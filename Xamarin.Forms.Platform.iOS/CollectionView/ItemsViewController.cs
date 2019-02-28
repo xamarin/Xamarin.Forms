@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -227,8 +228,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
 		{
+			var template = _itemsView.ItemTemplate;
+			var item = _itemsSource[indexPath.Row];
+
+			// Run this through the extension method in case it's really a DataTemplateSelector
+			template = template.SelectDataTemplate(item, _itemsView);
+
 			// We need to create a renderer, which means we need a template
-			var view = _itemsView.ItemTemplate.CreateContent() as View;
+			var view = template.CreateContent() as View;
 			_itemsView.AddLogicalChild(view);
 			var renderer = CreateRenderer(view);
 			BindableObject.SetInheritedBindingContext(view, _itemsSource[indexPath.Row]);
@@ -357,6 +364,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (emptyViewTemplate != null)
 			{
+				// Run this through the extension method in case it's really a DataTemplateSelector
+				emptyViewTemplate = emptyViewTemplate.SelectDataTemplate(emptyView, _itemsView);
+
 				// We have a template; turn it into a Forms view 
 				var templateElement = emptyViewTemplate.CreateContent() as View;
 				var renderer = CreateRenderer(templateElement);
