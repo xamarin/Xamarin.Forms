@@ -13,21 +13,21 @@ namespace Xamarin.Forms.Platform.Android
 	public class ItemsViewAdapter : RecyclerView.Adapter
 	{
 		protected readonly ItemsView ItemsView;
-		readonly Func<IVisualElementRenderer, Context, AView> _createView;
-		internal readonly IItemsViewSource ItemsSource;
 		bool _disposed;
+		readonly Func<View, Context, ItemContentView> _createItemContentView;
+		internal readonly IItemsViewSource ItemsSource;
 
-		internal ItemsViewAdapter(ItemsView itemsView, Func<IVisualElementRenderer, Context, AView> createView = null)
+		internal ItemsViewAdapter(ItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
 
 			ItemsView = itemsView;
-			_createView = createView;
+			_createItemContentView = createItemContentView;
 			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
 
-			if (_createView == null)
+			if (_createItemContentView == null)
 			{
-				_createView = (renderer, context) => new ItemContentView(renderer, context);
+				_createItemContentView = (view, context) => new ItemContentView(context);
 			}
 		}
 
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (holder is TemplatedItemViewHolder templatedItemViewHolder)
 			{
-				ItemsView.RemoveLogicalChild(templatedItemViewHolder.View);
+				templatedItemViewHolder.Recycle(ItemsView);
 			}
 
 			base.OnViewRecycled(holder);
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.Android
 					textViewHolder.TextView.Text = ItemsSource[position].ToString();
 					break;
 				case TemplatedItemViewHolder templatedItemViewHolder:
-					BindableObject.SetInheritedBindingContext(templatedItemViewHolder.View, ItemsSource[position]);
+					templatedItemViewHolder.Bind(ItemsSource[position], ItemsView);
 					break;
 			}
 		}
@@ -106,6 +106,8 @@ namespace Xamarin.Forms.Platform.Android
 			Platform.SetRenderer(view, renderer);
 
 			return renderer;
+			var itemContentView = new ItemContentView(parent.Context);
+			return new TemplatedItemViewHolder(itemContentView, template);
 		}
 
 		public override int ItemCount => ItemsSource.Count;

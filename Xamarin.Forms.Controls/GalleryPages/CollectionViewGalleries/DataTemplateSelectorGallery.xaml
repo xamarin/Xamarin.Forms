@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries;assembly=Xamarin.Forms.Controls"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.DataTemplateSelectorGallery">
+
+    
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="DefaultTemplate">
+                <Grid HeightRequest="100">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Image Source="coffee.png"/>
+
+                    <Label Grid.Row="1" Text="{Binding Date, StringFormat='{}{0:d}'}"></Label>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="FridayTemplate">
+                <Grid HeightRequest="100">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    
+                    <Image Source="oasis.jpg"/>
+
+                    <Label Grid.Row="1" Text="Friday! Woot!"></Label>
+                </Grid>
+            </DataTemplate>
+            <local:TGIFDataTemplateSelector x:Key="tgifDataTemplateSelector"
+                    DefaultTemplate="{StaticResource DefaultTemplate}"
+                    FridayTemplate="{StaticResource FridayTemplate}" />
+
+            <DataTemplate x:Key="EmptyTemplate">
+
+                <!-- TODO This needs datattemplateselector for Empty View so we can verify it works -->
+                
+                <StackLayout>
+                    <Label Text="{Binding ., StringFormat='({0}) does not match any day of the week.'}"></Label>
+                </StackLayout>
+                
+            </DataTemplate>
+            
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+
+        <StackLayout>
+
+            <SearchBar x:Name="SearchBar" Placeholder="Day of Week Filter" />
+
+            <CollectionView x:Name="CollectionView" ItemTemplate="{StaticResource tgifDataTemplateSelector}" 
+                            EmptyViewTemplate="{StaticResource EmptyTemplate}"/>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
