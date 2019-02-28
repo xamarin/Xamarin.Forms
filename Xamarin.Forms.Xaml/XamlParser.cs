@@ -419,8 +419,6 @@ namespace Xamarin.Forms.Xaml
 			if (lookupAssemblies.Count == 0) {
 				XmlnsHelper.ParseXmlns(namespaceURI, out _, out var ns, out var asmstring, out _);
 				asmstring = asmstring ?? defaultAssemblyName;
-				if (asmstring == null)
-					return null;
 				if (namespaceURI != null && ns != null)
 					lookupAssemblies.Add(new XmlnsDefinitionAttribute(namespaceURI, ns) { AssemblyName = asmstring });
 			}
@@ -441,7 +439,7 @@ namespace Xamarin.Forms.Xaml
 			
 			potentialTypes = new List<XamlLoader.FallbackTypeInfo>();
 			foreach (string typeName in lookupNames)
-				foreach (XmlnsDefinitionAttribute xmlnsDefinitionAttribute in lookupAssemblies)				
+				foreach (XmlnsDefinitionAttribute xmlnsDefinitionAttribute in lookupAssemblies)	
 					potentialTypes.Add(new XamlLoader.FallbackTypeInfo {
 						ClrNamespace = xmlnsDefinitionAttribute.ClrNamespace,
 						TypeName = typeName,
