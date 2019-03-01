@@ -39,6 +39,19 @@ namespace Xamarin.Forms.Core.UITests
 			return new WinDriverApp(Session);
 		}
 
+		public static WindowsDriver<WindowsElement> ReConfigureAppFromCrash()
+		{
+			AppiumOptions options = new AppiumOptions();
+			options.AddAdditionalCapability("app", "0d4424f6-1e29-4476-ac00-ba22c3789cb6_ph1m9x8skttmg!App");
+			options.AddAdditionalCapability("appArguments", "RunningAsUITests");
+			Session = new WindowsDriver<WindowsElement>(new Uri(WindowsApplicationDriverUrl), options);
+			Assert.IsNotNull(Session);
+			Session.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
+			Reset();
+
+			return Session;
+		}
+
 		internal static void HandleAppClosed(Exception ex)
 		{
 			if (ex is InvalidOperationException && ex.Message == "Currently selected window has been closed")
