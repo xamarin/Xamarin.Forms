@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Text;
@@ -55,8 +59,7 @@ namespace Xamarin.Forms.Platform.UWP
 					WireUpFormsVsm();
 				}
 
-				Control.ItemsSource = ((LockableObservableListWrapper)Element.Items)._list;
-
+				Control.ItemsSource = GetItems(Element.Items);
 				UpdateTitle();
 				UpdateSelectedIndex();
 				UpdateLetterSpacing();
@@ -172,6 +175,35 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateLetterSpacing()
 		{
 			Control.CharacterSpacing = Element.LetterSpacing.ToEm();
+
+			if (Control.Header is TextBlock header)
+			{
+				header.CharacterSpacing = Element.LetterSpacing.ToEm();
+			}
+
+			if (Control.SelectedValue is TextBlock item)
+			{
+				item.CharacterSpacing = Element.LetterSpacing.ToEm();
+			}
+
+			if(Control.ItemsSource is ObservableCollection<TextBlock> collection)
+			{
+				collection.ForEach(f=>f.CharacterSpacing = Control.CharacterSpacing);
+			}
+		}
+
+
+		TextBlock ConvertStrongToTextBlock(string text)
+		{
+			return new TextBlock{
+				Text = text,
+				CharacterSpacing = Control.CharacterSpacing
+			};
+		}
+
+		ObservableCollection<TextBlock> GetItems(IList<string> items)
+		{
+			return new ObservableCollection<TextBlock>(items.Select(ConvertStrongToTextBlock));
 		}
 
 		void UpdateFont()
@@ -223,7 +255,11 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!Element.IsSet(Picker.TitleColorProperty))
 			{
 				Control.HeaderTemplate = null;
-				Control.Header = Element.Title;
+				Control.Header = new TextBlock
+				{
+					Text = Element.Title ?? string.Empty,
+					CharacterSpacing = Element.LetterSpacing.ToEm(),
+				};
 			}
 			else
 			{

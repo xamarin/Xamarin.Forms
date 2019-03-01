@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
@@ -175,7 +176,13 @@ namespace Xamarin.Forms.Platform.UWP
 			// No image, just the text
 			if (elementImage == null)
 			{
-				Control.Content = text;
+				Control.Content = new TextBlock
+				{
+					Text = text ?? string.Empty,
+					CharacterSpacing = Element.LetterSpacing.ToEm(),
+					VerticalAlignment = VerticalAlignment.Center,
+					HorizontalAlignment = HorizontalAlignment.Center,
+				};
 				return;
 			}
 
@@ -203,16 +210,17 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			// Both image and text, so we need to build a container for them
-			Control.Content = CreateContentContainer(Element.ContentLayout, image, text);
+			Control.Content = CreateContentContainer(Element.ContentLayout, image, text, Element.LetterSpacing.ToEm());
 		}
 
-		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text)
+		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text, int letterSpacing)
 		{
 			var container = new StackPanel();
 			var textBlock = new TextBlock {
 				Text = text,
 				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Center
+				HorizontalAlignment = HorizontalAlignment.Center,
+				CharacterSpacing = letterSpacing
 			};
 
 			var spacing = layout.Spacing;

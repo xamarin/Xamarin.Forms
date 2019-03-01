@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Linq;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 using WContentPresenter = Windows.UI.Xaml.Controls.ContentPresenter;
@@ -101,6 +103,23 @@ namespace Xamarin.Forms.Platform.UWP
 			CharacterSpacing = LetterSpacing;
 			if (_contentPresenter != null)
 				_contentPresenter.CharacterSpacing = LetterSpacing;
+
+			if(Content is TextBlock tb)
+			{
+				tb.CharacterSpacing = LetterSpacing;
+			}
+
+			if (Content is StackPanel sp)
+			{
+				foreach (var item in sp.Children)
+				{
+					if (item is TextBlock textBlock)
+					{
+						textBlock.CharacterSpacing = LetterSpacing;
+					}
+				}
+			}
+
 		}
 	}
 }

@@ -40,7 +40,7 @@
                     </Picker.Items>
                 </Picker>
                 <SearchBar Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="SearchBar" />
-                <Button Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Button" />
+                <Button Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Button"/>
             </StackLayout>
         </ScrollView>
     </StackLayout>
