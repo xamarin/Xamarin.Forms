@@ -60,7 +60,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
-    <CodesignKey>iPhone Developer: Peter Freeman Foot (NFPCJUZSF7)</CodesignKey>
+    <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>True</MtouchDebug>
     <CodesignEntitlements>
     </CodesignEntitlements>
@@ -76,8 +76,7 @@
     <BuildIpa>True</BuildIpa>
     <IpaMetadata />
     <IpaPackageName />
-    <CodesignProvision>
-    </CodesignProvision>
+    <CodesignProvision>Automatic</CodesignProvision>
     <CodesignResourceRules />
     <CodesignExtraArgs />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
