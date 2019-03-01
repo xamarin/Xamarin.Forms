@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void RestartFromCrash()
 		{
-			Init(WindowsTestBase.ReConfigureAppFromCrash());
+			Init(WindowsTestBase.CreateWindowsDriver());
 		}
 
 		public void Back()
