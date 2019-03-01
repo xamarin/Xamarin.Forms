@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Material.iOS
 		protected virtual void ApplyTheme() => Control?.ApplyTheme(this);
 		protected override void UpdatePlaceholder() => Control?.UpdatePlaceholder(this);
 
-		private protected override void UpdateFont()
+		protected override void UpdateFont()
 		{
 			base.UpdateFont();
 			Control?.ApplyTypographyScheme(Element);

@@ -258,7 +258,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.AdjustsFontSizeToFitWidth = Element.OnThisPlatform().AdjustsFontSizeToFitWidth();
 		}
 
-		private protected virtual void UpdateFont()
+		protected virtual void UpdateFont()
 		{
 			if (initialSize == CGSize.Empty)
 			{
