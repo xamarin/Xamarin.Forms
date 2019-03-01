@@ -8,9 +8,9 @@ namespace Xamarin.Forms.Material.iOS
 	{
 		protected override MaterialTextField CreateNativeControl() => new MaterialTextField(this, Element);
 		protected override void SetBackgroundColor(Color color) => ApplyTheme();
-		private protected override void UpdateColor() => Control?.UpdateTextColor(this);
+		protected override void UpdateColor() => Control?.UpdateTextColor(this);
 		protected virtual void ApplyTheme() => Control?.ApplyTheme(this);
-		private protected override void UpdatePlaceholder() => Control?.UpdatePlaceholder(this);
+		protected override void UpdatePlaceholder() => Control?.UpdatePlaceholder(this);
 
 		private protected override void UpdateFont()
 		{

@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Material.Android
 			UpdateBackgroundColor();
 		}
 
-		private protected override void UpdateTextColor() => ApplyTheme();
+		protected override void UpdateColor() => ApplyTheme();
 
 		protected override void UpdateBackgroundColor()
 		{
@@ -46,17 +46,24 @@ namespace Xamarin.Forms.Material.Android
 			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
 		}
 
-		private protected override void UpdatePlaceHolderText() => _textInputLayout.SetHint(Element.Placeholder, Element);
+		protected override void UpdatePlaceHolderText() => _textInputLayout.SetHint(Element.Placeholder, Element);
 		protected override EditText EditText => _textInputEditText;
-		private protected override void UpdatePlaceholderColor() => ApplyTheme();
-		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Element.PlaceholderColor);
+		protected override void UpdatePlaceholderColor() => ApplyTheme();
+		void ApplyTheme(Color textColor) => _textInputLayout?.ApplyTheme(textColor, Element.PlaceholderColor);
+		void ApplyTheme() => ApplyTheme(Element.TextColor);
 
-		private protected override void UpdateFont()
+		protected override void UpdateTextColor(Color color)
+		{
+			ApplyTheme(color);
+		}
+
+		protected override void UpdateFont()
 		{
 			base.UpdateFont();
 			_textInputLayout.Typeface = Element.ToTypeface();
 			_textInputEditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
+
 	}
 }
 #endif

@@ -43,16 +43,21 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.SetCursorVisible(isReadOnly);
 		}
 
-		private protected override void UpdatePlaceholderColor()
+		protected override void UpdatePlaceholderColor()
 		{
 			_hintColorSwitcher = _hintColorSwitcher ?? new TextColorSwitcher(EditText.HintTextColors, Element.UseLegacyColorManagement());
 			_hintColorSwitcher.UpdateTextColor(EditText, Element.PlaceholderColor, EditText.SetHintTextColor);
 		}
 
-		private protected override void UpdateTextColor()
+		protected override void UpdateColor()
+		{
+			UpdateTextColor(Element.TextColor);
+		}
+
+		protected override void UpdateTextColor(Color color)
 		{
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
-			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
+			_textColorSwitcher.UpdateTextColor(EditText, color);
 		}
 	}
 
@@ -155,7 +160,7 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.Text = Element.Text;
 			UpdateInputType();
 
-			UpdateTextColor();
+			UpdateColor();
 			UpdateAlignment();
 			UpdateFont();
 			UpdatePlaceholderColor();
@@ -190,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 
-		private protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
+		protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -211,7 +216,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
-				UpdateTextColor();
+				UpdateColor();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -268,9 +273,10 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
 		}
 
-		private protected abstract void UpdateTextColor();
+		protected abstract void UpdateColor();
+		protected abstract void UpdateTextColor(Color color);
 
-		private protected virtual void UpdateFont()
+		protected virtual void UpdateFont()
 		{
 			EditText.Typeface = Element.ToTypeface();
 			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
@@ -315,7 +321,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFont();
 		}
 
-		abstract private protected void UpdatePlaceholderColor();
+		abstract protected void UpdatePlaceholderColor();
 
 		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)
 		{

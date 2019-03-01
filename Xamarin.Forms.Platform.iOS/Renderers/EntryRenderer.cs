@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 		}
 
-		private protected virtual void UpdateColor()
+		protected virtual void UpdateColor()
 		{
 			var textColor = Element.TextColor;
 
@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SecureTextEntry = Element.IsPassword;
 		}
 
-		private protected virtual void UpdatePlaceholder()
+		protected virtual void UpdatePlaceholder()
 		{
 			var formatted = (FormattedString)Element.Placeholder;
 
