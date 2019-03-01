@@ -1,8 +1,15 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(Core.UITests.UITestCategories.Entry)]
+#endif
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 5202, "Entry.Focus() throws ObjectDisposedException", PlatformAffected.Android)]
 	public class Issue5202 : TestContentPage
@@ -24,5 +31,13 @@ namespace Xamarin.Forms.Controls.Issues
 			layout.Children.Add(button);
 			Content = layout;
 		}
+#if UITEST
+		[Test]
+		public void Issue5202Test()
+		{
+			RunningApp.WaitForElement("Click me");
+			RunningApp.Tap("Click me");
+		}
+#endif
 	}
 }
