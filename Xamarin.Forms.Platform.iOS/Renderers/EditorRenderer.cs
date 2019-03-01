@@ -53,6 +53,12 @@ namespace Xamarin.Forms.Platform.iOS
 			_placeholderLabel.Text = Element.Placeholder;
 		}
 
+		protected internal override void UpdateLetterSpacing()
+		{
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
+			_placeholderLabel.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(_placeholderLabel.Text);
+		}
+
 		protected internal override void UpdatePlaceholderColor()
 		{
 			if (Element.PlaceholderColor == Color.Default)
@@ -157,6 +163,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholderColor();
 			UpdateTextColor();
 			UpdateText();
+			UpdateLetterSpacing();
 			UpdateKeyboard();
 			UpdateEditable();
 			UpdateTextAlignment();
@@ -181,7 +188,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -198,6 +208,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			else if (e.PropertyName == Editor.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Editor.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateTextAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
@@ -289,7 +301,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal abstract void UpdatePlaceholderText();
 		protected internal abstract void UpdatePlaceholderColor();
-
+		protected internal abstract void UpdateLetterSpacing();
 
 		void UpdateTextAlignment()
 		{
