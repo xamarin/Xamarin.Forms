@@ -92,6 +92,32 @@ namespace Xamarin.Forms.Platform.Android
 
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, s.ToString());
 		}
+
+		// -- fix for 3.5 only --
+		internal override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		{
+			if (Control == null || Control.IsDisposed() || EditText == null || EditText.IsDisposed())
+				return;
+
+			e.Result = true;
+			if (e.Focus)
+			{
+				Device.BeginInvokeOnMainThread(() => {
+					if (Control == null || Control.IsDisposed() || EditText == null || EditText.IsDisposed())
+						return;
+
+					Control.RequestFocus();
+					EditText.ShowKeyboard();
+				});
+			}
+			else
+			{
+				Control.ClearFocus();
+				EditText.HideKeyboard();
+			}
+		}
+		// -- end fix for 3.5 --
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
