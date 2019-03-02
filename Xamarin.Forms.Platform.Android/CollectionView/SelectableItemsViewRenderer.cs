@@ -66,28 +66,8 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateNativeSelection()
 		{
 			var mode = SelectableItemsView.SelectionMode;
-			var selectedItem = SelectableItemsView.SelectedItem;
 
-			if (selectedItem == null)
-			{
-				if (mode == SelectionMode.None || mode == SelectionMode.Single)
-				{
-					SelectableItemsViewAdapter.ClearNativeSelection();
-				}
-
-				// If the mode is Multiple and SelectedItem is set to null, don't do anything
-				return;
-			}
-
-			if (mode != SelectionMode.Multiple)
-			{
-				SelectableItemsViewAdapter.ClearNativeSelection();
-				MarkItemSelected(selectedItem);
-			}
-
-			// TODO hartez 2018/11/06 22:32:07 This doesn't cover all the possible cases yet; need to handle multiple selection	
-
-			ClearNativeSelection();
+			SelectableItemsViewAdapter.ClearNativeSelection();
 
 			switch (mode)
 			{
