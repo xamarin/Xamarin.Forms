@@ -7,25 +7,25 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="DefaultTemplate">
-                <Grid HeightRequest="100">
+                <Grid HeightRequest="50">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <Image Source="coffee.png"/>
+                    <Image Source="coffee.png" AutomationId="weekday"/>
 
                     <Label Grid.Row="1" Text="{Binding Date, StringFormat='{}{0:dddd}'}"></Label>
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="WeekendTemplate">
-                <Grid HeightRequest="100">
+                <Grid HeightRequest="50">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    
-                    <Image Source="oasis.jpg"/>
+
+                    <Image Source="oasis.jpg" AutomationId="weekend"/>
 
                     <Label Grid.Row="1" Text="It's the weekend! Woot!"></Label>
                 </Grid>
