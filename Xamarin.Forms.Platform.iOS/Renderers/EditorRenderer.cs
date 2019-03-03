@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_placeholderLabel.Text = Element.Placeholder;
 		}
-
+		
 		protected internal override void UpdatePlaceholderColor()
 		{
 			if (Element.PlaceholderColor == Color.Default)
@@ -63,6 +63,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CreatePlaceholderLabel()
 		{
+			if (Control == null)
+			{
+				return;
+			}
+
 			Control.AddSubview(_placeholderLabel);
 
 			var edgeInsets = TextView.TextContainerInset;
