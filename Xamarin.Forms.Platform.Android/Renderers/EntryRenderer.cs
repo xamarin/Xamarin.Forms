@@ -49,10 +49,15 @@ namespace Xamarin.Forms.Platform.Android
 			_hintColorSwitcher.UpdateTextColor(EditText, Element.PlaceholderColor, EditText.SetHintTextColor);
 		}
 
-		protected override void UpdateTextColor()
+		protected override void UpdateColor()
+		{
+			UpdateTextColor(Element.TextColor);
+		}
+
+		protected override void UpdateTextColor(Color color)
 		{
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
-			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
+			_textColorSwitcher.UpdateTextColor(EditText, color);
 		}
 	}
 
@@ -191,7 +196,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 
-		internal protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
+		protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -212,7 +217,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
-				UpdateTextColor();
+				UpdateColor();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -271,9 +276,10 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
 		}
 
-		abstract protected void UpdateTextColor();
+		protected abstract void UpdateColor();
+		protected abstract void UpdateTextColor(Color color);
 
-		protected internal virtual void UpdateFont()
+		protected virtual void UpdateFont()
 		{
 			EditText.Typeface = Element.ToTypeface();
 			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);

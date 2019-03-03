@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 		}
 
-		protected internal virtual void UpdateColor()
+		protected virtual void UpdateColor()
 		{
 			var textColor = Element.TextColor;
 
@@ -264,7 +264,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.AdjustsFontSizeToFitWidth = Element.OnThisPlatform().AdjustsFontSizeToFitWidth();
 		}
 
-		protected internal virtual void UpdateFont()
+		protected virtual void UpdateFont()
 		{
 			if (initialSize == CGSize.Empty)
 			{
@@ -312,7 +312,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SecureTextEntry = Element.IsPassword;
 		}
 
-		protected internal virtual void UpdatePlaceholder()
+		protected virtual void UpdatePlaceholder()
 		{
 			var formatted = (FormattedString)Element.Placeholder;
 
