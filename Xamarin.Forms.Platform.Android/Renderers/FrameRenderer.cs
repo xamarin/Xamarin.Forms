@@ -4,15 +4,14 @@ using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Views;
-using AButton = Android.Widget.Button;
 using ACanvas = Android.Graphics.Canvas;
-using GlobalResource = Android.Resource;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class FrameRenderer : VisualElementRenderer<Frame>
 	{
 		bool _disposed;
+		private FrameDrawable _drawable;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
 		public FrameRenderer(Context context) : base(context)
@@ -32,6 +31,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing && !_disposed)
 			{
+				// The background may or may not match the drawable, so ensure that it is only disposed once
+				if (Background != _drawable)
+				{
+					_drawable?.Dispose();
+				}
+
 				Background.Dispose();
 				_disposed = true;
 			}
@@ -51,23 +56,27 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement != null && e.OldElement == null)
 			{
-				UpdateBackground();
 				_motionEventHelper.UpdateElement(e.NewElement);
+
+				// Dispose the previous drawable, if exists, and then create a drawable for the background of the
+				// current frame element
+				_drawable?.Dispose();
+				_drawable = new FrameDrawable(Element, Context.ToPixels);
+				this.SetBackground(_drawable);
 			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
-			{
-				UpdateBackground();
-			}
-		}
 
-		void UpdateBackground()
-		{
-			this.SetBackground(new FrameDrawable(Element, Context.ToPixels));
+			// If the background color is changed, the base class replaces the Background drawable. So after calling
+			// base.OnElementPropertyChanged(...), ensure that the background is set correctly because the base class
+			// doesn't handle corner radius.
+			if (Background != _drawable)
+			{
+				this.SetBackground(_drawable);
+			}
 		}
 
 		class FrameDrawable : Drawable
@@ -213,13 +222,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			void FrameOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
-				if (   e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName
+				if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName
 					|| e.PropertyName == Frame.BorderColorProperty.PropertyName
 					|| e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				{
-					if(_normalBitmap == null)
+					if (_normalBitmap == null)
 						return;
-						
+
 					using (var canvas = new ACanvas(_normalBitmap))
 					{
 						int width = Bounds.Width();
