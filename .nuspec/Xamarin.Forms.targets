@@ -149,13 +149,13 @@
   -->
 
   <!-- MonoAndroid targets. -->
-  <Target Name="IncludeProguardForAndroid" BeforeTargets="BeforeCompile" Condition="'$(TargetFrameworkIdentifier)' == 'MonoAndroid'">
+  <Target Name="IncludeProguardForAndroid" BeforeTargets="BeforeCompile" Condition="'$(AndroidApplication)' == 'True'">
     <ItemGroup>
       <ProguardConfiguration Include="$(MSBuildThisFileDirectory)MonoAndroid10\proguard.cfg" />
     </ItemGroup>
   </Target>
 
-  <Target Name="ValidateTargetFrameworkVersionForForms" BeforeTargets="CoreCompile" Condition="'$(XFDisableTargetFrameworkValidation)' != 'True' AND '$(TargetFrameworkIdentifier)' == 'MonoAndroid'">
+  <Target Name="ValidateTargetFrameworkVersionForForms" BeforeTargets="CoreCompile" Condition="'$(XFDisableTargetFrameworkValidation)' != 'True' AND '$(AndroidApplication)' == 'True'">
     <PropertyGroup>
       <MinTargetFrameworkVersionForForms>8.1</MinTargetFrameworkVersionForForms>
       <TargetFrameworkVersionWithoutV>$(TargetFrameworkVersion.TrimStart('vV'))</TargetFrameworkVersionWithoutV>
