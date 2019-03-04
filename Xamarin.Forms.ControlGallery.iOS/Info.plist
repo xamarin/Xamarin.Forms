@@ -131,8 +131,10 @@
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Fonts/SegoeWP-Light.ttf</string>
-		<string>Fonts/SegoeWP-Bold.ttf</string>
+		<string>Fonts/Roboto-Italic.ttf</string>
+		<string>Fonts/Roboto-Bold.ttf</string>
+		<string>Fonts/Roboto-Regular.ttf</string>
+		<string>Fonts/Roboto-BoldItalic.ttf</string>
 	</array>
 </dict>
 </plist>

@@ -16,8 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 2204, "Font aliasing and color aren't displayed correctly in MacOS without a retina display", PlatformAffected.macOS)]
 	public class Issue2204 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		string _fontFamilyMacOs = "SegoeWP-Light";
-		string _fontFamilyiuOs = "Segoe WP";
+		readonly string _fontFamilyMacOs = "Roboto";
 		protected override void Init()
 		{
 			var grid = new Grid();
@@ -31,9 +30,10 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				BackgroundColor = Color.FromHex("#32d2c8")
 			};
+
 			for (int i = 10; i < 20; i++)
 			{
-				AddToLayout(layout, i, _fontFamilyiuOs);
+				AddToLayout(layout, i, _fontFamilyMacOs);
 				AddToLayout(layout2, i, null);
 			}
 			grid.Children.Add(layout);
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		private static void AddToLayout(StackLayout layout, int i, string fontFamily)
 		{
-			var text = $"Xamarin Forms FontSize:{i} FontFamily: {fontFamily}";
+			var text = $"Xamarin Forms FontSize:{i}";
 			layout.Children.Add(new Label { Text = text, FontSize = i, FontFamily = fontFamily, TextColor = Color.White });
 			layout.Children.Add(new Label { Text = text, FontSize = i, FontFamily = fontFamily, FontAttributes = FontAttributes.Bold, TextColor = Color.White });
 			layout.Children.Add(new Label { Text = text, FontSize = i, FontFamily = fontFamily, FontAttributes = FontAttributes.Italic, TextColor = Color.White });
