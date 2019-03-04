@@ -115,7 +115,7 @@
       <Name>Xamarin.Forms.Maps</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
-      <Project>{67F9D3A8-F71E-4428-913F-C37AE82CDB24}</Project>
+      <Project>{D31A6537-ED9C-4EBD-B231-A8D4FE44126A}</Project>
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.MacOS\Xamarin.Forms.Platform.MacOS.csproj">
@@ -381,6 +381,34 @@
     <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\Vegetables%402x.jpg">
       <Link>Images\Vegetables%402x.jpg</Link>
     </BundleResource>
+    <BundleResource Include="Resources\Fonts\Roboto-Medium.ttf" />
+    <BundleResource Include="Resources\Fonts\Roboto-Regular.ttf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Black.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-BlackItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Bold.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-BoldItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Heavy.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-HeavyItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Light.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-LightItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Medium.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-MediumItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Regular.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-RegularItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Semibold.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-SemiboldItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Thin.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-ThinItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-Ultralight.otf" />
+    <BundleResource Include="Resources\Fonts\SF-Pro-Display-UltralightItalic.otf" />
+    <BundleResource Include="Resources\Fonts\SegoeWP-Black.ttf" />
+    <BundleResource Include="Resources\Fonts\SegoeWP-Bold.ttf" />
+    <BundleResource Include="Resources\Fonts\SegoeWP-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="Resources\Fonts\SegoeWP-Semibold.ttf" />
+    <BundleResource Include="Resources\Fonts\SegoeWP-Semilight.ttf" />
+    <BundleResource Include="Resources\Fonts\segoe-wp.ttf" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />

@@ -139,16 +139,16 @@ namespace Xamarin.Forms.Platform.MacOS
 					self.FontAttributes == FontAttributes.None;
 		}
 
-#if __MOBILE__
-		internal static UIFont ToUIFont(this Label label)
-#else
-		internal static UIFont ToNSFont(this Label label)
-#endif
-		{
-			var values = label.GetValues(Label.FontFamilyProperty, Label.FontSizeProperty, Label.FontAttributesProperty);
-			return ToUIFont((string)values[0], (float)(double)values[1], (FontAttributes)values[2]) ??
-					UIFont.SystemFontOfSize(UIFont.LabelFontSize);
-		}
+//#if __MOBILE__
+//		internal static UIFont ToUIFont(this Label label)
+//#else
+//		internal static UIFont ToNSFont(this Label label)
+//#endif
+		//{
+		//	var values = label.GetValues(Label.FontFamilyProperty, Label.FontSizeProperty, Label.FontAttributesProperty);
+		//	return ToUIFont((string)values[0], (float)(double)values[1], (FontAttributes)values[2]) ??
+		//			UIFont.SystemFontOfSize(UIFont.LabelFontSize);
+		//}
 
 #if __MOBILE__
 		internal static UIFont ToUIFont(this IFontElement element)
@@ -156,7 +156,11 @@ namespace Xamarin.Forms.Platform.MacOS
 		internal static NSFont ToNSFont(this IFontElement element)
 #endif
 		{
-			return ToUIFont(element.FontFamily, (float)element.FontSize, element.FontAttributes);
+			var values = (element as BindableObject).GetValues(Label.FontFamilyProperty, Label.FontSizeProperty, Label.FontAttributesProperty);
+			var fontFamily = (string)values[0];
+			var fontSize = float.Parse(values[1].ToString());
+			var fontAttributes = (FontAttributes)values[2];
+			return ToUIFont(fontFamily, fontSize, fontAttributes);
 		}
 
 		static UIFont _ToUIFont(string family, float size, FontAttributes attributes)
@@ -203,12 +207,15 @@ namespace Xamarin.Forms.Platform.MacOS
 							traits = traits | NSFontSymbolicTraits.ItalicTrait;
 
 						descriptor = descriptor.FontDescriptorWithSymbolicTraits(traits);
-						result = NSFont.FromDescription(descriptor, size);
-						if (result != null)
-							return result;
+						//result = NSFont.FromDescription(descriptor, size);
+						//if (result != null)
+							//return result;
 					}
 
 					result = NSFont.FromFontName(family, size);
+					//if (result != null)
+						//NSFont.FromDescription()
+						//result.RenderingMode = NSFontRenderingMode.Antialiased;
 #endif
 					if (result != null)
 						return result;
@@ -246,7 +253,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (bold)
 				return UIFont.BoldSystemFontOfSize(size);
 
-			return UIFont.SystemFontOfSize(size);
+			var font =  UIFont.SystemFontOfSize(size);
+
+			return font.ScreenFontWithRenderingMode(NSFontRenderingMode.Default);
 		}
 
 		static UIFont ToUIFont(string family, float size, FontAttributes attributes)
