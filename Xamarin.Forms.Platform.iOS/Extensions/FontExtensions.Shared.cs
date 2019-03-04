@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					self.FontAttributes == FontAttributes.None;
 		}
 
-		internal static NativeFont ToNativeFont(this IFontElement element)
+		static NativeFont ToNativeFont(this IFontElement element)
 		{
 			var fontFamily = element.FontFamily;
 			var fontSize = (float)element.FontSize;
