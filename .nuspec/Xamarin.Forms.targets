@@ -150,7 +150,7 @@
   -->
 
   <!-- MonoAndroid targets. -->
-  <PropertyGroup Condition="'$(AndroidApplication)' == 'True'">
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == 'MonoAndroid'">
     <CoreCompileDependsOn>
       IncludeProguardForAndroid;
       $(CoreCompileDependsOn);
