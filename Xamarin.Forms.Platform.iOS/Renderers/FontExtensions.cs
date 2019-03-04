@@ -139,17 +139,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					self.FontAttributes == FontAttributes.None;
 		}
 
-//#if __MOBILE__
-//		internal static UIFont ToUIFont(this Label label)
-//#else
-//		internal static UIFont ToNSFont(this Label label)
-//#endif
-		//{
-		//	var values = label.GetValues(Label.FontFamilyProperty, Label.FontSizeProperty, Label.FontAttributesProperty);
-		//	return ToUIFont((string)values[0], (float)(double)values[1], (FontAttributes)values[2]) ??
-		//			UIFont.SystemFontOfSize(UIFont.LabelFontSize);
-		//}
-
 #if __MOBILE__
 		internal static UIFont ToUIFont(this IFontElement element)
 #else
@@ -165,6 +154,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static UIFont _ToUIFont(string family, float size, FontAttributes attributes)
 		{
+			var font = UIFont.SystemFontOfSize(size);
+
 			var bold = (attributes & FontAttributes.Bold) != 0;
 			var italic = (attributes & FontAttributes.Italic) != 0;
 
@@ -172,8 +163,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				try
 				{
-					UIFont result;
+
 #if __MOBILE__
+					UIFont result = null;
 					if (UIFont.FamilyNames.Contains(family))
 					{
 						var descriptor = new UIFontDescriptor().CreateWithFamily(family);
@@ -194,6 +186,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					}
 
 					result = UIFont.FromName(family, size);
+					if (result != null)
+						return result;
 #else
 
 					var descriptor = new NSFontDescriptor().FontDescriptorWithFamily(family);
@@ -207,18 +201,11 @@ namespace Xamarin.Forms.Platform.MacOS
 							traits = traits | NSFontSymbolicTraits.ItalicTrait;
 
 						descriptor = descriptor.FontDescriptorWithSymbolicTraits(traits);
-						//result = NSFont.FromDescription(descriptor, size);
-						//if (result != null)
-							//return result;
+						font = NSFont.FromDescription(descriptor, size);
 					}
-
-					result = NSFont.FromFontName(family, size);
-					//if (result != null)
-						//NSFont.FromDescription()
-						//result.RenderingMode = NSFontRenderingMode.Antialiased;
+					font = NSFont.FromFontName(family, size);
 #endif
-					if (result != null)
-						return result;
+
 				}
 				catch
 				{
@@ -241,21 +228,24 @@ namespace Xamarin.Forms.Platform.MacOS
 					NSFontSymbolicTraits.BoldTrait |
 					NSFontSymbolicTraits.ItalicTrait);
 
-				return NSFont.FromDescription(descriptor, 0);
+				font =  NSFont.FromDescription(descriptor, 0);
 			}
 			if (italic)
 			{
 				var defaultFont = UIFont.SystemFontOfSize(size);
 				var descriptor = defaultFont.FontDescriptor.FontDescriptorWithSymbolicTraits(NSFontSymbolicTraits.ItalicTrait);
-				return NSFont.FromDescription(descriptor, 0);
+				font = NSFont.FromDescription(descriptor, 0);
 			}
 #endif
 			if (bold)
-				return UIFont.BoldSystemFontOfSize(size);
+				font = UIFont.BoldSystemFontOfSize(size);
 
-			var font =  UIFont.SystemFontOfSize(size);
+#if __MOBILE__
+			return font;
+#else
+			return font.ScreenFontWithRenderingMode(NSFontRenderingMode.AntialiasedIntegerAdvancements);
+#endif
 
-			return font.ScreenFontWithRenderingMode(NSFontRenderingMode.Default);
 		}
 
 		static UIFont ToUIFont(string family, float size, FontAttributes attributes)
