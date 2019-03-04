@@ -143,19 +143,31 @@
  			<Compile Include="@(_CSSOutputs)" />
  		</ItemGroup>
 	</Target>
-  <!-- 
+  
+ <!-- 
     Platform Specific Targets.
     We can't use a framework specific targets file because it breaks shared projects i.e.  /build/MonoAndroid10/Xamarin.Forms.targets
   -->
 
   <!-- MonoAndroid targets. -->
-  <Target Name="IncludeProguardForAndroid" BeforeTargets="BeforeCompile" Condition="'$(AndroidApplication)' == 'True'">
+  <PropertyGroup Condition="'$(AndroidApplication)' == 'True'">
+    <CoreCompileDependsOn>
+      IncludeProguardForAndroid;
+      $(CoreCompileDependsOn);
+    </CoreCompileDependsOn>
+    <PrepareForBuildDependsOn>
+      ValidateTargetFrameworkVersionForForms;
+      $(PrepareForBuildDependsOn);
+    </PrepareForBuildDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="IncludeProguardForAndroid">
     <ItemGroup>
       <ProguardConfiguration Include="$(MSBuildThisFileDirectory)MonoAndroid10\proguard.cfg" />
     </ItemGroup>
   </Target>
 
-  <Target Name="ValidateTargetFrameworkVersionForForms" BeforeTargets="CoreCompile" Condition="'$(XFDisableTargetFrameworkValidation)' != 'True' AND '$(AndroidApplication)' == 'True'">
+  <Target Name="ValidateTargetFrameworkVersionForForms" Condition="'$(XFDisableTargetFrameworkValidation)' != 'True'">
     <PropertyGroup>
       <MinTargetFrameworkVersionForForms>8.1</MinTargetFrameworkVersionForForms>
       <TargetFrameworkVersionWithoutV>$(TargetFrameworkVersion.TrimStart('vV'))</TargetFrameworkVersionWithoutV>
