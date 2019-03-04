@@ -228,7 +228,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					NSFontSymbolicTraits.BoldTrait |
 					NSFontSymbolicTraits.ItalicTrait);
 
-				font =  NSFont.FromDescription(descriptor, 0);
+				font = NSFont.FromDescription(descriptor, 0);
 			}
 			if (italic)
 			{

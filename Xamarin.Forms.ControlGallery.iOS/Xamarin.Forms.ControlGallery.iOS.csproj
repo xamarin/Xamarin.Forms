@@ -297,6 +297,88 @@
     <BundleResource Include="Resources\xamarin_logo%403x.png" />
     <BundleResource Include="Resources\xamarin_logo%402x.png" />
     <BundleResource Include="Resources\xamarin_logo.png" />
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\Roboto-Medium.ttf">
+      <Link>Resources\Fonts\Roboto-Medium.ttf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\Roboto-Regular.ttf">
+      <Link>Resources\Fonts\Roboto-Regular.ttf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Black.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Black.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-BlackItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-BlackItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Bold.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Bold.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-BoldItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-BoldItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Heavy.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Heavy.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-HeavyItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-HeavyItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Light.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Light.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-LightItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-LightItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Medium.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Medium.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-MediumItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-MediumItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Regular.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Regular.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-RegularItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-RegularItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Semibold.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Semibold.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-SemiboldItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-SemiboldItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Thin.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Thin.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-ThinItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-ThinItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-Ultralight.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-Ultralight.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SF-Pro-Display-UltralightItalic.otf">
+      <Link>Resources\Fonts\SF-Pro-Display-UltralightItalic.otf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SegoeWP-Black.ttf">
+      <Link>Resources\Fonts\SegoeWP-Black.ttf</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SegoeWP-Bold.ttf">
+      <Link>Resources\Fonts\SegoeWP-Bold.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SegoeWP-Light.ttf">
+      <Link>Resources\Fonts\SegoeWP-Light.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SegoeWP-Semibold.ttf">
+      <Link>Resources\Fonts\SegoeWP-Semibold.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\SegoeWP-Semilight.ttf">
+      <Link>Resources\Fonts\SegoeWP-Semilight.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\segoe-wp.ttf">
+      <Link>Resources\Fonts\segoe-wp.ttf</Link>
+    </BundleResource>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />

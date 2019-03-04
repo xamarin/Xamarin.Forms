@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.MyPage">
     <ContentPage.Content>
         <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="#32d2c8">
-             <Label Text="Welcome to Xamarin Forms no size!" FontFamily="SegoeWP-Light" VerticalOptions="Center" HorizontalOptions="Center" TextColor="White" />
+             <Label Text="Welcome to Xamarin Forms no size!" FontFamily="Segoe WP Light" VerticalOptions="Center" HorizontalOptions="Center" TextColor="White" />
           
 			<Label FontSize="10" Text="Welcome to Xamarin Forms 10!" FontFamily="SegoeWP-Light" VerticalOptions="Center" HorizontalOptions="Center" TextColor="White" />
             <Label FontSize="10" Text="Welcome to Xamarin Forms 10!" VerticalOptions="Center" HorizontalOptions="Center" TextColor="White" />

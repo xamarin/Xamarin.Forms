@@ -129,5 +129,10 @@
 	<string>LaunchScreen</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Fonts/SegoeWP-Light.ttf</string>
+		<string>Fonts/SegoeWP-Bold.ttf</string>
+	</array>
 </dict>
 </plist>
