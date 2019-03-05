@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
-				Control.LetterSpacing = Element.LetterSpacing.ToEm();
+				EditText.LetterSpacing = Element.LetterSpacing.ToEm();
 			}
 		}
 

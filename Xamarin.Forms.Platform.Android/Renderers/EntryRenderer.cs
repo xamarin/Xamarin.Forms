@@ -159,8 +159,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceHolderText();
 			EditText.Text = Element.Text;
 			UpdateInputType();
-
-            UpdateTextColor();
+			UpdateColor();
 			UpdateLetterSpacing();
 			UpdateAlignment();
 			UpdateFont();
