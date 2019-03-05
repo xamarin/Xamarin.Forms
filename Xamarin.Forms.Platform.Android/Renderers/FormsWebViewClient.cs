@@ -19,6 +19,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		WebNavigationResult _navigationResult = WebNavigationResult.Success;
 		WebViewRenderer _renderer;
+		string _lastUrlNotOverridden;
+		string _lastUrlNavigatedCancel;
 
 		public FormsWebViewClient(WebViewRenderer renderer)
 		{
@@ -32,24 +34,45 @@ namespace Xamarin.Forms.Platform.Android
 
 		}
 
-		public override void OnPageStarted(global::Android.Webkit.WebView view, string url, Bitmap favicon)
+		public override bool ShouldOverrideUrlLoading(global::Android.Webkit.WebView view, IWebResourceRequest request)
 		{
-			if (_renderer?.Element == null || url == WebViewRenderer.AssetBaseUrl)
-				return;
+			// this event does not fire when the Source is explictly set in code
+			_lastUrlNotOverridden = null;
+			if (_renderer?.Element == null || request?.Url == null)
+				return true;
+			var url = request.Url.ToString();
+			if (url == WebViewRenderer.AssetBaseUrl)
+				return false;
 
 			var args = new WebNavigatingEventArgs(WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url);
-
 			_renderer.ElementController.SendNavigating(args);
-			_navigationResult = WebNavigationResult.Success;
+			_lastUrlNotOverridden = args.Cancel ? null : url;
 
-			_renderer.UpdateCanGoBackForward();
+			return args.Cancel;
+		}
 
-			if (args.Cancel)
+		public override void OnPageStarted(global::Android.Webkit.WebView view, string url, Bitmap favicon)
+		{
+			if (_renderer?.Element == null || string.IsNullOrWhiteSpace(url) || url == WebViewRenderer.AssetBaseUrl)
+				return;
+
+			bool cancel = false;
+			if (!url.Equals(_lastUrlNotOverridden, StringComparison.OrdinalIgnoreCase))
 			{
+				var args = new WebNavigatingEventArgs(WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url);
+				_renderer.ElementController.SendNavigating(args);
+				cancel = args.Cancel;
+			}
+			_lastUrlNotOverridden = null;
+			_renderer.UpdateCanGoBackForward();
+			if (cancel)
+			{
+				_navigationResult = WebNavigationResult.Cancel;
 				_renderer.Control.StopLoading();
 			}
 			else
 			{
+				_navigationResult = WebNavigationResult.Success;
 				base.OnPageStarted(view, url, favicon);
 			}
 		}
@@ -64,9 +87,14 @@ namespace Xamarin.Forms.Platform.Android
 			_renderer.ElementController.SetValueFromRenderer(WebView.SourceProperty, source);
 			_renderer.IgnoreSourceChanges = false;
 
-			var args = new WebNavigatedEventArgs(WebNavigationEvent.NewPage, source, url, _navigationResult);
+			bool navigate = _navigationResult == WebNavigationResult.Failure ? !url.Equals(_lastUrlNavigatedCancel, StringComparison.OrdinalIgnoreCase) : true;
+			_lastUrlNavigatedCancel = _navigationResult == WebNavigationResult.Cancel ? url : null;
 
-			_renderer.ElementController.SendNavigated(args);
+			if (navigate)
+			{
+				var args = new WebNavigatedEventArgs(WebNavigationEvent.NewPage, source, url, _navigationResult);
+				_renderer.ElementController.SendNavigated(args);
+			}
 
 			_renderer.UpdateCanGoBackForward();
 
