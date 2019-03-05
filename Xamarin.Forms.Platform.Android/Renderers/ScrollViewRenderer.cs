@@ -247,8 +247,6 @@ namespace Xamarin.Forms.Platform.Android
 			EventHandler<VisualElementChangedEventArgs> changed = ElementChanged;
 			if (changed != null)
 				changed(this, e);
-
-			ScrollbarFadingEnabled = false;
 		}
 
 		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
