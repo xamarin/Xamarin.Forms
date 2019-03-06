@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class FrameRenderer : VisualElementRenderer<Frame>
 	{
 		bool _disposed;
-		private FrameDrawable _drawable;
+		FrameDrawable _drawable;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
 		public FrameRenderer(Context context) : base(context)
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementChanged(e);
 
-			if (e.NewElement != null && e.OldElement == null)
+			if (e.NewElement != null && e.NewElement != e.OldElement)
 			{
 				_motionEventHelper.UpdateElement(e.NewElement);
 
