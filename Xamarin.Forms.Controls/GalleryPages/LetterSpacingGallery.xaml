@@ -15,32 +15,33 @@
             </Label.FormattedText>
         </Label>
         <Slider Minimum="-10" Maximum="10" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Gray"
-                MinimumTrackColor="Gray" />
+                MinimumTrackColor="Gray"  Margin="20,0"/>
 
         <ScrollView>
             <StackLayout>
-                <Label Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Label" />
+                <Label Text="Welcome to Xamarin.Forms! - Label" LetterSpacing="0" x:Name="Label" TextColor="Red"/>
                 <Label>
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Span" />
+                            <Span Text="Welcome to Xamarin.Forms! - Span" LetterSpacing="0" x:Name="Span" TextColor="Red"/>
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
-                <Entry Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Entry"/>
-                <Entry Placeholder="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="PlaceholderEntry"/>
-                <Editor Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Editor"/>
-                <Editor Placeholder="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="PlaceholderEditor"/>
-                <DatePicker Date="2019-01-01" LetterSpacing="0" x:Name="DatePicker"/>
-                <TimePicker Time="10:10" LetterSpacing="0" x:Name="TimePicker"/>
-                <Picker Title="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Picker" >
+                <Entry Text="Welcome to Xamarin.Forms! - Entry" LetterSpacing="0" x:Name="Entry" TextColor="Red" PlaceholderColor="BlueViolet"/>
+                <Entry Placeholder="Welcome to Xamarin.Forms! - Entry" LetterSpacing="0" x:Name="PlaceholderEntry" TextColor="Red" PlaceholderColor="BlueViolet"/>
+                <Editor Text="Welcome to Xamarin.Forms! - Editor" LetterSpacing="0" x:Name="Editor" TextColor="Red" PlaceholderColor="BlueViolet"/>
+                <Editor Placeholder="Welcome to Xamarin.Forms! - Editor" LetterSpacing="0" x:Name="PlaceholderEditor" TextColor="Red" PlaceholderColor="BlueViolet"/>
+                <DatePicker Date="2019-01-01" LetterSpacing="0" x:Name="DatePicker" TextColor="Red"/>
+                <TimePicker Time="10:10" LetterSpacing="0" x:Name="TimePicker" TextColor="Red"/>
+                <Picker Title="Welcome to Xamarin.Forms! - Picker"  LetterSpacing="0" x:Name="Picker" TextColor="Red" TitleColor="BlueViolet">
                     <Picker.Items>
                         <x:String>Welcome to Xamarin.Forms1</x:String>
                         <x:String>Welcome to Xamarin.Forms2</x:String>
                     </Picker.Items>
                 </Picker>
-                <SearchBar Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="SearchBar" />
-                <Button Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Button"/>
+                <SearchBar Text="Welcome to Xamarin.Forms! - SearchBar" LetterSpacing="0" x:Name="SearchBar" TextColor="Red" PlaceholderColor="BlueViolet"/>
+                <SearchBar Placeholder="Welcome to Xamarin.Forms! - SearchBar" LetterSpacing="0" x:Name="PlaceholderSearchBar" TextColor="Red" PlaceholderColor="BlueViolet"/>
+                <Button Text="Welcome to Xamarin.Forms! - Button" LetterSpacing="0" x:Name="Button" TextColor="Red"/>
             </StackLayout>
         </ScrollView>
     </StackLayout>

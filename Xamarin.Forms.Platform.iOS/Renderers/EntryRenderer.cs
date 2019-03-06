@@ -332,6 +332,8 @@ namespace Xamarin.Forms.Platform.iOS
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 			}
+
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
 		}
 
 		void UpdateText()
@@ -343,8 +345,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
-			Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
+			Control.AttributedText = Control.AttributedText.AddLetterSpacing(Element.Text, Element.LetterSpacing);
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
 		}
 
 		void UpdateMaxLength()

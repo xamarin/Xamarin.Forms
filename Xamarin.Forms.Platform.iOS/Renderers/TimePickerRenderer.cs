@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
+			Control.AttributedText = Control.AttributedText.AddLetterSpacing(Control.Text, Element.LetterSpacing);
 		}
 
 		void UpdateTime()

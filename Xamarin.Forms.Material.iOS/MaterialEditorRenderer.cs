@@ -1,6 +1,7 @@
 ﻿using UIKit;
 using MaterialComponents;
 using System;
+using Foundation;
 using Xamarin.Forms.Platform.iOS;
 
 namespace Xamarin.Forms.Material.iOS
@@ -37,6 +38,11 @@ namespace Xamarin.Forms.Material.iOS
 				return;
 
 			Control.UpdatePlaceholder(this);
+		}
+
+		protected internal override void UpdateLetterSpacing()
+		{
+			Control.AttributedText = Control.AttributedText.AddLetterSpacing(Element.Text, Element.LetterSpacing);
 		}
 
 		protected internal override void UpdateText()

@@ -55,8 +55,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal override void UpdateLetterSpacing()
 		{
-			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
-			_placeholderLabel.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(_placeholderLabel.Text);
+			TextView.AttributedText = TextView.AttributedText.AddLetterSpacing(Element.Text, Element.LetterSpacing);
+			_placeholderLabel.AttributedText = _placeholderLabel.AttributedText.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
 		}
 
 		protected internal override void UpdatePlaceholderColor()
@@ -88,6 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 			);
 
 			_placeholderLabel.TranslatesAutoresizingMaskIntoConstraints = false;
+			_placeholderLabel.AttributedText = _placeholderLabel.AttributedText.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
 
 			Control.AddConstraints(hConstraints);
 			Control.AddConstraints(vConstraints);
@@ -215,7 +216,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == Editor.PlaceholderProperty.PropertyName)
+			{
 				UpdatePlaceholderText();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == Editor.AutoSizeProperty.PropertyName)

@@ -200,7 +200,8 @@ namespace Xamarin.Forms.Platform.iOS
 			_textField = _textField ?? Control.FindDescendantView<UITextField>();
 			if (_textField == null)
 				return;
-			_textField.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
+			_textField.AttributedText = _textField.AttributedText.AddLetterSpacing(Element.Text, Element.LetterSpacing);
+			_textField.AttributedPlaceholder = _textField.AttributedPlaceholder.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
 		}
 
 		void UpdateAlignment()
@@ -278,14 +279,14 @@ namespace Xamarin.Forms.Platform.iOS
 					? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
 
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, color);
-				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, _textField.AttributedPlaceholder);
+				_textField.AttributedPlaceholder.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
 
 			}
 			else
 			{
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, targetColor.IsDefault 
 					? ColorExtensions.SeventyPercentGrey.ToColor() : targetColor);
-				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, _textField.AttributedPlaceholder);
+				_textField.AttributedPlaceholder.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
 			}
 		}
 

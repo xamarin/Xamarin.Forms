@@ -162,8 +162,8 @@ namespace Xamarin.Forms.Platform.iOS
 
         void UpdateLetterSpacing()
         {
-	        Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
-			Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
+	        Control.AttributedText = Control.AttributedText.AddLetterSpacing(Control.Text, Element.LetterSpacing);
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddLetterSpacing(Element.Title, Element.LetterSpacing);
         }
 
         protected internal virtual void UpdateFont()
@@ -184,16 +184,16 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color)
+					.AddLetterSpacing(Element.Title, Element.LetterSpacing);
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color)
+					.AddLetterSpacing(Element.Title, Element.LetterSpacing);
             }
-
-			Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
 		}
 
 

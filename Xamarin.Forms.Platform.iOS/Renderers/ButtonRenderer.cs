@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			var attributedString = Element.LetterSpacing.ToLetterSpacingAttribute(Control.TitleLabel.Text);
+			var attributedString = new NSMutableAttributedString(Element.Text ?? string.Empty).AddLetterSpacing(Element.Text, Element.LetterSpacing);
 			Control.SetAttributedTitle(attributedString, UIControlState.Normal);
 			Control.SetAttributedTitle(attributedString, UIControlState.Highlighted);
 			Control.SetAttributedTitle(attributedString, UIControlState.Disabled);

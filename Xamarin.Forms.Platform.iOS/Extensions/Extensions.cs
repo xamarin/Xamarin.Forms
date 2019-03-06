@@ -113,58 +113,50 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static NSMutableAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSAttributedString attributedString)
+		internal static NSMutableAttributedString AddLetterSpacing(this NSMutableAttributedString attributedString, string text, double letterSpacing)
 		{
-			return ToLetterSpacingAttribute(letterSpacing, text, ConvertAttributedString(attributedString));
-		}
-
-		internal static NSMutableAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSMutableAttributedString attributedString = null)
-		{
-			if (attributedString == null)
+			if (attributedString == null || attributedString.Length == 0)
 			{
 				attributedString = text == null ? new NSMutableAttributedString() : new NSMutableAttributedString(text);
 			}
+			else
+			{
+				attributedString = new NSMutableAttributedString(attributedString);
+			}
 
+			AddKerningAdjustment(attributedString, text, letterSpacing);
 
+			return attributedString;
+		}
+
+		internal static NSMutableAttributedString AddLetterSpacing(this NSAttributedString attributedString, string text, double letterSpacing)
+		{
+			NSMutableAttributedString mutableAttributedString;
+			if (attributedString == null || attributedString.Length == 0)
+			{
+				mutableAttributedString = text == null ? new NSMutableAttributedString() : new NSMutableAttributedString(text);
+			}
+			else
+			{
+				mutableAttributedString = new NSMutableAttributedString(attributedString);
+			}
+
+			AddKerningAdjustment(mutableAttributedString, text, letterSpacing);
+
+			return mutableAttributedString;
+		}
+
+		internal static void AddKerningAdjustment(NSMutableAttributedString mutableAttributedString, string text, double letterSpacing)
+		{
 			if (!string.IsNullOrEmpty(text))
 			{
-				attributedString.RemoveAttribute
-				(
-					UIStringAttributeKey.KerningAdjustment,
-					new NSRange(0, text.Length - 1)
-				);
-				attributedString.AddAttribute
+				mutableAttributedString.AddAttribute
 				(
 					UIStringAttributeKey.KerningAdjustment,
 					NSObject.FromObject(letterSpacing), new NSRange(0, text.Length - 1)
 				);
 			}
-
-			return attributedString;
 		}
-
-		internal static NSMutableAttributedString ConvertAttributedString(NSAttributedString attributedString)
-		{
-			if(attributedString == null)
-			{
-				return null;
-			}
-
-			if (attributedString is NSMutableAttributedString mutableAttributed)
-			{
-				return new NSMutableAttributedString(mutableAttributed);
-			}
-
-			if (attributedString is NSAttributedString attributed && attributed.Length > 0)
-			{
-		
-				return new NSMutableAttributedString(attributed);
-			}
-
-			return null;
-
-		}
-
 
 		internal static bool IsHorizontal(this Button.ButtonContentLayout layout) =>
 			layout.Position == Button.ButtonContentLayout.ImagePosition.Left ||
