@@ -68,9 +68,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Title = "List Page";
 
-			var items = new object [] {
-				new CustomViewCellBindingContext(),
-				new object()
+			var items = new [] {
+				new CustomViewCellBindingContext()
 			};
 				
 			var cellTemplate = new DataTemplate (typeof(CustomViewCell));
