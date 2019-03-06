@@ -282,7 +282,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			});
 		}
 
-		private class CustomSearchHandler : SearchHandler
+		internal class CustomSearchHandler : SearchHandler
 		{
 			protected async override void OnQueryChanged(string oldValue, string newValue)
 			{
