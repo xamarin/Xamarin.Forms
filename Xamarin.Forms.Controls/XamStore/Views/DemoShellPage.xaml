@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:local="clr-namespace:Xamarin.Forms.Controls.XamStore;assembly=Xamarin.Forms.Controls"
-             x:Class="Xamarin.Forms.Controls.XamStore.DemoShellPage" Title="{Binding Title}">
+             x:Class="Xamarin.Forms.Controls.XamStore.DemoShellPage" Title="{Binding Title}" Padding="50">
   
     <ContentPage.Resources>
         <StyleSheet Source="../Styles/Global.css"/>
@@ -15,6 +15,9 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Name="SearchButton" Order="Primary" Icon="icon_search.png" Priority="0" Command="{Binding SearchCommand}" />
     </ContentPage.ToolbarItems>
+     <Shell.BackButtonBehavior>
+        <BackButtonBehavior TextOverride="Cancel"></BackButtonBehavior>
+    </Shell.BackButtonBehavior>
     <ContentPage.Content>
         <RelativeLayout>
             <StackLayout

@@ -117,6 +117,20 @@ namespace Xamarin.Forms.Controls.XamStore
 			}
 		}
 
+		private string _id;
+		public string Id
+		{
+			get
+			{
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				OnPropertyChanged(nameof(Id));
+			}
+		}
+
 		public HomeViewModel()
 		{
 			IsBusy = false;

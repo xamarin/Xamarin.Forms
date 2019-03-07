@@ -216,6 +216,9 @@ namespace Xamarin.Forms.Controls.XamStore
 					Console.WriteLine($"Alert result: {result}");
 				}), 0, 15);
 
+			grid.Children.Add(MakeButton("Navigate to 'demo' route",
+				async () => await Shell.CurrentShell.GoToAsync("demo", true)),
+			1, 15);
 
 			Content = new ScrollView { Content = grid };
 

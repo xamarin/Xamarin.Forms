@@ -12,12 +12,13 @@ namespace Xamarin.Forms.Controls.XamStore
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class StoreShell : Shell
 	{
-		public StoreShell ()
-		{
-			InitializeComponent ();
+			public StoreShell ()
+			{
+				InitializeComponent ();
 
-			CurrentItem = _storeItem;
-		}
+				CurrentItem =  _storeItem;
+				Routing.RegisterRoute("demo", typeof(DemoShellPage));
+			}
 
 		//bool allow = false;
 
