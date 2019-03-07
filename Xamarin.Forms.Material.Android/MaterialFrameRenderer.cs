@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Material.Android
 		readonly MotionEventHelper _motionEventHelper;
 
 		public MaterialFrameRenderer(Context context)
-			: base(MaterialContextThemeWrapper.Create(context, Resource.Style.XamarinFormsMaterialTheme))
+			: base(MaterialContextThemeWrapper.Create(context))
 		{
 			_gestureManager = new GestureManager(this);
 			_effectControlProvider = new EffectControlProvider(this);

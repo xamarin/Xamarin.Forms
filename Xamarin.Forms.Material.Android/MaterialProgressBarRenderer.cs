@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Material.Android
 		MotionEventHelper _motionEventHelper;
 		
 		public MaterialProgressBarRenderer(Context context)
-			: base(MaterialContextThemeWrapper.Create(context, Resource.Style.XamarinFormsMaterialProgressBarHorizontal), null, Resource.Style.XamarinFormsMaterialProgressBarHorizontal)
+			: base(MaterialContextThemeWrapper.Create(context), null, Resource.Attribute.materialProgressBarHorizontalStyle)
 		{
 			Indeterminate = false;
 			Max = MaximumValue;

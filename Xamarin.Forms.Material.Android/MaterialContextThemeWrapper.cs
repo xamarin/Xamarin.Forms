@@ -17,11 +17,6 @@ namespace Xamarin.Forms.Material.Android
 
 		}
 
-		public static MaterialContextThemeWrapper Create(Context context, int themeResId)
-		{
-			return new MaterialContextThemeWrapper(context, themeResId);
-		}
-
 		public static MaterialContextThemeWrapper Create(Context context)
 		{
 			if (context is MaterialContextThemeWrapper materialContext)
