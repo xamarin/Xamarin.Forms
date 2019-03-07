@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Material.Android
 		double _min = 0.0;
 
 		public MaterialSliderRenderer(Context context)
-			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialSlider), null, Resource.Style.XamarinFormsMaterialSlider)
+			: base(MaterialContextThemeWrapper.Create(context, Resource.Style.XamarinFormsMaterialSlider), null, Resource.Style.XamarinFormsMaterialSlider)
 		{
 			SetOnSeekBarChangeListener(this);
 			Max = (int)MaximumValue;
