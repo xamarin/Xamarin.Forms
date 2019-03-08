@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Material.Android
 		{
 		}
 
-		private MaterialContextThemeWrapper(Context context, int themeResId) : base(context, themeResId)
+		MaterialContextThemeWrapper(Context context, int themeResId) : base(context, themeResId)
 		{
 
 		}
