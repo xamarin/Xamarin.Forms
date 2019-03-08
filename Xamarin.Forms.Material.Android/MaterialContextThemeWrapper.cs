@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Material.Android
 {
 	public class MaterialContextThemeWrapper : ContextThemeWrapper
 	{
-		private MaterialContextThemeWrapper(Context context) : this(context, Resource.Style.XamarinFormsMaterialTheme)
+		MaterialContextThemeWrapper(Context context) : this(context, Resource.Style.XamarinFormsMaterialTheme)
 		{
 		}
 
