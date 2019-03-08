@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 			return ImplicitPrefix + source;
 		}
 
+		internal static bool CompareWithRegisteredRoutes(string compare) => s_routes.ContainsKey(compare);
+
 		internal static bool CompareRoutes(string route, string compare, out bool isImplicit)
 		{
 			if (isImplicit = route.StartsWith(ImplicitPrefix, StringComparison.Ordinal))

@@ -325,7 +325,7 @@ namespace Xamarin.Forms
 
 		public static Shell CurrentShell => Application.Current?.MainPage as Shell;
 
-		Uri GetAbsoluteUri(Uri relativeUri)
+		Uri GetAbsoluteUri(Uri relativeUri, bool ignoreCurrentItem)
 		{
 			if (CurrentItem == null)
 				throw new InvalidOperationException("Relative path is used after selecting Current item.");
@@ -335,9 +335,9 @@ namespace Xamarin.Forms
 			var query = parseUri["q"].Value;
 			var fragment = parseUri["f"].Value;
 
-			Element item = CurrentItem;
+			Element item = ignoreCurrentItem ? CurrentItem.Parent : CurrentItem;
 			var list = new List<string> { url.Trim('/') };
-			while (item != null)
+			while (item != null && !(item is IApplicationController))
 			{
 				var route = Routing.GetRoute(item)?.Trim('/');
 				if (string.IsNullOrEmpty(route))
@@ -363,7 +363,14 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			var uri = state.Location.IsAbsoluteUri ? state.Location : GetAbsoluteUri(state.Location);
+			var isGlobalRegisteredRoute = false;
+			var uri = state.Location;
+			if (!state.Location.IsAbsoluteUri)
+			{
+				isGlobalRegisteredRoute = Routing.CompareWithRegisteredRoutes(state.Location.ToString());
+				uri = GetAbsoluteUri(state.Location, isGlobalRegisteredRoute);
+			}
+
 			var queryString = uri.Query;
 			var queryData = ParseQueryString(queryString);
 			var path = uri.AbsolutePath;
@@ -372,7 +379,7 @@ namespace Xamarin.Forms
 
 			var parts = path.Substring(1).Split('/').ToList();
 
-			if (path.Length < 2)
+			if (parts.Count < 2)
 				throw new InvalidOperationException("Path must be at least 2 items long in Shell navigation");
 
 			var shellRoute = parts[0];
@@ -407,6 +414,18 @@ namespace Xamarin.Forms
 				}
 			}
 
+			if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
+			{
+				var shellItem = ShellItem.GetShellItemFromRouteName(shellItemRoute);
+
+				ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
+
+				if (CurrentItem != shellItem)
+					SetValueFromRenderer(CurrentItemProperty, shellItem);
+
+				if (parts.Count > 0)
+					await ((IShellItemController)shellItem).GoToPart(parts, queryData);
+			}
 			_accumulateNavigatedEvents = false;
 
 			// this can be null in the event that no navigation actually took place!
@@ -895,7 +914,7 @@ namespace Xamarin.Forms
 		{
 			var page = WalkToPage(this);
 
-			while (page != this)
+			while (page != this && page != null)
 			{
 				if (page.IsSet(FlyoutBehaviorProperty))
 					return GetFlyoutBehavior(page);
@@ -1027,7 +1046,7 @@ namespace Xamarin.Forms
 		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)
 		{
 			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, LogicalChildren);
-			if(FlyoutHeaderView != null)
+			if (FlyoutHeaderView != null)
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
 		}
 		#endregion
