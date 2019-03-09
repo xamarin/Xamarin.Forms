@@ -90,6 +90,10 @@ namespace Xamarin.Forms.Controls.Issues
 			var ButtonWithTextAndNameAndHelpLabel = new Label();
 			Configure(ButtonWithTextAndNameAndHelp, ButtonWithTextAndNameAndHelpLabel, layout, "Button 3", "Name 3", "Help 3.");
 
+			var ButtonWithHelp = new Button();
+			var ButtonWithHelpLabel = new Label();
+			Configure(ButtonWithHelp, ButtonWithHelpLabel, layout, null , null, "Help 4.");
+
 			Content = layout;
 		}
 
@@ -107,6 +111,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 			RunningApp.WaitForElement(q => q.Text("Name 3. Help 3."));
 			RunningApp.Screenshot("I see the label Name 3. Help 3.");
+
+			RunningApp.WaitForElement(q => q.Text("Help 4."));
+			RunningApp.Screenshot("I see the label Help 4.");
 		}
 #endif
 	}
