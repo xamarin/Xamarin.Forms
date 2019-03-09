@@ -19,8 +19,8 @@ namespace Xamarin.Forms.Internals
 	public class Registrar<TRegistrable> where TRegistrable : class
 	{
 		readonly Dictionary<Type, Dictionary<Type, Type>> _handlers = new Dictionary<Type, Dictionary<Type, Type>>();
-		static Type _defaultVisualType = typeof(VisualRendererMarker.Default);
-		static Type _materialVisualType = typeof(VisualRendererMarker.Material);
+		static Type _defaultVisualType = typeof(VisualMarker.DefaultVisual);
+		static Type _materialVisualType = typeof(VisualMarker.MaterialVisual);
 
 		static Type[] _defaultVisualRenderers = new[] { _defaultVisualType };
 
@@ -153,9 +153,6 @@ namespace Xamarin.Forms.Internals
 
 		bool LookupHandlerType(Type viewType, Type visualType, out Type handlerType)
 		{
-			if (_defaultVisualType != visualType)
-				VisualElement.VerifyVisualFlagEnabled();
-
 			visualType = visualType ?? _defaultVisualType;
 			while (viewType != null && viewType != typeof(Element))
 			{

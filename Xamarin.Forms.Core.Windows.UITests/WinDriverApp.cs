@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.UITests
 			{ "button", "ControlType.Button" }
 		};
 
-		readonly WindowsDriver<WindowsElement> _session;
+		WindowsDriver<WindowsElement> _session;
 
 		readonly Dictionary<string, string> _translatePropertyAccessor = new Dictionary<string, string>
 		{
@@ -43,8 +43,18 @@ namespace Xamarin.Forms.Core.UITests
 
 		public WinDriverApp(WindowsDriver<WindowsElement> session)
 		{
+			Init(session);
+		}
+
+		void Init(WindowsDriver<WindowsElement> session)
+		{
 			_session = session;
-			TestServer = new WindowsTestServer(_session);
+			TestServer = new WindowsTestServer(_session, this);
+		}
+
+		public void RestartFromCrash()
+		{
+			Init(WindowsTestBase.CreateWindowsDriver());
 		}
 
 		public void Back()
@@ -511,7 +521,7 @@ namespace Xamarin.Forms.Core.UITests
 			MouseClickAt(x, y);
 		}
 
-		public ITestServer TestServer { get; }
+		public ITestServer TestServer { get; private set; }
 
 		public void TouchAndHold(Func<AppQuery, AppQuery> query)
 		{
@@ -631,6 +641,15 @@ namespace Xamarin.Forms.Core.UITests
 			}
 			catch (InvalidOperationException)
 			{
+				ProcessException();
+			}
+			catch(WebDriverException)
+			{
+				ProcessException();
+			}
+
+			void ProcessException()
+			{
 				// Some elements aren't "clickable" from an automation perspective (e.g., Frame renders as a Border
 				// with content in it; if the content is just a TextBlock, we'll end up here)
 
@@ -638,6 +657,7 @@ namespace Xamarin.Forms.Core.UITests
 				// and Tap in that spot
 				PointF p = ElementToClickablePoint(element);
 				TapCoordinates(p.X, p.Y);
+
 			}
 		}
 
