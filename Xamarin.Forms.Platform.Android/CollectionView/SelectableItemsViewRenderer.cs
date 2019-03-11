@@ -43,26 +43,6 @@ namespace Xamarin.Forms.Platform.Android
 			SwapAdapter(ItemsViewAdapter, true);
 		}
 
-		void MarkItemSelected(object selectedItem)
-		{
-			if(selectedItem == null)
-			{
-				return;
-			}
-
-			var position = ItemsViewAdapter.GetPositionForItem(selectedItem);
-			var selectedHolder = FindViewHolderForAdapterPosition(position);
-			if (selectedHolder == null)
-			{
-				return;
-			}
-
-			if (selectedHolder is SelectableViewHolder selectable)
-			{
-				selectable.IsSelected = true;
-			}
-		}
-
 		void UpdateNativeSelection()
 		{
 			var mode = SelectableItemsView.SelectionMode;
@@ -76,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				case SelectionMode.Single:
 					var selectedItem = SelectableItemsView.SelectedItem;
-					MarkItemSelected(selectedItem);
+					SelectableItemsViewAdapter.MarkNativeSelection(selectedItem);
 					return;
 
 				case SelectionMode.Multiple:
@@ -84,7 +64,7 @@ namespace Xamarin.Forms.Platform.Android
 					
 					foreach(var item in selectedItems)
 					{
-						MarkItemSelected(item);
+						SelectableItemsViewAdapter.MarkNativeSelection(item);
 					}
 					return;
 			}

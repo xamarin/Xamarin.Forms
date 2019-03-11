@@ -55,7 +55,26 @@ namespace Xamarin.Forms.Platform.Android
 				_currentViewHolders[i].IsSelected = false;
 			}
 		}
-		
+
+		internal void MarkNativeSelection(object selectedItem)
+		{
+			if (selectedItem == null)
+			{
+				return;
+			}
+
+			var position = GetPositionForItem(selectedItem);
+
+			for (int i = 0; i < _currentViewHolders.Count; i++)
+			{
+				if (_currentViewHolders[i].AdapterPosition == position)
+				{
+					_currentViewHolders[i].IsSelected = true;
+					return;
+				}
+			}
+		}
+
 		int[] GetSelectedPositions()
 		{
 			switch (SelectableItemsView.SelectionMode)
