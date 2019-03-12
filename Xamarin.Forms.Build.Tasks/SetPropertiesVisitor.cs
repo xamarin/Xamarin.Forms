@@ -378,8 +378,12 @@ namespace Xamarin.Forms.Build.Tasks
 					break;
 				n = n.Parent as IElementNode;
 			}
+
+			if (dataTypeNode is null)
+				yield break;
+
 			if (!((dataTypeNode as ValueNode)?.Value is string dataType))
-				yield break; //throw
+				throw new XamlParseException("x:DataType expects a string literal", dataTypeNode as IXmlLineInfo);
 
 			var prefix = dataType.Contains(":") ? dataType.Substring(0, dataType.IndexOf(":", StringComparison.Ordinal)) : "";
 			var namespaceuri = node.NamespaceResolver.LookupNamespace(prefix) ?? "";
@@ -929,7 +933,7 @@ namespace Xamarin.Forms.Build.Tasks
 				declaringType = declaringType.DeclaringType;
 			var handler = declaringType.AllMethods().FirstOrDefault(md => md.Name == value as string);
 			if (handler == null) 
-				throw new XamlParseException($"EventHandler \"{value}\" not found in type \"{context.Body.Method.DeclaringType.FullName}\"", iXmlLineInfo);
+				throw new XamlParseException($"EventHandler \"{value}\" not found in type \"{declaringType}\"", iXmlLineInfo);
 
 			//check if the handler signature matches the Invoke signature;
 			var invoke = module.ImportReference(eventinfo.EventType.ResolveCached().GetMethods().First(md => md.Name == "Invoke"));
