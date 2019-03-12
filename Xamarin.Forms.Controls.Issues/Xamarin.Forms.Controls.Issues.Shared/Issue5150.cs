@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-
 
 #if UITEST
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
@@ -20,22 +18,11 @@ namespace Xamarin.Forms.Controls.Issues
 			"ContentDescription",
 			typeof(string),
 			typeof(ContentDescriptionEffectProperties),
-			null,
-			propertyChanged: OnContentDescriptionChanged );
+			null);
 
 		public static string GetContentDescription(BindableObject view)
 		{
 			return (string)view.GetValue(ContentDescriptionProperty);
-		}
-
-		public static void SetContentDescription(BindableObject view, string value)
-		{
-			view.SetValue(ContentDescriptionProperty, value);
-		}
-
-		static void OnContentDescriptionChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			System.Diagnostics.Debug.WriteLine($"Old value = {oldValue}, new value = {newValue}");
 		}
 	}
 
@@ -43,7 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public const string EffectName = "ContentDescriptionEffect";
 
-		public ContentDescriptionEffect() : base($"{Issues.Effects.ResolutionGroupName}.{EffectName}")
+		public ContentDescriptionEffect() : base($"{Effects.ResolutionGroupName}.{EffectName}")
 		{
 		}
 	}
@@ -55,9 +42,10 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 5150, "AutomationProperties.Name, AutomationProperties.HelpText on Button not read by Android TalkBack", PlatformAffected.Android)]
 	public class Issue5150 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-
-		private void Configure(Button button, Label label, StackLayout layout, string buttonText, string buttonName = null, string buttonHelp = null)
+		void AddButton(StackLayout layout, string buttonText, string buttonName = null, string buttonHelp = null)
 		{
+			var button = new Button();
+			var label = new Label();
 			button.Text = buttonText;
 			button.Effects.Add(new ContentDescriptionEffect());
 			button.SetValue(AutomationProperties.NameProperty, buttonName);
@@ -65,9 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 			button.PropertyChanged += (object sender, PropertyChangedEventArgs e) => {
 				if (e.PropertyName == ContentDescriptionEffectProperties.ContentDescriptionProperty.PropertyName)
 				{
-					var element = sender as Button;
-					var desc = (string)element.GetValue(ContentDescriptionEffectProperties.ContentDescriptionProperty);
-					label.Text = desc;
+					label.Text = ContentDescriptionEffectProperties.GetContentDescription(button);
 				}
 			};
 			layout.Children.Add(button);
@@ -78,21 +64,10 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var layout = new StackLayout();
 
-			var ButtonWithTextAndName = new Button();
-			var ButtonWithTextAndNameLabel = new Label();
-			Configure(ButtonWithTextAndName, ButtonWithTextAndNameLabel, layout, "Button 1", buttonName: "Name 1");
-
-			var ButtonWithTextAndHelp = new Button();
-			var ButtonWithTextAndHelpLabel = new Label();
-			Configure(ButtonWithTextAndHelp, ButtonWithTextAndHelpLabel, layout, "Button 2", buttonHelp: "Help 2.");
-
-			var ButtonWithTextAndNameAndHelp = new Button();
-			var ButtonWithTextAndNameAndHelpLabel = new Label();
-			Configure(ButtonWithTextAndNameAndHelp, ButtonWithTextAndNameAndHelpLabel, layout, "Button 3", "Name 3", "Help 3.");
-
-			var ButtonWithHelp = new Button();
-			var ButtonWithHelpLabel = new Label();
-			Configure(ButtonWithHelp, ButtonWithHelpLabel, layout, null , null, "Help 4.");
+			AddButton(layout, "Button 1", buttonName: "Name 1");
+			AddButton(layout, "Button 2", buttonHelp: "Help 2.");
+			AddButton(layout, "Button 3", "Name 3", "Help 3.");
+			AddButton(layout, null , buttonHelp: "Help 4.");
 
 			Content = layout;
 		}
