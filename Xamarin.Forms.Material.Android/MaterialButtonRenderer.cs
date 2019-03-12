@@ -168,6 +168,8 @@ namespace Xamarin.Forms.Material.Android
 				UpdatePrimaryColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
+			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -289,6 +291,11 @@ namespace Xamarin.Forms.Material.Android
 			// apply
 			SetTextColor(MaterialColors.CreateButtonTextColors(background, text));
 			ViewCompat.SetBackgroundTintList(this, MaterialColors.CreateButtonBackgroundColors(background));
+		}
+
+		void UpdateLetterSpacing()
+		{
+			LetterSpacing = Element.LetterSpacing.ToEm();
 		}
 
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> OnThisPlatform() =>
