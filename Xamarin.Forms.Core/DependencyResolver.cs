@@ -6,6 +6,7 @@ namespace Xamarin.Forms.Internals
 {
 	public static class DependencyResolver
 	{
+		static Type _defaultVisualType = typeof(VisualMarker.DefaultVisual);
 		static Func<Type, object[], object> Resolver { get; set; }
 
 		public static void ResolveUsing(Func<Type, object[], object> resolver)
@@ -37,13 +38,15 @@ namespace Xamarin.Forms.Internals
 
 		internal static object ResolveOrCreate(Type type, object source, Type visualType, params object[] args)
 		{
+			visualType = visualType ?? _defaultVisualType;
+
 			var result = Resolve(type, args);
 
 			if (result != null) return result;
 
 			if (args.Length > 0)
 			{
-				if(visualType != typeof(VisualRendererMarker.Default))
+				if(visualType != _defaultVisualType)
 					if (type.GetTypeInfo().DeclaredConstructors.Any(info => info.GetParameters().Length == 2))
 						return Activator.CreateInstance(type, new[] { args[0], source });
 
