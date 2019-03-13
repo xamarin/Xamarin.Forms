@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Xaml
 				return expression.Substring(2);
 
 			if (expression[expression.Length - 1] != '}')
-				throw new Exception("Expression must end with '}'");
+				ExceptionHelper.ThrowUnhandledException(new XamlParseException("Expression must end with '}'"));
 
 			int len;
 			string match;
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Xaml
 				return false;
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0)
-				throw new Exception("Expression did not end in '}'");
+				ExceptionHelper.ThrowUnhandledException(new XamlParseException("Expression did not end in '}'"));
 
 			var parser = Activator.CreateInstance(GetType()) as IExpressionParser;
 			return parser.Parse(match, ref expression, serviceProvider);
@@ -193,10 +193,10 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			if (inString && end == remaining.Length)
-				throw new Exception("Unterminated quoted string");
+				ExceptionHelper.ThrowUnhandledException(new XamlParseException("Unterminated quoted string"));
 
 			if (end == remaining.Length && !remaining.EndsWith("}", StringComparison.Ordinal))
-				throw new Exception("Expression did not end with '}'");
+				ExceptionHelper.ThrowUnhandledException(new XamlParseException("Expression did not end with '}'"));
 
 			if (end == 0)
 			{

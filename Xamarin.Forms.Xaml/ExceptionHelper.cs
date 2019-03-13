@@ -1,4 +1,5 @@
 using System;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -6,11 +7,20 @@ namespace Xamarin.Forms.Xaml
 	{
 		internal static void ThrowUnhandledException(HydrationContext context, Exception e)
 		{
-			if (context.ExceptionHandler != null)
-				context.ExceptionHandler(e);
+			ThrowUnhandledException(context?.ExceptionHandler, e);
+		}
+
+		internal static void ThrowUnhandledException(Exception e)
+		{
+			ThrowUnhandledException(ResourceLoader.ExceptionHandler, e);
+		}
+
+		internal static void ThrowUnhandledException(Action<Exception> exceptionHandler, Exception e)
+		{
+			if (exceptionHandler != null)
+				exceptionHandler(e);
 			else
 				throw (e);
 		}
-
 	}
 }
