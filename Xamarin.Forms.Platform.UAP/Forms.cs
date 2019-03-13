@@ -52,7 +52,7 @@ namespace Xamarin.Forms
 					Device.SetIdiom(TargetIdiom.TV);
 					break;
 				default:
-					Device.SetIdiom(TargetIdiom.Tablet);
+					Device.SetIdiom(TargetIdiom.Unsupported);
 					break;
 			}
 
