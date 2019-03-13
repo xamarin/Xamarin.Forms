@@ -43,7 +43,11 @@ namespace Xamarin.Forms
 			switch (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily)
 			{
 				case "Windows.Desktop":
-					Device.SetIdiom(TargetIdiom.Desktop);
+					if (Windows.UI.ViewManagement.UIViewSettings.GetForCurrentView().UserInteractionMode ==
+						Windows.UI.ViewManagement.UserInteractionMode.Touch)
+						Device.SetIdiom(TargetIdiom.Tablet);
+					else
+						Device.SetIdiom(TargetIdiom.Desktop);
 					break;
 				case "Windows.Mobile":
 					Device.SetIdiom(TargetIdiom.Phone);
