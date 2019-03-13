@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls
 				AutomationId = name + "StateLabel"
 			};
 
-			if(name == "Focus" || name == "Unfocused" || name == "Focus")
+			if(name == "Focus" || name == "Unfocused" || name == "Focused")
 				stateValueLabel.SetBinding(Label.TextProperty, "IsFocused", converter: new GenericValueConverter(o => o.ToString()));
 			else
 				stateValueLabel.SetBinding (Label.TextProperty, name, converter: new GenericValueConverter (o => o.ToString()));			
