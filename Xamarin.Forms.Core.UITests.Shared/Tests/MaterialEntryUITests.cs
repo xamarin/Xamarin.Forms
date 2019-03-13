@@ -5,7 +5,7 @@ using Xamarin.Forms.CustomAttributes;
 namespace Xamarin.Forms.Core.UITests
 {
 
-#if __ANDROID__ || _iOS
+#if __ANDROID__ || __IOS__
 	[TestFixture]
 	[Category(UITestCategories.Entry)]
 	[Category(UITestCategories.Visual)]

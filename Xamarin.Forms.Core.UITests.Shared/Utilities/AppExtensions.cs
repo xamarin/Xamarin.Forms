@@ -37,6 +37,7 @@ namespace Xamarin.Forms.Core.UITests
 
 			if(!String.IsNullOrWhiteSpace(visual))
 			{
+				app.DismissKeyboard();
 				app.ActivateContextMenu($"{text}AutomationId");
 				app.Tap("Select Visual");
 				app.Tap("Material");
