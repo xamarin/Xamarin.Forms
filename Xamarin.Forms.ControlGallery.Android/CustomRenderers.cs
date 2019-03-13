@@ -63,7 +63,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 	{
 		public ScrollbarFadingEnabledFalseScrollViewRenderer(Context context) : base(context)
 		{
-			// I do a cast here just so this will fail just to be sure we don't chance the base types
+			// I do a cast here just so this will fail just to be sure we don't change the base types
 			var castingTest = (global::Android.Support.V4.Widget.NestedScrollView)this;
 			castingTest.ScrollbarFadingEnabled = false;
 		}
