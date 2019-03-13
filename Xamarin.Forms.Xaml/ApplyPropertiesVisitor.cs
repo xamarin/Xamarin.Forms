@@ -142,10 +142,7 @@ namespace Xamarin.Forms.Xaml
 					return;
 				}
 				xpe = xpe ?? new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node);
-				if (Context.ExceptionHandler != null)
-					Context.ExceptionHandler(xpe);
-				else
-					throw xpe;
+				ExceptionHelper.ThrowUnhandledException(Context, xpe);
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is ListNode) {
 				if (!Values.TryGetValue(parentNode.Parent, out var source) && Context.ExceptionHandler != null)
@@ -171,10 +168,7 @@ namespace Xamarin.Forms.Xaml
 					return;
 				}
 				xpe = xpe ?? new XamlParseException($"Value of {parentList.XmlName.LocalName} does not have a Add() method", node);
-				if (Context.ExceptionHandler != null)
-					Context.ExceptionHandler(xpe);
-				else
-					throw xpe;
+				ExceptionHelper.ThrowUnhandledException(Context, xpe);
 			}
 		}
 
@@ -243,10 +237,7 @@ namespace Xamarin.Forms.Xaml
 				else if (valueProvider != null)
 					value = valueProvider.ProvideValue(serviceProvider);
 			} catch (Exception e) {
-				if (Context.ExceptionHandler != null)
-					Context.ExceptionHandler(e);
-				else
-					throw e;
+				ExceptionHelper.ThrowUnhandledException(Context, e);
 			}
 		}
 
@@ -357,10 +348,7 @@ namespace Xamarin.Forms.Xaml
 				return;
 
 			xpe = xpe ?? new XamlParseException($"Cannot assign property \"{localName}\": Property does not exist, or is not assignable, or mismatching type between value and property", lineInfo);
-			if (context.ExceptionHandler != null)
-				context.ExceptionHandler(xpe);
-			else
-				throw xpe;
+			ExceptionHelper.ThrowUnhandledException(context, xpe);
 		}
 
 		public static object GetPropertyValue(object xamlElement, XmlName propertyName, HydrationContext context, IXmlLineInfo lineInfo, out object targetProperty)
@@ -384,10 +372,7 @@ namespace Xamarin.Forms.Xaml
 				return value;
 
 			xpe = xpe ?? new XamlParseException($"Property {localName} is not found or does not have an accessible getter", lineInfo);
-			if (context.ExceptionHandler != null)
-				context.ExceptionHandler(xpe);
-			else
-				throw xpe;
+			ExceptionHelper.ThrowUnhandledException(context, xpe);
 
 			return null;
 		}
