@@ -15,9 +15,6 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Name="SearchButton" Order="Primary" Icon="icon_search.png" Priority="0" Command="{Binding SearchCommand}" />
     </ContentPage.ToolbarItems>
-     <Shell.BackButtonBehavior>
-        <BackButtonBehavior TextOverride="Cancel"></BackButtonBehavior>
-    </Shell.BackButtonBehavior>
     <ContentPage.Content>
         <RelativeLayout>
             <StackLayout
@@ -38,7 +35,7 @@
                     StyleClass="MainTab"
                     HorizontalOptions="FillAndExpand"
                     VerticalOptions="Fill"
-                    Image="button_bookmark.png"
+                    Image="icon_bookmark.png"
                     Command="{Binding ToggleCommand}" 
                     CommandParameter="bookmarked">
                     <Button.Triggers>

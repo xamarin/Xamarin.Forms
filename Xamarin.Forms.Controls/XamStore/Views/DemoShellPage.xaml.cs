@@ -78,6 +78,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public class HomeViewModel : Issues.BaseViewModel
 	{
 
@@ -222,6 +223,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	class InverseBoolConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -236,6 +238,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	class SelectedTabColorConverter : IValueConverter, IMarkupExtension
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -256,6 +259,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public class VocabEntry
 	{
 		public string Id { get; set; }
