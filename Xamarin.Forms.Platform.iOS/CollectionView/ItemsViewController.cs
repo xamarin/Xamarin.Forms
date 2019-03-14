@@ -234,12 +234,16 @@ namespace Xamarin.Forms.Platform.iOS
 			// Run this through the extension method in case it's really a DataTemplateSelector
 			template = template.SelectDataTemplate(item, _itemsView);
 
-			// We need to create a renderer, which means we need a template
+			// Create the content and renderer for the view and 
 			var view = template.CreateContent() as View;
-			_itemsView.AddLogicalChild(view);
 			var renderer = CreateRenderer(view);
-			BindableObject.SetInheritedBindingContext(view, _itemsSource[indexPath.Row]);
 			cell.SetRenderer(renderer);
+
+			// Bind the view to the data item
+			view.BindingContext = _itemsSource[indexPath.Row];
+
+			// And make sure it's a "child" of the ItemsView
+			_itemsView.AddLogicalChild(view);
 		}
 
 		internal void RemoveLogicalChild(UICollectionViewCell cell)
