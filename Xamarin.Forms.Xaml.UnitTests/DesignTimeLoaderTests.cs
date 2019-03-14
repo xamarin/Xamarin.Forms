@@ -628,6 +628,22 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(clrNamespace, Is.EqualTo("my.namespace"));
 			Assert.That(typeName, Is.EqualTo("MissingType"));
 		}
+
+		[Test]
+		public void IgnoreNamedMissingTypeException()
+		{
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+					xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+
+					<Missing x:Name=""MyName"" />
+				</ContentPage>";
+
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
 	}
 
 	public class InstantiateThrows
