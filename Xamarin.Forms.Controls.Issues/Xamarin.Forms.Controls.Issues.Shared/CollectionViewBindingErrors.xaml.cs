@@ -26,6 +26,8 @@ namespace Xamarin.Forms.Controls.Issues
 		public CollectionViewBindingErrors()
 		{
 #if APP
+			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
+
 			InitializeComponent();
 
 			var listener = new CountBindingErrors(BindingErrorCount);
