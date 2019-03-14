@@ -41,12 +41,14 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var template = _template.SelectDataTemplate(itemBindingContext, itemsView);
 
-			// Realize the content, create a renderer out of it, and use that
 			View = (View)template.CreateContent();
-			itemsView.AddLogicalChild(View);
 			_itemContentView.RealizeContent(View);
 
-			BindableObject.SetInheritedBindingContext(View, itemBindingContext);
+			// Set the binding context before we add it as a child of the ItemsView; otherwise, it will
+			// inherit the ItemsView's binding context
+			View.BindingContext = itemBindingContext;
+
+			itemsView.AddLogicalChild(View);
 		}
 	}
 }

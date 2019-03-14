@@ -30,7 +30,7 @@
 
                         GalleryBuilder.NavButton("DataTemplateSelector", () =>
                             new DataTemplateSelectorGallery(), Navigation),
-                    }
+					}
                 }
 			};
 		}
