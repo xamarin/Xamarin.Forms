@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Android.Animation;
 using Android.Content;
 using Android.Graphics;
+using Android.OS;
 using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
@@ -144,7 +145,7 @@ namespace Xamarin.Forms.Platform.Android
 				base.Draw(canvas);
 			}
 			catch (Java.Lang.NullPointerException npe)
-			when(npe.Message == null || npe.Message.Contains("ScrollBarDrawable.mutate()"))
+			when(npe.HandleDrawException())
 			{
 				// This will most likely never run since UpdateScrollBars is called 
 				// when the scrollbars visibilities are updated but I left it here

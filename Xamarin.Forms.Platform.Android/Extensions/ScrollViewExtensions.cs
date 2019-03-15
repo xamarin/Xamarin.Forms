@@ -41,5 +41,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			scrollView.ScrollBarsInitialized = true;
 		}
+
+		internal static bool HandleDrawException(this Java.Lang.NullPointerException npe)
+		{
+			if(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)
+				return true;
+
+			return npe.Message?.Contains("ScrollBarDrawable.mutate()") == true;
+		}
 	}
 }
