@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Android.Animation;
 using Android.Content;
 using Android.Graphics;
-using Android.OS;
 using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
