@@ -9,6 +9,7 @@ using Android.Views;
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
@@ -254,7 +255,7 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						ToolbarNavigationClickListener = this,
 					};
-					SetDrawerArrowDrawableFromFlyoutIcon(context, _drawerToggle);
+					await SetDrawerArrowDrawableFromFlyoutIcon(context, _drawerToggle);
 
 					_drawerToggle.DrawerSlideAnimationEnabled = false;
 					drawerLayout.AddDrawerListener(_drawerToggle);
@@ -285,22 +286,24 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual void SetDrawerArrowDrawableFromFlyoutIcon(Context context, ActionBarDrawerToggle actionBarDrawerToggle)
+		protected virtual async Task SetDrawerArrowDrawableFromFlyoutIcon(Context context, ActionBarDrawerToggle actionBarDrawerToggle)
 		{
 			Element item = Page;
-			string icon = null;
+			ImageSource icon = null;
 			while (!Application.IsApplicationOrNull(item))
 			{
 				if (item is IShellController shell)
 				{
-					icon = (shell.FlyoutIcon as FileImageSource)?.File;
+					icon = shell.FlyoutIcon;
+					if(icon != null)
+					{
+						var drawable = await context.GetFormsDrawable(icon);
+						actionBarDrawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, drawable);
+					}
+
 					item = null;
 				}
 				item = item?.Parent;
-			}
-			if (!string.IsNullOrEmpty(icon))
-			{
-				actionBarDrawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, icon);
 			}
 		}
 
@@ -476,8 +479,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		class FlyoutIconDrawerDrawable : DrawerArrowDrawable
 		{
-			Bitmap _iconBitmap;
-
+			Drawable _iconBitmap;
+			Context _context;
 			protected override void Dispose(bool disposing)
 			{
 				base.Dispose(disposing);
@@ -487,14 +490,16 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			public FlyoutIconDrawerDrawable(Context context, string icon) : base(context)
+			public FlyoutIconDrawerDrawable(Context context, Drawable icon) : base(context)
 			{
-				_iconBitmap = context.Resources.GetBitmap($"{icon}");
+				_iconBitmap = icon;
+				_context = context;
 			}
 
 			public override void Draw(Canvas canvas)
 			{
-				canvas.DrawBitmap(_iconBitmap, 0, 0, null);
+				_iconBitmap.SetBounds(this.Bounds.Left,Bounds.Top,Bounds.Right,Bounds.Bottom);
+				_iconBitmap.Draw(canvas);
 			}
 		}
 	}
