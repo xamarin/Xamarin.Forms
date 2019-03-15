@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 
@@ -645,6 +644,24 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 			Assert.That(exceptions.Count, Is.GreaterThan(1));
+		}
+
+		[Test]
+		public void IgnoreFindByNameInvalidCastException()
+		{
+			// The previewer might replace MyButton with Replaced.MyButton, which could result in generated calls to
+			// FindByName() failing with an InvalidCastException. This tests that such a call doesn't fail when
+			// IsDesignModeEnabled is true.
+
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+						<Label x:Name=""MyName"" />
+					</ContentPage>";
+
+			DesignMode.IsDesignModeEnabled = true;
+			var content = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.DoesNotThrow(() => content.FindByName<Button>("MyName"));
 		}
 	}
 
