@@ -6,16 +6,18 @@ using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.Support.V4.Content;
 using Path = System.IO.Path;
 using Xamarin.Forms.Internals;
 using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public static class ResourceManager
 	{
+		static Dictionary<Type, string> _resourceTypeNames = new Dictionary<Type, string>();
+
 		public static Type DrawableClass { get; set; }
 
 		public static Type ResourceClass { get; set; }
@@ -66,20 +68,20 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Bitmap GetBitmap(this Resources resource, string name)
 		{
-			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass));
+			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass, resource));
 		}
 
 		public static Task<Bitmap> GetBitmapAsync(this Resources resource, string name)
 		{
-			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass));
+			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass, resource));
 		}
 
 		[Obsolete("GetDrawable(this Resources, string) is obsolete as of version 2.5. "
 			+ "Please use GetDrawable(this Context, string) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Drawable GetDrawable(this Resources resource, string name)
-		{
-			int id = IdFromTitle(name, DrawableClass);
+		{			
+			int id = IdFromTitle(name, DrawableClass, resource);
 			if (id == 0)
 			{
 				Log.Warning("Could not load image named: {0}", name);
@@ -91,7 +93,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Drawable GetDrawable(this Context context, string name)
 		{
-			int id = IdFromTitle(name, DrawableClass);
+			int id = IdFromTitle(name, DrawableClass, context);
+
 			if (id == 0)
 			{
 				Log.Warning("Could not load image named: {0}", name);
@@ -127,13 +130,44 @@ namespace Xamarin.Forms.Platform.Android
 			ResourceClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Id" || x.Name == "Resource_Id");
 			StyleClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Style" || x.Name == "Resource_Style");
 			LayoutClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Layout" || x.Name == "Resource_Layout");
+
+			_resourceTypeNames.Add(DrawableClass, "drawable");
+			_resourceTypeNames.Add(ResourceClass, "id");
+			_resourceTypeNames.Add(StyleClass, "style");
+			_resourceTypeNames.Add(LayoutClass, "layout");
 		}
 
-		internal static int IdFromTitle(string title, Type type)
+		static int IdFromTitle(string title, Type type)
 		{
 			string name = Path.GetFileNameWithoutExtension(title);
 			int id = GetId(type, name);
 			return id;
+		}
+
+		static int IdFromTitle(string title, Type type, Resources resource)
+		{
+			int id = 0;
+			string name = Path.GetFileNameWithoutExtension(title);
+			if(_resourceTypeNames.TryGetValue(type, out string value))
+				id = resource.GetIdentifier(name, value, Platform.PackageName);
+
+			if (id > 0)
+				return id;
+
+			return GetId(type, name);
+		}
+
+		static int IdFromTitle(string title, Type type, Context context)
+		{
+			int id = 0;
+			string name = Path.GetFileNameWithoutExtension(title);
+			if (_resourceTypeNames.TryGetValue(type, out string value))
+				id = context.Resources.GetIdentifier(name, value, context.PackageName);
+
+			if (id > 0)
+				return id;
+
+			return GetId(type, name);
 		}
 
 		static int GetId(Type type, string memberName)
