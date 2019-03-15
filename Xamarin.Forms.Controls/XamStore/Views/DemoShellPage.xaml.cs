@@ -2,10 +2,12 @@
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.XamStore
 {
+	[Preserve(AllMembers=true)]
 	public partial class DemoShellPage : ContentPage
 	{
 
@@ -76,6 +78,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public class HomeViewModel : Issues.BaseViewModel
 	{
 
@@ -220,6 +223,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	class InverseBoolConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -234,6 +238,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	class SelectedTabColorConverter : IValueConverter, IMarkupExtension
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -254,6 +259,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public class VocabEntry
 	{
 		public string Id { get; set; }
@@ -272,6 +278,7 @@ namespace Xamarin.Forms.Controls.XamStore
 
 	}
 
+	[Preserve(AllMembers = true)]
 	static class ListTabs
 	{
 		public const string FULL = "full";

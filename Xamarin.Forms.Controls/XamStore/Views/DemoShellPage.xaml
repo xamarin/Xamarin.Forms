@@ -15,9 +15,6 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Name="SearchButton" Order="Primary" Icon="icon_search.png" Priority="0" Command="{Binding SearchCommand}" />
     </ContentPage.ToolbarItems>
-     <Shell.BackButtonBehavior>
-        <BackButtonBehavior TextOverride="Cancel"></BackButtonBehavior>
-    </Shell.BackButtonBehavior>
     <ContentPage.Content>
         <RelativeLayout>
             <StackLayout
