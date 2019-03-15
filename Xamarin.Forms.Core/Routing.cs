@@ -92,7 +92,7 @@ namespace Xamarin.Forms
 			// Honestly this could probably be expanded to allow any URI allowable character
 			// I just dont want to figure out what that validation looks like.
 			// It does however need to be lowercase since uri case sensitivity is a bit touchy
-			Regex r = new Regex("^[a-z]*$");
+			Regex r = new Regex(@"^[a-z|\/]*$");
 			return r.IsMatch(route);
 		}
 

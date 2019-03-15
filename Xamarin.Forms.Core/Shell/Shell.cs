@@ -325,7 +325,7 @@ namespace Xamarin.Forms
 
 		public static Shell CurrentShell => Application.Current?.MainPage as Shell;
 
-		Uri GetAbsoluteUri(Uri relativeUri, bool ignoreCurrentItem)
+		Uri GetAbsoluteUri(Uri relativeUri)
 		{
 			if (CurrentItem == null)
 				throw new InvalidOperationException("Relative path is used after selecting Current item.");
@@ -335,8 +335,8 @@ namespace Xamarin.Forms
 			var query = parseUri["q"].Value;
 			var fragment = parseUri["f"].Value;
 
-			Element item = ignoreCurrentItem ? CurrentItem.Parent : CurrentItem;
-			var list = new List<string> { url.Trim('/') };
+			Element item = CurrentItem;
+			var list = new List<string>();
 			while (item != null && !(item is IApplicationController))
 			{
 				var route = Routing.GetRoute(item)?.Trim('/');
@@ -345,6 +345,13 @@ namespace Xamarin.Forms
 				list.Insert(0, route);
 				item = item.Parent;
 			}
+
+			var isGlobalRegisteredRoute = Routing.CompareWithRegisteredRoutes(url);
+			if (isGlobalRegisteredRoute)
+				list.RemoveRange(1, list.Count - 1);
+
+			list.Add(url.Trim('/'));
+
 			var parentUriBuilder = new UriBuilder(RouteScheme)
 			{
 				Path = string.Join("/", list),
@@ -363,13 +370,7 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			var isGlobalRegisteredRoute = false;
-			var uri = state.Location;
-			if (!state.Location.IsAbsoluteUri)
-			{
-				isGlobalRegisteredRoute = Routing.CompareWithRegisteredRoutes(state.Location.ToString());
-				uri = GetAbsoluteUri(state.Location, isGlobalRegisteredRoute);
-			}
+			var uri = state.Location.IsAbsoluteUri ? state.Location : GetAbsoluteUri(state.Location);
 
 			var queryString = uri.Query;
 			var queryData = ParseQueryString(queryString);
