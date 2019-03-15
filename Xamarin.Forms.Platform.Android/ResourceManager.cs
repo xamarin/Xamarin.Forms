@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class ResourceManager
 	{
-		static Dictionary<Type, string> _resourceTypeNames = new Dictionary<Type, string>();
+		static Dictionary<object, string> _resourceTypeNames = new Dictionary<object, string>();
 
 		public static Type DrawableClass { get; set; }
 
@@ -131,10 +131,12 @@ namespace Xamarin.Forms.Platform.Android
 			StyleClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Style" || x.Name == "Resource_Style");
 			LayoutClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Layout" || x.Name == "Resource_Layout");
 
-			_resourceTypeNames.Add(DrawableClass, "drawable");
-			_resourceTypeNames.Add(ResourceClass, "id");
-			_resourceTypeNames.Add(StyleClass, "style");
-			_resourceTypeNames.Add(LayoutClass, "layout");
+			// If the above are null then these are just used for mapping types to names
+			// This mainly applies for the case of the designer
+			_resourceTypeNames.Add(DrawableClass ?? new object(), "drawable");
+			_resourceTypeNames.Add(ResourceClass ?? new object(), "id");
+			_resourceTypeNames.Add(StyleClass ?? new object(), "style");
+			_resourceTypeNames.Add(LayoutClass ?? new object(), "layout");
 		}
 
 		static int IdFromTitle(string title, Type type)
