@@ -76,8 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				base.Draw(canvas);
 			}
-			catch (Java.Lang.NullPointerException npe)
-			when (npe.HandleDrawException())
+			catch (Java.Lang.NullPointerException)
 			{
 				// This will most likely never run since UpdateScrollBars is called 
 				// when the scrollbars visibilities are updated but I left it here

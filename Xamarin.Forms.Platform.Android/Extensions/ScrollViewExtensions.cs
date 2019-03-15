@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		internal static void HandleScrollBarVisibilityChange(this IScrollView scrollView)
 		{
+			if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)
+				return;
 
 			// According to the Android Documentation
 			// * <p>AwakenScrollBars method should be invoked every time a subclass directly updates
@@ -40,14 +42,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			scrollView.ScrollBarsInitialized = true;
-		}
-
-		internal static bool HandleDrawException(this Java.Lang.NullPointerException npe)
-		{
-			if(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)
-				return true;
-
-			return npe.Message?.Contains("ScrollBarDrawable.mutate()") == true;
 		}
 	}
 }
