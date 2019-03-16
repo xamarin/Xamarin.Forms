@@ -94,8 +94,8 @@ namespace Xamarin.Forms.Xaml
 						try {
 							value = Activator.CreateInstance(type);
 						}
-						catch (TargetInvocationException tie) {
-							value = XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name }, type, tie) ?? throw tie;
+						catch (Exception e) {
+							value = XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name }, type, e) ?? throw e;
 						}
 					}
 				}
