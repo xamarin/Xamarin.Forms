@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Material.iOS
 		{
 			base.OnElementChanged(e);
 			UpdatePlaceholder();
+			UpdateLetterSpacing();
 		}
 
 		string IMaterialEntryRenderer.Placeholder => string.Empty;

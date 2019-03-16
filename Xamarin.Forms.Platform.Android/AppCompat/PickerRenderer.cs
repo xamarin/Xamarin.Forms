@@ -147,7 +147,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
-		void UpdateLetterSpacing()
+		protected void UpdateLetterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
@@ -203,6 +203,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
-		protected override void UpdatePlaceHolderText() => EditText.Hint = Element.Title;
+		protected override void UpdatePlaceHolderText()
+		{
+			EditText.Hint = Element.Title;
+		}
 	}
 }

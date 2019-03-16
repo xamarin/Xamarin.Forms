@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateLetterSpacing();
 		}
 
-        void UpdateLetterSpacing()
+        protected void UpdateLetterSpacing()
         {
 	        Control.AttributedText = Control.AttributedText.AddLetterSpacing(Control.Text, Element.LetterSpacing);
 			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddLetterSpacing(Element.Title, Element.LetterSpacing);
@@ -184,16 +184,16 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color)
-					.AddLetterSpacing(Element.Title, Element.LetterSpacing);
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color)
-					.AddLetterSpacing(Element.Title, Element.LetterSpacing);
-            }
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+			}
+
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddLetterSpacing(Element.Title, Element.LetterSpacing);
 		}
 
 
@@ -212,6 +212,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			UpdatePickerSelectedIndex(selectedIndex);
+			UpdateLetterSpacing();
 		}
 
 		void UpdatePickerFromModel(PickerSource s)
