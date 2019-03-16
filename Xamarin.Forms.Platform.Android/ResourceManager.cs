@@ -11,6 +11,7 @@ using Xamarin.Forms.Internals;
 using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -150,26 +151,35 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			int id = 0;
 			string name = Path.GetFileNameWithoutExtension(title);
-			if(_resourceTypeNames.TryGetValue(type, out string value))
+
+			if (id == 0)
+				id = GetId(type, name);
+
+			if (_resourceTypeNames.TryGetValue(type, out string value))
 				id = resource.GetIdentifier(name, value, Platform.PackageName);
 
-			if (id > 0)
-				return id;
+			if (id == 0)
+				id = resource.GetIdentifier(name, value, null);
 
-			return GetId(type, name);
+			return id;
+
 		}
 
 		static int IdFromTitle(string title, Type type, Context context)
 		{
 			int id = 0;
 			string name = Path.GetFileNameWithoutExtension(title);
+			
+			if (id == 0)
+				id = GetId(type, name);
+
 			if (_resourceTypeNames.TryGetValue(type, out string value))
 				id = context.Resources.GetIdentifier(name, value, context.PackageName);
 
-			if (id > 0)
-				return id;
+			if (id == 0)
+				id = context.Resources.GetIdentifier(name, value, null);
 
-			return GetId(type, name);
+			return id;
 		}
 
 		static int GetId(Type type, string memberName)
