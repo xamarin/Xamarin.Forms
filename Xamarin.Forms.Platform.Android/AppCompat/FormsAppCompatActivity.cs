@@ -83,9 +83,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-			if(!_activityCreated)
+			if (!_activityCreated)
 			{
-			    throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
+				throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
 			}
 
 			if (!_renderersAdded)
@@ -186,7 +186,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnDestroy()
 		{
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
+
 			PopupManager.Unsubscribe(this);
+
 			Platform?.Dispose();
 
 			// call at the end to avoid race conditions with Platform dispose

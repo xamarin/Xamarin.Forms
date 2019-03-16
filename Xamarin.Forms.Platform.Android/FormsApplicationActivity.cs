@@ -128,10 +128,12 @@ namespace Xamarin.Forms.Platform.Android
 			// may never be called
 			base.OnDestroy();
 
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
+
 			PopupManager.Unsubscribe(this);
 
-			if (Platform != null)
-				((IDisposable)Platform).Dispose();
+			((IDisposable) Platform)?.Dispose();
 		}
 
 		protected override void OnPause()
