@@ -142,6 +142,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		static int IdFromTitle(string title, Type type)
 		{
+			if (title == null)
+				return 0;
+
 			string name = Path.GetFileNameWithoutExtension(title);
 			int id = GetId(type, name);
 			return id;
@@ -150,6 +153,10 @@ namespace Xamarin.Forms.Platform.Android
 		static int IdFromTitle(string title, Type type, Resources resource)
 		{
 			int id = 0;
+
+			if (title == null)
+				return id;
+
 			string name = Path.GetFileNameWithoutExtension(title);
 
 			if (id == 0)
@@ -168,6 +175,9 @@ namespace Xamarin.Forms.Platform.Android
 		static int IdFromTitle(string title, Type type, Context context)
 		{
 			int id = 0;
+			if (title == null)
+				return id;
+
 			string name = Path.GetFileNameWithoutExtension(title);
 			
 			if (id == 0)
