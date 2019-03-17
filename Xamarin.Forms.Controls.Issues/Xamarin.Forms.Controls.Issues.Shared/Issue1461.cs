@@ -229,9 +229,10 @@ namespace Xamarin.Forms.Controls.Issues
 							BackgroundColor = Color.Gray
 						},
 						btn
-					}
+					},
+					BackgroundColor = Color.WhiteSmoke
 				},
-				//BackgroundColor = Color.Red
+				BackgroundColor = Color.Gray
 			};
 
 			if(initState.HasValue)
