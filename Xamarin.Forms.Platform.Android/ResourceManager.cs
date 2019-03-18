@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static void Init(Assembly masterAssembly)
 		{
-			DrawableClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == _drawableDefType || x.Name == "Resource_Drawable");
+			DrawableClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Drawable" || x.Name == "Resource_Drawable");
 			ResourceClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Id" || x.Name == "Resource_Id");
 			StyleClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Style" || x.Name == "Resource_Style");
 			LayoutClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Layout" || x.Name == "Resource_Layout");
