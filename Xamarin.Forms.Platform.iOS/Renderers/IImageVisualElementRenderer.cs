@@ -1,9 +1,9 @@
 ﻿#if __MOBILE__
-using ImageNativeView = UIKit.UIImageView;
-sing NativeImage = UIKit.UIImage;
+using NativeImageView = UIKit.UIImageView;
+using NativeImage = UIKit.UIImage;
 namespace Xamarin.Forms.Platform.iOS
 #else
-using ImageNativeView = AppKit.NSImageView;
+using NativeImageView = AppKit.NSImageView;
 using NativeImage = AppKit.NSImage;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
@@ -12,6 +12,6 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		void SetImage(NativeImage image);
 		bool IsDisposed { get; }
-		ImageNativeView GetImage();
+		NativeImageView GetImage();
 	}
 }

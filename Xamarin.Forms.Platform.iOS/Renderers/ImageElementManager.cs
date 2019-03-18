@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			(imageElement as IViewController)?.NativeSizeChanged();
 		}
 
-		internal static async Task<NSImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task<NativeImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			IImageSourceHandler handler;
 			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
