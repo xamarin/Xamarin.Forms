@@ -5,15 +5,9 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	internal class FormsNSImageView : NSView
+	internal class FormsNSImageView : NSImageView
 	{
 		bool _isOpaque;
-
-		public FormsNSImageView()
-		{
-			Layer = new CALayer();
-			WantsLayer = true;
-		}
 
 		public void SetIsOpaque(bool isOpaque)
 		{
@@ -21,21 +15,5 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		public override bool IsOpaque => _isOpaque;
-
-		public override CGSize FittingSize
-		{
-			get
-			{
-				var contents = Layer?.Contents;
-				if(contents == null)
-				{
-					return base.FittingSize;
-				}
-				var scale = (float)NSScreen.MainScreen.BackingScaleFactor;
-				var width = contents.Width / scale;
-				var height = contents.Height / scale;
-				return new CGSize(width, height);
-			}
-		}
 	}
 }
