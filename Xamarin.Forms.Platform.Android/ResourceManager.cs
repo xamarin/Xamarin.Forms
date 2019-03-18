@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Platform.Android
 			+ "Please use GetDrawable(this Context, string) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Drawable GetDrawable(this Resources resource, string name)
-		{			
+		{
 			int id = IdFromTitle(name, DrawableClass, resource);
 			if (id == 0)
 			{
