@@ -10,8 +10,6 @@ using Path = System.IO.Path;
 using Xamarin.Forms.Internals;
 using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.IO;
 
 namespace Xamarin.Forms.Platform.Android
 {
