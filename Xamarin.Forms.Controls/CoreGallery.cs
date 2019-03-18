@@ -246,6 +246,7 @@ namespace Xamarin.Forms.Controls
 	[Preserve(AllMembers = true)]
 	internal class CorePageView : ListView
 	{
+		[Preserve(AllMembers = true)]
 		internal class GalleryPageFactory
 		{
 			public GalleryPageFactory(Func<Page> create, string title)
@@ -258,10 +259,17 @@ namespace Xamarin.Forms.Controls
 				};
 
 				Title = title;
+				TitleAutomationId = $"{Title}AutomationId";
 			}
 
 			public Func<Page> Realize { get; set; }
 			public string Title { get; set; }
+
+			public string TitleAutomationId
+			{
+				get;
+				set;
+			}
 
 			public override string ToString()
 			{
@@ -288,7 +296,6 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
 				new GalleryPageFactory(() => new AppearingGalleryPage(), "Appearing Gallery"),
 				new GalleryPageFactory(() => new EntryCoreGalleryPage(), "Entry Gallery"),
-				new GalleryPageFactory(() => new EntryCoreGalleryPage{ Visual = VisualMarker.Material }, "Entry Gallery (Material)"),
 				new GalleryPageFactory(() => new MaterialEntryGalleryPage(), "Entry Material Demos"),
 				new GalleryPageFactory(() => new NavBarTitleTestPage(), "Titles And Navbar Windows"),
 				new GalleryPageFactory(() => new PanGestureGalleryPage(), "Pan gesture Gallery"),
@@ -391,7 +398,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new TableViewGallery(), "TableView Gallery - Legacy"),
 				new GalleryPageFactory(() => new TemplatedCarouselGallery(), "TemplatedCarouselPage Gallery - Legacy"),
 				new GalleryPageFactory(() => new TemplatedTabbedGallery(), "TemplatedTabbedPage Gallery - Legacy"),
-				 new GalleryPageFactory(() => new UnevenViewCellGallery(), "UnevenViewCell Gallery - Legacy"),
+				new GalleryPageFactory(() => new UnevenViewCellGallery(), "UnevenViewCell Gallery - Legacy"),
 				new GalleryPageFactory(() => new UnevenListGallery(), "UnevenList Gallery - Legacy"),
 				new GalleryPageFactory(() => new ViewCellGallery(), "ViewCell Gallery - Legacy"),
 				new GalleryPageFactory(() => new WebViewGallery(), "WebView Gallery - Legacy"),
@@ -436,9 +443,12 @@ namespace Xamarin.Forms.Controls
 						}
 					})
 				});
+
 				return cell;
 			});
+
 			template.SetBinding(TextCell.TextProperty, "Title");
+			template.SetBinding(TextCell.AutomationIdProperty, "TitleAutomationId");
 
 			BindingContext = _pages;
 			ItemTemplate = template;
