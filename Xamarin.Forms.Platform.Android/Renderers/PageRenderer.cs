@@ -1,6 +1,9 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Support.V4.Content;
+using AColor = Android.Graphics.Color;
+using AColorRes = Android.Resource.Color;
 using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
@@ -12,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use PageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public PageRenderer()
 		{
 		}
@@ -61,8 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 				Id = Platform.GenerateViewId();
 			}
 
-			UpdateBackgroundColor(view);
-			UpdateBackgroundImage(view);
+			UpdateBackground(false);
 
 			Clickable = true;
 		}
@@ -71,9 +74,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
-				UpdateBackgroundImage(Element);
+				UpdateBackground(true);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor(Element);
+				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
 		}
@@ -104,22 +107,27 @@ namespace Xamarin.Forms.Platform.Android
 			_previousHeight = newHeight;
 		}
 
-		void UpdateBackgroundColor(Page view)
+		void UpdateBackground(bool setBkndColorEvenWhenItsDefault)
 		{
-			if (view.Parent is BaseShellItem)
-			{
-				var background = view.BackgroundColor;
-				var color = Context.Resources.GetColor(global::Android.Resource.Color.BackgroundLight, Context.Theme);
-				SetBackgroundColor(background.IsDefault ? color : background.ToAndroid());
-			}
-			else if (view.BackgroundColor != Color.Default)
-				SetBackgroundColor(view.BackgroundColor.ToAndroid());
-		}
+			Page page = Element;
 
-		void UpdateBackgroundImage(Page view)
-		{
-			if (!string.IsNullOrEmpty(view.BackgroundImage))
-				this.SetBackground(Context.GetDrawable(view.BackgroundImage));
+			string bkgndImage = page.BackgroundImage;
+			if (!string.IsNullOrEmpty(bkgndImage))
+				this.SetBackground(Context.GetDrawable(bkgndImage));
+			else
+			{
+				Color bkgndColor = page.BackgroundColor;
+				bool isDefaultBkgndColor = bkgndColor.IsDefault;
+				if (page.Parent is BaseShellItem && isDefaultBkgndColor)
+				{
+					var color = Forms.IsMarshmallowOrNewer ?
+						Context.Resources.GetColor(AColorRes.BackgroundLight, Context.Theme) :
+						new AColor(ContextCompat.GetColor(Context, global::Android.Resource.Color.BackgroundLight));
+					SetBackgroundColor(color);
+				}
+				else if (!isDefaultBkgndColor || setBkndColorEvenWhenItsDefault)
+					SetBackgroundColor(bkgndColor.ToAndroid());
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Xamarin.Forms
@@ -50,6 +51,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			if (!InternalChildren.Any())
@@ -372,7 +374,7 @@ namespace Xamarin.Forms
 		void MeasureAndContractStarredColumns(double width, double height, double totalStarsWidth)
 		{
 			double starColWidth;
-			starColWidth = MeasuredStarredColumns();
+			starColWidth = MeasuredStarredColumns(width, height);
 
 			if (!double.IsPositiveInfinity(width) && double.IsPositiveInfinity(height))
 			{
@@ -424,7 +426,7 @@ namespace Xamarin.Forms
 			ContractRowsIfNeeded(height, r => r.Height.IsStar);
 		}
 
-		double MeasuredStarredColumns()
+		double MeasuredStarredColumns(double widthConstraint, double heightConstraint)
 		{
 			double starColWidth;
 			for (var iteration = 0; iteration < 2; iteration++)
@@ -448,7 +450,7 @@ namespace Xamarin.Forms
 								continue;
 							double assignedWidth = GetAssignedColumnWidth(child);
 
-							SizeRequest sizeRequest = child.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+							SizeRequest sizeRequest = child.Measure(widthConstraint, heightConstraint, MeasureFlags.IncludeMargins);
 							actualWidth = Math.Max(actualWidth, sizeRequest.Request.Width - assignedWidth - (GetColumnSpan(child) - 1) * ColumnSpacing);
 							minimumWidth = Math.Max(minimumWidth, sizeRequest.Minimum.Width - assignedWidth - (GetColumnSpan(child) - 1) * ColumnSpacing);
 						}

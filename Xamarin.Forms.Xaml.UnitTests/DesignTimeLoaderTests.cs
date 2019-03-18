@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -22,7 +22,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Device.PlatformServices = null;
 			XamlLoader.FallbackTypeResolver = null;
 			XamlLoader.ValueCreatedCallback = null;
+			XamlLoader.InstantiationFailedCallback = null;
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = null;
+#pragma warning disable 0618
+			Xamarin.Forms.Xaml.Internals.XamlLoader.DoNotThrowOnExceptions = false;
+#pragma warning restore 0618
 		}
 
 		[Test]
@@ -50,7 +54,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void ContentPageWithMissingType()
+		public void ContentPageWithMissingTypeMockviewReplacement()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
 
@@ -65,6 +69,28 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var page = (ContentPage) XamlLoader.Create(xaml, true);
 			Assert.That(page.Content, Is.TypeOf<MockView>());
+		}
+
+		[Test]
+		public void ContentPageWithMissingTypeNoReplacement()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type;
+
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+						<ContentPage.Content>
+							<local:MyCustomButton Foo=""Bar"">
+								<local:MyCustomButton.Qux>
+									<Label />
+								</local:MyCustomButton.Qux>
+							</local:MyCustomButton>
+						</ContentPage.Content>
+					</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.Null);
 		}
 
 		[Test]
@@ -449,6 +475,195 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var myButton = (Button)page.Content;
 
 			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Blue));
+		}
+
+		[Test]
+		public void CanProvideInstanceWhenInstantiationThrows()
+		{
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests""
+						xmlns:missing=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+						<StackLayout>
+							<local:InstantiateThrows />
+							<local:InstantiateThrows x:FactoryMethod=""CreateInstance"" />
+							<local:InstantiateThrows>
+								<x:Arguments>
+									<x:Int32>1</x:Int32>
+								</x:Arguments>
+							</local:InstantiateThrows>
+							<missing:Test>
+								<x:Arguments>
+									<x:Int32>1</x:Int32>
+								</x:Arguments>
+							</missing:Test>
+						</StackLayout>
+					</ContentPage>";
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.InstantiationFailedCallback = (xmltype, type, exception) => new Button();
+			var o = XamlLoader.Create(xaml, true);
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
+
+		[Test]
+		public void CanProvideInstanceWhenReplacedTypeConstructorInvalid()
+		{
+			var xaml = @"
+						<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+							xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+							<StackLayout>
+								<local:ReplacedType x:FactoryMethod=""CreateInstance"" />
+							</StackLayout>
+						</ContentPage>";
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.InstantiationFailedCallback = (xmltype, type, exception) => new Button();
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
+
+		[Test]
+		public void CanIgnoreSettingPropertyThatThrows()
+		{
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+						<local:SettingPropertyThrows TestValue=""Test"" TestBP=""bar""/>
+					</ContentPage>";
+
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void IgnoreConverterException()
+		{
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+						<Label BackgroundColor=""AlmostPink"" />
+					</ContentPage>";
+
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void IgnoreMarkupExtensionException()
+		{
+			var xaml = @"
+						<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+								xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+								<StackLayout>
+									<ListView ItemsSource=""{x:Static Foo}"" />
+									<ListView ItemsSource=""{local:Missing Test}"" />
+									<Label Text=""{Binding Foo"" />
+								</StackLayout>
+						</ContentPage>";
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.GreaterThan(1));
+		}
+
+		[Test]
+		public void CanResolveRootNode()
+		{
+			string assemblyName = null;
+			string clrNamespace = null;
+			string typeName = null;
+
+			XamlLoader.FallbackTypeResolver = (fallbackTypeInfos, type) =>
+			{
+				assemblyName = fallbackTypeInfos?[1].AssemblyName;
+				clrNamespace = fallbackTypeInfos?[1].ClrNamespace;
+				typeName = fallbackTypeInfos?[1].TypeName;
+				return type ?? typeof(MockView);
+			};
+
+			var xaml = @"
+						<local:MissingType xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+							xmlns:local=""clr-namespace:my.namespace;assembly=my.assembly"">
+						</local:MissingType>";
+
+			XamlLoader.Create(xaml, true);
+			Assert.That(assemblyName, Is.EqualTo("my.assembly"));
+			Assert.That(clrNamespace, Is.EqualTo("my.namespace"));
+			Assert.That(typeName, Is.EqualTo("MissingType"));
+		}
+
+		[Test]
+		public void CanResolveRootNodeWithoutAssembly()
+		{
+			string assemblyName = null;
+			string clrNamespace = null;
+			string typeName = null;
+
+
+			XamlLoader.FallbackTypeResolver = (fallbackTypeInfos, type) =>
+			{
+				assemblyName = fallbackTypeInfos?[1].AssemblyName;
+				clrNamespace = fallbackTypeInfos?[1].ClrNamespace;
+				typeName = fallbackTypeInfos?[1].TypeName;
+				return type ?? typeof(MockView);
+			};
+
+			var xaml = @"
+						<local:MissingType xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+							xmlns:local=""using:my.namespace"">
+						</local:MissingType>";
+
+			XamlLoader.Create(xaml, true);
+			Assert.That(assemblyName, Is.EqualTo(null));
+			Assert.That(clrNamespace, Is.EqualTo("my.namespace"));
+			Assert.That(typeName, Is.EqualTo("MissingType"));
+		}
+
+		[Test]
+		public void IgnoreNamedMissingTypeException()
+		{
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+						<StackLayout>
+							<local:Missing x:Name=""MyName"" />
+							<Button x:Name=""button"" />
+							<Button x:Name=""button"" />
+						</StackLayout>
+					</ContentPage>";
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.GreaterThan(1));
+		}
+	}
+
+	public class InstantiateThrows
+	{
+		public InstantiateThrows() => throw new InvalidOperationException();
+		public static InstantiateThrows CreateInstance() => throw new InvalidOperationException();
+		public InstantiateThrows(int value) => throw new InvalidOperationException();
+	}
+
+	public class SettingPropertyThrows : View
+	{
+		public static readonly BindableProperty TestBPProperty =
+			BindableProperty.Create("TestBP", typeof(string), typeof(SettingPropertyThrows), default(string),
+				propertyChanged: (b,o,n)=>throw new Exception());
+
+		public string TestValue {
+			get { return null; }
+			set { throw new InvalidOperationException(); }
 		}
 	}
 }

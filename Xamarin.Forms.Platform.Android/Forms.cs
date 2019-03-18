@@ -21,6 +21,7 @@ using Xamarin.Forms.Platform.Android;
 using Resource = Android.Resource;
 using Trace = System.Diagnostics.Trace;
 using ALayoutDirection = Android.Views.LayoutDirection;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
@@ -29,8 +30,10 @@ namespace Xamarin.Forms
 		const int TabletCrossover = 600;
 
 		static bool? s_isLollipopOrNewer;
+		static bool? s_isMarshmallowOrNewer;
 
 		[Obsolete("Context is obsolete as of version 2.5. Please use a local context instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Context Context { get; internal set; }
 
 		// One per process; does not change, suitable for loading resources (e.g., ResourceProvider)
@@ -50,6 +53,16 @@ namespace Xamarin.Forms
 				if (!s_isLollipopOrNewer.HasValue)
 					s_isLollipopOrNewer = (int)Build.VERSION.SdkInt >= 21;
 				return s_isLollipopOrNewer.Value;
+			}
+		}
+
+		internal static bool IsMarshmallowOrNewer
+		{
+			get
+			{
+				if (!s_isMarshmallowOrNewer.HasValue)
+					s_isMarshmallowOrNewer = (int)Build.VERSION.SdkInt >= 23;
+				return s_isMarshmallowOrNewer.Value;
 			}
 		}
 
@@ -83,6 +96,7 @@ namespace Xamarin.Forms
 		/// <param name="visibility">Title bar visibility enum</param>
 		[Obsolete("SetTitleBarVisibility(AndroidTitleBarVisibility) is obsolete as of version 2.5. "
 			+ "Please use SetTitleBarVisibility(Activity, AndroidTitleBarVisibility) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void SetTitleBarVisibility(AndroidTitleBarVisibility visibility)
 		{
 			if ((Activity)Context == null)
@@ -546,9 +560,9 @@ namespace Xamarin.Forms
 			{
 				double myValue;
 
-				if (TryGetTextAppearance(themeDefault, out myValue))
+				if (TryGetTextAppearance(themeDefault, out myValue) && myValue > 0)
 					return myValue;
-				if (TryGetTextAppearance(deviceDefault, out myValue))
+				if (TryGetTextAppearance(deviceDefault, out myValue) && myValue > 0)
 					return myValue;
 				return defaultValue;
 			}

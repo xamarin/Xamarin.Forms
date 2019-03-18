@@ -1,4 +1,7 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using System;
+using System.Globalization;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class ExampleTemplates
 	{
@@ -9,7 +12,7 @@
 				var templateLayout = new Grid
 				{
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition() },
-					WidthRequest = 100,
+					WidthRequest = 200,
 					HeightRequest = 100
 				};
 
@@ -17,7 +20,8 @@
 				{
 					HeightRequest = 100, WidthRequest = 100,
 					HorizontalOptions = LayoutOptions.Center,
-					VerticalOptions = LayoutOptions.Center
+					VerticalOptions = LayoutOptions.Center,
+					AutomationId = "photo"
 				};
 
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
@@ -47,15 +51,15 @@
 				var templateLayout = new Grid
 				{
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
-					WidthRequest = 100,
-					HeightRequest = 130
+					WidthRequest = 280,
+					HeightRequest = 310,
 				};
 
 				var image = new Image
 				{
 					Margin = new Thickness(5),
-					HeightRequest = 100,
-					WidthRequest = 100,
+					HeightRequest = 280,
+					WidthRequest = 280,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center,
 					Aspect = Aspect.AspectFit
@@ -219,6 +223,114 @@
 
 				return templateLayout;
 			});
+		}
+
+		public static DataTemplate PropagationTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var templateLayout = new Grid
+				{
+					BackgroundColor = Color.Bisque,
+					RowDefinitions = new RowDefinitionCollection { new RowDefinition { Height = GridLength.Auto } },
+					WidthRequest = 100,
+					HeightRequest = 140
+				};
+
+				var buttonLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+
+				var button1 = new Button
+				{
+					Margin = new Thickness(5),
+					Text = "Button 1"
+				};
+
+				var button2 = new Button
+				{
+					Margin = new Thickness(5),
+					Text = "Button 2"
+				};
+
+				var button3 = new Button
+				{
+					Margin = new Thickness(5),
+					Text = "Button 3"
+				};
+
+				buttonLayout.Children.Add(button1);
+				buttonLayout.Children.Add(button2);
+				buttonLayout.Children.Add(button3);
+
+				templateLayout.Children.Add(buttonLayout);
+
+				return templateLayout;
+			});
+		}
+		
+		public static DataTemplate VariableSizeTemplate()
+		{
+			var indexHeightConverter = new IndexRequestConverter(3, 50, 150);
+			var indexWidthConverter = new IndexRequestConverter(3, 100, 300);
+			var colorConverter = new IndexColorConverter();
+
+			return new DataTemplate(() =>
+			{
+				var layout = new Frame();
+
+				layout.SetBinding(VisualElement.HeightRequestProperty, new Binding("Index", converter: indexHeightConverter));
+				layout.SetBinding(VisualElement.WidthRequestProperty, new Binding("Index", converter: indexWidthConverter));
+				layout.SetBinding(VisualElement.BackgroundColorProperty, new Binding("Index", converter: colorConverter));
+
+				var image = new Image
+				{
+					Aspect = Aspect.AspectFit
+				};
+
+				image.SetBinding(VisualElement.HeightRequestProperty, new Binding("Index", converter: indexHeightConverter));
+				image.SetBinding(VisualElement.WidthRequestProperty, new Binding("Index", converter: indexWidthConverter));
+
+				image.SetBinding(Image.SourceProperty, new Binding("Image"));
+
+				layout.Content = image;
+
+				return layout;
+			});
+		}
+
+		class IndexRequestConverter : IValueConverter
+		{
+			readonly int _cutoff;
+			readonly int _lowValue;
+			readonly int _highValue;
+
+			public IndexRequestConverter(int cutoff, int lowValue, int highValue)
+			{
+				_cutoff = cutoff;
+				_lowValue = lowValue;
+				_highValue = highValue;
+			}
+
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				var index = (int)value;
+
+				return index < _cutoff ? _lowValue : (object)_highValue;
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+		}
+
+		class IndexColorConverter : IValueConverter
+		{
+			Color[] _colors = new Color[] { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.BlanchedAlmond };
+
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				var index = (int)value;
+				return _colors[index % _colors.Length];
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
 		}
 	}
 }

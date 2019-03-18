@@ -8,12 +8,11 @@ using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
-using AScrollView = Android.Widget.ScrollView;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ScrollViewRenderer : NestedScrollView, IVisualElementRenderer, IEffectControlProvider
+	public class ScrollViewRenderer : NestedScrollView, IVisualElementRenderer, IEffectControlProvider, IScrollView
 	{
 		ScrollViewContainer _container;
 		HorizontalScrollView _hScrollView;
@@ -34,6 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ScrollViewRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ScrollViewRenderer() : base(Forms.Context)
 		{
 		}
@@ -137,9 +137,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void Draw(Canvas canvas)
 		{
-			canvas.ClipRect(canvas.ClipBounds);
+			try
+			{
+				canvas.ClipRect(canvas.ClipBounds);
 
-			base.Draw(canvas);
+				base.Draw(canvas);
+			}
+			catch (Java.Lang.NullPointerException)
+			{
+				// This will most likely never run since UpdateScrollBars is called 
+				// when the scrollbars visibilities are updated but I left it here
+				// just in case there's an edge case that causes an exception
+				this.HandleScrollBarVisibilityChange();
+			}
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
@@ -246,7 +256,7 @@ namespace Xamarin.Forms.Platform.Android
 			bool requestContainerLayout = bottom > _previousBottom;
 			_previousBottom = bottom;
 
-			_container.Measure(MeasureSpecFactory.MakeMeasureSpec(right - left, MeasureSpecMode.Unspecified),
+			_container?.Measure(MeasureSpecFactory.MakeMeasureSpec(right - left, MeasureSpecMode.Unspecified),
 				MeasureSpecFactory.MakeMeasureSpec(bottom - top, MeasureSpecMode.Unspecified));
 			base.OnLayout(changed, left, top, right, bottom);
 			if (_view.Content != null && _hScrollView != null)
@@ -497,7 +507,7 @@ namespace Xamarin.Forms.Platform.Android
 					newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
 				}
 
-				_hScrollView.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
+				_hScrollView.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;				
 			}
 		}
 
@@ -512,6 +522,15 @@ namespace Xamarin.Forms.Platform.Android
 				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
 
 			VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
+
+			this.HandleScrollBarVisibilityChange();
 		}
+
+		void IScrollView.AwakenScrollBars()
+		{
+			base.AwakenScrollBars();
+		}
+
+		bool IScrollView.ScrollBarsInitialized { get; set; } = false;
 	}
 }

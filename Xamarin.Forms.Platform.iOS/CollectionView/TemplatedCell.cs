@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 			nativeView.Frame = new CGRect(CGPoint.Empty, size);
 			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
 
-			layoutAttributes.Frame = VisualElementRenderer.NativeView.Frame;
+			layoutAttributes.Frame = nativeView.Frame;
 
 			return layoutAttributes;
 		}
@@ -67,6 +67,24 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				// TODO hartez 2018/09/07 16:14:43 Does this also need to clear the constraints?	
 				ContentView.Subviews[n].RemoveFromSuperview();
+			}
+		}
+
+		public override bool Selected
+		{
+			get => base.Selected;
+			set
+			{
+				base.Selected = value;
+
+				var element = VisualElementRenderer?.Element;
+
+				if (element != null)
+				{
+					VisualStateManager.GoToState(element, value 
+						? VisualStateManager.CommonStates.Selected 
+						: VisualStateManager.CommonStates.Normal);
+				}
 			}
 		}
 	}

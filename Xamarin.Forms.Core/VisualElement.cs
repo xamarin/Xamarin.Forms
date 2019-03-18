@@ -8,6 +8,11 @@ namespace Xamarin.Forms
 {
 	public partial class VisualElement : NavigableElement, IAnimatable, IVisualElementController, IResourcesProvider, IStyleElement, IFlowDirectionController, IPropertyPropagationController, IVisualController
 	{
+
+		public new static readonly BindableProperty NavigationProperty = NavigableElement.NavigationProperty;
+
+		public new static readonly BindableProperty StyleProperty = NavigableElement.StyleProperty;
+
 		public static readonly BindableProperty InputTransparentProperty = BindableProperty.Create("InputTransparent", typeof(bool), typeof(VisualElement), default(bool));
 
 		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool),
@@ -633,6 +638,7 @@ namespace Xamarin.Forms
 		public event EventHandler<FocusEventArgs> Focused;
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public virtual SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			SizeRequest cachedResult;
@@ -712,7 +718,7 @@ namespace Xamarin.Forms
 
 			if (includeMargins)
 			{
-				if (!margin.IsDefault)
+				if (!margin.IsEmpty)
 				{
 					result.Minimum = new Size(result.Minimum.Width + margin.HorizontalThickness, result.Minimum.Height + margin.VerticalThickness);
 					result.Request = new Size(result.Request.Width + margin.HorizontalThickness, result.Request.Height + margin.VerticalThickness);
@@ -776,6 +782,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected virtual SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			if (!IsPlatformEnabled)
@@ -925,9 +932,6 @@ namespace Xamarin.Forms
 
 		static void OnVisualChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if(newValue != Xamarin.Forms.VisualMarker.Default)
-				VerifyVisualFlagEnabled();
-
 			var self = bindable as IVisualController;
 			var newVisual = (IVisual)newValue;
 
@@ -1062,14 +1066,6 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(bool)));
 
 			}
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void VerifyVisualFlagEnabled(
-			string constructorHint = null,
-			[CallerMemberName] string memberName = "")
-		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(Visual), ExperimentalFlags.VisualExperimental);
 		}
 	}
 }

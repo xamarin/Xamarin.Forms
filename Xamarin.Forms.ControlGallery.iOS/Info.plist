@@ -35,6 +35,10 @@
 		<string>Default-568h@2x.png</string>
 		<string>Default-812h@3x.png</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>ionicons.ttf</string>
+	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -131,5 +135,9 @@
 	<string>XamControl</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to photos.</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>XSAppIconAssets</key>
+	<string>Assets.xcassets/AppIcon.appiconset</string>
 </dict>
 </plist>

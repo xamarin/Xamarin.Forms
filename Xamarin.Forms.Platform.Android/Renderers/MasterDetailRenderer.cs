@@ -6,7 +6,6 @@ using Android.Content;
 using Android.Support.V4.Widget;
 using Android.Views;
 using AView = Android.Views.View;
-using AColor = Android.Graphics.Drawables.ColorDrawable;
 using Android.OS;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
@@ -33,6 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use MasterDetailRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public MasterDetailRenderer() : base(Forms.Context)
 		{
 		}
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.Android
 				element.SendViewInitialized(this);
 
 			if (element != null && !string.IsNullOrEmpty(element.AutomationId))
-					SetAutomationId(element.AutomationId);
+				SetAutomationId(element.AutomationId);
 
 			SetContentDescription();
 		}
@@ -208,6 +208,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_masterLayout != null)
 				{
+					if (_masterLayout.ChildView != null)
+						_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
 					_masterLayout.Dispose();
 					_masterLayout = null;
 				}
@@ -360,10 +363,13 @@ namespace Xamarin.Forms.Platform.Android
 				Update();
 			else
 				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() => Update());
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
+				if (_detailLayout == null || _detailLayout.IsDisposed())
+					return;
+
 				Context.HideKeyboard(this);
 				_detailLayout.ChildView = _page.Detail;
 			}
@@ -383,15 +389,20 @@ namespace Xamarin.Forms.Platform.Android
 				Update();
 			else
 				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() => Update());
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
-				if (_masterLayout != null && _masterLayout.ChildView != null)
+				if (_masterLayout == null || _masterLayout.IsDisposed())
+					return;
+
+				if (_masterLayout.ChildView != null)
 					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
 				_masterLayout.ChildView = _page.Master;
-				if (_page.Master != null)
-					_page.Master.PropertyChanged += HandleMasterPropertyChanged;
+
+				if (_masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged += HandleMasterPropertyChanged;
 			}
 		}
 

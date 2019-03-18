@@ -11,7 +11,8 @@ using Android.Support.V4.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer, ITabStop
+	internal sealed class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer, ITabStop,
+		ILayoutChanges
 	{
 		bool _disposed;
 		Image _element;
@@ -176,6 +177,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ImageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ImageRenderer() : base(Forms.Context)
 		{
 		}
