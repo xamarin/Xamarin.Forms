@@ -9,7 +9,6 @@
   <Import Project="..\.nuspec\Xamarin.Forms.DefaultItems.targets" />
 	
   <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0672;0219;0414</NoWarn>
   </PropertyGroup>
@@ -22,6 +21,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningsAsErrors />
   </PropertyGroup>
 
