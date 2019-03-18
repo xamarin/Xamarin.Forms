@@ -108,7 +108,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool PostionIsSelected(int position)
 		{
-			foreach (var selectedPosition in GetSelectedPositions())
+			var selectedPositions = GetSelectedPositions();
+			foreach (var selectedPosition in selectedPositions)
 			{
 				if (selectedPosition == position)
 				{
