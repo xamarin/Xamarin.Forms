@@ -170,10 +170,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			id = GetId(resourceType, name);
 
-			if (id > 0)
-				return id;
+			if (packageName != null)
+			{
+				if (id > 0)
+					return id;
 
-			id = resource.GetIdentifier(name, defType, packageName);
+				id = resource.GetIdentifier(name, defType, packageName);
+			}
 
 			if (id > 0)
 				return id;
