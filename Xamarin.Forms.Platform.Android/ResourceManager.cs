@@ -152,42 +152,34 @@ namespace Xamarin.Forms.Platform.Android
 
 		static int IdFromTitle(string title, Type type, Resources resource)
 		{
-			int id = 0;
-
-			if (title == null)
-				return id;
-
-			string name = Path.GetFileNameWithoutExtension(title);
-
-			if (id == 0)
-				id = GetId(type, name);
-
-			if (_resourceTypeNames.TryGetValue(type, out string value))
-				id = resource.GetIdentifier(name, value, Platform.PackageName);
-
-			if (id == 0)
-				id = resource.GetIdentifier(name, value, null);
-
-			return id;
-
+			return IdFromTitle(title, type, resource, Platform.PackageName);
 		}
 
 		static int IdFromTitle(string title, Type type, Context context)
+		{
+			return IdFromTitle(title, type, context.Resources, context.PackageName);
+		}
+
+		static int IdFromTitle(string title, Type type, Resources resource, string packageName)
 		{
 			int id = 0;
 			if (title == null)
 				return id;
 
 			string name = Path.GetFileNameWithoutExtension(title);
-			
-			if (id == 0)
-				id = GetId(type, name);
+
+			id = GetId(type, name);
+
+			if (id > 0)
+				return id;
 
 			if (_resourceTypeNames.TryGetValue(type, out string value))
-				id = context.Resources.GetIdentifier(name, value, context.PackageName);
+				id = resource.GetIdentifier(name, value, packageName);
 
-			if (id == 0)
-				id = context.Resources.GetIdentifier(name, value, null);
+			if (id > 0)
+				return id;
+
+			id = resource.GetIdentifier(name, value, null);
 
 			return id;
 		}
