@@ -7,8 +7,8 @@ namespace Xamarin.Forms
 	// Used by the SelectableItemsView to keep track of (and respond to changes in) the SelectedItems property
 	internal class SelectionList : IList<object>
 	{
-		private readonly SelectableItemsView _selectableItemsView;
-		private List<object> _internal;
+		readonly SelectableItemsView _selectableItemsView;
+		List<object> _internal;
 		static readonly IList<object> s_empty = new List<object>(0);
 
 		public SelectionList(SelectableItemsView selectableItemsView)
