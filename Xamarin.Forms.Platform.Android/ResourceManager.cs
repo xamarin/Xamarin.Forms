@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 			return AndroidAppCompat.GetDrawable(Forms.Context, id);
 		}
 
-		public static void LogInfo(string message)
+		static void LogInfoToPreviewer(string message)
 		{
 			Java.Lang.Class designerHost = Java.Lang.Class.FromType(typeof(ImageRenderer)).ClassLoader.LoadClass("mono.android.HostProcessConnection");
 			Java.Lang.Reflect.Method reportMethod = designerHost.GetMethod("logInfo", Java.Lang.Class.FromType(typeof(Java.Lang.String)));
