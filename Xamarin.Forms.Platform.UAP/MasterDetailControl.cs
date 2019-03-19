@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				// On first load, the _commandBar will still occupy space by the time this is called.
 				// Check ShouldShowToolbar to make sure the _commandBar will still be there on render.
-				if (_firstLoad || !ShouldShowSplitMode && _commandBar != null && ShouldShowToolbar)
+				if ((_firstLoad || !ShouldShowSplitMode) && _commandBar != null && ShouldShowToolbar)
 				{
 					height -= _commandBar.ActualHeight;
 					_firstLoad = false;
