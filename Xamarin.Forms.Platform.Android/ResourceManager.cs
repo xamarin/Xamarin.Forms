@@ -90,6 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 			return AndroidAppCompat.GetDrawable(Forms.Context, id);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		static void LogInfoToPreviewer(string message)
 		{
 			Java.Lang.Class designerHost = Java.Lang.Class.FromType(typeof(ImageRenderer)).ClassLoader.LoadClass("mono.android.HostProcessConnection");
