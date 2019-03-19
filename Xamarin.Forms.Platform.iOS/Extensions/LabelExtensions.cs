@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 			layoutManager.CharacterRangeForGlyphRange(characterRange, ref glyphRange);
 #else
-			layoutManager.CharacterRangeForGlyphRange(characterRange, out glyphRange);
+			layoutManager.GetCharacterRange(characterRange, out glyphRange);
 #endif
 			return layoutManager.BoundingRectForGlyphRange(glyphRange, textContainer);
 		}
