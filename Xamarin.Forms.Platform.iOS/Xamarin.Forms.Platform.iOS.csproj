@@ -90,7 +90,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\KeyboardObserver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\LabelRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\ListViewRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Renderers\NavigationMenuRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\NavigationRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\PageRenderer.cs" />
@@ -210,6 +209,8 @@
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
     <Compile Include="Extensions\FontExtensions.cs" />
     <Compile Include="Extensions\FontExtensions.Shared.cs" />
+    <Compile Include="Renderers\ButtonLayoutManager.cs" />
+    <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />

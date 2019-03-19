@@ -1,22 +1,26 @@
+using System;
 using System.ComponentModel;
+using CoreAnimation;
 using CoreGraphics;
 using MaterialComponents;
 using UIKit;
-using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 using MActivityIndicator = MaterialComponents.ActivityIndicator;
 
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, MActivityIndicator>
 	{
+		// by Material spec the stroke width is 1/12 of the diameter, 
+		// but Android's native progress indicator is 1/10 of the diameter.
+		const float _strokeRatio = 10;
+		const float _defaultRadius = 22;
+		const float _defaultStrokeWidth = 4;
+		const float _defaultSize = 2 * _defaultRadius + _defaultStrokeWidth;
 		SemanticColorScheme _defaultColorScheme;
 		SemanticColorScheme _colorScheme;
-
-		public MaterialActivityIndicatorRenderer()
-		{
-			VisualElement.VerifyVisualFlagEnabled();
-		}
+		CAShapeLayer _backgroundLayer;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
@@ -32,10 +36,19 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					_defaultColorScheme = CreateColorScheme();
 
 					SetNativeControl(CreateNativeControl());
+
+					_backgroundLayer = new CAShapeLayer
+					{
+						LineWidth = Control.StrokeWidth,
+						FillColor = UIColor.Clear.CGColor,
+						Hidden = true
+					};
+					Control.Layer.InsertSublayer(_backgroundLayer, 0);
 				}
 
 				UpdateColor();
 				UpdateIsRunning();
+				SetBackgroundColor(Element.BackgroundColor);
 
 				ApplyTheme();
 			}
@@ -55,8 +68,38 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			return new MActivityIndicator
 			{
-				IndicatorMode = ActivityIndicatorMode.Indeterminate
+				IndicatorMode = ActivityIndicatorMode.Indeterminate,
+				StrokeWidth = _defaultStrokeWidth,
+				Radius = _defaultRadius
 			};
+		}
+
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+
+			// try get the radius for this size
+			var min = NMath.Min(Control.Bounds.Width, Control.Bounds.Height);
+			var stroke = min / _strokeRatio;
+			var radius = min / 2;
+
+			// but, in the end use the limit set by the control
+			Control.Radius = radius;
+			Control.StrokeWidth = Control.Radius / (_strokeRatio / 2);
+
+			_backgroundLayer.LineWidth = Control.StrokeWidth;
+			_backgroundLayer.Path = UIBezierPath.FromArc(Control.Center, Control.Radius - Control.StrokeWidth / 2, 0, 360, true).CGPath;
+		}
+
+		public override CGSize SizeThatFits(CGSize size)
+		{
+			if (nfloat.IsInfinity(size.Width))
+				size.Width = _defaultSize;
+			if (nfloat.IsInfinity(size.Height))
+				size.Height = _defaultSize;
+			var min = NMath.Min(size.Width, size.Height);
+			size.Width = size.Height = min;
+			return size;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -80,37 +123,14 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			// Do not call base to avoid the actual background view changing color.
-			//base.SetBackgroundColor(color);
-
-			if (Control == null)
+			if (_backgroundLayer == null)
 				return;
 
-			// TODO: Investigate whether or not we want to look for the track
-			//       layer and change the color. This will be brittle.
-			//       For now, just show/hide the track.
-
-			if (color.IsDefault)
-				Control.TrackEnabled = false;
-			else
-				Control.TrackEnabled = true;
-
-			// handle the actual background color next to the main color
-			UpdateColor();
+			_backgroundLayer.Hidden = color.IsDefault;
+			_backgroundLayer.StrokeColor = color.ToCGColor();
 		}
 
-		void UpdateColor()
-		{
-			Color color = Element.Color;
-			Color backColor = Element.BackgroundColor;
-
-			if (!color.IsDefault)
-				_colorScheme.PrimaryColor = color.ToUIColor();
-			else if (!backColor.IsDefault)
-				_colorScheme.PrimaryColor = backColor.ToUIColor();
-			else
-				_colorScheme.PrimaryColor = _defaultColorScheme.PrimaryColor;
-		}
+		void UpdateColor() => _colorScheme.PrimaryColor = Element.Color.IsDefault ? _defaultColorScheme.PrimaryColor : Element.Color.ToUIColor();
 
 		void UpdateIsRunning()
 		{

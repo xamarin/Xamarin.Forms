@@ -28,6 +28,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	internal class RenderWith { }
 	internal class RenderWithChild : RenderWith { }
 	internal class RenderWithChildTarget : IRegisterable { }
+	internal class RenderWithSetAsNewDefault : IRegisterable { }
 
 	internal class VisualButtonTarget : IRegisterable { }
 	internal class VisualSliderTarget : IRegisterable { }
@@ -45,7 +46,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override void Setup()
 		{
 			base.Setup();
-			Device.SetFlags(new List<string> { ExperimentalFlags.VisualExperimental });
 			Device.PlatformServices = new MockPlatformServices();
 			Internals.Registrar.RegisterAll(new[] {
 				typeof (TestHandlerAttribute)
@@ -58,6 +58,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			base.TearDown();
 			Device.PlatformServices = null;
+		}
+
+
+		[Test]
+		public void RegisteringANewDefaultShouldReplaceRenderWithAttributeForFallbackVisual()
+		{
+			Internals.Registrar.Registered.Register(typeof(RenderWith), typeof(RenderWithSetAsNewDefault));
+			var renderWithTarget = Internals.Registrar.Registered.GetHandler(typeof(RenderWith), typeof(VisualMarkerUnitTests));
+
+			Assert.That(renderWithTarget, Is.InstanceOf<RenderWithSetAsNewDefault>());
 		}
 
 

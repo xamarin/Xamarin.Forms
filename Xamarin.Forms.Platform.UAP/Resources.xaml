@@ -236,7 +236,7 @@
     </Style>
 
     <DataTemplate x:Key="TextCell">
-		<StackPanel>
+		<StackPanel AutomationProperties.AutomationId="{Binding AutomationId}">
 			<TextBlock
 				Text="{Binding Text}"
 				Style="{ThemeResource BaseTextBlockStyle}"
@@ -349,5 +349,8 @@
 	<Style TargetType="ToggleSwitch">
 		<Setter Property="MinWidth" Value="0"/>
 	</Style>
-    
+
+    <DataTemplate x:Key="ComboBoxHeader">
+        <TextBlock Text="{Binding Title}" Foreground="{Binding TitleColor,Converter={StaticResource ColorConverter},ConverterParameter=DefaultTextForegroundThemeBrush}" />
+    </DataTemplate>
 </ResourceDictionary>

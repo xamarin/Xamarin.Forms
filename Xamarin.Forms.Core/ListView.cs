@@ -278,11 +278,11 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendCellAppearing(Cell cell)
-			=> ItemAppearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext));
+			=> ItemAppearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendCellDisappearing(Cell cell)
-			=> ItemDisappearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext));
+			=> ItemDisappearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendRefreshing()
@@ -442,7 +442,7 @@ namespace Xamarin.Forms
 
 			cell?.OnTapped();
 
-			ItemTapped?.Invoke(this, new ItemTappedEventArgs(ItemsSource.Cast<object>().ElementAt(groupIndex), cell?.BindingContext));
+			ItemTapped?.Invoke(this, new ItemTappedEventArgs(ItemsSource.Cast<object>().ElementAt(groupIndex), cell?.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -506,7 +506,7 @@ namespace Xamarin.Forms
 			if (newValue != null && lv.GroupDisplayBinding != null)
 			{
 				lv.GroupDisplayBinding = null;
-				Debug.WriteLine("GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
+				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
 			}
 		}
 
@@ -598,7 +598,7 @@ namespace Xamarin.Forms
 			=> ScrollToRequested?.Invoke(this, e);
 
 		static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
-			=> ((ListView)bindable).ItemSelected?.Invoke(bindable, new SelectedItemChangedEventArgs(newValue));
+			=> ((ListView)bindable).ItemSelected?.Invoke(bindable, new SelectedItemChangedEventArgs(newValue, ((ListView)bindable).TemplatedItems.GetGlobalIndexOfItem(newValue)));
 
 		static bool ValidateHeaderFooterTemplate(BindableObject bindable, object value)
 		{
