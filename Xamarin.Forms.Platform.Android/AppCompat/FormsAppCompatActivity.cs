@@ -297,7 +297,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (args.PropertyName == "MainPage")
+			if (args.PropertyName == nameof(_application.MainPage))
 				InternalSetPage(_application.MainPage);
 			if (args.PropertyName == PlatformConfiguration.AndroidSpecific.Application.WindowSoftInputModeAdjustProperty.PropertyName)
 				SetSoftInputMode();
