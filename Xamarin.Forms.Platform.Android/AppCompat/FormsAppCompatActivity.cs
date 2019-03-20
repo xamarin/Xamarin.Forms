@@ -291,6 +291,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void AppOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
+			// Activity in pause must not react to application changes
+			if (_currentState >= AndroidApplicationLifecycleState.OnPause)
+			{
+				return;
+			}
+
 			if (args.PropertyName == "MainPage")
 				InternalSetPage(_application.MainPage);
 			if (args.PropertyName == PlatformConfiguration.AndroidSpecific.Application.WindowSoftInputModeAdjustProperty.PropertyName)
