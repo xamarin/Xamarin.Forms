@@ -557,10 +557,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		bool PageIsChildOfPlatform(Page page)
 		{
-			Element parent = page;
-			while (!Application.IsApplicationOrNull(parent.RealParent))
-				parent = parent.RealParent;
-
+			var parent = page.AncestorToRoot();
 			return Page == parent || _navModel.Roots.Contains(parent);
 		}
 
