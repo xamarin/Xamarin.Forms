@@ -8,7 +8,12 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Items")]
+	public class ShellTab : ShellSection
+	{
+		public ShellContentCollection Content => Items;
+	}
+
+	[ContentProperty(nameof(Items))]
 	public class ShellSection : ShellGroupItem, IShellSectionController, IPropertyPropagationController
 	{
 		#region PropertyKeys

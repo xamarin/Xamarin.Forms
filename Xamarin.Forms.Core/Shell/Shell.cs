@@ -12,7 +12,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Items")]
+	[ContentProperty(nameof(Items))]
 	public class Shell : Page, IShellController, IPropertyPropagationController
 	{
 		public static readonly BindableProperty BackButtonBehaviorProperty =
@@ -610,6 +610,7 @@ namespace Xamarin.Forms
 		}
 
 		public ShellItemCollection Items => (ShellItemCollection)GetValue(ItemsProperty);
+		public ShellItemCollection Flyout => Items;
 
 		public DataTemplate ItemTemplate {
 			get => (DataTemplate)GetValue(ItemTemplateProperty);

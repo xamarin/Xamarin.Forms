@@ -12,6 +12,10 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
+	public class TabContent : ShellContent
+	{
+	}
+
 	[ContentProperty("Content")]
 	public class ShellContent : BaseShellItem, IShellContentController
 	{
