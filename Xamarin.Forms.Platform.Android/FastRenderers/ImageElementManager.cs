@@ -32,9 +32,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			renderer.ElementChanged -= OnElementChanged;
 			if (renderer is ILayoutChanges layoutChanges)
 				layoutChanges.LayoutChange -= OnLayoutChange;
-
-			if (renderer.View is ImageView imageView)
-				imageView.SetImageDrawable(null);
 		}
 
 		async static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
