@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateShellInsetPadding();
 			if (Page != null && Forms.IsiOS11OrNewer)
 			{
-				var insets = NativeView.SafeAreaInsets;
+				var insets = View.SafeAreaInsets;
 				if (Page.Parent is TabbedPage)
 				{
 					insets.Bottom = 0;
