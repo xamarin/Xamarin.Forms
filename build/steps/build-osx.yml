@@ -6,12 +6,29 @@ steps:
     inputs:
       type: InlineScript
       script: '$(Build.Repository.LocalPath)/$(ProvisionatorExecutablePath) keychain set $(p12CertName) $(la.p12.Password)'
+    condition: eq(variables['provisioningSign'], 'true')
 
   - bash: '$(Build.Repository.LocalPath)/$(ProvisionatorExecutablePath) keychain set github.com $(GitHub.Token) || echo "PAT already set"'
     displayName: 'Initialize PAT'
+    condition: eq(variables['provisioningSign'], 'true')
 
-  - bash: '$(Build.Repository.LocalPath)/$(ProvisionatorExecutablePath) $(Build.Repository.LocalPath)/Xamarin.Forms.Build/provisioning.csx $(provisionator.extraArguments)'
-    displayName: Provisioning
+  - task: xamops.azdevex.provisionator-task.provisionator@1
+    displayName: Provisionate Sign iOS
+    condition: eq(variables['provisioningSign'], 'true')
+    env:
+      APPLECODESIGNIDENTITY: $(AppleCodesignIdentity)
+      APPLECODESIGNIDENTITYURL: $(AppleCodesignIdentityUrl)
+      APPLECODESIGNPROFILEURL: $(AppleCodesignProfileUrl)
+    inputs:
+      provisioning_script: $(provisionator.signPath)
+      provisioning_extra_args: $(provisionator.extraArguments)
+
+  - task: xamops.azdevex.provisionator-task.provisionator@1
+    displayName: Provisionate Xamarin
+    condition: eq(variables['provisioningOSX'], 'true')
+    inputs:
+      provisioning_script: $(provisionator.osxPath)
+      provisioning_extra_args: $(provisionator.extraArguments)
 
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet 4.8.1'

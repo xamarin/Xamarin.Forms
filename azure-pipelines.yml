@@ -7,10 +7,25 @@ variables:
   value: ''
 - name: Suffix
   value: ''
+- name: major
+  value: 4
+- name: minor
+  value: 0
+- name: patch
+  value: 1
+- name: buildversion
+  value: $[counter('versioncounter', 1000)]
+- name: sign
+  value: 'false'
+- name: provisioning
+  value: 'true'
+- name: provisioningSign
+  value: 'true'
 - name: ProvisionatorExecutablePath
   value: 'Xamarin.Forms.Build/provisionator.sh'
 - group: Xamarin.Forms
 - group: XQA Secrets
+- group: xamops-azdev-secrets
 
 trigger:
   branches:
@@ -78,6 +93,10 @@ jobs:
       - sh
       - msbuild
       - Xamarin.iOS
+  variables:
+    provisioningOSX : $(provisioning)
+    provisionator.osxPath : 'build/provisioning/provisioning.csx'
+    provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
   steps:
      - template: build/steps/build-osx.yml
 
