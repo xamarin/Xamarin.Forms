@@ -301,7 +301,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Control == null || Element == null)
 				return;
 
-			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();
+			EditText.ImeOptions = Element.ReturnType.ToAndroidImeAction();
 		}
 	}
 }
