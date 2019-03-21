@@ -1565,11 +1565,6 @@ namespace Xamarin.Forms.Platform.iOS
 				RefreshControl.TintColor = color;
 		}
 
-		public override void ViewWillLayoutSubviews()
-		{
-			(TableView?.Source as ListViewRenderer.ListViewDataSource)?.DetermineEstimatedRowHeight();
-		}
-
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
