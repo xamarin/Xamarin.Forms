@@ -11,7 +11,6 @@ using AProgressBar = Android.Widget.ProgressBar;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(ProgressBar), typeof(MaterialProgressBarRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -27,7 +26,7 @@ namespace Xamarin.Forms.Material.Android
 		MotionEventHelper _motionEventHelper;
 		
 		public MaterialProgressBarRenderer(Context context)
-			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarHorizontal), null, Resource.Style.XamarinFormsMaterialProgressBarHorizontal)
+			: base(MaterialContextThemeWrapper.Create(context), null, Resource.Attribute.materialProgressBarHorizontalStyle)
 		{
 			Indeterminate = false;
 			Max = MaximumValue;

@@ -11,7 +11,6 @@ using Xamarin.Forms.Material.Android;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Slider), typeof(MaterialSliderRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -30,7 +29,7 @@ namespace Xamarin.Forms.Material.Android
 		double _min = 0.0;
 
 		public MaterialSliderRenderer(Context context)
-			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialSlider), null, Resource.Style.XamarinFormsMaterialSlider)
+			: base(MaterialContextThemeWrapper.Create(context), null, Resource.Attribute.materialSliderStyle)
 		{
 			SetOnSeekBarChangeListener(this);
 			Max = (int)MaximumValue;
