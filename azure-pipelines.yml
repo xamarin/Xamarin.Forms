@@ -8,24 +8,23 @@ variables:
 - name: Suffix
   value: ''
 - name: major
-  value: 4
+  value: 3
 - name: minor
-  value: 0
+  value: 4
 - name: patch
-  value: 1
+  value: 0
 - name: buildversion
-  value: $[counter('versioncounter', 1000)]
-- name: sign
-  value: 'false'
-- name: provisioning
-  value: 'true'
-- name: provisioningSign
-  value: 'true'
-- name: ProvisionatorExecutablePath
-  value: 'Xamarin.Forms.Build/provisionator.sh'
+  value: $[counter('$(Build.SourceBranchName)_counter', 1)]
 - group: Xamarin.Forms
 - group: XQA Secrets
 - group: xamops-azdev-secrets
+
+resources:
+  repositories:
+    - repository: xamarin-templates
+      type: github
+      name: xamarin/yaml-templates
+      endpoint: xamarin
 
 trigger:
   branches:
@@ -82,6 +81,33 @@ jobs:
   steps:
      - template: build/steps/build-windows-test.yml
 
+- template: build/steps/build-android.yml
+  parameters:
+    name: android_legacy
+    displayName: Build Android [Legacy Renderers]
+    vmImage: Hosted Mac Internal
+    targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage"'
+    dependsOn: Phase_1
+
+- template: build/steps/build-android.yml
+  parameters:
+    name: android_preappcompact
+    displayName: Build Android [Pre-AppCompat]
+    vmImage: Hosted Mac Internal
+    targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP"'
+    dependsOn: Phase_1
+
+- template: build/steps/build-android.yml
+  parameters:
+    name: android_fast
+    displayName: Build Android [Fast Renderers]
+    vmImage: Hosted Mac Internal
+    targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP"'
+    dependsOn: Phase_1
+
 - job: Phase_4
   displayName: OSX Phase
   dependsOn: Phase_1
@@ -104,6 +130,9 @@ jobs:
   displayName: Nuget Phase
   dependsOn:
    - Phase_3
+   - android_legacy
+   - android_preappcompact
+   - android_fast
   condition: succeeded()
   pool:
     name: Hosted VS2017
