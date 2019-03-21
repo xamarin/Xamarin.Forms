@@ -358,7 +358,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Control == null || Element == null)
 				return;
-			Control.ReturnKeyType = Element.ReturnType.ToUIReturnKeyType();
+			TextView.ReturnKeyType = Element.ReturnType.ToUIReturnKeyType();
 		}
 
 		internal class FormsUITextView : UITextView, IFormsUITextView
