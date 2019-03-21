@@ -45,10 +45,6 @@
 		<SnExe>sn</SnExe>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net46|AnyCPU'">
-	  <WarningsAsErrors />
-	</PropertyGroup>
-
 	<Target Name="_SetSnExe" Condition="'$(SnExe)' == '' And '$(OS)' == 'Windows_NT'">
 		<GetFrameworkSdkPath>
 			<Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
@@ -62,7 +58,7 @@
 	</Target>
 
   <Target Name="_StrongName" AfterTargets="Build" DependsOnTargets="_SetSnExe" Condition="'$(TargetPath)' != ''" Inputs="$(TargetPath)" Outputs="$(IntermediateOutputPath)Sn.stamp">
-  	<Exec Command="&quot;$(SnExe)&quot; -R $(TargetPath) ..\xamarin.forms.snk" Condition=" '$(SignAssembly)' == 'true' " />
+  	<Exec Command='"$(SnExe)" -R $(TargetPath) ..\xamarin.forms.snk' Condition=" '$(SignAssembly)' == 'true' " />
   </Target>
 
   <Target Name="_CopyToNuspecDir" AfterTargets="_StrongName;Build">
