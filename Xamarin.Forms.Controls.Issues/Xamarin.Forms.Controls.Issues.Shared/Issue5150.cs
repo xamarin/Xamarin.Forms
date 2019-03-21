@@ -35,9 +35,6 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 	}
 
-#if UITEST
-	[Category(UITestCategories.Button)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 5150, "AutomationProperties.Name, AutomationProperties.HelpText on Button not read by Android TalkBack", PlatformAffected.Android)]
 	public class Issue5150 : TestContentPage // or TestMasterDetailPage, etc ...
@@ -63,6 +60,10 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			var layout = new StackLayout();
+			layout.Children.Add(new Label
+			{
+				Text = "On the Android platform, the labels below each button should match the text read by TalkBack."
+			});
 
 			AddButton(layout, "Button 1", buttonName: "Name 1");
 			AddButton(layout, "Button 2", buttonHelp: "Help 2.");
@@ -72,8 +73,13 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = layout;
 		}
 
+
 #if UITEST
 		[Test]
+		[Category(UITestCategories.Button)]
+#if !__ANDROID__
+		[Ignore("This test verifies ContentDescription is set on the Android platform.")]
+#endif
 		public void Issue5150Test() 
 		{
 			RunningApp.Screenshot ("I am at Issue 5150");
