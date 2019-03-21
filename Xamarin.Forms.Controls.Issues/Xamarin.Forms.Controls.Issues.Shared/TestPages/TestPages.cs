@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Controls
 					RunningApp.TestServer.Get("version");
 					return;
 				}
-				catch (Exception ex)
+				catch 
 				{
 				}
 
