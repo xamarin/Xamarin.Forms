@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (isInViewCell)
 				{
-					Window window = ((Activity)Context).Window;
+					Window window = Context.GetActivity().Window;
 					if (hasFocus)
 					{
 						_startingInputMode = window.Attributes.SoftInputMode;
