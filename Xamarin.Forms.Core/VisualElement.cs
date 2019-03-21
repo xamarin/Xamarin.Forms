@@ -68,7 +68,7 @@ namespace Xamarin.Forms
 			set { SetValue(VisualProperty, value); }
 		}
 
-		IVisual _effectiveVisual = Xamarin.Forms.VisualMarker.Default;
+		IVisual _effectiveVisual = Xamarin.Forms.VisualMarker.Material;
 		IVisual IVisualController.EffectiveVisual
 		{
 			get { return _effectiveVisual; }

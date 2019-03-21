@@ -6,7 +6,17 @@
              ios:Page.UseSafeArea="true">
     <ContentPage.Content>
         <StackLayout>
-            <Button Text="I am a Button"  />
+            <ListView x:Name="tests">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout>
+                                <Entry></Entry>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView> 
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
