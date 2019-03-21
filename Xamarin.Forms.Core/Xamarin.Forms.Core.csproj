@@ -7,10 +7,8 @@
 		<DebugType>full</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-	  <WarningsAsErrors />
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-	  <WarningsAsErrors />
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj" />
