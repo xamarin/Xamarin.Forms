@@ -8,6 +8,8 @@ using Android.Support.V4.View;
 using Android.Content.Res;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.AppCompat;
+using Xamarin.Forms.Platform.Android;
+using Android.Widget;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -98,6 +100,9 @@ namespace Xamarin.Forms.Material.Android
 		 * */
 		void OnFocusChange(object sender, FocusChangeEventArgs e)
 		{
+			if (EditText == null)
+				return;
+
 			Device.BeginInvokeOnMainThread(() => ApplyTheme());
 
 			// propagate the focus changed event to the View Renderer base class
@@ -121,12 +126,23 @@ namespace Xamarin.Forms.Material.Android
 			}
 		}
 
+		public override EditText EditText
+		{
+			get
+			{
+				if (this.IsDisposed())
+					return null;
+
+				return base.EditText;
+			}
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (!_isDisposed)
 			{
 				_isDisposed = true;
-				if (EditText != null)
+				if (EditText != null && !EditText.IsDisposed())
 					EditText.FocusChange -= OnFocusChange;
 			}
 
