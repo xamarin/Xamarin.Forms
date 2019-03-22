@@ -48,7 +48,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
 
-				_toolbarTracker.Page = ((IShellContentController)shellContent).Page;
+				var page = ((IShellContentController)shellContent).Page;
+				if(page == null)
+					throw new ArgumentNullException(nameof(page), "Shell Content Page is Null");
+
+				_toolbarTracker.Page = page;
 			}
 			else
 			{
