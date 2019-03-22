@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		readonly UICollectionView _collectionView;
 		readonly IList _itemsSource;
+		bool _disposed;
 
 		public ObservableItemsSource(IList itemSource, UICollectionView collectionView)
 		{
@@ -22,6 +23,24 @@ namespace Xamarin.Forms.Platform.iOS
 		public int Count => _itemsSource.Count;
 
 		public object this[int index] => _itemsSource[index];
+
+		public void Dispose()
+		{
+			Dispose(true);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					((INotifyCollectionChanged)_itemsSource).CollectionChanged -= CollectionChanged;
+				}
+
+				_disposed = true;
+			}
+		}
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
