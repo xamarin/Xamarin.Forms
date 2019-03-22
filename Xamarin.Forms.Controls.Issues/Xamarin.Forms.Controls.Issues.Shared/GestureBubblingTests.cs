@@ -30,7 +30,6 @@ namespace Xamarin.Forms.Controls.Issues
 		const string TargetAutomationId = "controlinsideofframe";
 		const string NoTaps = "No taps yet";
 		const string Tapped = "Frame was tapped";
-		ContentPage _menu;
 
 #if UITEST
 		[Test, TestCaseSource(nameof(TestCases))]
@@ -175,11 +174,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		ContentPage BuildMenu()
 		{
-			if (_menu != null)
-			{
-				return _menu;
-			}
-
 			var layout = new Grid
 			{
 				VerticalOptions = LayoutOptions.Fill,

@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Controls.Issues
 	public class InputTransparentTests : TestNavigationPage
 	{
 		const string TargetAutomationId = "inputtransparenttarget";
-		ContentPage _menu;
 
 #if UITEST
 		[Test, TestCaseSource(nameof(TestCases))]
@@ -158,11 +157,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		ContentPage BuildMenu()
 		{
-			if (_menu != null)
-			{
-				return _menu;
-			}
-
 			var layout = new Grid
 			{
 				VerticalOptions = LayoutOptions.Fill, HorizontalOptions = LayoutOptions.Fill,
