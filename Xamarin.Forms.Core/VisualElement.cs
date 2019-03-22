@@ -72,7 +72,7 @@ namespace Xamarin.Forms
 			_defaultVisual = visual;
 		}
 
-		static IVisual _defaultVisual = Xamarin.Forms.VisualMarker.Default;
+		static IVisual _defaultVisual = Xamarin.Forms.VisualMarker.Material;
 		IVisual _effectiveVisual = _defaultVisual;
 		IVisual IVisualController.EffectiveVisual
 		{
