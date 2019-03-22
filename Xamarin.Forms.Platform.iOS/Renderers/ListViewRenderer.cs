@@ -817,7 +817,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			protected override void UpdateEstimatedRowHeight(UITableView tableView)
 			{
-				tableView.EstimatedRowHeight = GetEstimatedRowHeight(tableView);
+				var estimatedRowheight  = GetEstimatedRowHeight(tableView);
+				//if we are providing 0 we are disabling EstimatedRowHeight,
+				//this works fine on newer versions, but iOS10 it will cause a crash so we leave the default value
+				if (estimatedRowheight == 0 && Forms.IsiOS11OrNewer)
+					tableView.EstimatedRowHeight = estimatedRowheight;
 			}
 
 			internal Cell GetPrototypicalCell(NSIndexPath indexPath)
