@@ -85,8 +85,9 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				_disposed = true;
+
+				base.Dispose(disposing);
 			}
-			base.Dispose(disposing);
 		}
 
 		static IVisualElementRenderer CreateRenderer(View view, Context context)
