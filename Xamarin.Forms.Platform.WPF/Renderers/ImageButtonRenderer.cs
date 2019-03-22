@@ -146,29 +146,29 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		private void RefreshImage()
+		void RefreshImage()
 		{
 			((IVisualElementController)Element)?.InvalidateMeasure(InvalidationTrigger.RendererReady);
 		}
 
-		private void OnButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		void OnButtonClick(object sender, System.Windows.RoutedEventArgs e)
 		{
 			((IButtonController)Element)?.SendReleased();
 			((IButtonController)Element)?.SendClicked();
 		}
 
-		private void OnImageFailed(object sender, System.Windows.ExceptionRoutedEventArgs e)
+		void OnImageFailed(object sender, System.Windows.ExceptionRoutedEventArgs e)
 		{
 			Log.Warning("Image loading", $"Image failed to load: {e.ErrorException.Message}");
 			Element?.SetIsLoading(false);
 		}
 
-		private void UpdateBorderColor()
+		void UpdateBorderColor()
 		{
 			Control.UpdateDependencyColor(WButton.BorderBrushProperty, Element.BorderColor);
 		}
 
-		private void UpdateBorderWidth()
+		void UpdateBorderWidth()
 		{
 			Control.BorderThickness =
 				Element.BorderWidth <= 0d
@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Platform.WPF
 					: new WThickness(Element.BorderWidth);
 		}
 
-		private void UpdateAspect()
+		void UpdateAspect()
 		{
 			_image.Stretch = Element.Aspect.ToStretch();
 			if (Element.Aspect == Aspect.Fill)
