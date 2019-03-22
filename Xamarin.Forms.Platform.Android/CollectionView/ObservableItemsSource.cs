@@ -9,10 +9,11 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly RecyclerView.Adapter _adapter;
 		readonly IList _itemsSource;
+		bool _disposed;
 
-		public ObservableItemsSource(IEnumerable itemSource, RecyclerView.Adapter adapter)
+		public ObservableItemsSource(IList itemSource, RecyclerView.Adapter adapter)
 		{
-			_itemsSource = (IList)itemSource;
+			_itemsSource = itemSource;
 			_adapter = adapter;
 
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
@@ -26,8 +27,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Dispose(true);
 		}
-
-		bool _disposed;
 
 		protected virtual void Dispose(bool disposing)
 		{
