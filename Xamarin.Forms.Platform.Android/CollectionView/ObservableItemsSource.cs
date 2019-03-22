@@ -7,8 +7,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ObservableItemsSource : IItemsViewSource
 	{
-		RecyclerView.Adapter _adapter;
-		IList _itemsSource;
+		readonly RecyclerView.Adapter _adapter;
+		readonly IList _itemsSource;
 
 		public ObservableItemsSource(IEnumerable itemSource, RecyclerView.Adapter adapter)
 		{
@@ -36,8 +36,6 @@ namespace Xamarin.Forms.Platform.Android
 				if (disposing)
 				{
 					((INotifyCollectionChanged)_itemsSource).CollectionChanged -= CollectionChanged;
-					_itemsSource = null;
-					_adapter = null;
 				}
 
 				_disposed = true;

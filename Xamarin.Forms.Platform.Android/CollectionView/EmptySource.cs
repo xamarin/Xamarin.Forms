@@ -2,7 +2,7 @@ using System;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class EmptySource : IItemsViewSource
+	sealed internal class EmptySource : IItemsViewSource
 	{
 		public int Count => 0;
 
@@ -10,22 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Dispose()
 		{
-			Dispose(true);
-		}
-
-		bool _disposed;
-
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-
-				}
-
-				_disposed = true;
-			}
+			
 		}
 	}
 }

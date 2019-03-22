@@ -60,7 +60,7 @@
 			if (addItemsWithTimer)
 				generator.GenerateEmptyObservableCollectionAndAddItemsEverySecond();
 			else
-				generator.GenerateObservableCollection();
+				generator.GenerateItems();
 		}
 	}
 }
