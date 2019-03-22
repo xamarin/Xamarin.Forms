@@ -48,7 +48,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		}
 	}
 
-	public class DisposePageRenderer : PageRenderer
+	public class DisposePageRenderer : AccessiblePageRenderer
 	{
 		protected override void Dispose(bool disposing)
 		{
