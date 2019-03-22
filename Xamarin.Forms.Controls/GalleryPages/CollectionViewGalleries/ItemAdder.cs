@@ -11,13 +11,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 		protected override void ModifyObservableCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{
-			var index = indexes[0];
-
-			if (index > -1 && (index < observableCollection.Count || index == 0))
-			{
-				var item = new CollectionViewGalleryTestItem(DateTime.Now, "Inserted", "oasis.jpg", index);
-				observableCollection.Insert(index, item);
-			}
+			var item = new CollectionViewGalleryTestItem(DateTime.Now, "Added", "oasis.jpg", observableCollection.Count);
+			observableCollection.Add(item);
 		}
 	}
 }

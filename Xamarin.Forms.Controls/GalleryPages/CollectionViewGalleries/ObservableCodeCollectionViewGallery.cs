@@ -30,18 +30,18 @@
 			var generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.ObservableCollection);
 
 			var remover = new ItemRemover(collectionView);
-			var inserter = new ItemInserter(collectionView);
+			var adder = new ItemAdder(collectionView);
 			var replacer = new ItemReplacer(collectionView);
 			var mover = new ItemMover(collectionView);
-			var adder = new ItemAdder(collectionView);
+			var inserter = new ItemInserter(collectionView);
 
 			layout.Children.Add(generator);
 
 			layout.Children.Add(remover);
 			Grid.SetRow(remover, 1);
 
-			layout.Children.Add(inserter);
-			Grid.SetRow(inserter, 2);
+			layout.Children.Add(adder);
+			Grid.SetRow(adder, 2);
 
 			layout.Children.Add(replacer);
 			Grid.SetRow(replacer, 3);
@@ -49,8 +49,8 @@
 			layout.Children.Add(mover);
 			Grid.SetRow(mover, 4);
 
-			layout.Children.Add(adder);
-			Grid.SetRow(adder, 5);
+			layout.Children.Add(inserter);
+			Grid.SetRow(inserter, 5);
 
 			layout.Children.Add(collectionView);
 			Grid.SetRow(collectionView, 6);
