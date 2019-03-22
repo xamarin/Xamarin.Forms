@@ -6,9 +6,9 @@ namespace Xamarin.Forms
 {
 	public static class TabIndexExtensions
 	{
-		public static IDictionary<int, List<VisualElement>> GetTabIndexesOnParentPage(this VisualElement element, out int countChildrenWithTabStopWithoutThis)
+		public static IDictionary<int, List<VisualElement>> GetTabIndexesOnParentPage(this VisualElement element, out int countChildrensWithTabStopWithoutThis)
 		{
-			countChildrenWithTabStopWithoutThis = 0;
+			countChildrensWithTabStopWithoutThis = 0;
 
 			Element parentPage = element.Parent;
 			while (parentPage != null && !(parentPage is Page))
@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 			if (!childrenWithTabStop.Contains(element))
 				return null;
 
-			countChildrenWithTabStopWithoutThis = childrenWithTabStop.Count - 1;
+			countChildrensWithTabStopWithoutThis = childrenWithTabStop.Count - 1;
 			return childrenWithTabStop.GroupToDictionary(c => c.TabIndex);
 		}
 
