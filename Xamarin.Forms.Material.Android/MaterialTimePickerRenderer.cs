@@ -5,6 +5,7 @@ using Android.Widget;
 using Xamarin.Forms;
 using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.Platform.Android;
+using AView = Android.Views.View;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.TimePicker), typeof(MaterialTimePickerRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
@@ -20,6 +21,7 @@ namespace Xamarin.Forms.Material.Android
 		}
 
 		protected override EditText EditText => _textInputEditText;
+		protected override AView ControlUsedForAutomation => EditText;
 
 		protected override MaterialPickerTextInputLayout CreateNativeControl()
 		{
