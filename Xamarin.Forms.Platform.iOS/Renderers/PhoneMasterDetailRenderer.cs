@@ -326,14 +326,14 @@ namespace Xamarin.Forms.Platform.iOS
 			((MasterDetailPage)Element).Master.PropertyChanged += HandleMasterPropertyChanged;
 
 			UIView masterView = masterRenderer.NativeView;
-			if (masterRenderer is PageRenderer) // PageRenderer's NativeView is the PageContainer, but we need the parent View.
+			if (masterRenderer is AccessiblePageRenderer) // AccessiblePageRenderer's NativeView is the PageContainer, but we need the parent View.
 				masterView = masterView.Superview;
 
 			_masterController.View.AddSubview(masterView);
 			_masterController.AddChildViewController(masterRenderer.ViewController);
 
 			UIView detailView = detailRenderer.NativeView;
-			if (detailRenderer is PageRenderer) // PageRenderer's NativeView is the PageContainer, but we need the parent View.
+			if (detailRenderer is AccessiblePageRenderer) // AccessiblePageRenderer's NativeView is the PageContainer, but we need the parent View.
 				detailView = detailView.Superview;
 
 			_detailController.View.AddSubview(detailView);

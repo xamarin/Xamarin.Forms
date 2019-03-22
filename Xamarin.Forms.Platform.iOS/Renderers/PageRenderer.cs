@@ -8,7 +8,9 @@ using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PageRenderer : AccessibleUIViewController, IVisualElementRenderer, IEffectControlProvider
+	[Obsolete("PageRenderer is obsolete as of 4.0.0. Please use AccessiblePageRenderer instead.")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		bool _appeared;
 		bool _disposed;
@@ -27,7 +29,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			VisualElementRenderer<VisualElement>.RegisterEffect(effect, NativeView);
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 
 		public VisualElement Element { get; private set; }
@@ -41,10 +43,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UIView NativeView
 		{
-			get { return _disposed ? null : Container; }
+			get { return _disposed ? null : View; }
 		}
 
-		public override void SetElement(VisualElement element)
+		public void SetElement(VisualElement element)
 		{
 			VisualElement oldElement = Element;
 			Element = element;
@@ -52,15 +54,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
-			base.SetElement(element);
+			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
+				SetAutomationId(Element.AutomationId);
 
 			if (element != null)
-			{
-				if (!string.IsNullOrEmpty(element.AutomationId))
-					SetAutomationId(element.AutomationId);
-
 				element.SendViewInitialized(NativeView);
-			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -74,9 +72,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLayoutSubviews();
 
-			if (_disposed)
-				return;
-
 			if (Element.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
@@ -86,14 +81,16 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewSafeAreaInsetsDidChange()
 		{
 			UpdateShellInsetPadding();
-			if (Page != null && Forms.IsiOS11OrNewer)
+			var page = (Element as Page);
+			if (page != null && Forms.IsiOS11OrNewer)
 			{
-				var insets = View.SafeAreaInsets;
-				if (Page.Parent is TabbedPage)
+				var insets = NativeView.SafeAreaInsets;
+				if (page.Parent is TabbedPage)
 				{
 					insets.Bottom = 0;
 				}
-				Page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(new Thickness(insets.Left, insets.Top, insets.Right, insets.Bottom));
+				page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(new Thickness(insets.Left, insets.Top, insets.Right, insets.Bottom));
+
 			}
 
 			base.ViewSafeAreaInsetsDidChange();
@@ -136,16 +133,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 
-			if (NativeView == null)
-				return;
-
-			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => NativeView.EndEditing(true));
+			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => View.EndEditing(true));
 
 			uiTapGestureRecognizer.ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) => true;
 			uiTapGestureRecognizer.ShouldReceiveTouch = OnShouldReceiveTouch;
 			uiTapGestureRecognizer.DelaysTouchesBegan =
 				uiTapGestureRecognizer.DelaysTouchesEnded = uiTapGestureRecognizer.CancelsTouchesInView = false;
-			NativeView.AddGestureRecognizer(uiTapGestureRecognizer);
+			View.AddGestureRecognizer(uiTapGestureRecognizer);
 
 			UpdateBackground();
 
@@ -156,16 +150,16 @@ namespace Xamarin.Forms.Platform.iOS
 			_tracker = new VisualElementTracker(this, !(Element.Parent is BaseShellItem));
 
 			_events = new EventTracker(this);
-			_events.LoadEvents(NativeView);
+			_events.LoadEvents(View);
 
-			Element.SendViewInitialized(NativeView);
+			Element.SendViewInitialized(View);
 		}
 
 		public override void ViewWillDisappear(bool animated)
 		{
 			base.ViewWillDisappear(animated);
 
-			NativeView?.Window?.EndEditing(true);
+			View.Window?.EndEditing(true);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -268,9 +262,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateShellInsetPadding()
 		{
-			if (Element == null)
-				return;
-
 			var setInsets = Shell.GetSetPaddingInsets(Element);
 
 			if (!setInsets && Element.Parent != null)
@@ -306,7 +297,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UIView.Animate(0.25, () => SetNeedsStatusBarAppearanceUpdate());
 			else
 				SetNeedsStatusBarAppearanceUpdate();
-			NativeView?.SetNeedsLayout();
+			View.SetNeedsLayout();
 		}
 
 		bool OnShouldReceiveTouch(UIGestureRecognizer recognizer, UITouch touch)
@@ -336,20 +327,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			if (NativeView == null)
-				return;
-
 			string bgImage = ((Page)Element).BackgroundImage;
 			if (!string.IsNullOrEmpty(bgImage))
 			{
-				NativeView.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(bgImage);
+				View.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(bgImage);
 				return;
 			}
 			Color bgColor = Element.BackgroundColor;
 			if (bgColor.IsDefault)
-				NativeView.BackgroundColor = UIColor.White;
+				View.BackgroundColor = UIColor.White;
 			else
-				NativeView.BackgroundColor = bgColor.ToUIColor();
+				View.BackgroundColor = bgColor.ToUIColor();
 		}
 
 		void UpdateTitle()

@@ -130,7 +130,11 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (CarouselPageRenderer))]
 	internal class _CarouselPageRenderer { }
 
+#if !__IOS__
 	[RenderWith (typeof (PageRenderer))]
+#else
+	[RenderWith (typeof (AccessiblePageRenderer))]
+#endif
 	internal class _PageRenderer { }
 
 #if !__IOS__ && !TIZEN4_0

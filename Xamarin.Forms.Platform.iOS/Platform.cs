@@ -296,7 +296,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetRenderer(view, viewRenderer);
 
 				var nativeView = viewRenderer.NativeView;
-				if (viewRenderer is PageRenderer) // PageRenderer's NativeView is the PageContainer, but we need the parent View.
+				if (viewRenderer is AccessiblePageRenderer) // AccessiblePageRenderer's NativeView is the PageContainer, but we need the parent View.
 					nativeView = nativeView.Superview;
 
 				_renderer.View.AddSubview(nativeView);
