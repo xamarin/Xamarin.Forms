@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Internals
 			{
 				if (s_ticker == null)
 				{
-					s_ticker = s_ticker = Device.PlatformServices.CreateTicker();
+					s_ticker = Device.PlatformServices.CreateTicker();
 				}
 
 				return s_ticker.GetTickerInstance(); 
