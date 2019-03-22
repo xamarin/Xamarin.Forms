@@ -117,6 +117,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
+			if (Element == null)
+				return;
+
 			if (!e.Focus)
 			{
 				EditText.HideKeyboard();
