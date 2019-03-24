@@ -34,7 +34,7 @@ namespace Xamarin.Forms
 			var stepper = (Stepper)bindable;
 			var clampedValue = ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
 			var decimalPlaces = stepper.DecimalPlaces;
-			return decimalPlaces >= 0 && decimalPlaces <= 15
+			return decimalPlaces >= 0
 				? Math.Round(clampedValue, decimalPlaces)
 				: clampedValue;
 		}, propertyChanged: (bindable, oldValue, newValue) =>
