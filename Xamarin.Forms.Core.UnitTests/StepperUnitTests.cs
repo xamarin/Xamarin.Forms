@@ -144,6 +144,73 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
+		[Test]
+		public void TestValueDecimalPlacesNotSet()
+		{
+			var stepper = new Stepper
+			{
+				Minimum = 0,
+				Maximum = 10,
+				Increment = 1.55
+			};
+
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(1.55, stepper.Value);
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(3.1, stepper.Value);
+		}
+
+		[Test]
+		public void TestValueDecimalPlacesSetTo0()
+		{
+			var stepper = new Stepper
+			{
+				Minimum = 0,
+				Maximum = 10,
+				Increment = 1.55,
+				DecimalPlaces = 0
+			};
+
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(2, stepper.Value);
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(4, stepper.Value);
+		}
+
+		[Test]
+		public void TestValueDecimalPlacesSetTo1()
+		{
+			var stepper = new Stepper
+			{
+				Minimum = 0,
+				Maximum = 10,
+				Increment = 1.55,
+				DecimalPlaces = 1
+			};
+
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(1.6, stepper.Value);
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(3.2, stepper.Value);
+		}
+
+		[Test]
+		public void TestValueDecimalPlacesSetToIntMax()
+		{
+			var stepper = new Stepper
+			{
+				Minimum = 0,
+				Maximum = 10,
+				Increment = 1.55,
+				DecimalPlaces = int.MaxValue
+			};
+
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(1.55, stepper.Value);
+			stepper.Value += stepper.Increment;
+			Assert.AreEqual(3.1, stepper.Value);
+		}
+
 		[TestCase (100.0, 0.5)]
 		[TestCase (10.0, 25.0)]
 		[TestCase (0, 39.5)]

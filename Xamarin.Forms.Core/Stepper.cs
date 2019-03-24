@@ -35,7 +35,7 @@ namespace Xamarin.Forms
 			var clampedValue = ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
 			var decimalPlaces = stepper.DecimalPlaces;
 			return decimalPlaces >= 0
-				? Math.Round(clampedValue, decimalPlaces)
+				? Math.Round(clampedValue, Math.Min(decimalPlaces, 15)) // double has 15 decimal places. But we don't want to throw exception even though user set DecimalPlaces > 15
 				: clampedValue;
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
