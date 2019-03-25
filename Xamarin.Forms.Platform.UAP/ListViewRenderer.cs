@@ -724,7 +724,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnListItemClicked(int index)
 		{
-			Element.NotifyRowTapped(index, cell: null);
+			Element.NotifyRowTapped(index);
 			_itemWasClicked = true;
 		}
 

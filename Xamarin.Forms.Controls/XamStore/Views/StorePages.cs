@@ -209,9 +209,16 @@ namespace Xamarin.Forms.Controls.XamStore
 						Navigation.PushAsync(page);
 					}),
 				2, 14);
+			
+			grid.Children.Add(MakeButton("Show Alert",
+				async () => {
+					var result = await DisplayAlert("Title", "Message", "Ok", "Cancel");
+					Console.WriteLine($"Alert result: {result}");
+				}), 0, 15);
+
 			grid.Children.Add(MakeButton("Navigate to 'demo' route",
 				async () => await Shell.CurrentShell.GoToAsync("demo", true)),
-			0, 15);
+			1, 15);
 
 			Content = new ScrollView { Content = grid };
 
