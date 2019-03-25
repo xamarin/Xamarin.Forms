@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Material.Android
 
 		public override bool OnTouchEvent(MotionEvent e)
 		{
-			if (!Enabled || (_inputTransparent && Enabled))
+			if (!Enabled || _inputTransparent)
 				return false;
 
 			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
