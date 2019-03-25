@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Material.Android
 		MotionEventHelper _motionEventHelper;
 		double _max = 0.0;
 		double _min = 0.0;
-		private bool _inputTransparent;
+		bool _inputTransparent;
 
 		public MaterialSliderRenderer(Context context)
 			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialSlider), null, Resource.Style.XamarinFormsMaterialSlider)

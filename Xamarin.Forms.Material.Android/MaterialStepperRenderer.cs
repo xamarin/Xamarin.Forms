@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Material.Android
 
 		MButton _downButton;
 		MButton _upButton;
-		private bool _inputTransparent;
+		bool _inputTransparent;
 
 		public MaterialStepperRenderer(Context context) : base(context)
 		{
