@@ -108,6 +108,7 @@ namespace Xamarin.Forms.Platform.iOS
 			};
 
 			if (deepLinkUri.Thumbnail != null)
+			{
 				using (var uiimage = await deepLinkUri.Thumbnail.GetNativeImageAsync())
 				{
 					if (uiimage == null)
@@ -115,6 +116,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					searchableAttributeSet.ThumbnailData = uiimage.AsPNG();
 				}
+			}
 
 			return searchableAttributeSet;
 		}
