@@ -66,6 +66,33 @@ namespace Xamarin.Forms
 			}
 		}
 
+
+		public static Color GetColorItemNormal(Context context)
+		{
+			Color rc = Color.White;
+			using (var value = new TypedValue())
+			{
+				if (context.Theme.ResolveAttribute(global::Android.Resource.Attribute.TextColor, value, true) && Forms.IsLollipopOrNewer) // Android 5.0+
+				{
+					rc = Color.FromUint((uint)value.Data);
+				}
+			}
+			return rc;
+		}
+
+		public static float GetFontSizeNormal(Context context)
+		{
+			float size = 50;
+			using (var value = new TypedValue())
+			{
+				if (context.Theme.ResolveAttribute(global::Android.Resource.Attribute.TextSize, value, true) && Forms.IsLollipopOrNewer) // Android 5.0+
+				{
+					size = (float)value.Data;
+				}
+			}
+			return size;
+		}
+
 		public static Color GetColorButtonNormal(Context context)
 		{
 			if (!_ColorButtonNormalSet)

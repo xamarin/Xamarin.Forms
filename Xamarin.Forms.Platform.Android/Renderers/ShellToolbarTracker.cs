@@ -236,42 +236,15 @@ namespace Xamarin.Forms.Platform.Android
 			var backButtonHandler = Shell.GetBackButtonBehavior(page);
 			toolbar.SetNavigationOnClickListener(this);
 
+			var activity = (FormsAppCompatActivity)context;
+
 			if (backButtonHandler != null)
 			{
-				var behavior = backButtonHandler;
-				var command = behavior.Command;
-				var commandParameter = behavior.CommandParameter;
-				var image = behavior.IconOverride;
-				var text = behavior.TextOverride;
-				var enabled = behavior.IsEnabled;
-
-				if(image != null)
-				{
-					using (var icon = await context.GetFormsDrawable(image))
-					using (var mutatedIcon = icon.GetConstantState().NewDrawable().Mutate())
-					{
-						mutatedIcon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-						toolbar.NavigationIcon = mutatedIcon;
-					}
-				}
-				else
-				{
-					_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
-						R.String.Ok, R.String.Ok)
-					{
-						ToolbarNavigationClickListener = this,
-					};
-					_drawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, null, text);
-
-					drawerLayout.AddDrawerListener(_drawerToggle);
-
-					_drawerToggle.SyncState();
-				}
-			
+				await CustomizeBackButtonBehavior(context, toolbar, drawerLayout, backButtonHandler, activity);
 			}
 			else
 			{
-				var activity = (FormsAppCompatActivity)context;
+
 				if (_drawerToggle == null)
 				{
 					_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
@@ -310,6 +283,49 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		private async Task CustomizeBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)
+		{
+			var behavior = backButtonHandler;
+			var command = behavior.Command;
+			var commandParameter = behavior.CommandParameter;
+			var image = behavior.IconOverride;
+			var text = behavior.TextOverride;
+			var enabled = behavior.IsEnabled;
+
+			if (image != null)
+			{
+				using (var icon = await context.GetFormsDrawable(image))
+				using (var mutatedIcon = icon.GetConstantState().NewDrawable().Mutate())
+				{
+					mutatedIcon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+					toolbar.NavigationIcon = mutatedIcon;
+				}
+			} else if (text != null)
+			{
+				toolbar.NavigationContentDescription = text;
+				toolbar.NavigationContentDescriptionFormatted = text;
+			}
+
+			if (CanNavigateBack)
+			{
+				if (_drawerToggle == null)
+				{
+					_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
+						R.String.Ok, R.String.Ok)
+					{
+						ToolbarNavigationClickListener = this,
+					};
+				}
+				_drawerToggle.DrawerIndicatorEnabled = false;
+				using (var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext))
+				{
+					icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+					icon.Progress = 1;
+					toolbar.NavigationIcon = icon;
+				}
+			}
+		}
+
 		protected virtual async Task SetDrawerArrowDrawableFromFlyoutIcon(Context context, ActionBarDrawerToggle actionBarDrawerToggle)
 		{
 			Element item = Page;
@@ -319,7 +335,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (item is IShellController shell)
 				{
 					icon = shell.FlyoutIcon;
-					if(icon != null)
+					if (icon != null)
 					{
 						var drawable = await context.GetFormsDrawable(icon);
 						actionBarDrawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, drawable, null);
@@ -506,6 +522,7 @@ namespace Xamarin.Forms.Platform.Android
 			Drawable _iconBitmap;
 			string _text;
 			Color _defaultColor;
+			float _defaultSize;
 
 			public Color BackgroundColor => _defaultColor;
 			public Color PressedBackgroundColor => BackgroundColor.AddLuminosity(-.12);//<item name="highlight_alpha_material_light" format="float" type="dimen">0.12</item>
@@ -521,7 +538,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			public FlyoutIconDrawerDrawable(Context context, Drawable icon, string text) : base(context)
 			{
-				_defaultColor = Forms.GetColorButtonNormal(context);
+				_defaultColor = Forms.GetColorItemNormal(context);
+				_defaultSize = Forms.GetFontSizeNormal(context);
 				_iconBitmap = icon;
 				_text = text;
 			}
@@ -529,20 +547,19 @@ namespace Xamarin.Forms.Platform.Android
 			public override void Draw(Canvas canvas)
 			{
 				bool pressed = false;
-				if(_iconBitmap != null)
+				if (_iconBitmap != null)
 				{
 					_iconBitmap.SetBounds(Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom);
 					_iconBitmap.Draw(canvas);
 				}
-				else if(!string.IsNullOrEmpty(_text))
+				else if (!string.IsNullOrEmpty(_text))
 				{
 					var paint = new Paint { AntiAlias = true };
-					var relation = Math.Sqrt(canvas.Width * canvas.Height);
-					paint.TextSize = 50;
+					paint.TextSize = _defaultSize;
 					paint.Color = pressed ? PressedBackgroundColor.ToAndroid() : BackgroundColor.ToAndroid();
 					paint.SetStyle(Paint.Style.Fill);
 					var y = (Bounds.Height() / 2) + (paint.TextSize / 2);
-					canvas.DrawText(_text,0,y, paint);
+					canvas.DrawText(_text, 0, y, paint);
 				}
 			}
 		}
