@@ -147,7 +147,6 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element != null && _focusChangeHandler != null)
 				{
 					Element.FocusChangeRequested -= _focusChangeHandler;
-
 				}
 				_focusChangeHandler = null;
 			}

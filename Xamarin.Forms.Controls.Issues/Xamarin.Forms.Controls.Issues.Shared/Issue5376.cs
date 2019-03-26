@@ -23,12 +23,22 @@ namespace Xamarin.Forms.Controls.Issues
 			MasterBehavior = MasterBehavior.Popover;
 			IsPresented = false;
 			Master = new ContentPage { Title = "test 5376" };
-			var testPage = new NavigationPage(new EntryPage() { Title = $"Test page" });
+			var entryPage = new EntryPage() { Title = $"Test page" };
+			var testPage = new NavigationPage(entryPage);
 			Detail = testPage;
-			await Task.Delay(100);
+			while (!entryPage.IsTested)
+				await Task.Delay(100);
+
+			// dispose testPage renderers
 			Detail = new ContentPage();
 			await Task.Delay(100);
+
+			// create testPage renderers
+			entryPage.IsTested = false;
 			Detail = testPage;
+			while (!entryPage.IsTested)
+				await Task.Delay(100);
+
 			Detail = new ContentPage { Content = new Label { Text = "Success" } };
 		}
 
@@ -36,6 +46,8 @@ namespace Xamarin.Forms.Controls.Issues
 		class EntryPage : ContentPage
 		{
 			Entry entry;
+
+			public volatile bool IsTested = false;
 
 			public EntryPage()
 			{
@@ -45,20 +57,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 			protected override void OnAppearing()
 			{
+				IsTested = false;
+
 				base.OnAppearing();
 
+				entry.Focus();
 				new Thread(() =>
 				{
-					var success = false;
-					while (!success)
+					while (!IsTested)
 					{
-						Thread.Sleep(1000);
+						Thread.Sleep(100);
 						Device.BeginInvokeOnMainThread(() =>
 						{
 							if (entry.IsFocused)
 							{
 								entry.Unfocus();
-								success = true;
+								IsTested = true;
 							}
 							else
 							{
