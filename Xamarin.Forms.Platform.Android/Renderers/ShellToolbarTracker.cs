@@ -240,50 +240,55 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (backButtonHandler != null)
 			{
-				await CustomizeBackButtonBehavior(context, toolbar, drawerLayout, backButtonHandler, activity);
+				await UpdateDrawerArrowFromBackButtonBehavior(context, toolbar, drawerLayout, backButtonHandler, activity);
 			}
 			else
 			{
-
-				if (_drawerToggle == null)
-				{
-					_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
-						R.String.Ok, R.String.Ok)
-					{
-						ToolbarNavigationClickListener = this,
-					};
-					await SetDrawerArrowDrawableFromFlyoutIcon(context, _drawerToggle);
-
-					_drawerToggle.DrawerSlideAnimationEnabled = false;
-					drawerLayout.AddDrawerListener(_drawerToggle);
-				}
-
-				if (CanNavigateBack)
-				{
-					_drawerToggle.DrawerIndicatorEnabled = false;
-					using (var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext))
-					{
-						icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-						icon.Progress = 1;
-						toolbar.NavigationIcon = icon;
-					}
-				}
-				else if (_flyoutBehavior == FlyoutBehavior.Flyout)
-				{
-					toolbar.NavigationIcon = null;
-					var drawable = _drawerToggle.DrawerArrowDrawable;
-					drawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-					_drawerToggle.DrawerIndicatorEnabled = true;
-				}
-				else
-				{
-					_drawerToggle.DrawerIndicatorEnabled = false;
-				}
-				_drawerToggle.SyncState();
+				await UpdateDrawerArrow(context, toolbar, drawerLayout, activity);
 			}
 		}
 
-		async Task CustomizeBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)
+		protected virtual async Task UpdateDrawerArrow(Context context, Toolbar toolbar, DrawerLayout drawerLayout, FormsAppCompatActivity activity)
+		{
+			if (_drawerToggle == null)
+			{
+				_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
+					R.String.Ok, R.String.Ok)
+				{
+					ToolbarNavigationClickListener = this,
+				};
+
+				await UpdateDrawerArrowFromFlyoutIcon(context, _drawerToggle);
+
+				_drawerToggle.DrawerSlideAnimationEnabled = false;
+				drawerLayout.AddDrawerListener(_drawerToggle);
+			}
+
+			if (CanNavigateBack)
+			{
+				_drawerToggle.DrawerIndicatorEnabled = false;
+				using (var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext))
+				{
+					icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+					icon.Progress = 1;
+					toolbar.NavigationIcon = icon;
+				}
+			}
+			else if (_flyoutBehavior == FlyoutBehavior.Flyout)
+			{
+				toolbar.NavigationIcon = null;
+				var drawable = _drawerToggle.DrawerArrowDrawable;
+				drawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+				_drawerToggle.DrawerIndicatorEnabled = true;
+			}
+			else
+			{
+				_drawerToggle.DrawerIndicatorEnabled = false;
+			}
+			_drawerToggle.SyncState();
+		}
+
+		protected virtual async Task UpdateDrawerArrowFromBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)
 		{
 			var behavior = backButtonHandler;
 			var command = behavior.Command;
@@ -321,7 +326,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual async Task SetDrawerArrowDrawableFromFlyoutIcon(Context context, ActionBarDrawerToggle actionBarDrawerToggle)
+		protected virtual async Task UpdateDrawerArrowFromFlyoutIcon(Context context, ActionBarDrawerToggle actionBarDrawerToggle)
 		{
 			Element item = Page;
 			ImageSource icon = null;
