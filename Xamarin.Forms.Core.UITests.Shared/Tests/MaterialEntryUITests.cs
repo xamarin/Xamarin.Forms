@@ -57,6 +57,41 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			base._Scale();
 		}
+
+		[Test]
+		[UiTest(typeof(Entry), "IsEnabled")]
+		public override void _IsEnabled()
+		{
+			base._IsEnabled();
+		}
+
+		[Test]
+		[UiTest(typeof(Entry), "IsVisible")]
+		public override void _IsVisible()
+		{
+			base._IsVisible();
+		}
+
+		[Test]
+		[UiTest(typeof(Entry), "TranslationX")]
+		public override void _TranslationX()
+		{
+			base._TranslationX();
+		}
+
+		[Test]
+		[UiTest(typeof(Entry), "TranslationY")]
+		public override void _TranslationY()
+		{
+			base._TranslationY();
+		}
+
+		[Test]
+		[UiTest(typeof(Entry), "Completed")]
+		public override void Completed()
+		{
+			base.Completed();
+		}
 	}
 #endif
 }
