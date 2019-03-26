@@ -557,7 +557,7 @@ namespace Xamarin.Forms.Platform.Android
 					paint.TextSize = _defaultSize;
 					paint.Color = pressed ? _pressedBackgroundColor.ToAndroid() : _defaultColor.ToAndroid();
 					paint.SetStyle(Paint.Style.Fill);
-					var y = (Bounds.Height() / 2) + (paint.TextSize / 2);
+					var y = (Bounds.Height() + paint.TextSize) / 2;
 					canvas.DrawText(_text, 0, y, paint);
 				}
 			}
