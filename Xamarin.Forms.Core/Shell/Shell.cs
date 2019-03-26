@@ -337,7 +337,8 @@ namespace Xamarin.Forms
 
 			Element item = ignoreCurrentItem ? CurrentItem.Parent : CurrentItem;
 			var list = new List<string> { url.Trim('/') };
-			while (item != null && !(item is IApplicationController))
+
+      while (item != null && !(item is IApplicationController))
 			{
 				var route = Routing.GetRoute(item)?.Trim('/');
 				if (string.IsNullOrEmpty(route))
@@ -345,6 +346,13 @@ namespace Xamarin.Forms
 				list.Insert(0, route);
 				item = item.Parent;
 			}
+
+			var isGlobalRegisteredRoute = Routing.CompareWithRegisteredRoutes(url);
+			if (isGlobalRegisteredRoute)
+				list.RemoveRange(1, list.Count - 1);
+
+			list.Add(url.Trim('/'));
+
 			var parentUriBuilder = new UriBuilder(RouteScheme)
 			{
 				Path = string.Join("/", list),

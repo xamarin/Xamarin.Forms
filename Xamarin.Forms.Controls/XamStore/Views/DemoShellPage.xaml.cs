@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
@@ -7,7 +8,7 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.XamStore
 {
-	[Preserve(AllMembers=true)]
+	[Preserve(AllMembers = true)]
 	public partial class DemoShellPage : ContentPage
 	{
 
@@ -79,7 +80,30 @@ namespace Xamarin.Forms.Controls.XamStore
 	}
 
 	[Preserve(AllMembers = true)]
-	public class HomeViewModel : Issues.BaseViewModel
+	public class OurBaseViewModel : INotifyPropertyChanged
+	{
+		bool _isBusy;
+
+		public bool IsBusy
+		{
+			get { return _isBusy; }
+			set { _isBusy = value; OnPropertyChanged(nameof(IsBusy)); }
+		}
+
+		//INotifyPropertyChanged Implementation
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected void OnPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged == null)
+				return;
+
+			PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
+
+	[Preserve(AllMembers = true)]
+	public class HomeViewModel : OurBaseViewModel
 	{
 
 		public Action Changed { get; set; }
@@ -98,7 +122,7 @@ namespace Xamarin.Forms.Controls.XamStore
 
 		public INavigation Navigation { get; set; }
 
-		private bool _isFullTabSelected = true;
+		bool _isFullTabSelected = true;
 		public bool IsFullTabSelected
 		{
 			get
@@ -120,7 +144,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			}
 		}
 
-		private string _id;
+		string _id;
 		public string Id
 		{
 			get
@@ -157,7 +181,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			return Enumerable.Range(1, 100).Select((arg) => new VocabEntry { IsBookmarked = arg % 2 == 0 }).AsQueryable();
 		}
 
-		private async void AddEntry()
+		async void AddEntry()
 		{
 			try
 			{
@@ -170,12 +194,12 @@ namespace Xamarin.Forms.Controls.XamStore
 			};
 		}
 
-		private void OpenSearch()
+		void OpenSearch()
 		{
 
 		}
 
-		async private void GoToMenu(string id)
+		async void GoToMenu(string id)
 		{
 			//var page = new VocabEntryDetailsPage(new VocabEntryDetailsViewModel(entry));
 
@@ -184,7 +208,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			await Shell.CurrentShell.GoToAsync($"app:///home/vocab?id={id}");
 		}
 
-		private void Toggle(string destination)
+		void Toggle(string destination)
 		{
 			IsFullTabSelected = (destination == ListTabs.FULL);
 
@@ -211,7 +235,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			await Shell.CurrentShell.GoToAsync($"app:///base/details?id={entry.Id}");
 		}
 
-		private void DeleteEntry(VocabEntry entry)
+		void DeleteEntry(VocabEntry entry)
 		{
 			//_realm.Write(() => _realm.Remove(entry));
 		}
@@ -264,7 +288,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public string Id { get; set; }
 
-		public string Title =>  $"Entry {Id}";
+		public string Title => $"Entry {Id}";
 
 		public bool IsBookmarked { get; set; }
 
@@ -278,6 +302,7 @@ namespace Xamarin.Forms.Controls.XamStore
 
 	}
 
+	[Preserve(AllMembers = true)]
 	static class ListTabs
 	{
 		public const string FULL = "full";
