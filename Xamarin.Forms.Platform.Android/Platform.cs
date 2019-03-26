@@ -22,7 +22,12 @@ using AView = Android.Views.View;
 namespace Xamarin.Forms.Platform.Android
 {
 	public class Platform : BindableObject, INavigation, IDisposable, IPlatformLayout
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
+
+		internal static string PackageName { get; private set; }
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
@@ -60,6 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_embedded = embedded;
 			_context = context ?? throw new ArgumentNullException(nameof(context), "Somehow we're getting a null context passed in");
+			PackageName = context.PackageName;
 			_activity = context as Activity;
 
 			if (!embedded)
@@ -281,6 +287,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			_navModel.PushModal(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			await PresentModal(modal, animated);
 
 			// Verify that the modal is still on the stack
@@ -446,6 +458,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void SetPage(Page newRoot)
 		{
+			if (Page == newRoot)
+			{
+				return;
+			}
+
 			var layout = false;
 			List<IVisualElementRenderer> toDispose = null;
 
@@ -466,6 +483,13 @@ namespace Xamarin.Forms.Platform.Android
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
@@ -1154,6 +1178,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			// If a page is found, return the PageContext set by the previewer for that page (if any)
 			return (parent as Page)?.GetValue(PageContextProperty) as Context;
+		}
+
+		#endregion
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 
 		#endregion

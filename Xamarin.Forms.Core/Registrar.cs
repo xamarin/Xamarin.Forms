@@ -19,7 +19,9 @@ namespace Xamarin.Forms.Internals
 	public class Registrar<TRegistrable> where TRegistrable : class
 	{
 		readonly Dictionary<Type, Dictionary<Type, Type>> _handlers = new Dictionary<Type, Dictionary<Type, Type>>();
-		static Type _defaultVisualType = typeof(VisualRendererMarker.Default);
+		static Type _defaultVisualType = typeof(VisualMarker.DefaultVisual);
+		static Type _materialVisualType = typeof(VisualMarker.MaterialVisual);
+
 		static Type[] _defaultVisualRenderers = new[] { _defaultVisualType };
 
 		public void Register(Type tview, Type trender, Type[] supportedVisuals)
@@ -38,7 +40,7 @@ namespace Xamarin.Forms.Internals
 			for (int i = 0; i < supportedVisuals.Length; i++)
 				visualRenderers[supportedVisuals[i]] = trender;
 		}
-		
+
 		public void Register(Type tview, Type trender) => Register(tview, trender, _defaultVisualRenderers);
 
 		internal TRegistrable GetHandler(Type type) => GetHandler(type, _defaultVisualType);
@@ -121,8 +123,10 @@ namespace Xamarin.Forms.Internals
 			if (_handlers.TryGetValue(viewType, out Dictionary<Type, Type> visualRenderers))
 				if (visualRenderers.TryGetValue(visualType, out Type specificTypeRenderer))
 					return specificTypeRenderer;
+				else if (visualType == _materialVisualType)
+					VisualMarker.MaterialCheck();
 
-			if (visualType != _defaultVisualType && _handlers.TryGetValue(_defaultVisualType, out visualRenderers))
+			if (visualType != _defaultVisualType && visualRenderers != null)
 				if (visualRenderers.TryGetValue(_defaultVisualType, out Type specificTypeRenderer))
 					return specificTypeRenderer;
 
@@ -149,9 +153,6 @@ namespace Xamarin.Forms.Internals
 
 		bool LookupHandlerType(Type viewType, Type visualType, out Type handlerType)
 		{
-			if (_defaultVisualType != visualType)
-				VisualElement.VerifyVisualFlagEnabled();
-
 			visualType = visualType ?? _defaultVisualType;
 			while (viewType != null && viewType != typeof(Element))
 			{
@@ -159,7 +160,7 @@ namespace Xamarin.Forms.Internals
 					if (visualRenderers.TryGetValue(visualType, out handlerType))
 						return true;
 
-				if (visualType != _defaultVisualType && _handlers.TryGetValue(viewType, out visualRenderers))
+				if (visualType != _defaultVisualType && visualRenderers != null)
 					if (visualRenderers.TryGetValue(_defaultVisualType, out handlerType))
 						return true;
 
