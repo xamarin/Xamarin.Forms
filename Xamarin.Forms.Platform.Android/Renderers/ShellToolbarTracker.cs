@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					UpdateTitleView(_shellContext.AndroidContext, _toolbar, null);
 
-					_drawerToggle.Dispose();
+					_drawerToggle?.Dispose();
 					if (_searchView != null)
 					{
 						_searchView.View.RemoveFromParent();
@@ -283,7 +283,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private async Task CustomizeBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)
+		async Task CustomizeBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)
 		{
 			var behavior = backButtonHandler;
 			var command = behavior.Command;
@@ -292,37 +292,32 @@ namespace Xamarin.Forms.Platform.Android
 			var text = behavior.TextOverride;
 			var enabled = behavior.IsEnabled;
 
+			Drawable icon = null;
+
 			if (image != null)
+				icon = await context.GetFormsDrawable(image);
+
+			if (text != null)
+				icon = new FlyoutIconDrawerDrawable(context, TintColor, null, text);
+
+			if (CanNavigateBack && icon == null)
 			{
-				using (var icon = await context.GetFormsDrawable(image))
-				using (var mutatedIcon = icon.GetConstantState().NewDrawable().Mutate())
+				icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext);
+				(icon as DrawerArrowDrawable).Progress = 1;
+			}
+
+			var iconState = icon.GetConstantState();
+			if (iconState != null)
+			{
+				using (var mutatedIcon = iconState.NewDrawable().Mutate())
 				{
 					mutatedIcon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
 					toolbar.NavigationIcon = mutatedIcon;
 				}
-			} else if (text != null)
-			{
-				toolbar.NavigationContentDescription = text;
-				toolbar.NavigationContentDescriptionFormatted = text;
 			}
-
-			if (CanNavigateBack)
+			else
 			{
-				if (_drawerToggle == null)
-				{
-					_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
-						R.String.Ok, R.String.Ok)
-					{
-						ToolbarNavigationClickListener = this,
-					};
-				}
-				_drawerToggle.DrawerIndicatorEnabled = false;
-				using (var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext))
-				{
-					icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-					icon.Progress = 1;
-					toolbar.NavigationIcon = icon;
-				}
+				toolbar.NavigationIcon = icon;
 			}
 		}
 
@@ -338,7 +333,7 @@ namespace Xamarin.Forms.Platform.Android
 					if (icon != null)
 					{
 						var drawable = await context.GetFormsDrawable(icon);
-						actionBarDrawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, drawable, null);
+						actionBarDrawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, TintColor, drawable, null);
 					}
 
 					item = null;
@@ -524,8 +519,7 @@ namespace Xamarin.Forms.Platform.Android
 			Color _defaultColor;
 			float _defaultSize;
 
-			public Color BackgroundColor => _defaultColor;
-			public Color PressedBackgroundColor => BackgroundColor.AddLuminosity(-.12);//<item name="highlight_alpha_material_light" format="float" type="dimen">0.12</item>
+			Color _pressedBackgroundColor => _defaultColor.AddLuminosity(-.12);//<item name="highlight_alpha_material_light" format="float" type="dimen">0.12</item>
 
 			protected override void Dispose(bool disposing)
 			{
@@ -536,9 +530,9 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			public FlyoutIconDrawerDrawable(Context context, Drawable icon, string text) : base(context)
+			public FlyoutIconDrawerDrawable(Context context, Color defaultColor, Drawable icon, string text) : base(context)
 			{
-				_defaultColor = Forms.GetColorItemNormal(context);
+				_defaultColor = defaultColor;
 				_defaultSize = Forms.GetFontSizeNormal(context);
 				_iconBitmap = icon;
 				_text = text;
@@ -556,7 +550,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var paint = new Paint { AntiAlias = true };
 					paint.TextSize = _defaultSize;
-					paint.Color = pressed ? PressedBackgroundColor.ToAndroid() : BackgroundColor.ToAndroid();
+					paint.Color = pressed ? _pressedBackgroundColor.ToAndroid() : _defaultColor.ToAndroid();
 					paint.SetStyle(Paint.Style.Fill);
 					var y = (Bounds.Height() / 2) + (paint.TextSize / 2);
 					canvas.DrawText(_text, 0, y, paint);

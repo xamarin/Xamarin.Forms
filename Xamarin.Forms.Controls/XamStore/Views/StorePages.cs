@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		public BasePage(string title, Color tint)
 		{
 			Title = title;
-
+			Shell.SetShellForegroundColor(this, tint);
 			var grid = new Grid()
 			{
 				Padding = 20,
@@ -223,9 +223,11 @@ namespace Xamarin.Forms.Controls.XamStore
 			grid.Children.Add(MakeButton("Go Back with Text",
 			async () => {
 					var page = (Page)Activator.CreateInstance(GetType());
+					Shell.SetShellForegroundColor(page, Color.Pink);
 					Shell.SetBackButtonBehavior(page, new BackButtonBehavior()
 					{
-						//IconOverride = "calculator.png"
+						//IconOverride = "calculator.png",
+						
 						TextOverride = "back"
 					});
 					await Navigation.PushAsync(page);
