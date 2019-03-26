@@ -20,13 +20,15 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			Application.Current.AppLinks.RegisterLink(GetEntry());
+			// android needs firebase for this to work, so skip it unless iOS
+			if (Device.RuntimePlatform == Device.iOS)
+				Application.Current.AppLinks.RegisterLink(GetEntry());
 
 			// Initialize ui here instead of ctor
 			Content = new Label
 			{
 				AutomationId = "IssuePageLabel",
-				Text = "I just tried to register an applink without a Thumbnail. If this did not crash, this test has succeeded."
+				Text = "If this is iOS, I just tried to register an applink without a Thumbnail. If this did not crash, this test has succeeded."
 			};
 		}
 
@@ -52,7 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 			return entry;
 		}
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public async void Issue5470Test() 
 		{
