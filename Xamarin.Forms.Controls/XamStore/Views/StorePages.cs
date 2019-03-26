@@ -220,6 +220,17 @@ namespace Xamarin.Forms.Controls.XamStore
 				async () => await Shell.CurrentShell.GoToAsync("demo", true)),
 			1, 15);
 
+			grid.Children.Add(MakeButton("Go Back with Text",
+			async () => {
+					var page = (Page)Activator.CreateInstance(GetType());
+					Shell.SetBackButtonBehavior(page, new BackButtonBehavior()
+					{
+						//IconOverride = "calculator.png"
+						TextOverride = "back"
+					});
+					await Navigation.PushAsync(page);
+				}),2, 15);
+
 			Content = new ScrollView { Content = grid };
 
 			//var listView = new ListView();
