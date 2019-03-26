@@ -335,7 +335,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(IsMapWithItemsSource(itemsSource, map));
 			foreach (Pin pin in map.Pins)
 			{
-				Assert.IsTrue(pin.Address == "Address 2");
+				Assert.AreEqual(pin.Address, "Address 1");
 			}
 		}
 
