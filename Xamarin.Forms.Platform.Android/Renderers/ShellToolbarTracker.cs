@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Platform.Android
 				icon = await context.GetFormsDrawable(image);
 
 			if (text != null)
-				icon = new FlyoutIconDrawerDrawable(context, TintColor, null, text);
+				icon = new FlyoutIconDrawerDrawable(context, TintColor, icon, text);
 
 			if (CanNavigateBack && icon == null)
 			{
@@ -340,8 +340,7 @@ namespace Xamarin.Forms.Platform.Android
 						var drawable = await context.GetFormsDrawable(icon);
 						actionBarDrawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, TintColor, drawable, null);
 					}
-
-					item = null;
+					return;
 				}
 				item = item?.Parent;
 			}

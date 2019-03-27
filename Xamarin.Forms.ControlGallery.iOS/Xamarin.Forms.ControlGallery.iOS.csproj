@@ -312,9 +312,6 @@
     <BundleResource Include="Resources\xamarin_logo%403x.png" />
     <BundleResource Include="Resources\xamarin_logo%402x.png" />
     <BundleResource Include="Resources\xamarin_logo.png" />
-    <BundleResource Include="Resources\button_add%402x.png" />
-    <BundleResource Include="Resources\icon_search%402x.png" />
-    <BundleResource Include="Resources\icon_bookmark%402x.png" />
     <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\Roboto-Bold.ttf">
       <Link>Resources\Fonts\Roboto-Bold.ttf</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

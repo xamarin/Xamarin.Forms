@@ -5,7 +5,6 @@
 			Route="xamstore"
 			RouteHost="www.xamarin.com"
 			RouteScheme="http"
-            FlyoutIcon="menuIcon.png"
 			x:Class="Xamarin.Forms.Controls.XamStore.StoreShell">
 	<Shell.Resources>
 		<Style x:Key="BaseStyle" TargetType="Element">

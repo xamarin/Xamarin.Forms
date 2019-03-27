@@ -154,9 +154,9 @@
     <AndroidResource Include="Resources\drawable\test.jpg" />
     <AndroidResource Include="Resources\drawable\invalidimage.jpg" />
     <AndroidResource Include="Resources\values\strings.xml" />
+    <AndroidResource Include="Resources\drawable\icon_search.png" />
     <AndroidResource Include="Resources\drawable\icon_bookmark.png" />
     <AndroidResource Include="Resources\drawable\button_add.png" />
-    <AndroidResource Include="Resources\drawable\icon_search.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\Icon.png" />
