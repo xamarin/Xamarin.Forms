@@ -18,17 +18,17 @@ namespace Xamarin.Forms
 			if (descendantsOnPage == null)
 				return null;
 
-			var childrenWithTabStop = new List<VisualElement>();
+			var childrensWithTabStop = new List<VisualElement>();
 			foreach (var descendant in descendantsOnPage)
 			{
 				if (descendant is VisualElement visualElement && visualElement.IsTabStop)
-					childrenWithTabStop.Add(visualElement);
+					childrensWithTabStop.Add(visualElement);
 			}
-			if (!childrenWithTabStop.Contains(element))
+			if (!childrensWithTabStop.Contains(element))
 				return null;
 
-			countChildrensWithTabStopWithoutThis = childrenWithTabStop.Count - 1;
-			return childrenWithTabStop.GroupToDictionary(c => c.TabIndex);
+			countChildrensWithTabStopWithoutThis = childrensWithTabStop.Count - 1;
+			return childrensWithTabStop.GroupToDictionary(c => c.TabIndex);
 		}
 
 		public static VisualElement FindNextElement(this VisualElement element, bool forwardDirection, IDictionary<int, List<VisualElement>> tabIndexes, ref int tabIndex)
