@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -61,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_context = context;
 		}
-		
+
 		public async void OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
 		{
 			_flyoutBehavior = behavior;
@@ -198,17 +199,18 @@ namespace Xamarin.Forms.Platform.iOS
 				var commandParameter = behavior.CommandParameter;
 				var image = behavior.IconOverride;
 				var enabled = behavior.IsEnabled;
+
 				if (image == null)
 				{
 					var text = BackButtonBehavior.TextOverride;
 					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => command?.Execute(commandParameter)) { Enabled = enabled };
+						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, command, commandParameter, IsRootPage)) { Enabled = enabled };
 				}
 				else
 				{
 					var icon = await image.GetNativeImageAsync();
 					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => command?.Execute(commandParameter)) { Enabled = enabled };
+						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, command, commandParameter, IsRootPage)) { Enabled = enabled };
 				}
 			}
 			else if (IsRootPage && _flyoutBehavior == FlyoutBehavior.Flyout)
@@ -220,6 +222,16 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				NavigationItem.LeftBarButtonItem = null;
 			}
+		}
+
+		static void LeftBarButtonItemHandler(UIViewController controller, ICommand command, object commandParameter, bool isRootPage)
+		{
+			if (command == null && !isRootPage && controller is UINavigationController navigationController)
+			{
+				navigationController.PopViewController(true);
+				return;
+			}
+			command.Execute(commandParameter);
 		}
 
 		async Task SetDrawerArrowDrawableFromFlyoutIcon()
