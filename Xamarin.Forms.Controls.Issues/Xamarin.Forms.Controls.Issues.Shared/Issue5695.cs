@@ -12,7 +12,7 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 5555, "Memory leak when SwitchCell or EntryCell", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Github, 5695, "Memory leak when Navigation.RemovePage", PlatformAffected.iOS)]
 	public class Issue5695 : TestMasterDetailPage
     {
 		[Preserve(AllMembers = true)]
