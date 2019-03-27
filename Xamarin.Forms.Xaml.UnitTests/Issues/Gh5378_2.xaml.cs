@@ -9,10 +9,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[XamlCompilation(XamlCompilationOptions.Skip)]
 	public partial class Gh5378_2 : ContentPage
 	{
-		public Gh5378_2()
-		{
-			InitializeComponent();
-		}
+		public Gh5378_2() => InitializeComponent();
 
 		public Gh5378_2(bool useCompiledXaml)
 		{

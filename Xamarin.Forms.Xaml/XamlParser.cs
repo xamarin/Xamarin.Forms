@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Xaml
 			var skipFirstRead = nested;
 			Debug.Assert(reader.NodeType == XmlNodeType.Element);
 			var name = reader.Name;
-			List<INode> nodes = new List<INode>();
+			var nodes = new List<INode>();
 			INode node = null;
 
 			while (skipFirstRead || reader.Read())
@@ -161,6 +161,8 @@ namespace Xamarin.Forms.Xaml
 						var elementName = reader.Name;
 						var elementNsUri = reader.NamespaceURI;
 						var elementXmlInfo = (IXmlLineInfo)reader;
+						if (elementName.Contains("."))
+							throw new XamlParseException($"Invalid element name: '{elementName}'. Element names shouldn't contain a '.'");
 						IList<KeyValuePair<string, string>> xmlns;
 
 						var attributes = ParseXamlAttributes(reader, out xmlns);

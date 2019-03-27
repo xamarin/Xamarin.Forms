@@ -8,6 +8,9 @@ namespace Xamarin.Forms.Xaml
 #endif
 	public class XamlParseException : Exception
 	{
+#if NETSTANDARD2_0
+		[NonSerialized]
+#endif
 		readonly string _unformattedMessage;
 
 		public XamlParseException()
