@@ -8,7 +8,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class ShellTab : ShellSection
+	public class Tab : ShellSection
 	{
 		public ShellContentCollection Content => Items;
 	}

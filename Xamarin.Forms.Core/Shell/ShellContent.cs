@@ -16,7 +16,7 @@ namespace Xamarin.Forms
 	{
 	}
 
-	[ContentProperty("Content")]
+	[ContentProperty(nameof(Content))]
 	public class ShellContent : BaseShellItem, IShellContentController
 	{
 		static readonly BindablePropertyKey MenuItemsPropertyKey =
