@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Material.Android
 			if (!_isDisposed)
 			{
 				_isDisposed = true;
-				if (EditText != null &&)
+				if (EditText != null)
 					EditText.FocusChange -= OnFocusChange;
 			}
 
