@@ -231,7 +231,7 @@ namespace Xamarin.Forms.Platform.iOS
 				navigationController.PopViewController(true);
 				return;
 			}
-			command.Execute(commandParameter);
+			command?.Execute(commandParameter);
 		}
 
 		async Task SetDrawerArrowDrawableFromFlyoutIcon()

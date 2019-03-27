@@ -69,18 +69,19 @@ namespace Xamarin.Forms
 		public static float GetFontSizeNormal(Context context)
 		{
 			float size = 50;
-			if (Forms.IsLollipopOrNewer)
-			{
+			if (!IsLollipopOrNewer)
+				return size;
 
-				//this doesn't seem to work
-				using (var value = new TypedValue())
+			// Android 5.0+
+			//this doesn't seem to work
+			using (var value = new TypedValue())
+			{
+				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true)) 
 				{
-					if (context.Theme.ResolveAttribute(global::Android.Resource.Attribute.TextSize, value, true) && Forms.IsLollipopOrNewer) // Android 5.0+
-					{
-						size = (float)value.Data;
-					}
+					size = value.Data;
 				}
 			}
+
 			return size;
 		}
 

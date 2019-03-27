@@ -219,8 +219,8 @@ namespace Xamarin.Forms.Controls.XamStore
 			grid.Children.Add(MakeButton("Navigate to 'demo' route",
 				async () => await Shell.CurrentShell.GoToAsync("demo", true)),
 			1, 15);
-      
-      grid.Children.Add(MakeButton("Go Back with Text",
+
+			grid.Children.Add(MakeButton("Go Back with Text",
 			async () => {
 					var page = (Page)Activator.CreateInstance(GetType());
 					Shell.SetShellForegroundColor(page, Color.Pink);
@@ -243,7 +243,7 @@ namespace Xamarin.Forms.Controls.XamStore
 				async () => await Shell.CurrentShell.GoToAsync(navEntry.Text, true)),
 			2, 16);
 
-      Content = new ScrollView { Content = grid };
+			Content = new ScrollView { Content = grid };
 
 			//var listView = new ListView();
 			//listView.ItemsSource = Enumerable.Range(0, 1000).ToList();
