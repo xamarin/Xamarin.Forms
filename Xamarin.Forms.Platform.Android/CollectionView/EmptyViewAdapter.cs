@@ -11,8 +11,8 @@ namespace Xamarin.Forms.Platform.Android
 	public class EmptyViewAdapter : RecyclerView.Adapter
 	{
 		int _itemViewType;
-		private object _emptyView;
-		private DataTemplate _emptyViewTemplate;
+		object _emptyView;
+		DataTemplate _emptyViewTemplate;
 
 		public object EmptyView
 		{
