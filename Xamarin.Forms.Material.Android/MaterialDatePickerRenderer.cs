@@ -37,6 +37,7 @@ namespace Xamarin.Forms.Material.Android
 		{
 			base.OnElementChanged(e);
 			_textInputLayout.SetHint(string.Empty, Element);
+			UpdateBackgroundColor();
 		}
 
 		protected override void UpdateBackgroundColor()

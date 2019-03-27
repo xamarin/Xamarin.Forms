@@ -33,6 +33,12 @@ namespace Xamarin.Forms.Material.Android
 			return _textInputLayout;
 		}
 
+		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
+		{
+			base.OnElementChanged(e);
+			UpdateBackgroundColor();
+		}
+
 		protected override void UpdateBackgroundColor()
 		{
 			if (_textInputLayout == null)
