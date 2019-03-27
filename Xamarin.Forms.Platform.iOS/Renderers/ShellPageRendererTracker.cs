@@ -226,7 +226,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		static void LeftBarButtonItemHandler(UIViewController controller, ICommand command, object commandParameter, bool isRootPage)
 		{
-			if (command == null && !isRootPage && controller is UINavigationController navigationController)
+			if (command == null && !isRootPage && controller?.ParentViewController is UINavigationController navigationController)
 			{
 				navigationController.PopViewController(true);
 				return;
