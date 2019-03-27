@@ -8,14 +8,14 @@ using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged
+	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged	
 
 	public class ItemsViewAdapter : RecyclerView.Adapter
 	{
 		protected readonly ItemsView ItemsView;
-		bool _disposed;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
 		internal readonly IItemsViewSource ItemsSource;
+		bool _disposed;
 
 		internal ItemsViewAdapter(ItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
@@ -67,12 +67,20 @@ namespace Xamarin.Forms.Platform.Android
 				return new TextViewHolder(view);
 			}
 
-			// Realize the content, create a renderer out of it, and use that
-			var templateElement = (View)template.CreateContent();
-			ItemsView.AddLogicalChild(templateElement);
-			var itemContentControl = _createView(CreateRenderer(templateElement, context), context);
+			var itemContentView = new ItemContentView(parent.Context);
+			return new TemplatedItemViewHolder(itemContentView, template);
+		}
 
-			return new TemplatedItemViewHolder(itemContentControl, templateElement);
+		public override int ItemCount => ItemsSource.Count;
+
+		public override int GetItemViewType(int position)
+		{
+			// TODO hartez We might be able to turn this to our own purposes
+			// We might be able to have the CollectionView signal the adapter if the ItemTemplate property changes
+			// And as long as it's null, we return a value to that effect here
+			// Then we don't have to check _itemsView.ItemTemplate == null in OnCreateViewHolder, we can just use
+			// the viewType parameter.
+			return 42;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -88,38 +96,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				base.Dispose(disposing);
 			}
-		}
-
-		static IVisualElementRenderer CreateRenderer(View view, Context context)
-		{
-			if (view == null)
-			{
-				throw new ArgumentNullException(nameof(view));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			var renderer = Platform.CreateRenderer(view, context);
-			Platform.SetRenderer(view, renderer);
-
-			return renderer;
-			var itemContentView = new ItemContentView(parent.Context);
-			return new TemplatedItemViewHolder(itemContentView, template);
-		}
-
-		public override int ItemCount => ItemsSource.Count;
-
-		public override int GetItemViewType(int position)
-		{
-			// TODO hartez We might be able to turn this to our own purposes
-			// We might be able to have the CollectionView signal the adapter if the ItemTemplate property changes
-			// And as long as it's null, we return a value to that effect here
-			// Then we don't have to check _itemsView.ItemTemplate == null in OnCreateViewHolder, we can just use
-			// the viewType parameter.
-			return 42;
 		}
 
 		public virtual int GetPositionForItem(object item)
