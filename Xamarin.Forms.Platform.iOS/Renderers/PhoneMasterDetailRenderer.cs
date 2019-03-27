@@ -332,6 +332,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_detailController.AddChildViewController(detailRenderer.ViewController);
 
 			SetNeedsStatusBarAppearanceUpdate();
+			SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 
 		void UpdateLeftBarButton()
@@ -353,6 +354,17 @@ namespace Xamarin.Forms.Platform.iOS
 				return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
 			else
 				return base.ChildViewControllerForStatusBarHidden();
+		}
+
+		public override UIViewController ChildViewControllerForHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (((MasterDetailPage)Element).Detail != null)
+					return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
+				else
+					return base.ChildViewControllerForStatusBarHidden();
+			}
 		}
 
 		void UpdatePanGesture()
