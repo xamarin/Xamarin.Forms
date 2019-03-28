@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		protected readonly ItemsView ItemsView;
 		public override int ItemCount => 1;
 
 		public EmptyViewAdapter(ItemsView itemsView)
@@ -102,19 +103,6 @@ namespace Xamarin.Forms.Platform.Android
 		public override int GetItemViewType(int position)
 		{
 			return _itemViewType;
-		}
-
-		IVisualElementRenderer CreateRenderer(View view, Context context)
-		{
-			if (view == null)
-			{
-				throw new ArgumentNullException(nameof(view));
-			}
-
-			var renderer = Platform.CreateRenderer(view, context);
-			Platform.SetRenderer(view, renderer);
-
-			return renderer;
 		}
 
 		static TextView CreateTextView(string text, Context context)
