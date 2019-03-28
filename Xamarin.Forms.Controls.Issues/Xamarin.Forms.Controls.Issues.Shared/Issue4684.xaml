@@ -11,11 +11,16 @@
         </ContentView>
     </Shell.FlyoutHeader>
     <ShellItem Title="Home" Route="Home">
-        <ShellSection>
-            <ShellContent>
-                <ContentPage />
-            </ShellContent>
-        </ShellSection>
+        <ShellContent Title="Control">
+            <ContentPage Title="Control">
+                <ScrollView>
+                    <StackLayout>
+                        <Label Text="Select Connect in Flyout Menu. Click between tabs. Select Home in Flyout Menu. Select Connect in Flyout Menu. Click between tabs. If the app has not crashed then test has passed">
+                        </Label>
+                    </StackLayout>
+                </ScrollView>
+            </ContentPage>
+        </ShellContent>
     </ShellItem>
     <ShellItem Title="Connect" Route="connect">
         <ShellSection>
