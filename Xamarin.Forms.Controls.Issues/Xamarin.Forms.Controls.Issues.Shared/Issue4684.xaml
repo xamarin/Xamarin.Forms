@@ -1,0 +1,24 @@
+﻿<local:TestShell
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	x:Class="Xamarin.Forms.Controls.Issues.Issue4684"
+    Title="Test Page"
+    xmlns:local="using:Xamarin.Forms.Controls">
+    <ShellItem Title="Home" Route="Home">
+        <ShellSection>
+            <ShellContent>
+                <ContentPage />
+            </ShellContent>
+        </ShellSection>
+    </ShellItem>
+    <ShellItem Title="Connect" Route="connect">
+        <ShellSection>
+            <ShellContent Title="Connect">
+                <ContentPage  Title="Connect"/>
+            </ShellContent>
+            <ShellContent Title="Control">
+                <ContentPage Title="Control" />
+            </ShellContent>
+        </ShellSection>
+    </ShellItem>
+</local:TestShell>
