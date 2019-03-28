@@ -29,19 +29,20 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 		}
 
-#if UITEST && __ANDROID__
+#if UITEST
 		[Test]
 		public void NavigatingBackAndForthDoesNotCrash()
 		{
-			RunningApp.Tap("OK");
+			TapInFlyout("Connect");
+			RunningApp.Tap("Control");
+
+			TapInFlyout("Home");
+			TapInFlyout("Connect");
+
 			RunningApp.Tap("Connect");
 			RunningApp.Tap("Control");
-			RunningApp.Tap("OK");
-			RunningApp.Tap("Home");
-			RunningApp.Tap("OK");
-			RunningApp.Tap("Connect");
-			RunningApp.Tap("Connect");
-			RunningApp.Tap("Control");
+
+			RunningApp.WaitForElement("Success");
 		}
 
 #endif

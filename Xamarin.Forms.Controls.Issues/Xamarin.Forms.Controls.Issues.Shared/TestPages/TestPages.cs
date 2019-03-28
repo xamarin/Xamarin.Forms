@@ -606,6 +606,22 @@ namespace Xamarin.Forms.Controls
 				AppSetup.EndIsolate();
 			}
 		}
+
+		public void ShowFlyout()
+		{
+			RunningApp.WaitForElement("OK");
+			RunningApp.Tap("OK");
+		}
+
+
+		public void TapInFlyout(string text)
+		{
+			ShowFlyout();
+			RunningApp.WaitForElement(text);
+			RunningApp.Tap(text);
+		}
+
+
 #endif
 
 		protected abstract void Init();
