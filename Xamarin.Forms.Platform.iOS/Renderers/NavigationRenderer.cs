@@ -523,8 +523,14 @@ namespace Xamarin.Forms.Platform.iOS
 				throw new ArgumentNullException("page");
 
 			var pageContainer = CreateViewControllerForPage(page);
-			var target = Platform.GetRenderer(before).ViewController.ParentViewController;
-			ViewControllers = ViewControllers.Insert(ViewControllers.IndexOf(target), pageContainer);
+			var target = Platform.GetRenderer(before).ViewController.ParentViewController as ParentingViewController;
+			var index = ViewControllers.IndexOf(target);
+			ViewControllers = ViewControllers.Insert(index, pageContainer);
+			if (index == 0)
+			{
+				target.NavigationItem.LeftBarButtonItem = null;
+				pageContainer.UpdateLeftBarButtonItem(before);
+			}
 		}
 
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs e)
@@ -585,6 +591,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_removeControllers = _removeControllers.Remove(target);
 				ViewControllers = _removeControllers;
 			}
+			target.Dispose();
 			var parentingViewController = ViewControllers.Last() as ParentingViewController;
 			parentingViewController?.UpdateLeftBarButtonItem(page);
 		}

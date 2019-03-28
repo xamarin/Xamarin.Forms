@@ -555,14 +555,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (!_isAttachedToWindow)
 				PushCurrentPages();
 
-			UpdateToolbar();
-
 			int index = PageController.InternalChildren.IndexOf(before);
 			if (index == -1)
 				throw new InvalidOperationException("This should never happen, please file a bug");
 
 			Fragment fragment = FragmentContainer.CreateInstance(page);
 			_fragmentStack.Insert(index, fragment);
+
+			UpdateToolbar();
 		}
 
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs e)
@@ -947,11 +947,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (bar == null)
 				return;
 
-			bool isNavigated = NavigationPageController.StackDepth > 1;
 			bar.NavigationIcon = null;
 			Page currentPage = Element.CurrentPage;
+			bool isFirstPage = _fragmentStack.IndexOf(GetPageFragment(currentPage)) == 0;
 
-			if (isNavigated)
+			if (!isFirstPage)
 			{
 				if (toggle != null)
 				{
