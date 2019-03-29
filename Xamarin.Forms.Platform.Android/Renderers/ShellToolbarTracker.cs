@@ -252,8 +252,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_drawerToggle == null)
 			{
+				FastRenderers.AutomationPropertiesProvider.GetShellAccessibilityResources(context, _shellContext.Shell, out int resourceIdOpen, out int resourceIdClose);
+
 				_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
-					R.String.Ok, R.String.Ok)
+																	resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+																	resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose)
 				{
 					ToolbarNavigationClickListener = this,
 				};
@@ -285,6 +288,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_drawerToggle.DrawerIndicatorEnabled = false;
 			}
+
 			_drawerToggle.SyncState();
 		}
 
@@ -345,6 +349,7 @@ namespace Xamarin.Forms.Platform.Android
 				item = item?.Parent;
 			}
 		}
+
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{

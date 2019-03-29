@@ -39,10 +39,10 @@ namespace Xamarin.Forms.Controls.XamStore
 			{
 				Glyph = "\uf2fb",
 				FontFamily = fontFamily,
-				Size = 20
+				Size = 20,
+				AutomationId = "shellIcon"
 			};
 
-			FlyoutIcon.AutomationId = "shellIcon";
 			FlyoutIcon.SetAutomationPropertiesHelpText("This as Shell FlyoutIcon");
 			FlyoutIcon.SetAutomationPropertiesName("SHELLMAINFLYOUTICON");
 			CurrentItem = _storeItem;
