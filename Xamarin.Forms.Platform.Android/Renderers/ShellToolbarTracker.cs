@@ -47,6 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 		//assume the default
 		Color _tintColor = Color.Default;
 		Toolbar _toolbar;
+		string _defaultNavigationContentDescription;
 
 		public ShellToolbarTracker(IShellContext shellContext, Toolbar toolbar, DrawerLayout drawerLayout)
 		{
@@ -377,6 +378,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void UpdatePageTitle(Toolbar toolbar, Page page)
 		{
 			_toolbar.Title = page.Title;
+			_defaultNavigationContentDescription = _toolbar.SetNavigationContentDescription(page, _defaultNavigationContentDescription);
 		}
 
 		protected virtual void UpdateTitleView(Context context, Toolbar toolbar, View titleView)
@@ -417,6 +419,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var menuitem = menu.Add(title);
 					UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
+					menuitem.SetTitleOrContentDescription(item);
 					menuitem.SetEnabled(item.IsEnabled);
 					menuitem.SetShowAsAction(ShowAsAction.Always);
 					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
