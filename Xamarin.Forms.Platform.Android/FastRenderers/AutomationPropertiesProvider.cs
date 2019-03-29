@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Android.Support.V4.View;
 using Android.Widget;
 using AView = Android.Views.View;
 
@@ -55,11 +56,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				defaultContentDescription = control.ContentDescription;
 
 			string value = ConcatenateNameAndHelpText(element);
+			string contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
 
-			if (control is IButtonLayoutRenderer button)
-				control = button.View;
+			control.ContentDescription = contentDescription;
 
-			control.ContentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+			if (control is IButtonLayoutRenderer buttonLayout)
+			{
+				var view = buttonLayout.View;
+				var nameAndHelpTextDelegate = new NameAndHelpTextAccessibilityDelegate {
+					AccessibilityText = contentDescription
+				};
+				ViewCompat.SetAccessibilityDelegate(buttonLayout.View, nameAndHelpTextDelegate);
+			}
 		}
 
 		internal static void SetContentDescription(
