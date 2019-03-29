@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				if (e.PropertyName == ContentDescriptionEffectProperties.NameAndHelpTextProperty.PropertyName)
 				{
-					nameAndHelpTextLabel.Text = $"Name + Help Text = {ContentDescriptionEffectProperties.GetNameAndHelpText(button)}";
+					nameAndHelpTextLabel.Text = $"Name + HelpText = {ContentDescriptionEffectProperties.GetNameAndHelpText(button)}";
 				}
 			};
 			layout.Children.Add(button);
