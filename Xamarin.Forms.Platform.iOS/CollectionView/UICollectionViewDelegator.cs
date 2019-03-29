@@ -25,6 +25,25 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsViewController = itemsViewController;
 		}
 
+		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
+		{
+			switch (ItemsViewController.ItemsView.RemainingItemsThreshold)
+			{
+				case -1:
+					return;
+				case 0:
+					if (path.Row == ItemsViewController.ItemsViewSource.Count - 1)
+						ItemsViewController.ItemsView.SendRemainingItemsThresholdReached();
+					break;
+				default:
+					if (ItemsViewController.ItemsViewSource.Count - 1 - path.Row <= ItemsViewController.ItemsView.RemainingItemsThreshold)
+						ItemsViewController.ItemsView.SendRemainingItemsThresholdReached();
+					break;
+			}
+
+			ItemsViewLayout?.WillDisplayCell(collectionView, cell, path);
+		}
+
 		public override UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
 			nint section)
 		{

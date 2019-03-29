@@ -2,8 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
+using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -44,6 +43,14 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
+		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty = BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommand), typeof(ICommand), typeof(ItemsView), null);
+
+		public ICommand RemainingItemsThresholdReachedCommand
+		{
+			get { return (ICommand)GetValue(RemainingItemsThresholdReachedCommandProperty); }
+			set { SetValue(RemainingItemsThresholdReachedCommandProperty, value); }
+		}
+
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(
 			nameof(HorizontalScrollBarVisibility),
 			typeof(ScrollBarVisibility),
@@ -67,6 +74,15 @@ namespace Xamarin.Forms
 		{
 			get => (ScrollBarVisibility)GetValue(VerticalScrollBarVisibilityProperty);
 			set => SetValue(VerticalScrollBarVisibilityProperty, value);
+		}
+
+		public static readonly BindableProperty RemainingItemsThresholdProperty =
+			BindableProperty.Create(nameof(RemainingItemsThreshold), typeof(int), typeof(ItemsView), -1, validateValue: (bindable, value) => (int)value >= -1);
+
+		public int RemainingItemsThreshold
+		{
+			get => (int)GetValue(RemainingItemsThresholdProperty);
+			set => SetValue(RemainingItemsThresholdProperty, value);
 		}
 
 		public void AddLogicalChild(Element element)
@@ -139,7 +155,14 @@ namespace Xamarin.Forms
 			OnScrollToRequested(new ScrollToRequestEventArgs(item, group, position, animate));
 		}
 
+		public void SendRemainingItemsThresholdReached()
+		{
+			OnRemainingItemsThresholdReached();
+		}
+
 		public event EventHandler<ScrollToRequestEventArgs> ScrollToRequested;
+
+		public event EventHandler<EventArgs> RemainingItemsThresholdReached;
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
@@ -157,6 +180,14 @@ namespace Xamarin.Forms
 		protected virtual void OnScrollToRequested(ScrollToRequestEventArgs e)
 		{
 			ScrollToRequested?.Invoke(this, e);
+		}
+
+		protected virtual void OnRemainingItemsThresholdReached()
+		{
+			RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
+
+			if(RemainingItemsThresholdReachedCommand?.CanExecute(null) == true)
+				RemainingItemsThresholdReachedCommand?.Execute(null);
 		}
 	}
 }
