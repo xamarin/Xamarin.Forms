@@ -501,7 +501,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 			{
-				if (_child == null)
+				if (_child == null ||
+				    _child.Element == null)
 				{
 					SetMeasuredDimension(0, 0);
 					return;
