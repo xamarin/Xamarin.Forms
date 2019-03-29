@@ -33,7 +33,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Text="Two" TabIndex="-1" TextColor="Gray"/>
-            <Label Text="Three" TextColor="Red" Grid.Column="1" />
+            <Label Text="Three" TextColor="Red" Grid.Column="1" AutomationProperties.IsInAccessibleTree="true"  />
             <Button Text="Four" TextColor="Gray" Grid.Column="2"/>
             <Button Text="Five" TextColor="Gray" Grid.Column="3"/>
             <Button Text="Eight" TabIndex="1" Grid.Column="4" TextColor="Gray"/>

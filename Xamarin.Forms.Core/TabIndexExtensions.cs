@@ -6,6 +6,11 @@ namespace Xamarin.Forms
 {
 	public static class TabIndexExtensions
 	{
+		public static SortedDictionary<int, List<VisualElement>> GetSortedTabIndexesOnParentPage(this VisualElement element, out int countChildrensWithTabStopWithoutThis)
+		{
+			return new SortedDictionary<int, List<VisualElement>>(TabIndexExtensions.GetTabIndexesOnParentPage(element, out countChildrensWithTabStopWithoutThis));
+		}
+
 		public static IDictionary<int, List<VisualElement>> GetTabIndexesOnParentPage(this VisualElement element, out int countChildrensWithTabStopWithoutThis)
 		{
 			countChildrensWithTabStopWithoutThis = 0;
@@ -82,37 +87,6 @@ namespace Xamarin.Forms
 					return tabIndexes[tabIndex][0];
 				}
 			}
-		}
-
-		public static VisualElement GetFirstElementByTabIndex(IDictionary<int, List<VisualElement>> tabIndexes)
-		{
-			if (tabIndexes == null || tabIndexes.Count == 0)
-				return null;
-
-			var minIndex = tabIndexes.Min(x => x.Key);
-
-			var tabGroup = tabIndexes[minIndex];
-
-			return tabGroup[0];
-		}
-
-		public static VisualElement GetFirstNonLayoutTabStop(IDictionary<int, List<VisualElement>> tabIndexes)
-		{
-			if (tabIndexes == null || tabIndexes.Count == 0)
-				return null;
-
-			var minIndex = tabIndexes.Min(x => x.Key);
-
-			var tabGroup = tabIndexes[minIndex];
-
-			for (int t = 0; t < tabGroup.Count; t++)
-			{
-				var ve = tabGroup[t];
-				if (!(ve is Layout) && ve.IsTabStop)
-					return ve;
-			}
-
-			return null;
 		}
 	}
 }

@@ -149,35 +149,50 @@ namespace Xamarin.Forms.Platform.Android
 			if (!am.IsEnabled)
 				return;
 
-			var children = Element.Descendants();
-			IDictionary<int, List<VisualElement>> tabIndexes = null;
-			int childrenWithTabStopsLessOne = 0;
-			AView firstTabStop = null;
-			foreach (var child in children)
+			SortedDictionary<int, List<VisualElement>> tabIndexes = null;
+			foreach (var child in Element.LogicalChildren)
 			{
-				if (!(child is VisualElement ve && ve.GetRenderer().View is ITabStop tabStop))
+				if (!(child is VisualElement ve))
 					continue;
 
-				var thisControl = tabStop.TabStop;
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage(out _);
+				break;
+			}
 
-				if (tabIndexes == null)
-				{
-					tabIndexes = ve.GetTabIndexesOnParentPage(out childrenWithTabStopsLessOne);
-					firstTabStop = GetFirstTabStop(tabIndexes, childrenWithTabStopsLessOne);
-				}
+			if (tabIndexes == null)
+				return;
 
-				// this element should be the first thing focused after the root
-				if (thisControl == firstTabStop)
+			AView prevControl = null;
+			foreach (var idx in tabIndexes?.Keys)
+			{
+				var tabGroup = tabIndexes[idx];
+				foreach (var child in tabGroup)
 				{
-					thisControl.AccessibilityTraversalAfter = NoId;
-				}
-				else if (ve.IsTabStop)
-				{
-					AView control = GetNextTabStop(ve, forwardDirection: true,
-														tabIndexes: tabIndexes,
-														maxAttempts: childrenWithTabStopsLessOne);
-					if (control != null && control != firstTabStop)
-						control.AccessibilityTraversalAfter = thisControl.Id;
+					if (child is Layout || 
+						!(
+							child is VisualElement ve && ve.IsTabStop
+							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
+							&& ve.GetRenderer().View is ITabStop tabStop)
+						 )
+						continue;
+
+					var thisControl = tabStop.TabStop;
+
+					if (thisControl == null)
+						continue;
+
+					// this element should be the first thing focused after the root
+					if (prevControl == null)
+					{
+						thisControl.AccessibilityTraversalAfter = NoId;
+					}
+					else
+					{
+						if (thisControl != prevControl)
+							thisControl.AccessibilityTraversalAfter = prevControl.Id;
+					}
+
+					prevControl = thisControl;
 				}
 			}
 		}
@@ -186,49 +201,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 			OrderedTraversalController.UpdateTraversalOrder();
-		}
-
-		static AView GetFirstTabStop(IDictionary<int, List<VisualElement>> tabIndexes, int maxAttempts)
-		{
-			if (maxAttempts <= 0 || tabIndexes == null)
-				return null;
-
-			VisualElement ve = TabIndexExtensions.GetFirstNonLayoutTabStop(tabIndexes);
-
-			if (AutomationProperties.GetIsInAccessibleTree(ve) != false)
-			{
-				var renderer = ve?.GetRenderer();
-
-				var control = (renderer as ITabStop)?.TabStop;
-				if (control?.Focusable == true)
-					return control;
-			}
-
-			return GetNextTabStop(ve, true, tabIndexes, maxAttempts);
-		}
-
-		static AView GetNextTabStop(VisualElement ve, bool forwardDirection, IDictionary<int, List<VisualElement>> tabIndexes, int maxAttempts)
-		{
-			if (maxAttempts <= 0 || tabIndexes == null || ve == null)
-				return null;
-
-			int tabIndex = ve.TabIndex;
-
-			VisualElement nextElement = ve;
-			AView nextControl = null;
-			int attempt = 0;
-			do
-			{
-				nextElement = nextElement?.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
-
-				if (AutomationProperties.GetIsInAccessibleTree(nextElement) != false)
-				{
-					var renderer = nextElement?.GetRenderer();
-					nextControl = (renderer as ITabStop)?.TabStop;
-				}
-
-			} while (++attempt < maxAttempts && nextControl?.Focusable != true);
-			return nextControl;
 		}
 	}
 }

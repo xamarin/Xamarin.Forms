@@ -20,43 +20,44 @@ namespace Xamarin.Forms.Platform.iOS
 				return null;
 
 			var children = _element.Descendants();
-			IDictionary<int, List<VisualElement>> tabIndexes = null;
-			int childrenWithTabStopsLessOne = 0;
-			VisualElement firstTabStop = null;
+			SortedDictionary<int, List<VisualElement>> tabIndexes = null;
 			List<NSObject> views = new List<NSObject>();
 			foreach (var child in children)
 			{
-				if (!(child is VisualElement ve && Platform.GetRenderer(ve).NativeView is ITabStop tabStop))
-				{
+				if (!(child is VisualElement ve))
 					continue;
-				}
-				if (tabIndexes == null)
-				{
-					tabIndexes = ve.GetTabIndexesOnParentPage(out childrenWithTabStopsLessOne);
-					firstTabStop = GetFirstTabStopVisualElement(tabIndexes);
-					break;
-				}
+
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage(out _);
+				break;
 			}
 
-			if (firstTabStop == null || tabIndexes == null)
+			if (tabIndexes == null)
 				return null;
 
-			VisualElement nextVisualElement = firstTabStop;
-			UIView nextControl = null;
-			do
+			foreach (var idx in tabIndexes?.Keys)
 			{
-				nextControl = (Platform.GetRenderer(nextVisualElement).NativeView as ITabStop)?.TabStop;
+				var tabGroup = tabIndexes[idx];
+				foreach (var child in tabGroup)
+				{
+					if (child is Layout ||
+						!(
+							child is VisualElement ve && ve.IsTabStop
+							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
+							&& ve.GetRenderer().NativeView is ITabStop tabStop)
+						 )
+						continue;
 
-				if (views.Contains(nextControl))
-					break; // we've looped to the beginning
+					var thisControl = tabStop.TabStop;
 
-				if (nextControl != null)
-					views.Add(nextControl);
+					if (thisControl == null)
+						continue;
 
-				nextVisualElement = GetNextTabStopVisualElement(nextVisualElement, forwardDirection: true,
-																tabIndexes: tabIndexes,
-																maxAttempts: childrenWithTabStopsLessOne);
-			} while (nextVisualElement != null && nextVisualElement != firstTabStop);
+					if (views.Contains(thisControl))
+						break; // we've looped to the beginning
+
+					views.Add(thisControl);
+				}
+			}
 
 			return views;
 		}
@@ -99,38 +100,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Container = new PageContainer(this);
 			View?.AddSubview(Container);
-		}
-
-		static VisualElement GetFirstTabStopVisualElement(IDictionary<int, List<VisualElement>> tabIndexes)
-		{
-			if (tabIndexes == null)
-				return null;
-
-			return TabIndexExtensions.GetFirstElementByTabIndex(tabIndexes);
-		}
-
-		static VisualElement GetNextTabStopVisualElement(VisualElement ve, bool forwardDirection, IDictionary<int, List<VisualElement>> tabIndexes, int maxAttempts)
-		{
-			if (maxAttempts <= 0 || tabIndexes == null || ve == null)
-				return null;
-
-			int tabIndex = ve.TabIndex;
-
-			VisualElement nextElement = ve;
-			UIView nextControl = null;
-			int attempt = 0;
-			do
-			{
-				nextElement = nextElement.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
-
-				if (AutomationProperties.GetIsInAccessibleTree(nextElement) != false)
-				{
-					var renderer = Platform.GetRenderer(nextElement);
-					nextControl = (renderer as ITabStop)?.TabStop;
-				}
-
-			} while (++attempt < maxAttempts && nextControl == null);
-			return nextElement;
 		}
 	}
 }
