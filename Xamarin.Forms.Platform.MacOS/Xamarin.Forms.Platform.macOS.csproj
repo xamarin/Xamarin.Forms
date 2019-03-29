@@ -20,7 +20,6 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <ConsolePause>false</ConsolePause>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>
@@ -182,9 +181,6 @@
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\UIViewExtensions.cs">
       <Link>Extensions\UIViewExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\FontExtensions.cs">
-      <Link>Extensions\FontExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\FormattedStringExtensions.cs">
       <Link>Extensions\FormattedStringExtensions.cs</Link>
     </Compile>
@@ -240,6 +236,17 @@
     <Compile Include="Controls\FormsNSSlider.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\DisposeHelpers.cs">
       <Link>DisposeHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\ImageElementManager.cs">
+      <Link>Renderers\ImageElementManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\IImageVisualElementRenderer.cs">
+      <Link>Renderers\IImageVisualElementRenderer.cs</Link>
+    </Compile>
+    <Compile Include="Extensions\ImageExtensions.cs" />
+    <Compile Include="Extensions\FontExtensions.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\FontExtensions.Shared.cs">
+      <Link>Extensions\FontExtensions.Shared.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

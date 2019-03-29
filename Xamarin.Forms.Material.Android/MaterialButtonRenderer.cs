@@ -18,7 +18,6 @@ using AView = Android.Views.View;
 using MButton = Android.Support.Design.Button.MaterialButton;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Button), typeof(MaterialButtonRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -40,9 +39,12 @@ namespace Xamarin.Forms.Material.Android
 		VisualElementRenderer _visualElementRenderer;
 		ButtonLayoutManager _buttonLayoutManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
-		
+
 		public MaterialButtonRenderer(Context context)
-			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialTheme))
+			: this(MaterialContextThemeWrapper.Create(context), null) { }
+
+		public MaterialButtonRenderer(Context context, BindableObject element)
+			: base(MaterialContextThemeWrapper.Create(context))
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_buttonLayoutManager = new ButtonLayoutManager(this,
