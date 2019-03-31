@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class UICollectionViewDelegator : UICollectionViewDelegateFlowLayout
 	{
-		float _horizontalOffset, _verticalOffset;
+		float _previousHorizontalOffset, _previousVerticalOffset;
 
 		public ItemsViewLayout ItemsViewLayout { get; private set; }
 		public ItemsViewController ItemsViewController { get; private set; }
@@ -30,14 +30,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
-			_horizontalOffset = (float)scrollView.ContentOffset.X;
-			_verticalOffset = (float)scrollView.ContentOffset.Y;
+			_previousHorizontalOffset = (float)scrollView.ContentOffset.X;
+			_previousVerticalOffset = (float)scrollView.ContentOffset.Y;
 		}
 
 		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
 		{
-			_horizontalOffset = 0;
-			_verticalOffset = 0;
+			_previousHorizontalOffset = 0;
+			_previousVerticalOffset = 0;
 		}
 
 		public override void Scrolled(UIScrollView scrollView)
@@ -45,12 +45,12 @@ namespace Xamarin.Forms.Platform.iOS
 			var indexPathsForVisibleItems = ItemsViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row);
 			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
 			var lastVisibleItemIndex = (int)indexPathsForVisibleItems.Last().Item;
-			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(scrollView.ContentOffset.X - _horizontalOffset, scrollView.ContentOffset.Y - _verticalOffset, scrollView.ContentOffset.X, scrollView.ContentOffset.Y, firstVisibleItemIndex, lastVisibleItemIndex);
+			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(scrollView.ContentOffset.X - _previousHorizontalOffset, scrollView.ContentOffset.Y - _previousVerticalOffset, scrollView.ContentOffset.X, scrollView.ContentOffset.Y, firstVisibleItemIndex, lastVisibleItemIndex);
 
 			ItemsViewController.ItemsView.SendScrolled(scrolledEventArgs);
 
-			_horizontalOffset = (float)scrollView.ContentOffset.X;
-			_verticalOffset = (float)scrollView.ContentOffset.Y;
+			_previousHorizontalOffset = (float)scrollView.ContentOffset.X;
+			_previousVerticalOffset = (float)scrollView.ContentOffset.Y;
 
 			switch (ItemsViewController.ItemsView.RemainingItemsThreshold)
 			{
