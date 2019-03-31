@@ -160,7 +160,14 @@ namespace Xamarin.Forms
 			OnRemainingItemsThresholdReached();
 		}
 
+		public void SendScrolled(Core.Items.ScrolledEventArgs e)
+		{
+			OnScrolled(e);
+		}
+
 		public event EventHandler<ScrollToRequestEventArgs> ScrollToRequested;
+
+		public event EventHandler<Core.Items.ScrolledEventArgs> Scrolled;
 
 		public event EventHandler<EventArgs> RemainingItemsThresholdReached;
 
@@ -188,6 +195,11 @@ namespace Xamarin.Forms
 
 			if(RemainingItemsThresholdReachedCommand?.CanExecute(null) == true)
 				RemainingItemsThresholdReachedCommand?.Execute(null);
+		}
+
+		protected virtual void OnScrolled(Core.Items.ScrolledEventArgs e)
+		{
+			Scrolled?.Invoke(this, e);
 		}
 	}
 }

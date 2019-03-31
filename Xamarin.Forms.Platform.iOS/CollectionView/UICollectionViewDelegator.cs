@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -7,6 +8,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class UICollectionViewDelegator : UICollectionViewDelegateFlowLayout
 	{
+		float _horizontalOffset, _verticalOffset;
+
 		public ItemsViewLayout ItemsViewLayout { get; private set; }
 		public ItemsViewController ItemsViewController { get; private set; }
 		public SelectableItemsViewController SelectableItemsViewController
@@ -25,22 +28,47 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsViewController = itemsViewController;
 		}
 
-		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
+		public override void DraggingStarted(UIScrollView scrollView)
 		{
+			_horizontalOffset = (float)scrollView.ContentOffset.X;
+			_verticalOffset = (float)scrollView.ContentOffset.Y;
+		}
+
+		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
+		{
+			_horizontalOffset = 0;
+			_verticalOffset = 0;
+		}
+
+		public override void Scrolled(UIScrollView scrollView)
+		{
+			var indexPathsForVisibleItems = ItemsViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row);
+			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
+			var lastVisibleItemIndex = (int)indexPathsForVisibleItems.Last().Item;
+			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(scrollView.ContentOffset.X - _horizontalOffset, scrollView.ContentOffset.Y - _verticalOffset, scrollView.ContentOffset.X, scrollView.ContentOffset.Y, firstVisibleItemIndex, lastVisibleItemIndex);
+
+			ItemsViewController.ItemsView.SendScrolled(scrolledEventArgs);
+
+			_horizontalOffset = (float)scrollView.ContentOffset.X;
+			_verticalOffset = (float)scrollView.ContentOffset.Y;
+
 			switch (ItemsViewController.ItemsView.RemainingItemsThreshold)
 			{
 				case -1:
 					return;
 				case 0:
-					if (path.Row == ItemsViewController.ItemsViewSource.Count - 1)
+					if (lastVisibleItemIndex== ItemsViewController.ItemsViewSource.Count - 1)
 						ItemsViewController.ItemsView.SendRemainingItemsThresholdReached();
 					break;
 				default:
-					if (ItemsViewController.ItemsViewSource.Count - 1 - path.Row <= ItemsViewController.ItemsView.RemainingItemsThreshold)
+					if (ItemsViewController.ItemsViewSource.Count - 1 - lastVisibleItemIndex <= ItemsViewController.ItemsView.RemainingItemsThreshold)
 						ItemsViewController.ItemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
+		}
 
+		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
+		{
 			ItemsViewLayout?.WillDisplayCell(collectionView, cell, path);
 		}
 

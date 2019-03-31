@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
+using System;
+using System.Security.Cryptography;
 
 #if UITEST
 using Xamarin.UITest;
@@ -25,9 +27,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 5623, "CollectionView with Incremental Collection (RemainingItemsThreshold)", PlatformAffected.All)]
 	public partial class Github5623 : TestContentPage
 	{
-		int _itemCount = 100;
-		int _maximumItemCount = 1000;
-		int _pageSize = 100;
+		int _itemCount = 10;
+		int _maximumItemCount = 100;
+		int _pageSize = 10;
 		static SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
 
 		public Github5623()
@@ -46,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		private async void CollectionView_RemainingItemsThresholdReached(object sender, System.EventArgs e)
+		async void CollectionView_RemainingItemsThresholdReached(object sender, System.EventArgs e)
 		{
 			await SemaphoreSlim.WaitAsync();
 			try
@@ -77,15 +79,25 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
+		void CollectionView_OnScrolled(object sender, Core.Items.ScrolledEventArgs e)
+		{
+			Label1.Text = "HorizontalDelta: " + e.HorizontalDelta;
+			Label2.Text = "VerticalDelta: " + e.VerticalDelta;
+			Label3.Text = "HorizontalOffset: " + e.HorizontalOffset;
+			Label4.Text = "VerticalOffset: " + e.VerticalOffset;
+			Label5.Text = "FirstVisibleItemIndex: " + e.FirstVisibleItemIndex;
+			Label6.Text = "LastVisibleItemIndex: " + e.LastVisibleItemIndex;
+		}
+
 		async Task<ObservableCollection<Model5623>> GetNextSetAsync()
 		{
 			return await Task.Run(() =>
 			{
 				var collection = new ObservableCollection<Model5623>();
 
-				for (var i = _itemCount + 1; i <= _itemCount + _pageSize; i++)
+				for (var i = _itemCount; i < _itemCount + _pageSize; i++)
 				{
-					collection.Add(new Model5623
+					collection.Add(new Model5623((BindingContext as ViewModel5623).ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems)
 					{
 						Text = i.ToString(),
 						BackgroundColor = i % 2 == 0 ? Color.AntiqueWhite : Color.Lavender
@@ -104,7 +116,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement (q => q.Marked ("CollectionView"));
 			
-			var elementQuery = RunningApp.Query(c => c.Marked(_maximumItemCount.ToString()));
+			var elementQuery = RunningApp.Query(c => c.Marked((_maximumItemCount - 1).ToString()));
 			var elementAvailable = elementQuery.Any();
 			var attempt = 0;
 
@@ -135,6 +147,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Command RemainingItemsThresholdReachedCommand { get; set; }
 
+		public ItemSizingStrategy ItemSizingStrategy { get; set; } = ItemSizingStrategy.MeasureAllItems;
+
 		public ViewModel5623()
 		{
 			var collection = new ObservableCollection<Model5623>();
@@ -142,7 +156,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			for (var i = 0; i < pageSize; i++)
 			{
-				collection.Add(new Model5623
+				collection.Add(new Model5623(ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems)
 				{
 					Text = i.ToString(),
 					BackgroundColor = i % 2 == 0 ? Color.AntiqueWhite : Color.Lavender
@@ -161,8 +175,25 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class Model5623
 	{
+		RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+
 		public string Text { get; set; }
 
 		public Color BackgroundColor { get; set; }
+
+		public int Height { get; set; } = 200;
+
+		public string HeightText { get; private set; } 
+
+		public Model5623(bool isUneven)
+		{
+			var byteArray = new byte[4];
+			provider.GetBytes(byteArray);
+
+			if(isUneven)
+				Height = 100 + (BitConverter.ToInt32(byteArray, 0) % 300 + 300) % 300;
+
+			HeightText = "(Height: " + Height + ")";
+		}
 	}
 }

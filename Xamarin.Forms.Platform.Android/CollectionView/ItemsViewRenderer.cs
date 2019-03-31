@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Android.Content;
@@ -169,17 +170,17 @@ namespace Xamarin.Forms.Platform.Android
 						? LinearLayoutManager.Horizontal
 						: LinearLayoutManager.Vertical;
 
-					return new LinearLayoutManager(Context, orientation, false);
+					return new CustomLinearLayoutManager(Context, orientation, false);
 			}
 
 			// Fall back to plain old vertical list
 			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
-			return new LinearLayoutManager(Context);
+			return new CustomLinearLayoutManager(Context);
 		}
 
 		GridLayoutManager CreateGridLayout(GridItemsLayout gridItemsLayout)
 		{
-			return new GridLayoutManager(Context, gridItemsLayout.Span,
+			return new CustomGridLayoutManager(Context, gridItemsLayout.Span,
 				gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
 					? LinearLayoutManager.Horizontal
 					: LinearLayoutManager.Vertical,
@@ -577,6 +578,78 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				SwapAdapter(ItemsViewAdapter, true);
 				SetLayoutManager(SelectLayoutManager(_layout));
+			}
+		}
+
+		public class CustomGridLayoutManager : GridLayoutManager
+		{
+			public CustomGridLayoutManager(Context context, int spanCount, int orientation, bool reverseLayout) : base(context, spanCount, orientation, reverseLayout)
+			{
+
+			}
+		}
+
+		public class CustomLinearLayoutManager : LinearLayoutManager
+		{
+			Dictionary<int, Dimensions> _childDimensions = new Dictionary<int, Dimensions>();
+
+			public CustomLinearLayoutManager(Context context) : base(context)
+			{
+
+			}
+
+			public CustomLinearLayoutManager(Context context, int orientation, bool reverseLayout) : base(context, orientation, reverseLayout)
+			{
+
+			}
+
+			public override void OnLayoutCompleted(State state)
+			{
+				base.OnLayoutCompleted(state);
+
+				for (var i = 0; i < ChildCount; i++)
+				{
+					var child = GetChildAt(i);
+					var dimensions = new Dimensions
+					{
+						Width = child.Width,
+						Height = child.Height
+					};
+
+					_childDimensions[GetPosition(child)] = dimensions;
+				}
+			}
+
+			public override int ComputeHorizontalScrollOffset(State state)
+			{
+				return ComputeOffset(false);
+			}
+
+			public override int ComputeVerticalScrollOffset(State state)
+			{
+				return ComputeOffset(true);
+			}
+
+			int ComputeOffset(bool isVertical)
+			{
+				if (ChildCount == 0)
+					return 0;
+
+				var firstChild = GetChildAt(0);
+				var firstChildPosition = GetPosition(firstChild);
+				var offset = !isVertical ? -firstChild.GetX() : -firstChild.GetY();
+
+				for (var i = 0; i < firstChildPosition; i++)
+					offset += _childDimensions.ContainsKey(i) ? (!isVertical ? _childDimensions[i].Width : _childDimensions[i].Height) : 0;
+
+				return (int)offset;
+			}
+
+			class Dimensions
+			{
+				public int Width { get; set; }
+
+				public int Height { get; set; }
 			}
 		}
 	}

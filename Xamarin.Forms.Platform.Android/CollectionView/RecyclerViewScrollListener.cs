@@ -24,18 +24,22 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			base.OnScrolled(recyclerView, dx, dy);
 
 			var linearLayoutManager = recyclerView.GetLayoutManager() as LinearLayoutManager;
-			var lastVisibleItemPosition = linearLayoutManager.FindLastVisibleItemPosition();
+			var firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
+			var lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
+			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(dx, dy, recyclerView.ComputeHorizontalScrollOffset(), recyclerView.ComputeVerticalScrollOffset(), firstVisibleItemIndex, lastVisibleItemIndex);
+
+			_itemsView.SendScrolled(scrolledEventArgs);
 
 			switch (_itemsView.RemainingItemsThreshold)
 			{
 				case -1:
 					return;
 				case 0:
-					if (lastVisibleItemPosition == _itemsViewAdapter.ItemCount - 1)
+					if (firstVisibleItemIndex == _itemsViewAdapter.ItemCount - 1)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 				default:
-					if (_itemsViewAdapter.ItemCount - 1 - lastVisibleItemPosition <= _itemsView.RemainingItemsThreshold)
+					if (_itemsViewAdapter.ItemCount - 1 - firstVisibleItemIndex <= _itemsView.RemainingItemsThreshold)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
