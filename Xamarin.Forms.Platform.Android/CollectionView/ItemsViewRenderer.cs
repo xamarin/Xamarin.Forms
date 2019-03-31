@@ -583,15 +583,44 @@ namespace Xamarin.Forms.Platform.Android
 
 		public class CustomGridLayoutManager : GridLayoutManager
 		{
+			readonly Dictionary<int, Dimensions> _childDimensions = new Dictionary<int, Dimensions>();
+
 			public CustomGridLayoutManager(Context context, int spanCount, int orientation, bool reverseLayout) : base(context, spanCount, orientation, reverseLayout)
 			{
 
+			}
+
+			public override void OnLayoutCompleted(State state)
+			{
+				base.OnLayoutCompleted(state);
+
+				for (var i = 0; i < ChildCount; i++)
+				{
+					var child = GetChildAt(i);
+					var dimensions = new Dimensions
+					{
+						Width = child.Width,
+						Height = child.Height
+					};
+
+					_childDimensions[GetPosition(child)] = dimensions;
+				}
+			}
+
+			public override int ComputeHorizontalScrollOffset(State state)
+			{
+				return ComputeOffset(this, _childDimensions, false);
+			}
+
+			public override int ComputeVerticalScrollOffset(State state)
+			{
+				return ComputeOffset(this, _childDimensions, true);
 			}
 		}
 
 		public class CustomLinearLayoutManager : LinearLayoutManager
 		{
-			Dictionary<int, Dimensions> _childDimensions = new Dictionary<int, Dimensions>();
+			readonly Dictionary<int, Dimensions> _childDimensions = new Dictionary<int, Dimensions>();
 
 			public CustomLinearLayoutManager(Context context) : base(context)
 			{
@@ -622,35 +651,35 @@ namespace Xamarin.Forms.Platform.Android
 
 			public override int ComputeHorizontalScrollOffset(State state)
 			{
-				return ComputeOffset(false);
+				return ComputeOffset(this, _childDimensions, false);
 			}
 
 			public override int ComputeVerticalScrollOffset(State state)
 			{
-				return ComputeOffset(true);
+				return ComputeOffset(this, _childDimensions, true);
 			}
+		}
 
-			int ComputeOffset(bool isVertical)
-			{
-				if (ChildCount == 0)
-					return 0;
+		static int ComputeOffset(LinearLayoutManager linearLayoutManager, Dictionary<int, Dimensions> childDimensions, bool isVertical)
+		{
+			if (linearLayoutManager.ChildCount == 0)
+				return 0;
 
-				var firstChild = GetChildAt(0);
-				var firstChildPosition = GetPosition(firstChild);
-				var offset = !isVertical ? -firstChild.GetX() : -firstChild.GetY();
+			var firstChild = linearLayoutManager.GetChildAt(0);
+			var firstChildPosition = linearLayoutManager.GetPosition(firstChild);
+			var offset = !isVertical ? -firstChild.GetX() : -firstChild.GetY();
 
-				for (var i = 0; i < firstChildPosition; i++)
-					offset += _childDimensions.ContainsKey(i) ? (!isVertical ? _childDimensions[i].Width : _childDimensions[i].Height) : 0;
+			for (var i = 0; i < firstChildPosition; i++)
+				offset += childDimensions.ContainsKey(i) ? (!isVertical ? childDimensions[i].Width : childDimensions[i].Height) : 0;
 
-				return (int)offset;
-			}
+			return (int)offset;
+		}
 
-			class Dimensions
-			{
-				public int Width { get; set; }
+		class Dimensions
+		{
+			public int Width { get; set; }
 
-				public int Height { get; set; }
-			}
+			public int Height { get; set; }
 		}
 	}
 }
