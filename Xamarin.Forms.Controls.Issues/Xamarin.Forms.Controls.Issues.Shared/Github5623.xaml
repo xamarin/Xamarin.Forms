@@ -18,6 +18,7 @@
             <Label x:Name="Label4" LineBreakMode="WordWrap" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
             <Label x:Name="Label5" LineBreakMode="WordWrap" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
             <Label x:Name="Label6" LineBreakMode="WordWrap" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+            <Label x:Name="Label7" LineBreakMode="WordWrap" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
         </StackLayout>
 
         <CollectionView Grid.Row="1" x:Name="CollectionView" ItemSizingStrategy="{Binding ItemSizingStrategy}" ItemsSource="{Binding Items}" Scrolled="CollectionView_OnScrolled" RemainingItemsThreshold="25" RemainingItemsThresholdReached="CollectionView_RemainingItemsThresholdReached" RemainingItemsThresholdReachedCommand="{Binding RemainingItemsThresholdReachedCommand}">
@@ -32,5 +33,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <BoxView Grid.Row="1" HorizontalOptions="FillAndExpand" VerticalOptions="Center" BackgroundColor="Red" HeightRequest="5"/>
     </Grid>
 </controls:TestContentPage>

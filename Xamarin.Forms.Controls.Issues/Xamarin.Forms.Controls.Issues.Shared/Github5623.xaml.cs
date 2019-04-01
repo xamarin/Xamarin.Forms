@@ -86,7 +86,8 @@ namespace Xamarin.Forms.Controls.Issues
 			Label3.Text = "HorizontalOffset: " + e.HorizontalOffset;
 			Label4.Text = "VerticalOffset: " + e.VerticalOffset;
 			Label5.Text = "FirstVisibleItemIndex: " + e.FirstVisibleItemIndex;
-			Label6.Text = "LastVisibleItemIndex: " + e.LastVisibleItemIndex;
+			Label6.Text = "CenterItemIndex: " + e.CenterItemIndex;
+			Label7.Text = "LastVisibleItemIndex: " + e.LastVisibleItemIndex;
 		}
 
 		async Task<ObservableCollection<Model5623>> GetNextSetAsync()

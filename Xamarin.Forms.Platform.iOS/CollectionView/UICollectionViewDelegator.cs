@@ -44,8 +44,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var indexPathsForVisibleItems = ItemsViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row);
 			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
+			var centerPoint = new CGPoint(ItemsViewController.CollectionView.Center.X + ItemsViewController.CollectionView.ContentOffset.X, ItemsViewController.CollectionView.Center.Y + ItemsViewController.CollectionView.ContentOffset.Y);
+			var centerIndexPath = ItemsViewController.CollectionView.IndexPathForItemAtPoint(centerPoint);
+			var centerItemIndex = centerIndexPath == null ? firstVisibleItemIndex : centerIndexPath.Row;
 			var lastVisibleItemIndex = (int)indexPathsForVisibleItems.Last().Item;
-			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(scrollView.ContentOffset.X - _previousHorizontalOffset, scrollView.ContentOffset.Y - _previousVerticalOffset, scrollView.ContentOffset.X, scrollView.ContentOffset.Y, firstVisibleItemIndex, lastVisibleItemIndex);
+			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(scrollView.ContentOffset.X - _previousHorizontalOffset, scrollView.ContentOffset.Y - _previousVerticalOffset, scrollView.ContentOffset.X, scrollView.ContentOffset.Y, firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
 
 			ItemsViewController.ItemsView.SendScrolled(scrolledEventArgs);
 

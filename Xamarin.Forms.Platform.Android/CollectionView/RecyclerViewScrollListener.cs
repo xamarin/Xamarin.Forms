@@ -1,4 +1,7 @@
-﻿using Android.Support.V7.Widget;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Android.Graphics;
+using Android.Support.V7.Widget;
 
 namespace Xamarin.Forms.Platform.Android.CollectionView
 {
@@ -34,7 +37,8 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			var linearLayoutManager = recyclerView.GetLayoutManager() as LinearLayoutManager;
 			var firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
 			var lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
-			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(dx, dy, _horizontallOffset, _verticalOffset, firstVisibleItemIndex, lastVisibleItemIndex);
+			var centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, lastVisibleItemIndex, linearLayoutManager);
+			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(dx, dy, _horizontallOffset, _verticalOffset, firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
 
 			_itemsView.SendScrolled(scrolledEventArgs);
 
@@ -51,6 +55,30 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
+		}
+
+		static int CalculateCenterItemIndex(int firstVisibleItemIndex, int lastVisibleItemIndex, LinearLayoutManager linearLayoutManager)
+		{
+			var keyValuePairs = new Dictionary<int, int>();
+			for (var i = firstVisibleItemIndex; i <= lastVisibleItemIndex; i++)
+			{
+				var view = linearLayoutManager.FindViewByPosition(i);
+				var rect = new Rect();
+
+				view.GetLocalVisibleRect(rect);
+				keyValuePairs[i] = rect.Height();
+			}
+
+			var center = keyValuePairs.Values.Sum() / 2.0;
+			foreach (var keyValuePair in keyValuePairs)
+			{
+				center -= keyValuePair.Value;
+
+				if (center <= 0)
+					return keyValuePair.Key;
+			}
+
+			return firstVisibleItemIndex;
 		}
 
 		protected override void Dispose(bool disposing)
