@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 		{
 			base.OnScrolled(recyclerView, dx, dy);
 
-			// TODO: These offsets will be incorrect upon orientation or row dimension/count change.
+			// TODO: These offsets will be incorrect upon row size or count change.
 			// They are currently provided in place of LinearLayoutManager's default offset calculation
 			// because it does not report accurate values in the presence of uneven rows.
 			// See https://stackoverflow.com/questions/27507715/android-how-to-get-the-current-x-offset-of-recyclerview
