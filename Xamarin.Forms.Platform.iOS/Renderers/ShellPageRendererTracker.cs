@@ -54,6 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UISearchController _searchController;
 		SearchHandler _searchHandler;
 		Page _page;
+		SearchHandlerAppearanceTracker _searchHandlerAppearanceTracker;
 
 		BackButtonBehavior BackButtonBehavior { get; set; }
 		UINavigationItem NavigationItem { get; set; }
@@ -116,12 +117,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (oldPage != null)
 			{
+				oldPage.Appearing -= PageAppearing;
 				oldPage.PropertyChanged -= OnPagePropertyChanged;
 				((INotifyCollectionChanged)oldPage.ToolbarItems).CollectionChanged -= OnToolbarItemsChanged;
 			}
 
 			if (newPage != null)
 			{
+				newPage.Appearing += PageAppearing;
 				newPage.PropertyChanged += OnPagePropertyChanged;
 				((INotifyCollectionChanged)newPage.ToolbarItems).CollectionChanged += OnToolbarItemsChanged;
 				SetBackButtonBehavior(Shell.GetBackButtonBehavior(newPage));
@@ -405,6 +408,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void AttachSearchController()
 		{
+
 			if (SearchHandler.ShowsResults)
 			{
 				_resultsRenderer = _context.CreateShellSearchResultsRenderer();
@@ -438,6 +442,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Forms.IsiOS11OrNewer)
 				NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisiblity.Collapsable;
 
+			_searchHandlerAppearanceTracker = new SearchHandlerAppearanceTracker(searchBar, SearchHandler);
+
 			var icon = SearchHandler.QueryIcon;
 			if (icon != null)
 			{
@@ -456,7 +462,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetSearchBarIcon(searchBar, icon, UISearchBarIcon.Bookmark);
 			}
 
-			searchBar.ShowsBookmarkButton = SearchHandler.ClearPlaceholderEnabled;
+			searchBar.ShowsBookmarkButton = SearchHandler.ClearPlaceholderEnabled;		
 		}
 
 		void BookmarkButtonClicked(object sender, EventArgs e)
@@ -466,6 +472,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void DettachSearchController()
 		{
+			_searchHandlerAppearanceTracker.Dispose();
+			_searchHandlerAppearanceTracker = null;
 			if (Forms.IsiOS11OrNewer)
 			{
 				RemoveSearchController(NavigationItem);
@@ -498,6 +506,13 @@ namespace Xamarin.Forms.Platform.iOS
 			searchBar.SetImageforSearchBarIcon(result, icon, UIControlState.Normal);
 		}
 
+		void PageAppearing(object sender, EventArgs e)
+		{
+			//UIKIt will try to override our colors when the SearchController is inside the NavigationBar
+			//Best way was to force them to be set again when page is Appearing / ViewDidLoad
+			_searchHandlerAppearanceTracker?.UpdateSearchBarColors();
+		}
+
 		#endregion SearchHandler
 
 		#region IDisposable Support
@@ -513,6 +528,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (disposing)
 				{
+					_searchHandlerAppearanceTracker?.Dispose();
+					Page.Appearing -= PageAppearing;
 					Page.PropertyChanged -= OnPagePropertyChanged;
 					((INotifyCollectionChanged)Page.ToolbarItems).CollectionChanged -= OnToolbarItemsChanged;
 					((IShellController)_context.Shell).RemoveFlyoutBehaviorObserver(this);
@@ -523,6 +540,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetBackButtonBehavior(null);
 				_rendererRef = null;
 				NavigationItem = null;
+				_searchHandlerAppearanceTracker = null;
 				_disposed = true;
 			}
 		}
