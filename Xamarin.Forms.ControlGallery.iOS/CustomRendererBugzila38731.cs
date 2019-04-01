@@ -10,7 +10,7 @@ using Xamarin.Forms.Controls.Issues;
 
 namespace Xamarin.Forms.ControlGallery.iOS
 {
-	public class CustomRendererBugzila38731 : Platform.iOS.AccessiblePageRenderer
+	public class CustomRendererBugzila38731 : Platform.iOS.PageRenderer
 	{
 		public override void ViewWillAppear(bool animated)
 		{

@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform.iOS;
 [assembly: ExportRenderer(typeof(Page), typeof(_2489CustomRenderer))]
 namespace Xamarin.Forms.ControlGallery.iOS
 {
-	public class _2489CustomRenderer : AccessiblePageRenderer
+	public class _2489CustomRenderer : PageRenderer
 	{
 		protected override void OnElementChanged(VisualElementChangedEventArgs e)
 		{
