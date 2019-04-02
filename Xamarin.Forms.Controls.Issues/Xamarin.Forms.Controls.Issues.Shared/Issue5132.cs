@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 5132, "Unable to specify automation properties on the hamburger/flyout icon", PlatformAffected.Default)]
 	public class Issue5132 : TestShell
 	{
+		string _idIconElement = "shellIcon";
+		string _titleElement = "Connect";
 		protected override void Init()
 		{
 			Title = "Shell";
@@ -25,13 +27,13 @@ namespace Xamarin.Forms.Controls.Issues
 				Glyph = "\uf2fb",
 				FontFamily = DefaultFontFamily(),
 				Size = 20,
-				AutomationId = "shellIcon"
+				AutomationId = _idIconElement
 			};
 			FlyoutIcon.SetValue(AutomationProperties.HelpTextProperty, "This as Shell FlyoutIcon");
 			FlyoutIcon.SetValue(AutomationProperties.NameProperty, "SHELLMAINFLYOUTICON");
 			Items.Add(new ShellItem
 			{
-				Title = "Connect",
+				Title = _titleElement,
 				Items = {
 					new ShellSection { Title = "library",
 						Items = {
@@ -66,8 +68,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue5132Test()
 		{
-			RunningApp.WaitForElement(q => q.Marked("shellIcon"));
-			TapInFlyout("Connect", "shellIcon");
+			RunningApp.WaitForElement(q => q.Marked(_idIconElement));
+			TapInFlyout(_titleElement, _idIconElement);
 		}
 #endif
 	}
