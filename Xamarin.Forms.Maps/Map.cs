@@ -18,11 +18,14 @@ namespace Xamarin.Forms.Maps
 
 		public static readonly BindableProperty HasZoomEnabledProperty = BindableProperty.Create("HasZoomEnabled", typeof(bool), typeof(Map), true);
 
-		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(IEnumerable), typeof(IEnumerable), typeof(Map), default(IEnumerable),
+		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(Map), default(IEnumerable),
 			propertyChanged: (b, o, n) => ((Map)b).OnItemsSourcePropertyChanged((IEnumerable)o, (IEnumerable)n));
 
 		public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(Map), default(DataTemplate),
 			propertyChanged: (b, o, n) => ((Map)b).OnItemTemplatePropertyChanged((DataTemplate)o, (DataTemplate)n));
+
+		public static readonly BindableProperty ItemTemplateSelectorProperty = BindableProperty.Create(nameof(ItemTemplateSelector), typeof(DataTemplateSelector), typeof(Map), default(DataTemplateSelector),
+			propertyChanged: (b, o, n) => ((Map)b).OnItemTemplateSelectorPropertyChanged());
 
 		readonly ObservableCollection<Pin> _pins = new ObservableCollection<Pin>();
 		MapSpan _visibleRegion;
@@ -82,8 +85,14 @@ namespace Xamarin.Forms.Maps
 			set { SetValue(ItemTemplateProperty, value); }
 		}
 
+		public DataTemplateSelector ItemTemplateSelector
+		{
+			get { return (DataTemplateSelector)GetValue(ItemTemplateSelectorProperty); }
+			set { SetValue(ItemTemplateSelectorProperty, value); }
+		}
+		
 		public event EventHandler<MapClickedEventArgs> MapClicked;
-
+		
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendMapClicked(Position position) => MapClicked?.Invoke(this, new MapClickedEventArgs(position));
 
@@ -158,6 +167,12 @@ namespace Xamarin.Forms.Maps
 			CreatePinItems();
 		}
 
+		void OnItemTemplateSelectorPropertyChanged()
+		{
+			_pins.Clear();
+			CreatePinItems();
+		}
+
 		void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
@@ -195,7 +210,7 @@ namespace Xamarin.Forms.Maps
 
 		void CreatePinItems()
 		{
-			if (ItemsSource == null || ItemTemplate == null)
+			if (ItemsSource == null || (ItemTemplate == null && ItemTemplateSelector == null))
 			{
 				return;
 			}
@@ -208,12 +223,14 @@ namespace Xamarin.Forms.Maps
 
 		void CreatePin(object newItem)
 		{
-			if (ItemTemplate == null)
-			{
-				return;
-			}
+			DataTemplate itemTemplate = ItemTemplate;
+			if (itemTemplate == null)
+				itemTemplate = ItemTemplateSelector?.SelectTemplate(newItem, this);
 
-			var pin = (Pin)ItemTemplate.CreateContent();
+			if (itemTemplate == null)
+				return;
+
+			var pin = (Pin)itemTemplate.CreateContent();
 			pin.BindingContext = newItem;
 			_pins.Add(pin);
 		}

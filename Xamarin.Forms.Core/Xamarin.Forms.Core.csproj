@@ -6,6 +6,10 @@
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugType>full</DebugType>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj" />
 	</ItemGroup>
@@ -22,17 +26,8 @@
 	</ItemGroup>
 	<Import Project="..\Xamarin.Flex\Xamarin.Flex.projitems" Label="Shared" Condition="Exists('..\Xamarin.Flex\Xamarin.Flex.projitems')" />
 	<UsingTask TaskName="XFCorePostProcessor.Tasks.FixXFCoreAssembly" AssemblyFile="..\XFCorePostProcessor.Tasks\bin\Debug\net461\XFCorePostProcessor.Tasks.dll" />
-	<Target
-		Condition="$(DesignTimeBuild) != true AND $(BuildingProject) == true"
-		AfterTargets="AfterCompile"
-		Name="XFCorePostProcessor"
-		Inputs="$(IntermediateOutputPath)$(TargetFileName)"
-		Outputs="$(IntermediateOutputPath)XFCorePostProcessor.stamp">
-	    <Touch
-		    Files="$(IntermediateOutputPath)XFCorePostProcessor.stamp"
-		    AlwaysCreate="True" />
-	    <FixXFCoreAssembly
-		    Assembly="$(IntermediateOutputPath)$(TargetFileName)"
-		    ReferencePath="@(ReferencePath)" />
+	<Target Condition="$(DesignTimeBuild) != true AND $(BuildingProject) == true" AfterTargets="AfterCompile" Name="XFCorePostProcessor" Inputs="$(IntermediateOutputPath)$(TargetFileName)" Outputs="$(IntermediateOutputPath)XFCorePostProcessor.stamp">
+	    <Touch Files="$(IntermediateOutputPath)XFCorePostProcessor.stamp" AlwaysCreate="True" />
+	    <FixXFCoreAssembly Assembly="$(IntermediateOutputPath)$(TargetFileName)" ReferencePath="@(ReferencePath)" />
 	</Target>
 </Project>

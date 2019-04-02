@@ -269,7 +269,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			Pin targetPin = null;
 			foreach (Pin pin in ((Map)Element).Pins)
 			{
-				object target = pin.Id;
+				object target = pin.MarkerId;
 				if (target != annotation)
 					continue;
 
@@ -314,7 +314,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				pin.PropertyChanged += PinOnPropertyChanged;
 
 				var annotation = CreateAnnotation(pin);
-				pin.Id = annotation;
+				pin.MarkerId = annotation;
 				((MKMapView)Control).AddAnnotation(annotation);
 			}
 		}
@@ -322,7 +322,7 @@ namespace Xamarin.Forms.Maps.MacOS
 		void PinOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			Pin pin = (Pin)sender;
-			var annotation = pin.Id as MKPointAnnotation;
+			var annotation = pin.MarkerId as MKPointAnnotation;
 
 			if (annotation == null)
 			{
@@ -393,7 +393,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			foreach (Pin pin in pins)
 			{
 				pin.PropertyChanged -= PinOnPropertyChanged;
-				((MKMapView)Control).RemoveAnnotation((IMKAnnotation)pin.Id);
+				((MKMapView)Control).RemoveAnnotation((IMKAnnotation)pin.MarkerId);
 			}
 		}
 
