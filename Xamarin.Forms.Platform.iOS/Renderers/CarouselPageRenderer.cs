@@ -253,8 +253,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UIView container = new CarouselPageContainer(page);
 
 			UIView view = renderer.NativeView;
-			if (renderer is PageRenderer) // PageRenderer's NativeView is the PageContainer, but we need the parent View.
-				view = view.Superview;
 
 			container.AddSubview(view);
 			_containerMap[page] = container;

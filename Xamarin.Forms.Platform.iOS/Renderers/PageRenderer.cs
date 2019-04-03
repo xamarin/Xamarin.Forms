@@ -8,7 +8,7 @@ using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PageRenderer : AccessibleUIViewController, IVisualElementRenderer, IEffectControlProvider
+	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController
 	{
 		bool _appeared;
 		bool _disposed;
@@ -16,7 +16,10 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 
+		internal PageContainer Container => NativeView as PageContainer;
+
 		Page Page => Element as Page;
+		IAccessibilityElementsController AccessibilityElementsController => this;
 
 		bool UsingSafeArea => (Forms.IsiOS11OrNewer) ? Page.On<PlatformConfiguration.iOS>().UsingSafeArea() : false;
 		Thickness SafeAreaInsets => Page.On<PlatformConfiguration.iOS>().SafeAreaInsets();
@@ -34,6 +37,54 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
+		public List<NSObject> GetAccessibilityElements()
+		{
+			if (Container == null || Element == null)
+				return null;
+
+			var children = Element.Descendants();
+			SortedDictionary<int, List<VisualElement>> tabIndexes = null;
+			List<NSObject> views = new List<NSObject>();
+			foreach (var child in children)
+			{
+				if (!(child is VisualElement ve))
+					continue;
+
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage(out _);
+				break;
+			}
+
+			if (tabIndexes == null)
+				return null;
+
+			foreach (var idx in tabIndexes?.Keys)
+			{
+				var tabGroup = tabIndexes[idx];
+				foreach (var child in tabGroup)
+				{
+					if (child is Layout ||
+						!(
+							child is VisualElement ve && ve.IsTabStop
+							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
+							&& ve.GetRenderer().NativeView is ITabStop tabStop)
+						 )
+						continue;
+
+					var thisControl = tabStop.TabStop;
+
+					if (thisControl == null)
+						continue;
+
+					if (views.Contains(thisControl))
+						break; // we've looped to the beginning
+
+					views.Add(thisControl);
+				}
+			}
+
+			return views;
+		}
+
 		public SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
@@ -41,18 +92,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UIView NativeView
 		{
-			get { return _disposed ? null : Container; }
+			get { return _disposed ? null : View; }
 		}
 
-		public override void SetElement(VisualElement element)
+		public void SetElement(VisualElement element)
 		{
 			VisualElement oldElement = Element;
 			Element = element;
 			UpdateTitle();
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
-
-			base.SetElement(element);
 
 			if (element != null)
 			{
@@ -68,6 +117,18 @@ namespace Xamarin.Forms.Platform.iOS
 		public void SetElementSize(Size size)
 		{
 			Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+		}
+
+		public override void LoadView()
+		{
+			View = new PageContainer(this);
+		}
+
+		public override void ViewWillLayoutSubviews()
+		{
+			base.ViewWillLayoutSubviews();
+
+			AccessibilityElementsController.ResetAccessibilityElements();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -88,7 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateShellInsetPadding();
 			if (Page != null && Forms.IsiOS11OrNewer)
 			{
-				var insets = View.SafeAreaInsets;
+				var insets = NativeView.SafeAreaInsets;
 				if (Page.Parent is TabbedPage)
 				{
 					insets.Bottom = 0;
@@ -198,6 +259,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				Element = null;
+				Container?.Dispose();
 				_disposed = true;
 			}
 
@@ -247,6 +309,11 @@ namespace Xamarin.Forms.Platform.iOS
 						return UIKit.UIStatusBarAnimation.None;
 				}
 			}
+		}
+
+		void IAccessibilityElementsController.ResetAccessibilityElements()
+		{
+			Container?.ClearAccessibilityElements();
 		}
 
 		void UpdateUseSafeArea()

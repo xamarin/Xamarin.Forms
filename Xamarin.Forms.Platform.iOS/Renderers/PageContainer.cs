@@ -6,13 +6,13 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PageContainer : UIView, IUIAccessibilityContainer
+	internal class PageContainer : UIView, IUIAccessibilityContainer
 	{
-		readonly AccessibleUIViewController _parent;
+		readonly IAccessibilityElementsController _parent;
 		List<NSObject> _accessibilityElements = new List<NSObject>();
 		bool _disposed;
 
-		public PageContainer(AccessibleUIViewController parent)
+		public PageContainer(IAccessibilityElementsController parent)
 		{
 			_parent = parent;
 		}
