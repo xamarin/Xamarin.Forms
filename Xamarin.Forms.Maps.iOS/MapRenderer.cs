@@ -81,6 +81,8 @@ namespace Xamarin.Forms.Maps.MacOS
 				mkMapView.RemoveFromSuperview();
 #if __MOBILE__
 				mkMapView.RemoveGestureRecognizer(_mapClickedGestureRecognizer);
+				_mapClickedGestureRecognizer.Dispose();
+				_mapClickedGestureRecognizer = null;
 
 				if (FormsMaps.IsiOs9OrNewer)
 				{
@@ -292,6 +294,11 @@ namespace Xamarin.Forms.Maps.MacOS
 #if __MOBILE__
 		void OnMapClicked(UITapGestureRecognizer recognizer)
 		{
+			if (Element == null)
+			{
+				return;
+			}
+
 			var tapPoint = recognizer.LocationInView(Control);
 			var tapGPS = ((MKMapView)Control).ConvertPoint(tapPoint, Control);
 			((Map)Element).SendMapClicked(new Position(tapGPS.Latitude, tapGPS.Longitude));

@@ -299,7 +299,7 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void OnMapTapped(MapControl sender, MapInputEventArgs args)
 		{
-			Element.SendMapClicked(new Position(args.Location.Position.Latitude, args.Location.Position.Longitude));
+			Element?.SendMapClicked(new Position(args.Location.Position.Latitude, args.Location.Position.Longitude));
 		}
 	}
 }
