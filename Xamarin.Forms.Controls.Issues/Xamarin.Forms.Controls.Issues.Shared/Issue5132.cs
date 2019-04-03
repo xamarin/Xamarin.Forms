@@ -31,13 +31,13 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 			FlyoutIcon.SetValue(AutomationProperties.HelpTextProperty, "This as Shell FlyoutIcon");
 			FlyoutIcon.SetValue(AutomationProperties.NameProperty, "SHELLMAINFLYOUTICON");
-			Items.Add(new ShellItem
+			Items.Add(new FlyoutItem
 			{
 				Title = _titleElement,
 				Items = {
-					new ShellSection { Title = "library",
+					new Tab { Title = "library",
 						Items = {
-									new ShellContent { Content = new Label  { Text = "Turn accessibility on and make sure the help text is read" } }
+									new ContentPage { Title = "Library",  Content = new Label  { Text = "Turn accessibility on and make sure the help text is read" } }
 								}
 						}
 				}
