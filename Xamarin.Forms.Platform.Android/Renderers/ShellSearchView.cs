@@ -10,7 +10,6 @@ using Java.Lang;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -42,6 +41,8 @@ namespace Xamarin.Forms.Platform.Android
 		void IShellSearchView.LoadView()
 		{
 			LoadView(SearchHandler);
+			if(_searchHandlerAppearanceTracker == null)
+				_searchHandlerAppearanceTracker = new SearchHandlerAppearanceTracker(this);
 		}
 
 		#endregion IShellSearchView
@@ -89,8 +90,10 @@ namespace Xamarin.Forms.Platform.Android
 		AImageButton _clearButton;
 		AImageButton _clearPlaceholderButton;
 		AImageButton _searchButton;
+		//AButton _cancelButton;
 		AppCompatAutoCompleteTextView _textBlock;
 		bool _disposed;
+		SearchHandlerAppearanceTracker _searchHandlerAppearanceTracker;
 
 		public ShellSearchView(Context context, IShellContext shellContext) : base(context)
 		{
@@ -122,6 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_disposed = true;
 
+				_searchHandlerAppearanceTracker?.Dispose();
 				SearchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
 
 				_textBlock.ItemClick -= OnTextBlockItemClicked;
@@ -149,6 +153,7 @@ namespace Xamarin.Forms.Platform.Android
 			_cardView = null;
 			_clearPlaceholderButton = null;
 			_shellContext = null;
+			_searchHandlerAppearanceTracker = null;
 
 			SearchHandler = null;
 		}
@@ -204,6 +209,9 @@ namespace Xamarin.Forms.Platform.Android
 			// A note on accessibility. The _textBlocks hint is what android defaults to reading in the screen
 			// reader. Therefor we do not need to set something else.
 
+			//_cancelButton = new AButton(context);
+			//_cancelButton.Text = "Cancel";
+
 			_clearButton = CreateImageButton(context, clearImage, Resource.Drawable.abc_ic_clear_material, 0, padding);
 			_clearPlaceholderButton = CreateImageButton(context, clearPlaceholderImage, -1, 0, padding);
 
@@ -211,6 +219,7 @@ namespace Xamarin.Forms.Platform.Android
 			linearLayout.AddView(_textBlock);
 			linearLayout.AddView(_clearButton);
 			linearLayout.AddView(_clearPlaceholderButton);
+			//linearLayout.AddView(_cancelButton);
 
 			UpdateClearButtonState();
 
@@ -221,11 +230,17 @@ namespace Xamarin.Forms.Platform.Android
 			_clearButton.Click += OnClearButtonClicked;
 			_clearPlaceholderButton.Click += OnClearPlaceholderButtonClicked;
 			_searchButton.Click += OnSearchButtonClicked;
+			//_cancelButton.Click += CancelButtonClicked;
 
 			AddView(_cardView);
 
 			linearLayout.Dispose();
 		}
+
+		//protected virtual void CancelButtonClicked(object sender, EventArgs e)
+		//{
+		//	throw new NotImplementedException();
+		//}
 
 		protected virtual void OnSearchHandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
