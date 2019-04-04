@@ -146,6 +146,9 @@ namespace Xamarin.Forms.Platform.UWP
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
 			_navigationBar.Background = new SolidColorBrush(appearance.TabBarBackgroundColor.ToWindowsColor());
+			var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
+			titleBar.BackgroundColor = titleBar.ButtonBackgroundColor = appearance.BackgroundColor.ToWindowsColor();
+			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = appearance.TitleColor.ToWindowsColor();
 		}
 
 		#endregion IAppearanceObserver
