@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(Core.UITests.UITestCategories.MasterDetailPage)]
-	[Category(UITestCategories.Navigation)]
+	[Category(Core.UITests.UITestCategories.Navigation)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 5412, "5412 - (NavigationBar disappears on MasterDetailPage)", PlatformAffected.UWP)]
