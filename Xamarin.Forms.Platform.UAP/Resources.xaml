@@ -128,7 +128,7 @@
 	
 	<DataTemplate x:Key="ViewCell">
         <ContentControl DataContext="{Binding Cell}">
-            <ContentPresenter Background="{Binding BackgroundColor, Converter={StaticResource ColorConverter}, ConverterParameter=SystemControlTransparentBrush}" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" Content="{Binding View, Converter={StaticResource ViewToRenderer}}" />
+            <ContentPresenter Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" Content="{Binding View, Converter={StaticResource ViewToRenderer}}" />
         </ContentControl>
     </DataTemplate>
 
@@ -271,7 +271,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="ImageCell">
-        <Grid Background="{Binding BackgroundColor, Converter={StaticResource ColorConverter}, ConverterParameter=SystemControlTransparentBrush}">
+        <Grid>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition />
@@ -303,7 +303,7 @@
 	</DataTemplate>
 	
 	<DataTemplate x:Key="SwitchCell">
-        <Grid HorizontalAlignment="Stretch" x:Name="ParentGrid" Background="{Binding BackgroundColor, Converter={StaticResource ColorConverter}, ConverterParameter=SystemControlTransparentBrush}">
+        <Grid HorizontalAlignment="Stretch" x:Name="ParentGrid">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
@@ -316,7 +316,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="EntryCell">
-        <uwp:EntryCellTextBox Background="{Binding BackgroundColor, Converter={StaticResource ColorConverter}, ConverterParameter=SystemControlTransparentBrush}" IsEnabled="{Binding IsEnabled}" Header="{Binding}" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding HorizontalTextAlignment,Converter={StaticResource HorizontalTextAlignmentConverter}}" PlaceholderText="{Binding Placeholder}"  InputScope="{Binding Keyboard,Converter={StaticResource KeyboardConverter}}" HorizontalAlignment="Stretch">
+        <uwp:EntryCellTextBox IsEnabled="{Binding IsEnabled}" Header="{Binding}" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding HorizontalTextAlignment,Converter={StaticResource HorizontalTextAlignmentConverter}}" PlaceholderText="{Binding Placeholder}"  InputScope="{Binding Keyboard,Converter={StaticResource KeyboardConverter}}" HorizontalAlignment="Stretch">
 			<uwp:EntryCellTextBox.HeaderTemplate>
 				<DataTemplate>
                     <TextBlock Text="{Binding Label}" IsHitTestVisible="False" Style="{ThemeResource BaseTextBlockStyle}" Foreground="{Binding LabelColor, Converter={StaticResource ColorConverter}, ConverterParameter=DefaultTextForegroundThemeBrush}" />

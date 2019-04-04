@@ -107,6 +107,17 @@ namespace Xamarin.Forms.Platform.Android
 			cellController.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
 		}
 
+		protected void UpdateBackgroundColor(AView view, Cell cell)
+		{
+			if (view == null)
+				return;
+
+			if (cell.IsSet(Cell.BackgroundColorProperty))
+				view.SetBackgroundColor(cell.BackgroundColor.ToAndroid());
+			else
+				view.Background?.ClearColorFilter();
+		}
+
 		internal static CellRenderer GetRenderer(BindableObject cell)
 		{
 			return (CellRenderer)cell.GetValue(RendererProperty);

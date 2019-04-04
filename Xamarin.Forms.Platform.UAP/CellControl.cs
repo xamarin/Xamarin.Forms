@@ -147,6 +147,19 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateOnColor();
 			}
+			else if (e.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackground();
+		}
+
+		void UpdateBackground()
+		{
+			var nativeContent = FrameworkElementExtensions.GetFirstDescendant<Windows.UI.Xaml.Controls.ContentPresenter>(this);
+			if (nativeContent != null)
+			{
+				nativeContent.Background = Cell.IsSet(Cell.BackgroundColorProperty)
+					? new SolidColorBrush(Cell.BackgroundColor.ToWindowsColor())
+					: null;
+			}
 		}
 
 		void UpdateOnColor()
@@ -361,6 +374,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateContent(newCell);
 				UpdateFlowDirection(newCell);
 				SetupContextMenu();
+				UpdateBackground();
 
 				newCell.PropertyChanged += _propertyChangedHandler;
 			}

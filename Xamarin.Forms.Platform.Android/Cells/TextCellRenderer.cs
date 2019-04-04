@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFlowDirection();
 			UpdateAutomationId();
 			UpdateBackgroundColor();
+			UpdateBackgroundColor(View, Cell);
 			View.SetImageVisible(false);
 
 			return View;
@@ -43,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (args.PropertyName == VisualElement.AutomationIdProperty.PropertyName)
 				UpdateAutomationId();
 			else if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
+				UpdateBackgroundColor(View, Cell);
 		}
 
 		void UpdateAutomationId()
@@ -72,19 +73,6 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateFlowDirection()
 		{
 			View.UpdateFlowDirection(ParentView);
-		}
-
-		void UpdateBackgroundColor()
-		{
-			if (View == null)
-				return;
-
-			var cell = (TextCell)Cell;
-
-			if (cell.IsSet(Cell.BackgroundColorProperty))
-				View.SetBackgroundColor(cell.BackgroundColor.ToAndroid());
-			else
-				View.Background?.ClearColorFilter();
 		}
 
 		void UpdateMainText()

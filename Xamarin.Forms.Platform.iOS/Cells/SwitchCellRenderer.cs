@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return tvc;
 		}
 
-		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected override void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var boolCell = (SwitchCell)sender;
 			var realCell = (CellTableViewCell)GetRealCell(boolCell);

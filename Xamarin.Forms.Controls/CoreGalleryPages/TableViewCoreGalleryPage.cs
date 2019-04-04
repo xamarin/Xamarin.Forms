@@ -68,20 +68,14 @@ namespace Xamarin.Forms.Controls
 
 			switchCell.OnChanged += (s, a) =>
 			{
-				if (a.Value)
-				{
-					switchCell.BackgroundColor = Color.Yellow;
-				}
-				else
-				{
-					switchCell.BackgroundColor = Color.HotPink;
-				}
+				switchCell.BackgroundColor = a.Value ? Color.Yellow : Color.HotPink;
 			};
 
 			section3.Add(switchCell);
 
 			var entryCell = new EntryCell()
 			{
+				Label = "Hit Enter to change the color:",
 				Text = "Blue",
 				BackgroundColor = Color.Blue
 			};

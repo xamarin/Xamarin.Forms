@@ -112,16 +112,5 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 		}
-
-		void UpdateBackgroundColor(SwitchCellView cell, SwitchCell switchCell)
-		{
-			if (cell == null)
-				return;
-
-			if (switchCell.IsSet(Cell.BackgroundColorProperty))
-				cell.SetBackgroundColor(switchCell.BackgroundColor.ToAndroid());
-			else
-				cell.Background?.ClearColorFilter();
-		}
 	}
 }

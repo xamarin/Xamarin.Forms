@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.iOS
 			tvc.AccessibilityIdentifier = cell.AutomationId;
 		}
 
-		protected virtual void HandlePropertyChanged(object sender, PropertyChangedEventArgs args)
+		protected override void HandlePropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			//keeping this method for backwards compatibility 
 			//as the the sender for this method is a CellTableViewCell

@@ -21,9 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (tvc == null)
 				tvc = new CellTableViewCell(UITableViewCellStyle.Default, item.GetType().FullName);
 			else
-			{
 				tvc.PropertyChanged -= HandlePropertyChanged;
-			}
 
 			tvc.Cell = item;
 			tvc.PropertyChanged += HandlePropertyChanged;
@@ -38,15 +36,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Performance.Stop(reference);
 			return tvc;
-		}
-
-		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			var cell = (Cell)sender;
-			var realCell = (CellTableViewCell)GetRealCell(cell);
-
-			if (e.PropertyName == Cell.BackgroundColorProperty.PropertyName)
-				UpdateBackground(realCell, cell);
 		}
 
 		public virtual void SetAccessibility (UITableViewCell tableViewCell, Cell cell)
@@ -72,6 +61,10 @@ namespace Xamarin.Forms.Platform.iOS
 			tableViewCell.TextLabel.BackgroundColor = color;
 			tableViewCell.ContentView.BackgroundColor = color;
 			tableViewCell.BackgroundColor = color;
+		}
+
+		protected virtual void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
 		}
 
 		protected void UpdateBackground(UITableViewCell tableViewCell, Cell cell)

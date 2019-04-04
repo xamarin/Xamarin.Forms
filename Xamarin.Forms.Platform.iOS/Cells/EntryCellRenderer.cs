@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return tvc;
 		}
 
-		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected override void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var entryCell = (EntryCell)sender;
 			var realCell = (EntryCellTableViewCell)GetRealCell(entryCell);

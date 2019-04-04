@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsEnabled();
 			UpdateHeight();
 			UpdateFlowDirection();
-			UpdateBackgroundColor();
+			UpdateBackgroundColor(_view, Cell);
 
 			_view.TextChanged = OnTextChanged;
 			_view.EditingCompleted = OnEditingCompleted;
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHorizontalTextAlignment();
 			}
 			else if (e.PropertyName == Cell.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
+				UpdateBackgroundColor(_view, Cell);
 		}
 
 		protected virtual NumberKeyListener GetDigitsKeyListener(InputTypes inputTypes)
@@ -144,19 +144,6 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			_view.EditText.Text = entryCell.Text;
-		}
-
-		void UpdateBackgroundColor()
-		{
-			if (_view == null)
-				return;
-
-			var entryCell = (EntryCell)Cell;
-
-			if (entryCell.IsSet(Cell.BackgroundColorProperty))
-				_view.SetBackgroundColor(entryCell.BackgroundColor.ToAndroid());
-			else
-				_view.Background?.ClearColorFilter();
 		}
 	}
 }

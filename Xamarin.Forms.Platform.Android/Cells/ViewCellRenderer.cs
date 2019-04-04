@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 			var c = new ViewCellContainer(context, view, cell, ParentView, unevenRows, rowHeight);
 			_view = c;
 
-			UpdateBackgroundColor();
+			UpdateBackgroundColor(_view, Cell);
 			Performance.Stop(reference, "GetCellCore");
 
 			return c;
@@ -58,20 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnCellPropertyChanged(sender, args);
 
 			if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
-		}
-
-		void UpdateBackgroundColor()
-		{
-			if (_view == null)
-				return;
-
-			var cell = (ViewCell)Cell;
-			
-			if (cell.IsSet(Cell.BackgroundColorProperty))
-				_view.SetBackgroundColor(cell.BackgroundColor.ToAndroid());
-			else
-				_view.Background?.ClearColorFilter();
+				UpdateBackgroundColor(_view, Cell);
 		}
 
 		internal class ViewCellContainer : ViewGroup, INativeElementView
