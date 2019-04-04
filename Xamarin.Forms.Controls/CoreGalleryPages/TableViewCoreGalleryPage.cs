@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Controls
 				BackgroundColor = Color.Blue
 			};
 
-			entryCell.Tapped += (s, a) =>
+			entryCell.Completed += (s, a) =>
 			{
 				entryCell.Text = "Hotpink";
 				entryCell.BackgroundColor = Color.HotPink;
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Controls
 
 			var viewCell = new ViewCell()
 			{
-				View = new Label { Text = "Black or Hotpink" },
+				View = new Label { Text = "White or Hotpink" },
 				BackgroundColor = Color.White
 			};
 
