@@ -22,7 +22,6 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsEnabled();
 			UpdateFlowDirection();
 			UpdateAutomationId();
-			UpdateBackgroundColor();
 			UpdateBackgroundColor(View, Cell);
 			View.SetImageVisible(false);
 
