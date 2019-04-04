@@ -5,11 +5,14 @@ using Xamarin.Forms.Internals;
 using System;
 using System.Linq;
 using Android.Runtime;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class ViewCellRenderer : CellRenderer
 	{
+		ViewCellContainer _view;
+
 		protected override AView GetCellCore(Cell item, AView convertView, ViewGroup parent, Context context)
 		{
 			Performance.Start(out string reference, "GetCellCore");
@@ -42,10 +45,33 @@ namespace Xamarin.Forms.Platform.Android
 			Platform.SetRenderer(cell.View, view);
 			cell.View.IsPlatformEnabled = true;
 			var c = new ViewCellContainer(context, view, cell, ParentView, unevenRows, rowHeight);
+			_view = c;
 
+			UpdateBackgroundColor();
 			Performance.Stop(reference, "GetCellCore");
 
 			return c;
+		}
+
+		protected override void OnCellPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			base.OnCellPropertyChanged(sender, args);
+
+			if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackgroundColor();
+		}
+
+		void UpdateBackgroundColor()
+		{
+			if (_view == null)
+				return;
+
+			var cell = (ViewCell)Cell;
+			
+			if (cell.IsSet(Cell.BackgroundColorProperty))
+				_view.SetBackgroundColor(cell.BackgroundColor.ToAndroid());
+			else
+				_view.Background?.ClearColorFilter();
 		}
 
 		internal class ViewCellContainer : ViewGroup, INativeElementView

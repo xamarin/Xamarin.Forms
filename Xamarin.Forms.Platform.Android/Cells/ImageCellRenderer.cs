@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateImage();
 			UpdateFlowDirection();
+			UpdateBackgroundColor();
 
 			return result;
 		}
@@ -23,6 +24,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateImage();
 			else if (args.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
+			else if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackgroundColor();
 		}
 
 		void UpdateImage()
@@ -40,6 +43,19 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateFlowDirection()
 		{
 			View.UpdateFlowDirection(ParentView);
+		}
+
+		void UpdateBackgroundColor()
+		{
+			if (View == null)
+				return;
+
+			var cell = (ImageCell)Cell;
+
+			if (cell.IsSet(Cell.BackgroundColorProperty))
+				View.SetBackgroundColor(cell.BackgroundColor.ToAndroid());
+			else
+				View.Background?.ClearColorFilter();
 		}
 	}
 }

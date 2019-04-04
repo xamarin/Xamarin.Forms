@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsEnabled(_view, cell);
 			UpdateFlowDirection();
 			UpdateOnColor(_view, cell);
+			UpdateBackgroundColor(_view, cell);
 
 			return _view;
 		}
@@ -54,6 +55,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFlowDirection();
 			else if (args.PropertyName == SwitchCell.OnColorProperty.PropertyName)
 				UpdateOnColor(_view, (SwitchCell)sender);
+			else if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackgroundColor(_view, (SwitchCell)sender);
 		}
 
 		void UpdateChecked()
@@ -108,6 +111,17 @@ namespace Xamarin.Forms.Platform.Android
 					aSwitch.TrackDrawable.ClearColorFilter();
 				}
 			}
+		}
+
+		void UpdateBackgroundColor(SwitchCellView cell, SwitchCell switchCell)
+		{
+			if (cell == null)
+				return;
+
+			if (switchCell.IsSet(Cell.BackgroundColorProperty))
+				cell.SetBackgroundColor(switchCell.BackgroundColor.ToAndroid());
+			else
+				cell.Background?.ClearColorFilter();
 		}
 	}
 }

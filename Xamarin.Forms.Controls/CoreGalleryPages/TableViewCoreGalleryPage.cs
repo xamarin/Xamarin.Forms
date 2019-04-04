@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Controls
 			var viewCell = new ViewCell()
 			{
 				View = new Label { Text = "Black or Hotpink" },
-				BackgroundColor = Color.Black
+				BackgroundColor = Color.White
 			};
 
 			viewCell.Tapped += (s, a) =>
@@ -122,7 +122,22 @@ namespace Xamarin.Forms.Controls
 
 			section3.Add(viewCell);
 
+			var clearAllButton = new Button
+			{
+				Text = "Clear all backgrounds"
+			};
+
+			clearAllButton.Clicked += (s, a) =>
+			{
+				textCell.BackgroundColor = Color.Default;
+				switchCell.BackgroundColor = Color.Default;
+				entryCell.BackgroundColor = Color.Default;
+				imageCell.BackgroundColor = Color.Default;
+				viewCell.BackgroundColor = Color.Default;
+			};
+
 			cellBackgroundColorContainer.View.Root.Add(section3);
+			cellBackgroundColorContainer.ContainerLayout.Children.Add(clearAllButton);
 
 			Add(tableSectionContainer);
 			Add(cellBackgroundColorContainer);
