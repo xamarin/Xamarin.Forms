@@ -17,29 +17,22 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class ShellRenderer : SplitView, IVisualElementRenderer, /*IShellContext, */IAppearanceObserver
 	{
-		event EventHandler<VisualElementChangedEventArgs> _elementChanged;
+		public static readonly Color DefaultBackgroundColor = Color.FromRgb(33, 150, 243);
+		public static readonly Color DefaultForegroundColor = Color.White;
+		public static readonly Color DefaultTitleColor = Color.White;
+		public static readonly Color DefaultUnselectedColor = Color.FromRgba(255, 255, 255, 180);
+
+		//bool _disposed;
+		ShellFlyoutRenderer _flyoutRenderer;
+		UFrame _frameLayout;
 
 		public ShellRenderer()
 		{
-			//Everything in this constructor is an early hack to render something
-			//To be replaced with renderers for each item
-
-			//Flyout:
-			this.IsPaneOpen = true;
-			this.PaneBackground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Gray);
-			//Content area
-			var content = new UGrid();
-			content.Children.Add(new UFrame());
-			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
-			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength() });
-			//Bottom bar
-			var bottomBar = new UGrid() { Background = new SolidColorBrush(Colors.CornflowerBlue), MinHeight = 40 };
-			UGrid.SetRow(bottomBar, 1);
-			content.Children.Add(bottomBar);
-			this.Content = content;
 		}
 
 		#region IVisualElementRenderer
+
+		event EventHandler<VisualElementChangedEventArgs> _elementChanged;
 
 		event EventHandler<VisualElementChangedEventArgs> IVisualElementRenderer.ElementChanged
 		{
@@ -80,6 +73,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public void Dispose()
 		{
 			SetElement(null);
+			//_disposed = true;
 		}
 
 		public void SetElement(VisualElement element)
@@ -105,30 +99,53 @@ namespace Xamarin.Forms.Platform.UWP
 			//	MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly));
 			//_flyoutRenderer.AndroidView.Layout(0, 0, width, height);
 		}
-
+		UGrid _navigationBar;
 		protected virtual void OnElementSet(Shell shell)
 		{
-			//_flyoutRenderer = CreateShellFlyoutRenderer();
-			//_frameLayout = new CustomFrameLayout(AndroidContext)
-			//{
-			//	LayoutParameters = new LP(LP.MatchParent, LP.MatchParent),
-			//	Id = Platform.GenerateViewId(),
-			//};
-			//_frameLayout.SetFitsSystemWindows(true);
-			//
-			//_flyoutRenderer.AttachFlyout(this, _frameLayout);
-			//
-			//((IShellController)shell).AddAppearanceObserver(this, shell);
-			//
-			//SwitchFragment(FragmentManager, _frameLayout, shell.CurrentItem, false);
+			_flyoutRenderer = CreateShellFlyoutRenderer();
+			_frameLayout = new UFrame();
+			//Content area
+			var content = new UGrid();
+			content.Children.Add(_frameLayout);
+			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength() });
+			//Navigation bar
+			_navigationBar = new UGrid() { Background = new SolidColorBrush(Colors.Red), MinHeight = 40 };
+			UGrid.SetRow(_navigationBar, 1);
+			content.Children.Add(_navigationBar);
+			this.Content = content;
+
+			((IShellController)shell).AddAppearanceObserver(this, shell);
+
+			SwitchShellItem(_frameLayout, shell.CurrentItem, false);
 		}
+
+		ShellItemRenderer _currentRenderer;
+
+		protected virtual void SwitchShellItem(UFrame targetView, ShellItem newItem, bool animate = true)
+		{
+			var previousRenderer = _currentRenderer;
+			_currentRenderer = CreateShellItemRenderer(newItem);
+			_currentRenderer.ShellItem = newItem;
+			//If animate: Transition to new item
+		}
+
+		protected virtual ShellFlyoutRenderer CreateShellFlyoutRenderer()
+		{
+			return new ShellFlyoutRenderer(this);
+		}
+
+		protected virtual ShellItemRenderer CreateShellItemRenderer(ShellItem shellItem)
+		{
+			return new ShellItemRenderer(this);
+		}
+
 
 		#region IAppearanceObserver
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			//TODO
-			//UpdateStatusBarColor(appearance);
+			_navigationBar.Background = new SolidColorBrush(appearance.TabBarBackgroundColor.ToWindowsColor());
 		}
 
 		#endregion IAppearanceObserver
