@@ -303,6 +303,12 @@
 
 	<DataTemplate x:Key="TextCell">
 		<StackPanel>
+            <StackPanel.Background>
+                <MultiBinding Converter="{StaticResource ColorConverter}" ConverterParameter="{x:Static StackPanel.BackgroundProperty}">
+                    <Binding RelativeSource="{RelativeSource Self}"/>
+                    <Binding Path="BackgroundColor"/>
+                </MultiBinding>
+            </StackPanel.Background>
 			<TextBlock
 				Text="{Binding Text}"
 				Style="{StaticResource ListViewItemTextBlockStyle}"
@@ -330,7 +336,13 @@
 	</DataTemplate>
 	
 	<DataTemplate x:Key="SwitchCell">
-		<Grid HorizontalAlignment="Stretch">
+        <Grid HorizontalAlignment="Stretch">
+            <Grid.Background>
+                <MultiBinding Converter="{StaticResource ColorConverter}" ConverterParameter="{x:Static Grid.BackgroundProperty}">
+                    <Binding RelativeSource="{RelativeSource Self}"/>
+                    <Binding Path="BackgroundColor"/>
+                </MultiBinding>
+            </Grid.Background>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
@@ -341,7 +353,13 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="ImageCell">
-		<Grid>
+        <Grid>
+            <Grid.Background>
+                <MultiBinding Converter="{StaticResource ColorConverter}" ConverterParameter="{x:Static Grid.BackgroundProperty}">
+                    <Binding RelativeSource="{RelativeSource Self}"/>
+                    <Binding Path="BackgroundColor"/>
+                </MultiBinding>
+            </Grid.Background>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition />
@@ -381,12 +399,17 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="EntryCell">
-
-		<wpf:FormsTextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" IsEnabled="{Binding IsEnabled}"/>
-
-	</DataTemplate>
+        <wpf:FormsTextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" IsEnabled="{Binding IsEnabled}">
+            <wpf:FormsTextBox.Background>
+                <MultiBinding Converter="{StaticResource ColorConverter}" ConverterParameter="{x:Static wpf:FormsTextBox.BackgroundProperty}">
+                    <Binding RelativeSource="{RelativeSource Self}"/>
+                    <Binding Path="BackgroundColor"/>
+                </MultiBinding>
+            </wpf:FormsTextBox.Background>
+        </wpf:FormsTextBox>
+    </DataTemplate>
 
 	<DataTemplate x:Key="ViewCell">
-		<ContentPresenter Content="{Binding View, Converter={StaticResource ViewToRenderer}}" />
+        <ContentPresenter Content="{Binding View, Converter={StaticResource ViewToRenderer}}" />
 	</DataTemplate>
 </ResourceDictionary>
