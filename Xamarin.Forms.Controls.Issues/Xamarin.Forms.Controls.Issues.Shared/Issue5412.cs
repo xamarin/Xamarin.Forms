@@ -12,14 +12,40 @@ using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(Core.UITests.UITestCategories.MasterDetailPage)]
+	[Category(UITestCategories.Navigation)]
+#endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 4512, "5412 - (NavigationBar disappears on MasterDetailPage)", PlatformAffected.UWP)]
+	[Issue(IssueTracker.Github, 5412, "5412 - (NavigationBar disappears on MasterDetailPage)", PlatformAffected.UWP)]
 	public class Issue5412 : TestContentPage
 	{
 		protected override async void Init()
 		{
 			await Navigation.PushModalAsync(new Issue5412MainPage());
 		}
+
+#if UITEST
+		[Test]
+		public void Issue5412Test()
+		{
+			var hamburgerText = "\uE700";
+			var settings = "Settings";
+			var back = "Back";
+		
+			RunningApp.WaitForElement(hamburgerText);
+			RunningApp.Tap(hamburgerText);
+
+			RunningApp.WaitForElement(settings);
+			RunningApp.Tap(settings);
+
+			RunningApp.WaitForElement(back);
+			RunningApp.Tap(back);
+
+			// This fails if the menu isn't displayed (original error behavior)
+			RunningApp.WaitForElement(hamburgerText);
+		}
+#endif
 	}
 
 	public class Issue5412MainPage : MasterDetailPage
@@ -46,6 +72,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Detail = new NavigationPage(new Issue5412IndexPage());
 		}
 	}
+
 	public class Issue5412SettingPage : ContentPage
 	{
 		public Issue5412SettingPage()
