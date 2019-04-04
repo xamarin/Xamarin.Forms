@@ -13,6 +13,7 @@ namespace Xamarin.Forms
 	{
 		public const int DefaultCellHeight = 40;
 		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), typeof(Cell), true, propertyChanged: OnIsEnabledPropertyChanged);
+		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Cell), Color.Default, propertyChanged: OnBackgroundColorPropertyChanged);
 
 		ObservableCollection<MenuItem> _contextActions;
 		readonly Lazy<ElementConfiguration> _elementConfiguration;
@@ -104,6 +105,12 @@ namespace Xamarin.Forms
 			set { SetValue(IsEnabledProperty, value); }
 		}
 
+		public Color BackgroundColor
+		{
+			get { return (Color)GetValue(BackgroundColorProperty); }
+			set { SetValue(BackgroundColorProperty, value); }
+		}
+
 		public double RenderHeight
 		{
 			get
@@ -188,7 +195,7 @@ namespace Xamarin.Forms
 
 				PropertyPropagationController.PropagatePropertyChanged(null);
 			}
-
+			
 			base.OnPropertyChanging(propertyName);
 		}
 
@@ -237,6 +244,11 @@ namespace Xamarin.Forms
 		static void OnIsEnabledPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			(bindable as Cell).OnPropertyChanged("HasContextActions");
+		}
+
+		static void OnBackgroundColorPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			(bindable as Cell).OnPropertyChanged(nameof(BackgroundColor));
 		}
 
 		void OnParentPropertyChanged(object sender, PropertyChangedEventArgs e)

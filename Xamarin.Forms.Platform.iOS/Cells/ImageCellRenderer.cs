@@ -29,6 +29,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (args.PropertyName == ImageCell.ImageSourceProperty.PropertyName)
 				SetImage(imageCell, tvc);
+			else if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackground(tvc, imageCell);
 		}
 
 		async void SetImage(ImageCell cell, CellTableViewCell target)

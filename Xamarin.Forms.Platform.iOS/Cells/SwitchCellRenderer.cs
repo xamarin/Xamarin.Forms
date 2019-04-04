@@ -71,6 +71,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFlowDirection(realCell, boolCell);
 			else if (e.PropertyName == SwitchCell.OnColorProperty.PropertyName)
 				UpdateOnColor(realCell, boolCell);
+			else if (e.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackground(realCell, boolCell);
 		}
 
 		static void OnSwitchValueChanged(object sender, EventArgs eventArgs)

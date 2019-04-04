@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -15,9 +16,17 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Performance.Start(out string reference);
 
-			var tvc = reusableCell as CellTableViewCell ?? new CellTableViewCell(UITableViewCellStyle.Default, item.GetType().FullName);
+			var tvc = reusableCell as CellTableViewCell;
+
+			if (tvc == null)
+				tvc = new CellTableViewCell(UITableViewCellStyle.Default, item.GetType().FullName);
+			else
+			{
+				tvc.PropertyChanged -= HandlePropertyChanged;
+			}
 
 			tvc.Cell = item;
+			tvc.PropertyChanged += HandlePropertyChanged;
 
 			WireUpForceUpdateSizeRequested(item, tvc, tv);
 
@@ -29,6 +38,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Performance.Stop(reference);
 			return tvc;
+		}
+
+		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var cell = (Cell)sender;
+			var realCell = (CellTableViewCell)GetRealCell(cell);
+
+			if (e.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackground(realCell, cell);
 		}
 
 		public virtual void SetAccessibility (UITableViewCell tableViewCell, Cell cell)
@@ -67,6 +85,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (defaultBgColor != Color.Default)
 			{
 				uiBgColor = defaultBgColor.ToUIColor();
+			}
+			else if (cell.IsSet(Cell.BackgroundColorProperty))
+			{
+				uiBgColor = cell.BackgroundColor.ToUIColor();
 			}
 			else
 			{

@@ -33,6 +33,23 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
+		static void UpdateIsEnabled(ViewTableCell cell, ViewCell viewCell)
+		{
+			cell.UserInteractionEnabled = viewCell.IsEnabled;
+			cell.TextLabel.Enabled = viewCell.IsEnabled;
+		}
+
+		void ViewCellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var viewCell = (ViewCell)sender;
+			var realCell = (ViewTableCell)GetRealCell(viewCell);
+
+			if (e.PropertyName == Cell.IsEnabledProperty.PropertyName)
+				UpdateIsEnabled(realCell, viewCell);
+			else if (e.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackground(realCell, viewCell);
+		}
+
 		internal class ViewTableCell : UITableViewCell, INativeElementView
 		{
 			WeakReference<IVisualElementRenderer> _rendererRef;

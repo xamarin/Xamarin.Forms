@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return tvc;
 		}
 
-		static void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var entryCell = (EntryCell)sender;
 			var realCell = (EntryCellTableViewCell)GetRealCell(entryCell);
@@ -65,6 +65,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsEnabled(realCell, entryCell);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateHorizontalTextAlignment(realCell, entryCell);
+			else if (e.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackground(realCell, entryCell);
 		}
 
 		static void OnKeyBoardDoneButtonPressed(object sender, EventArgs e)

@@ -62,6 +62,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsEnabled(tvc, textCell);
 			else if (args.PropertyName == TextCell.AutomationIdProperty.PropertyName)
 				UpdateAutomationId(tvc, textCell);
+			else if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
+				UpdateBackground(tvc, textCell);
 
 			HandlePropertyChanged(tvc, args);
 		}
