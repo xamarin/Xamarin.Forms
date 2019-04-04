@@ -81,6 +81,7 @@
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PropertyChangedEventArgsExtensions.cs" />
+    <Compile Include="ShellRenderer.cs" />
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
