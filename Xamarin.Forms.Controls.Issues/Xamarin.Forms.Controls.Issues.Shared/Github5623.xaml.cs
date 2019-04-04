@@ -153,7 +153,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public ViewModel5623()
 		{
 			var collection = new ObservableCollection<Model5623>();
-			var pageSize = 100;
+			var pageSize = 10;
 
 			for (var i = 0; i < pageSize; i++)
 			{
