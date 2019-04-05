@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Xamarin.Forms.Platform.UWP;
-using UGrid= Windows.UI.Xaml.Controls.Grid;
 using UFrame = Windows.UI.Xaml.Controls.Frame;
+using UGrid = Windows.UI.Xaml.Controls.Grid;
 using URowDefinition = Windows.UI.Xaml.Controls.RowDefinition;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -89,7 +83,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		#endregion IVisualElementRenderer
 
-		protected Shell Element { get; private set; }
+		protected internal Shell Element { get; private set; }
 
 		void OnElementSizeChanged(object sender, EventArgs e)
 		{
@@ -106,14 +100,47 @@ namespace Xamarin.Forms.Platform.UWP
 			_frameLayout = new UFrame();
 			//Content area
 			var content = new UGrid();
-			content.Children.Add(_frameLayout);
-			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
 			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength() });
+			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+			content.Children.Add(_frameLayout);
+			UGrid.SetRow(_frameLayout, 1);
 			//Navigation bar
-			_navigationBar = new UGrid() { Background = new SolidColorBrush(Colors.Red), MinHeight = 40 };
-			UGrid.SetRow(_navigationBar, 1);
+			_navigationBar = new UGrid() { Background = new SolidColorBrush(Colors.Red) };
+			_navigationBar.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
+			_navigationBar.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+			var burgerButton = new Windows.UI.Xaml.Controls.Button()
+			{
+				Content = new TextBlock()
+				{
+					FontFamily = new FontFamily("Segoe MDL2 Assets"),
+					FontSize = 20,
+					Text = "",
+					VerticalAlignment = VerticalAlignment.Center,
+					Foreground = new SolidColorBrush() { Color = Windows.UI.Colors.White }
+				},
+				HorizontalContentAlignment = HorizontalAlignment.Center,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				BorderThickness = new Windows.UI.Xaml.Thickness(0),
+				Background = null,
+				Width = 48,
+				Height = 48,
+				Margin = new Windows.UI.Xaml.Thickness(5, 5, 20, 5),
+			};
+			burgerButton.Click += (s, e) => Element.FlyoutIsPresented = !Element.FlyoutIsPresented;
+			_navigationBar.Children.Add(burgerButton);
+			var _title = new TextBlock()
+			{
+				Text = "Browse",
+				VerticalAlignment = VerticalAlignment.Center,
+				Foreground = new SolidColorBrush() { Color = Windows.UI.Colors.White }
+			};
+			UGrid.SetColumn(_title, 1);
+			_navigationBar.Children.Add(_title);
 			content.Children.Add(_navigationBar);
+
 			this.Content = content;
+
+			_flyoutRenderer.AttachFlyout(this, _frameLayout);
 
 			((IShellController)shell).AddAppearanceObserver(this, shell);
 
@@ -127,7 +154,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var previousRenderer = _currentRenderer;
 			_currentRenderer = CreateShellItemRenderer(newItem);
 			_currentRenderer.ShellItem = newItem;
-			//If animate: Transition to new item
+			//TODO: If animate: Transition to new item
 		}
 
 		protected virtual ShellFlyoutRenderer CreateShellFlyoutRenderer()
@@ -139,7 +166,6 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			return new ShellItemRenderer(this);
 		}
-
 
 		#region IAppearanceObserver
 
