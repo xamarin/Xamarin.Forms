@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -78,6 +79,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Element.SizeChanged += OnElementSizeChanged;
 			OnElementSet(Element);
 
+			Element.PropertyChanged += OnElementPropertyChanged;
 			_elementChanged?.Invoke(this, new VisualElementChangedEventArgs(null, Element));
 		}
 
@@ -93,7 +95,17 @@ namespace Xamarin.Forms.Platform.UWP
 			//	MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly));
 			//_flyoutRenderer.AndroidView.Layout(0, 0, width, height);
 		}
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == Shell.CurrentItemProperty.PropertyName)
+			{
+				SwitchShellItem(_frameLayout, Element.CurrentItem);
+			}
+		}
+
 		UGrid _navigationBar;
+		UGrid _tabBar;
+		TextBlock _title;
 		protected virtual void OnElementSet(Shell shell)
 		{
 			_flyoutRenderer = CreateShellFlyoutRenderer();
@@ -102,12 +114,14 @@ namespace Xamarin.Forms.Platform.UWP
 			var content = new UGrid();
 			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength() });
 			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+			content.RowDefinitions.Add(new URowDefinition() { Height = new Windows.UI.Xaml.GridLength() });
 			content.Children.Add(_frameLayout);
 			UGrid.SetRow(_frameLayout, 1);
 			//Navigation bar
 			_navigationBar = new UGrid() { Background = new SolidColorBrush(Colors.Red) };
 			_navigationBar.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
 			_navigationBar.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+			_navigationBar.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
 			var burgerButton = new Windows.UI.Xaml.Controls.Button()
 			{
 				Content = new TextBlock()
@@ -128,7 +142,7 @@ namespace Xamarin.Forms.Platform.UWP
 			};
 			burgerButton.Click += (s, e) => Element.FlyoutIsPresented = !Element.FlyoutIsPresented;
 			_navigationBar.Children.Add(burgerButton);
-			var _title = new TextBlock()
+			_title = new TextBlock()
 			{
 				Text = "Browse",
 				VerticalAlignment = VerticalAlignment.Center,
@@ -137,6 +151,13 @@ namespace Xamarin.Forms.Platform.UWP
 			UGrid.SetColumn(_title, 1);
 			_navigationBar.Children.Add(_title);
 			content.Children.Add(_navigationBar);
+			_tabBar = new UGrid()
+			{
+				Height = 40,
+				Visibility = Visibility.Collapsed
+			};
+			UGrid.SetRow(_tabBar, 2);
+			content.Children.Add(_tabBar);
 
 			this.Content = content;
 
@@ -154,6 +175,34 @@ namespace Xamarin.Forms.Platform.UWP
 			var previousRenderer = _currentRenderer;
 			_currentRenderer = CreateShellItemRenderer(newItem);
 			_currentRenderer.ShellItem = newItem;
+			//TODO: Do all this in the renderer
+			_title.Text = newItem.CurrentItem?.Title;
+			var page = ((IShellContentController)newItem?.CurrentItem?.CurrentItem).GetOrCreateContent();
+			targetView.Content = page?.ToFrameworkElement();
+			if(newItem.Items.Count > 1)
+			{
+				_tabBar.ColumnDefinitions.Clear();
+				_tabBar.Children.Clear();
+				_tabBar.Visibility = Visibility.Visible;
+				for (int i = 0; i < newItem.Items.Count; i++)
+				{
+					var item = newItem.Items[i];
+					_tabBar.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+					var tb = new TextBlock()
+					{
+						Text = item.Title,
+						Foreground = new SolidColorBrush(Windows.UI.Colors.White),
+						Margin = new Windows.UI.Xaml.Thickness(0, 7, 0, 5),
+						HorizontalAlignment = HorizontalAlignment.Center
+					};
+					UGrid.SetColumn(tb, i);
+					_tabBar.Children.Add(tb);
+				}
+			}
+			else
+			{
+				_tabBar.Visibility = Visibility.Collapsed;
+			}
 			//TODO: If animate: Transition to new item
 		}
 
@@ -171,7 +220,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			_navigationBar.Background = new SolidColorBrush(appearance.TabBarBackgroundColor.ToWindowsColor());
+			_tabBar.Background = _navigationBar.Background = new SolidColorBrush(appearance.TabBarBackgroundColor.ToWindowsColor());
 			var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
 			titleBar.BackgroundColor = titleBar.ButtonBackgroundColor = appearance.BackgroundColor.ToWindowsColor();
 			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = appearance.TitleColor.ToWindowsColor();
