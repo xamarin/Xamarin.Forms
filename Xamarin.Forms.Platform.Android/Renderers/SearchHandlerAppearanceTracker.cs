@@ -13,6 +13,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AView = Android.Views.View;
+using AImageButton = Android.Widget.ImageButton;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -45,7 +46,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateBackgroundColor();
 			UpdateTextColor();
 			UpdatePlaceholderColor();
-			UpdateCancelButton();
+			UpdateCancelButtonColor();
+			UpdateClearPlaceholderIconColor();
 		}
 
 		void UpdateFont()
@@ -84,7 +86,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if (e.Is(SearchHandler.CancelButtonColorProperty))
 			{
-				UpdateCancelButton();
+				UpdateCancelButtonColor();
+			}
+			else if (e.Is(SearchHandler.PlaceholderColorProperty))
+			{
+				UpdateClearPlaceholderIconColor();
 			}
 			else if (e.Is(SearchHandler.KeyboardProperty))
 			{
@@ -101,26 +107,41 @@ namespace Xamarin.Forms.Platform.Android
 			var linearLayout = (_control as ViewGroup).GetChildrenOfType<LinearLayout>().FirstOrDefault();
 			linearLayout.SetBackgroundColor(_searchHandler.BackgroundColor.ToAndroid());
 		}
-
-		void UpdateCancelButton()
+		
+		void UpdateCancelButtonColor()
 		{
-			int searchViewCloseButtonId = _control.Resources.GetIdentifier("android:id/search_close_btn", null, null);
-			if (searchViewCloseButtonId != 0)
-			{
-				var image = _control.FindViewById<ImageView>(searchViewCloseButtonId);
-				if (image != null && image.Drawable != null)
-				{
-					var cancelColor = _searchHandler.CancelButtonColor;
-					if (!cancelColor.IsDefault)
-						image.Drawable.SetColorFilter(cancelColor.ToAndroid(), PorterDuff.Mode.SrcIn);
-					else
-						image.Drawable.ClearColorFilter();
-				}
-			}
+			//For now we are using the clear icon 
+			//we should add a new cancel button that unfocus and hides keyboard
+			UpdateClearIconColor();
 		}
+
+		void UpdateClearIconColor()
+		{
+			UpdateImageButtonIconColor(nameof(SearchHandler.ClearIcon),_searchHandler.CancelButtonColor);
+		}
+
+		void UpdateClearPlaceholderIconColor()
+		{
+			UpdateImageButtonIconColor(nameof(SearchHandler.ClearPlaceholderIcon), _searchHandler.PlaceholderColor);
+		}
+
 		void UpdateTextColor()
 		{
-			_textColorSwitcher?.UpdateTextColor(_editText, _searchHandler.TextColor);
+			var textColor = _searchHandler.TextColor;
+			_textColorSwitcher?.UpdateTextColor(_editText, textColor);
+			UpdateImageButtonIconColor("SearchIcon", textColor);
+			//we need to set the cursor to
+		}
+		void UpdateImageButtonIconColor(string tagName, Color toColor)
+		{
+			var image = _control.FindViewWithTag(tagName) as AImageButton;
+			if (image != null && image.Drawable != null)
+			{
+				if (!toColor.IsDefault)
+					image.Drawable.SetColorFilter(toColor.ToAndroid(), PorterDuff.Mode.SrcIn);
+				else
+					image.Drawable.ClearColorFilter();
+			}
 		}
 
 		void UpdateInputType()
@@ -142,7 +163,7 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 			}
-			//Control.SetInputType(_inputType);
+			_editText.InputType = _inputType;
 
 			if (keyboard == Keyboard.Numeric)
 			{
