@@ -2,9 +2,10 @@
 {
 	public class ShellItemRenderer : IAppearanceObserver
 	{
+		ShellRenderer _renderer;
 		public ShellItemRenderer(ShellRenderer renderer)
 		{
-
+			_renderer = renderer;
 		}
 
 		#region IAppearanceObserver
