@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			int padding = (int)context.ToPixels(8);
 
-			_searchButton = CreateImageButton(context, searchImage, Resource.Drawable.abc_ic_search_api_material, padding, 0);
+			_searchButton = CreateImageButton(context, searchImage, Resource.Drawable.abc_ic_search_api_material, padding, 0, "SearchIcon");
 
 			lp = new LinearLayout.LayoutParams(0, LP.MatchParent)
 			{
@@ -212,8 +212,8 @@ namespace Xamarin.Forms.Platform.Android
 			//_cancelButton = new AButton(context);
 			//_cancelButton.Text = "Cancel";
 
-			_clearButton = CreateImageButton(context, clearImage, Resource.Drawable.abc_ic_clear_material, 0, padding);
-			_clearPlaceholderButton = CreateImageButton(context, clearPlaceholderImage, -1, 0, padding);
+			_clearButton = CreateImageButton(context, clearImage, Resource.Drawable.abc_ic_clear_material, 0, padding, nameof(SearchHandler.ClearIcon));
+			_clearPlaceholderButton = CreateImageButton(context, clearPlaceholderImage, -1, 0, padding, nameof(SearchHandler.ClearPlaceholderIcon));
 
 			linearLayout.AddView(_searchButton);
 			linearLayout.AddView(_textBlock);
@@ -311,12 +311,13 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		AImageButton CreateImageButton(Context context, ImageSource image, int defaultImage, int leftMargin, int rightMargin)
+		AImageButton CreateImageButton(Context context, ImageSource image, int defaultImage, int leftMargin, int rightMargin, string tag)
 		{
 			var result = new AImageButton(context);
+			result.Tag = tag;
 			result.SetPadding(0, 0, 0, 0);
 			result.Focusable = false;
-
+		
 			string defaultHint = null;
 			string defaultDescription = null;
 			AutomationPropertiesProvider.SetContentDescription(result, image, ref defaultDescription, ref defaultHint);
