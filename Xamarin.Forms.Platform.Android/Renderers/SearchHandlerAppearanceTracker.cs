@@ -47,7 +47,6 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateTextColor();
 			UpdatePlaceholderColor();
 			UpdateCancelButtonColor();
-			UpdateClearPlaceholderIconColor();
 		}
 
 		void UpdateFont()
@@ -59,6 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdatePlaceholderColor()
 		{
 			_hintColorSwitcher?.UpdateTextColor(_editText, _searchHandler.PlaceholderColor, _editText.SetHintTextColor);
+			UpdateClearPlaceholderIconColor();
 		}
 
 		void UpdateTextAlignment()
@@ -87,10 +87,6 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.Is(SearchHandler.CancelButtonColorProperty))
 			{
 				UpdateCancelButtonColor();
-			}
-			else if (e.Is(SearchHandler.PlaceholderColorProperty))
-			{
-				UpdateClearPlaceholderIconColor();
 			}
 			else if (e.Is(SearchHandler.KeyboardProperty))
 			{
