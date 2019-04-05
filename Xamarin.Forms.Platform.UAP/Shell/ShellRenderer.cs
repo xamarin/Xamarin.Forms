@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_currentRenderer = CreateShellItemRenderer(newItem);
 			_currentRenderer.ShellItem = newItem;
 			//TODO: Do all this in the renderer
-			_title.Text = newItem.CurrentItem?.Title;
+			_title.Text = newItem.CurrentItem?.Title ?? string.Empty;
 			var page = ((IShellContentController)newItem?.CurrentItem?.CurrentItem).GetOrCreateContent();
 			targetView.Content = page?.ToFrameworkElement();
 			if(newItem.Items.Count > 1)
