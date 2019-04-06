@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					label,
 					slider,
-					new Label { Text = "The initial slider value above should be 6." }
+					new Label { Text = $"The initial slider value above should be {_success}." }
 				}
 			};
 		}
