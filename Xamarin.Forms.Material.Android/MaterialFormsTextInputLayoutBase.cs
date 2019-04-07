@@ -6,6 +6,10 @@ using Android.Runtime;
 using Android.Util;
 using Android.Support.V4.View;
 using Android.Content.Res;
+using AView = Android.Views.View;
+using Xamarin.Forms.Platform.Android.AppCompat;
+using Xamarin.Forms.Platform.Android;
+using Android.Widget;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -94,8 +98,18 @@ namespace Xamarin.Forms.Material.Android
 		 * and this is the only way to set it away from that and to whatever the user specified
 		 * 2) The HintTextColor has a different alpha when focused vs not focused
 		 * */
-		void OnFocusChange(object sender, FocusChangeEventArgs e) => 
+		void OnFocusChange(object sender, FocusChangeEventArgs e)
+		{
+			if (EditText == null)
+				return;
+
 			Device.BeginInvokeOnMainThread(() => ApplyTheme());
+
+			// propagate the focus changed event to the View Renderer base class
+			if (Parent is AView.IOnFocusChangeListener focusChangeListener)
+				focusChangeListener.OnFocusChange(EditText, e.HasFocus);
+
+		}
 
 		internal void SetHint(string hint, VisualElement element)
 		{
@@ -109,6 +123,17 @@ namespace Xamarin.Forms.Material.Android
 			else
 			{
 				Hint = hint ?? String.Empty;
+			}
+		}
+
+		public override EditText EditText
+		{
+			get
+			{
+				if (this.IsDisposed())
+					return null;
+
+				return base.EditText;
 			}
 		}
 
