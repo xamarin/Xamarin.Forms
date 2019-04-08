@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
@@ -11,29 +12,58 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			var pickers = new List<Picker> {
-				new Picker(),
-				new Picker(),
-				new Picker { Title = "Title1" },
-				new Picker { Title = "Title2" },
-				new Picker { Visual = VisualMarker.Material },
-				new Picker { Visual = VisualMarker.Material },
-				new Picker { Title = "Title1", Visual = VisualMarker.Material },
-				new Picker { Title = "Title2", Visual = VisualMarker.Material },
-			};
-#if APP
-			pickers[0].SetAutomationPropertiesName("First accessibility");
-			pickers[0].SetAutomationPropertiesHelpText("This is the accessibility text");
-			pickers[3].SetAutomationPropertiesName("Last accessibility");
-			pickers[3].SetAutomationPropertiesHelpText("This is the accessibility text");
+			var pickers = new List<Picker>();
+			var grid = new Grid();
+			int row = 0, col = 0;
 
-			// material
-			pickers[4].SetAutomationPropertiesName("First accessibility");
-			pickers[4].SetAutomationPropertiesHelpText("This is the accessibility text");
-			pickers[7].SetAutomationPropertiesName("Last accessibility");
-			pickers[7].SetAutomationPropertiesHelpText("This is the accessibility text");
+			void AddPicker(string title, Func<Picker> getPicker)
+			{
+				grid.AddChild(new Label { Text = title }, col, row++);
+				var picker = getPicker();
+				picker.ItemsSource = Enumerable.Range(1, 10).Select(i => $"item {i}").ToList();
+				pickers.Add(picker);
+				grid.AddChild(picker, col, row++);
+			}
+
+			int index = 0;
+			grid.AddChild(new Label { Text = "Default Style" }, col, row++);
+#if APP
+			AddPicker("AutomationProperties", () => 
+			{
+				var picker = new Picker();
+				picker.SetAutomationPropertiesName("First accessibility");
+				picker.SetAutomationPropertiesHelpText("This is the accessibility text");
+				return picker;
+			});
+			AddPicker("Default", () => new Picker ());
+			AddPicker("Default + Title", () => new Picker { Title = "Title1" });
+			AddPicker("AutomationProperties + Title", () =>
+			{
+				var picker = new Picker { Title = "Title2" };
+				picker.SetAutomationPropertiesName("Last accessibility");
+				picker.SetAutomationPropertiesHelpText("This is the accessibility text");
+				return picker;
+			});
+
+			row = 0; col++;
+			grid.AddChild(new Label { Text = "Material Style" }, col, row++);
+			AddPicker("AutomationProperties", () =>
+			{
+				var picker = new Picker { Visual = VisualMarker.Material };
+				picker.SetAutomationPropertiesName("First accessibility");
+				picker.SetAutomationPropertiesHelpText("This is the accessibility text");
+				return picker;
+			});
+			AddPicker("Default", () => new Picker { Visual = VisualMarker.Material });
+			AddPicker("Default + Title", () => new Picker { Title = "Title1", Visual = VisualMarker.Material });
+			AddPicker("AutomationProperties + Title", () =>
+			{
+				var picker = new Picker { Title = "Title2", Visual = VisualMarker.Material };
+				picker.SetAutomationPropertiesName("Last accessibility");
+				picker.SetAutomationPropertiesHelpText("This is the accessibility text");
+				return picker;
+			});
 #endif
-			pickers.ForEach(p => p.ItemsSource = Enumerable.Range(1, 10).Select(i => $"item {i}").ToList());
 
 			Content = new ScrollView
 			{
@@ -41,22 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Children =
 					{
-						new Label { Text = "AutomationProperties" },
-						pickers[0],
-						new Label { Text = "Default" },
-						pickers[1],
-						new Label { Text = "Default + Title" },
-						pickers[2],
-						new Label { Text = "AutomationProperties + Title" },
-						pickers[3],
-						new Label { Text = "-=[ Material ]=-" },
-						pickers[4],
-						new Label { Text = "Default" },
-						pickers[5],
-						new Label { Text = "Default + Title" },
-						pickers[6],
-						new Label { Text = "AutomationProperties + Title" },
-						pickers[7],
+						grid,
 						new Button
 						{
 							Text = "Clear pickers",
