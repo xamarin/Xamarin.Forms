@@ -42,6 +42,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_isDisposed = true;
 				((INotifyCollectionChanged)Element.Items).CollectionChanged -= RowsCollectionChanged;
+
+				_pickerAccessibilityDelegate?.Dispose();
+				_pickerAccessibilityDelegate = null;
 			}
 
 			base.Dispose(disposing);
