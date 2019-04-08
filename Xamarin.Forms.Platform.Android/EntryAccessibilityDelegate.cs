@@ -1,9 +1,23 @@
 ﻿using Android.Views.Accessibility;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	class EntryAccessibilityDelegate : global::Android.Views.View.AccessibilityDelegate
 	{
+		BindableObject _element;
+
+		public EntryAccessibilityDelegate(BindableObject Element) : base()
+		{
+			_element = Element;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			_element = null;
+			base.Dispose(disposing);
+		}
+
 		public string ValueText { get; set; }
 
 		public string ClassName { get; set; } = "android.widget.Button";
@@ -12,7 +26,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnInitializeAccessibilityNodeInfo(host, info);
 			info.ClassName = ClassName;
-			info.Text = ValueText;
+			if (_element != null)
+			{
+				var value = string.IsNullOrWhiteSpace(ValueText) ? string.Empty : $"{ValueText}. ";
+				host.ContentDescription = $"{value}{AutomationPropertiesProvider.ConcatenateNameAndHelpText(_element)}";
+			}
 		}
 	}
 }

@@ -1,7 +1,6 @@
 using Android.App;
 using Android.Util;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -62,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 					SetNativeControl(textField);
 
-					ControlUsedForAutomation.SetAccessibilityDelegate(_pickerAccessibilityDelegate = new EntryAccessibilityDelegate());
+					ControlUsedForAutomation.SetAccessibilityDelegate(_pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
 				}
 				UpdateFont();
 				UpdatePicker();

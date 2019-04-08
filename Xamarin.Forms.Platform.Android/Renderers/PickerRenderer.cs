@@ -64,8 +64,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var textField = CreateNativeControl();
 
-					_pickerAccessibilityDelegate = new EntryAccessibilityDelegate();
-					textField.SetAccessibilityDelegate(_pickerAccessibilityDelegate);
+					textField.SetAccessibilityDelegate(_pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
