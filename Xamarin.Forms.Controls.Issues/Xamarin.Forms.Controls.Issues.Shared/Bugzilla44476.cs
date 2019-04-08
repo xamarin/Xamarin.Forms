@@ -4,14 +4,20 @@ using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
-#endif
+using Xamarin.Forms.Core.UITests;
+#endif	
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 44476, "[Android] Unwanted margin at top of details page when nested in a NavigationPage")]
+	[Issue(IssueTracker.Bugzilla, 44476, "[Android] Unwanted margin at top of details page when nested in a NavigationPage", 
+		PlatformAffected.Android)]
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.MasterDetailPage)]
+#endif
 	public class Bugzilla44476 : TestNavigationPage
 	{
+		const string _success = "This should be visible.";
 		protected override void Init()
 		{
 			BackgroundColor = Color.Maroon;
@@ -44,7 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 								VerticalOptions = LayoutOptions.EndAndExpand,
 								Children =
 								{
-									new Label { Text = "This should be visible." }
+									new Label { Text = _success  }
 								}
 							}
 						}
@@ -52,5 +58,14 @@ namespace Xamarin.Forms.Controls.Issues
 				},
 			});
 		}
+
+
+#if UITEST
+		[Test]
+		public void UnwantedMarginAtTopOfDetailsPageWhenNestedInANavigationPage()
+		{
+			RunningApp.WaitForElement(_success);
+		}
+#endif
 	}
 }
