@@ -268,7 +268,7 @@ namespace Xamarin.Forms
 			return _elementConfiguration.Value;
 		}
 
-		public class ElementConfiguration : IElementConfiguration<Cell>
+		class ElementConfiguration : IElementConfiguration<Cell>
 		{
 			readonly Lazy<PlatformConfigurationRegistry<Cell>> _platformConfigurationRegistry;
 			public ElementConfiguration(Cell cell)
