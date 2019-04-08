@@ -44,7 +44,11 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Children =
 					{
-						new Label { Text = "This page's appearing unsubscribes from the ModalPushed/ModalPopped events" },
+						new Label
+						{
+							Text = "This page's appearing unsubscribes from the ModalPushed/ModalPopped events",
+							HorizontalTextAlignment = TextAlignment.Center
+						},
 						new Button
 						{
 							Text = _goBack,
@@ -65,6 +69,11 @@ namespace Xamarin.Forms.Controls.Issues
 				Children =
 				{
 					new Label { Text = _modal },
+					new Label
+					{
+						Text = "Now press the button bellow, and verify if you go back to previous page. If back's you've success!",
+						HorizontalTextAlignment= TextAlignment.Center
+					},
 					new Button
 					{
 						Text = "Click to dismiss modal",
@@ -82,6 +91,11 @@ namespace Xamarin.Forms.Controls.Issues
 				VerticalOptions = LayoutOptions.Center,
 				Children =
 				{
+					new Label
+					{
+						Text = "Verify if after you press the \"Click to push Modal\" button, you navigate to Modal Page.",
+						HorizontalTextAlignment = TextAlignment.Center
+					},
 					new Button
 					{
 						Text = "Click to push Modal",
