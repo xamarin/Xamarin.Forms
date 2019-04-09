@@ -14,45 +14,45 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1, "Issue Description", PlatformAffected.Default)]
-	public class Github1 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Issue1 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
 		protected override void Init()
 		{
 			// Initialize ui here instead of ctor
 			Content = new Label
 			{
-				AutomationId = "Github1Label",
+				AutomationId = "Issue1Label",
 				Text = "See if I'm here"
 			};
 
-			BindingContext = new ViewModelGithub1();
+			BindingContext = new ViewModelIssue1();
 		}
 
 #if UITEST
 		[Test]
-		public void Github1Test() 
+		public void Issue1Test() 
 		{
 			// Delete this and all other UITEST sections if there is no way to automate the test. Otherwise, be sure to rename the test and update the Category attribute on the class. Note that you can add multiple categories.
-			RunningApp.Screenshot("I am at Github1");
-			RunningApp.WaitForElement(q => q.Marked("Github1Label"));
+			RunningApp.Screenshot("I am at Issue1");
+			RunningApp.WaitForElement(q => q.Marked("Issue1Label"));
 			RunningApp.Screenshot("I see the Label");
 		}
 #endif
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ViewModelGithub1
+	public class ViewModelIssue1
 	{
-		public ViewModelGithub1()
+		public ViewModelIssue1()
 		{
 
 		}
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ModelGithub1
+	public class ModelIssue1
 	{
-		public ModelGithub1()
+		public ModelIssue1()
 		{
 
 		}

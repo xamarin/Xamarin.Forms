@@ -29,34 +29,34 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			BindingContext = new ViewModelGithub2();
+			BindingContext = new ViewModelIssue2();
 		}
 
 #if UITEST
 		[Test]
-		public void Github2Test()
+		public void Issue2Test()
 		{
 			// Delete this and all other UITEST sections if there is no way to automate the test. Otherwise, be sure to rename the test and update the Category attribute on the class. Note that you can add multiple categories.
-			RunningApp.Screenshot("I am at Github2");
-			RunningApp.WaitForElement(q => q.Marked("Github2Label"));
+			RunningApp.Screenshot("I am at Issue2");
+			RunningApp.WaitForElement(q => q.Marked("Issue2Label"));
 			RunningApp.Screenshot("I see the Label");
 		}
 #endif
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ViewModelGithub2
+	public class ViewModelIssue2
 	{
-		public ViewModelGithub2()
+		public ViewModelIssue2()
 		{
 			
 		}
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ModelGithub2
+	public class ModelIssue2
 	{
-		public ModelGithub2()
+		public ModelIssue2()
 		{
 			
 		}
