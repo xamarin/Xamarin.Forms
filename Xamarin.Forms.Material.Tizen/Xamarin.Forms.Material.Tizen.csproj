@@ -12,13 +12,13 @@
 
   <ItemGroup>
     <Compile Include="..\Xamarin.Forms.Material.Android\MaterialColors.cs">
-      <Link>MaterailColors.cs</Link>
+      <Link>MaterialColors.cs</Link>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Tizen.NET" Version="4.0.0" />
-    <PackageReference Include="Tizen.NET.MaterialComponents" Version="0.9.1-preview" />
+    <PackageReference Include="Tizen.NET.MaterialComponents" Version="0.9.5-preview" />
   </ItemGroup>
 
   <ItemGroup>

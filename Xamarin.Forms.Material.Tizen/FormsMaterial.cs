@@ -1,4 +1,7 @@
 ﻿using System;
+using Tizen.NET.MaterialComponents;
+using Xamarin.Forms.Material.Tizen;
+
 namespace Xamarin.Forms
 {
     public static class FormsMaterial
@@ -9,6 +12,7 @@ namespace Xamarin.Forms
 			// this dll doesn't get removed
 
 			VisualMarker.RegisterMaterial();
+			MColors.Current = MaterialColors.Light.CreateColorScheme();
         }
     }
 }

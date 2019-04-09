@@ -64,17 +64,9 @@ namespace Xamarin.Forms.Material.Tizen
 			if (backgroundColor == Color.Default)
 			{
 				if (textColor != Color.Default)
-#if !__TIZEN__
 					return WithAlpha(platformTextColor, 0.0392f);
-#else
-					return PlatformColor.FromRgba(platformTextColor.R, platformTextColor.G, platformTextColor.B, (int)Math.Round(255*0.0392f));
-#endif
 				else
-#if !__TIZEN__
 					return WithAlpha(MaterialColors.Light.PrimaryColorVariant, 0.0392f);
-#else
-					return PlatformColor.FromRgba(MaterialColors.Light.PrimaryColorVariant.R, MaterialColors.Light.PrimaryColorVariant.G, MaterialColors.Light.PrimaryColorVariant.B, (int)Math.Round(255 * 0.0392f));
-#endif
 			}
 
 			return ToPlatformColor(backgroundColor);
@@ -281,6 +273,26 @@ namespace Xamarin.Forms.Material.Tizen
 					OnSurfaceColor = OnSurfaceColor,
 				};
 			}
+#elif __TIZEN__
+			class FormsLightColors : MColors
+			{
+				public override PlatformColor PrimaryColor => MaterialColors.Light.PrimaryColor;
+				public override PlatformColor PrimaryColorVariant => MaterialColors.Light.PrimaryColorVariant;
+				public override PlatformColor OnPrimaryColor => MaterialColors.Light.OnPrimaryColor;
+				public override PlatformColor SecondaryColor => MaterialColors.Light.SecondaryColor;
+				public override PlatformColor OnSecondaryColor => MaterialColors.Light.OnSecondaryColor;
+
+				public override PlatformColor BackgroundColor => MaterialColors.Light.BackgroundColor;
+				public override PlatformColor ErrorColor => MaterialColors.Light.ErrorColor;
+				public override PlatformColor SurfaceColor => MaterialColors.Light.SurfaceColor;
+				public override PlatformColor OnBackgroundColor => MaterialColors.Light.OnBackgroundColor;
+				public override PlatformColor OnSurfaceColor => MaterialColors.Light.OnSurfaceColor;
+			};
+
+			public static MColors CreateColorScheme()
+			{
+				return new FormsLightColors();
+			}
 #endif
 
 		}
@@ -321,6 +333,26 @@ namespace Xamarin.Forms.Material.Tizen
 					OnSurfaceColor = OnSurfaceColor,
 				};
 			}
+#elif __TIZEN__
+			class FormsDarkColors : MColors
+			{
+				public override PlatformColor PrimaryColor => MaterialColors.Dark.PrimaryColor;
+				public override PlatformColor PrimaryColorVariant => MaterialColors.Dark.PrimaryColorVariant;
+				public override PlatformColor OnPrimaryColor => MaterialColors.Dark.OnPrimaryColor;
+				public override PlatformColor SecondaryColor => MaterialColors.Dark.SecondaryColor;
+				public override PlatformColor OnSecondaryColor => MaterialColors.Dark.OnSecondaryColor;
+
+				public override PlatformColor BackgroundColor => MaterialColors.Dark.BackgroundColor;
+				public override PlatformColor ErrorColor => MaterialColors.Dark.ErrorColor;
+				public override PlatformColor SurfaceColor => MaterialColors.Dark.SurfaceColor;
+				public override PlatformColor OnBackgroundColor => MaterialColors.Dark.OnBackgroundColor;
+				public override PlatformColor OnSurfaceColor => MaterialColors.Dark.OnSurfaceColor;
+			};
+
+			public static MColors CreateColorScheme()
+			{
+				return new FormsDarkColors();
+			}
 #endif
 
 		}
@@ -346,7 +378,7 @@ namespace Xamarin.Forms.Material.Tizen
 #elif __IOS__
 			return color.ColorWithAlpha(color.CGColor.Alpha / 255f * alpha);
 #elif __TIZEN__
-			return PlatformColor.FromRgba(color.R, color.G, color.B, (int)Math.Round(color.A*alpha));
+			return color.WithAlpha(color.A / 255f * alpha);
 #endif
 		}
 
@@ -357,7 +389,7 @@ namespace Xamarin.Forms.Material.Tizen
 #elif __IOS__
 			return color.ColorWithAlpha(alpha);
 #elif __TIZEN__
-			return PlatformColor.FromRgba(color.R, color.G, color.B, (int)Math.Round(255*alpha));
+			return color.WithAlpha(alpha);
 #endif
 		}
 
