@@ -42,6 +42,19 @@ namespace Xamarin.Forms
 			return bindable.GetType().Name + ++s_routeCount;
 		}
 
+		public static string[] GetRouteKeys()
+		{
+			string[] keys = new string[s_routes.Count];
+			int i = 0;
+			foreach(var key in s_routes.Keys)
+			{
+				keys[i] = key;
+				i++;
+			}
+
+			return keys;
+		}
+
 		public static Element GetOrCreateContent(string route)
 		{
 			Element result = null;
