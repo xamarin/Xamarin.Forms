@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Github2Test()
 		{
 			// Delete this and all other UITEST sections if there is no way to automate the test. Otherwise, be sure to rename the test and update the Category attribute on the class. Note that you can add multiple categories.
-			RunningApp.Screenshot("I am at Github 2");
+			RunningApp.Screenshot("I am at Github2");
 			RunningApp.WaitForElement(q => q.Marked("Github2Label"));
 			RunningApp.Screenshot("I see the Label");
 		}
