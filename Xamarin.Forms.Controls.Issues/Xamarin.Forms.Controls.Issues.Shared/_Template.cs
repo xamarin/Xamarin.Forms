@@ -24,6 +24,8 @@ namespace Xamarin.Forms.Controls.Issues
 				AutomationId = "Github1Label",
 				Text = "See if I'm here"
 			};
+
+			BindingContext = new ViewModelGithub1();
 		}
 
 #if UITEST
