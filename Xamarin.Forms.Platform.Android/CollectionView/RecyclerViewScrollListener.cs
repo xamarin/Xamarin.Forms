@@ -33,11 +33,18 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			// See https://stackoverflow.com/questions/27507715/android-how-to-get-the-current-x-offset-of-recyclerview
 			_horizontallOffset += dx;
 			_verticalOffset += dy;
-			
-			var linearLayoutManager = recyclerView.GetLayoutManager() as LinearLayoutManager;
-			var firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
-			var lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
-			var centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, lastVisibleItemIndex, linearLayoutManager);
+
+			var firstVisibleItemIndex = -1;
+			var lastVisibleItemIndex = -1;
+			var centerItemIndex = -1;
+
+			if (recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager)
+			{
+				firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
+				lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
+				centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, lastVisibleItemIndex, linearLayoutManager);
+			}
+
 			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(dx, dy, _horizontallOffset, _verticalOffset, firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
 
 			_itemsView.SendScrolled(scrolledEventArgs);
