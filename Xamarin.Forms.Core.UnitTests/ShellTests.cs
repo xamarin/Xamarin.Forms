@@ -135,12 +135,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("IMPL_shell", typeof(ShellItem)));
 
 			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("app://tab2/IMPL_tab21", typeof(ShellItem)));
-
-			string ReverseCase(string input) // Tab1 => tAB1
-			{
-				return new string(input.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
-					char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
-			}
 		}
 
 
