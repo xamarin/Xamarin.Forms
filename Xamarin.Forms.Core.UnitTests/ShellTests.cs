@@ -7,15 +7,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Core.UnitTests
 {
 	[TestFixture]
-	public class ShellTests : BaseTestFixture
+	public class ShellTests : ShellTestBase
 	{
-		[SetUp]
-		public override void Setup()
-		{
-			Device.SetFlags(new[] { Shell.ShellExperimental });
-			base.Setup();
-
-		}
 
 		[Test]
 		public void DefaultState()
@@ -373,79 +366,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.GoToAsync("//rootlevelcontent1");
 			Assert.AreEqual(shell.CurrentItem, item1);
 		}
-
-		ShellSection MakeSimpleShellSection(string route, string contentRoute)
-		{
-			return MakeSimpleShellSection(route, contentRoute, new ShellTestPage());
-		}
-
-		ShellSection MakeSimpleShellSection(string route, string contentRoute, ContentPage contentPage)
-		{
-			var shellSection = new ShellSection();
-			shellSection.Route = route;
-			var shellContent = new ShellContent { Content = contentPage, Route = contentRoute };
-			shellSection.Items.Add(shellContent);
-			return shellSection;
-		}
-
-		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
-		public class ShellTestPage : ContentPage
-		{
-			public string SomeQueryParameter { get; set; }
-		}
-
-		ShellItem CreateShellItem(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
-		{
-			page = page ?? new ContentPage();
-			ShellItem item = null;
-			var section = CreateShellSection(page, asImplicit, shellContentRoute);
-
-			if (asImplicit)
-				item = ShellItem.CreateFromShellSection(section);
-			else
-			{
-				item = new ShellItem();
-				item.Items.Add(section);
-			}
-
-			return item;
-		}
-
-		ShellSection CreateShellSection(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
-		{
-			var content = CreateShellContent(page, asImplicit, shellContentRoute);
-
-			ShellSection section = null;
-
-			if (asImplicit)
-				section = ShellSection.CreateFromShellContent(content);
-			else
-			{
-				section = new ShellSection();
-				section.Items.Add(content);
-			}
-
-			return section;
-		}
-
-		ShellContent CreateShellContent(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
-		{
-			page = page ?? new ContentPage();
-			ShellContent content = null;
-
-			if(!String.IsNullOrWhiteSpace(shellContentRoute))
-			{
-				content = new ShellContent() { Content = page };
-				content.Route = shellContentRoute;
-			}
-			else if (asImplicit)
-				content = (ShellContent)page;
-			else
-				content = new ShellContent() { Content = page };
-
-
-			return content;
-		}
-
 	}
 }

@@ -352,53 +352,6 @@ namespace Xamarin.Forms
 		public static Shell Current => Application.Current?.MainPage as Shell;
 
 
-		[DebuggerDisplay("Full = {FullUri}, Short = {ShortUri}")]
-		class RequestDefinition
-		{
-			public RequestDefinition(Uri fullUri, Uri shortUri, ShellItem item, ShellSection section, ShellContent content)
-			{
-				FullUri = fullUri;
-				ShortUri = shortUri;
-				Item = item;
-				Section = section;
-				Content = content;
-			}
-
-			public RequestDefinition(string fullUri, string shortUri, ShellItem item, ShellSection section, ShellContent content) :
-				this(new Uri(fullUri, UriKind.Absolute), new Uri(shortUri, UriKind.Absolute), item, section, content)
-			{
-			}
-
-			public Uri FullUri { get; }
-			public Uri ShortUri { get; }
-			public ShellItem Item { get; }
-			public ShellSection Section { get; }
-			public ShellContent Content { get; }
-		}
-
-		[DebuggerDisplay("RequestDefinition = {Request}, StackRequest = {StackRequest}")]
-		class NavigationRequest
-		{
-			public enum WhatToDoWithTheStack
-			{
-				ReplaceIt,
-				PushToIt
-			}
-
-			public NavigationRequest(RequestDefinition definition, WhatToDoWithTheStack stackRequest, string query, string fragment)
-			{
-				StackRequest = stackRequest;
-				Query = query;
-				Fragment = fragment;
-				Request = definition;
-			}
-
-			public WhatToDoWithTheStack StackRequest { get; }
-			public string Query { get; }
-			public string Fragment { get; }
-			public RequestDefinition Request { get; }
-		}
-
 		List<RequestDefinition> BuildAllTheRoutes()
 		{
 			List<RequestDefinition> routes = new List<RequestDefinition>();
