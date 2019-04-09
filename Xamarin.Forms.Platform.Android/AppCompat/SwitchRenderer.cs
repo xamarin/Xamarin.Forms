@@ -67,6 +67,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					Element.Toggled -= HandleToggled;
 
 				Control.SetOnCheckedChangeListener(null);
+
+				_defaultTrackDrawable.Dispose();
+				_defaultTrackDrawable = null;
 			}
 
 			base.Dispose(disposing);
