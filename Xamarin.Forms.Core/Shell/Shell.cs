@@ -405,12 +405,12 @@ namespace Xamarin.Forms
 				{
 					var section = item.Items[j];
 
-					for (var k = 0; k < item.Items.Count; k++)
+					for (var k = 0; k < section.Items.Count; k++)
 					{
 						var content = section.Items[k];
 
-						string longUri = $"{RouteScheme}://{Routing.GetRoute(this)}/{Routing.GetRoute(item)}/{Routing.GetRoute(section)}/{Routing.GetRoute(content)}";
-						string shortUri = $"{RouteScheme}://{Routing.GetRoutePathIfNotImplicit(this)}{Routing.GetRoutePathIfNotImplicit(item)}{Routing.GetRoutePathIfNotImplicit(section)}{Routing.GetRoutePathIfNotImplicit(content)}";
+						string longUri = $"{RouteScheme}://{RouteHost}/{Routing.GetRoute(this)}/{Routing.GetRoute(item)}/{Routing.GetRoute(section)}/{Routing.GetRoute(content)}";
+						string shortUri = $"{RouteScheme}://{RouteHost}/{Routing.GetRoutePathIfNotImplicit(this)}{Routing.GetRoutePathIfNotImplicit(item)}{Routing.GetRoutePathIfNotImplicit(section)}{Routing.GetRoutePathIfNotImplicit(content)}";
 
 						routes.Add(new RequestDefinition(longUri, shortUri));
 					}
@@ -427,17 +427,33 @@ namespace Xamarin.Forms
 			// this also isn't setup to search registered global routes
 			
 			var alltheroutes = BuildAllTheRoutes();
-			var parseUri = Regex.Match(relativeUri.OriginalString, @"(?<u>.+?)(\?(?<q>.+?))?(#(?<f>.+))?$").Groups;
-			var url = parseUri["u"].Value;
-			var query = parseUri["q"].Value;
-			var fragment = parseUri["f"].Value;
+
+			string url = null;
+			string query = null;
+			string fragment = null;
+
+			if (relativeUri.IsAbsoluteUri)
+			{
+				url = relativeUri.LocalPath;
+				query = relativeUri.Query;
+				fragment = relativeUri.Fragment;
+			}
+			else
+			{
+				var parseUri = Regex.Match(relativeUri.OriginalString, @"(?<u>.+?)(\?(?<q>.+?))?(#(?<f>.+))?$").Groups;
+				url = parseUri["u"].Value;
+				query = parseUri["q"].Value;
+				fragment = parseUri["f"].Value;
+			}
+
 
 			NavigationRequest.WhatToDoWithTheStack whatToDoWithTheStack = NavigationRequest.WhatToDoWithTheStack.PushToIt;
-			if (url.StartsWith("//"))
+			if (url.StartsWith("//") || relativeUri.IsAbsoluteUri)
 				whatToDoWithTheStack = NavigationRequest.WhatToDoWithTheStack.ReplaceIt;
 
+			
 			// remove to list
-			var list = url.Substring(1).Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+			var list = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 			var myRoute = Routing.GetRoute(this);
 
 			if (!Routing.IsImplicitRoute(myRoute) && list[0] != myRoute)
@@ -446,7 +462,7 @@ namespace Xamarin.Forms
 			}
 
 			string Path = string.Join("/", list);
-			var requestUri = new Uri($"{RouteScheme}://{Path}", UriKind.Absolute);
+			var requestUri = new Uri($"{RouteScheme}://{RouteHost}/{Path}", UriKind.Absolute);
 
 			// at this point we'll search a few different permutations of all registered routes to locate the best fit		
 			NavigationRequest navigationRequest = null;
@@ -467,7 +483,7 @@ namespace Xamarin.Forms
 
 			
 			if (navigationRequest == null)
-				throw new ArgumentException(nameof(relativeUri), relativeUri.ToString());
+				throw new ArgumentException(relativeUri.ToString(), nameof(relativeUri));
 
 			
 			return navigationRequest;
