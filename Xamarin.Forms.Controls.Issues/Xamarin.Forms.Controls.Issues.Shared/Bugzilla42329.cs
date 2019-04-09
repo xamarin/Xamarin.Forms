@@ -17,16 +17,21 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ListView)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 42329, "ListView in Frame and FormsAppCompatActivity Memory Leak")]
-	public class Bugzilla42329 : TestMasterDetailPage 
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 42329, "ListView in Frame and FormsAppCompatActivity Memory Leak")]
+	public class Bugzilla42329 : TestMasterDetailPage
 	{
 		const string DestructorMessage = "ContentPageEx Destructor called";
 		const string Page1Title = "Page1";
 		const string Page2Title = "Page2";
 		const string Page3Title = "Page3";
+		const string LabelPage1 = "Open the drawer menu and select Page2";
+		const string LabelPage2 = "Open the drawer menu and select Page3";
+		static string LabelPage3 = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed.";
+		static string Success = string.Empty;
+		static MasterDetailPage Reference;
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			var masterPage = new MasterPage();
 			Master = masterPage;
@@ -42,6 +47,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			Detail = new NavigationPage(new _42329_FrameWithListView());
+			Reference = this;
 		}
 
 		[Preserve(AllMembers = true)]
@@ -102,6 +108,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			~ContentPageEx()
 			{
+				Success = "Desctructor called";
 				Log.Warning("Bugzilla42329", DestructorMessage);
 			}
 		}
@@ -112,15 +119,28 @@ namespace Xamarin.Forms.Controls.Issues
 			public _42329_FrameWithListView()
 			{
 				var lv = new ListView();
-				var label = new Label();
+				var label = new Label() { Text =  LabelPage1};
+				label.GestureRecognizers.Add(new TapGestureRecognizer
+				{
+					Command = new Command(OpenMaster)
+				});
 				var frame = new Frame { Content = lv };
 
 				Title = Page1Title;
 				Content = new StackLayout
 				{
-					Children = { new Label { Text = "Open the drawer menu and select Page2" }, frame }
+					Children =
+					{
+						label,
+						frame
+					}
 				};
 			}
+		}
+
+		static void OpenMaster()
+		{
+			Reference.IsPresented = true;
 		}
 
 		[Preserve(AllMembers = true)]
@@ -128,18 +148,50 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			public _42329_Page2()
 			{
+				var lbl = new Label
+				{
+					Text = LabelPage2
+				};
+				lbl.GestureRecognizers.Add(new TapGestureRecognizer
+				{
+					Command = new Command(OpenMaster)
+				});
+
 				Title = Page2Title;
-				Content = new StackLayout { Children = { new Label { Text = "Open the drawer menu and select Page3" } } };
+				Content = new StackLayout
+				{
+					Children =
+					{
+						lbl
+					}
+				};
 			}
 		}
 
 		[Preserve(AllMembers = true)]
 		public class _42329_Page3 : ContentPage
 		{
+			Label lblFlag;
 			public _42329_Page3()
 			{
 				Title = Page3Title;
-				Content = new StackLayout { Children = { new Label { Text = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed." } } };
+				lblFlag = new Label
+				{
+					Text = LabelPage3,
+					HorizontalTextAlignment = TextAlignment.Center,
+					TextColor = Color.Red
+				};
+				lblFlag.GestureRecognizers.Add(new TapGestureRecognizer
+				{
+					Command = new Command(async () => await DisplayAlert("Alert", Success, "ok"))
+				});
+				Content = new StackLayout
+				{
+					Children =
+					{
+						lblFlag
+					}
+				};
 			}
 
 			protected override void OnAppearing()
@@ -150,5 +202,24 @@ namespace Xamarin.Forms.Controls.Issues
 				GC.Collect();
 			}
 		}
+
+#if UITEST
+		[Test]
+		public void MemoryLeak()
+		{
+			RunningApp.WaitForElement(Page1Title);
+			RunningApp.Tap(LabelPage1);
+			RunningApp.WaitForElement(Page1Title);
+			RunningApp.Tap(Page2Title);
+			RunningApp.WaitForElement(LabelPage2);
+			RunningApp.Tap(LabelPage2);
+			RunningApp.WaitForElement(Page2Title);
+			RunningApp.Tap(Page3Title);
+			RunningApp.WaitForElement(LabelPage3);
+			RunningApp.Tap(LabelPage3);
+			RunningApp.WaitForElement(Success);
+
+		}
+#endif
 	}
 }
