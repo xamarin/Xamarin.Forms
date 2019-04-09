@@ -11,28 +11,30 @@ namespace Xamarin.Forms
 
 		internal const string ImplicitPrefix = "IMPL_";
 
-		internal static string GenerateImplicitRoute (string source)
+		internal static string GenerateImplicitRoute(string source)
 		{
-			if (source.StartsWith(ImplicitPrefix, StringComparison.Ordinal))
+			if (IsImplicitRoute(source))
 				return source;
-			return ImplicitPrefix + source;
+			return String.Concat(ImplicitPrefix, source);
+		}
+		internal static bool IsImplicitRoute(string source)
+		{
+			return (source.StartsWith(ImplicitPrefix, StringComparison.Ordinal));
+		}
+		internal static bool IsImplicitRoute(Element source)
+		{
+			return IsImplicitRoute(GetRoute(source));
 		}
 
 		internal static bool CompareWithRegisteredRoutes(string compare) => s_routes.ContainsKey(compare);
 
-		internal static bool CompareRoutes(string route, string compare, out bool isImplicit)
+		internal static bool CompareRoutes(string route, string compare)
 		{
-			if (isImplicit = route.StartsWith(ImplicitPrefix, StringComparison.Ordinal))
-				route = route.Substring(ImplicitPrefix.Length);
-
-			if (compare.StartsWith(ImplicitPrefix, StringComparison.Ordinal))
-				throw new Exception();
-
 			return route == compare;
 		}
 
 		public static readonly BindableProperty RouteProperty =
-			BindableProperty.CreateAttached("Route", typeof(string), typeof(Routing), null, 
+			BindableProperty.CreateAttached("Route", typeof(string), typeof(Routing), null,
 				defaultValueCreator: CreateDefaultRoute);
 
 		static object CreateDefaultRoute(BindableObject bindable)
@@ -64,6 +66,15 @@ namespace Xamarin.Forms
 		public static string GetRoute(Element obj)
 		{
 			return (string)obj.GetValue(RouteProperty);
+		}
+
+		internal static string GetRoutePathIfNotImplicit(Element obj)
+		{
+			var source = GetRoute(obj);
+			if (IsImplicitRoute(source))
+				return String.Empty;
+
+			return $"{source}/";
 		}
 
 		public static void RegisterRoute(string route, RouteFactory factory)

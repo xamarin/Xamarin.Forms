@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -80,13 +81,14 @@ namespace Xamarin.Forms
 		{
 			var element = (Element)bindable;
 
-			while (!Application.IsApplicationOrNull(element)) {
+			while (!Application.IsApplicationOrNull(element))
+			{
 				if (element is Shell shell)
 					shell.NotifyFlyoutBehaviorObservers();
 				element = element.Parent;
 			}
 		}
-		
+
 		public static readonly BindableProperty ShellBackgroundColorProperty =
 			BindableProperty.CreateAttached("ShellBackgroundColor", typeof(Color), typeof(Shell), Color.Default,
 				propertyChanged: OnShellColorValueChanged);
@@ -266,34 +268,40 @@ namespace Xamarin.Forms
 
 		async void IShellController.OnFlyoutItemSelected(Element element)
 		{
+			await (this as IShellController).OnFlyoutItemSelectedAsync(element);
+		}
+
+		async Task IShellController.OnFlyoutItemSelectedAsync(Element element)
+		{
 			ShellItem shellItem = null;
 			ShellSection shellSection = null;
 			ShellContent shellContent = null;
 
-			switch (element) {
-			case MenuShellItem menuShellItem:
-				((IMenuItemController)menuShellItem.MenuItem).Activate();
-				break;
-			case ShellItem i:
-				shellItem = i;
-				break;
-			case ShellSection s:
-				shellItem = s.Parent as ShellItem;
-				shellSection = s;
-				break;
-			case ShellContent c:
-				shellItem = c.Parent.Parent as ShellItem;
-				shellSection = c.Parent as ShellSection;
-				shellContent = c;
-				break;
-			case MenuItem m:
-				((IMenuItemController)m).Activate();
-				break;
+			switch (element)
+			{
+				case MenuShellItem menuShellItem:
+					((IMenuItemController)menuShellItem.MenuItem).Activate();
+					break;
+				case ShellItem i:
+					shellItem = i;
+					break;
+				case ShellSection s:
+					shellItem = s.Parent as ShellItem;
+					shellSection = s;
+					break;
+				case ShellContent c:
+					shellItem = c.Parent.Parent as ShellItem;
+					shellSection = c.Parent as ShellSection;
+					shellContent = c;
+					break;
+				case MenuItem m:
+					((IMenuItemController)m).Activate();
+					break;
 			}
 
 			if (shellItem == null || !shellItem.IsEnabled)
 				return;
-				
+
 			shellSection = shellSection ?? shellItem.CurrentItem;
 			shellContent = shellContent ?? shellSection?.CurrentItem;
 
@@ -343,40 +351,126 @@ namespace Xamarin.Forms
 
 		public static Shell Current => Application.Current?.MainPage as Shell;
 
-		Uri GetAbsoluteUri(Uri relativeUri)
-		{
-			if (CurrentItem == null)
-				throw new InvalidOperationException("Relative path is used after selecting Current item.");
 
+		[DebuggerDisplay("Full = {FullUri}, Short = {ShortUri}")]
+		class RequestDefinition
+		{
+			public RequestDefinition(Uri fullUri, Uri shortUri)
+			{
+				FullUri = fullUri;
+				ShortUri = shortUri;
+			}
+			public RequestDefinition(string fullUri, string shortUri) :
+				this(new Uri(fullUri, UriKind.Absolute), new Uri(shortUri, UriKind.Absolute))
+			{
+			}
+
+			public Uri FullUri { get; }
+			public Uri ShortUri { get; }
+		}
+
+		[DebuggerDisplay("RequestDefinition = {Request}, StackRequest = {StackRequest}")]
+		class NavigationRequest
+		{
+			public enum WhatToDoWithTheStack
+			{
+				ReplaceIt,
+				PushToIt
+			}
+
+			public NavigationRequest(RequestDefinition definition, WhatToDoWithTheStack stackRequest, string query, string fragment)
+			{
+				StackRequest = stackRequest;
+				Query = query;
+				Fragment = fragment;
+				Request = definition;
+			}
+
+			public WhatToDoWithTheStack StackRequest { get; }
+			public string Query { get; }
+			public string Fragment { get; }
+			public RequestDefinition Request { get; }
+		}
+
+		List<RequestDefinition> BuildAllTheRoutes()
+		{
+			List<RequestDefinition> routes = new List<RequestDefinition>();
+			// todo make better maybe
+
+			for (var i = 0; i < Items.Count; i++)
+			{
+				var item = Items[i];
+
+				for (var j = 0; j < item.Items.Count; j++)
+				{
+					var section = item.Items[j];
+
+					for (var k = 0; k < item.Items.Count; k++)
+					{
+						var content = section.Items[k];
+
+						string longUri = $"{RouteScheme}://{Routing.GetRoute(this)}/{Routing.GetRoute(item)}/{Routing.GetRoute(section)}/{Routing.GetRoute(content)}";
+						string shortUri = $"{RouteScheme}://{Routing.GetRoutePathIfNotImplicit(this)}{Routing.GetRoutePathIfNotImplicit(item)}{Routing.GetRoutePathIfNotImplicit(section)}{Routing.GetRoutePathIfNotImplicit(content)}";
+
+						routes.Add(new RequestDefinition(longUri, shortUri));
+					}
+				}
+			}
+
+			return routes;
+		}
+
+		NavigationRequest GetNavigationRequest(Uri relativeUri)
+		{
+			// currently everything is being treated as if it starts with `//` 
+			// will work on other permutations soon
+			// this also isn't setup to search registered global routes
+			
+			var alltheroutes = BuildAllTheRoutes();
 			var parseUri = Regex.Match(relativeUri.OriginalString, @"(?<u>.+?)(\?(?<q>.+?))?(#(?<f>.+))?$").Groups;
 			var url = parseUri["u"].Value;
 			var query = parseUri["q"].Value;
 			var fragment = parseUri["f"].Value;
 
-			Element item = CurrentItem;
-			var list = new List<string>();
-			while (item != null && !(item is IApplicationController))
+			NavigationRequest.WhatToDoWithTheStack whatToDoWithTheStack = NavigationRequest.WhatToDoWithTheStack.PushToIt;
+			if (url.StartsWith("//"))
+				whatToDoWithTheStack = NavigationRequest.WhatToDoWithTheStack.ReplaceIt;
+
+			// remove to list
+			var list = url.Substring(1).Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+			var myRoute = Routing.GetRoute(this);
+
+			if (!Routing.IsImplicitRoute(myRoute) && list[0] != myRoute)
 			{
-				var route = Routing.GetRoute(item)?.Trim('/');
-				if (string.IsNullOrEmpty(route))
-					break;
-				list.Insert(0, route);
-				item = item.Parent;
+				list.Insert(0, myRoute);
 			}
 
-			var isGlobalRegisteredRoute = Routing.CompareWithRegisteredRoutes(url);
-			if (isGlobalRegisteredRoute)
-				list.RemoveRange(1, list.Count - 1);
+			string Path = string.Join("/", list);
+			var requestUri = new Uri($"{RouteScheme}://{Path}", UriKind.Absolute);
 
-			list.Add(url.Trim('/'));
-
-			var parentUriBuilder = new UriBuilder(RouteScheme)
+			// at this point we'll search a few different permutations of all registered routes to locate the best fit		
+			NavigationRequest navigationRequest = null;
+			for(int i = 0; i < alltheroutes.Count; i++)
 			{
-				Path = string.Join("/", list),
-				Query = query,
-				Fragment = fragment
-			};
-			return parentUriBuilder.Uri;
+				var route = alltheroutes[i];
+
+				if(requestUri.Equals(route.FullUri) || requestUri.Equals(route.ShortUri))
+				{
+					navigationRequest = new NavigationRequest(route, whatToDoWithTheStack, query, fragment);
+					break;
+				}
+			}
+
+			// if nothing is found the remove segments until you find a match for the scenarios of //route/page/page
+
+
+
+			
+			if (navigationRequest == null)
+				throw new ArgumentException(nameof(relativeUri), relativeUri.ToString());
+
+			
+			return navigationRequest;
 		}
 
 		public async Task GoToAsync(ShellNavigationState state, bool animate = true)
@@ -388,9 +482,9 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			var uri = state.Location.IsAbsoluteUri ? state.Location : GetAbsoluteUri(state.Location);
-
-			var queryString = uri.Query;
+			var navigationRequest = GetNavigationRequest(state.Location);
+			var uri = navigationRequest.Request.FullUri;
+			var queryString = navigationRequest.Query;
 			var queryData = ParseQueryString(queryString);
 			var path = uri.AbsolutePath;
 
@@ -416,15 +510,14 @@ namespace Xamarin.Forms
 			for (int i = 0; i < items.Count; i++)
 			{
 				var shellItem = items[i];
-				if (Routing.CompareRoutes(shellItem.Route, shellItemRoute, out var isImplicit))
+				if (Routing.CompareRoutes(shellItem.Route, shellItemRoute))
 				{
 					ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
 
 					if (CurrentItem != shellItem)
 						SetValueFromRenderer(CurrentItemProperty, shellItem);
 
-					if (!isImplicit)
-						parts.RemoveAt(0);
+					parts.RemoveAt(0);
 
 					if (parts.Count > 0)
 						await ((IShellItemController)shellItem).GoToPart(parts, queryData);
@@ -433,18 +526,18 @@ namespace Xamarin.Forms
 				}
 			}
 
-			if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
-			{
-				var shellItem = ShellItem.GetShellItemFromRouteName(shellItemRoute);
+			//if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
+			//{
+			//	var shellItem = ShellItem.GetShellItemFromRouteName(shellItemRoute);
 
-				ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
+			//	ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
 
-				if (CurrentItem != shellItem)
-					SetValueFromRenderer(CurrentItemProperty, shellItem);
+			//	if (CurrentItem != shellItem)
+			//		SetValueFromRenderer(CurrentItemProperty, shellItem);
 
-				if (parts.Count > 0)
-					await ((IShellItemController)shellItem).GoToPart(parts, queryData);
-			}
+			//	if (parts.Count > 0)
+			//		await ((IShellItemController)shellItem).GoToPart(parts, queryData);
+			//}
 			_accumulateNavigatedEvents = false;
 
 			// this can be null in the event that no navigation actually took place!
@@ -467,7 +560,8 @@ namespace Xamarin.Forms
 			}
 
 			//if the lastItem is implicitly wrapped, get the actual ShellContent
-			if (isLastItem) {
+			if (isLastItem)
+			{
 				if (element is ShellItem shellitem && shellitem.Items.FirstOrDefault() is ShellSection section)
 					element = section;
 				if (element is ShellSection shellsection && shellsection.Items.FirstOrDefault() is ShellContent content)
@@ -481,7 +575,8 @@ namespace Xamarin.Forms
 
 			//filter the query to only apply the keys with matching prefix
 			var filteredQuery = new Dictionary<string, string>(query.Count);
-			foreach (var q in query) {
+			foreach (var q in query)
+			{
 				if (!q.Key.StartsWith(prefix, StringComparison.Ordinal))
 					continue;
 				var key = q.Key.Substring(prefix.Length);
@@ -506,7 +601,7 @@ namespace Xamarin.Forms
 			if (shellItem != null)
 			{
 				var shellItemRoute = shellItem.Route;
-				if (!shellItemRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
+				//if (!shellItemRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
 				{
 					stateBuilder.Append(shellItemRoute);
 					stateBuilder.Append("/");
@@ -515,7 +610,7 @@ namespace Xamarin.Forms
 				if (shellSection != null)
 				{
 					var shellSectionRoute = shellSection.Route;
-					if (!shellSectionRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
+					//if (!shellSectionRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
 					{
 						stateBuilder.Append(shellSectionRoute);
 						stateBuilder.Append("/");
@@ -524,7 +619,7 @@ namespace Xamarin.Forms
 					if (shellContent != null)
 					{
 						var shellContentRoute = shellContent.Route;
-						if (!shellContentRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
+						//if (!shellContentRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
 						{
 							stateBuilder.Append(shellContentRoute);
 							stateBuilder.Append("/");
@@ -601,6 +696,7 @@ namespace Xamarin.Forms
 			_checkExperimentalFlag = checkFlag;
 			VerifyShellFlagEnabled(constructorHint: nameof(Shell));
 			((INotifyCollectionChanged)Items).CollectionChanged += (s, e) => SendStructureChanged();
+			Route = Routing.GenerateImplicitRoute("shell");
 		}
 
 		internal const string ShellExperimental = ExperimentalFlags.ShellExperimental;
@@ -608,7 +704,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal void VerifyShellFlagEnabled(string constructorHint = null, [CallerMemberName] string memberName = "")
 		{
-			if(_checkExperimentalFlag)
+			if (_checkExperimentalFlag)
 				ExperimentalFlags.VerifyFlagEnabled("Shell", ShellExperimental, constructorHint, memberName);
 		}
 
@@ -622,44 +718,52 @@ namespace Xamarin.Forms
 			set => SetValue(FlyoutIconProperty, value);
 		}
 
-		public ShellItem CurrentItem {
+		public ShellItem CurrentItem
+		{
 			get => (ShellItem)GetValue(CurrentItemProperty);
 			set => SetValue(CurrentItemProperty, value);
 		}
 
 		public ShellNavigationState CurrentState => (ShellNavigationState)GetValue(CurrentStateProperty);
 
-		public Color FlyoutBackgroundColor {
+		public Color FlyoutBackgroundColor
+		{
 			get => (Color)GetValue(FlyoutBackgroundColorProperty);
 			set => SetValue(FlyoutBackgroundColorProperty, value);
 		}
 
-		public FlyoutBehavior FlyoutBehavior {
+		public FlyoutBehavior FlyoutBehavior
+		{
 			get => (FlyoutBehavior)GetValue(FlyoutBehaviorProperty);
 			set => SetValue(FlyoutBehaviorProperty, value);
 		}
 
-		public object FlyoutHeader {
+		public object FlyoutHeader
+		{
 			get => GetValue(FlyoutHeaderProperty);
 			set => SetValue(FlyoutHeaderProperty, value);
 		}
 
-		public FlyoutHeaderBehavior FlyoutHeaderBehavior {
+		public FlyoutHeaderBehavior FlyoutHeaderBehavior
+		{
 			get => (FlyoutHeaderBehavior)GetValue(FlyoutHeaderBehaviorProperty);
 			set => SetValue(FlyoutHeaderBehaviorProperty, value);
 		}
 
-		public DataTemplate FlyoutHeaderTemplate {
+		public DataTemplate FlyoutHeaderTemplate
+		{
 			get => (DataTemplate)GetValue(FlyoutHeaderTemplateProperty);
 			set => SetValue(FlyoutHeaderTemplateProperty, value);
 		}
 
-		public bool FlyoutIsPresented {
+		public bool FlyoutIsPresented
+		{
 			get => (bool)GetValue(FlyoutIsPresentedProperty);
 			set => SetValue(FlyoutIsPresentedProperty, value);
 		}
 
-		public DataTemplate GroupHeaderTemplate {
+		public DataTemplate GroupHeaderTemplate
+		{
 			get => (DataTemplate)GetValue(GroupHeaderTemplateProperty);
 			set => SetValue(GroupHeaderTemplateProperty, value);
 		}
@@ -667,19 +771,22 @@ namespace Xamarin.Forms
 		public ShellItemCollection Items => (ShellItemCollection)GetValue(ItemsProperty);
 		public ShellItemCollection Flyout => Items;
 
-		public DataTemplate ItemTemplate {
+		public DataTemplate ItemTemplate
+		{
 			get => (DataTemplate)GetValue(ItemTemplateProperty);
 			set => SetValue(ItemTemplateProperty, value);
 		}
 
 		public MenuItemCollection MenuItems => (MenuItemCollection)GetValue(MenuItemsProperty);
 
-		public DataTemplate MenuItemTemplate {
+		public DataTemplate MenuItemTemplate
+		{
 			get => (DataTemplate)GetValue(MenuItemTemplateProperty);
 			set => SetValue(MenuItemTemplateProperty, value);
 		}
 
-		public string Route {
+		public string Route
+		{
 			get => Routing.GetRoute(this);
 			set => Routing.SetRoute(this, value);
 		}
@@ -688,9 +795,11 @@ namespace Xamarin.Forms
 
 		public string RouteScheme { get; set; } = "app";
 
-		View FlyoutHeaderView {
+		View FlyoutHeaderView
+		{
 			get => _flyoutHeaderView;
-			set {
+			set
+			{
 				if (_flyoutHeaderView == value)
 					return;
 
@@ -816,7 +925,8 @@ namespace Xamarin.Forms
 		{
 			if (_accumulateNavigatedEvents)
 				_accumulatedEvent = args;
-			else {
+			else
+			{
 				/* Removing this check for now as it doesn't properly cover all implicit scenarios
 				 * if (args.Current.Location.AbsolutePath.TrimEnd('/') != _lastNavigating.Location.AbsolutePath.TrimEnd('/'))
 					throw new InvalidOperationException($"Navigation: Current location doesn't match navigation uri {args.Current.Location.AbsolutePath} != {_lastNavigating.Location.AbsolutePath}");
@@ -1060,19 +1170,20 @@ namespace Xamarin.Forms
 
 		Element WalkToPage(Element element)
 		{
-			switch (element) {
-			case Shell shell:
-				element = shell.CurrentItem;
-				break;
-			case ShellItem shellItem:
-				element = shellItem.CurrentItem;
-				break;
-			case ShellSection shellSection:
-				var controller = (IShellSectionController)element;
-				// this is the same as .Last but easier and will add in the root if not null
-				// it generally wont be null but this is just in case
-				element = controller.PresentedPage ?? element;
-				break;
+			switch (element)
+			{
+				case Shell shell:
+					element = shell.CurrentItem;
+					break;
+				case ShellItem shellItem:
+					element = shellItem.CurrentItem;
+					break;
+				case ShellSection shellSection:
+					var controller = (IShellSectionController)element;
+					// this is the same as .Last but easier and will add in the root if not null
+					// it generally wont be null but this is just in case
+					element = controller.PresentedPage ?? element;
+					break;
 			}
 
 			return element;

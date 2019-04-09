@@ -1,12 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<Shell xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xamarin.Forms.Sandbox.MainPage"
-             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
-             ios:Page.UseSafeArea="true">
-    <ContentPage.Content>
-        <StackLayout>
-            <Button Text="I am a Button"  />
-        </StackLayout>
-    </ContentPage.Content>
-</ContentPage>
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+       xmlns:local="clr-namespace:Xamarin.Forms.Sandbox"
+       ios:Page.UseSafeArea="true">
+
+    <ShellItem FlyoutDisplayOptions="AsMultipleItems" >
+
+        <ShellSection Title="I will get navigated to">
+            <local:Page2>
+            </local:Page2>
+        </ShellSection>
+        
+        <ShellSection Title="I will get navigated to">            
+            <local:Page2>
+            </local:Page2>
+        </ShellSection>
+    </ShellItem>
+
+
+    <ShellContent Route="justshellcontent">
+    </ShellContent>
+</Shell>

@@ -32,15 +32,14 @@ namespace Xamarin.Forms
 			for (int i = 0; i < items.Count; i++)
 			{
 				var shellSection = items[i];
-				if (Routing.CompareRoutes(shellSection.Route, shellSectionRoute, out var isImplicit))
+				if (Routing.CompareRoutes(shellSection.Route, shellSectionRoute))
 				{
 					Shell.ApplyQueryAttributes(shellSection, queryData, parts.Count == 1);
 
 					if (CurrentItem != shellSection)
 						SetValueFromRenderer(CurrentItemProperty, shellSection);
 
-					if (!isImplicit)
-						parts.RemoveAt(0);
+					parts.RemoveAt(0);
 					if (parts.Count > 0)
 					{
 						return ((IShellSectionController)shellSection).GoToPart(parts, queryData);
@@ -116,10 +115,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-#if DEBUG
-		[Obsolete ("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
-		public static implicit operator ShellItem(ShellSection shellSection)
+		internal static ShellItem CreateFromShellSection(ShellSection shellSection)
 		{
 			var result = new ShellItem();
 
@@ -130,6 +126,14 @@ namespace Xamarin.Forms
 			result.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellSection));
 			result.SetBinding(FlyoutDisplayOptionsProperty, new Binding(nameof(FlyoutDisplayOptions), BindingMode.OneTime, source: shellSection));
 			return result;
+		}
+
+#if DEBUG
+		[Obsolete ("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
+#endif
+		public static implicit operator ShellItem(ShellSection shellSection)
+		{
+			return CreateFromShellSection(shellSection);
 		}
 
 		internal static ShellItem GetShellItemFromRouteName(string route)

@@ -77,26 +77,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(shellItem, shell.CurrentItem);
 		}
 
-		ShellSection MakeSimpleShellSection(string route, string contentRoute)
-		{
-			return MakeSimpleShellSection(route, contentRoute, new ShellTestPage());
-		}
-
-		ShellSection MakeSimpleShellSection (string route, string contentRoute, ContentPage contentPage)
-		{
-			var shellSection = new ShellSection();
-			shellSection.Route = route;
-			var shellContent = new ShellContent { Content = contentPage, Route = contentRoute };
-			shellSection.Items.Add(shellContent);
-			return shellSection;
-		}
-
-		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
-		public class ShellTestPage : ContentPage
-		{
-			public string SomeQueryParameter { get; set; }
-		}
-
 		[Test]
 		public void SimpleGoTo()
 		{
@@ -313,5 +293,124 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreEqual(((IShellController)shell).FlyoutHeader, label);
 		}
+
+		[Test]
+		public async Task FlyoutNavigateToImplicitContentPage()
+		{
+			var shell = new Shell();
+			var shellITem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems,  };
+			var shellSection = new ShellSection() { Title = "can navigate to" };
+			shellSection.Items.Add(new ContentPage());
+
+			var shellSection2 = new ShellSection() { Title = "can navigate to" };
+			shellSection2.Items.Add(new ContentPage());
+
+			var implicitSection = CreateShellSection(new ContentPage(), asImplicit: true);
+
+			shellITem.Items.Add(shellSection);
+			shellITem.Items.Add(shellSection2);
+			shellITem.Items.Add(implicitSection);
+
+			shell.Items.Add(shellITem);
+			IShellController shellController = (IShellController)shell;
+
+			await shellController.OnFlyoutItemSelectedAsync(shellSection2);
+			Assert.AreEqual(shellSection2, shell.CurrentItem.CurrentItem);
+
+			await shellController.OnFlyoutItemSelectedAsync(shellSection);
+			Assert.AreEqual(shellSection, shell.CurrentItem.CurrentItem);
+
+			await shellController.OnFlyoutItemSelectedAsync(implicitSection);
+			Assert.AreEqual(implicitSection, shell.CurrentItem.CurrentItem);
+
+		}
+
+
+		[Test]
+		public async Task UriNavigationTests()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1");
+			var item2 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent2");
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			shell.GoToAsync("//rootlevelcontent2");
+		}
+
+		ShellSection MakeSimpleShellSection(string route, string contentRoute)
+		{
+			return MakeSimpleShellSection(route, contentRoute, new ShellTestPage());
+		}
+
+		ShellSection MakeSimpleShellSection(string route, string contentRoute, ContentPage contentPage)
+		{
+			var shellSection = new ShellSection();
+			shellSection.Route = route;
+			var shellContent = new ShellContent { Content = contentPage, Route = contentRoute };
+			shellSection.Items.Add(shellContent);
+			return shellSection;
+		}
+
+		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
+		public class ShellTestPage : ContentPage
+		{
+			public string SomeQueryParameter { get; set; }
+		}
+
+		ShellItem CreateShellItem(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
+		{
+			page = page ?? new ContentPage();
+			ShellItem item = null;
+			var section = CreateShellSection(page, asImplicit, shellContentRoute);
+
+			if (asImplicit)
+				item = ShellItem.CreateFromShellSection(section);
+			else
+			{
+				item = new ShellItem();
+				item.Items.Add(section);
+			}
+
+			return item;
+		}
+
+		ShellSection CreateShellSection(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
+		{
+			var content = CreateShellContent(page, asImplicit, shellContentRoute);
+
+			ShellSection section = null;
+
+			if (asImplicit)
+				section = ShellSection.CreateFromShellContent(content);
+			else
+			{
+				section = new ShellSection();
+				section.Items.Add(content);
+			}
+
+			return section;
+		}
+
+		ShellContent CreateShellContent(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
+		{
+			page = page ?? new ContentPage();
+			ShellContent content = null;
+
+			if(!String.IsNullOrWhiteSpace(shellContentRoute))
+			{
+				content = new ShellContent() { Content = page };
+				content.Route = shellContentRoute;
+			}
+			else if (asImplicit)
+				content = (ShellContent)page;
+			else
+				content = new ShellContent() { Content = page };
+
+
+			return content;
+		}
+
 	}
 }

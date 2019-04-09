@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
@@ -72,15 +73,15 @@ namespace Xamarin.Forms
 			for (int i = 0; i < items.Count; i++)
 			{
 				ShellContent shellContent = items[i];
-				if (Routing.CompareRoutes(shellContent.Route, shellContentRoute, out var isImplicit))
+				if (Routing.CompareRoutes(shellContent.Route, shellContentRoute))
 				{
 					Shell.ApplyQueryAttributes(shellContent, queryData, parts.Count == 1);
 
 					if (CurrentItem != shellContent)
 						SetValueFromRenderer(CurrentItemProperty, shellContent);
 
-					if (!isImplicit)
-						parts.RemoveAt(0);
+					parts.RemoveAt(0);
+
 					if (parts.Count > 0)
 					{
 						return GoToAsync(parts, queryData, false);
@@ -190,10 +191,7 @@ namespace Xamarin.Forms
 
 		ShellItem ShellItem => Parent as ShellItem;
 
-#if DEBUG
-		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
-		public static implicit operator ShellSection(ShellContent shellContent)
+		internal static ShellSection CreateFromShellContent(ShellContent shellContent)
 		{
 			var shellSection = new ShellSection();
 
@@ -205,6 +203,19 @@ namespace Xamarin.Forms
 			shellSection.SetBinding(TitleProperty, new Binding("Title", BindingMode.OneWay, source: shellContent));
 			shellSection.SetBinding(IconProperty, new Binding("Icon", BindingMode.OneWay, source: shellContent));
 			return shellSection;
+		}
+
+		internal static ShellSection CreateFromTemplatedPage(TemplatedPage page)
+		{
+			return CreateFromShellContent((ShellContent)page);
+		}
+
+#if DEBUG
+		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
+#endif
+		public static implicit operator ShellSection(ShellContent shellContent)
+		{
+			return CreateFromShellContent(shellContent);
 		}
 
 #if DEBUG

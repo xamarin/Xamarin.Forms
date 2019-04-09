@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace Xamarin.Forms.Sandbox
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainPage : Shell
+	public partial class Page1 : ContentPage
 	{
-		public MainPage()
+		public Page1()
 		{
 			InitializeComponent();
 		}
