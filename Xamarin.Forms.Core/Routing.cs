@@ -13,17 +13,17 @@ namespace Xamarin.Forms
 
 		internal static string GenerateImplicitRoute(string source)
 		{
-			if (IsImplicitRoute(source))
+			if (IsImplicit(source))
 				return source;
 			return String.Concat(ImplicitPrefix, source);
 		}
-		internal static bool IsImplicitRoute(string source)
+		internal static bool IsImplicit(string source)
 		{
 			return (source.StartsWith(ImplicitPrefix, StringComparison.Ordinal));
 		}
-		internal static bool IsImplicitRoute(Element source)
+		internal static bool IsImplicit(Element source)
 		{
-			return IsImplicitRoute(GetRoute(source));
+			return IsImplicit(GetRoute(source));
 		}
 
 		internal static bool CompareWithRegisteredRoutes(string compare) => s_routes.ContainsKey(compare);
@@ -71,7 +71,7 @@ namespace Xamarin.Forms
 		internal static string GetRoutePathIfNotImplicit(Element obj)
 		{
 			var source = GetRoute(obj);
-			if (IsImplicitRoute(source))
+			if (IsImplicit(source))
 				return String.Empty;
 
 			return $"{source}/";
@@ -79,16 +79,14 @@ namespace Xamarin.Forms
 
 		public static void RegisterRoute(string route, RouteFactory factory)
 		{
-			if (!ValidateRoute(route))
-				throw new ArgumentException("Route must contain only lowercase letters");
+			ValidateRoute(route);
 
 			s_routes[route] = factory;
 		}
 
 		public static void RegisterRoute(string route, Type type)
 		{
-			if (!ValidateRoute(route))
-				throw new ArgumentException("Route must contain only lowercase letters");
+			ValidateRoute(route);
 
 			s_routes[route] = new TypeRouteFactory(type);
 		}
@@ -98,13 +96,19 @@ namespace Xamarin.Forms
 			obj.SetValue(RouteProperty, value);
 		}
 
-		static bool ValidateRoute(string route)
+		static void ValidateRoute(string route)
 		{
-			// Honestly this could probably be expanded to allow any URI allowable character
-			// I just dont want to figure out what that validation looks like.
-			// It does however need to be lowercase since uri case sensitivity is a bit touchy
-			Regex r = new Regex(@"^[a-z|\/]*$");
-			return r.IsMatch(route);
+			if (string.IsNullOrWhiteSpace(route))
+				throw new ArgumentNullException("Route cannot be an empty string");
+
+			var uri = new Uri(route, UriKind.RelativeOrAbsolute);
+
+			var parts = uri.OriginalString.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (var part in parts)
+			{
+				if (IsImplicit(part))
+					throw new ArgumentException($"Route contains invalid characters in \"{part}\"");
+			}
 		}
 
 		class TypeRouteFactory : RouteFactory

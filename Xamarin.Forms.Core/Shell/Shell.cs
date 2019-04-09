@@ -473,7 +473,7 @@ namespace Xamarin.Forms
 			var list = url.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 			var myRoute = Routing.GetRoute(this);
 
-			if (!Routing.IsImplicitRoute(myRoute) && list[0] != myRoute)
+			if (!Routing.IsImplicit(myRoute) && list[0] != myRoute)
 			{
 				list.Insert(0, myRoute);
 			}

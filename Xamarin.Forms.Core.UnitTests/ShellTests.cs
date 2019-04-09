@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Xamarin.Forms.Internals;
@@ -106,6 +107,42 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tabfour/content/"));
 		}
+
+		[Test]
+		public async Task CaseIgnoreRouting()
+		{
+			var routes = new[] { "Tab1", "TAB2", "@-_-@", "+:~", "=%", "Super_Simple+-Route.doc", "1/2", @"1\2/3", "app://tab" };
+
+			foreach (var route in routes)
+			{
+				Routing.RegisterRoute(route, typeof(ShellItem));
+
+				var content1 = Routing.GetOrCreateContent(route);
+				Assert.IsNotNull(content1);
+				Assert.AreEqual(Routing.GetRoute(content1), route);
+			}
+
+			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("app://IMPL_tab21", typeof(ShellItem)));
+
+			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute(@"app:\\IMPL_tab21", typeof(ShellItem)));
+
+			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute(string.Empty, typeof(ShellItem)));
+
+			Assert.Catch(typeof(ArgumentNullException), () => Routing.RegisterRoute(null, typeof(ShellItem)));
+
+			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("tab1/IMPL_tab11", typeof(ShellItem)));
+
+			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("IMPL_shell", typeof(ShellItem)));
+
+			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("app://tab2/IMPL_tab21", typeof(ShellItem)));
+
+			string ReverseCase(string input) // Tab1 => tAB1
+			{
+				return new string(input.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
+					char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
+			}
+		}
+
 
 		[Test]
 		public async Task RelativeGoTo()
