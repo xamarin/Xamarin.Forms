@@ -100,6 +100,8 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			}
 
 			_disposed = true;
+
+			base.Dispose(disposing);
 		}
 	}
 }
