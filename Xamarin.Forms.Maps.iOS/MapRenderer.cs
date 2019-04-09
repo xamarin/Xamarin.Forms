@@ -410,28 +410,31 @@ namespace Xamarin.Forms.Maps.MacOS
 
 		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
-			switch (notifyCollectionChangedEventArgs.Action)
+			Device.BeginInvokeOnMainThread(() =>
 			{
-				case NotifyCollectionChangedAction.Add:
-					AddPins(notifyCollectionChangedEventArgs.NewItems);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					RemovePins(notifyCollectionChangedEventArgs.OldItems);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					RemovePins(notifyCollectionChangedEventArgs.OldItems);
-					AddPins(notifyCollectionChangedEventArgs.NewItems);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					var mapView = (MKMapView)Control;
-					if (mapView.Annotations?.Length > 0)
-						mapView.RemoveAnnotations(mapView.Annotations);
-					AddPins((IList)(Element as Map).Pins);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					//do nothing
-					break;
-			}
+				switch (notifyCollectionChangedEventArgs.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						AddPins(notifyCollectionChangedEventArgs.NewItems);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						RemovePins(notifyCollectionChangedEventArgs.OldItems);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						RemovePins(notifyCollectionChangedEventArgs.OldItems);
+						AddPins(notifyCollectionChangedEventArgs.NewItems);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						var mapView = (MKMapView)Control;
+						if (mapView.Annotations?.Length > 0)
+							mapView.RemoveAnnotations(mapView.Annotations);
+						AddPins((IList)(Element as Map).Pins);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						//do nothing
+						break;
+				}
+			});
 		}
 
 		void RemovePins(IList pins)

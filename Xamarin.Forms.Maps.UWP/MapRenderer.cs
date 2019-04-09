@@ -123,29 +123,33 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			switch (e.Action)
+			Device.BeginInvokeOnMainThread(() =>
 			{
-				case NotifyCollectionChangedAction.Add:
-					foreach (Pin pin in e.NewItems)
-						LoadPin(pin);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					// no matter
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					foreach (Pin pin in e.OldItems)
-						RemovePin(pin);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					foreach (Pin pin in e.OldItems)
-						RemovePin(pin);
-					foreach (Pin pin in e.NewItems)
-						LoadPin(pin);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					ClearPins();
-					break;
-			}
+				switch (e.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						foreach (Pin pin in e.NewItems)
+							LoadPin(pin);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						// no matter
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						foreach (Pin pin in e.OldItems)
+							RemovePin(pin);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						foreach (Pin pin in e.OldItems)
+							RemovePin(pin);
+						foreach (Pin pin in e.NewItems)
+							LoadPin(pin);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						ClearPins();
+						LoadPins();
+						break;
+				}
+			});
 		}
 
 		void LoadPins()
