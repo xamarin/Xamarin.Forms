@@ -118,12 +118,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 				else
 				{
-					Control.TrackDrawable.SetColorFilter(Element.OnColor.ToAndroid(), PorterDuff.Mode.Multiply);
+					Control.TrackDrawable?.SetColorFilter(Element.OnColor.ToAndroid(), PorterDuff.Mode.Multiply);
 				}
 			}
 			else
 			{
-				Control.TrackDrawable.ClearColorFilter();
+				Control.TrackDrawable?.ClearColorFilter();
 			}
 		}
 
