@@ -383,82 +383,6 @@ namespace Xamarin.Forms
 			return routes;
 		}
 
-		///// <summary>
-		///// This will eventually move out to an interface.
-		///// The idea here is to translate a Uri into a NavigationRequest which will have information like
-		///// transitions, stack, etc...
-		///// </summary>
-		///// <param name="relativeUri"></param>
-		///// <returns></returns>
-		//NavigationRequest GetNavigationRequest(Uri relativeUri)
-		//{
-		//	// currently everything is being treated as if it starts with `//` 
-		//	// will work on other permutations soon
-		//	// this also isn't setup to search registered global routes
-			
-		//	var alltheroutes = BuildAllTheRoutes();
-
-		//	string url = null;
-		//	string query = null;
-		//	string fragment = null;
-
-		//	if (relativeUri.IsAbsoluteUri)
-		//	{
-		//		url = relativeUri.LocalPath;
-		//		query = relativeUri.Query;
-		//		fragment = relativeUri.Fragment;
-		//	}
-		//	else
-		//	{
-		//		var parseUri = Regex.Match(relativeUri.OriginalString, @"(?<u>.+?)(\?(?<q>.+?))?(#(?<f>.+))?$").Groups;
-		//		url = parseUri["u"].Value;
-		//		query = parseUri["q"].Value;
-		//		fragment = parseUri["f"].Value;
-		//	}
-
-
-		//	NavigationRequest.WhatToDoWithTheStack whatToDoWithTheStack = NavigationRequest.WhatToDoWithTheStack.PushToIt;
-		//	if (url.StartsWith("//") || relativeUri.IsAbsoluteUri)
-		//		whatToDoWithTheStack = NavigationRequest.WhatToDoWithTheStack.ReplaceIt;
-
-			
-		//	// remove to list
-		//	var list = url.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-		//	var myRoute = Routing.GetRoute(this);
-
-		//	if (!Routing.IsImplicit(myRoute) && list[0] != myRoute)
-		//	{
-		//		list.Insert(0, myRoute);
-		//	}
-
-		//	string Path = string.Join("/", list);
-		//	var requestUri = new Uri($"{RouteScheme}://{RouteHost}/{Path}", UriKind.Absolute);
-
-		//	// at this point we'll search a few different permutations of all registered routes to locate the best fit		
-		//	NavigationRequest navigationRequest = null;
-		//	for(int i = 0; i < alltheroutes.Count; i++)
-		//	{
-		//		var route = alltheroutes[i];
-
-		//		if(requestUri.Equals(route.FullUri) || requestUri.Equals(route.ShortUri))
-		//		{
-		//			navigationRequest = new NavigationRequest(route, whatToDoWithTheStack, query, fragment);
-		//			break;
-		//		}
-		//	}
-
-		//	// if nothing is found the remove segments until you find a match for the scenarios of //route/page/page
-
-
-
-			
-		//	if (navigationRequest == null)
-		//		throw new ArgumentException(relativeUri.ToString(), nameof(relativeUri));
-
-			
-		//	return navigationRequest;
-		//}
-
 		public async Task GoToAsync(ShellNavigationState state, bool animate = true)
 		{
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
@@ -493,26 +417,21 @@ namespace Xamarin.Forms
 			var shellItemRoute = parts[0];
 			ApplyQueryAttributes(this, queryData, false);
 
-			var items = Items;
-			for (int i = 0; i < items.Count; i++)
+			var shellItem = navigationRequest.Request.Item;
+			if (shellItem != null)
 			{
-				var shellItem = items[i];
-				if (Routing.CompareRoutes(shellItem.Route, shellItemRoute))
-				{
-					ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
+				ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
 
-					if (CurrentItem != shellItem)
-						SetValueFromRenderer(CurrentItemProperty, shellItem);
+				if (CurrentItem != shellItem)
+					SetValueFromRenderer(CurrentItemProperty, shellItem);
 
-					parts.RemoveAt(0);
+				parts.RemoveAt(0);
 
-					if (parts.Count > 0)
-						await ((IShellItemController)shellItem).GoToPart(parts, queryData);
-
-					break;
-				}
+				if (parts.Count > 0)
+					await ((IShellItemController)shellItem).GoToPart(parts, queryData);
 			}
 
+			
 			//if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
 			//{
 			//	var shellItem = ShellItem.GetShellItemFromRouteName(shellItemRoute);

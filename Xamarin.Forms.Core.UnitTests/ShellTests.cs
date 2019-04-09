@@ -169,6 +169,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync("/tab23");
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab23/content/"));
 
+			/*
+			 * removing support for .. notation for now
 			await shell.GoToAsync("../one/tab11");
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/one/tab11/content/"));
 
@@ -184,6 +186,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			await shell.GoToAsync(new ShellNavigationState($"../one/tab11#fragment"));
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/one/tab11/content/"));
+			*/
 		}
 
 		[Test]
