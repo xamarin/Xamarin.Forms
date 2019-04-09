@@ -24,14 +24,12 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			InitializeComponent();
-
-			BindingContext = new ViewModelGithub2();
 #endif
 		}
 
 		protected override void Init()
 		{
-
+			BindingContext = new ViewModelGithub2();
 		}
 
 #if UITEST
