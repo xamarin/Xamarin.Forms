@@ -355,18 +355,25 @@ namespace Xamarin.Forms
 		[DebuggerDisplay("Full = {FullUri}, Short = {ShortUri}")]
 		class RequestDefinition
 		{
-			public RequestDefinition(Uri fullUri, Uri shortUri)
+			public RequestDefinition(Uri fullUri, Uri shortUri, ShellItem item, ShellSection section, ShellContent content)
 			{
 				FullUri = fullUri;
 				ShortUri = shortUri;
+				Item = item;
+				Section = section;
+				Content = content;
 			}
-			public RequestDefinition(string fullUri, string shortUri) :
-				this(new Uri(fullUri, UriKind.Absolute), new Uri(shortUri, UriKind.Absolute))
+
+			public RequestDefinition(string fullUri, string shortUri, ShellItem item, ShellSection section, ShellContent content) :
+				this(new Uri(fullUri, UriKind.Absolute), new Uri(shortUri, UriKind.Absolute), item, section, content)
 			{
 			}
 
 			public Uri FullUri { get; }
 			public Uri ShortUri { get; }
+			public ShellItem Item { get; }
+			public ShellSection Section { get; }
+			public ShellContent Content { get; }
 		}
 
 		[DebuggerDisplay("RequestDefinition = {Request}, StackRequest = {StackRequest}")]
@@ -412,7 +419,10 @@ namespace Xamarin.Forms
 						string longUri = $"{RouteScheme}://{RouteHost}/{Routing.GetRoute(this)}/{Routing.GetRoute(item)}/{Routing.GetRoute(section)}/{Routing.GetRoute(content)}";
 						string shortUri = $"{RouteScheme}://{RouteHost}/{Routing.GetRoutePathIfNotImplicit(this)}{Routing.GetRoutePathIfNotImplicit(item)}{Routing.GetRoutePathIfNotImplicit(section)}{Routing.GetRoutePathIfNotImplicit(content)}";
 
-						routes.Add(new RequestDefinition(longUri, shortUri));
+						longUri = longUri.TrimEnd('/');
+						shortUri = shortUri.TrimEnd('/');
+
+						routes.Add(new RequestDefinition(longUri, shortUri, item, section, content));
 					}
 				}
 			}
@@ -420,6 +430,13 @@ namespace Xamarin.Forms
 			return routes;
 		}
 
+		/// <summary>
+		/// This will eventually move out to an interface.
+		/// The idea here is to translate a Uri into a NavigationRequest which will have information like
+		/// transitions, stack, etc...
+		/// </summary>
+		/// <param name="relativeUri"></param>
+		/// <returns></returns>
 		NavigationRequest GetNavigationRequest(Uri relativeUri)
 		{
 			// currently everything is being treated as if it starts with `//` 

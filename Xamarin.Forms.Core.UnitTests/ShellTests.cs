@@ -337,6 +337,10 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(item2);
 
 			shell.GoToAsync("//rootlevelcontent2");
+			Assert.AreEqual(shell.CurrentItem, item2);
+
+			shell.GoToAsync("//rootlevelcontent1");
+			Assert.AreEqual(shell.CurrentItem, item1);
 		}
 
 		ShellSection MakeSimpleShellSection(string route, string contentRoute)
