@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Controls.Issues
 			ScrollListInPage("List 10");
 		}
 
-		private void ScrollListInPage(string tabName)
+		void ScrollListInPage(string tabName)
 		{
 			RunningApp.WaitForElement(tabName);
 			RunningApp.Tap(tabName);
