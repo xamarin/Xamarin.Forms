@@ -41,6 +41,22 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		[Ignore("Code needs to be finished")]
+		public async Task ShellSectionWithRelativeEditUpOneLevel()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1", shellSectionRoute: "section1");
+
+			Routing.RegisterRoute("//section1/edit", typeof(ContentPage));
+
+			shell.Items.Add(item1);
+
+			await shell.GoToAsync("//rootlevelcontent1");
+			var location = shell.CurrentState.Location;
+			await shell.GoToAsync("edit");
+		}
+
+		[Test]
 		public async Task ShellSectionWithRelativeEdit()
 		{
 			var shell = new Shell();

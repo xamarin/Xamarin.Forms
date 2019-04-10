@@ -109,6 +109,7 @@ namespace Xamarin.Forms
 						.Select(x => new { Uri = ConvertToStandardFormat(shell, new Uri(x, UriKind.RelativeOrAbsolute)), route = x })
 						.ToArray();
 
+				// Todo is this supported?
 				foreach(var registeredRoute in registeredRoutes)
 				{
 					if(registeredRoute.Uri.Equals(request))
@@ -120,8 +121,8 @@ namespace Xamarin.Forms
 			}
 
 			var depthStart = 0;
-			var depthDirection = 1;
-			var depthLimit = 3;
+			//var depthDirection = 1;
+			//var depthLimit = 3;
 
 			if (segments[0] == shell.Route)
 			{
@@ -133,13 +134,26 @@ namespace Xamarin.Forms
 				depthStart = 0;
 			}
 
-			for (int i = depthStart; i != depthLimit; i += depthDirection)
+			// build this out
+			//if(relativeMatch && shell.CurrentItem?.CurrentItem?.CurrentItem  != null)
+			//{
+			//	NodeLocation location = new NodeLocation();
+			//	location.SetNode(shell.CurrentItem?.CurrentItem?.CurrentItem);
+			//	var routeMatch = LocateRegisteredRoute(location, "edit", shell);
+			//}
+
+			//for (int i = depthStart; i != depthLimit; i += depthDirection)
 			{
 				SearchPath(shell, null, segments, possibleRoutePaths, depthStart);
 				possibleRoutePaths = LocateRegisteredRoute(possibleRoutePaths, shell);
-				if (possibleRoutePaths.Count > 0)
-					break;
+				//if (possibleRoutePaths.Count > 0)
+					//break;
 			}
+
+			//if(shell.CurrentState != null)
+			//{
+			//	var location = shell.CurrentState.Location;
+			//}
 
 			return possibleRoutePaths;
 		}
