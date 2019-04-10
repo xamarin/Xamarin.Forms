@@ -197,9 +197,7 @@ namespace Xamarin.Forms.Controls.Issues
 			protected override void OnAppearing()
 			{
 				base.OnAppearing();
-				GC.Collect();
-				GC.Collect();
-				GC.Collect();
+				GarbageCollectionHelper.Collect();
 			}
 		}
 
