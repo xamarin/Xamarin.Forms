@@ -392,8 +392,7 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			var searchHandler = new ShellUriHandler();
-			var navigationRequest = searchHandler.GetNavigationRequest(this, state.Location);
+			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.Location);
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
 			var queryData = ParseQueryString(queryString);
@@ -414,7 +413,6 @@ namespace Xamarin.Forms
 			else
 				parts.RemoveAt(0);
 
-			var shellItemRoute = parts[0];
 			ApplyQueryAttributes(this, queryData, false);
 
 			var shellItem = navigationRequest.Request.Item;

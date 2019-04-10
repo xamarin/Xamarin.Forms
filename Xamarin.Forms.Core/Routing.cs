@@ -33,6 +33,11 @@ namespace Xamarin.Forms
 			return route == compare;
 		}
 
+		internal static void Clear()
+		{
+			s_routes.Clear();
+		}
+
 		public static readonly BindableProperty RouteProperty =
 			BindableProperty.CreateAttached("Route", typeof(string), typeof(Routing), null,
 				defaultValueCreator: CreateDefaultRoute);

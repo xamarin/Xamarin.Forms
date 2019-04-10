@@ -9,6 +9,58 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ShellUriHandlerTests : ShellTestBase
 	{
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+			Routing.Clear();
+		}
+
+		[Test]
+		public async Task GlobalRegisterAbsoluteMatching()
+		{
+			var shell = new Shell() { RouteScheme = "app", Route = "shellroute" };
+			Routing.RegisterRoute("/seg1/seg2/seg3", typeof(object));
+			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("app://seg1/seg2/seg3"));
+
+			Assert.AreEqual("/seg1/seg2/seg3", request.Request.ShortUri.ToString());
+		}
+
+		[Test]
+		public async Task ShellContentOnlyWithGlobalEdit()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1");
+			var item2 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent2");
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			Routing.RegisterRoute("//rootlevelcontent1/edit", typeof(object));
+
+			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("//rootlevelcontent1/edit"));
+			Assert.AreEqual("//rootlevelcontent1/edit", request.Request.ShortUri.ToString());
+		}
+
+		[Test]
+		public async Task ShellSectionWithRelativeEdit()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1", shellSectionRoute:"section1");
+			var editShellContent = CreateShellContent(shellContentRoute: "edit");
+
+
+			item1.Items[0].Items.Add(editShellContent);
+			shell.Items.Add(item1);
+
+			shell.GoToAsync("//rootlevelcontent1");
+			var location = shell.CurrentState.Location;
+			shell.GoToAsync("edit");
+
+			Assert.AreEqual(editShellContent, shell.CurrentItem.CurrentItem.CurrentItem);
+		}
+
+
 		[Test]
 		public async Task ShellContentOnly()
 		{
@@ -44,13 +96,12 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//section1/rootlevelcontent")).Select(x=> x.PathNoImplicit).ToArray();
 
-			Assert.AreEqual(2, builders.Length);
+			Assert.AreEqual(1, builders.Length);
 			Assert.IsTrue(builders.Contains("//section1/rootlevelcontent"));
-			Assert.IsTrue(builders.Contains("//section1"));
 
 			builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//section2/rootlevelcontent")).Select(x => x.PathNoImplicit).ToArray();
+			Assert.AreEqual(1, builders.Length);
 			Assert.IsTrue(builders.Contains("//section2/rootlevelcontent"));
-			Assert.IsTrue(builders.Contains("//section2"));
 		}
 
 		[Test]
@@ -66,13 +117,12 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//item1/rootlevelcontent")).Select(x => x.PathNoImplicit).ToArray();
 
-			Assert.AreEqual(2, builders.Length);
+			Assert.AreEqual(1, builders.Length);
 			Assert.IsTrue(builders.Contains("//item1/rootlevelcontent"));
-			Assert.IsTrue(builders.Contains("//item1"));
 
 			builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//item2/rootlevelcontent")).Select(x => x.PathNoImplicit).ToArray();
+			Assert.AreEqual(1, builders.Length);
 			Assert.IsTrue(builders.Contains("//item2/rootlevelcontent"));
-			Assert.IsTrue(builders.Contains("//item2"));
 		}
 
 

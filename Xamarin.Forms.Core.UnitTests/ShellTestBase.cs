@@ -17,6 +17,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+
+		}
+
 		protected Uri CreateUri(string uri) => new Uri(uri, UriKind.RelativeOrAbsolute);
 
 		protected ShellSection MakeSimpleShellSection(string route, string contentRoute)
