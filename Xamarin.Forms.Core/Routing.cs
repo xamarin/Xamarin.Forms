@@ -19,7 +19,7 @@ namespace Xamarin.Forms
 		}
 		internal static bool IsImplicit(string source)
 		{
-			return (source.StartsWith(ImplicitPrefix, StringComparison.Ordinal));
+			return source.StartsWith(ImplicitPrefix, StringComparison.Ordinal);
 		}
 		internal static bool IsImplicit(Element source)
 		{
@@ -27,11 +27,6 @@ namespace Xamarin.Forms
 		}
 
 		internal static bool CompareWithRegisteredRoutes(string compare) => s_routes.ContainsKey(compare);
-
-		internal static bool CompareRoutes(string route, string compare)
-		{
-			return route == compare;
-		}
 
 		internal static void Clear()
 		{
@@ -50,13 +45,7 @@ namespace Xamarin.Forms
 		public static string[] GetRouteKeys()
 		{
 			string[] keys = new string[s_routes.Count];
-			int i = 0;
-			foreach(var key in s_routes.Keys)
-			{
-				keys[i] = key;
-				i++;
-			}
-
+			s_routes.Keys.CopyTo(keys, 0);
 			return keys;
 		}
 
@@ -113,6 +102,12 @@ namespace Xamarin.Forms
 			ValidateRoute(route);
 
 			s_routes[route] = factory;
+		}
+
+		public static void UnRegisterRoute(string route)
+		{
+			if (s_routes.TryGetValue(route, out _))
+				s_routes.Remove(route);
 		}
 
 		public static void RegisterRoute(string route, Type type)

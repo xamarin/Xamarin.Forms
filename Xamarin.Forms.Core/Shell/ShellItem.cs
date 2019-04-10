@@ -108,7 +108,7 @@ namespace Xamarin.Forms
 		{
 			var result = new ShellItem();
 
-			result.Route = Routing.GenerateImplicitRoute($"{shellSection.Route}");
+			result.Route = Routing.GenerateImplicitRoute(shellSection.Route);
 
 			result.Items.Add(shellSection);
 			result.SetBinding(TitleProperty, new Binding(nameof(Title), BindingMode.OneWay, source: shellSection));

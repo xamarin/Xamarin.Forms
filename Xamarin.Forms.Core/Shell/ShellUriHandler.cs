@@ -104,18 +104,15 @@ namespace Xamarin.Forms
 
 			if (!relativeMatch)
 			{
-				var registeredRoutes =
-					Routing
-						.GetRouteKeys()
-						.Select(x => new { Uri = ConvertToStandardFormat(shell, new Uri(x, UriKind.RelativeOrAbsolute)), route = x })
-						.ToArray();
-
-				// Todo is this supported?
-				foreach (var registeredRoute in registeredRoutes)
+				var keys = Routing.GetRouteKeys();
+				for (int i = 0; i < keys.Length; i++)
 				{
-					if (registeredRoute.Uri.Equals(request))
+					var route = keys[i];
+					var uri = ConvertToStandardFormat(shell, new Uri(route, UriKind.RelativeOrAbsolute));
+					// Todo is this supported?
+					if (uri.Equals(request))
 					{
-						RouteRequestBuilder builder = new RouteRequestBuilder(registeredRoute.route, registeredRoute.route, null, segments);
+						var builder = new RouteRequestBuilder(route, route, null, segments);
 						return new List<RouteRequestBuilder> { builder };
 					}
 				}
@@ -243,78 +240,6 @@ namespace Xamarin.Forms
 			return bestMatches;
 		}
 
-		//internal static List<RouteRequestBuilder> LocateRegisteredRoute(List<RouteRequestBuilder> possibleRoutePaths, Shell shell)
-		//{
-		//	List<RouteRequestBuilder> bestMatches = new List<RouteRequestBuilder>();
-		//	foreach (var match in possibleRoutePaths)
-		//	{
-		//		if (match.IsFullMatch)
-		//			bestMatches.Add(match);
-		//	}
-
-		//	if (bestMatches.Count == 1)
-		//		return bestMatches;
-
-		//	bestMatches.Clear();
-
-		//	foreach (var match in possibleRoutePaths)
-		//	{
-		//		bool matchFound = true;
-		//		while (matchFound && !match.IsFullMatch)
-		//		{
-		//			matchFound = false;
-		//			NodeLocation nodeLocation = new NodeLocation();
-		//			nodeLocation.SetNode(match.LowestChild);
-
-		//			List<RouteRequestBuilder> builder = new List<RouteRequestBuilder>();
-		//			SearchPath(nodeLocation.LowestChild, null, match.RemainingSegments, builder, 3, ignoreGlobalRoutes: false);
-		//			SearchPath(nodeLocation.LowestChild, null, match.RemainingSegments, builder, 2, ignoreGlobalRoutes: false);
-		//			SearchPath(nodeLocation.LowestChild, null, match.RemainingSegments, builder, 1, ignoreGlobalRoutes: false);
-		//			SearchPath(nodeLocation.LowestChild, null, match.RemainingSegments, builder, 0, ignoreGlobalRoutes: false);
-
-		//			//NodeLocation nodeLocation = new NodeLocation();
-		//			//nodeLocation.SetNode((object)match.Content ?? (object)match.Section ?? (object)match.Item);
-
-		//			//string locatedRoute = LocateRegisteredRoute(nodeLocation, match.NextSegment, shell);
-		//			/*if (!String.IsNullOrWhiteSpace(locatedRoute))
-		//			{
-		//				match.AddGlobalRoute(locatedRoute, match.NextSegment);
-		//				matchFound = true;
-		//			}*/
-		//		}
-
-		//		if (match.IsFullMatch)
-		//			bestMatches.Add(match);
-		//	}
-
-		//	return bestMatches;
-		//}
-
-		//internal static string LocateRegisteredRoute(NodeLocation startingPoint, string route, Shell shell)
-		//{
-		//	var registeredRoutes =
-		//		Routing
-		//			.GetRouteKeys()
-		//			.Select(x => new { Uri = ConvertToStandardFormat(shell, new Uri(x, UriKind.RelativeOrAbsolute)), route = x })
-		//			.ToArray();
-
-		//	while (startingPoint.Shell != null)
-		//	{
-		//		foreach (var registeredRoute in registeredRoutes)
-		//		{
-		//			Uri combined = new Uri($"{startingPoint.GetUri()}/{route}");
-		//			if (combined.Equals(registeredRoute.Uri))
-		//			{
-		//				return registeredRoute.route;
-		//			}
-		//		}
-
-		//		startingPoint.Pop();
-		//	}
-
-		//	return String.Empty;
-		//}
-
 		internal class NodeLocation
 		{
 			public Shell Shell { get; private set; }
@@ -394,7 +319,7 @@ namespace Xamarin.Forms
 				if (Content != null && !Routing.IsImplicit(Content))
 					paths.Add(Content.Route);
 
-				string uri = String.Join("/", paths.ToArray());
+				string uri = String.Join("/", paths);
 				return new Uri($"{Shell.RouteScheme}://{uri}");
 			}
 
@@ -435,7 +360,7 @@ namespace Xamarin.Forms
 				if (items == null)
 					return;
 
-				foreach (var nextNode in GetItems(node))
+				foreach (var nextNode in items)
 				{
 					SearchPath(nextNode, null, segments, possibleRoutePaths, depthToStart, myDepth, currentLocation, ignoreGlobalRoutes);
 				}
@@ -739,7 +664,7 @@ namespace Xamarin.Forms
 		string MakeUriString(List<string> segments)
 		{
 			if (segments[0].StartsWith("/") || segments[0].StartsWith("\\"))
-				return $"{String.Join(_uriSeparator, segments)}";
+				return String.Join(_uriSeparator, segments);
 
 			return $"//{String.Join(_uriSeparator, segments)}";
 		}
