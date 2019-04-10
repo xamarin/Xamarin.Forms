@@ -16,5 +16,12 @@ namespace Xamarin.Forms.Sandbox
 		{
 			InitializeComponent();
 		}
+
+		private async void Button_Clicked(object sender, EventArgs e)
+		{
+
+			//await Navigation.PushAsync(new EditPage());
+			await Shell.Current.CurrentItem.CurrentItem.GoToAsync(new List<string> { "edit" }, new Dictionary<string, string>(), false);
+		}
 	}
 }

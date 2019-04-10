@@ -21,5 +21,6 @@
 
 
     <ShellContent Route="justshellcontent">
+        <local:Page1></local:Page1>
     </ShellContent>
 </Shell>

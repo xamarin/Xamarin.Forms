@@ -16,5 +16,15 @@ namespace Xamarin.Forms.Sandbox
 		{
 			InitializeComponent();
 		}
+
+		private async void justshellcontent_Clicked(object sender, EventArgs e)
+		{
+			await Shell.Current.GoToAsync("//justshellcontent");
+		}
+
+		private async void justshellcontentAndEdit_Clicked(object sender, EventArgs e)
+		{
+			await Shell.Current.GoToAsync("//justshellcontent/edit");
+		}
 	}
 }

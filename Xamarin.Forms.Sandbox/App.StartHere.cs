@@ -9,9 +9,24 @@ namespace Xamarin.Forms.Sandbox
 		// This code is called from the App Constructor so just initialize the main page of the application here
 		void InitializeMainPage()
 		{
+			Routing.RegisterRoute("edit", typeof(EditPage));
 			//MainPage = CreateStackLayoutPage(new[] { new Button() { Text = "text" } });
 			//MainPage.Visual = VisualMarker.Material;
 			MainPage = new MainPage();
+		}
+	}
+
+	public class EditPage : ContentPage
+	{
+		public EditPage()
+		{
+			Content = new StackLayout()
+			{
+				Children =
+				{
+					new Label(){ Text = "Edit page"}
+				}
+			};
 		}
 	}
 }

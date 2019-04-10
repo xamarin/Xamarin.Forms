@@ -4,7 +4,13 @@
              x:Class="Xamarin.Forms.Sandbox.Page2">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.page2!"
+            <Button Text="gotoasync(justshellcontent)" 
+                    Clicked="justshellcontent_Clicked"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+
+            <Button Text="gotoasync(justshellcontent/edit)" 
+                    Clicked="justshellcontentAndEdit_Clicked"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
         </StackLayout>

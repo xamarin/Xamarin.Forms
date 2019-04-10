@@ -72,15 +72,20 @@ namespace Xamarin.Forms
 			if (shellContent == null)
 				return Task.FromResult(true);
 
-			 Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
+			
+			if(request.Request.GlobalRoutes.Count > 0)
+			{
+				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
+				Device.BeginInvokeOnMainThread(async () =>
+				{
+					await GoToAsync(request.Request.GlobalRoutes, queryData, false);
+				});
+			}
+
+			Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
 
 			if (CurrentItem != shellContent)
 				SetValueFromRenderer(CurrentItemProperty, shellContent);
-
-
-			if(request.Request.GlobalRoutes.Count > 0)
-				return GoToAsync(request.Request.GlobalRoutes, queryData, false);
-		
 
 			return Task.FromResult(true);
 		}

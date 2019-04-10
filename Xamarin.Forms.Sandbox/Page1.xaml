@@ -4,7 +4,7 @@
              x:Class="Xamarin.Forms.Sandbox.Page1">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
+            <Button Text="Push Page" Clicked="Button_Clicked"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
         </StackLayout>

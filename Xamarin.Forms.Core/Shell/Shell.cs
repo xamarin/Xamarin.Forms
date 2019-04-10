@@ -418,7 +418,7 @@ namespace Xamarin.Forms
 			var shellItem = navigationRequest.Request.Item;
 			if (shellItem != null)
 			{
-				ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
+				ApplyQueryAttributes(shellItem, queryData, navigationRequest.Request.Section == null);
 
 				if (CurrentItem != shellItem)
 					SetValueFromRenderer(CurrentItemProperty, shellItem);
@@ -428,7 +428,10 @@ namespace Xamarin.Forms
 				if (parts.Count > 0)
 					await ((IShellItemController)shellItem).GoToPart(navigationRequest, queryData);
 			}
-
+			else
+			{
+				await CurrentItem.CurrentItem.GoToAsync(navigationRequest.Request.GlobalRoutes, queryData, animate);
+			}
 			
 			//if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
 			//{
@@ -442,6 +445,7 @@ namespace Xamarin.Forms
 			//	if (parts.Count > 0)
 			//		await ((IShellItemController)shellItem).GoToPart(parts, queryData);
 			//}
+
 			_accumulateNavigatedEvents = false;
 
 			// this can be null in the event that no navigation actually took place!
@@ -597,6 +601,7 @@ namespace Xamarin.Forms
 
 		internal Shell(bool checkFlag)
 		{
+			Navigation = new NavigationImpl(this);
 			_checkExperimentalFlag = checkFlag;
 			VerifyShellFlagEnabled(constructorHint: nameof(Shell));
 			((INotifyCollectionChanged)Items).CollectionChanged += (s, e) => SendStructureChanged();
@@ -1098,6 +1103,27 @@ namespace Xamarin.Forms
 			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, LogicalChildren);
 			if (FlyoutHeaderView != null)
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
+		}
+
+		public class NavigationImpl : NavigationProxy
+		{
+			readonly Shell _shell;
+
+			NavigationProxy SectionProxy => _shell.CurrentItem.CurrentItem.NavigationProxy;			
+
+			public NavigationImpl(Shell shell) => _shell = shell;
+
+			protected override IReadOnlyList<Page> GetNavigationStack() => SectionProxy.NavigationStack;
+
+			protected override void OnInsertPageBefore(Page page, Page before) => SectionProxy.InsertPageBefore(page, before);
+
+			protected override Task<Page> OnPopAsync(bool animated) => SectionProxy.PopAsync(animated);
+
+			protected override Task OnPopToRootAsync(bool animated) => SectionProxy.PopToRootAsync(animated);
+
+			protected override Task OnPushAsync(Page page, bool animated) => SectionProxy.PushAsync(page, animated);
+
+			protected override void OnRemovePage(Page page) => SectionProxy.RemovePage(page);
 		}
 	}
 }
