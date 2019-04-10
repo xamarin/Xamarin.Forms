@@ -27,9 +27,10 @@ namespace Xamarin.Forms.Material.Android
 		MotionEventHelper _motionEventHelper;
 		double _max = 0.0;
 		double _min = 0.0;
+		bool _inputTransparent;
 
 		public MaterialSliderRenderer(Context context)
-			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialSlider), null, Resource.Style.XamarinFormsMaterialSlider)
+			: base(MaterialContextThemeWrapper.Create(context), null, Resource.Attribute.materialSliderStyle)
 		{
 			SetOnSeekBarChangeListener(this);
 			Max = (int)MaximumValue;
@@ -44,6 +45,9 @@ namespace Xamarin.Forms.Material.Android
 
 		public override bool OnTouchEvent(MotionEvent e)
 		{
+			if (!Enabled || _inputTransparent)
+				return false;
+
 			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
 				return true;
 
@@ -118,6 +122,7 @@ namespace Xamarin.Forms.Material.Android
 
 				UpdateValue();
 				UpdateColors();
+				UpdateInputTransparent();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -131,6 +136,17 @@ namespace Xamarin.Forms.Material.Android
 				UpdateValue();
 			else if (e.IsOneOf(VisualElement.BackgroundColorProperty, Slider.MaximumTrackColorProperty, Slider.MinimumTrackColorProperty, Slider.ThumbColorProperty))
 				UpdateColors();
+			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
+				UpdateInputTransparent();
+		}
+
+
+		void UpdateInputTransparent()
+		{
+			if (Element == null)
+				return;
+
+			_inputTransparent = Element.InputTransparent;
 		}
 
 		void UpdateColors()
@@ -201,6 +217,8 @@ namespace Xamarin.Forms.Material.Android
 
 		// ITabStop
 		AView ITabStop.TabStop => this;
+
+
 	}
 }
 #endif
