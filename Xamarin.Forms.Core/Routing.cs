@@ -95,8 +95,21 @@ namespace Xamarin.Forms
 			return $"{source}/";
 		}
 
+		public static string FormatRoute(List<string> segments)
+		{
+			var route = FormatRoute(String.Join("/", segments));
+			return route;
+		}
+
+		public static string FormatRoute(string route)
+		{
+			return route;
+		}
+
 		public static void RegisterRoute(string route, RouteFactory factory)
 		{
+			if (!String.IsNullOrWhiteSpace(route))
+				route = FormatRoute(route);
 			ValidateRoute(route);
 
 			s_routes[route] = factory;
@@ -104,6 +117,9 @@ namespace Xamarin.Forms
 
 		public static void RegisterRoute(string route, Type type)
 		{
+			if(!String.IsNullOrWhiteSpace(route))
+				route = FormatRoute(route);
+
 			ValidateRoute(route);
 
 			s_routes[route] = new TypeRouteFactory(type);

@@ -108,11 +108,12 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			foreach (var route in routes)
 			{
-				Routing.RegisterRoute(route, typeof(ShellItem));
+				var formattedRoute = Routing.FormatRoute(route);
+				Routing.RegisterRoute(formattedRoute, typeof(ShellItem));
 
-				var content1 = Routing.GetOrCreateContent(route);
+				var content1 = Routing.GetOrCreateContent(formattedRoute);
 				Assert.IsNotNull(content1);
-				Assert.AreEqual(Routing.GetRoute(content1), route);
+				Assert.AreEqual(Routing.GetRoute(content1), formattedRoute);
 			}
 
 			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("app://IMPL_tab21", typeof(ShellItem)));
