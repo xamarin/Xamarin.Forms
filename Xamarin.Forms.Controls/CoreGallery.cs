@@ -217,6 +217,7 @@ namespace Xamarin.Forms.Controls
 				new CoreViewContainer ("SwapRoot - NavigationPage", typeof(CoreNavigationPage)),
 				new CoreViewContainer ("SwapRoot - TabbedPage", typeof(CoreTabbedPage)),
 				new CoreViewContainer ("SwapRoot - BottomNavigation TabbedPage", typeof(CoreTabbedPageAsBottomNavigation)),
+				new CoreViewContainer ("SwapRoot - Store Shell", typeof(XamStore.StoreShell)),
 			};
 
 			var template = new DataTemplate(typeof(TextCell));
@@ -343,6 +344,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new VisualGallery(), "Visual Gallery"),
 				new GalleryPageFactory(() => new WebViewCoreGalleryPage(), "WebView Gallery"),
 				new GalleryPageFactory(() => new WkWebViewCoreGalleryPage(), "WkWebView Gallery"),
+				new GalleryPageFactory(() => new DynamicViewGallery(), "Dynamic ViewGallery"),
 				//pages
  				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
 				new GalleryPageFactory(() => new MasterDetailPageTabletPage(), "MasterDetailPage Tablet Page"),
@@ -581,6 +583,7 @@ namespace Xamarin.Forms.Controls
 
 			foreach (var page in Issues.Helpers.ViewHelper.GetAllPages())
 			{
+				page.Visual = VisualMarker.Default;
 				if (!DependencyService.Get<IRegistrarValidationService>().Validate(page, out string message))
 					throw new InvalidOperationException(message);
 			}

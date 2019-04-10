@@ -12,7 +12,6 @@ using AProgressBar = Android.Widget.ProgressBar;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(ActivityIndicator), typeof(MaterialActivityIndicatorRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -30,7 +29,7 @@ namespace Xamarin.Forms.Material.Android
 		public MaterialActivityIndicatorRenderer(Context context)
 			: base(context)
 		{
-			_control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular)
+			_control = new CircularProgress(MaterialContextThemeWrapper.Create(context), null, Resource.Attribute.materialProgressBarCircularStyle)
 			{
 				// limiting size to compare iOS realization
 				// https://github.com/material-components/material-components-ios/blob/develop/components/ActivityIndicator/src/MDCActivityIndicator.m#L425
