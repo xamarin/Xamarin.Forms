@@ -375,7 +375,7 @@ namespace Xamarin.Forms
 						longUri = longUri.TrimEnd('/');
 						shortUri = shortUri.TrimEnd('/');
 
-						routes.Add(new RequestDefinition(longUri, shortUri, item, section, content));
+						routes.Add(new RequestDefinition(longUri, shortUri, item, section, content, new List<string>()));
 					}
 				}
 			}
@@ -426,7 +426,7 @@ namespace Xamarin.Forms
 				parts.RemoveAt(0);
 
 				if (parts.Count > 0)
-					await ((IShellItemController)shellItem).GoToPart(parts, queryData);
+					await ((IShellItemController)shellItem).GoToPart(navigationRequest, queryData);
 			}
 
 			

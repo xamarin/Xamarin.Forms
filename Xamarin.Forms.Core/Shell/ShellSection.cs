@@ -65,30 +65,22 @@ namespace Xamarin.Forms
 			callback(DisplayedPage);
 		}
 
-		Task IShellSectionController.GoToPart(List<string> parts, Dictionary<string, string> queryData)
+		Task IShellSectionController.GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
 		{
-			var shellContentRoute = parts[0];
+			ShellContent shellContent = request.Request.Content;
 
-			var items = Items;
-			for (int i = 0; i < items.Count; i++)
-			{
-				ShellContent shellContent = items[i];
-				if (Routing.CompareRoutes(shellContent.Route, shellContentRoute))
-				{
-					Shell.ApplyQueryAttributes(shellContent, queryData, parts.Count == 1);
+			if (shellContent == null)
+				return Task.FromResult(true);
 
-					if (CurrentItem != shellContent)
-						SetValueFromRenderer(CurrentItemProperty, shellContent);
+			 Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
 
-					parts.RemoveAt(0);
+			if (CurrentItem != shellContent)
+				SetValueFromRenderer(CurrentItemProperty, shellContent);
 
-					if (parts.Count > 0)
-					{
-						return GoToAsync(parts, queryData, false);
-					}
-					break;
-				}
-			}
+
+			if(request.Request.GlobalRoutes.Count > 0)
+				return GoToAsync(request.Request.GlobalRoutes, queryData, false);
+		
 
 			return Task.FromResult(true);
 		}

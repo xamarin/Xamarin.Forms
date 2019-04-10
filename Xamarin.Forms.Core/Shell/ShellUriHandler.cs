@@ -71,8 +71,11 @@ namespace Xamarin.Forms
 			RequestDefinition definition =
 				new RequestDefinition(
 					ConvertToStandardFormat(shell, new Uri(theWinningRoute.PathFull, UriKind.RelativeOrAbsolute)),
-					new Uri(theWinningRoute.PathNoImplicit, UriKind.RelativeOrAbsolute)
-					, theWinningRoute.Item, theWinningRoute.Section, theWinningRoute.Content);
+					new Uri(theWinningRoute.PathNoImplicit, UriKind.RelativeOrAbsolute),
+					theWinningRoute.Item, 
+					theWinningRoute.Section, 
+					theWinningRoute.Content,
+					theWinningRoute.GlobalRouteMatches);
 
 			NavigationRequest navigationRequest = new NavigationRequest(definition, whatDoIDo, request.Query, request.Fragment);
 
@@ -502,7 +505,7 @@ namespace Xamarin.Forms
 
 
 	[DebuggerDisplay("RequestDefinition = {Request}, StackRequest = {StackRequest}")]
-	internal class NavigationRequest
+	public class NavigationRequest
 	{
 		public enum WhatToDoWithTheStack
 		{
@@ -526,19 +529,20 @@ namespace Xamarin.Forms
 
 
 	[DebuggerDisplay("Full = {FullUri}, Short = {ShortUri}")]
-	internal class RequestDefinition
+	public class RequestDefinition
 	{
-		public RequestDefinition(Uri fullUri, Uri shortUri, ShellItem item, ShellSection section, ShellContent content)
+		public RequestDefinition(Uri fullUri, Uri shortUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes)
 		{
 			FullUri = fullUri;
 			ShortUri = shortUri;
 			Item = item;
 			Section = section;
 			Content = content;
+			GlobalRoutes = globalRoutes;
 		}
 
-		public RequestDefinition(string fullUri, string shortUri, ShellItem item, ShellSection section, ShellContent content) :
-			this(new Uri(fullUri, UriKind.Absolute), new Uri(shortUri, UriKind.Absolute), item, section, content)
+		public RequestDefinition(string fullUri, string shortUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes) :
+			this(new Uri(fullUri, UriKind.Absolute), new Uri(shortUri, UriKind.Absolute), item, section, content, globalRoutes)
 		{
 		}
 
@@ -547,6 +551,7 @@ namespace Xamarin.Forms
 		public ShellItem Item { get; }
 		public ShellSection Section { get; }
 		public ShellContent Content { get; }
+		public List<string> GlobalRoutes { get; }
 	}
 
 

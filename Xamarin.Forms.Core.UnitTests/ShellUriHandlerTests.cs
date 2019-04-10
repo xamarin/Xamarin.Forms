@@ -36,10 +36,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(item1);
 			shell.Items.Add(item2);
 
-			Routing.RegisterRoute("//rootlevelcontent1/edit", typeof(object));
-
-			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("//rootlevelcontent1/edit"));
-			Assert.AreEqual("//rootlevelcontent1/edit", request.Request.ShortUri.ToString());
+			Routing.RegisterRoute("//rootlevelcontent1/edit", typeof(ContentPage));
+			await shell.GoToAsync("//rootlevelcontent1/edit");
 		}
 
 		[Test]
@@ -53,9 +51,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			item1.Items[0].Items.Add(editShellContent);
 			shell.Items.Add(item1);
 
-			shell.GoToAsync("//rootlevelcontent1");
+			await shell.GoToAsync("//rootlevelcontent1");
 			var location = shell.CurrentState.Location;
-			shell.GoToAsync("edit");
+			await shell.GoToAsync("edit");
 
 			Assert.AreEqual(editShellContent, shell.CurrentItem.CurrentItem.CurrentItem);
 		}

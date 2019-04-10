@@ -24,30 +24,19 @@ namespace Xamarin.Forms
 
 		#region IShellItemController
 
-		Task IShellItemController.GoToPart(List<string> parts, Dictionary<string, string> queryData)
+		Task IShellItemController.GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
 		{
-			var shellSectionRoute = parts[0];
+			var shellSection = request.Request.Section;
 
-			var items = Items;
-			for (int i = 0; i < items.Count; i++)
-			{
-				var shellSection = items[i];
-				if (Routing.CompareRoutes(shellSection.Route, shellSectionRoute))
-				{
-					Shell.ApplyQueryAttributes(shellSection, queryData, parts.Count == 1);
+			if (shellSection == null)
+				return Task.FromResult(true);
 
-					if (CurrentItem != shellSection)
-						SetValueFromRenderer(CurrentItemProperty, shellSection);
+			Shell.ApplyQueryAttributes(shellSection, queryData, request.Request.Content == null);
 
-					parts.RemoveAt(0);
-					if (parts.Count > 0)
-					{
-						return ((IShellSectionController)shellSection).GoToPart(parts, queryData);
-					}
-					break;
-				}
-			}
-			return Task.FromResult(true);
+			if (CurrentItem != shellSection)
+				SetValueFromRenderer(CurrentItemProperty, shellSection);
+
+			return ((IShellSectionController)shellSection).GoToPart(request, queryData);
 		}
 
 		bool IShellItemController.ProposeSection(ShellSection shellSection, bool setValue)
