@@ -11,9 +11,22 @@ namespace Xamarin.Forms
 	{
 		static readonly char[] _pathSeparator = { '/', '\\' };
 
+		static Uri FormatUri(Uri path)
+		{
+			if (path.IsAbsoluteUri)
+				return path;
+
+			return new Uri(FormatUri(path.OriginalString), UriKind.Relative);
+		}
+
+		static string FormatUri(string path)
+		{
+			return path.Replace("\\", "/");
+		}
 
 		public static Uri ConvertToStandardFormat(Shell shell, Uri request)
 		{
+			request = FormatUri(request);
 			string pathAndQuery = null;
 			if (request.IsAbsoluteUri)
 				pathAndQuery = $"{request.Host}/{request.PathAndQuery}";
@@ -37,6 +50,7 @@ namespace Xamarin.Forms
 
 		public static NavigationRequest GetNavigationRequest(Shell shell, Uri uri)
 		{
+			uri = FormatUri(uri);
 			// figure out the intent of the Uri
 			NavigationRequest.WhatToDoWithTheStack whatDoIDo = NavigationRequest.WhatToDoWithTheStack.PushToIt;
 			if (uri.IsAbsoluteUri)
@@ -85,11 +99,21 @@ namespace Xamarin.Forms
 
 		internal static List<RouteRequestBuilder> GenerateRoutePaths(Shell shell, Uri request)
 		{
+			request = FormatUri(request);
 			return GenerateRoutePaths(shell, request, request);
 		}
 
 		internal static List<RouteRequestBuilder> GenerateRoutePaths(Shell shell, Uri request, Uri originalRequest)
 		{
+			request = FormatUri(request);
+			originalRequest = FormatUri(originalRequest);
+
+			var routeKeys = Routing.GetRouteKeys();
+			for (int i = 0; i < routeKeys.Length; i++)
+			{
+				routeKeys[i] = FormatUri(routeKeys[i]);
+			}
+
 			List<RouteRequestBuilder> possibleRoutePaths = new List<RouteRequestBuilder>();
 			if (!request.IsAbsoluteUri)
 				request = ConvertToStandardFormat(shell, request);
@@ -104,10 +128,9 @@ namespace Xamarin.Forms
 
 			if (!relativeMatch)
 			{
-				var keys = Routing.GetRouteKeys();
-				for (int i = 0; i < keys.Length; i++)
+				for (int i = 0; i < routeKeys.Length; i++)
 				{
-					var route = keys[i];
+					var route = routeKeys[i];
 					var uri = ConvertToStandardFormat(shell, new Uri(route, UriKind.RelativeOrAbsolute));
 					// Todo is this supported?
 					if (uri.Equals(request))
@@ -119,7 +142,6 @@ namespace Xamarin.Forms
 			}
 
 			var depthStart = 0;
-			var routeKeys = Routing.GetRouteKeys();
 
 			if (segments[0] == shell.Route)
 			{
@@ -460,8 +482,9 @@ namespace Xamarin.Forms
 
 			var keys = Routing.GetRouteKeys();
 			string route = GetRoute(node);
-			foreach (var key in keys)
+			for (var i = 0; i < keys.Length; i++)
 			{
+				var key = FormatUri(keys[i]);
 				if (key.StartsWith("/") && !(node is Shell))
 					continue;
 
