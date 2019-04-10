@@ -4,7 +4,6 @@
              x:Class="Xamarin.Forms.Sandbox.MainPage"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              ios:Page.UseSafeArea="true">
-
     <ContentPage.Content>
         <StackLayout>
             <Button Text="I am a Button"  />
