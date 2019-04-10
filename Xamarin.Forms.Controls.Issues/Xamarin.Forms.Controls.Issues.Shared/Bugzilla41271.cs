@@ -1,13 +1,27 @@
 ﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System;
+
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 41271, "[UWP] Memory Leak from ListView in TabbedPage")]
+	[Issue(IssueTracker.Bugzilla, 41271, "[UWP] Memory Leak from ListView in TabbedPage", PlatformAffected.UWP)]
+
+#if UITEST
+	[Category(UITestCategories.ListView)]
+#endif
+
 	public class Bugzilla41271 : TestTabbedPage
 	{
+		const string _listMain = "mainList";
+
 		[Preserve(AllMembers = true)]
 		class Person
 		{
@@ -71,10 +85,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 				for (var x = 0; x < 1000; x++)
 				{
-					_People.Add(new Person("Bob", "Bobson", "San Francisco", "California"));
+					_People.Add(new Person("Bob", "Bobson", "San Francisco", $"California #{x}"));
 				}
 
-				_ListView = new ListView(ListViewCachingStrategy.RecycleElement) { ItemTemplate = new DataTemplate(typeof(ListViewCell)) };
+				_ListView = new ListView(ListViewCachingStrategy.RecycleElement)
+				{
+					ItemTemplate = new DataTemplate(typeof(ListViewCell)),
+					AutomationId = _listMain
+				};
 				Content = _ListView;
 			}
 
@@ -103,5 +121,32 @@ namespace Xamarin.Forms.Controls.Issues
 				counter++;
 			}
 		}
+
+#if UITEST
+		// If the cellPhone has in Landscape mode, increase the timeout.
+
+		[Test]
+		public void MemoryLeakInListViewTabbedPageUWP()
+		{
+			ScrollListInPage("List 1");
+			ScrollListInPage("List 2");
+			ScrollListInPage("List 3");
+			ScrollListInPage("List 4");
+			ScrollListInPage("List 5");
+			ScrollListInPage("List 6");
+			ScrollListInPage("List 7");
+			ScrollListInPage("List 8");
+			ScrollListInPage("List 8");
+			ScrollListInPage("List 10");
+		}
+
+		private void ScrollListInPage(string tabName)
+		{
+			RunningApp.WaitForElement(tabName);
+			RunningApp.Tap(tabName);
+			RunningApp.ScrollDownTo("California #40", _listMain, ScrollStrategy.Gesture, 0.7, timeout: TimeSpan.FromMinutes(1));
+			RunningApp.ScrollUpTo("California #1", _listMain, ScrollStrategy.Gesture, 0.7, timeout: TimeSpan.FromMinutes(1));
+		}
+#endif
 	}
 }
