@@ -217,34 +217,41 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var shell = new Shell() { RouteScheme = "app", Route = "shellroute", RouteHost = "host" };
 
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("//path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("/path")));
+			Uri[] TestUris = new Uri[] {
+				CreateUri("path"),
+				CreateUri("//path"),
+				CreateUri("/path"),
+				CreateUri("host/path"),
+				CreateUri("//host/path"),
+				CreateUri("/host/path"),
+				CreateUri("shellroute/path"),
+				CreateUri("//shellroute/path"),
+				CreateUri("/shellroute/path"),
+				CreateUri("host/shellroute/path"),
+				CreateUri("//host/shellroute/path"),
+				CreateUri("/host/shellroute/path"),
+				CreateUri("app://path"),
+				CreateUri("app:/path"),
+				CreateUri("app://host/path"),
+				CreateUri("app:/host/path"),
+				CreateUri("app://shellroute/path"),
+				CreateUri("app:/shellroute/path"),
+				CreateUri("app://host/shellroute/path"),
+				CreateUri("app:/host/shellroute/path")
+			};
 
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("host/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("//host/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("/host/path")));
 
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("shellroute/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("//shellroute/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("/shellroute/path")));
+			foreach(var uri in TestUris)
+			{
+				Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, uri));
 
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("host/shellroute/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("//host/shellroute/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("/host/shellroute/path")));
-
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app://path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app:/path")));
-
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app://host/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app:/host/path")));
-
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app://shellroute/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app:/shellroute/path")));
-
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app://host/shellroute/path")));
-			Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, CreateUri("app:/host/shellroute/path")));
-
+				if(!uri.IsAbsoluteUri)
+				{
+					var reverse = new Uri(uri.OriginalString.Replace("/", "\\"), UriKind.Relative);
+					Assert.AreEqual(new Uri("app://host/shellroute/path"), ShellUriHandler.ConvertToStandardFormat(shell, reverse));
+				}
+				
+			}
 		}
 	}
 }
