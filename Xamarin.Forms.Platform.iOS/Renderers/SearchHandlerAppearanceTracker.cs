@@ -1,5 +1,6 @@
 ﻿using System;
 using CoreGraphics;
+using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -11,6 +12,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _cancelButtonTextColorDefaultNormal;
 		UIColor _defaultTextColor;
 		UIColor _defaultTintColor;
+		UIColor _defaultClearIconTintColor;
+		UIColor _defaultPlaceholderTintColor;
 		bool _hasCustomBackground;
 		UIColor _defaultBackgroundColor;
 		SearchHandler _searchHandler;
@@ -25,6 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_uiSearchBar = searchBar;
 			_uiSearchBar.OnEditingStarted += OnEditingStarted;
 			_uiSearchBar.OnEditingStopped += OnEditingEnded;
+			_uiSearchBar.TextChanged += OnTextChanged;
 			_uiSearchBar.ShowsCancelButton = true;
 			GetDefaultSearchBarColors(_uiSearchBar);
 			var uiTextField = searchBar.FindDescendantView<UITextField>();
@@ -32,6 +36,17 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateSearchBarTextAlignment(uiTextField);
 			UpdateFont(uiTextField);
 			UpdateKeyboard();
+		}
+
+		public void UpdateSearchBarColors()
+		{
+			var cancelButton = _uiSearchBar.FindDescendantView<UIButton>();
+			var uiTextField = _uiSearchBar.FindDescendantView<UITextField>();
+
+			UpdateTextColor(uiTextField);
+			UpdateSearchBarPlaceholder(uiTextField);
+			UpdateCancelButtonColor(cancelButton);
+			UpdateSearchBarBackgroundColor(uiTextField);
 		}
 
 		void SearchHandlerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -42,7 +57,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.Is(SearchHandler.TextColorProperty))
 			{
-				UpdateSearchBarBackgroundColor(_uiSearchBar.FindDescendantView<UITextField>());
+				UpdateTextColor(_uiSearchBar.FindDescendantView<UITextField>());
 			}
 			else if (e.IsOneOf(SearchHandler.PlaceholderColorProperty, SearchHandler.PlaceholderProperty))
 			{
@@ -54,22 +69,12 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.Is(SearchHandler.CancelButtonColorProperty))
 			{
-				UpdateCancelButton(_uiSearchBar.FindDescendantView<UIButton>());
+				UpdateCancelButtonColor(_uiSearchBar.FindDescendantView<UIButton>());
 			}
 			else if (e.Is(SearchHandler.KeyboardProperty))
 			{
 				UpdateKeyboard();
 			}
-		}
-
-		public void UpdateSearchBarColors()
-		{
-			var cancelButton = _uiSearchBar.FindDescendantView<UIButton>();
-			var uiTextField = _uiSearchBar.FindDescendantView<UITextField>();
-			UpdateSearchBarTextColor(uiTextField);
-			UpdateSearchBarPlaceholder(uiTextField);
-			UpdateCancelButton(cancelButton);
-			UpdateSearchBarBackgroundColor(uiTextField);
 		}
 
 		void GetDefaultSearchBarColors(UISearchBar searchBar)
@@ -87,13 +92,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFont(UITextField textField)
 		{
-
 			if (textField == null)
 				return;
 
 			textField.Font = _searchHandler.ToUIFont();
 		}
-
 
 		void UpdateSearchBarBackgroundColor(UITextField textField)
 		{
@@ -123,7 +126,7 @@ namespace Xamarin.Forms.Platform.iOS
 			backgroundView.BackgroundColor = backGroundColor.ToUIColor();
 		}
 
-		void UpdateCancelButton(UIButton cancelButton)
+		void UpdateCancelButtonColor(UIButton cancelButton)
 		{
 			if (cancelButton == null)
 				return;
@@ -142,6 +145,8 @@ namespace Xamarin.Forms.Platform.iOS
 				cancelButton.SetTitleColor(cancelUIColor, UIControlState.Highlighted);
 				cancelButton.SetTitleColor(cancelUIColor, UIControlState.Disabled);
 			}
+
+			UpdateClearIconColor(cancelColor);
 		}
 
 		void UpdateSearchBarPlaceholder(UITextField textField)
@@ -153,9 +158,21 @@ namespace Xamarin.Forms.Platform.iOS
 			var targetColor = _searchHandler.PlaceholderColor;
 			var placeHolderColor = targetColor.IsDefault ? ColorExtensions.SeventyPercentGrey.ToColor() : targetColor;
 			textField.AttributedPlaceholder = formatted.ToAttributed(_searchHandler, placeHolderColor, _searchHandler.HorizontalTextAlignment);
+
+			//Center placeholder
+			//var width = (_uiSearchBar.Frame.Width / 2) - textField.AttributedPlaceholder.Size.Width;
+
+			//var paddingView = new UIImageView(new CGRect(0, 0, width, _uiSearchBar.Frame.Height));
+
+			//textField.LeftView = paddingView;
+			//var paddingView = UIView(frame: CGRect(x: 0, y: 0, width: width, height: searchBar.frame.height))
+
+			//searchBarTextField.leftView = paddingView
+
+			//searchBarTextField.leftViewMode = .unlessEditing
 		}
 
-		void UpdateSearchBarTextColor(UITextField textField)
+		void UpdateTextColor(UITextField textField)
 		{
 			if (textField == null)
 				return;
@@ -165,11 +182,53 @@ namespace Xamarin.Forms.Platform.iOS
 
 			textField.TextColor = targetColor.IsDefault ? _defaultTextColor : targetColor.ToUIColor();
 			UpdateSearchBarTintColor(targetColor);
+			UpdateSearchButtonIconColor(targetColor);
+			UpdateClearPlaceholderIconColor(targetColor);
 		}
 
 		void UpdateSearchBarTintColor(Color targetColor)
 		{
 			_uiSearchBar.TintColor = targetColor.IsDefault ? _defaultTintColor : targetColor.ToUIColor();
+		}
+
+		void UpdateSearchButtonIconColor(Color targetColor)
+		{
+			var imageView = _uiSearchBar.FindDescendantView<UITextField>()?.LeftView as UIImageView;
+
+			_defaultClearIconTintColor = _defaultClearIconTintColor ?? imageView.TintColor;
+
+			SetSearchBarIconColor(imageView, targetColor, _defaultClearIconTintColor);
+		}
+
+		void UpdateClearPlaceholderIconColor(Color targetColor)
+		{
+			var uiTextField = _uiSearchBar.FindDescendantView<UITextField>();
+
+			var uiButton = uiTextField.FindDescendantView<UIButton>();
+
+			if (uiButton == null)
+				return;
+
+			_defaultPlaceholderTintColor = _defaultPlaceholderTintColor ?? uiButton?.ImageView?.TintColor;
+
+
+			SetSearchBarIconColor(uiButton, targetColor, _defaultPlaceholderTintColor);
+			uiButton.TintColor = targetColor.IsDefault ? _defaultPlaceholderTintColor : targetColor.ToUIColor();
+		}
+
+		void UpdateClearIconColor(Color targetColor)
+		{
+			var uiTextField = _uiSearchBar.FindDescendantView<UITextField>();
+
+			var uiButton = uiTextField.ValueForKey(new NSString("clearButton")) as UIButton;
+
+			if (uiButton == null)
+				return;
+
+			_defaultClearIconTintColor = _defaultClearIconTintColor ?? uiButton?.TintColor;
+
+			SetSearchBarIconColor(uiButton, targetColor, _defaultClearIconTintColor);
+
 		}
 
 		void UpdateSearchBarTextAlignment(UITextField textField)
@@ -184,7 +243,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var keyboard = _searchHandler.Keyboard;
 			_uiSearchBar.ApplyKeyboard(keyboard);
-		
+
 			// iPhone does not have an enter key on numeric keyboards
 			if (Device.Idiom == TargetIdiom.Phone && (keyboard == Keyboard.Numeric || keyboard == Keyboard.Telephone))
 			{
@@ -206,8 +265,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEditingStarted(object sender, EventArgs e)
 		{
+			UpdateCancelButtonColor(_uiSearchBar.FindDescendantView<UIButton>());
 			//ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 		}
+
+		void OnTextChanged(object sender, UISearchBarTextChangedEventArgs e)
+		{
+			UpdateCancelButtonColor(_uiSearchBar.FindDescendantView<UIButton>());
+		}
+
 
 		void OnSearchButtonClicked(object sender, EventArgs e)
 		{
@@ -227,6 +293,32 @@ namespace Xamarin.Forms.Platform.iOS
 			return accessoryView;
 		}
 
+		static void SetSearchBarIconColor(UIImageView imageView, Color targetColor, UIColor defaultTintColor)
+		{
+			var icon = imageView?.Image;
+
+			if (icon == null || (targetColor.IsDefault && defaultTintColor == null))
+				return;
+
+			var newIcon = icon.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
+			imageView.TintColor = targetColor.IsDefault ? defaultTintColor : targetColor.ToUIColor();
+			imageView.Image = newIcon;
+		}
+
+		static void SetSearchBarIconColor(UIButton button, Color targetColor, UIColor defaultTintColor)
+		{
+			var icon = button.ImageView?.Image;
+
+			if (icon == null || (targetColor.IsDefault && defaultTintColor == null))
+				return;
+
+			var newIcon = icon.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
+			button.SetImage(newIcon, UIControlState.Normal);
+			button.SetImage(newIcon, UIControlState.Selected);
+			button.SetImage(newIcon, UIControlState.Highlighted);
+			button.TintColor = button.ImageView.TintColor = targetColor.IsDefault ? defaultTintColor : targetColor.ToUIColor();
+		}
+
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -240,6 +332,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_uiSearchBar.OnEditingStarted -= OnEditingStarted;
 					_uiSearchBar.OnEditingStopped -= OnEditingEnded;
+					_uiSearchBar.TextChanged -= OnTextChanged;
 				}
 				if (_searchHandler != null)
 				{
