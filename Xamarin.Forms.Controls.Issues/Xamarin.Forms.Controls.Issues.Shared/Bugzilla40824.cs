@@ -5,6 +5,7 @@ using Xamarin.Forms.Internals;
 using System.Collections.Generic;
 
 #if UITEST
+using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using NUnit.Framework;
 #endif
@@ -12,16 +13,24 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40824, "ListView item's contextual action menu not being closed upon navigation in AppCompat")]
+	[Issue(IssueTracker.Bugzilla, 40824, "ListView item's contextual action menu not being closed upon navigation in AppCompat"
+		, PlatformAffected.Android)]
+#if UITEST
+	[Category(UITestCategories.ListView)]
+#endif
 	public class Bugzilla40824 : TestContentPage
 	{
+		const string _cat = "Cat";
+		const string _menu = "Action";
+		const string _navigate = "Go to next page";
+		const string _pageTitle = "Next Page";
 		protected override void Init()
 		{
 			var list = new ListView
 			{
 				ItemsSource = new List<string>
 				{
-					"Cat",
+					_cat,
 					"Dog",
 					"Rat"
 				},
@@ -31,7 +40,8 @@ namespace Xamarin.Forms.Controls.Issues
 					cell.SetBinding(TextCell.TextProperty, ".");
 					cell.ContextActions.Add(new MenuItem
 					{
-						Text = "Action",
+						Text = _menu,
+						AutomationId = _menu,
 						Icon = "icon",
 						IsDestructive = true,
 						Command = new Command(() => DisplayAlert("TITLE", "Context action invoked", "Ok")),
@@ -46,12 +56,25 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					new Button
 					{
-						Text = "Go to next page",
-						Command = new Command(() => Navigation.PushAsync(new ContentPage { Title = "Next Page", Content = new Label { Text = "Here" } }))
+						Text = _navigate,
+						Command = new Command(() => Navigation.PushAsync(new ContentPage { Title = _pageTitle, Content = new Label { Text = "Here" } }))
 					},
 					list
 				}
 			};
 		}
+
+#if UITEST && __ANDROID__
+		[Test]
+		public void NavigationWithContextualAction()
+		{
+			RunningApp.WaitForElement(_cat);
+			RunningApp.TouchAndHold(_cat);
+			RunningApp.WaitForElement(_menu);
+			RunningApp.Tap(_navigate);
+			RunningApp.WaitForElement(_pageTitle);
+			RunningApp.WaitForNoElement(_menu);
+		}
+#endif
 	}
 }
