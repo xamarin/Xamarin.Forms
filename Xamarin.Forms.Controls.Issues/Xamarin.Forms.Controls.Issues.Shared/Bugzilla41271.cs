@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 	public class Bugzilla41271 : TestTabbedPage
 	{
-		const string _listMain = "mainList";
+		const string ListMain = "mainList";
 
 		[Preserve(AllMembers = true)]
 		class Person
@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Controls.Issues
 				_ListView = new ListView(ListViewCachingStrategy.RecycleElement)
 				{
 					ItemTemplate = new DataTemplate(typeof(ListViewCell)),
-					AutomationId = _listMain
+					AutomationId = ListMain
 				};
 				Content = _ListView;
 			}
@@ -128,24 +128,16 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void MemoryLeakInListViewTabbedPageUWP()
 		{
-			ScrollListInPage("List 1");
-			ScrollListInPage("List 2");
-			ScrollListInPage("List 3");
-			ScrollListInPage("List 4");
-			ScrollListInPage("List 5");
-			ScrollListInPage("List 6");
-			ScrollListInPage("List 7");
-			ScrollListInPage("List 8");
-			ScrollListInPage("List 8");
-			ScrollListInPage("List 10");
+			for (int i = 1; i <= 10; i++)
+				ScrollListInPage($"List {i}");
 		}
 
 		void ScrollListInPage(string tabName)
 		{
 			RunningApp.WaitForElement(tabName);
 			RunningApp.Tap(tabName);
-			RunningApp.ScrollDownTo("California #40", _listMain, ScrollStrategy.Gesture, 0.7, timeout: TimeSpan.FromMinutes(1));
-			RunningApp.ScrollUpTo("California #1", _listMain, ScrollStrategy.Gesture, 0.7, timeout: TimeSpan.FromMinutes(1));
+			RunningApp.ScrollDownTo("California #20", ListMain, ScrollStrategy.Gesture, 0.7, timeout: TimeSpan.FromMinutes(1));
+			RunningApp.ScrollUpTo("California #1", ListMain, ScrollStrategy.Gesture, 0.7, timeout: TimeSpan.FromMinutes(1));
 		}
 #endif
 	}

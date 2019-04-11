@@ -20,17 +20,17 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Bugzilla40824 : TestContentPage
 	{
-		const string _cat = "Cat";
-		const string _menu = "Action";
-		const string _navigate = "Go to next page";
-		const string _pageTitle = "Next Page";
+		const string Cat = "Cat";
+		const string Menu = "Action";
+		const string Navigate = "Go to next page";
+		const string PageTitle = "Next Page";
 		protected override void Init()
 		{
 			var list = new ListView
 			{
 				ItemsSource = new List<string>
 				{
-					_cat,
+					Cat,
 					"Dog",
 					"Rat",
 					"The contextual action should disapper when",
@@ -42,8 +42,8 @@ namespace Xamarin.Forms.Controls.Issues
 					cell.SetBinding(TextCell.TextProperty, ".");
 					cell.ContextActions.Add(new MenuItem
 					{
-						Text = _menu,
-						AutomationId = _menu,
+						Text = Menu,
+						AutomationId = Menu,
 						Icon = "icon",
 						IsDestructive = true,
 						Command = new Command(() => DisplayAlert("TITLE", "Context action invoked", "Ok")),
@@ -58,8 +58,8 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					new Button
 					{
-						Text = _navigate,
-						Command = new Command(() => Navigation.PushAsync(new ContentPage { Title = _pageTitle, Content = new Label { Text = "Here" } }))
+						Text = Navigate,
+						Command = new Command(() => Navigation.PushAsync(new ContentPage { Title = PageTitle, Content = new Label { Text = "Here" } }))
 					},
 					list
 				}
@@ -70,12 +70,12 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void NavigationWithContextualAction()
 		{
-			RunningApp.WaitForElement(_cat);
-			RunningApp.TouchAndHold(_cat);
-			RunningApp.WaitForElement(_menu);
-			RunningApp.Tap(_navigate);
-			RunningApp.WaitForElement(_pageTitle);
-			RunningApp.WaitForNoElement(_menu);
+			RunningApp.WaitForElement(Cat);
+			RunningApp.TouchAndHold(Cat);
+			RunningApp.WaitForElement(Menu);
+			RunningApp.Tap(Navigate);
+			RunningApp.WaitForElement(PageTitle);
+			RunningApp.WaitForNoElement(Menu);
 		}
 #endif
 	}

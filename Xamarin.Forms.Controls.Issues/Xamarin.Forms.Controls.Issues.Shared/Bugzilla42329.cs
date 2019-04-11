@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string Page3Title = "Page3";
 		const string LabelPage1 = "Open the drawer menu and select Page2";
 		const string LabelPage2 = "Open the drawer menu and select Page3";
-		static string LabelPage3 = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed.";
+		readonly static string LabelPage3 = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed.";
 		static string Success = string.Empty;
 		static MasterDetailPage Reference;
 
@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void MemoryLeak()
+		public void MemoryLeakB42329()
 		{
 			RunningApp.WaitForElement(Page1Title);
 			RunningApp.Tap(LabelPage1);

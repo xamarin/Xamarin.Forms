@@ -19,11 +19,11 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Bugzilla43519 : TestTabbedPage
 	{
-		const string _pop = "PopModal";
+		const string Pop = "PopModal";
 
-		const string _push = "PushModal";
+		const string Push = "PushModal";
 
-		const string _page2 = "Page 2";
+		const string Page2 = "Page 2";
 
 		protected override void Init()
 		{
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							Command = new Command(() => Navigation.PopModalAsync()),
 							Text = "Pop modal page -- should not crash on UWP",
-							AutomationId = _pop
+							AutomationId = Pop
 						}
 					}
 				}
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Children.Add(mdp);
 			Children.Add(new ContentPage
 			{
-				Title = _page2,
+				Title = Page2,
 				Content = new StackLayout
 				{
 					Children =
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							Command = new Command(() => Navigation.PushModalAsync(modalPage)),
 							Text = "Click to display modal",
-							AutomationId = _push
+							AutomationId = Push
 						}
 					}
 				}
@@ -82,13 +82,13 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void TabbedModalNavigation()
 		{
-			RunningApp.WaitForElement(_page2);
-			RunningApp.Tap(_page2);
-			RunningApp.WaitForElement(_push);
-			RunningApp.Tap(_push);
-			RunningApp.WaitForElement(_pop);
-			RunningApp.Tap(_pop);
-			RunningApp.WaitForElement(_page2);
+			RunningApp.WaitForElement(Page2);
+			RunningApp.Tap(Page2);
+			RunningApp.WaitForElement(Push);
+			RunningApp.Tap(Push);
+			RunningApp.WaitForElement(Pop);
+			RunningApp.Tap(Pop);
+			RunningApp.WaitForElement(Page2);
 
 		}
 #endif

@@ -21,17 +21,17 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Bugzilla43663 : TestNavigationPage
 	{
-		const string _message = "Message";
+		const string Message = "Message";
 
-		const string _goBack = "Go back";
+		const string GoBack = "Go back";
 
-		const string _cancel = "Cancel";
+		const string Cancel = "Cancel";
 
-		const string _pushModal = "Push Modal";
+		const string PushModal = "Push Modal";
 
-		const string _popModal = "Pop Modal";
+		const string PopModal = "Pop Modal";
 
-		const string _modal = "Modal";
+		const string Modal = "Modal";
 		protected override void Init()
 		{
 			Application.Current.ModalPushed += ModalPushed;
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 						},
 						new Button
 						{
-							Text = _goBack,
+							Text = GoBack,
 							Command = new Command(async () => await Navigation.PopModalAsync())
 						}
 					}
@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children =
 				{
-					new Label { Text = _modal },
+					new Label { Text = Modal },
 					new Label
 					{
 						Text = "Now press the button bellow, and verify if you go back to previous page. If back's you've success!",
@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							await Navigation.PopModalAsync();
 						}),
-						AutomationId = _popModal
+						AutomationId = PopModal
 					}
 				},
 			};
@@ -100,11 +100,11 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = "Click to push Modal",
 						Command = new Command(async () => await Navigation.PushModalAsync(modalPage)),
-						AutomationId = _pushModal
+						AutomationId = PushModal
 					},
 					new Button
 					{
-						Text = _goBack,
+						Text = GoBack,
 						Command = new Command(async () => await Navigation.PopAsync())
 					}
 				}
@@ -116,12 +116,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void ModalPushed(object sender, ModalPushedEventArgs e)
 		{
-			DisplayAlert("Pushed", _message, _cancel);
+			DisplayAlert("Pushed", Message, Cancel);
 		}
 
 		void ModalPopped(object sender, ModalPoppedEventArgs e)
 		{
-			DisplayAlert("Popped", _message, _cancel);
+			DisplayAlert("Popped", Message, Cancel);
 		}
 
 #if UITEST
@@ -129,19 +129,21 @@ namespace Xamarin.Forms.Controls.Issues
 		public void ModalNavigation()
 		{
 			DissmissAlert();
-			RunningApp.WaitForElement(q => q.Marked(_pushModal));
-			RunningApp.Tap(q => q.Marked(_pushModal));
+			RunningApp.WaitForElement(q => q.Marked(PushModal));
+			RunningApp.Tap(q => q.Marked(PushModal));
 			DissmissAlert();
-			RunningApp.WaitForElement(q => q.Marked(_modal));
-			RunningApp.Tap(q => q.Marked(_popModal));
+			RunningApp.WaitForElement(q => q.Marked(Modal));
+			RunningApp.Tap(q => q.Marked(PopModal));
 			DissmissAlert();
-			RunningApp.WaitForElement(q => q.Marked(_pushModal));
+			RunningApp.WaitForElement(q => q.Marked(PushModal));
+
+
 		}
 
 		void DissmissAlert()
 		{
-			RunningApp.WaitForElement(_message);
-			RunningApp.Tap(_cancel);
+			RunningApp.WaitForElement(Message);
+			RunningApp.Tap(Cancel);
 		}
 #endif
 	}
