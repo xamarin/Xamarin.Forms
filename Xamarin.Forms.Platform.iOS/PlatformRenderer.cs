@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return ChildViewControllers[0].GetSupportedInterfaceOrientations();
 			}
-			
+
 			return base.GetSupportedInterfaceOrientations();
 		}
 
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			return base.PreferredInterfaceOrientationForPresentation();
 		}
-		
+
 		public override UIViewController ChildViewControllerForStatusBarHidden()
 		{
 			return (UIViewController)Platform.GetRenderer(this.Platform.Page);
@@ -198,7 +198,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 			SetNeedsStatusBarAppearanceUpdate();
-			SetNeedsUpdateOfHomeIndicatorAutoHidden();
+			if (Forms.IsiOS11OrNewer)
+				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 	}
 }
