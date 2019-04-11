@@ -32,7 +32,9 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					_cat,
 					"Dog",
-					"Rat"
+					"Rat",
+					"The contextual action should disapper when",
+					"navigating to another page"
 				},
 				ItemTemplate = new DataTemplate(() =>
 				{
