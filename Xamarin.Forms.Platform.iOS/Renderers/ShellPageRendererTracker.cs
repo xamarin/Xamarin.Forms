@@ -553,7 +553,6 @@ namespace Xamarin.Forms.Platform.iOS
 			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Normal);
 			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Highlighted);
 			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Selected);
-			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Disabled);
 		}
 
 		void PageAppearing(object sender, EventArgs e)

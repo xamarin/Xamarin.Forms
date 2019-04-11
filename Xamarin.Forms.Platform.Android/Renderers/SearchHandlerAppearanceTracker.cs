@@ -58,7 +58,6 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdatePlaceholderColor()
 		{
 			_hintColorSwitcher?.UpdateTextColor(_editText, _searchHandler.PlaceholderColor, _editText.SetHintTextColor);
-			UpdateClearPlaceholderIconColor();
 		}
 
 		void UpdateTextAlignment()
@@ -118,7 +117,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateClearPlaceholderIconColor()
 		{
-			UpdateImageButtonIconColor(nameof(SearchHandler.ClearPlaceholderIcon), _searchHandler.PlaceholderColor);
+			UpdateImageButtonIconColor(nameof(SearchHandler.ClearPlaceholderIcon), _searchHandler.TextColor);
 		}
 
 		void UpdateTextColor()
@@ -126,6 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 			var textColor = _searchHandler.TextColor;
 			_textColorSwitcher?.UpdateTextColor(_editText, textColor);
 			UpdateImageButtonIconColor("SearchIcon", textColor);
+			UpdateClearPlaceholderIconColor();
 			//we need to set the cursor to
 		}
 		void UpdateImageButtonIconColor(string tagName, Color toColor)
