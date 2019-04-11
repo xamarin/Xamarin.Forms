@@ -117,8 +117,6 @@ namespace Xamarin.Forms
 			set { SetValue(BackgroundColorProperty, value); }
 		}
 
-		#region ISearchHandlerController
-
 		event EventHandler<ListProxyChangedEventArgs> ISearchHandlerController.ListProxyChanged
 		{
 			add { _listProxyChanged += value; }
