@@ -53,7 +53,15 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void AllScreenIsBlack()
 		{
-			RunningApp.WaitForElement(Black);
+			
+			var box = RunningApp.WaitForElement(Black)[0];
+			var layout = RunningApp.WaitForElement(White)[0];
+
+			if (box.Rect.Height == layout.Rect.Height &&
+				box.Rect.Width == layout.Rect.Width)
+				RunningApp.WaitForElement(Black);
+			else
+				RunningApp.WaitForNoElement(Black);
 		}
 #endif
 	}
