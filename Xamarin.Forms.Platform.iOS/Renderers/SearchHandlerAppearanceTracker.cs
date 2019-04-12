@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_searchHandler = searchHandler;
 			_searchHandler.PropertyChanged += SearchHandlerPropertyChanged;
+			_searchHandler.FocusChangeRequested += SearchHandlerFocusChangeRequested;
 			_uiSearchBar = searchBar;
 			_uiSearchBar.OnEditingStarted += OnEditingStarted;
 			_uiSearchBar.OnEditingStopped += OnEditingEnded;
@@ -47,6 +48,12 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateSearchBarPlaceholder(uiTextField);
 			UpdateCancelButtonColor(cancelButton);
 			UpdateSearchBarBackgroundColor(uiTextField);
+		}
+
+		void SearchHandlerFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		{
+			if (e.Focus)
+				e.Result = _uiSearchBar.BecomeFirstResponder();
 		}
 
 		void SearchHandlerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -264,12 +271,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEditingEnded(object sender, EventArgs e)
 		{
-			//ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+			_searchHandler.SetIsFocused(false);
 		}
 
 		void OnEditingStarted(object sender, EventArgs e)
 		{
 			UpdateCancelButtonColor(_uiSearchBar.FindDescendantView<UIButton>());
+			_searchHandler.SetIsFocused(true);
 			//ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 		}
 
@@ -340,6 +348,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				if (_searchHandler != null)
 				{
+					_searchHandler.FocusChangeRequested -= SearchHandlerFocusChangeRequested;
 					_searchHandler.PropertyChanged -= SearchHandlerPropertyChanged;
 				}
 				_searchHandler = null;
