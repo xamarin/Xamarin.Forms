@@ -1,7 +1,6 @@
 ﻿using System;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
 
 #if UITEST
 using Xamarin.UITest;
@@ -30,7 +29,6 @@ namespace Xamarin.Forms.Controls.Issues
 			public TestPage()
 			{
 				Title = "Test Page";
-				AutomationId = "B43527TestPage";
 
 				Content = new StackLayout
 				{
