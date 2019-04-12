@@ -75,6 +75,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateKeyboard();
 			}
+			else if (e.Is(SearchHandler.HorizontalTextAlignmentProperty))
+			{
+				UpdateSearchBarTextAlignment(_uiSearchBar.FindDescendantView<UITextField>());
+			}
 		}
 
 		void GetDefaultSearchBarColors(UISearchBar searchBar)
