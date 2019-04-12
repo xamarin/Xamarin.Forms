@@ -48,6 +48,12 @@ namespace Xamarin.Forms.Controls.Issues
 
         }
 
+		protected override async void OnAppearing()
+		{
+			base.OnAppearing();
+			await DisplayAlert("Instruction", "If you see just the black color, the test pass. (Ignore the navigation bar)", "Ok");
+		}
+
 
 #if UITEST
 		[Test]
