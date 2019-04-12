@@ -16,7 +16,7 @@
 
 			var instructions = new Label
 			{
-				Text = "Tapping the items below should update their text, and the items should expand to accommodate the larger text."
+				Text = "Tap the buttons in each item to increase/decrease the amount of text. The items should expand and contract to accommodate the text."
 			};
 
 			var itemTemplate = ExampleTemplates.DynamicTextTemplate();
