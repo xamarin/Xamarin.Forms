@@ -1,13 +1,91 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
+using static Xamarin.Forms.VisualElement;
 
 namespace Xamarin.Forms
 {
 	public class SearchHandler : BindableObject, ISearchHandlerController, IPlaceholderElement, IFontElement, ITextElement, ITextAlignmentElement
 	{
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsFocused),
+			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedPropertyChanged);
+
+		public event EventHandler<EventArgs> Focused;
+		public event EventHandler<EventArgs> Unfocused;
+
+		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
+
+		public bool IsFocused
+		{
+			get { return (bool)GetValue(IsFocusedProperty); }
+		}
+
+		static void OnIsFocusedPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			var element = (SearchHandler)bindable;
+
+			if (element == null)
+			{
+				return;
+			}
+
+			var isFocused = (bool)newvalue;
+			if (isFocused)
+			{
+				element.Focused?.Invoke(element, new EventArgs());
+				element.OnFocused();
+			}
+			else
+			{
+				element.Unfocused?.Invoke(element, new EventArgs());
+				element.OnUnfocus();
+			}
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetIsFocused(bool value)
+		{
+			SetValueCore(IsFocusedPropertyKey.BindableProperty, value);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<FocusRequestArgs> FocusChangeRequested;
+
+		public bool Focus()
+		{
+			if (IsFocused)
+				return true;
+
+			if (FocusChangeRequested == null)
+				return false;
+
+			var arg = new FocusRequestArgs { Focus = true };
+			FocusChangeRequested(this, arg);
+			return arg.Result;
+		}
+
+		public void Unfocus()
+		{
+			if (!IsFocused)
+				return;
+
+			FocusChangeRequested?.Invoke(this, new FocusRequestArgs());
+		}
+
+		protected virtual void OnFocused()
+		{
+			
+		}
+
+		protected virtual void OnUnfocus()
+		{
+			
+		}
+
 		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(Keyboard), typeof(SearchHandler), Keyboard.Default, coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
 
 		public Keyboard Keyboard
