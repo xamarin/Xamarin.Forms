@@ -14,6 +14,7 @@ using Android.Views;
 using Android.Widget;
 using AView = Android.Views.View;
 using AImageButton = Android.Widget.ImageButton;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -32,6 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 			_searchHandler = searchView.SearchHandler;
 			_control = searchView.View;
 			_searchHandler.PropertyChanged += SearchHandlerPropertyChanged;
+			_searchHandler.FocusChangeRequested += SearchHandlerFocusChangeRequested;
 			_editText = (_control as ViewGroup).GetChildrenOfType<EditText>().FirstOrDefault();
 			_textColorSwitcher = new TextColorSwitcher(_editText.TextColors, false);
 			_hintColorSwitcher = new TextColorSwitcher(_editText.HintTextColors, false);
@@ -39,6 +41,22 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFont();
 			UpdateTextAlignment();
 			UpdateInputType();
+		}
+
+		void SearchHandlerFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		{
+			e.Result = true;
+
+			if (e.Focus)
+			{
+				_control?.RequestFocus();
+				_control?.PostShowKeyboard();
+			}
+			else
+			{
+				_control.ClearFocus();
+				_control.HideKeyboard();
+			}
 		}
 
 		void UpdateSearchBarColors()
@@ -64,6 +82,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_editText.UpdateHorizontalAlignment(_searchHandler.HorizontalTextAlignment, _control.Context.HasRtlSupport(), Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
 		}
+
+	
 
 		void SearchHandlerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
@@ -186,6 +206,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_searchHandler != null)
 				{
+					_searchHandler.FocusChangeRequested -= SearchHandlerFocusChangeRequested;
 					_searchHandler.PropertyChanged -= SearchHandlerPropertyChanged;
 				}
 				_searchHandler = null;

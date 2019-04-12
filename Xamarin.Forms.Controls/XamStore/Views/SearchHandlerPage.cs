@@ -37,6 +37,8 @@ namespace Xamarin.Forms.Controls.XamStore
 					new ScrollView { Content = new StackLayout {
 														Children = {
 																	new Button { Text = "Show/Hide SearchHandler", Command = new Command(()=> ShowHideSearchHandler()) },
+																	new Button { Text = "Focus/Unfocus SearchHandler", Command = new Command(()=> FocusUnfocusSearchHandler()) },
+
 																	_propertyLayout
 																	}
 															}
@@ -72,6 +74,17 @@ namespace Xamarin.Forms.Controls.XamStore
 					_propertyLayout.Children.Add(alignmentPicker);
 				}
 			}
+		}
+
+		void FocusUnfocusSearchHandler()
+		{
+			if (_searchHandler == null)
+				return;
+
+			if (_searchHandler.IsFocused)
+				_searchHandler.Unfocus();
+			else
+				_searchHandler.Focus();
 		}
 
 		void ShowHideSearchHandler()
