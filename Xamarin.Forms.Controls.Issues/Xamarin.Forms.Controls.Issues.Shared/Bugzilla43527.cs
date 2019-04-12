@@ -1,6 +1,7 @@
 ﻿using System;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Linq;
 
 #if UITEST
 using Xamarin.UITest;
@@ -29,6 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public TestPage()
 			{
 				Title = "Test Page";
+				AutomationId = "B43527TestPage";
 
 				Content = new StackLayout
 				{
@@ -39,5 +41,24 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 			}
 		}
+
+#if UITEST && __WINDOWS__
+		[Test]
+		public void TestB43527UpdateTitle()
+		{
+			try
+			{
+
+				RunningApp.WaitForElement(q => q.Marked("Change Title"));
+				RunningApp.WaitForElement(q => q.Marked("Test Page"));
+				RunningApp.Tap(q => q.Marked("Change Title"));
+				RunningApp.WaitForElement(q => q.Marked("Test Page"), timeoutMessage: "title changed. Element not found");
+			}
+			catch (TimeoutException ex)
+			{
+				Assert.AreEqual("title changed. Element not found", ex.Message);
+			}
+		}
+#endif
 	}
 }
