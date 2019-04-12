@@ -21,7 +21,8 @@ namespace Xamarin.Forms.Controls.Issues
     {
 		const string Black = "black";
 		const string White = "white";
-        protected override void Init()
+		const string Ok = "Ok";
+		protected override void Init()
         {
             AbsoluteLayout mainLayout = new AbsoluteLayout()
             {
@@ -51,7 +52,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override async void OnAppearing()
 		{
 			base.OnAppearing();
-			await DisplayAlert("Instruction", "If you see just the black color, the test pass. (Ignore the navigation bar)", "Ok");
+			await DisplayAlert("Instruction", "If you see just the black color, the test pass. (Ignore the navigation bar)", Ok);
 		}
 
 
@@ -59,7 +60,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void AllScreenIsBlack()
 		{
-			
+			RunningApp.WaitForElement(Ok);
+			RunningApp.Tap(Ok);
 			var box = RunningApp.WaitForElement(Black)[0];
 			var layout = RunningApp.WaitForElement(White)[0];
 
