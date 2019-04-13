@@ -24,6 +24,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			XamlLoader.ValueCreatedCallback = null;
 			XamlLoader.InstantiationFailedCallback = null;
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = null;
+#pragma warning disable 0618
+			Xamarin.Forms.Xaml.Internals.XamlLoader.DoNotThrowOnExceptions = false;
+#pragma warning restore 0618
 		}
 
 		[Test]
@@ -51,7 +54,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void ContentPageWithMissingType()
+		public void ContentPageWithMissingTypeMockviewReplacement()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
 
@@ -66,6 +69,28 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var page = (ContentPage) XamlLoader.Create(xaml, true);
 			Assert.That(page.Content, Is.TypeOf<MockView>());
+		}
+
+		[Test]
+		public void ContentPageWithMissingTypeNoReplacement()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type;
+
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+						<ContentPage.Content>
+							<local:MyCustomButton Foo=""Bar"">
+								<local:MyCustomButton.Qux>
+									<Label />
+								</local:MyCustomButton.Qux>
+							</local:MyCustomButton>
+						</ContentPage.Content>
+					</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.Null);
 		}
 
 		[Test]
@@ -511,6 +536,168 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 			Assert.That(exceptions.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void IgnoreConverterException()
+		{
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+						<Label BackgroundColor=""AlmostPink"" />
+					</ContentPage>";
+
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void IgnoreMarkupExtensionException()
+		{
+			var xaml = @"
+						<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+								xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+								<StackLayout>
+									<ListView ItemsSource=""{x:Static Foo}"" />
+									<ListView ItemsSource=""{local:Missing Test}"" />
+									<Label Text=""{Binding Foo"" />
+								</StackLayout>
+						</ContentPage>";
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.GreaterThan(1));
+		}
+
+		[Test]
+		public void CanResolveRootNode()
+		{
+			string assemblyName = null;
+			string clrNamespace = null;
+			string typeName = null;
+
+			XamlLoader.FallbackTypeResolver = (fallbackTypeInfos, type) =>
+			{
+				assemblyName = fallbackTypeInfos?[1].AssemblyName;
+				clrNamespace = fallbackTypeInfos?[1].ClrNamespace;
+				typeName = fallbackTypeInfos?[1].TypeName;
+				return type ?? typeof(MockView);
+			};
+
+			var xaml = @"
+						<local:MissingType xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+							xmlns:local=""clr-namespace:my.namespace;assembly=my.assembly"">
+						</local:MissingType>";
+
+			XamlLoader.Create(xaml, true);
+			Assert.That(assemblyName, Is.EqualTo("my.assembly"));
+			Assert.That(clrNamespace, Is.EqualTo("my.namespace"));
+			Assert.That(typeName, Is.EqualTo("MissingType"));
+		}
+
+		[Test]
+		public void CanResolveRootNodeWithoutAssembly()
+		{
+			string assemblyName = null;
+			string clrNamespace = null;
+			string typeName = null;
+
+			XamlLoader.FallbackTypeResolver = (fallbackTypeInfos, type) =>
+			{
+				assemblyName = fallbackTypeInfos?[1].AssemblyName;
+				clrNamespace = fallbackTypeInfos?[1].ClrNamespace;
+				typeName = fallbackTypeInfos?[1].TypeName;
+				return type ?? typeof(MockView);
+			};
+
+			var xaml = @"
+						<local:MissingType xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+							xmlns:local=""using:my.namespace"">
+						</local:MissingType>";
+
+			XamlLoader.Create(xaml, true);
+			Assert.That(assemblyName, Is.EqualTo(null));
+			Assert.That(clrNamespace, Is.EqualTo("my.namespace"));
+			Assert.That(typeName, Is.EqualTo("MissingType"));
+		}
+
+		[Test]
+		public void IgnoreNamedMissingTypeException()
+		{
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+						<StackLayout>
+							<local:Missing x:Name=""MyName"" />
+							<Button x:Name=""button"" />
+							<Button x:Name=""button"" />
+						</StackLayout>
+					</ContentPage>";
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.GreaterThan(1));
+		}
+
+		[Test]
+		public void IgnoreFindByNameInvalidCastException()
+		{
+			var xaml = @"
+						<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+							<Label x:Name=""MyName"" />
+						</ContentPage>";
+
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			var content = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.DoesNotThrow(() => content.FindByName<Button>("MyName"));
+			Assert.That(exceptions.Count, Is.GreaterThanOrEqualTo(1));
+		}
+    
+		[Test]
+		public void TextAsRandomContent()
+		{
+			var xaml = @"
+						<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+								xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+								<StackLayout>
+									<Label>xyz</Label>
+									<StackLayout>foo</StackLayout>
+									<Label><Label.FormattedText>bar</Label.FormattedText></Label>
+								</StackLayout>
+						</ContentPage>";
+			XamlLoader.Create(xaml, true);
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.GreaterThanOrEqualTo(1));
+		}
+
+		[Test]
+		public void MissingGenericRootTypeProvidesCorrectTypeName()
+		{
+			var xaml = @"
+					<local:GenericContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:MissingNamespace""
+						x:TypeArguments=""x:Object"" />";
+
+			XamlLoader.FallbackTypeResolver = (p, type) =>
+			{
+				Assert.That(p.Select(i => i.TypeName), Has.Some.EqualTo("GenericContentPage`1"));
+				return typeof(ContentPage);
+			};
+
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 		}
 	}
 

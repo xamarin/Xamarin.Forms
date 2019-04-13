@@ -43,12 +43,15 @@ namespace Xamarin.Forms.Xaml
 		{
 			object value = null;
 
-			XamlParseException xpe;
 			var type = XamlParser.GetElementType(node.XmlType, node, Context.RootElement?.GetType().GetTypeInfo().Assembly,
-				out xpe);
-			if (xpe != null)
+				out XamlParseException xpe);
+			if (xpe != null) {
+				if (Context.ExceptionHandler != null) {
+					Context.ExceptionHandler(xpe);
+					return;
+				}
 				throw xpe;
-
+			}
 			Context.Types[node] = type;
 			if (IsXaml2009LanguagePrimitive(node))
 				value = CreateLanguagePrimitive(type, node);
@@ -76,7 +79,14 @@ namespace Xamarin.Forms.Xaml
 					if (value == null && node.CollectionItems.Any() && node.CollectionItems.First() is ValueNode) {
 						var serviceProvider = new XamlServiceProvider(node, Context);
 						var converted = ((ValueNode)node.CollectionItems.First()).Value.ConvertTo(type, () => type.GetTypeInfo(),
-							serviceProvider);
+							serviceProvider, out Exception exception);
+						if (exception != null) {
+							if (Context.ExceptionHandler != null) {
+								Context.ExceptionHandler(exception);
+								return;
+							}
+							throw exception;
+						} 
 						if (converted != null && converted.GetType() == type)
 							value = converted;
 					}
@@ -84,8 +94,8 @@ namespace Xamarin.Forms.Xaml
 						try {
 							value = Activator.CreateInstance(type);
 						}
-						catch (TargetInvocationException tie) {
-							value = XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name }, type, tie) ?? throw tie;
+						catch (Exception e) when (e is TargetInvocationException || e is MemberAccessException) {
+							value = XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name }, type, e) ?? throw e;
 						}
 					}
 				}
@@ -108,8 +118,17 @@ namespace Xamarin.Forms.Xaml
 				foreach (var cnode in node.CollectionItems)
 					cnode.Accept(visitor, node);
 
-				value = markup.ProvideValue(serviceProvider);
-
+				try {
+					value = markup.ProvideValue(serviceProvider);
+				}
+				catch (Exception e) {
+					var xamlpe = e as XamlParseException ?? new XamlParseException("Markup extension failed", serviceProvider, e);
+					if (Context.ExceptionHandler != null) {
+						Context.ExceptionHandler(xamlpe);
+					}
+					else
+						throw xamlpe;
+				}
 				if (!node.Properties.TryGetValue(XmlName.xKey, out INode xKey))
 					xKey = null;
 
@@ -291,7 +310,9 @@ namespace Xamarin.Forms.Xaml
 					enode.SkipProperties.Add(name);
 				var value = Context.Values[node];
 				var serviceProvider = new XamlServiceProvider(enode, Context);
-				var convertedValue = value.ConvertTo(parameter.ParameterType, () => parameter, serviceProvider);
+				var convertedValue = value.ConvertTo(parameter.ParameterType, () => parameter, serviceProvider, out Exception e);
+				if (e != null)
+					throw e;
 				array[i] = convertedValue;
 			}
 

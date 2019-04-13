@@ -295,7 +295,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var viewRenderer = CreateRenderer(view);
 				SetRenderer(view, viewRenderer);
 
-				_renderer.View.AddSubview(viewRenderer.NativeView);
+				var nativeView = viewRenderer.NativeView;
+
+				_renderer.View.AddSubview(nativeView);
 				if (viewRenderer.ViewController != null)
 					_renderer.AddChildViewController(viewRenderer.ViewController);
 				viewRenderer.NativeView.Frame = new RectangleF(0, 0, _renderer.View.Bounds.Width, _renderer.View.Bounds.Height);
@@ -313,10 +315,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool PageIsChildOfPlatform(Page page)
 		{
-			while (!Application.IsApplicationOrNull(page.RealParent))
-				page = (Page)page.RealParent;
-
-			return Page == page || _modals.Contains(page);
+			var parent = page.AncestorToRoot();
+			return Page == parent || _modals.Contains(parent);
 		}
 
 		// Creates a UIAlertAction which includes a call to hide the presenting UIWindow at the end
