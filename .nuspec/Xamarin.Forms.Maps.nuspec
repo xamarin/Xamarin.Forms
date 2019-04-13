@@ -18,12 +18,6 @@
       </group>
       <group targetFramework="MonoAndroid81">
         <dependency id="Xamarin.GooglePlayServices.Maps" version="60.1142.1"/>
-        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="27.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="27.0.2"/>
-        <dependency id="Xamarin.Forms" version="$version$"/>
-      </group>
-      <group targetFramework="MonoAndroid90">
-        <dependency id="Xamarin.GooglePlayServices.Maps" version="60.1142.1"/>
         <dependency id="Xamarin.Android.Support.v7.AppCompat" version="28.0.0.1"/>
         <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="28.0.0.1"/>
         <dependency id="Xamarin.Forms" version="$version$"/>
@@ -63,10 +57,6 @@
     <file src="..\Xamarin.Forms.Maps.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Maps.Tizen.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Maps\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Maps.dll" target="lib\tizen40" />
     <file src="..\docs\Xamarin.Forms.Maps.xml" target="lib\tizen40" />
-
-    <!-- Xaml Design-time Stuff -->
-    <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\netstandard2.0" />
-    <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\netstandard1.0" />
 
 </files>
 </package>

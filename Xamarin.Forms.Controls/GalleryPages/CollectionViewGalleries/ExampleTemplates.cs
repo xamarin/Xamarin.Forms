@@ -20,7 +20,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				{
 					HeightRequest = 100, WidthRequest = 100,
 					HorizontalOptions = LayoutOptions.Center,
-					VerticalOptions = LayoutOptions.Center
+					VerticalOptions = LayoutOptions.Center,
+					Margin = new Thickness(2, 5, 2, 2),
+					AutomationId = "photo"
 				};
 
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
@@ -29,7 +31,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				{
 					FontSize = 12,
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center
+					HorizontalTextAlignment = TextAlignment.Center,
+					Margin = new Thickness(2, 0, 2, 2)
 				};
 
 				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
@@ -224,6 +227,48 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate PropagationTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var templateLayout = new Grid
+				{
+					BackgroundColor = Color.Bisque,
+					RowDefinitions = new RowDefinitionCollection { new RowDefinition { Height = GridLength.Auto } },
+					WidthRequest = 100,
+					HeightRequest = 140
+				};
+
+				var buttonLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+
+				var button1 = new Button
+				{
+					Margin = new Thickness(5),
+					Text = "Button 1"
+				};
+
+				var button2 = new Button
+				{
+					Margin = new Thickness(5),
+					Text = "Button 2"
+				};
+
+				var button3 = new Button
+				{
+					Margin = new Thickness(5),
+					Text = "Button 3"
+				};
+
+				buttonLayout.Children.Add(button1);
+				buttonLayout.Children.Add(button2);
+				buttonLayout.Children.Add(button3);
+
+				templateLayout.Children.Add(buttonLayout);
+
+				return templateLayout;
+			});
+		}
+		
 		public static DataTemplate VariableSizeTemplate()
 		{
 			var indexHeightConverter = new IndexRequestConverter(3, 50, 150);

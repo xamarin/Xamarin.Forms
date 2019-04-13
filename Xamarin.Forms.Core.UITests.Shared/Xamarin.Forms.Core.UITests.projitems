@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Legacy-CellsUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Legacy-UnevenListTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\MapUITests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\MaterialEntryUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\PickerUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ProgressBarUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\RootGalleryUITests.cs" />
@@ -56,5 +57,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ParsingUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\UITestCustomExceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ViewInspector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\CollectionViewUITests.cs" />
   </ItemGroup>
 </Project>

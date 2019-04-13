@@ -19,7 +19,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -30,7 +29,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -83,7 +81,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\DatePickerRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\EditorRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\EntryRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Renderers\FontExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\FormattedStringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\FrameRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\ImageRenderer.cs" />
@@ -154,6 +151,8 @@
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
+    <Compile Include="Renderers\IAccessibilityElementsController.cs" />
+    <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
@@ -208,6 +207,8 @@
     <Compile Include="NativeValueConverterService.cs" />
     <Compile Include="NativeBindingService.cs" />
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
+    <Compile Include="Extensions\FontExtensions.cs" />
+    <Compile Include="Extensions\FontExtensions.Shared.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
   </ItemGroup>
