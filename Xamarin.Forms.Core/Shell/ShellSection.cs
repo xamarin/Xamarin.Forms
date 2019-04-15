@@ -10,6 +10,7 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
+	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class Tab : ShellSection
 	{
 		public ShellContentCollection Content => Items;

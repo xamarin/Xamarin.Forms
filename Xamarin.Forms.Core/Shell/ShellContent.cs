@@ -13,6 +13,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
+	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class TabContent : ShellContent
 	{
 	}

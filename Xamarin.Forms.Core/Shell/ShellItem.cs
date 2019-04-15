@@ -8,6 +8,7 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
+	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class FlyoutItem : ShellItem
 	{
 		public ShellSectionCollection Tabs => Items;
