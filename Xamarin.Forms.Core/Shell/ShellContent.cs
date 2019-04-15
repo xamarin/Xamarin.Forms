@@ -13,13 +13,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[EditorBrowsable(EditorBrowsableState.Always)]
-	public class TabContent : ShellContent
-	{
-	}
-
 	[ContentProperty(nameof(Content))]
-	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class ShellContent : BaseShellItem, IShellContentController
 	{
 		static readonly BindablePropertyKey MenuItemsPropertyKey =
