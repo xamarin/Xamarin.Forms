@@ -90,7 +90,6 @@ namespace Xamarin.Forms.Platform.Android
 		AImageButton _clearButton;
 		AImageButton _clearPlaceholderButton;
 		AImageButton _searchButton;
-		//AButton _cancelButton;
 		AppCompatAutoCompleteTextView _textBlock;
 		bool _disposed;
 		SearchHandlerAppearanceTracker _searchHandlerAppearanceTracker;
@@ -169,7 +168,6 @@ namespace Xamarin.Forms.Platform.Android
 			using (lp = new LayoutParams(LP.MatchParent, LP.MatchParent))
 				_cardView.LayoutParameters = lp;
 
-
 			var linearLayout = new LinearLayout(context);
 			using (lp = new LP(LP.MatchParent, LP.MatchParent))
 				linearLayout.LayoutParameters = lp;
@@ -206,9 +204,6 @@ namespace Xamarin.Forms.Platform.Android
 			// A note on accessibility. The _textBlocks hint is what android defaults to reading in the screen
 			// reader. Therefor we do not need to set something else.
 
-			//_cancelButton = new AButton(context);
-			//_cancelButton.Text = "Cancel";
-
 			_clearButton = CreateImageButton(context, clearImage, Resource.Drawable.abc_ic_clear_material, 0, padding, nameof(SearchHandler.ClearIcon));
 			_clearPlaceholderButton = CreateImageButton(context, clearPlaceholderImage, -1, 0, padding, nameof(SearchHandler.ClearPlaceholderIcon));
 
@@ -216,8 +211,7 @@ namespace Xamarin.Forms.Platform.Android
 			linearLayout.AddView(_textBlock);
 			linearLayout.AddView(_clearButton);
 			linearLayout.AddView(_clearPlaceholderButton);
-			//linearLayout.AddView(_cancelButton);
-
+		
 			UpdateClearButtonState();
 
 			// hook all events down here to avoid getting events while doing setup
@@ -227,17 +221,11 @@ namespace Xamarin.Forms.Platform.Android
 			_clearButton.Click += OnClearButtonClicked;
 			_clearPlaceholderButton.Click += OnClearPlaceholderButtonClicked;
 			_searchButton.Click += OnSearchButtonClicked;
-			//_cancelButton.Click += CancelButtonClicked;
-
+			
 			AddView(_cardView);
 
 			linearLayout.Dispose();
 		}
-
-		//protected virtual void CancelButtonClicked(object sender, EventArgs e)
-		//{
-		//	throw new NotImplementedException();
-		//}
 
 		protected virtual void OnSearchHandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
