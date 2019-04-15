@@ -104,7 +104,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 			SetNeedsStatusBarAppearanceUpdate();
-			SetNeedsUpdateOfHomeIndicatorAutoHidden();
+			if (Forms.IsiOS11OrNewer)
+				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 
 		public override UIViewController ChildViewControllerForStatusBarStyle()

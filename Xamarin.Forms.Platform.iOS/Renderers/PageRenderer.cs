@@ -440,7 +440,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateHomeIndicatorAutoHidden()
 		{
-			if (Element == null)
+			if (Element == null || !Forms.IsiOS11OrNewer)
 				return;
 
 			SetNeedsUpdateOfHomeIndicatorAutoHidden();
