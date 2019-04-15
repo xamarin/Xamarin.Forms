@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
@@ -13,6 +14,7 @@ namespace Xamarin.Forms
 	}
 
 	[ContentProperty(nameof(Items))]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class ShellItem : ShellGroupItem, IShellItemController, IElementConfiguration<ShellItem>, IPropertyPropagationController
 	{
 		#region PropertyKeys

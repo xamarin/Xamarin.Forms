@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 #if NETSTANDARD1_0
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Xamarin.Forms
 	}
 
 	[ContentProperty(nameof(Content))]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class ShellContent : BaseShellItem, IShellContentController
 	{
 		static readonly BindablePropertyKey MenuItemsPropertyKey =
