@@ -6,7 +6,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve(AllMembers=true)]
+	[Preserve(AllMembers = true)]
 	public class DynamicViewGallery : ContentPage
 	{
 		internal static Dictionary<string, (Func<object> ctor, NamedAction[] methods)> TestedTypes = new Dictionary<string, (Func<object> ctor, NamedAction[] methods)>
@@ -155,6 +155,10 @@ namespace Xamarin.Forms.Controls
 				{
 					propertyLayout.Children.Add(CreateThicknessPicker(property, element));
 				}
+				else if (property.PropertyType == typeof(TextAlignment))
+				{
+					propertyLayout.Children.Add(CreateEnumPicker(property, element, typeof(TextAlignment)));
+				}
 				else
 				{
 					//_propertyLayout.Children.Add(new Label { Text = $"//TODO: {property.Name} ({property.PropertyType})", TextColor = Color.Gray });
@@ -273,6 +277,43 @@ namespace Xamarin.Forms.Controls
 			actions.AddChild(valueLabel, 1, 1);
 
 			return actions;
+		}
+
+		static Grid CreateEnumPicker(PropertyInfo property, BindableObject element, Type elementType)
+		{
+			var grid = new Grid
+			{
+				Padding = 0,
+				RowSpacing = 3,
+				ColumnSpacing = 3,
+				ColumnDefinitions =
+						{
+							new ColumnDefinition { Width = 100 },
+							new ColumnDefinition { Width = GridLength.Star }
+						},
+			};
+			grid.AddChild(new Label { Text = property.Name, FontAttributes = FontAttributes.Bold }, 0, 0);
+			var picker = new Picker { Title = property.Name };
+			foreach (var item in Enum.GetNames(elementType))
+				picker.Items.Add(item);
+			
+			picker.SelectedItem = property.GetValue(element).ToString();
+			grid.AddChild(picker, 1, 0);
+			picker.SelectedIndexChanged += (_, e) =>
+			{
+				var newEnumValue = Enum.Parse(elementType, picker.SelectedItem.ToString());
+				property.SetValue(element, newEnumValue);
+			};
+			element.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName == property.Name)
+				{
+					var newVal = property.GetValue(element);
+					if (newVal.ToString() != picker.SelectedItem.ToString())
+						picker.SelectedItem = newVal;
+				}
+			};
+			return grid;
 		}
 
 		static Grid CreateThicknessPicker(PropertyInfo property, BindableObject element)
