@@ -42,10 +42,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			LoadView(SearchHandler);
 			if (_searchHandlerAppearanceTracker == null)
-				_searchHandlerAppearanceTracker = CreateSeachHandlerAppearanceTracker();
+				_searchHandlerAppearanceTracker = CreateSearchHandlerAppearanceTracker();
 		}
 
-		protected virtual SearchHandlerAppearanceTracker CreateSeachHandlerAppearanceTracker()
+		protected virtual SearchHandlerAppearanceTracker CreateSearchHandlerAppearanceTracker()
 		{
 			return new SearchHandlerAppearanceTracker(this);
 		}
