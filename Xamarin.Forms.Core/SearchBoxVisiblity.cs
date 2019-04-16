@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms
 {
-	public enum SearchBoxVisiblity
+	public enum SearchBoxVisibility
 	{
 		Hidden,
 		Collapsable,
