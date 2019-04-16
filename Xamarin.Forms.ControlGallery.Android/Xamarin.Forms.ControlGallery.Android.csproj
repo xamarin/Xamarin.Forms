@@ -45,7 +45,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;HAVE_OPENTK; TEST_EXPERIMENTAL_RENDERERS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;HAVE_OPENTK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>Full</AndroidLinkMode>
@@ -110,7 +110,6 @@
     <Compile Include="ColorPicker.cs" />
     <Compile Include="SampleNativeControl.cs" />
     <Compile Include="TestCloudService.cs" />
-    <Compile Include="_5724CustomRenderers.cs" />
     <Compile Include="_1909CustomRenderer.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_38989CustomRenderer.cs" />
