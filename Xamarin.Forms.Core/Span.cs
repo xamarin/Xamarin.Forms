@@ -150,6 +150,10 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnLetterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+		}
+
 		internal override void ValidateGesture(IGestureRecognizer gesture)
 		{
 			switch (gesture)

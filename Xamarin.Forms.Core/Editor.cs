@@ -144,6 +144,11 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnLetterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
 
 		private static void OnTextChanged(Editor bindable, string oldValue, string newValue)
 		{

@@ -194,6 +194,11 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnLetterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
 
 		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)
 		{

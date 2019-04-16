@@ -315,6 +315,11 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnLetterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
 
 		void IBorderElement.OnBorderColorPropertyChanged(Color oldValue, Color newValue)
 		{

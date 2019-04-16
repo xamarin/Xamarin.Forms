@@ -11,5 +11,7 @@ namespace Xamarin.Forms
 		void OnTextColorPropertyChanged(Color oldValue, Color newValue);
 
 		double LetterSpacing { get; }
+
+		void OnLetterSpacingPropertyChanged(double oldValue, double newValue);
 	}
 }
