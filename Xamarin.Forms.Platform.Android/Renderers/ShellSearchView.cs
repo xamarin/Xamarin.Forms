@@ -41,8 +41,13 @@ namespace Xamarin.Forms.Platform.Android
 		void IShellSearchView.LoadView()
 		{
 			LoadView(SearchHandler);
-			if(_searchHandlerAppearanceTracker == null)
-				_searchHandlerAppearanceTracker = new SearchHandlerAppearanceTracker(this);
+			if (_searchHandlerAppearanceTracker == null)
+				_searchHandlerAppearanceTracker = CreateSeachHandlerAppearanceTracker();
+		}
+
+		protected virtual SearchHandlerAppearanceTracker CreateSeachHandlerAppearanceTracker()
+		{
+			return new SearchHandlerAppearanceTracker(this);
 		}
 
 		#endregion IShellSearchView

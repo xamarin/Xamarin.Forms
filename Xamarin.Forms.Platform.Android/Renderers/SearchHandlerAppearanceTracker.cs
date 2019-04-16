@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateInputType();
 		}
 
-		void SearchHandlerFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		protected virtual void SearchHandlerFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			e.Result = true;
 
@@ -59,33 +59,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void UpdateSearchBarColors()
-		{
-			UpdateBackgroundColor();
-			UpdateTextColor();
-			UpdatePlaceholderColor();
-			UpdateCancelButtonColor();
-		}
-
-		void UpdateFont()
-		{
-			_editText.Typeface = _searchHandler.ToTypeface();
-			_editText.SetTextSize(ComplexUnitType.Sp, (float)_searchHandler.FontSize);
-		}
-
-		void UpdatePlaceholderColor()
-		{
-			_hintColorSwitcher?.UpdateTextColor(_editText, _searchHandler.PlaceholderColor, _editText.SetHintTextColor);
-		}
-
-		void UpdateTextAlignment()
-		{
-			_editText.UpdateHorizontalAlignment(_searchHandler.HorizontalTextAlignment, _control.Context.HasRtlSupport(), Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
-		}
-
-	
-
-		void SearchHandlerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		protected virtual void SearchHandlerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.Is(SearchHandler.BackgroundColorProperty))
 			{
@@ -115,6 +89,30 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateTextAlignment();
 			}
+		}
+
+		void UpdateSearchBarColors()
+		{
+			UpdateBackgroundColor();
+			UpdateTextColor();
+			UpdatePlaceholderColor();
+			UpdateCancelButtonColor();
+		}
+
+		void UpdateFont()
+		{
+			_editText.Typeface = _searchHandler.ToTypeface();
+			_editText.SetTextSize(ComplexUnitType.Sp, (float)_searchHandler.FontSize);
+		}
+
+		void UpdatePlaceholderColor()
+		{
+			_hintColorSwitcher?.UpdateTextColor(_editText, _searchHandler.PlaceholderColor, _editText.SetHintTextColor);
+		}
+
+		void UpdateTextAlignment()
+		{
+			_editText.UpdateHorizontalAlignment(_searchHandler.HorizontalTextAlignment, _control.Context.HasRtlSupport(), Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
 		}
 
 		void UpdateBackgroundColor()
