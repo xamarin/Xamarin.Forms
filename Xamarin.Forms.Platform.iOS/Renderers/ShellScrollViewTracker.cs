@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (parent is Page)
 				{
 					var searchHandler = Shell.GetSearchHandler(parent);
-					if (searchHandler?.SearchBoxVisibility == SearchBoxVisiblity.Collapsable)
+					if (searchHandler?.SearchBoxVisibility == SearchBoxVisibility.Collapsable)
 						_scrollView.AlwaysBounceVertical = true;
 					return;
 				}
