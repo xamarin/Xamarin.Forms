@@ -391,12 +391,12 @@ namespace Xamarin.Forms.Platform.iOS
 						NavigationItem.TitleView = null;
 				}
 			}
-			else if (visibility == SearchBoxVisibility.Collapsable || visibility == SearchBoxVisibility.Expanded)
+			else if (visibility == SearchBoxVisibility.Collapsible || visibility == SearchBoxVisibility.Expanded)
 			{
 				if (Forms.IsiOS11OrNewer)
 				{
 					NavigationItem.SearchController = _searchController;
-					NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisibility.Collapsable;
+					NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisibility.Collapsible;
 				}
 				else
 				{
@@ -438,7 +438,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateSearchIsEnabled(_searchController);
 			searchBar.SearchButtonClicked += SearchButtonClicked;
 			if (Forms.IsiOS11OrNewer)
-				NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisibility.Collapsable;
+				NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisibility.Collapsible;
 
 			var icon = SearchHandler.QueryIcon;
 			if (icon != null)

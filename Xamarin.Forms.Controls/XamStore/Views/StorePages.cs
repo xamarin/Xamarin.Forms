@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Controls.XamStore
 				0, 6);
 
 			grid.Children.Add(MakeButton("Collapse Search",
-					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisibility.Collapsable),
+					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisibility.Collapsible),
 				1, 6);
 
 			grid.Children.Add(MakeButton("Show Search",
@@ -374,7 +374,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public UpdatesPage() : base("Available Updates", Color.Default)
 		{
-			AddSearchHandler("Search Updates", SearchBoxVisibility.Collapsable);
+			AddSearchHandler("Search Updates", SearchBoxVisibility.Collapsible);
 		}
 	}
 
@@ -383,7 +383,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public InstalledPage() : base("Installed Items", Color.Default)
 		{
-			AddSearchHandler("Search Installed", SearchBoxVisibility.Collapsable);
+			AddSearchHandler("Search Installed", SearchBoxVisibility.Collapsible);
 		}
 	}
 
@@ -392,7 +392,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public LibraryPage() : base("My Library", Color.Default)
 		{
-			AddSearchHandler("Search Apps", SearchBoxVisibility.Collapsable);
+			AddSearchHandler("Search Apps", SearchBoxVisibility.Collapsible);
 		}
 	}
 
