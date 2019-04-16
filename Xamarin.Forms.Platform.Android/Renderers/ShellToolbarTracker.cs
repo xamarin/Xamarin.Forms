@@ -438,7 +438,7 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView.SearchConfirmed += OnSearchConfirmed;
 				}
 
-				if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Collapsable)
+				if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Collapsible)
 				{
 					var placeholder = new Java.Lang.String(SearchHandler.Placeholder);
 					var item = menu.Add(placeholder);
@@ -482,7 +482,7 @@ namespace Xamarin.Forms.Platform.Android
 		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
 		{
 			// We only need to do this tint hack when using collapsed search handlers
-			if (SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Collapsable)
+			if (SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Collapsible)
 				return;
 
 			for (int i = 0; i < _toolbar.ChildCount; i++)

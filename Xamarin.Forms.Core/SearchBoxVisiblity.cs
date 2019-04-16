@@ -3,7 +3,7 @@
 	public enum SearchBoxVisibility
 	{
 		Hidden,
-		Collapsable,
+		Collapsible,
 		Expanded
 	}
 }
