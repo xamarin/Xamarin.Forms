@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
-			if (!(Content is FrameworkElement frameworkElement))
+			if (!(Content is FrameworkElement frameworkElement) || Element == null)
 			{
 				return finalSize;
 			}
