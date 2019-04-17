@@ -44,8 +44,7 @@ jobs:
 - job: Phase_1
   displayName: Prepare Build Phase
   condition: succeeded()
-  pool:
-    name: Hosted VS2017
+  vmImage: $(winVmImage)
   steps:
      - template: build/steps/build-prepare.yml
 
@@ -53,9 +52,7 @@ jobs:
   displayName: Build Windows Phase
   dependsOn: Phase_1
   condition: succeeded()
-  pool:
-    name: Hosted VS2017
-    demands: msbuild
+  vmImage: $(winVmImage)
   strategy:
     matrix:
       debug:
@@ -71,9 +68,7 @@ jobs:
   displayName: Test Windows Phase
   dependsOn: Phase_2
   condition: succeeded()
-  pool:
-    name: Hosted VS2017
-    demands: vstest
+  vmImage: $(winVmImage)
   strategy:
     matrix:
       debug:
@@ -87,7 +82,7 @@ jobs:
   parameters:
     name: android_legacy
     displayName: Build Android [Legacy Renderers]
-    vmImage: Hosted Mac Internal
+    vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage"'
     dependsOn: Phase_1
@@ -97,7 +92,7 @@ jobs:
   parameters:
     name: android_preappcompact
     displayName: Build Android [Pre-AppCompat]
-    vmImage: Hosted Mac Internal
+    vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP"'
     dependsOn: Phase_1
@@ -107,7 +102,7 @@ jobs:
   parameters:
     name: android_fast
     displayName: Build Android [Fast Renderers]
-    vmImage: Hosted Mac Internal
+    vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP"'
     dependsOn: Phase_1
@@ -117,13 +112,7 @@ jobs:
   displayName: OSX Phase
   dependsOn: Phase_1
   condition: succeeded()
-  pool:
-    name: Hosted Mac Internal
-    demands:
-      - Agent.OS -equals darwin
-      - sh
-      - msbuild
-      - Xamarin.iOS
+  vmImage: $(macOSVmImage)
   variables:
     provisioningOSX : $(provisioning)
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
@@ -142,9 +131,7 @@ jobs:
    - android_preappcompact
    - android_fast
   condition: succeeded()
-  pool:
-    name: Hosted VS2017
-    demands: DotNetFramework
+  vmImage: $(winVmImage)
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
