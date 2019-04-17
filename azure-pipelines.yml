@@ -44,7 +44,8 @@ jobs:
 - job: Phase_1
   displayName: Prepare Build Phase
   condition: succeeded()
-  vmImage: $(winVmImage)
+  pool:
+    vmImage: $(winVmImage)
   steps:
      - template: build/steps/build-prepare.yml
 
@@ -52,7 +53,8 @@ jobs:
   displayName: Build Windows Phase
   dependsOn: Phase_1
   condition: succeeded()
-  vmImage: $(winVmImage)
+  pool:
+    vmImage: $(winVmImage)
   strategy:
     matrix:
       debug:
@@ -68,7 +70,8 @@ jobs:
   displayName: Test Windows Phase
   dependsOn: Phase_2
   condition: succeeded()
-  vmImage: $(winVmImage)
+  pool:
+    vmImage: $(winVmImage)
   strategy:
     matrix:
       debug:
@@ -112,7 +115,8 @@ jobs:
   displayName: OSX Phase
   dependsOn: Phase_1
   condition: succeeded()
-  vmImage: $(macOSVmImage)
+  pool:
+    vmImage: $(macOSVmImage)
   variables:
     provisioningOSX : $(provisioning)
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
@@ -131,7 +135,8 @@ jobs:
    - android_preappcompact
    - android_fast
   condition: succeeded()
-  vmImage: $(winVmImage)
+  pool:
+    vmImage: $(winVmImage)
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
