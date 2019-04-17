@@ -303,6 +303,9 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var label = new Label();
 
+			var viewModel = new Object();
+			shell.BindingContext = viewModel;
+
 			shell.FlyoutHeader = label;
 
 			Assert.AreEqual(((IShellController)shell).FlyoutHeader, label);
@@ -315,7 +318,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			});
 
 			Assert.AreEqual(((IShellController)shell).FlyoutHeader, label2);
-			Assert.AreEqual(((IShellController)shell).FlyoutHeader.BindingContext, label);
+			Assert.AreEqual(((IShellController)shell).FlyoutHeader.BindingContext, viewModel);
 
 			shell.FlyoutHeaderTemplate = null;
 
