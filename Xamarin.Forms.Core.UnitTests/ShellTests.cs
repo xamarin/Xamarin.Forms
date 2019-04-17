@@ -373,5 +373,43 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.GoToAsync("//rootlevelcontent1");
 			Assert.AreEqual(shell.CurrentItem, item1);
 		}
+
+		[Test]
+		public async Task TitleViewBindingContext()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			ShellItem item = new ShellItem()
+			{
+				Items =
+				{
+					new ShellSection()
+					{
+						Items =
+						{
+							new ShellContent()
+							{
+								Content = page
+							}
+						}
+					}
+				}
+			};
+
+			shell.Items.Add(item);
+			page.BindingContext = new { Text = "Binding" };
+
+			// setup title view
+			StackLayout layout = new StackLayout() { BackgroundColor = Color.White };
+			Label label = new Label();
+			label.SetBinding(Label.TextProperty, "Text");
+			layout.Children.Add(label);
+			Shell.SetTitleView(page, layout);
+
+			Assert.AreEqual(label.Text, "Binding");
+
+			page.BindingContext = new { Text = "Binding Changed" };
+			Assert.AreEqual(label.Text, "Binding Changed");
+		}
 	}
 }
