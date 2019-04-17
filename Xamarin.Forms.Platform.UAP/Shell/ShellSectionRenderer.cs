@@ -1,30 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI.Xaml.Navigation;
+﻿using System.ComponentModel;
+using Windows.UI.Xaml.Controls;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ShellSectionRenderer : Windows.UI.Xaml.Controls.Page
+	// Renders the actual page area where the contents gets rendered, as well as set of optional top-bar menu items and search box.
+	internal class ShellSectionRenderer : Windows.UI.Xaml.Controls.NavigationView, IAppearanceObserver
 	{
-		Windows.UI.Xaml.Controls.Frame _Frame;
+		Windows.UI.Xaml.Controls.Frame Frame { get; }
 		Page Page;
 		ShellContent CurrentContent;
 		ShellSection ShellSection;
 
 		public ShellSectionRenderer()
 		{
-			var root = new Windows.UI.Xaml.Controls.Grid();
-			root.RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
-			root.RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
-			_Frame = new Windows.UI.Xaml.Controls.Frame();
-			root.Children.Add(_Frame);
-			this.Content = root;
+			var template = @"<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""><NavigationViewItem Content=""{Binding Title}""/></DataTemplate>";
+			var datatemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Markup.XamlReader.Load(template);
+			MenuItemTemplate = datatemplate;
+
+			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+			IsSettingsVisible = false;
+			AlwaysShowHeader = false;
+			PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+			ItemInvoked += MenuItemInvoked;
+
+			AutoSuggestBox = new Windows.UI.Xaml.Controls.AutoSuggestBox() { Width = 300 };
+			AutoSuggestBox.TextChanged += SearchBox_TextChanged;
+			AutoSuggestBox.QuerySubmitted += SearchBox_QuerySubmitted;
+			AutoSuggestBox.SuggestionChosen += SearchBox_SuggestionChosen;
+
+			Frame = new Windows.UI.Xaml.Controls.Frame();
+			Content = Frame;
 			this.SizeChanged += ShellSectionRenderer_SizeChanged;
+			Resources["NavigationViewTopPaneBackground"] = new Windows.UI.Xaml.Media.SolidColorBrush(ShellRenderer.DefaultBackgroundColor);
+			Resources["TopNavigationViewItemForeground"] = new Windows.UI.Xaml.Media.SolidColorBrush(ShellRenderer.DefaultForegroundColor);
+			Resources["TopNavigationViewItemForegroundSelected"] = new Windows.UI.Xaml.Media.SolidColorBrush(ShellRenderer.DefaultForegroundColor);
+			Resources["NavigationViewSelectionIndicatorForeground"] = new Windows.UI.Xaml.Media.SolidColorBrush(ShellRenderer.DefaultForegroundColor);
 		}
 
 		void ShellSectionRenderer_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
@@ -32,12 +42,32 @@ namespace Xamarin.Forms.Platform.UWP
 			Page.ContainerArea = new Rectangle(0, 0, e.NewSize.Width, e.NewSize.Height);
 		}
 
-		protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+		void MenuItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
 		{
-			base.OnNavigatedTo(e);
-			var section = ShellSection = e.Parameter as ShellSection;
-			NavigateToContent(section.CurrentItem);
+			var shellContent = args.InvokedItemContainer?.DataContext as ShellContent;
+			var shellItem = ShellSection.RealParent as ShellItem;
+			var result = ((IShellController)shellItem.RealParent).ProposeNavigation(ShellNavigationSource.Pop, shellItem, ShellSection, shellContent, null, true);
+			if (result)
+			{
+				ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
+			}
+		}
+
+		internal void NavigateToShellSection(ShellSection section, Page page, bool animate = true)
+		{
+			if(ShellSection != null)
+			{
+				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
+				ShellSection = null;
+				MenuItemsSource = null;
+			}
+			ShellSection = section;
 			ShellSection.PropertyChanged += OnShellSectionPropertyChanged;
+			SelectedItem = null;
+			IsPaneVisible = section.Items.Count > 1;
+			MenuItemsSource = section.Items;
+			SelectedItem = section.CurrentItem;
+			NavigateToContent(section.CurrentItem, animate);
 		}
 
 		void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -48,23 +78,103 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal void NavigateToContent(ShellContent shellContent)
+		internal void NavigateToContent(ShellContent shellContent, bool animate = true)
 		{
 			if(CurrentContent != null && Page != null)
 				((IShellContentController)CurrentContent).RecyclePage(Page);
 			CurrentContent = shellContent;
 			 Page = ((IShellContentController)shellContent).GetOrCreateContent();
-			_Frame.Navigate((ContentPage)Page);
+			Frame.Navigate((ContentPage)Page);
+			UpdateSearchHandler(Shell.GetSearchHandler(Page));
+		}
+		#region Search
+
+		SearchHandler _currentSearchHandler;
+		void UpdateSearchHandler(SearchHandler searchHandler)
+		{
+			if (_currentSearchHandler != null)
+			{
+				_currentSearchHandler.PropertyChanged -= SearchHandler_PropertyChanged;
+			}
+			_currentSearchHandler = searchHandler;
+			if (AutoSuggestBox == null)
+				return;
+			if (searchHandler != null)
+			{
+				searchHandler.PropertyChanged += SearchHandler_PropertyChanged;
+				AutoSuggestBox.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				AutoSuggestBox.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Stretch;
+				AutoSuggestBox.PlaceholderText = searchHandler.Placeholder;
+				AutoSuggestBox.IsEnabled = searchHandler.IsSearchEnabled;
+				AutoSuggestBox.ItemsSource = _currentSearchHandler.ItemsSource;
+				IsPaneVisible = true;
+			}
+			else
+			{
+				IsPaneVisible = ShellSection.Items.Count > 1;
+				AutoSuggestBox.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			}
 		}
 
-		protected override void OnNavigatedFrom(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+		void SearchHandler_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			_Frame.Content = null;
-			ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
-			((IShellContentController)CurrentContent).RecyclePage(Page);
-			CurrentContent = null;
-			Page = null;
-			base.OnNavigatedFrom(e);
+			if (AutoSuggestBox == null)
+				return;
+			if (e.PropertyName == SearchHandler.PlaceholderProperty.PropertyName)
+			{
+				AutoSuggestBox.PlaceholderText = _currentSearchHandler.Placeholder;
+			}
+			else if (e.PropertyName == SearchHandler.IsSearchEnabledProperty.PropertyName)
+			{
+				AutoSuggestBox.IsEnabled = _currentSearchHandler.IsSearchEnabled;
+			}
+			else if (e.PropertyName == SearchHandler.ItemsSourceProperty.PropertyName)
+			{
+				AutoSuggestBox.ItemsSource = _currentSearchHandler.ItemsSource;
+			}
+			else if (e.PropertyName == SearchHandler.QueryProperty.PropertyName)
+			{
+				AutoSuggestBox.Text = _currentSearchHandler.Query;
+			}
 		}
+
+		void SearchBox_TextChanged(Windows.UI.Xaml.Controls.AutoSuggestBox sender, Windows.UI.Xaml.Controls.AutoSuggestBoxTextChangedEventArgs args)
+		{
+			if (args.Reason != Windows.UI.Xaml.Controls.AutoSuggestionBoxTextChangeReason.ProgrammaticChange)
+				_currentSearchHandler.Query = sender.Text;
+		}
+
+		void SearchBox_SuggestionChosen(Windows.UI.Xaml.Controls.AutoSuggestBox sender, Windows.UI.Xaml.Controls.AutoSuggestBoxSuggestionChosenEventArgs args)
+		{
+			((ISearchHandlerController)_currentSearchHandler).ItemSelected(args.SelectedItem);
+		}
+
+		void SearchBox_QuerySubmitted(Windows.UI.Xaml.Controls.AutoSuggestBox sender, Windows.UI.Xaml.Controls.AutoSuggestBoxQuerySubmittedEventArgs args)
+		{
+			((ISearchHandlerController)_currentSearchHandler).QueryConfirmed();
+		}
+
+		#endregion Search
+
+		#region IAppearanceObserver
+
+		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance) => UpdateAppearance(appearance);
+
+		void UpdateAppearance(ShellAppearance appearance)
+		{
+			var a = (IShellAppearanceElement)appearance;
+			UpdateBrushColor("NavigationViewTopPaneBackground", a.EffectiveTabBarBackgroundColor);
+			UpdateBrushColor("TopNavigationViewItemForeground", a.EffectiveTabBarForegroundColor);
+			UpdateBrushColor("TopNavigationViewItemForegroundSelected", a.EffectiveTabBarForegroundColor);
+			UpdateBrushColor("NavigationViewSelectionIndicatorForeground", a.EffectiveTabBarForegroundColor);
+		}
+
+		void UpdateBrushColor(string resourceKey, Color color)
+		{
+			if (Resources[resourceKey] is Windows.UI.Xaml.Media.SolidColorBrush sb)
+				sb.Color = color.ToWindowsColor();
+		}
+
+		#endregion
 	}
 }
