@@ -254,9 +254,9 @@ namespace Xamarin.Forms
 		}
 
 
-		#region internal element configuration
-		// This creates an internal class to keep track of IElementConfiguration because adding 
-		// IElementConfiguration<T> to the Cell itself kills performance on UWP
+		#region Nested IElementConfiguration<Cell> Implementation
+		// This creates a nested class to keep track of IElementConfiguration<Cell> because adding 
+		// IElementConfiguration<Cell> to the Cell itself tanks performance on UWP ListViews
 		// Issue has been logged with UWP
 		public IPlatformElementConfiguration<T, Cell> On<T>() where T : IConfigPlatform
 		{
