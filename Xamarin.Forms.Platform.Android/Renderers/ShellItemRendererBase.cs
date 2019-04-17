@@ -75,7 +75,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected IShellContext ShellContext { get; }
 
-		protected ShellItem ShellItem { get; private set; }
+		protected ShellItem ShellItem
+		{
+			get;
+			private set;
+		}
 
 		protected virtual IShellObservableFragment CreateFragmentForPage(Page page)
 		{
