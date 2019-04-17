@@ -74,9 +74,20 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		void UpdateHeaderInsets(Windows.UI.Xaml.Controls.NavigationViewDisplayMode displayMode)
-		{ 
-			var inset = (displayMode == Windows.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal) ? 100 : 10;
-			_HeaderArea.Padding = new Windows.UI.Xaml.Thickness(inset, 0, 0, 0);
+		{
+			double inset = 0;
+			if (displayMode == Windows.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal)
+			{
+				if (ShellContext.IsPaneToggleButtonVisible)
+					inset += 45;
+				if (ShellContext.IsBackButtonVisible != Windows.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
+				{
+					inset += 45;
+					if (ShellContext.IsPaneToggleButtonVisible)
+						inset += 10; //If both are visible there's even more margin to account for
+				}
+			}
+			_HeaderArea.Padding = new Windows.UI.Xaml.Thickness(Math.Max(10, inset), 0, 0, 0);
 		}
 
 		void UpdateBottomBar()
