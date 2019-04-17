@@ -117,7 +117,7 @@ jobs:
   condition: succeeded()
   pool:
     name: $(macOSVmImage)
-     demands:
+    demands:
       - Agent.OS -equals darwin
       - Xamarin.iOS
   variables:
