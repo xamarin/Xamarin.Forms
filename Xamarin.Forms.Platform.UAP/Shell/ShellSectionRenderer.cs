@@ -162,17 +162,25 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateAppearance(ShellAppearance appearance)
 		{
-			var a = (IShellAppearanceElement)appearance;
-			UpdateBrushColor("NavigationViewTopPaneBackground", a.EffectiveTabBarBackgroundColor);
-			UpdateBrushColor("TopNavigationViewItemForeground", a.EffectiveTabBarForegroundColor);
-			UpdateBrushColor("TopNavigationViewItemForegroundSelected", a.EffectiveTabBarForegroundColor);
-			UpdateBrushColor("NavigationViewSelectionIndicatorForeground", a.EffectiveTabBarForegroundColor);
+			var tabBarBackgroundColor = ShellRenderer.DefaultBackgroundColor;
+			var tabBarForegroundColor = ShellRenderer.DefaultForegroundColor;
+			if (appearance != null)
+			{
+				var a = (IShellAppearanceElement)appearance;
+				tabBarBackgroundColor = a.EffectiveTabBarBackgroundColor.ToWindowsColor();
+				tabBarForegroundColor = a.EffectiveTabBarForegroundColor.ToWindowsColor();
+			}
+
+			UpdateBrushColor("NavigationViewTopPaneBackground", tabBarBackgroundColor);
+			UpdateBrushColor("TopNavigationViewItemForeground", tabBarForegroundColor);
+			UpdateBrushColor("TopNavigationViewItemForegroundSelected", tabBarForegroundColor);
+			UpdateBrushColor("NavigationViewSelectionIndicatorForeground", tabBarForegroundColor);
 		}
 
-		void UpdateBrushColor(string resourceKey, Color color)
+		void UpdateBrushColor(string resourceKey, Windows.UI.Color color)
 		{
 			if (Resources[resourceKey] is Windows.UI.Xaml.Media.SolidColorBrush sb)
-				sb.Color = color.ToWindowsColor();
+				sb.Color = color;
 		}
 
 		#endregion

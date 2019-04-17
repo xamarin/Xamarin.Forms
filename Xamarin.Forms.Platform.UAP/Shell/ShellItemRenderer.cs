@@ -118,11 +118,21 @@ namespace Xamarin.Forms.Platform.UWP
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance) => UpdateAppearance(appearance);
 		void UpdateAppearance(ShellAppearance appearance)
 		{
-			var a = (IShellAppearanceElement)appearance;
+			var tabBarBackgroundColor = ShellRenderer.DefaultBackgroundColor;
+			var tabBarForegroundColor = ShellRenderer.DefaultForegroundColor;
+			var titleColor = ShellRenderer.DefaultTitleColor;
+			if (appearance != null)
+			{
+				var a = (IShellAppearanceElement)appearance;
+				tabBarBackgroundColor = a.EffectiveTabBarBackgroundColor.ToWindowsColor();
+				tabBarForegroundColor = a.EffectiveTabBarForegroundColor.ToWindowsColor();
+				if(!appearance.TitleColor.IsDefault)
+					titleColor = appearance.TitleColor.ToWindowsColor();
+			}
 			_BottomBarArea.Background = _HeaderArea.Background = 
-				new Windows.UI.Xaml.Media.SolidColorBrush(a.EffectiveTabBarBackgroundColor.ToWindowsColor());
-			_Title.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(appearance.TitleColor.ToWindowsColor());
-			var tabbarForeground = new Windows.UI.Xaml.Media.SolidColorBrush(a.EffectiveTabBarForegroundColor.ToWindowsColor());
+				new Windows.UI.Xaml.Media.SolidColorBrush(tabBarBackgroundColor);
+			_Title.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(titleColor);
+			var tabbarForeground = new Windows.UI.Xaml.Media.SolidColorBrush(tabBarForegroundColor);
 			foreach (var button in _BottomBar.Children.OfType<Windows.UI.Xaml.Controls.AppBarButton>())
 				button.Foreground = tabbarForeground;
 			if (SectionRenderer is IAppearanceObserver iao)

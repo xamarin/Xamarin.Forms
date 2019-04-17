@@ -178,15 +178,19 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			Windows.UI.Color backgroundColor;
-			if (appearance != null && !appearance.BackgroundColor.IsDefault)
-				backgroundColor = appearance.BackgroundColor.ToWindowsColor(); // #03A9F4
-			else
-				backgroundColor = Windows.UI.Color.FromArgb(255, 3, 169, 244); // #03A9F4
-			
+			Windows.UI.Color backgroundColor = Windows.UI.Color.FromArgb(255, 3, 169, 244); // #03A9F4
+			Windows.UI.Color foregroundColor = Windows.UI.Colors.Black;
+			if (appearance != null)
+			{
+				if (!appearance.BackgroundColor.IsDefault)
+					backgroundColor = appearance.BackgroundColor.ToWindowsColor();
+				if (!appearance.TitleColor.IsDefault)
+					foregroundColor = appearance.TitleColor.ToWindowsColor();
+			}
+
 			var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
 			titleBar.BackgroundColor = titleBar.ButtonBackgroundColor = backgroundColor;
-			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = appearance.TitleColor.ToWindowsColor();
+			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = foregroundColor;
 			if (DisplayMode == NavigationViewDisplayMode.Minimal)
 			{
 				UpdatePaneButtonColor("TogglePaneButton", true);
