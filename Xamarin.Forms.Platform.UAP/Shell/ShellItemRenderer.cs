@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 			HookEvents(newItem);
 		}
 
-		private void ShellContext_DisplayModeChanged(Windows.UI.Xaml.Controls.NavigationView sender, Windows.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs args)
+		void ShellContext_DisplayModeChanged(Windows.UI.Xaml.Controls.NavigationView sender, Windows.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs args)
 		{
 			UpdateHeaderInsets(args.DisplayMode);
 		}
