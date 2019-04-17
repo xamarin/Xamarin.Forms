@@ -128,19 +128,17 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ModalNavigation()
 		{
-			DissmissAlert();
+			DismissAlert();
 			RunningApp.WaitForElement(q => q.Marked(PushModal));
 			RunningApp.Tap(q => q.Marked(PushModal));
-			DissmissAlert();
+			DismissAlert();
 			RunningApp.WaitForElement(q => q.Marked(Modal));
 			RunningApp.Tap(q => q.Marked(PopModal));
-			DissmissAlert();
+			DismissAlert();
 			RunningApp.WaitForElement(q => q.Marked(PushModal));
-
-
 		}
 
-		void DissmissAlert()
+		void DismissAlert()
 		{
 			RunningApp.WaitForElement(Message);
 			RunningApp.Tap(Cancel);

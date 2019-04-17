@@ -123,8 +123,6 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		// If the cellPhone has in Landscape mode, increase the timeout.
-
 		[Test]
 		public void MemoryLeakInListViewTabbedPageUWP()
 		{

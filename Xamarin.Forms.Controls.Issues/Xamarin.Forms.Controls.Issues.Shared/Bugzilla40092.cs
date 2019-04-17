@@ -18,36 +18,37 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.BoxView)]
 #endif
 	public class Bugzilla40092 : TestContentPage
-    {
+	{
 		const string Black = "black";
 		const string White = "white";
 		const string Ok = "Ok";
 		protected override void Init()
-        {
-            AbsoluteLayout mainLayout = new AbsoluteLayout()
-            {
-                BackgroundColor = Color.White,
+		{
+			AbsoluteLayout mainLayout = new AbsoluteLayout()
+			{
+				BackgroundColor = Color.White,
 				AutomationId = White
-            };
+			};
 
 
-            // The root page of your application
-            var thePage = new ContentView
-            {
-                BackgroundColor = Color.Red,
-                Content = mainLayout
-            };
+			// The root page of your application
 
-            BoxView view = new BoxView()
-            {
-                Color = Color.Black,
+			var thePage = new ContentView
+			{
+				BackgroundColor = Color.Red,
+				Content = mainLayout
+			};
+
+			BoxView view = new BoxView()
+			{
+				Color = Color.Black,
 				AutomationId = Black
-            };
+			};
 
-            mainLayout.Children.Add(view, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All);
-            Content = thePage;
+			mainLayout.Children.Add(view, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All);
+			Content = thePage;
 
-        }
+		}
 
 		protected override async void OnAppearing()
 		{
