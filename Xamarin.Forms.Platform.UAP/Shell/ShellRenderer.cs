@@ -205,16 +205,21 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (behavior)
 			{
 				case FlyoutBehavior.Disabled:
-					IsPaneToggleButtonVisible = false;
+					IsPaneVisible = false;
 					IsPaneOpen = false;
+					IsPaneToggleButtonVisible = false;
+					PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
 					break;
 
 				case FlyoutBehavior.Flyout:
 					IsPaneToggleButtonVisible = true;
+					PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
 					break;
 
 				case FlyoutBehavior.Locked:
-					IsPaneToggleButtonVisible = true;
+					IsPaneVisible = true;
+					IsPaneToggleButtonVisible = false;
+					PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
 					break;
 			}
 		}
