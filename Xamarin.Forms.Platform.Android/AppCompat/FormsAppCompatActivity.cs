@@ -82,13 +82,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected void LoadApplication(Application application)
+		void RegisterHandlers()
 		{
-			if(!_activityCreated)
-			{
-			    throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
-			}
-			
 			if (!_renderersAdded)
 			{
 				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
@@ -113,6 +108,16 @@ namespace Xamarin.Forms.Platform.Android
 
 				_renderersAdded = true;
 			}
+		}
+
+		protected void LoadApplication(Application application)
+		{
+			if(!_activityCreated)
+			{
+			    throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
+			}
+
+			RegisterHandlers();
 
 			_application = application ?? throw new ArgumentNullException(nameof(application));
 			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
