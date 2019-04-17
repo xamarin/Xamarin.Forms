@@ -76,7 +76,7 @@ namespace Xamarin.Forms
 
 		public static View GetTitleView(BindableObject obj) => (View)obj.GetValue(TitleViewProperty);
 		public static void SetTitleView(BindableObject obj, View value) => obj.SetValue(TitleViewProperty, value);
-		
+
 		static void OnFlyoutBehaviorChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var element = (Element)bindable;
@@ -187,19 +187,12 @@ namespace Xamarin.Forms
 		List<(IAppearanceObserver Observer, Element Pivot)> _appearanceObservers = new List<(IAppearanceObserver Observer, Element Pivot)>();
 		List<IFlyoutBehaviorObserver> _flyoutBehaviorObservers = new List<IFlyoutBehaviorObserver>();
 
-		event EventHandler IShellController.HeaderChanged
-		{
-			add { _headerChanged += value; }
-			remove { _headerChanged -= value; }
-		}
-
 		event EventHandler IShellController.StructureChanged
 		{
 			add { _structureChanged += value; }
 			remove { _structureChanged -= value; }
 		}
 
-		event EventHandler _headerChanged;
 		event EventHandler _structureChanged;
 
 		View IShellController.FlyoutHeader => FlyoutHeaderView;
@@ -717,7 +710,6 @@ namespace Xamarin.Forms
 				_flyoutHeaderView = value;
 				if (_flyoutHeaderView != null)
 					OnChildAdded(_flyoutHeaderView);
-				_headerChanged?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
@@ -945,10 +937,14 @@ namespace Xamarin.Forms
 			if (!(bindable is Element owner))
 				return;
 
-			if (oldValue is View oldTitleView)
-				SetInheritedBindingContext(oldTitleView, null);
-			if (newValue is View newTitleView)
-				SetInheritedBindingContext(newTitleView, bindable.BindingContext);
+			var oldView = (View)oldValue;
+			var newView = (View)newValue;
+
+			if (oldView != null)
+				oldView.Parent = null;
+
+			if (newView != null)
+				newView.Parent = owner;
 		}
 
 		static Dictionary<string, string> ParseQueryString(string query)
@@ -1035,6 +1031,7 @@ namespace Xamarin.Forms
 			for (int i = 0; i < _flyoutBehaviorObservers.Count; i++)
 				_flyoutBehaviorObservers[i].OnFlyoutBehaviorChanged(behavior);
 		}
+
 		void OnFlyoutHeaderChanged(object oldVal, object newVal)
 		{
 			if (FlyoutHeaderTemplate == null)

@@ -379,24 +379,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			Shell shell = new Shell();
 			ContentPage page = new ContentPage();
-			ShellItem item = new ShellItem()
-			{
-				Items =
-				{
-					new ShellSection()
-					{
-						Items =
-						{
-							new ShellContent()
-							{
-								Content = page
-							}
-						}
-					}
-				}
-			};
-
-			shell.Items.Add(item);
+			shell.Items.Add(CreateShellItem(page));
 			page.BindingContext = new { Text = "Binding" };
 
 			// setup title view
@@ -406,10 +389,94 @@ namespace Xamarin.Forms.Core.UnitTests
 			layout.Children.Add(label);
 			Shell.SetTitleView(page, layout);
 
-			Assert.AreEqual(label.Text, "Binding");
-
+			Assert.AreEqual("Binding", label.Text);
 			page.BindingContext = new { Text = "Binding Changed" };
-			Assert.AreEqual(label.Text, "Binding Changed");
+			Assert.AreEqual("Binding Changed", label.Text);
+		}
+
+		[Test]
+		public async Task VisualPropagationPageLevel()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			shell.Items.Add(CreateShellItem(page));
+
+			// setup title view
+			StackLayout titleView = new StackLayout() { BackgroundColor = Color.White };
+			Button button = new Button();
+			titleView.Children.Add(button);
+			Shell.SetTitleView(page, titleView);
+			IVisualController visualController = button as IVisualController;
+
+
+			Assert.AreEqual(page, titleView.Parent);
+
+			Assert.AreEqual(VisualMarker.Default, ((IVisualController)button).EffectiveVisual);
+			page.Visual = VisualMarker.Material;
+			Assert.AreEqual(VisualMarker.Material, ((IVisualController)button).EffectiveVisual);
+		}
+
+		[Test]
+		public async Task VisualPropagationShellLevel()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			shell.Items.Add(CreateShellItem(page));
+
+			// setup title view
+			StackLayout titleView = new StackLayout() { BackgroundColor = Color.White };
+			Button button = new Button();
+			titleView.Children.Add(button);
+			Shell.SetTitleView(page, titleView);
+			IVisualController visualController = button as IVisualController;
+
+
+			Assert.AreEqual(page, titleView.Parent);
+			Assert.AreEqual(VisualMarker.Default, ((IVisualController)button).EffectiveVisual);
+			shell.Visual = VisualMarker.Material;
+			Assert.AreEqual(VisualMarker.Material, ((IVisualController)button).EffectiveVisual);
+		}
+
+		[Test]
+		public async Task FlyoutViewVisualPropagation()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			shell.Items.Add(CreateShellItem(page));
+
+			
+			// setup title view
+			StackLayout flyoutView = new StackLayout() { BackgroundColor = Color.White };
+			Button button = new Button();
+			flyoutView.Children.Add(button);
+			shell.SetValue(Shell.FlyoutHeaderProperty, flyoutView);
+
+			IVisualController visualController = button as IVisualController;
+			Assert.AreEqual(VisualMarker.Default, visualController.EffectiveVisual);
+			shell.Visual = VisualMarker.Material;
+			Assert.AreEqual(VisualMarker.Material, visualController.EffectiveVisual);
+		}
+
+		[Test]
+		public async Task FlyoutViewBindingContext()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			shell.Items.Add(CreateShellItem(page));
+			shell.BindingContext = new { Text = "Binding" };
+
+			// setup title view
+			StackLayout flyoutView = new StackLayout() { BackgroundColor = Color.White };
+			Label label = new Label();
+			label.SetBinding(Label.TextProperty, "Text");
+			flyoutView.Children.Add(label);
+			shell.SetValue(Shell.FlyoutHeaderProperty, flyoutView);
+
+			Assert.AreEqual("Binding", label.Text);
+			shell.BindingContext = new { Text = "Binding Changed" };
+			Assert.AreEqual("Binding Changed", label.Text);
+			shell.SetValue(Shell.FlyoutHeaderProperty, new ContentView());
+			Assert.AreEqual(null, flyoutView.BindingContext);
 		}
 	}
 }
