@@ -36,7 +36,8 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					button.Text = "Verify Title View Changed to Success Text";
 					page.BindingContext = new ViewModel() { Text = Success };
-				})
+				}),
+				AutomationId = "NextStep"
 			};
 
 			page.BindingContext = new ViewModel() { Text = PassStep1 };
@@ -66,8 +67,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && !__WINDOWS__
 		[Test]
-		public void UpdatingSourceOfDisposedListViewDoesNotCrash()
+		public void ShellViewTitleViewBinding()
 		{
+			RunningApp.WaitForElement(PassStep1);
+			RunningApp.Tap("NextStep");
 			RunningApp.WaitForElement(Success);
 		}
 #endif
