@@ -247,11 +247,32 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateDisplayedPage(Page page)
 		{
+			if(DisplayedPage != null)
+			{
+				DisplayedPage.PropertyChanged -= OnPagePropertyChanged;
+			}
 			DisplayedPage = page;
 			_Title.Text = page?.Title ?? ShellSection?.Title ?? "";
+			if (DisplayedPage != null)
+			{
+				DisplayedPage.PropertyChanged += OnPagePropertyChanged;
+			}
 		}
 
-		
+		private void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName == Shell.TabBarIsVisibleProperty.PropertyName)
+			{
+				UpdateBottomBarVisibility();
+			}
+		}
+
+		private void UpdateBottomBarVisibility()
+		{
+			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+		}
+
+
 		void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
 			SwitchSection((ShellNavigationSource)e.RequestType, (ShellSection)sender, e.Page, e.Animated);	
