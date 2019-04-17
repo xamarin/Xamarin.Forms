@@ -117,6 +117,9 @@ jobs:
   condition: succeeded()
   pool:
     name: $(macOSVmImage)
+     demands:
+      - Agent.OS -equals darwin
+      - Xamarin.iOS
   variables:
     provisioningOSX : $(provisioning)
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
