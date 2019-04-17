@@ -11,7 +11,7 @@
     <AssemblyName>Xamarin.Forms.Platform.UAP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.17763.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -81,10 +81,13 @@
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PropertyChangedEventArgsExtensions.cs" />
-    <Compile Include="Shell\ShellFlyoutRenderer.cs" />
-    <Compile Include="Shell\ShellFlyoutTemplatedContentRenderer.cs" />
+    <Compile Include="Shell\ShellAssemblyInfo.cs" />
+    <Compile Include="Shell\ShellHeaderRenderer.cs" />
     <Compile Include="Shell\ShellItemRenderer.cs" />
+    <Compile Include="Shell\ShellNavigationViewItemRenderer.cs" />
+    <Compile Include="Shell\ShellPaneTemplateSelector.cs" />
     <Compile Include="Shell\ShellRenderer.cs" />
+    <Compile Include="Shell\ShellSectionRenderer.cs" />
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
@@ -268,7 +271,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
+    <SDKReference Include="WindowsMobile, Version=10.0.17763.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
