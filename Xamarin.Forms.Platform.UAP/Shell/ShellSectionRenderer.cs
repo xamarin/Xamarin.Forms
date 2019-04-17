@@ -80,16 +80,18 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal void NavigateToContent(ShellContent shellContent, bool animate = true)
 		{
-			if(CurrentContent != null && Page != null)
+			if (CurrentContent != null && Page != null)
 				((IShellContentController)CurrentContent).RecyclePage(Page);
 			CurrentContent = shellContent;
-			 Page = ((IShellContentController)shellContent).GetOrCreateContent();
+			Page = ((IShellContentController)shellContent).GetOrCreateContent();
 			Frame.Navigate((ContentPage)Page);
 			UpdateSearchHandler(Shell.GetSearchHandler(Page));
 		}
+
 		#region Search
 
 		SearchHandler _currentSearchHandler;
+
 		void UpdateSearchHandler(SearchHandler searchHandler)
 		{
 			if (_currentSearchHandler != null)
