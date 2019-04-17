@@ -1,73 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Xamarin.Forms;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class ShellRenderer : NavigationView, IVisualElementRenderer, /*IShellContext, */IAppearanceObserver, IFlyoutBehaviorObserver
+	public class ShellRenderer : NavigationView, IVisualElementRenderer, IAppearanceObserver, IFlyoutBehaviorObserver
 	{
-		internal static readonly Color DefaultBackgroundColor = Color.FromRgb(33, 150, 243);
-		internal static readonly Color DefaultForegroundColor = Color.White;
-		internal static readonly Color DefaultTitleColor = Color.White;
-		internal static readonly Color DefaultUnselectedColor = Color.FromRgba(255, 255, 255, 180);
+		internal static readonly Windows.UI.Color DefaultBackgroundColor = Windows.UI.Color.FromArgb(255, 33, 150, 243);
+		internal static readonly Windows.UI.Color DefaultForegroundColor = Windows.UI.Colors.White;
+		internal static readonly Windows.UI.Color DefaultTitleColor = Windows.UI.Colors.White;
+		internal static readonly Windows.UI.Color DefaultUnselectedColor = Windows.UI.Color.FromArgb(180, 255, 255, 255);
 
-		Windows.UI.Xaml.Controls.Frame _Frame;
-		Windows.UI.Xaml.Controls.Panel _PaneHeaderArea;
+		ShellItemRenderer ItemRenderer { get; }
 
 		public ShellRenderer()
 		{
-			ItemInvoked += OnMenuItemInvoked;
-			Content = _Frame = new Windows.UI.Xaml.Controls.Frame();
-			BackRequested += OnBackRequested;
-			IsBackEnabled = true;
+			IsBackEnabled = false;
 			IsSettingsVisible = false;
+			Content = ItemRenderer = new ShellItemRenderer();
 			MenuItemTemplateSelector = new ShellPaneTemplateSelector();
-			PaneClosing += (s, e) => { if (_PaneHeaderArea != null) _PaneHeaderArea.Visibility = Visibility.Collapsed; };
-			PaneOpening += (s, e) => { if (_PaneHeaderArea != null) _PaneHeaderArea.Visibility = Visibility.Visible; };
+			DisplayModeChanged += OnDisplayModeChanged;
+			PaneClosing += (s, e) => OnPaneClosed();
+			PaneOpening += (s, e) => OnPaneOpening();
+			ItemInvoked += OnMenuItemInvoked;
 		}
 
-		protected override void OnApplyTemplate()
+		void OnDisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
 		{
-			base.OnApplyTemplate();
-			var topnavPad = GetTemplateChild("TopNavTopPadding") as UIElement;
-			if (topnavPad != null)
-				topnavPad.Visibility = Visibility.Collapsed;
-			var toggleTopnavPad = GetTemplateChild("TogglePaneTopPadding") as UIElement;
-			if (toggleTopnavPad != null)
-				toggleTopnavPad.Visibility = Visibility.Collapsed;
-			//Replace title area with Header area
-			var paneTitle = GetTemplateChild("PaneTitleTextBlock") as FrameworkElement;
-			if (paneTitle != null)
+			bool isClosed = (args.DisplayMode == NavigationViewDisplayMode.Minimal);
+			var elm = GetTemplateChild("TogglePaneTopPadding") as UIElement;
+			if(elm != null)
+				elm.Visibility = isClosed ? Visibility.Collapsed : Visibility.Visible;
+			UpdatePaneButtonColor("TogglePaneButton", isClosed);
+			UpdatePaneButtonColor("NavigationViewBackButton", isClosed);			
+		}
+
+		private void UpdatePaneButtonColor(string name, bool overrideColor)
+		{
+			var toggleButton = GetTemplateChild(name) as Control;
+			if (toggleButton != null)
 			{
-				paneTitle.Loaded += (s, e) =>
-				{
-					if (paneTitle.Parent is Panel panel)
-					{
-						panel.Children.Clear();
-						_PaneHeaderArea = panel;
-						UpdatePaneHeader();
-					}
-				};
+				var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
+				if (overrideColor)
+					toggleButton.Foreground = new SolidColorBrush(titleBar.ButtonForegroundColor.Value);
+				else
+					toggleButton.ClearValue(Control.ForegroundProperty);
 			}
 		}
-		void OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+
+		void OnPaneOpening()
 		{
-			if (_Frame.Content is ShellItemRenderer r && r.CanGoBack)
-			{
-				r.GoBack();
-			}
-			else if (_Frame.CanGoBack)
-			{
-				_Frame.GoBack();
-			}
-			IsBackEnabled = _Frame.CanGoBack || _Frame.Content is ShellItemRenderer ren && ren.CanGoBack;
+			if (PaneCustomContent is FrameworkElement fe)
+				fe.Visibility = Visibility.Visible;
+			Shell.FlyoutIsPresented = true;
+		}
+
+		void OnPaneClosed()
+		{
+			if (PaneCustomContent is FrameworkElement fe)
+				fe.Visibility = Visibility.Collapsed;
+			Shell.FlyoutIsPresented = false;
 		}
 
 		void OnMenuItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -124,8 +119,8 @@ namespace Xamarin.Forms.Platform.UWP
 			Element = (Shell)element;
 			Element.SizeChanged += OnElementSizeChanged;
 			OnElementSet(Element);
-
 			Element.PropertyChanged += OnElementPropertyChanged;
+			ItemRenderer.SetShellContext(this);
 			_elementChanged?.Invoke(this, new VisualElementChangedEventArgs(null, Element));
 		}
 
@@ -146,12 +141,18 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				SwitchShellItem(Element.CurrentItem);
 			}
+			else if (e.PropertyName == Shell.FlyoutIsPresentedProperty.PropertyName)
+			{
+				IsPaneOpen = Shell.FlyoutIsPresented;
+			}
 		}
 
 		protected virtual void OnElementSet(Shell shell)
 		{
 			((IShellController)Element).AddFlyoutBehaviorObserver(this);
-			UpdatePaneHeader();
+			var shr = new ShellHeaderRenderer(shell);
+			PaneCustomContent = shr;
+			
 			MenuItemsSource = IterateItems();
 			SwitchShellItem(shell.CurrentItem, false);
 			((IShellController)shell).AddAppearanceObserver(this, shell);
@@ -167,29 +168,10 @@ namespace Xamarin.Forms.Platform.UWP
 				yield return item;
 		}
 
-		void UpdatePaneHeader()
-		{
-			if (_PaneHeaderArea != null)
-			{
-				_PaneHeaderArea.Visibility = IsPaneOpen ? Visibility.Visible : Visibility.Collapsed;
-				_PaneHeaderArea.ClearValue(FrameworkElement.HeightProperty);
-				_PaneHeaderArea.Children.Clear();
-				if (Element != null)
-				{
-					Windows.UI.Xaml.FrameworkElement header = null;
-					_PaneHeaderArea.Children.Add(new ShellHeaderRenderer(Element));
-					if (header != null)
-						_PaneHeaderArea.Children.Add(header);
-				}
-			}
-		}
-
 		void SwitchShellItem(ShellItem newItem, bool animate = true)
 		{
-			if (_Frame.Content != null)
-				IsBackEnabled = true;
 			SelectedItem = newItem;
-			_Frame.Navigate(typeof(ShellItemRenderer), ShellItemRenderer.CreateNavigationArgs(this, newItem), new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+			ItemRenderer.NavigateToShellItem(newItem, animate);
 		}
 
 		#region IAppearanceObserver
@@ -201,14 +183,15 @@ namespace Xamarin.Forms.Platform.UWP
 				backgroundColor = appearance.BackgroundColor.ToWindowsColor(); // #03A9F4
 			else
 				backgroundColor = Windows.UI.Color.FromArgb(255, 3, 169, 244); // #03A9F4
-			var brush = new SolidColorBrush(backgroundColor);
-
+			
 			var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
 			titleBar.BackgroundColor = titleBar.ButtonBackgroundColor = backgroundColor;
 			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = appearance.TitleColor.ToWindowsColor();
-
-			if (_Frame.Content is IAppearanceObserver iao)
-				iao.OnAppearanceChanged(appearance);
+			if (DisplayMode == NavigationViewDisplayMode.Minimal)
+			{
+				UpdatePaneButtonColor("TogglePaneButton", true);
+				UpdatePaneButtonColor("NavigationViewBackButton", true);
+			}
 		}
 
 		#endregion IAppearanceObserver
@@ -218,18 +201,16 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (behavior)
 			{
 				case FlyoutBehavior.Disabled:
-					PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+					IsPaneToggleButtonVisible = false;
 					IsPaneOpen = false;
 					break;
 
 				case FlyoutBehavior.Flyout:
-					PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
-					IsPaneOpen = Shell.FlyoutIsPresented;
+					IsPaneToggleButtonVisible = true;
 					break;
 
 				case FlyoutBehavior.Locked:
-					IsPaneOpen = true;
-					PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+					IsPaneToggleButtonVisible = true;
 					break;
 			}
 		}
