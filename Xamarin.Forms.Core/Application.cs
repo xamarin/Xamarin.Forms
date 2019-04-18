@@ -24,6 +24,8 @@ namespace Xamarin.Forms
 
 		static SemaphoreSlim SaveSemaphore = new SemaphoreSlim(1, 1);
 
+		public static readonly BindableProperty UseLegacyPageEventsProperty = BindableProperty.Create(nameof(UseLegacyPageEvents), typeof(bool), typeof(Application), false);
+
 		[Obsolete("Assign the LogWarningsListener")]
 		public static bool LogWarningsToApplicationOutput { get; set; }
 
@@ -338,6 +340,12 @@ namespace Xamarin.Forms
 
 		internal void OnPageDisappeared(Page page)
 			=> PageDisappearing?.Invoke(this, page);
+
+		public bool UseLegacyPageEvents
+		{
+			get => (bool)GetValue(UseLegacyPageEventsProperty);
+			set => SetValue(UseLegacyPageEventsProperty, value);
+		}
 
 		void OnModalPopped(Page modalPage)
 			=> ModalPopped?.Invoke(this, new ModalPoppedEventArgs(modalPage));

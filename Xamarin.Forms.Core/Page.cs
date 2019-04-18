@@ -361,6 +361,12 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendAppeared()
 		{
+			if (Application.Current.UseLegacyPageEvents)
+			{
+				SendAppearing();
+				return;
+			}
+
 			if (_hasAppeared)
 				return;
 
@@ -381,6 +387,12 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDisappeared()
 		{
+			if (Application.Current.UseLegacyPageEvents)
+			{
+				SendDisappearing();
+				return;
+			}
+
 			if (!_hasAppeared)
 				return;
 

@@ -58,7 +58,8 @@ namespace Xamarin.Forms.Platform.UWP
 		public override void OnLoading(FrameworkElement sender, object args)
 		{
 			base.OnLoading(sender, args);
-			Element?.SendAppearing();
+			if (!Application.Current.UseLegacyPageEvents)
+				Element?.SendAppearing();
 		}
 
 		public override void OnLoaded(object sender, RoutedEventArgs args)
@@ -69,12 +70,18 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				return;
 			}
-			Element?.SendAppeared();
+			if (!Application.Current.UseLegacyPageEvents)
+				Element?.SendAppeared();
+			else
+				Element?.SendAppearing();
 		}
 
 		public override void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			Element?.SendDisappeared();
+			if (!Application.Current.UseLegacyPageEvents)
+				Element?.SendDisappeared();
+			else
+				Element?.SendDisappearing();
 
 			base.OnUnloaded(sender, args);
 		}

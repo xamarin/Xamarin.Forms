@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _appeared;
 		bool _appearing;
+		bool _disposed;
 
 		public PageRenderer(Context context) : base(context)
 		{
@@ -43,16 +44,28 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
-			{
-				if(_appearing)
-					PageController.SendDisappearing();
-				_appearing = false;
+			if (_disposed)
+				return;
 
-				if (_appeared)
-					PageController.SendDisappeared();
-				_appeared = false;
+			if (!Application.Current.UseLegacyPageEvents)
+			{
+				if (disposing)
+				{
+					if (_appearing)
+						PageController?.SendDisappearing();
+					_appearing = false;
+
+					if (_appeared)
+						PageController?.SendDisappeared();
+					_appeared = false;
+				}
 			}
+			else
+			{
+				PageController?.SendDisappearing();
+			}
+			_disposed = true;
+
 			base.Dispose(disposing);
 		}
 
@@ -60,20 +73,23 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnAttachedToWindow();
 
-			if (!_appearing)
+			if (!_appearing && !Application.Current.UseLegacyPageEvents)
 				PageController.SendAppearing();
 			_appearing = true;
 
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
 				return;
+
+			if (Application.Current.UseLegacyPageEvents)
+				PageController.SendAppearing();
 		}
 
 		public override void OnGlobalLayout(object sender, EventArgs e)
 		{
 			base.OnGlobalLayout(sender, e);
 
-			if (!_appeared)
+			if (!_appeared && !Application.Current.UseLegacyPageEvents)
 			{
 				PageController?.SendAppeared();
 				_appeared = true;
@@ -84,13 +100,16 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnDetachedFromWindow();
 
-			if (_appeared)
+			if (_appeared && !Application.Current.UseLegacyPageEvents)
 				PageController.SendDisappeared();
 			_appeared = false;
 
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && pageContainer.IsInFragment)
 				return;
+
+			if (Application.Current.UseLegacyPageEvents)
+				PageController.SendDisappearing();
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Page> e)
