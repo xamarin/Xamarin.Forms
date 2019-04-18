@@ -18,7 +18,7 @@
 
 		protected override Windows.UI.Xaml.DataTemplate SelectTemplateCore(object item)
 		{
-			if (item is ShellItem)
+			if (item is BaseShellItem)
 				return ShellContentTemplate;
 			if(item is MenuItem)
 				return MenuItemTemplate;
