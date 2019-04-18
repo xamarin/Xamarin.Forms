@@ -130,6 +130,8 @@ jobs:
     buildConfiguration: $(DefaultBuildConfiguration)
     slnPath: $(SolutionFile)
     nugetVersion: 4.8.1
+    iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
+    iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
   steps:
      - template: build/steps/build-osx.yml
 
