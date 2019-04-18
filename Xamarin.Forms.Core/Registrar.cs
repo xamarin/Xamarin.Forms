@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Xamarin.Forms.Internals;
+//using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -252,7 +252,7 @@ namespace Xamarin.Forms.Internals
 		//typeof(ExportRendererAttribute);
 		//typeof(ExportCellAttribute);
 		//typeof(ExportImageSourceHandlerAttribute);
-		public static void RegisterRenderers(HandlerAttribute[] attributes)
+		private static void RegisterRenderers(HandlerAttribute[] attributes)
 		{
 			var length = attributes.Length;
 			for (var i = 0; i < length; i++)
@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Internals
 			}
 		}
 
-		public static void RegisterStylesheets()
+		private static void RegisterStylesheets()
 		{
 			var assembly = typeof(StyleSheets.StylePropertyAttribute).GetTypeInfo().Assembly;
 
@@ -283,7 +283,7 @@ namespace Xamarin.Forms.Internals
 			}
 		}
 
-		public static void RegisterEffects(string resolutionName, ExportEffectAttribute[] effectAttributes)
+		private static void RegisterEffects(string resolutionName, ExportEffectAttribute[] effectAttributes)
 		{
 			var exportEffectsLength = effectAttributes.Length;
 			for (var i = 0; i < exportEffectsLength; i++)
@@ -297,8 +297,7 @@ namespace Xamarin.Forms.Internals
 		{
 			//Profile.FrameBegin();
 
-			Assembly[] assemblies;
-			assemblies = Device.GetAssemblies();
+			Assembly[] assemblies = Device.GetAssemblies();
 
 			if (ExtraAssemblies != null)
 				assemblies = assemblies.Union(ExtraAssemblies).ToArray();

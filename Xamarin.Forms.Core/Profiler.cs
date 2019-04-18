@@ -10,9 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
+#if false
 namespace Xamarin.Forms.Internals
 {
-#if false
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public struct Profile : IDisposable
 	{
@@ -144,5 +144,6 @@ namespace Xamarin.Forms.Internals
 			Data[_slot] = datum;
 		}
 	}
-#endif
 }
+#endif
+

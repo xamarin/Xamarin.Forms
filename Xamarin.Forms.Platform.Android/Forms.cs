@@ -142,7 +142,7 @@ namespace Xamarin.Forms
 			//Profile.FrameEnd();
 		}
 
-		public static void Init(ActivationOptions activation)
+		public static void Initialize(ActivationOptions activation)
 		{
 			//Profile.FrameBegin();
 			SetupInit(
@@ -264,28 +264,28 @@ namespace Xamarin.Forms
 			{
 				if (maybeOptions.HasValue)
 				{
-					var options = maybeOptions.Value;
-					var handlers = options.Handlers;
-					var flags = options.Flags;
-					var effectScopes = options.EffectScopes;
+					//var options = maybeOptions.Value;
+					//var handlers = options.Handlers;
+					//var flags = options.Flags;
+					//var effectScopes = options.EffectScopes;
 
-					// renderers
-					Registrar.RegisterRenderers(handlers);
+					//// renderers
+					//Registrar.RegisterRenderers(handlers);
 
-					// effects
-					if (effectScopes != null)
-					{
-						for (var i = 0; i < effectScopes.Length; i++)
-						{
-							var effectScope = effectScopes[0];
-							Registrar.RegisterEffects(effectScope.Name, effectScope.Effects);
-						}
-					}
+					//// effects
+					//if (effectScopes != null)
+					//{
+					//	for (var i = 0; i < effectScopes.Length; i++)
+					//	{
+					//		var effectScope = effectScopes[0];
+					//		Registrar.RegisterEffects(effectScope.Name, effectScope.Effects);
+					//	}
+					//}
 
-					// css
-					var noCss = (flags & ActivationFlags.NoCss) != 0;
-					if (!noCss)
-						Registrar.RegisterStylesheets();
+					//// css
+					//var noCss = (flags & ActivationFlags.NoCss) != 0;
+					//if (!noCss)
+					//	Registrar.RegisterStylesheets();
 				}
 				else
 				{
