@@ -27,12 +27,12 @@ steps:
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
     inputs:
-      certSecureFile: $(iOSCertSecureFileName)
+      certSecureFile: 'Xamarin Forms iOS Certificate.p12'
 
   - task: InstallAppleProvisioningProfile@1
     displayName: 'Install an Apple provisioning profile'
     inputs:
-      provProfileSecureFile: $(iOSProvisioningSecureFileName)
+      provProfileSecureFile: 'Xamarin Forms iOS Provisioning.mobileprovision'
 
   - task: XamariniOS@2
     displayName: 'Build Xamarin.iOS solution $(slnPath)'
