@@ -83,7 +83,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-			if (!_activityCreated)
+			//Profile.FrameBegin();
+			if(!_activityCreated)
 			{
 				throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
 			}
@@ -127,7 +128,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			application.PropertyChanged += AppOnPropertyChanged;
 
+			//Profile.FramePartition(nameof(SetMainPage));
+
 			SetMainPage();
+
+			//Profile.FrameEnd();
 		}
 
 		protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
