@@ -35,7 +35,14 @@ namespace Xamarin.Forms.Platform.UWP
 			if(elm != null)
 				elm.Visibility = isClosed ? Visibility.Collapsed : Visibility.Visible;
 			UpdatePaneButtonColor("TogglePaneButton", isClosed);
-			UpdatePaneButtonColor("NavigationViewBackButton", isClosed);			
+			UpdatePaneButtonColor("NavigationViewBackButton", isClosed);
+		}
+
+		protected override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			if (PaneCustomContent is FrameworkElement fe)
+				fe.Visibility = IsPaneOpen ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		private void UpdatePaneButtonColor(string name, bool overrideColor)
@@ -55,14 +62,16 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (PaneCustomContent is FrameworkElement fe)
 				fe.Visibility = Visibility.Visible;
-			Shell.FlyoutIsPresented = true;
+			if (Shell != null)
+				Shell.FlyoutIsPresented = true;
 		}
 
 		void OnPaneClosed()
 		{
 			if (PaneCustomContent is FrameworkElement fe)
 				fe.Visibility = Visibility.Collapsed;
-			Shell.FlyoutIsPresented = false;
+			if(Shell != null)
+				Shell.FlyoutIsPresented = false;
 		}
 
 		void OnMenuItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -150,9 +159,9 @@ namespace Xamarin.Forms.Platform.UWP
 		protected virtual void OnElementSet(Shell shell)
 		{
 			((IShellController)Element).AddFlyoutBehaviorObserver(this);
-			var shr = new ShellHeaderRenderer(shell);
+			var shr = new ShellHeaderRenderer(shell) { Visibility = IsPaneOpen ? Visibility.Visible : Visibility.Collapsed };
 			PaneCustomContent = shr;
-			
+
 			MenuItemsSource = IterateItems();
 			SwitchShellItem(shell.CurrentItem, false);
 			((IShellController)shell).AddAppearanceObserver(this, shell);
