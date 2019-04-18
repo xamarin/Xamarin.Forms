@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Platform.UWP
 {
 	// Responsible for rendering the content title, as well as the bottom bar list of shell sections
-	internal class ShellItemRenderer : Windows.UI.Xaml.Controls.Grid, IAppearanceObserver
+	internal class ShellItemRenderer : Windows.UI.Xaml.Controls.Grid, IAppearanceObserver, IFlyoutBehaviorObserver
 	{
 		ShellSectionRenderer SectionRenderer { get; }
 		Windows.UI.Xaml.Controls.TextBlock _Title;
@@ -49,14 +49,14 @@ namespace Xamarin.Forms.Platform.UWP
 			if (ShellContext != null)
 			{
 				((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
-				ShellContext.DisplayModeChanged -= ShellContext_DisplayModeChanged;
+				((IShellController)ShellContext.Shell).RemoveFlyoutBehaviorObserver(this);
 			}
 			ShellContext = context;
 			if (ShellContext != null)
 			{
+				((IShellController)ShellContext.Shell).AddFlyoutBehaviorObserver(this);
 				((IShellController)ShellContext.Shell).AddAppearanceObserver(this, ShellContext.Shell);
-				ShellContext.DisplayModeChanged += ShellContext_DisplayModeChanged;
-				UpdateHeaderInsets(ShellContext.DisplayMode);
+				UpdateHeaderInsets();
 			}
 		}
 
@@ -68,26 +68,14 @@ namespace Xamarin.Forms.Platform.UWP
 			HookEvents(newItem);
 		}
 
-		void ShellContext_DisplayModeChanged(Windows.UI.Xaml.Controls.NavigationView sender, Windows.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs args)
+		internal void UpdateHeaderInsets()
 		{
-			UpdateHeaderInsets(args.DisplayMode);
-		}
-
-		void UpdateHeaderInsets(Windows.UI.Xaml.Controls.NavigationViewDisplayMode displayMode)
-		{
-			double inset = 0;
-			if (displayMode == Windows.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal)
-			{
-				if (ShellContext.IsPaneToggleButtonVisible)
-					inset += 45;
-				if (ShellContext.IsBackButtonVisible != Windows.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
-				{
-					inset += 45;
-					if (ShellContext.IsPaneToggleButtonVisible)
-						inset += 10; //If both are visible there's even more margin to account for
-				}
-			}
-			_HeaderArea.Padding = new Windows.UI.Xaml.Thickness(Math.Max(10, inset), 0, 0, 0);
+			double inset = 10;
+			if (ShellContext.IsPaneToggleButtonVisible)
+				inset += 45;
+			if (ShellContext.IsBackButtonVisible != Windows.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
+				inset += 45;
+			_HeaderArea.Padding = new Windows.UI.Xaml.Thickness(inset, 0, 0, 0);
 		}
 
 		void UpdateBottomBar()
@@ -276,6 +264,11 @@ namespace Xamarin.Forms.Platform.UWP
 		void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
 			SwitchSection((ShellNavigationSource)e.RequestType, (ShellSection)sender, e.Page, e.Animated);	
+		}
+
+		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
+		{
+			UpdateHeaderInsets();
 		}
 	}
 }
