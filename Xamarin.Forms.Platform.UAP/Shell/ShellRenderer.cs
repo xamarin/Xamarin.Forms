@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ShellRenderer()
 		{
+			if (!Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackEnabled"))
+				throw new PlatformNotSupportedException("Windows 10 October 2018 (1809) update required");
 			IsBackEnabled = false;
 			IsSettingsVisible = false;
 			Content = ItemRenderer = new ShellItemRenderer();
