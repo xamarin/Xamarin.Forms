@@ -83,9 +83,12 @@ namespace Xamarin.Forms.Platform.UWP
 			if (CurrentContent != null && Page != null)
 				((IShellContentController)CurrentContent).RecyclePage(Page);
 			CurrentContent = shellContent;
-			Page = ((IShellContentController)shellContent).GetOrCreateContent();
-			Frame.Navigate((ContentPage)Page);
-			UpdateSearchHandler(Shell.GetSearchHandler(Page));
+			if (shellContent != null)
+			{
+				Page = ((IShellContentController)shellContent).GetOrCreateContent();
+				Frame.Navigate((ContentPage)Page);
+				UpdateSearchHandler(Shell.GetSearchHandler(Page));
+			}
 		}
 
 		#region Search
