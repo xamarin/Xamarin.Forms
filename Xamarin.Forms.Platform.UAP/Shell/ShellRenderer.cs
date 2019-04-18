@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.UWP
 			PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
 			IsPaneOpen = false;
 			Content = ItemRenderer = new ShellItemRenderer();
-			MenuItemTemplateSelector = new ShellPaneTemplateSelector();
+			MenuItemTemplateSelector = new ShellFlyoutTemplateSelector();
 			PaneClosing += (s, e) => OnPaneClosed();
 			PaneOpening += (s, e) => OnPaneOpening();
 			ItemInvoked += OnMenuItemInvoked;
