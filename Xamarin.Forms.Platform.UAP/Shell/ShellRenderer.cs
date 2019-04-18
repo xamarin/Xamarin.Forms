@@ -171,12 +171,18 @@ namespace Xamarin.Forms.Platform.UWP
 
 		IEnumerable<object> IterateItems()
 		{
-			foreach (var item in Element.Items)
-				yield return item;
-			if (Element.Items.Count > 0 && Element.MenuItems.Count > 0)
-				yield return null; //Use null for a seperator
-			foreach (var item in Element.MenuItems)
-				yield return item;
+			var groups = ((IShellController)Shell).GenerateFlyoutGrouping();
+			foreach(var group in groups)
+			{
+				if (group.Count > 0 && group != groups[0])
+				{
+					yield return null; // Creates a seperator
+				}
+				foreach(var item in group)
+				{
+					yield return item;
+				}
+			}
 		}
 
 		void SwitchShellItem(ShellItem newItem, bool animate = true)
