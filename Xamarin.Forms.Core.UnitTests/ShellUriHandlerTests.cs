@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(item1);
 			shell.Items.Add(item2);
 			await shell.GoToAsync("//item1/section1/rootlevelcontent1");
-			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("section1/edit"));
+			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("section1/edit"), true);
 
 			Assert.AreEqual(1, request.Request.GlobalRoutes.Count);
 			Assert.AreEqual("item1/section1/edit", request.Request.GlobalRoutes.First());
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(item1);
 
 			await shell.GoToAsync("//rootlevelcontent1");
-			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("edit"));
+			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("edit"), true);
 
 			Assert.AreEqual("section1/edit", request.Request.GlobalRoutes.First());
 		}
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			await shell.GoToAsync("//rootlevelcontent1");
 			var location = shell.CurrentState.Location;
-			await shell.GoToAsync("edit");
+			await shell.GoToAsync("edit", false, true);
 
 			Assert.AreEqual(editShellContent, shell.CurrentItem.CurrentItem.CurrentItem);
 		}
@@ -209,6 +209,50 @@ namespace Xamarin.Forms.Core.UnitTests
 			builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//item2/rootlevelcontent")).Select(x => x.PathNoImplicit).ToArray();
 			Assert.AreEqual(1, builders.Length);
 			Assert.IsTrue(builders.Contains("//item2/rootlevelcontent"));
+		}
+
+
+		[Test]
+		public async Task AbsoluteNavigationToRelativeWithGlobal()
+		{
+			var shell = new Shell() { RouteScheme = "app", RouteHost = "xamarin.com", Route = "xaminals" };
+
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "dogs");
+			var item2 = CreateShellItem(asImplicit: true, shellSectionRoute: "domestic", shellContentRoute: "cats", shellItemRoute: "animals");
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			Routing.RegisterRoute("catdetails", typeof(ContentPage));
+			await shell.GoToAsync($"app://xamarin.com/xaminals/animals/domestic/cats/catdetails?name=domestic");
+
+			Assert.AreEqual(
+				"app://xamarin.com/xaminals/animals/domestic/cats/catdetails",
+				shell.CurrentState.Location.ToString()
+				);
+		}
+
+		[Test]
+		public async Task RelativeNavigationWithRoute()
+		{
+			var shell = new Shell() { RouteScheme = "app", RouteHost = "xamarin.com", Route = "xaminals" };
+
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "dogs");
+			var item2 = CreateShellItem(asImplicit: true, shellSectionRoute: "domestic", shellContentRoute: "cats", shellItemRoute: "animals");
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			Routing.RegisterRoute("catdetails", typeof(ContentPage));
+			Assert.That(async () => await shell.GoToAsync($"cats/catdetails?name=domestic"), Throws.Exception);
+
+			// once relative routing with a stack is fixed then we can remove the above exception check and add below back in
+			// await shell.GoToAsync($"cats/catdetails?name=domestic")
+			//Assert.AreEqual(
+			//	"app://xamarin.com/xaminals/animals/domestic/cats/catdetails",
+			//	shell.CurrentState.Location.ToString()
+			//	);
+
 		}
 
 

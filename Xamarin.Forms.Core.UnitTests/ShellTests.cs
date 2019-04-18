@@ -161,13 +161,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			await shell.GoToAsync("app:///s/two/tab21/");
 
-			await shell.GoToAsync("/tab22");
+			await shell.GoToAsync("/tab22", false, true);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab22/content/"));
 
-			await shell.GoToAsync("tab21");
+			await shell.GoToAsync("tab21", false, true);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab21/content/"));
 
-			await shell.GoToAsync("/tab23");
+			await shell.GoToAsync("/tab23", false, true);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab23/content/"));
 
 			/*

@@ -42,7 +42,7 @@ namespace Xamarin.Forms
 			return bindable.GetType().Name + ++s_routeCount;
 		}
 
-		public static string[] GetRouteKeys()
+		internal static string[] GetRouteKeys()
 		{
 			string[] keys = new string[s_routes.Count];
 			s_routes.Keys.CopyTo(keys, 0);

@@ -48,7 +48,7 @@ namespace Xamarin.Forms
 			return new Uri(uri);
 		}
 
-		public static NavigationRequest GetNavigationRequest(Shell shell, Uri uri)
+		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false)
 		{
 			uri = FormatUri(uri);
 			// figure out the intent of the Uri
@@ -62,7 +62,7 @@ namespace Xamarin.Forms
 
 			Uri request = ConvertToStandardFormat(shell, uri);
 
-			var possibleRouteMatches = GenerateRoutePaths(shell, request, uri);
+			var possibleRouteMatches = GenerateRoutePaths(shell, request, uri, enableRelativeShellRoutes);
 
 
 			if (possibleRouteMatches.Count == 0)
@@ -100,10 +100,10 @@ namespace Xamarin.Forms
 		internal static List<RouteRequestBuilder> GenerateRoutePaths(Shell shell, Uri request)
 		{
 			request = FormatUri(request);
-			return GenerateRoutePaths(shell, request, request);
+			return GenerateRoutePaths(shell, request, request, false);
 		}
 
-		internal static List<RouteRequestBuilder> GenerateRoutePaths(Shell shell, Uri request, Uri originalRequest)
+		internal static List<RouteRequestBuilder> GenerateRoutePaths(Shell shell, Uri request, Uri originalRequest, bool enableRelativeShellRoutes)
 		{
 			request = FormatUri(request);
 			originalRequest = FormatUri(originalRequest);
@@ -160,19 +160,37 @@ namespace Xamarin.Forms
 
 				while (currentLocation.Shell != null)
 				{
-					List<RouteRequestBuilder> pureRoutesMatch = new List<RouteRequestBuilder>();
-					List<RouteRequestBuilder> pureGlobalRoutesMatch = new List<RouteRequestBuilder>();
+					var pureRoutesMatch = new List<RouteRequestBuilder>();
+					var pureGlobalRoutesMatch = new List<RouteRequestBuilder>();
 
-					SearchPath(currentLocation.LowestChild, null, segments, pureRoutesMatch, 0);
+					//currently relative routes to shell routes isn't supported as we aren't creating navigation stacks
+					if (enableRelativeShellRoutes)
+					{
+						SearchPath(currentLocation.LowestChild, null, segments, pureRoutesMatch, 0);
+						ExpandOutGlobalRoutes(pureRoutesMatch, routeKeys);
+						pureRoutesMatch = GetBestMatches(pureRoutesMatch);
+						if (pureRoutesMatch.Count > 0)
+						{
+							return pureRoutesMatch;
+						}
+					}
+
+
 					SearchPath(currentLocation.LowestChild, null, segments, pureGlobalRoutesMatch, 0, ignoreGlobalRoutes: false);
-					pureRoutesMatch = GetBestMatches(pureRoutesMatch);
+					ExpandOutGlobalRoutes(pureGlobalRoutesMatch, routeKeys);
 					pureGlobalRoutesMatch = GetBestMatches(pureGlobalRoutesMatch);
-
-					if (pureRoutesMatch.Count > 0)
-						return pureRoutesMatch;
-
 					if (pureGlobalRoutesMatch.Count > 0)
+					{
+						// currently relative routes to shell routes isn't supported as we aren't creating navigation stacks
+						// So right now we will just throw an exception so that once this is implemented
+						// GotoAsync doesn't start acting inconsistely and all of a suddent starts creating routes
+						if (!enableRelativeShellRoutes && pureGlobalRoutesMatch[0].SegmentsMatched.Count > 0)
+						{
+							throw new Exception($"Relative routing to shell elements is currently not supported. Try prefixing your uri with ///: ///{originalRequest}");
+						}
+
 						return pureGlobalRoutesMatch;
+					}
 
 					currentLocation.Pop();
 				}
@@ -209,45 +227,50 @@ namespace Xamarin.Forms
 					return bestMatches;
 
 				bestMatches.Clear();
-				foreach (var possibleRoutePath in possibleRoutePaths)
-				{
-					while (routeKeys.Contains(possibleRoutePath.NextSegment) || routeKeys.Contains(possibleRoutePath.RemainingPath))
-					{
-						if(routeKeys.Contains(possibleRoutePath.NextSegment))
-							possibleRoutePath.AddGlobalRoute(possibleRoutePath.NextSegment, possibleRoutePath.NextSegment);
-						else
-							possibleRoutePath.AddGlobalRoute(possibleRoutePath.RemainingPath, possibleRoutePath.RemainingPath);
-					}
-
-					while (!possibleRoutePath.IsFullMatch)
-					{
-						NodeLocation nodeLocation = new NodeLocation();
-						nodeLocation.SetNode(possibleRoutePath.LowestChild);
-						List<RouteRequestBuilder> pureGlobalRoutesMatch = new List<RouteRequestBuilder>();
-						while (nodeLocation.Shell != null && pureGlobalRoutesMatch.Count == 0)
-						{
-							SearchPath(nodeLocation.LowestChild, null, possibleRoutePath.RemainingSegments, pureGlobalRoutesMatch, 0, ignoreGlobalRoutes: false);
-							nodeLocation.Pop();
-						}
-
-						// nothing found or too many things found
-						if (pureGlobalRoutesMatch.Count != 1)
-						{
-							break;
-						}
-
-
-						for (var i = 0; i < pureGlobalRoutesMatch[0].GlobalRouteMatches.Count; i++)
-						{
-							var match = pureGlobalRoutesMatch[0];
-							possibleRoutePath.AddGlobalRoute(match.GlobalRouteMatches[i], match.SegmentsMatched[i]);
-						}
-					}
-				}
+				ExpandOutGlobalRoutes(possibleRoutePaths, routeKeys);
 			}
 
 			possibleRoutePaths = GetBestMatches(possibleRoutePaths);
 			return possibleRoutePaths;
+		}
+
+		internal static void ExpandOutGlobalRoutes(List<RouteRequestBuilder> possibleRoutePaths, string[] routeKeys)
+		{
+			foreach (var possibleRoutePath in possibleRoutePaths)
+			{
+				while (routeKeys.Contains(possibleRoutePath.NextSegment) || routeKeys.Contains(possibleRoutePath.RemainingPath))
+				{
+					if (routeKeys.Contains(possibleRoutePath.NextSegment))
+						possibleRoutePath.AddGlobalRoute(possibleRoutePath.NextSegment, possibleRoutePath.NextSegment);
+					else
+						possibleRoutePath.AddGlobalRoute(possibleRoutePath.RemainingPath, possibleRoutePath.RemainingPath);
+				}
+
+				while (!possibleRoutePath.IsFullMatch)
+				{
+					NodeLocation nodeLocation = new NodeLocation();
+					nodeLocation.SetNode(possibleRoutePath.LowestChild);
+					List<RouteRequestBuilder> pureGlobalRoutesMatch = new List<RouteRequestBuilder>();
+					while (nodeLocation.Shell != null && pureGlobalRoutesMatch.Count == 0)
+					{
+						SearchPath(nodeLocation.LowestChild, null, possibleRoutePath.RemainingSegments, pureGlobalRoutesMatch, 0, ignoreGlobalRoutes: false);
+						nodeLocation.Pop();
+					}
+
+					// nothing found or too many things found
+					if (pureGlobalRoutesMatch.Count != 1 || pureGlobalRoutesMatch[0].GlobalRouteMatches.Count == 0)
+					{
+						break;
+					}
+
+
+					for (var i = 0; i < pureGlobalRoutesMatch[0].GlobalRouteMatches.Count; i++)
+					{
+						var match = pureGlobalRoutesMatch[0];
+						possibleRoutePath.AddGlobalRoute(match.GlobalRouteMatches[i], match.SegmentsMatched[i]);
+					}
+				}
+			}
 		}
 
 		internal static List<RouteRequestBuilder> GetBestMatches(List<RouteRequestBuilder> possibleRoutePaths)
@@ -704,7 +727,7 @@ namespace Xamarin.Forms
 
 
 	[DebuggerDisplay("RequestDefinition = {Request}, StackRequest = {StackRequest}")]
-	public class NavigationRequest
+	internal class NavigationRequest
 	{
 		public enum WhatToDoWithTheStack
 		{

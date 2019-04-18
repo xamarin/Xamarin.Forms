@@ -383,7 +383,12 @@ namespace Xamarin.Forms
 			return routes;
 		}
 
-		public async Task GoToAsync(ShellNavigationState state, bool animate = true)
+		public Task GoToAsync(ShellNavigationState state, bool animate = true)
+		{
+			return GoToAsync(state, animate, false);
+		}
+
+		internal async Task GoToAsync(ShellNavigationState state, bool animate, bool enableRelativeShellRoutes)
 		{
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
 			var accept = ProposeNavigation(ShellNavigationSource.Unknown, state, true);
@@ -392,7 +397,7 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.Location);
+			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.Location, enableRelativeShellRoutes);
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
 			var queryData = ParseQueryString(queryString);
@@ -426,7 +431,7 @@ namespace Xamarin.Forms
 				parts.RemoveAt(0);
 
 				if (parts.Count > 0)
-					await ((IShellItemController)shellItem).GoToPart(navigationRequest, queryData);
+					await shellItem.GoToPart(navigationRequest, queryData);
 			}
 			else
 			{
