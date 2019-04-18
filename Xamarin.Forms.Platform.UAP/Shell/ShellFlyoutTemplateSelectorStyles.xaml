@@ -10,4 +10,7 @@
     <DataTemplate x:Key="ShellFlyoutSeperatorTemplate">
         <NavigationViewItemSeparator />
     </DataTemplate>
+    <DataTemplate x:Key="ShellSectionMenuItemTemplate">
+        <NavigationViewItem Content="{Binding Title}"/>
+    </DataTemplate>
 </ResourceDictionary>
