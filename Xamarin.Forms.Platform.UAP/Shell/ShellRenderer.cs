@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ShellRenderer()
 		{
-			if (!Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackEnabled"))
+			if (!Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneDisplayMode"))
 				throw new PlatformNotSupportedException("Windows 10 October 2018 (1809) update required");
 			IsBackEnabled = false;
 			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
