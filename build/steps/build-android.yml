@@ -65,3 +65,9 @@ jobs:
             ${{ parameters.targetFolder }}/$(ApkName)
           TargetFolder: ${{ parameters.apkTargetFolder }}
           CleanTargetFolder: true
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: AndroidApps'
+        inputs:
+          PathtoPublish: '$(build.artifactstagingdirectory)'
+          ArtifactName: OSXArtifacts
