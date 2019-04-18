@@ -7,9 +7,12 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			var source = (FileImageSource)value;
-			string uri = "ms-appx:///" + (source != null ? source.File : string.Empty);
-			return new BitmapIcon { UriSource = new Uri(uri) };
+			if (value is FileImageSource source)
+			{
+				string uri = "ms-appx:///" + (source != null ? source.File : string.Empty);
+				return new BitmapIcon { UriSource = new Uri(uri) };
+			}
+			return value;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)

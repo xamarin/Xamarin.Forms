@@ -1,0 +1,13 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DataTemplate x:Key="ShellFlyoutBaseShellItemTemplate">
+        <NavigationViewItem Content="{Binding Title}" Icon="{Binding FlyoutIcon, Converter={StaticResource FileImageSourcePathConverter}}" />
+    </DataTemplate>
+    <DataTemplate x:Key="ShellFlyoutMenuItemTemplate">
+        <NavigationViewItem Content="{Binding Text}" Icon="{Binding Icon, Converter={StaticResource FileImageSourcePathConverter}}" />
+    </DataTemplate>
+    <DataTemplate x:Key="ShellFlyoutSeperatorTemplate">
+        <NavigationViewItemSeparator />
+    </DataTemplate>
+</ResourceDictionary>

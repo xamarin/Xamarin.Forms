@@ -84,8 +84,7 @@
     <Compile Include="Shell\ShellAssemblyInfo.cs" />
     <Compile Include="Shell\ShellHeaderRenderer.cs" />
     <Compile Include="Shell\ShellItemRenderer.cs" />
-    <Compile Include="Shell\ShellNavigationViewItemRenderer.cs" />
-    <Compile Include="Shell\ShellPaneTemplateSelector.cs" />
+    <Compile Include="Shell\ShellFlyoutTemplateSelector.cs" />
     <Compile Include="Shell\ShellRenderer.cs" />
     <Compile Include="Shell\ShellSectionRenderer.cs" />
     <Compile Include="StepperControl.xaml.cs">
@@ -232,6 +231,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Shell\ShellFlyoutTemplateSelectorStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
