@@ -3,21 +3,21 @@ using Windows.UI.Xaml.Controls;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ImageSourceIconElementConverter : Windows.UI.Xaml.Data.IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, string language)
-		{
-			// TODO: investigate whether we can use AsyncValue<T> instead of blocking
+    internal class ImageSourceIconElementConverter : Windows.UI.Xaml.Data.IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            // TODO: investigate whether we can use AsyncValue<T> instead of blocking
 
-			if (value is ImageSource source)
-				return source.ToWindowsIconElement();
+            if (value is ImageSource source)
+                return source.ToWindowsIconElement();
 
-			return null;
-		}
+            return null;
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, string language)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
