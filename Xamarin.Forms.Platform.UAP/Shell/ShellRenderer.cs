@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class ShellRenderer : NavigationView, IVisualElementRenderer, IAppearanceObserver, IFlyoutBehaviorObserver
 	{
-		internal static readonly Windows.UI.Color DefaultBackgroundColor = Windows.UI.Color.FromArgb(255, 33, 150, 243);
+		internal static readonly Windows.UI.Color DefaultBackgroundColor = Windows.UI.Color.FromArgb(255, 3, 169, 244);
 		internal static readonly Windows.UI.Color DefaultForegroundColor = Windows.UI.Colors.White;
 		internal static readonly Windows.UI.Color DefaultTitleColor = Windows.UI.Colors.White;
 		internal static readonly Windows.UI.Color DefaultUnselectedColor = Windows.UI.Color.FromArgb(180, 255, 255, 255);
@@ -21,59 +21,38 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackEnabled"))
 				throw new PlatformNotSupportedException("Windows 10 October 2018 (1809) update required");
 			IsBackEnabled = false;
+			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
+			PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+			IsPaneOpen = false;
 			Content = ItemRenderer = new ShellItemRenderer();
 			MenuItemTemplateSelector = new ShellPaneTemplateSelector();
-			DisplayModeChanged += OnDisplayModeChanged;
 			PaneClosing += (s, e) => OnPaneClosed();
 			PaneOpening += (s, e) => OnPaneOpening();
 			ItemInvoked += OnMenuItemInvoked;
 		}
 
-		void OnDisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
-		{
-			bool isClosed = (args.DisplayMode == NavigationViewDisplayMode.Minimal);
-			var elm = GetTemplateChild("TogglePaneTopPadding") as UIElement;
-			if(elm != null)
-				elm.Visibility = isClosed ? Visibility.Collapsed : Visibility.Visible;
-			UpdatePaneButtonColor("TogglePaneButton", isClosed);
-			UpdatePaneButtonColor("NavigationViewBackButton", isClosed);
-		}
-
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
-			if (PaneCustomContent is FrameworkElement fe)
-				fe.Visibility = IsPaneOpen ? Visibility.Visible : Visibility.Collapsed;
-		}
-
-		private void UpdatePaneButtonColor(string name, bool overrideColor)
-		{
-			var toggleButton = GetTemplateChild(name) as Control;
-			if (toggleButton != null)
-			{
-				var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
-				if (overrideColor)
-					toggleButton.Foreground = new SolidColorBrush(titleBar.ButtonForegroundColor.Value);
-				else
-					toggleButton.ClearValue(Control.ForegroundProperty);
-			}
+			UpdatePaneButtonColor("TogglePaneButton", !IsPaneOpen);
+			UpdatePaneButtonColor("NavigationViewBackButton", !IsPaneOpen);
 		}
 
 		void OnPaneOpening()
 		{
-			if (PaneCustomContent is FrameworkElement fe)
-				fe.Visibility = Visibility.Visible;
 			if (Shell != null)
 				Shell.FlyoutIsPresented = true;
+			UpdatePaneButtonColor("TogglePaneButton", false);
+			UpdatePaneButtonColor("NavigationViewBackButton", false);
 		}
 
 		void OnPaneClosed()
 		{
-			if (PaneCustomContent is FrameworkElement fe)
-				fe.Visibility = Visibility.Collapsed;
 			if(Shell != null)
 				Shell.FlyoutIsPresented = false;
+			UpdatePaneButtonColor("TogglePaneButton", true);
+			UpdatePaneButtonColor("NavigationViewBackButton", true);
 		}
 
 		void OnMenuItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -160,12 +139,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void OnElementSet(Shell shell)
 		{
-			((IShellController)Element).AddFlyoutBehaviorObserver(this);
-			var shr = new ShellHeaderRenderer(shell) { Visibility = IsPaneOpen ? Visibility.Visible : Visibility.Collapsed };
+			var shr = new ShellHeaderRenderer(shell);
 			PaneCustomContent = shr;
-
 			MenuItemsSource = IterateItems();
 			SwitchShellItem(shell.CurrentItem, false);
+			IsPaneOpen = Shell.FlyoutIsPresented;
+			((IShellController)Element).AddFlyoutBehaviorObserver(this);
 			((IShellController)shell).AddAppearanceObserver(this, shell);
 		}
 
@@ -191,28 +170,38 @@ namespace Xamarin.Forms.Platform.UWP
 			ItemRenderer.NavigateToShellItem(newItem, animate);
 		}
 
+		void UpdatePaneButtonColor(string name, bool overrideColor)
+		{
+			var toggleButton = GetTemplateChild(name) as Control;
+			if (toggleButton != null)
+			{
+				var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
+				if (overrideColor)
+					toggleButton.Foreground = new SolidColorBrush(titleBar.ButtonForegroundColor.Value);
+				else
+					toggleButton.ClearValue(Control.ForegroundProperty);
+			}
+		}
+
 		#region IAppearanceObserver
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			Windows.UI.Color backgroundColor = Windows.UI.Color.FromArgb(255, 3, 169, 244); // #03A9F4
-			Windows.UI.Color foregroundColor = Windows.UI.Colors.Black;
+			Windows.UI.Color backgroundColor = DefaultBackgroundColor;
+			Windows.UI.Color titleColor = DefaultTitleColor;
 			if (appearance != null)
 			{
 				if (!appearance.BackgroundColor.IsDefault)
 					backgroundColor = appearance.BackgroundColor.ToWindowsColor();
 				if (!appearance.TitleColor.IsDefault)
-					foregroundColor = appearance.TitleColor.ToWindowsColor();
+					titleColor = appearance.TitleColor.ToWindowsColor();
 			}
 
 			var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
 			titleBar.BackgroundColor = titleBar.ButtonBackgroundColor = backgroundColor;
-			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = foregroundColor;
-			if (DisplayMode == NavigationViewDisplayMode.Minimal)
-			{
-				UpdatePaneButtonColor("TogglePaneButton", true);
-				UpdatePaneButtonColor("NavigationViewBackButton", true);
-			}
+			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = titleColor;
+			UpdatePaneButtonColor("TogglePaneButton", !IsPaneOpen);
+			UpdatePaneButtonColor("NavigationViewBackButton", !IsPaneOpen);
 		}
 
 		#endregion IAppearanceObserver
@@ -222,15 +211,18 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (behavior)
 			{
 				case FlyoutBehavior.Disabled:
-					IsPaneVisible = false;
-					IsPaneOpen = false;
 					IsPaneToggleButtonVisible = false;
+					IsPaneVisible = false;
 					PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+					IsPaneOpen = false;
 					break;
 
 				case FlyoutBehavior.Flyout:
+					IsPaneVisible = true;
 					IsPaneToggleButtonVisible = true;
-					PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
+					bool shouldOpen = Shell.FlyoutIsPresented;
+					PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal; //This will trigger opening the flyout
+					IsPaneOpen = shouldOpen;
 					break;
 
 				case FlyoutBehavior.Locked:
