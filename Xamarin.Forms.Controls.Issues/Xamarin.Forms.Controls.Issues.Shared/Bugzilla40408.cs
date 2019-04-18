@@ -19,8 +19,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		const string Page1 = "Page 1";
 		const string Page2 = "Page 2";
-		const string Appearing = "Appearing";
-		const string Disappearing = "Disappearing";
+		const string ThisAppearing = "Appearing";
+		const string ThisDisappearing = "Disappearing";
 		const string Page3 = "Page 3";
 		const string Content = "View Content";
 		const string MasterDetailPage = "View Master Detail";
@@ -82,32 +82,32 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void ContentPage2_Disappearing(object sender, EventArgs e)
 		{
-			DisplayAlert(Disappearing, "ContentPage", Ok);
+			DisplayAlert(ThisDisappearing, "ContentPage", Ok);
 		}
 
 		void TabbedPage1_Disappearing(object sender, EventArgs e)
 		{
-			DisplayAlert(Disappearing, "TabbedPage", Ok);
+			DisplayAlert(ThisDisappearing, "TabbedPage", Ok);
 		}
 
 		void MasterDetailPage1_Disappearing(object sender, EventArgs e)
 		{
-			DisplayAlert(Disappearing, "MasterDetailPage", Ok);
+			DisplayAlert(ThisDisappearing, "MasterDetailPage", Ok);
 		}
 
 		void TabbedPage1_Appearing(object sender, EventArgs e)
 		{
-			DisplayAlert(Appearing, "TabbedPage", Ok);
+			DisplayAlert(ThisAppearing, "TabbedPage", Ok);
 		}
 
 		void ContentPage2_Appearing(object sender, EventArgs e)
 		{
-			DisplayAlert(Appearing, "ContentPage", Ok);
+			DisplayAlert(ThisAppearing, "ContentPage", Ok);
 		}
 
 		void MasterDetailPage1_Appearing(object sender, EventArgs e)
 		{
-			DisplayAlert(Appearing, "MasterDetailPage", Ok);
+			DisplayAlert(ThisAppearing, "MasterDetailPage", Ok);
 		}
 
 
@@ -130,11 +130,11 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(Page1);
 			RunningApp.Tap(goTo);
-			RunningApp.WaitForElement(Appearing);
+			RunningApp.WaitForElement(ThisAppearing);
 			RunningApp.Tap(Ok);
 			RunningApp.WaitForElement(destination);
 			RunningApp.NavigateBack();
-			RunningApp.WaitForElement(Disappearing);
+			RunningApp.WaitForElement(ThisDisappearing);
 			RunningApp.Tap(Ok);
 		}
 #endif
