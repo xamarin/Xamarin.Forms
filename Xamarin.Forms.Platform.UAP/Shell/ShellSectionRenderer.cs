@@ -13,10 +13,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ShellSectionRenderer()
 		{
-			var template = @"<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""><NavigationViewItem Content=""{Binding Title}""/></DataTemplate>";
-			var datatemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Markup.XamlReader.Load(template);
-			MenuItemTemplate = datatemplate;
-
+			MenuItemTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ShellSectionMenuItemTemplate"];
 			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
 			AlwaysShowHeader = false;
