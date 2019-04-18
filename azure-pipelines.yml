@@ -157,7 +157,7 @@ jobs:
     displayName: Sign Phase
     dependsOn: Phase_5
     pool:
-      name: VSEng-XamarinCustom
+      name: $(signVmImage)
     variables:
       signBuild: $[dependencies.Phase_1.outputs['prepare.signnuget']]
       displayName: Sign Phase
