@@ -299,54 +299,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return img;
 		}
 
-		public class Hamburger : UIImage
-		{
-			public override void Draw(CGRect rect)
-			{
-				// base.Draw(rect);
-				// thickness of your line
-				float lineThick = 1.0f;
-
-				// length of your line relative to your button
-				float lineLength = (float)Math.Min(Size.Width, Size.Height) * 0.8f;
-
-	// color of your line
-				UIColor lineColor = UIColor.White;
-
-	// this will add small padding from button border to your first line and other lines
-				float marginGap = 5.0f;
-
-	// we need three line
-				for(int i =0; i < 3; i++) {
-					// create path
-					var linePath = new UIBezierPath();
-
-					linePath.LineWidth = lineThick;
-
-					//start point of line
-					linePath.MoveTo(new CGPoint(
-						x: Size.Width / 2 - lineLength / 2,
-						y: 6.0  +marginGap
-						));
-
-					//nfloat.lin
-					//end point of line
-					linePath.AddLineTo(new CGPoint(
-					x: Size.Width / 2 + lineLength / 2,
-					y: 6.0 + marginGap
-					));
-					//set line color
-					lineColor.SetStroke();
-
-					//draw the line
-					linePath.Stroke();
-
-				}
-
-			}
-		}
-
-
 		void OnMenuButtonPressed(object sender, EventArgs e)
 		{
 			_context.Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, true);
