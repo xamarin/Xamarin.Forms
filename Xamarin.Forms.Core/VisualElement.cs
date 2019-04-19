@@ -287,8 +287,6 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendLoaded()
 		{
-			if (Application.Current.UseLegacyPageEvents)
-				return;
 			OnLoaded();
 			Loaded?.Invoke(this, EventArgs.Empty);
 		}
@@ -296,8 +294,6 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendUnloaded()
 		{
-			if (Application.Current.UseLegacyPageEvents)
-				return;
 			OnUnloaded();
 			Unloaded?.Invoke(this, EventArgs.Empty);
 		}
@@ -305,8 +301,6 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendBeforeAppearing()
 		{
-			if (Application.Current.UseLegacyPageEvents)
-				return;
 			OnBeforeAppearing();
 			BeforeAppearing?.Invoke(this, EventArgs.Empty);
 		}

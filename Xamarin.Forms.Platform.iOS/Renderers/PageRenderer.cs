@@ -165,12 +165,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
-			if (Application.Current.UseLegacyPageEvents)
-			{
-				base.ViewWillAppear(animated);
-				return;
-			}
-
 			if (!_appearing && !_disposed)
 				Page.SendBeforeAppearing();
 
@@ -180,7 +174,8 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appearing = true;
-			Page.SendAppearing();
+			if (!Application.Current.UseLegacyPageEvents)
+				Page.SendAppearing();
 		}
 
 		public override void ViewDidAppear(bool animated)
@@ -191,7 +186,10 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = true;
-			Page.SendAppeared();
+
+			if (!Application.Current.UseLegacyPageEvents)
+				Page.SendAppeared();
+
 			UpdateStatusBarPrefersHidden();
 			if(Forms.IsiOS11OrNewer)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
@@ -214,7 +212,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is CarouselPage)
 				return;
 
-			Page.SendDisappeared();
+			if (!Application.Current.UseLegacyPageEvents)
+				Page.SendDisappeared();
 		}
 
 		public override void ViewDidLoad()
@@ -266,7 +265,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_appearing = false;
 
-				if (_appeared)
+				if (_appeared && !Application.Current.UseLegacyPageEvents)
 					Page.SendDisappeared();
 
 				_appeared = false;
