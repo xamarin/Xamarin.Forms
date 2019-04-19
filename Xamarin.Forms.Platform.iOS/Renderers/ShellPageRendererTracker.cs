@@ -265,7 +265,7 @@ namespace Xamarin.Forms.Platform.iOS
 			NavigationItem.LeftBarButtonItem = barButtonItem;
 		}
 
-		public UIImage DrawHamburger()
+		UIImage DrawHamburger()
 		{
 			const string hamburgerKey = "Hamburger";
 			UIImage img = (UIImage)_nSCache.ObjectForKey((NSString)hamburgerKey);
