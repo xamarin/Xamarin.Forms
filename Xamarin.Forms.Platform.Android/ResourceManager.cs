@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class ResourceManager
 	{
+		const string _drawableDefType = "drawable";
+
 		public static Type DrawableClass { get; set; }
 
 		public static Type ResourceClass { get; set; }
@@ -215,12 +217,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Bitmap GetBitmap(this Resources resource, string name)
 		{
-			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass));
+			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource));
 		}
 
 		public static Task<Bitmap> GetBitmapAsync(this Resources resource, string name)
 		{
-			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass));
+			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource));
 		}
 
 		[Obsolete("GetDrawable(this Resources, string) is obsolete as of version 2.5. "
@@ -228,7 +230,7 @@ namespace Xamarin.Forms.Platform.Android
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Drawable GetDrawable(this Resources resource, string name)
 		{
-			int id = IdFromTitle(name, DrawableClass);
+			int id = IdFromTitle(name, DrawableClass, _drawableDefType, resource);
 			if (id == 0)
 			{
 				Log.Warning("Could not load image named: {0}", name);
@@ -238,9 +240,18 @@ namespace Xamarin.Forms.Platform.Android
 			return AndroidAppCompat.GetDrawable(Forms.Context, id);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		static void LogInfoToPreviewer(string message)
+		{
+			Java.Lang.Class designerHost = Java.Lang.Class.FromType(typeof(ImageRenderer)).ClassLoader.LoadClass("mono.android.HostProcessConnection");
+			Java.Lang.Reflect.Method reportMethod = designerHost.GetMethod("logInfo", Java.Lang.Class.FromType(typeof(Java.Lang.String)));
+			reportMethod.Invoke(null, message);
+		}
+
 		public static Drawable GetDrawable(this Context context, string name)
 		{
-			int id = IdFromTitle(name, DrawableClass);
+			int id = IdFromTitle(name, DrawableClass, _drawableDefType, context);
+
 			if (id == 0)
 			{
 				Log.Warning("Could not load image named: {0}", name);
@@ -278,15 +289,58 @@ namespace Xamarin.Forms.Platform.Android
 			LayoutClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Layout" || x.Name == "Resource_Layout");
 		}
 
-		internal static int IdFromTitle(string title, Type type)
+		static int IdFromTitle(string title, Type type)
 		{
+			if (title == null)
+				return 0;
+
 			string name = Path.GetFileNameWithoutExtension(title);
 			int id = GetId(type, name);
 			return id;
 		}
 
+		static int IdFromTitle(string title, Type resourceType, string defType, Resources resource)
+		{
+			return IdFromTitle(title, resourceType, defType, resource, Platform.PackageName);
+		}
+
+		static int IdFromTitle(string title, Type resourceType, string defType, Context context)
+		{
+			return IdFromTitle(title, resourceType, defType, context.Resources, context.PackageName);
+		}
+
+		static int IdFromTitle(string title, Type resourceType, string defType, Resources resource, string packageName)
+		{
+			int id = 0;
+			if (title == null)
+				return id;
+
+			string name = Path.GetFileNameWithoutExtension(title);
+
+			id = GetId(resourceType, name);
+
+			if (id > 0)
+				return id;
+
+			if (packageName != null)
+			{
+				id = resource.GetIdentifier(name, defType, packageName);
+
+				if (id > 0)
+					return id;
+			}
+
+			id = resource.GetIdentifier(name, defType, null);
+
+			return id;
+		}
+
 		static int GetId(Type type, string memberName)
 		{
+			// This may legitimately be null in designer scenarios
+			if (type == null)
+				return 0;
+
 			object value = null;
 			var fields = type.GetFields();
 			for (int i = 0; i < fields.Length; i++)

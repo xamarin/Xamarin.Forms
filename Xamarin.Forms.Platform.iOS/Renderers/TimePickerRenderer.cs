@@ -6,7 +6,16 @@ using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class TimePickerRenderer : ViewRenderer<TimePicker, UITextField>
+	public class TimePickerRenderer : TimePickerRendererBase<UITextField>
+	{
+		protected override UITextField CreateNativeControl()
+		{
+			return new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+		}
+	}
+
+	public abstract class TimePickerRendererBase<TControl> : ViewRenderer<TimePicker, TControl>
+		where TControl : UITextField
 	{
 		UIDatePicker _picker;
 		UIColor _defaultTextColor;
@@ -44,13 +53,16 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
+
+		protected abstract override TControl CreateNativeControl();
+
 		protected override void OnElementChanged(ElementChangedEventArgs<TimePicker> e)
 		{
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					var entry = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+					var entry = CreateNativeControl();
 
 					entry.EditingDidBegin += OnStarted;
 					entry.EditingDidEnd += OnEnded;
@@ -69,6 +81,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 					entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 					entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+					
+					entry.InputAssistantItem.LeadingBarButtonGroups = null;
+					entry.InputAssistantItem.TrailingBarButtonGroups = null;
 
 					_defaultTextColor = entry.TextColor;
 
@@ -98,8 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName || e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
-
-			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
 		}
 
@@ -122,13 +136,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			(Control as UITextField).UpdateTextAlignment(Element);
 		}
-		
-		void UpdateFont()
+
+		protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
 		}
 
-		void UpdateTextColor()
+		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
 
@@ -145,6 +159,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_picker.Date = new DateTime(1, 1, 1).Add(Element.Time).ToNSDate();
 			Control.Text = DateTime.Today.Add(Element.Time).ToString(Element.Format);
+			Element.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.MeasureChanged);
 		}
 	}
 }

@@ -58,9 +58,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				// only mark as finished if we are still working on the same image
 				if (Equals(newView?.Source, newImageSource))
+				{
 					imageController?.SetIsLoading(false);
-
-				imageController?.NativeSizeChanged();
+					imageController?.NativeSizeChanged();
+				}
 			}
 		}
 	}

@@ -4,21 +4,15 @@ using CoreGraphics;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 using MProgressView = MaterialComponents.ProgressView;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialProgressBarRenderer : ViewRenderer<ProgressBar, MProgressView>
 	{
-		const float BackgroundAlpha = 0.3f;
-
 		BasicColorScheme _defaultColorScheme;
 		BasicColorScheme _colorScheme;
-
-		public MaterialProgressBarRenderer()
-		{
-			VisualElement.VerifyVisualFlagEnabled();
-		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
@@ -51,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			var cs = MaterialColors.Light.CreateColorScheme();
 			return new BasicColorScheme(
 				cs.PrimaryColor,
-				cs.PrimaryColor.ColorWithAlpha(BackgroundAlpha),
+				cs.PrimaryColor.ColorWithAlpha(MaterialColors.SliderTrackAlpha),
 				cs.PrimaryColor);
 		}
 
@@ -64,10 +58,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
 
-		protected override MProgressView CreateNativeControl()
-		{
-			return new MProgressView();
-		}
+		protected override MProgressView CreateNativeControl() => new MProgressView();
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
@@ -116,16 +107,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			ApplyTheme();
 		}
 
-		void UpdateProgressColor()
-		{
-			UpdateAllColors();
-		}
+		void UpdateProgressColor() => UpdateAllColors();
 
 		void UpdateAllColors()
 		{
-			// TODO: Fix this once Google implements the new way.
-			//       Right now, copy what is done with the activity indicator.
-
 			Color progressColor = Element.ProgressColor;
 			Color backgroundColor = Element.BackgroundColor;
 
@@ -144,8 +129,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					// handle the case where only the background is set
 					var background = backgroundColor.ToUIColor();
 
-					// TODO: Potentially override background alpha to match material design.
-					// TODO: Potentially override primary color to match material design.
 					_colorScheme = new BasicColorScheme(
 						_defaultColorScheme.PrimaryColor,
 						background,
@@ -160,9 +143,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					// handle the case where only the progress is set
 					var progress = progressColor.ToUIColor();
 
+					progress.GetRGBA(out _, out _, out _, out var alpha);
 					_colorScheme = new BasicColorScheme(
 						progress,
-						progress.ColorWithAlpha(BackgroundAlpha),
+						progress.ColorWithAlpha(alpha * MaterialColors.SliderTrackAlpha),
 						progress);
 				}
 				else
@@ -171,7 +155,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					var background = backgroundColor.ToUIColor();
 					var progress = progressColor.ToUIColor();
 
-					// TODO: Potentially override alpha to match material design.
 					_colorScheme = new BasicColorScheme(
 						progress,
 						background,

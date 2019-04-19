@@ -237,6 +237,17 @@ namespace Xamarin.Forms.Platform.iOS
 				return base.ChildViewControllerForStatusBarHidden();
 		}
 
+		public override UIViewController ChildViewControllerForHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (((MasterDetailPage)Element).Detail != null)
+					return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
+				else
+					return base.ChildViewControllerForHomeIndicatorAutoHidden;
+			}
+		}
+
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
 			if (e.OldElement != null)
@@ -321,7 +332,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_ = this.ApplyNativeImageAsync(Page.BackgroundImageProperty, bgImage =>
 			{
 				if (bgImage != null)
-					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
+					View.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(bgImage);
 				else if (Element.BackgroundColor == Color.Default)
 					View.BackgroundColor = UIColor.White;
 				else

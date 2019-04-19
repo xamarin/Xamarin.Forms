@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
+	[DebuggerDisplay("Title = {Title}, Route = {Route}")]
 	public class BaseShellItem : NavigableElement, IPropertyPropagationController, IVisualController, IFlowDirectionController
 	{
 		#region PropertyKeys
@@ -65,6 +67,9 @@ namespace Xamarin.Forms
 			get { return _effectiveVisual; }
 			set
 			{
+				if (value == _effectiveVisual)
+					return;
+
 				_effectiveVisual = value;
 				OnPropertyChanged(VisualElement.VisualProperty.PropertyName);
 			}

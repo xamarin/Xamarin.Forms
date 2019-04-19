@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Controls
 
 		public const string DefaultMainPageId = "ControlGalleryMainPage";
 
+		public static bool PreloadTestCasesIssuesList { get; set; } = true;
 		public App()
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
@@ -125,7 +126,6 @@ namespace Xamarin.Forms.Controls
 			mdp.Master.Icon.SetAutomationPropertiesName("MDPICON");
 			return mdp;
 
-			//Device.SetFlags(new[] { "Shell_Experimental" });
             //return new XamStore.StoreShell();
         }
 

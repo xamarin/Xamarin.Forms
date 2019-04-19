@@ -23,13 +23,21 @@ steps:
 
 
   - powershell: |
-       $formsNugetVersion = $env:major + "." + $env:minor + "." + $env:patch + "." + $env:buildversion
-       if($env:SUFFIX)
+       $preXamForms = $env:XAMARINFORMSPACKAGEVERSION
+       $prefix = $env:SUFFIX
+       Write-Host("Pre FormsVersion = $preXamForms $prefix")
+
+       if(!$preXamForms)
        {
-          $formsNugetVersion = $formsNugetVersion +"-"+$env:SUFFIX
+          $formsNugetVersion = $env:major + "." + $env:minor + "." + $env:patch + "." + $env:buildversion
+          if($prefix)
+          {
+            $formsNugetVersion = $formsNugetVersion +"-"+$prefix
+          }
+          Write-Host("FormsVersion = $formsNugetVersion")
+          Write-Host("##{0}[task.setvariable variable=XamarinFormsPackageVersion]{1}" -f "vso",$formsNugetVersion.ToString() )
        }
-       Write-Host("FormsVersion = $formsNugetVersion")
-       Write-Host("##{0}[task.setvariable variable=XamarinFormsPackageVersion]{1}" -f "vso",$formsNugetVersion.ToString() )
+
     failOnStderr: true
     displayName: 'Set Nuget version'
 
@@ -43,6 +51,7 @@ steps:
       versioningScheme: byEnvVar
       versionEnvVar: XamarinFormsPackageVersion
       buildProperties: 'IdAppend=$(FormsIdAppend)'
+      configuration: $(buildConfiguration)
 
 
   - task: NuGetCommand@2
@@ -50,7 +59,7 @@ steps:
     inputs:
       command: push
       packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/debug/*.nupkg'
-      publishVstsFeed: '13fa23d7-5f2f-47f1-a87c-45a9f173dd74'
+      publishVstsFeed: '$(VstsFeed)'
       allowPackageConflicts: true
 
 

@@ -64,6 +64,9 @@ namespace Xamarin.Forms.Platform.Android
 			_bottomView.SetBackgroundColor(Color.White.ToAndroid());
 			_bottomView.SetOnNavigationItemSelectedListener(this);
 
+			if(ShellItem == null)
+				throw new ArgumentException("Active Shell Item not set. Have you added any Shell Items to your Shell?", nameof(ShellItem));
+
 			HookEvents(ShellItem);
 			SetupMenu();
 
@@ -335,7 +338,7 @@ namespace Xamarin.Forms.Platform.Android
 					menuItem.SetChecked(true);
 			}
 
-			_bottomView.Visibility = end == 1 ? ViewStates.Gone : ViewStates.Visible;
+			UpdateTabBarVisibility();
 
 			_bottomView.SetShiftMode(false, false);
 
@@ -377,7 +380,7 @@ namespace Xamarin.Forms.Platform.Android
 					visible = false;
 			}
 
-			_bottomView.Visibility = (visible) ? ViewStates.Visible : ViewStates.Gone;
+			_bottomView.Visibility = visible ? ViewStates.Visible : ViewStates.Gone;
 		}
 	}
 }
