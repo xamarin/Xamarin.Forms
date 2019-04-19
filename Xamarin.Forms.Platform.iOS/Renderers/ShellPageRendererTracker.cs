@@ -55,6 +55,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UISearchController _searchController;
 		SearchHandler _searchHandler;
 		Page _page;
+		NSCache _nSCache;
 
 		BackButtonBehavior BackButtonBehavior { get; set; }
 		UINavigationItem NavigationItem { get; set; }
@@ -62,6 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ShellPageRendererTracker(IShellContext context)
 		{
 			_context = context;
+			_nSCache = new NSCache();
 		}
 
 		public async void OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
@@ -235,7 +237,6 @@ namespace Xamarin.Forms.Platform.iOS
 			command?.Execute(commandParameter);
 		}
 
-		NSCache _nSCache = new NSCache();
 		async Task SetDrawerArrowDrawableFromFlyoutIcon()
 		{
 			Element item = Page;
