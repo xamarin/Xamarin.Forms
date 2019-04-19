@@ -231,7 +231,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual void UpdateLeftBarButtonItem(Context context, Toolbar toolbar, DrawerLayout drawerLayout, Page page)
+		protected virtual async void UpdateLeftBarButtonItem(Context context, Toolbar toolbar, DrawerLayout drawerLayout, Page page)
 		{
 			var backButtonHandler = Shell.GetBackButtonBehavior(page);
 			toolbar.SetNavigationOnClickListener(this);
@@ -300,7 +300,7 @@ namespace Xamarin.Forms.Platform.Android
 			Drawable icon = null;
 
 			if (image != null)
-				icon = await context.GetFormsDrawable(image);
+				icon = await context.GetFormsDrawableAsync(image);
 
 			if (text != null)
 				icon = new FlyoutIconDrawerDrawable(context, TintColor, icon, text);
@@ -337,7 +337,7 @@ namespace Xamarin.Forms.Platform.Android
 					icon = shell.FlyoutIcon;
 					if (icon != null)
 					{
-						var drawable = await context.GetFormsDrawable(icon);
+						var drawable = await context.GetFormsDrawableAsync(icon);
 						actionBarDrawerToggle.DrawerArrowDrawable = new FlyoutIconDrawerDrawable(context, TintColor, drawable, null);
 					}
 					return;

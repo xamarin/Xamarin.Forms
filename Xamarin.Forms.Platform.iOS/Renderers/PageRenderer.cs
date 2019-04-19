@@ -416,7 +416,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				if (bgImage != null)
-					NativeView.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(bgImage);
+					NativeView.BackgroundColor = UIColor.FromPatternImage(bgImage);
 				else if (Element.BackgroundColor.IsDefault)
 					NativeView.BackgroundColor = UIColor.White;
 				else

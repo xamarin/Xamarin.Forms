@@ -332,7 +332,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_ = this.ApplyNativeImageAsync(Page.BackgroundImageProperty, bgImage =>
 			{
 				if (bgImage != null)
-					View.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(bgImage);
+					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
 				else if (Element.BackgroundColor == Color.Default)
 					View.BackgroundColor = UIColor.White;
 				else

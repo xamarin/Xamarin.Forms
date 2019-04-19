@@ -116,7 +116,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground(bool setBkndColorEvenWhenItsDefault)
 		{
-			_ = this.ApplyDrawableAsync(view, Page.BackgroundImageProperty, Context, drawable =>
+			Page page = Element;
+
+			_ = this.ApplyDrawableAsync(page, Page.BackgroundImageProperty, Context, drawable =>
 			{
 				if (drawable != null)
 				{
@@ -124,7 +126,6 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else
 				{
-					Page page = Element;
 					Color bkgndColor = page.BackgroundColor;
 					bool isDefaultBkgndColor = bkgndColor.IsDefault;
 					if (page.Parent is BaseShellItem && isDefaultBkgndColor)
