@@ -43,6 +43,17 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HeightProperty = HeightPropertyKey.BindableProperty;
 
+		public static readonly BindableProperty ParentHeightProperty = BindableProperty.Create("ParentHeight", typeof(double), typeof(VisualElement), default(double));
+
+		double ParentHeight
+		{
+			get { return (double)GetValue(ParentHeightProperty); }
+			set { SetValue(ParentHeightProperty, value); }
+		}
+
+		static bool IsMacOsPlatform = Device.RuntimePlatform == Device.macOS;
+
+
 		public static readonly BindableProperty RotationProperty = BindableProperty.Create("Rotation", typeof(double), typeof(VisualElement), default(double));
 
 		public static readonly BindableProperty RotationXProperty = BindableProperty.Create("RotationX", typeof(double), typeof(VisualElement), default(double));
@@ -300,11 +311,15 @@ namespace Xamarin.Forms
 			private set
 			{
 				if (value.X == X && value.Y == Y && value.Height == Height && value.Width == Width)
+				{
+					if (IsMacOsPlatform) ParentHeight = (Parent as VisualElement)?.Height ?? 0;
 					return;
+				}
 				BatchBegin();
 				X = value.X;
 				Y = value.Y;
 				SetSize(value.Width, value.Height);
+				if (IsMacOsPlatform) ParentHeight = (Parent as VisualElement)?.Height ?? 0;
 				BatchCommit();
 			}
 		}

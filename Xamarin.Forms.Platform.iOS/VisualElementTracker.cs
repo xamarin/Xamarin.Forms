@@ -86,7 +86,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (TrackFrame && (e.PropertyName == VisualElement.XProperty.PropertyName ||
 							   e.PropertyName == VisualElement.YProperty.PropertyName ||
 							   e.PropertyName == VisualElement.WidthProperty.PropertyName ||
-							   e.PropertyName == VisualElement.HeightProperty.PropertyName))
+							   e.PropertyName == VisualElement.HeightProperty.PropertyName ||
+							   e.PropertyName == VisualElement.ParentHeightProperty.PropertyName))
 			{
 				UpdateNativeControl();
 			}
