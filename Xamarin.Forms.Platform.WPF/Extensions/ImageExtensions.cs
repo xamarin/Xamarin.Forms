@@ -46,7 +46,11 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 			catch (OperationCanceledException)
 			{
-				// no-op
+				Log.Warning("Image loading", "Image load cancelled");
+			}
+			catch (Exception ex)
+			{
+				Log.Warning("Image loading", $"Image load failed: {ex}");
 			}
 
 			return null;

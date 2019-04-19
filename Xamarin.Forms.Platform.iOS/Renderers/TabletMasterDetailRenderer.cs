@@ -316,15 +316,17 @@ namespace Xamarin.Forms.Platform.iOS
 			PerformButtonSelector();
 		}
 
-		async void UpdateBackground()
+		void UpdateBackground()
 		{
-			UIImage bgImage = await ((Page)Element).BackgroundImage.GetNativeImageAsync();
-			if (bgImage != null)
-				View.BackgroundColor = UIColor.FromPatternImage(bgImage);
-			else if (Element.BackgroundColor == Color.Default)
-				View.BackgroundColor = UIColor.White;
-			else
-				View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			_ = this.ApplyNativeImageAsync(Page.BackgroundImageProperty, bgImage =>
+			{
+				if (bgImage != null)
+					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
+				else if (Element.BackgroundColor == Color.Default)
+					View.BackgroundColor = UIColor.White;
+				else
+					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			});
 		}
 
 		void UpdateControllers()

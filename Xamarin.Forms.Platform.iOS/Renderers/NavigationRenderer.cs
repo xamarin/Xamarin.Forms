@@ -741,35 +741,34 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			EventHandler handler = (o, e) => masterDetailPage.IsPresented = !masterDetailPage.IsPresented;
-
-			bool shouldUseIcon = masterDetailPage.Master.Icon != null;
-			if (shouldUseIcon)
+			await masterDetailPage.Master.ApplyNativeImageAsync(Page.IconProperty, icon =>
 			{
-				try
+				if (icon != null)
 				{
-					var icon = await masterDetailPage.Master.Icon.GetNativeImageAsync();
-					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, handler);
+					try
+					{
+						containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, OnItemTapped);
+					}
+					catch (Exception)
+					{
+						// Throws Exception otherwise would catch more specific exception type
+					}
 				}
-				catch (Exception)
-				{
-					// Throws Exception otherwise would catch more specific exception type
-					shouldUseIcon = false;
-				}
-			}
+			});
 
-			if (!shouldUseIcon)
-			{
-				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, handler);
-			}
 			if (containerController.NavigationItem.LeftBarButtonItem != null)
-			{
-				if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
-					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
+				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, OnItemTapped);
+
+			if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
+				SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
 #if __MOBILE__
-				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
-				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
+			containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
+			containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
 #endif
+
+			void OnItemTapped(object sender, EventArgs e)
+			{
+				masterDetailPage.IsPresented = !masterDetailPage.IsPresented;
 			}
 		}
 

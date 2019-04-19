@@ -46,9 +46,15 @@ namespace Xamarin.Forms.Internals
 
 			TaskScheduler scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-			_valueTask.ContinueWith(t => { IsRunning = false; }, scheduler);
+			if (_valueTask.IsCompleted)
+				IsRunning = false;
+			else
+				_valueTask.ContinueWith(t => IsRunning = false, scheduler);
 
-			_valueTask.ContinueWith(t => { OnPropertyChanged(nameof(Value)); }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
+			if (_valueTask.Status == TaskStatus.RanToCompletion)
+				OnPropertyChanged(nameof(Value));
+			else
+				_valueTask.ContinueWith(t => OnPropertyChanged(nameof(Value)), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
 		}
 
 		public bool IsRunning
@@ -74,6 +80,8 @@ namespace Xamarin.Forms.Internals
 				return _valueTask.Result;
 			}
 		}
+
+		public static AsyncValue<T> Null => new AsyncValue<T>(Task.FromResult<T>(default(T)));
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

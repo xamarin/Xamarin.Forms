@@ -172,14 +172,18 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateBackground()
 		{
-			string bgImage = ((Page)Element).BackgroundImage;
-			if (!string.IsNullOrEmpty(bgImage))
+			this.ApplyNativeImageAsync(Page.BackgroundImageProperty, bgImage =>
 			{
-				View.Layer.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage)).CGColor;
-				return;
-			}
-			Color bgColor = Element.BackgroundColor;
-			View.Layer.BackgroundColor = bgColor.IsDefault ? NSColor.White.CGColor : bgColor.ToCGColor();
+				if (bgImage != null)
+				{
+					View.Layer.BackgroundColor = NSColor.FromPatternImage(bgImage).CGColor;
+				}
+				else
+				{
+					Color bgColor = Element.BackgroundColor;
+					View.Layer.BackgroundColor = bgColor.IsDefault ? NSColor.White.CGColor : bgColor.ToCGColor();
+				}
+			});
 		}
 
 		void UpdateTitle()

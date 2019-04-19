@@ -76,17 +76,15 @@ namespace Xamarin.Forms.Platform.GTK
 			if (_toolbar == null || _navigation == null)
 				return;
 
-			var iconPath = GetCurrentPageIconPath();
-
-			if (!string.IsNullOrEmpty(iconPath))
+			_toolbarIcon.WidthRequest = 1;
+			_ = _navigation?.Peek(0)?.ApplyNativeImageAsync(Page.IconProperty, icon =>
 			{
-				_toolbarIcon.Pixbuf = new Pixbuf(iconPath);
-				_toolbarIcon.SetSizeRequest(GtkToolbarConstants.ToolbarIconWidth, GtkToolbarConstants.ToolbarIconHeight);
-			}
-			else
-			{
-				_toolbarIcon.WidthRequest = 1;
-			}
+				if (icon != null)
+				{
+					_toolbarIcon.Pixbuf = icon;
+					_toolbarIcon.SetSizeRequest(GtkToolbarConstants.ToolbarIconWidth, GtkToolbarConstants.ToolbarIconHeight);
+				}
+			});
 		}
 
 		public void UpdateTitle()
@@ -156,13 +154,6 @@ namespace Xamarin.Forms.Platform.GTK
 			if (_navigation == null)
 				return string.Empty;
 			return _navigation.Peek(0).Title ?? string.Empty;
-		}
-
-		private string GetCurrentPageIconPath()
-		{
-			if (_navigation == null)
-				return string.Empty;
-			return _navigation.Peek(0).Icon ?? string.Empty;
 		}
 
 		private void UpdateBarBackgroundColor(Controls.Page page)

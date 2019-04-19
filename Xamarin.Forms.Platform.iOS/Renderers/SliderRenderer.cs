@@ -120,12 +120,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		async void UpdateThumbImage()
+		void UpdateThumbImage()
 		{
-			var uiimage = await Element.ThumbImage.GetNativeImageAsync();
-			Control?.SetThumbImage(uiimage, UIControlState.Normal);
-			
-			((IVisualElementController)Element).NativeSizeChanged();
+			_ = this.ApplyNativeImageAsync(Slider.ThumbImageProperty, uiimage =>
+			{
+				Control?.SetThumbImage(uiimage, UIControlState.Normal);
+
+				((IVisualElementController)Element).NativeSizeChanged();
+			});
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

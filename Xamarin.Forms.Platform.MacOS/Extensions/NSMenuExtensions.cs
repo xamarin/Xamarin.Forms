@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AppKit;
+using Xamarin.Forms.Platform.MacOS;
 
 namespace Xamarin.Forms.Platform.macOS.Extensions
 {
@@ -36,8 +37,11 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 				nsMenuItem.Tag = i;
 			nsMenuItem.Enabled = menuItem.IsEnabled;
 			nsMenuItem.Activated += (sender, e) => ((IMenuItemController)menuItem).Activate();
-			if (!string.IsNullOrEmpty(menuItem.Icon))
-				nsMenuItem.Image = new NSImage(menuItem.Icon);
+			_ = menuItem.ApplyNativeImageAsync(MenuItem.IconProperty, image =>
+			{
+				if (image != null)
+					nsMenuItem.Image = image;
+			});
 
 			return nsMenuItem;
 		}
@@ -56,10 +60,10 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 				}
 				if (property.Equals(nameof(MenuItem.Icon)))
 				{
-					if (!string.IsNullOrEmpty(item.Icon))
-						menuItem.Image = new NSImage(item.Icon);
-					else
-						menuItem.Image = null;
+					_ = item.ApplyNativeImageAsync(MenuItem.IconProperty, image =>
+					{
+						menuItem.Image = image;
+					});
 				}
 			}
 		}

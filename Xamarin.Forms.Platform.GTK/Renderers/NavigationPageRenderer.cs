@@ -156,11 +156,11 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			base.UpdateBackgroundImage();
 
-			var parent = Widget?.Parent as EventBox;
-
-			if (parent != null)
+			if (Widget?.Parent is EventBox parent)
 			{
-				parent.VisibleWindow = Page.CurrentPage?.ShouldDisplayNativeWindow() ?? true;
+				parent.VisibleWindow = Page.CurrentPage?.Parent is Page parentPage
+					? parentPage.BackgroundImage.IsEmpty
+					: true;
 			}
 		}
 

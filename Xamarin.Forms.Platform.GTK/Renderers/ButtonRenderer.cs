@@ -161,17 +161,17 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private void UpdateContent()
 		{
-			if (!string.IsNullOrEmpty(Element.Image))
+			this.ApplyNativeImageAsync(Button.ImageProperty, image =>
 			{
-				Control.SetImageFromFile(Element.Image);
-				Control.ImageSpacing = (uint)Element.ContentLayout.Spacing;
-				Control.SetImagePosition(Element.ContentLayout.Position.AsPositionType());
-				Control.ImageWidget.Visible = true;
-			}
-			else
-			{
-				Control.ImageWidget.Visible = false;
-			}
+				if (image != null)
+				{
+					Control.ImageWidget.Pixbuf = image;
+					Control.ImageSpacing = (uint)Element.ContentLayout.Spacing;
+					Control.SetImagePosition(Element.ContentLayout.Position.AsPositionType());
+				}
+
+				Control.ImageWidget.Visible = image != null;
+			});
 		}
 	}
 }

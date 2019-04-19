@@ -90,7 +90,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			catch (OperationCanceledException)
 			{
-				// no-op
+				Internals.Log.Warning("Image loading", "Image load cancelled");
+			}
+			catch (Exception ex)
+			{
+				Internals.Log.Warning("Image loading", $"Image load failed: {ex}");
 			}
 
 			return null;
@@ -129,7 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				try
 				{
-					using (var drawable = await context.GetFormsDrawableAsync(initialSource))
+					using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
 					{
 						// TODO: it might be good to make sure the renderer has not been disposed
 
@@ -174,7 +178,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				try
 				{
-					using (var drawable = await context.GetFormsDrawableAsync(initialSource))
+					using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
 					{
 						// only set if we are still on the same image
 						if (bindable.GetValue(imageSourceProperty) == initialSource)
