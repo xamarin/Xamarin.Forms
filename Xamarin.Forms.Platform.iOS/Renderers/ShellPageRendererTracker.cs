@@ -1,4 +1,5 @@
 ﻿using CoreGraphics;
+using Foundation;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -234,6 +235,7 @@ namespace Xamarin.Forms.Platform.iOS
 			command?.Execute(commandParameter);
 		}
 
+		NSCache _nSCache = new NSCache();
 		async Task SetDrawerArrowDrawableFromFlyoutIcon()
 		{
 			Element item = Page;
@@ -247,13 +249,102 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				item = item?.Parent;
 			}
-			if (image == null)
-				image = "3bar.png";
-			var icon = await image.GetNativeImageAsync();
+
+			UIImage icon = null;
+
+			if (image != null)
+				icon = await image.GetNativeImageAsync();
+			else
+				icon = DrawHamburger();
+			
+
 			var barButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, OnMenuButtonPressed);
+
 			barButtonItem.AccessibilityIdentifier = "OK";
 			NavigationItem.LeftBarButtonItem = barButtonItem;
 		}
+
+		public UIImage DrawHamburger()
+		{
+			const string hamburgerKey = "Hamburger";
+			UIImage img = (UIImage)_nSCache.ObjectForKey((NSString)hamburgerKey);
+
+			if (img != null)
+				return img;
+
+			var rect = new CGRect(0, 0, 23f, 23f);
+
+			UIGraphics.BeginImageContextWithOptions(rect.Size, false, 0);
+			var ctx = UIGraphics.GetCurrentContext();
+			ctx.SaveState();
+			ctx.SetStrokeColor(UIColor.Blue.CGColor);
+
+			float size = 3f;
+			float start = 4f;
+			ctx.SetLineWidth(size);
+
+			for(int i = 0; i< 3; i++)
+			{
+				ctx.MoveTo(1f, start + i * (size * 2));
+				ctx.AddLineToPoint(22f, start + i * (size * 2));
+				ctx.StrokePath();
+			}
+
+			ctx.RestoreState();
+			img = UIGraphics.GetImageFromCurrentImageContext();
+			UIGraphics.EndImageContext();
+
+			_nSCache.SetObjectforKey(img, (NSString)hamburgerKey);
+			return img;
+		}
+
+		public class Hamburger : UIImage
+		{
+			public override void Draw(CGRect rect)
+			{
+				// base.Draw(rect);
+				// thickness of your line
+				float lineThick = 1.0f;
+
+				// length of your line relative to your button
+				float lineLength = (float)Math.Min(Size.Width, Size.Height) * 0.8f;
+
+	// color of your line
+				UIColor lineColor = UIColor.White;
+
+	// this will add small padding from button border to your first line and other lines
+				float marginGap = 5.0f;
+
+	// we need three line
+				for(int i =0; i < 3; i++) {
+					// create path
+					var linePath = new UIBezierPath();
+
+					linePath.LineWidth = lineThick;
+
+					//start point of line
+					linePath.MoveTo(new CGPoint(
+						x: Size.Width / 2 - lineLength / 2,
+						y: 6.0  +marginGap
+						));
+
+					//nfloat.lin
+					//end point of line
+					linePath.AddLineTo(new CGPoint(
+					x: Size.Width / 2 + lineLength / 2,
+					y: 6.0 + marginGap
+					));
+					//set line color
+					lineColor.SetStroke();
+
+					//draw the line
+					linePath.Stroke();
+
+				}
+
+			}
+		}
+
 
 		void OnMenuButtonPressed(object sender, EventArgs e)
 		{
