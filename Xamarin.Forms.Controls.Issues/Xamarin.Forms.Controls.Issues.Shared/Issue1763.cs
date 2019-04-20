@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Children.Add(new ContactsPage());
 		}
 
-#if UITEST && __WINDOWS__
+#if UITEST
 		[Test]
 		public void TestIssue1763ItemTappedFiring()
 		{
@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(q => q.Marked("Egor1"));
 			RunningApp.WaitForElement(q => q.Marked("Tapped a List item"));
 			RunningApp.Tap(q => q.Marked("Destruction"));
+			RunningApp.WaitForElement(q => q.Marked("Contacts"));
 		}
 #endif
 
