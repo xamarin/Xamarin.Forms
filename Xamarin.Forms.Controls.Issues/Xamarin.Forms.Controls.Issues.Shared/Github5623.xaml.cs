@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		void CollectionView_OnScrolled(object sender, Core.Items.ScrolledEventArgs e)
+		void CollectionView_OnScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			Label1.Text = "HorizontalDelta: " + e.HorizontalDelta;
 			Label2.Text = "VerticalDelta: " + e.VerticalDelta;

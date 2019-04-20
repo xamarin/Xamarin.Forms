@@ -48,9 +48,18 @@ namespace Xamarin.Forms.Platform.iOS
 			var centerIndexPath = ItemsViewController.CollectionView.IndexPathForItemAtPoint(centerPoint);
 			var centerItemIndex = centerIndexPath == null ? firstVisibleItemIndex : centerIndexPath.Row;
 			var lastVisibleItemIndex = (int)indexPathsForVisibleItems.Last().Item;
-			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(scrollView.ContentOffset.X - _previousHorizontalOffset, scrollView.ContentOffset.Y - _previousVerticalOffset, scrollView.ContentOffset.X, scrollView.ContentOffset.Y, firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
+			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
+			{
+				HorizontalDelta = scrollView.ContentOffset.X - _previousHorizontalOffset,
+				VerticalDelta = scrollView.ContentOffset.Y - _previousVerticalOffset,
+				HorizontalOffset = scrollView.ContentOffset.X,
+				VerticalOffset = scrollView.ContentOffset.Y,
+				FirstVisibleItemIndex = firstVisibleItemIndex,
+				CenterItemIndex = centerItemIndex,
+				LastVisibleItemIndex = lastVisibleItemIndex
+			};
 
-			ItemsViewController.ItemsView.SendScrolled(scrolledEventArgs);
+			ItemsViewController.ItemsView.SendScrolled(itemsViewScrolledEventArgs);
 
 			_previousHorizontalOffset = (float)scrollView.ContentOffset.X;
 			_previousVerticalOffset = (float)scrollView.ContentOffset.Y;
@@ -60,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 				case -1:
 					return;
 				case 0:
-					if (lastVisibleItemIndex== ItemsViewController.ItemsViewSource.Count - 1)
+					if (lastVisibleItemIndex == ItemsViewController.ItemsViewSource.Count - 1)
 						ItemsViewController.ItemsView.SendRemainingItemsThresholdReached();
 					break;
 				default:

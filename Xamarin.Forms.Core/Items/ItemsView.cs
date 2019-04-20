@@ -43,12 +43,13 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty = BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommand), typeof(ICommand), typeof(ItemsView), null);
+		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty = 
+			BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommand), typeof(ICommand), typeof(ItemsView), null);
 
 		public ICommand RemainingItemsThresholdReachedCommand
 		{
-			get { return (ICommand)GetValue(RemainingItemsThresholdReachedCommandProperty); }
-			set { SetValue(RemainingItemsThresholdReachedCommandProperty, value); }
+			get => (ICommand)GetValue(RemainingItemsThresholdReachedCommandProperty);
+			set => SetValue(RemainingItemsThresholdReachedCommandProperty, value);
 		}
 
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(
@@ -157,17 +158,26 @@ namespace Xamarin.Forms
 
 		public void SendRemainingItemsThresholdReached()
 		{
-			OnRemainingItemsThresholdReached();
+			var e = EventArgs.Empty;
+
+			RemainingItemsThresholdReached?.Invoke(this, e);
+
+			if (RemainingItemsThresholdReachedCommand?.CanExecute(null) == true)
+				RemainingItemsThresholdReachedCommand?.Execute(null);
+
+			OnRemainingItemsThresholdReached(e);
 		}
 
-		public void SendScrolled(Core.Items.ScrolledEventArgs e)
+		public void SendScrolled(ItemsViewScrolledEventArgs e)
 		{
+			Scrolled?.Invoke(this, e);
+
 			OnScrolled(e);
 		}
 
 		public event EventHandler<ScrollToRequestEventArgs> ScrollToRequested;
 
-		public event EventHandler<Core.Items.ScrolledEventArgs> Scrolled;
+		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
 
 		public event EventHandler<EventArgs> RemainingItemsThresholdReached;
 
@@ -189,17 +199,14 @@ namespace Xamarin.Forms
 			ScrollToRequested?.Invoke(this, e);
 		}
 
-		protected virtual void OnRemainingItemsThresholdReached()
+		protected virtual void OnRemainingItemsThresholdReached(EventArgs e)
 		{
-			RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
-
-			if(RemainingItemsThresholdReachedCommand?.CanExecute(null) == true)
-				RemainingItemsThresholdReachedCommand?.Execute(null);
+			
 		}
 
-		protected virtual void OnScrolled(Core.Items.ScrolledEventArgs e)
+		protected virtual void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
-			Scrolled?.Invoke(this, e);
+			
 		}
 	}
 }

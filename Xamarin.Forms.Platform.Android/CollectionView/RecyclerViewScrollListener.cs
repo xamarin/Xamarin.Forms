@@ -45,9 +45,18 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 				centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, lastVisibleItemIndex, linearLayoutManager);
 			}
 
-			var scrolledEventArgs = new Core.Items.ScrolledEventArgs(dx, dy, _horizontallOffset, _verticalOffset, firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
+			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
+			{
+				HorizontalDelta = dx,
+				VerticalDelta = dy,
+				HorizontalOffset = _horizontallOffset,
+				VerticalOffset = _verticalOffset,
+				FirstVisibleItemIndex = firstVisibleItemIndex,
+				CenterItemIndex = centerItemIndex,
+				LastVisibleItemIndex = lastVisibleItemIndex
+			};
 
-			_itemsView.SendScrolled(scrolledEventArgs);
+			_itemsView.SendScrolled(itemsViewScrolledEventArgs);
 
 			switch (_itemsView.RemainingItemsThreshold)
 			{
