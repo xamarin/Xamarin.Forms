@@ -86,7 +86,6 @@ namespace Xamarin.Forms
 			RequestDefinition definition =
 				new RequestDefinition(
 					ConvertToStandardFormat(shell, new Uri(theWinningRoute.PathFull, UriKind.RelativeOrAbsolute)),
-					new Uri(theWinningRoute.PathNoImplicit, UriKind.RelativeOrAbsolute),
 					theWinningRoute.Item,
 					theWinningRoute.Section,
 					theWinningRoute.Content,
@@ -751,25 +750,23 @@ namespace Xamarin.Forms
 
 
 	[DebuggerDisplay("Full = {FullUri}, Short = {ShortUri}")]
-	public class RequestDefinition
+	internal class RequestDefinition
 	{
-		public RequestDefinition(Uri fullUri, Uri shortUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes)
+		public RequestDefinition(Uri fullUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes)
 		{
 			FullUri = fullUri;
-			ShortUri = shortUri;
 			Item = item;
 			Section = section;
 			Content = content;
 			GlobalRoutes = globalRoutes;
 		}
 
-		public RequestDefinition(string fullUri, string shortUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes) :
-			this(new Uri(fullUri, UriKind.Absolute), new Uri(shortUri, UriKind.Absolute), item, section, content, globalRoutes)
+		public RequestDefinition(string fullUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes) :
+			this(new Uri(fullUri, UriKind.Absolute), item, section, content, globalRoutes)
 		{
 		}
 
 		public Uri FullUri { get; }
-		public Uri ShortUri { get; }
 		public ShellItem Item { get; }
 		public ShellSection Section { get; }
 		public ShellContent Content { get; }

@@ -370,12 +370,10 @@ namespace Xamarin.Forms
 						var content = section.Items[k];
 
 						string longUri = $"{RouteScheme}://{RouteHost}/{Routing.GetRoute(this)}/{Routing.GetRoute(item)}/{Routing.GetRoute(section)}/{Routing.GetRoute(content)}";
-						string shortUri = $"{RouteScheme}://{RouteHost}/{Routing.GetRoutePathIfNotImplicit(this)}{Routing.GetRoutePathIfNotImplicit(item)}{Routing.GetRoutePathIfNotImplicit(section)}{Routing.GetRoutePathIfNotImplicit(content)}";
 
 						longUri = longUri.TrimEnd('/');
-						shortUri = shortUri.TrimEnd('/');
 
-						routes.Add(new RequestDefinition(longUri, shortUri, item, section, content, new List<string>()));
+						routes.Add(new RequestDefinition(longUri, item, section, content, new List<string>()));
 					}
 				}
 			}
@@ -397,7 +395,7 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.Location, enableRelativeShellRoutes);
+			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
 			var queryData = ParseQueryString(queryString);
@@ -514,29 +512,20 @@ namespace Xamarin.Forms
 			if (shellItem != null)
 			{
 				var shellItemRoute = shellItem.Route;
-				//if (!shellItemRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
-				{
-					stateBuilder.Append(shellItemRoute);
-					stateBuilder.Append("/");
-				}
+				stateBuilder.Append(shellItemRoute);
+				stateBuilder.Append("/");
 
 				if (shellSection != null)
 				{
 					var shellSectionRoute = shellSection.Route;
-					//if (!shellSectionRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
-					{
-						stateBuilder.Append(shellSectionRoute);
-						stateBuilder.Append("/");
-					}
+					stateBuilder.Append(shellSectionRoute);
+					stateBuilder.Append("/");
 
 					if (shellContent != null)
 					{
 						var shellContentRoute = shellContent.Route;
-						//if (!shellContentRoute.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
-						{
-							stateBuilder.Append(shellContentRoute);
-							stateBuilder.Append("/");
-						}
+						stateBuilder.Append(shellContentRoute);
+						stateBuilder.Append("/");
 					}
 
 					if (!stackAtRoot)

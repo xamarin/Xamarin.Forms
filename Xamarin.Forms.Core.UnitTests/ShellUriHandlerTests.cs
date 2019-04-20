@@ -17,13 +17,26 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task GlobalRegisterAbsoluteMatching()
+		public async Task LocationRemovesImplicit()
+		{
+
+			var shell = new Shell() { RouteScheme = "app" };
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1");
+
+			shell.Items.Add(item1);
+
+			Assert.AreEqual("app:///rootlevelcontent1", shell.CurrentState.Location.ToString());
+		}
+
+
+		[Test]
+		public async Task GlobalRegisterAbsoluteMatching()	
 		{
 			var shell = new Shell() { RouteScheme = "app", Route = "shellroute" };
 			Routing.RegisterRoute("/seg1/seg2/seg3", typeof(object));
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("app://seg1/seg2/seg3"));
 
-			Assert.AreEqual("/seg1/seg2/seg3", request.Request.ShortUri.ToString());
+			Assert.AreEqual("app:///shellroute/seg1/seg2/seg3", request.Request.FullUri.ToString());
 		}
 
 		[Test]
@@ -140,7 +153,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(item1);
 
 			await shell.GoToAsync("//rootlevelcontent1");
-			var location = shell.CurrentState.Location;
+			var location = shell.CurrentState.FullLocation;
 			await shell.GoToAsync("edit", false, true);
 
 			Assert.AreEqual(editShellContent, shell.CurrentItem.CurrentItem.CurrentItem);
@@ -228,7 +241,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreEqual(
 				"app://xamarin.com/xaminals/animals/domestic/cats/catdetails",
-				shell.CurrentState.Location.ToString()
+				shell.CurrentState.FullLocation.ToString()
 				);
 		}
 

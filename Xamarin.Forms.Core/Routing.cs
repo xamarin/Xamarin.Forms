@@ -84,6 +84,21 @@ namespace Xamarin.Forms
 			return $"{source}/";
 		}
 
+		internal static Uri RemoveImplicit(Uri uri)
+		{
+			if (!uri.IsAbsoluteUri)
+				return uri;
+
+			string[] parts = uri.ToString().TrimEnd('/').Split('/');
+
+			List<string> toKeep = new List<string>();
+			for (int i = 0; i < parts.Length; i++)
+				if (!IsImplicit(parts[i]))
+					toKeep.Add(parts[i]);
+
+			return new Uri(string.Join("/", toKeep));
+		}
+
 		public static string FormatRoute(List<string> segments)
 		{
 			var route = FormatRoute(String.Join("/", segments));

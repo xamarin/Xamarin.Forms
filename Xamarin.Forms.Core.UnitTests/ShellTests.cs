@@ -94,11 +94,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(one);
 			shell.Items.Add(two);
 
-			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/one/tabone/content/"));
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/one/tabone/content"));
 
 			shell.GoToAsync(new ShellNavigationState("app:///s/two/tabfour/"));
 
-			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tabfour/content/"));
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tabfour/content"));
 		}
 
 		[Test]
@@ -162,13 +162,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync("app:///s/two/tab21/");
 
 			await shell.GoToAsync("/tab22", false, true);
-			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab22/content/"));
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab22/content"));
 
 			await shell.GoToAsync("tab21", false, true);
-			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab21/content/"));
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab21/content"));
 
 			await shell.GoToAsync("/tab23", false, true);
-			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab23/content/"));
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/two/tab23/content"));
 
 			/*
 			 * removing support for .. notation for now
