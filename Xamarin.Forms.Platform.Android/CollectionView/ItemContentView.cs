@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 			Content.Element.MeasureInvalidated += ElementMeasureInvalidated;
 		}
 
-		private void ElementMeasureInvalidated(object sender, System.EventArgs e)
+		void ElementMeasureInvalidated(object sender, System.EventArgs e)
 		{
 			RequestLayout();
 		}

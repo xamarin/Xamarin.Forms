@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 	[Preserve(AllMembers = true)]
 	public class CollectionViewGalleryTestItem : INotifyPropertyChanged
 	{
-		private string _caption;
+		string _caption;
 
 		public DateTime Date { get; set; }
 
