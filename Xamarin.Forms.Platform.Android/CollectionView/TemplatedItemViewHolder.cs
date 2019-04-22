@@ -32,6 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Recycle(ItemsView itemsView)
 		{
+			View.BindingContext = null;
 			itemsView.RemoveLogicalChild(View);
 			_itemContentView.Recycle();
 		}

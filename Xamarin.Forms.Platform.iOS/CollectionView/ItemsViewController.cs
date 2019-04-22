@@ -262,6 +262,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var oldView = templatedCell.VisualElementRenderer?.Element;
 				if (oldView != null)
 				{
+					oldView.BindingContext = null;
 					_itemsView.RemoveLogicalChild(oldView);
 				}
 
