@@ -100,7 +100,11 @@ namespace Xamarin.Forms
 #endif
 			Device.SetFlags(s_flags);
 			Device.PlatformServices = new IOSPlatformServices();
+#if __MOBILE__
 			Device.Info = new IOSDeviceInfo();
+#else
+			Device.Info = new Platform.macOS.MacDeviceInfo();
+#endif
 
 			Internals.Registrar.RegisterAll(new[]
 				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
@@ -138,80 +142,6 @@ namespace Xamarin.Forms
 						_results.Add(value);
 				}
 				return base.VisitMember(node);
-			}
-		}
-
-		internal class IOSDeviceInfo : DeviceInfo
-		{
-			bool _disposed;
-
-#if __MOBILE__
-			readonly NSObject _notification;
-			private Size _pixelScreenSize;
-#endif
-			Size _scaledScreenSize;
-			double _scalingFactor;
-
-			public IOSDeviceInfo()
-			{
-#if __MOBILE__
-				_notification = UIDevice.Notifications.ObserveOrientationDidChange(OrientationChanged);
-#endif
-			}
-
-			public override Size PixelScreenSize => _pixelScreenSize;
-			public override Size ScaledScreenSize => _scaledScreenSize;
-
-			public override double ScalingFactor => _scalingFactor;
-
-			void UpdateScreenSize()
-			{
-#if __MOBILE__
-				_scalingFactor = UIScreen.MainScreen.Scale;
-
-				var boundsWidth = UIScreen.MainScreen.Bounds.Width;
-				var boundsHeight = UIScreen.MainScreen.Bounds.Height;
-
-				// We can't rely directly on the MainScreen bounds because they may not have been updated yet
-				// But CurrentOrientation is up-to-date, so we can use it to work out the dimensions
-				var width = CurrentOrientation.IsLandscape()
-					? Math.Max(boundsHeight, boundsWidth)
-					: Math.Min(boundsHeight, boundsWidth);
-
-				var height = CurrentOrientation.IsPortrait()
-					? Math.Max(boundsHeight, boundsWidth)
-					: Math.Min(boundsHeight, boundsWidth);
-
-				_scaledScreenSize = new Size(width, height);
-#else
-				_scalingFactor = NSScreen.MainScreen.BackingScaleFactor;
-				_scaledScreenSize = new Size(NSScreen.MainScreen.Frame.Width, NSScreen.MainScreen.Frame.Height);
-#endif
-				_pixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
-			}
-
-			void OrientationChanged(object sender, NSNotificationEventArgs args)
-			{
-				CurrentOrientation = UIDevice.CurrentDevice.Orientation.ToDeviceOrientation();
-				UpdateScreenSize();
-			}
-
-			protected override void Dispose(bool disposing)
-			{
-				if (_disposed)
-				{
-					return;
-				}
-
-				_disposed = true;
-
-#if __MOBILE__
-				if (disposing)
-				{
-					_notification.Dispose();
-				}
-#endif
-				base.Dispose(disposing);
 			}
 		}
 
