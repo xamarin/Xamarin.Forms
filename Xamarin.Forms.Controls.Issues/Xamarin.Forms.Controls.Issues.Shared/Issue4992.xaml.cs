@@ -5,7 +5,9 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4992, "CollectionView doesn't resize on orientation change",
 		PlatformAffected.Android)]
