@@ -142,7 +142,9 @@ namespace Xamarin.Forms.Platform
 #endif
 	internal class _MasterDetailPageRenderer { }
 
+#if  !TIZEN4_0
 	[RenderWith(typeof(FloatingActionButtonRenderer))]
+#endif
 	internal class _FloatingActionButtonRenderer { }
 }
 
