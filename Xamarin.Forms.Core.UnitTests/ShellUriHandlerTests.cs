@@ -17,6 +17,23 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public async Task RouteWithGlobalPageRoute()
+		{
+
+			var shell = new Shell() { RouteScheme = "app", Route= "xaminals", RouteHost = "thehost" };
+			var item1 = CreateShellItem(asImplicit: true, shellItemRoute: "animals", shellSectionRoute: "domestic", shellContentRoute: "dogs");
+			var item2 = CreateShellItem(asImplicit: true, shellItemRoute: "animals", shellSectionRoute: "domestic", shellContentRoute: "cats");
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			Routing.RegisterRoute("catdetails", typeof(ContentPage));
+			await shell.GoToAsync("//cats/catdetails?name=3");
+
+			Assert.AreEqual("app://thehost/xaminals/animals/domestic/cats/catdetails", shell.CurrentState.Location.ToString());
+		}
+
+		[Test]
 		public async Task LocationRemovesImplicit()
 		{
 

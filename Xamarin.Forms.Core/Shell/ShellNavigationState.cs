@@ -26,7 +26,12 @@ namespace Xamarin.Forms
 		}
 
 		public ShellNavigationState() { }
-		public ShellNavigationState(string location) => FullLocation = new Uri(location, UriKind.RelativeOrAbsolute);
+		public ShellNavigationState(string location)
+		{
+			FullLocation = ShellUriHandler.CreateUri(location);
+
+		}
+
 		public ShellNavigationState(Uri location) => FullLocation = location;
 		public static implicit operator ShellNavigationState(Uri uri) => new ShellNavigationState(uri);
 		public static implicit operator ShellNavigationState(string value) => new ShellNavigationState(value);

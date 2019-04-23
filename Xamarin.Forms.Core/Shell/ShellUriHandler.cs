@@ -19,9 +19,28 @@ namespace Xamarin.Forms
 			return new Uri(FormatUri(path.OriginalString), UriKind.Relative);
 		}
 
-		static string FormatUri(string path)
+		internal static string FormatUri(string path)
 		{
 			return path.Replace("\\", "/");
+		}
+
+		internal static Uri CreateUri(string path)
+		{
+			path = FormatUri(path);
+
+			// on iOS if the uri starts with // it'll instantiate as absolute with
+			// file: as the default scheme where as android just crashes
+			// so this checks if it starts with / and just forces relative
+			if (path.StartsWith("/", StringComparison.Ordinal))
+				return new Uri(path, UriKind.Relative);
+
+			Uri result;
+			if (Uri.TryCreate(path, UriKind.Absolute, out result))
+			{
+				return result;
+			}
+
+			return new Uri(path, UriKind.Relative);
 		}
 
 		public static Uri ConvertToStandardFormat(Shell shell, Uri request)
@@ -55,7 +74,7 @@ namespace Xamarin.Forms
 			NavigationRequest.WhatToDoWithTheStack whatDoIDo = NavigationRequest.WhatToDoWithTheStack.PushToIt;
 			if (uri.IsAbsoluteUri)
 				whatDoIDo = NavigationRequest.WhatToDoWithTheStack.ReplaceIt;
-			else if (uri.OriginalString.StartsWith("//") || uri.OriginalString.StartsWith("\\\\"))
+			else if (uri.OriginalString.StartsWith("//", StringComparison.Ordinal) || uri.OriginalString.StartsWith("\\\\", StringComparison.Ordinal))
 				whatDoIDo = NavigationRequest.WhatToDoWithTheStack.ReplaceIt;
 			else
 				whatDoIDo = NavigationRequest.WhatToDoWithTheStack.PushToIt;
@@ -85,7 +104,7 @@ namespace Xamarin.Forms
 			var theWinningRoute = possibleRouteMatches[0];
 			RequestDefinition definition =
 				new RequestDefinition(
-					ConvertToStandardFormat(shell, new Uri(theWinningRoute.PathFull, UriKind.RelativeOrAbsolute)),
+					ConvertToStandardFormat(shell, CreateUri(theWinningRoute.PathFull)),
 					theWinningRoute.Item,
 					theWinningRoute.Section,
 					theWinningRoute.Content,
@@ -120,7 +139,8 @@ namespace Xamarin.Forms
 			string localPath = request.LocalPath;
 
 			bool relativeMatch = false;
-			if (!originalRequest.IsAbsoluteUri && !originalRequest.OriginalString.StartsWith("/") && !originalRequest.OriginalString.StartsWith("\\"))
+			if (!originalRequest.IsAbsoluteUri &&
+				!originalRequest.OriginalString.StartsWith("/", StringComparison.Ordinal))
 				relativeMatch = true;
 
 			var segments = localPath.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
@@ -130,7 +150,7 @@ namespace Xamarin.Forms
 				for (int i = 0; i < routeKeys.Length; i++)
 				{
 					var route = routeKeys[i];
-					var uri = ConvertToStandardFormat(shell, new Uri(route, UriKind.RelativeOrAbsolute));
+					var uri = ConvertToStandardFormat(shell, CreateUri(route));
 					// Todo is this supported?
 					if (uri.Equals(request))
 					{
@@ -507,7 +527,7 @@ namespace Xamarin.Forms
 			for (var i = 0; i < keys.Length; i++)
 			{
 				var key = FormatUri(keys[i]);
-				if (key.StartsWith("/") && !(node is Shell))
+				if (key.StartsWith("/", StringComparison.Ordinal) && !(node is Shell))
 					continue;
 
 				var segments = key.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
@@ -708,7 +728,7 @@ namespace Xamarin.Forms
 
 		string MakeUriString(List<string> segments)
 		{
-			if (segments[0].StartsWith("/") || segments[0].StartsWith("\\"))
+			if (segments[0].StartsWith("/", StringComparison.Ordinal) || segments[0].StartsWith("\\", StringComparison.Ordinal))
 				return String.Join(_uriSeparator, segments);
 
 			return $"//{String.Join(_uriSeparator, segments)}";
