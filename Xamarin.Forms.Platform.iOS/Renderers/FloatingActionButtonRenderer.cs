@@ -1,21 +1,18 @@
-﻿using System;
+﻿using CoreGraphics;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using CoreGraphics;
-using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, UIButton>
 	{
-		const int smallSize = 44;
-		const int normalSize = 56;
+		const int SmallSize = 44;
+		const int NormalSize = 56;
 
 		public override SizeF SizeThatFits(SizeF size)
 		{
@@ -23,9 +20,9 @@ namespace Xamarin.Forms.Platform.iOS
 				return SizeF.Empty;
 
 			if (Element.Size == FloatingActionButtonSize.Mini)
-				return new SizeF(smallSize, smallSize);
+				return new SizeF(SmallSize, SmallSize);
 
-			return new SizeF(normalSize, normalSize);
+			return new SizeF(NormalSize, NormalSize);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -102,7 +99,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			uiButton.ClipsToBounds = false;
 
-			nfloat cornerRadius = button.Size == FloatingActionButtonSize.Mini ? smallSize / 2 : normalSize / 2;
+			nfloat cornerRadius = button.Size == FloatingActionButtonSize.Mini ? SmallSize / 2 : NormalSize / 2;
 			uiButton.Layer.CornerRadius = cornerRadius;
 			uiButton.Layer.ShadowColor = UIColor.Black.CGColor;
 			uiButton.Layer.ShadowOpacity = 0.4f;
@@ -121,7 +118,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateSize()
 		{
-			var size = Element.Size == FloatingActionButtonSize.Mini ? smallSize : normalSize;
+			var size = Element.Size == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
 
 			Control.Frame = new CGRect(Control.Frame.X, Control.Frame.Y, size, size);
 		}
