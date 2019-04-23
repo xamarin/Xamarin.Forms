@@ -16,6 +16,12 @@ namespace Xamarin.Forms.Controls
 	[Issue(IssueTracker.Github, 2210, "[Enhancement] Add better life cycle events", PlatformAffected.All)]
 	public class Issue2210 : TestMasterDetailPage
 	{
+		const string startTestLabel = "GoTest";
+		const string switchButtonLabel = "Switch Legacy Events";
+		const string checkLabelText = "CheckMe";
+		const string resultId = "Result";
+		const char separator = '\n';
+
 		public enum State
 		{
 			PageLoaded,
@@ -30,51 +36,44 @@ namespace Xamarin.Forms.Controls
 			ElementUnloaded,
 		}
 
-		public List<State> Result = new List<State>();
-
-		void LogEvent(State state)
-		{
-			Result.Add(state);
-			Debug.WriteLine($"{state}");
-		}
-
-		Button addRemoveButton;
-
 		protected override void Init()
 		{
 			MasterBehavior = MasterBehavior.Split;
 
-			var label = new Label();
-			var resultLabel = new Label();
+			IsPresented = true;
 
-			addRemoveButton = new Button
+			var result = new List<State>();
+			var checkLabel = new Label();
+			var resultLabel = new Label { AutomationId = resultId };
+
+			var addRemoveButton = new Button
 			{
-				Text = "GoTest",
+				Text = startTestLabel,
 				Command = new Command(async () =>
 				{
-					Result.Clear();
+					result.Clear();
 					resultLabel.Text = "Let's assume that this text is not here.";
-					label.Text = "But soon everything will change.";
+					checkLabel.Text = "But soon everything will change.";
 
 					var button = new Button
 					{
 						Text = "Button"
 					};
-					button.Loaded += (_, __) => LogEvent(State.ElementLoaded);
-					button.Unloaded += (_, __) => LogEvent(State.ElementUnloaded);
-					button.BeforeAppearing += (_, __) => LogEvent(State.ElementBeforeAppearing);
+					button.Loaded += (_, __) => result.Add(State.ElementLoaded);
+					button.Unloaded += (_, __) => result.Add(State.ElementUnloaded);
+					button.BeforeAppearing += (_, __) => result.Add(State.ElementBeforeAppearing);
 
 					var page = new ContentPage
 					{
 						Content = button
 					};
-					page.Loaded += (_, __) => LogEvent(State.PageLoaded);
-					page.Unloaded += (_, __) => LogEvent(State.PageUnloaded);
-					page.BeforeAppearing += (_, __) => LogEvent(State.PageBeforeAppearing);
-					page.Appearing += (_, __) => LogEvent(State.PageAppearing);
-					page.Appeared += (_, __) => LogEvent(State.PageAppeared);
-					page.Disappearing += (_, __) => LogEvent(State.PageDisappearing);
-					page.Disappeared += (_, __) => LogEvent(State.PageDisappeared);
+					page.Loaded += (_, __) => result.Add(State.PageLoaded);
+					page.Unloaded += (_, __) => result.Add(State.PageUnloaded);
+					page.BeforeAppearing += (_, __) => result.Add(State.PageBeforeAppearing);
+					page.Appearing += (_, __) => result.Add(State.PageAppearing);
+					page.Appeared += (_, __) => result.Add(State.PageAppeared);
+					page.Disappearing += (_, __) => result.Add(State.PageDisappearing);
+					page.Disappeared += (_, __) => result.Add(State.PageDisappeared);
 
 					await Detail.Navigation.PushAsync(page);
 					// UWP not waiting for page creation
@@ -87,14 +86,11 @@ namespace Xamarin.Forms.Controls
 					await Task.Delay(200);
 
 					var sb = new StringBuilder();
-					if (Application.Current.UseLegacyPageEvents)
-						sb.AppendLine("[!] Legacy events is enabled").AppendLine();
-					for (int i = 0; i < Result.Count; i++)
-						sb.AppendLine($"{i} {Result[i]}");
-
+					for (int i = 0; i < result.Count; i++)
+						sb.Append($"{result[i]}{separator}");
 					resultLabel.Text = sb.ToString();
 
-					label.Text = "CheckMe";
+					checkLabel.Text = checkLabelText;
 				})
 			};
 
@@ -109,9 +105,10 @@ namespace Xamarin.Forms.Controls
 						resultLabel,
 						new Button
 						{
-							Text = "Swith Legacy Events",
+							Text = switchButtonLabel,
 							Command = new Command(() => Application.Current.UseLegacyPageEvents = !Application.Current.UseLegacyPageEvents)
-						}
+						},
+						checkLabel
 					}
 				}
 			};
@@ -123,7 +120,11 @@ namespace Xamarin.Forms.Controls
 					{
 						Children =
 						{
-							label
+							new Button
+							{
+								Text = "Open menu",
+								Command = new Command(() => IsPresented = true)
+							}
 						}
 					}
 				}
@@ -131,25 +132,36 @@ namespace Xamarin.Forms.Controls
 		}
 
 #if UITEST
+		string[] result;
+
+		int IndexOf(State state) => result?.IndexOf(state.ToString()) ?? -1;
+
+		void GetResult()
+		{
+			var resultLabel = RunningApp.Query(c => c.Marked(resultId))[0].Text;
+			result = resultLabel.Split(new [] { separator }, System.StringSplitOptions.RemoveEmptyEntries);
+		}
+
 		[Test]
 		public void Issue2210_CycleEvents()
 		{
-			RunningApp.Tap("GoTest");
-			RunningApp.WaitForElement("CheckMe");
-			Assert.AreEqual(10, Result.Count);
-			CollectionAssert.AllItemsAreUnique(Result);
+			RunningApp.Tap(startTestLabel);
+			RunningApp.WaitForElement(checkLabelText);
+			GetResult();
+			Assert.AreEqual(10, result.Length);
+			CollectionAssert.AllItemsAreUnique(result);
 
-			var pageBeforeAppearing = Result.IndexOf(State.PageBeforeAppearing);
-			var pageAppearing = Result.IndexOf(State.PageAppearing);
-			var pageAppeared = Result.IndexOf(State.PageAppeared);
-			var pageDisappearing = Result.IndexOf(State.PageDisappearing);
-			var pageDisappeared = Result.IndexOf(State.PageDisappeared);
-			var pageLoaded = Result.IndexOf(State.PageLoaded);
-			var pageUnloaded = Result.IndexOf(State.PageUnloaded);
+			var pageBeforeAppearing = IndexOf(State.PageBeforeAppearing);
+			var pageAppearing = IndexOf(State.PageAppearing);
+			var pageAppeared = IndexOf(State.PageAppeared);
+			var pageDisappearing = IndexOf(State.PageDisappearing);
+			var pageDisappeared = IndexOf(State.PageDisappeared);
+			var pageLoaded = IndexOf(State.PageLoaded);
+			var pageUnloaded = IndexOf(State.PageUnloaded);
 
-			var buttonBeforeAppearing = Result.IndexOf(State.ElementBeforeAppearing);
-			var buttonLoaded = Result.IndexOf(State.ElementLoaded);
-			var buttonUnloaded = Result.IndexOf(State.ElementUnloaded);
+			var buttonBeforeAppearing = IndexOf(State.ElementBeforeAppearing);
+			var buttonLoaded = IndexOf(State.ElementLoaded);
+			var buttonUnloaded = IndexOf(State.ElementUnloaded);
 
 			Assert.Less(pageBeforeAppearing, pageAppearing);
 			Assert.Less(pageAppearing, pageAppeared);
@@ -165,26 +177,28 @@ namespace Xamarin.Forms.Controls
 			Assert.Less(buttonUnloaded, pageUnloaded);
 
 			// check legacy events
-			RunningApp.Tap("Swith Legacy Events");
-			RunningApp.Tap("GoTest");
-			RunningApp.WaitForElement("CheckMe");
-			Assert.AreEqual(8, Result.Count);
-			CollectionAssert.AllItemsAreUnique(Result);
-			CollectionAssert.DoesNotContain(Result, State.PageAppeared);
-			CollectionAssert.DoesNotContain(Result, State.PageDisappeared);
+			RunningApp.Tap(switchButtonLabel);
+			RunningApp.Tap(startTestLabel);
+			RunningApp.WaitForElement(checkLabelText);
+			GetResult();
+			Assert.AreEqual(8, result.Length);
+			CollectionAssert.AllItemsAreUnique(result);
+			CollectionAssert.DoesNotContain(result, State.PageAppeared.ToString());
+			CollectionAssert.DoesNotContain(result, State.PageDisappeared.ToString());
 
-			pageBeforeAppearing = Result.IndexOf(State.PageBeforeAppearing);
-			pageAppearing = Result.IndexOf(State.PageAppearing);
-			pageDisappearing = Result.IndexOf(State.PageDisappearing);
-			pageLoaded = Result.IndexOf(State.PageLoaded);
-			pageUnloaded = Result.IndexOf(State.PageUnloaded);
+			pageBeforeAppearing = IndexOf(State.PageBeforeAppearing);
+			pageAppearing = IndexOf(State.PageAppearing);
+			pageDisappearing = IndexOf(State.PageDisappearing);
+			pageLoaded = IndexOf(State.PageLoaded);
+			pageUnloaded = IndexOf(State.PageUnloaded);
 
-			buttonBeforeAppearing = Result.IndexOf(State.ElementBeforeAppearing);
-			buttonLoaded = Result.IndexOf(State.ElementLoaded);
-			buttonUnloaded = Result.IndexOf(State.ElementUnloaded);
+			buttonBeforeAppearing = IndexOf(State.ElementBeforeAppearing);
+			buttonLoaded = IndexOf(State.ElementLoaded);
+			buttonUnloaded = IndexOf(State.ElementUnloaded);
 
 			Assert.Less(pageBeforeAppearing, pageAppearing);
-			Assert.Less(pageAppearing, buttonBeforeAppearing);
+			Assert.Less(pageBeforeAppearing, buttonBeforeAppearing);
+			Assert.Less(pageAppearing, pageDisappearing);
 			Assert.Less(pageLoaded, pageUnloaded);
 			Assert.Less(pageLoaded, pageDisappearing);
 			Assert.Less(pageLoaded, buttonUnloaded);
