@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_FloatingActionButtonRenderer))]
-	public class FloatingActionButton : View, IButtonController
+	public class FloatingActionButton : View, IButtonController, IElementConfiguration<FloatingActionButton>
 	{
 		public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create("ImageSource", typeof(ImageSource), typeof(FloatingActionButton), null);
 
@@ -46,6 +46,17 @@ namespace Xamarin.Forms
 		public event EventHandler Pressed;
 		public event EventHandler Released;
 
+		readonly Lazy<PlatformConfigurationRegistry<FloatingActionButton>> _platformConfigurationRegistry;
+		public FloatingActionButton()
+		{
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<FloatingActionButton>>(() => new PlatformConfigurationRegistry<FloatingActionButton>(this));
+		}
+
+		public IPlatformElementConfiguration<T, FloatingActionButton> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendClicked()
 		{
@@ -77,7 +88,7 @@ namespace Xamarin.Forms
 
 	public enum FloatingActionButtonSize
 	{
-	    Normal,
-	    Mini
+		Normal,
+		Mini
 	}
 }
