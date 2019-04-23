@@ -970,6 +970,7 @@ namespace Xamarin.Forms.Core.UITests
 				Rect = ToAppRect(windowsElement),
 				Label = windowsElement.Id, // Not entirely sure about this one
 				Description = windowsElement.Text, // or this one
+				Text = windowsElement.Text,
 				Enabled = windowsElement.Enabled,
 				Id = windowsElement.Id
 			};

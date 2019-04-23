@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Controls
 						// Something has failed and we're stuck in a place where we can't navigate
 						// to the test. Usually this is because we're getting network/HTTP errors 
 						// communicating with the server on the device. So we'll try restarting the app.
-						RunningApp = InitializeApp();
+						RunningApp = app = InitializeApp();
 					}
 					else
 					{

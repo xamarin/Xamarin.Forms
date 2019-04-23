@@ -1,6 +1,5 @@
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +19,6 @@ namespace Xamarin.Forms.Controls
 		const string switchButtonLabel = "Switch Legacy Events";
 		const string checkLabelText = "CheckMe";
 		const string resultId = "Result";
-		const char separator = '\n';
 
 		public enum State
 		{
@@ -87,7 +85,7 @@ namespace Xamarin.Forms.Controls
 
 					var sb = new StringBuilder();
 					for (int i = 0; i < result.Count; i++)
-						sb.Append($"{result[i]}{separator}");
+						sb.AppendLine(result[i].ToString());
 					resultLabel.Text = sb.ToString();
 
 					checkLabel.Text = checkLabelText;
@@ -139,7 +137,7 @@ namespace Xamarin.Forms.Controls
 		void GetResult()
 		{
 			var resultLabel = RunningApp.Query(c => c.Marked(resultId))[0].Text;
-			result = resultLabel.Split(new [] { separator }, System.StringSplitOptions.RemoveEmptyEntries);
+			result = resultLabel.Split(new [] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
 		}
 
 		[Test]
