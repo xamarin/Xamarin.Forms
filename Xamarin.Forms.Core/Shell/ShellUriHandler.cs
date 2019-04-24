@@ -124,7 +124,7 @@ namespace Xamarin.Forms
 			var routeKeys = Routing.GetRouteKeys();
 			for (int i = 0; i < routeKeys.Length; i++)
 			{
-				if(routeKeys[i] == originalRequest.OriginalString)
+				if (routeKeys[i] == originalRequest.OriginalString)
 				{
 					var builder = new RouteRequestBuilder(routeKeys[i], routeKeys[i], null, new string[] { routeKeys[i] });
 					return new List<RouteRequestBuilder> { builder };
