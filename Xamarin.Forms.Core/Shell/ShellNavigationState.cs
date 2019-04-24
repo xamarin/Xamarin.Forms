@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 	[DebuggerDisplay("Location = {Location}")]
 	public class ShellNavigationState
 	{
-		private Uri _fullLocation;
+		Uri _fullLocation;
 
 		internal Uri FullLocation
 		{
