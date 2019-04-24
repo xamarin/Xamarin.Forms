@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!am.IsEnabled)
 				return;
 
-			SortedDictionary<int, List<VisualElement>> tabIndexes = null;
+			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
 			foreach (var child in Element.LogicalChildren)
 			{
 				if (!(child is VisualElement ve))
