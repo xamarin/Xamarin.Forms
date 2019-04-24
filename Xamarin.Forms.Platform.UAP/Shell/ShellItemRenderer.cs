@@ -240,11 +240,12 @@ namespace Xamarin.Forms.Platform.UWP
 				DisplayedPage.PropertyChanged -= OnPagePropertyChanged;
 			}
 			DisplayedPage = page;
-			_Title.Text = page?.Title ?? ShellSection?.Title ?? "";
 			if (DisplayedPage != null)
 			{
 				DisplayedPage.PropertyChanged += OnPagePropertyChanged;
 			}
+			UpdateBottomBarVisibility();
+			UpdatePageTitle();
 		}
 
 		private void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -253,13 +254,21 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateBottomBarVisibility();
 			}
+			else if (e.PropertyName == Page.TitleProperty.PropertyName)
+			{
+				UpdatePageTitle();
+			}
+		}
+
+		private void UpdatePageTitle()
+		{
+			_Title.Text = DisplayedPage?.Title ?? ShellSection?.Title ?? "";
 		}
 
 		private void UpdateBottomBarVisibility()
 		{
 			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
 		}
-
 
 		void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
