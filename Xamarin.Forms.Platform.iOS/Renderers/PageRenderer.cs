@@ -301,7 +301,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				var animation = ((Page)Element).OnThisPlatform().PreferredStatusBarUpdateAnimation();
+				var animation = Page.OnThisPlatform().PreferredStatusBarUpdateAnimation();
 				switch (animation)
 				{
 					case (PageUIStatusBarAnimation.Fade):
@@ -356,7 +356,7 @@ namespace Xamarin.Forms.Platform.iOS
 				bottomPadding = BottomLayoutGuide.Length;
 			}
 
-			(Element as Page).Padding = new Thickness(0, topPadding, 0, bottomPadding);
+			Page.Padding = new Thickness(0, topPadding, 0, bottomPadding);
 		}
 
 		void UpdateStatusBarPrefersHidden()
@@ -364,7 +364,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element == null)
 				return;
 
-			var animation = ((Page)Element).OnThisPlatform().PreferredStatusBarUpdateAnimation();
+			var animation = Page.OnThisPlatform().PreferredStatusBarUpdateAnimation();
 			if (animation == PageUIStatusBarAnimation.Fade || animation == PageUIStatusBarAnimation.Slide)
 				UIView.Animate(0.25, () => SetNeedsStatusBarAppearanceUpdate());
 			else
@@ -384,7 +384,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override bool PrefersStatusBarHidden()
 		{
-			var mode = ((Page)Element).OnThisPlatform().PrefersStatusBarHidden();
+			var mode = Page.OnThisPlatform().PrefersStatusBarHidden();
 			switch (mode)
 			{
 				case (StatusBarHiddenMode.True):
@@ -418,8 +418,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateTitle()
 		{
-			if (!string.IsNullOrWhiteSpace(((Page)Element).Title))
-				NavigationItem.Title = ((Page)Element).Title;
+			if (!string.IsNullOrWhiteSpace(Page.Title))
+				NavigationItem.Title = Page.Title;
 		}
 
 		IEnumerable<UIView> ViewAndSuperviewsOfView(UIView view)
@@ -439,6 +439,6 @@ namespace Xamarin.Forms.Platform.iOS
 			SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 
-		public override bool PrefersHomeIndicatorAutoHidden => ((Page)Element).OnThisPlatform().PrefersHomeIndicatorAutoHidden();
+		public override bool PrefersHomeIndicatorAutoHidden => Page.OnThisPlatform().PrefersHomeIndicatorAutoHidden();
 	}
 }

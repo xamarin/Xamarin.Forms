@@ -103,25 +103,6 @@ namespace Xamarin.Forms.Platform.iOS
 			LayoutParallax();
 		}
 
-		float SafeAreaOffset
-		{
-			get
-			{
-				if (!Forms.IsiOS11OrNewer)
-				{
-
-					return (float)UIApplication.SharedApplication.StatusBarFrame.Size.Height;
-
-				}
-
-				if (UIApplication.SharedApplication.KeyWindow != null)
-					return (float)UIApplication.SharedApplication.KeyWindow.SafeAreaInsets.Top;
-
-				if (UIApplication.SharedApplication.Windows.Length > 0)
-					return (float)UIApplication.SharedApplication.Windows[0].SafeAreaInsets.Top;
-
-				return 0;
-			}
-		}
+		float SafeAreaOffset => (float)Platform.SafeAreaInsetsForWindow.Top;
 	}
 }
