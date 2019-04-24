@@ -339,32 +339,24 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateShellInsetPadding()
 		{
-			if (Element == null)
+			if (!(Element?.Parent is ShellContent))
 				return;
 
-			var setInsets = Shell.GetSetPaddingInsets(Element);
+			nfloat topPadding = 0;
+			nfloat bottomPadding = 0;
 
-			if (!setInsets && Element.Parent != null)
-				setInsets = Shell.GetSetPaddingInsets(Element.Parent);
-
-			if (setInsets)
+			if (Forms.IsiOS11OrNewer)
 			{
-				nfloat topPadding = 0;
-				nfloat bottomPadding = 0;
-
-				if (Forms.IsiOS11OrNewer)
-				{
-					topPadding = View.SafeAreaInsets.Top;
-					bottomPadding = View.SafeAreaInsets.Bottom;
-				}
-				else
-				{
-					topPadding = TopLayoutGuide.Length;
-					bottomPadding = BottomLayoutGuide.Length;
-				}
-
-				(Element as Page).Padding = new Thickness(0, topPadding, 0, bottomPadding);
+				topPadding = View.SafeAreaInsets.Top;
+				bottomPadding = View.SafeAreaInsets.Bottom;
 			}
+			else
+			{
+				topPadding = TopLayoutGuide.Length;
+				bottomPadding = BottomLayoutGuide.Length;
+			}
+
+			(Element as Page).Padding = new Thickness(0, topPadding, 0, bottomPadding);
 		}
 
 		void UpdateStatusBarPrefersHidden()
