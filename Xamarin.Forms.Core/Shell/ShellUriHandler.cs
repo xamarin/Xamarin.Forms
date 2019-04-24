@@ -205,7 +205,7 @@ namespace Xamarin.Forms
 					{
 						// currently relative routes to shell routes isn't supported as we aren't creating navigation stacks
 						// So right now we will just throw an exception so that once this is implemented
-						// GotoAsync doesn't start acting inconsistely and all of a suddent starts creating routes
+						// GotoAsync doesn't start acting inconsistently and all of a suddent starts creating routes
 						if (!enableRelativeShellRoutes && pureGlobalRoutesMatch[0].SegmentsMatched.Count > 0)
 						{
 							throw new Exception($"Relative routing to shell elements is currently not supported. Try prefixing your uri with ///: ///{originalRequest}");
