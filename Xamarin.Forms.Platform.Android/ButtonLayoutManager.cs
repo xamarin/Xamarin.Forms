@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
 		}
 
-		AppCompatButton View => _renderer?.View as AppCompatButton;
+		AppCompatButton View => _renderer?.View;
 
 		Context Context => _renderer?.View?.Context;
 

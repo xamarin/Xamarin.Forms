@@ -913,7 +913,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
+		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
 			_ = this.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconProperty, Context, iconDrawable =>
 			{
