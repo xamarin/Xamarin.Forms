@@ -10,6 +10,7 @@ namespace Xamarin.Forms
 		static Dictionary<string, RouteFactory> s_routes = new Dictionary<string, RouteFactory>();
 
 		internal const string ImplicitPrefix = "IMPL_";
+		const string _pathSeparator = "/";
 
 		internal static string GenerateImplicitRoute(string source)
 		{
@@ -87,21 +88,21 @@ namespace Xamarin.Forms
 		internal static Uri RemoveImplicit(Uri uri)
 		{
 			if (!uri.IsAbsoluteUri)
-				return uri;
+				return ShellUriHandler.FormatUri(uri);
 
-			string[] parts = uri.ToString().TrimEnd('/').Split('/');
+			string[] parts = uri.OriginalString.TrimEnd(_pathSeparator[0]).Split(_pathSeparator[0]);
 
 			List<string> toKeep = new List<string>();
 			for (int i = 0; i < parts.Length; i++)
 				if (!IsImplicit(parts[i]))
 					toKeep.Add(parts[i]);
 
-			return new Uri(string.Join("/", toKeep));
+			return new Uri(string.Join(_pathSeparator, toKeep));
 		}
 
 		public static string FormatRoute(List<string> segments)
 		{
-			var route = FormatRoute(String.Join("/", segments));
+			var route = FormatRoute(String.Join(_pathSeparator, segments));
 			return route;
 		}
 
@@ -143,7 +144,7 @@ namespace Xamarin.Forms
 		static void ValidateRoute(string route)
 		{
 			if (string.IsNullOrWhiteSpace(route))
-				throw new ArgumentNullException("Route cannot be an empty string");
+				throw new ArgumentNullException(nameof(route), "Route cannot be an empty string");
 
 			var uri = new Uri(route, UriKind.RelativeOrAbsolute);
 

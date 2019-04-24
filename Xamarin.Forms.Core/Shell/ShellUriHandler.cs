@@ -9,9 +9,10 @@ namespace Xamarin.Forms
 
 	internal class ShellUriHandler
 	{
-		static readonly char[] _pathSeparator = { '/', '\\' };
+		static readonly char[] _pathSeparators = { '/', '\\' };
+		const string _pathSeparator = "/";
 
-		static Uri FormatUri(Uri path)
+		internal static Uri FormatUri(Uri path)
 		{
 			if (path.IsAbsoluteUri)
 				return path;
@@ -21,7 +22,7 @@ namespace Xamarin.Forms
 
 		internal static string FormatUri(string path)
 		{
-			return path.Replace("\\", "/");
+			return path.Replace("\\", _pathSeparator);
 		}
 
 		internal static Uri CreateUri(string path)
@@ -31,14 +32,11 @@ namespace Xamarin.Forms
 			// on iOS if the uri starts with // it'll instantiate as absolute with
 			// file: as the default scheme where as android just crashes
 			// so this checks if it starts with / and just forces relative
-			if (path.StartsWith("/", StringComparison.Ordinal))
+			if (path.StartsWith(_pathSeparator, StringComparison.Ordinal))
 				return new Uri(path, UriKind.Relative);
 
-			Uri result;
-			if (Uri.TryCreate(path, UriKind.Absolute, out result))
-			{
+			if (Uri.TryCreate(path, UriKind.Absolute, out Uri result))
 				return result;
-			}
 
 			return new Uri(path, UriKind.Relative);
 		}
@@ -52,7 +50,7 @@ namespace Xamarin.Forms
 			else
 				pathAndQuery = request.OriginalString;
 
-			var segments = new List<string>(pathAndQuery.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries));
+			var segments = new List<string>(pathAndQuery.Split(_pathSeparators, StringSplitOptions.RemoveEmptyEntries));
 
 
 			if (segments[0] != shell.RouteHost)
@@ -61,7 +59,7 @@ namespace Xamarin.Forms
 			if (segments[1] != shell.Route)
 				segments.Insert(1, shell.Route);
 
-			var path = String.Join("/", segments.ToArray());
+			var path = String.Join(_pathSeparator, segments.ToArray());
 			string uri = $"{shell.RouteScheme}://{path}";
 
 			return new Uri(uri);
@@ -140,10 +138,10 @@ namespace Xamarin.Forms
 
 			bool relativeMatch = false;
 			if (!originalRequest.IsAbsoluteUri &&
-				!originalRequest.OriginalString.StartsWith("/", StringComparison.Ordinal))
+				!originalRequest.OriginalString.StartsWith(_pathSeparator, StringComparison.Ordinal))
 				relativeMatch = true;
 
-			var segments = localPath.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
+			var segments = localPath.Split(_pathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
 			if (!relativeMatch)
 			{
@@ -383,7 +381,7 @@ namespace Xamarin.Forms
 				if (Content != null && !Routing.IsImplicit(Content))
 					paths.Add(Content.Route);
 
-				string uri = String.Join("/", paths);
+				string uri = String.Join(_pathSeparator, paths);
 				return new Uri($"{Shell.RouteScheme}://{uri}");
 			}
 
@@ -530,7 +528,7 @@ namespace Xamarin.Forms
 				if (key.StartsWith("/", StringComparison.Ordinal) && !(node is Shell))
 					continue;
 
-				var segments = key.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
+				var segments = key.Split(_pathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
 				if (segments[0] == route)
 				{
@@ -553,7 +551,7 @@ namespace Xamarin.Forms
 			{
 				get
 				{
-					var segments = _path.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries).ToList().Skip(1).ToList();
+					var segments = _path.Split(_pathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList().Skip(1).ToList();
 
 					if (segments.Count == 0)
 						return new object[0];
@@ -568,7 +566,7 @@ namespace Xamarin.Forms
 			{
 				get
 				{
-					var segments = _path.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
+					var segments = _path.Split(_pathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
 					if (segments.Length == 0)
 						return string.Empty;
@@ -581,7 +579,7 @@ namespace Xamarin.Forms
 			{
 				get
 				{
-					var segments = _path.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries).ToList().Skip(1).ToList();
+					var segments = _path.Split(_pathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList().Skip(1).ToList();
 
 					if (segments.Count == 0)
 						return true;
@@ -711,7 +709,7 @@ namespace Xamarin.Forms
 				if (nextMatch >= _allSegments.Length)
 					return null;
 
-				return Routing.FormatRoute(String.Join("/", _allSegments.Skip(nextMatch)));
+				return Routing.FormatRoute(String.Join(_uriSeparator, _allSegments.Skip(nextMatch)));
 			}
 		}
 		public string[] RemainingSegments
@@ -728,7 +726,7 @@ namespace Xamarin.Forms
 
 		string MakeUriString(List<string> segments)
 		{
-			if (segments[0].StartsWith("/", StringComparison.Ordinal) || segments[0].StartsWith("\\", StringComparison.Ordinal))
+			if (segments[0].StartsWith(_uriSeparator, StringComparison.Ordinal) || segments[0].StartsWith("\\", StringComparison.Ordinal))
 				return String.Join(_uriSeparator, segments);
 
 			return $"//{String.Join(_uriSeparator, segments)}";
