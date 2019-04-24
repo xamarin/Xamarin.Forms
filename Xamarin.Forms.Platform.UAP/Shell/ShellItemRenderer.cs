@@ -219,6 +219,7 @@ namespace Xamarin.Forms.Platform.UWP
 				foreach (ShellSection shellSection in e.NewItems)
 					HookChildEvents(shellSection);
 			}
+			UpdateBottomBar();
 		}
 
 		protected virtual void OnShellSectionChanged(ShellSection oldSection, ShellSection newSection)
