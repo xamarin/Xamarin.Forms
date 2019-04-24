@@ -40,6 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 			_visualElementRenderer = this;
 			_backgroundTracker = new BorderBackgroundManager(this);
+			
 		}
 
 		AButton NativeButton

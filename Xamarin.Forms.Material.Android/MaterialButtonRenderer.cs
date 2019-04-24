@@ -358,6 +358,9 @@ namespace Xamarin.Forms.Material.Android
 
 		// ITabStop
 		AView ITabStop.TabStop => this;
+
+		// IButtonLayoutRenderer
+		AppCompatButton IButtonLayoutRenderer.View => this;
 	}
 }
 #endif

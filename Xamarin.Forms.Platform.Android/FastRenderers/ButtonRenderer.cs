@@ -344,5 +344,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			return _platformElementConfiguration;
 		}
+
+		AppCompatButton IButtonLayoutRenderer.View => this;
 	}
 }
