@@ -756,17 +756,19 @@ namespace Xamarin.Forms.Platform.iOS
 						// Throws Exception otherwise would catch more specific exception type
 					}
 				}
-			});
 
-			if (containerController.NavigationItem.LeftBarButtonItem != null)
-				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, OnItemTapped);
+				if(icon == null || containerController.NavigationItem.LeftBarButtonItem == null)
+				{
+					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, OnItemTapped);
+				}
 
-			if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
-				SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
+				if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
+					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
 #if __MOBILE__
-			containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
-			containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
 #endif
+			});
 
 			void OnItemTapped(object sender, EventArgs e)
 			{
