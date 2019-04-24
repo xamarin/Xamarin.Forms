@@ -121,14 +121,19 @@ namespace Xamarin.Forms
 
 		internal static List<RouteRequestBuilder> GenerateRoutePaths(Shell shell, Uri request, Uri originalRequest, bool enableRelativeShellRoutes)
 		{
-			request = FormatUri(request);
-			originalRequest = FormatUri(originalRequest);
-
 			var routeKeys = Routing.GetRouteKeys();
 			for (int i = 0; i < routeKeys.Length; i++)
 			{
+				if(routeKeys[i] == originalRequest.OriginalString)
+				{
+					var builder = new RouteRequestBuilder(routeKeys[i], routeKeys[i], null, new string[] { routeKeys[i] });
+					return new List<RouteRequestBuilder> { builder };
+				}
 				routeKeys[i] = FormatUri(routeKeys[i]);
 			}
+
+			request = FormatUri(request);
+			originalRequest = FormatUri(originalRequest);
 
 			List<RouteRequestBuilder> possibleRoutePaths = new List<RouteRequestBuilder>();
 			if (!request.IsAbsoluteUri)
@@ -138,7 +143,7 @@ namespace Xamarin.Forms
 
 			bool relativeMatch = false;
 			if (!originalRequest.IsAbsoluteUri &&
-				!originalRequest.OriginalString.StartsWith(_pathSeparator, StringComparison.Ordinal))
+				!originalRequest.OriginalString.StartsWith("//", StringComparison.Ordinal))
 				relativeMatch = true;
 
 			var segments = localPath.Split(_pathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -149,11 +154,11 @@ namespace Xamarin.Forms
 				{
 					var route = routeKeys[i];
 					var uri = ConvertToStandardFormat(shell, CreateUri(route));
-					// Todo is this supported?
 					if (uri.Equals(request))
 					{
-						var builder = new RouteRequestBuilder(route, route, null, segments);
-						return new List<RouteRequestBuilder> { builder };
+						throw new Exception($"Global routes currently cannot be the only page on the stack so absolute routing to global routes is not supported. For now just navigate to: {originalRequest.OriginalString.Replace("//","")}");
+						//var builder = new RouteRequestBuilder(route, route, null, segments);
+						//return new List<RouteRequestBuilder> { builder };
 					}
 				}
 			}
@@ -212,7 +217,7 @@ namespace Xamarin.Forms
 					currentLocation.Pop();
 				}
 
-				string searchPath = String.Join("/", segments);
+				string searchPath = String.Join(_pathSeparator, segments);
 
 				if (routeKeys.Contains(searchPath))
 				{

@@ -34,6 +34,20 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public async Task AbsoluteRoutingToPage()
+		{
+
+			var shell = new Shell() { RouteScheme = "app", Route = "xaminals", RouteHost = "thehost" };
+			var item1 = CreateShellItem(asImplicit: true, shellItemRoute: "animals", shellSectionRoute: "domestic", shellContentRoute: "dogs");
+			shell.Items.Add(item1);
+
+			Routing.RegisterRoute("catdetails", typeof(ContentPage));
+
+			Assert.That(async () => await shell.GoToAsync($"//catdetails"), Throws.Exception);
+		}
+
+
+		[Test]
 		public async Task LocationRemovesImplicit()
 		{
 
@@ -51,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var shell = new Shell() { RouteScheme = "app", Route = "shellroute" };
 			Routing.RegisterRoute("/seg1/seg2/seg3", typeof(object));
-			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("app://seg1/seg2/seg3"));
+			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("/seg1/seg2/seg3"));
 
 			Assert.AreEqual("app:///shellroute/seg1/seg2/seg3", request.Request.FullUri.ToString());
 		}
