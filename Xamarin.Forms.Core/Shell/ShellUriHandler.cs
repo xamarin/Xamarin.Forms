@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 		internal static Uri FormatUri(Uri path)
 		{
 			if (path.IsAbsoluteUri)
-				return path;
+				return new Uri(FormatUri(path.OriginalString), UriKind.Absolute);
 
 			return new Uri(FormatUri(path.OriginalString), UriKind.Relative);
 		}

@@ -325,7 +325,8 @@ namespace Xamarin.Forms.Core.UnitTests
 				CreateUri("app://shellroute/path"),
 				CreateUri("app:/shellroute/path"),
 				CreateUri("app://host/shellroute/path"),
-				CreateUri("app:/host/shellroute/path")
+				CreateUri("app:/host/shellroute/path"),
+				CreateUri("app:/host/shellroute\\path")
 			};
 
 
