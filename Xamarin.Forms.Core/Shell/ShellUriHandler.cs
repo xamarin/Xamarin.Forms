@@ -156,7 +156,7 @@ namespace Xamarin.Forms
 					var uri = ConvertToStandardFormat(shell, CreateUri(route));
 					if (uri.Equals(request))
 					{
-						throw new Exception($"Global routes currently cannot be the only page on the stack so absolute routing to global routes is not supported. For now just navigate to: {originalRequest.OriginalString.Replace("//","")}");
+						throw new Exception($"Global routes currently cannot be the only page on the stack, so absolute routing to global routes is not supported. For now, just navigate to: {originalRequest.OriginalString.Replace("//","")}");
 						//var builder = new RouteRequestBuilder(route, route, null, segments);
 						//return new List<RouteRequestBuilder> { builder };
 					}
