@@ -1,153 +1,282 @@
-﻿using System;
-using System.ComponentModel;
-using Android.Content;
+﻿using Android.Content;
+using Android.Content.Res;
 using Android.Graphics;
-using Android.Util;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using static System.String;
+using Android.Graphics.Drawables;
+using Android.Support.V4.View;
+using Android.Views;
+using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
 using AFloatingButton = global::Android.Support.Design.Widget.FloatingActionButton;
-using AMotionEvent = Android.Views.MotionEvent;
-using AMotionEventActions = Android.Views.MotionEventActions;
-using Object = Java.Lang.Object;
-using Xamarin.Forms.Internals;
-using System.Threading.Tasks;
-using Android.Graphics.Drawables;
-using Android.Content.Res;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, AFloatingButton>, AView.IOnAttachStateChangeListener
+	public class FloatingActionButtonRenderer : AFloatingButton,
+		IVisualElementRenderer, IViewRenderer, ITabStop,
+		AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener, AView.IOnAttachStateChangeListener
 	{
-		const float smallSize = 44f;
-		const float normalSize = 56f;
+		const float SmallSize = 44f;
+		const float NormalSize = 56f;
 
+		int? _defaultLabelFor;
 		bool _isDisposed;
+		bool _inputTransparent;
+		AutomationPropertiesProvider _automationPropertiesProvider;
+		VisualElementTracker _tracker;
+		VisualElementRenderer _visualElementRenderer;
+		IPlatformElementConfiguration<PlatformConfiguration.Android, FloatingActionButton> _platformElementConfiguration;
+		FloatingActionButton _button;
+
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 
 		public FloatingActionButtonRenderer(Context context) : base(context)
 		{
-			AutoPackage = false;
+			Initialize();
 		}
 
-		AFloatingButton NativeButton
+		protected FloatingActionButton Element => Button;
+		protected AFloatingButton Control => this;
+
+		VisualElement IVisualElementRenderer.Element => Element;
+		AView IVisualElementRenderer.View => this;
+		ViewGroup IVisualElementRenderer.ViewGroup => null;
+		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
+
+		FloatingActionButton Button
 		{
-			get { return Control; }
+			get => _button;
+			set
+			{
+				_button = value;
+				_platformElementConfiguration = null;
+			}
 		}
 
-		public void OnViewAttachedToWindow(AView attachedView)
+		AView ITabStop.TabStop => this;
+
+		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Button, Button, v);
+
+		bool IOnTouchListener.OnTouch(AView v, MotionEvent e) => ButtonElementManager.OnTouch(Button, Button, v, e);
+
+		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
 		{
+			((IElementController)Button).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, hasFocus);
 		}
 
-		public void OnViewDetachedFromWindow(AView detachedView)
+		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
+			var size = MinimumSize();
+			Measure((int)size.Width, (int)size.Height);
+			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), size);
 		}
 
-		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
-			return base.GetDesiredSize(widthConstraint, heightConstraint);
+			if (element == null)
+			{
+				throw new ArgumentNullException(nameof(element));
+			}
+
+			if (!(element is FloatingActionButton))
+			{
+				throw new ArgumentException($"{nameof(element)} must be of type {nameof(FloatingActionButton)}");
+			}
+
+			VisualElement oldElement = Button;
+			Button = (FloatingActionButton)element;
+
+			Performance.Start(out string reference);
+
+			if (oldElement != null)
+			{
+				oldElement.PropertyChanged -= OnElementPropertyChanged;
+			}
+
+
+			element.PropertyChanged += OnElementPropertyChanged;
+
+			if (_tracker == null)
+			{
+				// Can't set up the tracker in the constructor because it access the Element (for now)
+				SetTracker(new VisualElementTracker(this));
+			}
+			if (_visualElementRenderer == null)
+			{
+				_visualElementRenderer = new VisualElementRenderer(this);
+			}
+
+			OnElementChanged(new ElementChangedEventArgs<FloatingActionButton>(oldElement as FloatingActionButton, Button));
+
+			SendVisualElementInitialized(element, this);
+
+			Performance.Stop(reference);
 		}
 
-		protected override void OnLayout(bool changed, int l, int t, int r, int b)
+		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
-			var size = Element.Size == FloatingActionButtonSize.Mini ? smallSize : normalSize;
-			size = Context.ToPixels(size);
+			if (_defaultLabelFor == null)
+			{
+				_defaultLabelFor = ViewCompat.GetLabelFor(this);
+			}
 
-			base.OnLayout(changed, l, t, l + (int)size, t + (int)size);
+			ViewCompat.SetLabelFor(this, (int)(id ?? _defaultLabelFor));
+		}
+
+		void IVisualElementRenderer.UpdateLayout() => _tracker?.UpdateLayout();
+
+		void IViewRenderer.MeasureExactly()
+		{
+			ViewRenderer.MeasureExactly(this, Element, Context);
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
+			{
 				return;
+			}
 
 			_isDisposed = true;
 
 			if (disposing)
 			{
+				SetOnClickListener(null);
+				SetOnTouchListener(null);
+				RemoveOnAttachStateChangeListener(this);
+
+				_automationPropertiesProvider?.Dispose();
+				_tracker?.Dispose();
+				_visualElementRenderer?.Dispose();
+
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+
+					if (Platform.GetRenderer(Element) == this)
+						Element.ClearValue(Platform.RendererProperty);
+				}
 			}
 
 			base.Dispose(disposing);
 		}
 
-		protected override AFloatingButton CreateNativeControl()
+		public override bool OnTouchEvent(MotionEvent e)
 		{
-			return new AFloatingButton(Context);
+			if (!Enabled || (_inputTransparent && Enabled))
+				return false;
+
+			return base.OnTouchEvent(e);
 		}
 
-		protected override async void OnElementChanged(ElementChangedEventArgs<FloatingActionButton> e)
+		Size MinimumSize()
 		{
-			base.OnElementChanged(e);
+			var size = Element.Size == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
+			return new Xamarin.Forms.Size(size, size);
+		}
 
-			if (e.OldElement == null)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<FloatingActionButton> e)
+		{
+			if (e.NewElement != null && !_isDisposed)
 			{
-				AFloatingButton button = Control;
+				this.EnsureId();
 
-				if (button == null)
-				{
-					button = CreateNativeControl();
-					button.SetOnClickListener(ButtonClickListener.Instance.Value);
-					button.SetOnTouchListener(ButtonTouchListener.Instance.Value);
-					button.Tag = this;
+				UpdateInputTransparent();
+				UpdateColor();
+				UpdateEnabled();
+				TryUpdateBitmap();
 
-					SetNativeControl(button);
-
-					//var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-					//_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);
-
-					button.AddOnAttachStateChangeListener(this);
-				}
+				//ElevationHelper.SetElevation(this, e.NewElement);
 			}
 
-			//if (_backgroundTracker == null)
-			//	_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
-			//else
-				//_backgroundTracker.Button = e.NewElement;
-
-			await UpdateAll();
+			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
-		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			base.OnElementPropertyChanged(sender, e);
-
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateColor();
-			else if (e.PropertyName == FloatingActionButton.SizeProperty.PropertyName)
-				this.UpdateLayout();
+			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
+			{
+				UpdateInputTransparent();
+			}
 			else if (e.PropertyName == Image.SourceProperty.PropertyName)
-				await TryUpdateBitmap();
+			{
+				TryUpdateBitmap();
+			}
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			{
+				UpdateColor();
+			}
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			{
 				UpdateEnabled();
+			}
+			else if (e.PropertyName == FloatingActionButton.SizeProperty.PropertyName)
+			{
+				_tracker?.UpdateLayout();
+				Size = Element.Size == FloatingActionButtonSize.Mini ? SizeMini : SizeNormal;
+			}
+
+			ElementPropertyChanged?.Invoke(this, e);
 		}
 
-		protected override void UpdateBackgroundColor()
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
-			if (Element == null || Control == null)
+			var size = Element.Size == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
+			size = Context.ToPixels(size);
+
+			base.OnLayout(changed, l, t, l + (int)size, t + (int)size);
+		}
+
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+		}
+
+		void SetTracker(VisualElementTracker tracker)
+		{
+			_tracker = tracker;
+		}
+
+		internal void OnNativeFocusChanged(bool hasFocus)
+		{
+		}
+
+		internal void SendVisualElementInitialized(VisualElement element, AView nativeView)
+		{
+			element.SendViewInitialized(nativeView);
+		}
+
+		void Initialize()
+		{
+			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
+
+			SoundEffectsEnabled = false;
+			SetOnClickListener(this);
+			SetOnTouchListener(this);
+			AddOnAttachStateChangeListener(this);
+			OnFocusChangeListener = this;
+
+			Tag = this;
+		}
+
+		void UpdateInputTransparent()
+		{
+			if (Element == null || _isDisposed)
+			{
 				return;
+			}
+
+			_inputTransparent = Element.InputTransparent;
 		}
 
-		async Task UpdateAll()
-		{
-			UpdateColor();
-			UpdateEnabled();
-			await TryUpdateBitmap();
-		}
-
-		void UpdateColor()
-		{
-			NativeButton.BackgroundTintList = ColorStateList.ValueOf(Element.BackgroundColor.ToAndroid());
-		}
-
-		void UpdateEnabled()
-		{
-			Control.Enabled = Element.IsEnabled;
-		}
-
-		protected virtual async Task TryUpdateBitmap()
+		void TryUpdateBitmap()
 		{
 			try
 			{
-				await UpdateBitmap();
+				UpdateBitmap();
 			}
 			catch (Exception ex)
 			{
@@ -158,14 +287,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected async Task UpdateBitmap()
+		void UpdateBitmap()
 		{
 			if (Element == null || Control == null || Control.IsDisposed())
 			{
 				return;
 			}
 
-			if (NativeButton == null || NativeButton.IsDisposed())
+			if (Control == null || Control.IsDisposed())
 				return;
 
 			if (Device.IsInvokeRequired)
@@ -182,69 +311,61 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (handler is FileImageSourceHandler)
 				{
-					drawable = NativeButton.Context.GetDrawable((FileImageSource)source);
+					drawable = Control.Context.GetDrawable((FileImageSource)source);
 				}
 
 				if (drawable == null)
 				{
 					try
 					{
-						bitmap = await handler.LoadImageAsync(source, NativeButton.Context);
+						bitmap = handler.LoadImageAsync(source, Control.Context).Result;
 					}
 					catch (TaskCanceledException)
-					{						
+					{
 					}
 				}
 			}
 
-			if (!NativeButton.IsDisposed())
+			if (!Control.IsDisposed())
 			{
 				if (bitmap == null && drawable != null)
 				{
-					NativeButton.SetImageDrawable(drawable);
+					Control.SetImageDrawable(drawable);
 				}
 				else
 				{
-					NativeButton.SetImageBitmap(bitmap);
+					Control.SetImageBitmap(bitmap);
 				}
 			}
 
 			bitmap?.Dispose();
 		}
 
-		class ButtonClickListener : Object, IOnClickListener
+		void UpdateColor()
 		{
-			public static readonly Lazy<ButtonClickListener> Instance = new Lazy<ButtonClickListener>(() => new ButtonClickListener());
-
-			public void OnClick(AView v)
-			{
-				var renderer = v.Tag as FloatingActionButtonRenderer;
-				if (renderer != null)
-					((IButtonController)renderer.Element).SendClicked();
-			}
+			Control.BackgroundTintList = ColorStateList.ValueOf(Element.BackgroundColor.ToAndroid());
 		}
 
-		class ButtonTouchListener : Object, IOnTouchListener
+		void UpdateEnabled()
 		{
-			public static readonly Lazy<ButtonTouchListener> Instance = new Lazy<ButtonTouchListener>(() => new ButtonTouchListener());
+			Control.Enabled = Element.IsEnabled;
+		}
 
-			public bool OnTouch(AView v, AMotionEvent e)
-			{
-				var renderer = v.Tag as FloatingActionButtonRenderer;
-				if (renderer != null)
-				{
-					var buttonController = renderer.Element as IButtonController;
-					if (e.Action == AMotionEventActions.Down)
-					{
-						buttonController?.SendPressed();
-					}
-					else if (e.Action == AMotionEventActions.Up)
-					{
-						buttonController?.SendReleased();
-					}
-				}
-				return false;
-			}
+		IPlatformElementConfiguration<PlatformConfiguration.Android, FloatingActionButton> OnThisPlatform()
+		{
+			if (_platformElementConfiguration == null)
+				_platformElementConfiguration = Button.OnThisPlatform();
+
+			return _platformElementConfiguration;
+		}
+
+		void IOnAttachStateChangeListener.OnViewAttachedToWindow(global::Android.Views.View attachedView)
+		{
+			TryUpdateBitmap();
+		}
+
+		void IOnAttachStateChangeListener.OnViewDetachedFromWindow(global::Android.Views.View detachedView)
+		{
 		}
 	}
 }
