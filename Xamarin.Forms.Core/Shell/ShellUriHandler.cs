@@ -22,7 +22,7 @@ namespace Xamarin.Forms
 
 		internal static string FormatUri(string path)
 		{
-			return path.Replace("\\", _pathSeparator);
+			return path.Replace(_pathSeparators[1], _pathSeparator[0]);
 		}
 
 		internal static Uri CreateUri(string path)
@@ -530,7 +530,7 @@ namespace Xamarin.Forms
 			for (var i = 0; i < keys.Length; i++)
 			{
 				var key = FormatUri(keys[i]);
-				if (key.StartsWith("/", StringComparison.Ordinal) && !(node is Shell))
+				if (key.StartsWith(_pathSeparator, StringComparison.Ordinal) && !(node is Shell))
 					continue;
 
 				var segments = key.Split(_pathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
