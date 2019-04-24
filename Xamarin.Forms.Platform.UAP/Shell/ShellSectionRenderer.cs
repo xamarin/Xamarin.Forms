@@ -78,12 +78,24 @@ namespace Xamarin.Forms.Platform.UWP
 		internal void NavigateToContent(ShellContent shellContent, bool animate = true)
 		{
 			if (CurrentContent != null && Page != null)
+			{
+				Page.PropertyChanged -= Page_PropertyChanged;
 				((IShellContentController)CurrentContent).RecyclePage(Page);
+			}
 			CurrentContent = shellContent;
 			if (shellContent != null)
 			{
 				Page = ((IShellContentController)shellContent).GetOrCreateContent();
+				Page.PropertyChanged += Page_PropertyChanged;
 				Frame.Navigate((ContentPage)Page);
+				UpdateSearchHandler(Shell.GetSearchHandler(Page));
+			}
+		}
+
+		private void Page_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName == Shell.SearchHandlerProperty.PropertyName)
+			{
 				UpdateSearchHandler(Shell.GetSearchHandler(Page));
 			}
 		}
@@ -104,7 +116,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (searchHandler != null)
 			{
 				searchHandler.PropertyChanged += SearchHandler_PropertyChanged;
-				AutoSuggestBox.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				AutoSuggestBox.Visibility = searchHandler.SearchBoxVisibility == SearchBoxVisibility.Hidden ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
 				AutoSuggestBox.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Stretch;
 				AutoSuggestBox.PlaceholderText = searchHandler.Placeholder;
 				AutoSuggestBox.IsEnabled = searchHandler.IsSearchEnabled;
@@ -137,6 +149,11 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == SearchHandler.QueryProperty.PropertyName)
 			{
 				AutoSuggestBox.Text = _currentSearchHandler.Query;
+			}
+			else if (e.PropertyName == SearchHandler.SearchBoxVisibilityProperty.PropertyName)
+			{
+				AutoSuggestBox.Visibility = _currentSearchHandler.SearchBoxVisibility == SearchBoxVisibility.Hidden ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
+				AutoSuggestBox.IsSuggestionListOpen = _currentSearchHandler.SearchBoxVisibility == SearchBoxVisibility.Expanded;
 			}
 		}
 
