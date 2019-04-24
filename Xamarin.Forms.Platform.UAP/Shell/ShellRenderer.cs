@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -18,16 +19,21 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ShellRenderer()
 		{
-			if (!Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneDisplayMode"))
+			if (!ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneDisplayMode"))
 				throw new PlatformNotSupportedException("Windows 10 October 2018 (1809) update required");
+
+			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackEnabled"))
 			IsBackEnabled = false;
+			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
 			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
 			PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
 			IsPaneOpen = false;
 			Content = ItemRenderer = new ShellItemRenderer();
 			MenuItemTemplateSelector = new ShellFlyoutTemplateSelector();
+			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
 			PaneClosing += (s, e) => OnPaneClosed();
+			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
 			PaneOpening += (s, e) => OnPaneOpening();
 			ItemInvoked += OnMenuItemInvoked;
 		}

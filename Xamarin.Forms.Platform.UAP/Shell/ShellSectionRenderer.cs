@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Windows.Foundation.Metadata;
 using Windows.UI.Xaml.Controls;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -14,6 +15,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public ShellSectionRenderer()
 		{
 			MenuItemTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ShellSectionMenuItemTemplate"];
+			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
 			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
 			AlwaysShowHeader = false;

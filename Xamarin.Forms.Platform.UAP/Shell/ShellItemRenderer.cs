@@ -73,8 +73,11 @@ namespace Xamarin.Forms.Platform.UWP
 			double inset = 10;
 			if (ShellContext.IsPaneToggleButtonVisible)
 				inset += 45;
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
+			{
 			if (ShellContext.IsBackButtonVisible != Windows.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
 				inset += 45;
+			}
 			_HeaderArea.Padding = new Windows.UI.Xaml.Thickness(inset, 0, 0, 0);
 		}
 
