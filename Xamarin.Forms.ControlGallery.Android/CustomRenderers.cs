@@ -82,6 +82,11 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		protected override void Dispose(bool disposing)
 		{
+			foreach (var effect in Element.Effects.OfType<Controls.Effects.AttachedStateEffect>())
+			{
+				effect.Detached(Element);
+			}
+
 			base.Dispose(disposing);
 		}
 	}
