@@ -22,12 +22,12 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneDisplayMode"))
 				throw new PlatformNotSupportedException("Windows 10 October 2018 (1809) update required");
 
-			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackEnabled"))
+			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackEnabled")) // Requires 1803 (17134)
 			IsBackEnabled = false;
-			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
+			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible")) // Requires 1803 (17134)
 			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
-			PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+			PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal; // Requires 1809 (17763)
 			IsPaneOpen = false;
 			Content = ItemRenderer = new ShellItemRenderer();
 			MenuItemTemplateSelector = new ShellFlyoutTemplateSelector();
