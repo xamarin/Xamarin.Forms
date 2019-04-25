@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Page.SendAppeared();
 
 			UpdateStatusBarPrefersHidden();
-			if(Forms.IsiOS11OrNewer)
+			if (Forms.IsiOS11OrNewer)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (!Application.Current.UseLegacyPageEvents)
-				Page.SendDisappeared();
+				Page?.SendDisappeared();
 		}
 
 		public override void ViewDidLoad()
@@ -250,7 +250,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillDisappear(animated);
 			_appearing = false;
-			Page.SendDisappearing ();
+			if (!Application.Current.UseLegacyPageEvents)
+				Page?.SendDisappearing();
 			NativeView?.Window?.EndEditing(true);
 		}
 
@@ -288,7 +289,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_tracker = null;
 				}
 
-				Element.SendUnloaded ();
+				Element.SendUnloaded();
 				Element = null;
 				Container?.Dispose();
 				_disposed = true;
