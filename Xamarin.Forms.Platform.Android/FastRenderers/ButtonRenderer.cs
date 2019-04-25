@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		BorderBackgroundManager _backgroundTracker;
 		ButtonLayoutManager _buttonLayoutManager;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> _platformElementConfiguration;
-		private Button _button;
+		Button _button;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;

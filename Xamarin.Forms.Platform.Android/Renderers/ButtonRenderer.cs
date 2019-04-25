@@ -194,7 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 					// Keep track of the image height so we can use it in OnLayout
 					_imageHeight = image?.IntrinsicHeight ?? -1;
 
-					Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+					Device.BeginInvokeOnMainThread(() => Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged));
 				});
 				return;
 			}
@@ -222,7 +222,7 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 				}
 
-				Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				Device.BeginInvokeOnMainThread(() => Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged));
 			});
 		}
 

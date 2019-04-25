@@ -295,7 +295,10 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 				}
 
-				_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				// If you don't dispatch this to the queue then it causes some timing issues with renderering
+				// This code gets called during a layout cycle so it's getting invalidated midway through invalidation
+				// which causes issues. If you want to remove the Invoke then use Issue4484 to test this. 
+				Device.BeginInvokeOnMainThread(() => _element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged));
 			});
 		}
 	}
