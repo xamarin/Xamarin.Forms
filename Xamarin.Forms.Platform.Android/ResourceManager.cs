@@ -110,12 +110,23 @@ namespace Xamarin.Forms.Platform.Android
 			return renderer.ApplyDrawableAsync(bindable, imageSourceProperty, shellContext.AndroidContext, onSet, onLoading, cancellationToken);
 		}
 
-		internal static Task ApplyDrawableAsync(this IVisualElementRenderer renderer, BindableProperty imageSourceProperty, Context context, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		internal static Task ApplyDrawableAsync(this IVisualElementRenderer renderer,
+										  BindableProperty imageSourceProperty,
+										  Context context,
+										  Action<Drawable> onSet,
+										  Action<bool> onLoading = null,
+										  CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return renderer.ApplyDrawableAsync(null, imageSourceProperty, context, onSet, onLoading, cancellationToken);
 		}
 
-		internal static async Task ApplyDrawableAsync(this IVisualElementRenderer renderer, BindableObject bindable, BindableProperty imageSourceProperty, Context context, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task ApplyDrawableAsync(this IVisualElementRenderer renderer,
+												BindableObject bindable,
+												BindableProperty imageSourceProperty,
+												Context context,
+												Action<Drawable> onSet,
+												Action<bool> onLoading = null,
+												CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_ = context ?? throw new ArgumentNullException(nameof(context));
@@ -124,7 +135,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// TODO: it might be good to make sure the renderer has not been disposed
 
-			// makse sure things are good before we start
+			// make sure things are good before we start
 			var element = bindable ?? renderer.Element;
 
 			if (element == null || renderer.View == null)

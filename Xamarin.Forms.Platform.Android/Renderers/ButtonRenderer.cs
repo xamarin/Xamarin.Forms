@@ -194,7 +194,10 @@ namespace Xamarin.Forms.Platform.Android
 					// Keep track of the image height so we can use it in OnLayout
 					_imageHeight = image?.IntrinsicHeight ?? -1;
 
-					Device.BeginInvokeOnMainThread(() => Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged));
+					// Invalidating here causes a crazy amount of increased measure invalidations
+					// when I tested with Issue4484 it caused about 800 calls to invalidate measure vs the 8 without this
+					// I'm pretty sure it gets into a layout / invalidation loop where these are invalidating mid layout				
+					//Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 				});
 				return;
 			}
@@ -222,7 +225,10 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 				}
 
-				Device.BeginInvokeOnMainThread(() => Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged));
+				// Invalidating here causes a crazy amount of increased measure invalidations
+				// when I tested with Issue4484 it caused about 800 calls to invalidate measure vs the 8 without this
+				// I'm pretty sure it gets into a layout / invalidation loop where these are invalidating mid layout				
+				//Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 			});
 		}
 
