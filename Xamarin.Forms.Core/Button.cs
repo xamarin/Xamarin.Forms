@@ -125,9 +125,17 @@ namespace Xamarin.Forms
 			set { SetValue(FontProperty, value); }
 		}
 
-		public ImageSource Image
+		public ImageSource ImageSource
 		{
 			get { return (ImageSource)GetValue(ImageProperty); }
+			set { SetValue(ImageProperty, value); }
+		}
+
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ImageSource Image
+		{
+			get { return GetValue(ImageProperty) as FileImageSource; }
 			set { SetValue(ImageProperty, value); }
 		}
 
@@ -219,7 +227,7 @@ namespace Xamarin.Forms
 
 		protected override void OnBindingContextChanged()
 		{
-			ImageSource image = Image;
+			ImageSource image = ImageSource;
 			if (image != null)
 				SetInheritedBindingContext(image, BindingContext);
 
@@ -242,7 +250,7 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		Aspect IImageElement.Aspect => Aspect.AspectFit;
-		ImageSource IImageElement.Source => Image;
+		ImageSource IImageElement.Source => ImageSource;
 		bool IImageElement.IsOpaque => false;
 
 

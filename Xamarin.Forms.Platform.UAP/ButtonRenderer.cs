@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Platform.UWP
 		async void UpdateContent()
 		{
 			var text = Element.Text;
-			var elementImage = await Element.Image.ToWindowsImageSourceAsync();
+			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
 			if (elementImage == null)

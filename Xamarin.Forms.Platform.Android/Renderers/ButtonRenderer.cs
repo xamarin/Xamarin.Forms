@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBitmap()
 		{
-			var elementImage = Element.Image;
+			var elementImage = Element.ImageSource;
 			_imageHeight = -1;
 
 			if (elementImage == null || elementImage.IsEmpty)

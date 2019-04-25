@@ -257,7 +257,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return;
 
-			ImageSource elementImage = _element.Image;
+			ImageSource elementImage = _element.ImageSource;
 
 			if (elementImage == null || elementImage.IsEmpty)
 			{

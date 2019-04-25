@@ -105,10 +105,10 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateBitmap()
 		{
-			if (!Element.Image.IsNullOrEmpty())
+			if (!Element.ImageSource.IsNullOrEmpty())
 			{
 				Control.Image = new Native.Image(Control);
-				_ = Control.Image.LoadFromImageSourceAsync(Element.Image);
+				_ = Control.Image.LoadFromImageSourceAsync(Element.ImageSource);
 			}
 			else
 			{

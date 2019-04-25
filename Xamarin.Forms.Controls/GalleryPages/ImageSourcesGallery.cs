@@ -334,9 +334,9 @@ namespace Xamarin.Forms.Controls
 						{
 							CreateImageSourcePicker("Select Image Source", getter =>
 							{
-								_buttonWithImageAndText.Image = getter();
-								_buttonWithPositionedImageAndText.Image = getter();
-								_buttonWithImage.Image = getter();
+								_buttonWithImageAndText.ImageSource = getter();
+								_buttonWithPositionedImageAndText.ImageSource = getter();
+								_buttonWithImage.ImageSource = getter();
 								_imageButton.Source = getter();
 							}),
 							new Label
@@ -347,22 +347,22 @@ namespace Xamarin.Forms.Controls
 							(_buttonWithImageAndText = new Button
 							{
 								Text = "Image & Text",
-								Image = "bank.png"
+								ImageSource = "bank.png"
 							}),
 							(_buttonWithPositionedImageAndText = new Button
 							{
 								Text = "Image Above & Text",
 								ContentLayout = new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Top, 5),
-								Image = "bank.png"
+								ImageSource = "bank.png"
 							}),
 							(_buttonWithImage = new Button
 							{
-								Image = "bank.png"
+								ImageSource = "bank.png"
 							}),
 							new Button
 							{
 								Text = "Just Text",
-								Image = null
+								ImageSource = null
 							},
 							new Label
 							{
