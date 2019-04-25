@@ -40,16 +40,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 			IsPresented = true;
 
-			var result = new List<State>();
+			var states = new List<State>();
 			var checkLabel = new Label();
 			var resultLabel = new Label { AutomationId = resultId };
 
-			var addRemoveButton = new Button
+			var goTestButton = new Button
 			{
 				Text = startTestLabel,
 				Command = new Command(async () =>
 				{
-					result.Clear();
+					states.Clear();
 					resultLabel.Text = "Let's assume that this text is not here.";
 					checkLabel.Text = "But soon everything will change.";
 
@@ -57,21 +57,21 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = "Button"
 					};
-					button.Loaded += (_, __) => result.Add(State.ElementLoaded);
-					button.Unloaded += (_, __) => result.Add(State.ElementUnloaded);
-					button.BeforeAppearing += (_, __) => result.Add(State.ElementBeforeAppearing);
+					button.Loaded += (_, __) => states.Add(State.ElementLoaded);
+					button.Unloaded += (_, __) => states.Add(State.ElementUnloaded);
+					button.BeforeAppearing += (_, __) => states.Add(State.ElementBeforeAppearing);
 
 					var page = new ContentPage
 					{
 						Content = button
 					};
-					page.Loaded += (_, __) => result.Add(State.PageLoaded);
-					page.Unloaded += (_, __) => result.Add(State.PageUnloaded);
-					page.BeforeAppearing += (_, __) => result.Add(State.PageBeforeAppearing);
-					page.Appearing += (_, __) => result.Add(State.PageAppearing);
-					page.Appeared += (_, __) => result.Add(State.PageAppeared);
-					page.Disappearing += (_, __) => result.Add(State.PageDisappearing);
-					page.Disappeared += (_, __) => result.Add(State.PageDisappeared);
+					page.Loaded += (_, __) => states.Add(State.PageLoaded);
+					page.Unloaded += (_, __) => states.Add(State.PageUnloaded);
+					page.BeforeAppearing += (_, __) => states.Add(State.PageBeforeAppearing);
+					page.Appearing += (_, __) => states.Add(State.PageAppearing);
+					page.Appeared += (_, __) => states.Add(State.PageAppeared);
+					page.Disappearing += (_, __) => states.Add(State.PageDisappearing);
+					page.Disappeared += (_, __) => states.Add(State.PageDisappeared);
 
 					await Detail.Navigation.PushAsync(page);
 					// UWP not waiting for page creation
@@ -84,8 +84,8 @@ namespace Xamarin.Forms.Controls.Issues
 					await Task.Delay(200);
 
 					var sb = new StringBuilder();
-					for (int i = 0; i < result.Count; i++)
-						sb.AppendLine(result[i].ToString());
+					for (int i = 0; i < states.Count; i++)
+						sb.AppendLine(states[i].ToString());
 					resultLabel.Text = sb.ToString();
 
 					checkLabel.Text = checkLabelText;
@@ -95,11 +95,13 @@ namespace Xamarin.Forms.Controls.Issues
 			Master = new ContentPage
 			{
 				Title = "menu",
+				// on iOS the goTestButton overlaps by notch. Until this is corrected added padding-top.
+				Padding = new Thickness(5, 40, 5, 0), 
 				Content = new StackLayout
 				{
 					Children =
 					{
-						addRemoveButton,
+						goTestButton,
 						resultLabel,
 						new Button
 						{
