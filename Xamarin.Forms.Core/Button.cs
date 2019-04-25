@@ -134,7 +134,7 @@ namespace Xamarin.Forms
 			set { SetValue(ImageSourceProperty, value); }
 		}
 
-		[Obsolete]
+		[Obsolete("Image is obsolete as of 4.0.0. Please use ImageSource instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ImageSource Image
 		{

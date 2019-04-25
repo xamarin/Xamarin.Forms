@@ -47,11 +47,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ThumbColorProperty = BindableProperty.Create(nameof(ThumbColor), typeof(Color), typeof(Slider), Color.Default);
 
+		public static readonly BindableProperty ThumbImageSourceProperty = BindableProperty.Create(nameof(ThumbImageSource), typeof(ImageSource), typeof(Slider), default(ImageSource));
+
 		[Obsolete("ThumbImageProperty is obsolete as of 4.0.0. Please use ThumbImageSourceProperty instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty ThumbImageProperty = ThumbImageSourceProperty;
-
-		public static readonly BindableProperty ThumbImageSourceProperty = BindableProperty.Create(nameof(ThumbImageSource), typeof(ImageSource), typeof(Slider), default(ImageSource));
 
 		public static readonly BindableProperty DragStartedCommandProperty = BindableProperty.Create(nameof(DragStartedCommand), typeof(ICommand), typeof(Slider), default(ICommand));
 
@@ -106,7 +106,7 @@ namespace Xamarin.Forms
 			set { SetValue(ThumbImageSourceProperty, value); }
 		}
 
-		[Obsolete]
+		[Obsolete("ThumbImage is obsolete as of 4.0.0. Please use ThumbImageSource instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FileImageSource ThumbImage
 		{

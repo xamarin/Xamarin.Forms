@@ -44,11 +44,11 @@ namespace Xamarin.Forms
 			set => SetValue(CommandParameterProperty, value);
 		}
 
-		[Obsolete]
+		[Obsolete("Icon is obsolete as of 4.0.0. Please use IconImageSource instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FileImageSource Icon
 		{
-			get => GetValue(IconProperty) as FileImageSource;
+			get => GetValue(IconProperty) as FileImageSource ?? default(FileImageSource);
 			set => SetValue(IconProperty, value);
 		}
 
