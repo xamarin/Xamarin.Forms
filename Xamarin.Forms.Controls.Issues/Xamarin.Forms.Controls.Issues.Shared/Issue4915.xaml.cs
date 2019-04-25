@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Issue4356Test()
+		public void LegacyImageSourceProperties()
 		{
 			RunningApp.WaitForElement("Nothing Crashed");
 		}
