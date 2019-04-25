@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateCurrentPage();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
-			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
 		}
 
@@ -201,7 +201,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (View.Layer == null)
 				return;
 
-			this.ApplyNativeImageAsync(Page.BackgroundImageProperty, image =>
+			this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, image =>
 			{
 				if (image != null)
 				{

@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.GTK
 				return;
 
 			_toolbarIcon.WidthRequest = 1;
-			_ = _navigation?.Peek(0)?.ApplyNativeImageAsync(Page.IconProperty, icon =>
+			_ = _navigation?.Peek(0)?.ApplyNativeImageAsync(Page.IconImageSourceProperty, icon =>
 			{
 				if (icon != null)
 				{
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.GTK
 				e.PropertyName.Equals(NavigationPage.BarBackgroundColorProperty.PropertyName) ||
 				e.PropertyName.Equals(NavigationPage.HasNavigationBarProperty.PropertyName) ||
 				e.PropertyName.Equals(Page.TitleProperty.PropertyName) ||
-				e.PropertyName.Equals(Page.IconProperty.PropertyName))
+				e.PropertyName.Equals(Page.IconImageSourceProperty.PropertyName))
 				UpdateToolBar();
 		}
 
@@ -401,7 +401,7 @@ namespace Xamarin.Forms.Platform.GTK
 				UpdateToolbarItems();
 			else if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 				UpdateToolbarItems();
-			else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
+			else if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
 				UpdateToolbarItems();
 		}
 
@@ -428,7 +428,7 @@ namespace Xamarin.Forms.Platform.GTK
 
 			public static ToolButton CreateToolButton(ToolbarItem item)
 			{
-				var pixBuf = item.Icon.ToPixbuf();
+				var pixBuf = item.IconImageSource.ToPixbuf();
 				Gtk.Image icon = pixBuf != null ? new Gtk.Image(pixBuf) : null;
 				ToolButton button = new ToolButton(icon, item.Text);
 				ApplyDefaultDimensions(button);

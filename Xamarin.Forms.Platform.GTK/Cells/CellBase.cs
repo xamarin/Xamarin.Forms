@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.GTK.Cells
 			{
 				var menuItem = new ImageMenuItem(item.Text);
 
-				_ = item.ApplyNativeImageAsync(MenuItem.IconProperty, icon =>
+				_ = item.ApplyNativeImageAsync(MenuItem.IconImageSourceProperty, icon =>
 				{
 					if (icon != null)
 						menuItem.Image = new Gtk.Image(icon);

@@ -423,7 +423,7 @@ namespace Xamarin.Forms.Platform.Android
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					_ = _context.ApplyDrawableAsync(item, MenuItem.IconProperty, iconDrawable =>
+					_ = _context.ApplyDrawableAsync(item, MenuItem.IconImageSourceProperty, iconDrawable =>
 					{
 						if (iconDrawable != null)
 							menuItem.SetIcon(iconDrawable);
@@ -572,7 +572,7 @@ namespace Xamarin.Forms.Platform.Android
 				ClearMasterDetailToggle();
 				return;
 			}
-			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || CurrentMasterDetailPage.Master.Icon.IsEmpty ||
+			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || CurrentMasterDetailPage.Master.IconImageSource.IsEmpty ||
 				(MasterDetailPageController.ShouldShowSplitMode && CurrentMasterDetailPage.IsPresented))
 			{
 				//clear out existing icon;
@@ -783,7 +783,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// TODO: this must be changed to support the other image source types
-			var fileImageSource = CurrentMasterDetailPage.Master.Icon as FileImageSource;
+			var fileImageSource = CurrentMasterDetailPage.Master.IconImageSource as FileImageSource;
 			if (fileImageSource == null)
 					throw new InvalidOperationException("Icon property must be a FileImageSource on Master page");
 
@@ -821,7 +821,7 @@ namespace Xamarin.Forms.Platform.Android
 				_activity.InvalidateOptionsMenu();
 			else if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 				_activity.InvalidateOptionsMenu();
-			else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
+			else if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
 				_activity.InvalidateOptionsMenu();
 		}
 
@@ -864,7 +864,7 @@ namespace Xamarin.Forms.Platform.Android
 				modalRenderer = CreateRenderer(modal, _context);
 				SetRenderer(modal, modalRenderer);
 
-				if (modal.BackgroundColor == Color.Default && modal.BackgroundImage == null)
+				if (modal.BackgroundColor == Color.Default && modal.BackgroundImageSource == null)
 					modalRenderer.View.SetWindowBackground();
 			}
 			modalRenderer.Element.Layout(new Rectangle(0, 0, _context.FromPixels(_renderer.Width), _context.FromPixels(_renderer.Height)));

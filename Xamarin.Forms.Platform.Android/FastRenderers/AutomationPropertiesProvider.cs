@@ -19,9 +19,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 
 			var automationIdParent = s_defaultDrawerId;
-			var icon = page.Master?.Icon;
+			var icon = page.Master?.IconImageSource;
 			if (icon != null && !icon.IsEmpty)
-				automationIdParent = page.Master.Icon.AutomationId;
+				automationIdParent = page.Master.IconImageSource.AutomationId;
 			else if (!string.IsNullOrEmpty(page.AutomationId))
 				automationIdParent = page.AutomationId;
 

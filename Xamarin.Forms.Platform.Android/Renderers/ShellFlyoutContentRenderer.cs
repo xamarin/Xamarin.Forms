@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						title = menuItem.Text;
 						bindable = menuItem;
-						property = MenuItem.IconProperty;
+						property = MenuItem.IconImageSourceProperty;
 					}
 
 					var item = menu.Add(gid, id++, 0, new Java.Lang.String(title));

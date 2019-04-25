@@ -274,7 +274,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			// TODO: investigate if we can use the other image source types: stream, font, uri
 
-			var iconSource = newItem.Icon as FileImageSource;
+			var iconSource = newItem.IconImageSource as FileImageSource;
 			var icon = iconSource.IsNullOrEmpty() ? null : ResourcePath.GetPath(iconSource);
 
 			if (index == 0)

@@ -304,7 +304,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPage();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
-			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
 		}
 
@@ -361,7 +361,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			this.ApplyNativeImageAsync(Page.BackgroundImageProperty, bgImage =>
+			this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
 			{
 				if (bgImage != null)
 					View.BackgroundColor = UIColor.FromPatternImage(bgImage);

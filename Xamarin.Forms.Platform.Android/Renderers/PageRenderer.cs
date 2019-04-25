@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground(true);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground(false);
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Page page = Element;
 
-			_ = this.ApplyDrawableAsync(page, Page.BackgroundImageProperty, Context, drawable =>
+			_ = this.ApplyDrawableAsync(page, Page.BackgroundImageSourceProperty, Context, drawable =>
 			{
 				if (drawable != null)
 				{

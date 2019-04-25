@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == Button.ImageProperty.PropertyName)
+			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				UpdateBitmap();
 			else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				UpdateText();
@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 				// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
 				// to handle the vertical centering 
 
-				this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
+				this.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
 				{
 					// Clear any previous padding and set the image as top/center
 					UpdateContentEdge();
@@ -202,7 +202,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
+			this.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
 			{
 				var layout = Element.ContentLayout;
 

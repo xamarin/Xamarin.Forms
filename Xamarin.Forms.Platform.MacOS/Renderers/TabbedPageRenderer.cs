@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected virtual NSTabViewItem GetTabViewItem(Page page, IVisualElementRenderer pageRenderer)
 		{
 			var tvi = new NSTabViewItem { ViewController = pageRenderer.ViewController, Label = page.Title ?? "" };
-			_ = this.ApplyNativeImageAsync(page, Page.IconProperty, icon =>
+			_ = this.ApplyNativeImageAsync(page, Page.IconImageSourceProperty, icon =>
 			{
 				if (icon != null)
 				{
@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				var index = TabbedPage.GetIndex(page);
 				TabViewItems[index].Label = page.Title;
 			}
-			else if (e.PropertyName == Page.IconProperty.PropertyName)
+			else if (e.PropertyName == Page.IconImageSourceProperty.PropertyName)
 			{
 				var page = (Page)sender;
 
@@ -248,7 +248,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				item.Label = page.Title;
 
-				_ = this.ApplyNativeImageAsync(page, Page.IconProperty, icon =>
+				_ = this.ApplyNativeImageAsync(page, Page.IconImageSourceProperty, icon =>
 				{
 					if (icon != null)
 						item.Image = icon;

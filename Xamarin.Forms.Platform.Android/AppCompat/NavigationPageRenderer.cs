@@ -544,7 +544,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconProperty.PropertyName)
+			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
 				UpdateMenu();
 		}
 
@@ -915,7 +915,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
-			_ = this.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconProperty, Context, iconDrawable =>
+			_ = this.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconImageSourceProperty, Context, iconDrawable =>
 			{
 				if (iconDrawable != null)
 				{

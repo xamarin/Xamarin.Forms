@@ -520,14 +520,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					tab.SetText(page.Title);
 				}
 			}
-			else if (e.PropertyName == Page.IconProperty.PropertyName)
+			else if (e.PropertyName == Page.IconImageSourceProperty.PropertyName)
 			{
 				var page = (Page)sender;
 				var index = Element.Children.IndexOf(page);
 				if (IsBottomTabPlacement)
 				{
 					var menuItem = _bottomNavigationView.Menu.GetItem(index);
-					_ = this.ApplyDrawableAsync(page, Page.IconProperty, Context, icon =>
+					_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
 					{
 						menuItem.SetIcon(icon);
 					});
@@ -535,7 +535,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					TabLayout.Tab tab = _tabLayout.GetTabAt(index);
-					_ = this.ApplyDrawableAsync(page, Page.IconProperty, Context, icon =>
+					_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
 					{
 						SetTabIcon(tab, icon);
 					});
@@ -660,7 +660,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				Page child = Element.Children[i];
 				var menuItem = bottomNavigationView.Menu.GetItem(i);
-				_ = this.ApplyDrawableAsync(child, Page.IconProperty, Context, icon =>
+				_ = this.ApplyDrawableAsync(child, Page.IconImageSourceProperty, Context, icon =>
 				{
 					menuItem.SetIcon(icon);
 				});
@@ -681,7 +681,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				Page child = Element.Children[i];
 				TabLayout.Tab tab = tabs.GetTabAt(i);
-				_ = this.ApplyDrawableAsync(child, Page.IconProperty, Context, icon =>
+				_ = this.ApplyDrawableAsync(child, Page.IconImageSourceProperty, Context, icon =>
 				{
 					SetTabIcon(tab, icon);
 				});

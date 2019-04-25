@@ -173,9 +173,9 @@ namespace Xamarin.Forms.Controls
 							Spacing = 10,
 							Children =
 							{
-								CreateImageSourcePicker("Change Tab Icon", getter => Icon = getter()),
-								CreateImageSourcePicker("Change Toolbar Icon", getter => _toolbarItem.Icon = getter()),
-								CreateImageSourcePicker("Change Background", getter => BackgroundImage = getter()),
+								CreateImageSourcePicker("Change Tab Icon", getter => IconImageSource = getter()),
+								CreateImageSourcePicker("Change Toolbar Icon", getter => _toolbarItem.IconImageSource = getter()),
+								CreateImageSourcePicker("Change Background", getter => BackgroundImageSource = getter()),
 							}
 						}
 					};
@@ -218,7 +218,7 @@ namespace Xamarin.Forms.Controls
 								{
 									var menuItem = new MenuItem();
 									menuItem.SetBinding(MenuItem.TextProperty, new Binding(nameof(ListItem.Text)));
-									menuItem.SetBinding(MenuItem.IconProperty, new Binding(nameof(ListItem.ContextImage)));
+									menuItem.SetBinding(MenuItem.IconImageSourceProperty, new Binding(nameof(ListItem.ContextImage)));
 
 									var cell = new ImageCell();
 									cell.ContextActions.Add(menuItem);
@@ -396,7 +396,7 @@ namespace Xamarin.Forms.Controls
 						Spacing = 10,
 						Children =
 						{
-							CreateImageSourcePicker("Select Image Source", getter => _slider.ThumbImage = getter()),
+							CreateImageSourcePicker("Select Image Source", getter => _slider.ThumbImageSource = getter()),
 							(_slider = new Slider
 							{
 								Minimum = 0,

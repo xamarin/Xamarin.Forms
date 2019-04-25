@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateTitle();
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override async void UpdateBackground()
 		{
-			var bgImage = Element.BackgroundImage;
+			var bgImage = Element.BackgroundImageSource;
 			if (bgImage == null || bgImage.IsEmpty)
 			{
 				base.UpdateBackground();
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				var appBar = new FormsAppBarButton() { DataContext = item };
 
-				var iconBinding = new System.Windows.Data.Binding(nameof(item.Icon))
+				var iconBinding = new System.Windows.Data.Binding(nameof(item.IconImageSource))
 				{
 					Converter = new IconConveter()
 				};

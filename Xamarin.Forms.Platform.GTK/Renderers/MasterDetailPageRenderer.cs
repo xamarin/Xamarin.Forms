@@ -117,7 +117,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private async void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Xamarin.Forms.Page.IconProperty.PropertyName)
+			if (e.PropertyName == Xamarin.Forms.Page.IconImageSourceProperty.PropertyName)
 				await UpdateHamburguerIconAsync();
 		}
 
@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private Task UpdateHamburguerIconAsync()
 		{
-			return Page.Master.ApplyNativeImageAsync(Xamarin.Forms.Page.IconProperty, image =>
+			return Page.Master.ApplyNativeImageAsync(Xamarin.Forms.Page.IconImageSourceProperty, image =>
 			{
 				Widget.UpdateHamburguerIcon(image);
 

@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (renderer.ViewController.TabBarItem != null)
 					renderer.ViewController.TabBarItem.Title = page.Title;
 			}
-			else if (e.PropertyName == Page.IconProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName && Forms.IsiOS10OrNewer)
+			else if (e.PropertyName == Page.IconImageSourceProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName && Forms.IsiOS10OrNewer)
 			{
 				var page = (Page)sender;
 
@@ -460,7 +460,7 @@ namespace Xamarin.Forms.Platform.iOS
 		/// </returns>
 		protected virtual async Task<Tuple<UIImage, UIImage>> GetIcon(Page page)
 		{
-			var icon = await page.Icon.GetNativeImageAsync();
+			var icon = await page.IconImageSource.GetNativeImageAsync();
 			return icon == null ? null : Tuple.Create(icon, (UIImage)null);
 		}
 	}

@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaximumTrackColor();
 			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();
-			else if (e.PropertyName == Slider.ThumbImageProperty.PropertyName)
+			else if (e.PropertyName == Slider.ThumbImageSourceProperty.PropertyName)
 				UpdateThumbImage();
 		}
 
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			var thumbImage = Element.ThumbImage;
+			var thumbImage = Element.ThumbImageSource;
 
 			if (thumbImage == null)
 			{

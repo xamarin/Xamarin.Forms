@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 				nsMenuItem.Tag = i;
 			nsMenuItem.Enabled = menuItem.IsEnabled;
 			nsMenuItem.Activated += (sender, e) => ((IMenuItemController)menuItem).Activate();
-			_ = menuItem.ApplyNativeImageAsync(MenuItem.IconProperty, image =>
+			_ = menuItem.ApplyNativeImageAsync(MenuItem.IconImageSourceProperty, image =>
 			{
 				if (image != null)
 					nsMenuItem.Image = image;
@@ -58,9 +58,9 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 				{
 					menuItem.Enabled = item.IsEnabled;
 				}
-				if (property.Equals(nameof(MenuItem.Icon)))
+				if (property.Equals(nameof(MenuItem.IconImageSource)))
 				{
-					_ = item.ApplyNativeImageAsync(MenuItem.IconProperty, image =>
+					_ = item.ApplyNativeImageAsync(MenuItem.IconImageSourceProperty, image =>
 					{
 						menuItem.Image = image;
 					});

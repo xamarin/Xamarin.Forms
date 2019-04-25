@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			if (Widget?.Parent is EventBox parent)
 			{
 				parent.VisibleWindow = Page.CurrentPage?.Parent is Page parentPage
-					? parentPage.BackgroundImage.IsEmpty
+					? parentPage.BackgroundImageSource.IsEmpty
 					: true;
 			}
 		}
@@ -258,7 +258,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			if (e.PropertyName == Xamarin.Forms.Page.TitleProperty.PropertyName)
 				UpdateTitle();
-			else if (e.PropertyName == Xamarin.Forms.Page.IconProperty.PropertyName)
+			else if (e.PropertyName == Xamarin.Forms.Page.IconImageSourceProperty.PropertyName)
 				UpdateIcon();
 		}
 

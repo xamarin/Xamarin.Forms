@@ -327,7 +327,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Presented = Element.IsPresented;
 				_isPresentingFromCore = false;
 			}
-			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackgroundImage(Element);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(Element);
@@ -379,7 +379,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateBackgroundImage(Page view)
 		{
-			_ = this.ApplyDrawableAsync(view, Page.BackgroundImageProperty, Context, drawable =>
+			_ = this.ApplyDrawableAsync(view, Page.BackgroundImageSourceProperty, Context, drawable =>
 			{
 				if (drawable != null)
 					this.SetBackground(drawable);

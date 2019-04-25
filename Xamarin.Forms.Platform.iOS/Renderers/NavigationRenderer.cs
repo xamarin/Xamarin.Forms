@@ -743,7 +743,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			await masterDetailPage.Master.ApplyNativeImageAsync(Page.IconProperty, icon =>
+			await masterDetailPage.Master.ApplyNativeImageAsync(Page.IconImageSourceProperty, icon =>
 			{
 				if (icon != null)
 				{

@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </summary>
 		public PageRenderer()
 		{
-			RegisterPropertyHandler(Page.BackgroundImageProperty, UpdateBackgroundImage);
+			RegisterPropertyHandler(Page.BackgroundImageSourceProperty, UpdateBackgroundImage);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Page> e)
@@ -63,12 +63,12 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateBackgroundImage(bool initiaize)
 		{
-			if (initiaize && Element.BackgroundImage.IsNullOrEmpty())
+			if (initiaize && Element.BackgroundImageSource.IsNullOrEmpty())
 				return;
 
 			// TODO: investigate if we can use the other image source types: stream, font, uri
 
-			var bgImage = Element.BackgroundImage as FileImageSource;
+			var bgImage = Element.BackgroundImageSource as FileImageSource;
 			if (bgImage.IsNullOrEmpty())
 				_page.File = null;
 			else

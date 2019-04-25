@@ -183,7 +183,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
-			else if (e.PropertyName == Button.ImageProperty.PropertyName || e.PropertyName == Button.ContentLayoutProperty.PropertyName)
+			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName || e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				UpdateImage();
 			else if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				UpdateTextAndImage();
@@ -276,7 +276,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
 
-			_renderer.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
+			_renderer.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
 			{
 				switch (layout.Position)
 				{

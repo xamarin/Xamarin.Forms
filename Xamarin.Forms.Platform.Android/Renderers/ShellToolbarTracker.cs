@@ -348,7 +348,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
-			_shellContext.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconProperty, baseDrawable =>
+			_shellContext.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconImageSourceProperty, baseDrawable =>
 			{
 				if (baseDrawable != null)
 				{

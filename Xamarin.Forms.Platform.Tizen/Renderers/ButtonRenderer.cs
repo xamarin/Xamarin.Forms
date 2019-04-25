@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Button.FontSizeProperty, UpdateFontSize);
 			RegisterPropertyHandler(Button.FontAttributesProperty, UpdateFontAttributes);
 			RegisterPropertyHandler(Button.TextColorProperty, UpdateTextColor);
-			RegisterPropertyHandler(Button.ImageProperty, UpdateBitmap);
+			RegisterPropertyHandler(Button.ImageSourceProperty, UpdateBitmap);
 			RegisterPropertyHandler(Button.BorderColorProperty, UpdateBorder);
 			RegisterPropertyHandler(Button.CornerRadiusProperty, UpdateBorder);
 			RegisterPropertyHandler(Button.BorderWidthProperty, UpdateBorder);

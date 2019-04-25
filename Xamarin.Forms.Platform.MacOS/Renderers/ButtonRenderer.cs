@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateBorder();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundVisibility();
-			else if (e.PropertyName == Button.ImageProperty.PropertyName)
+			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				UpdateImage();
 		}
 
@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateImage()
 		{
-			this.ApplyNativeImageAsync(Button.ImageProperty, image =>
+			this.ApplyNativeImageAsync(Button.ImageSourceProperty, image =>
 			{
 				NSButton button = Control;
 				if (button != null && image != null)

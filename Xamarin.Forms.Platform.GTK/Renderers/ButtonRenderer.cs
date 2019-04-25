@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				UpdateBorder();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName)
 				UpdateBorder();
-			else if (e.PropertyName == Button.ImageProperty.PropertyName || e.PropertyName == Button.ContentLayoutProperty.PropertyName)
+			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName || e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				UpdateContent();
 		}
 
@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private void UpdateContent()
 		{
-			this.ApplyNativeImageAsync(Button.ImageProperty, image =>
+			this.ApplyNativeImageAsync(Button.ImageSourceProperty, image =>
 			{
 				if (image != null)
 				{

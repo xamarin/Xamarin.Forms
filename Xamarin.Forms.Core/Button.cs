@@ -47,8 +47,11 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create("CornerRadius", typeof(int), typeof(Button), defaultValue: BorderElement.DefaultCornerRadius,
 			propertyChanged: CornerRadiusPropertyChanged);
 
-		public static readonly BindableProperty ImageProperty = ImageElement.ImageProperty;
+		public static readonly BindableProperty ImageSourceProperty = ImageElement.ImageProperty;
 
+		[Obsolete("ImageProperty is obsolete as of 4.0.0. Please use ImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty ImageProperty = ImageElement.ImageProperty;
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
@@ -127,8 +130,8 @@ namespace Xamarin.Forms
 
 		public ImageSource ImageSource
 		{
-			get { return (ImageSource)GetValue(ImageProperty); }
-			set { SetValue(ImageProperty, value); }
+			get { return (ImageSource)GetValue(ImageSourceProperty); }
+			set { SetValue(ImageSourceProperty, value); }
 		}
 
 		[Obsolete]
@@ -254,7 +257,7 @@ namespace Xamarin.Forms
 		bool IImageElement.IsOpaque => false;
 
 
-		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageProperty.PropertyName);
+		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageSourceProperty.PropertyName);
 
 		int IBorderElement.CornerRadiusDefaultValue => (int)CornerRadiusProperty.DefaultValue;
 
