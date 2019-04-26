@@ -80,6 +80,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 		}
 
+#if TEST_EXPERIMENTAL_RENDERERS
 		protected override void Dispose(bool disposing)
 		{
 			foreach (var effect in Element.Effects.OfType<Controls.Effects.AttachedStateEffect>())
@@ -89,6 +90,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			base.Dispose(disposing);
 		}
+#endif
 	}
 
 	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
@@ -690,7 +692,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if(disposing)
+			if (disposing)
 			{
 				ViewGroup.ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
 				_gridChild.SetOnTouchListener(null);
