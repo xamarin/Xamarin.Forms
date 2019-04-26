@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			Application.Current.UseLegacyPageEvents = false;
 			MasterBehavior = MasterBehavior.Split;
 
 			IsPresented = true;

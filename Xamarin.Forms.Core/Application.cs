@@ -183,6 +183,10 @@ namespace Xamarin.Forms
 
 		public event EventHandler<Page> PageDisappearing;
 
+		public event EventHandler<Page> PageAppeared;
+
+		public event EventHandler<Page> PageDisappeared;
+
 		async void SaveProperties()
 		{
 			try
@@ -336,10 +340,10 @@ namespace Xamarin.Forms
 			=> PageDisappearing?.Invoke(this, page);
 
 		internal void OnPageAppeared(Page page)
-			=> PageAppearing?.Invoke(this, page);
+			=> PageAppeared?.Invoke(this, page);
 
 		internal void OnPageDisappeared(Page page)
-			=> PageDisappearing?.Invoke(this, page);
+			=> PageDisappeared?.Invoke(this, page);
 
 		public bool UseLegacyPageEvents
 		{
