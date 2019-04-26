@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class PageRenderer : VisualElementRenderer<Page>, IOrderedTraversalController
 	{
-		bool _appeared;
 		bool _appearing;
 		bool _disposed;
 
@@ -51,10 +50,6 @@ namespace Xamarin.Forms.Platform.Android
 					if (_appearing)
 						PageController?.SendDisappearing();
 					_appearing = false;
-
-					if (_appeared)
-						PageController?.SendDisappeared();
-					_appeared = false;
 				}
 				else
 				{
@@ -81,24 +76,9 @@ namespace Xamarin.Forms.Platform.Android
 				PageController?.SendAppearing();
 		}
 
-		protected override void OnGlobalLayout()
-		{
-			base.OnGlobalLayout();
-
-			if (!_appeared && !Application.Current.UseLegacyPageEvents)
-			{
-				PageController?.SendAppeared();
-				_appeared = true;
-			}
-		}
-
 		protected override void OnDetachedFromWindow()
 		{
 			base.OnDetachedFromWindow();
-
-			if (_appeared && !Application.Current.UseLegacyPageEvents)
-				PageController?.SendDisappeared();
-			_appeared = false;
 
 			if (Parent is PageContainer pageContainer && pageContainer.IsInFragment)
 				return;

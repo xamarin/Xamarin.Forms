@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		Context _context;
 
 		bool _disposed;
+		bool _loaded;
 
 		VisualElement _element;
 		bool _initialUpdateNeeded = true;
@@ -27,13 +28,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public VisualElementTracker(IVisualElementRenderer renderer)
 		{
-			if (renderer == null)
-				throw new ArgumentNullException("renderer");
+			_renderer = renderer ?? throw new ArgumentNullException("renderer");
 
 			_batchCommittedHandler = HandleRedrawNeeded;
 			_propertyChangedHandler = HandlePropertyChanged;
 
-			_renderer = renderer;
 			_context = renderer.View.Context;
 			_renderer.ElementChanged += RendererOnElementChanged;
 
@@ -43,6 +42,25 @@ namespace Xamarin.Forms.Platform.Android
 			renderer.View.SetCameraDistance(3600);
 
 			renderer.View.AddOnAttachStateChangeListener(AttachTracker.Instance);
+
+			if (renderer.View.ViewTreeObserver.IsAlive)
+				renderer.View.ViewTreeObserver.GlobalLayout += ViewTreeObserver_GlobalLayout;
+		}
+
+		void ViewTreeObserver_GlobalLayout(object sender, EventArgs e)
+		{
+			if (!_loaded && !_disposed)
+			{
+				_element?.SendLoaded();
+
+				if (_element is IPageController page && !Application.Current.UseLegacyPageEvents)
+					page.SendAppeared();
+
+				_loaded = true;
+
+				if (sender is ViewTreeObserver vto && vto.IsAlive)
+					vto.GlobalLayout -= ViewTreeObserver_GlobalLayout;
+			}
 		}
 
 		public void Dispose()
@@ -60,8 +78,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				SetElement(_element, null);
+				if (_loaded)
+				{
+					_element?.SendUnloaded();
+					if (_element is IPageController page && !Application.Current.UseLegacyPageEvents)
+						page.SendDisappeared();
+				}
 
+				SetElement(_element, null);
 				if (_renderer != null)
 				{
 					_renderer.ElementChanged -= RendererOnElementChanged;
@@ -196,6 +220,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void HandleViewAttachedToWindow()
 		{
+			_element?.SendBeforeAppearing();
+
 			if (_initialUpdateNeeded)
 			{
 				UpdateNativeView(this, EventArgs.Empty);
@@ -203,6 +229,19 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateClipToBounds();
+		}
+
+		void HandleViewDetachedFromWindow()
+		{
+			if (_loaded)
+			{
+				_element?.SendUnloaded();
+
+				if (_element is IPageController page && !Application.Current.UseLegacyPageEvents)
+					page.SendDisappeared();
+			}
+
+			_loaded = false;
 		}
 
 		void MaybeRequestLayout()
@@ -450,8 +489,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void OnViewAttachedToWindow(AView attachedView)
 			{
-				var renderer = attachedView as IVisualElementRenderer;
-				if (renderer == null || renderer.Tracker == null)
+				if (!(attachedView is IVisualElementRenderer renderer) || renderer.Tracker == null)
 					return;
 
 				renderer.Tracker.HandleViewAttachedToWindow();
@@ -459,6 +497,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void OnViewDetachedFromWindow(AView detachedView)
 			{
+				if (!(detachedView is IVisualElementRenderer renderer) || renderer.Tracker == null)
+					return;
+
+				renderer.Tracker.HandleViewDetachedFromWindow();
 			}
 		}
 	}

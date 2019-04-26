@@ -1,18 +1,17 @@
+using Android.Content;
+using Android.Runtime;
+using Android.Support.V4.View;
+using Android.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Android.Content;
-using Android.Views;
 using Xamarin.Forms.Internals;
-using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.Runtime;
-using Android.Support.V4.View;
-using Android.Graphics;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer, ViewTreeObserver.IOnGlobalLayoutListener,
+	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer,
 		IEffectControlProvider where TElement : VisualElement
 	{
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
@@ -23,7 +22,6 @@ namespace Xamarin.Forms.Platform.Android
 		bool? _defaultFocusable;
 		string _defaultHint;
 		bool _cascadeInputTransparent = true;
-		bool _loaded;
 		bool _disposed;
 
 		VisualElementPackager _packager;
@@ -34,9 +32,6 @@ namespace Xamarin.Forms.Platform.Android
 		protected VisualElementRenderer(Context context) : base(context)
 		{
 			_gestureManager = new GestureManager(this);
-
-			if (ViewTreeObserver.IsAlive)
-				ViewTreeObserver.AddOnGlobalLayoutListener(this);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -265,27 +260,6 @@ namespace Xamarin.Forms.Platform.Android
 			Performance.Stop(reference);
 		}
 
-		protected override void OnAttachedToWindow()
-		{
-			Element?.SendBeforeAppearing();
-			base.OnAttachedToWindow();
-		}
-
-		// NOTE: Adding the override OnDetachedFromWindow causes the renderers to stay alive after they've been collected by Android
-		//protected override void OnDetachedFromWindow()
-
-		protected virtual void OnGlobalLayout()
-		{
-			if (!_loaded && !_disposed)
-			{
-				Element?.SendLoaded();
-				_loaded = true;
-
-				if (ViewTreeObserver.IsAlive)
-					ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
-			}
-		}
-
 		/// <summary>
 		/// Determines whether the native control is disposed of when this renderer is disposed
 		/// Can be overridden in deriving classes 
@@ -300,16 +274,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing && !_disposed)
 			{
-				if (ViewTreeObserver.IsAlive)
-					ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
-
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 
 				EffectUtilities.UnregisterEffectControlProvider(this, Element);
-
-				if (_loaded)
-					Element?.SendUnloaded();
 
 				if (Tracker != null)
 				{
@@ -487,8 +455,5 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 			=> ViewCompat.SetLabelFor(this, id ?? ViewCompat.GetLabelFor(this));
-
-		void ViewTreeObserver.IOnGlobalLayoutListener.OnGlobalLayout()
-			=> OnGlobalLayout();
 	}
 }
