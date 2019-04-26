@@ -59,6 +59,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if(ShellSection != null)
 			{
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
+				((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged -= ShellSectionRenderer_CollectionChanged;
 				ShellSection = null;
 				MenuItemsSource = null;
 			}
@@ -67,8 +68,17 @@ namespace Xamarin.Forms.Platform.UWP
 			SelectedItem = null;
 			IsPaneVisible = section.Items.Count > 1;
 			MenuItemsSource = section.Items;
+			((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged += ShellSectionRenderer_CollectionChanged;
 			SelectedItem = section.CurrentItem;
 			NavigateToContent(section.CurrentItem, animate);
+		}
+
+		private void ShellSectionRenderer_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			// This shouldn't be necessary, but MenuItemsSource doesn't appear to be listening for INCC
+			// Revisit once using WinUI instead.
+			MenuItemsSource = null;
+			MenuItemsSource = ShellSection?.Items;
 		}
 
 		void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
