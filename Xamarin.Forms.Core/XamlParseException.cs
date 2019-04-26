@@ -46,6 +46,8 @@ namespace Xamarin.Forms.Xaml
 		public IXmlLineInfo XmlInfo { get; private set; }
 		internal string UnformattedMessage => _unformattedMessage ?? Message;
 
+		public string SourceUri { get; internal set; }
+
 		static string FormatMessage(string message, IXmlLineInfo xmlinfo)
 		{
 			if (xmlinfo == null || !xmlinfo.HasLineInfo())

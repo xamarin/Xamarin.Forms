@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Xaml
 				return new ValueNode(expression.Substring(2), null);
 
 			if (expression[expression.Length - 1] != '}') {
-				var ex = new XamlParseException("Expression must end with '}'", xmlLineInfo);
+				var ex = new XamlParseException("Expression must end with '}'", xmlLineInfo) { SourceUri = XamlFilePathAttribute.GetFilePathForObject(Context.RootElement) };
 				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(ex);
 					return null;

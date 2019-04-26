@@ -116,22 +116,22 @@ namespace Xamarin.Forms.Xaml
 					return;
 				ProvideValue(ref value, node, source, XmlName.Empty);
 				string contentProperty;
-				Exception xpe = null;
+				Exception ex = null;
 				var xKey = node.Properties.ContainsKey(XmlName.xKey) ? ((ValueNode)node.Properties[XmlName.xKey]).Value as string : null;
 
 				//ResourceDictionary
-				if (xpe == null && TryAddToResourceDictionary(source as ResourceDictionary, value, xKey, node, out xpe))
+				if (ex == null && TryAddToResourceDictionary(source as ResourceDictionary, value, xKey, node, out ex))
 					return;
 
 				// Collection element, implicit content, or implicit collection element.
-				if (xpe == null && typeof(IEnumerable).IsAssignableFrom(Context.Types[parentElement]) && Context.Types[parentElement].GetRuntimeMethods().Any(mi => mi.Name == "Add" && mi.GetParameters().Length == 1)) {
+				if (ex == null && typeof(IEnumerable).IsAssignableFrom(Context.Types[parentElement]) && Context.Types[parentElement].GetRuntimeMethods().Any(mi => mi.Name == "Add" && mi.GetParameters().Length == 1)) {
 					var addMethod =
 						Context.Types[parentElement].GetRuntimeMethods().First(mi => mi.Name == "Add" && mi.GetParameters().Length == 1);
 
 					addMethod.Invoke(source, new[] { value });
 					return;
 				}
-				if (xpe == null && (contentProperty = GetContentPropertyName(Context.Types[parentElement].GetTypeInfo())) != null) {
+				if (ex == null && (contentProperty = GetContentPropertyName(Context.Types[parentElement].GetTypeInfo())) != null) {
 					var name = new XmlName(node.NamespaceURI, contentProperty);
 					if (Skips.Contains(name))
 						return;
@@ -141,11 +141,13 @@ namespace Xamarin.Forms.Xaml
 					SetPropertyValue(source, name, value, Context.RootElement, node, Context, node);
 					return;
 				}
-				xpe = xpe ?? new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node);
+				ex = ex ?? new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node);
+				if (ex is XamlParseException xpe)
+					xpe.SourceUri = XamlFilePathAttribute.GetFilePathForObject(Context.RootElement);
 				if (Context.ExceptionHandler != null)
-					Context.ExceptionHandler(xpe);
+					Context.ExceptionHandler(ex);
 				else
-					throw xpe;
+					throw ex;
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is ListNode) {
 				if (!Values.TryGetValue(parentNode.Parent, out var source) && Context.ExceptionHandler != null)
@@ -171,6 +173,7 @@ namespace Xamarin.Forms.Xaml
 					return;
 				}
 				xpe = xpe ?? new XamlParseException($"Value of {parentList.XmlName.LocalName} does not have a Add() method", node);
+
 				if (Context.ExceptionHandler != null)
 					Context.ExceptionHandler(xpe);
 				else
