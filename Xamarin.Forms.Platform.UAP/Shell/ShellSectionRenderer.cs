@@ -5,14 +5,16 @@ using Windows.UI.Xaml.Controls;
 namespace Xamarin.Forms.Platform.UWP
 {
 	// Renders the actual page area where the contents gets rendered, as well as set of optional top-bar menu items and search box.
-	internal class ShellSectionRenderer : Windows.UI.Xaml.Controls.NavigationView, IAppearanceObserver
+	[Windows.UI.Xaml.Data.Bindable]
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public sealed class ShellSectionRenderer : NavigationView, IAppearanceObserver
 	{
 		Windows.UI.Xaml.Controls.Frame Frame { get; }
 		Page Page;
 		ShellContent CurrentContent;
 		ShellSection ShellSection;
 
-		public ShellSectionRenderer()
+		internal ShellSectionRenderer()
 		{
 			MenuItemTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ShellSectionMenuItemTemplate"];
 			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
