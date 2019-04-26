@@ -13,7 +13,8 @@ namespace Xamarin.Forms.Platform.UWP
 		Windows.UI.Xaml.Controls.TextBlock _Title;
 		Windows.UI.Xaml.Controls.Border _BottomBarArea;
 		Windows.UI.Xaml.Controls.Grid _BottomBar;
-		Windows.UI.Xaml.Controls.Border _HeaderArea;
+		Windows.UI.Xaml.Controls.Grid _HeaderArea;
+		Windows.UI.Xaml.Controls.ItemsControl _Toolbar;
 
 		internal ShellItem ShellItem { get; private set; }
 
@@ -28,10 +29,23 @@ namespace Xamarin.Forms.Platform.UWP
 			_Title = new Windows.UI.Xaml.Controls.TextBlock()
 			{
 				Style = Resources["SubtitleTextBlockStyle"] as Windows.UI.Xaml.Style,
-				VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Center
+				VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Center,
+				TextTrimming = Windows.UI.Xaml.TextTrimming.CharacterEllipsis,
+				TextWrapping = Windows.UI.Xaml.TextWrapping.NoWrap
 			};
-			_HeaderArea = new Windows.UI.Xaml.Controls.Border() { Child = _Title, Padding = new Windows.UI.Xaml.Thickness(10,0,0,0) };
+			_HeaderArea = new Windows.UI.Xaml.Controls.Grid() { Padding = new Windows.UI.Xaml.Thickness(10,0,10,0) };
+			_HeaderArea.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+			_HeaderArea.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
+			_HeaderArea.Children.Add(_Title);
 			Children.Add(_HeaderArea);
+
+			_Toolbar = new Windows.UI.Xaml.Controls.ItemsControl()
+			{
+				ItemTemplate = Windows.UI.Xaml.Application.Current.Resources["ShellToolbarItemTemplate"] as Windows.UI.Xaml.DataTemplate,
+				ItemsPanel = Windows.UI.Xaml.Application.Current.Resources["ShellToolbarItemsPanelTemplate"] as Windows.UI.Xaml.Controls.ItemsPanelTemplate,
+			};
+			SetColumn(_Toolbar, 1);
+			_HeaderArea.Children.Add(_Toolbar);
 
 			SectionRenderer = new ShellSectionRenderer();
 			SetRow(SectionRenderer, 1);
@@ -250,6 +264,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			UpdateBottomBarVisibility();
 			UpdatePageTitle();
+			UpdateToolbar();
 		}
 
 		private void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -272,6 +287,11 @@ namespace Xamarin.Forms.Platform.UWP
 		private void UpdateBottomBarVisibility()
 		{
 			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+		}
+
+		private void UpdateToolbar()
+		{
+			_Toolbar.ItemsSource = DisplayedPage?.ToolbarItems;
 		}
 
 		void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)

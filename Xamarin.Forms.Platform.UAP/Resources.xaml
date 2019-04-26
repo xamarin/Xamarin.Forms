@@ -17,7 +17,8 @@
 		<ResourceDictionary Source="Items/ItemsViewStyles.xaml" />
         <ResourceDictionary Source="Shell/ShellFlyoutTemplateSelectorStyles.xaml" />
 		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
-	</ResourceDictionary.MergedDictionaries>
+	    <ResourceDictionary Source="Shell/ShellStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 	
 	<uwp:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
 	<uwp:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />

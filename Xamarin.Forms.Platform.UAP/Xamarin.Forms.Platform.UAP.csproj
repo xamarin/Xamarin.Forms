@@ -98,6 +98,7 @@
     <Compile Include="Shell\ShellFlyoutTemplateSelector.cs" />
     <Compile Include="Shell\ShellRenderer.cs" />
     <Compile Include="Shell\ShellSectionRenderer.cs" />
+    <Compile Include="Shell\ToolbarItemRenderer.cs" />
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
@@ -246,7 +247,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shell\ShellFlyoutTemplateSelectorStyles.xaml">
+    <Page Include="Shell\ShellStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
