@@ -271,15 +271,8 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnAttachedToWindow();
 		}
 
-		protected override void OnDetachedFromWindow()
-		{
-			base.OnDetachedFromWindow();
-			_loaded = false;
-			Element?.SendUnloaded();
-
-			if (ViewTreeObserver.IsAlive)
-				ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
-		}
+		// NOTE: Adding the override OnDetachedFromWindow causes the renderers to stay alive after they've been collected by Android
+		//protected override void OnDetachedFromWindow()
 
 		protected virtual void OnGlobalLayout()
 		{
@@ -287,6 +280,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Element?.SendLoaded();
 				_loaded = true;
+
+				if (ViewTreeObserver.IsAlive)
+					ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
 			}
 		}
 
