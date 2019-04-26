@@ -395,7 +395,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		class PageTestApp : Application { }
 
 		[Test]
-		public void SendApplicationPageAppearing()
+		public void SendApplicationPageAppear()
 		{
 			var app = new PageTestApp();
 			var page = new ContentPage();
@@ -403,14 +403,39 @@ namespace Xamarin.Forms.Core.UnitTests
 			Page actual = null;
 			app.MainPage = page;
 			app.PageAppearing += (sender, args) => actual = args;
+			app.PageAppeared += (sender, args) => actual = args;
 
 			((IPageController)page).SendAppearing();
 
 			Assert.AreSame(page, actual);
+			actual = null;
+
+			((IPageController)page).SendAppeared();
+			Assert.AreSame(page, actual);
 		}
 
 		[Test]
-		public void SendApplicationPageDisappearing()
+		public void SendApplicationPageAppearingLagacy()
+		{
+			var app = new PageTestApp { UseLegacyPageEvents = true };
+			var page = new ContentPage();
+
+			Page actual = null;
+			app.MainPage = page;
+			app.PageAppearing += (sender, args) => actual = args;
+			app.PageAppeared += (sender, args) => actual = args;
+
+			((IPageController)page).SendAppearing();
+
+			Assert.AreSame(page, actual);
+			actual = null;
+
+			((IPageController)page).SendAppeared();
+			Assert.AreSame(actual, null);
+		}
+
+		[Test]
+		public void SendApplicationPageDisappear()
 		{
 			var app = new PageTestApp();
 			var page = new ContentPage();
@@ -418,53 +443,95 @@ namespace Xamarin.Forms.Core.UnitTests
 			Page actual = null;
 			app.MainPage = page;
 			app.PageDisappearing += (sender, args) => actual = args;
+			app.PageDisappeared += (sender, args) => actual = args;
 
 			((IPageController)page).SendAppearing();
+			((IPageController)page).SendAppeared();
 			((IPageController)page).SendDisappearing();
 
+			Assert.AreSame(page, actual);
+			actual = null;
+
+			((IPageController)page).SendDisappeared();
 			Assert.AreSame(page, actual);
 		}
 
 		[Test]
-		public void SendAppearing ()
+		public void SendApplicationPageDisappearingLegacy()
 		{
-			var page = new ContentPage ();
+			var app = new PageTestApp { UseLegacyPageEvents = true };
+			var page = new ContentPage();
+
+			Page actual = null;
+			app.MainPage = page;
+			app.PageDisappearing += (sender, args) => actual = args;
+			app.PageDisappeared += (sender, args) => actual = args;
+
+			((IPageController)page).SendAppearing();
+			((IPageController)page).SendAppeared();
+			((IPageController)page).SendDisappearing();
+
+			Assert.AreSame(page, actual);
+			actual = null;
+
+			((IPageController)page).SendDisappeared();
+			Assert.AreSame(actual, null);
+		}
+
+		[Test]
+		public void SendAppear()
+		{
+			var page = new ContentPage();
 
 			bool sent = false;
+			bool sended = false;
 			page.Appearing += (sender, args) => sent = true;
+			page.Appeared += (sender, args) => sended = sent;
 
-			((IPageController)page).SendAppearing ();
+			((IPageController)page).SendAppearing();
+			((IPageController)page).SendAppeared();
 
-			Assert.True (sent);
+			Assert.True(sent);
+			Assert.True(sended);
 		}
 
 		[Test]
-		public void SendDisappearing ()
+		public void SendDisappear()
 		{
-			var page = new ContentPage ();
+			var page = new ContentPage();
 
-			((IPageController)page).SendAppearing ();
+			((IPageController)page).SendAppearing();
+			((IPageController)page).SendAppeared();
 
 			bool sent = false;
+			bool sended = false;
 			page.Disappearing += (sender, args) => sent = true;
+			page.Disappeared += (sender, args) => sended = sent;
 
-			((IPageController)page).SendDisappearing ();
+			((IPageController)page).SendDisappearing();
+			((IPageController)page).SendDisappeared();
 
-			Assert.True (sent);
+			Assert.True(sent);
+			Assert.True(sended);
 		}
 
 		[Test]
-		public void SendAppearingDoesntGetCalledMultipleTimes ()
+		public void SendAppearDoesntGetCalledMultipleTimes()
 		{
-			var page = new ContentPage ();
+			var page = new ContentPage();
 
 			int countAppearing = 0;
+			int countAppeared = 0;
 			page.Appearing += (sender, args) => countAppearing++;
+			page.Appeared += (sender, args) => countAppeared++;
 
-			((IPageController)page).SendAppearing ();
-			((IPageController)page).SendAppearing ();
+			((IPageController)page).SendAppearing();
+			((IPageController)page).SendAppearing();
+			((IPageController)page).SendAppeared();
+			((IPageController)page).SendAppeared();
 
-			Assert.That (countAppearing, Is.EqualTo(1));
+			Assert.That(countAppearing, Is.EqualTo(1));
+			Assert.That(countAppeared, Is.EqualTo(1));
 		}
 
 		[Test]
