@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		const string startTestLabel = "GoTest";
 		const string switchButtonLabel = "Switch Legacy Events";
-		const string checkLabelText = "CheckMe";
+		const string successlText = "Success";
 		const string resultId = "Result";
 
 		public enum State
@@ -89,7 +89,42 @@ namespace Xamarin.Forms.Controls.Issues
 						sb.AppendLine(states[i].ToString());
 					resultLabel.Text = sb.ToString();
 
-					checkLabel.Text = checkLabelText;
+					bool success = false;
+
+					if (Application.Current.UseLegacyPageEvents)
+					{
+						success =
+							states.Count == 8 &&
+							states.IndexOf(State.PageAppeared) == -1 &&
+							states.IndexOf(State.PageDisappeared) == -1 &&
+							states.IndexOf(State.PageBeforeAppearing) < states.IndexOf(State.PageAppearing) &&
+							states.IndexOf(State.PageBeforeAppearing) < states.IndexOf(State.ElementBeforeAppearing) &&
+							states.IndexOf(State.PageAppearing) < states.IndexOf(State.PageDisappearing) &&
+							states.IndexOf(State.PageLoaded) < states.IndexOf(State.PageUnloaded) &&
+							states.IndexOf(State.PageLoaded) < states.IndexOf(State.PageDisappearing) &&
+							states.IndexOf(State.PageLoaded) < states.IndexOf(State.ElementUnloaded) &&
+							states.IndexOf(State.ElementBeforeAppearing) < states.IndexOf(State.ElementLoaded) &&
+							states.IndexOf(State.ElementLoaded) < states.IndexOf(State.ElementUnloaded) &&
+							states.IndexOf(State.ElementUnloaded) < states.IndexOf(State.PageUnloaded);
+					}
+					else
+					{
+						success =
+							states.Count == 10 &&
+							states.IndexOf(State.PageBeforeAppearing) < states.IndexOf(State.PageAppearing) &&
+							states.IndexOf(State.PageAppearing) < states.IndexOf(State.PageAppeared) &&
+							states.IndexOf(State.PageAppearing) < states.IndexOf(State.ElementBeforeAppearing) &&
+							states.IndexOf(State.PageAppeared) < states.IndexOf(State.PageDisappearing) &&
+							states.IndexOf(State.PageDisappearing) < states.IndexOf(State.PageDisappeared) &&
+							states.IndexOf(State.PageLoaded) < states.IndexOf(State.PageUnloaded) &&
+							states.IndexOf(State.PageLoaded) < states.IndexOf(State.PageDisappearing) &&
+							states.IndexOf(State.PageLoaded) < states.IndexOf(State.ElementUnloaded) &&
+							states.IndexOf(State.ElementBeforeAppearing) < states.IndexOf(State.ElementLoaded) &&
+							states.IndexOf(State.ElementLoaded) < states.IndexOf(State.ElementUnloaded) &&
+							states.IndexOf(State.ElementUnloaded) < states.IndexOf(State.PageUnloaded);
+					}
+
+					checkLabel.Text = success ? successlText : "Failed";
 				})
 			};
 
@@ -133,80 +168,16 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		string[] result;
-
-		int IndexOf(State state) => result?.IndexOf(state.ToString()) ?? -1;
-
-		void GetResult()
-		{
-			var resultLabel = RunningApp.Query(c => c.Marked(resultId))[0].Text;
-			result = resultLabel.Split(new [] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
-		}
-
 		[Test]
 		public void Issue2210_CycleEvents()
 		{
 			RunningApp.Tap(startTestLabel);
-			RunningApp.WaitForElement(checkLabelText);
-			GetResult();
-			Assert.AreEqual(10, result.Length);
-			CollectionAssert.AllItemsAreUnique(result);
-
-			var pageBeforeAppearing = IndexOf(State.PageBeforeAppearing);
-			var pageAppearing = IndexOf(State.PageAppearing);
-			var pageAppeared = IndexOf(State.PageAppeared);
-			var pageDisappearing = IndexOf(State.PageDisappearing);
-			var pageDisappeared = IndexOf(State.PageDisappeared);
-			var pageLoaded = IndexOf(State.PageLoaded);
-			var pageUnloaded = IndexOf(State.PageUnloaded);
-
-			var buttonBeforeAppearing = IndexOf(State.ElementBeforeAppearing);
-			var buttonLoaded = IndexOf(State.ElementLoaded);
-			var buttonUnloaded = IndexOf(State.ElementUnloaded);
-
-			Assert.Less(pageBeforeAppearing, pageAppearing);
-			Assert.Less(pageAppearing, pageAppeared);
-			Assert.Less(pageAppearing, buttonBeforeAppearing);
-			Assert.Less(pageAppeared, pageDisappearing);
-			Assert.Less(pageDisappearing, pageDisappeared);
-			Assert.Less(pageLoaded, pageUnloaded);
-			Assert.Less(pageLoaded, pageDisappearing);
-			Assert.Less(pageLoaded, buttonUnloaded);
-
-			Assert.Less(buttonBeforeAppearing, buttonLoaded);
-			Assert.Less(buttonLoaded, buttonUnloaded);
-			Assert.Less(buttonUnloaded, pageUnloaded);
+			RunningApp.WaitForElement(successlText);
 
 			// check legacy events
 			RunningApp.Tap(switchButtonLabel);
 			RunningApp.Tap(startTestLabel);
-			RunningApp.WaitForElement(checkLabelText);
-			GetResult();
-			Assert.AreEqual(8, result.Length);
-			CollectionAssert.AllItemsAreUnique(result);
-			CollectionAssert.DoesNotContain(result, State.PageAppeared.ToString());
-			CollectionAssert.DoesNotContain(result, State.PageDisappeared.ToString());
-
-			pageBeforeAppearing = IndexOf(State.PageBeforeAppearing);
-			pageAppearing = IndexOf(State.PageAppearing);
-			pageDisappearing = IndexOf(State.PageDisappearing);
-			pageLoaded = IndexOf(State.PageLoaded);
-			pageUnloaded = IndexOf(State.PageUnloaded);
-
-			buttonBeforeAppearing = IndexOf(State.ElementBeforeAppearing);
-			buttonLoaded = IndexOf(State.ElementLoaded);
-			buttonUnloaded = IndexOf(State.ElementUnloaded);
-
-			Assert.Less(pageBeforeAppearing, pageAppearing);
-			Assert.Less(pageBeforeAppearing, buttonBeforeAppearing);
-			Assert.Less(pageAppearing, pageDisappearing);
-			Assert.Less(pageLoaded, pageUnloaded);
-			Assert.Less(pageLoaded, pageDisappearing);
-			Assert.Less(pageLoaded, buttonUnloaded);
-
-			Assert.Less(buttonBeforeAppearing, buttonLoaded);
-			Assert.Less(buttonLoaded, buttonUnloaded);
-			Assert.Less(buttonUnloaded, pageUnloaded);
+			RunningApp.WaitForElement(successlText);
 		}
 #endif
 	}

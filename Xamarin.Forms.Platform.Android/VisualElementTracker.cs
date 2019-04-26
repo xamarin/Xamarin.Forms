@@ -53,8 +53,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_element?.SendLoaded();
 
-				if (_element is IPageController page && !Application.Current.UseLegacyPageEvents)
-					page.SendAppeared();
+				if (!Application.Current.UseLegacyPageEvents)
+					(_element as IPageController)?.SendAppeared();
 
 				_loaded = true;
 
@@ -230,8 +230,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_element?.SendUnloaded();
 
-				if (_element is IPageController page && !Application.Current.UseLegacyPageEvents)
-					page.SendDisappeared();
+				if (!Application.Current.UseLegacyPageEvents)
+					(_element as IPageController)?.SendDisappeared();
 			}
 
 			_loaded = false;
@@ -480,21 +480,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			public static readonly AttachTracker Instance = new AttachTracker();
 
-			public void OnViewAttachedToWindow(AView attachedView)
-			{
-				if (!(attachedView is IVisualElementRenderer renderer) || renderer.Tracker == null)
-					return;
-
-				renderer.Tracker.HandleViewAttachedToWindow();
-			}
+			public void OnViewAttachedToWindow(AView attachedView) 
+				=> (attachedView as IVisualElementRenderer)?.Tracker?.HandleViewAttachedToWindow();
 
 			public void OnViewDetachedFromWindow(AView detachedView)
-			{
-				if (!(detachedView is IVisualElementRenderer renderer) || renderer.Tracker == null)
-					return;
-
-				renderer.Tracker.HandleViewDetachedFromWindow();
-			}
+				=> (detachedView as IVisualElementRenderer)?.Tracker?.HandleViewDetachedFromWindow();
 		}
 	}
 }
