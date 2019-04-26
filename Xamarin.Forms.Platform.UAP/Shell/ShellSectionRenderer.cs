@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -55,7 +56,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal void NavigateToShellSection(ShellSection section, Page page, bool animate = true)
+		internal void NavigateToShellSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
 			if(ShellSection != null)
 			{
@@ -71,7 +72,7 @@ namespace Xamarin.Forms.Platform.UWP
 			MenuItemsSource = section.Items;
 			((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged += ShellSectionRenderer_CollectionChanged;
 			SelectedItem = section.CurrentItem;
-			NavigateToContent(section.CurrentItem, animate);
+			NavigateToContent(source, section.CurrentItem, animate);
 		}
 
 		private void ShellSectionRenderer_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -86,11 +87,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
-				NavigateToContent(ShellSection.CurrentItem);
+				NavigateToContent(ShellNavigationSource.ShellSectionChanged, ShellSection.CurrentItem);
 			}
 		}
 
-		internal void NavigateToContent(ShellContent shellContent, bool animate = true)
+		internal void NavigateToContent(ShellNavigationSource source, ShellContent shellContent, bool animate = true)
 		{
 			if (CurrentContent != null && Page != null)
 			{
@@ -102,9 +103,25 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Page = ((IShellContentController)shellContent).GetOrCreateContent();
 				Page.PropertyChanged += Page_PropertyChanged;
-				Frame.Navigate((ContentPage)Page);
+				
+				Frame.Navigate((ContentPage)Page, GetTransitionInfo(source));
 				UpdateSearchHandler(Shell.GetSearchHandler(Page));
 			}
+		}
+
+		NavigationTransitionInfo GetTransitionInfo(ShellNavigationSource navSource)
+		{
+			switch (navSource)
+			{
+				case ShellNavigationSource.Push:
+					return new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight };
+				case ShellNavigationSource.Pop:
+				case ShellNavigationSource.PopToRoot:
+					return new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft };
+				case ShellNavigationSource.ShellSectionChanged:
+					return null;
+			}
+			return null;
 		}
 
 		private void Page_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -193,7 +210,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		private void UpdateQueryIcon()
+		void UpdateQueryIcon()
 		{
 			if (_currentSearchHandler != null)
 			{

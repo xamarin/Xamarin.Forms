@@ -246,7 +246,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void SwitchSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
-			SectionRenderer.NavigateToShellSection(section, page, animate);			
+			SectionRenderer.NavigateToShellSection(source, section, page, animate);			
 	    }
 
 		Page DisplayedPage { get; set; }
