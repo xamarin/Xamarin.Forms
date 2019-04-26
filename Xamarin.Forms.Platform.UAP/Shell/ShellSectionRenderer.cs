@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml.Controls;
 
@@ -135,6 +136,8 @@ namespace Xamarin.Forms.Platform.UWP
 				AutoSuggestBox.PlaceholderText = searchHandler.Placeholder;
 				AutoSuggestBox.IsEnabled = searchHandler.IsSearchEnabled;
 				AutoSuggestBox.ItemsSource = _currentSearchHandler.ItemsSource;
+				ToggleSearchBoxVisibility();
+				UpdateQueryIcon();
 				IsPaneVisible = true;
 			}
 			else
@@ -166,8 +169,38 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else if (e.PropertyName == SearchHandler.SearchBoxVisibilityProperty.PropertyName)
 			{
-				AutoSuggestBox.Visibility = _currentSearchHandler.SearchBoxVisibility == SearchBoxVisibility.Hidden ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
-				AutoSuggestBox.IsSuggestionListOpen = _currentSearchHandler.SearchBoxVisibility == SearchBoxVisibility.Expanded;
+				ToggleSearchBoxVisibility();
+			}
+			else if (e.PropertyName == SearchHandler.QueryIconProperty.PropertyName)
+			{
+				UpdateQueryIcon();
+			}
+		}
+
+		void ToggleSearchBoxVisibility()
+		{
+			AutoSuggestBox.Visibility = _currentSearchHandler == null || _currentSearchHandler.SearchBoxVisibility == SearchBoxVisibility.Hidden ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
+			if (_currentSearchHandler != null && _currentSearchHandler.SearchBoxVisibility != SearchBoxVisibility.Hidden)
+			{
+				if (_currentSearchHandler.SearchBoxVisibility == SearchBoxVisibility.Expanded)
+				{
+					// TODO: Expand search
+				}
+				else
+				{
+					// TODO: Collapse search
+				}
+			}
+		}
+
+		private void UpdateQueryIcon()
+		{
+			if (_currentSearchHandler != null)
+			{
+				if(_currentSearchHandler.QueryIcon is FileImageSource fis)
+					AutoSuggestBox.QueryIcon = new BitmapIcon() { UriSource = new Uri("ms-appx:///" + fis.File) };
+				else 
+					AutoSuggestBox.QueryIcon = new SymbolIcon(Symbol.Find);
 			}
 		}
 
