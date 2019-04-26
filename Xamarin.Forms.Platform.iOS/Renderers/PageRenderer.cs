@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_disposed)
 				return;
 
-			if (Element.Parent is BaseShellItem)
+			if (Element?.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
 			UpdateShellInsetPadding();
@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewWillAppear(bool animated)
 		{
 			if (!_appearing && !_disposed)
-				Page.SendBeforeAppearing();
+				Page?.SendBeforeAppearing();
 
 			base.ViewWillAppear(animated);
 
@@ -175,7 +175,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appearing = true;
 			if (!Application.Current.UseLegacyPageEvents)
-				Page.SendAppearing();
+				Page?.SendAppearing();
 		}
 
 		public override void ViewDidAppear(bool animated)
@@ -188,16 +188,16 @@ namespace Xamarin.Forms.Platform.iOS
 			_appeared = true;
 
 			if (!Application.Current.UseLegacyPageEvents)
-				Page.SendAppeared();
+				Page?.SendAppeared();
 
 			UpdateStatusBarPrefersHidden();
 			if (Forms.IsiOS11OrNewer)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
-			if (Element.Parent is CarouselPage)
+			if (Element?.Parent is CarouselPage)
 				return;
 
-			Page.SendAppearing();
+			Page?.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appeared = false;
 
-			if (Element.Parent is CarouselPage)
+			if (Element?.Parent is CarouselPage)
 				return;
 
 			if (!Application.Current.UseLegacyPageEvents)
@@ -262,12 +262,12 @@ namespace Xamarin.Forms.Platform.iOS
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
 				if (_appearing)
-					Page.SendDisappearing();
+					Page?.SendDisappearing();
 
 				_appearing = false;
 
 				if (_appeared && !Application.Current.UseLegacyPageEvents)
-					Page.SendDisappeared();
+					Page?.SendDisappeared();
 
 				_appeared = false;
 
@@ -289,7 +289,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_tracker = null;
 				}
 
-				Element.SendUnloaded();
+				Element?.SendUnloaded();
 				Element = null;
 				Container?.Dispose();
 				_disposed = true;

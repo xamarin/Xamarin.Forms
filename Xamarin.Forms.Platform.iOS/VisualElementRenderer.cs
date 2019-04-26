@@ -300,10 +300,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.MovedToWindow ();
 
 			if (Window != null && !_loaded) {
-				Element.SendLoaded ();
+				Element?.SendLoaded ();
 				_loaded = true;
 			} else if (Window == null && _loaded) {
-				Element.SendUnloaded ();
+				Element?.SendUnloaded ();
 				_loaded = false;
 			}
 		}
@@ -313,7 +313,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.WillMoveToWindow (window);
 
 			if (!_beforeAppearing && Element != null) {
-				Element.SendBeforeAppearing ();
+				Element?.SendBeforeAppearing ();
 				_beforeAppearing = true;
 			}
 		}
