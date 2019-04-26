@@ -63,6 +63,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnAttachedToWindow()
 		{
+			Element?.SendBeforeAppearing();
+
 			base.OnAttachedToWindow();
 
 			if (!_appearing && !Application.Current.UseLegacyPageEvents)
