@@ -44,12 +44,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (_disposed)
-				return;
-
-			if (!Application.Current.UseLegacyPageEvents)
+			if (disposing && !_disposed)
 			{
-				if (disposing)
+				if (!Application.Current.UseLegacyPageEvents)
 				{
 					if (_appearing)
 						PageController?.SendDisappearing();
@@ -59,13 +56,13 @@ namespace Xamarin.Forms.Platform.Android
 						PageController?.SendDisappeared();
 					_appeared = false;
 				}
-			}
-			else
-			{
-				PageController?.SendDisappearing();
-			}
-			_disposed = true;
+				else
+				{
+					PageController?.SendDisappearing();
+				}
 
+				_disposed = true;
+			}
 			base.Dispose(disposing);
 		}
 
@@ -74,20 +71,19 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnAttachedToWindow();
 
 			if (!_appearing && !Application.Current.UseLegacyPageEvents)
-				PageController.SendAppearing();
+				PageController?.SendAppearing();
 			_appearing = true;
 
-			var pageContainer = Parent as PageContainer;
-			if (pageContainer != null && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
+			if (Parent is PageContainer pageContainer && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
 				return;
 
 			if (Application.Current.UseLegacyPageEvents)
-				PageController.SendAppearing();
+				PageController?.SendAppearing();
 		}
 
-		public override void OnGlobalLayout(object sender, EventArgs e)
+		protected override void OnGlobalLayout()
 		{
-			base.OnGlobalLayout(sender, e);
+			base.OnGlobalLayout();
 
 			if (!_appeared && !Application.Current.UseLegacyPageEvents)
 			{
@@ -101,20 +97,18 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnDetachedFromWindow();
 
 			if (_appeared && !Application.Current.UseLegacyPageEvents)
-				PageController.SendDisappeared();
+				PageController?.SendDisappeared();
 			_appeared = false;
 
-			var pageContainer = Parent as PageContainer;
-			if (pageContainer != null && pageContainer.IsInFragment)
+			if (Parent is PageContainer pageContainer && pageContainer.IsInFragment)
 				return;
 
 			if (Application.Current.UseLegacyPageEvents)
-				PageController.SendDisappearing();
+				PageController?.SendDisappearing();
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Page> e)
 		{
-			Page view = e.NewElement;
 			base.OnElementChanged(e);
 
 			if (Id == NoId)
@@ -218,7 +212,7 @@ namespace Xamarin.Forms.Platform.Android
 				var tabGroup = tabIndexes[idx];
 				foreach (var child in tabGroup)
 				{
-					if (child is Layout || 
+					if (child is Layout ||
 						!(
 							child is VisualElement ve && ve.IsTabStop
 							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true

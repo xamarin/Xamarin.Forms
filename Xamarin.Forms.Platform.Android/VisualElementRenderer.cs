@@ -12,7 +12,7 @@ using Android.Graphics;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer, 
+	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer, ViewTreeObserver.IOnGlobalLayoutListener,
 		IEffectControlProvider where TElement : VisualElement
 	{
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
@@ -34,7 +34,9 @@ namespace Xamarin.Forms.Platform.Android
 		protected VisualElementRenderer(Context context) : base(context)
 		{
 			_gestureManager = new GestureManager(this);
-			ViewTreeObserver.GlobalLayout += OnGlobalLayout;
+
+			if (ViewTreeObserver.IsAlive)
+				ViewTreeObserver.AddOnGlobalLayoutListener(this);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -66,7 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return base.DispatchTouchEvent(e);
-		}		  		
+		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use VisualElementRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -274,13 +276,16 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnDetachedFromWindow();
 			_loaded = false;
 			Element?.SendUnloaded();
+
+			if (ViewTreeObserver.IsAlive)
+				ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
 		}
 
-		public virtual void OnGlobalLayout(object sender, EventArgs e)
+		protected virtual void OnGlobalLayout()
 		{
 			if (!_loaded && !_disposed)
 			{
-				Element.SendLoaded();
+				Element?.SendLoaded();
 				_loaded = true;
 			}
 		}
@@ -299,13 +304,16 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing && !_disposed)
 			{
+				if (ViewTreeObserver.IsAlive)
+					ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
+
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 
 				EffectUtilities.UnregisterEffectControlProvider(this, Element);
 
 				if (_loaded)
-					Element.SendUnloaded();
+					Element?.SendUnloaded();
 
 				if (Tracker != null)
 				{
@@ -344,6 +352,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					Element = null;
 				}
+
 				_disposed = true;
 			}
 
@@ -369,7 +378,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			ElevationHelper.SetElevation(this, e.NewElement);
 		}
-		
+
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
@@ -404,7 +413,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		static void UpdateLayout(IEnumerable<Element> children)
 		{
-			foreach (Element element in children)  	{
+			foreach (Element element in children)
+			{
 				var visualElement = element as VisualElement;
 				if (visualElement == null)
 					continue;
@@ -481,5 +491,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 			=> ViewCompat.SetLabelFor(this, id ?? ViewCompat.GetLabelFor(this));
+
+		void ViewTreeObserver.IOnGlobalLayoutListener.OnGlobalLayout()
+			=> OnGlobalLayout();
 	}
 }
