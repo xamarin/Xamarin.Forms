@@ -78,13 +78,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (_loaded)
-				{
-					_element?.SendUnloaded();
-					if (_element is IPageController page && !Application.Current.UseLegacyPageEvents)
-						page.SendDisappeared();
-				}
-
 				SetElement(_element, null);
 				if (_renderer != null)
 				{
