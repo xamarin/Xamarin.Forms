@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_headerView.Frame = new CGRect(0, _headerOffset + SafeAreaOffset, parent.Frame.Width, _headerSize);
 
-				if (_headerOffset < 0)
+				if (_headerOffset < 0 && _headerSize + _headerOffset >= 0)
 				{
 					CAShapeLayer shapeLayer = new CAShapeLayer();
 					CGRect rect = new CGRect(0, _headerOffset * -1, parent.Frame.Width, _headerSize + _headerOffset);
