@@ -272,6 +272,10 @@ namespace Xamarin.Forms
 
 		public event EventHandler BeforeAppearing;
 
+		bool _hasLoaded;
+		bool _hasUnloaded;
+		bool _hasBeforeAppearing;
+
 		protected virtual void OnLoaded()
 		{
 		}
@@ -287,22 +291,40 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendLoaded()
 		{
+			if (_hasLoaded)
+				return;
+
 			OnLoaded();
 			Loaded?.Invoke(this, EventArgs.Empty);
+
+			_hasLoaded = true;
+			_hasUnloaded = false;
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendUnloaded()
 		{
+			if (_hasUnloaded)
+				return;
+
 			OnUnloaded();
 			Unloaded?.Invoke(this, EventArgs.Empty);
+
+			_hasUnloaded = true;
+			_hasBeforeAppearing = _hasLoaded = false;
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendBeforeAppearing()
 		{
+			if (_hasBeforeAppearing)
+				return;
+
 			OnBeforeAppearing();
 			BeforeAppearing?.Invoke(this, EventArgs.Empty);
+
+			_hasBeforeAppearing = true;
+			_hasUnloaded = false;
 		}
 
 		internal VisualElement()

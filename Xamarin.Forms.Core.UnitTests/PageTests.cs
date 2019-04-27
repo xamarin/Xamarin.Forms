@@ -415,7 +415,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void SendApplicationPageAppearingLagacy()
+		public void SendApplicationPageAppearingLegacy()
 		{
 			var app = new PageTestApp { UseLegacyPageEvents = true };
 			var page = new ContentPage();
@@ -520,16 +520,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var page = new ContentPage();
 
+			int countBeforeAppearing = 0;
 			int countAppearing = 0;
 			int countAppeared = 0;
+			page.BeforeAppearing += (sender, args) => countBeforeAppearing++;
 			page.Appearing += (sender, args) => countAppearing++;
 			page.Appeared += (sender, args) => countAppeared++;
 
+			page.SendBeforeAppearing();
+			page.SendBeforeAppearing();
 			((IPageController)page).SendAppearing();
 			((IPageController)page).SendAppearing();
 			((IPageController)page).SendAppeared();
 			((IPageController)page).SendAppeared();
 
+			Assert.That(countBeforeAppearing, Is.EqualTo(1));
 			Assert.That(countAppearing, Is.EqualTo(1));
 			Assert.That(countAppeared, Is.EqualTo(1));
 		}
