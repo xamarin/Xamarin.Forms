@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Core.Interactivity
 			base.OnDetachingFrom(bindable);
 		}
 
-		private void AddEventHandler(EventInfo eventInfo, object item, Action<object, EventArgs> action)
+		void AddEventHandler(EventInfo eventInfo, object item, Action<object, EventArgs> action)
 		{
 			var eventParameters = eventInfo.EventHandlerType
 				.GetRuntimeMethods().First(m => m.Name == "Invoke")
