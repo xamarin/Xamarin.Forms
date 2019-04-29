@@ -39,9 +39,20 @@ namespace Xamarin.Forms
 		{
 		}
 
+		public T AssociatedObject { get; private set; }
+
 		protected override void OnAttachedTo(BindableObject bindable)
 		{
 			base.OnAttachedTo(bindable);
+			AssociatedObject = (T)bindable;
+
+			if(AssociatedObject.BindingContext != null)
+			{
+				BindingContext = AssociatedObject.BindingContext;
+			}
+
+			AssociatedObject.BindingContextChanged += OnBindingContextChanged;
+
 			OnAttachedTo((T)bindable);
 		}
 
@@ -52,11 +63,18 @@ namespace Xamarin.Forms
 		protected override void OnDetachingFrom(BindableObject bindable)
 		{
 			OnDetachingFrom((T)bindable);
+			AssociatedObject.BindingContextChanged -= OnBindingContextChanged;
+			AssociatedObject = null;
 			base.OnDetachingFrom(bindable);
 		}
 
 		protected virtual void OnDetachingFrom(T bindable)
 		{
+		}
+
+		void OnBindingContextChanged(object sender, EventArgs e)
+		{
+			BindingContext = AssociatedObject.BindingContext;
 		}
 	}
 }

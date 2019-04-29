@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			base.OnAttachedTo (bindable);
 			attached = true;
 			AttachCount++;
-			AssociatedObject = bindable;
 		}
 
 		protected override void OnDetachingFrom (BindableObject bindable)
@@ -22,10 +21,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			AttachCount--;
 			detached = true;
 			base.OnDetachingFrom (bindable);
-			AssociatedObject = null;
 		}
-
-		public BindableObject AssociatedObject {get;set;}
 	}
 
 	[TestFixture]
