@@ -7,26 +7,16 @@ steps:
     - task: NuGetCommand@2
       displayName: 'NuGet restore'
       inputs:
-        restoreSolution: Xamarin.Forms.sln
-
+        restoreSolution: $(SolutionFile)
 
     - task: MSBuild@1
-      displayName: 'Build solution Xamarin.Forms.sln'
+      displayName: 'Build solution'
       inputs:
-        solution: Xamarin.Forms.sln
-        msbuildVersion: 15.0
+        solution: $(SolutionFile)
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
         msbuildArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
         clean: true
-
-
-    - task: DeleteFiles@1
-      displayName: 'Delete files from $(Build.ArtifactStagingDirectory)'
-      inputs:
-        SourceFolder: '$(Build.ArtifactStagingDirectory)'
-        Contents: '**/*'
-
 
     - task: CopyFiles@2
       displayName: 'Copy Files dlls'
@@ -45,7 +35,6 @@ steps:
           Xamarin.Forms.Build.Tasks/bin/**/*.dll
           Xamarin.Forms.Core.Design/bin/**/*.dll
           Xamarin.Forms.Xaml.Design/bin/**/*.dll
-          Xamarin.Forms.Maps.Design/bin/**/*.dll
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.pdb
@@ -56,7 +45,17 @@ steps:
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Platform.WP8/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pri
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xr.xml
@@ -72,6 +71,7 @@ steps:
           Xamarin.Forms.Maps.MacOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.WP8/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pri
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.xbf
           Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll

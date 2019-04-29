@@ -12,7 +12,6 @@ using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly: Dependency(typeof(TestCloudService))]
-[assembly: Dependency(typeof(StringProvider))]
 [assembly: Dependency(typeof(CacheService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
@@ -72,14 +71,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				((DisposeLabel)Element).SendRendererDisposed();
 			}
 			base.Dispose(disposing);
-		}
-	}
-
-	public class StringProvider : IStringProvider
-	{
-		public string CoreGalleryTitle
-		{
-			get { return "iOS Core Gallery"; }
 		}
 	}
 
@@ -159,9 +150,11 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			App.IOSVersion = int.Parse(versionPart[0]);
 
 			Xamarin.Calabash.Start();
-			// Forms.SetFlags("CollectionView_Experimental", "Visual_Experimental", "Shell_Experimental");
+			// Forms.SetFlags("CollectionView_Experimental", "Shell_Experimental");
 			Forms.Init();
 			FormsMaps.Init();
+			FormsMaterial.Init();
+
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
 			{
 				// http://developer.xamarin.com/recipes/testcloud/set-accessibilityidentifier-ios/
@@ -358,7 +351,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				StartPressed40911();
 			};
 
-			page.Layout.Children.Add(button);
+			page._40911Layout.Children.Add(button);
 		}
 
 		public void StartPressed40911()

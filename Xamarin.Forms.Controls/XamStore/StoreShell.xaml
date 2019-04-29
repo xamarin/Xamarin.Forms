@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Shell xmlns="http://xamarin.com/schemas/2014/forms"
+<?xml version="1.0" encoding="utf-8" ?>
+<localTest:TestShell xmlns="http://xamarin.com/schemas/2014/forms"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:local="clr-namespace:Xamarin.Forms.Controls.XamStore"
+			xmlns:localTest="clr-namespace:Xamarin.Forms.Controls"
 			Route="xamstore"
 			RouteHost="www.xamarin.com"
 			RouteScheme="http"
@@ -57,6 +58,7 @@
 
 	<ShellItem Route="store" x:Name="_storeItem" FlyoutDisplayOptions="AsMultipleItems">
 		<ShellContent Route="home" Style="{StaticResource GreenShell}" Title="Home" Icon="home.png" FlyoutIcon="homeflyout.png" ContentTemplate="{DataTemplate local:HomePage}" />
+        <ShellContent Route="list" Title="List"  Icon="games.png" FlyoutIcon="gamesflyout.png" ContentTemplate="{DataTemplate local:DemoShellPage}" />
 		<ShellContent Route="games" Style="{StaticResource GreenShell}" Title="Games" Icon="games.png" FlyoutIcon="gamesflyout.png" ContentTemplate="{DataTemplate local:GamesPage}" />
 		<ShellContent Route="movies" Style="{StaticResource MoviesShell}" Title="Movies &amp; TV" 
 					  Icon="film.png" FlyoutIcon="filmflyout.png" ContentTemplate="{DataTemplate local:MoviesPage}">
@@ -99,4 +101,4 @@
 		<MenuItem Text="Parent Guide" />
 		<MenuItem Text="About Xam Store" />
 	</Shell.MenuItems>
-</Shell>
+</localTest:TestShell>

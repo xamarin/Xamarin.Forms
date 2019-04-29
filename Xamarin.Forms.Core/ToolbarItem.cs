@@ -17,13 +17,13 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public ToolbarItem(string text, string icon, Action activated, ToolbarItemOrder order = ToolbarItemOrder.Default, int priority = 0)
+		public ToolbarItem(string name, string icon, Action activated, ToolbarItemOrder order = ToolbarItemOrder.Default, int priority = 0)
 		{
 			if (activated == null)
 				throw new ArgumentNullException("activated");
 
-			Text = text;
-			Icon = icon;
+			Text = name;
+			IconImageSource = icon;
 			Clicked += (s, e) => activated();
 			Order = order;
 			Priority = priority;

@@ -5,6 +5,12 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public static class Extensions
 	{
+		public static void ApplyKeyboard(this IUITextInput textInput, Keyboard keyboard)
+		{
+			if(textInput is IUITextInputTraits traits)
+				ApplyKeyboard(traits, keyboard);
+		}
+
 		public static void ApplyKeyboard(this IUITextInputTraits textInput, Keyboard keyboard)
 		{
 			textInput.AutocapitalizationType = UITextAutocapitalizationType.None;
@@ -105,5 +111,9 @@ namespace Xamarin.Forms.Platform.iOS
 					return DeviceOrientation.Other;
 			}
 		}
+
+		internal static bool IsHorizontal(this Button.ButtonContentLayout layout) =>
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Left ||
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Right;
 	}
 }

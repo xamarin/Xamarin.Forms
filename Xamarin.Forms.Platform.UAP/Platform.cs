@@ -17,6 +17,9 @@ using NativeAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperti
 namespace Xamarin.Forms.Platform.UWP
 {
 	public abstract class Platform : INavigation
+#pragma warning disable CS0618 // Type or member is obsolete
+		, IPlatform
+#pragma warning restore CS0618 // Type or member is obsolete
 	{
 		static Task<bool> s_currentAlert;
 
@@ -64,9 +67,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_page = page;
 
+			var current = Windows.UI.Xaml.Application.Current;
+
+			if (!current.Resources.ContainsKey("RootContainerStyle"))
+			{
+				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(Forms.GetTabletResources());
+			}
+
 			_container = new Canvas
 			{
-				Style = (Windows.UI.Xaml.Style)Windows.UI.Xaml.Application.Current.Resources["RootContainerStyle"]
+				Style = (Windows.UI.Xaml.Style)current.Resources["RootContainerStyle"]
 			};
 
 			_page.Content = _container;
@@ -181,6 +191,11 @@ namespace Xamarin.Forms.Platform.UWP
 			return tcs.Task;
 		}
 
+		SizeRequest IPlatform.GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
+		{
+			return Platform.GetNativeSize(element, widthConstraint, heightConstraint);
+		} 
+
 		public static SizeRequest GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
 		{
 			// Hack around the fact that Canvas ignores the child constraints.
@@ -225,7 +240,7 @@ namespace Xamarin.Forms.Platform.UWP
 		Page _currentPage;
 		readonly NavigationModel _navModel = new NavigationModel();
 		readonly ToolbarTracker _toolbarTracker = new ToolbarTracker();
-		readonly FileImageSourcePathConverter _fileImageSourcePathConverter = new FileImageSourcePathConverter();
+		readonly ImageSourceIconElementConverter _imageSourceIconElementConverter = new ImageSourceIconElementConverter();
 		Windows.UI.Xaml.Controls.ProgressBar GetBusyIndicator()
 		{
 			if (_busyIndicator == null)
@@ -246,7 +261,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal bool BackButtonPressed()
 		{
-			Page lastRoot = _navModel.Roots.Last();
+			Page lastRoot = _navModel.Roots.LastOrDefault();
+
+			if (lastRoot == null)
+				return false;
 
 			bool handled = lastRoot.SendBackButtonPressed();
 
@@ -273,6 +291,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (newPage == _currentPage)
 				return;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			newPage.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			if (_currentPage != null)
 			{
@@ -393,12 +417,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 				var button = new AppBarButton();
 				button.SetBinding(AppBarButton.LabelProperty, "Text");
-				button.SetBinding(AppBarButton.IconProperty, "Icon", _fileImageSourcePathConverter);
+				button.SetBinding(AppBarButton.IconProperty, "Icon", _imageSourceIconElementConverter);
 				button.Command = new MenuItemCommand(item);
 				button.DataContext = item;
 				button.SetValue(NativeAutomationProperties.AutomationIdProperty, item.AutomationId);
 				button.SetAutomationPropertiesName(item);
-				button.SetAutomationPropertiesAccessibilityView(item);							   
+				button.SetAutomationPropertiesAccessibilityView(item);
 				button.SetAutomationPropertiesHelpText(item);
 				button.SetAutomationPropertiesLabeledBy(item);
 
@@ -492,9 +516,11 @@ namespace Xamarin.Forms.Platform.UWP
 			if (options.Accept != null)
 				alertDialog.PrimaryButtonText = options.Accept;
 
-			while (s_currentAlert != null)
+			var currentAlert = s_currentAlert;
+			while (currentAlert != null)
 			{
-				await s_currentAlert;
+				await currentAlert;
+				currentAlert = s_currentAlert;
 			}
 
 			s_currentAlert = ShowAlert(alertDialog);
@@ -517,5 +543,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			e.Handled = BackButtonPressed();
 		}
+
+
 	}
 }
