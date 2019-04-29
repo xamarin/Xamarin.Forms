@@ -65,6 +65,9 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
+#if !(__ANDROID__ || __IOS__)
+		[Ignore("Shell test is only supported on Android and iOS")]
+#endif 
 		[Test]
 		public void Issue5132Test()
 		{
