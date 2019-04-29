@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Items = {
 					new Tab { Title = "library",
 						Items = {
-									new ContentPage { Title = "Library",  Content = new Label  { Text = "Turn accessibility on and make sure the help text is read" } }
+									new ContentPage { Title = "Library",  Content = new ScrollView { Content = new Label  { Text = "Turn accessibility on and make sure the help text is read" } } }
 								}
 						}
 				}
