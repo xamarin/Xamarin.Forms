@@ -13,6 +13,11 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
+			if(value is ElementEventArgs args)
+			{
+				value = args.Element;
+			}
+
 			if(value is Button btn)
 			{
 				return btn.Text;
@@ -66,6 +71,27 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.NotNull(element);
 			Assert.AreSame(button, element);
+		}
+
+		[Test]
+		public void InvokesCommandWithParameterUsingConverter()
+		{
+			var sl = new StackLayout();
+			var button = new Button { Text = "Some Text" };
+			string buttonText = null;
+			var behavior = new EventToCommandBehavior
+			{
+				Command = new Command<string>(t => buttonText = t),
+				EventName = "ChildAdded",
+				EventArgsConverter = new MockButtonTextConverter()
+			};
+
+			sl.Behaviors.Add(behavior);
+
+			sl.Children.Add(button);
+
+			Assert.NotNull(buttonText);
+			Assert.AreEqual(button.Text, buttonText);
 		}
 
 		[Test]

@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Core.Interactivity
 				parameter = propertyValue;
 			}
 
-			if (parameter == null && eventArgs != null && eventArgs != EventArgs.Empty && EventArgsConverter != null)
+			if(EventArgsConverter != null && (parameter != null || eventArgs != EventArgs.Empty))
 			{
 				parameter = EventArgsConverter.Convert(eventArgs, typeof(object), EventArgsConverterParameter,
 					CultureInfo.CurrentUICulture);
