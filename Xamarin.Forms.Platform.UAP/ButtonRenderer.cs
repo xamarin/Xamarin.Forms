@@ -1,9 +1,7 @@
 using System;
 using System.ComponentModel;
-using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
@@ -48,11 +46,11 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Element.IsSet(Button.TextColorProperty) && Element.TextColor != (Color)Button.TextColorProperty.DefaultValue)
 					UpdateTextColor();
 
-				if (Element.IsSet(Button.LetterSpacingProperty))
-					UpdateLetterSpacing();
-
 				if (Element.IsSet(Button.BorderColorProperty) && Element.BorderColor != (Color)Button.BorderColorProperty.DefaultValue)
 					UpdateBorderColor();
+
+				if (Element.IsSet(Button.LetterSpacingProperty))
+					UpdateLetterSpacing();
 
 				if (Element.IsSet(Button.BorderWidthProperty) && Element.BorderWidth != (double)Button.BorderWidthProperty.DefaultValue)
 					UpdateBorderWidth();
@@ -84,9 +82,13 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageProperty.PropertyName)
+			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				UpdateContent();
+			}
+			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			{
+				UpdateLetterSpacing();
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
@@ -95,10 +97,6 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 			{
 				UpdateTextColor();
-			}
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
-			{
-				UpdateLetterSpacing();
 			}
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 			{
@@ -168,59 +166,62 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.LetterSpacing = Element.LetterSpacing.ToEm();
 		}
 
-		void UpdateContent()
+		async void UpdateContent()
 		{
 			var text = Element.Text;
-			var elementImage = Element.Image;
+			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
 			if (elementImage == null)
 			{
-				Control.Content = new TextBlock
-				{
-					Text = text ?? string.Empty,
-					CharacterSpacing = Element.LetterSpacing.ToEm(),
-					VerticalAlignment = VerticalAlignment.Center,
-					HorizontalAlignment = HorizontalAlignment.Center,
-				};
+				Control.Content = text;
+				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
-			var bmp = new BitmapImage(new Uri("ms-appx:///" + elementImage.File));
-
+			var size = elementImage.GetImageSourceSize();
 			var image = new WImage
 			{
-				Source = bmp,
+				Source = elementImage,
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center,
-				Stretch = Stretch.Uniform
+				Stretch = Stretch.Uniform,
+				Width = size.Width,
+				Height = size.Height,
 			};
 
-			bmp.ImageOpened += (sender, args) => {
-				image.Width = bmp.PixelWidth;
-				image.Height = bmp.PixelHeight;
-				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
-			};
+			// BitmapImage is a special case that has an event when the image is loaded
+			// when this happens, we want to resize the button
+			if (elementImage is BitmapImage bmp)
+			{
+				bmp.ImageOpened += (sender, args) => {
+					var actualSize = bmp.GetImageSourceSize();
+					image.Width = actualSize.Width;
+					image.Height = actualSize.Height;
+					Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
+				};
+			}
 
 			// No text, just the image
 			if (string.IsNullOrEmpty(text))
 			{
 				Control.Content = image;
+				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
 			// Both image and text, so we need to build a container for them
-			Control.Content = CreateContentContainer(Element.ContentLayout, image, text, Element.LetterSpacing.ToEm());
+			Control.Content = CreateContentContainer(Element.ContentLayout, image, text);
+			Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 		}
 
-		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text, int letterSpacing)
+		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text)
 		{
 			var container = new StackPanel();
 			var textBlock = new TextBlock {
 				Text = text,
 				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				CharacterSpacing = letterSpacing
+				HorizontalAlignment = HorizontalAlignment.Center
 			};
 
 			var spacing = layout.Spacing;

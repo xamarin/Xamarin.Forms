@@ -10,6 +10,8 @@ using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries;
+using Xamarin.Forms.Controls.Issues;
+
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
@@ -46,7 +48,7 @@ namespace Xamarin.Forms.Controls
 
 			var toCrashButton = new Button { Text = "Crash Me" };
 
-			var masterPage = new ContentPage { Title = "Menu", Icon = "bank.png", Content = toCrashButton };
+			var masterPage = new ContentPage { Title = "Menu", IconImageSource = "bank.png", Content = toCrashButton };
 			var detailPage = new CoreRootPage(this, NavigationBehavior.PushModalAsync) { Title = "DetailPage" };
 
 			bool toggle = false;
@@ -136,7 +138,7 @@ namespace Xamarin.Forms.Controls
 			Children.Add(new NavigationPage(new Page())
 			{
 				Title = "Rubriques",
-				Icon = "coffee.png",
+				IconImageSource = "coffee.png",
 				BarBackgroundColor = Color.Blue,
 				BarTextColor = Color.Aqua
 			});
@@ -280,6 +282,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
+				new GalleryPageFactory(() => new Issues.A11yTabIndex(), "Accessibility TabIndex"),
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
@@ -534,6 +537,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Text = "Go to Test Cases",
 				AutomationId = "GoToTestButton",
+				TabIndex = -2,
 				Command = new Command(async () =>
 				{
 					if (!string.IsNullOrEmpty(searchBar.Text))
@@ -550,6 +554,7 @@ namespace Xamarin.Forms.Controls
 					searchBar,
 					new Button {
 						Text = "Click to Force GC",
+						TabIndex = -2,
 						Command = new Command(() => {
 							GC.Collect ();
 							GC.WaitForPendingFinalizers ();
@@ -559,6 +564,14 @@ namespace Xamarin.Forms.Controls
 
 				}
 			};
+
+			var secondaryWindowService = DependencyService.Get<ISecondaryWindowService>();
+			if (secondaryWindowService != null)
+			{
+				var openSecondWindowButton = new Button() { Text = "Open Secondary Window" };
+				openSecondWindowButton.Clicked += (obj, args) => { secondaryWindowService.OpenSecondaryWindow(new Issue2482()); };
+				stackLayout.Children.Add(openSecondWindowButton);
+			}
 
 			this.SetAutomationPropertiesName("Gallery");
 			this.SetAutomationPropertiesHelpText("Lists all gallery pages");
