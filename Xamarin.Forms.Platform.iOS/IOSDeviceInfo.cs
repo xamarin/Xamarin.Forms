@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class IOSDeviceInfo : DeviceInfo
 	{
-		private Size _pixelScreenSize;
+		Size _pixelScreenSize;
 		Size _scaledScreenSize;
 		double _scalingFactor;
 		bool _disposed;
