@@ -304,7 +304,7 @@ namespace Xamarin.Forms
 		{
 			bool _disposed;
 			readonly Context _formsActivity;
-			private Size _scaledScreenSize;
+			Size _scaledScreenSize;
 			Size _pixelScreenSize;
 			double _scalingFactor;
 
