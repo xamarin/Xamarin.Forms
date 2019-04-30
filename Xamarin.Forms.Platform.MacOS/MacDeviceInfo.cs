@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Platform.macOS
 {
 	internal class MacDeviceInfo : DeviceInfo
 	{
-		private Size _pixelScreenSize;
+		Size _pixelScreenSize;
 		Size _scaledScreenSize;
 		double _scalingFactor;
 
