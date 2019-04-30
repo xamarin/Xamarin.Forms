@@ -34,5 +34,19 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Application.Current.MainPage = new Issue5949_1();
 		}
+
+#if UITEST
+		[Test]
+		public void DoNotAccessDisposedCollectionView()
+		{
+			RunningApp.WaitForElement("Login");
+			RunningApp.Tap("Login");	
+			
+			RunningApp.WaitForElement(Issue5949_2.BackButton);
+			RunningApp.Tap(Issue5949_2.BackButton);
+		
+			RunningApp.WaitForElement("Login");
+		}
+#endif
 	}
 }

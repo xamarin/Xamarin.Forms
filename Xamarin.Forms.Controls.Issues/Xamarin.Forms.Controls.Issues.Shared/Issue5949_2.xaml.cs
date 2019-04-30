@@ -9,12 +9,14 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public partial class Issue5949_2 : ContentPage
 	{
-		const string BackButton = "5949GoBack";
+		public const string BackButton = "5949GoBack";
+		public const string ToolBarItem = "Login";
 
 		public Issue5949_2()
 		{
 #if APP
 			InitializeComponent();
+			ToolbarItems.Add(new ToolbarItem(ToolBarItem, null, () => Navigation.PushAsync(LoginPage())));
 			BindingContext = new _5949ViewModel();
 #endif
 		}
@@ -31,11 +33,6 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 
 			public List<string> Items { get; set; }
-		}
-
-		void ToolbarItem_Clicked(object sender, EventArgs e)
-		{
-			Navigation.PushAsync(LoginPage());
 		}
 
 		ContentPage LoginPage()
