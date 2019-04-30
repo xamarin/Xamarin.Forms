@@ -55,11 +55,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			}
 
-			// PREVIEWER HACK for some reason previewer can't find the resources for the recycler or the appBar
-			if (recycler == null)
-				recycler = (RecyclerView)coordinator.GetChildAt(1);
-			if (appBar == null)
-				appBar = (AppBarLayout)coordinator.GetChildAt(0);
+
+			try
+			{
+				// PREVIEWER HACK for some reason previewer can't find the resources for the recycler or the appBar
+				if (recycler == null)
+					recycler = (RecyclerView)coordinator.GetChildAt(1);
+				if (appBar == null)
+					appBar = (AppBarLayout)coordinator.GetChildAt(0);
+			}
+			catch
+			{
+				// PReviewer hack.
+				// appcompat and non appcompat initialize this whole thing differently so the above are for appcompat the below are for non
+			}
 
 			// PREVIEWER HACK for some reason previewer can't find the resources for the recycler or the appBar
 			if (recycler == null)
