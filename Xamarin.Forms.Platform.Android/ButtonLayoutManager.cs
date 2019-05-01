@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _preserveInitialPadding;
 		bool _borderAdjustsPadding;
 		bool _maintainLegacyMeasurements;
+		bool _hasLayoutOccurred;
 
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer)
 			: this(renderer, false, false, false, true)
@@ -141,6 +142,8 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 			}
+
+			_hasLayoutOccurred = true;
 		}
 
 		public void OnViewAttachedToWindow(AView attachedView)
@@ -306,8 +309,12 @@ namespace Xamarin.Forms.Platform.Android
 						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
 						break;
 				}
-		
-				_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+
+				// I'm not thrilled about the BeginInvokeOnMainThread
+				// but without it the button won't resize based on the image dimensions if the image has changed
+				// you can see this using Issue4915
+				if (_hasLayoutOccurred)
+					Device.BeginInvokeOnMainThread(() => _element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged));
 			});
 		}
 	}

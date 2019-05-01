@@ -54,7 +54,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			_buttonLayoutManager?.Update();
 			return base.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 

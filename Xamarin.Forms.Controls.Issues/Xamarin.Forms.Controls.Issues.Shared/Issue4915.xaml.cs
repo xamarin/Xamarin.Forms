@@ -62,6 +62,28 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
+		private void ButtonClicked(object sender, EventArgs e)
+		{
+			ViewModel vm = null;
+			if ((BindingContext as ViewModel).Image != "oasis.png")
+			{
+				vm = new ViewModel()
+				{
+					Image = "oasis.png",
+					ImageUrl = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/78385f9fc1fc56dc88bd98e73bf9c8f2f2d0a90a/Xamarin.Forms.ControlGallery.iOS/Resources/jet.png"
+				};
+
+			}
+			else
+			{
+				vm = new ViewModel();
+			}
+
+			BindingContext = vm;
+			Parent.BindingContext = vm;
+			Parent.Parent.BindingContext = vm;
+		}
+
 		[Preserve(AllMembers = true)]
 		public class ViewModel
 		{
