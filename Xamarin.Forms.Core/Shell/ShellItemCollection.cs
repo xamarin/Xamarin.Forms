@@ -15,6 +15,7 @@ namespace Xamarin.Forms
 		public int Count => Inner.Count;
 		public bool IsReadOnly => ((IList<ShellItem>)Inner).IsReadOnly;
 		internal IList<ShellItem> Inner { get; set; }
+		internal Shell Parent { get; set; }
 
 		public ShellItem this[int index]
 		{
@@ -22,7 +23,29 @@ namespace Xamarin.Forms
 			set => Inner[index] = value;
 		}
 
-		public void Add(ShellItem item) => Inner.Add(item);
+		public void Add(ShellItem item)
+		{
+			/*
+			 * This is purely for the case where a user is only specifying Tabs at the heighest level
+			 * <shell>
+			 * <tab></tab>
+			 * <tab></tab>
+			 * </shell>
+			 * */
+			if (Routing.IsImplicit(item) &&
+				item is TabBar
+				)
+			{
+				int i = Count - 1;
+				if (i >= 0 &&  this[i] is TabBar && Routing.IsImplicit(this[i]))
+				{
+					this[i].Items.Add(item.Items[0]);
+					return;
+				}
+			}
+
+			Inner.Add(item);
+		}
 
 		public void Clear() => Inner.Clear();
 
