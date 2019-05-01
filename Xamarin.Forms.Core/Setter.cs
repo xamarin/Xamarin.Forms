@@ -14,17 +14,6 @@ namespace Xamarin.Forms
 	{
 		readonly ConditionalWeakTable<BindableObject, object> _originalValues = new ConditionalWeakTable<BindableObject, object>();
 
-		/// <summary>
-		///		Set the target for the property to be changed.  Can be a <c>x:Reference</c> to a <see cref="BindableObject"/>
-		///		or the Name of an object in the attached scope.
-		/// </summary>
-		/// <example>
-		/// The following example shows the two ways of targeting a named object.
-		/// <code>
-		///		<Setter Target="{x:Reference TargetLabel1}" Property="Label.TextColor" Value="#94b0b7" />
-		///		<Setter Target="TargetLabel1" Property="Label.TextColor" Value="#94b0b7" />
-		/// </code>
-		/// </example>
 		public object Target { get; set; }
 
 		public BindableProperty Property { get; set; }
