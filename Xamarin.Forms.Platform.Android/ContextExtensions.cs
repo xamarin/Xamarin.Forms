@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
-		public static Context GetThemedContext(this Context context)
+		internal static Context GetThemedContext(this Context context)
 		{
 			if (context == null)
 				return null;
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
-		public static bool IsDesignerContext(this Context context)
+		internal static bool IsDesignerContext(this Context context)
 		{
 			if (context == null)
 				return false;
@@ -131,6 +131,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static AFragmentManager GetFragmentManager(this Context context)
 		{
+			if (context == null)
+				return null;
+
 			var activity = context.GetActivity();
 
 			if (activity is global::Android.Support.V4.App.FragmentActivity fa)
