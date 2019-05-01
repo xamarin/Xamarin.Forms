@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					HorizontalOptions = LayoutOptions.End,
 					VerticalOptions = LayoutOptions.End,
-					Image = "coffee.png",
+					ImageSource = "coffee.png",
 					Padding = new Thickness(10),
 					BackgroundColor = Color.Green
 				};
