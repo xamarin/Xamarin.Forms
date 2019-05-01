@@ -100,11 +100,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Context GetThemedContext(this Context context)
 		{
-			if (context.IsDesignerContext())
-				return context;
-
 			if (context == null)
 				return null;
+
+			if (context.IsDesignerContext())
+				return context;
 
 			if (context is global::Android.Support.V7.App.AppCompatActivity activity)
 				return activity.SupportActionBar.ThemedContext;
