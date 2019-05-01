@@ -56,9 +56,8 @@ namespace Xamarin.Forms.Controls.Issues
 			masterDetailPage1.Master = master1;
 			masterDetailPage1.Detail = detail1;
 			masterDetailPage1.BackgroundColor = Color.Yellow;
-
-			masterDetailPage1.Appearing += MasterDetailPage1_Appearing;
-			masterDetailPage1.Disappearing += MasterDetailPage1_Disappearing;
+			masterDetailPage1.Detail.Appearing += MasterDetailPage1_Appearing;
+			masterDetailPage1.Detail.Disappearing += MasterDetailPage1_Disappearing;
 			
 			var contentPage1 = new ContentPage();
 			SetHasBackButton(contentPage1, true);
@@ -78,6 +77,18 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 			
 			PushAsync(contentPage1);
+		}
+
+		private void MasterDetailPage1_DisappearingDetail(object sender, EventArgs e)
+		{
+			DisplayAlert(ThisDisappearing, "MasterDetailPage Detail", Ok);
+
+		}
+
+		private void MasterDetailPage1_AppearingDetail(object sender, EventArgs e)
+		{
+			DisplayAlert(ThisAppearing, "MasterDetailPage Detail", Ok);
+
 		}
 
 		void ContentPage2_Disappearing(object sender, EventArgs e)
