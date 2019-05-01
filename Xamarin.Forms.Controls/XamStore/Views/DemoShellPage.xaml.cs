@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			InitializeComponent();
 			ViewModel = new HomeViewModel();
 			NavigationPage.SetBackButtonTitle(this, "");
-			//AddSearchHandler("Search", SearchBoxVisiblity.Expanded);
+			//AddSearchHandler("Search", SearchBoxVisibility.Expanded);
 		}
 
 		protected override void OnAppearing()
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			(sender as ListView).SelectedItem = null;
 		}
 
-		protected void AddSearchHandler(string placeholder, SearchBoxVisiblity visibility)
+		protected void AddSearchHandler(string placeholder, SearchBoxVisibility visibility)
 		{
 			var searchHandler = new BasePage.CustomSearchHandler();
 
@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		{
 			try
 			{
-				await Shell.CurrentShell.GoToAsync("app:///base/details?id=new");
+				await Shell.Current.GoToAsync("app:///base/details?id=new");
 			}
 			catch (Exception ex)
 			{
@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Controls.XamStore
 
 			//Navigation.PushAsync(page);
 			Console.WriteLine("GoToMenu");
-			await Shell.CurrentShell.GoToAsync($"app:///home/vocab?id={id}");
+			await Shell.Current.GoToAsync($"app:///home/vocab?id={id}");
 		}
 
 		void Toggle(string destination)
@@ -232,7 +232,7 @@ namespace Xamarin.Forms.Controls.XamStore
 
 			//Navigation.PushAsync(page);
 
-			await Shell.CurrentShell.GoToAsync($"app:///base/details?id={entry.Id}");
+			await Shell.Current.GoToAsync($"app:///base/details?id={entry.Id}");
 		}
 
 		void DeleteEntry(VocabEntry entry)

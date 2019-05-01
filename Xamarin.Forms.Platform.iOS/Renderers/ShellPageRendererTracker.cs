@@ -1,4 +1,5 @@
 ﻿using CoreGraphics;
+using Foundation;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -54,6 +55,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UISearchController _searchController;
 		SearchHandler _searchHandler;
 		Page _page;
+		NSCache _nSCache;
 
 		BackButtonBehavior BackButtonBehavior { get; set; }
 		UINavigationItem NavigationItem { get; set; }
@@ -61,6 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ShellPageRendererTracker(IShellContext context)
 		{
 			_context = context;
+			_nSCache = new NSCache();
 		}
 
 		public async void OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
@@ -247,10 +250,53 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				item = item?.Parent;
 			}
-			if (image == null)
-				image = "3bar.png";
-			var icon = await image.GetNativeImageAsync();
-			NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, OnMenuButtonPressed);
+
+			UIImage icon = null;
+
+			if (image != null)
+				icon = await image.GetNativeImageAsync();
+			else
+				icon = DrawHamburger();
+			
+
+			var barButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, OnMenuButtonPressed);
+
+			barButtonItem.AccessibilityIdentifier = "OK";
+			NavigationItem.LeftBarButtonItem = barButtonItem;
+		}
+
+		UIImage DrawHamburger()
+		{
+			const string hamburgerKey = "Hamburger";
+			UIImage img = (UIImage)_nSCache.ObjectForKey((NSString)hamburgerKey);
+
+			if (img != null)
+				return img;
+
+			var rect = new CGRect(0, 0, 23f, 23f);
+
+			UIGraphics.BeginImageContextWithOptions(rect.Size, false, 0);
+			var ctx = UIGraphics.GetCurrentContext();
+			ctx.SaveState();
+			ctx.SetStrokeColor(UIColor.Blue.CGColor);
+
+			float size = 3f;
+			float start = 4f;
+			ctx.SetLineWidth(size);
+
+			for(int i = 0; i< 3; i++)
+			{
+				ctx.MoveTo(1f, start + i * (size * 2));
+				ctx.AddLineToPoint(22f, start + i * (size * 2));
+				ctx.StrokePath();
+			}
+
+			ctx.RestoreState();
+			img = UIGraphics.GetImageFromCurrentImageContext();
+			UIGraphics.EndImageContext();
+
+			_nSCache.SetObjectforKey(img, (NSString)hamburgerKey);
+			return img;
 		}
 
 		void OnMenuButtonPressed(object sender, EventArgs e)
@@ -379,7 +425,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void UpdateSearchVisibility(UISearchController searchController)
 		{
 			var visibility = SearchHandler.SearchBoxVisibility;
-			if (visibility == SearchBoxVisiblity.Hidden)
+			if (visibility == SearchBoxVisibility.Hidden)
 			{
 				if (searchController != null)
 				{
@@ -389,12 +435,12 @@ namespace Xamarin.Forms.Platform.iOS
 						NavigationItem.TitleView = null;
 				}
 			}
-			else if (visibility == SearchBoxVisiblity.Collapsable || visibility == SearchBoxVisiblity.Expanded)
+			else if (visibility == SearchBoxVisibility.Collapsible || visibility == SearchBoxVisibility.Expanded)
 			{
 				if (Forms.IsiOS11OrNewer)
 				{
 					NavigationItem.SearchController = _searchController;
-					NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisiblity.Collapsable;
+					NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisibility.Collapsible;
 				}
 				else
 				{
@@ -415,7 +461,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_searchController = new UISearchController(_resultsRenderer?.ViewController);
 			var visibility = SearchHandler.SearchBoxVisibility;
-			if (visibility != SearchBoxVisiblity.Hidden)
+			if (visibility != SearchBoxVisibility.Hidden)
 			{
 				if (Forms.IsiOS11OrNewer)
 					NavigationItem.SearchController = _searchController;
@@ -436,7 +482,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateSearchIsEnabled(_searchController);
 			searchBar.SearchButtonClicked += SearchButtonClicked;
 			if (Forms.IsiOS11OrNewer)
-				NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisiblity.Collapsable;
+				NavigationItem.HidesSearchBarWhenScrolling = visibility == SearchBoxVisibility.Collapsible;
 
 			var icon = SearchHandler.QueryIcon;
 			if (icon != null)

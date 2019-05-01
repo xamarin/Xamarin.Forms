@@ -218,7 +218,7 @@ namespace Xamarin.Forms.Controls.Issues
 			btn.Clicked += bnToggle_Clicked;
 			Master = new ContentPage {
 				Title = string.Format ("Master sample for {0}", state),
-				Icon = "bank.png",
+				IconImageSource = "bank.png",
 				Padding = Device.RuntimePlatform == Device.iOS ? new Thickness(5, 60, 5, 5) : new Thickness(5),
 				Content = 
 					new StackLayout { Children = {
@@ -228,9 +228,10 @@ namespace Xamarin.Forms.Controls.Issues
 							BackgroundColor = Color.Gray
 						},
 						btn
-					}
+					},
+					BackgroundColor = Color.WhiteSmoke
 				},
-				//BackgroundColor = Color.Red
+				BackgroundColor = Color.Gray
 			};
 
 			if(initState.HasValue)
