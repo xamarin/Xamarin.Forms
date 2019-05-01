@@ -15,7 +15,6 @@ namespace Xamarin.Forms
 		public int Count => Inner.Count;
 		public bool IsReadOnly => ((IList<ShellItem>)Inner).IsReadOnly;
 		internal IList<ShellItem> Inner { get; set; }
-		internal Shell Parent { get; set; }
 
 		public ShellItem this[int index]
 		{
