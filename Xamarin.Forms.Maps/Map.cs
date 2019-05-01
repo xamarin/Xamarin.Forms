@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Maps
 {
@@ -90,6 +91,11 @@ namespace Xamarin.Forms.Maps
 			get { return (DataTemplateSelector)GetValue(ItemTemplateSelectorProperty); }
 			set { SetValue(ItemTemplateSelectorProperty, value); }
 		}
+		
+		public event EventHandler<MapClickedEventArgs> MapClicked;
+		
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendMapClicked(Position position) => MapClicked?.Invoke(this, new MapClickedEventArgs(position));
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetVisibleRegion(MapSpan value) => VisibleRegion = value;
@@ -170,37 +176,10 @@ namespace Xamarin.Forms.Maps
 
 		void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			switch (e.Action)
-			{
-				case NotifyCollectionChangedAction.Add:
-					if (e.NewStartingIndex == -1)
-						goto case NotifyCollectionChangedAction.Reset;
-					foreach (object item in e.NewItems)
-						CreatePin(item);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					if (e.OldStartingIndex == -1 || e.NewStartingIndex == -1)
-						goto case NotifyCollectionChangedAction.Reset;
-					// Not tracking order
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					if (e.OldStartingIndex == -1)
-						goto case NotifyCollectionChangedAction.Reset;
-					foreach (object item in e.OldItems)
-						RemovePin(item);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					if (e.OldStartingIndex == -1)
-						goto case NotifyCollectionChangedAction.Reset;
-					foreach (object item in e.OldItems)
-						RemovePin(item);
-					foreach (object item in e.NewItems)
-						CreatePin(item);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					_pins.Clear();
-					break;
-			}
+			e.Apply(
+				insert: (item, _, __) => CreatePin(item),
+				removeAt: (item, _) => RemovePin(item),
+				reset: () => _pins.Clear());
 		}
 
 		void CreatePinItems()
@@ -232,10 +211,15 @@ namespace Xamarin.Forms.Maps
 
 		void RemovePin(object itemToRemove)
 		{
-			Pin pinToRemove = _pins.FirstOrDefault(pin => pin.BindingContext?.Equals(itemToRemove) == true);
-			if (pinToRemove != null)
+			// Instead of just removing by item (i.e. _pins.Remove(pinToRemove))
+			//  we need to remove by index because of how Pin.Equals() works
+			for (int i = 0; i < _pins.Count; ++i)
 			{
-				_pins.Remove(pinToRemove);
+				Pin pin = _pins[i];
+				if (pin.BindingContext?.Equals(itemToRemove) == true)
+				{
+					_pins.RemoveAt(i);
+				}
 			}
 		}
 	}
