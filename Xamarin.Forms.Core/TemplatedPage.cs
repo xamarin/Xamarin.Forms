@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 		protected override void OnChildRemoved(Element child)
 		{
 			base.OnChildRemoved(child);
-			((IControlTemplated)this).OnChildRemoved(child);
+			TemplateUtilities.OnChildRemoved(this, child);
 		}
 	}
 }

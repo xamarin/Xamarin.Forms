@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void TemplatedView_should_have_Templated_Root_set()
+		public void ShouldHaveTemplatedRootSet()
 		{
 			var tv = new TemplatedView();
 			var ct = (IControlTemplated)tv;
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void TemplatedView_GetTemplateChild_should_work()
+		public void GetTemplateChildShouldWork()
 		{
 			var xaml = @"<ContentView
 					xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -53,12 +53,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			contentView.LoadFromXaml(xaml);
 
 			IList<Element> internalChildren = contentView.InternalChildren;
-			BindableObject tc = contentView.GetTemplateChild("label0");
+			var tc = (BindableObject)contentView.GetTemplateChild("label0");
 			Assert.AreEqual(tc, internalChildren[0]);
 		}
 
 		[Test]
-		public void TemplatedView_OnApplyTemplate_should_be_called()
+		public void OnApplyTemplateShouldBeCalled()
 		{
 			var xaml = @"<ContentView
 					xmlns=""http://xamarin.com/schemas/2014/forms""

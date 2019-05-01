@@ -130,12 +130,12 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public static BindableObject GetTemplateChild(this IControlTemplated controlTemplated, string name)
+		public static object GetTemplateChild(this IControlTemplated controlTemplated, string name)
 		{
-			return (BindableObject)controlTemplated.TemplateRoot?.FindByName(name);
+			return controlTemplated.TemplateRoot?.FindByName(name);
 		}
 
-		internal static void OnChildRemoved(this IControlTemplated controlTemplated, Element removedChild)
+		internal static void OnChildRemoved(IControlTemplated controlTemplated, Element removedChild)
 		{
 			if (removedChild == controlTemplated.TemplateRoot)
 				controlTemplated.TemplateRoot = null;
