@@ -10,7 +10,9 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
+#endif
 	[Preserve(AllMembers = true)]
 	public partial class Issue5949_1 : MasterDetailPage
 	{
