@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 	public static class ResourceManager
 	{
 		const string _drawableDefType = "drawable";
+		const string _cachePlaceHolder = "PLEASEHOLD";
 		static ImageCache _lruCache = null;
 		static object _lruCacheHandle = new object();
 
@@ -38,9 +39,9 @@ namespace Xamarin.Forms.Platform.Android
 		class ImageCache : global::Android.Util.LruCache
 		{
 
-			static int getCacheSize()
+			static int GetCacheSize()
 			{
-				// taken from lru cache docs
+				// https://developer.android.com/topic/performance/graphics/cache-bitmap
 				int cacheSize = 4 * 1024 * 1024;
 				if (Java.Lang.Runtime.GetRuntime()?.MaxMemory() != null)
 				{
@@ -50,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 				return cacheSize;
 			}
 
-			public ImageCache() : base(getCacheSize())
+			public ImageCache() : base(GetCacheSize())
 			{
 
 			}
@@ -184,21 +185,21 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				try
 				{
-					string cachKey = String.Empty;
+					string cacheKey = String.Empty;
 
 					// Todo improve for other sources
-					// volley the requests up front so that if the same request comes in it isn't requeueued
-					if(initialSource is UriImageSource uri)
+					// volley the requests up front so that if the same request comes in it isn't requeued
+					if (initialSource is UriImageSource uri)
 					{
-						cachKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
+						cacheKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
 						var cache = GetCache();
-						var cacheObject = cache.Get(cachKey);
+						var cacheObject = cache.Get(cacheKey);
 
 						// this only really gets hit during load when there are a lot of requests for the same image
-						while(cacheObject?.ToString() == "PLEASEHOLD")
+						while(cacheObject?.ToString() == _cachePlaceHolder)
 						{
 							await Task.Delay(100).ConfigureAwait(false);
-							cacheObject = cache.Get(cachKey);
+							cacheObject = cache.Get(cacheKey);
 						}
 
 						Bitmap bitmap = cacheObject as Bitmap;
@@ -206,16 +207,16 @@ namespace Xamarin.Forms.Platform.Android
 
 						if (bitmap == null)
 						{
-							cache.Put(cachKey, "PLEASEHOLD");
+							cache.Put(cacheKey, _cachePlaceHolder);
 							var task = context.GetFormsDrawableAsync(initialSource, cancellationToken);
 							returnValue = await task;
 							if(returnValue is BitmapDrawable bitmapDrawable)
 							{
-								cache.Put(cachKey, bitmapDrawable.Bitmap);
+								cache.Put(cacheKey, bitmapDrawable.Bitmap);
 							}
 							else
 							{
-								cache.Remove(cachKey);
+								cache.Remove(cacheKey);
 							}
 						}
 						else
@@ -223,7 +224,9 @@ namespace Xamarin.Forms.Platform.Android
 							returnValue = new BitmapDrawable(context.Resources, bitmap);
 						}
 
-						// TODO: it might be good to make sure the renderer has not been disposed
+						if (renderer is IDisposedState disposed && disposed.IsDisposed)
+							return;
+
 						// we are back, so update the working element
 						element = bindable ?? renderer.Element;
 
@@ -243,7 +246,8 @@ namespace Xamarin.Forms.Platform.Android
 
 						using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
 						{
-							// TODO: it might be good to make sure the renderer has not been disposed
+							if (renderer is IDisposedState disposed && disposed.IsDisposed)
+								return;
 
 							// we are back, so update the working element
 							element = bindable ?? renderer.Element;

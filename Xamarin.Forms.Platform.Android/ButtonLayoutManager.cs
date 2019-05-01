@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			AppCompatButton view = View;
-			if (view == null || view.Layout == null)
+			if (view == null)
 				return;
 
 			Drawable drawable = null;

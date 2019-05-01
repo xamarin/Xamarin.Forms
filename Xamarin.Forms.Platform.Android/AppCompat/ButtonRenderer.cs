@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>,
 		AView.IOnAttachStateChangeListener, AView.IOnClickListener, AView.IOnTouchListener,
-		IBorderVisualElementRenderer, IButtonLayoutRenderer
+		IBorderVisualElementRenderer, IButtonLayoutRenderer, IDisposedState
 	{
 		BorderBackgroundManager _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
@@ -202,5 +202,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		AppCompatButton IButtonLayoutRenderer.View => Control;
+		bool IDisposedState.IsDisposed => _isDisposed;
 	}
 }
