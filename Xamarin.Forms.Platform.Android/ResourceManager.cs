@@ -18,6 +18,43 @@ namespace Xamarin.Forms.Platform.Android
 	public static class ResourceManager
 	{
 		const string _drawableDefType = "drawable";
+		static ImageCache _lruCache = null;
+		static object _lruCacheHandle = new object();
+
+		static ImageCache GetCache()
+		{
+			if (_lruCache != null)
+				return _lruCache;
+
+			lock(_lruCacheHandle)
+			{
+				if (_lruCache == null)
+					_lruCache = new ImageCache();
+			}
+
+			return _lruCache;
+		}
+
+		class ImageCache : global::Android.Util.LruCache
+		{
+
+			static int getCacheSize()
+			{
+				// taken from lru cache docs
+				int cacheSize = 4 * 1024 * 1024;
+				if (Java.Lang.Runtime.GetRuntime()?.MaxMemory() != null)
+				{
+					var maxMemory = (int)(Java.Lang.Runtime.GetRuntime().MaxMemory() / 1024);
+					cacheSize = maxMemory / 8;
+				}
+				return cacheSize;
+			}
+
+			public ImageCache() : base(getCacheSize())
+			{
+
+			}
+		}
 
 		public static Type DrawableClass { get; set; }
 
@@ -120,6 +157,7 @@ namespace Xamarin.Forms.Platform.Android
 			return renderer.ApplyDrawableAsync(null, imageSourceProperty, context, onSet, onLoading, cancellationToken);
 		}
 
+
 		internal static async Task ApplyDrawableAsync(this IVisualElementRenderer renderer,
 												BindableObject bindable,
 												BindableProperty imageSourceProperty,
@@ -146,10 +184,46 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				try
 				{
-					using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
-					{
-						// TODO: it might be good to make sure the renderer has not been disposed
+					string cachKey = String.Empty;
 
+					// Todo improve for other sources
+					// volley the requests up front so that if the same request comes in it isn't requeueued
+					if(initialSource is UriImageSource uri)
+					{
+						cachKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
+						var cache = GetCache();
+						var cacheObject = cache.Get(cachKey);
+
+						// this only really gets hit during load when there are a lot of requests for the same image
+						while(cacheObject?.ToString() == "PLEASEHOLD")
+						{
+							await Task.Delay(100).ConfigureAwait(false);
+							cacheObject = cache.Get(cachKey);
+						}
+
+						Bitmap bitmap = cacheObject as Bitmap;
+						Drawable returnValue = null;
+
+						if (bitmap == null)
+						{
+							cache.Put(cachKey, "PLEASEHOLD");
+							var task = context.GetFormsDrawableAsync(initialSource, cancellationToken);
+							returnValue = await task;
+							if(returnValue is BitmapDrawable bitmapDrawable)
+							{
+								cache.Put(cachKey, bitmapDrawable.Bitmap);
+							}
+							else
+							{
+								cache.Remove(cachKey);
+							}
+						}
+						else
+						{
+							returnValue = new BitmapDrawable(context.Resources, bitmap);
+						}
+
+						// TODO: it might be good to make sure the renderer has not been disposed
 						// we are back, so update the working element
 						element = bindable ?? renderer.Element;
 
@@ -159,7 +233,31 @@ namespace Xamarin.Forms.Platform.Android
 
 						// only set if we are still on the same image
 						if (element.GetValue(imageSourceProperty) == initialSource)
-							onSet(drawable);
+						{
+							using(returnValue)
+								onSet(returnValue);
+						}
+					}
+					else
+					{
+
+						using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
+						{
+							// TODO: it might be good to make sure the renderer has not been disposed
+
+							// we are back, so update the working element
+							element = bindable ?? renderer.Element;
+
+							// makse sure things are good now that we are back
+							if (element == null || renderer.View == null)
+								return;
+
+							// only set if we are still on the same image
+							if (element.GetValue(imageSourceProperty) == initialSource)
+							{
+								onSet(drawable);
+							}
+						}
 					}
 				}
 				finally
@@ -179,40 +277,15 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		internal static async Task ApplyDrawableAsync(this Context context, BindableObject bindable, BindableProperty imageSourceProperty, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task ApplyDrawableAsync(this Context context,
+												BindableObject bindable,
+												BindableProperty imageSourceProperty,
+												Action<Drawable> onSet,
+												Action<bool> onLoading = null,
+												CancellationToken cancellationToken = default(CancellationToken))
 		{
-			_ = context ?? throw new ArgumentNullException(nameof(context));
-			_ = bindable ?? throw new ArgumentNullException(nameof(bindable));
-			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
-			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
 
-			onLoading?.Invoke(true);
-			if (bindable.GetValue(imageSourceProperty) is ImageSource initialSource)
-			{
-				try
-				{
-					using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
-					{
-						// only set if we are still on the same image
-						if (bindable.GetValue(imageSourceProperty) == initialSource)
-							onSet(drawable);
-					}
-				}
-				finally
-				{
-					if (onLoading != null)
-					{
-						// only mark as finished if we are still on the same image
-						if (bindable.GetValue(imageSourceProperty) == initialSource)
-							onLoading.Invoke(false);
-					}
-				}
-			}
-			else
-			{
-				onSet(null);
-				onLoading?.Invoke(false);
-			}
+			await ApplyDrawableAsync(null, bindable, imageSourceProperty, context, onSet, onLoading, cancellationToken);
 		}
 
 		public static Bitmap GetBitmap(this Resources resource, FileImageSource fileImageSource)

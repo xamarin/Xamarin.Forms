@@ -276,8 +276,20 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
 
+			Drawable existingImage = null;
+			var images = TextViewCompat.GetCompoundDrawablesRelative(view);
+			for (int i = 0; i < images.Length; i++)
+				if(images[i] != null)
+				{
+					existingImage = images[i];
+					break;
+				}
+
 			_renderer.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
 			{
+				if (image == existingImage)
+					return;
+
 				switch (layout.Position)
 				{
 					case Button.ButtonContentLayout.ImagePosition.Top:
@@ -294,11 +306,8 @@ namespace Xamarin.Forms.Platform.Android
 						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
 						break;
 				}
-
-				// Invalidating here causes a crazy amount of increased measure invalidations
-				// when I tested with Issue4484 it caused about 800 calls to invalidate measure vs the 8 without this
-				// I'm pretty sure it gets into a layout / invalidation loop where these are invalidating mid layout				
-				//_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+		
+				_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 			});
 		}
 	}

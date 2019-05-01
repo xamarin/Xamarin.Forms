@@ -27,8 +27,17 @@ namespace Xamarin.Forms.Controls.Issues
 #pragma warning restore CS0618 // Type or member is obsolete
 			navPage.BindingContext = new Issue4915ContentPage.ViewModel();
 
+
+			var urlNavPage = new NavigationPage(new Issue4915ContentPage()) { Title = "nav page 1" };
+			urlNavPage.SetBinding(Page.IconImageSourceProperty, "ImageUrl");
+			urlNavPage.BindingContext = new Issue4915ContentPage.ViewModel();
+
+
 			Children.Add(navPage);
+			Children.Add(urlNavPage);
 			Children.Add(new Issue4915ContentPage() { Title = "page 2" });
+
+
 		}
 
 #if UITEST
@@ -57,6 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public class ViewModel
 		{
 			public string Image { get; set; } = "coffee.png";
+			public string ImageUrl { get; set; } = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/f27f5a3650f37894d4a1ac925d6fab4dc7350087/Xamarin.Forms.ControlGallery.iOS/oasis.jpg";
 		}
 	}
 }
