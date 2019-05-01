@@ -145,6 +145,7 @@
     <Compile Include="IDeviceInfoProvider.cs" />
     <Compile Include="IDisposedState.cs" />
     <Compile Include="ILayoutChanges.cs" />
+    <Compile Include="ImageCache.cs" />
     <Compile Include="IScrollView.cs" />
     <Compile Include="ITabStop.cs" />
     <Compile Include="IPickerRenderer.cs" />

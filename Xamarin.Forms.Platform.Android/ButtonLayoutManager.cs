@@ -310,11 +310,8 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 				}
 
-				// I'm not thrilled about the BeginInvokeOnMainThread
-				// but without it the button won't resize based on the image dimensions if the image has changed
-				// you can see this using Issue4915
 				if (_hasLayoutOccurred)
-					Device.BeginInvokeOnMainThread(() => _element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged));
+					_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 			});
 		}
 	}

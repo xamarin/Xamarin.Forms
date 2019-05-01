@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Platform.Android
 	public static class ResourceManager
 	{
 		const string _drawableDefType = "drawable";
-		const string _cachePlaceHolder = "PLEASEHOLD";
 		static ImageCache _lruCache = null;
 		static object _lruCacheHandle = new object();
 
@@ -36,26 +35,6 @@ namespace Xamarin.Forms.Platform.Android
 			return _lruCache;
 		}
 
-		class ImageCache : global::Android.Util.LruCache
-		{
-
-			static int GetCacheSize()
-			{
-				// https://developer.android.com/topic/performance/graphics/cache-bitmap
-				int cacheSize = 4 * 1024 * 1024;
-				if (Java.Lang.Runtime.GetRuntime()?.MaxMemory() != null)
-				{
-					var maxMemory = (int)(Java.Lang.Runtime.GetRuntime().MaxMemory() / 1024);
-					cacheSize = maxMemory / 8;
-				}
-				return cacheSize;
-			}
-
-			public ImageCache() : base(GetCacheSize())
-			{
-
-			}
-		}
 
 		public static Type DrawableClass { get; set; }
 
@@ -177,7 +156,7 @@ namespace Xamarin.Forms.Platform.Android
 			// make sure things are good before we start
 			var element = bindable ?? renderer.Element;
 
-			if (element == null || renderer.View == null)
+			if (element == null)
 				return;
 
 			onLoading?.Invoke(true);
@@ -188,26 +167,19 @@ namespace Xamarin.Forms.Platform.Android
 					string cacheKey = String.Empty;
 
 					// Todo improve for other sources
-					// volley the requests up front so that if the same request comes in it isn't requeued
+					// volley the requests better up front so that if the same request comes in it isn't requeued
 					if (initialSource is UriImageSource uri)
 					{
 						cacheKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
 						var cache = GetCache();
-						var cacheObject = cache.Get(cacheKey);
-
-						// this only really gets hit during load when there are a lot of requests for the same image
-						while(cacheObject?.ToString() == _cachePlaceHolder)
-						{
-							await Task.Delay(100).ConfigureAwait(false);
-							cacheObject = cache.Get(cacheKey);
-						}
+						var cacheObject = await cache.GetAsync(cacheKey);
 
 						Bitmap bitmap = cacheObject as Bitmap;
 						Drawable returnValue = null;
 
 						if (bitmap == null)
 						{
-							cache.Put(cacheKey, _cachePlaceHolder);
+							cache.PutLoadingKey(cacheKey);
 							var task = context.GetFormsDrawableAsync(initialSource, cancellationToken);
 							returnValue = await task;
 							if(returnValue is BitmapDrawable bitmapDrawable)
