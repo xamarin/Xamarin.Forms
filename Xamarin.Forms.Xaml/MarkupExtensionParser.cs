@@ -76,7 +76,10 @@ namespace Xamarin.Forms.Xaml
 			}
 			if (value == null && strValue != null) {
 				try {
-					value = strValue.ConvertTo(markupExtension.GetType().GetRuntimeProperty(prop).PropertyType, (Func<TypeConverter>)null, serviceProvider);
+					value = strValue.ConvertTo(markupExtension.GetType().GetRuntimeProperty(prop).PropertyType,
+						(Func<TypeConverter>)null, serviceProvider, out Exception converterException);
+					if (converterException != null)
+						throw converterException;
 				}
 				catch (AmbiguousMatchException e) {
 					throw new XamlParseException($"Multiple properties with name  '{markupExtension.GetType()}.{prop}' found.", serviceProvider, innerException: e);

@@ -1,11 +1,13 @@
 using System;
+using System.ComponentModel;
+using System.Windows.Input;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SliderRenderer))]
-	public class Slider : View, IElementConfiguration<Slider>
+	public class Slider : View, ISliderController, IElementConfiguration<Slider>
 	{
 		public static readonly BindableProperty MinimumProperty = BindableProperty.Create("Minimum", typeof(double), typeof(Slider), 0d, validateValue: (bindable, value) =>
 		{
@@ -36,9 +38,7 @@ namespace Xamarin.Forms
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var slider = (Slider)bindable;
-			EventHandler<ValueChangedEventArgs> eh = slider.ValueChanged;
-			if (eh != null)
-				eh(slider, new ValueChangedEventArgs((double)oldValue, (double)newValue));
+			slider.ValueChanged?.Invoke(slider, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
 		public static readonly BindableProperty MinimumTrackColorProperty = BindableProperty.Create(nameof(MinimumTrackColor), typeof(Color), typeof(Slider), Color.Default);
@@ -48,6 +48,10 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ThumbColorProperty = BindableProperty.Create(nameof(ThumbColor), typeof(Color), typeof(Slider), Color.Default);
 
 		public static readonly BindableProperty ThumbImageProperty = BindableProperty.Create(nameof(ThumbImage), typeof(FileImageSource), typeof(Slider), default(FileImageSource));
+
+		public static readonly BindableProperty DragStartedCommandProperty = BindableProperty.Create(nameof(DragStartedCommand), typeof(ICommand), typeof(Slider), default(ICommand));
+
+		public static readonly BindableProperty DragCompletedCommandProperty = BindableProperty.Create(nameof(DragCompletedCommand), typeof(ICommand), typeof(Slider), default(ICommand));
 
 		readonly Lazy<PlatformConfigurationRegistry<Slider>> _platformConfigurationRegistry;
 
@@ -98,6 +102,18 @@ namespace Xamarin.Forms
 			set { SetValue(ThumbImageProperty, value); }
 		}
 
+		public ICommand DragStartedCommand
+		{
+			get { return (ICommand)GetValue(DragStartedCommandProperty); }
+			set { SetValue(DragStartedCommandProperty, value); }
+		}
+
+		public ICommand DragCompletedCommand
+		{
+			get { return (ICommand)GetValue(DragCompletedCommandProperty); }
+			set { SetValue(DragCompletedCommandProperty, value); }
+		}
+
 		public double Maximum
 		{
 			get { return (double)GetValue(MaximumProperty); }
@@ -117,6 +133,26 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler<ValueChangedEventArgs> ValueChanged;
+		public event EventHandler DragStarted;
+		public event EventHandler DragCompleted;
+
+		void ISliderController.SendDragStarted()
+		{
+			if (IsEnabled)
+			{
+				DragStartedCommand?.Execute(null);
+				DragStarted?.Invoke(this, null);
+			}
+		}
+
+		void ISliderController.SendDragCompleted()
+		{
+			if (IsEnabled)
+			{
+				DragCompletedCommand?.Execute(null);
+				DragCompleted?.Invoke(this, null);
+			}
+		}
 
 		public IPlatformElementConfiguration<T, Slider> On<T>() where T : IConfigPlatform
 		{

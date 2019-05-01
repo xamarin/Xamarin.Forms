@@ -20,6 +20,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: InternalsVisibleTo("Xamarin.Forms.Xaml.UnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.FlexLayout.UnitTests")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Material")]
 
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.iOS.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.Android.UITests")]
@@ -39,6 +40,8 @@ using Xamarin.Forms.StyleSheets;
 
 [assembly: XmlnsDefinition("http://xamarin.com/schemas/2014/forms", "Xamarin.Forms")]
 [assembly: XmlnsDefinition("http://xamarin.com/schemas/2014/forms/design", "Xamarin.Forms")]
+[assembly: XmlnsPrefix("http://xamarin.com/schemas/2014/forms", "xf")]
+[assembly: XmlnsPrefix("http://xamarin.com/schemas/2014/forms/design", "d")]
 
 [assembly: StyleProperty("background-color", typeof(VisualElement), nameof(VisualElement.BackgroundColorProperty))]
 [assembly: StyleProperty("background-image", typeof(Page), nameof(Page.BackgroundImageProperty))]
@@ -75,7 +78,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("text-decoration", typeof(IDecorableTextElement), nameof(DecorableTextElement.TextDecorationsProperty))]
 [assembly: StyleProperty("transform", typeof(VisualElement), nameof(VisualElement.TransformProperty))]
 [assembly: StyleProperty("transform-origin", typeof(VisualElement), nameof(VisualElement.TransformOriginProperty))]
-[assembly: StyleProperty("vertical-align", typeof(Label), nameof(Label.VerticalTextAlignment))]
+//[assembly: StyleProperty("vertical-align", /*typeof(Label), nameof(Label.VerticalTextAlignmentProperty)*/)]
 [assembly: StyleProperty("visibility", typeof(VisualElement), nameof(VisualElement.IsVisibleProperty), Inherited = true)]
 [assembly: StyleProperty("width", typeof(VisualElement), nameof(VisualElement.WidthRequestProperty))]
 [assembly: StyleProperty("line-height", typeof(ILineHeightElement), nameof(LineHeightElement.LineHeightProperty), Inherited = true)]
@@ -108,6 +111,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("-xf-spacing", typeof(StackLayout), nameof(StackLayout.SpacingProperty))]
 [assembly: StyleProperty("-xf-orientation", typeof(StackLayout), nameof(StackLayout.OrientationProperty))]
 [assembly: StyleProperty("-xf-visual", typeof(VisualElement), nameof(VisualElement.VisualProperty))]
+[assembly: StyleProperty("-xf-vertical-text-alignment", typeof(Label), nameof(Label.VerticalTextAlignmentProperty))]
 
 //shell
 [assembly: StyleProperty("-xf-flyout-background", typeof(Shell), nameof(Shell.FlyoutBackgroundColorProperty))]

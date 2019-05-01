@@ -45,7 +45,6 @@ steps:
           Xamarin.Forms.Build.Tasks/bin/**/*.dll
           Xamarin.Forms.Core.Design/bin/**/*.dll
           Xamarin.Forms.Xaml.Design/bin/**/*.dll
-          Xamarin.Forms.Maps.Design/bin/**/*.dll
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.pdb
@@ -56,7 +55,14 @@ steps:
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Platform.WP8/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pri
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xr.xml
@@ -72,6 +78,7 @@ steps:
           Xamarin.Forms.Maps.MacOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.WP8/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pri
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.xbf
           Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll

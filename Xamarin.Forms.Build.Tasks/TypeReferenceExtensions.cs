@@ -206,8 +206,6 @@ namespace Xamarin.Forms.Build.Tasks
 			if (typeRef.FullName == "System.Object")
 				return false;
 			var typeDef = typeRef.ResolveCached();
-			if (TypeRefComparer.Default.Equals(typeDef, baseClass.ResolveCached()))
-				return true;
 			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir.InterfaceType.ResolveGenericParameters(typeRef), baseClass)))
 				return true;
 			if (typeDef.BaseType == null)
@@ -327,7 +325,7 @@ namespace Xamarin.Forms.Build.Tasks
 						returnType = ((GenericInstanceType)opDeclTypeRef).GenericArguments [((GenericParameter)returnType).Position];
 					if (!returnType.InheritsFromOrImplements(toType))
 						continue;
-					var paramType = cast.Parameters[0].ParameterType;
+					var paramType = cast.Parameters[0].ParameterType.ResolveGenericParameters(castDef);
 					if (!fromType.InheritsFromOrImplements(paramType))
 						continue;
 					return castDef;
@@ -338,54 +336,71 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public static TypeReference ResolveGenericParameters(this TypeReference self, MethodReference declaringMethodReference)
 		{
-			var genericself = self as GenericParameter;
-			if (genericself != null) {
-				IGenericInstance instance;
+			var genericParameterSelf = self as GenericParameter;
+			var genericdeclMethod = declaringMethodReference as GenericInstanceMethod;
+			var declaringTypeReference = declaringMethodReference.DeclaringType;
+			var genericdeclType = declaringTypeReference as GenericInstanceType;
 
-				switch (genericself.Type) {
+			if (genericParameterSelf != null) {
+				switch (genericParameterSelf.Type) {
 				case GenericParameterType.Method:
-					instance = (IGenericInstance)declaringMethodReference;
+					self = genericdeclMethod.GenericArguments[genericParameterSelf.Position];
 					break;
 
 				case GenericParameterType.Type:
-					instance = (IGenericInstance)declaringMethodReference.DeclaringType;
+					self = genericdeclType.GenericArguments[genericParameterSelf.Position];
 					break;
-
-				default:
-					throw new Exception("unknown generic parameter type");
 				}
-
-				return instance.GenericArguments[genericself.Position];
 			}
 
-			var genericInstanceSelf = self as GenericInstanceType;
-			if (genericInstanceSelf != null) {
-				var genericArguments = genericInstanceSelf.GenericArguments;
-				var arguments = genericArguments.Select(argument => argument.ResolveGenericParameters(declaringMethodReference));
-				return genericInstanceSelf.ElementType.MakeGenericInstanceType(arguments.ToArray());
-			}
+			var genericself = self as GenericInstanceType;
+			if (genericself == null)
+				return self;
 
-			return self;
+			genericself = genericself.ResolveGenericParameters(declaringTypeReference);
+			for (var i = 0; i < genericself.GenericArguments.Count; i++) {
+				var genericParameter = genericself.GenericArguments[i] as GenericParameter;
+				if (genericParameter != null)
+					genericself.GenericArguments[i] = genericdeclMethod.GenericArguments[genericParameter.Position];
+			}
+			return genericself;
 		}
 
 		public static TypeReference ResolveGenericParameters(this TypeReference self, TypeReference declaringTypeReference)
-		{
-			var genericself = self as GenericInstanceType;
-			return genericself == null ? self : ResolveGenericParameters(genericself, declaringTypeReference);
-		}
-
-		static GenericInstanceType ResolveGenericParameters(this GenericInstanceType self, TypeReference declaringTypeReference)
 		{
 			var genericdeclType = declaringTypeReference as GenericInstanceType;
 			if (genericdeclType == null)
 				return self;
 
+			var genericParameterSelf = self as GenericParameter;
+			if (genericParameterSelf != null)
+				return genericdeclType.GenericArguments[genericParameterSelf.Position];
+
+			var genericself = self as GenericInstanceType;
+			if (genericself != null)
+				return genericself.ResolveGenericParameters(declaringTypeReference);
+
+			return self;
+		}
+
+		public static GenericInstanceType ResolveGenericParameters(this GenericInstanceType self, TypeReference declaringTypeReference)
+		{
+			var genericdeclType = declaringTypeReference as GenericInstanceType;
+			if (genericdeclType == null)
+				return self;
+
+			return self.ResolveGenericParameters(genericdeclType);
+		}
+
+		public static GenericInstanceType ResolveGenericParameters(this GenericInstanceType self, GenericInstanceType declaringTypeReference)
+		{
 			List<TypeReference> args = new List<TypeReference>();
 			for (var i = 0; i < self.GenericArguments.Count; i++) {
-				if (!self.GenericArguments[i].IsGenericParameter)
+				var genericParameter = self.GenericArguments[i] as GenericParameter;
+				if (genericParameter == null)
 					args.Add(self.GenericArguments[i].ResolveGenericParameters(declaringTypeReference));
-				else
-					args.Add(genericdeclType.GenericArguments[(self.GenericArguments[i] as GenericParameter).Position]);
+				else if (genericParameter.Type == GenericParameterType.Type)
+					args.Add(declaringTypeReference.GenericArguments[genericParameter.Position]);
 			}
 			return self.ElementType.MakeGenericInstanceType(args.ToArray());
 		}

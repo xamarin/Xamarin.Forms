@@ -246,6 +246,7 @@ namespace Xamarin.Forms.Controls
 	[Preserve(AllMembers = true)]
 	internal class CorePageView : ListView
 	{
+		[Preserve(AllMembers = true)]
 		internal class GalleryPageFactory
 		{
 			public GalleryPageFactory(Func<Page> create, string title)
@@ -258,10 +259,17 @@ namespace Xamarin.Forms.Controls
 				};
 
 				Title = title;
+				TitleAutomationId = $"{Title}AutomationId";
 			}
 
 			public Func<Page> Realize { get; set; }
 			public string Title { get; set; }
+
+			public string TitleAutomationId
+			{
+				get;
+				set;
+			}
 
 			public override string ToString()
 			{
@@ -271,6 +279,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
+				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
@@ -286,6 +295,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
 				new GalleryPageFactory(() => new AppearingGalleryPage(), "Appearing Gallery"),
 				new GalleryPageFactory(() => new EntryCoreGalleryPage(), "Entry Gallery"),
+				new GalleryPageFactory(() => new MaterialEntryGalleryPage(), "Entry Material Demos"),
 				new GalleryPageFactory(() => new NavBarTitleTestPage(), "Titles And Navbar Windows"),
 				new GalleryPageFactory(() => new PanGestureGalleryPage(), "Pan gesture Gallery"),
 				new GalleryPageFactory(() => new SwipeGestureGalleryPage(), "Swipe gesture Gallery"),
@@ -303,6 +313,10 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ContextActionsGallery (tableView: true), "ContextActions Table Gallery"),
 				new GalleryPageFactory(() => new CoreBoxViewGalleryPage(), "BoxView Gallery"),
 				new GalleryPageFactory(() => new ButtonCoreGalleryPage(), "Button Gallery"),
+				new GalleryPageFactory(() => new ButtonLayoutGalleryPage(), "Button Layout Gallery"),
+				new GalleryPageFactory(() => new ButtonLayoutGalleryPage(VisualMarker.Material), "Button Layout Gallery (Material)"),
+				new GalleryPageFactory(() => new ButtonBorderBackgroundGalleryPage(), "Button Border & Background Gallery"),
+				new GalleryPageFactory(() => new ButtonBorderBackgroundGalleryPage(VisualMarker.Material), "Button Border & Background Gallery (Material)"),
 				new GalleryPageFactory(() => new DatePickerCoreGalleryPage(), "DatePicker Gallery"),
 				new GalleryPageFactory(() => new EditorCoreGalleryPage(), "Editor Gallery"),
 				new GalleryPageFactory(() => new FrameCoreGalleryPage(), "Frame Gallery"),
@@ -314,6 +328,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new OpenGLViewCoreGalleryPage(), "OpenGLView Gallery"),
 				new GalleryPageFactory(() => new PickerCoreGalleryPage(), "Picker Gallery"),
 				new GalleryPageFactory(() => new ProgressBarCoreGalleryPage(), "ProgressBar Gallery"),
+				new GalleryPageFactory(() => new MaterialProgressBarGallery(), "ProgressBar & Slider Gallery (Material)"),
+				new GalleryPageFactory(() => new MaterialActivityIndicatorGallery(), "ActivityIndicator Gallery (Material)"),
 				new GalleryPageFactory(() => new ScrollGallery(), "ScrollView Gallery"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Horizontal), "ScrollView Gallery Horizontal"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Both), "ScrollView Gallery 2D"),
@@ -358,12 +374,13 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ListRefresh(), "ListView.PullToRefresh"),
 				new GalleryPageFactory(() => new ListViewDemoPage(), "ListView Demo Gallery - Legacy"),
 				new GalleryPageFactory(() => new MapGallery(), "Map Gallery - Legacy"),
+				new GalleryPageFactory(() => new MapWithItemsSourceGallery(), "Map With ItemsSource Gallery - Legacy"),
 				new GalleryPageFactory(() => new MinimumSizeGallery(), "MinimumSize Gallery - Legacy"),
 				new GalleryPageFactory(() => new MultiGallery(), "Multi Gallery - Legacy"),
-				new GalleryPageFactory(() => new NavigationMenuGallery(), "NavigationMenu Gallery - Legacy"),
 				new GalleryPageFactory(() => new NavigationPropertiesGallery(), "Navigation Properties"),
 #if HAVE_OPENTK
-				new GalleryPageFactory(() => new OpenGLGallery(), "OpenGLGallery - Legacy"),
+				new GalleryPageFactory(() => new BasicOpenGLGallery(), "Basic OpenGL Gallery - Legacy"),
+				new GalleryPageFactory(() => new AdvancedOpenGLGallery(), "Advanced OpenGL Gallery - Legacy"),
 #endif
 				new GalleryPageFactory(() => new PickerGallery(), "Picker Gallery - Legacy"),
 				new GalleryPageFactory(() => new ProgressBarGallery(), "ProgressBar Gallery - Legacy"),
@@ -380,7 +397,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new TableViewGallery(), "TableView Gallery - Legacy"),
 				new GalleryPageFactory(() => new TemplatedCarouselGallery(), "TemplatedCarouselPage Gallery - Legacy"),
 				new GalleryPageFactory(() => new TemplatedTabbedGallery(), "TemplatedTabbedPage Gallery - Legacy"),
-				 new GalleryPageFactory(() => new UnevenViewCellGallery(), "UnevenViewCell Gallery - Legacy"),
+				new GalleryPageFactory(() => new UnevenViewCellGallery(), "UnevenViewCell Gallery - Legacy"),
 				new GalleryPageFactory(() => new UnevenListGallery(), "UnevenList Gallery - Legacy"),
 				new GalleryPageFactory(() => new ViewCellGallery(), "ViewCell Gallery - Legacy"),
 				new GalleryPageFactory(() => new WebViewGallery(), "WebView Gallery - Legacy"),
@@ -389,6 +406,12 @@ namespace Xamarin.Forms.Controls
 
 		public CorePageView(Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
 		{
+			var galleryFactory = DependencyService.Get<IPlatformSpecificCoreGalleryFactory>();
+
+			var platformPages = galleryFactory?.GetPages();
+			if (platformPages != null)
+				_pages.AddRange(platformPages.Select(p => new GalleryPageFactory(p.Create, p.Title + " (Platform Specifc)")));
+
 			_titleToPage = _pages.ToDictionary(o => o.Title);
 
 			// avoid NRE for root pages without NavigationBar
@@ -398,8 +421,33 @@ namespace Xamarin.Forms.Controls
 				_pages.Insert(1, new GalleryPageFactory(() => new TitleView(true), "TitleView"));
 			}
 
-			var template = new DataTemplate(typeof(TextCell));
+			_pages.Sort((x, y) => string.Compare(x.Title, y.Title, true));
+
+			var template = new DataTemplate(() =>
+			{
+				var cell = new TextCell();
+				cell.ContextActions.Add(new MenuItem
+				{
+					Text = "Select Visual",
+					Command = new Command(async () =>
+					{
+						var buttons = typeof(VisualMarker).GetProperties().Select(p => p.Name);
+						var selection = await rootPage.DisplayActionSheet("Select Visual", "Cancel", null, buttons.ToArray());
+						if (cell.BindingContext is GalleryPageFactory pageFactory)
+						{
+							var page = pageFactory.Realize();
+							if (typeof(VisualMarker).GetProperty(selection)?.GetValue(null) is IVisual visual)
+								page.Visual = visual;
+							await PushPage(page);
+						}
+					})
+				});
+
+				return cell;
+			});
+
 			template.SetBinding(TextCell.TextProperty, "Title");
+			template.SetBinding(TextCell.AutomationIdProperty, "TitleAutomationId");
 
 			BindingContext = _pages;
 			ItemTemplate = template;
@@ -447,6 +495,14 @@ namespace Xamarin.Forms.Controls
 
 			await PushPage(page);
 		}
+
+		public void FilterPages(string filter)
+		{
+			if (string.IsNullOrWhiteSpace(filter))
+				ItemsSource = _pages;
+			else
+				ItemsSource = _pages.Where(p => p.Title.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1);
+		}
 	}
 	[Preserve(AllMembers = true)]
 	internal class CoreRootPage : ContentPage
@@ -455,15 +511,20 @@ namespace Xamarin.Forms.Controls
 		{
 			ValidateRegistrar();
 
-			IStringProvider stringProvider = DependencyService.Get<IStringProvider>();
+			var galleryFactory = DependencyService.Get<IPlatformSpecificCoreGalleryFactory>();
 
-			Title = stringProvider.CoreGalleryTitle;
+			Title = galleryFactory?.Title ?? "Core Gallery";
 
 			var corePageView = new CorePageView(rootPage, navigationBehavior);
 
 			var searchBar = new SearchBar()
 			{
 				AutomationId = "SearchBar"
+			};
+
+			searchBar.TextChanged += (sender, e) =>
+			{
+				corePageView.FilterPages(e.NewTextValue);
 			};
 
 			var testCasesButton = new Button
@@ -519,6 +580,7 @@ namespace Xamarin.Forms.Controls
 
 			foreach (var page in Issues.Helpers.ViewHelper.GetAllPages())
 			{
+				page.Visual = VisualMarker.Default;
 				if (!DependencyService.Get<IRegistrarValidationService>().Validate(page, out string message))
 					throw new InvalidOperationException(message);
 			}
@@ -526,9 +588,11 @@ namespace Xamarin.Forms.Controls
 	}
 
 	[Preserve(AllMembers = true)]
-	public interface IStringProvider
+	public interface IPlatformSpecificCoreGalleryFactory
 	{
-		string CoreGalleryTitle { get; }
+		string Title { get; }
+
+		IEnumerable<(Func<Page> Create, string Title)> GetPages();
 	}
 	[Preserve(AllMembers = true)]
 	public static class CoreGallery

@@ -4,6 +4,7 @@ using Android.Content;
 using Android.Util;
 using Android.Views.InputMethods;
 using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
+using AActivity = Android.App.Activity;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -32,9 +33,9 @@ namespace Xamarin.Forms.Platform.Android
 		public static void HideKeyboard(this Context self, global::Android.Views.View view)
 		{
 			var service = (InputMethodManager)self.GetSystemService(Context.InputMethodService);
-			// Can happen in the context of the Android Designer
+			// service may be null in the context of the Android Designer
 			if (service != null)
-				service.HideSoftInputFromWindow(view.WindowToken, 0);
+				service.HideSoftInputFromWindow(view.WindowToken, HideSoftInputFlags.None);
 		}
 
 		public static void ShowKeyboard(this Context self, global::Android.Views.View view)
@@ -50,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			SetupMetrics(self);
 
-			return (float)Math.Round(dp * s_displayDensity);
+			return (float)Math.Ceiling(dp * s_displayDensity);
 		}
 
 		public static bool HasRtlSupport(this Context self) =>
@@ -80,6 +81,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			using (DisplayMetrics metrics = context.Resources.DisplayMetrics)
 				s_displayDensity = metrics.Density;
+		}
+
+		public static AActivity GetActivity(this Context context)
+		{
+			if (context == null)
+				return null;
+
+			if (context is AActivity activity)
+				return activity;
+
+			if (context is ContextWrapper contextWrapper)
+				return contextWrapper.BaseContext.GetActivity();
+
+			return null;
 		}
 	}
 }

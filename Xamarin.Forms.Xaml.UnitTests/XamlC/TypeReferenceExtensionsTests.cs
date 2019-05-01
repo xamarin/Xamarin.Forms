@@ -134,6 +134,7 @@ namespace Xamarin.Forms.XamlcUnitTests
 		[TestCase(typeof(StackLayout), typeof(View), ExpectedResult = true)]
 		[TestCase(typeof(Foo<string>), typeof(Foo), ExpectedResult = true)]
 		[TestCase(typeof(Bar<string>), typeof(Foo), ExpectedResult = true)]
+		[TestCase(typeof(Bar<string>), typeof(Foo<bool>), ExpectedResult = false)]
 		[TestCase(typeof(Bar<string>), typeof(Foo<string>), ExpectedResult = true)]
 		[TestCase(typeof(Qux<string>), typeof(double), ExpectedResult = false)] //https://github.com/xamarin/Xamarin.Forms/issues/1497
 		public bool TestInheritsFromOrImplements(Type typeRef, Type baseClass)
@@ -148,6 +149,17 @@ namespace Xamarin.Forms.XamlcUnitTests
 			var test = typeof(TypeReferenceExtensionsTests).Assembly;
 
 			Assert.False(TestInheritsFromOrImplements(test.GetType("Xamarin.Forms.Effect"), core.GetType("Xamarin.Forms.Effect")));
+		}
+
+		[Test]
+		public void TestResolveSelectedGenericParameter()
+		{
+			var imported = module.ImportReference(typeof(Bar<byte>));
+			var baseType = (GenericInstanceType)imported.Resolve().BaseType;
+			var resolvedType = baseType.GenericArguments[0].ResolveGenericParameters(imported);
+
+			Assert.AreEqual("System", resolvedType.Namespace);
+			Assert.AreEqual("Byte", resolvedType.Name);
 		}
 
 		[TestCase(typeof(Bar<byte>), 1)]

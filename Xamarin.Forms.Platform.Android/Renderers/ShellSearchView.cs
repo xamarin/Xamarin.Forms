@@ -10,7 +10,6 @@ using Java.Lang;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -42,6 +41,8 @@ namespace Xamarin.Forms.Platform.Android
 		void IShellSearchView.LoadView()
 		{
 			LoadView(SearchHandler);
+			if(_searchHandlerAppearanceTracker == null)
+				_searchHandlerAppearanceTracker = new SearchHandlerAppearanceTracker(this);
 		}
 
 		#endregion IShellSearchView
@@ -89,8 +90,10 @@ namespace Xamarin.Forms.Platform.Android
 		AImageButton _clearButton;
 		AImageButton _clearPlaceholderButton;
 		AImageButton _searchButton;
+		//AButton _cancelButton;
 		AppCompatAutoCompleteTextView _textBlock;
 		bool _disposed;
+		SearchHandlerAppearanceTracker _searchHandlerAppearanceTracker;
 
 		public ShellSearchView(Context context, IShellContext shellContext) : base(context)
 		{
@@ -122,6 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_disposed = true;
 
+				_searchHandlerAppearanceTracker?.Dispose();
 				SearchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
 
 				_textBlock.ItemClick -= OnTextBlockItemClicked;
@@ -149,6 +153,7 @@ namespace Xamarin.Forms.Platform.Android
 			_cardView = null;
 			_clearPlaceholderButton = null;
 			_shellContext = null;
+			_searchHandlerAppearanceTracker = null;
 
 			SearchHandler = null;
 		}
@@ -177,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			int padding = (int)context.ToPixels(8);
 
-			_searchButton = CreateImageButton(context, searchImage, Resource.Drawable.abc_ic_search_api_material, padding, 0);
+			_searchButton = CreateImageButton(context, searchImage, Resource.Drawable.abc_ic_search_api_material, padding, 0, "SearchIcon");
 
 			lp = new LinearLayout.LayoutParams(0, LP.MatchParent)
 			{
@@ -204,13 +209,17 @@ namespace Xamarin.Forms.Platform.Android
 			// A note on accessibility. The _textBlocks hint is what android defaults to reading in the screen
 			// reader. Therefor we do not need to set something else.
 
-			_clearButton = CreateImageButton(context, clearImage, Resource.Drawable.abc_ic_clear_material, 0, padding);
-			_clearPlaceholderButton = CreateImageButton(context, clearPlaceholderImage, -1, 0, padding);
+			//_cancelButton = new AButton(context);
+			//_cancelButton.Text = "Cancel";
+
+			_clearButton = CreateImageButton(context, clearImage, Resource.Drawable.abc_ic_clear_material, 0, padding, nameof(SearchHandler.ClearIcon));
+			_clearPlaceholderButton = CreateImageButton(context, clearPlaceholderImage, -1, 0, padding, nameof(SearchHandler.ClearPlaceholderIcon));
 
 			linearLayout.AddView(_searchButton);
 			linearLayout.AddView(_textBlock);
 			linearLayout.AddView(_clearButton);
 			linearLayout.AddView(_clearPlaceholderButton);
+			//linearLayout.AddView(_cancelButton);
 
 			UpdateClearButtonState();
 
@@ -221,11 +230,17 @@ namespace Xamarin.Forms.Platform.Android
 			_clearButton.Click += OnClearButtonClicked;
 			_clearPlaceholderButton.Click += OnClearPlaceholderButtonClicked;
 			_searchButton.Click += OnSearchButtonClicked;
+			//_cancelButton.Click += CancelButtonClicked;
 
 			AddView(_cardView);
 
 			linearLayout.Dispose();
 		}
+
+		//protected virtual void CancelButtonClicked(object sender, EventArgs e)
+		//{
+		//	throw new NotImplementedException();
+		//}
 
 		protected virtual void OnSearchHandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -296,12 +311,13 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		AImageButton CreateImageButton(Context context, ImageSource image, int defaultImage, int leftMargin, int rightMargin)
+		AImageButton CreateImageButton(Context context, ImageSource image, int defaultImage, int leftMargin, int rightMargin, string tag)
 		{
 			var result = new AImageButton(context);
+			result.Tag = tag;
 			result.SetPadding(0, 0, 0, 0);
 			result.Focusable = false;
-
+		
 			string defaultHint = null;
 			string defaultDescription = null;
 			AutomationPropertiesProvider.SetContentDescription(result, image, ref defaultDescription, ref defaultHint);
