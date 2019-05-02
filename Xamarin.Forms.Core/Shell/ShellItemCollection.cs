@@ -25,7 +25,7 @@ namespace Xamarin.Forms
 		public void Add(ShellItem item)
 		{
 			/*
-			 * This is purely for the case where a user is only specifying Tabs at the heighest level
+			 * This is purely for the case where a user is only specifying Tabs at the highest level
 			 * <shell>
 			 * <tab></tab>
 			 * <tab></tab>
