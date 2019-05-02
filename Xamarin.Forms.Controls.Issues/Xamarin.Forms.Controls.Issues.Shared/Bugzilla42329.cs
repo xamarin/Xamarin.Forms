@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string LabelPage1 = "Open the drawer menu and select Page2";
 		const string LabelPage2 = "Open the drawer menu and select Page3";
 		readonly static string LabelPage3 = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed.";
-		static string Success = string.Empty;
+		static string Success { get; set; } = string.Empty;
 		static MasterDetailPage Reference;
 
 		protected override void Init()
@@ -175,16 +175,17 @@ namespace Xamarin.Forms.Controls.Issues
 			public _42329_Page3()
 			{
 				Title = Page3Title;
+				Success = Success;
 				lblFlag = new Label
 				{
 					Text = LabelPage3,
 					HorizontalTextAlignment = TextAlignment.Center,
 					TextColor = Color.Red
 				};
-				lblFlag.GestureRecognizers.Add(new TapGestureRecognizer
-				{
-					Command = new Command(async () => await DisplayAlert("Alert", Success, "ok"))
-				});
+				//lblFlag.GestureRecognizers.Add(new TapGestureRecognizer
+				//{
+				//	Command = new Command(async () => await DisplayAlert("Alert", Success, "ok"))
+				//});
 				Content = new StackLayout
 				{
 					Children =
@@ -194,10 +195,11 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 			}
 
-			protected override void OnAppearing()
+			protected override async void OnAppearing()
 			{
 				base.OnAppearing();
 				GarbageCollectionHelper.Collect();
+				await DisplayAlert("Alert", Success, "ok");
 			}
 		}
 
@@ -213,10 +215,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(LabelPage2);
 			RunningApp.WaitForElement(Page2Title);
 			RunningApp.Tap(Page3Title);
-			RunningApp.WaitForElement(LabelPage3);
-			RunningApp.Tap(LabelPage3);
-			RunningApp.WaitForElement(Success);
-
+			RunningApp.WaitForElement("Desctructor called");
+			RunningApp.Tap("ok");
 		}
 #endif
 	}
