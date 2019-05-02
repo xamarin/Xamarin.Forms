@@ -53,9 +53,9 @@ namespace Xamarin.Forms.Platform.Android
 						}
 					}
 				}
-				else if (!Forms.IsLollipopOrNewer)
+				else
 				{
-					imageView.SetImageDrawable(null);
+					imageView.SetImageBitmap(null);
 				}
 			}
 			finally
