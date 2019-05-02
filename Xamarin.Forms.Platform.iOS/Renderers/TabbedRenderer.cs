@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (renderer.ViewController.TabBarItem != null)
 					renderer.ViewController.TabBarItem.Title = page.Title;
 			}
-			else if (e.PropertyName == Page.IconProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName && Forms.IsiOS10OrNewer)
+			else if (e.PropertyName == Page.IconImageSourceProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName && Forms.IsiOS10OrNewer)
 			{
 				var page = (Page)sender;
 
@@ -238,6 +238,9 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
 			else if (e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName || e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName)
 				UpdateSelectedTabColors();
+			else if (e.PropertyName == PrefersHomeIndicatorAutoHiddenProperty.PropertyName)
+				UpdatePrefersHomeIndicatorAutoHiddenOnPages();
+
 		}
 
 		public override UIViewController ChildViewControllerForStatusBarHidden()
@@ -260,6 +263,27 @@ namespace Xamarin.Forms.Platform.iOS
 			for (var i = 0; i < ViewControllers.Length; i++)
 			{
 				Tabbed.GetPageByIndex(i).OnThisPlatform().SetPrefersStatusBarHidden(Tabbed.OnThisPlatform().PrefersStatusBarHidden());
+			}
+		}
+
+		public override UIViewController ChildViewControllerForHomeIndicatorAutoHidden
+		{
+			get
+			{
+				var current = Tabbed.CurrentPage;
+				if (current == null)
+					return null;
+
+				return GetViewController(current);
+			}
+		}
+
+		void UpdatePrefersHomeIndicatorAutoHiddenOnPages()
+		{
+			bool isHomeIndicatorHidden = Tabbed.OnThisPlatform().PrefersHomeIndicatorAutoHidden();
+			for (var i = 0; i < ViewControllers.Length; i++)
+			{
+				Tabbed.GetPageByIndex(i).OnThisPlatform().SetPrefersHomeIndicatorAutoHidden(isHomeIndicatorHidden);
 			}
 		}
 
@@ -436,13 +460,8 @@ namespace Xamarin.Forms.Platform.iOS
 		/// </returns>
 		protected virtual async Task<Tuple<UIImage, UIImage>> GetIcon(Page page)
 		{
-			if (!string.IsNullOrEmpty(page.Icon?.File))
-			{
-				var icon = await page.Icon.GetNativeImageAsync();
-				return Tuple.Create(icon, (UIImage)null);
-			}
-
-			return null;
+			var icon = await page.IconImageSource.GetNativeImageAsync();
+			return icon == null ? null : Tuple.Create(icon, (UIImage)null);
 		}
 	}
 }
