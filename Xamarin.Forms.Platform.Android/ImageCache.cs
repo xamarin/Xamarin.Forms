@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Put(string key, TimeSpan cacheValidity, global::Android.Graphics.Bitmap cacheObject)
 		{
-			_lruCache.Put(key, new CacheEntry() { TimeToLive = DateTimeOffset.Now.Add(cacheValidity), Data = cacheObject });
+			_lruCache.Put(key, new CacheEntry() { TimeToLive = DateTimeOffset.UtcNow.Add(cacheValidity), Data = cacheObject });
 		}
 
 		public Task<Java.Lang.Object> GetAsync(string cacheKey, TimeSpan cacheValidity, Func<Task<Java.Lang.Object>> createMethod)
@@ -30,6 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 			return Task.Run(async () =>
 			{
 				SemaphoreSlim semaphoreSlim = null;
+				Java.Lang.Object innerCacheObject = null;
 
 				try
 				{
@@ -38,10 +40,9 @@ namespace Xamarin.Forms.Platform.Android
 
 					var cacheEntry = _lruCache.Get(cacheKey) as CacheEntry;
 
-					if (cacheEntry?.TimeToLive < DateTimeOffset.Now)
+					if (cacheEntry?.TimeToLive < DateTimeOffset.UtcNow || cacheEntry?.IsDisposed == true)
 						cacheEntry = null;
 
-					Java.Lang.Object innerCacheObject = null;
 					if (cacheEntry == null && createMethod != null)
 					{
 						innerCacheObject = await createMethod().ConfigureAwait(false);
@@ -54,8 +55,6 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						innerCacheObject = cacheEntry.Data;
 					}
-
-					return innerCacheObject;
 				}
 				catch
 				{
@@ -66,13 +65,36 @@ namespace Xamarin.Forms.Platform.Android
 					semaphoreSlim?.Release();
 				}
 
-				return null;
+				return innerCacheObject;
 			});
 		}
 
-		public class CacheEntry : Java.Lang.Object
+		internal class CacheEntry : Java.Lang.Object
 		{
 			bool _isDisposed;
+
+			public CacheEntry(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
+			{
+			}
+
+			public CacheEntry()
+			{
+			}
+
+			public bool IsDisposed
+			{
+				get
+				{
+					if (Data == null)
+						return true;
+
+					if (this.IsDisposed() || Data.IsDisposed())
+						return true;
+
+					return false;
+				}
+			}
+
 			public DateTimeOffset TimeToLive { get; set; }
 			public global::Android.Graphics.Bitmap Data { get; set; }
 
