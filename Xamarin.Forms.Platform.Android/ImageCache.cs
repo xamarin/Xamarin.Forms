@@ -117,10 +117,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				// https://developer.android.com/topic/performance/graphics/cache-bitmap
 				int cacheSize = 4 * 1024 * 1024;
-				if (Java.Lang.Runtime.GetRuntime()?.MaxMemory() != null)
+				var maxMemory = Java.Lang.Runtime.GetRuntime()?.MaxMemory();
+				if (maxMemory != null)
 				{
-					var maxMemory = (int)(Java.Lang.Runtime.GetRuntime().MaxMemory() / 1024);
-					cacheSize = maxMemory / 8;
+					cacheSize = (int)(maxMemory.Value / 8);
 				}
 				return cacheSize;
 			}
