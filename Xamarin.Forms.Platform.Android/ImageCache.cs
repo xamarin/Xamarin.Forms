@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Java.Lang;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -12,6 +13,25 @@ namespace Xamarin.Forms.Platform.Android
 		const string _cachePlaceHolder = "PLEASEHOLD";
 
 		global::Android.Util.LruCache _lruCache;
+		public class FormsLruCache : global::Android.Util.LruCache
+		{
+			public FormsLruCache(int maxSize) : base(maxSize)
+			{
+			}
+
+			protected override int SizeOf(Object key, Object value)
+			{
+				if (value != null && value is global::Android.Graphics.Bitmap bitmap)
+					return bitmap.ByteCount;
+
+				return base.SizeOf(key, value);
+			}
+
+			protected override Object Create(Object key)
+			{
+				return base.Create(key);
+			}
+		}
 
 		static int GetCacheSize()
 		{
@@ -27,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ImageCache() : base()
 		{
-			_lruCache = new global::Android.Util.LruCache(GetCacheSize());
+			_lruCache = new FormsLruCache(GetCacheSize());
 		}
 
 		public async void Put(string key, Java.Lang.Object cacheObject)

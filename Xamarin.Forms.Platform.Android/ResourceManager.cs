@@ -18,22 +18,9 @@ namespace Xamarin.Forms.Platform.Android
 	public static class ResourceManager
 	{
 		const string _drawableDefType = "drawable";
-		static ImageCache _lruCache = null;
-		static object _lruCacheHandle = new object();
 
-		static ImageCache GetCache()
-		{
-			if (_lruCache != null)
-				return _lruCache;
-
-			lock(_lruCacheHandle)
-			{
-				if (_lruCache == null)
-					_lruCache = new ImageCache();
-			}
-
-			return _lruCache;
-		}
+		readonly static Lazy<ImageCache> _lruCache = new Lazy<ImageCache>(() => new ImageCache());
+		static ImageCache GetCache() => _lruCache.Value;
 
 
 		public static Type DrawableClass { get; set; }
