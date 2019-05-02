@@ -47,6 +47,7 @@ namespace Xamarin.Forms.Maps.UWP
 		void PushPinTapped(object sender, TappedRoutedEventArgs e)
 		{
 			_pin.SendTap();
+			_pin.SendMarkerClick();
 		}
 
 		void UpdateLocation()

@@ -67,6 +67,10 @@ namespace Xamarin.Forms.Maps
 
 		public event EventHandler Clicked;
 
+		public event EventHandler MarkerClicked;
+
+		public event EventHandler InfoWindowClicked;
+
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj))
@@ -107,6 +111,34 @@ namespace Xamarin.Forms.Maps
 			if (handler == null)
 				return false;
 
+			handler(this, EventArgs.Empty);
+			return true;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool SendMarkerClick()
+		{
+			var handler = MarkerClicked;
+
+			if (handler == null)
+			{
+				return false;
+			}
+
+			handler(this, EventArgs.Empty);
+			return true;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool SendInfoWindowClicked()
+		{
+			var handler = InfoWindowClicked;
+
+			if (handler == null)
+			{
+				return false;
+			}
+			
 			handler(this, EventArgs.Empty);
 			return true;
 		}

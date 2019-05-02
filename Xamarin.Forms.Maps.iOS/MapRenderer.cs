@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using CoreLocation;
 using MapKit;
 using ObjCRuntime;
@@ -71,6 +72,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				}
 
 				var mkMapView = (MKMapView)Control;
+				mkMapView.DidSelectAnnotationView -= MkMapViewOnAnnotationViewSelected;
 				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
 				mkMapView.GetViewForAnnotation = null;
 				if (mkMapView.Delegate != null)
@@ -145,6 +147,7 @@ namespace Xamarin.Forms.Maps.MacOS
 					SetNativeControl(mapView);
 
 					mapView.GetViewForAnnotation = GetViewForAnnotation;
+					mapView.DidSelectAnnotationView += MkMapViewOnAnnotationViewSelected;
 					mapView.RegionChanged += MkMapViewOnRegionChanged;
 #if __MOBILE__
 					mapView.AddGestureRecognizer(_mapClickedGestureRecognizer = new UITapGestureRecognizer(OnMapClicked));
@@ -256,6 +259,17 @@ namespace Xamarin.Forms.Maps.MacOS
 			mapPin.AddGestureRecognizer(recognizer);
 		}
 
+		void MkMapViewOnAnnotationViewSelected(object sender, MKAnnotationViewEventArgs e)
+		{
+			var annotation = e.View.Annotation;
+			var pin = ((Map)Element).Pins.FirstOrDefault(p => p.MarkerId == annotation);
+
+			if (pin != null)
+			{
+				pin.SendMarkerClick();
+			}
+		}
+
 #if __MOBILE__
 		void OnClick(object annotationObject, UITapGestureRecognizer recognizer)
 #else
@@ -289,6 +303,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				return;
 
 			targetPin.SendTap();
+			targetPin.SendInfoWindowClicked();
 		}
 
 #if __MOBILE__

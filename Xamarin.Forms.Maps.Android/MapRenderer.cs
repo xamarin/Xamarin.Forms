@@ -85,7 +85,8 @@ namespace Xamarin.Forms.Maps.Android
 				{
 					NativeMap.MyLocationEnabled = false;
 					NativeMap.SetOnCameraMoveListener(null);
-					NativeMap.InfoWindowClick -= MapOnMarkerClick;
+					NativeMap.MarkerClick -= OnMarkerClick;
+					NativeMap.InfoWindowClick -= OnInfoWindowClick;
 					NativeMap.MapClick -= OnMapClick;
 					NativeMap.Dispose();
 					NativeMap = null;
@@ -123,7 +124,8 @@ namespace Xamarin.Forms.Maps.Android
 				if (NativeMap != null)
 				{
 					NativeMap.SetOnCameraMoveListener(null);
-					NativeMap.InfoWindowClick -= MapOnMarkerClick;
+					NativeMap.MarkerClick -= OnMarkerClick;
+					NativeMap.InfoWindowClick -= OnInfoWindowClick;
 					NativeMap.MapClick -= OnMapClick;
 					NativeMap = null;
 				}
@@ -206,7 +208,8 @@ namespace Xamarin.Forms.Maps.Android
 			}
 
 			map.SetOnCameraMoveListener(this);
-			map.InfoWindowClick += MapOnMarkerClick;
+			map.MarkerClick += OnMarkerClick;
+			map.InfoWindowClick += OnInfoWindowClick;
 			map.MapClick += OnMapClick;
 
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
@@ -282,28 +285,27 @@ namespace Xamarin.Forms.Maps.Android
 			return _markers?.Find(m => m.Id == (string)pin.MarkerId);
 		}
 
-		void MapOnMarkerClick(object sender, GoogleMap.InfoWindowClickEventArgs eventArgs)
+		protected Pin GetPinForMarker(Marker marker)
 		{
-			// clicked marker
-			var marker = eventArgs.Marker;
+			return Map?.Pins.FirstOrDefault(p => (string)p.MarkerId == marker.Id);
+		}
 
-			// lookup pin
-			Pin targetPin = null;
-			for (var i = 0; i < Map.Pins.Count; i++)
+		void OnMarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
+		{
+			var pin = GetPinForMarker(e.Marker);
+			bool handled = pin?.SendMarkerClick() ?? false;
+			e.Handled = handled;
+		}
+
+		void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
+		{
+			var pin = GetPinForMarker(e.Marker);
+
+			if (pin != null)
 			{
-				Pin pin = Map.Pins[i];
-				if ((string)pin.MarkerId != marker.Id)
-				{
-					continue;
-				}
-
-				targetPin = pin;
-				break;
+				pin.SendTap();
+				pin.SendInfoWindowClicked();
 			}
-
-			// only consider event handled if a handler is present.
-			// Else allow default behavior of displaying an info window.
-			targetPin?.SendTap();
 		}
 
 		void OnMapClick(object sender, GoogleMap.MapClickEventArgs e)
