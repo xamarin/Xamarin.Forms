@@ -16,7 +16,7 @@ steps:
         solution: $(SolutionFile)
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
-        msbuildArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
+        msbuildArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
         clean: true
 
     - task: CopyFiles@2
@@ -108,6 +108,7 @@ steps:
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.dll
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.mdb
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.pdb
+          **/*.binlog
 
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
