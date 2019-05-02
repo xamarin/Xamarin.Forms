@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
-using Java.Lang;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -9,48 +11,16 @@ namespace Xamarin.Forms.Platform.Android
 	/// </summary>
 	class ImageCache
 	{
-
-		const string _cachePlaceHolder = "PLEASEHOLD";
-
-		global::Android.Util.LruCache _lruCache;
-		public class FormsLruCache : global::Android.Util.LruCache
-		{
-			public FormsLruCache(int maxSize) : base(maxSize)
-			{
-			}
-
-			protected override int SizeOf(Object key, Object value)
-			{
-				if (value != null && value is global::Android.Graphics.Bitmap bitmap)
-					return bitmap.ByteCount;
-
-				return base.SizeOf(key, value);
-			}
-
-			protected override Object Create(Object key)
-			{
-				return base.Create(key);
-			}
-		}
-
-		static int GetCacheSize()
-		{
-			// https://developer.android.com/topic/performance/graphics/cache-bitmap
-			int cacheSize = 4 * 1024 * 1024;
-			if (Java.Lang.Runtime.GetRuntime()?.MaxMemory() != null)
-			{
-				var maxMemory = (int)(Java.Lang.Runtime.GetRuntime().MaxMemory() / 1024);
-				cacheSize = maxMemory / 8;
-			}
-			return cacheSize;
-		}
+		readonly FormsLruCache _lruCache;
+		readonly ConcurrentDictionary<string, SemaphoreSlim> _waiting;
 
 		public ImageCache() : base()
 		{
-			_lruCache = new FormsLruCache(GetCacheSize());
+			_waiting = new ConcurrentDictionary<string, SemaphoreSlim>();
+			_lruCache = new FormsLruCache();
 		}
 
-		public async void Put(string key, Java.Lang.Object cacheObject)
+		public async Task PutAsync(string key, Java.Lang.Object cacheObject)
 		{
 			await Task.Run(() =>
 			{
@@ -67,35 +37,26 @@ namespace Xamarin.Forms.Platform.Android
 			}).ConfigureAwait(false);
 		}
 
-		public async void PutLoadingKey(string key)
-		{
-			await Task.Run(() =>
-			{
-				try
-				{
-					_lruCache.Put(key, _cachePlaceHolder);
-				}
-				catch
-				{
-					//just in case
-				}
-
-			}).ConfigureAwait(false);
-		}
-
-		public Task<Java.Lang.Object> GetAsync(string cacheKey)
+		public Task<Java.Lang.Object> GetAsync(string cacheKey, Func<Task<Java.Lang.Object>> createMethod)
 		{
 			return Task.Run(async () =>
 			{
+				SemaphoreSlim semaphoreSlim = null;
+
 				try
 				{
-					var innerCacheObject = _lruCache.Get(cacheKey);
+					semaphoreSlim = _waiting.GetOrAdd(cacheKey, (key) => new SemaphoreSlim(1, 1));
+					await semaphoreSlim.WaitAsync();
 
-					// this only really gets hit during load when there are a lot of requests for the same image
-					while (innerCacheObject?.ToString() == _cachePlaceHolder)
+					var innerCacheObject = _lruCache.Get(cacheKey);
+					
+					if(innerCacheObject == null && createMethod != null)
 					{
-						await Task.Delay(100).ConfigureAwait(false);
-						innerCacheObject = _lruCache.Get(cacheKey);
+						innerCacheObject = await createMethod();
+						if(innerCacheObject is global::Android.Graphics.Bitmap)
+							await PutAsync(cacheKey, innerCacheObject);
+						else if (innerCacheObject is global::Android.Graphics.Drawables.BitmapDrawable bitmap)
+							await PutAsync(cacheKey, bitmap.Bitmap);
 					}
 
 					return innerCacheObject;
@@ -103,6 +64,10 @@ namespace Xamarin.Forms.Platform.Android
 				catch
 				{
 					//just in case
+				}
+				finally
+				{
+					semaphoreSlim?.Release();
 				}
 
 				return null;
@@ -124,5 +89,38 @@ namespace Xamarin.Forms.Platform.Android
 
 			}).ConfigureAwait(false);
 		}
+		public class FormsLruCache : global::Android.Util.LruCache
+		{
+
+			static int GetCacheSize()
+			{
+				// https://developer.android.com/topic/performance/graphics/cache-bitmap
+				int cacheSize = 4 * 1024 * 1024;
+				if (Java.Lang.Runtime.GetRuntime()?.MaxMemory() != null)
+				{
+					var maxMemory = (int)(Java.Lang.Runtime.GetRuntime().MaxMemory() / 1024);
+					cacheSize = maxMemory / 8;
+				}
+				return cacheSize;
+			}
+
+			public FormsLruCache() : base(GetCacheSize())
+			{
+			}
+
+			protected override int SizeOf(Java.Lang.Object key, Java.Lang.Object value)
+			{
+				if (value != null && value is global::Android.Graphics.Bitmap bitmap)
+					return bitmap.ByteCount / 1024;
+
+				return base.SizeOf(key, value);
+			}
+
+			protected override void EntryRemoved(bool evicted, Java.Lang.Object key, Java.Lang.Object oldValue, Java.Lang.Object newValue)
+			{
+				base.EntryRemoved(evicted, key, oldValue, newValue);
+			}
+		}
+
 	}
 }

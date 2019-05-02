@@ -158,30 +158,17 @@ namespace Xamarin.Forms.Platform.Android
 					if (initialSource is UriImageSource uri)
 					{
 						cacheKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
-						var cache = GetCache();
-						var cacheObject = await cache.GetAsync(cacheKey);
+						var cacheObject = await GetCache().GetAsync(cacheKey, async () =>
+						{
+							var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken);
+							return drawable;
+						});
 
-						Bitmap bitmap = cacheObject as Bitmap;
 						Drawable returnValue = null;
-
-						if (bitmap == null)
-						{
-							cache.PutLoadingKey(cacheKey);
-							var task = context.GetFormsDrawableAsync(initialSource, cancellationToken);
-							returnValue = await task;
-							if(returnValue is BitmapDrawable bitmapDrawable)
-							{
-								cache.Put(cacheKey, bitmapDrawable.Bitmap);
-							}
-							else
-							{
-								cache.Remove(cacheKey);
-							}
-						}
-						else
-						{
+						if (cacheObject is Bitmap bitmap)
 							returnValue = new BitmapDrawable(context.Resources, bitmap);
-						}
+						else
+							returnValue = cacheObject as Drawable;
 
 						if (renderer is IDisposedState disposed && disposed.IsDisposed)
 							return;
