@@ -22,6 +22,8 @@
 							new PreselectedItemGallery(), Navigation),
 						GalleryBuilder.NavButton("Preselected Items", () =>
 							new PreselectedItemsGallery(), Navigation),
+						GalleryBuilder.NavButton("Single Selection, Bound", () =>
+							new SingleBoundSelection(), Navigation),
 					}
 				}
 			};
