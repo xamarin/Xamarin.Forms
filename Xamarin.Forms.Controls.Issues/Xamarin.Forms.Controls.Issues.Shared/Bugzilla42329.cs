@@ -182,10 +182,6 @@ namespace Xamarin.Forms.Controls.Issues
 					HorizontalTextAlignment = TextAlignment.Center,
 					TextColor = Color.Red
 				};
-				//lblFlag.GestureRecognizers.Add(new TapGestureRecognizer
-				//{
-				//	Command = new Command(async () => await DisplayAlert("Alert", Success, "ok"))
-				//});
 				Content = new StackLayout
 				{
 					Children =
