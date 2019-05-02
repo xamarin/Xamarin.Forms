@@ -237,6 +237,17 @@ namespace Xamarin.Forms.Platform.iOS
 				return base.ChildViewControllerForStatusBarHidden();
 		}
 
+		public override UIViewController ChildViewControllerForHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (((MasterDetailPage)Element).Detail != null)
+					return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
+				else
+					return base.ChildViewControllerForHomeIndicatorAutoHidden;
+			}
+		}
+
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
 			if (e.OldElement != null)
@@ -269,7 +280,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Page.IconProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName)
+			if (e.PropertyName == Page.IconImageSourceProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName)
 				MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 		}
 
@@ -318,12 +329,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			if (!string.IsNullOrEmpty(((Page)Element).BackgroundImage))
-				View.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(((Page)Element).BackgroundImage);
-			else if (Element.BackgroundColor == Color.Default)
-				View.BackgroundColor = UIColor.White;
-			else
-				View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			_ = this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
+			{
+				if (bgImage != null)
+					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
+				else if (Element.BackgroundColor == Color.Default)
+					View.BackgroundColor = UIColor.White;
+				else
+					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			});
 		}
 
 		void UpdateControllers()

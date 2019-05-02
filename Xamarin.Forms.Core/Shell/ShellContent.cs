@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 #if NETSTANDARD1_0
 using System.Linq;
@@ -12,10 +13,6 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class TabContent : ShellContent
-	{
-	}
-
 	[ContentProperty(nameof(Content))]
 	public class ShellContent : BaseShellItem, IShellContentController
 	{
@@ -92,7 +89,8 @@ namespace Xamarin.Forms
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
 
-		Page ContentCache {
+		Page ContentCache
+		{
 			get { return _contentCache; }
 			set
 			{
