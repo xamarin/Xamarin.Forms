@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		public BasePage(string title, Color tint)
 		{
 			Title = title;
-
+			Shell.SetShellForegroundColor(this, tint);
 			var grid = new Grid()
 			{
 				Padding = 20,
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Controls.XamStore
 				1, 2);
 
 			grid.Children.Add(MakeButton("Add Search",
-					() => AddSearchHandler("Added Search", SearchBoxVisiblity.Expanded)),
+					() => AddSearchHandler("Added Search", SearchBoxVisibility.Expanded)),
 				2, 2);
 
 			grid.Children.Add(MakeButton("Add Toolbar",
@@ -100,15 +100,15 @@ namespace Xamarin.Forms.Controls.XamStore
 				2, 5);
 
 			grid.Children.Add(MakeButton("Hide Search",
-					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisiblity.Hidden),
+					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisibility.Hidden),
 				0, 6);
 
 			grid.Children.Add(MakeButton("Collapse Search",
-					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisiblity.Collapsable),
+					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisibility.Collapsible),
 				1, 6);
 
 			grid.Children.Add(MakeButton("Show Search",
-					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisiblity.Expanded),
+					() => Shell.GetSearchHandler(this).SearchBoxVisibility = SearchBoxVisibility.Expanded),
 				2, 6);
 
 			grid.Children.Add(MakeButton("Set Back",
@@ -209,13 +209,39 @@ namespace Xamarin.Forms.Controls.XamStore
 						Navigation.PushAsync(page);
 					}),
 				2, 14);
-
+			
 			grid.Children.Add(MakeButton("Show Alert",
 				async () => {
 					var result = await DisplayAlert("Title", "Message", "Ok", "Cancel");
 					Console.WriteLine($"Alert result: {result}");
 				}), 0, 15);
 
+			grid.Children.Add(MakeButton("Navigate to 'demo' route",
+				async () => await Shell.Current.GoToAsync("demo", true)),
+			1, 15);
+
+			grid.Children.Add(MakeButton("Go Back with Text",
+			async () => {
+					var page = (Page)Activator.CreateInstance(GetType());
+					Shell.SetShellForegroundColor(page, Color.Pink);
+					Shell.SetBackButtonBehavior(page, new BackButtonBehavior()
+					{
+						//IconOverride = "calculator.png",
+						
+						TextOverride = "back"
+					});
+					await Navigation.PushAsync(page);
+				}),2, 15);
+
+			grid.Children.Add(new Label {
+				Text = "Navigate to",
+				VerticalOptions = LayoutOptions.CenterAndExpand
+			}, 0, 16);
+			var navEntry = new Entry { Text = "demo/demo" };
+			grid.Children.Add(navEntry, 1, 16);
+			grid.Children.Add(MakeButton("GO!",
+				async () => await Shell.Current.GoToAsync(navEntry.Text, true)),
+			2, 16);
 
 			Content = new ScrollView { Content = grid };
 
@@ -282,7 +308,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			});
 		}
 
-		private class CustomSearchHandler : SearchHandler
+		internal class CustomSearchHandler : SearchHandler
 		{
 			protected async override void OnQueryChanged(string oldValue, string newValue)
 			{
@@ -313,7 +339,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			}
 		}
 
-		protected void AddSearchHandler(string placeholder, SearchBoxVisiblity visibility)
+		protected void AddSearchHandler(string placeholder, SearchBoxVisibility visibility)
 		{
 			var searchHandler = new CustomSearchHandler();
 
@@ -348,7 +374,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public UpdatesPage() : base("Available Updates", Color.Default)
 		{
-			AddSearchHandler("Search Updates", SearchBoxVisiblity.Collapsable);
+			AddSearchHandler("Search Updates", SearchBoxVisibility.Collapsible);
 		}
 	}
 
@@ -357,7 +383,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public InstalledPage() : base("Installed Items", Color.Default)
 		{
-			AddSearchHandler("Search Installed", SearchBoxVisiblity.Collapsable);
+			AddSearchHandler("Search Installed", SearchBoxVisibility.Collapsible);
 		}
 	}
 
@@ -366,7 +392,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public LibraryPage() : base("My Library", Color.Default)
 		{
-			AddSearchHandler("Search Apps", SearchBoxVisiblity.Collapsable);
+			AddSearchHandler("Search Apps", SearchBoxVisibility.Collapsible);
 		}
 	}
 
@@ -387,7 +413,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public HomePage() : base("Store Home", Color.Default)
 		{
-			AddSearchHandler("Search Apps", SearchBoxVisiblity.Expanded);
+			AddSearchHandler("Search Apps", SearchBoxVisibility.Expanded);
 		}
 	}
 
@@ -396,7 +422,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public GamesPage() : base("Games", Color.Default)
 		{
-			AddSearchHandler("Search Games", SearchBoxVisiblity.Expanded);
+			AddSearchHandler("Search Games", SearchBoxVisibility.Expanded);
 		}
 	}
 
@@ -405,7 +431,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public MoviesPage() : base("Hot Movies", Color.Default)
 		{
-			AddSearchHandler("Search Movies", SearchBoxVisiblity.Expanded);
+			AddSearchHandler("Search Movies", SearchBoxVisibility.Expanded);
 		}
 	}
 
@@ -414,7 +440,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public BooksPage() : base("Bookstore", Color.Default)
 		{
-			AddSearchHandler("Search Books", SearchBoxVisiblity.Expanded);
+			AddSearchHandler("Search Books", SearchBoxVisibility.Expanded);
 		}
 	}
 
@@ -423,7 +449,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public MusicPage() : base("Music", Color.Default)
 		{
-			AddSearchHandler("Search Music", SearchBoxVisiblity.Expanded);
+			AddSearchHandler("Search Music", SearchBoxVisibility.Expanded);
 		}
 	}
 
@@ -432,7 +458,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	{
 		public NewsPage() : base("Newspapers", Color.Default)
 		{
-			AddSearchHandler("Search Papers", SearchBoxVisiblity.Expanded);
+			AddSearchHandler("Search Papers", SearchBoxVisibility.Expanded);
 		}
 	}
 

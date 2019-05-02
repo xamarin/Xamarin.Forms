@@ -39,8 +39,11 @@ namespace Xamarin.Forms.Material.Android
 		VisualElementRenderer _visualElementRenderer;
 		ButtonLayoutManager _buttonLayoutManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
-		
+
 		public MaterialButtonRenderer(Context context)
+			: this(MaterialContextThemeWrapper.Create(context), null) { }
+
+		public MaterialButtonRenderer(Context context, BindableObject element)
 			: base(MaterialContextThemeWrapper.Create(context))
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
@@ -323,10 +326,6 @@ namespace Xamarin.Forms.Material.Android
 		VisualElement IBorderVisualElementRenderer.Element => Element;
 		AView IBorderVisualElementRenderer.View => this;
 
-		// IButtonLayoutRenderer
-		Button IButtonLayoutRenderer.Element => Element;
-		AppCompatButton IButtonLayoutRenderer.View => this;
-
 		// IVisualElementRenderer
 		VisualElement IVisualElementRenderer.Element => Element;
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
@@ -359,6 +358,9 @@ namespace Xamarin.Forms.Material.Android
 
 		// ITabStop
 		AView ITabStop.TabStop => this;
+
+		// IButtonLayoutRenderer
+		AppCompatButton IButtonLayoutRenderer.View => this;
 	}
 }
 #endif

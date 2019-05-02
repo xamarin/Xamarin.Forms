@@ -19,7 +19,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -30,7 +29,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -41,9 +39,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="System.Net.Http" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\3bar%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ContextActionCell.cs" />
@@ -153,6 +148,8 @@
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
+    <Compile Include="Renderers\IAccessibilityElementsController.cs" />
+    <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
@@ -265,9 +262,6 @@
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\3bar.png" />
   </ItemGroup>
   <ItemGroup />
 </Project>

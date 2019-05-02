@@ -220,6 +220,25 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnBindingContextChanged();
 		}
 
+		internal static UIEdgeInsets SafeAreaInsetsForWindow
+		{
+			get
+			{
+				UIEdgeInsets safeAreaInsets;
+
+				if (!Forms.IsiOS11OrNewer)
+					safeAreaInsets = new UIEdgeInsets(UIApplication.SharedApplication.StatusBarFrame.Size.Height, 0, 0, 0);
+				else if (UIApplication.SharedApplication.KeyWindow != null)
+					safeAreaInsets = UIApplication.SharedApplication.KeyWindow.SafeAreaInsets;
+				else if (UIApplication.SharedApplication.Windows.Length > 0)
+					safeAreaInsets = UIApplication.SharedApplication.Windows[0].SafeAreaInsets;
+				else
+					safeAreaInsets = UIEdgeInsets.Zero;
+
+				return safeAreaInsets;
+			}
+		}
+
 		internal void DidAppear()
 		{
 			_animateModals = false;
@@ -295,7 +314,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var viewRenderer = CreateRenderer(view);
 				SetRenderer(view, viewRenderer);
 
-				_renderer.View.AddSubview(viewRenderer.NativeView);
+				var nativeView = viewRenderer.NativeView;
+
+				_renderer.View.AddSubview(nativeView);
 				if (viewRenderer.ViewController != null)
 					_renderer.AddChildViewController(viewRenderer.ViewController);
 				viewRenderer.NativeView.Frame = new RectangleF(0, 0, _renderer.View.Bounds.Width, _renderer.View.Bounds.Height);
