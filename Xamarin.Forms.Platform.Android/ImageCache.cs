@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 			_lruCache = new FormsLruCache();			
 		}
 
-		async Task PutAsync(string key, TimeSpan cacheValidity, global::Android.Graphics.Bitmap cacheObject)
+		async void Put(string key, TimeSpan cacheValidity, global::Android.Graphics.Bitmap cacheObject)
 		{
 			await Task.Run(() =>
 			{
@@ -32,9 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					//just in case
 				}
-
-
-			}).ConfigureAwait(false);
+			});
 		}
 
 		public Task<Java.Lang.Object> GetAsync(string cacheKey, TimeSpan cacheValidity, Func<Task<Java.Lang.Object>> createMethod)
@@ -46,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 				try
 				{
 					semaphoreSlim = _waiting.GetOrAdd(cacheKey, (key) => new SemaphoreSlim(1, 1));
-					await semaphoreSlim.WaitAsync();
+					await semaphoreSlim.WaitAsync().ConfigureAwait(false);
 
 					var cacheEntry = _lruCache.Get(cacheKey) as CacheEntry;
 
@@ -56,11 +54,11 @@ namespace Xamarin.Forms.Platform.Android
 					Java.Lang.Object innerCacheObject = null;
 					if (cacheEntry == null && createMethod != null)
 					{
-						innerCacheObject = await createMethod();
+						innerCacheObject = await createMethod().ConfigureAwait(false);
 						if(innerCacheObject is global::Android.Graphics.Bitmap bm)
-							await PutAsync(cacheKey, cacheValidity, bm);
+							Put(cacheKey, cacheValidity, bm);
 						else if (innerCacheObject is global::Android.Graphics.Drawables.BitmapDrawable bitmap)
-							await PutAsync(cacheKey, cacheValidity, bitmap.Bitmap);
+							Put(cacheKey, cacheValidity, bitmap.Bitmap);
 					}
 					else
 					{
@@ -80,22 +78,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				return null;
 			});
-		}
-
-		public async void Remove(string key)
-		{
-			await Task.Run(() =>
-			{
-				try
-				{
-					_lruCache.Remove(key);
-				}
-				catch
-				{
-					//just in case
-				}
-
-			}).ConfigureAwait(false);
 		}
 
 		public class CacheEntry : Java.Lang.Object
