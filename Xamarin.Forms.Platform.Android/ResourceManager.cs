@@ -155,10 +155,10 @@ namespace Xamarin.Forms.Platform.Android
 
 					// Todo improve for other sources
 					// volley the requests better up front so that if the same request comes in it isn't requeued
-					if (initialSource is UriImageSource uri)
+					if (initialSource is UriImageSource uri && uri.CachingEnabled)
 					{
 						cacheKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
-						var cacheObject = await GetCache().GetAsync(cacheKey, async () =>
+						var cacheObject = await GetCache().GetAsync(cacheKey, uri.CacheValidity, async () =>
 						{
 							var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken);
 							return drawable;

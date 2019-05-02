@@ -17,16 +17,16 @@ namespace Xamarin.Forms.Platform.Android
 		public ImageCache() : base()
 		{
 			_waiting = new ConcurrentDictionary<string, SemaphoreSlim>();
-			_lruCache = new FormsLruCache();
+			_lruCache = new FormsLruCache();			
 		}
 
-		public async Task PutAsync(string key, Java.Lang.Object cacheObject)
+		async Task PutAsync(string key, TimeSpan cacheValidity, global::Android.Graphics.Bitmap cacheObject)
 		{
 			await Task.Run(() =>
 			{
 				try
 				{
-					_lruCache.Put(key, cacheObject);
+					_lruCache.Put(key, new CacheEntry() { TimeToLive = DateTimeOffset.Now.Add(cacheValidity), Data = cacheObject });
 				}
 				catch
 				{
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 			}).ConfigureAwait(false);
 		}
 
-		public Task<Java.Lang.Object> GetAsync(string cacheKey, Func<Task<Java.Lang.Object>> createMethod)
+		public Task<Java.Lang.Object> GetAsync(string cacheKey, TimeSpan cacheValidity, Func<Task<Java.Lang.Object>> createMethod)
 		{
 			return Task.Run(async () =>
 			{
@@ -48,15 +48,23 @@ namespace Xamarin.Forms.Platform.Android
 					semaphoreSlim = _waiting.GetOrAdd(cacheKey, (key) => new SemaphoreSlim(1, 1));
 					await semaphoreSlim.WaitAsync();
 
-					var innerCacheObject = _lruCache.Get(cacheKey);
-					
-					if(innerCacheObject == null && createMethod != null)
+					var cacheEntry = _lruCache.Get(cacheKey) as CacheEntry;
+
+					if (cacheEntry?.TimeToLive < DateTimeOffset.Now)
+						cacheEntry = null;
+
+					Java.Lang.Object innerCacheObject = null;
+					if (cacheEntry == null && createMethod != null)
 					{
 						innerCacheObject = await createMethod();
-						if(innerCacheObject is global::Android.Graphics.Bitmap)
-							await PutAsync(cacheKey, innerCacheObject);
+						if(innerCacheObject is global::Android.Graphics.Bitmap bm)
+							await PutAsync(cacheKey, cacheValidity, bm);
 						else if (innerCacheObject is global::Android.Graphics.Drawables.BitmapDrawable bitmap)
-							await PutAsync(cacheKey, bitmap.Bitmap);
+							await PutAsync(cacheKey, cacheValidity, bitmap.Bitmap);
+					}
+					else
+					{
+						innerCacheObject = cacheEntry.Data;
 					}
 
 					return innerCacheObject;
@@ -89,6 +97,25 @@ namespace Xamarin.Forms.Platform.Android
 
 			}).ConfigureAwait(false);
 		}
+
+		public class CacheEntry : Java.Lang.Object
+		{
+			bool _isDisposed;
+			public DateTimeOffset TimeToLive { get; set; }
+			public global::Android.Graphics.Bitmap Data { get; set; }
+
+			protected override void Dispose(bool disposing)
+			{
+				if(!_isDisposed)
+				{
+					_isDisposed = true;
+					Data = null;
+				}
+
+				base.Dispose(disposing);
+			}
+		}
+
 		public class FormsLruCache : global::Android.Util.LruCache
 		{
 
@@ -114,12 +141,7 @@ namespace Xamarin.Forms.Platform.Android
 					return bitmap.ByteCount / 1024;
 
 				return base.SizeOf(key, value);
-			}
-
-			protected override void EntryRemoved(bool evicted, Java.Lang.Object key, Java.Lang.Object oldValue, Java.Lang.Object newValue)
-			{
-				base.EntryRemoved(evicted, key, oldValue, newValue);
-			}
+			} 
 		}
 
 	}
