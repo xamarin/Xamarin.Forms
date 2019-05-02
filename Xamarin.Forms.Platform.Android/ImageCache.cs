@@ -20,19 +20,9 @@ namespace Xamarin.Forms.Platform.Android
 			_lruCache = new FormsLruCache();			
 		}
 
-		async void Put(string key, TimeSpan cacheValidity, global::Android.Graphics.Bitmap cacheObject)
+		void Put(string key, TimeSpan cacheValidity, global::Android.Graphics.Bitmap cacheObject)
 		{
-			await Task.Run(() =>
-			{
-				try
-				{
-					_lruCache.Put(key, new CacheEntry() { TimeToLive = DateTimeOffset.Now.Add(cacheValidity), Data = cacheObject });
-				}
-				catch
-				{
-					//just in case
-				}
-			});
+			_lruCache.Put(key, new CacheEntry() { TimeToLive = DateTimeOffset.Now.Add(cacheValidity), Data = cacheObject });
 		}
 
 		public Task<Java.Lang.Object> GetAsync(string cacheKey, TimeSpan cacheValidity, Func<Task<Java.Lang.Object>> createMethod)
