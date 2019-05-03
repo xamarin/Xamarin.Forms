@@ -144,16 +144,12 @@ namespace Xamarin.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
-		internal override IEnumerable<Element> ActuallyLogicalChildrenInternal
+		internal override IEnumerable<Element> JustTheLogicalChildren
 		{
 			get
 			{
-				foreach (var child in InternalChildren)
-					yield return child;
-
 				var titleviewPart1TheShell = Shell.GetTitleView(this);
 				var titleViewPart2TheNavBar = NavigationPage.GetTitleView(this);
-				var searchHandler = Shell.GetSearchHandler(this);
 
 				if (titleviewPart1TheShell != null)
 					yield return titleviewPart1TheShell;

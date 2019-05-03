@@ -478,5 +478,26 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.SetValue(Shell.FlyoutHeaderProperty, new ContentView());
 			Assert.AreEqual(null, flyoutView.BindingContext);
 		}
+
+
+
+		[Test]
+		public async Task TitleViewLogicalChild()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			shell.Items.Add(CreateShellItem(page));
+			page.BindingContext = new { Text = "Binding" };
+
+			// setup title view
+			StackLayout layout = new StackLayout() { BackgroundColor = Color.White };
+			Label label = new Label();
+			label.SetBinding(Label.TextProperty, "Text");
+			layout.Children.Add(label);
+			Shell.SetTitleView(page, layout);
+
+
+			Assert.True(page.JustTheLogicalChildren.Contains(layout));
+		}
 	}
 }

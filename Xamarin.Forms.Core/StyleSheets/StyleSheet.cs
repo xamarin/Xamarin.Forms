@@ -100,7 +100,7 @@ namespace Xamarin.Forms.StyleSheets
 			foreach (var child in styleable.LogicalChildrenInternal)
 				((IStyle)this).Apply(child);
 
-			foreach (var child in styleable.ActuallyLogicalChildrenInternal)
+			foreach (var child in styleable.ActuallyLogicalChildren)
 				((IStyle)this).Apply(child);
 		}
 
