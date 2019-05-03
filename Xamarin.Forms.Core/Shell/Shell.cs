@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -572,6 +573,8 @@ namespace Xamarin.Forms
 		bool _accumulateNavigatedEvents;
 		View _flyoutHeaderView;
 		bool _checkExperimentalFlag = true;
+		IList<Element> _logicalChildren = new List<Element>();
+		ReadOnlyCollection<Element> _logicalChildrenReadOnly;
 
 		public Shell() : this(true)
 		{
@@ -788,8 +791,11 @@ namespace Xamarin.Forms
 			return false;
 		}
 
+		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
+
 		protected override void OnChildAdded(Element child)
 		{
+			_logicalChildren.Add(child);
 			base.OnChildAdded(child);
 
 			if (child is ShellItem shellItem && CurrentItem == null && !(child is MenuShellItem))
@@ -800,6 +806,7 @@ namespace Xamarin.Forms
 
 		protected override void OnChildRemoved(Element child)
 		{
+			_logicalChildren.Add(child);
 			base.OnChildRemoved(child);
 
 			if (child == CurrentItem && Items.Count > 0)
