@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			}
 
 #if __MOBILE__
-			var recognizer = new UITapGestureRecognizer(g => OnClick(annotation, g))
+			var recognizer = new UITapGestureRecognizer(g => OnCalloutClicked(annotation))
 			{
 				ShouldReceiveTouch = (gestureRecognizer, touch) =>
 				{
@@ -254,44 +254,44 @@ namespace Xamarin.Forms.Maps.MacOS
 				}
 			};
 #else
-			var recognizer = new NSClickGestureRecognizer(g => OnClick(annotation, g));
+			var recognizer = new NSClickGestureRecognizer(g => OnCalloutClicked(annotation));
 #endif
 			mapPin.AddGestureRecognizer(recognizer);
+		}
+
+		protected Pin GetPinForAnnotation(IMKAnnotation annotation)
+		{
+			Pin targetPin = null;
+			var map = (Map)Element;
+
+			for (int i = 0; i < map.Pins.Count; i++)
+			{
+				var pin = map.Pins[i];
+				if ((IMKAnnotation)pin.MarkerId == annotation)
+				{
+					targetPin = pin;
+					break;
+				}
+			}
+
+			return targetPin;
 		}
 
 		void MkMapViewOnAnnotationViewSelected(object sender, MKAnnotationViewEventArgs e)
 		{
 			var annotation = e.View.Annotation;
-			var pin = ((Map)Element).Pins.FirstOrDefault(p => p.MarkerId == annotation);
+			var pin = GetPinForAnnotation(annotation);
 
 			if (pin != null)
 			{
 				pin.SendMarkerClick();
 			}
 		}
-
-#if __MOBILE__
-		void OnClick(object annotationObject, UITapGestureRecognizer recognizer)
-#else
-		void OnClick(object annotationObject, NSClickGestureRecognizer recognizer)
-#endif
+		
+		void OnCalloutClicked(IMKAnnotation annotation)
 		{
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
-			NSObject annotation = Runtime.GetNSObject(((IMKAnnotation)annotationObject).Handle);
-			if (annotation == null)
-				return;
-
 			// lookup pin
-			Pin targetPin = null;
-			foreach (Pin pin in ((Map)Element).Pins)
-			{
-				object target = pin.MarkerId;
-				if (target != annotation)
-					continue;
-
-				targetPin = pin;
-				break;
-			}
+			Pin targetPin = GetPinForAnnotation(annotation);
 
 			// pin not found. Must have been activated outside of forms
 			if (targetPin == null)

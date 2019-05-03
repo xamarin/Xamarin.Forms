@@ -287,7 +287,19 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected Pin GetPinForMarker(Marker marker)
 		{
-			return Map?.Pins.FirstOrDefault(p => (string)p.MarkerId == marker.Id);
+			Pin targetPin = null;
+
+			for (int i = 0; i < Map.Pins.Count; i++)
+			{
+				var pin = Map.Pins[i];
+				if ((string)pin.MarkerId == marker.Id)
+				{
+					targetPin = pin;
+					break;
+				}
+			}
+
+			return targetPin;
 		}
 
 		void OnMarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
