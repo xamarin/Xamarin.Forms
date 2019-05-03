@@ -303,7 +303,9 @@ namespace Xamarin.Forms.Maps.Android
 
 			if (pin != null)
 			{
+#pragma warning disable CS0612
 				pin.SendTap();
+#pragma warning restore CS0612
 				pin.SendInfoWindowClicked();
 			}
 		}

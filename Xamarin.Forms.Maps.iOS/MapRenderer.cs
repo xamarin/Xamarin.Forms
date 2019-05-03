@@ -302,7 +302,9 @@ namespace Xamarin.Forms.Maps.MacOS
 			if (_lastTouchedView is MKAnnotationView)
 				return;
 
+#pragma warning disable CS0612
 			targetPin.SendTap();
+#pragma warning restore CS0612
 			targetPin.SendInfoWindowClicked();
 		}
 

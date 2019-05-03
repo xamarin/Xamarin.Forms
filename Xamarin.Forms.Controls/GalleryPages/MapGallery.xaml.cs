@@ -23,7 +23,9 @@ namespace Xamarin.Forms.Controls
 			InitializeComponent();
 
 			Map = MakeMap();
+#pragma warning disable CS0618
 			Map.Pins.ForEach(pin => pin.Clicked += PinClicked);
+#pragma warning restore CS0618
 			Map.MapClicked += MapClicked;
 
 			((Grid)Content).Children.Add(Map, 0, 1);
