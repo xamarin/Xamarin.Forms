@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 			await Navigation.PushModalAsync(new Issue5412MainPage());
 		}
 
-#if UITEST
+#if UITEST && __WINDOWS__
 		[Test]
 		public void Issue5412Test()
 		{
