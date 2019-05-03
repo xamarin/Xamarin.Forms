@@ -284,7 +284,13 @@ namespace Xamarin.Forms.Maps.MacOS
 
 			if (pin != null)
 			{
-				pin.SendMarkerClick();
+				// SendMarkerClick() returns the value of PinClickedEventArgs.HideInfoWindow
+				// Hide the info window by deselecting the annotation
+				bool deselect = pin.SendMarkerClick();
+				if (deselect)
+				{
+					((MKMapView)Control).DeselectAnnotation(annotation, false);
+				}
 			}
 		}
 		
@@ -305,7 +311,14 @@ namespace Xamarin.Forms.Maps.MacOS
 #pragma warning disable CS0612
 			targetPin.SendTap();
 #pragma warning restore CS0612
-			targetPin.SendInfoWindowClicked();
+
+			// SendInfoWindowedClick() returns the value of PinClickedEventArgs.HideInfoWindow
+			// Hide the info window by deselecting the annotation
+			bool deselect = targetPin.SendInfoWindowClick();
+			if (deselect)
+			{
+				((MKMapView)Control).DeselectAnnotation(annotation, true);
+			}
 		}
 
 #if __MOBILE__

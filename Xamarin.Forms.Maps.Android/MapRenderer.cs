@@ -305,20 +305,37 @@ namespace Xamarin.Forms.Maps.Android
 		void OnMarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
 		{
 			var pin = GetPinForMarker(e.Marker);
-			bool handled = pin?.SendMarkerClick() ?? false;
+
+			if (pin == null)
+			{
+				return;
+			}
+
+			// Setting e.Handled = true will prevent the info window from being presented
+			// SendMarkerClick() returns the value of PinClickedEventArgs.HideInfoWindow
+			bool handled = pin.SendMarkerClick();
 			e.Handled = handled;
 		}
 
 		void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
 		{
-			var pin = GetPinForMarker(e.Marker);
+			var marker = e.Marker;
+			var pin = GetPinForMarker(marker);
 
-			if (pin != null)
+			if (pin == null)
 			{
+				return;
+			}
+
 #pragma warning disable CS0612
-				pin.SendTap();
+			pin.SendTap();
 #pragma warning restore CS0612
-				pin.SendInfoWindowClicked();
+
+			// SendInfoWindowClick() returns the value of PinClickedEventArgs.HideInfoWindow
+			bool hideInfoWindow = pin.SendInfoWindowClick();
+			if (hideInfoWindow)
+			{
+				marker.HideInfoWindow();
 			}
 		}
 
