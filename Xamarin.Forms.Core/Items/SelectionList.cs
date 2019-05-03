@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
@@ -8,13 +9,33 @@ namespace Xamarin.Forms
 	internal class SelectionList : IList<object>
 	{
 		readonly SelectableItemsView _selectableItemsView;
-		List<object> _internal;
 		static readonly IList<object> s_empty = new List<object>(0);
 
-		public SelectionList(SelectableItemsView selectableItemsView)
+		readonly IList<object> _internal;
+		IList<object> _shadow;
+		bool _fromRenderer;
+
+		public SelectionList(SelectableItemsView selectableItemsView, IList<object> items = null)
 		{
 			_selectableItemsView = selectableItemsView ?? throw new ArgumentNullException(nameof(selectableItemsView));
-			_internal = new List<object>();
+			_internal = items ?? new List<object>();
+			_shadow = Copy();
+
+			if (items is INotifyCollectionChanged incc)
+			{
+				incc.CollectionChanged += OnCollectionChanged;
+			}
+		}
+
+		private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			if (_fromRenderer)
+			{
+				return;
+			}
+
+			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
+			_shadow = Copy();
 		}
 
 		public object this[int index] { get => _internal[index]; set => _internal[index] = value; }
@@ -24,19 +45,22 @@ namespace Xamarin.Forms
 
 		public void Add(object item)
 		{
-			var oldItems = Copy();
-
+			_fromRenderer = true;
 			_internal.Add(item);
+			_fromRenderer = false;
 
-			_selectableItemsView.SelectedItemsPropertyChanged(oldItems, Copy());
+			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
+			_shadow.Add(item);
 		}
 
 		public void Clear()
 		{
-			var oldItems = Copy();
+			_fromRenderer = true;
 			_internal.Clear();
+			_fromRenderer = false;
 
-			_selectableItemsView.SelectedItemsPropertyChanged(oldItems, s_empty);
+			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, s_empty);
+			_shadow.Clear();
 		}
 
 		public bool Contains(object item)
@@ -61,22 +85,24 @@ namespace Xamarin.Forms
 
 		public void Insert(int index, object item)
 		{
-			var oldItems = Copy();
-
+			_fromRenderer = true;
 			_internal.Insert(index, item);
+			_fromRenderer = false;
 
-			_selectableItemsView.SelectedItemsPropertyChanged(oldItems, Copy());
+			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
+			_shadow.Insert(index, item);
 		}
 
 		public bool Remove(object item)
 		{
-			var oldItems = Copy();
-
+			_fromRenderer = true;
 			var removed = _internal.Remove(item);
+			_fromRenderer = false;
 
 			if (removed)
 			{
-				_selectableItemsView.SelectedItemsPropertyChanged(oldItems, Copy());
+				_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
+				_shadow.Remove(item);
 			}
 
 			return removed;
@@ -84,11 +110,12 @@ namespace Xamarin.Forms
 
 		public void RemoveAt(int index)
 		{
-			var oldItems = Copy();
-
+			_fromRenderer = true;
 			_internal.RemoveAt(index);
+			_fromRenderer = false;
 
-			_selectableItemsView.SelectedItemsPropertyChanged(oldItems, Copy());
+			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
+			_shadow.RemoveAt(index);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -105,16 +132,6 @@ namespace Xamarin.Forms
 			}
 
 			return items;
-		}
-
-		public void ClearQuietly()
-		{
-			_internal.Clear();
-		}
-
-		public void AddQuietly(object item)
-		{
-			_internal.Add(item);
 		}
 	}
 }

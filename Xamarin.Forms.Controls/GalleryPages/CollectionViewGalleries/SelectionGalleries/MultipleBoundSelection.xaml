@@ -5,17 +5,22 @@
     <ContentPage.Content>
         <StackLayout Spacing="5">
 
-            <Label Text="The selected item in the CollectionView should match the 'Selected' Label below. If it does not, this test has failed."
+            <Label Text="The selected items in the CollectionView should always match the 'Selected' Label below. If it does not, this test has failed."
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
 
-            <Label Text="{Binding SelectedItemsText, StringFormat='{}Selected: {0}'}"
+            <Label Text="{Binding SelectedItemsText, StringFormat='{}Selected: {0}'}" FontAttributes="Bold"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
 
-            <Button AutomationId="Reset" Text="Reset Selection to Items 1 and 2" Clicked="ResetClicked" />
+            <Button AutomationId="ClearAndAdd" Text="Clear VM selection and add Items 1 and 2" Clicked="ClearAndAdd" />
 
-            <CollectionView ItemsSource="{Binding Items}" SelectionMode="Multiple" SelectedItems="{Binding SelectedItems}">
+            <Button AutomationId="Reset" Text="Set VM selection to new list" Clicked="ResetClicked" />
+
+            <Button AutomationId="DirectUpdate" Text="Clear CV selection and add Items 0 and 3" Clicked="DirectUpdateClicked" />
+
+            <CollectionView x:Name="CollectionView" ItemsSource="{Binding Items}" 
+                            SelectionMode="Multiple" SelectedItems="{Binding SelectedItems}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout>
