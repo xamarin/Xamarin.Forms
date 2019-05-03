@@ -8,12 +8,11 @@ namespace Xamarin.Forms
 	// Used by the SelectableItemsView to keep track of (and respond to changes in) the SelectedItems property
 	internal class SelectionList : IList<object>
 	{
-		readonly SelectableItemsView _selectableItemsView;
 		static readonly IList<object> s_empty = new List<object>(0);
-
+		readonly SelectableItemsView _selectableItemsView;
 		readonly IList<object> _internal;
 		IList<object> _shadow;
-		bool _fromRenderer;
+		bool _externalChange;
 
 		public SelectionList(SelectableItemsView selectableItemsView, IList<object> items = null)
 		{
@@ -27,27 +26,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
-		{
-			if (_fromRenderer)
-			{
-				return;
-			}
-
-			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
-			_shadow = Copy();
-		}
-
 		public object this[int index] { get => _internal[index]; set => _internal[index] = value; }
 
 		public int Count => _internal.Count;
+
 		public bool IsReadOnly => false;
 
 		public void Add(object item)
 		{
-			_fromRenderer = true;
+			_externalChange = true;
 			_internal.Add(item);
-			_fromRenderer = false;
+			_externalChange = false;
 
 			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
 			_shadow.Add(item);
@@ -55,9 +44,9 @@ namespace Xamarin.Forms
 
 		public void Clear()
 		{
-			_fromRenderer = true;
+			_externalChange = true;
 			_internal.Clear();
-			_fromRenderer = false;
+			_externalChange = false;
 
 			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, s_empty);
 			_shadow.Clear();
@@ -85,9 +74,9 @@ namespace Xamarin.Forms
 
 		public void Insert(int index, object item)
 		{
-			_fromRenderer = true;
+			_externalChange = true;
 			_internal.Insert(index, item);
-			_fromRenderer = false;
+			_externalChange = false;
 
 			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
 			_shadow.Insert(index, item);
@@ -95,9 +84,9 @@ namespace Xamarin.Forms
 
 		public bool Remove(object item)
 		{
-			_fromRenderer = true;
+			_externalChange = true;
 			var removed = _internal.Remove(item);
-			_fromRenderer = false;
+			_externalChange = false;
 
 			if (removed)
 			{
@@ -110,9 +99,9 @@ namespace Xamarin.Forms
 
 		public void RemoveAt(int index)
 		{
-			_fromRenderer = true;
+			_externalChange = true;
 			_internal.RemoveAt(index);
-			_fromRenderer = false;
+			_externalChange = false;
 
 			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
 			_shadow.RemoveAt(index);
@@ -132,6 +121,21 @@ namespace Xamarin.Forms
 			}
 
 			return items;
+		}
+
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			if (_externalChange)
+			{
+				// If this change was initiated by a renderer or direct manipulation of ColllectionView.SelectedItems,
+				// we don't need to send a selection change notification
+				return;
+			}
+
+			// This change is coming from a bound viewmodel property
+			// Emit a selection change notification, then bring the shadow copy up-to-date
+			_selectableItemsView.SelectedItemsPropertyChanged(_shadow, _internal);
+			_shadow = Copy();
 		}
 	}
 }
