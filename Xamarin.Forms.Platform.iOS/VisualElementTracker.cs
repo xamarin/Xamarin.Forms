@@ -87,7 +87,8 @@ namespace Xamarin.Forms.Platform.MacOS
 							   e.PropertyName == VisualElement.YProperty.PropertyName ||
 							   e.PropertyName == VisualElement.WidthProperty.PropertyName ||
 							   e.PropertyName == VisualElement.HeightProperty.PropertyName ||
-							   e.PropertyName == VisualElement.ParentHeightProperty.PropertyName))
+							   // Due to a different coordinate system in macOS, "ParentHeightForMacOS" is required to be passed from VisualElement
+							   e.PropertyName == "ParentHeightForMacOS"))
 			{
 				UpdateNativeControl();
 			}
