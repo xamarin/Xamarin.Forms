@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class Tab : ShellSection
 	{
-		public ShellContentCollection Content => Items;
+		public IList<ShellContent> Content => Items;
 	}
 
 	[ContentProperty(nameof(Items))]
@@ -166,7 +166,7 @@ namespace Xamarin.Forms
 			set { SetValue(CurrentItemProperty, value); }
 		}
 
-		public ShellContentCollection Items => (ShellContentCollection)GetValue(ItemsProperty);
+		public IList<ShellContent> Items => (ShellContentCollection)GetValue(ItemsProperty);
 
 		public IReadOnlyList<Page> Stack => _navStack;
 
@@ -554,7 +554,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public class NavigationImpl : NavigationProxy
+		class NavigationImpl : NavigationProxy
 		{
 			readonly ShellSection _owner;
 
