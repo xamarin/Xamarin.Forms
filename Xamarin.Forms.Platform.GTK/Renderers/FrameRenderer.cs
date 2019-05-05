@@ -51,11 +51,6 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				Control.ResetBorderColor();
 			else
 				Control.SetBorderColor(Element.BorderColor);
-
-			if (Element.HasShadow)
-				Control.SetShadow();
-			else
-				Control.ResetShadow();
 		}
 
 		private void PackChild()
