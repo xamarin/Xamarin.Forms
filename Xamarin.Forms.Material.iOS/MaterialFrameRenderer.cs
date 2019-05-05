@@ -192,6 +192,7 @@ namespace Xamarin.Forms.Material.iOS
 					BottomRightCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
 				};
 
+				shapeScheme.SmallComponentShape = shapeCategory;
 				shapeScheme.MediumComponentShape = shapeCategory;
 				shapeScheme.LargeComponentShape = shapeCategory;
 
