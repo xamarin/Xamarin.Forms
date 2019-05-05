@@ -115,12 +115,13 @@ namespace Xamarin.Forms.Material.iOS
 			base.Dispose(disposing);
 		}
 
+
 		protected virtual CardScheme CreateCardScheme()
 		{
+
 			return new CardScheme
 			{
-				ColorScheme = MaterialColors.Light.CreateColorScheme(),
-				ShapeScheme = new ShapeScheme(),
+				ColorScheme = new SemanticColorScheme()
 			};
 		}
 
@@ -137,6 +138,7 @@ namespace Xamarin.Forms.Material.iOS
 
 			// this is set in the theme, so we must always disable it
 			Interactable = false;
+			UpdateCornerRadius();
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -177,9 +179,26 @@ namespace Xamarin.Forms.Material.iOS
 
 			var cornerRadius = Element.CornerRadius;
 			if (cornerRadius < 0)
-				CornerRadius = _defaultCornerRadius;
-			else
-				CornerRadius = cornerRadius;
+				cornerRadius = (float)_defaultCornerRadius;
+
+			if(_cardScheme != null)
+			{
+				var shapeScheme = new ShapeScheme();
+				var shapeCategory = new ShapeCategory()
+				{
+					BottomLeftCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
+					TopLeftCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
+					TopRightCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
+					BottomRightCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
+				};
+
+				shapeScheme.MediumComponentShape = shapeCategory;
+				shapeScheme.LargeComponentShape = shapeCategory;
+
+				_cardScheme.ShapeScheme = shapeScheme;
+			}
+
+			CornerRadius = cornerRadius;
 		}
 
 		void UpdateBorderColor()
