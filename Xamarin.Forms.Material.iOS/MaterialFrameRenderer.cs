@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Material.iOS
 
 			return new CardScheme
 			{
-				ColorScheme = new SemanticColorScheme()
+				ColorScheme = MaterialColors.Light.CreateColorScheme()
 			};
 		}
 
