@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 3454, "Picker accessibility text is wrong", PlatformAffected.macOS)]
+	[Issue(IssueTracker.Github, 3454, "Picker accessibility text is wrong", PlatformAffected.Android)]
 	public class Issue3454 : TestContentPage
 	{
 		protected override void Init()
