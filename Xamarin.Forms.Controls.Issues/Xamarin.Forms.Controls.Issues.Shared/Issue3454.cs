@@ -15,7 +15,9 @@ namespace Xamarin.Forms.Controls.Issues
 			var pickers = new List<Picker>();
 			var grid = new Grid();
 			int row = 0, col = 0;
-
+			int index = 0;
+			grid.AddChild(new Label { Text = "Default Style" }, col, row++);
+#if APP
 			void AddPicker(string title, Func<Picker> getPicker)
 			{
 				grid.AddChild(new Label { Text = title }, col, row++);
@@ -25,9 +27,6 @@ namespace Xamarin.Forms.Controls.Issues
 				grid.AddChild(picker, col, row++);
 			}
 
-			int index = 0;
-			grid.AddChild(new Label { Text = "Default Style" }, col, row++);
-#if APP
 			AddPicker("AutomationProperties", () => 
 			{
 				var picker = new Picker();
