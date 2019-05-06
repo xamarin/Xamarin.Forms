@@ -272,9 +272,9 @@ namespace Xamarin.Forms.Core.UnitTests
 				e.Cancel();
 			};
 
-			shell.GoToAsync(new ShellNavigationState("app:///s/two/tabfour/"));
+			shell.GoToAsync(new ShellNavigationState("//two/tabfour/"));
 
-			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/one/tabone/content/"));
+			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content"));
 		}
 
 		[Test]
