@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -423,7 +422,7 @@ namespace Xamarin.Forms
 			{
 				await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate);
 			}
-			
+
 			//if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
 			//{
 			//	var shellItem = ShellItem.GetShellItemFromRouteName(shellItemRoute);
@@ -573,8 +572,6 @@ namespace Xamarin.Forms
 		bool _accumulateNavigatedEvents;
 		View _flyoutHeaderView;
 		bool _checkExperimentalFlag = true;
-		IList<Element> _logicalChildren = new List<Element>();
-		ReadOnlyCollection<Element> _logicalChildrenReadOnly;
 
 		public Shell() : this(true)
 		{
@@ -791,11 +788,8 @@ namespace Xamarin.Forms
 			return false;
 		}
 
-		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
-
 		protected override void OnChildAdded(Element child)
 		{
-			_logicalChildren.Add(child);
 			base.OnChildAdded(child);
 
 			if (child is ShellItem shellItem && CurrentItem == null && !(child is MenuShellItem))
@@ -806,7 +800,6 @@ namespace Xamarin.Forms
 
 		protected override void OnChildRemoved(Element child)
 		{
-			_logicalChildren.Remove(child);
 			base.OnChildRemoved(child);
 
 			if (child == CurrentItem && Items.Count > 0)
@@ -814,6 +807,16 @@ namespace Xamarin.Forms
 				((IShellController)this).OnFlyoutItemSelected(Items[0]);
 			}
 		}
+
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
+		{
+			get
+			{
+				if (FlyoutHeaderView != null)
+					yield return FlyoutHeaderView;
+			}
+		}
+
 
 		protected virtual void OnNavigated(ShellNavigatedEventArgs args)
 		{
@@ -1089,7 +1092,7 @@ namespace Xamarin.Forms
 		{
 			readonly Shell _shell;
 
-			NavigationProxy SectionProxy => _shell.CurrentItem.CurrentItem.NavigationProxy;			
+			NavigationProxy SectionProxy => _shell.CurrentItem.CurrentItem.NavigationProxy;
 
 			public NavigationImpl(Shell shell) => _shell = shell;
 

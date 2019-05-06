@@ -291,11 +291,11 @@ namespace Xamarin.Forms
 				if (currentItem.Page != null)
 					DisplayedPage = currentItem.Page;
 			}
+
 		}
 
 		protected override void OnChildAdded(Element child)
 		{
-			_logicalChildren.Add(child);
 			base.OnChildAdded(child);
 			if (CurrentItem == null && Items.Contains(child))
 				SetValueFromRenderer(CurrentItemProperty, child);
@@ -305,9 +305,6 @@ namespace Xamarin.Forms
 
 		protected override void OnChildRemoved(Element child)
 		{
-			if (!_logicalChildren.Remove(child))
-				return;
-
 			base.OnChildRemoved(child);
 			if (CurrentItem == child)
 			{
@@ -326,6 +323,8 @@ namespace Xamarin.Forms
 
 			UpdateDisplayedPage();
 		}
+
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement => Items;
 
 		protected virtual void OnInsertPageBefore(Page page, Page before)
 		{
@@ -349,7 +348,7 @@ namespace Xamarin.Forms
 				return;
 
 			_navStack.Insert(index, page);
-			OnChildAdded(page);
+			AddPage(page);
 			SendAppearanceChanged();
 
 			var args = new NavigationRequestedEventArgs(page, before, false)
@@ -460,7 +459,7 @@ namespace Xamarin.Forms
 			};
 
 			_navStack.Add(page);
-			OnChildAdded(page);
+			AddPage(page);
 			SendAppearanceChanged();
 			_navigationRequested?.Invoke(this, args);
 
@@ -518,6 +517,12 @@ namespace Xamarin.Forms
 			shellSection.UpdateDisplayedPage();
 		}
 
+		void AddPage(Page page)
+		{
+			_logicalChildren.Add(page);
+			OnChildAdded(page);
+		}
+
 		void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.NewItems != null)
@@ -537,7 +542,8 @@ namespace Xamarin.Forms
 
 		void RemovePage(Page page)
 		{
-			OnChildRemoved(page);
+			if (_logicalChildren.Remove(page))
+				OnChildRemoved(page);
 		}
 
 		void SendAppearanceChanged() => ((IShellController)Parent?.Parent)?.AppearanceChanged(this, false);
