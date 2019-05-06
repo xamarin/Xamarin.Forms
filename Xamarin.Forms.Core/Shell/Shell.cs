@@ -806,7 +806,7 @@ namespace Xamarin.Forms
 
 		protected override void OnChildRemoved(Element child)
 		{
-			_logicalChildren.Add(child);
+			_logicalChildren.Remove(child);
 			base.OnChildRemoved(child);
 
 			if (child == CurrentItem && Items.Count > 0)

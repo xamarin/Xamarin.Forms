@@ -144,7 +144,7 @@ namespace Xamarin.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
-		internal override IEnumerable<Element> JustTheLogicalChildren
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
 		{
 			get
 			{

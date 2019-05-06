@@ -497,7 +497,31 @@ namespace Xamarin.Forms.Core.UnitTests
 			Shell.SetTitleView(page, layout);
 
 
-			Assert.True(page.JustTheLogicalChildren.Contains(layout));
+			Assert.True(page.ChildrenNotDrawnByThisElement.Contains(layout));
+		}
+
+
+		[Test]
+		public async Task FlyoutHeaderLogicalChild()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			shell.Items.Add(CreateShellItem(page));
+
+			// setup title view
+			StackLayout layout = new StackLayout() { BackgroundColor = Color.White };
+			Label label = new Label();
+			label.SetBinding(Label.TextProperty, "Text");
+			layout.Children.Add(label);
+
+
+			shell.FlyoutHeader = null;
+			shell.FlyoutHeader = layout;
+
+			Assert.True(shell.LogicalChildren.Contains(layout));
+			shell.FlyoutHeader = null;
+
+			Assert.False(shell.LogicalChildren.Contains(layout));
 		}
 	}
 }
