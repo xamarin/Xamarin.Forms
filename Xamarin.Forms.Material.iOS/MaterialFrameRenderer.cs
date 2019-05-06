@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Material.iOS
 	{
 		CardScheme _defaultCardScheme;
 		CardScheme _cardScheme;
-		float _defaultCornerRadius = -1f;
+		float _defaultCornerRadius = -1;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 		bool _disposed = false;
@@ -86,7 +86,6 @@ namespace Xamarin.Forms.Material.iOS
 
 				Element.PropertyChanged += OnElementPropertyChanged;
 
-				UpdateBorderColor();
 				UpdateBackgroundColor();
 				ApplyTheme();
 			}
@@ -117,7 +116,6 @@ namespace Xamarin.Forms.Material.iOS
 
 		protected virtual CardScheme CreateCardScheme()
 		{
-
 			return new CardScheme
 			{
 				ColorScheme = MaterialColors.Light.CreateColorScheme()
@@ -126,6 +124,10 @@ namespace Xamarin.Forms.Material.iOS
 
 		protected virtual void ApplyTheme()
 		{
+			UpdateCornerRadius();
+			UpdateBorderColor();
+			UpdateBackgroundColor();
+
 			if (Element.BorderColor.IsDefault)
 				CardThemer.ApplyScheme(_cardScheme, this);
 			else
@@ -137,7 +139,6 @@ namespace Xamarin.Forms.Material.iOS
 
 			// this is set in the theme, so we must always disable it
 			Interactable = false;
-			UpdateCornerRadius();
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -151,16 +152,14 @@ namespace Xamarin.Forms.Material.iOS
 			}
 			else if (e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
 			{
-				UpdateCornerRadius();
+				updatedTheme = true;
 			}
 			else if (e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName)
 			{
-				UpdateBorderColor();
 				updatedTheme = true;
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
-				UpdateBackgroundColor();
 				updatedTheme = true;
 			}
 
@@ -174,13 +173,13 @@ namespace Xamarin.Forms.Material.iOS
 		{
 			// set the default radius on the first time
 			if (_defaultCornerRadius < 0)
-				_defaultCornerRadius = (float)CornerRadius;
+				_defaultCornerRadius = (float)MaterialColors.kFrameCornerRadiusDefault;
 
 			var cornerRadius = Element.CornerRadius;
 			if (cornerRadius < 0)
 				cornerRadius = _defaultCornerRadius;
 
-			if(_cardScheme != null)
+			if (_cardScheme != null)
 			{
 				var shapeScheme = new ShapeScheme();
 				var shapeCategory = new ShapeCategory(ShapeCornerFamily.Rounded, cornerRadius);
@@ -204,6 +203,8 @@ namespace Xamarin.Forms.Material.iOS
 					colorScheme.OnSurfaceColor = _defaultCardScheme.ColorScheme.OnSurfaceColor;
 				else
 					colorScheme.OnSurfaceColor = borderColor.ToUIColor();
+
+				this.SetBorderWidth(1f, UIControlState.Normal);
 			}
 		}
 
