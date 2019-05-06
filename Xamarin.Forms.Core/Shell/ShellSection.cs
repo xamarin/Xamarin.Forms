@@ -166,7 +166,7 @@ namespace Xamarin.Forms
 			set { SetValue(CurrentItemProperty, value); }
 		}
 
-		public IList<ShellContent> Items => (ShellContentCollection)GetValue(ItemsProperty);
+		public IList<ShellContent> Items => (IList<ShellContent>)GetValue(ItemsProperty);
 
 		public IReadOnlyList<Page> Stack => _navStack;
 
