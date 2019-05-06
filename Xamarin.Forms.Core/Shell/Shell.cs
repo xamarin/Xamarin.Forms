@@ -633,7 +633,7 @@ namespace Xamarin.Forms
 			set => SetValue(FlyoutIsPresentedProperty, value);
 		}
 
-		public IList<ShellItem> Items => (ShellItemCollection)GetValue(ItemsProperty);
+		public IList<ShellItem> Items => (IList<ShellItem>)GetValue(ItemsProperty);
 		public IList<ShellItem> Flyout => Items;
 
 		public DataTemplate ItemTemplate
