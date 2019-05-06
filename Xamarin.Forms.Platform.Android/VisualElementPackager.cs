@@ -144,6 +144,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		void EnsureChildOrder()
 		{
+			float elevationToSet = 0;
 			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
 				Element child = ElementController.LogicalChildren[i];
@@ -152,7 +153,21 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					IVisualElementRenderer r = Platform.GetRenderer(element);
 					if (r != null)
+					{
 						(_renderer.View as ViewGroup)?.BringChildToFront(r.View);
+
+						if (Forms.IsLollipopOrNewer)
+						{
+							var elevation = ElevationHelper.GetElevation(r.View) ?? 0;
+							var elementElevation = ElevationHelper.GetElevation(element);
+
+							if (elevation > elevationToSet)
+								elevationToSet = elevation;
+
+							if(elementElevation == null)
+								r.View.Elevation = elevationToSet;
+						}
+					}
 				}
 			}
 		}
