@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Material.iOS
 	{
 		CardScheme _defaultCardScheme;
 		CardScheme _cardScheme;
-		nfloat _defaultCornerRadius = -1f;
+		float _defaultCornerRadius = -1f;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 		bool _disposed = false;
@@ -86,7 +86,6 @@ namespace Xamarin.Forms.Material.iOS
 
 				Element.PropertyChanged += OnElementPropertyChanged;
 
-				UpdateCornerRadius();
 				UpdateBorderColor();
 				UpdateBackgroundColor();
 				ApplyTheme();
@@ -175,22 +174,16 @@ namespace Xamarin.Forms.Material.iOS
 		{
 			// set the default radius on the first time
 			if (_defaultCornerRadius < 0)
-				_defaultCornerRadius = CornerRadius;
+				_defaultCornerRadius = (float)CornerRadius;
 
 			var cornerRadius = Element.CornerRadius;
 			if (cornerRadius < 0)
-				cornerRadius = (float)_defaultCornerRadius;
+				cornerRadius = _defaultCornerRadius;
 
 			if(_cardScheme != null)
 			{
 				var shapeScheme = new ShapeScheme();
-				var shapeCategory = new ShapeCategory()
-				{
-					BottomLeftCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
-					TopLeftCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
-					TopRightCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
-					BottomRightCorner = new RoundedCornerTreatment() { Radius = cornerRadius },
-				};
+				var shapeCategory = new ShapeCategory(ShapeCornerFamily.Rounded, cornerRadius);
 
 				shapeScheme.SmallComponentShape = shapeCategory;
 				shapeScheme.MediumComponentShape = shapeCategory;
