@@ -161,11 +161,13 @@ namespace Xamarin.Forms.Platform.Android
 							var elevation = ElevationHelper.GetElevation(r.View) ?? 0;
 							var elementElevation = ElevationHelper.GetElevation(element);
 
-							if (elevation > elevationToSet)
-								elevationToSet = elevation;
+							if (elementElevation == null)
+							{
+								if (elevation > elevationToSet)
+									elevationToSet = elevation;
 
-							if(elementElevation == null)
 								r.View.Elevation = elevationToSet;
+							}
 						}
 					}
 				}
