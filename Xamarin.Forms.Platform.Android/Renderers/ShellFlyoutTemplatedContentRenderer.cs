@@ -41,9 +41,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Android designer can't load fragments or resources from layouts
 			if (context.IsDesignerContext())
+			{
+				_rootView = new CoordinatorLayout(context);
 				return;
+			}
 
-            var coordinator = LayoutInflater.FromContext(context).Inflate(Resource.Layout.FlyoutContent, null);
+			var coordinator = LayoutInflater.FromContext(context).Inflate(Resource.Layout.FlyoutContent, null);
 			var recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);
 			var appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
 
