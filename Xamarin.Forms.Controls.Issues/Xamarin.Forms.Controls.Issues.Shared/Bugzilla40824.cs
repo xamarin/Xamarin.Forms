@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = Menu,
 						AutomationId = Menu,
-						Icon = "icon",
+						IconImageSource = "icon",
 						IsDestructive = true,
 						Command = new Command(() => DisplayAlert("TITLE", "Context action invoked", "Ok")),
 					});
