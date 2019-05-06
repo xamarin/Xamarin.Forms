@@ -112,7 +112,7 @@ namespace Xamarin.Forms
 			set { SetValue(CurrentItemProperty, value); }
 		}
 
-		public IList<ShellSection> Items => (ShellSectionCollection)GetValue(ItemsProperty);
+		public IList<ShellSection> Items => (IList<ShellSection>)GetValue(ItemsProperty);
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(_children));
 
