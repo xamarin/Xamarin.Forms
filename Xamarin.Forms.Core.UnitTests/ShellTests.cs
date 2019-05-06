@@ -265,7 +265,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(one);
 			shell.Items.Add(two);
 
-			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content/"));
+			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content"));
 
 			shell.Navigating += (s, e) =>
 			{
