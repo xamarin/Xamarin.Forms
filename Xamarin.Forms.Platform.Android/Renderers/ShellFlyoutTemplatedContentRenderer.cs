@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Android designer can't load fragments or resources from layouts
 			if (context.IsDesignerContext())
 			{
-				_rootView = new CoordinatorLayout(context);
+				_rootView = new FrameLayout(context);
 				return;
 			}
 
