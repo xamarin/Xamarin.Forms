@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var pickers = new List<Picker>();
 			var grid = new Grid();
 			int row = 0, col = 0;
-			int index = 0;
 			grid.AddChild(new Label { Text = "Default Style" }, col, row++);
 #if APP
 			void AddPicker(string title, Func<Picker> getPicker)
