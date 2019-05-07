@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Maps
 			propertyChanged: (b, o, n) => ((Map)b).OnItemTemplateSelectorPropertyChanged());
 
 		readonly ObservableCollection<Pin> _pins = new ObservableCollection<Pin>();
+		readonly ObservableCollection<Polyline> _polylines = new ObservableCollection<Polyline>();
 		MapSpan _visibleRegion;
 
 		public Map(MapSpan region)
@@ -91,7 +92,9 @@ namespace Xamarin.Forms.Maps
 			get { return (DataTemplateSelector)GetValue(ItemTemplateSelectorProperty); }
 			set { SetValue(ItemTemplateSelectorProperty, value); }
 		}
-		
+
+		public IList<Polyline> Polylines => _polylines;
+
 		public event EventHandler<MapClickedEventArgs> MapClicked;
 		
 		[EditorBrowsable(EditorBrowsableState.Never)]

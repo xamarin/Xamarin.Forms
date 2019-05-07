@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Xamarin.Forms.Controls.GalleryPages.MapElementsGallery"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps">
+    <ContentPage.Content>
+        <StackLayout>
+            <maps:Map
+                x:Name="Map"
+                MapClicked="MapClicked" />
+            <Button
+                Clicked="AddPolylineClicked"
+                Text="Add Polyline" />
+            <Button
+                Clicked="RemovePolylineClicked"
+                Text="Remove Polyline" />
+            <Button
+                Clicked="ChangeColorClicked"
+                Text="Change Stroke Color" />
+            <Button
+                Clicked="ChangeWidthClicked"
+                Text="Change Stroke Width" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
