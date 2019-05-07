@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			var shell = new Shell();
 
 			Assert.IsEmpty(shell.Items);
-			Assert.IsEmpty(shell.MenuItems);
 		}
 
 		[Test]
