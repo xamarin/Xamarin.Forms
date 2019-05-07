@@ -17,11 +17,21 @@ namespace Xamarin.Forms.Platform.iOS
 			Platform.SetRenderer(view, _renderer);
 
 			AddSubview(_renderer.NativeView);
+			ClipsToBounds = true;
 		}
 
 		public override void LayoutSubviews()
 		{
-			_view.Layout(Bounds.ToRectangle());
+			if (Bounds.Height == 0)
+			{
+				var request = _view.Measure(Frame.Width, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+				Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, Frame.Width, request.Request.Height));
+				Frame = new CGRect(Frame.X, Frame.Y, Frame.Width, request.Request.Height);
+			}
+			else
+			{
+				_view.Layout(Bounds.ToRectangle());
+			}
 		}
 
 		protected override void Dispose(bool disposing)

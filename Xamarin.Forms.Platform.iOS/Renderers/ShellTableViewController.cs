@@ -10,20 +10,13 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly IShellContext _context;
 		readonly UIView _headerView;
 		readonly ShellTableViewSource _source;
-		double _headerMax = 200;
+		double _headerMax = -1;
 		double _headerMin = 44;
 		double _headerOffset = 0;
 		double _headerSize;
 
 		public ShellTableViewController(IShellContext context, UIView headerView, Action<Element> onElementSelected)
 		{
-			if (headerView == null)
-			{
-				_headerMax = 20;
-				_headerMin = 0;
-			}
-
-			_headerSize = _headerMax;
 			_context = context;
 			_headerView = headerView;
 			_source = new ShellTableViewSource(context, onElementSelected);
@@ -42,6 +35,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var parent = TableView.Superview;
 			TableView.Frame = parent.Bounds.Inset(0, SafeAreaOffset);
+			SetHeaderSize();
 			if (_headerView != null)
 			{
 				_headerView.Frame = new CGRect(0, _headerOffset + SafeAreaOffset, parent.Frame.Width, _headerSize);
@@ -60,6 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
+			SetHeaderSize();
 
 			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 			if (Forms.IsiOS11OrNewer)
@@ -79,8 +74,27 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
+		bool _headerSizeSet = false;
+		void SetHeaderSize()
+		{
+			if(_headerView == null)
+			{
+				_headerMax = 20;
+				_headerMin = 0;
+				return;
+			}
+			if (_headerSizeSet)
+				return;
+
+			_headerView.LayoutIfNeeded();
+			_headerMax = _headerView.Bounds.Height;
+			_headerSize = _headerMax;
+			_headerSizeSet = true;
+		}
+
 		void OnScrolled(object sender, UIScrollView e)
 		{
+			SetHeaderSize();
 			var headerBehavior = _context.Shell.FlyoutHeaderBehavior;
 
 			switch (headerBehavior)
