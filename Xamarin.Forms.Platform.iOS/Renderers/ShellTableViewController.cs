@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly UIView _headerView;
 		readonly ShellTableViewSource _source;
 		double _headerMax = -1;
-		double _headerMin = 44;
+		double _headerMin = 56;
 		double _headerOffset = 0;
 		double _headerSize;
 
@@ -40,10 +40,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_headerView.Frame = new CGRect(0, _headerOffset + SafeAreaOffset, parent.Frame.Width, _headerSize);
 
-				if (_headerOffset < 0 && _headerSize + _headerOffset >= 0)
+				var headerHeight = _headerSize + _headerOffset;
+				if (headerHeight < 0)
+					headerHeight = 0;
+
+				if (_headerOffset < 0)
 				{
 					CAShapeLayer shapeLayer = new CAShapeLayer();
-					CGRect rect = new CGRect(0, _headerOffset * -1, parent.Frame.Width, _headerSize + _headerOffset);
+					CGRect rect = new CGRect(0, _headerOffset * -1, parent.Frame.Width, headerHeight);
 					var path = CGPath.FromRect(rect);
 					shapeLayer.Path = path;
 					_headerView.Layer.Mask = shapeLayer;
