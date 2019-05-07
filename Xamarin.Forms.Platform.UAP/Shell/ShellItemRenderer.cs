@@ -277,6 +277,24 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdatePageTitle();
 			}
+			else if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
+			{
+				UpdateNavBarVisibility();
+			}
+		}
+
+		private void UpdateNavBarVisibility()
+		{
+			if (DisplayedPage == null || Shell.GetNavBarIsVisible(DisplayedPage))
+			{
+				_HeaderArea.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				Shell.SetFlyoutBehavior(Shell.Current, Xamarin.Forms.FlyoutBehavior.Flyout);
+			}
+			else
+			{
+				_HeaderArea.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				Shell.SetFlyoutBehavior(Shell.Current, Xamarin.Forms.FlyoutBehavior.Disabled);
+			}
 		}
 
 		private void UpdatePageTitle()
