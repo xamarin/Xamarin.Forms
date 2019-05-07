@@ -13,10 +13,18 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		bool _isLayouting;
 		Rect _last;
 		Dictionary<int, RealizedItem> _realizedItem = new Dictionary<int, RealizedItem>();
+		List<int> _itemSizes;
+		List<int> _accumulatedItemSizes;
 
-		public LinearLayoutManager(bool isHorizontal)
+		bool _hasUnevenRows;
+		int _baseItemSize;
+
+		public LinearLayoutManager(bool isHorizontal) : this(isHorizontal, ItemSizingStrategy.MeasureFirstItem) { }
+
+		public LinearLayoutManager(bool isHorizontal, ItemSizingStrategy sizingStrategy)
 		{
 			IsHorizontal = isHorizontal;
+			_hasUnevenRows = sizingStrategy == ItemSizingStrategy.MeasureAllItems;
 		}
 
 		public bool IsHorizontal { get; }
@@ -34,18 +42,37 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public ESize GetScrollCanvasSize()
 		{
+			if (CollectionView.Count == 0 || _allocatedSize.Width <= 0 || _allocatedSize.Height <= 0)
+				return _allocatedSize;
+
 			if (_scrollCanvasSize.Width > 0 && _scrollCanvasSize.Height > 0)
 				return _scrollCanvasSize;
 
-			var itemCount = CollectionView.Count;
-			var itemSize = CollectionView.GetItemSize();
+			var totalItemSize = _hasUnevenRows ? _accumulatedItemSizes[_accumulatedItemSizes.Count - 1] : BaseItemSize * CollectionView.Count;
 			if (IsHorizontal)
 			{
-				return _scrollCanvasSize = new ESize(itemCount * itemSize.Width, _allocatedSize.Height);
+				_scrollCanvasSize = new ESize(totalItemSize, _allocatedSize.Height);
 			}
 			else
 			{
-				return _scrollCanvasSize = new ESize(_allocatedSize.Width, itemCount * itemSize.Height);
+				_scrollCanvasSize = new ESize(_allocatedSize.Width, totalItemSize);
+			}
+
+			return _scrollCanvasSize;
+		}
+
+		int BaseItemSize
+		{
+			get
+			{
+				if (_baseItemSize == 0)
+				{
+					if (_allocatedSize.Width <= 0 || _allocatedSize.Height <= 0)
+						return 0;
+
+					_baseItemSize = IsHorizontal ? CollectionView.GetItemSize().Width : CollectionView.GetItemSize().Height;
+				}
+				return _baseItemSize;
 			}
 		}
 
@@ -57,7 +84,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				return true;
 
 			var diff = IsHorizontal ? Math.Abs(_last.X - viewport.X) : Math.Abs(_last.Y - viewport.Y);
-			var margin = IsHorizontal ? CollectionView.GetItemSize().Width : CollectionView.GetItemSize().Height;
+			var margin = BaseItemSize;
 			if (diff > margin)
 				return true;
 
@@ -71,17 +98,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				return;
 			}
+
 			_isLayouting = true;
 			_last = bound;
 
-			var size = CollectionView.GetItemSize();
-			var itemSize = IsHorizontal ? size.Width : size.Height;
-			int startIndex = Math.Max(GetStartIndex(bound, itemSize) - 2, 0);
-			int endIndex = Math.Min(GetEndIndex(bound, itemSize) + 2, CollectionView.Count - 1);
+			int startIndex = Math.Max(GetStartIndex(bound) - 2, 0);
+			int endIndex = Math.Min(GetEndIndex(bound) + 2, CollectionView.Count - 1);
 
 			foreach (var index in _realizedItem.Keys.ToList())
 			{
-
 				if (index < startIndex || index > endIndex)
 				{
 					CollectionView.UnrealizeView(_realizedItem[index].View);
@@ -138,6 +163,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				}
 			}
 
+			UpdateInsertedSize(inserted);
+
 			_scrollCanvasSize = new ESize(0, 0);
 		}
 
@@ -164,6 +191,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_realizedItem.Remove(last);
 			}
 
+			UpdateRemovedSize(removed);
+
 			_scrollCanvasSize = new ESize(0, 0);
 		}
 
@@ -181,19 +210,33 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public Rect GetItemBound(int index)
 		{
-			var size = CollectionView.GetItemSize();
-			if (IsHorizontal)
+			int itemSize = 0;
+			int startPoint = 0;
+
+			if (!_hasUnevenRows)
 			{
-				size.Height = _allocatedSize.Height;
+				itemSize = BaseItemSize;
+				startPoint = itemSize * index;
 			}
 			else
 			{
-				size.Width = _allocatedSize.Width;
+				var measured = CollectionView.GetItemSize(index);
+				itemSize = IsHorizontal ? measured.Width : measured.Height;
+
+				if (itemSize != _itemSizes[index])
+				{
+					UpdateAccumulatedItemSize(index, itemSize - _itemSizes[index]);
+					_itemSizes[index] = itemSize;
+
+					CollectionView.ContentSizeUpdated();
+				}
+				startPoint = _accumulatedItemSizes[index] - itemSize;
 			}
-			return
-				IsHorizontal ?
-				new Rect(index * size.Width, 0, size.Width, size.Height) :
-				new Rect(0, index * size.Height, size.Width, size.Height);
+
+
+			return IsHorizontal ?
+				new Rect(startPoint, 0, itemSize, _allocatedSize.Height) :
+				new Rect(0, startPoint, _allocatedSize.Width, itemSize);
 		}
 
 		public void Reset()
@@ -206,14 +249,50 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_scrollCanvasSize = new ESize(0, 0);
 		}
 
+		public void ItemSourceUpdated()
+		{
+			if (!_hasUnevenRows)
+				return;
+
+			int n = CollectionView.Count;
+			_itemSizes = new List<int>();
+			_accumulatedItemSizes = new List<int>();
+
+			for (int i = 0; i < n; i++)
+			{
+				_itemSizes.Add(BaseItemSize);
+				_accumulatedItemSizes.Add((i > 0 ? _accumulatedItemSizes[i - 1] : 0) + _itemSizes[i]);
+			}
+		}
+
 		int GetStartIndex(Rect bound, int itemSize)
 		{
 			return ViewPortStartPoint(bound) / itemSize;
 		}
 
+		int GetStartIndex(Rect bound)
+		{
+			if (!_hasUnevenRows)
+			{
+				return GetStartIndex(bound, BaseItemSize);
+			}
+
+			return FindFirstGreaterOrEqualTo(_accumulatedItemSizes, ViewPortStartPoint(bound));
+		}
+
 		int GetEndIndex(Rect bound, int itemSize)
 		{
 			return (int)Math.Ceiling(ViewPortEndPoint(bound) / (double)itemSize);
+		}
+
+		int GetEndIndex(Rect bound)
+		{
+			if (!_hasUnevenRows)
+			{
+				return GetEndIndex(bound, BaseItemSize);
+			}
+
+			return FindFirstGreaterOrEqualTo(_accumulatedItemSizes, ViewPortEndPoint(bound));
 		}
 
 		int ViewPortStartPoint(Rect viewPort)
@@ -229,6 +308,70 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		int ViewPortSize(Rect viewPort)
 		{
 			return IsHorizontal ? viewPort.Width : viewPort.Height;
+		}
+
+		void UpdateAccumulatedItemSize(int index, int diff)
+		{
+			for (int i = index; i < _accumulatedItemSizes.Count; i++)
+			{
+				_accumulatedItemSizes[i] += diff;
+			}
+
+			if (IsHorizontal)
+			{
+				_scrollCanvasSize.Width += diff;
+			}
+			else
+			{
+				_scrollCanvasSize.Height += diff;
+			}
+		}
+
+		void UpdateRemovedSize(int removed)
+		{
+			if (!_hasUnevenRows)
+				return;
+			var removedSize = _itemSizes[removed];
+			_itemSizes.RemoveAt(removed);
+			UpdateAccumulatedItemSize(removed, -removedSize);
+			_accumulatedItemSizes.RemoveAt(removed);
+		}
+
+		void UpdateInsertedSize(int inserted)
+		{
+			if (!_hasUnevenRows)
+				return;
+
+			_itemSizes.Insert(inserted, BaseItemSize);
+			_accumulatedItemSizes.Insert(inserted, 0);
+			_accumulatedItemSizes[inserted] = inserted > 0 ? _accumulatedItemSizes[inserted - 1] : 0;
+			UpdateAccumulatedItemSize(inserted, BaseItemSize);
+		}
+
+		static int FindFirstGreaterOrEqualTo(IList<int> data, int value)
+		{
+			if (data.Count == 0)
+				return 0;
+
+			int start = 0;
+			int end = data.Count - 1;
+			while (start < end)
+			{
+				int mid = (start + end) / 2;
+				if (data[mid] < value)
+				{
+					start = mid + 1;
+				}
+				else
+				{
+					end = mid - 1;
+				}
+			}
+			if (data[start] < value)
+			{
+				start++;
+			}
+			return start;
 		}
 
 		class RealizedItem

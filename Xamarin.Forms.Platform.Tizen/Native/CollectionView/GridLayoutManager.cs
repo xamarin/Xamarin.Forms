@@ -222,6 +222,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_scrollCanvasSize = new ESize(0, 0);
 		}
 
+		public void ItemSourceUpdated()
+		{
+		}
+
 		int GetStartIndex(Rect bound, int itemSize)
 		{
 			return ViewPortStartPoint(bound) / itemSize * Span;

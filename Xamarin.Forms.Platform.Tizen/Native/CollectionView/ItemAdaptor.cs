@@ -96,5 +96,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		public abstract void SetBinding(EvasObject view, int index);
 
 		public abstract ESize MeasureItem(int widthConstraint, int heightConstraint);
+
+		public abstract ESize MeasureItem(int index, int widthConstraint, int heightConstraint);
 	}
 }

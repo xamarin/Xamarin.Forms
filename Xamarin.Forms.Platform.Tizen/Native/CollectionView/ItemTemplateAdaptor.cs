@@ -12,39 +12,26 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			ItemTemplate = new DataTemplate(() =>
 			{
-				return new StackLayout
+				XLabel label;
+				var view = new StackLayout
 				{
 					BackgroundColor = Color.White,
 					Padding = 30,
 					Children =
 					{
-						new XLabel()
+						(label = new XLabel())
 					}
 				};
+				label.SetBinding(XLabel.TextProperty, new Binding("."));
+				return view;
 			});
-		}
-		public override void SetBinding(EvasObject native, int index)
-		{
-			((GetTemplatedView(native) as StackLayout).Children[0] as XLabel).Text = this[index].ToString();
-		}
-
-		public override ESize MeasureItem(int widthConstraint, int heightConstraint)
-		{
-			var view = (View)ItemTemplate.CreateContent();
-			if (Count > 0)
-			{
-				((view as StackLayout).Children[0] as XLabel).Text = this[0].ToString();
-			}
-			var renderer = Platform.GetOrCreateRenderer(view);
-			var request = view.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request;
-			renderer.Dispose();
-			return request.ToPixel();
 		}
 	}
 
 	public class ItemTemplateAdaptor : ItemAdaptor
 	{
 		Dictionary<EvasObject, View> _nativeFormsTable = new Dictionary<EvasObject, View>();
+		Dictionary<object, View> _dataBindedViewTable = new Dictionary<object, View>();
 		ItemsView _itemsView;
 
 		public ItemTemplateAdaptor(ItemsView itemsView) : base(itemsView.ItemsSource)
@@ -82,6 +69,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (_nativeFormsTable.TryGetValue(native, out View view))
 			{
+				ResetBindedView(view);
 				Platform.GetRenderer(view)?.Dispose();
 				_nativeFormsTable.Remove(native);
 			}
@@ -91,22 +79,41 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (_nativeFormsTable.TryGetValue(native, out View view))
 			{
+				ResetBindedView(view);
 				view.BindingContext = this[index];
+				_dataBindedViewTable[this[index]] = view;
 			}
 		}
 
 		public override ESize MeasureItem(int widthConstraint, int heightConstraint)
 		{
-			var view = ItemTemplate.CreateContent() as View;
-			var renderer = Platform.GetOrCreateRenderer(view);
-			view.Parent = _itemsView;
-			if (Count > 0)
-				view.BindingContext = this[0];
-			var request = view.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request;
-			renderer.Dispose();
-
-			return request.ToPixel();
+			return MeasureItem(0, widthConstraint, heightConstraint);
 		}
 
+		public override ESize MeasureItem(int index, int widthConstraint, int heightConstraint)
+		{
+			if (_dataBindedViewTable.TryGetValue(this[index], out View createdView) && createdView != null)
+			{
+				return createdView.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request.ToPixel();
+			}
+
+			var view = ItemTemplate.CreateContent() as View;
+			using (var renderer = Platform.GetOrCreateRenderer(view))
+			{
+				view.Parent = _itemsView;
+				if (Count > index)
+					view.BindingContext = this[index];
+				var request = view.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request;
+				return request.ToPixel();
+			}
+		}
+
+		void ResetBindedView(View view)
+		{
+			if (view.BindingContext != null && _dataBindedViewTable.ContainsKey(view.BindingContext))
+			{
+				_dataBindedViewTable[view.BindingContext] = null;
+			}
+		}
 	}
 }

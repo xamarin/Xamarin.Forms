@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		void ItemUpdated(int index);
 
+		void ItemSourceUpdated();
+
 		void Reset();
 	}
 }

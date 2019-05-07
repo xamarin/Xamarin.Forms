@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Specialized;
 using ElmSharp;
 using EBox = ElmSharp.Box;
@@ -203,7 +204,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				return _itemSize;
 			}
 
-			_itemSize = Adaptor.MeasureItem(AllocatedSize.Width, AllocatedSize.Height);
+			_itemSize = Adaptor.MeasureItem(LayoutManager.IsHorizontal ? AllocatedSize.Width * 100 : AllocatedSize.Width, LayoutManager.IsHorizontal ? AllocatedSize.Height : AllocatedSize.Height * 100);
 			_itemSize.Width = Math.Max(_itemSize.Width, 10);
 			_itemSize.Height = Math.Max(_itemSize.Height, 10);
 
@@ -212,6 +213,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				Scroller.SetPageSize(_itemSize.Width, _itemSize.Height);
 			}
 			return _itemSize;
+		}
+
+		ESize ICollectionViewController.GetItemSize(int index)
+		{
+			if (Adaptor == null)
+			{
+				return new ESize(0, 0);
+			}
+			return Adaptor.MeasureItem(index, LayoutManager.IsHorizontal ? AllocatedSize.Width * 100 : AllocatedSize.Width, LayoutManager.IsHorizontal ? AllocatedSize.Height : AllocatedSize.Height * 100);
 		}
 
 		ViewHolder ICollectionViewController.RealizeView(int index)
@@ -271,6 +281,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			view.ResetState();
 			view.Hide();
 			_pool.AddRecyclerView(view);
+			if (_lastSelectedViewHolder == view)
+			{
+				_lastSelectedViewHolder = null;
+			}
+		}
+
+		void ICollectionViewController.ContentSizeUpdated()
+		{
+			OnInnerLayout();
 		}
 
 		protected virtual EScroller CreateScroller(EvasObject parent)
@@ -319,8 +338,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (_layoutManager == null)
 				return;
 
+			_itemSize = new ESize(-1, -1);
 			_layoutManager.CollectionView = this;
 			_layoutManager.SizeAllocated(AllocatedSize);
+			if (Adaptor != null)
+			{
+				_layoutManager.ItemSourceUpdated();
+			}
 			RequestLayoutItems();
 		}
 
@@ -341,6 +365,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			_itemSize = new ESize(-1, -1);
 			(Adaptor as INotifyCollectionChanged).CollectionChanged += OnCollectionChanged;
+			LayoutManager?.ItemSourceUpdated();
 
 			RequestLayoutItems();
 
@@ -357,6 +382,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				int idx = e.NewStartingIndex;
 				foreach (var item in e.NewItems)
 				{
+					foreach (var viewHolder in _viewHolderIndexTable.Keys.ToList())
+					{
+						if (_viewHolderIndexTable[viewHolder] >= idx)
+						{
+							_viewHolderIndexTable[viewHolder]++;
+						}
+					}
 					LayoutManager.ItemInserted(idx++);
 				}
 			}
@@ -366,6 +398,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				foreach (var item in e.OldItems)
 				{
 					LayoutManager.ItemRemoved(idx);
+					foreach (var viewHolder in _viewHolderIndexTable.Keys.ToList())
+					{
+						if (_viewHolderIndexTable[viewHolder] > idx)
+						{
+							_viewHolderIndexTable[viewHolder]--;
+						}
+					}
 				}
 			}
 			else if (e.Action == NotifyCollectionChangedAction.Move)
@@ -471,6 +510,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		int Count { get; }
 
 		ESize GetItemSize();
+
+		ESize GetItemSize(int index);
+
+		void ContentSizeUpdated();
 	}
 
 	public enum CollectionViewSelectionMode
