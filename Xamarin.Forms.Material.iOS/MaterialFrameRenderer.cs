@@ -86,7 +86,6 @@ namespace Xamarin.Forms.Material.iOS
 
 				Element.PropertyChanged += OnElementPropertyChanged;
 
-				UpdateBackgroundColor();
 				ApplyTheme();
 			}
 
@@ -204,7 +203,7 @@ namespace Xamarin.Forms.Material.iOS
 				else
 					colorScheme.OnSurfaceColor = borderColor.ToUIColor();
 
-				this.SetBorderWidth(1f, UIControlState.Normal);
+				SetBorderWidth(borderColor.IsDefault ? 0f : 1f, UIControlState.Normal);
 			}
 		}
 
