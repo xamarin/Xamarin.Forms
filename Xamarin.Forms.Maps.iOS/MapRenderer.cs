@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using CoreLocation;
 using MapKit;
 using ObjCRuntime;
@@ -62,8 +63,8 @@ namespace Xamarin.Forms.Maps.MacOS
 				{
 					var mapModel = (Map)Element;
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
-
+					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
+					((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
 					foreach (Pin pin in mapModel.Pins)
 					{
 						pin.PropertyChanged -= PinOnPropertyChanged;
@@ -73,6 +74,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				var mkMapView = (MKMapView)Control;
 				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
 				mkMapView.GetViewForAnnotation = null;
+				mkMapView.OverlayRenderer = null;
 				if (mkMapView.Delegate != null)
 				{
 					mkMapView.Delegate.Dispose();
@@ -112,12 +114,19 @@ namespace Xamarin.Forms.Maps.MacOS
 			if (e.OldElement != null)
 			{
 				var mapModel = (Map)e.OldElement;
-				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
 
+				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
 				foreach (Pin pin in mapModel.Pins)
 				{
 					pin.PropertyChanged -= PinOnPropertyChanged;
+				}
+
+				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
+				foreach (Polyline polyline in mapModel.Polylines)
+				{
+					polyline.PropertyChanged -= PolylineOnPropertyChanged;
 				}
 			}
 
@@ -145,6 +154,7 @@ namespace Xamarin.Forms.Maps.MacOS
 					SetNativeControl(mapView);
 
 					mapView.GetViewForAnnotation = GetViewForAnnotation;
+					mapView.OverlayRenderer = GetViewForOverlay;
 					mapView.RegionChanged += MkMapViewOnRegionChanged;
 #if __MOBILE__
 					mapView.AddGestureRecognizer(_mapClickedGestureRecognizer = new UITapGestureRecognizer(OnMapClicked));
@@ -160,9 +170,11 @@ namespace Xamarin.Forms.Maps.MacOS
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
 
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnCollectionChanged;
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnPinCollectionChanged;
+				OnPinCollectionChanged(mapModel.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
-				OnCollectionChanged(((Map)Element).Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged += OnPolylineCollectionChanged;
+				OnPolylineCollectionChanged(mapModel.Polylines, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}
 
@@ -369,7 +381,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			((MKMapView)Control).SetRegion(mapRegion, animated);
 		}
 
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
 			switch (notifyCollectionChangedEventArgs.Action)
 			{
@@ -440,6 +452,113 @@ namespace Xamarin.Forms.Maps.MacOS
 					((MKMapView)Control).MapType = MKMapType.Hybrid;
 					break;
 			}
+		}
+
+		void OnPolylineCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					AddPolylines(e.NewItems.Cast<Polyline>());
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemovePolylines(e.OldItems.Cast<Polyline>());
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					RemovePolylines(e.OldItems.Cast<Polyline>());
+					AddPolylines(e.NewItems.Cast<Polyline>());
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					var mkMapView = (MKMapView)Control;
+
+					if (mkMapView.Overlays != null)
+					{
+						var polylines = mkMapView.Overlays.OfType<MKPolyline>();
+						foreach (var mkPolyline in polylines)
+						{
+							mkMapView.RemoveOverlay(mkPolyline);
+						}
+					}
+
+					AddPolylines(((Map)Element).Polylines);
+					break;
+			}
+		}
+
+		void AddPolylines(IEnumerable<Polyline> polylines)
+		{
+			foreach (var polyline in polylines)
+			{
+				polyline.PropertyChanged += PolylineOnPropertyChanged;
+
+				var mkPolyline = MKPolyline.FromCoordinates(polyline.Geopath
+					.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
+					.ToArray());
+
+				polyline.PolylineId = mkPolyline;
+
+				((MKMapView)Control).AddOverlay(mkPolyline);
+			}
+		}
+
+		void RemovePolylines(IEnumerable<Polyline> polylines)
+		{
+			foreach (var polyline in polylines)
+			{
+				polyline.PropertyChanged -= PolylineOnPropertyChanged;
+
+				var mkPolyline = (MKPolyline)polyline.PolylineId;
+				((MKMapView)Control).RemoveOverlay(mkPolyline);
+			}
+		}
+
+		void PolylineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var polyline = (Polyline)sender;
+
+			RemovePolylines(new[] { polyline });
+			AddPolylines(new[] { polyline });
+		}
+
+		protected MKOverlayRenderer GetViewForOverlay(MKMapView mapview, IMKOverlay overlay)
+		{
+			if (overlay is MKPolyline polyline)
+			{
+				return GetViewForPolyline(polyline);
+			}
+
+			return null;
+		}
+
+		protected virtual MKPolylineRenderer GetViewForPolyline(MKPolyline mkPolyline)
+		{
+			var map = (Map)Element;
+			Polyline targetPolyline = null;
+
+			for (int i = 0; i < map.Polylines.Count; i++)
+			{
+				var polyline = map.Polylines[i];
+				if (ReferenceEquals(polyline.PolylineId, mkPolyline))
+				{
+					targetPolyline = polyline;
+					break;
+				}
+			}
+
+			if (targetPolyline == null)
+			{
+				return null;
+			}
+
+			return new MKPolylineRenderer(mkPolyline)
+			{
+#if __MOBILE__
+				StrokeColor = targetPolyline.StrokeColor.ToUIColor(Color.Black),
+#else
+				StrokeColor = targetPolyline.StrokeColor.ToNSColor(Color.Black),
+#endif
+				LineWidth = targetPolyline.StrokeWidth
+			};
 		}
 	}
 }
