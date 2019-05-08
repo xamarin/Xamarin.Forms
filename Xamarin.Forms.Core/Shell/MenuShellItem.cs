@@ -20,8 +20,8 @@ namespace Xamarin.Forms
 		{
 			if (e.PropertyName == Shell.MenuItemTemplateProperty.PropertyName)
 				Shell.SetMenuItemTemplate(this, Shell.GetMenuItemTemplate(MenuItem));
-			else if (e.PropertyName == "Title")
-				OnPropertyChanged("Text");
+			else if (e.PropertyName == TitleProperty.PropertyName)
+				OnPropertyChanged(MenuItem.TextProperty.PropertyName);
 		}
 
 		public MenuItem MenuItem { get; }
@@ -37,7 +37,7 @@ namespace Xamarin.Forms
 		protected override void OnBindingContextChanged()
 		{
 			base.OnBindingContextChanged();
-			MenuItem.BindingContext = BindingContext;
+			SetInheritedBindingContext(MenuItem, BindingContext);
 		}
 	}
 }
