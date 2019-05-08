@@ -13,6 +13,7 @@ using Java.Lang;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Math = System.Math;
+using NativePolyline = Android.Gms.Maps.Model.Polyline;
 
 namespace Xamarin.Forms.Maps.Android
 {
@@ -27,6 +28,7 @@ namespace Xamarin.Forms.Maps.Android
 		bool _init = true;
 
 		List<Marker> _markers;
+		List<NativePolyline> _polylines;
 
 		public MapRenderer(Context context) : base(context)
 		{
@@ -73,11 +75,17 @@ namespace Xamarin.Forms.Maps.Android
 				if (Element != null)
 				{
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;
 
+					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
 					foreach (Pin pin in Element.Pins)
 					{
 						pin.PropertyChanged -= PinOnPropertyChanged;
+					}
+
+					((ObservableCollection<Polyline>)Element.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
+					foreach (Polyline polyline in Element.Polylines)
+					{
+						polyline.PropertyChanged -= PolylineOnPropertyChanged;
 					}
 				}
 
@@ -111,11 +119,17 @@ namespace Xamarin.Forms.Maps.Android
 			if (e.OldElement != null)
 			{
 				Map oldMapModel = e.OldElement;
-				((ObservableCollection<Pin>)oldMapModel.Pins).CollectionChanged -= OnCollectionChanged;
 
+				((ObservableCollection<Pin>)oldMapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
 				foreach (Pin pin in oldMapModel.Pins)
 				{
 					pin.PropertyChanged -= PinOnPropertyChanged;
+				}
+
+				((ObservableCollection<Polyline>)oldMapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
+				foreach (Polyline polyline in oldMapModel.Polylines)
+				{
+					polyline.PropertyChanged -= PolylineOnPropertyChanged;
 				}
 
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
@@ -135,11 +149,8 @@ namespace Xamarin.Forms.Maps.Android
 
 			MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, OnMoveToRegionMessage, Map);
 
-			var incc = Map.Pins as INotifyCollectionChanged;
-			if (incc != null)
-			{
-				incc.CollectionChanged += OnCollectionChanged;
-			}
+			((INotifyCollectionChanged)Map.Pins).CollectionChanged += OnPinCollectionChanged;
+			((INotifyCollectionChanged)Map.Polylines).CollectionChanged += OnPolylineCollectionChanged;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -182,7 +193,8 @@ namespace Xamarin.Forms.Maps.Android
 				if (NativeMap != null)
 				{
 					MoveToRegion(Element.LastMoveToRegion, false);
-					OnCollectionChanged(Element.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					OnPinCollectionChanged(Element.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					OnPolylineCollectionChanged(Element.Polylines, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 					_init = false;
 				}
 			}
@@ -342,7 +354,7 @@ namespace Xamarin.Forms.Maps.Android
 			}
 		}
 
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
 			switch (notifyCollectionChangedEventArgs.Action)
 			{
@@ -439,6 +451,143 @@ namespace Xamarin.Forms.Maps.Android
 			double dlat = Math.Max(Math.Abs(ul.Latitude - lr.Latitude), Math.Abs(ur.Latitude - ll.Latitude));
 			double dlong = Math.Max(Math.Abs(ul.Longitude - lr.Longitude), Math.Abs(ur.Longitude - ll.Longitude));
 			Element.SetVisibleRegion(new MapSpan(new Position(pos.Latitude, pos.Longitude), dlat, dlong));
+		}
+
+		protected NativePolyline GetNativePolyline(Polyline polyline)
+		{
+			return _polylines?.Find(p => p.Id == (string)polyline.PolylineId);
+		}
+
+		protected Polyline GetPolylineFromNative(NativePolyline polyline)
+		{
+			Polyline targetPolyline = null;
+
+			for (int i = 0; i < Map.Polylines.Count; i++)
+			{
+				var formsPolyline = Map.Polylines[i];
+				if ((string)formsPolyline.PolylineId == polyline.Id)
+				{
+					targetPolyline = formsPolyline;
+					break;
+				}
+			}
+
+			return targetPolyline;
+		}
+
+		protected virtual PolylineOptions CreateNativePolyline(Polyline polyline)
+		{
+			var opts = new PolylineOptions();
+
+			opts.InvokeColor(polyline.StrokeColor.ToAndroid(Color.Black));
+			opts.InvokeWidth(polyline.StrokeWidth);
+
+			foreach (var position in polyline.Geopath)
+			{
+				opts.Points.Add(new LatLng(position.Latitude, position.Longitude));
+			}
+
+			return opts;
+		}
+
+		void PolylineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var formsPolyline = (Polyline)sender;
+			var nativePolyline = GetNativePolyline(formsPolyline);
+
+			if (nativePolyline == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == Polyline.StrokeColorProperty.PropertyName)
+			{
+				nativePolyline.Color = formsPolyline.StrokeColor.ToAndroid(Color.Black);
+			}
+			else if (e.PropertyName == Polyline.StrokeWidthProperty.PropertyName)
+			{
+				nativePolyline.Width = formsPolyline.StrokeWidth;
+			}
+			else if (e.PropertyName == nameof(Polyline.Geopath))
+			{
+				nativePolyline.Points = formsPolyline.Geopath.Select(position => new LatLng(position.Latitude, position.Longitude)).ToList();
+			}
+		}
+
+		void OnPolylineCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					AddPolylines(e.NewItems.Cast<Polyline>());
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemovePolylines(e.OldItems.Cast<Polyline>());
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					RemovePolylines(e.OldItems.Cast<Polyline>());
+					AddPolylines(e.NewItems.Cast<Polyline>());
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					_polylines?.ForEach(p => p.Remove());
+					_polylines = null;
+					AddPolylines(Map.Polylines);
+					break;
+			}
+		}
+
+		void AddPolylines(IEnumerable<Polyline> polylines)
+		{
+			var map = NativeMap;
+			if (map == null)
+			{
+				return;
+			}
+
+			if (_polylines == null)
+			{
+				_polylines = new List<NativePolyline>();
+			}
+
+			_polylines.AddRange(polylines.Select(p =>
+			{
+				p.PropertyChanged += PolylineOnPropertyChanged;
+
+				var options = CreateNativePolyline(p);
+				var nativePolyline = map.AddPolyline(options);
+
+				p.PolylineId = nativePolyline.Id;
+
+				return nativePolyline;
+			}));
+		}
+
+		void RemovePolylines(IEnumerable<Polyline> polylines)
+		{
+			var map = NativeMap;
+
+			if (map == null)
+			{
+				return;
+			}
+
+			if (_markers == null)
+			{
+				return;
+			}
+
+			foreach (var polyline in polylines)
+			{
+				polyline.PropertyChanged -= PolylineOnPropertyChanged;
+
+				var native = GetNativePolyline(polyline);
+
+				if (native != null)
+				{
+					native.Remove();
+					_polylines.Remove(native);
+				}
+			}
 		}
 
 		void IOnMapReadyCallback.OnMapReady(GoogleMap map)

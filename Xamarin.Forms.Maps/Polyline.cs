@@ -32,9 +32,16 @@ namespace Xamarin.Forms.Maps
 			set => SetValue(StrokeWidthProperty, value);
 		}
 
-		public IList<Position> Geopath { get; } = new ObservableCollection<Position>();
+		public IList<Position> Geopath { get; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public object PolylineId { get; set; }
+
+		public Polyline()
+		{
+			var observable = new ObservableCollection<Position>();
+			observable.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Geopath));
+			Geopath = observable;
+		}
 	}
 }
