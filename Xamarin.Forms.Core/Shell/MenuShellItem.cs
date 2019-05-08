@@ -33,5 +33,11 @@ namespace Xamarin.Forms
 		{
 			(MenuItem as IMenuItemController).Activate();
 		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+			MenuItem.BindingContext = BindingContext;
+		}
 	}
 }
