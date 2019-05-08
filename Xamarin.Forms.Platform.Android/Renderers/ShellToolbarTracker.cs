@@ -253,11 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_drawerToggle == null)
 			{
-				FastRenderers.AutomationPropertiesProvider.GetShellAccessibilityResources(context, _shellContext.Shell, out int resourceIdOpen, out int resourceIdClose);
-
-				_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar,
-																	resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
-																	resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose)
+				_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar, R.String.Ok, R.String.Ok)
 				{
 					ToolbarNavigationClickListener = this,
 				};
@@ -291,6 +287,20 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_drawerToggle.SyncState();
+
+			//this needs to be set after SyncState
+			UpdateToolbarIconAccessibilityText(toolbar, _shellContext.Shell);
+		}
+
+		protected virtual void UpdateToolbarIconAccessibilityText(Toolbar toolbar, Shell shell)
+		{
+			var shellIconTextDescription = shell.FlyoutIcon?.AutomationId ?? AutomationProperties.GetHelpText(_shellContext.Shell.FlyoutIcon) ?? shell.AutomationId;
+
+			//setting a empty text will cause to not read the default ´OK´
+			if (string.IsNullOrEmpty(shellIconTextDescription))
+				return;
+
+			toolbar.NavigationContentDescription = shellIconTextDescription;
 		}
 
 		protected virtual async Task UpdateDrawerArrowFromBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)

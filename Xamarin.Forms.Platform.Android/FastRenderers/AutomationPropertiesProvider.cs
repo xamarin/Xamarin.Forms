@@ -8,20 +8,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 	internal class AutomationPropertiesProvider : IDisposable
 	{
 		static readonly string s_defaultDrawerId = "drawer";
-		static readonly string s_defaultDrawerShellId = "shell";
 		static readonly string s_defaultDrawerIdOpenSuffix = "_open";
 		static readonly string s_defaultDrawerIdCloseSuffix = "_close";
-
-		internal static void GetShellAccessibilityResources(global::Android.Content.Context context, Shell shell, out int resourceIdOpen, out int resourceIdClose)
-		{
-			var automationIdParent = s_defaultDrawerShellId;
-			if (!string.IsNullOrEmpty(shell?.FlyoutIcon?.AutomationId))
-				automationIdParent = shell.FlyoutIcon.AutomationId;
-			else if (!string.IsNullOrEmpty(shell?.AutomationId))
-				automationIdParent = shell.AutomationId;
-
-			GetAccessibilityResources(context, out resourceIdOpen, out resourceIdClose, automationIdParent);
-		}
 
 		internal static void GetDrawerAccessibilityResources(global::Android.Content.Context context, MasterDetailPage page, out int resourceIdOpen, out int resourceIdClose)
 		{
@@ -32,7 +20,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			else if (!string.IsNullOrEmpty(page.AutomationId))
 				automationIdParent = page.AutomationId;
 
-			GetAccessibilityResources(context, out resourceIdOpen, out resourceIdClose, automationIdParent);
+			resourceIdOpen = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdOpenSuffix}", "string", context.ApplicationInfo.PackageName);
+			resourceIdClose = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdCloseSuffix}", "string", context.ApplicationInfo.PackageName);
 		}
 
 		internal static void SetAutomationId(AView control, VisualElement element, string value = null)
@@ -140,15 +129,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			textView.Hint = !string.IsNullOrWhiteSpace(value) ? value : defaultHint;
 
 			return true;
-		}
-
-		static void GetAccessibilityResources(global::Android.Content.Context context, out int resourceIdOpen, out int resourceIdClose, string automationIdParent)
-		{
-			resourceIdOpen = 0;
-			resourceIdClose = 0;
-
-			resourceIdOpen = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdOpenSuffix}", "string", context.ApplicationInfo.PackageName);
-			resourceIdClose = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdCloseSuffix}", "string", context.ApplicationInfo.PackageName);
 		}
 
 		string _defaultContentDescription;
