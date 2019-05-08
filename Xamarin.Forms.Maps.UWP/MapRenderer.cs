@@ -24,7 +24,8 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				var mapModel = e.OldElement;
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
+				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
 			}
 
 			if (e.NewElement != null)
@@ -46,10 +47,13 @@ namespace Xamarin.Forms.Maps.UWP
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
 
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnCollectionChanged;
-
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnPinCollectionChanged;
 				if (mapModel.Pins.Any())
 					LoadPins();
+
+				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged += OnPolylineCollectionChanged;
+				if (mapModel.Polylines.Any())
+					LoadPolylines();
 
 				if (Control == null) return;
 
@@ -84,7 +88,7 @@ namespace Xamarin.Forms.Maps.UWP
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 
 				if (Element != null)
-					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;
+					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
 			}
 			base.Dispose(disposing);
 		}
@@ -93,7 +97,7 @@ namespace Xamarin.Forms.Maps.UWP
 		Ellipse _userPositionCircle;
 		DispatcherTimer _timer;
 
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -149,6 +153,98 @@ namespace Xamarin.Forms.Maps.UWP
 		void LoadPin(Pin pin)
 		{
 			Control.Children.Add(new PushPin(pin));
+		}
+
+		void OnPolylineCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					foreach (Polyline polyline in e.NewItems)
+						LoadPolyline(polyline);
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					foreach (Polyline polyline in e.OldItems)
+						RemovePolyline(polyline);
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					foreach (Polyline polyline in e.OldItems)
+						RemovePolyline(polyline);
+					foreach (Polyline polyline in e.NewItems)
+						LoadPolyline(polyline);
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					Control.MapElements.Clear();
+					LoadPins();
+					break;
+			}
+		}
+
+		void LoadPolylines()
+		{
+			foreach (var polyline in Element.Polylines)
+			{
+				LoadPolyline(polyline);
+			}
+		}
+
+		void LoadPolyline(Polyline polyline)
+		{
+			polyline.PropertyChanged += OnPolylinePropertyChanged;
+
+			if (polyline.Geopath.Any())
+			{
+				var mapPolyline = new MapPolyline()
+				{
+					Path = new Geopath(polyline.Geopath.Select(position => new BasicGeoposition()
+					{
+						Latitude = position.Latitude,
+						Longitude = position.Longitude
+					})),
+					StrokeColor = polyline.StrokeColor.IsDefault ? Colors.Black : polyline.StrokeColor.ToWindowsColor(),
+					StrokeThickness = polyline.StrokeWidth
+				};
+
+				polyline.PolylineId = mapPolyline;
+
+				Control.MapElements.Add(mapPolyline);
+			}
+		}
+
+		void RemovePolyline(Polyline polyline)
+		{
+			polyline.PropertyChanged -= OnPolylinePropertyChanged;
+			Control.MapElements.Remove((MapPolyline)polyline.PolylineId);
+		}
+
+		void OnPolylinePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var polyline = (Polyline)sender;
+			var mapPolyline = (MapPolyline)polyline.PolylineId;
+
+			if (mapPolyline == null || polyline.Geopath.Count == 0)
+			{
+				RemovePolyline(polyline);
+				LoadPolyline(polyline);
+				return;
+			}
+
+			if (e.PropertyName == Polyline.StrokeColorProperty.PropertyName)
+			{
+				mapPolyline.StrokeColor = polyline.StrokeColor.IsDefault ? Colors.Black : polyline.StrokeColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == Polyline.StrokeWidthProperty.PropertyName)
+			{
+				mapPolyline.StrokeThickness = polyline.StrokeWidth;
+			}
+			else if (e.PropertyName == nameof(polyline.Geopath))
+			{
+				mapPolyline.Path = new Geopath(polyline.Geopath.Select(position => new BasicGeoposition()
+				{
+					Latitude = position.Latitude,
+					Longitude = position.Longitude
+				}));
+			}
 		}
 
 		async Task UpdateIsShowingUser(bool moveToLocation = true)
