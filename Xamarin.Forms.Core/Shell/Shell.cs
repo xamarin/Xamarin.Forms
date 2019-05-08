@@ -494,7 +494,7 @@ namespace Xamarin.Forms
 
 		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack)
 		{
-			StringBuilder stateBuilder = new StringBuilder($"{RouteScheme}://{RouteHost}/{Route}/");
+			StringBuilder stateBuilder = new StringBuilder($"//");
 			Dictionary<string, string> queryData = new Dictionary<string, string>();
 
 			bool stackAtRoot = sectionStack == null || sectionStack.Count <= 1;
@@ -662,15 +662,15 @@ namespace Xamarin.Forms
 			set => SetMenuItemTemplate(this, value);
 		}
 
-		public string Route
+		internal string Route
 		{
 			get => Routing.GetRoute(this);
 			set => Routing.SetRoute(this, value);
 		}
 
-		public string RouteHost { get; set; }
+		internal string RouteHost { get; set; } = "shell";
 
-		public string RouteScheme { get; set; } = "app";
+		internal string RouteScheme { get; set; } = "app";
 
 		View FlyoutHeaderView
 		{
@@ -743,7 +743,8 @@ namespace Xamarin.Forms
 						}
 						else
 						{
-							currentGroup.Add(shellSection);
+							if(!(shellSection.Parent is TabBar))
+								currentGroup.Add(shellSection);
 
 							// If we have only a single child we will also show the items menu items
 							if (shellSection.Items.Count == 1 && shellSection == shellItem.CurrentItem)
@@ -756,7 +757,8 @@ namespace Xamarin.Forms
 				}
 				else
 				{
-					currentGroup.Add(shellItem);
+					if (!(shellItem is TabBar))
+						currentGroup.Add(shellItem);
 				}
 			}
 
