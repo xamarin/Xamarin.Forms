@@ -2,7 +2,7 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal static class ElevationHelper
+	public static class ElevationHelper
 	{
 		internal static void SetElevation(global::Android.Views.View view, VisualElement element)
 		{
