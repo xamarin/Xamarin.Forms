@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		Rect _last;
 		Dictionary<int, RealizedItem> _realizedItem = new Dictionary<int, RealizedItem>();
 		List<int> _itemSizes;
+		List<bool> _cached;
 		List<int> _accumulatedItemSizes;
 
 		bool _hasUnevenRows;
@@ -218,6 +219,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				itemSize = BaseItemSize;
 				startPoint = itemSize * index;
 			}
+			else if (_cached[index])
+			{
+				itemSize = _itemSizes[index];
+				startPoint = _accumulatedItemSizes[index] - itemSize;
+			}
 			else
 			{
 				var measured = CollectionView.GetItemSize(index);
@@ -231,8 +237,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 					CollectionView.ContentSizeUpdated();
 				}
 				startPoint = _accumulatedItemSizes[index] - itemSize;
+				_cached[index] = true;
 			}
-
 
 			return IsHorizontal ?
 				new Rect(startPoint, 0, itemSize, _allocatedSize.Height) :
@@ -256,10 +262,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			int n = CollectionView.Count;
 			_itemSizes = new List<int>();
+			_cached = new List<bool>();
 			_accumulatedItemSizes = new List<int>();
 
 			for (int i = 0; i < n; i++)
 			{
+				_cached.Add(false);
 				_itemSizes.Add(BaseItemSize);
 				_accumulatedItemSizes.Add((i > 0 ? _accumulatedItemSizes[i - 1] : 0) + _itemSizes[i]);
 			}
@@ -335,6 +343,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_itemSizes.RemoveAt(removed);
 			UpdateAccumulatedItemSize(removed, -removedSize);
 			_accumulatedItemSizes.RemoveAt(removed);
+			_cached.RemoveAt(removed);
 		}
 
 		void UpdateInsertedSize(int inserted)
@@ -342,6 +351,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (!_hasUnevenRows)
 				return;
 
+			_cached.Insert(inserted, false);
 			_itemSizes.Insert(inserted, BaseItemSize);
 			_accumulatedItemSizes.Insert(inserted, 0);
 			_accumulatedItemSizes[inserted] = inserted > 0 ? _accumulatedItemSizes[inserted - 1] : 0;
