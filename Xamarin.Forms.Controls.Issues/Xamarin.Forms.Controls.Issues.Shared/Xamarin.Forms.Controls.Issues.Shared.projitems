@@ -463,6 +463,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue5535.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5793.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6130.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)LegacyComponents\NonAppCompatSwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapsModalCrash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModalActivityIndicatorTest.cs" />
@@ -598,6 +601,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue5470.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5724.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6132.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla56298.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42620.cs" />
@@ -1186,5 +1190,16 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6130.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="D:\Source-Xamarin\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue6130.xaml.cs">
+      <DependentUpon>Issue6130.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
