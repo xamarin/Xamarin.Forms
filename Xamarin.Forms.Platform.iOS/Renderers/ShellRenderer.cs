@@ -263,7 +263,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		class DesignerFlyoutRenderer : IShellFlyoutRenderer
+		// this won't work on the previewer if it's private
+		internal class DesignerFlyoutRenderer : IShellFlyoutRenderer
 		{
 			readonly UIViewController _parent;
 
