@@ -119,6 +119,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual IShellFlyoutRenderer CreateFlyoutRenderer()
 		{
+			// HACK
 			if(UIApplication.SharedApplication?.Delegate?.GetType()?.FullName == "XamarinFormsPreviewer.iOS.AppDelegate")
 			{
 				return new DesignerFlyoutRenderer(this);
@@ -262,7 +263,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public class DesignerFlyoutRenderer : IShellFlyoutRenderer
+		class DesignerFlyoutRenderer : IShellFlyoutRenderer
 		{
 			readonly UIViewController _parent;
 
