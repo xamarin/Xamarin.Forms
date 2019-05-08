@@ -4,7 +4,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class ElevationHelper
 	{
-		internal static void SetElevation(global::Android.Views.View view, VisualElement element)
+		public static void SetElevation(global::Android.Views.View view, VisualElement element)
 		{
 			if (view == null || element == null || !Forms.IsLollipopOrNewer)
 			{
