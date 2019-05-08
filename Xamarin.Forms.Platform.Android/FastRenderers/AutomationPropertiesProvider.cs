@@ -13,6 +13,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		internal static void GetDrawerAccessibilityResources(global::Android.Content.Context context, MasterDetailPage page, out int resourceIdOpen, out int resourceIdClose)
 		{
+			resourceIdOpen = 0;
+			resourceIdClose = 0;
+			if (page == null)
+				return;
+
 			var automationIdParent = s_defaultDrawerId;
 			var icon = page.Master?.IconImageSource;
 			if (icon != null && !icon.IsEmpty)

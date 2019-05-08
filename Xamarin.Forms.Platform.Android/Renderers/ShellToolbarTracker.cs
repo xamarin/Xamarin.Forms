@@ -285,7 +285,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_drawerToggle.DrawerIndicatorEnabled = false;
 			}
-
 			_drawerToggle.SyncState();
 
 			//this needs to be set after SyncState
@@ -360,7 +359,6 @@ namespace Xamarin.Forms.Platform.Android
 				item = item?.Parent;
 			}
 		}
-
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
