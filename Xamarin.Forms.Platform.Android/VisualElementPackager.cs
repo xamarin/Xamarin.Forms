@@ -5,7 +5,6 @@ using Android.Content;
 using Xamarin.Forms.Internals;
 using Android.Views;
 using AView = Android.Views.View;
-using System.Linq;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -154,8 +153,6 @@ namespace Xamarin.Forms.Platform.Android
 					IVisualElementRenderer r = Platform.GetRenderer(element);
 					if (r != null)
 					{
-						(_renderer.View as ViewGroup)?.BringChildToFront(r.View);
-
 						if (Forms.IsLollipopOrNewer)
 						{
 							var elevation = ElevationHelper.GetElevation(r.View) ?? 0;
@@ -169,6 +166,8 @@ namespace Xamarin.Forms.Platform.Android
 								r.View.Elevation = elevationToSet;
 							}
 						}
+
+						(_renderer.View as ViewGroup)?.BringChildToFront(r.View);
 					}
 				}
 			}
@@ -180,7 +179,31 @@ namespace Xamarin.Forms.Platform.Android
 			if (view != null)
 				AddChild(view);
 
-			if (ElementController.LogicalChildren.LastOrDefault() != view)
+			int itemCount = ElementController.LogicalChildren.Count;
+			if (itemCount <= 1)
+				return;
+
+
+			Element lastChild = ElementController.LogicalChildren[itemCount - 1];
+
+			if(lastChild != view)
+			{
+				EnsureChildOrder();
+				return;
+			}
+
+			Element previousChild = ElementController.LogicalChildren[itemCount - 2];
+
+			IVisualElementRenderer lastRenderer = null;
+			IVisualElementRenderer previousRenderer = null;
+
+			if (lastChild is VisualElement last)
+				lastRenderer = Platform.GetRenderer(last);
+
+			if (previousChild is VisualElement previous)
+				previousRenderer = Platform.GetRenderer(previous);
+
+			if (lastRenderer?.View?.Elevation < previousRenderer?.View?.Elevation)
 				EnsureChildOrder();
 		}
 
