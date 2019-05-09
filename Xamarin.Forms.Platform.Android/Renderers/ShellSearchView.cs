@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			int padding = (int)context.ToPixels(8);
 
-			_searchButton = CreateImageButton(context, searchImage, Resource.Drawable.abc_ic_search_api_material, padding, 0, "SearchIcon");
+			_searchButton = CreateImageButton(context, searchHandler, SearchHandler.QueryIconProperty, Resource.Drawable.abc_ic_search_api_material, padding, 0, "SearchIcon");
 
 			lp = new LinearLayout.LayoutParams(0, LP.MatchParent)
 			{
@@ -207,10 +207,10 @@ namespace Xamarin.Forms.Platform.Android
 			_textBlock.SetDropDownBackgroundDrawable(new ClipDrawableWrapper(_textBlock.DropDownBackground));
 
 			// A note on accessibility. The _textBlocks hint is what android defaults to reading in the screen
-			// reader. Therefor we do not need to set something else.
+			// reader. Therefore, we do not need to set something else.
 
-			_clearButton = CreateImageButton(context, clearImage, Resource.Drawable.abc_ic_clear_material, 0, padding, nameof(SearchHandler.ClearIcon));
-			_clearPlaceholderButton = CreateImageButton(context, clearPlaceholderImage, -1, 0, padding, nameof(SearchHandler.ClearPlaceholderIcon));
+			_clearButton = CreateImageButton(context, searchHandler, SearchHandler.ClearIconProperty, Resource.Drawable.abc_ic_clear_material, 0, padding, nameof(SearchHandler.ClearIcon));
+			_clearPlaceholderButton = CreateImageButton(context, searchHandler, SearchHandler.ClearPlaceholderIconProperty, -1, 0, padding, nameof(SearchHandler.ClearPlaceholderIcon));
 
 			linearLayout.AddView(_searchButton);
 			linearLayout.AddView(_textBlock);
@@ -301,7 +301,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		AImageButton CreateImageButton(Context context, ImageSource image, int defaultImage, int leftMargin, int rightMargin, string tag)
+		AImageButton CreateImageButton(Context context, BindableObject bindable, BindableProperty property, int defaultImage, int leftMargin, int rightMargin, string tag)
 		{
 			var result = new AImageButton(context);
 			result.Tag = tag;
@@ -373,7 +373,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				base.Draw(canvas);
 
-				// Step 1: Clip out the top shadow that was drawn as it wont look right when ligned up
+				// Step 1: Clip out the top shadow that was drawn as it wont look right when lined up
 				var paint = new Paint
 				{
 					Color = AColor.Black
