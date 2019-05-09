@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_drawerToggle == null)
 			{
-				_drawerToggle = new ActionBarDrawerToggle((Activity)context, drawerLayout, toolbar, R.String.Ok, R.String.Ok)
+				_drawerToggle = new ActionBarDrawerToggle(context.GetActivity(), drawerLayout, toolbar, R.String.Ok, R.String.Ok)
 				{
 					ToolbarNavigationClickListener = this,
 				};
