@@ -1198,7 +1198,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="D:\Source-Xamarin\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue6130.xaml.cs">
+    <Compile Update="$(MSBuildThisFileDirectory)Issue6130.xaml.cs">
       <DependentUpon>Issue6130.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
