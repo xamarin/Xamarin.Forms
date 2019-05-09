@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Image)]
 	[NUnit.Framework.Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
 #endif
 	public class Issue4597 : TestContentPage
 	{
@@ -35,8 +36,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			_image = new Image() { Source = _fileName, AutomationId = _fileName };
-			_button = new Button() { Image = _fileName, AutomationId = _fileName };
+			_image = new Image() { Source = _fileName, AutomationId = _fileName, ClassId = "Something" };
+			_button = new Button() { ImageSource = _fileName, AutomationId = _fileName };
 			_imageButton = new ImageButton() { Source = _fileName, AutomationId = _fileName };
 			_listView = new ListView()
 			{
@@ -62,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 					if (button.Text == _disappearText)
 					{
 						_image.Source = null;
-						_button.Image = null;
+						_button.ImageSource = null;
 						_imageButton.Source = null;
 						_listView.ItemsSource = new string[] { null };
 						Device.BeginInvokeOnMainThread(() => button.Text = _appearText);
@@ -70,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 					else
 					{
 						_image.Source = _fileName;
-						_button.Image = _fileName;
+						_button.ImageSource = _fileName;
 						_imageButton.Source = _fileName;
 						_listView.ItemsSource = new string[] { _fileName };
 						Device.BeginInvokeOnMainThread(() => button.Text = _disappearText);
@@ -98,27 +99,36 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(_fileName);
 			var elementsBefore = RunningApp.WaitForElement(_fileName);
+#if !__WINDOWS__
 			var imageCell = RunningApp.Query(app => app.Marked(_theListView).Descendant()).Where(x => x.Class.Contains("Image")).FirstOrDefault();
+#endif
 
 #if __IOS__
 			Assert.AreEqual(4, elementsBefore.Where(x => x.Class.Contains("Image")).Count());
-#else
+#elif __ANDROID__
 			Assert.AreEqual(3, elementsBefore.Length);
+#else
+			Assert.AreEqual(4, elementsBefore.Count());
 #endif
 
+
+#if !__WINDOWS__
 			Assert.IsNotNull(imageCell);
+#endif
 
 			RunningApp.Tap("ClickMe");
 			RunningApp.WaitForElement(_appearText);
 			var elementsAfter = RunningApp.WaitForElement(_fileName);
+
+#if !__WINDOWS__
 			var imageCellAfter = RunningApp.Query(app => app.Marked(_theListView).Descendant()).Where(x => x.Class.Contains("Image")).FirstOrDefault();
 			Assert.IsNull(imageCellAfter);
-#if __IOS__
-			Assert.AreEqual(0, elementsAfter.Where(x => x.Class.Contains("Image")).Count());
 #endif
 
-#if __ANDROID__
-			foreach(var newElement in elementsAfter)
+#if __IOS__
+			Assert.AreEqual(0, elementsAfter.Where(x => x.Class.Contains("Image")).Count());
+#elif __ANDROID__
+			foreach (var newElement in elementsAfter)
 			{
 				foreach(var oldElement in elementsBefore)
 				{
@@ -129,6 +139,9 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 				}
 			}
+#else			
+			//can't validate if images have vanished until this is resolved
+			Assert.Inconclusive(@"https://github.com/xamarin/Xamarin.Forms/issues/4731");
 #endif
 		}
 #endif

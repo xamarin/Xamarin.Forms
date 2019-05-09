@@ -54,14 +54,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_measured = true;
 
+			// we have to include the padding, otherwise the image is smaller than expected
+			var padding = new Size(Element.Padding.HorizontalThickness, Element.Padding.VerticalThickness);
 
-			var result = new Size
-			{
-				Width = ((BitmapSource)_image.Source).PixelWidth,
-				Height = ((BitmapSource)_image.Source).PixelHeight
-			};
-
-			return new SizeRequest(result);
+			return new SizeRequest(_image.Source.GetImageSourceSize() + padding);
 		}
 
 

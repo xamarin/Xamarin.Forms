@@ -32,7 +32,6 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>CS0109</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -43,7 +42,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>CS0109</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -100,6 +98,7 @@
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
+    <Compile Include="Extensions\ScrollViewExtensions.cs" />
     <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
     <Compile Include="AppCompat\PageExtensions.cs" />
     <Compile Include="Extensions\JavaObjectExtensions.cs" />
@@ -145,14 +144,14 @@
     <Compile Include="GetDesiredSizeDelegate.cs" />
     <Compile Include="IBorderVisualElementRenderer.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
+    <Compile Include="IDisposedState.cs" />
+    <Compile Include="ILayoutChanges.cs" />
+    <Compile Include="ImageCache.cs" />
+    <Compile Include="IScrollView.cs" />
     <Compile Include="ITabStop.cs" />
-    <Compile Include="Material\MaterialContextThemeWrapper.cs" />
-    <Compile Include="Material\MaterialFrameRenderer.cs" />
-    <Compile Include="Material\MaterialFormsEditText.cs" />
-    <Compile Include="Material\MaterialButtonRenderer.cs" />
-    <Compile Include="Material\MaterialEntryRenderer.cs" />
-    <Compile Include="Material\MaterialProgressBarRenderer.cs" />
     <Compile Include="IPickerRenderer.cs" />
+    <Compile Include="PickerManager.cs" />
+    <Compile Include="Renderers\CircularProgress.cs" />
     <Compile Include="Renderers\PickerEditText.cs" />
     <Compile Include="Renderers\FontImageSourceHandler.cs" />
     <Compile Include="Renderers\FormsWebViewClient.cs" />
@@ -202,6 +201,7 @@
     <Compile Include="Renderers\IImageSourceHandler.cs" />
     <Compile Include="Renderers\ImageExtensions.cs" />
     <Compile Include="Renderers\ImageLoaderSourceHandler.cs" />
+    <Compile Include="Renderers\IOrderedTraversalController.cs" />
     <Compile Include="Renderers\IShellBottomNavigationViewAppearanceTracker.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
     <Compile Include="Renderers\IShellFlyoutContentRenderer.cs" />
@@ -313,13 +313,11 @@
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Renderers\IPopupTrigger.cs" />
-    <Compile Include="Material\MaterialActivityIndicatorRenderer.cs" />
-    <Compile Include="Material\MaterialColors.cs" />
     <Compile Include="ButtonElementManager.cs" />
     <Compile Include="IButtonLayoutRenderer.cs" />
     <Compile Include="ButtonLayoutManager.cs" />
-    <Compile Include="Material\MaterialSliderRenderer.cs" />
-    <AndroidResource Include="Resources\color\white_disabled_material.xml" />
+    <Compile Include="IStepperRenderer.cs" />
+    <Compile Include="StepperRendererManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -339,27 +337,10 @@
       <Name>Xamarin.Forms.Platform.Android.FormsViewGroup</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <PackageReference Include="Xamarin.Android.Support.Design">
-      <Version>28.0.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v4">
-      <Version>28.0.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView">
-      <Version>28.0.0.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
-    <PackageReference Include="Xamarin.Android.Support.Design">
-      <Version>27.0.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v4">
-      <Version>27.0.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView">
-      <Version>27.0.2.1</Version>
-    </PackageReference>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.1" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Layout\ShellContent.axml" />
@@ -390,31 +371,6 @@
     <ProjectToBuild Include="Xamarin.Forms.Platform.Android.csproj">
       <Properties>CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);AndroidTargetFrameworkVersion=v8.1</Properties>
     </ProjectToBuild>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <AndroidResource Include="Resources\Layout\TextInputLayoutFilledBox.axml">
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <AndroidResource Include="Resources\values\styles.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable\MaterialActivityIndicatorBackground.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable\MaterialProgressBar.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\color\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Condition=" '$(CreateAllAndroidTargets)' == 'true' ">
     <!--  create 8.1 binaries-->

@@ -20,7 +20,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: InternalsVisibleTo("Xamarin.Forms.Xaml.UnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.FlexLayout.UnitTests")]
-[assembly: InternalsVisibleTo("Xamarin.Forms.Material.iOS")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Material")]
 
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.iOS.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.Android.UITests")]
@@ -28,8 +28,8 @@ using Xamarin.Forms.StyleSheets;
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.macOS.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.iOS.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Android.UITests")]
-[assembly: InternalsVisibleTo("Xamarin.Forms.Loader")]
-// Xamarin.Forms.Loader.dll, Xamarin.Forms.Internals.ResourceLoader.ResourceProvider, kzu@microsoft.com
+[assembly: InternalsVisibleTo("Xamarin.Forms.Loader")] // Xamarin.Forms.Loader.dll, Xamarin.Forms.Internals.ResourceLoader.ResourceProvider, kzu@microsoft.com
+[assembly: InternalsVisibleTo("Xamarin.HotReload.Forms")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.UITest.Validator")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Build.Tasks")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
@@ -44,7 +44,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: XmlnsPrefix("http://xamarin.com/schemas/2014/forms/design", "d")]
 
 [assembly: StyleProperty("background-color", typeof(VisualElement), nameof(VisualElement.BackgroundColorProperty))]
-[assembly: StyleProperty("background-image", typeof(Page), nameof(Page.BackgroundImageProperty))]
+[assembly: StyleProperty("background-image", typeof(Page), nameof(Page.BackgroundImageSourceProperty))]
 [assembly: StyleProperty("border-color", typeof(IBorderElement), nameof(BorderElement.BorderColorProperty))]
 [assembly: StyleProperty("border-radius", typeof(ICornerElement), nameof(CornerElement.CornerRadiusProperty))]
 [assembly: StyleProperty("border-radius", typeof(IBorderElement), nameof(BorderElement.CornerRadiusProperty))]
@@ -78,7 +78,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("text-decoration", typeof(IDecorableTextElement), nameof(DecorableTextElement.TextDecorationsProperty))]
 [assembly: StyleProperty("transform", typeof(VisualElement), nameof(VisualElement.TransformProperty))]
 [assembly: StyleProperty("transform-origin", typeof(VisualElement), nameof(VisualElement.TransformOriginProperty))]
-[assembly: StyleProperty("vertical-align", typeof(Label), nameof(Label.VerticalTextAlignment))]
+//[assembly: StyleProperty("vertical-align", /*typeof(Label), nameof(Label.VerticalTextAlignmentProperty)*/)]
 [assembly: StyleProperty("visibility", typeof(VisualElement), nameof(VisualElement.IsVisibleProperty), Inherited = true)]
 [assembly: StyleProperty("width", typeof(VisualElement), nameof(VisualElement.WidthRequestProperty))]
 [assembly: StyleProperty("line-height", typeof(ILineHeightElement), nameof(LineHeightElement.LineHeightProperty), Inherited = true)]
@@ -111,6 +111,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("-xf-spacing", typeof(StackLayout), nameof(StackLayout.SpacingProperty))]
 [assembly: StyleProperty("-xf-orientation", typeof(StackLayout), nameof(StackLayout.OrientationProperty))]
 [assembly: StyleProperty("-xf-visual", typeof(VisualElement), nameof(VisualElement.VisualProperty))]
+[assembly: StyleProperty("-xf-vertical-text-alignment", typeof(Label), nameof(Label.VerticalTextAlignmentProperty))]
 
 //shell
 [assembly: StyleProperty("-xf-flyout-background", typeof(Shell), nameof(Shell.FlyoutBackgroundColorProperty))]

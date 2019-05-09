@@ -81,6 +81,7 @@ using Xamarin.Forms.Platform.WPF;
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
 [assembly: ExportRenderer(typeof(MediaElement), typeof(MediaElementRenderer))]
+[assembly: ExportRenderer(typeof(ImageButton), typeof(ImageButtonRenderer))]
 
 // Control don't exist natively in WPF Platform
 [assembly: ExportRenderer(typeof(TableView), typeof(TableViewRenderer))]

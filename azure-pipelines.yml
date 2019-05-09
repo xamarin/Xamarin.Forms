@@ -1,34 +1,29 @@
 variables:
-- name: BuildConfiguration
+- name: DefaultBuildConfiguration
   value: Debug
-- name: BuildPlatform
+- name: DefaultBuildPlatform
   value: 'any cpu'
-- name: XamarinFormsPackageVersion
-  value: ''
-- name: Suffix
-  value: ''
+- name: ApkName
+  value: AndroidControlGallery.AndroidControlGallery.apk
+- name: IpaName
+  value: XamarinFormsControlGalleryiOS.ipa
+- name: SolutionFile
+  value: Xamarin.Forms.sln
 - name: major
-  value: 4
+  value: 99
 - name: minor
   value: 0
 - name: patch
-  value: 1
+  value: 0
 - name: buildversion
-  value: $[counter('versioncounter', 1000)]
-- name: sign
-  value: 'false'
-- name: provisioning
-  value: 'true'
-- name: AppleCodesignIdentity
-  value: ''
-- name: AppleCodesignIdentityUrl
-  value: ''
-- name: AppleCodesignProfileUrl
-  value: ''
-- name: ProvisionatorExecutablePath
-  value: 'Xamarin.Forms.Build/provisionator.sh'
-- group: Xamarin.Forms
-- group: XQA Secrets
+  value: $[counter('$(Build.SourceBranchName)_counter', 1)]
+
+resources:
+  repositories:
+    - repository: xamarin-templates
+      type: github
+      name: xamarin/yaml-templates
+      endpoint: xamarin
 
 trigger:
   branches:
@@ -50,7 +45,7 @@ jobs:
   displayName: Prepare Build Phase
   condition: succeeded()
   pool:
-    name: Hosted VS2017
+    name: $(winVmImage)
   steps:
      - template: build/steps/build-prepare.yml
 
@@ -59,16 +54,15 @@ jobs:
   dependsOn: Phase_1
   condition: succeeded()
   pool:
-    name: Hosted VS2017
-    demands: msbuild
+    name: $(winVmImage)
   strategy:
     matrix:
       debug:
-        BuildConfiguration: 'Debug'
-        BuildPlatform: 'any cpu'
+        BuildConfiguration: $(DefaultBuildConfiguration)
+        BuildPlatform: $(DefaultBuildPlatform)
       release:
         BuildConfiguration: 'Release'
-        BuildPlatform: 'any cpu'
+        BuildPlatform: $(DefaultBuildPlatform)
   steps:
      - template: build/steps/build-windows.yml
 
@@ -77,31 +71,67 @@ jobs:
   dependsOn: Phase_2
   condition: succeeded()
   pool:
-    name: Hosted VS2017
+    name: $(winVmImage)
     demands: vstest
   strategy:
     matrix:
       debug:
-        BuildConfiguration: 'Debug'
+        BuildConfiguration: $(DefaultBuildConfiguration)
       release:
         BuildConfiguration: 'Release'
   steps:
      - template: build/steps/build-windows-test.yml
+
+- template: build/steps/build-android.yml
+  parameters:
+    name: android_legacy
+    displayName: Build Android [Legacy Renderers]
+    vmImage: $(macOSVmImage)
+    targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage"'
+    dependsOn: Phase_1
+    buildConfiguration: $(DefaultBuildConfiguration)
+
+- template: build/steps/build-android.yml
+  parameters:
+    name: android_preappcompact
+    displayName: Build Android [Pre-AppCompat]
+    vmImage: $(macOSVmImage)
+    targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP"'
+    dependsOn: Phase_1
+    buildConfiguration: $(DefaultBuildConfiguration)
+
+- template: build/steps/build-android.yml
+  parameters:
+    name: android_fast
+    displayName: Build Android [Fast Renderers]
+    vmImage: $(macOSVmImage)
+    targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP"'
+    dependsOn: Phase_1
+    buildConfiguration: $(DefaultBuildConfiguration)
 
 - job: Phase_4
   displayName: OSX Phase
   dependsOn: Phase_1
   condition: succeeded()
   pool:
-    name: Hosted Mac Internal
+    name: $(macOSVmImage)
     demands:
       - Agent.OS -equals darwin
       - sh
       - msbuild
       - Xamarin.iOS
   variables:
-    provisioningOSX : true
-    provisioningSign : $(provisioning)
+    provisioningOSX : $(provisioning)
+    provisionator.osxPath : 'build/provisioning/provisioning.csx'
+    provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
+    buildConfiguration: $(DefaultBuildConfiguration)
+    slnPath: $(SolutionFile)
+    nugetVersion: 4.8.1
+    iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
+    iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
   steps:
      - template: build/steps/build-osx.yml
 
@@ -109,25 +139,30 @@ jobs:
   displayName: Nuget Phase
   dependsOn:
    - Phase_3
+   - android_legacy
+   - android_preappcompact
+   - android_fast
   condition: succeeded()
   pool:
-    name: Hosted VS2017
-    demands: DotNetFramework
+    name: $(winVmImage)
   variables:
     FormsIdAppend: ''
+    buildConfiguration: $(DefaultBuildConfiguration)
   steps:
      - template: build/steps/build-nuget.yml
 
-- job: Phase_6
-  displayName: Sign Phase
-  dependsOn: Phase_5
-  condition: and(succeeded(), eq(dependencies.Phase_1.outputs['prepare.sign'], 'true'))
-  pool:
-    name: VSEng-Xamarin-Forms
-  variables:
-    sign: $[dependencies.Phase_1.outputs['prepare.sign']]
-  steps:
-     - template: build/steps/build-sign.yml
+  # only sign the packages when running on Windows, and using the private server which has the certificates
+- ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
+  - job: Phase_6
+    displayName: Sign Phase
+    dependsOn: Phase_5
+    pool:
+      name: $(signVmImage)
+    variables:
+      signBuild: $[dependencies.Phase_1.outputs['prepare.signnuget']]
+      displayName: Sign Phase
+    steps:
+      - template: build/steps/build-sign.yml
 
 
 

@@ -150,7 +150,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			App.IOSVersion = int.Parse(versionPart[0]);
 
 			Xamarin.Calabash.Start();
-			// Forms.SetFlags("CollectionView_Experimental", "Visual_Experimental", "Shell_Experimental");
+			// Forms.SetFlags("CollectionView_Experimental", "Shell_Experimental");
 			Forms.Init();
 			FormsMaps.Init();
 			FormsMaterial.Init();
@@ -351,7 +351,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				StartPressed40911();
 			};
 
-			page.Layout.Children.Add(button);
+			page._40911Layout.Children.Add(button);
 		}
 
 		public void StartPressed40911()

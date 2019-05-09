@@ -51,14 +51,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public virtual void SetBackgroundColor(UITableViewCell tableViewCell, Cell cell, UIColor color)
 		{
+			tableViewCell.TextLabel.BackgroundColor = color;
+			tableViewCell.ContentView.BackgroundColor = color;
 			tableViewCell.BackgroundColor = color;
 		}
 
 		protected void UpdateBackground(UITableViewCell tableViewCell, Cell cell)
 		{
 			var uiBgColor = UIColor.White; // Must be set to a solid color or blending issues will occur
-
-			var  defaultBgColor = cell.OnThisPlatform().DefaultBackgroundColor();
+#if __MOBILE__
+			var defaultBgColor = cell.On<PlatformConfiguration.iOS>().DefaultBackgroundColor();
+#else
+			var defaultBgColor = cell.On<PlatformConfiguration.macOS>().DefaultBackgroundColor();
+#endif
 			if (defaultBgColor != Color.Default)
 			{
 				uiBgColor = defaultBgColor.ToUIColor();

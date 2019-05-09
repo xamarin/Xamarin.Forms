@@ -73,10 +73,36 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = Context.GetFragmentManager());
 		bool IsBottomTabPlacement => (Element != null) ? Element.OnThisPlatform().GetToolbarPlacement() == ToolbarPlacement.Bottom : false;
-		public Color BarItemColor => (Element != null) ? Element.OnThisPlatform().GetBarItemColor() : Color.Default;
-		public Color BarSelectedItemColor => (Element != null) ? Element.OnThisPlatform().GetBarSelectedItemColor() : Color.Default;
+
+		public Color BarItemColor
+		{
+			get
+			{
+				if (Element != null)
+				{
+					if (Element.IsSet(TabbedPage.UnselectedTabColorProperty))
+						return Element.UnselectedTabColor;
+				}
+
+				return Color.Default;
+			}
+		}
+
+		public Color BarSelectedItemColor
+		{
+			get
+			{
+				if (Element != null)
+				{
+					if (Element.IsSet(TabbedPage.SelectedTabColorProperty))
+						return Element.SelectedTabColor;
+				}
+
+				return Color.Default;
+			}
+		}
 
 		IPageController PageController => Element as IPageController;
 
@@ -205,7 +231,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			base.OnElementChanged(e);
 
-			var activity = (FormsAppCompatActivity)Context;
+			var activity = Context.GetActivity();
 
 			if (e.OldElement != null)
 				((IPageController)e.OldElement).InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
@@ -302,8 +328,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName ||
-				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.BarItemColorProperty.PropertyName ||
-				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.BarSelectedItemColorProperty.PropertyName)
+				e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName ||
+				e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName)
 			{
 				_newTabTextColors = null;
 				_newTabIconColors = null;
@@ -494,21 +520,25 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					tab.SetText(page.Title);
 				}
 			}
-			else if (e.PropertyName == Page.IconProperty.PropertyName)
+			else if (e.PropertyName == Page.IconImageSourceProperty.PropertyName)
 			{
 				var page = (Page)sender;
 				var index = Element.Children.IndexOf(page);
-				FileImageSource icon = page.Icon;
-
 				if (IsBottomTabPlacement)
 				{
 					var menuItem = _bottomNavigationView.Menu.GetItem(index);
-					menuItem.SetIcon(GetIconDrawable(icon));
+					_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
+					{
+						menuItem.SetIcon(icon);
+					});
 				}
 				else
 				{
 					TabLayout.Tab tab = _tabLayout.GetTabAt(index);
-					SetTabIcon(tab, icon);
+					_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
+					{
+						SetTabIcon(tab, icon);
+					});
 				}
 			}
 		}
@@ -629,12 +659,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				FileImageSource icon = child.Icon;
-				if (string.IsNullOrEmpty(icon))
-					continue;
-
 				var menuItem = bottomNavigationView.Menu.GetItem(i);
-				menuItem.SetIcon(GetIconDrawable(icon));
+				_ = this.ApplyDrawableAsync(child, Page.IconImageSourceProperty, Context, icon =>
+				{
+					menuItem.SetIcon(icon);
+				});
 			}
 		}
 
@@ -651,22 +680,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				FileImageSource icon = child.Icon;
-				if (string.IsNullOrEmpty(icon))
-					continue;
-
 				TabLayout.Tab tab = tabs.GetTabAt(i);
-				SetTabIcon(tab, icon);
+				_ = this.ApplyDrawableAsync(child, Page.IconImageSourceProperty, Context, icon =>
+				{
+					SetTabIcon(tab, icon);
+				});
 			}
 		}
 
-		protected virtual Drawable GetIconDrawable(FileImageSource icon) =>
-			Context.GetDrawable(icon);
-
-		protected virtual void SetTabIcon(TabLayout.Tab tab, FileImageSource icon)
+		void SetTabIcon(TabLayout.Tab tab, Drawable icon)
 		{
-			tab.SetIcon(GetIconDrawable(icon));
-			this.SetIconColorFilter(tab);
+			tab.SetIcon(icon);
+			SetIconColorFilter(tab);
 		}
 
 		void UpdateBarBackgroundColor()

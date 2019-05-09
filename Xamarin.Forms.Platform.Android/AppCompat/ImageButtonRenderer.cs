@@ -21,7 +21,9 @@ namespace Xamarin.Forms.Platform.Android
 		IImageRendererController,
 		AView.IOnFocusChangeListener,
 		AView.IOnClickListener,
-		AView.IOnTouchListener
+		AView.IOnTouchListener,
+		ILayoutChanges,
+		IDisposedState
 	{
 		bool _inputTransparent;
 		bool _disposed;
@@ -40,7 +42,8 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElement IVisualElementRenderer.Element => Element;
 		AView IVisualElementRenderer.View => this;
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
-		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
+		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;		
+		bool IDisposedState.IsDisposed => _disposed;
 
 		public ImageButton Element
 		{
