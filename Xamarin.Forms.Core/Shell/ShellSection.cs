@@ -13,7 +13,6 @@ namespace Xamarin.Forms
 	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class Tab : ShellSection
 	{
-		public IList<ShellContent> Content => Items;
 	}
 
 	[ContentProperty(nameof(Items))]

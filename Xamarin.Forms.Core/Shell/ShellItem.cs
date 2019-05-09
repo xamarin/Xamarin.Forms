@@ -15,8 +15,6 @@ namespace Xamarin.Forms
 		{
 			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
 		}
-
-		public IList<ShellSection> Tabs => Items;
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Always)]
@@ -26,8 +24,6 @@ namespace Xamarin.Forms
 		{
 			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled);
 		}
-
-		public IList<ShellSection> Tabs => Items;
 	}
 
 
