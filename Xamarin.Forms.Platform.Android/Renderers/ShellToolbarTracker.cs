@@ -237,23 +237,22 @@ namespace Xamarin.Forms.Platform.Android
 			var backButtonHandler = Shell.GetBackButtonBehavior(page);
 			toolbar.SetNavigationOnClickListener(this);
 
-			var activity = (FormsAppCompatActivity)context;
-
 			if (backButtonHandler != null)
 			{
-				await UpdateDrawerArrowFromBackButtonBehavior(context, toolbar, drawerLayout, backButtonHandler, activity);
+				await UpdateDrawerArrowFromBackButtonBehavior(context, toolbar, drawerLayout, backButtonHandler);
 			}
 			else
 			{
-				await UpdateDrawerArrow(context, toolbar, drawerLayout, activity);
+				await UpdateDrawerArrow(context, toolbar, drawerLayout);
 			}
 		}
 
-		protected virtual async Task UpdateDrawerArrow(Context context, Toolbar toolbar, DrawerLayout drawerLayout, FormsAppCompatActivity activity)
+		protected virtual async Task UpdateDrawerArrow(Context context, Toolbar toolbar, DrawerLayout drawerLayout)
 		{
-			if (_drawerToggle == null)
+			if (_drawerToggle == null && !context.IsDesignerContext())
 			{
 				_drawerToggle = new ActionBarDrawerToggle(context.GetActivity(), drawerLayout, toolbar, R.String.Ok, R.String.Ok)
+
 				{
 					ToolbarNavigationClickListener = this,
 				};
@@ -267,7 +266,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (CanNavigateBack)
 			{
 				_drawerToggle.DrawerIndicatorEnabled = false;
-				using (var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext))
+				using (var icon = new DrawerArrowDrawable(context.GetThemedContext()))
 				{
 					icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
 					icon.Progress = 1;
@@ -308,7 +307,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual async Task UpdateDrawerArrowFromBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)
+		protected virtual async Task UpdateDrawerArrowFromBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler)
 		{
 			var behavior = backButtonHandler;
 			var command = behavior.Command;
@@ -327,7 +326,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (CanNavigateBack && icon == null)
 			{
-				icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext);
+				icon = new DrawerArrowDrawable(context.GetThemedContext());
 				(icon as DrawerArrowDrawable).Progress = 1;
 			}
 
