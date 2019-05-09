@@ -41,9 +41,6 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\3bar%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ContextActionCell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContextScrollViewDelegate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalCloseContextGestureRecognizer.cs" />
@@ -143,6 +140,7 @@
     <Compile Include="Extensions\LabelExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
+    <Compile Include="IOSDeviceInfo.cs" />
     <Compile Include="Renderers\ImageElementManager.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeViewWrapper.cs" />
@@ -151,6 +149,8 @@
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
+    <Compile Include="Renderers\IAccessibilityElementsController.cs" />
+    <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
@@ -263,9 +263,6 @@
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\3bar.png" />
   </ItemGroup>
   <ItemGroup />
 </Project>

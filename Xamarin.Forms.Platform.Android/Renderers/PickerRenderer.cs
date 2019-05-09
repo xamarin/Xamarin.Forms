@@ -174,6 +174,8 @@ namespace Xamarin.Forms.Platform.Android
 			_dialog.DismissEvent += (sender, args) =>
 			{
 				ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+				_dialog?.Dispose();
+				_dialog = null;
 			};
 			_dialog.Show();
 		}
