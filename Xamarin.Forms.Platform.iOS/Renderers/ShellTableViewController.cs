@@ -78,6 +78,12 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if ((_context?.Shell as IShellController) != null)
 					((IShellController)_context.Shell).StructureChanged -= OnStructureChanged;
+
+				if(_source != null)
+					_source.ScrolledEvent -= OnScrolled;
+
+				if(_headerView != null)
+					_headerView.HeaderSizeChanged -= OnHeaderSizeChanged;
 			}
 
 			base.Dispose(disposing);
