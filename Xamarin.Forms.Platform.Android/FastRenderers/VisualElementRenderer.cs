@@ -6,7 +6,6 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	// TODO hartez 2017/03/03 14:11:17 It's weird that this class is called VisualElementRenderer but it doesn't implement that interface. The name should probably be different.
 	public sealed class VisualElementRenderer : IDisposable, IEffectControlProvider, ITabStop
 	{
 		bool _disposed;
