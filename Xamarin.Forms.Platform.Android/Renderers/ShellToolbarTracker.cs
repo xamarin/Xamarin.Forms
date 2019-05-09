@@ -295,11 +295,17 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var shellIconTextDescription = shell.FlyoutIcon?.AutomationId ?? AutomationProperties.GetHelpText(_shellContext.Shell.FlyoutIcon) ?? shell.AutomationId;
 
-			//setting a empty text will cause to not read the default ´OK´
-			if (string.IsNullOrEmpty(shellIconTextDescription))
-				return;
-
-			toolbar.NavigationContentDescription = shellIconTextDescription;
+			//if AutomationId was specified the user wants to use UITests and interact with FlyoutIcon
+			if (!string.IsNullOrEmpty(shell.FlyoutIcon?.AutomationId))
+			{
+				if (_defaultNavigationContentDescription == null)
+					_defaultNavigationContentDescription = toolbar.NavigationContentDescription;
+				toolbar.NavigationContentDescription = shell.FlyoutIcon.AutomationId;
+			}
+			else
+			{
+				toolbar.SetNavigationContentDescription(_shellContext.Shell.FlyoutIcon, _defaultNavigationContentDescription);
+			}
 		}
 
 		protected virtual async Task UpdateDrawerArrowFromBackButtonBehavior(Context context, Toolbar toolbar, DrawerLayout drawerLayout, BackButtonBehavior backButtonHandler, FormsAppCompatActivity activity)
@@ -386,7 +392,6 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void UpdatePageTitle(Toolbar toolbar, Page page)
 		{
 			_toolbar.Title = page.Title;
-			_defaultNavigationContentDescription = _toolbar.SetNavigationContentDescription(page, _defaultNavigationContentDescription);
 		}
 
 		protected virtual void UpdateTitleView(Context context, Toolbar toolbar, View titleView)

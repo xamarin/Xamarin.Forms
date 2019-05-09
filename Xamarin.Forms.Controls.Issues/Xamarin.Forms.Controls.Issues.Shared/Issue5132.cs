@@ -30,14 +30,14 @@ namespace Xamarin.Forms.Controls.Issues
 				AutomationId = _idIconElement
 			};
 			FlyoutIcon.SetValue(AutomationProperties.HelpTextProperty, "This as Shell FlyoutIcon");
-			FlyoutIcon.SetValue(AutomationProperties.NameProperty, "SHELLMAINFLYOUTICON");
+			FlyoutIcon.SetValue(AutomationProperties.NameProperty, "Shell Icon");
 			Items.Add(new FlyoutItem
 			{
 				Title = _titleElement,
 				Items = {
 					new Tab { Title = "library",
 						Items = {
-									new ContentPage { Title = "Library",  Content = new ScrollView { Content = new Label  { Text = "Turn accessibility on and make sure the help text is read" } } }
+									new ContentPage { Title = "Library",  Content = new ScrollView { Content = new Label  { Text = "Turn accessibility on and make sure the help text is read on iOS, on Android it will read the AutomationID if specified and then the HelpText this allows UITest to work " } } }
 								}
 						}
 				}
