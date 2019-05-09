@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
@@ -634,7 +629,6 @@ namespace Xamarin.Forms
 		}
 
 		public IList<ShellItem> Items => (IList<ShellItem>)GetValue(ItemsProperty);
-		public IList<ShellItem> Flyout => Items;
 
 		public DataTemplate ItemTemplate
 		{
