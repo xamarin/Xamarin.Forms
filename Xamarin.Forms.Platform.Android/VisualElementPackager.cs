@@ -192,6 +192,9 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			if (!Forms.IsLollipopOrNewer)
+				return;
+
 			Element previousChild = ElementController.LogicalChildren[itemCount - 2];
 
 			IVisualElementRenderer lastRenderer = null;
@@ -203,7 +206,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (previousChild is VisualElement previous)
 				previousRenderer = Platform.GetRenderer(previous);
 
-			if (lastRenderer?.View?.Elevation < previousRenderer?.View?.Elevation)
+			if (ElevationHelper.GetElevation(lastRenderer?.View) < ElevationHelper.GetElevation(previousRenderer?.View))
 				EnsureChildOrder();
 		}
 
