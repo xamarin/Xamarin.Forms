@@ -277,6 +277,24 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				if (oldMaxItemSize != updatedMaxItemSize)
 				{
 					UpdateAccumulatedItemSize(rowIndex, updatedMaxItemSize - oldMaxItemSize);
+					int columnStart = (index / Span) * Span;
+					for (int toUpdate = columnStart; toUpdate < index; toUpdate++)
+					{
+						if (_realizedItem.ContainsKey(toUpdate))
+						{
+							var updated = _realizedItem[toUpdate].View.Geometry;
+							if (IsHorizontal)
+							{
+								updated.X += (updatedMaxItemSize - oldMaxItemSize) / 2;
+							}
+							else
+							{
+								updated.Y += (updatedMaxItemSize - oldMaxItemSize) / 2;
+							}
+							_realizedItem[toUpdate].View.Geometry = updated;
+						}
+					}
+					CollectionView.ContentSizeUpdated();
 				}
 				rowStartPoint = _accumulatedItemSizes[rowIndex] - updatedMaxItemSize + (updatedMaxItemSize - itemSize) / 2;
 				columnStartPoint = columnSize * columnIndex;
@@ -380,13 +398,16 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_accumulatedItemSizes[i] += diff;
 			}
 
-			if (IsHorizontal)
+			if (_scrollCanvasSize.Width > 0 && _scrollCanvasSize.Height > 0)
 			{
-				_scrollCanvasSize.Width += diff;
-			}
-			else
-			{
-				_scrollCanvasSize.Height += diff;
+				if (IsHorizontal)
+				{
+					_scrollCanvasSize.Width += diff;
+				}
+				else
+				{
+					_scrollCanvasSize.Height += diff;
+				}
 			}
 		}
 

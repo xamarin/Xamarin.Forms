@@ -356,13 +356,17 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_accumulatedItemSizes[i] += diff;
 			}
 
-			if (IsHorizontal)
+			if (_scrollCanvasSize.Width > 0 && _scrollCanvasSize.Height > 0)
 			{
-				_scrollCanvasSize.Width += diff;
-			}
-			else
-			{
-				_scrollCanvasSize.Height += diff;
+
+				if (IsHorizontal)
+				{
+					_scrollCanvasSize.Width += diff;
+				}
+				else
+				{
+					_scrollCanvasSize.Height += diff;
+				}
 			}
 		}
 

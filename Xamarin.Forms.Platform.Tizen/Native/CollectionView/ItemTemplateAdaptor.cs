@@ -132,7 +132,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (_dataBindedViewTable.TryGetValue(this[index], out View createdView) && createdView != null)
 			{
-				
 				return createdView.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request.ToPixel();
 			}
 
