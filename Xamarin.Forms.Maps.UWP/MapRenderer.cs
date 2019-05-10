@@ -88,8 +88,12 @@ namespace Xamarin.Forms.Maps.UWP
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 
 				if (Element != null)
+				{
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
+					((ObservableCollection<Polyline>)Element.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
+				}
 			}
+
 			base.Dispose(disposing);
 		}
 
