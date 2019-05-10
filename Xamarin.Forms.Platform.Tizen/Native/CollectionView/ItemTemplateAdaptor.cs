@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using ElmSharp;
 using ESize = ElmSharp.Size;
 using XLabel = Xamarin.Forms.Label;
@@ -8,22 +10,35 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 {
 	public class ItemDefaultTemplateAdaptor : ItemTemplateAdaptor
 	{
+		class ToTextConverter : IValueConverter
+		{
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				return value?.ToString() ?? string.Empty;
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+		}
+
 		public ItemDefaultTemplateAdaptor(ItemsView itemsView) : base(itemsView)
 		{
 			ItemTemplate = new DataTemplate(() =>
 			{
-				XLabel label;
-				var view = new StackLayout
+				var label = new XLabel
+				{
+					TextColor = Color.Black,
+				};
+				label.SetBinding(XLabel.TextProperty, new Binding(".", converter: new ToTextConverter()));
+
+				return new StackLayout
 				{
 					BackgroundColor = Color.White,
 					Padding = 30,
 					Children =
 					{
-						(label = new XLabel())
+						label
 					}
 				};
-				label.SetBinding(XLabel.TextProperty, new Binding("."));
-				return view;
 			});
 		}
 	}
@@ -94,6 +109,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (_dataBindedViewTable.TryGetValue(this[index], out View createdView) && createdView != null)
 			{
+				
 				return createdView.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request.ToPixel();
 			}
 

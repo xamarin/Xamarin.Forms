@@ -181,7 +181,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				case ListItemsLayout listItemsLayout:
 					return new LinearLayoutManager(listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal, sizing);
 				case GridItemsLayout gridItemsLayout:
-					return new GridLayoutManager(gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal, gridItemsLayout.Span);
+					return new GridLayoutManager(gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal, gridItemsLayout.Span, sizing);
 				default:
 					break;
 			}

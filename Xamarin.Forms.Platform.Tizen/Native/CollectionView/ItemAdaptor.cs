@@ -8,6 +8,11 @@ using ESize = ElmSharp.Size;
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
 
+	/// <summary>
+	/// A special maker to check empty source
+	/// </summary>
+	interface IEmptyAdaptor { }
+
 	public abstract class ItemAdaptor : INotifyCollectionChanged
 	{
 		IList _itemsSource;
