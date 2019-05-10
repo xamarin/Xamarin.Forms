@@ -244,17 +244,18 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (Adaptor == null)
 				return null;
 
-			var holder = _pool.GetRecyclerView();
+			var holder = _pool.GetRecyclerView(Adaptor.GetViewCategory(index));
 			if (holder != null)
 			{
 				holder.Show();
 			}
 			else
 			{
-				var content = Adaptor.CreateNativeView(this);
+				var content = Adaptor.CreateNativeView(index, this);
 				holder = new ViewHolder(this);
 				holder.RequestSelected += OnRequestItemSelection;
 				holder.Content = content;
+				holder.ViewCategory = Adaptor.GetViewCategory(index);
 				_innerLayout.PackEnd(holder);
 			}
 

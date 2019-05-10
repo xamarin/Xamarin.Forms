@@ -68,9 +68,26 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return _nativeFormsTable[evasObject];
 		}
 
-		public override EvasObject CreateNativeView(EvasObject parent)
+		public override object GetViewCategory(int index)
 		{
-			var view = ItemTemplate.CreateContent() as View;
+			if (ItemTemplate is DataTemplateSelector selector)
+			{
+				return selector.SelectTemplate(this[index], _itemsView);
+			}
+			return base.GetViewCategory(index);
+		}
+
+		public override EvasObject CreateNativeView(int index, EvasObject parent)
+		{
+			View view = null;
+			if (ItemTemplate is DataTemplateSelector selector)
+			{
+				view = selector.SelectTemplate(this[index], _itemsView).CreateContent() as View;
+			}
+			else
+			{
+				view = ItemTemplate.CreateContent() as View;
+			}
 			var renderer = Platform.GetOrCreateRenderer(view);
 			var native = Platform.GetOrCreateRenderer(view).NativeView;
 			view.Parent = _itemsView;
@@ -78,6 +95,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			_nativeFormsTable[native] = view;
 			return native;
+
+		}
+
+		public override EvasObject CreateNativeView(EvasObject parent)
+		{
+			return CreateNativeView(0, parent);
 		}
 
 		public override void RemoveNativeView(EvasObject native)
@@ -113,7 +136,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				return createdView.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request.ToPixel();
 			}
 
-			var view = ItemTemplate.CreateContent() as View;
+			View view = null;
+			if (ItemTemplate is DataTemplateSelector selector)
+			{
+				view = selector.SelectTemplate(this[index], _itemsView).CreateContent() as View;
+			}
+			else
+			{
+				view = ItemTemplate.CreateContent() as View;
+			}
 			using (var renderer = Platform.GetOrCreateRenderer(view))
 			{
 				view.Parent = _itemsView;

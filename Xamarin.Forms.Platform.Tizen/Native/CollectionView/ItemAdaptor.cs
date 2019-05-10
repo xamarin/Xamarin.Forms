@@ -94,7 +94,14 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return _itemsSource.IndexOf(item);
 		}
 
+		public virtual object GetViewCategory(int index)
+		{
+			return this;
+		}
+
 		public abstract EvasObject CreateNativeView(EvasObject parent);
+
+		public abstract EvasObject CreateNativeView(int index, EvasObject parent);
 
 		public abstract void RemoveNativeView(EvasObject native);
 
