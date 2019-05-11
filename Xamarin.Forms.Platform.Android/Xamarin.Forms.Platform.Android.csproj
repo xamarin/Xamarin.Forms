@@ -143,7 +143,9 @@
     <Compile Include="GetDesiredSizeDelegate.cs" />
     <Compile Include="IBorderVisualElementRenderer.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
+    <Compile Include="IDisposedState.cs" />
     <Compile Include="ILayoutChanges.cs" />
+    <Compile Include="ImageCache.cs" />
     <Compile Include="IScrollView.cs" />
     <Compile Include="ITabStop.cs" />
     <Compile Include="IPickerRenderer.cs" />
@@ -217,6 +219,7 @@
     <Compile Include="Renderers\MotionEventHelper.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\ScrollViewContainer.cs" />
+    <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellBottomNavViewAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellItemRenderer.cs" />
     <Compile Include="Renderers\ShellContentFragment.cs" />
