@@ -40,22 +40,14 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-#if UITEST && __WINDOWS__
+#if UITEST
 		[Test]
 		public void TestB43527UpdateTitle()
 		{
-			try
-			{
-
 				RunningApp.WaitForElement(q => q.Marked("Change Title"));
 				RunningApp.WaitForElement(q => q.Marked("Test Page"));
 				RunningApp.Tap(q => q.Marked("Change Title"));
-				RunningApp.WaitForElement(q => q.Marked("Test Page"), timeoutMessage: "title changed. Element not found");
-			}
-			catch (TimeoutException ex)
-			{
-				Assert.AreEqual("title changed. Element not found", ex.Message);
-			}
+				RunningApp.WaitForNoElement(q => q.Marked("Test Page"));
 		}
 #endif
 	}
