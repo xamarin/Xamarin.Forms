@@ -404,7 +404,7 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 			return self.ElementType.MakeGenericInstanceType(args.ToArray());
 		}
-		
+
 		static Dictionary<TypeReference, TypeDefinition> resolves = new Dictionary<TypeReference, TypeDefinition>();
 		public static TypeDefinition ResolveCached(this TypeReference typeReference)
 		{
