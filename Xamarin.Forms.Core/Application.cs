@@ -285,28 +285,28 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendResume()
+		public virtual void SendResume()
 		{
 			s_current = this;
 			OnResume();
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendSleep()
+		public virtual void SendSleep()
 		{
 			OnSleep();
 			SavePropertiesAsFireAndForget();
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public Task SendSleepAsync()
+		public virtual Task SendSleepAsync()
 		{
 			OnSleep();
 			return SavePropertiesAsync();
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendStart()
+		public virtual void SendStart()
 		{
 			OnStart();
 		}
