@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Build.Tasks
 				return properties.Single();
 			if (typeDef.IsInterface) {
 				foreach (var face in typeDef.Interfaces) {
-					var p = face.InterfaceType.GetProperty(predicate, out var interfaceDeclaringTypeRef);
+					var p = face.InterfaceType.ResolveGenericParameters(typeRef).GetProperty(predicate, out var interfaceDeclaringTypeRef);
 					if (p != null) {
 						declaringTypeRef = interfaceDeclaringTypeRef;
 						return p;
@@ -404,7 +404,7 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 			return self.ElementType.MakeGenericInstanceType(args.ToArray());
 		}
-
+		
 		static Dictionary<TypeReference, TypeDefinition> resolves = new Dictionary<TypeReference, TypeDefinition>();
 		public static TypeDefinition ResolveCached(this TypeReference typeReference)
 		{
