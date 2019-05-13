@@ -322,6 +322,19 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			InitializeMeasureCache();
 		}
 
+		public void ItemMeasureInvalidated(int index)
+		{
+			if (_realizedItem.ContainsKey(index))
+			{
+				CollectionView.RequestLayoutItems();
+			}
+			if (_hasUnevenRows)
+			{
+				if (_cached.Count > index)
+					_cached[index] = false;
+			}
+		}
+
 		void InitializeMeasureCache()
 		{
 			_baseItemSize = 0;

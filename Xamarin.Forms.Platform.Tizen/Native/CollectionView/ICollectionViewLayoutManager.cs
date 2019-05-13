@@ -26,5 +26,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		void ItemSourceUpdated();
 
 		void Reset();
+
+		void ItemMeasureInvalidated(int index);
 	}
 }

@@ -198,9 +198,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			ScrollTo(Adaptor.GetItemIndex(item), position, animate);
 		}
 
+		public void ItemMeasureInvalidated(int index)
+		{
+			LayoutManager?.ItemMeasureInvalidated(index);
+		}
+
 		void ICollectionViewController.RequestLayoutItems() => RequestLayoutItems();
-
-
 
 		ESize ICollectionViewController.GetItemSize()
 		{
@@ -294,6 +297,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		void ICollectionViewController.UnrealizeView(ViewHolder view)
 		{
 			_viewHolderIndexTable.Remove(view);
+			Adaptor.UnBinding(view.Content);
 			view.ResetState();
 			view.Hide();
 			_pool.AddRecyclerView(view);
@@ -342,7 +346,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_selectedItemIndex = -1;
 			}
 		}
-
 
 		void OnLayoutManagerChanging()
 		{
@@ -591,5 +594,4 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		None,
 		Single,
 	}
-
 }

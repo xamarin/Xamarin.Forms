@@ -95,7 +95,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			_nativeFormsTable[native] = view;
 			return native;
-
 		}
 
 		public override EvasObject CreateNativeView(EvasObject parent)
@@ -120,6 +119,17 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				ResetBindedView(view);
 				view.BindingContext = this[index];
 				_dataBindedViewTable[this[index]] = view;
+
+				view.MeasureInvalidated += OnItemMeasureInvalidated;
+			}
+		}
+
+		public override void UnBinding(EvasObject native)
+		{
+			if (_nativeFormsTable.TryGetValue(native, out View view))
+			{
+				view.MeasureInvalidated -= OnItemMeasureInvalidated;
+				ResetBindedView(view);
 			}
 		}
 
@@ -159,6 +169,16 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (view.BindingContext != null && _dataBindedViewTable.ContainsKey(view.BindingContext))
 			{
 				_dataBindedViewTable[view.BindingContext] = null;
+			}
+		}
+
+		void OnItemMeasureInvalidated(object sender, EventArgs e)
+		{
+			var data = (sender as View)?.BindingContext ?? null;
+			int index = GetItemIndex(data);
+			if (index != -1)
+			{
+				CollectionView.ItemMeasureInvalidated(index);
 			}
 		}
 	}
