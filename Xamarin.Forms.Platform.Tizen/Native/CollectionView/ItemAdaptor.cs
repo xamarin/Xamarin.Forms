@@ -8,6 +8,11 @@ using ESize = ElmSharp.Size;
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
 
+	/// <summary>
+	/// A special maker to check empty source
+	/// </summary>
+	interface IEmptyAdaptor { }
+
 	public abstract class ItemAdaptor : INotifyCollectionChanged
 	{
 		IList _itemsSource;
@@ -89,12 +94,22 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return _itemsSource.IndexOf(item);
 		}
 
+		public virtual object GetViewCategory(int index)
+		{
+			return this;
+		}
+
 		public abstract EvasObject CreateNativeView(EvasObject parent);
+
+		public abstract EvasObject CreateNativeView(int index, EvasObject parent);
 
 		public abstract void RemoveNativeView(EvasObject native);
 
 		public abstract void SetBinding(EvasObject view, int index);
+		public abstract void UnBinding(EvasObject view);
 
 		public abstract ESize MeasureItem(int widthConstraint, int heightConstraint);
+
+		public abstract ESize MeasureItem(int index, int widthConstraint, int heightConstraint);
 	}
 }
