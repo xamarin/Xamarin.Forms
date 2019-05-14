@@ -78,12 +78,12 @@ namespace Xamarin.Forms
 				return new SelectionList((SelectableItemsView)bindable);
 			}
 
-			if (!(value is SelectionList))
+			if(value is SelectionList)
 			{
-				return new SelectionList((SelectableItemsView)bindable, value as IList<object>);
+				return value;
 			}
 
-			return value;
+			return new SelectionList((SelectableItemsView)bindable, value as IList<object>);
 		}
 
 		static object DefaultValueCreator(BindableObject bindable)
@@ -94,8 +94,8 @@ namespace Xamarin.Forms
 		static void SelectedItemsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var selectableItemsView = (SelectableItemsView)bindable;
-			var oldSelection = oldValue == null ? s_empty : (IList<object>)oldValue;
-			var newSelection = newValue == null ? s_empty : (IList<object>)newValue;
+			var oldSelection = (IList<object>)oldValue ?? s_empty;
+			var newSelection = (IList<object>)newValue ?? s_empty;
 
 			selectableItemsView.SelectedItemsPropertyChanged(oldSelection, newSelection);
 		}
