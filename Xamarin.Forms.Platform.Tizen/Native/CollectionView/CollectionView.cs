@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return (this as ICollectionViewController).GetItemSize(LayoutManager.IsHorizontal ? AllocatedSize.Width * 100 : AllocatedSize.Width, LayoutManager.IsHorizontal ? AllocatedSize.Height : AllocatedSize.Height * 100);
 		}
 
-		ESize ICollectionViewController.GetItemSize(int widthConstraint, int heightConstaraint)
+		ESize ICollectionViewController.GetItemSize(int widthConstraint, int heightConstraint)
 		{
 			if (Adaptor == null)
 			{
@@ -222,7 +222,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				return _itemSize;
 			}
 
-			_itemSize = Adaptor.MeasureItem(widthConstraint, heightConstaraint);
+			_itemSize = Adaptor.MeasureItem(widthConstraint, heightConstraint);
 			_itemSize.Width = Math.Max(_itemSize.Width, 10);
 			_itemSize.Height = Math.Max(_itemSize.Height, 10);
 
