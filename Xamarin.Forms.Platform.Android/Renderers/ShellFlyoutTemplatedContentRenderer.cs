@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
+using Android.Graphics;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -25,10 +26,11 @@ namespace Xamarin.Forms.Platform.Android
         IShellContext _shellContext;
         bool _disposed;
         HeaderContainer _headerView;
-        AView _rootView;
-        Drawable _defaultBackground;
+        ViewGroup _rootView;
+        Drawable _defaultBackgroundColor;
+		ImageView _bgImage;
 
-        public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
+		public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
         {
             _shellContext = shellContext;
 
@@ -50,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 			var recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);
 			var appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
 
-			_rootView = coordinator;
+			_rootView = coordinator as ViewGroup;
 
 			appBar.AddOnOffsetChangedListener(this);
 
@@ -88,10 +90,16 @@ namespace Xamarin.Forms.Platform.Android
 
             coordinator.LayoutParameters = new LP(width, LP.MatchParent);
 
-            UpdateFlyoutHeaderBehavior();
+			_bgImage = new ImageView(context)
+			{
+				LayoutParameters = new LP(coordinator.LayoutParameters),
+				Elevation = float.NegativeInfinity
+			};
+
+			UpdateFlyoutHeaderBehavior();
             _shellContext.Shell.PropertyChanged += OnShellPropertyChanged;
 
-            UpdateFlyoutBackgroundColor();
+            UpdateFlyoutBackground();
         }
 
         protected void OnElementSelected(Element element)
@@ -103,24 +111,67 @@ namespace Xamarin.Forms.Platform.Android
         {
             if (e.PropertyName == Shell.FlyoutHeaderBehaviorProperty.PropertyName)
                 UpdateFlyoutHeaderBehavior();
-            else if (e.PropertyName == Shell.FlyoutBackgroundColorProperty.PropertyName)
-                UpdateFlyoutBackgroundColor();
+            else if (e.IsOneOf(
+				Shell.FlyoutBackgroundColorProperty, 
+				Shell.FlyoutBackgroundImageProperty, 
+				Shell.FlyoutBackgroundImageAspectProperty))
+                UpdateFlyoutBackground();
         }
 
-        protected virtual void UpdateFlyoutBackgroundColor()
-        {
-            var color = _shellContext.Shell.FlyoutBackgroundColor;
-            if (_defaultBackground == null && color.IsDefault)
-                return;
+		protected virtual async void UpdateFlyoutBackground()
+		{
+			// color
+			var color = _shellContext.Shell.FlyoutBackgroundColor;
+			if (_defaultBackgroundColor == null)
+				_defaultBackgroundColor = _rootView.Background;
 
-            if (_defaultBackground == null)
-                _defaultBackground = _rootView.Background;
+			_rootView.Background = color.IsDefault ? _defaultBackgroundColor : new ColorDrawable(color.ToAndroid());
 
-            if (color.IsDefault)
-                _rootView.Background = _defaultBackground;
-            else
-                _rootView.Background = new ColorDrawable(color.ToAndroid());
-        }
+			// image
+			var imageSource = _shellContext.Shell.FlyoutBackgroundImage;
+			if (imageSource == null || !_shellContext.Shell.IsSet(Shell.FlyoutBackgroundImageProperty))
+			{
+				if (_rootView.IndexOfChild(_bgImage) != -1)
+					_rootView.RemoveView(_bgImage);
+				return;
+			}
+
+			using (var drawable = await _shellContext.AndroidContext.GetFormsDrawableAsync(imageSource) as BitmapDrawable)
+			{
+				if (_rootView.IsDisposed())
+					return;
+
+				if (drawable == null)
+				{
+					if (_rootView.IndexOfChild(_bgImage) != -1)
+						_rootView.RemoveView(_bgImage);
+					return;
+				}
+
+				var bitmapSize = new Size(drawable.Bitmap.Width, drawable.Bitmap.Height);
+				var boundingSize = new Size(_rootView.Width, _rootView.Height - _headerView.Height);
+				var size = bitmapSize;
+
+				_bgImage.SetImageDrawable(drawable);
+
+				switch (_shellContext.Shell.FlyoutBackgroundImageAspect)
+				{
+					default:
+					case Aspect.AspectFit:
+						_bgImage.SetScaleType(ImageView.ScaleType.FitCenter);
+						break;
+					case Aspect.AspectFill:
+						_bgImage.SetScaleType(ImageView.ScaleType.CenterCrop);
+						break;
+					case Aspect.Fill:
+						_bgImage.SetScaleType(ImageView.ScaleType.FitXy);
+						break;
+				}
+
+				if (_rootView.IndexOfChild(_bgImage) == -1)
+					_rootView.AddView(_bgImage);
+			}
+		}
 
         protected virtual void UpdateFlyoutHeaderBehavior()
         {
@@ -167,11 +218,13 @@ namespace Xamarin.Forms.Platform.Android
                     _shellContext.Shell.PropertyChanged -= OnShellPropertyChanged;
                     _headerView.Dispose();
                     _rootView.Dispose();
-                    _defaultBackground?.Dispose();
-                }
+                    _defaultBackgroundColor?.Dispose();
+					_bgImage?.Dispose();
+				}
 
-                _defaultBackground = null;
-                _rootView = null;
+                _defaultBackgroundColor = null;
+				_bgImage = null;
+				_rootView = null;
                 _headerView = null;
                 _shellContext = null;
                 _disposed = true;
