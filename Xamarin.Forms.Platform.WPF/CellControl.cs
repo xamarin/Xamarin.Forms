@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.WPF
 				{
 					foreach (var child in vc.LogicalChildren)
 					{
-						if (child is Layout<View> layout)
+						if (child is Layout layout)
 						{
 							if (layout.HorizontalOptions.Expands)
 							{
