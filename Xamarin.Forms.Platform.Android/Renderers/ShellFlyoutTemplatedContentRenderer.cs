@@ -109,25 +109,28 @@ namespace Xamarin.Forms.Platform.Android
 
         protected virtual void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == Shell.FlyoutHeaderBehaviorProperty.PropertyName)
-                UpdateFlyoutHeaderBehavior();
-            else if (e.IsOneOf(
-				Shell.FlyoutBackgroundColorProperty, 
-				Shell.FlyoutBackgroundImageProperty, 
+			if (e.PropertyName == Shell.FlyoutHeaderBehaviorProperty.PropertyName)
+				UpdateFlyoutHeaderBehavior();
+			else if (e.IsOneOf(
+				Shell.FlyoutBackgroundColorProperty,
+				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
-                UpdateFlyoutBackground();
+				UpdateFlyoutBackground();
         }
 
-		protected virtual async void UpdateFlyoutBackground()
+		protected virtual void UpdateFlyoutBackground()
 		{
-			// color
 			var color = _shellContext.Shell.FlyoutBackgroundColor;
 			if (_defaultBackgroundColor == null)
 				_defaultBackgroundColor = _rootView.Background;
 
 			_rootView.Background = color.IsDefault ? _defaultBackgroundColor : new ColorDrawable(color.ToAndroid());
 
-			// image
+			UpdateFlyoutBgImageAsync();
+		}
+
+		async void UpdateFlyoutBgImageAsync()
+		{
 			var imageSource = _shellContext.Shell.FlyoutBackgroundImage;
 			if (imageSource == null || !_shellContext.Shell.IsSet(Shell.FlyoutBackgroundImageProperty))
 			{
@@ -135,7 +138,6 @@ namespace Xamarin.Forms.Platform.Android
 					_rootView.RemoveView(_bgImage);
 				return;
 			}
-
 			using (var drawable = await _shellContext.AndroidContext.GetFormsDrawableAsync(imageSource) as BitmapDrawable)
 			{
 				if (_rootView.IsDisposed())
@@ -147,10 +149,6 @@ namespace Xamarin.Forms.Platform.Android
 						_rootView.RemoveView(_bgImage);
 					return;
 				}
-
-				var bitmapSize = new Size(drawable.Bitmap.Width, drawable.Bitmap.Height);
-				var boundingSize = new Size(_rootView.Width, _rootView.Height - _headerView.Height);
-				var size = bitmapSize;
 
 				_bgImage.SetImageDrawable(drawable);
 
@@ -173,7 +171,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-        protected virtual void UpdateFlyoutHeaderBehavior()
+		protected virtual void UpdateFlyoutHeaderBehavior()
         {
             switch (_shellContext.Shell.FlyoutHeaderBehavior)
             {
