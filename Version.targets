@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
  <PropertyGroup>
     <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' != ''">$(SYSTEM_PULLREQUEST_TARGETBRANCH)</GitBranch>
     <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' == '' and '$(BUILD_SOURCEBRANCHNAME)' != ''">$(BUILD_SOURCEBRANCHNAME)</GitBranch>
@@ -28,9 +28,15 @@
 
       <GitSemVerDashLabel Condition="'$(GitSemVerDashLabel)' != '' and '$(GitCommits)' != '0'">$(GitSemVerDashLabel).$(GitCommits)</GitSemVerDashLabel>
       <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
-      <Version>$(PackageVersion)</Version>
+      <Version>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)</Version>
     </PropertyGroup>
-
+    
+    <PropertyGroup>
+      <InformationalVersion>$(PackageVersion)</InformationalVersion>
+      <FileVersion>$(Version)</FileVersion>
+      <AssemblyVersion>$(Version)</AssemblyVersion>
+    </PropertyGroup>
+    
     <ItemGroup>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
         <_Parameter1>Version</_Parameter1>
