@@ -2,10 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>tizen40</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <IncludeGlobalAssemblyInfo>true</IncludeGlobalAssemblyInfo>   
   </PropertyGroup>
- 
+
   <ItemGroup>
     <PackageReference Include="Tizen.NET" Version="4.0.0" />
   </ItemGroup>
