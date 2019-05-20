@@ -12,8 +12,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionG
 				return string.Empty;
 			}
 
-			return items.Aggregate(string.Empty,
-				(s, o) => s + (s.Length == 0 ? "" : ", ") + ((CollectionViewGalleryTestItem)o).Caption);
+			return string.Join(", ", items.Cast<CollectionViewGalleryTestItem>().Select(i => i.Caption));
 		}
 	}
 }
