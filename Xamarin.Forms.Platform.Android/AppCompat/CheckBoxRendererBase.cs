@@ -141,19 +141,26 @@ namespace Xamarin.Forms.Platform.Android
 				_visualElementRenderer = new VisualElementRenderer(this);
 			}
 
-			Performance.Stop(reference);
-			this.EnsureId();
-
-			UpdateOnColor();
-			UpdateIsChecked();
-			UpdateBackgroundColor();
-
-			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, Element));
+			OnElementChanged(new ElementChangedEventArgs<CheckBox>(oldElement as CheckBox, Element));
 			Element?.SendViewInitialized(Control);
+			Performance.Stop(reference);
 		}
 
-		// CheckBox related
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<CheckBox> e)
+		{
+			if (e.NewElement != null && !_disposed)
+			{
+				this.EnsureId();
+
+				UpdateOnColor();
+				UpdateIsChecked();
+				UpdateBackgroundColor();
+			}
+
+			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
+		}
+
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == CheckBox.TintColorProperty.PropertyName)
 			{
