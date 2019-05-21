@@ -9,60 +9,46 @@ namespace Xamarin.Forms.Material.iOS
 	{
 		const float _defaultSize = 18.0f;
 		const float _lineWidth = 2.0f;
+		static UIImage _checked;
+		static UIImage _unchecked;
 
-		//UIImage _checkedImage;
-		//UIImage _uncheckedImage;
-
-		protected override UIImage CreateCheckBox()
+		internal override UIBezierPath CreateBoxPath(CGRect backgroundRect) => UIBezierPath.FromRoundedRect(backgroundRect, 1);
+		internal override UIBezierPath CreateCheckPath() => new UIBezierPath
 		{
-			var checkBoxColor = (CheckBoxTintColor.IsDefault ? base.TintColor : CheckBoxTintColor.ToUIColor());
+			LineWidth = (nfloat).12,
+			LineCapStyle = CGLineCap.Round,
+			LineJoinStyle = CGLineJoin.Round
+		};
 
-			/*if (_checkedImage != null && IsChecked)
+		internal override void DrawCheckMark(UIBezierPath path)
+		{
+			path.MoveTo(new CGPoint(0.80f, 0.14f));
+			path.AddLineTo(new CGPoint(0.33f, 0.6f));
+			path.AddLineTo(new CGPoint(0.10f, 0.37f));
+		}
+
+		protected override UIImage GetCheckBoximage()
+		{
+			// Ideally I would use the static images here but when disabled it always tints them grey
+			// and I don't know how to make it not tint them gray
+			if (!Enabled && CheckBoxTintColor != Color.Default)
 			{
-				var tintedImage = _checkedImage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
-				ImageView.TintColor = checkBoxColor;
-				return tintedImage;
-			}*/
+				if (IsChecked)
+					return CreateCheckBox(CreateCheckMark()).ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
 
-			UIGraphics.BeginImageContextWithOptions(new CGSize(_defaultSize, _defaultSize), false, 0);
-			var context = UIGraphics.GetCurrentContext();
-			context.SaveState();
-
-			
-			checkBoxColor.SetFill();
-			checkBoxColor.SetStroke();
-
-			var vPadding = _lineWidth / 2;
-			var hPadding = _lineWidth / 2;
-			var diameter = _defaultSize - _lineWidth;
-			var backgroundRect = new CGRect(hPadding, vPadding, diameter, diameter);
-			var boxPath = UIBezierPath.FromRoundedRect(backgroundRect, 1);
-			boxPath.LineWidth = (nfloat)_lineWidth;
-			boxPath.Stroke();
-			if (IsChecked)
-			{
-				boxPath.Fill();
-				var checkPath = new UIBezierPath
-				{
-					LineWidth = (nfloat).12,
-					LineCapStyle = CGLineCap.Square,
-					LineJoinStyle = CGLineJoin.Miter
-				};
-
-				context.TranslateCTM((nfloat)hPadding + (nfloat)(0.05 * diameter), (nfloat)vPadding + (nfloat)(0.1 * diameter));
-				context.ScaleCTM((nfloat)diameter, (nfloat)diameter);
-				checkPath.MoveTo(new CGPoint(0.80f, 0.14f));
-				checkPath.AddLineTo(new CGPoint(0.33f, 0.6f));
-				checkPath.AddLineTo(new CGPoint(0.10f, 0.37f));
-				(CheckColor.IsDefault ? UIColor.White : CheckColor.ToUIColor()).SetStroke();
-				checkPath.Stroke();
+				return CreateCheckBox(null).ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
 			}
 
-			context.RestoreState();
-			var img = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext();
+			if (_checked == null)
+				_checked = CreateCheckBox(CreateCheckMark());
 
-			return img;
+			if (_unchecked == null)
+				_unchecked = CreateCheckBox(null);
+
+			if (IsChecked)
+				return _checked;
+
+			return _unchecked;
 		}
 	}
 }

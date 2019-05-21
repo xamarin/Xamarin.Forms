@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var elemValue = (string)Element?.GetValue(AutomationProperties.NameProperty);
 			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel == Control?.Title(UIControlState.Normal))
 				return;
-
+			
 			base.SetAccessibilityLabel();
 		}
 
@@ -123,7 +123,6 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.MinimumViewSize = MinimumSize;
 				Control.IsChecked = Element.IsChecked;
 				Control.IsEnabled = Element.IsEnabled;
-				Control.CheckColor = Color.Default;
 
 				e.NewElement.CheckedChanged += OnElementCheckedChanged;
 				UpdateTintColor();
