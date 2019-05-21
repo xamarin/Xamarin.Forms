@@ -213,7 +213,7 @@
                         </VisualStateManager.VisualStateGroups>
                         <Grid Height="32" VerticalAlignment="Top">
                             <Rectangle x:Name="NormalRectangle" 
-                                       Fill="{Binding TintBrush, RelativeSource={RelativeSource TemplatedParent}}" 
+                                       Fill="{Binding DefaultFillBrush, RelativeSource={RelativeSource TemplatedParent}}" 
                                        Height="20" 
                                        StrokeThickness="{ThemeResource CheckBoxBorderThemeThickness}" 
                                        Stroke="{Binding TintBrush, RelativeSource={RelativeSource TemplatedParent}}" 

@@ -12,9 +12,26 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class FormsCheckBox : WindowsCheckbox
 	{
-
 		public static readonly DependencyProperty TintBrushProperty =
 			DependencyProperty.Register(nameof(TintBrush), typeof(Brush), typeof(FormsCheckBox),
+				new PropertyMetadata(default(Brush), OnTintBrushPropertyChanged));
+
+		static void OnTintBrushPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			var checkBox =  (FormsCheckBox)d;
+
+			if(checkBox.IsChecked == false)
+			{
+				checkBox.DefaultFillBrush = Color.Transparent.ToBrush();
+			}
+			else
+			{
+				checkBox.DefaultFillBrush = (Brush)e.NewValue;
+			}
+		}
+
+		public static readonly DependencyProperty DefaultFillBrushProperty =
+			DependencyProperty.Register(nameof(DefaultFillBrush), typeof(Brush), typeof(FormsCheckBox),
 				new PropertyMetadata(default(Brush)));
 
 		public FormsCheckBox()
@@ -25,7 +42,13 @@ namespace Xamarin.Forms.Platform.UWP
 		public Brush TintBrush
 		{
 			get { return (Brush)GetValue(TintBrushProperty); }
-			set { SetValue(TintBrushProperty, value); }
+			set { SetValue(TintBrushProperty, value);  }
+		}
+
+		public Brush DefaultFillBrush
+		{
+			get { return (Brush)GetValue(DefaultFillBrushProperty); }
+			set { SetValue(DefaultFillBrushProperty, value); }
 		}
 	}
 }
