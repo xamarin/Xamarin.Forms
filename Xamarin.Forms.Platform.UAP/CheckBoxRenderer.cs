@@ -41,14 +41,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override void Dispose(bool disposing)
 		{
+			if (Control != null && !_isDisposed)
+			{
+				_isDisposed = true;
+
+				Control.Checked -= OnNativeChecked;
+				Control.Unchecked -= OnNativeChecked;
+			}
+
 			base.Dispose(disposing);
-			if (_isDisposed)
-				return;
-
-			_isDisposed = true;
-
-			Control.Checked -= OnNativeChecked;
-			Control.Unchecked -= OnNativeChecked;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

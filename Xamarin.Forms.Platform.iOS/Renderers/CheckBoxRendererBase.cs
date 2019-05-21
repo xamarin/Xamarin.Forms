@@ -8,7 +8,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public abstract class CheckBoxRendererBase<T> : ViewRenderer<CheckBox, T>
 		where T : FormsCheckBox
 	{
-		protected virtual float MinimumSize => 36.0f;
+		// set to match Android
+		protected virtual float MinimumSize => 32.0f;
 		bool _isDisposed = false;
 
 		protected CheckBoxRendererBase()

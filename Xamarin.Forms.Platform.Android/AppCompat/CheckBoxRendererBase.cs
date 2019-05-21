@@ -96,6 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			return new Size();
 		}
+
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
 			if (_disposed)
