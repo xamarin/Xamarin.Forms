@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -15,7 +17,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.ManualReview)]
+	[NUnit.Framework.Category(UITestCategories.CollectionView)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 6077, "CollectionView (iOS) using horizontal grid does not display last column of uneven item count", PlatformAffected.iOS)]
@@ -32,26 +34,16 @@ namespace Xamarin.Forms.Controls.Issues
 				CreateItemsCollection();
 			}
 
-			void CreateItemsCollection()
+			void CreateItemsCollection(int items = 5)
 			{
-				_items.Add(new ItemModel
+				for (int n = 0; n < items; n++)
 				{
-					Title = "Item 1",
-				});
-				_items.Add(new ItemModel
-				{
-					Title = "Item 2",
-				});
-				_items.Add(new ItemModel
-				{
-					Title = "Item 3",
-				});
+					_items.Add(new ItemModel
+					{
+						Title = $"Item {n + 1}",
+					});
+				}
 
-				_items.Add(new ItemModel
-				{
-					Title = "Item 4",
-				});
-			
 				Items = new ObservableCollection<ItemModel>(_items);
 			}
 
@@ -83,29 +75,25 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public class ItemModel
 		{
-			string _title;
-			public string Title
-			{
-				get { return _title; }
-				set { _title = value; }
-			}
+			public string Title { get; set; }
 		}
 
 		ContentPage CreateRoot()
 		{
 			var page = new ContentPage { Title = "Issue6077" };
 
-			var cv = new CollectionView();
+			var cv = new CollectionView { ItemSizingStrategy = ItemSizingStrategy.MeasureAllItems };
 
 			var itemsLayout = new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal);
+			
 
 			cv.ItemsLayout = itemsLayout;
 
 			var template = new DataTemplate(() => {
-				var grid = new Grid { };
+				var grid = new Grid { HeightRequest = 100, WidthRequest = 50, BackgroundColor = Color.AliceBlue };
 
 				grid.RowDefinitions = new RowDefinitionCollection { new RowDefinition { Height = new GridLength(100) } };
-				grid.ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition { Width = new GridLength(100) } };
+				grid.ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition { Width = new GridLength(50) } };
 
 				var label = new Label { };
 
@@ -119,8 +107,10 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 
 			cv.ItemTemplate = template;
-			cv.SetBinding(CollectionView.ItemsSourceProperty, new Binding("Items"));
+			cv.SetBinding(ItemsView.ItemsSourceProperty, new Binding("Items"));
+
 			page.Content = cv;
+
 			BindingContext = new MainViewModel();
 
 			return page;
@@ -128,9 +118,20 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+#if APP
 			Device.SetFlags(new List<string>(Device.Flags ?? new List<string>()) { "CollectionView_Experimental" });
 
 			PushAsync(CreateRoot());
+#endif
 		}
+
+#if UITEST
+		[Test]
+		public void LastColumnShouldBeVisible()
+		{
+			// If the partial column shows up, then Item 5 will be in it
+			RunningApp.WaitForElement("Item 5");
+		}
+#endif
 	}
 }
