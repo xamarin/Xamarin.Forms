@@ -27,16 +27,16 @@
       <VersionMetadataPlusLabel Condition="'$(VersionMetadataLabel)' != ''">+$(VersionMetadataLabel)</VersionMetadataPlusLabel>
 
       <GitSemVerDashLabel Condition="'$(GitSemVerDashLabel)' != '' and '$(GitCommits)' != '0'">$(GitSemVerDashLabel).$(GitCommits)</GitSemVerDashLabel>
-      <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
-      <Version>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)</Version>
+      <PackageVersion>$(GitBaseVersion)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+      <Version>$(GitBaseVersion)</Version>
     </PropertyGroup>
-    
+
     <PropertyGroup>
       <InformationalVersion>$(PackageVersion)</InformationalVersion>
-      <FileVersion>$(Version)</FileVersion>
-      <AssemblyVersion>$(Version)</AssemblyVersion>
+      <FileVersion>$(Version).$(GitCommits)</FileVersion>
+      <AssemblyVersion>$(Version).0</AssemblyVersion>
     </PropertyGroup>
-    
+
     <ItemGroup>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
         <_Parameter1>Version</_Parameter1>
