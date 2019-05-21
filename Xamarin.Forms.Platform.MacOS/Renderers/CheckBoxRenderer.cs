@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void OnControlActivated(object sender, EventArgs e)
 		{
-			ElementController?.SetValueFromRenderer(Switch.IsToggledProperty, Control.State == NSCellStateValue.On);
+			ElementController?.SetValueFromRenderer(CheckBox.IsCheckedProperty, Control.State == NSCellStateValue.On);
 		}
 
 		void OnElementChecked(object sender, EventArgs e)

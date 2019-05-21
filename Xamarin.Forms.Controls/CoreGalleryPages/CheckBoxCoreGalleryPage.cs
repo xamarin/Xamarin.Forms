@@ -19,10 +19,10 @@ namespace Xamarin.Forms.Controls
 		{
 			base.Build(stackLayout);
 
-			var isCheckedContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.IsChecked, new CheckBox() { HorizontalOptions = LayoutOptions.Start }, "IsChecked", value => value.ToString());
+			var isCheckedContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.IsChecked, new CheckBox() { IsChecked = true, HorizontalOptions = LayoutOptions.Start }, "IsChecked", value => value.ToString());
 			Add(isCheckedContainer);
 
-			var checkedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.CheckedColor, new CheckBox() { TintColor = Color.Orange, HorizontalOptions = LayoutOptions.Start }, "Color", value => value.ToString());
+			var checkedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.CheckedColor, new CheckBox() { IsChecked = true, TintColor = Color.Orange, HorizontalOptions = LayoutOptions.Start }, "Color", value => value.ToString());
 			Add(checkedColorContainer);
 
 			var groupList = new VisualStateGroupList();

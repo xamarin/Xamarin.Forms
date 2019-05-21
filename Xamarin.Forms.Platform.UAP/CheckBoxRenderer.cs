@@ -1,12 +1,23 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml;
-
-using WindowsCheckbox = Windows.UI.Xaml.Controls.CheckBox;
+using Windows.UI.Xaml.Media;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class CheckBoxRenderer : ViewRenderer<CheckBox, WindowsCheckbox>
+	public class CheckBoxRenderer : ViewRenderer<CheckBox, FormsCheckBox>
 	{
+		static Brush _tintDefaultBrush = Color.Blue.ToBrush();
+		bool _isDisposed = false;
+
+
+		protected virtual FormsCheckBox CreateNativeControl()
+		{
+			return new FormsCheckBox()
+			{
+				Style = Windows.UI.Xaml.Application.Current.Resources["FormsCheckBoxStyle"] as Windows.UI.Xaml.Style
+			};
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<CheckBox> e)
 		{
 			base.OnElementChanged(e);
@@ -15,18 +26,29 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var control = new WindowsCheckbox();
+					var control = CreateNativeControl();
 					control.Checked += OnNativeChecked;
 					control.Unchecked += OnNativeChecked;
-					//control.ClearValue(WindowsCheckbox.IsCheckedProperty);
 
 					SetNativeControl(control);
 				}
 
-				Control.IsChecked = Element.IsChecked;
-				
+				UpdateIsChecked();
 				UpdateFlowDirection();
+				UpdateTintColor();
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
+			Control.Checked -= OnNativeChecked;
+			Control.Unchecked -= OnNativeChecked;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -35,11 +57,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.PropertyName == CheckBox.IsCheckedProperty.PropertyName)
 			{
-				Control.IsChecked = Element.IsChecked;
+				UpdateIsChecked();
 			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
 				UpdateFlowDirection();
+			}
+			else if(e.PropertyName == CheckBox.TintColorProperty.PropertyName)
+			{
+				UpdateTintColor();
 			}
 		}
 
@@ -53,6 +79,19 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateFlowDirection()
 		{
 			Control.UpdateFlowDirection(Element);
+		}
+
+
+		void UpdateIsChecked()
+		{
+			Control.IsChecked = Element.IsChecked;
+		}
+
+		void UpdateTintColor()
+		{
+			BrushHelpers.UpdateColor(Element.TintColor, ref _tintDefaultBrush,
+				() => Control.TintBrush, brush => Control.TintBrush = brush);
+			
 		}
 	}
 }

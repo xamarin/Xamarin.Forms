@@ -6,26 +6,39 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using WPFCheckBox = System.Windows.Controls.CheckBox;
+using WControl = System.Windows.Controls.Control;
+using System.Windows.Media;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	public class CheckBoxRenderer : ViewRenderer<CheckBox, WPFCheckBox>
+	public class CheckBoxRenderer : ViewRenderer<CheckBox, FormsCheckBox>
 	{
+		bool _isDisposed;
+		static Brush _tintDefaultBrush = Color.Transparent.ToBrush();
+
+		public CheckBoxRenderer()
+		{
+			
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<CheckBox> e)
 		{
 			if (e.NewElement != null)
 			{
 				if (Control == null) // construct and SetNativeControl and suscribe control event
 				{
-					SetNativeControl(new WPFCheckBox());
+					SetNativeControl(new FormsCheckBox()
+					{
+						Style = (System.Windows.Style)System.Windows.Application.Current.MainWindow.FindResource("FormsCheckBoxStyle")
+					});
+
 					Control.Checked += OnNativeChecked;
 					Control.Unchecked += OnNativeChecked;
-
-					
 				}
 
 				// Update control property 
 				UpdateIsChecked();
+				UpdateTintColor();
 			}
 
 			base.OnElementChanged(e);
@@ -39,6 +52,19 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				UpdateIsChecked();
 			}
+			else if (e.PropertyName == CheckBox.TintColorProperty.PropertyName)
+			{
+				UpdateTintColor();
+			}
+		}
+		
+		void UpdateTintColor()
+		{
+			if (Element.TintColor == Color.Default)
+				Control.TintBrush = _tintDefaultBrush;
+			else
+				Control.TintBrush = Element.TintColor.ToBrush();
+
 		}
 
 		void UpdateIsChecked()
@@ -50,15 +76,10 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			((IElementController)Element).SetValueFromRenderer(CheckBox.IsCheckedProperty, Control.IsChecked);
 		}
-
-		bool _isDisposed;
-
+		
 		protected override void Dispose(bool disposing)
 		{
-			if (_isDisposed)
-				return;
-
-			if (disposing)
+			if (disposing && !_isDisposed)
 			{
 				if (Control != null)
 				{
