@@ -48,7 +48,7 @@
       </AssemblyAttribute>
     </ItemGroup>
 
-    <Message Condition="$(CI)" Importance="high" Text="##vso[build.updatebuildnumber]$(Version)"/>
+    <Message Condition="$(CI)" Importance="high" Text="##vso[build.updatebuildnumber]$(PackageVersion)"/>
   </Target>
 
   <Target Name="VersionInfoReport" DependsOnTargets="SetVersions" AfterTargets="GitInfoReport">
