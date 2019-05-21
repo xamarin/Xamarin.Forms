@@ -9,12 +9,11 @@ namespace Xamarin.Forms.Platform.UWP
 		static Brush _tintDefaultBrush = Color.Blue.ToBrush();
 		bool _isDisposed = false;
 
-
 		protected virtual FormsCheckBox CreateNativeControl()
 		{
 			return new FormsCheckBox()
 			{
-				Style = Windows.UI.Xaml.Application.Current.Resources["FormsCheckBoxStyle"] as Windows.UI.Xaml.Style
+				Style = Windows.UI.Xaml.Application.Current.Resources["FormsCheckBoxStyle"] as Windows.UI.Xaml.Style,			
 			};
 		}
 
