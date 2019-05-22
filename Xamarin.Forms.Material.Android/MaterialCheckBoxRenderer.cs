@@ -38,21 +38,5 @@ namespace Xamarin.Forms.Material.Android
 
 			return new ColorStateList(_checkedStates, checkBoxColorsList);
 		}
-
-		public static int Layer(
-		   int backgroundColor,
-		   int overlayColor,
-		   float overlayAlpha)
-		{
-			var alpha = ((uint)overlayColor) >> 24;
-			int computedAlpha = (int)Math.Round(alpha * overlayAlpha);
-			int computedOverlayColor = AColorUtils.SetAlphaComponent(overlayColor, computedAlpha);
-			return Layer(backgroundColor, computedOverlayColor);
-		}
-
-		public static int Layer(int backgroundColor, int overlayColor)
-		{
-			return AColorUtils.CompositeColors(overlayColor, backgroundColor);
-		}
 	}
 }

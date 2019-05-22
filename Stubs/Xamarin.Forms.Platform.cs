@@ -106,7 +106,9 @@ namespace Xamarin.Forms.Platform
 	internal class _FrameRenderer { }
 
 #if __ANDROID__ || __IOS__
-	[RenderWith(typeof(CheckBoxRenderer))]
+	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
+	// once previewer switches to appcompat then we can remove this
+	[RenderWith(typeof(CheckBoxDesignerRenderer))]
 	internal class _CheckBoxRenderer { }
 #endif
 
