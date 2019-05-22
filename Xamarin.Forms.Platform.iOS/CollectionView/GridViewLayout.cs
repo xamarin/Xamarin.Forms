@@ -139,6 +139,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var itemCount = CollectionView.NumberOfItemsInSection(section);
 
+			if (itemCount < _itemsLayout.Span)
+			{
+				// If there is just one partial column, no problem; UICollectionViewFlowLayout gets it right
+			}
+
 			if (itemCount % _itemsLayout.Span == 0)
 			{
 				// All of the columns are full; the bug only occurs when we have a partial column
