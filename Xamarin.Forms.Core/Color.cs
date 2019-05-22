@@ -301,6 +301,14 @@ namespace Xamarin.Forms
 			return string.Format(CultureInfo.InvariantCulture, "[Color: A={0}, R={1}, G={2}, B={3}, Hue={4}, Saturation={5}, Luminosity={6}]", A, R, G, B, Hue, Saturation, Luminosity);
 		}
 
+		public string ToHex()
+		{
+			var red = (int)(R * 255);
+			var green = (int)(G * 255);
+			var blue = (int)(B * 255);
+			var alpha = (int)(A * 255);
+			return $"#{alpha:X2}{red:X2}{green:X2}{blue:X2}";
+		}
 		static uint ToHex (char c)
 		{
 			ushort x = (ushort)c;
