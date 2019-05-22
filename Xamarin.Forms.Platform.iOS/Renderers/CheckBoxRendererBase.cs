@@ -141,8 +141,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnElementCheckedChanged(object sender, EventArgs e)
 		{
-			((IElementController)Element).SetValueFromRenderer(CheckBox.IsCheckedProperty, Control.IsChecked);
 			Control.IsChecked = Element.IsChecked;
+			((IElementController)Element).SetValueFromRenderer(CheckBox.IsCheckedProperty, Control.IsChecked);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

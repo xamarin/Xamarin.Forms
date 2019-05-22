@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				_tintColor = value;
-				CheckBoxTintUIColor = (CheckBoxTintColor.IsDefault ? base.TintColor : CheckBoxTintColor.ToUIColor());
+				CheckBoxTintUIColor = (CheckBoxTintColor.IsDefault ? null : CheckBoxTintColor.ToUIColor());
 			}
 		}
 
