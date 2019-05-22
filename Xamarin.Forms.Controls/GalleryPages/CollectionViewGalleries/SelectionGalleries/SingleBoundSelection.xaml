@@ -14,6 +14,8 @@
                 HorizontalOptions="CenterAndExpand" />
 
             <Button AutomationId="Reset" Text="Reset Selection to Item 0" Clicked="ResetClicked" />
+            
+            <Button AutomationId="Clear" Text="Clear Selection" Clicked="ClearClicked" />
 
             <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" SelectedItem="{Binding SelectedItem}">
                 <CollectionView.ItemTemplate>

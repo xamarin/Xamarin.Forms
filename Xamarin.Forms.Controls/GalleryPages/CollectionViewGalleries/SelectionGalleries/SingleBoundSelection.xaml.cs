@@ -19,5 +19,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionG
 		{
 			_vm.SelectedItem = _vm.Items[0];
 		}
+
+		private void ClearClicked(object sender, EventArgs e)
+		{
+			_vm.SelectedItem = null;
+		}
 	}
 }
