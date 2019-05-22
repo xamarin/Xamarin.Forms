@@ -142,6 +142,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (itemCount < _itemsLayout.Span)
 			{
 				// If there is just one partial column, no problem; UICollectionViewFlowLayout gets it right
+				return false;
 			}
 
 			if (itemCount % _itemsLayout.Span == 0)
