@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		{
 			Device.PlatformServices = new MockPlatformServices();
 			Xamarin.Forms.Internals.Registrar.RegisterAll(new Type[0]);
+			Application.Current = null;
 		}
 
 		[TearDown]
