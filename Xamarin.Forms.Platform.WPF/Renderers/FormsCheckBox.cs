@@ -15,11 +15,25 @@ namespace Xamarin.Forms.Platform.WPF
 
 		public static readonly DependencyProperty TintBrushProperty =
 			DependencyProperty.Register(nameof(TintBrush), typeof(Brush), typeof(FormsCheckBox),
-				new PropertyMetadata(default(Brush)));
+				new PropertyMetadata(default(Brush), OnTintBrushPropertyChanged));
+
+		static void OnTintBrushPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			var checkBox = (FormsCheckBox)d;
+
+			if (e.NewValue is SolidColorBrush solidBrush && solidBrush.Color.A == 0)
+			{
+				checkBox.BorderBrush = Color.Black.ToBrush();
+			}
+			else if (e.NewValue is SolidColorBrush b)
+			{
+				checkBox.BorderBrush = b;
+			}
+		}
 
 		public FormsCheckBox()
 		{
-			
+			BorderBrush = Color.Black.ToBrush();
 		}
 
 		public Brush TintBrush
