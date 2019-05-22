@@ -48,9 +48,9 @@ steps:
     displayName: 'Set Nuget version'
 
   - task: NuGetToolInstaller@0
-      displayName: 'Use NuGet'
-      inputs:
-        versionSpec: $(nugetVersion)
+    displayName: 'Use NuGet'
+    inputs:
+      versionSpec: $(nugetVersion)
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
