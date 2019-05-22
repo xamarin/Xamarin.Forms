@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				UpdateIsChecked();
 			}
-			else if (e.PropertyName == CheckBox.TintColorProperty.PropertyName)
+			else if (e.PropertyName == CheckBox.ColorProperty.PropertyName)
 			{
 				UpdateTintColor();
 			}
@@ -60,10 +60,10 @@ namespace Xamarin.Forms.Platform.WPF
 		
 		void UpdateTintColor()
 		{
-			if (Element.TintColor == Color.Default)
+			if (Element.Color == Color.Default)
 				Control.TintBrush = _tintDefaultBrush;
 			else
-				Control.TintBrush = Element.TintColor.ToBrush();
+				Control.TintBrush = Element.Color.ToBrush();
 
 		}
 

@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls
 			var isCheckedContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.IsChecked, new CheckBox() { IsChecked = true, HorizontalOptions = LayoutOptions.Start }, "IsChecked", value => value.ToString());
 			Add(isCheckedContainer);
 
-			var checkedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.CheckedColor, new CheckBox() { IsChecked = true, TintColor = Color.Orange, HorizontalOptions = LayoutOptions.Start }, "Color", value => value.ToString());
+			var checkedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.CheckedColor, new CheckBox() { IsChecked = true, Color = Color.Orange, HorizontalOptions = LayoutOptions.Start }, "Color", value => value.ToString());
 			Add(checkedColorContainer);
 
 			var groupList = new VisualStateGroupList();
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls
 			};
 			checkedVisualState.Setters.Add(new Setter
 			{
-				Property = CheckBox.TintColorProperty,
+				Property = CheckBox.ColorProperty,
 				Value = Color.Orange
 			});
 
@@ -45,14 +45,14 @@ namespace Xamarin.Forms.Controls
 			};
 			normalVisualState.Setters.Add(new Setter
 			{
-				Property = CheckBox.TintColorProperty,
+				Property = CheckBox.ColorProperty,
 				Value = Color.Red
 			});
 			group.States.Add(normalVisualState);
 			groupList.Add(group);
 
 
-			var checkBoxStateManaged = new CheckBox() { TintColor = Color.Red, HorizontalOptions = LayoutOptions.Start };
+			var checkBoxStateManaged = new CheckBox() { Color = Color.Red, HorizontalOptions = LayoutOptions.Start };
 			VisualStateManager.SetVisualStateGroups(checkBoxStateManaged, groupList);
 
 

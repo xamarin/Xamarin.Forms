@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFlowDirection();
 			}
-			else if(e.PropertyName == CheckBox.TintColorProperty.PropertyName)
+			else if(e.PropertyName == CheckBox.ColorProperty.PropertyName)
 			{
 				UpdateTintColor();
 			}
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTintColor()
 		{
-			BrushHelpers.UpdateColor(Element.TintColor, ref _tintDefaultBrush,
+			BrushHelpers.UpdateColor(Element.Color, ref _tintDefaultBrush,
 				() => Control.TintBrush, brush => Control.TintBrush = brush);
 			
 		}

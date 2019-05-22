@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Material.Android
 
 		protected override ColorStateList GetColorStateList()
 		{
-			if (Element.TintColor != Color.Default)
+			if (Element.Color != Color.Default)
 				return base.GetColorStateList();
 
 			int[] checkBoxColorsList = new int[4];

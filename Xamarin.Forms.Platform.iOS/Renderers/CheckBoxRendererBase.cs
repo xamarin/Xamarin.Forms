@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element == null)
 				return;
 
-			Control.CheckBoxTintColor = Element.TintColor;
+			Control.CheckBoxTintColor = Element.Color;
 		}
 
 		void OnElementCheckedChanged(object sender, EventArgs e)
@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == CheckBox.TintColorProperty.PropertyName)
+			if (e.PropertyName == CheckBox.ColorProperty.PropertyName)
 				UpdateTintColor();
 			else if (e.PropertyName == CheckBox.IsEnabledProperty.PropertyName)
 				Control.IsEnabled = Element.IsEnabled;

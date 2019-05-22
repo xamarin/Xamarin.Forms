@@ -4,7 +4,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_CheckBoxRenderer))]
-	public class CheckBox : View, IElementConfiguration<CheckBox>
+	public class CheckBox : View, IElementConfiguration<CheckBox>, IBorderElement, IColorElement
 	{
 		public const string IsCheckedVisualState = "IsChecked";
 
@@ -14,12 +14,12 @@ namespace Xamarin.Forms
 			((CheckBox)bindable).ChangeVisualState();
 		}, defaultBindingMode: BindingMode.TwoWay);
 
-		public static readonly BindableProperty TintColorProperty = BindableProperty.Create(nameof(TintColor), typeof(Color), typeof(CheckBox), Color.Default);
+		public static readonly BindableProperty ColorProperty = ColorElement.ColorProperty;
 
-		public Color TintColor
+		public Color Color
 		{
-			get { return (Color)GetValue(TintColorProperty); }
-			set { SetValue(TintColorProperty, value); }
+			get { return (Color)GetValue(ColorProperty); }
+			set { SetValue(ColorProperty, value); }
 		}
 	
 		readonly Lazy<PlatformConfigurationRegistry<CheckBox>> _platformConfigurationRegistry;
@@ -38,7 +38,6 @@ namespace Xamarin.Forms
 				ChangeVisualState();
 			}
 		}
-
 		protected internal override void ChangeVisualState()
 		{
 			if (IsEnabled && IsChecked)
@@ -53,9 +52,33 @@ namespace Xamarin.Forms
 
 		public event EventHandler<CheckedChangedEventArgs> CheckedChanged;
 
+
+
 		public IPlatformElementConfiguration<T, CheckBox> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
+
+		void IBorderElement.OnBorderColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+
+		Color IBorderElement.BorderColor => Color.Transparent;
+
+		int IBorderElement.CornerRadius => 0;
+
+		double IBorderElement.BorderWidth => 0;
+
+		int IBorderElement.CornerRadiusDefaultValue => 0;
+
+		Color IBorderElement.BorderColorDefaultValue => Color.Transparent;
+
+		double IBorderElement.BorderWidthDefaultValue => 0;
+
+		bool IBorderElement.IsCornerRadiusSet() => false;
+		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBorderColorSet() => false;
+		bool IBorderElement.IsBorderWidthSet() => false;
 	}
 }

@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == CheckBox.TintColorProperty.PropertyName)
+			if (e.PropertyName == CheckBox.ColorProperty.PropertyName)
 			{
 				UpdateOnColor();
 			}
@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual ColorStateList GetColorStateList()
 		{
-			var tintColor = Element.TintColor == Color.Default ? Color.Accent.ToAndroid() : Element.TintColor.ToAndroid();
+			var tintColor = Element.Color == Color.Default ? Color.Accent.ToAndroid() : Element.Color.ToAndroid();
 
 			var list = new ColorStateList(
 					_checkedStates,
