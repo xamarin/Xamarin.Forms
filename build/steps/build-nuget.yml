@@ -72,6 +72,7 @@ steps:
       packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/debug/*.nupkg'
       publishVstsFeed: '$(VstsFeed)'
       allowPackageConflicts: true
+    continueOnError: true
 
 
   - powershell: |
