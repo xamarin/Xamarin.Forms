@@ -15,6 +15,10 @@ namespace Xamarin.Forms.Material.iOS
 		protected override void OnElementChanged(ElementChangedEventArgs<CheckBox> e)
 		{
 			base.OnElementChanged(e);
+
+			if (Control == null)
+				return;
+
 			if (e.OldElement != null)
 				Control.CheckedChanged -= OnCheckedChanged;
 
