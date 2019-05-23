@@ -19,7 +19,8 @@ namespace Xamarin.Forms.Platform.Android
 		AppCompatCheckBox,
 		IVisualElementRenderer,
 		AView.IOnFocusChangeListener,
-		CompoundButton.IOnCheckedChangeListener
+		CompoundButton.IOnCheckedChangeListener,
+		ITabStop
 	{
 		bool _disposed;
 		bool _skipInvalidate;
@@ -265,5 +266,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected AppCompatCheckBox Control => this;
+
+		AView ITabStop.TabStop => this;
 	}
 }
