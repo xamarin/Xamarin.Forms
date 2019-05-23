@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls
 		public DynamicViewGallery()
 		{
 			_selector = new Picker();
-			foreach (var item in TestedTypes)
+			foreach (var item in TestedTypes.OrderBy(x=> x.Key.ToString()))
 				_selector.Items.Add(item.Key.ToString());
 			_selector.SelectedIndexChanged += TypeSelected;
 

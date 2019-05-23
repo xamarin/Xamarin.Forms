@@ -102,7 +102,11 @@ namespace Xamarin.Forms.Platform.iOS
 				_checkBoxTintUIColor = value;
 				ImageView.TintColor = value;
 				TintColor = value;
-				SetNeedsDisplay();
+
+				if (Enabled)
+					SetNeedsDisplay();
+				else
+					UpdateDisplay();
 			}
 		}
 

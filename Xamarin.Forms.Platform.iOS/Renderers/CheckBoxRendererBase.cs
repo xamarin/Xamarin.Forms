@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_isDisposed)
+			if (disposing && !_isDisposed && Control != null)
 			{
 				_isDisposed = true;
 				Control.CheckedChanged -= OnControlCheckedChanged;
@@ -132,7 +132,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnElementCheckedChanged(object sender, EventArgs e)
 		{
 			Control.IsChecked = Element.IsChecked;
-			((IElementController)Element).SetValueFromRenderer(CheckBox.IsCheckedProperty, Control.IsChecked);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
