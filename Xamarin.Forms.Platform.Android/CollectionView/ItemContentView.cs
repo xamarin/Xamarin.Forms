@@ -66,6 +66,16 @@ namespace Xamarin.Forms.Platform.Android
 			var width = Context.FromPixels(pixelWidth);
 			var height = Context.FromPixels(pixelHeight);
 
+			if (height == 0 && MeasureSpec.GetMode(heightMeasureSpec) == MeasureSpecMode.Unspecified)
+			{
+				height = double.PositiveInfinity;
+			}
+
+			if (width == 0 && MeasureSpec.GetMode(widthMeasureSpec) == MeasureSpecMode.Unspecified)
+			{
+				width = double.PositiveInfinity;
+			}
+
 			SizeRequest measure = Content.Element.Measure(width, height, MeasureFlags.IncludeMargins);
 
 			// When we implement ItemSizingStrategy.MeasureFirstItem for Android, these next two clauses will need to

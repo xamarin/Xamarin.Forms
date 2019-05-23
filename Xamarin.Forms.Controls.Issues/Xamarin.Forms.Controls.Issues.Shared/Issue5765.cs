@@ -28,36 +28,39 @@ namespace Xamarin.Forms.Controls.Issues
 			PushAsync(CreateRoot());
 		}
 
-		private Page CreateRoot()
+		Frame CreateFrame()
+		{
+			var frame = new Frame() { CornerRadius = 10, BackgroundColor = Color.SeaGreen };
+
+			var flexLayout = new FlexLayout()
+			{
+				Direction = FlexDirection.Row,
+				JustifyContent = FlexJustify.SpaceBetween,
+				AlignItems = FlexAlignItems.Stretch
+			};
+
+			var label1 = new Label { Text = "First Label", AutomationId = Target, HeightRequest = 100 };
+			var label2 = new Label { Text = "Second Label" };
+
+			flexLayout.Children.Add(label1);
+			flexLayout.Children.Add(label2);
+
+			frame.Content = flexLayout;
+
+			return frame;
+		}
+
+		Page CreateRoot()
 		{
 			var page = new ContentPage() { Title = "Issue5765" };
 
 			var cv = new CollectionView();
 
 			cv.ItemTemplate = new DataTemplate(() => {
-
-				var frame = new Frame() { CornerRadius = 10 };
-
-				var flexLayout = new FlexLayout()
-				{
-					Direction = FlexDirection.Row,
-					JustifyContent = FlexJustify.SpaceBetween,
-					AlignItems = FlexAlignItems.Stretch
-				};
-
-				var label1 = new Label { Text = "First Label", AutomationId = Target };
-				var label2 = new Label { Text = "Second Label" };
-
-				flexLayout.Children.Add(label1);
-				flexLayout.Children.Add(label2);
-
-				frame.Content = flexLayout;
-
-				return frame;
-
+				return CreateFrame();	
 			});
 
-			cv.ItemsSource = new List<string> { "one", "two" };
+			cv.ItemsSource = new List<string> { "one", "two", "three" };
 
 			page.Content = cv;
 
