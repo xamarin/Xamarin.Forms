@@ -22,6 +22,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
                     <Grid x:Name="RootGrid" 
+                          VerticalAlignment="Center"
                           Background="{TemplateBinding Background}" 
                           BorderThickness="{TemplateBinding BorderThickness}" 
                           BorderBrush="{TemplateBinding BorderBrush}">

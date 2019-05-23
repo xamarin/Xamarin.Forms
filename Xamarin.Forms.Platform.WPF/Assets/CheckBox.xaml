@@ -39,7 +39,7 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type CheckBox}">
-					<Grid x:Name="templateRoot" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+					<Grid x:Name="templateRoot" Background="{TemplateBinding Background}" SnapsToDevicePixels="True" VerticalAlignment="Center">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto"/>
 							<ColumnDefinition Width="*"/>
