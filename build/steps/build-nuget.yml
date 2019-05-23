@@ -34,7 +34,7 @@ steps:
       packagesToPack: '.nuspec/*.nuspec'
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/debug'
       versioningScheme: byEnvVar
-      versionEnvVar: XamarinFormsPackageVersion
+      versionEnvVar: nugetPackageVersion
       configuration: $(buildConfiguration)
 
 

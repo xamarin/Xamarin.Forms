@@ -9,12 +9,6 @@ variables:
   value: XamarinFormsControlGalleryiOS.ipa
 - name: SolutionFile
   value: Xamarin.Forms.sln
-- name: major
-  value: 3
-- name: minor
-  value: 6
-- name: patch
-  value: 0
 - name: buildversion
   value: $[counter('$(Build.SourceBranchName)_counter', 1)]
 - name: MONO_VERSION
@@ -148,7 +142,7 @@ jobs:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
     nugetVersion: $(NUGET_VERSION)
-    pacakageVersion : $[ dependencies.Phase_2.outputs['debug.winbuild.packageversion'] ]
+    nugetPackageVersion : $[ dependencies.Phase_2.outputs['debug.winbuild.xamarinformspackageversion'] ]
   steps:
      - template: build/steps/build-nuget.yml
 

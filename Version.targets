@@ -3,8 +3,8 @@
     <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' != ''">$(SYSTEM_PULLREQUEST_TARGETBRANCH)</GitBranch>
     <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' == '' and '$(BUILD_SOURCEBRANCHNAME)' != ''">$(BUILD_SOURCEBRANCHNAME)</GitBranch>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(GitSemVerDashLabel)' == ''">
-    <GitSemVerDashLabel Condition="$(CI) and '$(BUILD_REASON)' == 'Schedule'">nightly</GitSemVerDashLabel>
+  <PropertyGroup Condition="'$(GitSemVerLabel)' == ''">
+    <GitSemVerLabel Condition="$(CI) and '$(BUILD_REASON)' == 'Schedule'">nightly</GitSemVerLabel>
   </PropertyGroup>
 
   <Target Name="SetVersions"
