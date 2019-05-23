@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using CoreGraphics;
 using UIKit;
 
@@ -10,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 		where T : FormsCheckBox
 	{
 		protected virtual float MinimumSize => 44f; // Apple docs
-		bool _isDisposed = false;
+		bool _isDisposed;
 
 		protected CheckBoxRendererBase()
 		{
@@ -33,32 +32,17 @@ namespace Xamarin.Forms.Platform.iOS
 			var elemValue = (string)Element?.GetValue(AutomationProperties.NameProperty);
 			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel == Control?.Title(UIControlState.Normal))
 				return;
-			
+
 			base.SetAccessibilityLabel();
 		}
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
 			var result = base.SizeThatFits(size);
-
-			var height = result.Height;
-			var width = result.Width;
-
-			if (height < MinimumSize)
-			{
-				height = MinimumSize;
-			}
-
-			if (width < MinimumSize)
-			{
-				width = MinimumSize;
-			}
-
-			var final = (nfloat)Math.Min(width, height);
-			result.Width = final;
-			result.Height = final;
-
-			return result;
+			var height = Math.Max(MinimumSize, result.Height);
+			var width = Math.Max(MinimumSize, result.Width);
+			var final = Math.Min(width, height);
+			return new CGSize(final, final);
 		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -87,7 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			if(set)
+			if (set)
 			{
 				sizeConstraint = new SizeRequest(new Size(width, height), new Size(MinimumSize, MinimumSize));
 			}
@@ -102,7 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing && !_isDisposed)
 			{
 				_isDisposed = true;
-				Control.CheckedChanged -= OnElementCheckedChanged;
+				Control.CheckedChanged -= OnControlCheckedChanged;
 			}
 
 			base.Dispose(disposing);
@@ -118,6 +102,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					SetNativeControl(CreateNativeControl());
+					Control.CheckedChanged += OnControlCheckedChanged;
 				}
 
 				Control.MinimumViewSize = MinimumSize;
@@ -139,6 +124,11 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.CheckBoxTintColor = Element.Color;
 		}
 
+		void OnControlCheckedChanged(object sender, EventArgs e)
+		{
+			Element.IsChecked = Control.IsChecked;
+		}
+
 		void OnElementCheckedChanged(object sender, EventArgs e)
 		{
 			Control.IsChecked = Element.IsChecked;
@@ -149,10 +139,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == CheckBox.ColorProperty.PropertyName)
+			if (e.Is(CheckBox.ColorProperty))
 				UpdateTintColor();
-			else if (e.PropertyName == CheckBox.IsEnabledProperty.PropertyName)
-				Control.IsEnabled = Element.IsEnabled;
 		}
 	}
 }

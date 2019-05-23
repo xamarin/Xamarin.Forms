@@ -1,5 +1,4 @@
 ﻿using System;
-using CoreAnimation;
 using CoreGraphics;
 using UIKit;
 
@@ -142,15 +141,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_unchecked == null)
 				_unchecked = CreateCheckBox(null);
 
-			if (IsChecked)
-				return _checked;
-
-			return _unchecked;
+			return IsChecked ? _checked : _unchecked;
 		}
 
 		internal void UpdateDisplay()
 		{
-			this.SetImage(GetCheckBoximage(), UIControlState.Normal);
+			SetImage(GetCheckBoximage(), UIControlState.Normal);
 			SetNeedsDisplay();
 		}
 
@@ -189,10 +185,10 @@ namespace Xamarin.Forms.Platform.iOS
 			boxPath.Stroke();
 
 			if (check != null)
+			{
 				boxPath.Fill();
-
-			if (check != null)
 				check.Draw(new CGPoint(0, 0), CGBlendMode.DestinationOut, 1);
+			}
 
 			context.RestoreState();
 			var img = UIGraphics.GetImageFromCurrentImageContext();
@@ -214,8 +210,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var checkPath = CreateCheckPath();
 
-			context.TranslateCTM((nfloat)hPadding + (nfloat)(0.05 * diameter), (nfloat)vPadding + (nfloat)(0.1 * diameter));
-			context.ScaleCTM((nfloat)diameter, (nfloat)diameter);
+			context.TranslateCTM(hPadding + (nfloat)(0.05 * diameter), vPadding + (nfloat)(0.1 * diameter));
+			context.ScaleCTM(diameter, diameter);
 			DrawCheckMark(checkPath);
 			UIColor.White.SetStroke();
 			checkPath.Stroke();

@@ -28,6 +28,7 @@ namespace Xamarin.Forms.Controls
 				{ nameof(TimePicker), (() => new TimePicker(), null) },
 				{ nameof(ListView), (() => new ListView(), null) },
 				{ nameof(BoxView), (() => new BoxView(), null) },
+				{ nameof(CheckBox), (() => new CheckBox(), null) },
 
 			};
 
