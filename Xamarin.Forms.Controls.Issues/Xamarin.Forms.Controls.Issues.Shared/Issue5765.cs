@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void LabelsInFramesShouldBeVisible()
+		public void FlexLayoutsInFramesShouldSizeCorrectly()
 		{
 			// If the first label is visible at all, then this has succeeded
 			RunningApp.WaitForElement(Target);
