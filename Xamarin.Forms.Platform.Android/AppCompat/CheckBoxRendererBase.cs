@@ -6,11 +6,8 @@ using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Android.Graphics.Drawables;
 using Android.Graphics;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.OS;
 using Android.Widget;
 using Android.Content.Res;
 using Android.Support.V4.Widget;
@@ -51,8 +48,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			SoundEffectsEnabled = false;
 			SetOnCheckedChangeListener(this);
-			Tag = this;			
+			Tag = this;
 			OnFocusChangeListener = this;
+			ClipToOutline = true;
 		}
 
 		protected override void Dispose(bool disposing)
