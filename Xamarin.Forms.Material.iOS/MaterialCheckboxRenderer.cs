@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Material.iOS
 			}
 		}
 
-		private void OnCheckedChanged(object sender, EventArgs e)
+		void OnCheckedChanged(object sender, EventArgs e)
 		{
 			UpdateTintColor();
 		}
