@@ -29,10 +29,13 @@ namespace Xamarin.Forms.Material.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed && Control != null)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if (Control != null && disposing)
 			{
 				Control.CheckedChanged -= OnCheckedChanged;
-				_disposed = true;
 			}
 
 			base.Dispose(disposing);

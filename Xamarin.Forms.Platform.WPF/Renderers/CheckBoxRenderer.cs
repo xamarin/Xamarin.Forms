@@ -79,16 +79,16 @@ namespace Xamarin.Forms.Platform.WPF
 		
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_isDisposed)
+			if (_isDisposed)
+				return;
+			_isDisposed = true;
+
+			if (disposing && Control != null)
 			{
-				if (Control != null)
-				{
-					Control.Checked -= OnNativeChecked;
-					Control.Unchecked -= OnNativeChecked;
-				}
+				Control.Checked -= OnNativeChecked;
+				Control.Unchecked -= OnNativeChecked;
 			}
 
-			_isDisposed = true;
 			base.Dispose(disposing);
 		}
 	}
