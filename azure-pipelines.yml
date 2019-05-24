@@ -35,8 +35,7 @@ trigger:
     - 4.*
   tags:
     include:
-    - release*
-    - beta*
+    - *
   paths:
     exclude:
     - README.md
@@ -49,24 +48,17 @@ pr:
     - 4.*
     - 3.*
 
-- job: win
-  displayName: Build Windows Phase
-  dependsOn: Phase_1
-  condition: succeeded()
-  pool:
-    name: $(winVmImage)
-  strategy:
-    matrix:
-      debug:
-        BuildConfiguration: $(DefaultBuildConfiguration)
-        BuildPlatform: $(DefaultBuildPlatform)
-      release:
-        BuildConfiguration: 'Release'
-        BuildPlatform: $(DefaultBuildPlatform)
-  variables:
-    nugetVersion: $(NUGET_VERSION)
-  steps:
-     - template: build/steps/build-windows.yml
+jobs:
+
+- template: build/steps/build-windows.yml
+  parameters:
+    name: win
+    displayName: Build Windows Phase
+    vmImage: $(winVmImage)
+    targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
+    msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+    buildConfiguration: $(DefaultBuildConfiguration)
+    buildPlatform: $(DefaultBuildPlatform)
 
 - template: build/steps/build-android.yml
   parameters:
@@ -75,7 +67,6 @@ pr:
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)\android-legacy.binlog'
-    dependsOn: Phase_1
     buildConfiguration: $(DefaultBuildConfiguration)
 
 - template: build/steps/build-android.yml
@@ -85,7 +76,6 @@ pr:
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)\android-preappcompact.binlog'
-    dependsOn: Phase_1
     buildConfiguration: $(DefaultBuildConfiguration)
 
 - template: build/steps/build-android.yml
@@ -95,13 +85,10 @@ pr:
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)\android-newrenderers.binlog'
-    dependsOn: Phase_1
     buildConfiguration: $(DefaultBuildConfiguration)
 
-- job: Phase_4
+- job: osx
   displayName: OSX Phase
-  dependsOn: Phase_1
-  condition: succeeded()
   pool:
     name: $(macOSVmImage)
     demands:
@@ -121,7 +108,7 @@ pr:
   steps:
      - template: build/steps/build-osx.yml
 
-- job: nuget
+- job: nuget_pack
   displayName: Nuget Phase
   dependsOn:
    - win
@@ -141,9 +128,9 @@ pr:
 
   # only sign the packages when running on Windows, and using the private server which has the certificates
 - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
-  - job: sign
+  - job: nuget_sign
     displayName: Sign Phase
-    dependsOn: nuget
+    dependsOn: nuget_pack
     pool:
       name: $(signVmImage)
     variables:
