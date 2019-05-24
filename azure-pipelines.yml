@@ -9,14 +9,12 @@ variables:
   value: XamarinFormsControlGalleryiOS.ipa
 - name: SolutionFile
   value: Xamarin.Forms.sln
-- name: buildversion
+- name: BuildVersion
   value: $[counter('$(Build.SourceBranchName)_counter', 1)]
 - name: MONO_VERSION
   value: 5_18_1
 - name: XCODE_VERSION
   value: 10.2
-- name: provisioning
-  value: false
 - name: NUGET_VERSION
   value: 5.0.2
 
@@ -36,7 +34,6 @@ trigger:
   tags:
     include:
     - '*'
-
   paths:
     exclude:
     - README.md
@@ -50,7 +47,6 @@ pr:
     - 3.*
 
 jobs:
-
 - template: build/steps/build-windows.yml
   parameters:
     name: win
@@ -132,10 +128,11 @@ jobs:
     pool:
       name: $(signVmImage)
     variables:
-      signBuild: $(sign)
+      signBuild: $(Sign)
       displayName: Sign Phase
     steps:
       - template: build/steps/build-sign.yml
+    condition: and(succeeded(), or(eq(variables['Sign'], 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
 
 
 
