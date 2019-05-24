@@ -604,6 +604,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			TextColor,
 			Text,
+			Padding,
 			FormattedText,
 			FontAttibutesBold,
 			FontAttributesItalic,

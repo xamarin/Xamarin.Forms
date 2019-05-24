@@ -233,6 +233,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateGravity();
 				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+				UpdatePadding();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -258,6 +259,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateLineHeight();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
 
 		void UpdateColor()
@@ -359,7 +362,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_lastSizeRequest = null;
 		}
 
-		void UpdateLineHeight() {
+		void UpdateLineHeight()
+		{
 			if (_lineSpacingExtraDefault < 0)
 				_lineSpacingExtraDefault = LineSpacingExtra;
 			if (_lineSpacingMultiplierDefault < 0)
@@ -368,7 +372,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (Element.LineHeight == -1)
 				SetLineSpacing(_lineSpacingExtraDefault, _lineSpacingMultiplierDefault);
 			else if (Element.LineHeight >= 0)
-				SetLineSpacing(0, (float) Element.LineHeight);
+				SetLineSpacing(0, (float)Element.LineHeight);
+
+			_lastSizeRequest = null;
+		}
+
+		void UpdatePadding()
+		{
+			SetPadding(
+				(int)Context.ToPixels(Element.Padding.Left),
+				(int)Context.ToPixels(Element.Padding.Top),
+				(int)Context.ToPixels(Element.Padding.Right),
+				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
 		}
