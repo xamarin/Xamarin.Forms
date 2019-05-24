@@ -35,7 +35,8 @@ trigger:
     - 4.*
   tags:
     include:
-    - *
+    - '*'
+
   paths:
     exclude:
     - README.md
