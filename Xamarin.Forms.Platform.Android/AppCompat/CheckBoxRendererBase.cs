@@ -56,7 +56,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if (disposing)
 			{
 				_disposed = true;
 				_tracker?.Dispose();
@@ -93,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		Size MinimumSize()
 		{
-			return new Size();
+			return Size.Zero;
 		}
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -108,7 +112,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
-
 			if (element == null)
 			{
 				throw new ArgumentNullException(nameof(element));

@@ -6,7 +6,6 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class FormsCheckBox : UIButton
 	{
-
 		static UIImage _checked;
 		static UIImage _unchecked;
 
@@ -18,6 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isEnabled;
 		float _minimumViewSize;
 		public EventHandler CheckedChanged;
+		bool _disposed;
 
 		internal float MinimumViewSize
 		{
@@ -229,7 +229,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			TouchUpInside -= OnTouchUpInside;
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if(disposing)
+				TouchUpInside -= OnTouchUpInside;
+
 			base.Dispose(disposing);
 		}
 	}

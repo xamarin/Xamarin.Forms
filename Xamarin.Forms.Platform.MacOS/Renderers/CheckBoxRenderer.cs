@@ -33,11 +33,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if (disposing && Control != null)
 			{
-				_disposed = true;
-				if (Control != null)
-					Control.Activated -= OnControlActivated;
+				Control.Activated -= OnControlActivated;
 			}
 
 			base.Dispose(disposing);

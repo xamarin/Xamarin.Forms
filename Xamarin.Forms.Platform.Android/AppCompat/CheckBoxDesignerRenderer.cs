@@ -60,9 +60,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if (disposing)
 			{
-				_disposed = true;
 				_tracker?.Dispose();
 				_tracker = null;
 				SetOnCheckedChangeListener(null);

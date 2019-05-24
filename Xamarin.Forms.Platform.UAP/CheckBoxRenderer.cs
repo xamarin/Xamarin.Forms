@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.UWP
 	public class CheckBoxRenderer : ViewRenderer<CheckBox, FormsCheckBox>
 	{
 		static Brush _tintDefaultBrush = Color.Blue.ToBrush();
-		bool _isDisposed = false;
+		bool _disposed = false;
 
 		protected virtual FormsCheckBox CreateNativeControl()
 		{
@@ -40,10 +40,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override void Dispose(bool disposing)
 		{
-			if (Control != null && !_isDisposed)
-			{
-				_isDisposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (Control != null && disposing)
+			{
 				Control.Checked -= OnNativeChecked;
 				Control.Unchecked -= OnNativeChecked;
 			}

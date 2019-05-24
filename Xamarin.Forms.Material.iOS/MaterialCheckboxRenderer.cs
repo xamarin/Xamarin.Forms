@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Material.iOS
 	public class MaterialCheckBoxRenderer : CheckBoxRendererBase<MaterialFormsCheckBox>
 	{
 		protected override float MinimumSize => 48f;
-		bool _isDisposed = false;
+		bool _disposed = false;
 
 		protected override MaterialFormsCheckBox CreateNativeControl()
 		{
@@ -29,10 +29,10 @@ namespace Xamarin.Forms.Material.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_isDisposed && Control != null)
+			if (disposing && !_disposed && Control != null)
 			{
 				Control.CheckedChanged -= OnCheckedChanged;
-				_isDisposed = true;
+				_disposed = true;
 			}
 
 			base.Dispose(disposing);

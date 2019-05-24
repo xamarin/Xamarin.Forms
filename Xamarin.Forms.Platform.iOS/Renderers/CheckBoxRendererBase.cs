@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 		where T : FormsCheckBox
 	{
 		protected virtual float MinimumSize => 44f; // Apple docs
-		bool _isDisposed;
+		bool _disposed;
 
 		protected CheckBoxRendererBase()
 		{
@@ -83,9 +83,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_isDisposed && Control != null)
+			if (_disposed)
+				return;
+
+			if (disposing && Control != null)
 			{
-				_isDisposed = true;
+				_disposed = true;
 				Control.CheckedChanged -= OnControlCheckedChanged;
 			}
 
