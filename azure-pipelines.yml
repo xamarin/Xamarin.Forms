@@ -113,9 +113,6 @@ jobs:
   displayName: Nuget Phase
   dependsOn:
    - win
-   - android_legacy
-   - android_preappcompact
-   - android_fast
   condition: succeeded()
   pool:
     name: $(winVmImage)
@@ -135,7 +132,7 @@ jobs:
     pool:
       name: $(signVmImage)
     variables:
-      signBuild: $[ dependencies.win.outputs['debug.winbuild.signpackage'] ]
+      signBuild: $(Sign)
       displayName: Sign Phase
     steps:
       - template: build/steps/build-sign.yml
