@@ -124,7 +124,7 @@ jobs:
   steps:
      - template: build/steps/build-nuget.yml
 
-  # only sign the packages when running on Windows, and using the private server which has the certificates
+  # only sign using the private server
 - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
   - job: nuget_sign
     displayName: Sign Phase
@@ -132,7 +132,7 @@ jobs:
     pool:
       name: $(signVmImage)
     variables:
-      signBuild: $(Sign)
+      signBuild: $(sign)
       displayName: Sign Phase
     steps:
       - template: build/steps/build-sign.yml
