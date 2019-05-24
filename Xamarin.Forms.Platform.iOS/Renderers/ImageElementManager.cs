@@ -115,11 +115,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			var imageController = imageElement as IImageController;
 
 			var source = imageElement.Source;
-		
+#if __MOBILE__
 			if (Control.Image?.Images != null && Control.Image.Images.Length > 1)
 			{
 				renderer.SetImage(null);
 			} 
+#else
+			if (Control.Image != null && Control.Image.Representations().Length > 1)
+			{
+				renderer.SetImage(null);
+			}
+#endif
 			else if (oldElement != null)
 			{
 				var oldSource = oldElement.Source;
