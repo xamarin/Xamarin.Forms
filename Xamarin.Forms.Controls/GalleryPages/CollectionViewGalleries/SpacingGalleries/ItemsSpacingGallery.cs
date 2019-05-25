@@ -17,13 +17,13 @@
 					{
 						descriptionLabel,
 						GalleryBuilder.NavButton("Vertical List Spacing", () =>
-							new SpacingGallery (ItemsLayoutOrientation.Vertical), Navigation),
+							new SpacingGallery (ListItemsLayout.VerticalList), Navigation),
 						GalleryBuilder.NavButton("Horizontal List Spacing", () =>
-							new SpacingGallery (ItemsLayoutOrientation.Horizontal), Navigation),
-						//GalleryBuilder.NavButton("Vertical Grid Spacing", () =>
-						//	new GridSpacingGallery (ItemsLayoutOrientation.Horizontal), Navigation),
-						//GalleryBuilder.NavButton("Horizontal Grid Spacing", () =>
-						//	new GridSpacingGallery (ItemsLayoutOrientation.Horizontal), Navigation)
+							new SpacingGallery (ListItemsLayout.HorizontalList), Navigation),
+						GalleryBuilder.NavButton("Vertical Grid Spacing", () =>
+							new SpacingGallery (new GridItemsLayout(3, ItemsLayoutOrientation.Vertical)), Navigation),
+						GalleryBuilder.NavButton("Horizontal Grid Spacing", () =>
+							new SpacingGallery (new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal)), Navigation)
 					}
 				}
 			};

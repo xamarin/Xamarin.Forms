@@ -8,8 +8,11 @@ namespace Xamarin.Forms.Platform.Android
 	internal class SpacingItemDecoration : RecyclerView.ItemDecoration
 	{
 		ItemsLayoutOrientation _orientation;
-		int _spacing;
-		int _adjustedSpacing = -1;
+		int _verticalSpacing;
+		int _adjustedVerticalSpacing = -1;
+		int _horizontalSpacing;
+		int _adjustedHorizontalSpacing = -1;
+		int _span = 1;
 
 		public SpacingItemDecoration(IItemsLayout itemsLayout)
 		{
@@ -20,11 +23,22 @@ namespace Xamarin.Forms.Platform.Android
 
 			switch (itemsLayout)
 			{
-				//case GridItemsLayout gridItemsLayout:
-				//	return CreateGridLayout(gridItemsLayout);
+				case GridItemsLayout gridItemsLayout:
+					_orientation = gridItemsLayout.Orientation;
+					_horizontalSpacing = gridItemsLayout.HorizontalItemSpacing;
+					_verticalSpacing = gridItemsLayout.VerticalItemSpacing;
+					_span = gridItemsLayout.Span;
+					break;
 				case ListItemsLayout listItemsLayout:
 					_orientation = listItemsLayout.Orientation;
-					_spacing =  listItemsLayout.ItemSpacing;
+					if (_orientation == ItemsLayoutOrientation.Horizontal)
+					{
+						_horizontalSpacing = listItemsLayout.ItemSpacing;
+					}
+					else
+					{
+						_verticalSpacing = listItemsLayout.ItemSpacing;
+					}
 					break;
 			}
 		}
@@ -33,25 +47,40 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.GetItemOffsets(outRect, view, parent, state);
 
-			if (parent.GetChildAdapterPosition(view) == 0)
+			var position = parent.GetChildAdapterPosition(view);
+
+			if (position == 0)
 			{
 				return;
 			}
 
-			if (_adjustedSpacing == -1)
+			if (_adjustedVerticalSpacing == -1)
 			{
-				_adjustedSpacing = (int)parent.Context.ToPixels(_spacing);
+				_adjustedVerticalSpacing = (int)parent.Context.ToPixels(_verticalSpacing);
 			}
 
-			switch (_orientation)
+			if (_adjustedHorizontalSpacing == -1)
 			{
-				case ItemsLayoutOrientation.Vertical:
-					outRect.Top = _adjustedSpacing;
-					break;
-				case ItemsLayoutOrientation.Horizontal:
-					outRect.Left = _adjustedSpacing;
-					break;
+				_adjustedHorizontalSpacing  = (int)parent.Context.ToPixels(_horizontalSpacing);
 			}
+
+			var firstInRow = false;
+			var firstInCol = false;
+
+			if (_orientation == ItemsLayoutOrientation.Vertical)
+			{
+				firstInRow = position >= _span && position % _span == 0;
+				firstInCol = position < _span;
+			}
+
+			if (_orientation == ItemsLayoutOrientation.Horizontal)
+			{
+				firstInCol = position >= _span && position % _span == 0;
+				firstInRow = position < _span;
+			}
+
+			outRect.Top = firstInCol ? 0 : _adjustedVerticalSpacing;
+			outRect.Left = firstInRow ? 0 : _adjustedHorizontalSpacing;
 		}
 	}
 }

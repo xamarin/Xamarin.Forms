@@ -2,7 +2,7 @@
 {
 	internal class SpacingGallery : ContentPage
 	{
-		public SpacingGallery(ItemsLayoutOrientation orientation)
+		public SpacingGallery(IItemsLayout itemsLayout)
 		{
 			var layout = new Grid
 			{
@@ -17,14 +17,19 @@
 
 			var instructions = new Label
 			{
-				Text = "Tap the buttons in each item to increase/decrease the amount of text. The items should expand and contract to accommodate the text."
+				Text = "Use the control below to update the spacing between items."
 			};
+
+			if (itemsLayout is GridItemsLayout)
+			{
+				instructions.Text += " Format is '[vertical], [horizontal]'";
+			}
 
 			var itemTemplate = ExampleTemplates.SpacingTemplate();
 
 			var collectionView = new CollectionView
 			{
-				ItemsLayout = new ListItemsLayout(orientation),
+				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 				AutomationId = "collectionview",
 				Margin = 10

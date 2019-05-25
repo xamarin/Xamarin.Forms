@@ -336,7 +336,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
+		protected virtual void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
 		{
 			if (propertyChanged.Is(GridItemsLayout.SpanProperty))
 			{
@@ -349,7 +349,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateSnapBehavior();
 			}
-			else if (propertyChanged.Is(ListItemsLayout.ItemSpacingProperty))
+			else if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty, 
+				GridItemsLayout.HorizontalItemSpacingProperty, GridItemsLayout.VerticalItemSpacingProperty))
 			{
 				UpdateItemSpacing();
 			}

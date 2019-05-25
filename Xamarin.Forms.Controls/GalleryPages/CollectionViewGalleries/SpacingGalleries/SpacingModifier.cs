@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGal
 			var button = new Button { Text = buttonText, AutomationId = $"btn{buttonText}" };
 			var label = new Label { Text = LabelText, VerticalTextAlignment = TextAlignment.Center };
 
-			Entry = new Entry { Keyboard = Keyboard.Numeric, Text = InitialEntryText, WidthRequest = 100, AutomationId = $"entry{buttonText}" };
+			Entry = new Entry { Text = InitialEntryText, WidthRequest = 100, AutomationId = $"entry{buttonText}" };
 
 			layout.Children.Add(label);
 			layout.Children.Add(Entry);
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGal
 
 		protected virtual string LabelText => "Spacing:";
 
-		protected virtual string InitialEntryText => "0";
+		protected virtual string InitialEntryText => _cv.ItemsLayout is GridItemsLayout ? "0, 0" : "0";
 
 		protected virtual void OnButtonClicked()
 		{
@@ -51,18 +51,21 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGal
 			{
 				listItemsLayout.ItemSpacing = indexes[0];
 			}
+			else if (_cv.ItemsLayout is GridItemsLayout gridItemsLayout)
+			{
+				gridItemsLayout.VerticalItemSpacing = indexes[0];
+				gridItemsLayout.HorizontalItemSpacing = indexes[1];
+			}
 		}
 
 		protected virtual bool ParseIndexes(out int[] indexes)
 		{
-			if (!int.TryParse(Entry.Text, out int index))
+			if (_cv.ItemsLayout is ListItemsLayout listItemsLayout)
 			{
-				indexes = new int[0];
-				return false;
+				return IndexParser.ParseIndexes(Entry.Text, 1, out indexes);
 			}
 
-			indexes = new[] { index };
-			return true;
+			return IndexParser.ParseIndexes(Entry.Text, 2, out indexes);
 		}
 	}
 }
