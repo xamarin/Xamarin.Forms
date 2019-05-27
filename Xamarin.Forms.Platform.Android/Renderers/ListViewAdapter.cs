@@ -292,6 +292,9 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					UnsetSelectedBackground(layout);
 
+				if ((cell as ViewCell)?.View?.GetRenderer() is IVisualElementRenderer viewRenderer)
+					Device.BeginInvokeOnMainThread(() => viewRenderer.Tracker?.UpdateLayout());
+
 				Performance.Stop(reference);
 				return layout;
 			}
