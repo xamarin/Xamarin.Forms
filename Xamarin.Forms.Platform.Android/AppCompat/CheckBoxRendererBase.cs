@@ -51,7 +51,8 @@ namespace Xamarin.Forms.Platform.Android
 			SetOnCheckedChangeListener(this);
 			Tag = this;
 			OnFocusChangeListener = this;
-			ClipToOutline = true;
+
+			this.SetClipToOutline(true);
 		}
 
 		protected override void Dispose(bool disposing)
