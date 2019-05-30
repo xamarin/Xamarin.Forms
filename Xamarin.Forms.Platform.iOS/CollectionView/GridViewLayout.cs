@@ -110,6 +110,12 @@ namespace Xamarin.Forms.Platform.iOS
 			var fullColumns = base.LayoutAttributesForElementsInRect(rect);
 
 			var itemCount = CollectionView.NumberOfItemsInSection(section);
+
+			if (fullColumns.Length == itemCount)
+			{
+				return fullColumns;
+			}
+
 			var missingCellCount = itemCount % _itemsLayout.Span;
 
 			UICollectionViewLayoutAttributes[] allCells = new UICollectionViewLayoutAttributes[fullColumns.Length + missingCellCount];
