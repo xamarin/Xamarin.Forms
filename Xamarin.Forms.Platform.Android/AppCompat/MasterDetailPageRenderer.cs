@@ -207,10 +207,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (disposing)
+			{
 				if (_tracker != null)
 				{
 					_tracker.Dispose();
