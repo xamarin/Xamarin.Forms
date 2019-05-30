@@ -303,12 +303,13 @@ namespace Xamarin.Forms
 
 		public string ToHex()
 		{
-			var red = (int)(R * 255);
-			var green = (int)(G * 255);
-			var blue = (int)(B * 255);
-			var alpha = (int)(A * 255);
+			var red = (uint)(R * 255);
+			var green = (uint)(G * 255);
+			var blue = (uint)(B * 255);
+			var alpha = (uint)(A * 255);
 			return $"#{alpha:X2}{red:X2}{green:X2}{blue:X2}";
 		}
+
 		static uint ToHex (char c)
 		{
 			ushort x = (ushort)c;
@@ -319,7 +320,7 @@ namespace Xamarin.Forms
 			if (x >= 'a' && x <= 'f')
 				return (uint)(x - 'a' + 10);
 			return 0;
-		}
+		} 
 
 		static uint ToHexD (char c)
 		{
