@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Maps
 			}
 		}
 
-		[Obsolete("This event is obsolete. Please use MarkerClicked and/or InfoWindowClicked instead.")]
+		[Obsolete("This event is obsolete as of 4.1.0. Please use MarkerClicked and/or InfoWindowClicked instead.")]
 		public event EventHandler Clicked;
 
 		public event EventHandler<PinClickedEventArgs> MarkerClicked;
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Maps
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		[Obsolete]
+		[Obsolete("This method is obsolete as of 4.1.0.")]
 		public bool SendTap()
 		{
 			EventHandler handler = Clicked;

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using CoreLocation;
 using MapKit;
 using ObjCRuntime;
 using RectangleF = CoreGraphics.CGRect;
-using Foundation;
 
 #if __MOBILE__
 using UIKit;
@@ -312,7 +308,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			targetPin.SendTap();
 #pragma warning restore CS0612
 
-			// SendInfoWindowedClick() returns the value of PinClickedEventArgs.HideInfoWindow
+			// SendInfoWindowClick() returns the value of PinClickedEventArgs.HideInfoWindow
 			// Hide the info window by deselecting the annotation
 			bool deselect = targetPin.SendInfoWindowClick();
 			if (deselect)
