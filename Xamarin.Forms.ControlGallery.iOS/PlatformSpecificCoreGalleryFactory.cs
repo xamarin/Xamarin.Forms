@@ -14,6 +14,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 		public IEnumerable<(Func<Page> Create, string Title)> GetPages()
 		{
+			yield return (() => new ContextActionDisplayTest(), "Context Action Display Test");
 #if HAVE_OPENTK
 			yield return (() => new AdvancedOpenGLGallery(), "Advanced OpenGL Gallery - Legacy");
 #else

@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public class MenuItem : BaseMenuItem, IMenuItemController
+	public class MenuItem : BaseMenuItem, IMenuItemController, IElementConfiguration<MenuItem>
 	{
 		public static readonly BindableProperty AcceleratorProperty = BindableProperty.CreateAttached(nameof(Accelerator), typeof(Accelerator), typeof(MenuItem), null);
 
@@ -27,6 +27,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsEnabledProperty = IsEnabledPropertyKey.BindableProperty;
 
 		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(MenuItem), null);
+
+		readonly Lazy<PlatformConfigurationRegistry<MenuItem>> _platformConfigurationRegistry;
 
 		public static Accelerator GetAccelerator(BindableObject bindable) => (Accelerator)bindable.GetValue(AcceleratorProperty);
 
@@ -88,6 +90,11 @@ namespace Xamarin.Forms
 
 		protected virtual void OnClicked() => Clicked?.Invoke(this, EventArgs.Empty);
 
+		public MenuItem()
+		{
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<MenuItem>>(() => new PlatformConfigurationRegistry<MenuItem>(this));
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		void IMenuItemController.Activate()
 		{
@@ -126,6 +133,11 @@ namespace Xamarin.Forms
 				return;
 
 			IsEnabledCore = Command.CanExecute(CommandParameter);
+		}
+
+		public IPlatformElementConfiguration<T, MenuItem> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

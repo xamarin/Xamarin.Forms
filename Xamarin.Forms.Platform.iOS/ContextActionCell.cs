@@ -5,6 +5,7 @@ using System.ComponentModel;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Platform.iOS.Resources;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
@@ -418,8 +419,23 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				button.SetBackgroundImage(DestructiveBackground, UIControlState.Normal);
 
-			button.SetTitle(item.Text, UIControlState.Normal);
-			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
+			var displayType = item.OnThisPlatform().GetContextActionDisplay();
+			if (displayType == ContextActionDisplay.Icon)
+			{
+				var handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(item.IconImageSource);
+				if (handler != null)
+				{
+					var image = handler.LoadImageAsync(item.IconImageSource).GetAwaiter().GetResult();
+					button.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+					button.SetImage(image, UIControlState.Normal);
+					button.ImageEdgeInsets = new UIEdgeInsets(5, 15, 5, 15);
+				}
+			}
+			else
+			{
+				button.SetTitle(item.Text, UIControlState.Normal);
+				button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
+			}
 
 			button.Enabled = item.IsEnabled;
 
@@ -559,7 +575,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var button = GetButton(item);
 				button.Tag = i;
-				var buttonWidth = button.TitleLabel.SizeThatFits(new SizeF(width, height)).Width + 30;
+				var buttonWidth = (nfloat)Math.Max(button.ImageView.SizeThatFits(new SizeF(width, height)).Width, button.TitleLabel.SizeThatFits(new SizeF(width, height)).Width) + 30;
 				if (buttonWidth > largestWidth)
 					largestWidth = buttonWidth;
 

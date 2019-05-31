@@ -123,6 +123,7 @@
     <Compile Include="..\xamarin.forms.controls\gallerypages\openglgalleries\AdvancedOpenGLGallery.cs">
       <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
     </Compile>
+    <Compile Include="GalleryPages\ContextActionDisplayTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
