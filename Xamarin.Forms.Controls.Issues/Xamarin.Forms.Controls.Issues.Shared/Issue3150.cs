@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new StackLayout
 			{
 				Children = {
+					new Label { Text = "If the yellow box extends past the end of the blue box, the test has passed" },
 					new Frame
 					{
 						BackgroundColor = Color.Blue,
