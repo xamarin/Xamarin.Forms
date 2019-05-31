@@ -23,22 +23,22 @@
 		}
 
 		public static readonly BindableProperty VerticalItemSpacingProperty =
-			BindableProperty.Create(nameof(VerticalItemSpacing), typeof(int), typeof(GridItemsLayout), 0,
-				validateValue: (bindable, value) => (int)value >= 0);
+			BindableProperty.Create(nameof(VerticalItemSpacing), typeof(double), typeof(GridItemsLayout), default(double),
+				validateValue: (bindable, value) => (double)value >= 0);
 
-		public int VerticalItemSpacing
+		public double VerticalItemSpacing
 		{
-			get => (int)GetValue(VerticalItemSpacingProperty);
+			get => (double)GetValue(VerticalItemSpacingProperty);
 			set => SetValue(VerticalItemSpacingProperty, value);
 		}
 
 		public static readonly BindableProperty HorizontalItemSpacingProperty =
-			BindableProperty.Create(nameof(HorizontalItemSpacing), typeof(int), typeof(GridItemsLayout), 0,
-				validateValue: (bindable, value) => (int)value >= 0);
+			BindableProperty.Create(nameof(HorizontalItemSpacing), typeof(double), typeof(GridItemsLayout), default(double),
+				validateValue: (bindable, value) => (double)value >= 0);
 
-		public int HorizontalItemSpacing
+		public double HorizontalItemSpacing
 		{
-			get => (int)GetValue(HorizontalItemSpacingProperty);
+			get => (double)GetValue(HorizontalItemSpacingProperty);
 			set => SetValue(HorizontalItemSpacingProperty, value);
 		}
 	}

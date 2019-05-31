@@ -14,12 +14,12 @@
 		// TODO hartez 2018/08/29 20:31:54 Need something like these previous two, but as a carousel default	
 
 		public static readonly BindableProperty ItemSpacingProperty =
-			BindableProperty.Create(nameof(ItemSpacing), typeof(int), typeof(ListItemsLayout), 0,
-				validateValue: (bindable, value) => (int)value >= 0);
+			BindableProperty.Create(nameof(ItemSpacing), typeof(double), typeof(ListItemsLayout), default(double),
+				validateValue: (bindable, value) => (double)value >= 0);
 
-		public int ItemSpacing
+		public double ItemSpacing
 		{
-			get => (int)GetValue(ItemSpacingProperty);
+			get => (double)GetValue(ItemSpacingProperty);
 			set => SetValue(ItemSpacingProperty, value);
 		}
 	}

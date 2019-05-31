@@ -7,11 +7,14 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class SpacingItemDecoration : RecyclerView.ItemDecoration
 	{
+		// TODO ezhart Fix the spacings to be doubles instead of ints
+
+
 		ItemsLayoutOrientation _orientation;
-		int _verticalSpacing;
-		int _adjustedVerticalSpacing = -1;
-		int _horizontalSpacing;
-		int _adjustedHorizontalSpacing = -1;
+		double _verticalSpacing;
+		double _adjustedVerticalSpacing = -1;
+		double _horizontalSpacing;
+		double _adjustedHorizontalSpacing = -1;
 		int _span = 1;
 
 		public SpacingItemDecoration(IItemsLayout itemsLayout)
@@ -56,12 +59,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_adjustedVerticalSpacing == -1)
 			{
-				_adjustedVerticalSpacing = (int)parent.Context.ToPixels(_verticalSpacing);
+				_adjustedVerticalSpacing = parent.Context.ToPixels(_verticalSpacing);
 			}
 
 			if (_adjustedHorizontalSpacing == -1)
 			{
-				_adjustedHorizontalSpacing  = (int)parent.Context.ToPixels(_horizontalSpacing);
+				_adjustedHorizontalSpacing  = parent.Context.ToPixels(_horizontalSpacing);
 			}
 
 			var firstInRow = false;
@@ -79,8 +82,8 @@ namespace Xamarin.Forms.Platform.Android
 				firstInRow = position < _span;
 			}
 
-			outRect.Top = firstInCol ? 0 : _adjustedVerticalSpacing;
-			outRect.Left = firstInRow ? 0 : _adjustedHorizontalSpacing;
+			outRect.Top = firstInCol ? 0 : (int)_adjustedVerticalSpacing;
+			outRect.Left = firstInRow ? 0 : (int)_adjustedHorizontalSpacing;
 		}
 	}
 }
