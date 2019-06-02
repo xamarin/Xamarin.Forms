@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		bool _fontApplied;
 		bool _isInitiallyDefault;
+		int _textDecorationsDefault = -1;
 		SizeRequest _perfectSize;
 		bool _perfectSizeValid;
 		IList<double> _inlineHeights = new List<double>();
@@ -137,7 +138,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateText(Control);
 
-				if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
+				if (e.OldElement?.TextDecorations != e.NewElement.TextDecorations)
 					UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
@@ -181,15 +182,23 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var elementTextDecorations = Element.TextDecorations;
 
-			if ((elementTextDecorations & TextDecorations.Underline) == 0)
-				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
-			else
-				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+			if (_textDecorationsDefault == 1)
+				_textDecorationsDefault = (int)textBlock.TextDecorations;
 
-			if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
-				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
+			if (elementTextDecorations == TextDecorations.None)
+				textBlock.TextDecorations = (Windows.UI.Text.TextDecorations)_textDecorationsDefault;
 			else
-				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
+			{
+				if ((elementTextDecorations & TextDecorations.Underline) == 0)
+					textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
+				else
+					textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+
+				if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
+					textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
+				else
+					textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
+			}
 
 			//TextDecorations are not updated in the UI until the text changes
 			if (textBlock.Inlines != null && textBlock.Inlines.Count > 0)
