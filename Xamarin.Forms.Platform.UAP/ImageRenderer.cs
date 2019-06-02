@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -28,9 +29,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_measured = true;
 
-			var result = new Size { Width = ((BitmapSource)Control.Source).PixelWidth, Height = ((BitmapSource)Control.Source).PixelHeight };
-
-			return new SizeRequest(result);
+			return new SizeRequest(Control.Source.GetImageSourceSize());
 		}
 
 		protected override void Dispose(bool disposing)

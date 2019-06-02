@@ -313,17 +313,13 @@ namespace Xamarin.Forms.Platform.iOS
 			((IShellSectionController)ShellSection).AddDisplayedPageObserver(this, OnDisplayedPageChanged);
 		}
 
-		protected virtual async void UpdateTabBarItem()
+		protected virtual void UpdateTabBarItem()
 		{
 			Title = ShellSection.Title;
-			var imageSource = ShellSection.Icon;
-			UIImage icon = null;
-			if (imageSource != null)
+			_ = _context.ApplyNativeImageAsync(ShellSection, ShellSection.IconProperty, icon =>
 			{
-				var source = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(imageSource);
-				icon = await source.LoadImageAsync(imageSource);
-			}
-			TabBarItem = new UITabBarItem(ShellSection.Title, icon, null);
+				TabBarItem = new UITabBarItem(ShellSection.Title, icon, null);
+			});
 		}
 
 		void DisposePage(Page page)

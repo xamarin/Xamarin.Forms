@@ -199,7 +199,8 @@ namespace Xamarin.Forms.CustomAttributes
 			ImageCell,
 			EntryCell,
 			Editor,
-			DatePicker
+			DatePicker,
+			CheckBox
 		}
 
 		public enum Layouts
@@ -507,6 +508,8 @@ namespace Xamarin.Forms.CustomAttributes
 			FontAttributes,
 			FontFamily,
 			FontSize,
+			MaxLength,
+			IsReadOnly
 		}
 
 		public enum Entry
@@ -530,6 +533,8 @@ namespace Xamarin.Forms.CustomAttributes
 			TextDisabledColor,
 			PlaceholderDisabledColor,
 			PasswordColor,
+			MaxLength,
+			IsReadOnly,
 			IsPasswordNumeric
 		}
 
@@ -709,7 +714,15 @@ namespace Xamarin.Forms.CustomAttributes
 
 		public enum Switch
 		{
-			IsToggled
+			IsToggled,
+			OnColor
+		}
+
+		public enum CheckBox
+		{
+			IsChecked,
+			CheckedColor,
+			UncheckedColor
 		}
 
 		public enum TimePicker
@@ -731,7 +744,9 @@ namespace Xamarin.Forms.CustomAttributes
 			MixedContentDisallowed,
 			MixedContentAllowed,
 			JavaScriptAlert,
-			EvaluateJavaScript
+			EvaluateJavaScript,
+			EnableZoomControls,
+			DisplayZoomControls
 		}
 
 		public enum UrlWebViewSource

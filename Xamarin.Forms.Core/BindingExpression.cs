@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -322,10 +322,10 @@ namespace Xamarin.Forms
 				{
 					ParameterInfo parameter = null;
 					ParameterInfo[] array = property.GetIndexParameters();
-					for (int i = 0; i < array.Length; i++)
+
+					if (array.Length > 0)
 					{
-						parameter = array[i];
-						break;
+						parameter = array[0];
 					}
 
 					if (parameter != null)
@@ -429,7 +429,7 @@ namespace Xamarin.Forms
 		internal static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
 		{
 			if (value == null)
-				return !convertTo.GetTypeInfo().IsValueType;
+				return !convertTo.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(convertTo) != null;
 			if ((toTarget && targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
 				return true;
 
@@ -630,7 +630,7 @@ namespace Xamarin.Forms
 							value = LastGetter.Invoke(value, Arguments);
 						}
 						catch (TargetInvocationException ex) {
-							if (ex.InnerException is KeyNotFoundException || ex.InnerException is IndexOutOfRangeException) {
+							if (ex.InnerException is KeyNotFoundException || ex.InnerException is IndexOutOfRangeException || ex.InnerException is ArgumentOutOfRangeException) {
 								value = null;
 								return false;
 							}

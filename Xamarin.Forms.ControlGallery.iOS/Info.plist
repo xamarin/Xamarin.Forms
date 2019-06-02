@@ -29,6 +29,12 @@
 	<string>com.xamarin.quickui.controlgallery</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>Default@2x.png</string>
+		<string>Default-568h@2x.png</string>
+		<string>Default-812h@3x.png</string>
+	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -129,5 +135,13 @@
 	<string>LaunchScreen</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>ionicons.ttf</string>
+		<string>Fonts/Roboto-Italic.ttf</string>
+		<string>Fonts/Roboto-Bold.ttf</string>
+		<string>Fonts/Roboto-Regular.ttf</string>
+		<string>Fonts/Roboto-BoldItalic.ttf</string>
+	</array>
 </dict>
 </plist>

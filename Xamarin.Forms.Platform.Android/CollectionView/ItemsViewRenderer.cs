@@ -10,6 +10,7 @@ using Android.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
+using AViewCompat = Android.Support.V4.View.ViewCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,13 +23,16 @@ namespace Xamarin.Forms.Platform.Android
 		
 		int? _defaultLabelFor;
 		bool _disposed;
+
 		protected ItemsView ItemsView;
+
 		IItemsLayout _layout;
 		SnapManager _snapManager;
 		ScrollHelper _scrollHelper;
 
 		EmptyViewAdapter _emptyViewAdapter;
 		DataChangeObserver _dataChangeViewObserver;
+		bool _watchingForEmpty;
 
 		public ItemsViewRenderer(Context context) : base(context)
 		{
@@ -45,7 +49,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
-			ClipBounds = new Rect(0,0, Width, Height);
+			AViewCompat.SetClipBounds(this, new Rect(0, 0, Width, Height));
 
 			// After a direct (non-animated) scroll operation, we may need to make adjustments
 			// to align the target item; if an adjustment is pending, execute it here.
@@ -80,20 +84,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!(element is ItemsView))
 			{
-				throw new ArgumentException($"{nameof(element)} must be of type {nameof(ItemsView)}");
+				throw new ArgumentException($"{nameof(element)} must be of type {typeof(ItemsView).Name}");
 			}
 
-			Performance.Start(out string perfRef);
+			var oldElement = ItemsView;
+			var newElement = (ItemsView)element;
 
-			VisualElement oldElement = ItemsView;
-			ItemsView = (ItemsView)element;
+			TearDownOldElement(oldElement);
+			SetUpNewElement(newElement);
 
-			OnElementChanged(oldElement as ItemsView, ItemsView);
+			OnElementChanged(oldElement, newElement);
 
 			// TODO hartez 2018/06/06 20:57:12 Find out what this does, and whether we really need it	
 			element.SendViewInitialized(this);
-
-			Performance.Stop(perfRef);
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
@@ -176,18 +179,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnElementChanged(ItemsView oldElement, ItemsView newElement)
 		{
-			TearDownOldElement(oldElement);
-			SetUpNewElement(newElement);
-
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, newElement));
-
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, newElement);
-			
-			UpdateBackgroundColor();
-			UpdateFlowDirection();
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			ElementPropertyChanged?.Invoke(this, changedProperty);
 
@@ -219,41 +215,58 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// Stop watching the old adapter to see if it's empty (if we _are_ watching)
-			Unwatch(GetAdapter());
-			
-			ItemsViewAdapter = new ItemsViewAdapter(ItemsView);
-			SwapAdapter(ItemsViewAdapter, false);
+			Unwatch(ItemsViewAdapter ?? GetAdapter());
+
+			UpdateAdapter();
 
 			UpdateEmptyView();
 		}
 
-		void Unwatch(RecyclerView.Adapter adapter)
+		protected virtual void UpdateAdapter()
 		{
-			if (adapter != null && _dataChangeViewObserver != null)
+			ItemsViewAdapter = new ItemsViewAdapter(ItemsView);
+			SwapAdapter(ItemsViewAdapter, true);
+		}
+
+		void Unwatch(Adapter adapter)
+		{
+			if (_watchingForEmpty && adapter != null && _dataChangeViewObserver != null)
 			{
 				adapter.UnregisterAdapterDataObserver(_dataChangeViewObserver);
 			}
+
+			_watchingForEmpty = false;
 		}
 
 		// TODO hartez 2018/10/24 19:25:14 I don't like these method names; too generic 	
-		void Watch(RecyclerView.Adapter adapter)
+		// TODO hartez 2018/11/05 22:37:42 Also, thinking all the EmptyView stuff should be moved to a helper	
+		void Watch(Adapter adapter)
 		{
+			if (_watchingForEmpty)
+			{
+				return;
+			}
+
 			if (_dataChangeViewObserver == null)
 			{
 				_dataChangeViewObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
 			}
 
 			adapter.RegisterAdapterDataObserver(_dataChangeViewObserver);
+			_watchingForEmpty = true;
 		}
 
-		void SetUpNewElement(ItemsView newElement)
+		protected virtual void SetUpNewElement(ItemsView newElement)
 		{
 			if (newElement == null)
 			{
+				ItemsView = null;
 				return;
 			}
 
-			newElement.PropertyChanged += OnElementPropertyChanged;
+			ItemsView = newElement;
+
+			ItemsView.PropertyChanged += OnElementPropertyChanged;
 
 			// TODO hartez 2018/06/06 20:49:14 Review whether we can just do this in the constructor	
 			if (Tracker == null)
@@ -265,24 +278,34 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateItemsSource();
 
-			_layout = newElement.ItemsLayout;
+			_layout = ItemsView.ItemsLayout;
 			SetLayoutManager(SelectLayoutManager(_layout));
+			
 			UpdateSnapBehavior();
+			UpdateBackgroundColor();
+			UpdateFlowDirection();
 
 			// Keep track of the ItemsLayout's property changes
-			_layout.PropertyChanged += LayoutOnPropertyChanged;
-
-			// TODO hartez 2018/09/17 13:16:12 This propertychanged handler needs to be torn down in Dispose and TearDownElement	
+			if (_layout != null)
+			{
+				_layout.PropertyChanged += LayoutOnPropertyChanged;
+			}
 
 			// Listen for ScrollTo requests
-			newElement.ScrollToRequested += ScrollToRequested;
+			ItemsView.ScrollToRequested += ScrollToRequested;
 		}
 		
-		void TearDownOldElement(ItemsView oldElement)
+		protected virtual void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
 			{
 				return;
+			}
+
+			// Stop listening for layout property changes
+			if (_layout != null)
+			{
+				_layout.PropertyChanged -= LayoutOnPropertyChanged;
 			}
 
 			// Stop listening for property changes
@@ -295,8 +318,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (adapter != null)
 			{
-				adapter.Dispose();
 				SetAdapter(null);
+				adapter.Dispose();
 			}
 
 			if (_snapManager != null)
@@ -356,7 +379,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateEmptyView()
 		{
-			if (ItemsViewAdapter == null)
+			if (ItemsViewAdapter == null || ItemsView == null)
 			{
 				return;
 			}
@@ -368,7 +391,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_emptyViewAdapter == null)
 				{
-					_emptyViewAdapter = new EmptyViewAdapter();
+					_emptyViewAdapter = new EmptyViewAdapter(ItemsView);
 				}
 
 				_emptyViewAdapter.EmptyView = emptyView;

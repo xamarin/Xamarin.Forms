@@ -193,13 +193,12 @@ namespace Xamarin.Forms.Platform.Android
 				MenuItem action = ActionModeContext.ContextActions[i];
 
 				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i,global::Android.Views.Menu.None, action.Text);
-				var icon = action.Icon;
-				if (icon != null)
+
+				_ = _context.ApplyDrawableAsync(action, MenuItem.IconImageSourceProperty, iconDrawable =>
 				{
-					Drawable iconDrawable = _context.GetFormsDrawable(icon);
 					if (iconDrawable != null)
 						item.SetIcon(iconDrawable);
-				}
+				});
 
 				action.PropertyChanged += changed;
 				action.PropertyChanging += changing;
@@ -244,7 +243,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var appCompatActivity = view.Context as AppCompatActivity;
 				if (appCompatActivity == null)
-					_actionMode = ((Activity)view.Context).StartActionMode(this);
+					_actionMode = view.Context.GetActivity().StartActionMode(this);
 				else
 					_supportActionMode = appCompatActivity.StartSupportActionMode(this);
 			}

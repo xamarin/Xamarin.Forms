@@ -105,15 +105,25 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (FrameRenderer))]
 	internal class _FrameRenderer { }
 
-#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
-	[RenderWith (typeof (NavigationMenuRenderer))]
-	internal class _NavigationMenuRenderer { }
+#if __ANDROID__
+	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
+	// once previewer switches to appcompat then we can remove this
+	[RenderWith(typeof(CheckBoxDesignerRenderer))]
+	internal class _CheckBoxRenderer { }
+#endif
 
+#if __IOS__
+	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
+	// once previewer switches to appcompat then we can remove this
+	[RenderWith(typeof(CheckBoxRenderer))]
+	internal class _CheckBoxRenderer { }
+#endif
+
+#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
 	[RenderWith (typeof (OpenGLViewRenderer))]
 #else
 	[RenderWith (null)]
 #endif
-	
 	internal class _OpenGLViewRenderer { }
 
 #if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0

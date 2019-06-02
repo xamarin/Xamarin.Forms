@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class FrameRenderer : VisualElementRenderer<Frame>
 	{
 		bool _disposed;
+		FrameDrawable _drawable;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
 		public FrameRenderer(Context context) : base(context)
@@ -20,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use FrameRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FrameRenderer()
 		{
 			AutoPackage = false;
@@ -31,7 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing && !_disposed)
 			{
-				Background.Dispose();
+				_drawable?.Dispose();
 				_disposed = true;
 			}
 		}
@@ -66,7 +68,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground()
 		{
-			this.SetBackground(new FrameDrawable(Element, Context.ToPixels));
+			_drawable?.Dispose();
+			this.SetBackground(_drawable = new FrameDrawable(Element, Context.ToPixels));
 		}
 
 		class FrameDrawable : Drawable

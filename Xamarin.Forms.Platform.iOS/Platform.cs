@@ -11,6 +11,9 @@ using RectangleF = CoreGraphics.CGRect;
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class Platform : BindableObject, INavigation, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
 			propertyChanged: (bindable, oldvalue, newvalue) =>
@@ -54,10 +57,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (!PageIsChildOfPlatform(sender))
 					return;
-
-				var pageRoot = sender;
-				while (!Application.IsApplicationOrNull(pageRoot.RealParent))
-					pageRoot = (Page)pageRoot.RealParent;
 
 				PresentActionSheet(arguments);
 			});
@@ -167,6 +166,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_modals.Add(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			modal.DescendantRemoved += HandleChildRemoved;
 
 			if (_appeared)
@@ -215,6 +220,25 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnBindingContextChanged();
 		}
 
+		internal static UIEdgeInsets SafeAreaInsetsForWindow
+		{
+			get
+			{
+				UIEdgeInsets safeAreaInsets;
+
+				if (!Forms.IsiOS11OrNewer)
+					safeAreaInsets = new UIEdgeInsets(UIApplication.SharedApplication.StatusBarFrame.Size.Height, 0, 0, 0);
+				else if (UIApplication.SharedApplication.KeyWindow != null)
+					safeAreaInsets = UIApplication.SharedApplication.KeyWindow.SafeAreaInsets;
+				else if (UIApplication.SharedApplication.Windows.Length > 0)
+					safeAreaInsets = UIApplication.SharedApplication.Windows[0].SafeAreaInsets;
+				else
+					safeAreaInsets = UIEdgeInsets.Zero;
+
+				return safeAreaInsets;
+			}
+		}
+
 		internal void DidAppear()
 		{
 			_animateModals = false;
@@ -246,6 +270,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_appeared == false)
 				return;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page);
 
 			Page.DescendantRemoved += HandleChildRemoved;
@@ -260,6 +290,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_renderer.View.BackgroundColor = UIColor.White;
 			_renderer.View.ContentMode = UIViewContentMode.Redraw;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				// The Platform property is no longer necessary, but we have to set it because some third-party
+				// library might still be retrieving it and using it
+				Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			AddChild(Page);
 
@@ -278,7 +314,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var viewRenderer = CreateRenderer(view);
 				SetRenderer(view, viewRenderer);
 
-				_renderer.View.AddSubview(viewRenderer.NativeView);
+				var nativeView = viewRenderer.NativeView;
+
+				_renderer.View.AddSubview(nativeView);
 				if (viewRenderer.ViewController != null)
 					_renderer.AddChildViewController(viewRenderer.ViewController);
 				viewRenderer.NativeView.Frame = new RectangleF(0, 0, _renderer.View.Bounds.Width, _renderer.View.Bounds.Height);
@@ -296,10 +334,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool PageIsChildOfPlatform(Page page)
 		{
-			while (!Application.IsApplicationOrNull(page.RealParent))
-				page = (Page)page.RealParent;
-
-			return Page == page || _modals.Contains(page);
+			var parent = page.AncestorToRoot();
+			return Page == parent || _modals.Contains(parent);
 		}
 
 		// Creates a UIAlertAction which includes a call to hide the presenting UIWindow at the end
@@ -491,5 +527,14 @@ namespace Xamarin.Forms.Platform.iOS
 				return result;
 			}
 		}
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
 	}
 }

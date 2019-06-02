@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Maps.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use MapRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public MapRenderer()
 		{
 			AutoPackage = false;
@@ -81,13 +82,14 @@ namespace Xamarin.Forms.Maps.Android
 				}
 
 				if (NativeMap != null)
- 				{
- 					NativeMap.MyLocationEnabled = false;
- 					NativeMap.SetOnCameraMoveListener(null);
- 					NativeMap.InfoWindowClick -= MapOnMarkerClick;
- 					NativeMap.Dispose();
+				{
+					NativeMap.MyLocationEnabled = false;
+					NativeMap.SetOnCameraMoveListener(null);
+					NativeMap.InfoWindowClick -= MapOnMarkerClick;
+					NativeMap.MapClick -= OnMapClick;
+					NativeMap.Dispose();
 					NativeMap = null;
-				 }
+				}
 
 				Control?.OnDestroy();
 			}
@@ -122,6 +124,7 @@ namespace Xamarin.Forms.Maps.Android
 				{
 					NativeMap.SetOnCameraMoveListener(null);
 					NativeMap.InfoWindowClick -= MapOnMarkerClick;
+					NativeMap.MapClick -= OnMapClick;
 					NativeMap = null;
 				}
 
@@ -202,6 +205,7 @@ namespace Xamarin.Forms.Maps.Android
 
 			map.SetOnCameraMoveListener(this);
 			map.InfoWindowClick += MapOnMarkerClick;
+			map.MapClick += OnMapClick;
 
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
@@ -242,7 +246,7 @@ namespace Xamarin.Forms.Maps.Android
 				pin.PropertyChanged += PinOnPropertyChanged;
 
 				// associate pin with marker for later lookup in event handlers
-				pin.Id = marker.Id;
+				pin.MarkerId = marker.Id;
 				return marker;
 			}));
 		}
@@ -273,7 +277,7 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected Marker GetMarkerForPin(Pin pin)
 		{
-			return _markers?.Find(m => m.Id == (string)pin.Id);
+			return _markers?.Find(m => m.Id == (string)pin.MarkerId);
 		}
 
 		void MapOnMarkerClick(object sender, GoogleMap.InfoWindowClickEventArgs eventArgs)
@@ -286,7 +290,7 @@ namespace Xamarin.Forms.Maps.Android
 			for (var i = 0; i < Map.Pins.Count; i++)
 			{
 				Pin pin = Map.Pins[i];
-				if ((string)pin.Id != marker.Id)
+				if ((string)pin.MarkerId != marker.Id)
 				{
 					continue;
 				}
@@ -298,6 +302,11 @@ namespace Xamarin.Forms.Maps.Android
 			// only consider event handled if a handler is present.
 			// Else allow default behavior of displaying an info window.
 			targetPin?.SendTap();
+		}
+
+		void OnMapClick(object sender, GoogleMap.MapClickEventArgs e)
+		{
+			Map.SendMapClicked(new Position(e.Point.Latitude, e.Point.Longitude));
 		}
 
 		void MoveToRegion(MapSpan span, bool animate)

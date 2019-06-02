@@ -1,6 +1,5 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Tizen;
-using System.Reflection;
 
 [assembly: Dependency(typeof(ResourcesProvider))]
 [assembly: Dependency(typeof(Deserializer))]
@@ -14,6 +13,7 @@ using System.Reflection;
 [assembly: ExportRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer))]
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer))]
+[assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
 [assembly: ExportRenderer(typeof(Button), typeof(ButtonRenderer))]
@@ -36,6 +36,7 @@ using System.Reflection;
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportRenderer(typeof(WebView), typeof(WebViewRenderer))]
 [assembly: ExportRenderer(typeof(ImageButton), typeof(ImageButtonRenderer))]
+[assembly: ExportRenderer(typeof(ItemsView), typeof(ItemsViewRenderer))]
 
 [assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImageSourceHandler))]
@@ -50,6 +51,3 @@ using System.Reflection;
 [assembly: ExportHandler(typeof(TapGestureRecognizer), typeof(TapGestureHandler))]
 [assembly: ExportHandler(typeof(PinchGestureRecognizer), typeof(PinchGestureHandler))]
 [assembly: ExportHandler(typeof(PanGestureRecognizer), typeof(PanGestureHandler))]
-
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]

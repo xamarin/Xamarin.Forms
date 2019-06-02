@@ -6,14 +6,14 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1305, "ToolbarItems on NavigationPage broken", PlatformAffected.Android, NavigationBehavior.PushModalAsync)]
+	[Issue (IssueTracker.Github, 1305, "ToolbarItems on NavigationPage broken", PlatformAffected.Android, NavigationBehavior.PushAsync)]
 	public class Issue1305 : ContentPage
 	{
 		public Issue1305 ()
 		{
 			var settings = new ToolbarItem
 			{
-				Icon = "bank.png",
+				IconImageSource = "bank.png",
 				Text = "Settings",
 				Command = new Command(ShowSettingsPage),
 			};
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Title = "Test Page";
 
-			Icon = "Icon.png";
+			IconImageSource = "Icon.png";
 
 		}
 
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Title = "Settings";
 
-			Icon = "bank.png";
+			IconImageSource = "bank.png";
 		}
 	}
 }

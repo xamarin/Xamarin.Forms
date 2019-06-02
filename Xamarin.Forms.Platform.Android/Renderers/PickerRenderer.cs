@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use PickerRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public PickerRenderer()
 		{
 			AutoPackage = false;
@@ -47,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override EditText CreateNativeControl()
 		{
-			return new PickerEditText(Context, this);
+			return new PickerEditText(Context);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
@@ -92,7 +93,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 		}
 
-		internal override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			base.OnFocusChangeRequested(sender, e);
 
@@ -110,6 +111,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Picker model = Element;
 
+			if (_dialog != null)
+				return;
+			
 			var picker = new NumberPicker(Context);
 			if (model.Items != null && model.Items.Any())
 			{
@@ -164,6 +168,8 @@ namespace Xamarin.Forms.Platform.Android
 			_dialog.DismissEvent += (sender, args) =>
 			{
 				ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+				_dialog?.Dispose();
+				_dialog = null;
 			};
 			_dialog.Show();
 		}

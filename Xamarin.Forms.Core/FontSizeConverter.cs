@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using Xamarin.Forms.Xaml;
 
@@ -8,6 +9,7 @@ namespace Xamarin.Forms
 	public class FontSizeConverter : TypeConverter, IExtendedTypeConverter
 	{
 		[Obsolete("IExtendedTypeConverter.ConvertFrom is obsolete as of version 2.2.0. Please use ConvertFromInvariantString (string, IServiceProvider) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		object IExtendedTypeConverter.ConvertFrom(CultureInfo culture, object value, IServiceProvider serviceProvider)
 			=> ((IExtendedTypeConverter)this).ConvertFromInvariantString(value as string, serviceProvider);
 
@@ -32,6 +34,16 @@ namespace Xamarin.Forms
 					namedSize = NamedSize.Medium;
 				else if (value.Equals(nameof(NamedSize.Large), sc))
 					namedSize = NamedSize.Large;
+				else if (value.Equals(nameof(NamedSize.Body), sc))
+					namedSize = NamedSize.Body;
+				else if (value.Equals(nameof(NamedSize.Caption), sc))
+					namedSize = NamedSize.Caption;
+				else if (value.Equals(nameof(NamedSize.Header), sc))
+					namedSize = NamedSize.Header;
+				else if (value.Equals(nameof(NamedSize.Subtitle), sc))
+					namedSize = NamedSize.Subtitle;
+				else if (value.Equals(nameof(NamedSize.Title), sc))
+					namedSize = NamedSize.Title;
 				else if (Enum.TryParse(value, ignoreCase, out NamedSize ns))
 					namedSize = ns;
 
@@ -60,6 +72,16 @@ namespace Xamarin.Forms
 					return Device.GetNamedSize(NamedSize.Medium, typeof(Label), false);
 				if (value.Equals(nameof(NamedSize.Large), StringComparison.Ordinal))
 					return Device.GetNamedSize(NamedSize.Large, typeof(Label), false);
+				if (value.Equals(nameof(NamedSize.Body), StringComparison.Ordinal))
+					return Device.GetNamedSize(NamedSize.Body, typeof(Label), false);
+				if (value.Equals(nameof(NamedSize.Caption), StringComparison.Ordinal))
+					return Device.GetNamedSize(NamedSize.Caption, typeof(Label), false);
+				if (value.Equals(nameof(NamedSize.Header), StringComparison.Ordinal))
+					return Device.GetNamedSize(NamedSize.Header, typeof(Label), false);
+				if (value.Equals(nameof(NamedSize.Subtitle), StringComparison.Ordinal))
+					return Device.GetNamedSize(NamedSize.Subtitle, typeof(Label), false);
+				if (value.Equals(nameof(NamedSize.Title), StringComparison.Ordinal))
+					return Device.GetNamedSize(NamedSize.Title, typeof(Label), false);
 				if (Enum.TryParse(value, out NamedSize namedSize))
 					return Device.GetNamedSize(namedSize, typeof(Label), false);
 			}

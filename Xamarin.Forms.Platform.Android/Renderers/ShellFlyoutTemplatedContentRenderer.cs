@@ -38,13 +38,21 @@ namespace Xamarin.Forms.Platform.Android
         protected virtual void LoadView(IShellContext shellContext)
         {
             var context = shellContext.AndroidContext;
-            var coordinator = LayoutInflater.FromContext(context).Inflate(Resource.Layout.FlyoutContent, null);
-            var recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);
-            var appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
 
-            _rootView = coordinator;
+			// Android designer can't load fragments or resources from layouts
+			if (context.IsDesignerContext())
+			{
+				_rootView = new FrameLayout(context);
+				return;
+			}
 
-            appBar.AddOnOffsetChangedListener(this);
+			var coordinator = LayoutInflater.FromContext(context).Inflate(Resource.Layout.FlyoutContent, null);
+			var recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);
+			var appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
+
+			_rootView = coordinator;
+
+			appBar.AddOnOffsetChangedListener(this);
 
             int actionBarHeight = (int)context.ToPixels(56);
 
@@ -68,11 +76,14 @@ namespace Xamarin.Forms.Platform.Android
             var metrics = context.Resources.DisplayMetrics;
             var width = Math.Min(metrics.WidthPixels, metrics.HeightPixels);
 
-            TypedValue tv = new TypedValue();
-            if (context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ActionBarSize, tv, true))
-            {
-                actionBarHeight = TypedValue.ComplexToDimensionPixelSize(tv.Data, metrics);
-            }
+			using (TypedValue tv = new TypedValue())
+			{
+				if (context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ActionBarSize, tv, true))
+				{
+					actionBarHeight = TypedValue.ComplexToDimensionPixelSize(tv.Data, metrics);
+				}
+			}
+
             width -= actionBarHeight;
 
             coordinator.LayoutParameters = new LP(width, LP.MatchParent);

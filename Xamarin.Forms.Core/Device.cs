@@ -33,8 +33,9 @@ namespace Xamarin.Forms
 		public static void SetTargetIdiom(TargetIdiom value) => Idiom = value;
 
         [Obsolete("TargetPlatform is obsolete as of version 2.3.4. Please use RuntimePlatform instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable 0618
-        public static TargetPlatform OS
+		public static TargetPlatform OS
         {
             get
             {
@@ -103,6 +104,66 @@ namespace Xamarin.Forms
 			PlatformServices.BeginInvokeOnMainThread(action);
 		}
 
+		public static Task<T> InvokeOnMainThreadAsync<T>(Func<T> func)
+		{
+			var tcs = new TaskCompletionSource<T>();
+			BeginInvokeOnMainThread(() =>
+			{
+				try
+				{
+					var result = func();
+					tcs.SetResult(result);
+				}
+				catch (Exception ex)
+				{
+					tcs.SetException(ex);
+				}
+			});
+			return tcs.Task;
+		}
+
+		public static Task InvokeOnMainThreadAsync(Action action)
+		{
+			Func<object> dummyFunc = () => { action(); return null; };
+			return InvokeOnMainThreadAsync(dummyFunc);
+		}
+
+		public static Task<T> InvokeOnMainThreadAsync<T>(Func<Task<T>> funcTask)
+		{
+			var tcs = new TaskCompletionSource<T>();
+			BeginInvokeOnMainThread(
+				async() =>
+				{
+					try
+					{
+						var ret = await funcTask().ConfigureAwait(false);
+						tcs.SetResult(ret);
+					}
+					catch (Exception e)
+					{
+						tcs.SetException(e);
+					}
+				}
+			);
+
+			return tcs.Task;
+		}
+
+		public static Task InvokeOnMainThreadAsync(Func<Task> funcTask)
+		{
+			Func<Task<object>> dummyFunc = () => { funcTask(); return null; };
+			return InvokeOnMainThreadAsync(dummyFunc);
+		}
+
+		public static async Task<SynchronizationContext> GetMainThreadSynchronizationContextAsync()
+		{
+			SynchronizationContext ret = null;
+			await InvokeOnMainThreadAsync(() =>
+				ret = SynchronizationContext.Current
+			).ConfigureAwait(false);
+			return ret;
+		}
+
 		public static double GetNamedSize(NamedSize size, Element targetElement)
 		{
 			return GetNamedSize(size, targetElement.GetType());
@@ -114,7 +175,8 @@ namespace Xamarin.Forms
         }
 
         [Obsolete("OnPlatform is obsolete as of version 2.3.4. Please use 'switch (Device.RuntimePlatform)' instead.")]
-        public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null)
         {
             switch (OS)
             {
@@ -145,7 +207,8 @@ namespace Xamarin.Forms
         }
 
         [Obsolete("OnPlatform<> (generic) is obsolete as of version 2.3.4. Please use 'switch (Device.RuntimePlatform)' instead.")]
-        public static T OnPlatform<T>(T iOS, T Android, T WinPhone)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static T OnPlatform<T>(T iOS, T Android, T WinPhone)
         {
             switch (OS)
             {

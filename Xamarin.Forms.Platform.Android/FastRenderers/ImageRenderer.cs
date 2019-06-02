@@ -11,7 +11,8 @@ using Android.Support.V4.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer, ITabStop
+	public class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer, ITabStop,
+		ILayoutChanges
 	{
 		bool _disposed;
 		Image _element;
@@ -69,7 +70,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			base.Invalidate();
 		}
 
-		void OnElementChanged(ElementChangedEventArgs<Image> e)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
 			this.EnsureId();
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
@@ -166,7 +167,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void IImageRendererController.SkipInvalidate() => _skipInvalidate = true;
 
-		AImageView Control => this;
+		protected AImageView Control => this;
+		protected Image Element => _element;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -176,11 +178,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ImageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ImageRenderer() : base(Forms.Context)
 		{
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			ElementPropertyChanged?.Invoke(this, e);
 		}

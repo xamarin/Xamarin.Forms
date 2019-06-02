@@ -5,6 +5,7 @@ using AScaleType = Android.Widget.ImageView.ScaleType;
 using ARect = Android.Graphics.Rect;
 using System;
 using Xamarin.Forms.Internals;
+using AViewCompat = Android.Support.V4.View.ViewCompat;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -14,20 +15,23 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			renderer.ElementPropertyChanged += OnElementPropertyChanged;
 			renderer.ElementChanged += OnElementChanged;
-			renderer.LayoutChange += OnLayoutChange;
+
+			if(renderer is ILayoutChanges layoutChanges)
+				layoutChanges.LayoutChange += OnLayoutChange;
 		}
 
 		static void OnLayoutChange(object sender, global::Android.Views.View.LayoutChangeEventArgs e)
 		{
 			if(sender is IVisualElementRenderer renderer && renderer.View is ImageView imageView)
-				imageView.ClipBounds = imageView.GetScaleType() == AScaleType.CenterCrop ? new ARect(0, 0, e.Right - e.Left, e.Bottom - e.Top) : null;
+				AViewCompat.SetClipBounds(imageView, imageView.GetScaleType() == AScaleType.CenterCrop ? new ARect(0, 0, e.Right - e.Left, e.Bottom - e.Top) : null);
 		}
 
 		public static void Dispose(IVisualElementRenderer renderer)
 		{
 			renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 			renderer.ElementChanged -= OnElementChanged;
-			renderer.LayoutChange -= OnLayoutChange;
+			if (renderer is ILayoutChanges layoutChanges)
+				layoutChanges.LayoutChange -= OnLayoutChange;
 
 			if (renderer.View is ImageView imageView)
 				imageView.SetImageDrawable(null);
@@ -57,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			var imageController = (IImageController)renderer.Element;
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName ||
-				e.PropertyName == Button.ImageProperty.PropertyName)
+				e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				try
 				{

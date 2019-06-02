@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			new PropertyTestCase<Map, bool> ("HasScrollEnabled", v => v.HasScrollEnabled, (v, o) => v.HasScrollEnabled = o, () => true, false),
 			new PropertyTestCase<Map, bool> ("HasZoomEnabled", v => v.HasZoomEnabled, (v, o) => v.HasZoomEnabled = o, () => true, false),
 			new PropertyTestCase<OpenGLView, bool> ("HasRenderLoop", v => v.HasRenderLoop, (v, o) => v.HasRenderLoop = o, () => false, true),
-			new PropertyTestCase<Page, string> ("BackgroundImage", v => v.BackgroundImage, (v, o) => v.BackgroundImage = o, () => null, "Foo"),
+			new PropertyTestCase<Page, ImageSource> ("BackgroundImageSource", v => v.BackgroundImageSource, (v, o) => v.BackgroundImageSource = o, () => null, "Foo"),
 			new PropertyTestCase<Page, Color> ("BackgroundColor", v => v.BackgroundColor, (v, o) => v.BackgroundColor = o, () => default(Color), new Color (0, 1, 0)),
 			new PropertyTestCase<Page, string> ("Title", v => v.Title, (v, o) => v.Title = o, () => null, "Foo"),
 			new PropertyTestCase<Page, bool> ("IsBusy", v => v.IsBusy, (v, o) => v.IsBusy = o, () => false, true),
@@ -151,7 +151,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			new PropertyTestCase<TapGestureRecognizer, int> ("NumberOfTapsRequired", t => t.NumberOfTapsRequired, (t, o) => t.NumberOfTapsRequired = o, () => 1, 3),
 			new PropertyTestCase<TapGestureRecognizer, object> ("CommandParameter", t => t.CommandParameter, (t, o) => t.CommandParameter = o, () => null, "Test"),
 			new PropertyTestCase<TapGestureRecognizer, ICommand> ("Command", t => t.Command, (t, o) => t.Command = o, () => null, new Command(()=>{})),
-			new PropertyTestCase<MasterDetailPage, bool> ("IsGestureEnabled", md => md.IsGestureEnabled, (md, v) => md.IsGestureEnabled = v, () => true, false)
+			new PropertyTestCase<MasterDetailPage, bool> ("IsGestureEnabled", md => md.IsGestureEnabled, (md, v) => md.IsGestureEnabled = v, () => true, false),
+			new PropertyTestCase<Entry, bool> ("IsReadOnly", v => v.IsReadOnly, (v, o) => v.IsReadOnly = o, () => false, true),
+			new PropertyTestCase<Editor, bool> ("IsReadOnly", v => v.IsReadOnly, (v, o) => v.IsReadOnly = o, () => false, true)
 		};
 #pragma warning restore 0414
 

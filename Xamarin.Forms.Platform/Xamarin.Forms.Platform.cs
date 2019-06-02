@@ -99,7 +99,7 @@
 	{
 	}
 
-	internal class _NavigationMenuRenderer
+	internal class _CheckBoxRenderer
 	{
 	}
 

@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		public bool MarkedForDispose { get; internal set; } = false;
 
-		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = Context.GetFragmentManager());
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
@@ -56,6 +56,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_pageContainer.Child.UpdateLayout();
 			}
 		}
+
+		public void UpdateFlowDirection() => _pageContainer?.UpdateFlowDirection(_parent);
 
 		protected override void AddChildView(VisualElement childView)
 		{
@@ -100,6 +102,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				fc?.SetOnCreateCallback(pc =>
 				{
 					_pageContainer = pc;
+					UpdateFlowDirection();
 					SetDefaultBackgroundColor(pc.Child);
 				});
 

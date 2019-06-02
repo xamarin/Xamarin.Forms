@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
+﻿using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.EmptyViewGalleries
 {
@@ -20,36 +17,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.EmptyViewG
 			CollectionView.ItemsSource = _demoFilteredItemSource.Items;
 			CollectionView.EmptyView = _emptyViewGalleryFilterInfo;
 
-			SearchBar.TextChanged += SearchBarOnTextChanged;
-		}
-
-		void SearchBarOnTextChanged(object sender, TextChangedEventArgs e)
-		{
-			_demoFilteredItemSource.FilterItems(e.NewTextValue);
-			_emptyViewGalleryFilterInfo.Filter = e.NewTextValue;
-		}
-	}
-
-	[Preserve(AllMembers = true)]
-	public class EmptyViewGalleryFilterInfo : INotifyPropertyChanged
-	{
-		string _filter;
-
-		public string Filter
-		{
-			get => _filter;
-			set
+			SearchBar.SearchCommand = new Command(() =>
 			{
-				_filter = value; 
-				OnPropertyChanged();
-			}
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+				_demoFilteredItemSource.FilterItems(SearchBar.Text);
+				_emptyViewGalleryFilterInfo.Filter = SearchBar.Text;
+			});
 		}
 	}
 }

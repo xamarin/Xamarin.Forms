@@ -26,7 +26,6 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -38,17 +37,20 @@
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AccessibilityExtensions.cs" />
+    <Compile Include="Extensions\ImageExtensions.cs" />
+    <Compile Include="FormsCheckBox.cs" />
     <Compile Include="IImageVisualElementRenderer.cs" />
     <Compile Include="ImageButtonRenderer.cs" />
     <Compile Include="CollectionViewRenderer.cs" />
     <Compile Include="FormsCancelButton.cs" />
     <Compile Include="AlertDialog.cs" />
+    <Compile Include="IDontGetFocus.cs" />
+    <Compile Include="FontImageSourceHandler.cs" />
     <Compile Include="Items\ItemContentControl.cs" />
     <Compile Include="FormsPivot.cs" />
     <Compile Include="AlignmentExtensions.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CheckBoxRenderer.cs" />
     <Compile Include="TextBlockExtensions.cs" />
     <Compile Include="TitleViewManager.cs" />
     <Compile Include="UriImageSourceHandler.cs" />
@@ -104,16 +107,12 @@
     <Compile Include="TabbedPageRenderer.cs" />
     <Compile Include="ToolbarPlacementHelper.cs" />
     <EmbeddedResource Include="Properties\Xamarin.Forms.Platform.UAP.rd.xml" />
-    <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Forms.cs" />
     <Compile Include="WindowsPage.cs" />
     <Compile Include="WindowsPlatform.cs" />
     <Compile Include="WindowsPlatformServices.cs" />
     <Compile Include="WindowsResourcesProvider.cs" />
     <Compile Include="ActivityIndicatorRenderer.cs" />
-    <Compile Include="AsyncValue.cs" />
     <Compile Include="BackgroundTracker.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="BoxViewRenderer.cs" />
@@ -132,7 +131,7 @@
     <Compile Include="ExportRendererAttribute.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileImageSourceHandler.cs" />
-    <Compile Include="FileImageSourcePathConverter.cs" />
+    <Compile Include="ImageSourceIconElementConverter.cs" />
     <Compile Include="FontExtensions.cs" />
     <Compile Include="FormsButton.cs" />
     <Compile Include="FrameRenderer.cs" />
@@ -140,6 +139,7 @@
     <Compile Include="HeightConverter.cs" />
     <Compile Include="ICellRenderer.cs" />
     <Compile Include="IImageSourceHandler.cs" />
+    <Compile Include="IIconElementHandler.cs" />
     <Compile Include="ImageConverter.cs" />
     <Compile Include="ImageRenderer.cs" />
     <Compile Include="IVisualElementRenderer.cs" />
@@ -193,6 +193,10 @@
     <Page Include="AutoSuggestStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FormsCheckBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="FormsCommandBarStyle.xaml">
       <SubType>Designer</SubType>
@@ -257,6 +261,9 @@
     </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Win2D.uwp">
+      <Version>1.20.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

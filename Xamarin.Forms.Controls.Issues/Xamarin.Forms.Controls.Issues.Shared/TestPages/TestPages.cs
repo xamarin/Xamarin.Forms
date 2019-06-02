@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Controls
 					RunningApp.TestServer.Get("version");
 					return;
 				}
-				catch (Exception ex)
+				catch 
 				{
 				}
 
@@ -368,7 +368,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		[TearDown]
-		public void TearDown()
+		public virtual void TearDown()
 		{
 			if (Isolate)
 			{
@@ -461,7 +461,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		[TearDown]
-		public void TearDown()
+		public virtual void TearDown()
 		{
 			if (Isolate)
 			{
@@ -551,7 +551,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		[TearDown]
-		public void TearDown()
+		public virtual void TearDown()
 		{
 			if (Isolate)
 			{
@@ -561,6 +561,95 @@ namespace Xamarin.Forms.Controls
 #endif
 
 		protected abstract void Init();
+	}
+
+
+
+
+	public abstract class TestShell : Shell
+	{
+#if UITEST
+		public IApp RunningApp => AppSetup.RunningApp;
+
+		protected virtual bool Isolate => true;
+#endif
+
+		protected TestShell() : base()
+		{
+#if APP
+			Init();
+#endif
+		}
+
+		public ContentPage CreateContentPage()
+		{
+			ContentPage page = new ContentPage();
+			ShellItem item = new ShellItem()
+			{
+				Items =
+				{
+					new ShellSection()
+					{
+						Items =
+						{
+							new ShellContent()
+							{
+								Content = page
+							}
+						}
+					}
+				}
+			};
+
+			Items.Add(item);
+			return page;
+
+		}
+#if UITEST
+		[SetUp]
+		public void Setup()
+		{
+			if (Isolate)
+			{
+				AppSetup.BeginIsolate();
+			}
+			else
+			{
+				AppSetup.EnsureMemory();
+				AppSetup.EnsureConnection();
+			}
+
+			AppSetup.NavigateToIssue(GetType(), RunningApp);
+		}
+
+		[TearDown]
+		public virtual void TearDown()
+		{
+			if (Isolate)
+			{
+				AppSetup.EndIsolate();
+			}
+		}
+
+		public void ShowFlyout(string flyoutIcon = "OK")
+		{
+			RunningApp.WaitForElement(flyoutIcon);
+			RunningApp.Tap(flyoutIcon);
+		}
+
+
+		public void TapInFlyout(string text, string flyoutIcon = "OK")
+		{
+			ShowFlyout(flyoutIcon);
+			RunningApp.WaitForElement(text);
+			RunningApp.Tap(text);
+		}
+
+
+#endif
+
+		protected abstract void Init();
+
 	}
 }
 

@@ -76,7 +76,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UpdateMinimumTrackColor();
 			UpdateMaximumTrackColor();
-			if (!string.IsNullOrEmpty(Element.ThumbImage))
+			var thumbImage = Element.ThumbImageSource;
+			if (thumbImage != null && !thumbImage.IsEmpty)
 			{
 				UpdateThumbImage();
 			}
@@ -119,36 +120,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		async void UpdateThumbImage()
+		void UpdateThumbImage()
 		{
-			IImageSourceHandler handler;
-			FileImageSource source = Element.ThumbImage;
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			_ = this.ApplyNativeImageAsync(Slider.ThumbImageSourceProperty, uiimage =>
 			{
-				UIImage uiimage;
-				try
-				{
-					uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-				}
-				catch (OperationCanceledException)
-				{
-					uiimage = null;
-				}
-				UISlider slider = Control;
-				if (slider != null && uiimage != null)
-				{
-					slider.SetThumbImage(uiimage, UIControlState.Normal);
-				}
-			}
-			else
-			{
-				UISlider slider = Control;
-				if (slider != null)
-				{
-					slider.SetThumbImage(null, UIControlState.Normal);
-				}
-			}
-			((IVisualElementController)Element).NativeSizeChanged();
+				Control?.SetThumbImage(uiimage, UIControlState.Normal);
+
+				((IVisualElementController)Element).NativeSizeChanged();
+			});
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -165,7 +144,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMinimumTrackColor();
 			else if (e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName)
 				UpdateMaximumTrackColor();
-			else if (e.PropertyName == Slider.ThumbImageProperty.PropertyName)
+			else if (e.PropertyName == Slider.ThumbImageSourceProperty.PropertyName)
 				UpdateThumbImage();
 			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();

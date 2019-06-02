@@ -25,6 +25,7 @@ using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
 
 
+[assembly: ExportRenderer(typeof(Issue5461.ScrollbarFadingEnabledFalseScrollView), typeof(ScrollbarFadingEnabledFalseScrollViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue1942.CustomGrid), typeof(Issue1942GridRenderer))]
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Effects.AttachedStateEffectLabel), typeof(AttachedStateEffectLabelRenderer))]
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.LegacyComponents.NonAppCompatSwitch), typeof(NonAppCompatSwitchRenderer))]
@@ -39,7 +40,8 @@ using Xamarin.Forms.Controls.Issues;
 [assembly: ExportRenderer(typeof(Issue1683.EditorKeyboardFlags), typeof(EditorRendererKeyboardFlags))]
 //[assembly: ExportRenderer(typeof(AndroidHelpText.HintLabel), typeof(HintLabel))]
 [assembly: ExportRenderer(typeof(QuickCollectNavigationPage), typeof(QuickCollectNavigationPageRenderer))]
-
+[assembly: ExportRenderer(typeof(Issue4782.Issue4782ImageButton), typeof(Issue4782ImageButtonImageButtonRenderer))]
+[assembly: ExportRenderer(typeof(Issue4561.CustomView), typeof(Issue4561CustomViewRenderer))]
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Issues.NoFlashTestNavigationPage), typeof(Xamarin.Forms.ControlGallery.Android.NoFlashTestNavigationPage))]
 
@@ -57,16 +59,38 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 
-	public class AttachedStateEffectLabelRenderer : LabelRenderer
+	public class ScrollbarFadingEnabledFalseScrollViewRenderer : ScrollViewRenderer
+	{
+		public ScrollbarFadingEnabledFalseScrollViewRenderer(Context context) : base(context)
+		{
+			// I do a cast here just so this will fail just to be sure we don't change the base types
+			var castingTest = (global::Android.Support.V4.Widget.NestedScrollView)this;
+			castingTest.ScrollbarFadingEnabled = false;
+		}
+	}
+
+	public class AttachedStateEffectLabelRenderer :
+#if TEST_EXPERIMENTAL_RENDERERS
+		Platform.Android.FastRenderers.LabelRenderer
+#else
+		LabelRenderer
+#endif
 	{
 		public AttachedStateEffectLabelRenderer(Context context) : base(context)
 		{
 		}
 
+#if TEST_EXPERIMENTAL_RENDERERS
 		protected override void Dispose(bool disposing)
 		{
+			foreach (var effect in Element.Effects.OfType<Controls.Effects.AttachedStateEffect>())
+			{
+				effect.Detached(Element);
+			}
+
 			base.Dispose(disposing);
 		}
+#endif
 	}
 
 	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
@@ -183,7 +207,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeListViewAdapter(Forms.Context as Activity, e.NewElement);
+				Control.Adapter = new NativeListViewAdapter(Forms.Context.GetActivity(), e.NewElement);
 #pragma warning restore 618
 				Control.ItemClick += Clicked;
 			}
@@ -203,7 +227,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeListViewAdapter(Forms.Context as Activity, Element);
+				Control.Adapter = new NativeListViewAdapter(Forms.Context.GetActivity(), Element);
 #pragma warning restore 618
 			}
 		}
@@ -281,7 +305,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			if (view == null)
 			{// no view to re-use, create new
-				view = (context as Activity).LayoutInflater.Inflate(Resource.Layout.NativeAndroidCell, null);
+				view = (context.GetActivity()).LayoutInflater.Inflate(Resource.Layout.NativeAndroidCell, null);
 			}
 			else
 			{ // re-use, clear image
@@ -370,7 +394,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 				// subscribe
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context as Activity, e.NewElement);
+				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context.GetActivity(), e.NewElement);
 #pragma warning restore 618
 				Control.ItemClick += Clicked;
 			}
@@ -395,7 +419,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context as Activity, Element);
+				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context.GetActivity(), Element);
 #pragma warning restore 618
 			}
 		}
@@ -629,6 +653,19 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 
+	public class Issue4782ImageButtonImageButtonRenderer : ImageButtonRenderer
+	{
+		public Issue4782ImageButtonImageButtonRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<ImageButton> e)
+		{
+			base.OnElementChanged(e);
+			SetImageDrawable(null);
+		}
+	}
+
 	public class Issue1942GridRenderer : VisualElementRenderer<Grid>, AView.IOnTouchListener, ViewTreeObserver.IOnGlobalLayoutListener
 	{
 		AView _gridChild;
@@ -655,7 +692,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if(disposing)
+			if (disposing)
 			{
 				ViewGroup.ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
 				_gridChild.SetOnTouchListener(null);
@@ -669,6 +706,78 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 			_gridChild = ViewGroup.GetChildAt(0);
 			_gridChild.SetOnTouchListener(this);
+		}
+	}
+
+	[Preserve]
+	public class Issue4561CustomView : LinearLayout
+	{
+		public Issue4561CustomView(Context context)
+			: base(context)
+		{
+			Initialize();
+		}
+
+		public Issue4561CustomView(Context context, IAttributeSet attrs) :
+			base(context, attrs)
+		{
+			Initialize();
+		}
+
+		public Issue4561CustomView(Context context, IAttributeSet attrs, int defStyle) :
+			base(context, attrs, defStyle)
+		{
+			Initialize();
+		}
+
+		void Initialize()
+		{
+			var editText1 = new EditText(Context)
+			{
+				InputType = InputTypes.NumberFlagDecimal,
+				Id = 12345,
+				Text = "customEdit1"
+			};
+			var editText2 = new EditText(Context)
+			{
+				InputType = InputTypes.NumberFlagDecimal,
+				Id = 123456,
+				Text = "customEdit2"
+			};
+
+			editText1.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent);
+			editText2.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent);
+
+			editText1.NextFocusForwardId = editText2.Id;
+			editText2.NextFocusForwardId = editText1.Id;
+
+			AddView(editText1);
+			AddView(editText2);
+
+			Orientation = Orientation.Vertical;
+		}
+	}
+
+	[Preserve]
+	public class Issue4561CustomViewRenderer : ViewRenderer<Issue4561.CustomView, Issue4561CustomView>
+	{
+		public Issue4561CustomViewRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override Issue4561CustomView CreateNativeControl() => new Issue4561CustomView(Context);
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Issue4561.CustomView> e)
+		{
+			base.OnElementChanged(e);
+			if (Element != null)
+			{
+				if (Control == null)
+				{
+					var view = CreateNativeControl();
+					SetNativeControl(view);
+				}
+			}
 		}
 	}
 

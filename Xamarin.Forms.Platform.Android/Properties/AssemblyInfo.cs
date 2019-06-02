@@ -1,24 +1,7 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
-
-// Information about this assembly is defined by the following attributes. 
-// Change them to the values specific to your project.
-
-[assembly: AssemblyTitle("Xamarin.Forms.Platform.Android")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCulture("")]
-[assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
-
-// The following attributes are used to specify the signing key for the assembly, 
-// if desired. See the Mono documentation for more information about signing.
-
-//[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("")]
-
 
 // These renderers are now registered via the RenderWithAttribute in the Android Forwarders project.
 // Note that AppCompat and FastRenderers are also registered conditionally in FormsAppCompatActivity.LoadApplication
@@ -46,8 +29,8 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (ScrollView), typeof (ScrollViewRenderer))]
 [assembly: ExportRenderer (typeof (ActivityIndicator), typeof (ActivityIndicatorRenderer))]
 [assembly: ExportRenderer (typeof (Frame), typeof (FrameRenderer))]
-[assembly: ExportRenderer (typeof (NavigationMenu), typeof (NavigationMenuRenderer))]
 [assembly: ExportRenderer (typeof (OpenGLView), typeof (OpenGLViewRenderer))]
+[assembly: ExportRenderer (typeof (CheckBox), typeof (CheckBoxRenderer))]
 
 [assembly: ExportRenderer (typeof (TabbedPage), typeof (TabbedRenderer))]
 [assembly: ExportRenderer (typeof (NavigationPage), typeof (NavigationRenderer))]
@@ -68,8 +51,9 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
+[assembly: ExportImageSourceHandler(typeof(FontImageSource), typeof(FontImageSourceHandler))]
 [assembly: Xamarin.Forms.Dependency(typeof(Deserializer))]
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 [assembly: Preserve]
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Material")]

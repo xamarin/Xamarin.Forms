@@ -35,7 +35,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
@@ -48,7 +47,6 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -60,7 +58,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -73,7 +70,6 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -85,7 +81,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -98,7 +93,6 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
@@ -127,8 +121,10 @@
     <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BorderEffect.cs" />
     <Compile Include="DisposePageRenderer.cs" />
+    <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="RegistrarValidationService.cs" />
     <Compile Include="SampleNativeControl.cs" />
+    <Compile Include="SecondaryWindowService.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
@@ -147,6 +143,44 @@
     <Content Include="invalidimage.jpg" />
     <Content Include="Legumes.jpg" />
     <Content Include="local.html" />
+    <Content Include="scale-100\bell.png" />
+    <Content Include="scale-100\books.png" />
+    <Content Include="scale-100\booksflyout.png" />
+    <Content Include="scale-100\film.png" />
+    <Content Include="scale-100\filmflyout.png" />
+    <Content Include="scale-100\games.png" />
+    <Content Include="scale-100\gamesflyout.png" />
+    <Content Include="scale-100\gear.png" />
+    <Content Include="scale-100\grid.png" />
+    <Content Include="scale-100\headphone.png" />
+    <Content Include="scale-100\headphoneflyout.png" />
+    <Content Include="scale-100\home.png" />
+    <Content Include="scale-100\homeflyout.png" />
+    <Content Include="scale-100\loop.png" />
+    <Content Include="scale-100\newspaper.png" />
+    <Content Include="scale-100\newspaperflyout.png" />
+    <Content Include="scale-100\person.png" />
+    <Content Include="scale-100\star-flyout.png" />
+    <Content Include="scale-100\star.png" />
+    <Content Include="scale-200\bell.png" />
+    <Content Include="scale-200\books.png" />
+    <Content Include="scale-200\booksflyout.png" />
+    <Content Include="scale-200\film.png" />
+    <Content Include="scale-200\filmflyout.png" />
+    <Content Include="scale-200\games.png" />
+    <Content Include="scale-200\gamesflyout.png" />
+    <Content Include="scale-200\gear.png" />
+    <Content Include="scale-200\grid.png" />
+    <Content Include="scale-200\headphone.png" />
+    <Content Include="scale-200\headphoneflyout.png" />
+    <Content Include="scale-200\home.png" />
+    <Content Include="scale-200\homeflyout.png" />
+    <Content Include="scale-200\loop.png" />
+    <Content Include="scale-200\newspaper.png" />
+    <Content Include="scale-200\newspaperflyout.png" />
+    <Content Include="scale-200\person.png" />
+    <Content Include="scale-200\star-flyout.png" />
+    <Content Include="scale-200\star.png" />
     <Content Include="test.jpg" />
     <Content Include="oasis.jpg" />
     <Content Include="oasissmall.jpg" />
@@ -158,7 +192,6 @@
     <Content Include="Assets\Fonts\Lobster-Regular.ttf" />
     <Content Include="Properties\default.rd.xml" />
     <Compile Include="BrokenImageSourceHandler.cs" />
-    <Compile Include="StringProvider.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -169,6 +202,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="xamarinstore.jpg" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -205,6 +239,11 @@
     <PackageReference Include="Xam.Plugin.DeviceInfo">
       <Version>3.0.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Fonts\ionicons.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

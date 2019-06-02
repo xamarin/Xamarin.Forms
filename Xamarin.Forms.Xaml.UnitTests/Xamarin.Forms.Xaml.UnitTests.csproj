@@ -3,13 +3,6 @@
     <TargetFramework>net47</TargetFramework>
     <RootNamespace>Xamarin.Forms.Xaml.UnitTests</RootNamespace>
     <AssemblyName>Xamarin.Forms.Xaml.UnitTests</AssemblyName>
-  </PropertyGroup>
-	
-  <Import Project="..\.nuspec\Xamarin.Forms.DefaultItems.props" />
-  <Import Project="..\.nuspec\Xamarin.Forms.DefaultItems.targets" />
-	
-  <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0672;0219;0414</NoWarn>
   </PropertyGroup>
@@ -37,6 +30,4 @@
       <Link>BaseTestFixture.cs</Link>
     </Compile>
   </ItemGroup>
-  <Import Project="..\.nuspec\Xamarin.Forms.Debug.targets" Condition="'$(BuildingInsideVisualStudio)' == 'true' AND Exists('$(__XFBuildTasksLocation)Xamarin.Forms.Build.Tasks.dll')" />
-  <Import Project="..\.nuspec\Xamarin.Forms.Debug.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
 </Project>

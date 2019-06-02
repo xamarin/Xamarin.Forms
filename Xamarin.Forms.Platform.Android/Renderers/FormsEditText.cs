@@ -4,14 +4,56 @@ using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using Android.Support.V4.Graphics.Drawable;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsEditText : EditText, IDescendantFocusToggler
+	public class FormsEditText : FormsEditTextBase, IFormsEditText
+	{
+		public FormsEditText(Context context) : base(context)
+		{
+		}
+
+
+		public override bool OnKeyPreIme(Keycode keyCode, KeyEvent e)
+		{
+			if (keyCode != Keycode.Back || e.Action != KeyEventActions.Down)
+			{
+				return base.OnKeyPreIme(keyCode, e);
+			}
+
+			this.HideKeyboard();
+
+			_onKeyboardBackPressed?.Invoke(this, EventArgs.Empty);
+			return true;
+		}
+
+		protected override void OnSelectionChanged(int selStart, int selEnd)
+		{
+			base.OnSelectionChanged(selStart, selEnd);
+			_selectionChanged?.Invoke(this, new SelectionChangedEventArgs(selStart, selEnd));
+		}
+
+		event EventHandler _onKeyboardBackPressed;
+		event EventHandler IFormsEditText.OnKeyboardBackPressed
+		{
+			add => _onKeyboardBackPressed += value;
+			remove => _onKeyboardBackPressed -= value;
+		}
+
+		event EventHandler<SelectionChangedEventArgs> _selectionChanged;
+		event EventHandler<SelectionChangedEventArgs> IFormsEditText.SelectionChanged
+		{
+			add => _selectionChanged += value;
+			remove => _selectionChanged -= value;
+		}
+	}
+
+	public class FormsEditTextBase : EditText, IDescendantFocusToggler
 	{
 		DescendantFocusToggler _descendantFocusToggler;
 
-		public FormsEditText(Context context) : base(context)
+		public FormsEditTextBase(Context context) : base(context)
 		{
 			DrawableCompat.Wrap(Background);
 		}
@@ -23,32 +65,13 @@ namespace Xamarin.Forms.Platform.Android
 			return _descendantFocusToggler.RequestFocus(control, baseRequestFocus);
 		}
 
-		public override bool OnKeyPreIme(Keycode keyCode, KeyEvent e)
-		{
-			if (keyCode != Keycode.Back || e.Action != KeyEventActions.Down)
-			{
-				return base.OnKeyPreIme(keyCode, e);
-			}
-
-			this.HideKeyboard();
-
-			OnKeyboardBackPressed?.Invoke(this, EventArgs.Empty);
-			return true;
-		}
 
 		public override bool RequestFocus(FocusSearchDirection direction, Rect previouslyFocusedRect)
 		{
 			return (this as IDescendantFocusToggler).RequestFocus(this, () => base.RequestFocus(direction, previouslyFocusedRect));
 		}
 
-		protected override void OnSelectionChanged(int selStart, int selEnd)
-		{
-			base.OnSelectionChanged(selStart, selEnd);
-			SelectionChanged?.Invoke(this, new SelectionChangedEventArgs(selStart, selEnd));
-		}
 
-		internal event EventHandler OnKeyboardBackPressed;
-		internal event EventHandler<SelectionChangedEventArgs> SelectionChanged;
 	}
 
 	public class SelectionChangedEventArgs : EventArgs
@@ -64,6 +87,7 @@ namespace Xamarin.Forms.Platform.Android
 	}
 
 	[Obsolete("EntryEditText is obsolete as of version 2.4.0. Please use Xamarin.Forms.Platform.Android.FormsEditText instead.")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class EntryEditText : FormsEditText
 	{
 		public EntryEditText(Context context) : base(context)
@@ -72,6 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 	}
 
 	[Obsolete("EditorEditText is obsolete as of version 2.4.0. Please use Xamarin.Forms.Platform.Android.FormsEditText instead.")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class EditorEditText : FormsEditText
 	{
 		public EditorEditText(Context context) : base(context)

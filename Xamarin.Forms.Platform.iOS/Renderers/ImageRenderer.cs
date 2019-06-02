@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -58,16 +59,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override async void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
-			if (Control == null)
-			{
-				var imageView = new UIImageView(RectangleF.Empty);
-				imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-				imageView.ClipsToBounds = true;
-				SetNativeControl(imageView);
-			}
-
 			if (e.NewElement != null)
 			{
+				if (Control == null)
+				{
+					var imageView = new UIImageView(RectangleF.Empty);
+					imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+					imageView.ClipsToBounds = true;
+					SetNativeControl(imageView);
+				}
+
 				await TrySetImage(e.OldElement as Image);
 			}
 
@@ -184,6 +185,45 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return image;
+		}
+	}
+
+	public sealed class FontImageSourceHandler : IImageSourceHandler
+	{
+		//should this be the default color on the BP for iOS? 
+		readonly Color _defaultColor = Color.White;
+
+		public Task<UIImage> LoadImageAsync(
+			ImageSource imagesource, 
+			CancellationToken cancelationToken = default(CancellationToken), 
+			float scale = 1f)
+		{
+			UIImage image = null;
+			var fontsource = imagesource as FontImageSource;
+			if (fontsource != null)
+			{
+				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
+				var imagesize = new SizeF((float)fontsource.Size, (float)fontsource.Size);
+				var font = UIFont.FromName(fontsource.FontFamily ?? string.Empty, (float)fontsource.Size) ??
+					UIFont.SystemFontOfSize((float)fontsource.Size);
+
+				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
+				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
+				var ctx = new NSStringDrawingContext();
+				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
+				attString.DrawString(new RectangleF(
+					imagesize.Width / 2 - boundingRect.Size.Width / 2,
+					imagesize.Height / 2 - boundingRect.Size.Height / 2,
+					imagesize.Width,
+					imagesize.Height));
+				image = UIGraphics.GetImageFromCurrentImageContext();
+				UIGraphics.EndImageContext();
+
+				if (iconcolor != _defaultColor)
+					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+			}
+			return Task.FromResult(image);
+
 		}
 	}
 }

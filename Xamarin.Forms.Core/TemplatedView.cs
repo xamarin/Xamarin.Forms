@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
@@ -16,6 +17,8 @@ namespace Xamarin.Forms
 
 		IList<Element> IControlTemplated.InternalChildren => InternalChildren;
 
+		Element IControlTemplated.TemplateRoot { get; set; }
+
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
 			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
@@ -28,6 +31,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			double widthRequest = WidthRequest;
@@ -72,6 +76,21 @@ namespace Xamarin.Forms
 
 		internal virtual void OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
 		{
+		}
+
+		void IControlTemplated.OnApplyTemplate()
+		{
+			OnApplyTemplate();
+		}
+
+		protected virtual void OnApplyTemplate()
+		{
+		}
+
+		protected override void OnChildRemoved(Element child)
+		{
+			base.OnChildRemoved(child);
+			TemplateUtilities.OnChildRemoved(this, child);
 		}
 	}
 }

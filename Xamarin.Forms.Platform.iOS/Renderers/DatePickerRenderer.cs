@@ -11,6 +11,9 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public NoCaretField() : base(new RectangleF())
 		{
+			SpellCheckingType = UITextSpellCheckingType.No;
+			AutocorrectionType = UITextAutocorrectionType.No;
+			AutocapitalizationType = UITextAutocapitalizationType.None;
 		}
 
 		public override RectangleF GetCaretRectForPosition(UITextPosition position)
@@ -19,7 +22,16 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public class DatePickerRenderer : ViewRenderer<DatePicker, UITextField>
+	public class DatePickerRenderer : DatePickerRendererBase<UITextField>
+	{
+		protected override UITextField CreateNativeControl()
+		{
+			return new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+		}
+	}
+
+	public abstract class DatePickerRendererBase<TControl> : ViewRenderer<DatePicker, TControl>
+		where TControl : UITextField
 	{
 		UIDatePicker _picker;
 		UIColor _defaultTextColor;
@@ -27,6 +39,9 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _useLegacyColorManagement;
 
 		IElementController ElementController => Element as IElementController;
+
+
+		abstract protected override TControl CreateNativeControl();
 
 		protected override void OnElementChanged(ElementChangedEventArgs<DatePicker> e)
 		{
@@ -37,7 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Control == null)
 			{
-				var entry = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+				var entry = CreateNativeControl();
 
 				entry.EditingDidBegin += OnStarted;
 				entry.EditingDidEnd += OnEnded;
@@ -58,6 +73,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 				entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+				
+				entry.InputAssistantItem.LeadingBarButtonGroups = null;
+				entry.InputAssistantItem.TrailingBarButtonGroups = null;
 
 				_defaultTextColor = entry.TextColor;
 
@@ -120,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 			(Control as UITextField).UpdateTextAlignment(Element);
 		}
 		
-		void UpdateFont()
+		protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
 		}
@@ -135,7 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.MinimumDate = Element.MinimumDate.ToNSDate();
 		}
 
-		void UpdateTextColor()
+		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
 
