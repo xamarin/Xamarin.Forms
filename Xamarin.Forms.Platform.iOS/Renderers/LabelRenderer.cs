@@ -27,6 +27,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		FormattedString _formatted;
 
+		NSDictionary _textDecorationsDefault;
+
 		bool IsTextFormatted => _formatted != null;
 
 		static HashSet<string> s_perfectSizeSet = new HashSet<string>
@@ -133,7 +135,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 			if (disposing)
 			{
-				if(Element != null)
+				if (Element != null)
 				{
 					Element.PropertyChanging -= ElementPropertyChanging;
 				}
@@ -142,6 +144,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
+			_perfectSizeValid = false;
+
 			if (e.OldElement != null)
 			{
 				e.OldElement.PropertyChanging -= ElementPropertyChanging;
@@ -165,10 +169,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (e.OldElement?.Text != e.NewElement?.Text)
 				{
 					UpdateText();
-					if (e.NewElement.TextDecorations != TextDecorations.None)
-						UpdateTextDecorations();
+					UpdateTextDecorations();
 				}
-				if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
+				if (e.OldElement?.TextDecorations != e.NewElement.TextDecorations)
 					UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
@@ -228,17 +231,31 @@ namespace Xamarin.Forms.Platform.MacOS
 
 
 			var textDecorations = Element.TextDecorations;
-	#if __MOBILE__
-				var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
-				var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
-				var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
+#if __MOBILE__
+			var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
+			var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
+			var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
 
-	#else
+#else
 				var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
 				var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
 				var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
-	#endif
-				var range = new NSRange(0, newAttributedText.Length);
+#endif
+			var range = new NSRange(0, newAttributedText.Length);
+			if (_textDecorationsDefault == null)
+			{
+				NSRange outRange;
+#if __MOBILE__
+				_textDecorationsDefault = Control.AttributedText.GetAttributes(0, out outRange);
+#else
+				_textDecorationsDefault = Control.AttributedStringValue.GetAttributes(0, out outRange);
+#endif
+			}
+
+			if (textDecorations == TextDecorations.None)
+				newAttributedText.SetAttributes(_textDecorationsDefault, range);
+			else
+			{
 
 				if ((textDecorations & TextDecorations.Strikethrough) == 0)
 					newAttributedText.RemoveAttribute(strikeThroughStyleKey, range);
@@ -249,12 +266,13 @@ namespace Xamarin.Forms.Platform.MacOS
 					newAttributedText.RemoveAttribute(underlineStyleKey, range);
 				else
 					newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
+			}
 
-	#if __MOBILE__
-				Control.AttributedText = newAttributedText;
-	#else
-				Control.AttributedStringValue = newAttributedText;
-	#endif
+#if __MOBILE__
+			Control.AttributedText = newAttributedText;
+#else
+			Control.AttributedStringValue = newAttributedText;
+#endif
 		}
 
 #if __MOBILE__
