@@ -196,8 +196,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 			{
 				UpdateText();
-				if (Element.TextDecorations != TextDecorations.None)
-					UpdateTextDecorations();
+				UpdateTextDecorations();
 			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
@@ -218,7 +217,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (s_perfectSizeSet.Contains(e.PropertyName))
 				_perfectSizeValid = false;
 		}
-    
+
 		void UpdateTextDecorations()
 		{
 #if __MOBILE__
@@ -237,9 +236,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
 
 #else
-				var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
-				var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
-				var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
+			var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
+			var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
+			var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
 #endif
 			var range = new NSRange(0, newAttributedText.Length);
 			if (_textDecorationsDefault == null)
