@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -29,13 +30,13 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.IsFalse(IsFocused());
 			remote.TapView();
 			Assert.IsTrue(IsFocused());
-			App.Tap("FocusStateLabel");
+			App.Tap("Focus View");
 			Assert.IsFalse(IsFocused());
 		}
 
 		bool IsFocused()
 		{
-			var focusedText = App.Query("FocusStateLabel")[0].ReadText();
+			var focusedText = App.Query(q => q.Marked("FocusStateLabel").All())[0].ReadText();
 			return System.Convert.ToBoolean(focusedText);
 		}
 
