@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 		float _lineSpacingMultiplierDefault;
 		int _lastConstraintHeight;
 		int _lastConstraintWidth;
+		int _textDecorationsDefault = -1;
 
 		SizeRequest? _lastSizeRequest;
 		float _lastTextSize = -1f;
@@ -134,7 +135,7 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 			}
 
-			if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
+			if (e.OldElement?.TextDecorations != e.NewElement.TextDecorations)
 				UpdateTextDecorations();
 
 			_motionEventHelper.UpdateElement(e.NewElement);
@@ -200,15 +201,24 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var textDecorations = Element.TextDecorations;
 
-			if ((textDecorations & TextDecorations.Strikethrough) == 0)
-				_view.PaintFlags &= ~PaintFlags.StrikeThruText;
-			else
-				_view.PaintFlags |= PaintFlags.StrikeThruText;
+			if (_textDecorationsDefault == -1)
+				_textDecorationsDefault = (int)_view.PaintFlags;
 
-			if ((textDecorations & TextDecorations.Underline) == 0)
-				_view.PaintFlags &= ~PaintFlags.UnderlineText;
+			if (textDecorations == TextDecorations.None)
+				_view.PaintFlags = (PaintFlags)_textDecorationsDefault;
 			else
-				_view.PaintFlags |= PaintFlags.UnderlineText;
+			{
+
+				if ((textDecorations & TextDecorations.Strikethrough) == 0)
+					_view.PaintFlags &= ~PaintFlags.StrikeThruText;
+				else
+					_view.PaintFlags |= PaintFlags.StrikeThruText;
+
+				if ((textDecorations & TextDecorations.Underline) == 0)
+					_view.PaintFlags &= ~PaintFlags.UnderlineText;
+				else
+					_view.PaintFlags |= PaintFlags.UnderlineText;
+			}
 		}
 
 		void UpdateGravity()

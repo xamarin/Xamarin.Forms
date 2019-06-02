@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		readonly ColorStateList _labelTextColorDefault;
 		int _lastConstraintHeight;
 		int _lastConstraintWidth;
+		int _textDecorationsDefault = -1;
 		SizeRequest? _lastSizeRequest;
 		float _lastTextSize = -1f;
 		Typeface _lastTypeface;
@@ -226,7 +227,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
-				if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
+				if (e.OldElement?.TextDecorations != e.NewElement.TextDecorations)
 					UpdateTextDecorations();
 				if (e.OldElement?.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
@@ -299,15 +300,24 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			var textDecorations = Element.TextDecorations;
 
-			if ((textDecorations & TextDecorations.Strikethrough) == 0)
-				PaintFlags &= ~PaintFlags.StrikeThruText;
-			else
-				PaintFlags |= PaintFlags.StrikeThruText;
+			if (_textDecorationsDefault == -1)
+				_textDecorationsDefault = (int)PaintFlags;
 
-			if ((textDecorations & TextDecorations.Underline) == 0)
-				PaintFlags &= ~PaintFlags.UnderlineText;
+			if (textDecorations == TextDecorations.None)
+				PaintFlags = (PaintFlags)_textDecorationsDefault;
 			else
-				PaintFlags |= PaintFlags.UnderlineText;
+			{
+
+				if ((textDecorations & TextDecorations.Strikethrough) == 0)
+					PaintFlags &= ~PaintFlags.StrikeThruText;
+				else
+					PaintFlags |= PaintFlags.StrikeThruText;
+
+				if ((textDecorations & TextDecorations.Underline) == 0)
+					PaintFlags &= ~PaintFlags.UnderlineText;
+				else
+					PaintFlags |= PaintFlags.UnderlineText;
+			}
 		}
 
 		void UpdateGravity()
