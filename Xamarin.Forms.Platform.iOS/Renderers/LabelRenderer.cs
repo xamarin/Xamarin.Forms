@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 			if (disposing)
 			{
-				if (Element != null)
+				if(Element != null)
 				{
 					Element.PropertyChanging -= ElementPropertyChanging;
 				}
@@ -142,8 +142,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
-			_perfectSizeValid = false;
-
 			if (e.OldElement != null)
 			{
 				e.OldElement.PropertyChanging -= ElementPropertyChanging;
@@ -164,8 +162,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				UpdateLineBreakMode();
 				UpdateAlignment();
-				UpdateText();
-				UpdateTextDecorations();
+				if (e.OldElement?.Text != e.NewElement?.Text)
+				{
+					UpdateText();
+					if (e.NewElement.TextDecorations != TextDecorations.None)
+						UpdateTextDecorations();
+				}
+				if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
+					UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
@@ -189,15 +193,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 			{
 				UpdateText();
-				UpdateTextDecorations();
+				if (Element.TextDecorations != TextDecorations.None)
+					UpdateTextDecorations();
 			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
-			{
 				UpdateText();
-				UpdateTextDecorations();
-			}
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -213,48 +215,37 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (s_perfectSizeSet.Contains(e.PropertyName))
 				_perfectSizeValid = false;
 		}
-
+    
 		void UpdateTextDecorations()
 		{
-			if (!Element.IsSet(Label.TextDecorationsProperty))
-				return;
+				var textDecorations = Element.TextDecorations;
+	#if __MOBILE__
+				var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
+				var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
+				var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
 
-#if __MOBILE__
-			if (!(Control.AttributedText?.Length > 0))
-				return;
-#else
-			if (!(Control.AttributedStringValue?.Length > 0))
-				return;
-#endif
+	#else
+				var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
+				var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
+				var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
+	#endif
+				var range = new NSRange(0, newAttributedText.Length);
 
-			var textDecorations = Element.TextDecorations;
-#if __MOBILE__
-			var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
-			var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
-			var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
+				if ((textDecorations & TextDecorations.Strikethrough) == 0)
+					newAttributedText.RemoveAttribute(strikeThroughStyleKey, range);
+				else
+					newAttributedText.AddAttribute(strikeThroughStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
-#else
-			var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
-			var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
-			var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
-#endif
-			var range = new NSRange(0, newAttributedText.Length);
+				if ((textDecorations & TextDecorations.Underline) == 0)
+					newAttributedText.RemoveAttribute(underlineStyleKey, range);
+				else
+					newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
-			if ((textDecorations & TextDecorations.Strikethrough) == 0)
-				newAttributedText.RemoveAttribute(strikeThroughStyleKey, range);
-			else
-				newAttributedText.AddAttribute(strikeThroughStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
-
-			if ((textDecorations & TextDecorations.Underline) == 0)
-				newAttributedText.RemoveAttribute(underlineStyleKey, range);
-			else
-				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
-
-#if __MOBILE__
-			Control.AttributedText = newAttributedText;
-#else
-			Control.AttributedStringValue = newAttributedText;
-#endif
+	#if __MOBILE__
+				Control.AttributedText = newAttributedText;
+	#else
+				Control.AttributedStringValue = newAttributedText;
+	#endif
 		}
 
 #if __MOBILE__
@@ -350,9 +341,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-			_formatted = Element.FormattedText;
+			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
+
+			_formatted = values[0] as FormattedString;
 			if (_formatted == null && Element.LineHeight >= 0)
-				_formatted = Element.Text;
+				_formatted = (string)values[1];
 
 			if (IsTextFormatted)
 			{
@@ -361,9 +354,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 			{
 #if __MOBILE__
-				Control.Text = Element.Text;
+				Control.Text = (string)values[1];
 #else
-				Control.StringValue = Element.Text ?? "";
+				Control.StringValue = (string)values[1] ?? "";
 #endif
 			}
 			UpdateLayout();
