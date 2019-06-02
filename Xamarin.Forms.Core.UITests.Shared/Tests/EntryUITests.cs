@@ -25,14 +25,18 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			var remote = new StateViewContainerRemote(App, Test.VisualElement.Focus, PlatformViewType);
 			remote.GoTo();
-			bool isFocused = System.Convert.ToBoolean( App.Query("FocusStateLabel")[0].ReadText());
-			Assert.IsFalse(isFocused);
+			
+			Assert.IsFalse(IsFocused());
 			remote.TapView();
-			isFocused = System.Convert.ToBoolean(App.Query("FocusStateLabel")[0].ReadText());
-			Assert.IsTrue(isFocused);
+			Assert.IsTrue(IsFocused());
 			App.Tap("FocusStateLabel");
-			isFocused = System.Convert.ToBoolean(App.Query("FocusStateLabel")[0].ReadText());
-			Assert.IsFalse(isFocused);
+			Assert.IsFalse(IsFocused());
+		}
+
+		bool IsFocused()
+		{
+			var focusedText = App.Query("FocusStateLabel")[0].ReadText();
+			return System.Convert.ToBoolean(focusedText);
 		}
 
 		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
