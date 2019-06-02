@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.WPF
 	public class LabelRenderer : ViewRenderer<Label, TextBlock>
 	{
 		bool _fontApplied;
+		TextDecorationCollection _textDecorationsDefault;
 		IList<double> _inlineHeights = new List<double>();
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				// Update control property 
 				UpdateText();
-				if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
+				if (e.OldElement?.TextDecorations != e.NewElement.TextDecorations)
 					UpdateTextDecorations();
 				UpdateColor();
 				UpdateAlign();
@@ -70,19 +71,27 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			var textDecorations = Element.TextDecorations;
 
-			var newTextDecorations = new System.Windows.TextDecorationCollection(Control.TextDecorations);
+			if (_textDecorationsDefault == null)
+				_textDecorationsDefault = Control.TextDecorations;
 
-			if ((textDecorations & TextDecorations.Underline) == 0)
-				newTextDecorations.TryRemove(System.Windows.TextDecorations.Underline, out newTextDecorations);
+			if (textDecorations == TextDecorations.None)
+				Control.TextDecorations = _textDecorationsDefault;
 			else
-				newTextDecorations.Add(System.Windows.TextDecorations.Underline);
+			{
+				var newTextDecorations = new System.Windows.TextDecorationCollection(Control.TextDecorations);
 
-			if ((textDecorations & TextDecorations.Strikethrough) == 0)
-				newTextDecorations.TryRemove(System.Windows.TextDecorations.Strikethrough, out newTextDecorations);
-			else
-				newTextDecorations.Add(System.Windows.TextDecorations.Strikethrough);
+				if ((textDecorations & TextDecorations.Underline) == 0)
+					newTextDecorations.TryRemove(System.Windows.TextDecorations.Underline, out newTextDecorations);
+				else
+					newTextDecorations.Add(System.Windows.TextDecorations.Underline);
 
-			Control.TextDecorations = newTextDecorations;
+				if ((textDecorations & TextDecorations.Strikethrough) == 0)
+					newTextDecorations.TryRemove(System.Windows.TextDecorations.Strikethrough, out newTextDecorations);
+				else
+					newTextDecorations.Add(System.Windows.TextDecorations.Strikethrough);
+
+				Control.TextDecorations = newTextDecorations;
+			}
 		}
 
 
