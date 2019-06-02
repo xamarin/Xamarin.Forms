@@ -218,7 +218,16 @@ namespace Xamarin.Forms.Platform.MacOS
     
 		void UpdateTextDecorations()
 		{
-				var textDecorations = Element.TextDecorations;
+#if __MOBILE__
+			if (!(Control.AttributedText?.Length > 0))
+				return;
+#else
+			if (!(Control.AttributedStringValue?.Length > 0))
+				return;
+#endif
+
+
+			var textDecorations = Element.TextDecorations;
 	#if __MOBILE__
 				var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
 				var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
@@ -341,11 +350,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
-
-			_formatted = values[0] as FormattedString;
+			_formatted = Element.FormattedText;
 			if (_formatted == null && Element.LineHeight >= 0)
-				_formatted = (string)values[1];
+				_formatted = Element.Text;
 
 			if (IsTextFormatted)
 			{
@@ -354,9 +361,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 			{
 #if __MOBILE__
-				Control.Text = (string)values[1];
+				Control.Text = Element.Text;
 #else
-				Control.StringValue = (string)values[1] ?? "";
+				Control.StringValue = Element.Text ?? "";
 #endif
 			}
 			UpdateLayout();
