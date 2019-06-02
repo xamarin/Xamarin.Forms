@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.IsFalse(IsFocused());
 			remote.TapView();
 			Assert.IsTrue(IsFocused());
-			App.Tap("Focus View");
+			App.Tap("Go"); // Won't do anything, we just need to take focus away from the Entry
 			Assert.IsFalse(IsFocused());
 		}
 
