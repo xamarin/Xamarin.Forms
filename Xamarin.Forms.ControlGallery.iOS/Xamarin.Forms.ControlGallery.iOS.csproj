@@ -123,6 +123,7 @@
     <Compile Include="..\xamarin.forms.controls\gallerypages\openglgalleries\AdvancedOpenGLGallery.cs">
       <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
     </Compile>
+    <Compile Include="GalleryPages\ContextActionDisplayTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -328,6 +329,12 @@
     <BundleResource Include="Resources\icon_search%402x.png" />
     <BundleResource Include="Resources\icon_bookmark%402x.png" />
     <BundleResource Include="Resources\xamarinstore.jpg" />
+    <BundleResource Include="Resources\Entry1.png" />
+    <BundleResource Include="Resources\Entry1%402x.png" />
+    <BundleResource Include="Resources\Entry2.png" />
+    <BundleResource Include="Resources\Entry2%402x.png" />
+    <BundleResource Include="Resources\Entry3.png" />
+    <BundleResource Include="Resources\Entry3%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
