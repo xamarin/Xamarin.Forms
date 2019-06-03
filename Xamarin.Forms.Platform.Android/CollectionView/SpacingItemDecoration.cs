@@ -7,9 +7,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class SpacingItemDecoration : RecyclerView.ItemDecoration
 	{
-		// TODO ezhart Fix the spacings to be doubles instead of ints
-
-
 		ItemsLayoutOrientation _orientation;
 		double _verticalSpacing;
 		double _adjustedVerticalSpacing = -1;
