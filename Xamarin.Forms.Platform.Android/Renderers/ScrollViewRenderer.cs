@@ -75,6 +75,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= HandlePropertyChanged;
+
+				if (oldElement.Content != null)
+					oldElement.Content.SizeChanged -= OnContentSizeChanged;
+
 				((IScrollViewController)oldElement).ScrollToRequested -= OnScrollToRequested;
 			}
 			if (element != null)
@@ -88,6 +92,10 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				_view.PropertyChanged += HandlePropertyChanged;
+
+				if (_view.Content != null)
+					_view.Content.SizeChanged += OnContentSizeChanged;
+
 				Controller.ScrollToRequested += OnScrollToRequested;
 
 				LoadContent();
@@ -354,6 +362,11 @@ namespace Xamarin.Forms.Platform.Android
 		void LoadContent()
 		{
 			_container.ChildView = _view.Content;
+		}
+
+		void OnContentSizeChanged(object sender, EventArgs e)
+		{
+			Tracker?.UpdateLayout();
 		}
 
 		async void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
