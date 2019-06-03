@@ -161,6 +161,8 @@ namespace Xamarin.Forms
 			public IOSPlatformServices()
 			{
 #if __MOBILE__
+				// We make these up anyway, so new sizes didn't really change
+				// iOS docs say default button font size is 15, default label font size is 17 so we use those as the defaults.
 				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 18f;
 #endif
 			}
@@ -206,8 +208,6 @@ namespace Xamarin.Forms
 				}
 #endif
 
-				// We make these up anyway, so new sizes didn't really change
-				// iOS docs say default button font size is 15, default label font size is 17 so we use those as the defaults.
 				switch (size)
 				{
 					//We multiply the fonts by the scale factor, and cast to an int, to make them whole numbers.
