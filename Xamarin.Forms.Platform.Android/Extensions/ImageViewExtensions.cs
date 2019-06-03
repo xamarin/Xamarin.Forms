@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Platform.Android
 			ImageSource newImageSource,
 			ImageSource previousImageSource)
 		{
+			bool checkView = newImageSource == null;
+			bool SourceIsNotChanged() => checkView ? newView?.Source == newImageSource : true;
 
 			IImageController imageController = newView as IImageController;
 			newImageSource = newImageSource ?? newView?.Source;
@@ -48,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 						using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
 						{
 							// only set the image if we are still on the same one
-							if (!imageView.IsDisposed() && Equals(newView?.Source, newImageSource))
+							if (!imageView.IsDisposed() && SourceIsNotChanged())
 								imageView.SetImageDrawable(drawable);
 						}
 					}
@@ -61,7 +63,7 @@ namespace Xamarin.Forms.Platform.Android
 			finally
 			{
 				// only mark as finished if we are still working on the same image
-				if (Equals(newView?.Source, newImageSource))
+				if (SourceIsNotChanged())
 				{
 					imageController?.SetIsLoading(false);
 					imageController?.NativeSizeChanged();
