@@ -13,12 +13,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Foundation;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 #if __MOBILE__
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
 using TNativeView = UIKit.UIView;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 #else
 using AppKit;
 using Xamarin.Forms.Platform.MacOS;
@@ -160,7 +160,9 @@ namespace Xamarin.Forms
 			readonly double _fontScalingFactor = 1;
 			public IOSPlatformServices()
 			{
+#if __MOBILE__
 				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 18f;
+#endif
 			}
 
 			static readonly MD5CryptoServiceProvider s_checksum = new MD5CryptoServiceProvider();
