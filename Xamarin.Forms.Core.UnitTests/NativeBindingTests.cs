@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		public void FireBazChanged()
 		{
-			BazChanged?.Invoke(this, new TappedEventArgs(null));
+			BazChanged?.Invoke(this, new TappedEventArgs(null, new Point()));
 		}
 
 		public event EventHandler<TappedEventArgs> BazChanged;

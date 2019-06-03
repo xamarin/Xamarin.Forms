@@ -34,18 +34,17 @@ namespace Xamarin.Forms
 			set { SetValue(NumberOfTapsRequiredProperty, value); }
 		}
 
-		public event EventHandler Tapped;
+		public event TappedEventHandler Tapped;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendTapped(View sender)
+		public void SendTapped(View sender, Point position)
 		{
 			ICommand cmd = Command;
 			if (cmd != null && cmd.CanExecute(CommandParameter))
 				cmd.Execute(CommandParameter);
 
-			EventHandler handler = Tapped;
-			if (handler != null)
-				handler(sender, new TappedEventArgs(CommandParameter));
+			var handler = Tapped;
+			handler?.Invoke(sender, new TappedEventArgs(CommandParameter, position));
 
 #pragma warning disable 0618 // retain until TappedCallback removed
 			Action<View, object> callback = TappedCallback;

@@ -306,6 +306,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new SwipeGestureGalleryPage(), "Swipe gesture Gallery"),
 				new GalleryPageFactory(() => new PinchGestureTestPage(), "Pinch gesture Gallery"),
 				new GalleryPageFactory(() => new ClickGestureGalleryPage(), "Click gesture Gallery"),
+				new GalleryPageFactory(() => new TapGestureTestPage(), "Tap gesture Gallery"),
 				new GalleryPageFactory(() => new AutomationIdGallery(), "AutomationID Gallery"),
 				new GalleryPageFactory(() => new LayoutPerformanceGallery(), "Layout Perf Gallery"),
 				new GalleryPageFactory(() => new ListViewSelectionColor(), "ListView SelectionColor Gallery"),
