@@ -13,6 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Foundation;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 #if __MOBILE__
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
@@ -155,18 +157,10 @@ namespace Xamarin.Forms
 
 		class IOSPlatformServices : IPlatformServices
 		{
-
 			readonly double _fontScalingFactor = 1;
 			public IOSPlatformServices()
 			{
-#if __MOBILE__
-				//The standard accessibility size for a font is 18, we can get a
-				//close approximation to the new Size by multiplying by this scale factor
-				if (!Forms.Flags.Contains(global::Xamarin.Forms.Flags.DisableAccessibilityScalingForNamedFontSizes))
-				{
-					_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 18f;
-				}
-#endif
+				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 18f;
 			}
 
 			static readonly MD5CryptoServiceProvider s_checksum = new MD5CryptoServiceProvider();
@@ -200,21 +194,31 @@ namespace Xamarin.Forms
 
 			public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 			{
+
+				var scalingFactor = _fontScalingFactor;
+
+#if __MOBILE__
+				if (Application.Current?.On<iOS>().GetDisableAccessibilityScalingForNamedFontSizes() == true)
+				{
+					scalingFactor = 1;
+				}
+#endif
+
 				// We make these up anyway, so new sizes didn't really change
 				// iOS docs say default button font size is 15, default label font size is 17 so we use those as the defaults.
 				switch (size)
 				{
 					//We multiply the fonts by the scale factor, and cast to an int, to make them whole numbers.
 					case NamedSize.Default:
-						return (int)((typeof(Button).IsAssignableFrom(targetElementType) ? 15 : 17) * _fontScalingFactor);
+						return (int)((typeof(Button).IsAssignableFrom(targetElementType) ? 15 : 17) * scalingFactor);
 					case NamedSize.Micro:
-						return (int)(12 * _fontScalingFactor);
+						return (int)(12 * scalingFactor);
 					case NamedSize.Small:
-						return (int)(14 * _fontScalingFactor);
+						return (int)(14 * scalingFactor);
 					case NamedSize.Medium:
-						return (int)(17 * _fontScalingFactor);
+						return (int)(17 * scalingFactor);
 					case NamedSize.Large:
-						return (int)(22 * _fontScalingFactor);
+						return (int)(22 * scalingFactor);
 #if __IOS__
 					case NamedSize.Body:
 						return (double)UIFont.PreferredBody.PointSize;
