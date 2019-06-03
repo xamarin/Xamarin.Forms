@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 6077, "CollectionView (iOS) using horizontal grid does not display last column of uneven item count", PlatformAffected.iOS)]
 	public class Issue6077 : TestNavigationPage
 	{
+		[Preserve(AllMembers = true)]
 		public class MainViewModel : INotifyPropertyChanged
 		{
 			readonly IList<ItemModel> _items;
@@ -73,6 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 			#endregion
 		}
 
+		[Preserve(AllMembers = true)]
 		public class ItemModel
 		{
 			public string Title { get; set; }
