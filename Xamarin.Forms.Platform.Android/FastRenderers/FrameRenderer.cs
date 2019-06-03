@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateClippedToBounds()
 		{
-			if (!_disposed)
+			if (!_disposed && Forms.IsLollipopOrNewer)
 				ClipToOutline = Element.IsClippedToBounds;
 		}
 
