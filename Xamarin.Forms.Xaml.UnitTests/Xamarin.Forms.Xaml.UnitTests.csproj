@@ -30,4 +30,12 @@
       <Link>BaseTestFixture.cs</Link>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="DataTemplateExtension - Copy.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="FontImageExtension.xaml.cs">
+      <DependentUpon>FontImageExtension.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
