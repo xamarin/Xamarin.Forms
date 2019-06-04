@@ -24,6 +24,8 @@ namespace Xamarin.Forms.Xaml
 				markupExtension = new OnIdiomExtension();
 			else if (match == "DataTemplate")
 				markupExtension = new DataTemplateExtension();
+			else if (match == "FontImage")
+				markupExtension = new FontImageExtension();
 			else
 			{
 				if (typeResolver == null)
