@@ -3,6 +3,7 @@
 namespace Xamarin.Forms.Xaml
 {
 	[AcceptEmptyServiceProvider]
+	[ContentProperty(nameof(Glyph))]
 	public class FontImageExtension : IMarkupExtension<ImageSource>
 	{
 		public string FontFamily { get; set; }
