@@ -43,8 +43,7 @@ namespace Xamarin.Forms
 			if (cmd != null && cmd.CanExecute(CommandParameter))
 				cmd.Execute(CommandParameter);
 
-			var handler = Tapped;
-			handler?.Invoke(sender, new TappedEventArgs(CommandParameter, position));
+			Tapped?.Invoke(sender, new TappedEventArgs(CommandParameter, position));
 
 #pragma warning disable 0618 // retain until TappedCallback removed
 			Action<View, object> callback = TappedCallback;

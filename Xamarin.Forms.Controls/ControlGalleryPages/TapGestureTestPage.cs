@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls
 				RowDefinitions = new RowDefinitionCollection { new RowDefinition {Height = GridLength.Auto},new RowDefinition {Height = GridLength.Auto}, new RowDefinition {Height = GridLength.Star} }
 			};
 
-			var picker = new Picker { ItemsSource = new List<int> { 1, 2 } };
+			var picker = new Picker { ItemsSource = new List<int> { 1, 2 }, Title = "Number of taps" };
 			grid.AddChild(picker, 0, 0);
 
 			outputLabel = new Label { Text = "Nothing tapped yet!", LineBreakMode = LineBreakMode.WordWrap, HorizontalTextAlignment = TextAlignment.Center };
