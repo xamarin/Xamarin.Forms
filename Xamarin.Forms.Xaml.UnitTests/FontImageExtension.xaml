@@ -5,9 +5,7 @@
     xmlns:local="using:Xamarin.Forms.Xaml.UnitTests"
     x:Class="Xamarin.Forms.Xaml.UnitTests.FontImageExtension">
 
+    <Tab Title="Hello" Icon="{FontImage FontFamily={x:Static local:FontImageExtension.FontFamily}, Glyph={x:Static local:FontImageExtension.Glyph}}" />
+    <Tab Title="World" Icon="{FontImage FontFamily={x:Static local:FontImageExtension.FontFamily}, Glyph={x:Static local:FontImageExtension.Glyph}}" />
 
-    <Tab Title="Hello" Icon="{FontImage FontFamily={x:Static local:FontImageExtension.FontFamily}, Glyph={x:Static local:FontImageExtension.Glyph}}">
-    </Tab>
-    <Tab Title="World" Icon="{FontImage FontFamily={x:Static local:FontImageExtension.FontFamily}, Glyph={x:Static local:FontImageExtension.Glyph}}">
-    </Tab>
 </TabBar>
