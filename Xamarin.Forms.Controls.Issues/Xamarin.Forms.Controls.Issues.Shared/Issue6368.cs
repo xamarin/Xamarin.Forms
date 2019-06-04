@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var button = new Button()
 			{
 				AutomationId = "btnGo",
-				Text = "Click me",
+				Text = "Click me to go to the next page",
 				Command = new Command(() => PushAsync(new ContentPage()
 				{
 					Content = GetContent()
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 			return content2;
 		}
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void Issue6368Test() 
 		{

@@ -14,7 +14,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			base.OnElementChanged(e);
 
-			//this Pattern is wrong
+			//
+			// --- Important --- //
+			//
+			// This is a WRONG Pattern!
 			//Pattern taken from: https://docs.microsoft.com/en-us/xamarin/xamarin-forms/app-fundamentals/custom-renderer/view
 			if (this.Control == null)
 			{
