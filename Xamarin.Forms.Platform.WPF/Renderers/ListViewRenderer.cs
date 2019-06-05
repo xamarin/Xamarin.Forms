@@ -320,18 +320,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void OnNativeKeyUp(object sender, KeyEventArgs e)
 		{
-			if (e.Key == Key.Enter)
-			{
-				Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
-			}
+			Element.NotifyRowTapped(Control.SelectedIndex, cell: null, e.Key != Key.Enter);
 		}
 
 		void OnNativeMouseUp(object sender, MouseButtonEventArgs e)
 		{
-			if (e.ChangedButton != MouseButton.Right)
-			{
-				Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
-			}
+			Element.NotifyRowTapped(Control.SelectedIndex, cell: null, e.ChangedButton == MouseButton.Right);
 		}
 
 		void OnNativeTouchUp(object sender, TouchEventArgs e)

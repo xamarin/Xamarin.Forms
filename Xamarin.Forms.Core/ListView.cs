@@ -427,7 +427,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void NotifyRowTapped(int groupIndex, int inGroupIndex, Cell cell = null)
+		public void NotifyRowTapped(int groupIndex, int inGroupIndex, Cell cell = null, bool isContextMenuRequested = false)
 		{
 			var group = TemplatedItems.GetGroup(groupIndex);
 
@@ -446,7 +446,9 @@ namespace Xamarin.Forms
 			if (SelectionMode != ListViewSelectionMode.None)
 				SetValueCore(SelectedItemProperty, cell?.BindingContext, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearDynamicResource | (changed ? SetValueFlags.RaiseOnEqual : 0));
 
-			cell?.OnTapped();
+			if (!isContextMenuRequested)
+			{
+				cell?.OnTapped();
 
 			var itemSource = ItemsSource?.Cast<object>().ToList();
 			object tappedGroup = null;
@@ -459,17 +461,17 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void NotifyRowTapped(int index, Cell cell = null)
+		public void NotifyRowTapped(int index, Cell cell = null, bool isContextmenuRequested = false)
 		{
 			if (IsGroupingEnabled)
 			{
 				int leftOver;
 				int groupIndex = TemplatedItems.GetGroupIndexFromGlobal(index, out leftOver);
 
-				NotifyRowTapped(groupIndex, leftOver - 1, cell);
+				NotifyRowTapped(groupIndex, leftOver - 1, cell, isContextmenuRequested);
 			}
 			else
-				NotifyRowTapped(0, index, cell);
+				NotifyRowTapped(0, index, cell, isContextmenuRequested);
 		}
 
 		internal override void OnIsPlatformEnabledChanged()

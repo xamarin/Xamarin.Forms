@@ -616,7 +616,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private void OnItemTapped(object sender, Controls.ItemTappedEventArgs args)
 		{
-			if (Element == null || args.MouseButton == MouseButton.Right)
+			if (Element == null)
 				return;
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
@@ -624,7 +624,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			if (index > -1)
 			{
-				Element.NotifyRowTapped(index, cell: null);
+				Element.NotifyRowTapped(index, cell: null, args.MouseButton == MouseButton.Right);
 			}
 		}
 	}
