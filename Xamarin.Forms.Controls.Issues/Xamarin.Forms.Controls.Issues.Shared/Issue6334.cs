@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue6334Test() 
 		{
-			RunningApp.WaitForElement (q => q.Marked (AutomationId));
+			RunningApp.WaitForElement (q => q.Marked ("IssuePageLabel"));
 			RunningApp.WaitForElement(q => q.Marked(Success));
 			RunningApp.Screenshot ("I see the gradient");
 		}
