@@ -1,5 +1,6 @@
 ﻿using GLib;
 using Gtk;
+using OpenTK.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 	public class ItemTappedEventArgs : EventArgs
 	{
 		private object _item;
+		private MouseButton _mouseButton;
 
 		public object Item
 		{
@@ -22,12 +24,21 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 			}
 		}
 
-		public ItemTappedEventArgs(object item)
+		public MouseButton MouseButton
+		{
+			get
+			{
+				return _mouseButton;
+			}
+		}
+
+		public ItemTappedEventArgs(object item, MouseButton button)
 		{
 			_item = item;
+			_mouseButton = button;
 		}
 	}
-
+	
 	public class SelectedItemEventArgs : EventArgs
 	{
 		private object _selectedItem;
@@ -487,8 +498,8 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 					SelectedItem = gtkCell.Item;
 
 					MarkCellAsSelected(gtkCell);
-
-					OnItemTapped?.Invoke(this, new ItemTappedEventArgs(SelectedItem));
+					
+					OnItemTapped?.Invoke(this, new ItemTappedEventArgs(SelectedItem, (MouseButton)args.Event.Button-1));
 				}
 			};
 			

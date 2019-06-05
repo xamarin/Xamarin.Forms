@@ -322,7 +322,12 @@ namespace Xamarin.Forms.Platform.WPF
 			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
 
 		void OnNativeMouseUp(object sender, MouseButtonEventArgs e)
-			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
+		{
+			if (e.ChangedButton != MouseButton.Right)
+			{
+				Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
+			}
+		}
 
 		void OnNativeTouchUp(object sender, TouchEventArgs e)
 			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);

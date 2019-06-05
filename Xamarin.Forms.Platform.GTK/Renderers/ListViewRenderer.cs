@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Input;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -615,12 +616,12 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private void OnItemTapped(object sender, Controls.ItemTappedEventArgs args)
 		{
-			if (Element == null)
+			if (Element == null || args.MouseButton == MouseButton.Right)
 				return;
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
 			var index = templatedItems.GetGlobalIndexOfItem(args.Item);
-
+			
 			if (index > -1)
 			{
 				Element.NotifyRowTapped(index, cell: null);
