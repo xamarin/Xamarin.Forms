@@ -54,27 +54,27 @@
 		}
 		#endregion
 
-		#region DisableAccessibilityScalingForNamedFontSizes
-		public static readonly BindableProperty DisableAccessibilityScalingForNamedFontSizesProperty = BindableProperty.Create("DisableAccessibilityScalingForNamedFontSizes", typeof(bool), typeof(Application), false);
+		#region EnableAccessibilityScalingForNamedFontSizes
+		public static readonly BindableProperty EnableAccessibilityScalingForNamedFontSizesProperty = BindableProperty.Create("EnableAccessibilityScalingForNamedFontSizes", typeof(bool), typeof(Application), true);
 
-		public static bool GetDisableAccessibilityScalingForNamedFontSizes(BindableObject element)
+		public static bool GetEnableAccessibilityScalingForNamedFontSizes(BindableObject element)
 		{
-			return (bool)element.GetValue(DisableAccessibilityScalingForNamedFontSizesProperty);
+			return (bool)element.GetValue(EnableAccessibilityScalingForNamedFontSizesProperty);
 		}
 
-		public static void SetDisableAccessibilityScalingForNamedFontSizes(BindableObject element, bool value)
+		public static void SetEnableAccessibilityScalingForNamedFontSizes(BindableObject element, bool value)
 		{
-			element.SetValue(DisableAccessibilityScalingForNamedFontSizesProperty, value);
+			element.SetValue(EnableAccessibilityScalingForNamedFontSizesProperty, value);
 		}
 
-		public static bool GetDisableAccessibilityScalingForNamedFontSizes(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static bool GetEnableAccessibilityScalingForNamedFontSizes(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			return GetDisableAccessibilityScalingForNamedFontSizes(config.Element);
+			return GetEnableAccessibilityScalingForNamedFontSizes(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetDisableAccessibilityScalingForNamedFontSizes(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetEnableAccessibilityScalingForNamedFontSizes(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
-			SetDisableAccessibilityScalingForNamedFontSizes(config.Element, value);
+			SetEnableAccessibilityScalingForNamedFontSizes(config.Element, value);
 			return config;
 		}
 		#endregion

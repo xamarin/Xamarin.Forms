@@ -13,17 +13,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Foundation;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+
 #if __MOBILE__
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
 using TNativeView = UIKit.UIView;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 #else
 using AppKit;
 using Xamarin.Forms.Platform.MacOS;
 using TNativeView = AppKit.NSView;
-
 #endif
 
 namespace Xamarin.Forms
@@ -202,12 +202,10 @@ namespace Xamarin.Forms
 				// iOS docs say default button font size is 15, default label font size is 17 so we use those as the defaults.
 				var scalingFactor = _fontScalingFactor;
 
-#if __MOBILE__
-				if (Application.Current?.On<iOS>().GetDisableAccessibilityScalingForNamedFontSizes() == true)
+				if (Application.Current?.On<iOS>().GetEnableAccessibilityScalingForNamedFontSizes() == false)
 				{
 					scalingFactor = 1;
 				}
-#endif
 
 				switch (size)
 				{
