@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 			_mouseButton = button;
 		}
 	}
-	
+
 	public class SelectedItemEventArgs : EventArgs
 	{
 		private object _selectedItem;
@@ -498,8 +498,8 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 					SelectedItem = gtkCell.Item;
 
 					MarkCellAsSelected(gtkCell);
-					
-					OnItemTapped?.Invoke(this, new ItemTappedEventArgs(SelectedItem, (MouseButton)args.Event.Button-1));
+
+					OnItemTapped?.Invoke(this, new ItemTappedEventArgs(SelectedItem, (MouseButton)args.Event.Button - 1));
 				}
 			};
 			

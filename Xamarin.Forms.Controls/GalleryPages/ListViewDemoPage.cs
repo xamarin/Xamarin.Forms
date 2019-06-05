@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -117,7 +118,7 @@ namespace Xamarin.Forms.Controls
 						    }
 					    }
 				    };
-					viewCell.Tapped += ViewCell_Tapped;
+				    viewCell.Tapped += ViewCell_Tapped;
 				    viewCell.ContextActions.Add(new MenuItem()
 				    {
 					    Text = "Odd Action"
@@ -126,9 +127,9 @@ namespace Xamarin.Forms.Controls
 			    });
 		    }
 
-			private void ViewCell_Tapped(object sender, EventArgs e)
+			void ViewCell_Tapped(object sender, EventArgs e)
 			{
-				
+				Debug.WriteLine("Item tapped");
 			}
 
 			protected override DataTemplate OnSelectTemplate (object item, BindableObject container)
@@ -223,7 +224,7 @@ namespace Xamarin.Forms.Controls
                 ItemsSource = new List<List<Person>> {people, people2},
 				IsPullToRefreshEnabled = true,
 				IsGroupingEnabled = true,
-				
+
                 // Define template for displaying each item.
                 // (Argument of DataTemplate constructor is called for 
                 //      each item; it must return a Cell derivative.)

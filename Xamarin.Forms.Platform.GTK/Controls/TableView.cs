@@ -7,7 +7,6 @@ using Xamarin.Forms.Platform.GTK.Extensions;
 
 namespace Xamarin.Forms.Platform.GTK.Controls
 {
-
 	public class TableView : ScrolledWindow
 	{
 		private VBox _root;
@@ -182,7 +181,7 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 								{
 									var selectedCell = gtkCell.Cell;
 
-									OnItemTapped?.Invoke(this, new ItemTappedEventArgs(selectedCell, (MouseButton)args.Event.Button));
+									OnItemTapped?.Invoke(this, new ItemTappedEventArgs(selectedCell, (MouseButton)args.Event.Button - 1));
 								}
 							};
 							_cells.Add(nativeCell);

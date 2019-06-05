@@ -621,7 +621,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
 			var index = templatedItems.GetGlobalIndexOfItem(args.Item);
-			
+
 			if (index > -1)
 			{
 				Element.NotifyRowTapped(index, cell: null);
