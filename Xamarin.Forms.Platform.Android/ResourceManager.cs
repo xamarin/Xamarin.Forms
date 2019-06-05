@@ -379,7 +379,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (packageName != null)
 			{
 				id = resource.GetIdentifier(name, defType, packageName);
-			
+
 				if (id > 0)
 					return id;
 			}
