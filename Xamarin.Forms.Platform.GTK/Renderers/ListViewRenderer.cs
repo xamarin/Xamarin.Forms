@@ -624,7 +624,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			if (index > -1)
 			{
-				Element.NotifyRowTapped(index, cell: null, args.MouseButton == MouseButton.Right);
+				Element.NotifyRowTapped(index, cell: null, isContextmenuRequested: args.MouseButton == MouseButton.Right);
 			}
 		}
 	}
