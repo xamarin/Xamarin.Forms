@@ -242,37 +242,6 @@ namespace Xamarin.Forms
 			return false;
 		}
 
-		private Element ResolveRelativeSourceAncestor(
-			RelativeBindingSource relativeSource, 
-			Element element)
-		{
-			if (element.RealParent is Application)
-				return null;
-
-			int currentLevel = 1;
-
-			element = element.RealParent;
-			while (!Application.IsApplicationOrNull(element))
-			{
-				if (currentLevel >= relativeSource.AncestorLevel)
-				{
-					if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor &&
-						relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.GetType().GetTypeInfo()))
-						return element;
-
-					if (element.BindingContext != null &&
-						relativeSource.Mode == RelativeBindingSourceMode.FindAncestorBindingContext &&
-						relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.BindingContext.GetType().GetTypeInfo()))
-						return element;
-				}
-
-				element = element.RealParent;
-				currentLevel++;
-			}
-
-			return null;
-		}
-
 		internal override BindingBase Clone()
 		{
 			return new Binding(Path, Mode) {

@@ -355,7 +355,7 @@ namespace Xamarin.Forms
 
 			OnDescendantAdded(child);
 			foreach (Element element in child.Descendants())
-				OnDescendantAdded(element);							
+				OnDescendantAdded(element);
 		}
 
 		protected virtual void OnChildRemoved(Element child)
@@ -366,7 +366,7 @@ namespace Xamarin.Forms
 
 			OnDescendantRemoved(child);
 			foreach (Element element in child.Descendants())
-				OnDescendantRemoved(element);				
+				OnDescendantRemoved(element);
 		}
 
 		protected virtual void OnParentSet()
