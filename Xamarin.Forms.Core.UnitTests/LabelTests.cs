@@ -298,15 +298,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (TextAlignment.End, labelYAlign.YAlign);
 			Assert.AreEqual (TextAlignment.End, labelVerticalTextAlignment.VerticalTextAlignment);
 		}
-
-		[Test]
-		public void SetLetterSpacing()
-		{
-			var control = new Label();
-			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
-			control.LetterSpacing = 1.0;
-		}
-
 		sealed class ViewModel : INotifyPropertyChanged
 		{
 			TextAlignment horizontalAlignment;

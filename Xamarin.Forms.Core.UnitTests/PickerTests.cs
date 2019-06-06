@@ -475,13 +475,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, picker.SelectedIndex);
 			Assert.AreEqual(null, picker.SelectedItem);
 		}
-
-		[Test]
-		public void SetLetterSpacing()
-		{
-			var control = new Picker();
-			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
-			control.LetterSpacing = 1.0;
-		}
 	}
 }

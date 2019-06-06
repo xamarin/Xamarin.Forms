@@ -174,13 +174,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			datePicker.SetValue (DatePicker.DateProperty, nullableDateTime);
 			Assert.AreEqual (dateTime, datePicker.Date);
 		}
-
-		[Test]
-		public void SetLetterSpacing()
-		{
-			var control = new DatePicker();
-			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
-			control.LetterSpacing = 1.0;
-		}
 	}
 }

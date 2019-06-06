@@ -44,13 +44,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Editor editor = new Editor();
 			Assert.AreEqual(editor.IsReadOnly, false);
 		}
-
-		[Test]
-		public void SetLetterSpacing()
-		{
-			var control = new Editor();
-			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
-			control.LetterSpacing = 1.0;
-		}
 	}
 }
