@@ -14,6 +14,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		public static string FontFamily => "MyFontFamily";
 		public static string Glyph => "MyGlyph";
+		public static Color Color => Color.Black;
+		public static double Size = 50d;
 
 		[TestFixture]
 		class Tests
