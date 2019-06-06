@@ -38,8 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 					cells.ContextActions.Add(new MenuItem()
 					{
 						IconImageSource = "coffee.png",
-						AutomationId = "coffee.png",
-						//Text = "Menuitem Text"
+						AutomationId = "coffee.png"
 					});
 
 					cells.View = new StackLayout()
@@ -48,7 +47,7 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							new Label()
 							{
-								Text = "test",
+								Text = "Trigger context action on this row and you should see a coffee cup. Test only relevation on Android",
 								AutomationId = "ListViewItem"
 							}
 						}
@@ -59,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 		}
 
-#if UITEST
+#if UITEST && __ANDROID__
 		[Test]
 		public void ContextActionsIconImageSource()
 		{
