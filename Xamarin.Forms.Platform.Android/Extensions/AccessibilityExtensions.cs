@@ -1,5 +1,6 @@
 ﻿using System;
 using Android.Views;
+using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -112,16 +113,11 @@ namespace Xamarin.Forms.Platform.Android
 			
 			var elemValue = ConcatenateNameAndHint(Element);
 
+			if (string.IsNullOrWhiteSpace(elemValue))
+				elemValue = Element.AutomationId;
+
 			if (!string.IsNullOrWhiteSpace(elemValue))
-				global::Android.Support.V4.View.MenuItemCompat.SetContentDescription(Control, elemValue);
-			else
-			{
-				string value = Element.AutomationId;
-				if (!string.IsNullOrEmpty(value))
-				{
-					global::Android.Support.V4.View.MenuItemCompat.SetContentDescription(Control, value);
-				}
-			}
+				AMenuItemCompat.SetContentDescription(Control, elemValue);
 
 			return;
 		}

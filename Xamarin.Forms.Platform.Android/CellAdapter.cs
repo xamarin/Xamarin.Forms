@@ -200,7 +200,6 @@ namespace Xamarin.Forms.Platform.Android
 					if (iconDrawable != null && !_isDisposed && !_actionModeNeedsUpdates)
 					{
 						item.SetIcon(iconDrawable);
-						string value = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(action);
 						item.SetTitleOrContentDescription(action);
 					}
 				});
