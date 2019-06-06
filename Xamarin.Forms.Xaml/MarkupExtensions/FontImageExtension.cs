@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Xaml
 		public string FontFamily { get; set; }
 		public string Glyph { get; set; }
 		public Color Color { get; set; }
+		public double Size { get; set; } = 30d;
 
 		public ImageSource ProvideValue(IServiceProvider serviceProvider)
 		{
@@ -16,7 +17,8 @@ namespace Xamarin.Forms.Xaml
 			{
 				FontFamily = FontFamily,
 				Glyph = Glyph,
-				Color = Color
+				Color = Color,
+				Size = Size
 			};
 		}
 
