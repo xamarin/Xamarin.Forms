@@ -16,10 +16,11 @@ namespace Xamarin.Forms
 
 		readonly List<BindingExpressionPart> _parts = new List<BindingExpressionPart>();
 
+		bool _trackingTemplatedParent;
 		BindableProperty _targetProperty;
 		WeakReference<object> _weakSource;
 		WeakReference<BindableObject> _weakTarget;
-		List<WeakReference<Element>> _relativeParentChain;
+		List<WeakReference<Element>> _ancestryChange;
 
 		internal BindingExpression(BindingBase binding, string path)
 		{
@@ -97,10 +98,17 @@ namespace Xamarin.Forms
 				}
 			}
 
+			if (_trackingTemplatedParent)
+			{
+				BindableObject target = null;
+				if (_weakTarget?.TryGetTarget(out target) == true && target is Element elem)
+					elem.TemplatedParentChanged -= OnTargetTemplatedParentChanged;
+			}
+
 			_weakSource = null;
 			_weakTarget = null;
 
-			ClearParentChangeSubscriptions();
+			ClearAncestryChangeSubscriptions();
 		}
 
 		/// <summary>
@@ -461,46 +469,61 @@ namespace Xamarin.Forms
 			}
 		}
 
-		// SubscribeToParentChanges, ClearParentChangeSubscriptions, FindParentChainMemberIndex,
-		// OnElementParentChainChange are used with RelativeSource bindings, to detect when
-		// there has been an ancestor change requiring re-applying the binding. This is preferable
-		// to propagating ancestor change notifications down the entire visual tree, the vast majority of
-		// which will not be using RelativeSource binding.
-		internal void SubscribeToParentChanges(List<Element> chain)
+		internal void SubscribeToTemplatedParentChanges(Element target, BindableProperty targetProperty)
 		{
-			ClearParentChangeSubscriptions();
+			_targetProperty = targetProperty;
+			target.TemplatedParentChanged += OnTargetTemplatedParentChanged;
+			_trackingTemplatedParent = true;
+		}
+
+		private void OnTargetTemplatedParentChanged(object sender, EventArgs e)
+		{
+			if (!(sender is Element elem) ||
+				!(this.Binding is Binding binding))
+				return;
+			binding.Unapply();
+			binding.Apply(null, elem, _targetProperty);
+		}
+
+		// SubscribeToAncestryChanges, ClearAncestryChangeSubscriptions, FindAncestryIndex, and
+		// OnElementParentSet are used with RelativeSource ancestor-type bindings, to detect when
+		// there has been an ancestry change requiring re-applying the binding, and to minimize
+		// re-applications especially during visual tree building.
+		internal void SubscribeToAncestryChanges(List<Element> chain)
+		{
+			ClearAncestryChangeSubscriptions();
 			if (chain == null)
 				return;
-			_relativeParentChain = new List<WeakReference<Element>>();
+			_ancestryChange = new List<WeakReference<Element>>();
 			foreach (var elem in chain)
 			{
-				elem.ParentSet += OnElementParentChainChange;
-				_relativeParentChain.Add(new WeakReference<Element>(elem));
+				elem.ParentSet += OnElementParentSet;
+				_ancestryChange.Add(new WeakReference<Element>(elem));
 			}
 		}
 
-		private void ClearParentChangeSubscriptions(int beginningWith = 0)
+		private void ClearAncestryChangeSubscriptions(int beginningWith = 0)
 		{
-			if (_relativeParentChain == null || _relativeParentChain.Count == 0)
+			if (_ancestryChange == null || _ancestryChange.Count == 0)
 				return;
-			int count = _relativeParentChain.Count;
+			int count = _ancestryChange.Count;
 			for (int i = beginningWith; i < count; i++)
 			{
 				Element elem;
-				var weakElement = _relativeParentChain.Last();
+				var weakElement = _ancestryChange.Last();
 				if (weakElement.TryGetTarget(out elem))
-					elem.ParentSet -= OnElementParentChainChange;
-				_relativeParentChain.RemoveAt(_relativeParentChain.Count - 1);
+					elem.ParentSet -= OnElementParentSet;
+				_ancestryChange.RemoveAt(_ancestryChange.Count - 1);
 			}
 		}
 
 		// Returns -1 if the member is not in the chain or the
 		// chain is no longer valid.
-		private int FindParentChainMemberIndex(Element elem)
+		private int FindAncestryIndex(Element elem)
 		{
-			for (int i = 0; i < _relativeParentChain.Count; i++)
+			for (int i = 0; i < _ancestryChange.Count; i++)
 			{
-				WeakReference<Element> weak = _relativeParentChain[i];
+				WeakReference<Element> weak = _ancestryChange[i];
 				Element chainMember = null;
 				if (!weak.TryGetTarget(out chainMember))
 					return -1;
@@ -510,7 +533,7 @@ namespace Xamarin.Forms
 			return -1;
 		}
 
-		private void OnElementParentChainChange(object sender, EventArgs e)
+		private void OnElementParentSet(object sender, EventArgs e)
 		{
 			if (!(sender is Element elem) ||
 				!(this.Binding is Binding binding))
@@ -524,14 +547,14 @@ namespace Xamarin.Forms
 			{
 				// Remove anything further up in the chain
 				// than the element with the null parent
-				int index = FindParentChainMemberIndex(elem);
+				int index = FindAncestryIndex(elem);
 				if (index == -1)
 				{
 					binding.Unapply();
 					return;
 				}
-				if (index + 1 < _relativeParentChain.Count)
-					ClearParentChangeSubscriptions(index + 1);
+				if (index + 1 < _ancestryChange.Count)
+					ClearAncestryChangeSubscriptions(index + 1);
 
 				// Force the binding expression to resolve to null
 				// for now, until someone in the chain gets a new

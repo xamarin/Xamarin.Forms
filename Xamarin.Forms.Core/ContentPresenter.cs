@@ -86,9 +86,7 @@ namespace Xamarin.Forms
 			if (newView != null)
 			{
 				self.InternalChildren.Add(newView);
-				newView.ParentOverride = await TemplateUtilities.FindAncestorAsync(
-					RelativeBindingSource.TemplatedParent,
-					(Element)bindable);
+				newView.ParentOverride = await TemplateUtilities.FindTemplatedParentAsync((Element)bindable);
 			}
 		}
 	}

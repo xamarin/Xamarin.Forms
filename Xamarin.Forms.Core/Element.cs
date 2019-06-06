@@ -208,8 +208,36 @@ namespace Xamarin.Forms
 				OnParentSet();
 
 				OnPropertyChanged();
+
+				if (this.IsTemplateRoot)
+					this.TemplatedParent = value;
 			}
 		}
+
+		internal event EventHandler TemplatedParentChanged;
+		
+		BindableObject _templatedParent;
+		public BindableObject TemplatedParent
+		{
+			get => _templatedParent ?? (_templatedParent = this.Parent?.TemplatedParent);
+			private set
+			{
+				if (_templatedParent == value)
+					return;
+				_templatedParent = value;
+				TemplatedParentChanged?.Invoke(this, null);
+				foreach (var element in this.Descendants())
+				{
+					if (value == null)
+						// Item has been detached from its templated 
+						// parent, so reset all the stored values
+						element._templatedParent = null;
+					element.TemplatedParentChanged?.Invoke(element, null);
+				}
+			}
+		}
+
+		internal bool IsTemplateRoot { get; set; }
 
 		void IElement.RemoveResourcesChangedListener(Action<object, ResourcesChangedEventArgs> onchanged)
 		{
@@ -327,7 +355,7 @@ namespace Xamarin.Forms
 
 			OnDescendantAdded(child);
 			foreach (Element element in child.Descendants())
-				OnDescendantAdded(element);
+				OnDescendantAdded(element);							
 		}
 
 		protected virtual void OnChildRemoved(Element child)
@@ -338,7 +366,7 @@ namespace Xamarin.Forms
 
 			OnDescendantRemoved(child);
 			foreach (Element element in child.Descendants())
-				OnDescendantRemoved(element);
+				OnDescendantRemoved(element);				
 		}
 
 		protected virtual void OnParentSet()

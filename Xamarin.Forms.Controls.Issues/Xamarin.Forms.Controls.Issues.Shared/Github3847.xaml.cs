@@ -63,12 +63,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public ObservableCollection<PersonViewModel> Employees { get; set; }
 
-		Command _DeleteEmployeeCommand;
+		Command _deleteEmployeeCommand;
 		public Command DeleteEmployeeCommand
 		{
 			get
 			{
-				return _DeleteEmployeeCommand ?? (_DeleteEmployeeCommand = new Command((employee) =>
+				return _deleteEmployeeCommand ?? (_deleteEmployeeCommand = new Command((employee) =>
 				{
 					this.Employees?.Remove(employee as PersonViewModel);
 				}));

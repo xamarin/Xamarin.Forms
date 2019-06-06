@@ -84,9 +84,8 @@ namespace Xamarin.Forms
 
 			base.Apply(newContext, bindObj, targetProperty, fromBindingContextChanged);
 
-			Element templatedParent = await TemplateUtilities.FindAncestorAsync(
-				RelativeBindingSource.TemplatedParent,
-				view);
+			Element templatedParent = await TemplateUtilities.FindTemplatedParentAsync(view);
+
 			ApplyInner(templatedParent, bindObj, targetProperty);
 		}
 

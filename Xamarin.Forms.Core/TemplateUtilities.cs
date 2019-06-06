@@ -1,67 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace Xamarin.Forms
 {
 	internal static class TemplateUtilities
 	{
-		public static async Task<Element> FindAncestorAsync(
-			RelativeBindingSource relativeSource,
-			Element element,
-			List<Element> fullChain = null)
+		public static async Task<Element> FindTemplatedParentAsync(Element element)
 		{
 			if (element.RealParent is Application)
 				return null;
 
 			var skipCount = 0;
-			int currentLevel = 1;
-
-			fullChain?.Add(element);
 			element = await GetRealParentAsync(element);
 			while (!Application.IsApplicationOrNull(element))
-			{				
-				if (relativeSource.Mode == RelativeBindingSourceMode.TemplatedParent)
+			{
+				var controlTemplated = element as IControlTemplated;
+				if (controlTemplated?.ControlTemplate != null)
 				{
-					var controlTemplated = element as IControlTemplated;
-					if (controlTemplated?.ControlTemplate != null)
-					{
-						if (skipCount == 0)
-							return element;
-						skipCount--;
-					}
-					if (element is ContentPresenter)
-						skipCount++;
+					if (skipCount == 0)
+						return element;
+					skipCount--;
 				}
-				else if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor ||
-						relativeSource.Mode == RelativeBindingSourceMode.FindAncestorBindingContext)
-				{
-					if (currentLevel >= relativeSource.AncestorLevel)
-					{
-						if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor &&
-							relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.GetType().GetTypeInfo()))
-						{
-							return element;
-						}
-
-						if (element.BindingContext != null &&
-							relativeSource.Mode == RelativeBindingSourceMode.FindAncestorBindingContext &&
-							relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.BindingContext.GetType().GetTypeInfo()))
-						{
-							return element;
-						}
-					}
-				}
-
-				fullChain?.Add(element);
+				if (element is ContentPresenter)
+					skipCount++;
 				element = await GetRealParentAsync(element);
-				
-				currentLevel++;
 			}
-			
+
 			return null;
 		}
 
