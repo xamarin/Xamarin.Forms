@@ -133,7 +133,6 @@ namespace Xamarin.Forms.Platform.Android
 												Action<bool> onLoading = null,
 												CancellationToken cancellationToken = default(CancellationToken))
 		{
-			_ = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_ = context ?? throw new ArgumentNullException(nameof(context));
 			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
 			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
@@ -141,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 			// TODO: it might be good to make sure the renderer has not been disposed
 
 			// make sure things are good before we start
-			var element = bindable ?? renderer.Element;
+			var element = bindable ?? renderer?.Element;
 
 			if (element == null)
 				return;
@@ -174,10 +173,10 @@ namespace Xamarin.Forms.Platform.Android
 							return;
 
 						// we are back, so update the working element
-						element = bindable ?? renderer.Element;
+						element = bindable ?? renderer?.Element;
 
 						// makse sure things are good now that we are back
-						if (element == null || renderer.View == null)
+						if (element == null || renderer?.View == null)
 							return;
 
 						// only set if we are still on the same image
@@ -196,10 +195,10 @@ namespace Xamarin.Forms.Platform.Android
 								return;
 
 							// we are back, so update the working element
-							element = bindable ?? renderer.Element;
+							element = bindable ?? renderer?.Element;
 
 							// makse sure things are good now that we are back
-							if (element == null || renderer.View == null)
+							if (element == null || (renderer != null && renderer.View == null))
 								return;
 
 							// only set if we are still on the same image

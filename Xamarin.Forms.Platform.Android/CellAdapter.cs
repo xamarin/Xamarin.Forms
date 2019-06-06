@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _actionModeNeedsUpdates;
 		AView _contextView;
 		global::Android.Support.V7.View.ActionMode _supportActionMode;
+		bool _isDisposed = false;
 
 		protected CellAdapter(Context context)
 		{
@@ -196,8 +197,12 @@ namespace Xamarin.Forms.Platform.Android
 
 				_ = _context.ApplyDrawableAsync(action, MenuItem.IconImageSourceProperty, iconDrawable =>
 				{
-					if (iconDrawable != null)
+					if (iconDrawable != null && !_isDisposed && !_actionModeNeedsUpdates)
+					{
 						item.SetIcon(iconDrawable);
+						string value = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(action);
+						item.SetTitleOrContentDescription(action);
+					}
 				});
 
 				action.PropertyChanged += changed;
@@ -333,6 +338,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return false;
+		}
+
+
+		protected override void Dispose(bool disposing)
+		{
+			_isDisposed = true;
+			base.Dispose(disposing);
 		}
 	}
 }
