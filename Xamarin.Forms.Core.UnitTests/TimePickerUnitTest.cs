@@ -39,6 +39,5 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That (() => picker.Time = new TimeSpan (0, 0, 0), Throws.Nothing);
 		}
-
 	}
 }

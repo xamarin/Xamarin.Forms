@@ -298,6 +298,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (TextAlignment.End, labelYAlign.YAlign);
 			Assert.AreEqual (TextAlignment.End, labelVerticalTextAlignment.VerticalTextAlignment);
 		}
+
 		sealed class ViewModel : INotifyPropertyChanged
 		{
 			TextAlignment horizontalAlignment;

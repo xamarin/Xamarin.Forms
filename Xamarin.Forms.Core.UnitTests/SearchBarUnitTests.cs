@@ -129,6 +129,5 @@ namespace Xamarin.Forms.Core.UnitTests
 	        var searchBar = new SearchBar();
             Assert.DoesNotThrow(() => searchBar.SearchCommand = new MyCommand());
 	    }
-
 	}
 }

@@ -169,6 +169,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Entry entry = new Entry();
 			Assert.AreEqual(entry.IsReadOnly, false);
 		}
-
 	}
 }

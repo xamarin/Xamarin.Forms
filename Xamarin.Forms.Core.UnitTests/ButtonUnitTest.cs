@@ -315,6 +315,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			button.BorderRadius = -1;
 			Assert.AreEqual(-1, button.BorderRadius);
 		}
+
 		private void AssertButtonContentLayoutsEqual(Button.ButtonContentLayout layout1, object layout2)
 		{
 			var bcl = (Button.ButtonContentLayout)layout2;

@@ -77,6 +77,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreEqual(vm.Text, span.Text);
 		}
+
 		class ViewModel
 		{
 			public string Text { get; set; }
