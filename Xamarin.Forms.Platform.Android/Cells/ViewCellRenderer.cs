@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ViewCellRenderer : CellRenderer
 	{
-		ViewCellContainer _view;
+		WeakReference<ViewCellContainer> _view;
 
 		protected override AView GetCellCore(Cell item, AView convertView, ViewGroup parent, Context context)
 		{
@@ -45,9 +45,11 @@ namespace Xamarin.Forms.Platform.Android
 			Platform.SetRenderer(cell.View, view);
 			cell.View.IsPlatformEnabled = true;
 			var c = new ViewCellContainer(context, view, cell, ParentView, unevenRows, rowHeight);
-			_view = c;
+			_view = new WeakReference<ViewCellContainer>(c);
 
-			UpdateBackgroundColor(_view, Cell);
+			if (_view.TryGetTarget(out var v))
+				UpdateBackgroundColor(v, Cell);
+
 			Performance.Stop(reference, "GetCellCore");
 
 			return c;
@@ -58,7 +60,10 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnCellPropertyChanged(sender, args);
 
 			if (args.PropertyName == Cell.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor(_view, Cell);
+			{
+				if (_view.TryGetTarget(out var view))
+					UpdateBackgroundColor(view, Cell);
+			}
 		}
 
 		internal class ViewCellContainer : ViewGroup, INativeElementView
