@@ -36,6 +36,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 						continue;
 
 					Assert.That(myTab.Icon, Is.TypeOf<FontImageSource>());
+
+					var fontImage = (FontImageSource)myTab.Icon;
+					Assert.AreEqual(fontImage.FontFamily, FontFamily);
+					Assert.AreEqual(fontImage.Glyph, Glyph);
+					Assert.AreEqual(fontImage.Size, Size);
+					Assert.AreEqual(fontImage.Color, Color);
 				}
 			}
 
