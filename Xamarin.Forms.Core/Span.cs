@@ -50,7 +50,6 @@ namespace Xamarin.Forms
 			set { SetValue(TextElement.LetterSpacingProperty, value); }
 		}
 
-
 		[Obsolete("Foreground is obsolete as of version 3.1.0. Please use the TextColor property instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty ForegroundColorProperty = TextColorProperty;
