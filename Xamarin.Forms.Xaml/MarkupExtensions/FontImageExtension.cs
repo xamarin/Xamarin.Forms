@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Xaml
 		public string FontFamily { get; set; }
 		public string Glyph { get; set; }
 		public Color Color { get; set; }
-		public double Size { get; set; } = 30d;
+		public double Size { get; set; } = (double)FontImageSource.SizeProperty.DefaultValue;
 
 		public ImageSource ProvideValue(IServiceProvider serviceProvider)
 		{
