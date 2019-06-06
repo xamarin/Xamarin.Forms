@@ -25,6 +25,7 @@ using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
 
 
+[assembly: ExportRenderer(typeof(Issue5461.ScrollbarFadingEnabledFalseScrollView), typeof(ScrollbarFadingEnabledFalseScrollViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue1942.CustomGrid), typeof(Issue1942GridRenderer))]
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Effects.AttachedStateEffectLabel), typeof(AttachedStateEffectLabelRenderer))]
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.LegacyComponents.NonAppCompatSwitch), typeof(NonAppCompatSwitchRenderer))]
@@ -58,16 +59,38 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 
-	public class AttachedStateEffectLabelRenderer : LabelRenderer
+	public class ScrollbarFadingEnabledFalseScrollViewRenderer : ScrollViewRenderer
+	{
+		public ScrollbarFadingEnabledFalseScrollViewRenderer(Context context) : base(context)
+		{
+			// I do a cast here just so this will fail just to be sure we don't change the base types
+			var castingTest = (global::Android.Support.V4.Widget.NestedScrollView)this;
+			castingTest.ScrollbarFadingEnabled = false;
+		}
+	}
+
+	public class AttachedStateEffectLabelRenderer :
+#if TEST_EXPERIMENTAL_RENDERERS
+		Platform.Android.FastRenderers.LabelRenderer
+#else
+		LabelRenderer
+#endif
 	{
 		public AttachedStateEffectLabelRenderer(Context context) : base(context)
 		{
 		}
 
+#if TEST_EXPERIMENTAL_RENDERERS
 		protected override void Dispose(bool disposing)
 		{
+			foreach (var effect in Element.Effects.OfType<Controls.Effects.AttachedStateEffect>())
+			{
+				effect.Detached(Element);
+			}
+
 			base.Dispose(disposing);
 		}
+#endif
 	}
 
 	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
@@ -184,7 +207,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeListViewAdapter(Forms.Context as Activity, e.NewElement);
+				Control.Adapter = new NativeListViewAdapter(Forms.Context.GetActivity(), e.NewElement);
 #pragma warning restore 618
 				Control.ItemClick += Clicked;
 			}
@@ -204,7 +227,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeListViewAdapter(Forms.Context as Activity, Element);
+				Control.Adapter = new NativeListViewAdapter(Forms.Context.GetActivity(), Element);
 #pragma warning restore 618
 			}
 		}
@@ -282,7 +305,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			if (view == null)
 			{// no view to re-use, create new
-				view = (context as Activity).LayoutInflater.Inflate(Resource.Layout.NativeAndroidCell, null);
+				view = (context.GetActivity()).LayoutInflater.Inflate(Resource.Layout.NativeAndroidCell, null);
 			}
 			else
 			{ // re-use, clear image
@@ -371,7 +394,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 				// subscribe
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context as Activity, e.NewElement);
+				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context.GetActivity(), e.NewElement);
 #pragma warning restore 618
 				Control.ItemClick += Clicked;
 			}
@@ -396,7 +419,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 #pragma warning disable 618
 				// Disabled the warning so we have a test that this obsolete stuff still works
-				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context as Activity, Element);
+				Control.Adapter = new NativeAndroidListViewAdapter(Forms.Context.GetActivity(), Element);
 #pragma warning restore 618
 			}
 		}
@@ -669,7 +692,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if(disposing)
+			if (disposing)
 			{
 				ViewGroup.ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
 				_gridChild.SetOnTouchListener(null);

@@ -9,6 +9,7 @@
 		<ResourceDictionary Source="PageControlStyle.xaml" />
 		<ResourceDictionary Source="FormsProgressBarStyle.xaml" />
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
+		<ResourceDictionary Source="FormsCheckBoxStyle.xaml" />
 		<ResourceDictionary Source="AutoSuggestStyle.xaml" />
 		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
@@ -30,7 +31,7 @@
 	<uwp:TextAlignmentToHorizontalAlignmentConverter x:Key="AlignmentConverter" />
 	<uwp:KeyboardConverter x:Key="KeyboardConverter" />
 	<uwp:MasterBackgroundConverter x:Key="MasterBackgroundConverter" />
-	<uwp:FileImageSourcePathConverter x:Key="FileImageSourcePathConverter" />
+	<uwp:ImageSourceIconElementConverter x:Key="ImageSourceIconElementConverter" />
 	<x:Double x:Key="TitleBarHeight">48</x:Double>
 
 	<DataTemplate x:Key="PushPinTemplate">
@@ -236,7 +237,7 @@
     </Style>
 
     <DataTemplate x:Key="TextCell">
-		<StackPanel>
+		<StackPanel AutomationProperties.AutomationId="{Binding AutomationId}">
 			<TextBlock
 				Text="{Binding Text}"
 				Style="{ThemeResource BaseTextBlockStyle}"

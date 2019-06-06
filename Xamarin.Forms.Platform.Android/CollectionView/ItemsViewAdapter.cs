@@ -8,25 +8,27 @@ using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged	
-
 	public class ItemsViewAdapter : RecyclerView.Adapter
 	{
-		protected readonly ItemsView ItemsView;
-		readonly Func<IVisualElementRenderer, Context, AView> _createView;
-		internal readonly IItemsViewSource ItemsSource;
+		const int TextView = 41;
+		const int TemplatedView = 42;
 
-		internal ItemsViewAdapter(ItemsView itemsView, Func<IVisualElementRenderer, Context, AView> createView = null)
+		protected readonly ItemsView ItemsView;
+		readonly Func<View, Context, ItemContentView> _createItemContentView;
+		internal readonly IItemsViewSource ItemsSource;
+		bool _disposed;
+
+		internal ItemsViewAdapter(ItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
 
 			ItemsView = itemsView;
-			_createView = createView;
+			_createItemContentView = createItemContentView;
 			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
 
-			if (_createView == null)
+			if (_createItemContentView == null)
 			{
-				_createView = (renderer, context) => new ItemContentView(renderer, context);
+				_createItemContentView = (view, context) => new ItemContentView(context);
 			}
 		}
 
@@ -34,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (holder is TemplatedItemViewHolder templatedItemViewHolder)
 			{
-				templatedItemViewHolder.View.Parent = null;
+				templatedItemViewHolder.Recycle(ItemsView);
 			}
 
 			base.OnViewRecycled(holder);
@@ -47,9 +49,8 @@ namespace Xamarin.Forms.Platform.Android
 				case TextViewHolder textViewHolder:
 					textViewHolder.TextView.Text = ItemsSource[position].ToString();
 					break;
-				case TemplatedItemViewHolder templateViewHolder:
-					templateViewHolder.View.Parent = ItemsView;
-					BindableObject.SetInheritedBindingContext(templateViewHolder.View, ItemsSource[position]);
+				case TemplatedItemViewHolder templatedItemViewHolder:
+					templatedItemViewHolder.Bind(ItemsSource[position], ItemsView);
 					break;
 			}
 		}
@@ -58,50 +59,44 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var context = parent.Context;
 
-			// Does the ItemsView have a DataTemplate?
-			var template = ItemsView.ItemTemplate;
-			if (template == null)
+			if(viewType == TextView)
 			{
-				// No template, just use the ToString view
 				var view = new TextView(context);
 				return new TextViewHolder(view);
 			}
 
-			// Realize the content, create a renderer out of it, and use that
-			var templateElement = (View)template.CreateContent();
-			var itemContentControl = _createView(CreateRenderer(templateElement, context), context);
-
-			return new TemplatedItemViewHolder(itemContentControl, templateElement);
-		}
-
-		static IVisualElementRenderer CreateRenderer(View view, Context context)
-		{
-			if (view == null)
-			{
-				throw new ArgumentNullException(nameof(view));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			var renderer = Platform.CreateRenderer(view, context);
-			Platform.SetRenderer(view, renderer);
-
-			return renderer;
+			var itemContentView = new ItemContentView(parent.Context);
+			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
 		}
 
 		public override int ItemCount => ItemsSource.Count;
 
 		public override int GetItemViewType(int position)
 		{
-			// TODO hartez We might be able to turn this to our own purposes
-			// We might be able to have the CollectionView signal the adapter if the ItemTemplate property changes
-			// And as long as it's null, we return a value to that effect here
-			// Then we don't have to check _itemsView.ItemTemplate == null in OnCreateViewHolder, we can just use
-			// the viewType parameter.
-			return 42;
+			// Does the ItemsView have a DataTemplate?
+			// TODO ezhart We could probably cache this instead of having to GetValue every time
+			if (ItemsView.ItemTemplate == null)
+			{
+				// No template, just use the Text view
+				return TextView;
+			}
+
+			return TemplatedView;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					ItemsSource?.Dispose();
+				}
+
+				_disposed = true;
+
+				base.Dispose(disposing);
+			}
 		}
 
 		public virtual int GetPositionForItem(object item)

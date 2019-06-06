@@ -6,6 +6,7 @@ using Android.Support.V7.Widget;
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -14,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>,
 		AView.IOnAttachStateChangeListener, AView.IOnClickListener, AView.IOnTouchListener,
-		IBorderVisualElementRenderer, IButtonLayoutRenderer
+		IBorderVisualElementRenderer, IButtonLayoutRenderer, IDisposedState
 	{
 		BorderBackgroundManager _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
@@ -50,12 +51,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void AView.IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView) =>
 			_buttonLayoutManager?.OnViewDetachedFromWindow(detachedView);
-
-		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
-		{
-			_buttonLayoutManager?.Update();
-			return base.GetDesiredSize(widthConstraint, heightConstraint);
-		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
@@ -201,12 +196,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
 		}
 
-		Button IButtonLayoutRenderer.Element => Element;
-		AppCompatButton IButtonLayoutRenderer.View => Control;
 		event EventHandler<VisualElementChangedEventArgs> IButtonLayoutRenderer.ElementChanged
 		{
 			add => ((IVisualElementRenderer)this).ElementChanged += value;
 			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
 		}
+
+		AppCompatButton IButtonLayoutRenderer.View => Control;
+		bool IDisposedState.IsDisposed => _isDisposed;
 	}
 }
