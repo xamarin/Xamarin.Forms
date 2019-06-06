@@ -29,18 +29,17 @@ namespace Xamarin.Forms.ControlGallery.iOS.CustomRenderers
 
 	class TagUiLabel : UILabel
 	{
-
-		private UIEdgeInsets EdgeInsets = new UIEdgeInsets(10, 5, 10, 5);
-		private UIEdgeInsets InverseEdgeInsets = new UIEdgeInsets(-10, -5, -10, -5);
+		UIEdgeInsets _edgeInsets = new UIEdgeInsets(10, 5, 10, 5);
+		UIEdgeInsets _inverseEdgeInsets = new UIEdgeInsets(-10, -5, -10, -5);
 
 		public override CoreGraphics.CGRect TextRectForBounds(CoreGraphics.CGRect bounds, nint numberOfLines)
 		{
-			var textRect = base.TextRectForBounds(EdgeInsets.InsetRect(bounds), numberOfLines);
-			return InverseEdgeInsets.InsetRect(textRect);
+			var textRect = base.TextRectForBounds(_edgeInsets.InsetRect(bounds), numberOfLines);
+			return _inverseEdgeInsets.InsetRect(textRect);
 		}
 		public override void DrawText(CoreGraphics.CGRect rect)
 		{
-			base.DrawText(EdgeInsets.InsetRect(rect));
+			base.DrawText(_edgeInsets.InsetRect(rect));
 		}
 	}
 }
