@@ -12,6 +12,7 @@ namespace Xamarin.Forms
 
 		double LetterSpacing { get; }
 
+		//note to implementor: but implement these methods explicitly
 		void OnLetterSpacingPropertyChanged(double oldValue, double newValue);
 	}
 }
