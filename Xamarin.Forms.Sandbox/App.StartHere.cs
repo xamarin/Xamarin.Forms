@@ -13,9 +13,9 @@ namespace Xamarin.Forms.Sandbox
 		{
 
 
-			this.Resources.Add(StyleSheet.FromAssemblyResource(
+		/*this.Resources.Add(StyleSheet.FromAssemblyResource(
 				IntrospectionExtensions.GetTypeInfo(typeof(App)).Assembly,
-				"Xamarin.Forms.Sandbox.Styles.css"));
+				"Xamarin.Forms.Sandbox.Styles.css"));*/
 
 			//MainPage = CreateStackLayoutPage(new[] { new Button() {  Text = "text" } });
 			//MainPage.Visual = VisualMarker.Material;

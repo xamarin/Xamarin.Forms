@@ -1,25 +1,130 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Shell xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xamarin.Forms.Sandbox.ShellPage"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
-             ios:Page.UseSafeArea="true">
-
-    <Shell.FlyoutHeader>
-        <StackLayout>
-            <Button Text="I am a Button"  />
-        </StackLayout>
-    </Shell.FlyoutHeader>
-    <ShellContent>
-        <ContentPage>
-            <Shell.TitleView>
-                <StackLayout>
-                    <Button Text="I am a Button"  />
-                </StackLayout>
-            </Shell.TitleView>
-            <StackLayout>
-                <Button Text="I am a Button"  />
-            </StackLayout>
-        </ContentPage>
-    </ShellContent>
+             
+               Shell.FlyoutBehavior="Flyout"  
+               FlyoutHeaderBehavior="Fixed"
+               Shell.FlyoutBackgroundColor="Purple">
+             
+  <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Image Margin="0"  HeightRequest="300" MinimumHeightRequest="100"  BackgroundColor="Black" Source="xamarin_logo.png"></Image>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+   
+    <FlyoutItem>
+        <Tab>
+            <ShellContent Shell.FlyoutBehavior="Disabled" Title="Tab 1">
+                <ContentPage  >
+                    <ScrollView>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="70" />
+                        </Grid.RowDefinitions>
+                        <Label Text="I am a top"  />
+                        <Label Grid.Row="1"  Text="I am a Button"  />
+                        <Entry Grid.Row="2" />
+                    </Grid>
+                        </ScrollView>
+                </ContentPage>
+            </ShellContent>
+            <ShellContent Shell.FlyoutBehavior="Disabled" Title="Tab 2">
+                <ContentPage  >
+                    <ScrollView>
+                    <StackLayout>
+                        <Button Clicked="Handle_Clicked" Text="I am a top"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle2_Clicked" Text="I am a Better Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                        <Button Clicked="Handle_Clicked" Text="I am a Button"  />
+                    </StackLayout>
+                        </ScrollView>
+                </ContentPage>
+            </ShellContent>
+        </Tab>
+    </FlyoutItem>
+    
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="some item"></MenuItem>
+    <MenuItem Text="bottom item"></MenuItem>
 </Shell>

@@ -37,6 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_defaultTitleAttributes = navBar.TitleTextAttributes;
 			}
 
+
 			if (!background.IsDefault)
 				navBar.BarTintColor = background.ToUIColor();
 			if (!foreground.IsDefault)
