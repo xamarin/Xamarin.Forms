@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __ANDROID__
 		[Test]
-		[Category(Core.UITests.UITestCategories.ManualReview)]
+		[Category(Core.UITests.UITestCategories.ListView)]
 		public void RefreshContextActions()
 		{
 			RunningApp.WaitForElement("Cell 1");
@@ -79,6 +79,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("Long Press Cell 4 to show context actions");
 			RunningApp.Tap(q => q.Marked("Cell 5"));
 			RunningApp.Screenshot("Clicked another cell and changed menu items");
+
+			Assert.AreEqual(1, RunningApp.Query(c => c.Marked("Hendrerit")).Length);
 		}
 #endif
 	}
