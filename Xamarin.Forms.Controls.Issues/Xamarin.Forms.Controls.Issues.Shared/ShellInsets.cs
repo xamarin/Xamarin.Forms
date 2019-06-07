@@ -28,6 +28,18 @@ namespace Xamarin.Forms.Controls.Issues
 		const string EntryTest = "EntryTest";
 		const string EntryToClick = "EntryToClick";
 		const string EntrySuccess = "EntrySuccess";
+		const string Reset = "Reset";
+
+		const string ToggleSafeArea = "ToggleSafeArea";
+		const string SafeAreaTest = "SafeAreaTest";
+		const string SafeAreaTopLabel = "SafeAreaTopLabel";
+		const string SafeAreaBottomLabel = "SafeAreaBottomLabel";
+
+		const string ListViewTest = "ListViewTest";
+
+		const string PaddingTest = "PaddingTest";
+		const string PaddingEntry = "PaddingEntry";
+		const string PaddingLabel = "PaddingLabel";
 
 		protected override void Init()
 		{
@@ -37,8 +49,8 @@ namespace Xamarin.Forms.Controls.Issues
 		void SetupLandingPage()
 		{
 			var page = CreateContentPage();
-			CheckBox cbox = new CheckBox();
-			Entry entryPadding = new Entry() { WidthRequest = 150 };
+			CheckBox cbox = new CheckBox() { AutomationId = ToggleSafeArea };
+			Entry entryPadding = new Entry() { WidthRequest = 150, AutomationId = PaddingEntry };
 
 			page.Content = new StackLayout()
 			{
@@ -53,7 +65,8 @@ namespace Xamarin.Forms.Controls.Issues
 					new Button()
 					{
 						Text = "List View Scroll Test",
-						Command = new Command(() => ListViewPage())
+						Command = new Command(() => ListViewPage()),
+						AutomationId = ListViewTest
 					},
 					new StackLayout()
 					{
@@ -64,7 +77,8 @@ namespace Xamarin.Forms.Controls.Issues
 							new Button()
 							{
 								Text = "Safe Area",
-								Command = new Command(() => SafeArea(cbox.IsChecked))
+								Command = new Command(() => SafeArea(cbox.IsChecked)),
+								AutomationId = SafeAreaTest
 							}
 						},
 						HorizontalOptions = LayoutOptions.Center
@@ -78,7 +92,8 @@ namespace Xamarin.Forms.Controls.Issues
 							new Button()
 							{
 								Text = "Padding",
-								Command = new Command(() => PaddingPage(entryPadding.Text))
+								Command = new Command(() => PaddingPage(entryPadding.Text)),
+								AutomationId = PaddingTest
 							}
 						},
 						HorizontalOptions = LayoutOptions.Center
@@ -100,8 +115,10 @@ namespace Xamarin.Forms.Controls.Issues
 				ItemTemplate = new DataTemplate(() =>
 				{
 					ViewCell cell = new ViewCell();
-					var label = new Label() { Text = " I am a label" }; ;
+					var label = new Label() { Text = " I am a label" };
 					label.SetBinding(Label.TextProperty, ".");
+					label.SetBinding(Label.AutomationIdProperty, ".");
+
 					cell.View =
 					new StackLayout()
 					{
@@ -116,7 +133,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 					return cell;
 				}),
-				ItemsSource = Enumerable.Range(0, 1000)
+				ItemsSource = Enumerable.Range(0, 1000).Select(x=> $"Item{x}").ToArray()
 			};
 
 			CurrentItem = Items.Last();
@@ -137,7 +154,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Children =
 				{
 					new Label(){ Text = "Top Label", HeightRequest = 200},
-					new Label() { Text = $"Padding: {text}"},
+					new Label() { Text = $"Padding: {text}", AutomationId = PaddingLabel},
 					new Button(){Text = "Reset", Command = new Command(() => SetupLandingPage() )}
 				}
 			};
@@ -146,6 +163,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Items.RemoveAt(0);
 		}
 
+
 		void SafeArea(bool value)
 		{
 			var page = CreateContentPage();
@@ -153,8 +171,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children =
 				{
-					new Label(){ Text = "Top Label", HeightRequest = 200},
-					new Label(){Text = value ? "You should see two labels" : "You should see one label"},
+					new Label(){ Text = "Top Label", HeightRequest = 200, AutomationId = SafeAreaTopLabel},
+					new Label(){Text = value ? "You should see two labels" : "You should see one label", AutomationId = SafeAreaBottomLabel},
 					new Button(){Text = "Reset", Command = new Command(() => SetupLandingPage() )}
 				}
 			};
@@ -196,6 +214,11 @@ namespace Xamarin.Forms.Controls.Issues
 							new Entry()
 							{
 								AutomationId = EntryToClick
+							},
+							new Button()
+							{
+								Text = "Click Me"
+
 							}
 						}
 				}
@@ -212,9 +235,53 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(EntryTest);
 			RunningApp.Tap(EntryToClick);
 			RunningApp.WaitForNoElement(EntrySuccess);
-			RunningApp.TapCoordinates(0, 0);
+			RunningApp.Tap("Click Me");
 			RunningApp.WaitForElement(EntrySuccess);
+			RunningApp.Tap(Reset);
 
+		}
+
+		[Test]
+		public void ListViewScrollTest()
+		{
+			RunningApp.Tap(ListViewTest);
+			RunningApp.WaitForElement("Item0");
+			RunningApp.Tap(Reset);
+
+		}
+		[Test]
+		public void SafeArea()
+		{
+			RunningApp.Tap(SafeAreaTest);
+			var noSafeAreaLocation = RunningApp.WaitForElement(SafeAreaBottomLabel);
+
+			Assert.AreEqual(1, noSafeAreaLocation.Length);
+			RunningApp.Tap(Reset);
+
+			RunningApp.Tap(ToggleSafeArea);
+			RunningApp.Tap(SafeAreaTest);
+			var safeAreaLocation = RunningApp.WaitForElement(SafeAreaBottomLabel);
+			Assert.AreEqual(1, safeAreaLocation.Length);
+
+			Assert.Greater(safeAreaLocation[0].Rect.Y, noSafeAreaLocation[0].Rect.Y);
+		}
+
+		[Test]
+		public void PaddingWithoutSafeArea()
+		{
+			RunningApp.EnterText(q => q.Raw($"* marked:'{PaddingEntry}'"), "0");
+			RunningApp.Tap(PaddingTest);
+			var zeroPadding = RunningApp.WaitForElement(PaddingLabel);
+
+			Assert.AreEqual(1, zeroPadding.Length);
+			RunningApp.Tap(Reset);
+
+			RunningApp.EnterText(PaddingEntry, "100");
+			RunningApp.Tap(PaddingTest);
+			var somePadding = RunningApp.WaitForElement(PaddingLabel);
+			Assert.AreEqual(1, somePadding.Length);
+
+			Assert.Greater(somePadding[0].Rect.Y, zeroPadding[0].Rect.Y);
 		}
 #endif
 	}
