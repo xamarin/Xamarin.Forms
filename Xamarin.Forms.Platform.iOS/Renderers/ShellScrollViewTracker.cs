@@ -71,7 +71,8 @@ namespace Xamarin.Forms.Platform.iOS
 				var newBounds = _scrollView.AdjustedContentInset.InsetRect(_scrollView.Bounds).ToRectangle();
 				newBounds.X = 0;
 				newBounds.Y = 0;
-				((ScrollView)_renderer.Element).LayoutAreaOverride = newBounds;
+				if(_renderer.Element is ScrollView scrollView)
+					scrollView.LayoutAreaOverride = newBounds;
 			}
 		}
 
@@ -132,7 +133,8 @@ namespace Xamarin.Forms.Platform.iOS
 			// If we can't bounce in that case you may not be able to expose the handler.
 			// Also the hiding behavior only depends on scroll on iOS 11. In 10 and below
 			// the search goes in the TitleView so there is nothing to collapse/expand.
-			if (!Forms.IsiOS11OrNewer || ((ScrollView)_renderer.Element).Orientation == ScrollOrientation.Horizontal)
+			if (!Forms.IsiOS11OrNewer || 
+				(_renderer.Element is ScrollView scrollView && scrollView.Orientation == ScrollOrientation.Horizontal))
 				return;
 
 			var parent = _renderer.Element.Parent;
