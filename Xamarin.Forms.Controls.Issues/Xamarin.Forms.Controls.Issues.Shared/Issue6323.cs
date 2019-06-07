@@ -14,11 +14,13 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			SelectedTabColor = Color.Purple;
 			Device.StartTimer(TimeSpan.FromSeconds(2), () =>
 			{
 				Children.Add(new ContentPage
 				{
-					Content = new Label { Text = "Success" }
+					Content = new Label { Text = "Success" },
+					Title = "I'm a title"
 				});
 				return false;
 			});

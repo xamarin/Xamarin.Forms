@@ -287,6 +287,7 @@ namespace Xamarin.Forms.Platform.UWP
 					// Need to make sure any new items have the correct fore/background colors
 					ApplyBarBackgroundColor(true);
 					ApplyBarTextColor(true);
+					UpdateSelectedTabColors();
 					break;
 			}
 		}
