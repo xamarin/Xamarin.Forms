@@ -25,6 +25,10 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class ShellInsets : TestShell
 	{
+		const string EntryTest = "EntryTest";
+		const string EntryToClick = "EntryToClick";
+		const string EntrySuccess = "EntrySuccess";
+
 		protected override void Init()
 		{
 			SetupLandingPage();
@@ -43,7 +47,8 @@ namespace Xamarin.Forms.Controls.Issues
 					new Button()
 					{
 						Text = "Entry Inset",
-						Command = new Command(() => EntryInset())
+						Command = new Command(() => EntryInset()),
+						AutomationId = EntryTest
 					},
 					new StackLayout()
 					{
@@ -141,7 +146,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Children =
 						{
-							new Label(){ VerticalOptions= LayoutOptions.FillAndExpand, Text = "Click the entry and it should scroll up and stay visible. Click off entry and this label should still be visible"},
+							new Label(){ AutomationId = EntrySuccess, VerticalOptions= LayoutOptions.FillAndExpand, Text = "Click the entry and it should scroll up and stay visible. Click off entry and this label should still be visible"},
 							new Button(){ Text = "Top Tab", Command = new Command(() => AddTopTab("top"))},
 							new Button(){ Text = "Bottom Tab", Command = new Command(() => AddBottomTab("bottom"))},
 							new Button(){ Text = "Change Navbar Visible", Command = new Command(() => Shell.SetNavBarIsVisible(view.Parent, !(Shell.GetNavBarIsVisible(view.Parent))))},
@@ -152,6 +157,9 @@ namespace Xamarin.Forms.Controls.Issues
 							},
 							new Button(){Text = "Reset", Command = new Command(() => SetupLandingPage() )},
 							new Entry()
+							{
+								AutomationId = EntryToClick
+							}
 						}
 				}
 			};
@@ -160,10 +168,16 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
-		public void UpdatingSourceOfDisposedListViewDoesNotCrash()
+		public void EntryScrollTest()
 		{
+			RunningApp.Tap(EntryTest);
+			RunningApp.Tap(EntryToClick);
+			RunningApp.WaitForNoElement(EntrySuccess);
+			RunningApp.TapCoordinates(0, 0);
+			RunningApp.WaitForElement(EntrySuccess);
+
 		}
 #endif
 	}

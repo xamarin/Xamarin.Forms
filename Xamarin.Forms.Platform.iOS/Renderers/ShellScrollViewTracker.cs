@@ -25,7 +25,14 @@ namespace Xamarin.Forms.Platform.iOS
 		public ShellScrollViewTracker(IVisualElementRenderer renderer)
 		{
 			_renderer = renderer;
-			_scrollView = (UIScrollView)_renderer.NativeView;
+
+			if (_renderer.NativeView is UIScrollView scrollView)
+				_scrollView = scrollView;
+			else if (_renderer.NativeView.Subviews.Length > 0 && _renderer.NativeView.Subviews[0] is UIScrollView nestedScrollView)
+				_scrollView = nestedScrollView;
+
+			if (_scrollView == null)
+				return;
 
 			var parent = _renderer.Element.Parent;
 
