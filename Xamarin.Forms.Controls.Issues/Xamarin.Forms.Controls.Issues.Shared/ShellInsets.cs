@@ -50,6 +50,11 @@ namespace Xamarin.Forms.Controls.Issues
 						Command = new Command(() => EntryInset()),
 						AutomationId = EntryTest
 					},
+					new Button()
+					{
+						Text = "List View Scroll Test",
+						Command = new Command(() => ListViewPage())
+					},
 					new StackLayout()
 					{
 						Orientation = StackOrientation.Horizontal,
@@ -84,6 +89,38 @@ namespace Xamarin.Forms.Controls.Issues
 			CurrentItem = Items.Last();
 			if (Items.Count > 1)
 				Items.RemoveAt(0);
+		}
+
+		void ListViewPage()
+		{
+			var page = CreateContentPage();
+
+			page.Content = new ListView(ListViewCachingStrategy.RecycleElement)
+			{
+				ItemTemplate = new DataTemplate(() =>
+				{
+					ViewCell cell = new ViewCell();
+					var label = new Label() { Text = " I am a label" }; ;
+					label.SetBinding(Label.TextProperty, ".");
+					cell.View =
+					new StackLayout()
+					{
+						Orientation = StackOrientation.Horizontal,
+						Children =
+						{
+							label,
+							new Entry(),
+							new Button() { Text = "Reset", Command = new Command(() => SetupLandingPage()) }
+						}
+					};
+
+					return cell;
+				}),
+				ItemsSource = Enumerable.Range(0, 1000)
+			};
+
+			CurrentItem = Items.Last();
+			Items.RemoveAt(0);
 		}
 
 		void PaddingPage(string text)
