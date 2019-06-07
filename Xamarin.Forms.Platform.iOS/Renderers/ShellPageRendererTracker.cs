@@ -146,7 +146,11 @@ namespace Xamarin.Forms.Platform.iOS
 			NavigationItem = ViewController.NavigationItem;
 			if (!Forms.IsiOS11OrNewer)
 			{
-				ViewController.AutomaticallyAdjustsScrollViewInsets = false;
+				var View = ViewController.View;
+				if (!Forms.IsiOS11OrNewer && View != null && View.Subviews.Length > 0 && View.Subviews[0] is UIScrollView)
+					ViewController.AutomaticallyAdjustsScrollViewInsets = true;
+				else
+					ViewController.AutomaticallyAdjustsScrollViewInsets = false;
 			}
 		}
 
