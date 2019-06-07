@@ -556,16 +556,14 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			// Retrieve all tab header textblocks
 			var allTabHeaderTextBlocks = Control.GetDescendantsByName<WTextBlock>(TabBarHeaderTextBlockName).ToArray();
+			if (allTabHeaderTextBlocks.Length != Control.Items.Count)
+				return;
 
 			// Loop through all pages in the Pivot control
 			foreach (Page page in Control.Items)
 			{
-				var pageIndex = Control.Items.IndexOf(page);
-				if (allTabHeaderTextBlocks.Length <= pageIndex)
-					continue;
-
 				// Fetch just the textblock for the current page
-				var tabBarTextBlock = allTabHeaderTextBlocks[pageIndex];
+				var tabBarTextBlock = allTabHeaderTextBlocks[Control.Items.IndexOf(page)];
 
 				// Apply selected or unselected style to the current textblock
 				if (page == Element.CurrentPage)
