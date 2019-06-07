@@ -352,6 +352,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				oldCell.PropertyChanged -= _propertyChangedHandler;
 				oldCell.SendDisappearing();
+				oldCell.Parent = null;
 			}
 
 			if (newCell != null)
