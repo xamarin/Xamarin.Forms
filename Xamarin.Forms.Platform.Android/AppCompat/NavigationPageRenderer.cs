@@ -839,10 +839,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (!removed)
 				{
 					UpdateToolbar();
-					if (_drawerToggle != null && NavigationPageController.StackDepth == 2)
+					if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && _masterDetailPage == null)
 						AnimateArrowIn();
 				}
-				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2)
+				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && _masterDetailPage == null)
 					AnimateArrowOut();
 
 				AddTransitionTimer(tcs, fragment, FragmentManager, fragmentsToRemove, TransitionDuration, removed);
@@ -947,7 +947,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			bar.NavigationIcon = null;
 			Page currentPage = Element.CurrentPage;
 
-			if (isNavigated)
+			if (isNavigated && _masterDetailPage == null) // GV ADDED masterdetail check
 			{
 				if (toggle != null)
 				{
