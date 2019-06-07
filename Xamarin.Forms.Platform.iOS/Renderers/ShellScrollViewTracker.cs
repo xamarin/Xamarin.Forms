@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			while (!Application.IsApplicationOrNull(parent))
 			{
-				if (parent is ScrollView || parent is ListView || parent is TableView)
+				if (parent is ScrollView || parent is ListView || parent is TableView || parent is CollectionView)
 					break;
 				parent = parent.Parent;
 
@@ -68,8 +68,26 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		Thickness _lastInset;
+		double _tabThickness;
+
+		public bool Reset()
+		{
+			if (!_isInShell)
+				return false;
+
+			if (_lastInset == 0 && _tabThickness == 0)
+				return false;
+
+			UpdateContentInset(_lastInset, _tabThickness);
+
+			return true;
+		}
+
 		void UpdateContentInset(Thickness inset, double tabThickness)
 		{
+			_lastInset = inset;
+			_tabThickness = tabThickness;
 			if (Forms.IsiOS11OrNewer)
 			{
 				if (_shellSection.Items.Count > 1 && _isInItems)
@@ -87,16 +105,16 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				var top = (float)(inset.Top);
+				if ((_shellSection.Items.Count > 1 && _isInItems))
+				{
+					var top = (float)(inset.Top) + (float)tabThickness;
 
-				if (_shellSection.Items.Count > 1 && _isInItems)
-					top += (float)tabThickness;
+					var delta = _scrollView.ContentInset.Top - top;
+					_scrollView.ContentInset = new UIEdgeInsets(top, (float)inset.Left, (float)inset.Bottom, (float)inset.Right);
 
-				var delta = _scrollView.ContentInset.Top - top;
-				_scrollView.ContentInset = new UIEdgeInsets(top, (float)inset.Left, (float)inset.Bottom, (float)inset.Right);
-
-				var currentOffset = _scrollView.ContentOffset;
-				_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta);
+					var currentOffset = _scrollView.ContentOffset;
+					_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta);
+				}
 			}
 		}
 
