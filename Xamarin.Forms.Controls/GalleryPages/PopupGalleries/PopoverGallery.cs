@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Controls
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-			var top = new StackLayout { Children = { PopoverWithLabel(), PopoverWithLayout(), TermsOfServicePopup() } };
+			var top = new StackLayout { Children = { PopoverWithLabel(), PopoverWithLayout(), PopoverWithCloseButtonLayout(), PopoverWithCloseButtonLayoutNoSize(), TermsOfServicePopup() } };
 			Grid.SetRow(top, 0);
 
 			// Putting one of the buttons on the bottom so if we're on the iPad we can see the little popover arrows working
@@ -31,16 +31,18 @@ namespace Xamarin.Forms.Controls
 			Content = layout;
 		}
 
-		Button CreateButton(string text, string automationId, View content)
+		Button CreateButton(string text, string automationId, View content, Color color, bool isAnchored = false, Size size = default(Size), Color border = default(Color))
 		{
 			var button = new Button { Text = text, AutomationId = automationId };
 			button.Clicked += async (sender, e) =>
 			{
-				var popover = new Popup(content, text, anchor: button);
+				var popover = isAnchored ?
+					new Popup(content) { Anchor = button, Size = size, Color = color, BorderColor = border } :
+					new Popup(content) { Size = size, Color = color, BorderColor = border };
 
 				var result = await Navigation.ShowPopup(popover);
 
-				await DisplayAlert(ResultTitle, result.ToString(), DismissText);
+				await DisplayAlert(ResultTitle, "Popup Dismissed", DismissText);
 			};
 
 			return button;
@@ -48,16 +50,12 @@ namespace Xamarin.Forms.Controls
 
 		Button PopoverWithLabel()
 		{
-			return CreateButton("Popup with Label", "testPopupWithLabel",
-				new Label
-				{
-					Text = "This is just a Label inside of a Popup. This is a basic popup which takes a View, and is only light-dismissable.",
-					LineBreakMode = LineBreakMode.WordWrap,
-					HorizontalTextAlignment = TextAlignment.Center,
-					VerticalTextAlignment = TextAlignment.Center,
-					HorizontalOptions = LayoutOptions.Fill,
-					VerticalOptions = LayoutOptions.Fill
-				});
+			var button = new Button
+			{
+				Text = "Label Popovers"
+			};
+			button.Clicked += async (s, e) => await Navigation.PushAsync(new PopupLabelGallery());
+			return button;
 		}
 
 		Button PopoverWithLayout()
@@ -73,7 +71,51 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 
-			return CreateButton("Popup with Layout", "testPopupWithLayout", content);
+			return CreateButton("Popup with Layout", "testPopupWithLayout", content, Color.White, size: new Size(800,800));
+		}
+
+		Button PopoverWithCloseButtonLayout()
+		{
+			var content = new Grid
+			{
+				Margin = new Thickness(20),
+				Padding = new Thickness(20),
+				Children =
+				{
+					new Label { LineBreakMode = LineBreakMode.WordWrap, Text = Placeholder, BackgroundColor = Color.White },
+					new Frame
+					{
+						HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true),
+						VerticalOptions = new LayoutOptions(LayoutAlignment.Start, true),
+						Margin = new Thickness(0, -30, 0, 0),
+						BackgroundColor = Color.Orange
+					}
+				}
+			};
+
+			return CreateButton("Popup with Close Button Layout", "testPopupWithCloseButtonLayout", content, Color.Transparent, size: new Size(500,500), border: Color.Transparent);
+		}
+
+		Button PopoverWithCloseButtonLayoutNoSize()
+		{
+			var content = new Grid
+			{
+				Margin = new Thickness(20),
+				Padding = new Thickness(20),
+				Children =
+				{
+					new Label { LineBreakMode = LineBreakMode.WordWrap, Text = Placeholder, BackgroundColor = Color.White },
+					new Frame
+					{
+						HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true),
+						VerticalOptions = new LayoutOptions(LayoutAlignment.Start, true),
+						Margin = new Thickness(0, -30, 0, 0),
+						BackgroundColor = Color.Orange
+					}
+				}
+			};
+
+			return CreateButton("Popup with Close Button Layout No Size", "testPopupWithCloseButtonLayout", content, Color.Transparent, border: Color.Transparent);
 		}
 
 
@@ -84,7 +126,7 @@ namespace Xamarin.Forms.Controls
 			button.Clicked += async (sender, e) =>
 			{
 				// Create a DateChooserPopup which uses DateChooserPopupControl as its content and is anchored to this button
-				var popup = new DateChooserPopup(new DateChooserPopupControl(), "Select Date", button);
+				var popup = new DateChooserPopup(new DateChooserPopupControl(), button);
 
 				// Show the popup and await the DateTime? result
 				DateTime? result = await Navigation.ShowPopup(popup);
@@ -98,10 +140,11 @@ namespace Xamarin.Forms.Controls
 
 		class DateChooserPopup : Popup<DateTime?>
 		{
-			public DateChooserPopup(IPopupView<DateTime?> popupView, string title = null, View anchor = null) 
-				: base(popupView, title, false, anchor) 
+			public DateChooserPopup(View popupView, View anchor = null, Size size = default(Size)) 
 			{
-				// Note that this popup is not light-dismissable
+				View = popupView;
+				Anchor = anchor;
+				Size = size;
 			}
 
 			protected override DateTime? OnLightDismissed()
@@ -148,6 +191,7 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
+		// TODO - This does not work in UWP for some reason, it needs more investigation
 		Button TermsOfServicePopup()
 		{
 			var button = new Button { Text = "Terms of Service Popup" };
@@ -160,13 +204,16 @@ namespace Xamarin.Forms.Controls
 				+  string.Concat(Enumerable.Repeat(Placeholder + "\n", 10))
 			};
 
-			var scrollView = new ScrollView { Content = tos, Margin = new Thickness(20) };
+			var scrollView = new ScrollView { Content = tos, Margin = new Thickness(20), HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true) };
 			
-			// Create the popup, specifying the text for the buttons
-			var tosPopup = new BinaryResultPopup(scrollView, "Terms of Service", anchor: button, affirmativeText: "Accept", negativeText: "Reject", size: new Size(400, 500));
+			
+			
 
 			button.Clicked += async (sender, args) =>
 			{
+				// Create the popup, specifying the text for the buttons
+				var tosPopup = new BooleanPopup(scrollView, anchor: button, affirmativeText: "Accept", negativeText: "Reject", size: new Size(800, 400));
+				
 				// Reset the popup in case we've already gotten a result from it
 				tosPopup.Reset();
 

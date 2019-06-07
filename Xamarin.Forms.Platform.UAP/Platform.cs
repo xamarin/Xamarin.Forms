@@ -680,5 +680,11 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			e.Handled = BackButtonPressed();
 		}
+
+		public Task<T> ShowPopup<T>(Popup<T> popup)
+		{
+			Platform.CreateRenderer(popup);
+			return popup.Result;
+		}
 	}
 }

@@ -7,8 +7,11 @@ using Android.OS;
 using Android.Views;
 using Android.Views.Animations;
 using AView = Android.Views.View;
+using AColor = Android.Graphics.Color;
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
+using Android.App;
+using Android.Graphics.Drawables;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -440,7 +443,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		public Task<T> ShowPopup<T>(Popup<T> popup)
 		{
-			throw new NotImplementedException();
+			Android.Platform.CreateRenderer(popup, _context);
+			return popup.Result;
 		}
 
 		sealed class ModalContainer : ViewGroup
