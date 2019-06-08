@@ -115,6 +115,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
+
+				_gestureManager?.Dispose();
+
 				if (_visualElementTracker != null)
 				{
 					_visualElementTracker.Dispose();
@@ -133,8 +140,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_backgroundDrawable = null;
 				}
 
-				_visualElementRenderer?.Dispose();
-				_visualElementRenderer = null;
+				if (_visualElementRenderer != null)
+				{
+					_visualElementRenderer.Dispose();
+					_visualElementRenderer = null;
+				}
 
 				int count = ChildCount;
 				for (var i = 0; i < count; i++)
@@ -145,12 +155,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
 				}
-				
 			}
 
 			base.Dispose(disposing);

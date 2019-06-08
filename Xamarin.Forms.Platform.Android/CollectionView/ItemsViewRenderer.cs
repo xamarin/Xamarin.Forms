@@ -136,6 +136,8 @@ namespace Xamarin.Forms.Platform.Android
 				_automationPropertiesProvider?.Dispose();
 				Tracker?.Dispose();
 
+				ItemsViewAdapter?.Dispose();
+
 				if (Element != null)
 				{
 					TearDownOldElement(Element as ItemsView);

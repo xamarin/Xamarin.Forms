@@ -57,9 +57,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 			_disposed = true;
 
-			SetPage(null);
-
 			FormsAppCompatActivity.BackPressed -= HandleBackPressed;
+
+			SetPage(null);
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
@@ -261,20 +261,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				foreach (var rootPage in _navModel.Roots)
 				{
-					if ((Android.Platform.GetRenderer(rootPage) is ILifeCycleState nr))
+					if (Android.Platform.GetRenderer(rootPage) is ILifeCycleState nr)
 						nr.MarkedForDispose = true;
 				}
 
-				_pendingRootChange = newRoot;
-				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() =>
-				{
-					if (_pendingRootChange == newRoot)
-					{
-						_pendingRootChange = null;
-						SetPageInternal(newRoot);
-					}
-				});
+				var viewsToRemove = new List<AView>();
+				var renderersToDispose = new List<IVisualElementRenderer>();
+
+				for (int i = 0; i < _renderer.ChildCount; i++)
+					viewsToRemove.Add(_renderer.GetChildAt(i));
+
+				foreach (var root in _navModel.Roots)
+					renderersToDispose.Add(Android.Platform.GetRenderer(root));
+
+				SetPageInternal(newRoot);
+
+				Cleanup(viewsToRemove, renderersToDispose);
 			}
 			else
 			{
@@ -298,17 +300,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			var layout = false;
 
-			var viewsToRemove = new List<AView>();
-			var renderersToDispose = new List<IVisualElementRenderer>();
-
 			if (Page != null)
 			{
-				for (int i = 0; i < _renderer.ChildCount; i++)
-					viewsToRemove.Add(_renderer.GetChildAt(i));
-
-				foreach (var root in _navModel.Roots)
-					renderersToDispose.Add(Android.Platform.GetRenderer(root));
-
 				_navModel = new NavigationModel();
 
 				layout = true;
@@ -316,33 +309,36 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (newRoot == null)
 			{
-				Cleanup(viewsToRemove, renderersToDispose);
+				Page = null;
+
 				return;
 			}
 
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
-			AddChild(Page, layout);
 
-			Cleanup(viewsToRemove, renderersToDispose);
+			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
 		}
 
 		void Cleanup(List<AView> viewsToRemove, List<IVisualElementRenderer> renderersToDispose)
 		{
-			for (int i = 0; i < viewsToRemove.Count; i++)
+			new Handler(Looper.MainLooper).Post(() =>
 			{
-				AView view = viewsToRemove[i];
-				_renderer?.RemoveView(view);
-			}
+				for (int i = 0; i < viewsToRemove.Count; i++)
+				{
+					AView view = viewsToRemove[i];
+					_renderer?.RemoveView(view);
+				}
 
-			for (int i = 0; i < renderersToDispose.Count; i++)
-			{
-				IVisualElementRenderer rootRenderer = renderersToDispose[i];
-				rootRenderer?.Dispose();
-			}
+				for (int i = 0; i < renderersToDispose.Count; i++)
+				{
+					IVisualElementRenderer rootRenderer = renderersToDispose[i];
+					rootRenderer?.Dispose();
+				}
+			});
 		}
 
 		void AddChild(Page page, bool layout = false)

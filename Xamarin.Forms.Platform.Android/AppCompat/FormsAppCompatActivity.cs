@@ -211,6 +211,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			PopupManager.Unsubscribe(this);
 
+			_layout.RemoveView(Platform);
+
 			Platform?.Dispose();
 
 			// call at the end to avoid race conditions with Platform dispose
