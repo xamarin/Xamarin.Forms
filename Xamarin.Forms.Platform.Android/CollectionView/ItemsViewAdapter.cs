@@ -79,19 +79,8 @@ namespace Xamarin.Forms.Platform.Android
 				return new TextViewHolder(view);
 			}
 
-			var itemContentView = CreateItemContentView(parent.Context);
+			var itemContentView = new ItemContentView(context);
 			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
-		}
-
-		ItemContentView CreateItemContentView(Context context)
-		{
-			if(ItemsView.ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems
-				|| _size == null)
-			{
-				return new ItemContentView(context);
-			}
-
-			return new ItemContentView(context);
 		}
 
 		public override int ItemCount => ItemsSource.Count;
