@@ -111,7 +111,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEnabled();
 			UpdateCancelButtonColor();
 			UpdateFont();
-			UpdateAlignment();
+			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateTextColor();
 			UpdatePlaceholderColor();
 			UpdateMaxLength();
@@ -142,13 +143,15 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == SearchBar.VerticalOptionsProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == SearchBar.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if(e.PropertyName == InputView.KeyboardProperty.PropertyName)
@@ -163,7 +166,7 @@ namespace Xamarin.Forms.Platform.Android
 				ClearFocus(Control);
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
 
@@ -171,6 +174,16 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			_editText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport(), Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
+
+			if (_editText == null)
+				return;
+
+			_editText.UpdateVerticalAlignment(Element.VerticalTextAlignment, Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
 		}
 
 		void UpdateCancelButtonColor()

@@ -38,7 +38,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateText();
 				UpdatePlaceholder();
 				UpdateCancelButtonColor();
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+				UpdateVerticalTextAlignment();
 				UpdateFont();
 				UpdateTextColor();
 				UpdatePlaceholderColor();
@@ -59,7 +60,9 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == SearchBar.CancelButtonColorProperty.PropertyName)
 				UpdateCancelButtonColor();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == SearchBar.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == SearchBar.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
@@ -71,7 +74,7 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == SearchBar.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Specifics.IsSpellCheckEnabledProperty.PropertyName)
 				UpdateIsSpellCheckEnabled();
 			else if(e.PropertyName == InputView.MaxLengthProperty.PropertyName)
@@ -92,7 +95,8 @@ namespace Xamarin.Forms.Platform.UWP
 				_cancelButton.ReadyChanged += (o, args) => UpdateCancelButtonColor();
 			}
 
-			UpdateAlignment();
+			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateTextColor();
 			UpdatePlaceholderColor();
 			UpdateBackgroundColor();
@@ -125,12 +129,20 @@ namespace Xamarin.Forms.Platform.UWP
 			((IElementController)Element).SetValueFromRenderer(SearchBar.TextProperty, sender.Text);
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 			if (_queryTextBox == null)
 				return;
 
 			_queryTextBox.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			if (_queryTextBox == null)
+				return;
+
+			_queryTextBox.VerticalContentAlignment = Element.VerticalTextAlignment.ToNativeVerticalAlignment();
 		}
 
 		void UpdateCancelButtonColor()

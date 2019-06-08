@@ -27,7 +27,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateText();
 				UpdateTextDecorations();
 				UpdateColor();
-				UpdateAlign();
+				UpdateHorizontalTextAlign();
+				UpdateVerticalTextAlign();
 				UpdateFont();
 				UpdateLineBreakMode();
 			}
@@ -52,8 +53,10 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor();
-			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
-				UpdateAlign();
+			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName)
+				UpdateHorizontalTextAlign();
+			else if (e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlign();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
@@ -88,7 +91,7 @@ namespace Xamarin.Forms.Platform.WPF
 		}
 
 
-		void UpdateAlign()
+		void UpdateHorizontalTextAlign()
 		{
 			if (Control == null)
 				return;
@@ -98,6 +101,18 @@ namespace Xamarin.Forms.Platform.WPF
 				return;
 
 			Control.TextAlignment = label.HorizontalTextAlignment.ToNativeTextAlignment();
+		}
+
+		void UpdateVerticalTextAlign()
+		{
+			if (Control == null)
+				return;
+
+			Label label = Element;
+			if (label == null)
+				return;
+
+			Control.VerticalAlignment = label.VerticalTextAlignment.ToNativeVerticalAlignment();
 		}
 
 		void UpdateColor()

@@ -119,7 +119,7 @@ namespace Xamarin.Forms
 			get { return (TextAlignment)GetValue(TextAlignmentElement.HorizontalTextAlignmentProperty); }
 			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
 		}
-
+		
 		public LineBreakMode LineBreakMode
 		{
 			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
@@ -137,7 +137,7 @@ namespace Xamarin.Forms
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
-
+		
 		public TextAlignment VerticalTextAlignment
 		{
 			get { return (TextAlignment)GetValue(VerticalTextAlignmentProperty); }

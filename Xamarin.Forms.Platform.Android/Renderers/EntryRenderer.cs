@@ -161,7 +161,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateInputType();
 
 			UpdateColor();
-			UpdateAlignment();
+			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateFont();
 			UpdatePlaceholderColor();
 			UpdateMaxLength();
@@ -224,7 +225,9 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Entry.IsTextPredictionEnabledProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if(e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
@@ -234,7 +237,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.Entry.ImeOptionsProperty.PropertyName)
@@ -268,9 +271,14 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.ImeOptions = _currentInputImeFlag;
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			EditText.UpdateVerticalAlignment(Element.VerticalTextAlignment);
 		}
 
 		protected abstract void UpdateColor();
