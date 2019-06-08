@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Platform.Android
 						element = bindable ?? renderer?.Element;
 
 						// makse sure things are good now that we are back
-						if (element == null || renderer?.View == null)
+						if (element == null || (renderer != null && renderer.View == null))
 							return;
 
 						// only set if we are still on the same image
