@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				_ = _context.ApplyDrawableAsync(action, MenuItem.IconImageSourceProperty, iconDrawable =>
 				{
-					if (iconDrawable != null && !_isDisposed && !_actionModeNeedsUpdates)
+					if (iconDrawable != null && !_isDisposed && !this.IsDisposed() && !_actionModeNeedsUpdates)
 					{
 						item.SetIcon(iconDrawable);
 						item.SetTitleOrContentDescription(action);
