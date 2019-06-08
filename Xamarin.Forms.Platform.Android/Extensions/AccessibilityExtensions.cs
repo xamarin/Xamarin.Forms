@@ -119,7 +119,6 @@ namespace Xamarin.Forms.Platform.Android
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				AMenuItemCompat.SetContentDescription(Control, elemValue);
 
-			return;
 		}
 
 		static string ConcatenateNameAndHint(Element Element)
