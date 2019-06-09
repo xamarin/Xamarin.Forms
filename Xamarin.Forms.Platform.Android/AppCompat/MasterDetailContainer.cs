@@ -1,14 +1,12 @@
-using System;
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	internal class MasterDetailContainer : Xamarin.Forms.Platform.Android.MasterDetailContainer, IManageFragments
+	internal class MasterDetailContainer : Android.MasterDetailContainer, IManageFragments
 	{
 		PageContainer _pageContainer;
 		FragmentManager _fragmentManager;
@@ -16,6 +14,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		MasterDetailPage _parent;
 		Fragment _currentFragment;
 		bool _disposed;
+		FragmentTransaction _transaction;
 
 		public MasterDetailContainer(MasterDetailPage parent, bool isMaster, Context context) : base(parent, isMaster, context)
 		{
@@ -79,9 +78,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					transaction.RemoveEx(_currentFragment);
 					transaction.SetTransitionEx((int)FragmentTransit.None);
 
-					// This is a removal of a fragment that's not going on the back stack; there's no reason to care
-					// whether its state gets successfully saved, since we'll never restore it. Ergo, CommitAllowingStateLoss
-					transaction.CommitAllowingStateLossEx();
+					_transaction = transaction;
 
 					_currentFragment = null;
 				}
@@ -114,12 +111,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				transaction.AddEx(Id, fragment);
 				transaction.SetTransitionEx((int)FragmentTransit.None);
 
-				// We don't currently support fragment restoration 
-				// So we don't need to worry about loss of this fragment's state
-				transaction.CommitAllowingStateLossEx();
+				_transaction = transaction;
 
 				_currentFragment = fragment;
 			}
+		}
+
+		protected override void OnAttachedToWindow()
+		{
+			base.OnAttachedToWindow();
+
+			if (_transaction == null)
+				return;
+
+			// We don't currently support fragment restoration 
+			// So we don't need to worry about loss of this fragment's state
+			_transaction.CommitAllowingStateLossEx();
+
+			// The transaction need to be executed after View as been attached
+			// So Fragment Manager can find the View being added
+			FragmentManager.ExecutePendingTransactionsEx();
+
+			_transaction = null;
 		}
 
 		protected override void Dispose(bool disposing)
