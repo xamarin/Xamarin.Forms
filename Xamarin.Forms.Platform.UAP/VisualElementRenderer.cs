@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, Element));
 
-			if (_control != null && this is IDontGetFocus)
+			if (_control != null && this is ITabStopOnDescendants)
 			{
 				_control.GotFocus += OnGotFocus;
 				_control.GettingFocus += OnGettingFocus;
