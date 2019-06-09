@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
-		private static Dictionary<string, Typeface> TypefaceCache = new Dictionary<string, Typeface>();
+		static Dictionary<string, Typeface> TypefaceCache = new Dictionary<string, Typeface>();
 
 		public Task<Bitmap> LoadImageAsync(
 			ImageSource imagesource,
