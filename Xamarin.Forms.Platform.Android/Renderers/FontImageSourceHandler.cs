@@ -1,15 +1,17 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Graphics;
 using Android.Util;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
+		private static Dictionary<string, Typeface> TypefaceCache = new Dictionary<string, Typeface>();
+
 		public Task<Bitmap> LoadImageAsync(
 			ImageSource imagesource,
 			Context context,
@@ -26,8 +28,13 @@ namespace Xamarin.Forms.Platform.Android
 					TextAlign = Paint.Align.Left,
 					AntiAlias = true,
 				};
-				using (var typeface = fontsource.FontFamily.ToTypeFace())
-					paint.SetTypeface(typeface);
+
+				if (!TypefaceCache.TryGetValue(fontsource.FontFamily, out Typeface typeface))
+				{
+					typeface = fontsource.FontFamily.ToTypeFace();
+					TypefaceCache.Add(fontsource.FontFamily, typeface);
+				}
+				paint.SetTypeface(typeface);
 
 				var width = (int)(paint.MeasureText(fontsource.Glyph) + .5f);
 				var baseline = (int)(-paint.Ascent() + .5f);
