@@ -615,7 +615,10 @@ namespace Xamarin.Forms
 					}
 				}
 
-				Device.BeginInvokeOnMainThread(() => _expression.Apply());
+				if (Device.IsInvokeRequired)
+					Device.BeginInvokeOnMainThread(() => _expression.Apply());
+				else
+					_expression.Apply();
 			}
 
 			public bool TryGetValue(object source, out object value)
