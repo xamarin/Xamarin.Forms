@@ -375,7 +375,7 @@ namespace Xamarin.Forms
 			ShellRouteState navigationRequest = null;
 
 			if (!enableRelativeShellRoutes)
-				navigationRequest = await UriProjectionParser.ParseAsync(new ShellUriParserArgs( this, state.FullLocation));
+				navigationRequest = await ShellUriParser.ParseAsync(new ShellUriParserArgs( this, state.FullLocation));
 			else // this path is really for ui testing only
 				navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
 
@@ -385,31 +385,44 @@ namespace Xamarin.Forms
 
 			// Right now this is a rigid structure but later down the road this will have more variations
 			// for example it might only be a ShellContent 
-			var shellItem = (ShellItem)pathParts[0].ShellItem;
-			var shellSection = (ShellSection)pathParts[1].ShellItem;
-			var shellContent = (ShellContent)pathParts[2].ShellItem;
+			ShellItem shellItem = (ShellItem)pathParts[0].ShellPart;
+			ShellSection shellSection = (ShellSection)pathParts[1].ShellPart;
+			ShellContent shellContent = (ShellContent)pathParts[2].ShellPart;
 			bool shellSectionChanged = false;
+			bool shellItemChanged = false;
+			bool shellContentChanged = false;
 
-			ApplyQueryAttributes(shellItem, pathParts[0].NavigationParameters, false);
-			ApplyQueryAttributes(shellSection, pathParts[1].NavigationParameters, false);
-			ApplyQueryAttributes(shellContent, pathParts[2].NavigationParameters, pathParts.Count == 3);
+			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(this, null, currentRoute));
+			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellItem, pathParts[0], currentRoute));
+			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellSection, pathParts[1], currentRoute));
+			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellContent, pathParts[2], currentRoute));
 
 			if (CurrentItem != shellItem)
-			{
-				
+			{				
 				SetValueFromRenderer(CurrentItemProperty, shellItem);
+				shellItemChanged = true;
 			}
 
 			if (shellItem.CurrentItem != shellSection)
 			{
 				shellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, shellSection);
+				shellSectionChanged = true;
 			}
 
 			if (shellSection.CurrentItem != shellContent)
 			{
 				shellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
-				shellSectionChanged = true;
+				shellContentChanged = true;
 			}
+
+			if(shellItemChanged)
+				await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellItem, pathParts[0], currentRoute));
+
+			if(shellSectionChanged)
+				await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellSection, pathParts[1], currentRoute));
+
+			if(shellContentChanged)
+				await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellContent, pathParts[2], currentRoute));
 
 			if (shellSectionChanged)
 			{
@@ -1132,9 +1145,11 @@ namespace Xamarin.Forms
 
 		#region Navigation Interfaces
 
-		// todo replace with dependency service registration stuff
-		internal static ShellNavigationService NavigationService { get; set; } = new ShellNavigationService();
-		IShellUriParser UriProjectionParser => NavigationService;
+		IShellUriParser ShellUriParser => DependencyService.Get<IShellUriParser>();
+		IShellApplyParameters ShellApplyParameters => DependencyService.Get<IShellApplyParameters>();
+		IShellPartAppearing ShellPartAppearing => DependencyService.Get<IShellPartAppearing>();
+		IShellPartAppeared ShellPartAppeared => DependencyService.Get<IShellPartAppeared>();
+		IShellNavigationRequest ShellNavigationRequest => DependencyService.Get<IShellNavigationRequest>();
 
 		#endregion
 

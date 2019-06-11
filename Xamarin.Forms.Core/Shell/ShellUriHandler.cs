@@ -100,7 +100,11 @@ namespace Xamarin.Forms
 			{
 				for (var i = 0; i < theWinningRoute.GlobalRouteMatches.Count; i++)
 				{
-					var item = new ShellContent() { Route = theWinningRoute.GlobalRouteMatches[i] };
+					var item = new ShellContent()
+					{
+						Route = theWinningRoute.GlobalRouteMatches[i]
+					};
+
 					pathParts.Add(new PathPart(item, Shell.GetNavigationParameters(item, request.Query, theWinningRoute.GlobalRouteMatches.Count == (i + 1))));
 				}
 
@@ -110,7 +114,13 @@ namespace Xamarin.Forms
 			{
 				var shellItem = theWinningRoute.Item;
 				ShellSection shellSection = theWinningRoute.Section;
+
+				if (shellSection == null)
+					shellSection = shellItem.Items[0];
+
 				ShellContent shellContent = theWinningRoute.Content;
+				if (shellContent == null)
+					shellContent = shellSection.Items[0];
 
 				pathParts.Add(new PathPart(shellItem, Shell.GetNavigationParameters(shellItem, request.Query, false)));
 				pathParts.Add(new PathPart(shellSection, Shell.GetNavigationParameters(shellSection, request.Query, false)));

@@ -120,8 +120,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync("//item1/section1/rootlevelcontent1");
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("section1/edit"), true);
 
-			Assert.AreEqual(3, request.CurrentRoute.PathParts.Count);
-			Assert.AreEqual("item1/section1/edit", request.CurrentRoute.PathParts[2].ShellItem.Route);
+			Assert.AreEqual(4, request.CurrentRoute.PathParts.Count);
+			Assert.AreEqual("item1/section1/edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
 		}
 
 		[Test]
@@ -138,8 +138,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("//rootlevelcontent1/add/edit"));
 
 			Assert.AreEqual(5, request.CurrentRoute.PathParts.Count);
-			Assert.AreEqual("section1/add", request.CurrentRoute.PathParts[3].ShellItem.Route);
-			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[4].ShellItem.Route);
+			Assert.AreEqual("section1/add", request.CurrentRoute.PathParts[3].ShellPart.Route);
+			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[4].ShellPart.Route);
 		}
 
 		[Test]
@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("//rootlevelcontent1/edit"));
 
 			Assert.AreEqual(4, request.CurrentRoute.PathParts.Count);			
-			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].ShellItem.Route);
+			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
 		}
 
 		[Test]
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("edit"));
 
 			Assert.AreEqual(4, request.CurrentRoute.PathParts.Count);
-			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].ShellItem.Route);
+			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
 		}
 
 
@@ -189,7 +189,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync("//rootlevelcontent1");
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("edit"), true);
 
-			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[3].ShellItem.Route);
+			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
 		}
 
 		[Test]

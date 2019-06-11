@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
+[assembly: Dependency(typeof(ShellNavigationService))]
 namespace Xamarin.Forms
 {
 	public class ShellNavigationService :
@@ -16,6 +17,10 @@ namespace Xamarin.Forms
 		IShellPartAppeared,
 		IShellNavigationRequest
 	{
+		public ShellNavigationService()
+		{
+		}
+
 		public Task AppearedAsync(ShellLifecycleArgs args)
 		{
 			return Task.Delay(0);
@@ -26,23 +31,31 @@ namespace Xamarin.Forms
 			return Task.Delay(0);
 		}
 
-		public Task ApplyParametersAsync(ShellLifecycleArgs args)
+		public void ApplyParameters(ShellLifecycleArgs args)
 		{
-			Shell.ApplyQueryAttributes(args.BaseShellItem, args.PathPart.NavigationParameters, args.IsLast);
-			return Task.Delay(0);
+			Shell.ApplyQueryAttributes(args.Element, args.PathPart?.NavigationParameters ?? args.RoutePath?.NavigationParameters, args.IsLast);
 		}
 
 		public Page Create(ShellContentCreateArgs args)
 		{
-			var template = args.Content.ContentTemplate;
-			var content = args.Content.Content;
+			var shellContent = args.Content;
+			var template = shellContent.ContentTemplate;
+			var content = shellContent.Content;
 
+			Page result = null;
 			if (template == null)
 			{
-				return null;
+				if (content is Page page)
+					result = page;
+				else
+					result = (Page)Routing.GetOrCreateContent(args.Content.Route);
+			}
+			else
+			{
+				result = (Page)template.CreateContent(content, shellContent);
 			}
 
-			return (Page)template.CreateContent(content, args.Content);
+			return result;
 
 		}
 		public Task<ShellRouteState> NavigatingToAsync(ShellNavigationArgs args)
@@ -57,38 +70,12 @@ namespace Xamarin.Forms
 		}
 	}
 
-
-	// possible any interface
-	public enum PresentationHint
-	{
-		Page,
-		Modal,
-		Dialog
-	}
-
-	interface ITransitionPlan
-	{
-		ITransition TransitionTo { get; }
-		ITransition TransitionFrom { get; }
-	}
-
-	interface ITransition
-	{
-
-	}
-
-	public class NavigationProjection
-	{
-		public ShellRouteState CurrentState { get; }
-		public ShellRouteState FutureState { get; set; }
-	}
-
 	public class PathPart
 	{
 		public PathPart(BaseShellItem baseShellItem, Dictionary<string, string> navigationParameters)
 		{
-			ShellItem = baseShellItem;
-			Path = ShellItem.Route;
+			ShellPart = baseShellItem;
+			Path = ShellPart.Route;
 			NavigationParameters = navigationParameters;
 		}
 
@@ -96,7 +83,7 @@ namespace Xamarin.Forms
 
 		public Dictionary<string, string> NavigationParameters { get; }
 
-		public BaseShellItem ShellItem { get; }
+		public BaseShellItem ShellPart { get; }
 
 		//// This describes how you will transition to and away from this Path Part
 		//ITransitionPlan Transition { get; }
@@ -118,7 +105,7 @@ namespace Xamarin.Forms
 			for (var i = 0; i < pathParts.Count; i++)
 			{
 				var path = pathParts[i];
-				builder.Append(path.ShellItem.Route);
+				builder.Append(path.ShellPart.Route);
 				builder.Append("/");
 			}
 
@@ -242,7 +229,7 @@ namespace Xamarin.Forms
 	{
 		// this is where we will apply query parameters to the shell content 
 		// this may be called multiple times. For example when the bindingcontext changes it will be called again
-		Task ApplyParametersAsync(ShellLifecycleArgs args);
+		void ApplyParameters(ShellLifecycleArgs args);
 	}
 
 	public interface IShellPartAppearing
@@ -286,14 +273,14 @@ namespace Xamarin.Forms
 	}
 	public class ShellLifecycleArgs : EventArgs
 	{
-		public ShellLifecycleArgs(BaseShellItem baseShellItem, PathPart pathPart, RoutePath routePath)
+		public ShellLifecycleArgs(Element element, PathPart pathPart, RoutePath routePath)
 		{
-			BaseShellItem = baseShellItem;
+			Element = element;
 			PathPart = pathPart;
 			RoutePath = routePath;
 		}
 
-		public BaseShellItem BaseShellItem { get; }
+		public Element Element { get; }
 		public PathPart PathPart { get; }
 		public RoutePath RoutePath { get; }
 
@@ -308,5 +295,27 @@ namespace Xamarin.Forms
 			}
 		}
 	}
+
+
+
+
+	//// possible any interface
+	//public enum PresentationHint
+	//{
+	//	Page,
+	//	Modal,
+	//	Dialog
+	//}
+
+	//interface ITransitionPlan
+	//{
+	//	ITransition TransitionTo { get; }
+	//	ITransition TransitionFrom { get; }
+	//}
+
+	//interface ITransition
+	//{
+
+	//}
 
 }

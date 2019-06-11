@@ -47,17 +47,7 @@ namespace Xamarin.Forms
 			var template = ContentTemplate;
 			var content = Content;
 
-			Page result = null;
-			if (template == null)
-			{
-				if (content is Page page)
-					result = page;
-			}
-			else
-			{
-				result = ContentCache ?? ShellContentCreator.Create(new ShellContentCreateArgs(this));
-				ContentCache = result;
-			}
+			Page result = ContentCache ?? ShellContentCreator.Create(new ShellContentCreateArgs(this));
 
 			if (result != null && result.Parent != this)
 				OnChildAdded(result);
@@ -66,6 +56,7 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"No Content found for {nameof(ShellContent)}, Title:{Title}, Route {Route}");
 
 			if (_delayedQueryParams != null && result  != null) {
+				// TODO rework this to all be internal to Shell Navigation Service
 				ApplyQueryAttributes(result, _delayedQueryParams);
 				_delayedQueryParams = null;
 			}
@@ -74,10 +65,7 @@ namespace Xamarin.Forms
 		}
 
 		#region Navigation Interfaces
-
-		// todo replace with dependency service registration stuff
-		IShellContentCreator ShellContentCreator => Shell.NavigationService;
-
+		IShellContentCreator ShellContentCreator => DependencyService.Get<IShellContentCreator>();
 		#endregion
 
 		void IShellContentController.RecyclePage(Page page)
