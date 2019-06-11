@@ -56,14 +56,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			_buttonLayoutManager?.OnLayout(changed, l, t, r, b);
 			base.OnLayout(changed, l, t, r, b);
-
-			if (!changed && !Control.IsLayoutRequested)
-				Control.ForceLayout();
 		}
 
 		protected override AppCompatButton CreateNativeControl()
 		{
-			return new AppCompatButton(Context);
+			return new FormsAppCompatButton(Context);
 		}
 
 		protected override void Dispose(bool disposing)
