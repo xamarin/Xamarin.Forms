@@ -14,6 +14,19 @@ namespace Xamarin.Forms.Sandbox
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ShellPage : Shell
 	{
+
+		public ShellPage()
+		{
+			InitializeComponent();
+
+			Routing.RegisterRoute("somepage", typeof(ContentPage));
+		}
+
+		async void PushGlobalRoute(object sender, System.EventArgs e)
+		{
+			await GoToAsync("somepage");
+		}
+
 		async void Handle_Clicked(object sender, System.EventArgs e)
 		{
 			var page = new ContentPage()
@@ -254,11 +267,6 @@ namespace Xamarin.Forms.Sandbox
 			Shell.SetNavBarIsVisible(page, true);
 			//page.Padding = 0;
 			await Navigation.PushAsync(page);
-		}
-
-		public ShellPage()
-		{
-			InitializeComponent();
 		}
 	}
 }

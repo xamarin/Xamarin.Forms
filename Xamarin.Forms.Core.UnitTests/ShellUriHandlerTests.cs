@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("section1/edit"), true);
 
 			Assert.AreEqual(4, request.CurrentRoute.PathParts.Count);
-			Assert.AreEqual("item1/section1/edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
+			Assert.AreEqual("item1/section1/edit", request.CurrentRoute.PathParts[3].Path);
 		}
 
 		[Test]
@@ -138,8 +138,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("//rootlevelcontent1/add/edit"));
 
 			Assert.AreEqual(5, request.CurrentRoute.PathParts.Count);
-			Assert.AreEqual("section1/add", request.CurrentRoute.PathParts[3].ShellPart.Route);
-			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[4].ShellPart.Route);
+			Assert.AreEqual("section1/add", request.CurrentRoute.PathParts[3].Path);
+			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[4].Path);
 		}
 
 		[Test]
@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("//rootlevelcontent1/edit"));
 
 			Assert.AreEqual(4, request.CurrentRoute.PathParts.Count);			
-			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
+			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].Path);
 		}
 
 		[Test]
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("edit"));
 
 			Assert.AreEqual(4, request.CurrentRoute.PathParts.Count);
-			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
+			Assert.AreEqual("edit", request.CurrentRoute.PathParts[3].Path);
 		}
 
 
@@ -189,7 +189,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync("//rootlevelcontent1");
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("edit"), true);
 
-			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[3].ShellPart.Route);
+			Assert.AreEqual("section1/edit", request.CurrentRoute.PathParts[3].Path);
 		}
 
 		[Test]
@@ -274,6 +274,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//item2/rootlevelcontent")).Select(x => x.PathNoImplicit).ToArray();
 			Assert.AreEqual(1, builders.Length);
 			Assert.IsTrue(builders.Contains("//item2/rootlevelcontent"));
+		}
+
+		[Test]
+		public async Task PoppingRemovesRouteFromStack()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(asImplicit: true, shellSectionRoute: "domestic", shellContentRoute: "cats", shellItemRoute: "animals");
+
+			shell.Items.Add(item1);
+
+			Routing.RegisterRoute("catdetails", typeof(ContentPage));
+			await shell.GoToAsync($"catdetails");
+			await shell.Navigation.PopAsync();
+			await shell.GoToAsync($"catdetails");
+
+			Assert.AreEqual(
+				"//animals/domestic/cats/catdetails",
+				shell.CurrentState.FullLocation.ToString()
+				);
 		}
 
 

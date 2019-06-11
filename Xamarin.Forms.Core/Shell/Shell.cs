@@ -352,14 +352,7 @@ namespace Xamarin.Forms
 		{
 			get
 			{
-				if (_routeState == null && CurrentItem?.CurrentItem?.CurrentItem != null)
-					_routeState = new ShellRouteState(this);
-
-				return _routeState;
-			}
-			private set
-			{
-				_routeState = value;
+				return new ShellRouteState(this);
 			}
 		}
 
@@ -372,109 +365,88 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			ShellRouteState navigationRequest = null;
-
-			if (!enableRelativeShellRoutes)
-				navigationRequest = await ShellUriParser.ParseAsync(new ShellUriParserArgs( this, state.FullLocation));
-			else // this path is really for ui testing only
-				navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
-
-			var currentRoute = navigationRequest.CurrentRoute;
-			var pathParts = currentRoute.PathParts;
-			ApplyQueryAttributes(this, currentRoute.NavigationParameters, false);
-
-			// Right now this is a rigid structure but later down the road this will have more variations
-			// for example it might only be a ShellContent 
-			ShellItem shellItem = (ShellItem)pathParts[0].ShellPart;
-			ShellSection shellSection = (ShellSection)pathParts[1].ShellPart;
-			ShellContent shellContent = (ShellContent)pathParts[2].ShellPart;
-			bool shellSectionChanged = false;
-			bool shellItemChanged = false;
-			bool shellContentChanged = false;
-
-			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(this, null, currentRoute));
-			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellItem, pathParts[0], currentRoute));
-			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellSection, pathParts[1], currentRoute));
-			ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellContent, pathParts[2], currentRoute));
-
-			if (CurrentItem != shellItem)
-			{				
-				SetValueFromRenderer(CurrentItemProperty, shellItem);
-				shellItemChanged = true;
-			}
-
-			if (shellItem.CurrentItem != shellSection)
+			try
 			{
-				shellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, shellSection);
-				shellSectionChanged = true;
-			}
 
-			if (shellSection.CurrentItem != shellContent)
-			{
-				shellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
-				shellContentChanged = true;
-			}
+				ShellRouteState navigationRequest = null;
 
-			if(shellItemChanged)
-				await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellItem, pathParts[0], currentRoute));
+				if (!enableRelativeShellRoutes)
+					navigationRequest = await ShellUriParser.ParseAsync(new ShellUriParserArgs(this, state.FullLocation));
+				else // this path is really for ui testing only
+					navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
 
-			if(shellSectionChanged)
-				await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellSection, pathParts[1], currentRoute));
+				navigationRequest = await ShellNavigationRequest.NavigatingToAsync(new ShellNavigationArgs(this, navigationRequest));
 
-			if(shellContentChanged)
-				await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellContent, pathParts[2], currentRoute));
-
-			if (shellSectionChanged)
-			{
-				if (pathParts.Count > 3)
+				if (navigationRequest == null || navigationRequest == this.RouteState)
 				{
-					// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
-					Device.BeginInvokeOnMainThread(async () =>
+					return;
+				}
+
+				var currentRoute = navigationRequest.CurrentRoute;
+				var pathParts = currentRoute.PathParts;
+				ApplyQueryAttributes(this, currentRoute.NavigationParameters, false);
+
+				// Right now this is a rigid structure but later down the road this will have more variations
+				// for example it might only be a ShellContent 
+				ShellItem shellItem = (ShellItem)pathParts[0].ShellPart;
+				ShellSection shellSection = (ShellSection)pathParts[1].ShellPart;
+				ShellContent shellContent = (ShellContent)pathParts[2].ShellPart;
+				bool shellSectionChanged = false;
+				bool shellItemChanged = false;
+				bool shellContentChanged = false;
+
+				ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(this, null, currentRoute));
+				ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellItem, pathParts[0], currentRoute));
+				ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellSection, pathParts[1], currentRoute));
+				ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(shellContent, pathParts[2], currentRoute));
+
+				if (CurrentItem != shellItem)
+				{
+					SetValueFromRenderer(CurrentItemProperty, shellItem);
+					shellItemChanged = true;
+				}
+
+				if (shellItem.CurrentItem != shellSection)
+				{
+					shellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, shellSection);
+					shellSectionChanged = true;
+				}
+
+				if (shellSection.CurrentItem != shellContent)
+				{
+					shellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
+					shellContentChanged = true;
+				}
+
+				if (shellItemChanged)
+					await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellItem, pathParts[0], currentRoute));
+
+				if (shellSectionChanged)
+					await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellSection, pathParts[1], currentRoute));
+
+				if (shellContentChanged)
+					await ShellPartAppearing.AppearingAsync(new ShellLifecycleArgs(shellContent, pathParts[2], currentRoute));
+
+				if (shellSectionChanged)
+				{
+					if (pathParts.Count > 3)
 					{
-						await shellSection.GoToAsync(navigationRequest, false);
-					});
+						// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
+						Device.BeginInvokeOnMainThread(async () =>
+						{
+							await shellSection.GoToAsync(navigationRequest, false);
+						});
+					}
+				}
+				else
+				{
+					await shellSection.GoToAsync(navigationRequest, animate);
 				}
 			}
-			else
+			finally
 			{
-				await shellSection.GoToAsync(navigationRequest, animate);
+				_accumulateNavigatedEvents = false;
 			}
-
-			RouteState = navigationRequest;
-
-			//if (shellItem != null)
-			//{
-
-
-
-			//	if (shellSection != null)
-			//	{
-			//		ApplyQueryAttributes(shellSection, queryData, navigationRequest.Request.Content == null);
-
-
-
-			//		if (shellContent != null)
-			//		{
-			//			if (navigationRequest.Request.GlobalRoutes.Count > 0)
-			//			{
-			//				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
-			//				Device.BeginInvokeOnMainThread(async () =>
-			//				{
-			//					await shellSection.GoToAsync(navigationRequest, queryData, false);
-			//				});
-			//			}
-
-			//			Shell.ApplyQueryAttributes(shellContent, queryData, navigationRequest.Request.GlobalRoutes.Count == 0);
-
-			//		}
-			//	}
-			//}
-			//else
-			//{
-			//	await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate);
-			//}
-
-			_accumulateNavigatedEvents = false;
 
 			// this can be null in the event that no navigation actually took place!
 			if (_accumulatedEvent != null)
@@ -486,7 +458,7 @@ namespace Xamarin.Forms
 		// TODO cleanup duplication between here and GetNavigationParameters
 		internal static void ApplyQueryAttributes(Element element, IDictionary<string, string> navigationParameters, bool isLastItem)
 		{
-			if (navigationParameters.Count == 0)
+			if (navigationParameters == null || navigationParameters.Count == 0)
 				return;
 
 			string prefix = "";
@@ -887,7 +859,6 @@ namespace Xamarin.Forms
 		}
 
 		ShellNavigationState _lastNavigating;
-		private ShellRouteState _routeState;
 
 		protected virtual void OnNavigating(ShellNavigatingEventArgs args)
 		{

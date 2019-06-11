@@ -222,7 +222,7 @@ namespace Xamarin.Forms
 
 				if (navPage != null)
 				{
-					if (Routing.GetRoute(navPage) == route.ShellPart.Route)
+					if (Routing.GetRoute(navPage) == route.Path)
 					{
 						ShellApplyParameters.ApplyParameters(new ShellLifecycleArgs(navPage, route, currentRoute));
 						//Shell.ApplyQueryAttributes(navPage, route.NavigationParameters, isLast);
@@ -237,7 +237,12 @@ namespace Xamarin.Forms
 					}
 				}
 
-				var content = Routing.GetOrCreateContent(route.ShellPart.Route) as Page;
+				Page content = null;
+
+				if (route.ShellPart is IShellContentController shellContent)
+					content = shellContent.GetOrCreateContent();
+				else
+					content = Routing.GetOrCreateContent(route.Path) as Page;
 
 				if (content == null)
 					break;

@@ -26,7 +26,7 @@
                             <RowDefinition Height="70" />
                         </Grid.RowDefinitions>
                         <Label Text="I am a top"  />
-                        <Label Grid.Row="1"  Text="I am a Button"  />
+                        <Button Clicked="PushGlobalRoute"  Grid.Row="1"  Text="I am a Button"  />
                         <Entry Grid.Row="2" />
                     </Grid>
                         </ScrollView>

@@ -72,18 +72,24 @@ namespace Xamarin.Forms
 
 	public class PathPart
 	{
-		public PathPart(BaseShellItem baseShellItem, Dictionary<string, string> navigationParameters)
+		readonly string _path;
+
+		public PathPart(Element baseShellItem, Dictionary<string, string> navigationParameters)
 		{
 			ShellPart = baseShellItem;
-			Path = ShellPart.Route;
+
+			if (baseShellItem is BaseShellItem shellPart)
+				_path = shellPart.Route;
+			else
+				_path = Routing.GetRoute(baseShellItem);
+
 			NavigationParameters = navigationParameters;
 		}
 
-		public string Path { get; }
-
+		public string Path => _path ?? Routing.GetRoute(ShellPart);
 		public Dictionary<string, string> NavigationParameters { get; }
 
-		public BaseShellItem ShellPart { get; }
+		public Element ShellPart { get; }
 
 		//// This describes how you will transition to and away from this Path Part
 		//ITransitionPlan Transition { get; }
@@ -105,7 +111,7 @@ namespace Xamarin.Forms
 			for (var i = 0; i < pathParts.Count; i++)
 			{
 				var path = pathParts[i];
-				builder.Append(path.ShellPart.Route);
+				builder.Append(path.Path);
 				builder.Append("/");
 			}
 
@@ -126,12 +132,33 @@ namespace Xamarin.Forms
 
 		internal ShellRouteState(Shell shell)
 		{
+			// TODO Shane wire up navigation parameters property on each base shell item
 			List<PathPart> pathParts = new List<PathPart>();
-			pathParts.Add(new PathPart(shell.CurrentItem, null));
-			pathParts.Add(new PathPart(shell.CurrentItem.CurrentItem, null));
-			pathParts.Add(new PathPart(shell.CurrentItem.CurrentItem.CurrentItem, null));
-			CurrentRoute = new RoutePath(pathParts, null);
-			Routes = new[] { CurrentRoute };
+			if (shell.CurrentItem != null)
+				pathParts.Add(new PathPart(shell.CurrentItem, null));
+
+			if (shell.CurrentItem?.CurrentItem != null)
+				pathParts.Add(new PathPart(shell.CurrentItem.CurrentItem, null));
+
+			if (shell.CurrentItem?.CurrentItem?.CurrentItem != null)
+			{
+				var shellSection = shell.CurrentItem.CurrentItem.CurrentItem;
+				pathParts.Add(new PathPart(shellSection, null));
+
+				foreach(var item in shellSection.Navigation.NavigationStack)
+				{
+					if (item == null)
+						continue;
+										
+					if(item.Parent is ShellContent content)
+						pathParts.Add(new PathPart(content, null));
+					else
+						pathParts.Add(new PathPart(item, null));
+				}
+			} 
+
+			CurrentRoute = new RoutePath(pathParts, new Dictionary<string, string>());
+			Routes = new[] { CurrentRoute };			
 		}
 
 
@@ -141,7 +168,7 @@ namespace Xamarin.Forms
 			Routes = new[] { CurrentRoute };
 		}
 
-		private ShellRouteState(RoutePath[] routePaths, RoutePath currentRoute)
+		ShellRouteState(RoutePath[] routePaths, RoutePath currentRoute)
 		{
 			Routes = routePaths;
 			CurrentRoute = currentRoute;
