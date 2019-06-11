@@ -947,7 +947,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			bar.NavigationIcon = null;
 			Page currentPage = Element.CurrentPage;
 
-			if (isNavigated && _masterDetailPage == null) // GV ADDED masterdetail check
+			if (isNavigated && _masterDetailPage == null)
 			{
 				if (toggle != null)
 				{
