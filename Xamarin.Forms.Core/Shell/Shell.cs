@@ -375,8 +375,8 @@ namespace Xamarin.Forms
 			ShellRouteState navigationRequest = null;
 
 			if (!enableRelativeShellRoutes)
-				navigationRequest = await UriProjectionParser.ParseAsync(this, state.FullLocation);
-			else
+				navigationRequest = await UriProjectionParser.ParseAsync(new ShellUriParserArgs( this, state.FullLocation));
+			else // this path is really for ui testing only
 				navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
 
 			var currentRoute = navigationRequest.CurrentRoute;
@@ -395,10 +395,15 @@ namespace Xamarin.Forms
 			ApplyQueryAttributes(shellContent, pathParts[2].NavigationParameters, pathParts.Count == 3);
 
 			if (CurrentItem != shellItem)
+			{
+				
 				SetValueFromRenderer(CurrentItemProperty, shellItem);
+			}
 
 			if (shellItem.CurrentItem != shellSection)
+			{
 				shellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, shellSection);
+			}
 
 			if (shellSection.CurrentItem != shellContent)
 			{
@@ -1128,8 +1133,8 @@ namespace Xamarin.Forms
 		#region Navigation Interfaces
 
 		// todo replace with dependency service registration stuff
-		ShellNavigationService NavigationService { get; set; } = new ShellNavigationService();
-		IUriProjectionParser UriProjectionParser => NavigationService;
+		internal static ShellNavigationService NavigationService { get; set; } = new ShellNavigationService();
+		IShellUriParser UriProjectionParser => NavigationService;
 
 		#endregion
 

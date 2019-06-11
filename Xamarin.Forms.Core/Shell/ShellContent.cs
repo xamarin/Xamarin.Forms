@@ -55,7 +55,7 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				result = ContentCache ?? (Page)template.CreateContent(content, this);
+				result = ContentCache ?? ShellContentCreator.Create(new ShellContentCreateArgs(this));
 				ContentCache = result;
 			}
 
@@ -72,6 +72,13 @@ namespace Xamarin.Forms
 
 			return result;
 		}
+
+		#region Navigation Interfaces
+
+		// todo replace with dependency service registration stuff
+		IShellContentCreator ShellContentCreator => Shell.NavigationService;
+
+		#endregion
 
 		void IShellContentController.RecyclePage(Page page)
 		{
