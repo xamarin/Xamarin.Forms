@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
 namespace Xamarin.Forms
 {
-
 	internal class ShellUriHandler
 	{
 		static readonly char[] _pathSeparators = { '/', '\\' };
 		const string _pathSeparator = "/";
+
+		static internal string Route = Routing.GenerateImplicitRoute("shell");
+		static internal string RouteHost => "shell";
+		static internal string RouteScheme => "app";
 
 		internal static Uri FormatUri(Uri path)
 		{
@@ -41,7 +45,7 @@ namespace Xamarin.Forms
 			return new Uri(path, UriKind.Relative);
 		}
 
-		public static Uri ConvertToStandardFormat(Shell shell, Uri request)
+		public static Uri ConvertToStandardFormat(Uri request)
 		{
 			request = FormatUri(request);
 			string pathAndQuery = null;
@@ -53,34 +57,23 @@ namespace Xamarin.Forms
 			var segments = new List<string>(pathAndQuery.Split(_pathSeparators, StringSplitOptions.RemoveEmptyEntries));
 
 
-			if (segments[0] != shell.RouteHost)
-				segments.Insert(0, shell.RouteHost);
+			if (segments.Count > 0 && segments[0] != RouteHost)
+				segments.Insert(0, RouteHost);
 
-			if (segments[1] != shell.Route)
-				segments.Insert(1, shell.Route);
+			if (segments.Count > 1 && segments[1] != Route)
+				segments.Insert(1, Route);
 
 			var path = String.Join(_pathSeparator, segments.ToArray());
-			string uri = $"{shell.RouteScheme}://{path}";
+			string uri = $"{RouteScheme}://{path}";
 
 			return new Uri(uri);
 		}
 
-		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false)
+		internal static ShellRouteState GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false)
 		{
 			uri = FormatUri(uri);
-			// figure out the intent of the Uri
-			NavigationRequest.WhatToDoWithTheStack whatDoIDo = NavigationRequest.WhatToDoWithTheStack.PushToIt;
-			if (uri.IsAbsoluteUri)
-				whatDoIDo = NavigationRequest.WhatToDoWithTheStack.ReplaceIt;
-			else if (uri.OriginalString.StartsWith("//", StringComparison.Ordinal) || uri.OriginalString.StartsWith("\\\\", StringComparison.Ordinal))
-				whatDoIDo = NavigationRequest.WhatToDoWithTheStack.ReplaceIt;
-			else
-				whatDoIDo = NavigationRequest.WhatToDoWithTheStack.PushToIt;
-
-			Uri request = ConvertToStandardFormat(shell, uri);
-
-			var possibleRouteMatches = GenerateRoutePaths(shell, request, uri, enableRelativeShellRoutes);
-
+			Uri request = ConvertToStandardFormat(uri);
+			List<RouteRequestBuilder> possibleRouteMatches = GenerateRoutePaths(shell, request, uri, enableRelativeShellRoutes);
 
 			if (possibleRouteMatches.Count == 0)
 				throw new ArgumentException($"unable to figure out route for: {uri}", nameof(uri));
@@ -100,17 +93,40 @@ namespace Xamarin.Forms
 			}
 
 			var theWinningRoute = possibleRouteMatches[0];
-			RequestDefinition definition =
-				new RequestDefinition(
-					ConvertToStandardFormat(shell, CreateUri(theWinningRoute.PathFull)),
-					theWinningRoute.Item,
-					theWinningRoute.Section,
-					theWinningRoute.Content,
-					theWinningRoute.GlobalRouteMatches);
+			List<PathPart> pathParts = new List<PathPart>();
+			ShellRouteState returnValue = shell.RouteState ?? new ShellRouteState();
 
-			NavigationRequest navigationRequest = new NavigationRequest(definition, whatDoIDo, request.Query, request.Fragment);
+			if (theWinningRoute.Item == null)
+			{
+				for (var i = 0; i < theWinningRoute.GlobalRouteMatches.Count; i++)
+				{
+					var item = new ShellContent() { Route = theWinningRoute.GlobalRouteMatches[i] };
+					pathParts.Add(new PathPart(item, Shell.GetNavigationParameters(item, request.Query, theWinningRoute.GlobalRouteMatches.Count == (i + 1))));
+				}
 
-			return navigationRequest;
+				returnValue = returnValue.Add(pathParts);
+			}
+			else
+			{
+				var shellItem = theWinningRoute.Item;
+				ShellSection shellSection = theWinningRoute.Section;
+				ShellContent shellContent = theWinningRoute.Content;
+
+				pathParts.Add(new PathPart(shellItem, Shell.GetNavigationParameters(shellItem, request.Query, false)));
+				pathParts.Add(new PathPart(shellSection, Shell.GetNavigationParameters(shellSection, request.Query, false)));
+
+				if(shellContent != null)
+					pathParts.Add(new PathPart(shellContent, Shell.GetNavigationParameters(shellContent, request.Query, theWinningRoute.GlobalRouteMatches.Count == 0)));
+				
+				for (var i = 0; i < theWinningRoute.GlobalRouteMatches.Count; i++)
+				{
+					var item = new ShellContent() { Route = theWinningRoute.GlobalRouteMatches[i] };
+					pathParts.Add(new PathPart(item, Shell.GetNavigationParameters(item, request.Query, theWinningRoute.GlobalRouteMatches.Count == (i + 1))));
+				}
+				returnValue = new ShellRouteState(new RoutePath(pathParts, Shell.GetNavigationParameters(shell, request.Query, false)));
+			}
+
+			return returnValue;
 		}
 
 		internal static List<RouteRequestBuilder> GenerateRoutePaths(Shell shell, Uri request)
@@ -137,7 +153,7 @@ namespace Xamarin.Forms
 
 			List<RouteRequestBuilder> possibleRoutePaths = new List<RouteRequestBuilder>();
 			if (!request.IsAbsoluteUri)
-				request = ConvertToStandardFormat(shell, request);
+				request = ConvertToStandardFormat(request);
 
 			string localPath = request.LocalPath;
 
@@ -153,10 +169,10 @@ namespace Xamarin.Forms
 				for (int i = 0; i < routeKeys.Length; i++)
 				{
 					var route = routeKeys[i];
-					var uri = ConvertToStandardFormat(shell, CreateUri(route));
+					var uri = ConvertToStandardFormat(CreateUri(route));
 					if (uri.Equals(request))
 					{
-						throw new Exception($"Global routes currently cannot be the only page on the stack, so absolute routing to global routes is not supported. For now, just navigate to: {originalRequest.OriginalString.Replace("//","")}");
+						throw new Exception($"Global routes currently cannot be the only page on the stack, so absolute routing to global routes is not supported. For now, just navigate to: {originalRequest.OriginalString.Replace("//", "")}");
 						//var builder = new RouteRequestBuilder(route, route, null, segments);
 						//return new List<RouteRequestBuilder> { builder };
 					}
@@ -175,7 +191,7 @@ namespace Xamarin.Forms
 				depthStart = 0;
 			}
 
-			if(relativeMatch && shell?.CurrentItem != null)
+			if (relativeMatch && shell?.CurrentItem != null)
 			{
 				// retrieve current location
 				var currentLocation = NodeLocation.Create(shell);
@@ -227,7 +243,7 @@ namespace Xamarin.Forms
 				RouteRequestBuilder builder = null;
 				foreach (var segment in segments)
 				{
-					if(routeKeys.Contains(segment))
+					if (routeKeys.Contains(segment))
 					{
 						if (builder == null)
 							builder = new RouteRequestBuilder(segment, segment, null, segments);
@@ -236,7 +252,7 @@ namespace Xamarin.Forms
 					}
 				}
 
-				if(builder != null && builder.IsFullMatch)
+				if (builder != null && builder.IsFullMatch)
 					return new List<RouteRequestBuilder> { builder };
 			}
 			else
@@ -321,9 +337,9 @@ namespace Xamarin.Forms
 			{
 				NodeLocation location = new NodeLocation();
 				location.SetNode(
-					(object)shell.CurrentItem?.CurrentItem?.CurrentItem ?? 
-					(object)shell.CurrentItem?.CurrentItem ?? 
-					(object)shell.CurrentItem ?? 
+					(object)shell.CurrentItem?.CurrentItem?.CurrentItem ??
+					(object)shell.CurrentItem?.CurrentItem ??
+					(object)shell.CurrentItem ??
 					(object)shell);
 
 				return location;
@@ -537,7 +553,7 @@ namespace Xamarin.Forms
 
 				if (segments[0] == route)
 				{
-					yield return  new GlobalRouteItem(key, key);
+					yield return new GlobalRouteItem(key, key);
 				}
 			}
 		}
@@ -597,204 +613,53 @@ namespace Xamarin.Forms
 		}
 	}
 
-	/// <summary>
-	/// This attempts to locate the intended route trying to be navigated to
-	/// </summary>
-	internal class RouteRequestBuilder
-	{
-		readonly List<string> _globalRouteMatches = new List<string>();
-		readonly List<string> _matchedSegments = new List<string>();
-		readonly List<string> _fullSegments = new List<string>();
-		readonly string[] _allSegments = null;
-		readonly static string _uriSeparator = "/";
-
-		public Shell Shell { get; private set; }
-		public ShellItem Item { get; private set; }
-		public ShellSection Section { get; private set; }
-		public ShellContent Content { get; private set; }
-		public object LowestChild =>
-			(object)Content ?? (object)Section ?? (object)Item ?? (object)Shell;
-
-		public RouteRequestBuilder(string shellSegment, string userSegment, object node, string[] allSegments)
-		{
-			_allSegments = allSegments;
-			if (node != null)
-				AddMatch(shellSegment, userSegment, node);
-			else
-				AddGlobalRoute(userSegment, shellSegment);
-		}
-		public RouteRequestBuilder(RouteRequestBuilder builder)
-		{
-			_allSegments = builder._allSegments;
-			_matchedSegments.AddRange(builder._matchedSegments);
-			_fullSegments.AddRange(builder._fullSegments);
-			_globalRouteMatches.AddRange(builder._globalRouteMatches);
-			Shell = builder.Shell;
-			Item = builder.Item;
-			Section = builder.Section;
-			Content = builder.Content;
-		}
-
-		public void AddGlobalRoute(string routeName, string segment)
-		{
-			_globalRouteMatches.Add(routeName);
-			_fullSegments.Add(segment);
-			_matchedSegments.Add(segment);
-		}
-
-		public void AddMatch(string shellSegment, string userSegment, object node)
-		{
-			if (node == null)
-				throw new ArgumentNullException(nameof(node));
-
-			switch (node)
-			{
-				case ShellUriHandler.GlobalRouteItem globalRoute:
-					if(globalRoute.IsFinished)
-						_globalRouteMatches.Add(globalRoute.SourceRoute);
-					break;
-				case Shell shell:
-					Shell = shell;
-					break;
-				case ShellItem item:
-					Item = item;
-					break;
-				case ShellSection section:
-					Section = section;
-
-					if (Item == null)
-					{
-						Item = Section.Parent as ShellItem;
-						_fullSegments.Add(Item.Route);
-					}
-
-					break;
-				case ShellContent content:
-					Content = content;
-					if (Section == null)
-					{
-						Section = Content.Parent as ShellSection;
-						_fullSegments.Add(Section.Route);
-					}
-
-					if (Item == null)
-					{
-						Item = Section.Parent as ShellItem;
-						_fullSegments.Insert(0, Item.Route);
-					}
-
-					break;
-
-			}
-
-			// if shellSegment == userSegment it means the implicit route is part of the request
-			if (!Routing.IsImplicit(shellSegment) || shellSegment == userSegment)
-				_matchedSegments.Add(shellSegment);
-
-			_fullSegments.Add(shellSegment);
-		}
-
-		public string NextSegment
-		{
-			get
-			{
-				var nextMatch = _matchedSegments.Count;
-				if (nextMatch >= _allSegments.Length)
-					return null;
-
-				return _allSegments[nextMatch];
-			}
-		}
-
-		public string RemainingPath
-		{
-			get
-			{
-				var nextMatch = _matchedSegments.Count;
-				if (nextMatch >= _allSegments.Length)
-					return null;
-
-				return Routing.FormatRoute(String.Join(_uriSeparator, _allSegments.Skip(nextMatch)));
-			}
-		}
-		public string[] RemainingSegments
-		{
-			get
-			{
-				var nextMatch = _matchedSegments.Count;
-				if (nextMatch >= _allSegments.Length)
-					return null;
-
-				return _allSegments.Skip(nextMatch).ToArray();
-			}
-		}
-
-		string MakeUriString(List<string> segments)
-		{
-			if (segments[0].StartsWith(_uriSeparator, StringComparison.Ordinal) || segments[0].StartsWith("\\", StringComparison.Ordinal))
-				return String.Join(_uriSeparator, segments);
-
-			return $"//{String.Join(_uriSeparator, segments)}";
-		}
-
-		public string PathNoImplicit => MakeUriString(_matchedSegments);
-		public string PathFull => MakeUriString(_fullSegments);
-
-		public bool IsFullMatch => _matchedSegments.Count == _allSegments.Length;
-		public List<string> GlobalRouteMatches => _globalRouteMatches;
-		public List<string> SegmentsMatched => _matchedSegments;
-
-	}
 
 
+	//[DebuggerDisplay("RequestDefinition = {Request}, StackRequest = {StackRequest}")]
+	//internal class NavigationRequest
+	//{
+	//	public enum WhatToDoWithTheStack
+	//	{
+	//		ReplaceIt,
+	//		PushToIt
+	//	}
 
-	[DebuggerDisplay("RequestDefinition = {Request}, StackRequest = {StackRequest}")]
-	internal class NavigationRequest
-	{
-		public enum WhatToDoWithTheStack
-		{
-			ReplaceIt,
-			PushToIt
-		}
+	//	public NavigationRequest(RequestDefinition definition, WhatToDoWithTheStack stackRequest, string query, string fragment)
+	//	{
+	//		StackRequest = stackRequest;
+	//		Query = query;
+	//		Fragment = fragment;
+	//		Request = definition;
+	//	}
 
-		public NavigationRequest(RequestDefinition definition, WhatToDoWithTheStack stackRequest, string query, string fragment)
-		{
-			StackRequest = stackRequest;
-			Query = query;
-			Fragment = fragment;
-			Request = definition;
-		}
-
-		public WhatToDoWithTheStack StackRequest { get; }
-		public string Query { get; }
-		public string Fragment { get; }
-		public RequestDefinition Request { get; }
-	}
-
-
-	[DebuggerDisplay("Full = {FullUri}, Short = {ShortUri}")]
-	internal class RequestDefinition
-	{
-		public RequestDefinition(Uri fullUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes)
-		{
-			FullUri = fullUri;
-			Item = item;
-			Section = section;
-			Content = content;
-			GlobalRoutes = globalRoutes;
-		}
-
-		public RequestDefinition(string fullUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes) :
-			this(new Uri(fullUri, UriKind.Absolute), item, section, content, globalRoutes)
-		{
-		}
-
-		public Uri FullUri { get; }
-		public ShellItem Item { get; }
-		public ShellSection Section { get; }
-		public ShellContent Content { get; }
-		public List<string> GlobalRoutes { get; }
-	}
+	//	public WhatToDoWithTheStack StackRequest { get; }
+	//	public string Query { get; }
+	//	public string Fragment { get; }
+	//	public RequestDefinition Request { get; }
+	//}
 
 
+	//[DebuggerDisplay("Full = {FullUri}, Short = {ShortUri}")]
+	//internal class RequestDefinition
+	//{
+	//	public RequestDefinition(Uri fullUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes)
+	//	{
+	//		FullUri = fullUri;
+	//		Item = item;
+	//		Section = section;
+	//		Content = content;
+	//		GlobalRoutes = globalRoutes;
+	//	}
+
+	//	public RequestDefinition(string fullUri, ShellItem item, ShellSection section, ShellContent content, List<string> globalRoutes) :
+	//		this(new Uri(fullUri, UriKind.Absolute), item, section, content, globalRoutes)
+	//	{
+	//	}
+
+	//	public Uri FullUri { get; }
+	//	public ShellItem Item { get; }
+	//	public ShellSection Section { get; }
+	//	public ShellContent Content { get; }
+	//	public List<string> GlobalRoutes { get; }
+	//}
 }

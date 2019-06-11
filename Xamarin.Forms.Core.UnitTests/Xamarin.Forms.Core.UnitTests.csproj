@@ -74,6 +74,7 @@
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
+    <Compile Include="ShellNavigationTests.cs" />
     <Compile Include="ShellTestBase.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
     <Compile Include="CheckBoxUnitTests.cs" />

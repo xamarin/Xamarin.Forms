@@ -67,29 +67,29 @@ namespace Xamarin.Forms
 			callback(DisplayedPage);
 		}
 
-		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
-		{
-			ShellContent shellContent = request.Request.Content;
+		//internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
+		//{
+		//	ShellContent shellContent = request.Request.Content;
 
-			if (shellContent == null)
-				return Task.FromResult(true);
+		//	if (shellContent == null)
+		//		return Task.FromResult(true);
 
-			if (request.Request.GlobalRoutes.Count > 0)
-			{
-				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
-				Device.BeginInvokeOnMainThread(async () =>
-				{
-					await GoToAsync(request, queryData, false);
-				});
-			}
+		//	if (request.Request.GlobalRoutes.Count > 0)
+		//	{
+		//		// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
+		//		Device.BeginInvokeOnMainThread(async () =>
+		//		{
+		//			await GoToAsync(request, queryData, false);
+		//		});
+		//	}
 
-			Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
+		//	Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
 
-			if (CurrentItem != shellContent)
-				SetValueFromRenderer(CurrentItemProperty, shellContent);
+		//	if (CurrentItem != shellContent)
+		//		SetValueFromRenderer(CurrentItemProperty, shellContent);
 
-			return Task.FromResult(true);
-		}
+		//	return Task.FromResult(true);
+		//}
 
 		bool IShellSectionController.RemoveContentInsetObserver(IShellContentInsetObserver observer)
 		{
@@ -227,44 +227,54 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		internal async Task GoToAsync(NavigationRequest request, IDictionary<string, string> queryData, bool animate)
+		internal async Task GoToAsync(ShellRouteState navigationRequest, bool animate)
 		{
-			List<string> routes = request.Request.GlobalRoutes;
-			if (routes == null || routes.Count == 0)
+			var currentRoute = navigationRequest.CurrentRoute;
+			var pathParts = currentRoute.PathParts;
+			if (pathParts == null || pathParts.Count <= 3)
 			{
 				await Navigation.PopToRootAsync(animate);
 				return;
 			}
 
-			for (int i = 0; i < routes.Count; i++)
+			int pageCount = 0;
+			for (int i = 3; i < pathParts.Count; i++, pageCount++)
 			{
-				bool isLast = i == routes.Count - 1;
-				var route = routes[i];
-				var navPage = _navStack.Count > i + 1 ? _navStack[i + 1] : null;
+				bool isLast = i == pathParts.Count - 1;
+				var route = pathParts[i];
+				var navPage = _navStack.Count > pageCount + 1 ? _navStack[pageCount + 1] : null;
 
 				if (navPage != null)
 				{
-					if (Routing.GetRoute(navPage) == route)
+					if (Routing.GetRoute(navPage) == route.ShellItem.Route)
 					{
-						Shell.ApplyQueryAttributes(navPage, queryData, isLast);
+						Shell.ApplyQueryAttributes(navPage, route.NavigationParameters, isLast);
 						continue;
 					}
-
-					if (request.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
+					else
 					{
-						while (_navStack.Count > i + 1)
+						while (_navStack.Count > pageCount + 1)
 						{
 							await OnPopAsync(false);
 						}
 					}
+
+					//if (request.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
+					//{
+					//	while (_navStack.Count > pageCount + 1)
+					//	{
+					//		await OnPopAsync(false);
+					//	}
+					//}
 				}
 
-				var content = Routing.GetOrCreateContent(route) as Page;
+				var content = Routing.GetOrCreateContent(route.ShellItem.Route) as Page;
+
 				if (content == null)
 					break;
 
-				Shell.ApplyQueryAttributes(content, queryData, isLast);
-				await OnPushAsync(content, i == routes.Count - 1 && animate);
+				Shell.ApplyQueryAttributes(content, route.NavigationParameters, isLast);
+				await OnPushAsync(content, i == pathParts.Count - 1 && animate);
 			}
 
 			SendAppearanceChanged();
