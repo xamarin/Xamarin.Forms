@@ -211,6 +211,11 @@ namespace Xamarin.Forms.Controls.Issues
 								Command = new Command(() => Navigation.PushAsync(new ContentPage(){ Content = CreateEntryInsetView() }))
 							},
 							new Button(){Text = "Reset", Command = new Command(() => SetupLandingPage() )},
+							new Button()
+							{
+								Text = "Click Me"
+
+							},
 							new Entry()
 							{
 								AutomationId = EntryToClick

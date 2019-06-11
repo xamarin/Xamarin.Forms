@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
-			if(_safeAreasSet)
+			if(_safeAreasSet || !Forms.IsiOS11OrNewer)
 				UpdateUseSafeArea();
 		}
 
