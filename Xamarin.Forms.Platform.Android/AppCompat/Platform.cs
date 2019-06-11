@@ -325,7 +325,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void Cleanup(List<AView> viewsToRemove, List<IVisualElementRenderer> renderersToDispose)
 		{
-			new Handler(Looper.MainLooper).Post(() =>
+			// If trigger by dispose, cleanup now, otherwise queue it for later
+			if (_disposed)
+			{
+				DoCleanup();
+			}
+			else
+			{
+				new Handler(Looper.MainLooper).Post(DoCleanup);
+			}
+
+			void DoCleanup()
 			{
 				for (int i = 0; i < viewsToRemove.Count; i++)
 				{
@@ -336,9 +346,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				for (int i = 0; i < renderersToDispose.Count; i++)
 				{
 					IVisualElementRenderer rootRenderer = renderersToDispose[i];
+					rootRenderer?.Element.ClearValue(Android.Platform.RendererProperty);
 					rootRenderer?.Dispose();
 				}
-			});
+			}
 		}
 
 		void AddChild(Page page, bool layout = false)
