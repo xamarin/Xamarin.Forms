@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace Xamarin.Forms
 {
-	public class ShellNavigationService
+	public class ShellNavigationService : IUriProjectionParser
 	{
-		internal class ShellNavigationImpl : IUriProjectionParser
+		public Task<ShellRouteState> ParseAsync(Shell currentState, Uri uri)
 		{
-			public Task<ShellRouteState> ParseAsync(Shell currentState, Uri uri)
-			{
-				var navigationRequest = ShellUriHandler.GetNavigationRequest(currentState, uri, false);
-				return Task.FromResult(navigationRequest);
-			}
+			var navigationRequest = ShellUriHandler.GetNavigationRequest(currentState, uri, false);
+			return Task.FromResult(navigationRequest);
 		}
 	}
 

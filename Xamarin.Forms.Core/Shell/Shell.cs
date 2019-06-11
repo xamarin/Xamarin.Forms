@@ -372,7 +372,13 @@ namespace Xamarin.Forms
 
 			_accumulateNavigatedEvents = true;
 
-			ShellRouteState navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
+			ShellRouteState navigationRequest = null;
+
+			if (!enableRelativeShellRoutes)
+				navigationRequest = await UriProjectionParser.ParseAsync(this, state.FullLocation);
+			else
+				navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
+
 			var currentRoute = navigationRequest.CurrentRoute;
 			var pathParts = currentRoute.PathParts;
 			ApplyQueryAttributes(this, currentRoute.NavigationParameters, false);
@@ -1118,6 +1124,14 @@ namespace Xamarin.Forms
 			if (FlyoutHeaderView != null)
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
 		}
+
+		#region Navigation Interfaces
+
+		// todo replace with dependency service registration stuff
+		ShellNavigationService NavigationService { get; set; } = new ShellNavigationService();
+		IUriProjectionParser UriProjectionParser => NavigationService;
+
+		#endregion
 
 		class NavigationImpl : NavigationProxy
 		{
