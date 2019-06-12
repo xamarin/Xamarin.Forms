@@ -21,22 +21,22 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public Task AppearedAsync(ShellLifecycleArgs args)
+		public virtual Task AppearedAsync(ShellLifecycleArgs args)
 		{
 			return Task.Delay(0);
 		}
 
-		public Task AppearingAsync(ShellLifecycleArgs args)
+		public virtual Task AppearingAsync(ShellLifecycleArgs args)
 		{
 			return Task.Delay(0);
 		}
 
-		public void ApplyParameters(ShellLifecycleArgs args)
+		public virtual void ApplyParameters(ShellLifecycleArgs args)
 		{
 			Shell.ApplyQueryAttributes(args.Element, args.PathPart?.NavigationParameters ?? args.RoutePath?.NavigationParameters, args.IsLast);
 		}
 
-		public Page Create(ShellContentCreateArgs args)
+		public virtual Page Create(ShellContentCreateArgs args)
 		{
 			var shellContent = args.Content;
 			var template = shellContent.ContentTemplate;
@@ -58,12 +58,12 @@ namespace Xamarin.Forms
 			return result;
 
 		}
-		public Task<ShellRouteState> NavigatingToAsync(ShellNavigationArgs args)
+		public virtual Task<ShellRouteState> NavigatingToAsync(ShellNavigationArgs args)
 		{
 			return Task.FromResult(args.FutureState);
 		}
 
-		public Task<ShellRouteState> ParseAsync(ShellUriParserArgs args)
+		public virtual Task<ShellRouteState> ParseAsync(ShellUriParserArgs args)
 		{
 			var navigationRequest = ShellUriHandler.GetNavigationRequest(args.Shell, args.Uri, false);
 			return Task.FromResult(navigationRequest);
