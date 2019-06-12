@@ -139,6 +139,19 @@ namespace Xamarin.Forms.Platform.iOS
 				var renderer = Platform.CreateRenderer(page);
 				Platform.SetRenderer(page, renderer);
 
+				var childView = renderer.ViewController.View;
+				if (!Forms.IsiOS11OrNewer)
+				{
+					if(childView != null && childView.Subviews.Length > 0 && childView.Subviews[0] is UIScrollView)
+					{
+						renderer.ViewController.AutomaticallyAdjustsScrollViewInsets = true;
+					}
+					else
+					{
+						renderer.ViewController.AutomaticallyAdjustsScrollViewInsets = false;
+					}
+				}
+
 				AddChildViewController(renderer.ViewController);
 
 				if (item == currentItem)
