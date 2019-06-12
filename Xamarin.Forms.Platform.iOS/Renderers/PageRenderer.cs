@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			//by default use the MainScreen Bounds so Effects can access the Container size
 			if (_pageContainer == null)
-				_pageContainer = new PageContainer(this) { Frame = UIScreen.MainScreen.Bounds};
+				_pageContainer = new PageContainer(this) { Frame = UIScreen.MainScreen.Bounds };
 
 			View = _pageContainer;
 		}
@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
-			if(_safeAreasSet || !Forms.IsiOS11OrNewer)
+			if (_safeAreasSet || !Forms.IsiOS11OrNewer)
 				UpdateUseSafeArea();
 		}
 
@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateUseSafeArea();
 			base.ViewSafeAreaInsetsDidChange();
 		}
-		
+
 		public UIViewController ViewController => _disposed ? null : this;
 
 		public override void ViewDidAppear(bool animated)
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appeared = true;
 			UpdateStatusBarPrefersHidden();
-			if(Forms.IsiOS11OrNewer)
+			if (Forms.IsiOS11OrNewer)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
@@ -326,7 +326,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateUseSafeArea();
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Page.PrefersHomeIndicatorAutoHiddenProperty.PropertyName)
 				UpdateHomeIndicatorAutoHidden();
-			else if(e.PropertyName == Page.PaddingProperty.PropertyName)
+			else if (e.PropertyName == Page.PaddingProperty.PropertyName)
 			{
 				if (ShouldUseSafeArea() && Page.Padding != SafeAreaInsets)
 					_userOverriddenSafeArea = true;
@@ -374,7 +374,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_userOverriddenSafeArea)
 				return;
-						
+
 			if (!IsPartOfShell && !Forms.IsiOS11OrNewer)
 				return;
 
@@ -399,7 +399,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(safeareaPadding);
 			}
 			else if (IsPartOfShell)
-			{	
+			{
 				safeareaPadding = new Thickness(0, TopLayoutGuide.Length + tabThickness, 0, BottomLayoutGuide.Length);
 				Page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(safeareaPadding);
 			}
@@ -413,7 +413,7 @@ namespace Xamarin.Forms.Platform.iOS
 					usingSafeArea = true;
 			}
 
-			if(!usingSafeArea && isSafeAreaSet && Page.Padding == safeareaPadding)
+			if (!usingSafeArea && isSafeAreaSet && Page.Padding == safeareaPadding)
 			{
 				Page.SetValueFromRenderer(Page.PaddingProperty, _userPadding);
 			}
@@ -421,13 +421,33 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!usingSafeArea)
 				return;
 
-			if (View != null && View.Subviews.Length > 0 && View.Subviews[0] is UIScrollView && IsPartOfShell)
+			if (SafeAreaInsets == Page.Padding)
 				return;
 
+			// this is determining if there is a UIScrollView control occupying the whole screen
+			if (IsPartOfShell && !isSafeAreaSet)
+			{
+				var subViewSearch = View;
+				for (int i = 0; i < 2 && subViewSearch != null; i++)
+				{
+					if (subViewSearch?.Subviews.Length > 0)
+					{
+						if (subViewSearch.Subviews[0] is UIScrollView)
+							return;
+
+						subViewSearch = subViewSearch.Subviews[0];
+					}
+					else
+					{
+						subViewSearch = null;
+					}
+				}
+			}
 			
 			Page.SetValueFromRenderer(Page.PaddingProperty, SafeAreaInsets);
 		}
 
+		
 		void UpdateStatusBarPrefersHidden()
 		{
 			if (Element == null)
