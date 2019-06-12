@@ -41,6 +41,8 @@ namespace Xamarin.Forms.Controls.Issues
 		const string PaddingEntry = "PaddingEntry";
 		const string PaddingLabel = "PaddingLabel";
 
+		const string EmptyPageSafeAreaTest = "EmptyPageSafeAreaTest";
+
 		protected override void Init()
 		{
 			SetupLandingPage();
@@ -61,6 +63,12 @@ namespace Xamarin.Forms.Controls.Issues
 						Text = "Entry Inset",
 						Command = new Command(() => EntryInset()),
 						AutomationId = EntryTest
+					},
+					new Button()
+					{
+						Text = "Safe Area on Page with no header",
+						Command = new Command(() => EmptyPageSafeArea()),
+						AutomationId = EmptyPageSafeAreaTest
 					},
 					new Button()
 					{
@@ -106,6 +114,43 @@ namespace Xamarin.Forms.Controls.Issues
 				Items.RemoveAt(0);
 		}
 
+		void EmptyPageSafeArea()
+		{
+			var page = CreateContentPage();
+			var topLabel = new Label() { Text = "Top Label", HeightRequest = 200, AutomationId = SafeAreaTopLabel, VerticalOptions = LayoutOptions.Start };
+			page.Content =
+				new StackLayout()
+				{
+					Children =
+					{
+						topLabel,
+						new StackLayout()
+						{
+							VerticalOptions = LayoutOptions.FillAndExpand,
+							Children =
+							{
+								new Label() { Text = "This page should have no safe area padding at the top" },
+								new Button() { Text = "Reset", Command = new Command(() => SetupLandingPage()) }
+							},
+							BackgroundColor = Color.Yellow,
+
+						}
+					}
+				};
+
+			page.BackgroundColor = Color.Green;
+
+			page.Appearing += (_, __) =>
+			{
+				topLabel.HeightRequest = page.On<iOS>().SafeAreaInsets().Top;
+			};
+
+			Shell.SetTabBarIsVisible(page, false);
+			Shell.SetNavBarIsVisible(page, false);
+			CurrentItem = Items.Last();
+			Items.RemoveAt(0);
+		}
+
 		void ListViewPage()
 		{
 			var page = CreateContentPage();
@@ -133,7 +178,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 					return cell;
 				}),
-				ItemsSource = Enumerable.Range(0, 1000).Select(x=> $"Item{x}").ToArray()
+				ItemsSource = Enumerable.Range(0, 1000).Select(x => $"Item{x}").ToArray()
 			};
 
 			CurrentItem = Items.Last();
@@ -172,8 +217,8 @@ namespace Xamarin.Forms.Controls.Issues
 				Children =
 				{
 					new Label(){ Text = "Top Label", HeightRequest = 200, AutomationId = SafeAreaTopLabel},
-					new Label(){Text = value ? "You should see two labels" : "You should see one label", AutomationId = SafeAreaBottomLabel},
-					new Button(){Text = "Reset", Command = new Command(() => SetupLandingPage() )}
+					new Label(){ Text = value ? "You should see two labels" : "You should see one label", AutomationId = SafeAreaBottomLabel},
+					new Button(){ Text = "Reset", Command = new Command(() => SetupLandingPage() )}
 				}
 			};
 
@@ -242,7 +287,6 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForNoElement(EntrySuccess);
 			RunningApp.Tap("Click Me");
 			RunningApp.WaitForElement(EntrySuccess);
-			RunningApp.Tap(Reset);
 
 		}
 
@@ -251,9 +295,17 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.Tap(ListViewTest);
 			RunningApp.WaitForElement("Item0");
-			RunningApp.Tap(Reset);
 
 		}
+
+		[Test]
+		public void SafeAreaOnBlankPage()
+		{
+			RunningApp.Tap(EmptyPageSafeAreaTest);
+			var noSafeAreaLocation = RunningApp.WaitForElement(SafeAreaTopLabel);
+			Assert.AreEqual(0, noSafeAreaLocation[0].Rect.Y);
+		}
+
 		[Test]
 		public void SafeArea()
 		{
