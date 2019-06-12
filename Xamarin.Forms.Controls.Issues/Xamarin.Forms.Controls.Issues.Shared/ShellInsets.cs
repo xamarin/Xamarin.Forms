@@ -202,8 +202,6 @@ namespace Xamarin.Forms.Controls.Issues
 					Children =
 						{
 							new Label(){ AutomationId = EntrySuccess, VerticalOptions= LayoutOptions.FillAndExpand, Text = "Click the entry and it should scroll up and stay visible. Click off entry and this label should still be visible"},
-							new Button(){ Text = "Top Tab", Command = new Command(() => AddTopTab("top"))},
-							new Button(){ Text = "Bottom Tab", Command = new Command(() => AddBottomTab("bottom"))},
 							new Button(){ Text = "Change Navbar Visible", Command = new Command(() => Shell.SetNavBarIsVisible(view.Parent, !(Shell.GetNavBarIsVisible(view.Parent))))},
 							new Button()
 							{
@@ -224,7 +222,9 @@ namespace Xamarin.Forms.Controls.Issues
 							{
 								Text = "Click Me"
 
-							}
+							},
+							new Button(){ Text = "Top Tab", Command = new Command(() => AddTopTab("top"))},
+							new Button(){ Text = "Bottom Tab", Command = new Command(() => AddBottomTab("bottom"))},
 						}
 				}
 			};

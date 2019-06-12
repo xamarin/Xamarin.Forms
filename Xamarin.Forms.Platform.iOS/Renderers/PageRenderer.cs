@@ -375,6 +375,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_userOverriddenSafeArea)
 				return;
 
+			if (!IsPartOfShell && !Forms.IsiOS11OrNewer)
+				return;
+
 			var tabThickness = _tabThickness;
 			if (!_isInItems)
 				tabThickness = 0;

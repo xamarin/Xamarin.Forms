@@ -144,14 +144,6 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void OnRendererSet()
 		{
 			NavigationItem = ViewController.NavigationItem;
-			if (!Forms.IsiOS11OrNewer)
-			{
-				var View = ViewController.View;
-				if (!Forms.IsiOS11OrNewer && View != null && View.Subviews.Length > 0 && View.Subviews[0] is UIScrollView)
-					ViewController.AutomaticallyAdjustsScrollViewInsets = true;
-				else
-					ViewController.AutomaticallyAdjustsScrollViewInsets = false;
-			}
 		}
 
 		protected virtual void UpdateTitleView()
