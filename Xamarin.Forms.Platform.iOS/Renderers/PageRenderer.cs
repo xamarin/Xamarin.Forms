@@ -374,7 +374,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_userOverriddenSafeArea)
 				return;
-
+						
 			if (!IsPartOfShell && !Forms.IsiOS11OrNewer)
 				return;
 
@@ -408,7 +408,10 @@ namespace Xamarin.Forms.Platform.iOS
 			bool isSafeAreaSet = Element.IsSet(PageSpecific.UseSafeAreaProperty);
 
 			if (IsPartOfShell && !isSafeAreaSet)
-				usingSafeArea = true;
+			{
+				if (Shell.GetNavBarIsVisible(Element) || _tabThickness != default(Thickness))
+					usingSafeArea = true;
+			}
 
 			if(!usingSafeArea && isSafeAreaSet && Page.Padding == safeareaPadding)
 			{
