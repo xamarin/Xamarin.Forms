@@ -132,13 +132,13 @@ namespace Xamarin.Forms.Controls.Issues
 								new Label() { Text = "This page should have no safe area padding at the top" },
 								new Button() { Text = "Reset", Command = new Command(() => SetupLandingPage()) }
 							},
-							BackgroundColor = Color.Yellow,
+							BackgroundColor = Color.White,
 
 						}
 					}
 				};
 
-			page.BackgroundColor = Color.Green;
+			page.BackgroundColor = Color.Yellow;
 
 			page.Appearing += (_, __) =>
 			{
@@ -180,6 +180,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}),
 				ItemsSource = Enumerable.Range(0, 1000).Select(x => $"Item{x}").ToArray()
 			};
+			page.BackgroundColor = Color.Yellow;
 
 			CurrentItem = Items.Last();
 			Items.RemoveAt(0);
@@ -203,6 +204,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new Button(){Text = "Reset", Command = new Command(() => SetupLandingPage() )}
 				}
 			};
+			page.BackgroundColor = Color.Yellow;
 
 			CurrentItem = Items.Last();
 			Items.RemoveAt(0);
@@ -221,6 +223,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new Button(){ Text = "Reset", Command = new Command(() => SetupLandingPage() )}
 				}
 			};
+			page.BackgroundColor = Color.Yellow;
 
 			page.On<iOS>().SetUseSafeArea(value);
 			CurrentItem = Items.Last();
@@ -232,6 +235,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var page = CreateContentPage();
 			page.Title = "Main";
 			page.Content = CreateEntryInsetView();
+			page.BackgroundColor = Color.Yellow;
 
 			CurrentItem = Items.Last();
 			Items.RemoveAt(0);
