@@ -106,6 +106,18 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
+		static bool IsDrawableSourceValid(this IVisualElementRenderer renderer, BindableObject bindable, out BindableObject element)
+		{
+			if (renderer == null)
+				element = bindable;
+			else if((renderer is IDisposedState disposed && disposed.IsDisposed) || renderer.View == null)
+				element = null;
+			else
+				element = renderer.Element;
+
+			return element != null;
+		}
+
 		internal static Task ApplyDrawableAsync(this IShellContext shellContext, BindableObject bindable, BindableProperty imageSourceProperty, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
@@ -137,12 +149,10 @@ namespace Xamarin.Forms.Platform.Android
 			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
 			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
 
-			// TODO: it might be good to make sure the renderer has not been disposed
-
 			// make sure things are good before we start
-			var element = bindable ?? renderer?.Element;
+			BindableObject element = null;
 
-			if (element == null)
+			if (!renderer.IsDrawableSourceValid(bindable, out element))
 				return;
 
 			onLoading?.Invoke(true);
@@ -169,14 +179,7 @@ namespace Xamarin.Forms.Platform.Android
 						else
 							returnValue = cacheObject as Drawable;
 
-						if (renderer is IDisposedState disposed && disposed.IsDisposed)
-							return;
-
-						// we are back, so update the working element
-						element = bindable ?? renderer?.Element;
-
-						// makse sure things are good now that we are back
-						if (element == null || (renderer != null && renderer.View == null))
+						if (!renderer.IsDrawableSourceValid(bindable, out element))
 							return;
 
 						// only set if we are still on the same image
