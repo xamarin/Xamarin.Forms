@@ -27,7 +27,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		const string EntryTest = "EntryTest";
 		const string EntryToClick = "EntryToClick";
+		const string EntryToClick2 = "EntryToClick2";
 		const string EntrySuccess = "EntrySuccess";
+		const string ResetKeyboard = "Hide Keyboard";
 		const string Reset = "Reset";
 
 		const string ToggleSafeArea = "ToggleSafeArea";
@@ -260,7 +262,7 @@ namespace Xamarin.Forms.Controls.Issues
 							new Button(){Text = "Reset", Command = new Command(() => SetupLandingPage() )},
 							new Button()
 							{
-								Text = "Click Me"
+								Text = ResetKeyboard
 
 							},
 							new Entry()
@@ -269,11 +271,15 @@ namespace Xamarin.Forms.Controls.Issues
 							},
 							new Button()
 							{
-								Text = "Click Me"
+								Text = ResetKeyboard
 
 							},
 							new Button(){ Text = "Top Tab", Command = new Command(() => AddTopTab("top"))},
 							new Button(){ Text = "Bottom Tab", Command = new Command(() => AddBottomTab("bottom"))},
+							new Entry()
+							{
+								AutomationId = EntryToClick2
+							},
 						}
 				}
 			};
@@ -288,8 +294,17 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.Tap(EntryTest);
 			RunningApp.Tap(EntryToClick);
+
+			// if the device has too much height then try clicking the second entry
+			// to trigger keyboard movement
+			if (RunningApp.Query(EntrySuccess).Length != 0)
+			{
+				RunningApp.Tap(ResetKeyboard);
+				RunningApp.Tap(EntryToClick2);
+			}
+
 			RunningApp.WaitForNoElement(EntrySuccess);
-			RunningApp.Tap("Click Me");
+			RunningApp.Tap(ResetKeyboard);
 			RunningApp.WaitForElement(EntrySuccess);
 
 		}
