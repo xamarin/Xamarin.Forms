@@ -194,14 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 
 						using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
 						{
-							if (renderer is IDisposedState disposed && disposed.IsDisposed)
-								return;
-
-							// we are back, so update the working element
-							element = bindable ?? renderer?.Element;
-
-							// makse sure things are good now that we are back
-							if (element == null || (renderer != null && renderer.View == null))
+							if (!renderer.IsDrawableSourceValid(bindable, out element))
 								return;
 
 							// only set if we are still on the same image
