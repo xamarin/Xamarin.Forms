@@ -303,8 +303,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void InvalidGenericType()
 		{
 			int exceptionCount = 0;
+#pragma warning disable 0618 // Type or member is obsolete
 			Forms.Internals.ResourceLoader.ExceptionHandler = _ => exceptionCount++;
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
+#pragma warning restore 0618 // Type or member is obsolete
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
