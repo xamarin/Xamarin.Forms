@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly EffectControlProvider _effectControlProvider;
 
 		protected ItemsViewAdapter ItemsViewAdapter;
-		
+
 		int? _defaultLabelFor;
 		bool _disposed;
 
@@ -139,7 +139,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element != null)
 				{
 					TearDownOldElement(Element as ItemsView);
+				}
 
+				// Dispose the adapter after tear down element
+				ItemsViewAdapter?.Dispose();
+
+				if (Element != null)
+				{
 					if (Platform.GetRenderer(Element) == this)
 					{
 						Element.ClearValue(Platform.RendererProperty);
@@ -281,7 +287,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_layout = ItemsView.ItemsLayout;
 			SetLayoutManager(SelectLayoutManager(_layout));
-			
+
 			UpdateSnapBehavior();
 			UpdateBackgroundColor();
 			UpdateFlowDirection();
@@ -296,7 +302,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Listen for ScrollTo requests
 			ItemsView.ScrollToRequested += ScrollToRequested;
 		}
-		
+
 		protected virtual void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
@@ -349,7 +355,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateSnapBehavior();
 			}
-			else if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty, 
+			else if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty,
 				GridItemsLayout.HorizontalItemSpacingProperty, GridItemsLayout.VerticalItemSpacingProperty))
 			{
 				UpdateItemSpacing();
@@ -479,7 +485,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
 			var position = DeterminePosition(args);
-			
+
 			if (args.IsAnimated)
 			{
 				ScrollHelper.AnimateScrollToPosition(position, args.ScrollToPosition);
