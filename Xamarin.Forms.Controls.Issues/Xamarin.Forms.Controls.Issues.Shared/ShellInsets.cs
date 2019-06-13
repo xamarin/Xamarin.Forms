@@ -294,13 +294,16 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.Tap(EntryTest);
 			RunningApp.Tap(EntryToClick);
+			RunningApp.EnterText(EntryToClick, "keyboard");
 
 			// if the device has too much height then try clicking the second entry
 			// to trigger keyboard movement
 			if (RunningApp.Query(EntrySuccess).Length != 0)
 			{
 				RunningApp.Tap(ResetKeyboard);
+				RunningApp.DismissKeyboard();
 				RunningApp.Tap(EntryToClick2);
+				RunningApp.EnterText(EntryToClick2, "keyboard");
 			}
 
 			RunningApp.WaitForNoElement(EntrySuccess);
