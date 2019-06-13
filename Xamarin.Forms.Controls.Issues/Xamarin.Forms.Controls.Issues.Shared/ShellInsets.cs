@@ -7,6 +7,7 @@ using Xamarin.Forms.Internals;
 using System.Linq;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using System.Threading;
 
 
 #if UITEST
@@ -306,7 +307,16 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.EnterText(EntryToClick2, "keyboard");
 			}
 
-			RunningApp.WaitForNoElement(EntrySuccess);
+			var entry = RunningApp.Query(EntrySuccess);
+			if(entry.Length > 0 && entry[0].Rect.Y > 0)
+			{
+				Thread.Sleep(2000);
+				entry = RunningApp.Query(EntrySuccess);
+
+				if (entry.Length > 0)
+					Assert.Less(entry[0].Rect.Y, 0);
+			}
+
 			RunningApp.Tap(ResetKeyboard);
 			RunningApp.WaitForElement(EntrySuccess);
 
