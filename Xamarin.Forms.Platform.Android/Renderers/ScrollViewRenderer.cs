@@ -75,9 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= HandlePropertyChanged;
-
-				if (oldElement.Content != null)
-					oldElement.Content.SizeChanged -= OnContentSizeChanged;
+				oldElement.LayoutChanged -= HandleLayoutChanged;
 
 				((IScrollViewController)oldElement).ScrollToRequested -= OnScrollToRequested;
 			}
@@ -92,9 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				_view.PropertyChanged += HandlePropertyChanged;
-
-				if (_view.Content != null)
-					_view.Content.SizeChanged += OnContentSizeChanged;
+				_view.LayoutChanged += HandleLayoutChanged;
 
 				Controller.ScrollToRequested += OnScrollToRequested;
 
@@ -113,6 +109,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
+		}
+
+		void HandleLayoutChanged(object sender, EventArgs e)
+		{
+			UpdateLayout();
 		}
 
 		void UpdateFlowDirection()
@@ -135,8 +136,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateLayout()
 		{
-			if (Tracker != null)
-				Tracker.UpdateLayout();
+			Tracker?.UpdateLayout();
 		}
 
 		public ViewGroup ViewGroup => this;
@@ -362,11 +362,6 @@ namespace Xamarin.Forms.Platform.Android
 		void LoadContent()
 		{
 			_container.ChildView = _view.Content;
-		}
-
-		void OnContentSizeChanged(object sender, EventArgs e)
-		{
-			Tracker?.UpdateLayout();
 		}
 
 		async void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
