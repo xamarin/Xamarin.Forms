@@ -115,28 +115,27 @@ namespace Xamarin.Forms.Platform.iOS
 					SetAutomationId(element.AutomationId);
 
 				element.SendViewInitialized(NativeView);
+
+				var parent = Element.Parent;
+
+				while (!Application.IsApplicationOrNull(parent))
+				{
+					if (parent is ShellContent)
+						_isInItems = true;
+
+					if (parent is ShellSection shellSection)
+					{
+						_shellSection = shellSection;
+						((IShellSectionController)_shellSection).AddContentInsetObserver(this);
+
+						break;
+					}
+
+					parent = parent.Parent;
+				}
 			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
-
-			var parent = Element.Parent;
-
-			while (!Application.IsApplicationOrNull(parent))
-			{
-				if (parent is ShellContent)
-					_isInItems = true;
-
-				if (parent is ShellSection shellSection)
-				{
-					_shellSection = shellSection;
-					((IShellSectionController)_shellSection).AddContentInsetObserver(this);
-
-					break;
-				}
-
-				parent = parent.Parent;
-			}
-
 		}
 
 		public void SetElementSize(Size size)
