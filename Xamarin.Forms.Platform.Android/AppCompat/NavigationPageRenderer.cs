@@ -1035,6 +1035,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_ = this.ApplyDrawableAsync(currentPage, NavigationPage.TitleIconImageSourceProperty, Context, drawable =>
 				{
 					_titleIconView.SetImageDrawable(drawable);
+					FastRenderers.AutomationPropertiesProvider.SetAutomationIdAndContentDescription(_titleIconView, source);
 				});
 			}
 		}

@@ -108,10 +108,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		static bool IsDrawableSourceValid(this IVisualElementRenderer renderer, BindableObject bindable, out BindableObject element)
 		{
-			if (renderer == null)
-				element = bindable;
-			else if((renderer is IDisposedState disposed && disposed.IsDisposed) || renderer.View == null)
+			if ((renderer is IDisposedState disposed && disposed.IsDisposed) || (renderer != null && renderer.View == null))
 				element = null;
+			else if (bindable != null)
+				element = bindable;
 			else
 				element = renderer.Element;
 
@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 						// only set if we are still on the same image
 						if (element.GetValue(imageSourceProperty) == initialSource)
 						{
-							using(returnValue)
+							using (returnValue)
 								onSet(returnValue);
 						}
 					}
