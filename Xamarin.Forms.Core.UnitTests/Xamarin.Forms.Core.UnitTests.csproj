@@ -76,6 +76,7 @@
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="ShellTestBase.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
+    <Compile Include="CheckBoxUnitTests.cs" />
     <Compile Include="VisualTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="ImageButtonUnitTest.cs" />
@@ -136,7 +137,6 @@
     <Compile Include="PointTests.cs" />
     <Compile Include="PositionTests.cs" />
     <Compile Include="ProgressBarTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleUnitTests.cs" />
     <Compile Include="RegistrarUnitTests.cs" />
     <Compile Include="RelativeLayoutTests.cs" />

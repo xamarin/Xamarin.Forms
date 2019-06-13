@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <Description>iOS Backend for Xamarin.Forms</Description>
+    <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -8,7 +12,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Xamarin.Forms.Platform.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -141,6 +144,7 @@
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="IOSDeviceInfo.cs" />
+    <Compile Include="Renderers\FormsCheckBox.cs" />
     <Compile Include="Renderers\ImageElementManager.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeViewWrapper.cs" />
@@ -151,6 +155,7 @@
     <Compile Include="PageExtensions.cs" />
     <Compile Include="Renderers\IAccessibilityElementsController.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
+    <Compile Include="Renderers\CheckBoxRendererBase.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
@@ -209,6 +214,8 @@
     <Compile Include="Extensions\FontExtensions.Shared.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
+    <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -258,11 +265,6 @@
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup />
 </Project>

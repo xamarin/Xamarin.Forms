@@ -123,6 +123,7 @@
     <Compile Include="..\xamarin.forms.controls\gallerypages\openglgalleries\AdvancedOpenGLGallery.cs">
       <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
     </Compile>
+    <Compile Include="CustomEffects\GradientEffect.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -327,6 +328,7 @@
     <BundleResource Include="Resources\button_add%402x.png" />
     <BundleResource Include="Resources\icon_search%402x.png" />
     <BundleResource Include="Resources\icon_bookmark%402x.png" />
+    <BundleResource Include="Resources\xamarinstore.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -396,6 +398,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Fonts\" />
+    <Folder Include="CustomEffects\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
