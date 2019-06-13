@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 			KeyboardObserver.KeyboardWillShow -= OnKeyboardShown;
 			KeyboardObserver.KeyboardWillHide -= OnKeyboardHidden;
 
-			_shellScrollViewTracker.Dispose();
+			_shellScrollViewTracker?.Dispose();
 			_shellScrollViewTracker = null;
 		}
 
