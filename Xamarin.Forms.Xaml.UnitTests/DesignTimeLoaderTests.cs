@@ -285,6 +285,25 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[Test]
 		public void UnknownGenericType()
 		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? 
+				(p.Any(i => i.TypeName == "MyCustomButton`1") ? typeof(ProxyGenericButton<>) : typeof(MockView));
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+					<local:MyCustomButton x:TypeArguments=""local:MyCustomType"" />
+				 </ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<ProxyGenericButton<MockView>>());
+		}
+
+		[Test]
+		public void InvalidGenericType()
+		{
+			int exceptionCount = 0;
+			Forms.Internals.ResourceLoader.ExceptionHandler = _ => exceptionCount++;
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
 
 			var xaml = @"
@@ -295,7 +314,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				 </ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
-			Assert.That(page.Content, Is.TypeOf<MockView>());
+			Assert.That(page.Content, Is.Null);
+			Assert.That(exceptionCount, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -707,13 +727,19 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			XamlLoader.FallbackTypeResolver = (p, type) =>
 			{
+				if (type != null)
+					return type;
 				Assert.That(p.Select(i => i.TypeName), Has.Some.EqualTo("GenericContentPage`1"));
-				return typeof(ContentPage);
+				return typeof(ProxyGenericContentPage<>);
 			};
 
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 		}
 	}
+
+	public class ProxyGenericContentPage<T> : ContentPage { }
+
+	public class ProxyGenericButton<T> : Button { }
 
 	public class InstantiateThrows
 	{
