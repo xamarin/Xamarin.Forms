@@ -3,17 +3,23 @@ using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Controls.Effects;
 using System.Threading.Tasks;
 
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 3548, "Cannot attach effect to Frame", PlatformAffected.Android, NavigationBehavior.PushAsync)]
-	public class Issue3548 : ContentPage
+	[Issue(IssueTracker.Github, 3548, "Cannot attach effect to Frame", PlatformAffected.iOS, NavigationBehavior.PushAsync)]
+	public class Issue3548 : TestContentPage
 	{
+		private const string SuccessMessage = "EFFECT IS ATTACHED!";
+
 		private Frame _statusFrame;
 		private AttachedStateEffect _effect;
 
-		public Issue3548()
+		protected override void Init()
 		{
 			var statusLabel = new Label
 			{
@@ -37,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_effect.StateChanged += (sender, e) =>
 			{
 				statusLabel.Text = _effect.State == AttachedStateEffect.AttachedState.Attached
-					? "EFFECT IS ATTACHED!"
+					? SuccessMessage
 					: "EFFECT IS DEATTACHED";
 
 				_statusFrame.BackgroundColor = Color.LightGreen;
@@ -52,10 +58,9 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 		}
 
-		protected override async void OnAppearing()
+		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			await Task.Delay(500);
 			_statusFrame.Effects.Add(_effect);
 		}
 
@@ -64,6 +69,14 @@ namespace Xamarin.Forms.Controls.Issues
 			base.OnDisappearing();
 			_statusFrame.Effects.Remove(_effect);
 		}
+
+#if UITEST
+		[Test]
+		public void CheckIsEffectAttached()
+		{
+			RunningApp.WaitForElement(q => q.Marked(SuccessMessage));
+		}
+#endif
 	}
 }
 
