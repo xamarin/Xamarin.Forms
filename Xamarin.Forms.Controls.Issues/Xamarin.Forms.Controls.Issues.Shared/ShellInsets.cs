@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class ShellInsets : TestShell
 	{
-		const string EntryTest = "EntryTest";
+		const string EntryTest = nameof(EntryTest);
 		const string EntryToClick = "EntryToClick";
 		const string EntryToClick2 = "EntryToClick2";
 		const string EntrySuccess = "EntrySuccess";
