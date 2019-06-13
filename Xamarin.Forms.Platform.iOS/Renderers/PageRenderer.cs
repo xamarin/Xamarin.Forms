@@ -529,7 +529,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		double _tabThickness;
-		private bool _isInItems;
+		bool _isInItems;
 
 		void IShellContentInsetObserver.OnInsetChanged(Thickness inset, double tabThickness)
 		{
