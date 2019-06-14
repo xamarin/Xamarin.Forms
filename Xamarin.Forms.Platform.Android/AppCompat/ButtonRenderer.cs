@@ -48,8 +48,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			_buttonLayoutManager?.Update();
-			return base.GetDesiredSize(widthConstraint, heightConstraint);
+			var result = base.GetDesiredSize(widthConstraint, heightConstraint);
+			Control.ForceLayout();
+			return result;
 		}
 
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>

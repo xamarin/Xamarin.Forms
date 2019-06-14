@@ -329,6 +329,7 @@ namespace Xamarin.Forms.Material.Android
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
 			Measure(widthConstraint, heightConstraint);
+			ForceLayout();
 			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
 		}
 
