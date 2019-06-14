@@ -33,6 +33,22 @@
                     </VisualStateGroup>
                 </VisualStateManager.VisualStateGroups>
             </Button>
+            <Button x:Name="buttonMaterial" Style="{StaticResource StandardButtonStyle}" IsEnabled="False" Text="Issue Button" Visual="Material">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Style" Value="{StaticResource StandardButtonStyle}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="Style" Value="{StaticResource DisabledButtonStyle}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Button>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -15,9 +15,15 @@ namespace Xamarin.Forms.Controls.Issues
 			new Thread(() =>
 			{
 				Thread.Sleep(1000);
-				Device.BeginInvokeOnMainThread(() => button.IsEnabled = true);
+				SwitchIsEnabled();
+				Thread.Sleep(1500);
+				SwitchIsEnabled();
+				Thread.Sleep(1000);
+				SwitchIsEnabled();
 			}).Start();
 #endif
 		}
+
+		void SwitchIsEnabled() => Device.BeginInvokeOnMainThread(() => button.IsEnabled = buttonMaterial.IsEnabled = !button.IsEnabled);
 	}
 }

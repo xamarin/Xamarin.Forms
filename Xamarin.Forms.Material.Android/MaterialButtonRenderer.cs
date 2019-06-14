@@ -178,16 +178,6 @@ namespace Xamarin.Forms.Material.Android
 		{
 			_buttonLayoutManager?.OnLayout(changed, left, top, right, bottom);
 			base.OnLayout(changed, left, top, right, bottom);
-
-			// fix autoSizeText
-			if (Layout != null)
-			{
-				if (!IsInLayout)
-					RequestLayout();
-				else
-					ForceLayout();
-				Invalidate();
-			}
 		}
 
 		void UpdateFont()

@@ -46,6 +46,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void SetContentDescription()
 			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
 
+		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			_buttonLayoutManager?.Update();
+			return base.GetDesiredSize(widthConstraint, heightConstraint);
+		}
+
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>
 			_buttonLayoutManager?.OnViewAttachedToWindow(attachedView);
 
@@ -60,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override AppCompatButton CreateNativeControl()
 		{
-			return new FormsAppCompatButton(Context);
+			return new AppCompatButton(Context);
 		}
 
 		protected override void Dispose(bool disposing)
