@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 3548, "Cannot attach effect to Frame", PlatformAffected.iOS, NavigationBehavior.PushAsync)]
+	[Issue(IssueTracker.Github, 3548, "Cannot attach effect to Frame", PlatformAffected.Android)]
 	public class Issue3548 : TestContentPage
 	{
 		private const string SuccessMessage = "EFFECT IS ATTACHED!";
