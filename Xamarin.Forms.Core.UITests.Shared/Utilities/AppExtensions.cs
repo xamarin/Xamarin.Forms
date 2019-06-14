@@ -44,6 +44,7 @@ namespace Xamarin.Forms.Core.UITests
 			}
 			else
 			{
+				app.DismissKeyboard();
 				app.Tap(q => q.Raw(goToTestButtonQuery));
 			}
 
