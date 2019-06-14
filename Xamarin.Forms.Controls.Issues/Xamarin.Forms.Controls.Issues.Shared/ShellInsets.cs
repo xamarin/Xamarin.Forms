@@ -294,6 +294,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void EntryScrollTest()
 		{
 			RunningApp.Tap(EntryTest);
+			var originalPosition = RunningApp.WaitForElement(EntrySuccess)[0].Rect;
 			RunningApp.Tap(EntryToClick);
 			RunningApp.EnterText(EntryToClick, "keyboard");
 
@@ -308,17 +309,25 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 
 			var entry = RunningApp.Query(EntrySuccess);
+
+			// ios10 on appcenter for some reason still returns this entry
+			// even though it's hidden so this is a fall back test just to ensure
+			// that the entry has scrolled up
 			if(entry.Length > 0 && entry[0].Rect.Y > 0)
 			{
 				Thread.Sleep(2000);
 				entry = RunningApp.Query(EntrySuccess);
 
 				if (entry.Length > 0)
-					Assert.Less(entry[0].Rect.Y, 0);
+					Assert.Less(entry[0].Rect.Y, originalPosition.Y);
 			}
 
 			RunningApp.Tap(ResetKeyboard);
-			RunningApp.WaitForElement(EntrySuccess);
+			var finalPosition = RunningApp.WaitForElement(EntrySuccess)[0].Rect;
+
+			// verify that label has returned to about the same spot
+			var diff = Math.Abs(originalPosition.Y - finalPosition.Y);
+			Assert.LessOrEqual(diff, 2);
 
 		}
 
