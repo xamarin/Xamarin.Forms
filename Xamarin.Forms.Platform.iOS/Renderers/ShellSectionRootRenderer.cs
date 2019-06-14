@@ -137,21 +137,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ShellContent item = ShellSection.Items[i];
 				var page = ((IShellContentController)item).GetOrCreateContent();
 				var renderer = Platform.CreateRenderer(page);
-				Platform.SetRenderer(page, renderer);
-
-				if (!Forms.IsiOS11OrNewer)
-				{
-					var childView = renderer.ViewController?.View;
-					if (childView != null && childView.Subviews.Length > 0 && childView.Subviews[0] is UIScrollView)
-					{
-						renderer.ViewController.AutomaticallyAdjustsScrollViewInsets = true;
-					}
-					else
-					{
-						renderer.ViewController.AutomaticallyAdjustsScrollViewInsets = false;
-					}
-				}
-
+				Platform.SetRenderer(page, renderer);				 
 				AddChildViewController(renderer.ViewController);
 
 				if (item == currentItem)
@@ -267,16 +253,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void LayoutHeader()
 		{
-			if (_header == null)
-				return;
-
-			CGRect frame;
-			if (Forms.IsiOS11OrNewer)
-				frame = new CGRect(View.Bounds.X, View.SafeAreaInsets.Top, View.Bounds.Width, HeaderHeight);
-			else
-				frame = new CGRect(View.Bounds.X, TopLayoutGuide.Length, View.Bounds.Width, HeaderHeight);
-			_blurView.Frame = frame;
-			_header.View.Frame = frame;
+			int tabThickness = 0;
+			if (_header != null)
+			{
+				tabThickness = HeaderHeight;
+				CGRect frame;
+				if (Forms.IsiOS11OrNewer)
+					frame = new CGRect(View.Bounds.X, View.SafeAreaInsets.Top, View.Bounds.Width, HeaderHeight);
+				else
+					frame = new CGRect(View.Bounds.X, TopLayoutGuide.Length, View.Bounds.Width, HeaderHeight);
+				_blurView.Frame = frame;
+				_header.View.Frame = frame;
+			}
 
 			nfloat left;
 			nfloat top;
@@ -297,7 +285,7 @@ namespace Xamarin.Forms.Platform.iOS
 				bottom = BottomLayoutGuide.Length;
 			}
 
-			((IShellSectionController)ShellSection).SendInsetChanged(new Thickness(left, top, right, bottom), HeaderHeight);
+			((IShellSectionController)ShellSection).SendInsetChanged(new Thickness(left, top, right, bottom), tabThickness);
 		}
 	}
 }

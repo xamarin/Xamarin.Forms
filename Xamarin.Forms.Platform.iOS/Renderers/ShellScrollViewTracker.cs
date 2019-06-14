@@ -87,9 +87,19 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_lastInset == 0 && _tabThickness == 0)
 				return false;
 
-			UpdateContentInset(_lastInset, _tabThickness);
+			if (!Forms.IsiOS11OrNewer)
+			{
+				UpdateContentInset(_lastInset, _tabThickness);
+				return true;
+			}
 
-			return true;
+			if (_shellSection.Items.Count > 1 && _isInItems)
+			{
+				UpdateContentInset(_lastInset, _tabThickness);
+				return true;
+			}
+
+			return false;
 		}
 
 		void UpdateContentInset(Thickness inset, double tabThickness)
@@ -113,16 +123,16 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				if ((_shellSection.Items.Count > 1 && _isInItems))
-				{
-					var top = (float)(inset.Top) + (float)tabThickness;
+				var top = (float)(inset.Top);
 
-					var delta = _scrollView.ContentInset.Top - top;
-					_scrollView.ContentInset = new UIEdgeInsets(top, (float)inset.Left, (float)inset.Bottom, (float)inset.Right);
+				if(_isInItems)
+					top += (float)tabThickness;
 
-					var currentOffset = _scrollView.ContentOffset;
-					_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta);
-				}
+				var delta = _scrollView.ContentInset.Top - top;
+				_scrollView.ContentInset = new UIEdgeInsets(top, (float)inset.Left, (float)inset.Bottom, (float)inset.Right);
+
+				var currentOffset = _scrollView.ContentOffset;
+				_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta - inset.Bottom);
 			}
 		}
 
