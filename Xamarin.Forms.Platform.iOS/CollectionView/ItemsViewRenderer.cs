@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			TearDownOldElement(e.OldElement);
 			SetUpNewElement(e.NewElement);
-			
+
 			base.OnElementChanged(e);
 		}
 
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateLayout()
 		{
-			_layout = SelectLayout(Element.ItemsLayout, Element.ItemSizingStrategy);	
+			_layout = SelectLayout(Element.ItemsLayout, Element.ItemSizingStrategy);
 
 			if (ItemsViewController != null)
 			{
@@ -142,6 +142,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateItemSizingStrategy()
 		{
+			// We're changing the strategy for a CollectionView mid-stream; 
+			// we'll just have to swap out the whole UICollectionViewLayout
 			UpdateLayout();
 		}
 
@@ -215,7 +217,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			ItemsViewController.CollectionView.ScrollToItem(indexPath, 
+			ItemsViewController.CollectionView.ScrollToItem(indexPath,
 				args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
 				args.IsAnimated);
 		}

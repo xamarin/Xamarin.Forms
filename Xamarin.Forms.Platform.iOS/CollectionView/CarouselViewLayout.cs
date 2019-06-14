@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		CarouselView _carouselView;
 
-		public CarouselViewLayout(ListItemsLayout itemsLayout, CarouselView carouselView) : base(itemsLayout)
+		public CarouselViewLayout(ListItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy, CarouselView carouselView) : base(itemsLayout, itemSizingStrategy)
 		{
 			_carouselView = carouselView;
 		}

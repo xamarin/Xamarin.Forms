@@ -270,6 +270,7 @@ namespace Xamarin.Forms
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
+			ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem;
 		}
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)

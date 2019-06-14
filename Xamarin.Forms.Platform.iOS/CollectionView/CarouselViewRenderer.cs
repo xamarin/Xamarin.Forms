@@ -18,15 +18,15 @@ namespace Xamarin.Forms.Platform.iOS
 			return new CarouselViewController(newElement as CarouselView, layout);
 		}
 
-		protected override ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification)
+		protected override ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification, ItemSizingStrategy itemSizingStrategy)
 		{
 			if (layoutSpecification is ListItemsLayout listItemsLayout)
 			{
-				return new CarouselViewLayout(listItemsLayout, CarouselView);
+				return new CarouselViewLayout(listItemsLayout, itemSizingStrategy, CarouselView);
 			}
 
 			// Fall back to horizontal carousel
-			return new CarouselViewLayout(new ListItemsLayout(ItemsLayoutOrientation.Horizontal), CarouselView);
+			return new CarouselViewLayout(new ListItemsLayout(ItemsLayoutOrientation.Horizontal), itemSizingStrategy, CarouselView);
 		}
 
 		protected override void TearDownOldElement(ItemsView oldElement)
