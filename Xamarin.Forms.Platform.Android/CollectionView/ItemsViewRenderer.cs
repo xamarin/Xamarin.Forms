@@ -141,9 +141,6 @@ namespace Xamarin.Forms.Platform.Android
 					TearDownOldElement(Element as ItemsView);
 				}
 
-				// Dispose the adapter after tear down element
-				ItemsViewAdapter?.Dispose();
-
 				if (Element != null)
 				{
 					if (Platform.GetRenderer(Element) == this)
@@ -221,9 +218,6 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			// Stop watching the old adapter to see if it's empty (if we _are_ watching)
-			Unwatch(ItemsViewAdapter ?? GetAdapter());
-
 			UpdateAdapter();
 
 			UpdateEmptyView();
@@ -231,8 +225,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateAdapter()
 		{
+			var oldItemViewAdapter = ItemsViewAdapter;
+
+			// Stop watching the old adapter to see if it's empty (if we are watching)
+			Unwatch(oldItemViewAdapter);
+
 			ItemsViewAdapter = new ItemsViewAdapter(ItemsView);
+
 			SwapAdapter(ItemsViewAdapter, true);
+
+			oldItemViewAdapter?.Dispose();
 		}
 
 		void Unwatch(Adapter adapter)
@@ -322,12 +324,13 @@ namespace Xamarin.Forms.Platform.Android
 			// Stop listening for ScrollTo requests
 			oldElement.ScrollToRequested -= ScrollToRequested;
 
-			var adapter = GetAdapter();
-
-			if (adapter != null)
+			if (ItemsViewAdapter != null)
 			{
+				Unwatch(ItemsViewAdapter);
+				
 				SetAdapter(null);
-				adapter.Dispose();
+
+				ItemsViewAdapter.Dispose();
 			}
 
 			if (_snapManager != null)
@@ -414,6 +417,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				_emptyViewAdapter.EmptyView = emptyView;
 				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
+
 				Watch(ItemsViewAdapter);
 			}
 			else
