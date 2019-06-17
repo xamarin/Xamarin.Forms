@@ -20,25 +20,27 @@ namespace Xamarin.Forms.Core.UITests
 #endif 
 
 #if __ANDROID__
-		static bool isSecondaryMenuOpen = false;
+		bool isSecondaryMenuOpen()
+		{
+			Thread.Sleep(1000);
+			var items = App.Query(btn4Id);
+			return items.Length > 0;
+		}
 #endif
-		static void ShouldShowMenu()
+		void ShouldShowMenu()
 		{
 #if __ANDROID__
-			isSecondaryMenuOpen = true;
 			//show secondary menu
 			App.WaitForElement(c => c.Class("OverflowMenuButton"));
 			App.Tap(c => c.Class("OverflowMenuButton"));
 #endif
 		}
 
-		static void ShouldHideMenu()
+		void ShouldHideMenu()
 		{
 #if __ANDROID__
-			if (isSecondaryMenuOpen)
+			if (isSecondaryMenuOpen())
 			{
-				isSecondaryMenuOpen = false;
-
 				// slight pause in case menu hasn't quite closed
 				Thread.Sleep(500);
 				App.Back();
@@ -91,9 +93,6 @@ namespace Xamarin.Forms.Core.UITests
 			ShouldShowMenu();
 #endif
 			App.Tap(c => c.Marked(btn3Id));
-#if __ANDROID__
-			isSecondaryMenuOpen = false;
-#endif
 #endif
 		}
 
@@ -159,6 +158,13 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
+
+		protected override void TestTearDown()
+		{
+			base.TestTearDown();
+			ResetApp();
+			NavigateToGallery();
+		}
 	}
 }
 
