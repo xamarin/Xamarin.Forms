@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Threading;
+using NUnit.Framework;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.CustomAttributes;
 
@@ -37,6 +38,9 @@ namespace Xamarin.Forms.Core.UITests
 			if (isSecondaryMenuOpen)
 			{
 				isSecondaryMenuOpen = false;
+
+				// slight pause in case menu hasn't quite closed
+				Thread.Sleep(500);
 				App.Back();
 			}
 #endif
@@ -87,6 +91,9 @@ namespace Xamarin.Forms.Core.UITests
 			ShouldShowMenu();
 #endif
 			App.Tap(c => c.Marked(btn3Id));
+#if __ANDROID__
+			isSecondaryMenuOpen = false;
+#endif
 #endif
 		}
 
