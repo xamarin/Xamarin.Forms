@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.Android
 			_bgImage = new ImageView(context)
 			{
 				LayoutParameters = new LP(coordinator.LayoutParameters),
-				Elevation = float.NegativeInfinity
+				Elevation = float.MinValue
 			};
 
 			UpdateFlyoutHeaderBehavior();
