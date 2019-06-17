@@ -839,10 +839,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (!removed)
 				{
 					UpdateToolbar();
-					if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && _masterDetailPage == null)
+					if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && (NavigationPage.GetHasBackButton(page) && _masterDetailPage != null))
 						AnimateArrowIn();
 				}
-				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && _masterDetailPage == null)
+				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && (NavigationPage.GetHasBackButton(page) && _masterDetailPage != null))
 					AnimateArrowOut();
 
 				AddTransitionTimer(tcs, fragment, FragmentManager, fragmentsToRemove, TransitionDuration, removed);
@@ -947,16 +947,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			bar.NavigationIcon = null;
 			Page currentPage = Element.CurrentPage;
 
-			if (isNavigated && _masterDetailPage == null)
+			if (isNavigated)
 			{
-				if (toggle != null)
-				{
-					toggle.DrawerIndicatorEnabled = false;
-					toggle.SyncState();
-				}
-
 				if (NavigationPage.GetHasBackButton(currentPage) && !Context.IsDesignerContext())
 				{
+					if (toggle != null)
+					{
+						toggle.DrawerIndicatorEnabled = false;
+						toggle.SyncState();
+					}
+
 					var activity = (global::Android.Support.V7.App.AppCompatActivity)context.GetActivity();
 					var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext);
 					icon.Progress = 1;
@@ -964,6 +964,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 					var prevPage = Element.Peek(1);
 					_defaultNavigationContentDescription = bar.SetNavigationContentDescription(prevPage, _defaultNavigationContentDescription);
+				}
+				else if (_masterDetailPage != null)
+				{
+					toggle.DrawerIndicatorEnabled = _masterDetailPage.ShouldShowToolbarButton();
+					toggle.SyncState();
 				}
 			}
 			else
