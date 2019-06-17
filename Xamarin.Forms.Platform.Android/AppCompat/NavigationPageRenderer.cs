@@ -839,10 +839,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (!removed)
 				{
 					UpdateToolbar();
-					if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && (NavigationPage.GetHasBackButton(page) && _masterDetailPage != null))
+					if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && NavigationPage.GetHasBackButton(page))
 						AnimateArrowIn();
 				}
-				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && (NavigationPage.GetHasBackButton(page) && _masterDetailPage != null))
+				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && NavigationPage.GetHasBackButton(page))
 					AnimateArrowOut();
 
 				AddTransitionTimer(tcs, fragment, FragmentManager, fragmentsToRemove, TransitionDuration, removed);
