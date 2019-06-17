@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			var cell = collectionView.DequeueReusableCell(DetermineCellReuseId(), indexPath) as UICollectionViewCell;
+			var cell = collectionView.DequeueReusableCell(DetermineCellReusedId(), indexPath) as UICollectionViewCell;
 
 			switch (cell)
 			{
@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return renderer;
 		}
 
-		string DetermineCellReuseId()
+		protected virtual string DetermineCellReusedId()
 		{
 			if (ItemsView.ItemTemplate != null)
 			{

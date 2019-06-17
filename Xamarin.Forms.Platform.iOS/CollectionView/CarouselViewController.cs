@@ -29,18 +29,36 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
+
 			var cell = base.GetCell(collectionView, indexPath);
 
-			var element = (cell as TemplatedCell).VisualElementRenderer?.Element;
-			VisualStateManager.GoToState(element, CarouselView.DefaultItemVisualState);
+			var element = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element;
+			if (element != null)
+				VisualStateManager.GoToState(element, CarouselView.DefaultItemVisualState);
 			return cell;
 		}
+
+
 
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
 			UpdateIntialPosition();
 			UpdateVisualStates();
+		}
+
+		protected override string DetermineCellReusedId()
+		{
+			if (_carouselView.ItemTemplate != null)
+			{
+				return CarouselTemplatedCell.ReuseId;
+			}
+			return base.DetermineCellReusedId();
+		}
+
+		protected override void RegisterViewTypes()
+		{
+			CollectionView.RegisterClassForCell(typeof(CarouselTemplatedCell), CarouselTemplatedCell.ReuseId);
 		}
 
 		internal void TeardDown()

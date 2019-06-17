@@ -225,6 +225,7 @@
     <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="CollectionView\CarouselViewLayout.cs" />
     <Compile Include="CollectionView\CarouselViewController.cs" />
+    <Compile Include="CollectionView\CarouselTemplatedCell.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />

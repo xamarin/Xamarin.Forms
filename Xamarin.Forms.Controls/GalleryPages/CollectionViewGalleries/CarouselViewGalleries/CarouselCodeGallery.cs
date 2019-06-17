@@ -33,10 +33,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 				Position = 2,
-				NumberOfVisibleItems = 3,
-				ItemSpacing = 10,
-				HeightRequest = 500,
-				Padding = new Thickness(60,0,60,0),
+				//NumberOfVisibleItems = 3,
+				//ItemSpacing = 10,
+				//HeightRequest = 500,
+				//Padding = new Thickness(60,0,60,0),
 				//BackgroundColor = Color.Green
 			};
 
