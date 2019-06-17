@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
 	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class Tab : ShellSection
 	{
-		public ShellContentCollection Content => Items;
 	}
 
 	[ContentProperty(nameof(Items))]
@@ -166,7 +165,7 @@ namespace Xamarin.Forms
 			set { SetValue(CurrentItemProperty, value); }
 		}
 
-		public ShellContentCollection Items => (ShellContentCollection)GetValue(ItemsProperty);
+		public IList<ShellContent> Items => (IList<ShellContent>)GetValue(ItemsProperty);
 
 		public IReadOnlyList<Page> Stack => _navStack;
 
@@ -199,8 +198,11 @@ namespace Xamarin.Forms
 			shellSection.Route = Routing.GenerateImplicitRoute(contentRoute);
 
 			shellSection.Items.Add(shellContent);
-			shellSection.SetBinding(TitleProperty, new Binding("Title", BindingMode.OneWay, source: shellContent));
-			shellSection.SetBinding(IconProperty, new Binding("Icon", BindingMode.OneWay, source: shellContent));
+
+			shellSection.SetBinding(TitleProperty, new Binding(nameof(Title), BindingMode.OneWay, source: shellContent));
+			shellSection.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellContent));
+			shellSection.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: shellContent));
+
 			return shellSection;
 		}
 
@@ -323,6 +325,8 @@ namespace Xamarin.Forms
 
 			UpdateDisplayedPage();
 		}
+
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement => Items;
 
 		protected virtual void OnInsertPageBefore(Page page, Page before)
 		{
@@ -554,7 +558,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public class NavigationImpl : NavigationProxy
+		class NavigationImpl : NavigationProxy
 		{
 			readonly ShellSection _owner;
 
