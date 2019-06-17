@@ -1089,6 +1089,25 @@ namespace Xamarin.Forms
 			protected override Task OnPushAsync(Page page, bool animated) => SectionProxy.PushAsync(page, animated);
 
 			protected override void OnRemovePage(Page page) => SectionProxy.RemovePage(page);
+
+			protected override Task<Page> OnPopModal(bool animated)
+			{
+				if (ModalStack.Count > 0)
+					ModalStack[ModalStack.Count - 1].SendDisappearing();
+
+				if (ModalStack.Count == 1)
+					_shell.CurrentItem.SendAppearing();
+
+				return base.OnPopModal(animated);
+			}
+			protected override Task OnPushModal(Page modal, bool animated)
+			{
+				if (ModalStack.Count == 0)
+					_shell.CurrentItem.SendDisappearing();
+
+				modal.SendAppearing();
+				return base.OnPushModal(modal, animated);
+			}
 		}
 	}
 }

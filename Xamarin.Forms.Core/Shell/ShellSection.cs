@@ -49,7 +49,7 @@ namespace Xamarin.Forms
 			{
 				if (_navStack.Count > 1)
 					return _navStack[_navStack.Count - 1];
-				return ((IShellContentController)CurrentItem).Page;
+				return ((IShellContentController)CurrentItem)?.Page;
 			}
 		}
 
@@ -494,24 +494,34 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Remove);
 		}
 
-		bool IsVisibleSection => Parent?.Parent is Shell shell && shell.CurrentItem?.CurrentItem == this;
+		internal bool IsVisibleSection => Parent?.Parent is Shell shell && shell.CurrentItem?.CurrentItem == this;
 		void PresentedPageDisappearing()
 		{
 			if (this is IShellSectionController sectionController)
+			{				
+				CurrentItem?.SendDisappearing();
 				sectionController.PresentedPage?.SendDisappearing();
+			}
 		}
+
 		void PresentedPageAppearing()
 		{
 			if (IsVisibleSection && this is IShellSectionController sectionController)
+			{
+				if(_navStack.Count == 1)
+					CurrentItem?.SendAppearing();
+
 				sectionController.PresentedPage?.SendAppearing();
+			}
 		}
 
 		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if (oldValue is BaseShellItem oldShellItem)
+			var shellSection = (ShellSection)bindable;
+
+			if (oldValue is ShellContent oldShellItem)
 				oldShellItem.SendDisappearing();
 
-			var shellSection = (ShellSection)bindable;
 			shellSection.PresentedPageAppearing();
 
 			if (shellSection.Parent?.Parent is IShellController shell)
@@ -601,14 +611,18 @@ namespace Xamarin.Forms
 					ModalStack[ModalStack.Count - 1].SendDisappearing();
 
 				if(ModalStack.Count == 1)
+				{
 					_owner.PresentedPageAppearing();
+				}
 
 				return base.OnPopModal(animated);
 			}
 			protected override Task OnPushModal(Page modal, bool animated)
 			{
-				if(ModalStack.Count == 0)
+				if (ModalStack.Count == 0)
+				{
 					_owner.PresentedPageDisappearing();
+				}
 
 				modal.SendAppearing();
 				return base.OnPushModal(modal, animated);
