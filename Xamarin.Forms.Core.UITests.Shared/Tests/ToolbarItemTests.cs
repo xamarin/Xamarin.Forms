@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Core.UITests
 			var btn2 = App.Query(c => c.Marked(btn4Id))[0];
 			Assert.False(btn2.Enabled, "Toolbar Item  should be disable");
 #else
-			var btn1 = App.Query(c => c.Marked(btn1Id))[0];
+			var btn1 = App.WaitForElement(c => c.Marked(btn1Id))[0];
 			ShouldShowMenu();
 			//var btn2 = App.Query (c => c.Marked (btn4Id)) [0];
 			//TODO: how to check Enable for the textview
