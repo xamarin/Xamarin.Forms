@@ -157,7 +157,6 @@ namespace Xamarin.Forms
 					OnChildRemoved(el);
 		}
 
-		//IDictionary<string, string> _delayedQueryParams;
 		internal override void ApplyQueryAttributes(IDictionary<string, string> query)
 		{
 			base.ApplyQueryAttributes(query);
