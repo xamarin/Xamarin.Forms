@@ -46,17 +46,23 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		internal static void SetBasicContentDescription(
 			AView control,
-			BindableObject element,
+			BindableObject bindableObject,
 			ref string defaultContentDescription)
 		{
-			if (element == null || control == null)
+			if (bindableObject == null || control == null)
 				return;
 
 			if (defaultContentDescription == null)
 				defaultContentDescription = control.ContentDescription;
 
-			string value = ConcatenateNameAndHelpText(element);
-			control.ContentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+			string value = ConcatenateNameAndHelpText(bindableObject);
+
+			var contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+
+			if (String.IsNullOrWhiteSpace(contentDescription) && bindableObject is Element element)
+				contentDescription = element.AutomationId;
+
+			control.ContentDescription = contentDescription;
 		}
 
 		internal static void SetContentDescription(
