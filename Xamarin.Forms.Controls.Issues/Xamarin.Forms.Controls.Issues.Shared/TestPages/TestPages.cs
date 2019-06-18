@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		static int s_testsrun;
-		const int ConsecutiveTestLimit = 10;
+		const int ConsecutiveTestLimit = 20;
 
 		// Until we get more of our memory leak issues worked out, restart the app 
 		// after a specified number of tests so we don't get bogged down in GC
@@ -574,7 +574,7 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => true;
 #endif
 
-		protected TestShell() : base(false)
+		protected TestShell() : base()
 		{
 #if APP
 			Init();
@@ -631,16 +631,16 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		public void ShowFlyout()
+		public void ShowFlyout(string flyoutIcon = "OK")
 		{
-			RunningApp.WaitForElement("OK");
-			RunningApp.Tap("OK");
+			RunningApp.WaitForElement(flyoutIcon);
+			RunningApp.Tap(flyoutIcon);
 		}
 
 
-		public void TapInFlyout(string text)
+		public void TapInFlyout(string text, string flyoutIcon = "OK")
 		{
-			ShowFlyout();
+			ShowFlyout(flyoutIcon);
 			RunningApp.WaitForElement(text);
 			RunningApp.Tap(text);
 		}

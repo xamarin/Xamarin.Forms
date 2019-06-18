@@ -5,7 +5,6 @@ using Android.Content;
 using Xamarin.Forms.Internals;
 using Android.Views;
 using AView = Android.Views.View;
-using System.Linq;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -38,6 +37,21 @@ namespace Xamarin.Forms.Platform.Android
 
 			_renderer = renderer;
 			_renderer.ElementChanged += OnElementChanged;
+
+			if(renderer.View is ILayoutChanges layout)
+				layout.LayoutChange += OnInitialLayoutChange;
+		}
+
+		void OnInitialLayoutChange(object sender, AView.LayoutChangeEventArgs e)
+		{
+			// this is used to adjust any relative elevations on the child elements that still need to settle
+			// the default elevation is set on Button after it's already added to the view hierarchy
+			// but this appears to only be the case when the app first starts
+
+			if (sender is ILayoutChanges layout)
+				layout.LayoutChange -= OnInitialLayoutChange;
+
+			EnsureChildOrder(true);
 		}
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -81,6 +95,10 @@ namespace Xamarin.Forms.Platform.Android
 
 					_renderer.Element.ChildrenReordered -= _childReorderedHandler;
 				}
+
+				if (_renderer.View is ILayoutChanges layout)
+					layout.LayoutChange -= OnInitialLayoutChange;
+
 				_renderer = null;
 			}
 
@@ -142,8 +160,12 @@ namespace Xamarin.Forms.Platform.Android
 				Performance.Stop(reference);
 			}
 		}
-		void EnsureChildOrder()
+
+		void EnsureChildOrder() => EnsureChildOrder(false);
+
+		void EnsureChildOrder(bool onlyUpdateElevations)
 		{
+			float elevationToSet = 0;
 			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
 				Element child = ElementController.LogicalChildren[i];
@@ -152,7 +174,24 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					IVisualElementRenderer r = Platform.GetRenderer(element);
 					if (r != null)
-						(_renderer.View as ViewGroup)?.BringChildToFront(r.View);
+					{
+						if (Forms.IsLollipopOrNewer)
+						{
+							var elevation = ElevationHelper.GetElevation(r.View) ?? 0;
+							var elementElevation = ElevationHelper.GetElevation(element);
+
+							if (elementElevation == null)
+							{
+								if (elevation > elevationToSet)
+									elevationToSet = elevation;
+																
+								r.View.Elevation = elevationToSet;
+							}
+						}
+
+						if(!onlyUpdateElevations)
+							(_renderer.View as ViewGroup)?.BringChildToFront(r.View);
+					}
 				}
 			}
 		}
@@ -163,7 +202,34 @@ namespace Xamarin.Forms.Platform.Android
 			if (view != null)
 				AddChild(view);
 
-			if (ElementController.LogicalChildren.LastOrDefault() != view)
+			int itemCount = ElementController.LogicalChildren.Count;
+			if (itemCount <= 1)
+				return;
+
+
+			Element lastChild = ElementController.LogicalChildren[itemCount - 1];
+
+			if(lastChild != view)
+			{
+				EnsureChildOrder();
+				return;
+			}
+
+			if (!Forms.IsLollipopOrNewer)
+				return;
+
+			Element previousChild = ElementController.LogicalChildren[itemCount - 2];
+
+			IVisualElementRenderer lastRenderer = null;
+			IVisualElementRenderer previousRenderer = null;
+
+			if (lastChild is VisualElement last)
+				lastRenderer = Platform.GetRenderer(last);
+
+			if (previousChild is VisualElement previous)
+				previousRenderer = Platform.GetRenderer(previous);
+
+			if (ElevationHelper.GetElevation(lastRenderer?.View) < ElevationHelper.GetElevation(previousRenderer?.View))
 				EnsureChildOrder();
 		}
 

@@ -246,12 +246,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			base.OnLayout(changed, l, t, r, b);
 		}
 
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			_buttonLayoutManager?.Update();
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-		}
-
 		void SetTracker(VisualElementTracker tracker)
 		{
 			_tracker = tracker;
@@ -364,5 +358,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		AppCompatButton IButtonLayoutRenderer.View => this;
+
+		Button IButtonLayoutRenderer.Element => this.Element;
 	}
 }
