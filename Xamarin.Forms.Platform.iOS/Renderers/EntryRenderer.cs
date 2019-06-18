@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholder();
 			UpdatePassword();
 			UpdateText();
-			UpdateLetterSpacing();
+			UpdateCharacterSpacing();
 			UpdateColor();
 			UpdateKeyboard();
 			UpdateAlignment();
@@ -156,12 +156,12 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)
 			{
 				UpdateText();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
-			else if (e.PropertyName == Entry.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -333,7 +333,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 			}
 
-			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 		}
 
 		void UpdateText()
@@ -343,10 +343,10 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Text = Element.Text;
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			Control.AttributedText = Control.AttributedText.AddLetterSpacing(Element.Text, Element.LetterSpacing);
-			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddLetterSpacing(Element.Placeholder, Element.LetterSpacing);
+			Control.AttributedText = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 		}
 
 		void UpdateMaxLength()

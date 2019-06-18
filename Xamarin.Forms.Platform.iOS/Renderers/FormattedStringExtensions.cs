@@ -30,10 +30,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 #if __MOBILE__
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), 
-				span.BackgroundColor.ToUIColor(), kerning: (float)span.LetterSpacing);
+				span.BackgroundColor.ToUIColor(), kerning: (float)span.CharacterSpacing);
 #else
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToNSFont(), fgcolor.ToNSColor(),
-				span.BackgroundColor.ToNSColor(), kerningAdjustment: (float)span.LetterSpacing);
+				span.BackgroundColor.ToNSColor(), kerningAdjustment: (float)span.CharacterSpacing);
 #endif
 		}
 
@@ -131,11 +131,11 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 			var attrString = new NSAttributedString(text, targetFont, spanFgColor, spanBgColor,
 				underlineStyle: hasUnderline ? NSUnderlineStyle.Single : NSUnderlineStyle.None,
-				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerning: (float)span.LetterSpacing);
+				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerning: (float)span.CharacterSpacing);
 #else
 			var attrString = new NSAttributedString(text, targetFont, spanFgColor, spanBgColor,
 				underlineStyle: hasUnderline ? NSUnderlineStyle.Single : NSUnderlineStyle.None,
-				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerningAdjustment: (float)span.LetterSpacing);
+				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerningAdjustment: (float)span.CharacterSpacing);
 #endif
 
 			return attrString;

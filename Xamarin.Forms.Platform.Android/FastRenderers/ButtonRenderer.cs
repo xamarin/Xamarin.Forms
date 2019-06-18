@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateTextColor();
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				_buttonLayoutManager?.Update();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -228,9 +228,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				UpdateFont();
 			}
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 			{
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 			{
@@ -332,11 +332,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_textColorSwitcher.Value.UpdateTextColor(this, Button.TextColor);
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
-				LetterSpacing = Button.LetterSpacing.ToEm();
+				LetterSpacing = Button.CharacterSpacing.ToEm();
 			}
 		}
 

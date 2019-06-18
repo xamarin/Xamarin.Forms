@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateFont();
 				UpdateTextColor();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				_buttonLayoutManager?.Update();
 			}
 		}
@@ -112,9 +112,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateFont();
 			}
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 			{
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 
 		}
@@ -159,9 +159,9 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TitleLabel.Font = Element.ToUIFont();
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			var attributedString = new NSMutableAttributedString(Element.Text ?? string.Empty).AddLetterSpacing(Element.Text, Element.LetterSpacing);
+			var attributedString = new NSMutableAttributedString(Element.Text ?? string.Empty).AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 			Control.SetAttributedTitle(attributedString, UIControlState.Normal);
 			Control.SetAttributedTitle(attributedString, UIControlState.Highlighted);
 			Control.SetAttributedTitle(attributedString, UIControlState.Disabled);

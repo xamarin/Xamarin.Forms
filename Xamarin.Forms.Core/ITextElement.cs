@@ -10,9 +10,9 @@ namespace Xamarin.Forms
 		//note to implementor: but implement this method explicitly
 		void OnTextColorPropertyChanged(Color oldValue, Color newValue);
 
-		double LetterSpacing { get; }
+		double CharacterSpacing { get; }
 
 		//note to implementor: but implement these methods explicitly
-		void OnLetterSpacingPropertyChanged(double oldValue, double newValue);
+		void OnCharacterSpacingPropertyChanged(double oldValue, double newValue);
 	}
 }

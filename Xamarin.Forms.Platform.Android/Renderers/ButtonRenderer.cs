@@ -134,8 +134,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateText();
 			UpdateBitmap();
 			UpdateTextColor();
-			UpdateLetterSpacing();
+			UpdateCharacterSpacing();
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
@@ -275,11 +275,11 @@ namespace Xamarin.Forms.Platform.Android
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
-				Control.LetterSpacing = Element.LetterSpacing.ToEm();
+				Control.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 		}
 

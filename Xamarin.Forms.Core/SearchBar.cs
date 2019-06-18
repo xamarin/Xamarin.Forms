@@ -38,7 +38,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty LetterSpacingProperty = TextElement.LetterSpacingProperty;
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<SearchBar>> _platformConfigurationRegistry;
 
@@ -88,10 +88,10 @@ namespace Xamarin.Forms
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
-		public double LetterSpacing
+		public double CharacterSpacing
 		{
-			get { return (double)GetValue(TextElement.LetterSpacingProperty); }
-			set { SetValue(TextElement.LetterSpacingProperty, value); }
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		bool IsEnabledCore
@@ -196,7 +196,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		void ITextElement.OnLetterSpacingPropertyChanged(double oldValue, double newValue)
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
 		{
 			InvalidateMeasure();
 		}

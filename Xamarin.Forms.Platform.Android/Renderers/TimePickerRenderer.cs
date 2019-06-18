@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetTime(e.NewElement.Time);
 			UpdateTextColor();
-			UpdateLetterSpacing();
+			UpdateCharacterSpacing();
 			UpdateFont();
 
 			if ((int)Build.VERSION.SdkInt > 16)
@@ -78,8 +78,8 @@ namespace Xamarin.Forms.Platform.Android
 				SetTime(Element.Time);
 			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == TimePicker.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == TimePicker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName || e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
 		}
@@ -145,11 +145,11 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
-				EditText.LetterSpacing = Element.LetterSpacing.ToEm();
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 		}
 

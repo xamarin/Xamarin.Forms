@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Control.ItemsSource = GetItems(Element.Items);
 				UpdateTitle();
 				UpdateSelectedIndex();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -76,8 +76,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectedIndex();
 			else if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdateTitle();
-			else if (e.PropertyName == Picker.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -172,18 +172,18 @@ namespace Xamarin.Forms.Platform.UWP
 			});
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			Control.CharacterSpacing = Element.LetterSpacing.ToEm();
+			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
 
 			if (Control.Header is TextBlock header)
 			{
-				header.CharacterSpacing = Element.LetterSpacing.ToEm();
+				header.CharacterSpacing = Element.CharacterSpacing.ToEm();
 			}
 
 			if (Control.SelectedValue is TextBlock item)
 			{
-				item.CharacterSpacing = Element.LetterSpacing.ToEm();
+				item.CharacterSpacing = Element.CharacterSpacing.ToEm();
 			}
 
 			if(Control.ItemsSource is ObservableCollection<TextBlock> collection)
@@ -258,7 +258,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Control.Header = new TextBlock
 				{
 					Text = Element.Title ?? string.Empty,
-					CharacterSpacing = Element.LetterSpacing.ToEm(),
+					CharacterSpacing = Element.CharacterSpacing.ToEm(),
 				};
 			}
 			else

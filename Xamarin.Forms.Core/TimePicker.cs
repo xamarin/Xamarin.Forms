@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty LetterSpacingProperty = TextElement.LetterSpacingProperty;
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
 		public static readonly BindableProperty TimeProperty = BindableProperty.Create(nameof(Time), typeof(TimeSpan), typeof(TimePicker), new TimeSpan(0), BindingMode.TwoWay, (bindable, value) =>
 		{
@@ -44,10 +44,10 @@ namespace Xamarin.Forms
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
-		public double LetterSpacing
+		public double CharacterSpacing
 		{
-			get { return (double)GetValue(TextElement.LetterSpacingProperty); }
-			set { SetValue(TextElement.LetterSpacingProperty, value); }
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		public TimeSpan Time
@@ -99,7 +99,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		void ITextElement.OnLetterSpacingPropertyChanged(double oldValue, double newValue)
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
 		{
 			InvalidateMeasure();
 		}

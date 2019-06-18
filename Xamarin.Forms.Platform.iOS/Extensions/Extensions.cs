@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static NSMutableAttributedString AddLetterSpacing(this NSMutableAttributedString attributedString, string text, double letterSpacing)
+		internal static NSMutableAttributedString AddCharacterSpacing(this NSMutableAttributedString attributedString, string text, double characterSpacing)
 		{
 			if (attributedString == null || attributedString.Length == 0)
 			{
@@ -124,12 +124,12 @@ namespace Xamarin.Forms.Platform.iOS
 				attributedString = new NSMutableAttributedString(attributedString);
 			}
 
-			AddKerningAdjustment(attributedString, text, letterSpacing);
+			AddKerningAdjustment(attributedString, text, characterSpacing);
 
 			return attributedString;
 		}
 
-		internal static NSMutableAttributedString AddLetterSpacing(this NSAttributedString attributedString, string text, double letterSpacing)
+		internal static NSMutableAttributedString AddCharacterSpacing(this NSAttributedString attributedString, string text, double characterSpacing)
 		{
 			NSMutableAttributedString mutableAttributedString;
 			if (attributedString == null || attributedString.Length == 0)
@@ -141,19 +141,19 @@ namespace Xamarin.Forms.Platform.iOS
 				mutableAttributedString = new NSMutableAttributedString(attributedString);
 			}
 
-			AddKerningAdjustment(mutableAttributedString, text, letterSpacing);
+			AddKerningAdjustment(mutableAttributedString, text, characterSpacing);
 
 			return mutableAttributedString;
 		}
 
-		internal static void AddKerningAdjustment(NSMutableAttributedString mutableAttributedString, string text, double letterSpacing)
+		internal static void AddKerningAdjustment(NSMutableAttributedString mutableAttributedString, string text, double characterSpacing)
 		{
 			if (!string.IsNullOrEmpty(text))
 			{
 				mutableAttributedString.AddAttribute
 				(
 					UIStringAttributeKey.KerningAdjustment,
-					NSObject.FromObject(letterSpacing), new NSRange(0, text.Length - 1)
+					NSObject.FromObject(characterSpacing), new NSRange(0, text.Length - 1)
 				);
 			}
 		}

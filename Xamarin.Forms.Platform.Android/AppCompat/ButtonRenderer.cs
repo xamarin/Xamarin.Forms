@@ -121,8 +121,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
-			UpdateLetterSpacing();
+			UpdateCharacterSpacing();
 		}
 
 		void UpdateEnabled()
@@ -180,11 +180,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
-				NativeButton.LetterSpacing = Element.LetterSpacing.ToEm();
+				NativeButton.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 			
 		}

@@ -42,12 +42,12 @@ namespace Xamarin.Forms
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
-		public static readonly BindableProperty LetterSpacingProperty = TextElement.LetterSpacingProperty;
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
-		public double LetterSpacing
+		public double CharacterSpacing
 		{
-			get { return (double)GetValue(TextElement.LetterSpacingProperty); }
-			set { SetValue(TextElement.LetterSpacingProperty, value); }
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		[Obsolete("Foreground is obsolete as of version 3.1.0. Please use the TextColor property instead.")]
@@ -149,7 +149,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		void ITextElement.OnLetterSpacingPropertyChanged(double oldValue, double newValue)
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
 		{
 		}
 

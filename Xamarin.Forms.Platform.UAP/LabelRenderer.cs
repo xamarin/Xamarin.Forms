@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (span.IsSet(Span.TextDecorationsProperty))
 				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
 
-			run.CharacterSpacing = span.LetterSpacing.ToEm();
+			run.CharacterSpacing = span.CharacterSpacing.ToEm();
 
 			return run;
 		}
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
-				UpdateLetterSpacing(Control);
+				UpdateCharacterSpacing(Control);
 				UpdateFont(Control);
 				UpdateLineBreakMode(Control);
 				UpdateMaxLines(Control);
@@ -166,8 +166,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateFont(Control);
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations(Control);
-			else if (e.PropertyName == Label.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing(Control);
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing(Control);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -304,9 +304,9 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void UpdateLetterSpacing(TextBlock textBlock)
+		void UpdateCharacterSpacing(TextBlock textBlock)
 		{
-			textBlock.CharacterSpacing = Element.LetterSpacing.ToEm();
+			textBlock.CharacterSpacing = Element.CharacterSpacing.ToEm();
 		}
 
 

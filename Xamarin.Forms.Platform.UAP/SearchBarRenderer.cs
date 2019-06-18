@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholder();
 				UpdateCancelButtonColor();
 				UpdateAlignment();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				UpdateFont();
 				UpdateTextColor();
 				UpdatePlaceholderColor();
@@ -64,8 +64,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlignment();
 			else if (e.PropertyName == SearchBar.FontAttributesProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == SearchBar.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
@@ -190,9 +190,9 @@ namespace Xamarin.Forms.Platform.UWP
 			_fontApplied = true;
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			Control.CharacterSpacing = Element.LetterSpacing.ToEm();
+			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
 		}
 
 		void UpdatePlaceholder()

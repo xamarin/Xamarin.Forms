@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateTime();
 				UpdateTextColor();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				UpdateFlowDirection();
 			}
 
@@ -111,12 +111,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == TimePicker.TimeProperty.PropertyName || e.PropertyName == TimePicker.FormatProperty.PropertyName)
 			{
 				UpdateTime();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == TimePicker.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == TimePicker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName ||
 			         e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
@@ -162,9 +162,9 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Text = Control.Text;
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			Control.AttributedText = Control.AttributedText.AddLetterSpacing(Control.Text, Element.LetterSpacing);
+			Control.AttributedText = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
 		}
 
 		void UpdateTime()

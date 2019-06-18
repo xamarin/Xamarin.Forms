@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -88,8 +88,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
-			else if (e.PropertyName == Picker.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -182,11 +182,11 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePicker();
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
-				Control.LetterSpacing = Element.LetterSpacing.ToEm();
+				Control.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 		}
 

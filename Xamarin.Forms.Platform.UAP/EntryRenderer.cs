@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholder();
 				UpdateTextColor();
 				UpdateFont();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				UpdateAlignment();
 				UpdatePlaceholderColor();
 				UpdateMaxLength();
@@ -111,9 +111,9 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholder();
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == Entry.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
 			{
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputScope();
@@ -217,9 +217,9 @@ namespace Xamarin.Forms.Platform.UWP
 			_fontApplied = true;
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			Control.CharacterSpacing = Element.LetterSpacing.ToEm();
+			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
 		}
 
 		void UpdateInputScope()

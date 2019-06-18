@@ -227,7 +227,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				UpdateTextDecorations();
 				if (e.OldElement?.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
@@ -252,8 +252,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
-			else if (e.PropertyName == Label.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -325,11 +325,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_lastSizeRequest = null;
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
 			{
-				LetterSpacing = Element.LetterSpacing.ToEm();
+				LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 		}
 

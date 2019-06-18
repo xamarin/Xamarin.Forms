@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateText();
 				UpdateInputScope();
 				UpdateTextColor();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				UpdateFont();
 				UpdateTextAlignment();
 				UpdateFlowDirection();
@@ -117,9 +117,9 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateText();
 			}
-			else if (e.PropertyName == Editor.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Editor.CharacterSpacingProperty.PropertyName)
 			{
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
@@ -308,9 +308,9 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.InputScope = editor.Keyboard.ToInputScope();
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			Control.CharacterSpacing = Element.LetterSpacing.ToEm();
+			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
 		}
 		void UpdateText()
 		{

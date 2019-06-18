@@ -49,8 +49,8 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Element.IsSet(Button.BorderColorProperty) && Element.BorderColor != (Color)Button.BorderColorProperty.DefaultValue)
 					UpdateBorderColor();
 
-				if (Element.IsSet(Button.LetterSpacingProperty))
-					UpdateLetterSpacing();
+				if (Element.IsSet(Button.CharacterSpacingProperty))
+					UpdateCharacterSpacing();
 
 				if (Element.IsSet(Button.BorderWidthProperty) && Element.BorderWidth != (double)Button.BorderWidthProperty.DefaultValue)
 					UpdateBorderWidth();
@@ -86,9 +86,9 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateContent();
 			}
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 			{
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
@@ -161,9 +161,9 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.BorderThickness = Element.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue ? new WThickness(3) : new WThickness(Element.BorderWidth);
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
-			Control.LetterSpacing = Element.LetterSpacing.ToEm();
+			Control.LetterSpacing = Element.CharacterSpacing.ToEm();
 		}
 
 		async void UpdateContent()

@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFont();
 			UpdateAlignment();
 			UpdateTextColor();
-			UpdateLetterSpacing();
+			UpdateCharacterSpacing();
 			UpdatePlaceholderColor();
 			UpdateMaxLength();
 
@@ -140,8 +140,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == SearchBar.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Platform.Android
 				Control.SetQuery(Element.Text, false);
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if(!Forms.IsLollipopOrNewer)
 				return;
@@ -260,7 +260,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_editText != null)
 			{
-				_editText.LetterSpacing = Element.LetterSpacing.ToEm();
+				_editText.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 		}
 

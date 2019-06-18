@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateText();
 				UpdateLineBreakMode();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
@@ -133,8 +133,8 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateGravity();
 				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
-				if (e.OldElement.LetterSpacing != e.NewElement.LetterSpacing)
-					UpdateLetterSpacing();
+				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
+					UpdateCharacterSpacing();
 
 			}
 			UpdateTextDecorations();
@@ -151,8 +151,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
-			else if (e.PropertyName == Label.LetterSpacingProperty.PropertyName)
-				UpdateLetterSpacing();
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
@@ -231,11 +231,11 @@ namespace Xamarin.Forms.Platform.Android
 			_view.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
 		}
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer && Control is TextView textControl)
 			{
-				textControl.LetterSpacing = Element.LetterSpacing.ToEm();
+				textControl.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 		}
 
