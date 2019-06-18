@@ -140,6 +140,23 @@ namespace Xamarin.Forms
 		{
 		}
 
+		internal void OnAppearing(Action action)
+		{
+			if (_hasAppearing)
+				action();
+			else
+			{
+				EventHandler eventHandler = null;
+				eventHandler = (_, __) =>
+				{
+					this.Appearing -= eventHandler;
+					action();
+				};
+
+				this.Appearing += eventHandler;
+			}
+		}
+
 		protected virtual void OnTabStopPropertyChanged(bool oldValue, bool newValue) { }
 
 		protected virtual bool TabStopDefaultValueCreator() => true;

@@ -65,11 +65,6 @@ namespace Xamarin.Forms
 			if (result != null && result.Parent != this)
 			{
 				OnChildAdded(result);
-				if (IsVisibleContent)
-				{
-					SendAppearing();
-					result.SendAppearing();
-				}
 			}
 
 			if (result == null)
@@ -102,8 +97,23 @@ namespace Xamarin.Forms
 
 		internal override void SendAppearing()
 		{
+			// only fire Appearing when the Content Page exists on the ShellContent
+			var content = ContentCache ?? Content;
+			if (content == null)
+				return;
+
 			base.SendAppearing();
 			((ContentCache ?? Content) as Page)?.SendAppearing();
+		}
+
+		protected override void OnChildAdded(Element child)
+		{
+			base.OnChildAdded(child);
+			if (child is Page page && IsVisibleContent)
+			{
+				SendAppearing();
+				page.SendAppearing();
+			}
 		}
 
 		Page ContentCache

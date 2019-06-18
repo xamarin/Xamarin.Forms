@@ -20,8 +20,8 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			FlyoutItem flyoutItem = new FlyoutItem();
 			Tab tab = new Tab();
-			ShellContent content = new ShellContent();
-			
+			ShellContent content = new ShellContent() { Content = new ContentPage() };
+
 			bool flyoutAppearing = false;
 			bool tabAppearing = false;
 			bool contentAppearing = false;
@@ -37,6 +37,92 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(flyoutAppearing, "Flyout appearing");
 			Assert.True(tabAppearing, "Tab Appearing");
 			Assert.True(contentAppearing, "Content Appearing");
+		}
+
+
+		[Test]
+		public void AppearingOnCreateFromTemplate()
+		{
+			Shell shell = new Shell();
+
+			FlyoutItem flyoutItem = new FlyoutItem();
+			Tab tab = new Tab();
+			ContentPage page = new ContentPage();
+			ShellContent content = new ShellContent() { ContentTemplate = new DataTemplate(() => page) };
+
+			bool flyoutAppearing = false;
+			bool tabAppearing = false;
+			bool contentAppearing = false;
+			bool pageAppearing = false;
+
+			flyoutItem.Appearing += (_, __) => flyoutAppearing = true;
+			tab.Appearing += (_, __) => tabAppearing = true;
+			content.Appearing += (_, __) => contentAppearing = true;
+			page.Appearing += (_, __) => pageAppearing = true;
+
+			shell.Items.Add(flyoutItem);
+			flyoutItem.Items.Add(tab);
+			tab.Items.Add(content);
+
+			Assert.True(flyoutAppearing, "Flyout appearing");
+			Assert.True(tabAppearing, "Tab Appearing");
+
+			// Because the is a page template the content appearing events won't fire until the page is created
+			Assert.IsFalse(contentAppearing, "Content Appearing");
+			Assert.IsFalse(pageAppearing, "Page Appearing");
+
+			var createdContent = (content as IShellContentController).GetOrCreateContent();
+
+			Assert.AreEqual(createdContent, page);
+			Assert.IsTrue(contentAppearing, "Content Appearing");
+			Assert.IsTrue(pageAppearing, "Page Appearing");
+		}
+
+
+		
+		[Test]
+		public async Task NavigatedFiresAfterContentIsCreatedWhenUsingTemplate()
+		{
+			Shell shell = new Shell();
+
+			FlyoutItem flyoutItem = new FlyoutItem();
+			Tab tab = new Tab();
+			ContentPage page = null;
+			ShellContent content = new ShellContent()
+			{
+				Route = "destination",
+				ContentTemplate = new DataTemplate(() =>
+				{
+					page = new ContentPage();
+					return page;
+				})
+			};
+
+			flyoutItem.Items.Add(tab);
+			tab.Items.Add(content);
+
+			shell.Items.Add(CreateShellItem());
+			shell.Items.Add(flyoutItem);
+
+			Assert.AreNotEqual(shell.CurrentItem.CurrentItem.CurrentItem, content);
+			Assert.IsNull(page);
+
+			bool navigated = false;
+			shell.Navigated += (_, __) =>
+			{
+				Assert.IsNotNull(page);
+				Assert.IsNotNull((content as IShellContentController).Page);
+				navigated = true;
+			};
+
+			await shell.GoToAsync("///destination");
+
+			// content hasn't been created yet
+			Assert.IsFalse(navigated);
+
+			var createPage = (content as IShellContentController).GetOrCreateContent();
+			Assert.AreEqual(createPage, page);
+			Assert.IsTrue(navigated);
 		}
 
 		[Test]

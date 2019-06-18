@@ -800,12 +800,15 @@ namespace Xamarin.Forms
 				_accumulatedEvent = args;
 			else
 			{
-				/* Removing this check for now as it doesn't properly cover all implicit scenarios
-				 * if (args.Current.Location.AbsolutePath.TrimEnd('/') != _lastNavigating.Location.AbsolutePath.TrimEnd('/'))
-					throw new InvalidOperationException($"Navigation: Current location doesn't match navigation uri {args.Current.Location.AbsolutePath} != {_lastNavigating.Location.AbsolutePath}");
-					*/
-				Navigated?.Invoke(this, args);
-				//System.Diagnostics.Debug.WriteLine("Navigated: " + args.Current.Location);
+				var content = CurrentItem?.CurrentItem?.CurrentItem;
+				if (content != null)
+				{
+					content.OnAppearing(() => Navigated?.Invoke(this, args));
+				}
+				else
+				{
+					Navigated?.Invoke(this, args);
+				}
 			}
 		}
 
