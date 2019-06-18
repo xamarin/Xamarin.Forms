@@ -115,6 +115,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (string.IsNullOrWhiteSpace(elemValue))
 				elemValue = Element.AutomationId;
+			else if (!String.IsNullOrEmpty(Element.Text))
+				elemValue = String.Join(". ", Element.Text, elemValue);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				AMenuItemCompat.SetContentDescription(Control, elemValue);
