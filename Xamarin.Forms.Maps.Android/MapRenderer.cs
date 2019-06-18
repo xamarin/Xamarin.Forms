@@ -327,9 +327,9 @@ namespace Xamarin.Forms.Maps.Android
 				return;
 			}
 
-#pragma warning disable CS0612
+#pragma warning disable CS0618
 			pin.SendTap();
-#pragma warning restore CS0612
+#pragma warning restore CS0618
 
 			// SendInfoWindowClick() returns the value of PinClickedEventArgs.HideInfoWindow
 			bool hideInfoWindow = pin.SendInfoWindowClick();
