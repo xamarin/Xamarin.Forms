@@ -9,12 +9,14 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class ObservableItemsSource : IItemsViewSource
 	{
 		readonly UICollectionView _collectionView;
+		readonly int _group;
 		readonly IList _itemsSource;
 		bool _disposed;
 
-		public ObservableItemsSource(IList itemSource, UICollectionView collectionView)
+		public ObservableItemsSource(IList itemSource, UICollectionView collectionView, int group = 0)
 		{
 			_collectionView = collectionView;
+			_group = group;
 			_itemsSource = itemSource;
 
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
@@ -42,6 +44,46 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public int ItemCountInGroup(nint group)
+		{
+			return _itemsSource.Count;
+		}
+
+		public object Group(NSIndexPath indexPath)
+		{
+			return null;
+		}
+
+		public NSIndexPath GetIndexForItem(object item)
+		{
+			for (int n = 0; n < _itemsSource.Count; n++)
+			{
+				if (this[n] == item)
+				{
+					return NSIndexPath.Create(0, n);
+				}
+			}
+
+			return NSIndexPath.Create(-1, -1);
+		}
+
+		public int GroupCount => 1;
+
+		public int ItemCount => _itemsSource.Count;
+
+		public object this[NSIndexPath indexPath]
+		{
+			get
+			{
+				if (indexPath.Section > 0)
+				{
+					throw new ArgumentOutOfRangeException(nameof(indexPath));
+				}
+
+				return this[indexPath.Row];
+			}
+		}
+
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
@@ -59,58 +101,26 @@ namespace Xamarin.Forms.Platform.iOS
 					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					_collectionView.ReloadData();
-					_collectionView.CollectionViewLayout.InvalidateLayout();
+					Reload();
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 		}
 
-		void Move(NotifyCollectionChangedEventArgs args)
+		void Reload()
 		{
-			var count = args.NewItems.Count;
-
-			if (count == 1)
-			{
-				// For a single item, we can use MoveItem and get the animation
-				var oldPath = NSIndexPath.Create(0, args.OldStartingIndex);
-				var newPath = NSIndexPath.Create(0, args.NewStartingIndex);
-
-				_collectionView.MoveItem(oldPath, newPath);
-				return;
-			}
-
-			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
-			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
-			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
-		}
-		
-		private void Replace(NotifyCollectionChangedEventArgs args)
-		{
-			var newCount = args.NewItems.Count;
-
-			if (newCount == args.OldItems.Count)
-			{
-				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
-
-				// We are replacing one set of items with a set of equal size; we can do a simple item range update
-				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
-				return;
-			}
-			
-			// The original and replacement sets are of unequal size; this means that everything currently in view will 
-			// have to be updated. So we just have to use ReloadData and let the UICollectionView update everything
 			_collectionView.ReloadData();
+			_collectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
-		static NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
+		NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
 		{
 			var result = new NSIndexPath[count];
 
 			for (int n = 0; n < count; n++)
 			{
-				result[n] = NSIndexPath.Create(0, startIndex + n);
+				result[n] = NSIndexPath.Create(_group, startIndex + n);
 			}
 
 			return result;
@@ -132,13 +142,50 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				// INCC implementation isn't giving us enough information to know where the removed items were in the
 				// collection. So the best we can do is a ReloadData()
-				_collectionView.ReloadData();
+				Reload();
 				return;
 			}
 
 			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
 			_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
+		}
+
+		void Replace(NotifyCollectionChangedEventArgs args)
+		{
+			var newCount = args.NewItems.Count;
+
+			if (newCount == args.OldItems.Count)
+			{
+				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+
+				// We are replacing one set of items with a set of equal size; we can do a simple item range update
+				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
+				return;
+			}
+
+			// The original and replacement sets are of unequal size; this means that everything currently in view will 
+			// have to be updated. So we just have to use ReloadData and let the UICollectionView update everything
+			Reload();
+		}
+
+		void Move(NotifyCollectionChangedEventArgs args)
+		{
+			var count = args.NewItems.Count;
+
+			if (count == 1)
+			{
+				// For a single item, we can use MoveItem and get the animation
+				var oldPath = NSIndexPath.Create(_group, args.OldStartingIndex);
+				var newPath = NSIndexPath.Create(_group, args.NewStartingIndex);
+
+				_collectionView.MoveItem(oldPath, newPath);
+				return;
+			}
+
+			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
+			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
+			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
 		}
 	}
 }

@@ -172,6 +172,19 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
+			if (Forms.IsiOS11OrNewer)
+			{
+				return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
+			}
+
+			// For iOS 10 and lower, we have to invalidate on header/footer changes here; otherwise, all of the 
+			// headers and footers will draw on top of one another
+			if (preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Header
+				|| preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Footer)
+			{
+				return true;
+			}
+
 			return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
 		}
 
@@ -369,6 +382,59 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			InvalidateLayout();
+		}
+
+		public override UICollectionViewLayoutInvalidationContext GetInvalidationContext(UICollectionViewLayoutAttributes preferredAttributes, UICollectionViewLayoutAttributes originalAttributes)
+		{
+			if (Forms.IsiOS11OrNewer)
+			{
+				return base.GetInvalidationContext(preferredAttributes, originalAttributes);
+			}
+
+			var indexPath = preferredAttributes.IndexPath;
+
+			try
+			{
+				UICollectionViewLayoutInvalidationContext invalidationContext =
+					base.GetInvalidationContext(preferredAttributes, originalAttributes);
+
+				// Ensure that if this invalidation was triggered by header/footer changes, the header/footer
+				// are being invalidated
+				if (preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Header)
+				{
+					invalidationContext.InvalidateSupplementaryElements(UICollectionElementKindSectionKey.Header,
+						new[] { indexPath });
+				}
+				else if (preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Footer)
+				{
+					invalidationContext.InvalidateSupplementaryElements(UICollectionElementKindSectionKey.Footer,
+						new[] { indexPath });
+				}
+
+				return invalidationContext;
+			}
+			catch (MonoTouchException)
+			{
+				// This happens on iOS 10 if we have any empty groups in our ItemsSource. Catching here and 
+				// returning a UICollectionViewFlowLayoutInvalidationContext means that the application does not
+				// crash, though any group headers/footers will initially draw in the wrong location. It's possible to 
+				// work around this problem by forcing a full layout update after the headers/footers have been 
+				// drawn in the wrong places
+			}
+
+			return new UICollectionViewFlowLayoutInvalidationContext();
+		}
+
+		public override UICollectionViewLayoutAttributes LayoutAttributesForSupplementaryView(NSString kind, NSIndexPath indexPath)
+		{
+			if (Forms.IsiOS11OrNewer)
+			{
+				return base.LayoutAttributesForSupplementaryView(kind, indexPath);
+			}
+
+			// iOS 10 and lower doesn't create these and will throw an exception in GetViewForSupplementaryElement 
+			// without them, so we need to do it manually here
+			return UICollectionViewLayoutAttributes.CreateForSupplementaryView(kind, indexPath);
 		}
 	}
 }
