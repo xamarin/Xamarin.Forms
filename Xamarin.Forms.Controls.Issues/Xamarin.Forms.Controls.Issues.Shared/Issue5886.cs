@@ -66,13 +66,13 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = stack;
 		}
 
-		private void Button_Clicked(object sender, EventArgs e)
+		void Button_Clicked(object sender, EventArgs e)
 		{
 			DependencyService.Get<IReplaceUWPRendererService>().ConvertToNative(this.scrollView);
 			label.Text = "Step 2 OK";
 		}
 
-		private void Button_Clicked1(object sender, EventArgs e)
+		void Button_Clicked1(object sender, EventArgs e)
 		{
 			DependencyService.Get<IReplaceUWPRendererService>().CreateRenderer(this.scrollView);
 			label.Text = "Step 1 OK";

@@ -1270,7 +1270,7 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue6130.xaml.cs">
       <DependentUpon>Issue6130.xaml</DependentUpon>
     </Compile>
-    <Compile Update="C:\Users\jfversluis\Documents\GitHub\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue6254.xaml.cs">
+    <Compile Update="$(MSBuildThisFileDirectory)Issue6254.xaml.cs">
       <DependentUpon>Issue6254.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
