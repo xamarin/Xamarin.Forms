@@ -24,6 +24,8 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
+#if APP
 		void SwitchIsEnabled() => Device.BeginInvokeOnMainThread(() => button.IsEnabled = buttonMaterial.IsEnabled = !button.IsEnabled);
+#endif
 	}
 }
