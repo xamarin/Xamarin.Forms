@@ -726,22 +726,24 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			AToolbar oldToolbar = _toolbar;
 
-			if (_titleViewRenderer != null)
-			{
-				Android.Platform.ClearRenderer(_titleViewRenderer.View);
-				_titleViewRenderer = null;
-			}
+			_toolbar.SetNavigationOnClickListener(null);
+			_toolbar.RemoveFromParent();
 
 			_toolbar.RemoveView(_titleView);
 			_titleView = null;
+
+			if (_titleViewRenderer != null)
+			{
+				Android.Platform.ClearRenderer(_titleViewRenderer.View);
+				_titleViewRenderer.Dispose();
+				_titleViewRenderer = null;
+			}
 
 			_toolbar.RemoveView(_titleIconView);
 			_titleIconView = null;
 
 			_imageSource = null;
 
-			_toolbar.RemoveFromParent();
-			_toolbar.SetNavigationOnClickListener(null);
 			_toolbar = null;
 
 			SetupToolbar();
