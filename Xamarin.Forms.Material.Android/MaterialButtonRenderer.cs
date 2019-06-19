@@ -289,7 +289,7 @@ namespace Xamarin.Forms.Material.Android
 			ViewCompat.SetBackgroundTintList(this, MaterialColors.CreateButtonBackgroundColors(background));
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			LetterSpacing = Element.LetterSpacing.ToEm();
 		}
