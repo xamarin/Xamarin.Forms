@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Material.iOS
 
 		protected internal override void UpdateCharacterSpacing()
 		{
-			Control.AttributedText = Control.AttributedText.AddLetterSpacing(Element.Text, Element.LetterSpacing);
+			Control.AttributedText = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 		}
 
 		protected internal override void UpdateText()
