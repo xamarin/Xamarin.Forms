@@ -15,9 +15,6 @@ namespace Xamarin.Forms.Platform.UWP
 		public static readonly DependencyProperty BackgroundColorProperty = DependencyProperty.Register(nameof(BackgroundColor), typeof(Brush), typeof(FormsButton),
 			new PropertyMetadata(default(Brush), OnBackgroundColorChanged));
 
-		public static readonly DependencyProperty LetterSpacingProperty = DependencyProperty.Register(nameof(LetterSpacing), typeof(int), typeof(FormsButton),
-			new PropertyMetadata(default(int), OnLetterSpacingChanged));
-
 		WContentPresenter _contentPresenter;
 
 		public Brush BackgroundColor
@@ -44,18 +41,6 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		public int LetterSpacing
-		{
-			get
-			{
-				return (int)GetValue(LetterSpacingProperty);
-			}
-			set
-			{
-				SetValue(LetterSpacingProperty, value);
-			}
-		}
-
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
@@ -76,11 +61,6 @@ namespace Xamarin.Forms.Platform.UWP
 			((FormsButton)d).UpdateBorderRadius();
 		}
 
-		static void OnLetterSpacingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			((FormsButton)d).LetterSpacingChanged();
-		}
-
 		void UpdateBackgroundColor()
 		{
 			if (BackgroundColor == null)
@@ -93,20 +73,20 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateBorderRadius()
 		{
-
 			if (_contentPresenter != null)
 				_contentPresenter.CornerRadius = new Windows.UI.Xaml.CornerRadius(BorderRadius);
 		}
 
-		void LetterSpacingChanged()
+		public void UpdateCharacterSpacing(int characterSpacing)
 		{
-			CharacterSpacing = LetterSpacing;
+			CharacterSpacing = characterSpacing;
+
 			if (_contentPresenter != null)
-				_contentPresenter.CharacterSpacing = LetterSpacing;
+				_contentPresenter.CharacterSpacing = CharacterSpacing;
 
 			if(Content is TextBlock tb)
 			{
-				tb.CharacterSpacing = LetterSpacing;
+				tb.CharacterSpacing = CharacterSpacing;
 			}
 
 			if (Content is StackPanel sp)
@@ -115,7 +95,7 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					if (item is TextBlock textBlock)
 					{
-						textBlock.CharacterSpacing = LetterSpacing;
+						textBlock.CharacterSpacing = CharacterSpacing;
 					}
 				}
 			}
