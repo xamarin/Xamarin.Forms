@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Material.Android
 				UpdatePrimaryColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 
 			ElementPropertyChanged?.Invoke(this, e);
