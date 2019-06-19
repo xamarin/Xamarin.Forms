@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Material.iOS
 			}
 			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 			{
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == Button.CornerRadiusProperty.PropertyName)
 			{
