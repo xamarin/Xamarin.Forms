@@ -898,7 +898,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue5888.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6368.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue6334.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6472.cs" />
   </ItemGroup>
   <ItemGroup>
