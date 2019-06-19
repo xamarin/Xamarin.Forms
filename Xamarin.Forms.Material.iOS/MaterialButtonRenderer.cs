@@ -230,7 +230,7 @@ namespace Xamarin.Forms.Material.iOS
 			}
 		}
 
-		void UpdateLetterSpacing()
+		void UpdateCharacterSpacing()
 		{
 			var attributedString = new NSMutableAttributedString(Element.Text ?? string.Empty).AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 			Control.SetAttributedTitle(attributedString, UIControlState.Normal);
