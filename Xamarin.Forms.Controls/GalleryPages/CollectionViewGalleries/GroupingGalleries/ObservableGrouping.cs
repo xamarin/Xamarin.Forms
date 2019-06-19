@@ -7,6 +7,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 	{
 		public ObservableGrouping()
 		{
+			Title = "Observable Grouped List";
+
 			var buttonStyle = new Style(typeof(Button)) { };
 			buttonStyle.Setters.Add(new Setter() { Property = Button.HeightRequestProperty, Value = 20 });
 			buttonStyle.Setters.Add(new Setter() { Property = Button.FontSizeProperty, Value = 10 });
@@ -125,7 +127,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 			groupReplacer.Clicked += (obj, args) => {
 				var group = itemsSource[1];
 				itemsSource.Remove(group);
-				itemsSource?.Insert(1, new ObservableTeam("Alpha Flight", new List<Member>() { new Member("Gaurdian"),
+				itemsSource?.Insert(1, new ObservableTeam("Alpha Flight", new List<Member> { new Member("Guardian"),
 					new Member("Sasquatch"), new Member("Northstar") }));
 			};
 
