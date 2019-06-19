@@ -22,7 +22,7 @@ namespace Xamarin.Forms
 		{
 			return source.StartsWith(ImplicitPrefix, StringComparison.Ordinal);
 		}
-		internal static bool IsImplicit(Element source)
+		internal static bool IsImplicit(BindableObject source)
 		{
 			return IsImplicit(GetRoute(source));
 		}
@@ -71,7 +71,7 @@ namespace Xamarin.Forms
 			return result;
 		}
 
-		public static string GetRoute(Element obj)
+		public static string GetRoute(BindableObject obj)
 		{
 			return (string)obj.GetValue(RouteProperty);
 		}
@@ -89,9 +89,6 @@ namespace Xamarin.Forms
 		{
 			uri = ShellUriHandler.FormatUri(uri);
 
-			if (!uri.IsAbsoluteUri)
-				return uri;
-
 			string[] parts = uri.OriginalString.TrimEnd(_pathSeparator[0]).Split(_pathSeparator[0]);
 
 			List<string> toKeep = new List<string>();
@@ -99,7 +96,7 @@ namespace Xamarin.Forms
 				if (!IsImplicit(parts[i]))
 					toKeep.Add(parts[i]);
 
-			return new Uri(string.Join(_pathSeparator, toKeep));
+			return new Uri(string.Join(_pathSeparator, toKeep), UriKind.Relative);
 		}
 
 		public static string FormatRoute(List<string> segments)

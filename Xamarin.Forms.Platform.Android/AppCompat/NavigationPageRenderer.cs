@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				if (_platform == null)
 				{
-					if (Context is FormsAppCompatActivity activity)
+					if (Context.GetActivity() is FormsAppCompatActivity activity)
 					{
 						_platform = activity.Platform;
 					}
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = Context.GetFragmentManager());
 
 		IPageController PageController => Element;
 
@@ -531,7 +531,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.HasBackButtonProperty.PropertyName)
 				UpdateToolbar();
-			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName ||
+			else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 				UpdateToolbar();
 		}
@@ -747,7 +747,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void SetupToolbar()
 		{
 			Context context = Context;
-			var activity = (FormsAppCompatActivity)context;
+			var activity = context.GetActivity();
 
 			AToolbar bar;
 			if (FormsAppCompatActivity.ToolbarResource != 0)
@@ -900,7 +900,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
 					menuItem.SetEnabled(controller.IsEnabled);
-					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));					
 					menuItem.SetTitleOrContentDescription(item);
 				}
 				else
@@ -937,7 +937,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 
 			Context context = Context;
-			var activity = (FormsAppCompatActivity)context;
 			AToolbar bar = _toolbar;
 			ActionBarDrawerToggle toggle = _drawerToggle;
 
@@ -956,8 +955,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					toggle.SyncState();
 				}
 
-				if (NavigationPage.GetHasBackButton(currentPage))
+				if (NavigationPage.GetHasBackButton(currentPage) && !Context.IsDesignerContext())
 				{
+					var activity = (global::Android.Support.V7.App.AppCompatActivity)context.GetActivity();
 					var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext);
 					icon.Progress = 1;
 					bar.NavigationIcon = icon;
@@ -1013,7 +1013,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTitleIcon()
 		{
 			Page currentPage = Element.CurrentPage;
-			ImageSource source = NavigationPage.GetTitleIcon(currentPage);
+			ImageSource source = NavigationPage.GetTitleIconImageSource(currentPage);
 
 			if (source == null || source.IsEmpty)
 			{
@@ -1034,9 +1034,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				_imageSource = source;
 				_titleIconView.SetImageResource(global::Android.Resource.Color.Transparent);
-				_ = this.ApplyDrawableAsync(currentPage, NavigationPage.TitleIconProperty, Context, drawable =>
+				_ = this.ApplyDrawableAsync(currentPage, NavigationPage.TitleIconImageSourceProperty, Context, drawable =>
 				{
 					_titleIconView.SetImageDrawable(drawable);
+					FastRenderers.AutomationPropertiesProvider.AccessibilitySettingsChanged(_titleIconView, source);
 				});
 			}
 		}
