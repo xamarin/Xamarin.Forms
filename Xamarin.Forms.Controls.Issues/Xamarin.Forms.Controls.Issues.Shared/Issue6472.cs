@@ -3,6 +3,12 @@ using Xamarin.Forms.Internals;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
+#if UITEST
+using Xamarin.Forms.Core.UITests;
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
@@ -64,6 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 					};
 					return new ViewCell { View = stackAccountLayout };
 				}),
+				AutomationId = "TheListview"
 			};
 			Content = listView;
 			listView.ItemsSource = staticData.TestCollection;
@@ -74,5 +81,14 @@ namespace Xamarin.Forms.Controls.Issues
 			base.OnAppearing();
 			staticData.testPopulate();
 		}
+
+#if UITEST && __IOS__
+		[Test]
+		public void Issue6472Test() 
+		{
+			RunningApp.WaitForElement ("TheListview");
+			RunningApp.Screenshot ("We got here without an exception while loading the data and data is visible");
+		}
+#endif
 	}
 }
