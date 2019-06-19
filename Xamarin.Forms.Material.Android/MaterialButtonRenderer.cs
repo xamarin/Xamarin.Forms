@@ -291,7 +291,7 @@ namespace Xamarin.Forms.Material.Android
 
 		void UpdateCharacterSpacing()
 		{
-			LetterSpacing = Element.LetterSpacing.ToEm();
+			LetterSpacing = Element.CharacterSpacing.ToEm();
 		}
 
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> OnThisPlatform() =>
