@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Material.iOS
 			{
 				UpdateBorder();
 			}
-			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 			{
 				UpdateLetterSpacing();
 			}
