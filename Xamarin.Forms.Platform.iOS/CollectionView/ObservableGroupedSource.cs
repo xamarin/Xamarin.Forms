@@ -19,7 +19,10 @@ namespace Xamarin.Forms.Platform.iOS
 			_collectionView = collectionView;
 			_groupSource = groupSource as IList ?? new ListSource(groupSource);
 
-			((INotifyCollectionChanged)_groupSource).CollectionChanged += CollectionChanged;
+			if (_groupSource is INotifyCollectionChanged incc)
+			{
+				incc.CollectionChanged += CollectionChanged;
+			}
 
 			ResetGroupTracking();
 		}
@@ -103,7 +106,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				ClearGroupTracking();
-				((INotifyCollectionChanged)_groupSource).CollectionChanged -= CollectionChanged;
+				if (_groupSource is INotifyCollectionChanged incc)
+				{
+					incc.CollectionChanged -= CollectionChanged;
+				}
 			}
 		}
 
