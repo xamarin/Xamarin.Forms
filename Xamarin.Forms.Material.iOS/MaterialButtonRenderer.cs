@@ -232,7 +232,7 @@ namespace Xamarin.Forms.Material.iOS
 
 		void UpdateLetterSpacing()
 		{
-			var attributedString = new NSMutableAttributedString(Element.Text ?? string.Empty).AddLetterSpacing(Element.Text, Element.LetterSpacing);
+			var attributedString = new NSMutableAttributedString(Element.Text ?? string.Empty).AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 			Control.SetAttributedTitle(attributedString, UIControlState.Normal);
 			Control.SetAttributedTitle(attributedString, UIControlState.Highlighted);
 			Control.SetAttributedTitle(attributedString, UIControlState.Disabled);
