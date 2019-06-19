@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Material.iOS
 				UpdateTextColor();
 				_buttonLayoutManager?.Update();
 				ApplyTheme();
-				UpdateLetterSpacing();
+				UpdateCharacterSpacing();
 			}
 		}
 
