@@ -8,7 +8,7 @@
         <Label>
             <Label.FormattedText>
                 <FormattedString>
-                    <Span Text="LettersSpacing" />
+                    <Span Text="CharacterSpacing" />
                     <Span Text=": " />
                     <Span Text="0" x:Name="CharacterSpacingValue" />
                 </FormattedString>
