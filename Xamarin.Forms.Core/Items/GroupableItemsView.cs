@@ -2,13 +2,13 @@
 {
 	public class GroupableItemsView : SelectableItemsView
 	{
-		public static readonly BindableProperty IsGroupingEnabledProperty =
-			BindableProperty.Create(nameof(IsGroupingEnabled), typeof(bool), typeof(GroupableItemsView), false);
+		public static readonly BindableProperty IsGroupedProperty =
+			BindableProperty.Create(nameof(IsGrouped), typeof(bool), typeof(GroupableItemsView), false);
 
-		public bool IsGroupingEnabled
+		public bool IsGrouped
 		{
-			get => (bool)GetValue(IsGroupingEnabledProperty);
-			set => SetValue(IsGroupingEnabledProperty, value);
+			get => (bool)GetValue(IsGroupedProperty);
+			set => SetValue(IsGroupedProperty, value);
 		}
 
 		public static readonly BindableProperty GroupHeaderTemplateProperty =

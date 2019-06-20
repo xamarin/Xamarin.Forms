@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 				ItemTemplate = ItemTemplate(),
 				GroupFooterTemplate = GroupFooterTemplate(),
 				GroupHeaderTemplate = GroupHeaderTemplate(),
-				IsGroupingEnabled = true,
+				IsGrouped = true,
 				SelectionMode = SelectionMode.Single
 			};
 

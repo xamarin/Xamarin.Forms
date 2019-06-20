@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public GroupableItemsViewController(GroupableItemsView groupableItemsView, ItemsViewLayout layout) 
 			: base(groupableItemsView, layout)
 		{
-			_isGroupingEnabled = GroupableItemsView.IsGroupingEnabled;
+			_isGroupingEnabled = GroupableItemsView.IsGrouped;
 		}
 
 		public override nint NumberOfSections(UICollectionView collectionView)
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
 			// Use the BindableProperty here (instead of _isGroupingEnabled) because the cached value might not be set yet
-			if (GroupableItemsView.IsGroupingEnabled) 
+			if (GroupableItemsView.IsGrouped) 
 			{
 				return ItemsSourceFactory.CreateGrouped(GroupableItemsView.ItemsSource, CollectionView);
 			}
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void UpdateItemsSource()
 		{
-			_isGroupingEnabled = GroupableItemsView.IsGroupingEnabled;
+			_isGroupingEnabled = GroupableItemsView.IsGrouped;
 			base.UpdateItemsSource();
 		}
 

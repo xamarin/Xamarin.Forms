@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGalleries.GroupingPlusSelection">
     <ContentPage.Content>
-         <CollectionView x:Name="CollectionView" IsGroupingEnabled="True" 
+         <CollectionView x:Name="CollectionView" IsGrouped="True" 
 						 SelectionMode="Single">
 
 			<CollectionView.ItemTemplate>

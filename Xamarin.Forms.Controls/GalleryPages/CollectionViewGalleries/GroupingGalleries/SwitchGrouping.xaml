@@ -6,7 +6,8 @@
         <StackLayout>
 			
 			<StackLayout Orientation="Horizontal">
-				<Label Text="Is Grouping Enabled:"></Label><Switch x:Name="GroupingSwitch" BindingContext="{x:Reference Name=CollectionView}" IsToggled="{Binding IsGroupingEnabled}"></Switch>
+				<Label Text="Is Grouped:"></Label><Switch x:Name="GroupingSwitch" 
+                    BindingContext="{x:Reference Name=CollectionView}" IsToggled="{Binding IsGrouped}"></Switch>
 			</StackLayout>
        		<CollectionView x:Name="CollectionView">
 				

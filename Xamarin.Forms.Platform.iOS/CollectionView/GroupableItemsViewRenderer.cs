@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.Is(GroupableItemsView.IsGroupingEnabledProperty))
+			if (changedProperty.Is(GroupableItemsView.IsGroupedProperty))
 			{
 				GroupableItemsViewController?.UpdateItemsSource();
 			}

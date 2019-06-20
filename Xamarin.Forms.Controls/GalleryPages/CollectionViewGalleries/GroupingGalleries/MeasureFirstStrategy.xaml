@@ -7,7 +7,7 @@
 
             <Label Text="Using ItemSizingStrategy.MeasureFirstItem. On scrolling, some items may disappear; this is a current known issue ()"></Label>
 
-            <CollectionView x:Name="CollectionView" ItemSizingStrategy="MeasureFirstItem" IsGroupingEnabled="True">
+            <CollectionView x:Name="CollectionView" ItemSizingStrategy="MeasureFirstItem" IsGrouped="True">
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>

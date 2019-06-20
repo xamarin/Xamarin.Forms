@@ -16,7 +16,7 @@
                 
             </Label>
 
-            <CollectionView x:Name="CollectionView" IsGroupingEnabled="True">
+            <CollectionView x:Name="CollectionView" IsGrouped="True">
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
