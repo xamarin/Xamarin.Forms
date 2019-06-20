@@ -1,6 +1,7 @@
 using System;
 using Android.Graphics;
 using Android.Support.V7.Widget;
+using Views = Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -8,6 +9,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly RecyclerView _recyclerView;
 		Action _pendingScrollAdjustment;
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = 0;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = 0;
 
 		public ScrollHelper(RecyclerView recyclerView)
 		{
@@ -168,6 +171,30 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_recyclerView.ScrollBy(offset, 0);
+		}
+
+		public void UpdateHorizontalScrollBarVisibility(ScrollBarVisibility horizontalScrollBarVisibility)
+		{
+			if (_defaultHorizontalScrollVisibility == 0)
+				_defaultHorizontalScrollVisibility =
+					_recyclerView.HorizontalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			if (horizontalScrollBarVisibility == ScrollBarVisibility.Default)
+				horizontalScrollBarVisibility = _defaultHorizontalScrollVisibility;
+			_recyclerView.ScrollBarStyle = Views.ScrollbarStyles.OutsideOverlay;
+			_recyclerView.HorizontalScrollBarEnabled = horizontalScrollBarVisibility == ScrollBarVisibility.Always;
+		}
+
+		public void UpdateVerticalScrollBarVisibility(ScrollBarVisibility verticalScrollBarVisibility)
+		{
+			if (_defaultVerticalScrollVisibility == 0)
+				_defaultVerticalScrollVisibility =
+					_recyclerView.VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			if (verticalScrollBarVisibility == ScrollBarVisibility.Default)
+				verticalScrollBarVisibility = _defaultVerticalScrollVisibility;
+
+			_recyclerView.VerticalScrollBarEnabled = verticalScrollBarVisibility == ScrollBarVisibility.Always;
 		}
 	}
 }

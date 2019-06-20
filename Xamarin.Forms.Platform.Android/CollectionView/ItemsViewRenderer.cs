@@ -210,6 +210,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateAdapter();
 			}
+			else if(changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			{
+				UpdateHorizontalScrollBarVisibility();
+			}
+			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
 		}
 
 		protected virtual void UpdateItemsSource()
@@ -296,6 +304,9 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFlowDirection();
 			UpdateItemSpacing();
 
+			UpdateHorizontalScrollBarVisibility();
+			UpdateVerticalScrollBarVisibility();
+
 			// Keep track of the ItemsLayout's property changes
 			if (_layout != null)
 			{
@@ -304,6 +315,16 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Listen for ScrollTo requests
 			ItemsView.ScrollToRequested += ScrollToRequested;
+		}
+
+		private void UpdateVerticalScrollBarVisibility()
+		{
+			ScrollHelper.UpdateVerticalScrollBarVisibility(ItemsView.VerticalScrollBarVisibility);
+		}
+
+		private void UpdateHorizontalScrollBarVisibility()
+		{
+			ScrollHelper.UpdateHorizontalScrollBarVisibility(ItemsView.HorizontalScrollBarVisibility);
 		}
 
 		protected virtual void TearDownOldElement(ItemsView oldElement)
