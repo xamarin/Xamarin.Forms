@@ -12,7 +12,7 @@
 		}
 
 		public static readonly BindableProperty GroupHeaderTemplateProperty =
-			BindableProperty.Create(nameof(GroupHeaderTemplate), typeof(DataTemplate), typeof(GroupableItemsView));
+			BindableProperty.Create(nameof(GroupHeaderTemplate), typeof(DataTemplate), typeof(GroupableItemsView), default(DataTemplate));
 
 		public DataTemplate GroupHeaderTemplate
 		{
@@ -21,7 +21,7 @@
 		}
 
 		public static readonly BindableProperty GroupFooterTemplateProperty =
-			BindableProperty.Create(nameof(GroupFooterTemplate), typeof(DataTemplate), typeof(GroupableItemsView));
+			BindableProperty.Create(nameof(GroupFooterTemplate), typeof(DataTemplate), typeof(GroupableItemsView), default(DataTemplate));
 
 		public DataTemplate GroupFooterTemplate
 		{
