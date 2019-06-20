@@ -212,7 +212,6 @@ namespace Xamarin.Forms.Platform.Android
 				oldElement.PropertyChanged -= _propertyChangeHandler;
 			}
 
-			// element may be allowed to be passed as null in the future
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
 
 			if (element.BackgroundColor != currentColor)
@@ -236,7 +235,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (AutoTrack && Tracker == null)
 				SetTracker(new VisualElementTracker(this));
 
-			if (oldElement != null && element != null)
+			if (oldElement != null)
 				Tracker?.UpdateLayout();
 
 			SendVisualElementInitialized(element, this);
