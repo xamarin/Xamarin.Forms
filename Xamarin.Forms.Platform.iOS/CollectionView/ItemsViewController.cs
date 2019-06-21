@@ -184,14 +184,11 @@ namespace Xamarin.Forms.Platform.iOS
 				var firstItem = new List<object> { enumerator.Current };
 				ItemsSource = ItemsSourceFactory.Create(firstItem, CollectionView);
 
-				// Insert that item into the UICollectionView
-				// TODO ezhart When we implement grouping, this will need to be the index of the first actual item
-				// Which might not be zero,zero if we have empty groups
-				var indexesToInsert = new NSIndexPath[1] { NSIndexPath.Create(0, 0) };
+				var sectionToInsert = new NSIndexSet(0);
 
 				UIView.PerformWithoutAnimation(() =>
 				{
-					CollectionView.InsertItems(indexesToInsert);
+					CollectionView.InsertSections(sectionToInsert);
 				});
 
 				// Okay, from now on we can just call ReloadData and things will work fine
