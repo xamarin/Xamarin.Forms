@@ -490,7 +490,7 @@ namespace Xamarin.Forms
 			if (baseShellItem != null)
 				baseShellItem.ApplyQueryAttributes(filteredQuery);
 			else if (isLastItem)
-				ShellContent.ApplyQueryAttributes(element, query);
+				element.SetValue(ShellContent.QueryAttributesProperty, query);
 		}
 
 		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack)
@@ -542,6 +542,12 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty CurrentStateProperty = CurrentStatePropertyKey.BindableProperty;
 
+		public static readonly BindableProperty FlyoutBackgroundImageProperty =
+			BindableProperty.Create(nameof(FlyoutBackgroundImage), typeof(ImageSource), typeof(Shell), default(ImageSource), BindingMode.OneTime);
+
+		public static readonly BindableProperty FlyoutBackgroundImageAspectProperty =
+			BindableProperty.Create(nameof(FlyoutBackgroundImageAspect), typeof(Aspect), typeof(Shell), default(Aspect), BindingMode.OneTime);
+
 		public static readonly BindableProperty FlyoutBackgroundColorProperty =
 			BindableProperty.Create(nameof(FlyoutBackgroundColor), typeof(Color), typeof(Shell), Color.Default, BindingMode.OneTime);
 
@@ -592,6 +598,19 @@ namespace Xamarin.Forms
 		}
 
 		public ShellNavigationState CurrentState => (ShellNavigationState)GetValue(CurrentStateProperty);
+
+		[TypeConverter(typeof(ImageSourceConverter))]
+		public ImageSource FlyoutBackgroundImage
+		{
+			get => (ImageSource)GetValue(FlyoutBackgroundImageProperty);
+			set => SetValue(FlyoutBackgroundImageProperty, value);
+		}
+
+		public Aspect FlyoutBackgroundImageAspect
+		{
+			get => (Aspect)GetValue(FlyoutBackgroundImageAspectProperty);
+			set => SetValue(FlyoutBackgroundImageAspectProperty, value);
+		}
 
 		public Color FlyoutBackgroundColor
 		{

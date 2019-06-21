@@ -28,16 +28,16 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			const string goToTestButtonQuery = "* marked:'GoToTestButton'";
 
-			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to disappear", TimeSpan.FromSeconds(10));
+			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to appear", TimeSpan.FromMinutes(2));
 
 			var text = Regex.Match(page, "'(?<text>[^']*)'").Groups["text"].Value;
 
 			app.WaitForElement("SearchBar");
 			app.EnterText(q => q.Raw("* marked:'SearchBar'"), text);
+			app.DismissKeyboard();
 
-			if(!String.IsNullOrWhiteSpace(visual))
+			if (!String.IsNullOrWhiteSpace(visual))
 			{
-				app.DismissKeyboard();
 				app.ActivateContextMenu($"{text}AutomationId");
 				app.Tap("Select Visual");
 				app.Tap("Material");
