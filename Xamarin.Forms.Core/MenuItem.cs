@@ -46,9 +46,9 @@ namespace Xamarin.Forms
 
 		[Obsolete("Icon is obsolete as of 4.0.0. Please use IconImageSource instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public FileImageSource Icon
+		public ImageSource Icon
 		{
-			get => GetValue(IconProperty) as FileImageSource ?? default(FileImageSource);
+			get => (ImageSource)GetValue(IconProperty);
 			set => SetValue(IconProperty, value);
 		}
 
