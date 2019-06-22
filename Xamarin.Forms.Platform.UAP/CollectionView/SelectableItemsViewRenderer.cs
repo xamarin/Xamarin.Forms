@@ -68,8 +68,17 @@ namespace Xamarin.Forms.Platform.UWP
 						{
 							ListViewBase.SelectedItem =
 								ListViewBase.Items.First(item =>
-									((ItemTemplatePair)item).Item == _selectableItemsView.SelectedItem
-								);
+								{
+									if (item is ItemTemplatePair itemPair)
+									{
+										return itemPair.Item == _selectableItemsView.SelectedItem;
+									}
+									else
+									{
+										return item == _selectableItemsView.SelectedItem;
+									}
+								});
+									
 						}
 					}
 					ListViewBase.SelectionChanged += OnNativeSelectionChanged;
@@ -81,8 +90,11 @@ namespace Xamarin.Forms.Platform.UWP
 					ListViewBase.SelectedItems.Clear();
 					foreach (var nativeItem in ListViewBase.Items)
 					{
-						var itemPair = (ItemTemplatePair)nativeItem;
-						if (_selectableItemsView.SelectedItems.Contains(itemPair.Item))
+						if (nativeItem is ItemTemplatePair itemPair && _selectableItemsView.SelectedItems.Contains(itemPair.Item))
+						{
+							ListViewBase.SelectedItems.Add(nativeItem);
+						}
+						else if (_selectableItemsView.SelectedItems.Contains(nativeItem))
 						{
 							ListViewBase.SelectedItems.Add(nativeItem);
 						}
@@ -109,16 +121,20 @@ namespace Xamarin.Forms.Platform.UWP
 					case UWPListViewSelectionMode.None:
 						break;
 					case UWPListViewSelectionMode.Single:
-						var selectedItem = (ItemTemplatePair)ListViewBase.SelectedItem;
-						Element.SetValueFromRenderer(SelectableItemsView.SelectedItemProperty, selectedItem.Item);
+						object selectedItem = 
+							ListViewBase.SelectedItem is ItemTemplatePair itemPair ? itemPair.Item : ListViewBase.SelectedItem;
+						Element.SetValueFromRenderer(SelectableItemsView.SelectedItemProperty, selectedItem);
 						break;
 					case UWPListViewSelectionMode.Multiple:
 						break;
 					case UWPListViewSelectionMode.Extended:
 						var selectedItems =
 							ListViewBase.SelectedItems
-								.Cast<ItemTemplatePair>()
-								.Select(a => a.Item)
+								.Select(a => 
+									{
+										var item = a is ItemTemplatePair itemPair1 ? itemPair1.Item : a;
+										return item;
+									})
 								.ToList();
 						Element.SetValueFromRenderer(SelectableItemsView.SelectedItemsProperty, selectedItems);
 						break;
