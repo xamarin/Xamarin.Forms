@@ -102,9 +102,9 @@ namespace Xamarin.Forms
 
 		internal void SelectedItemsPropertyChanged(IList<object> oldSelection, IList<object> newSelection)
 		{
-			SelectionPropertyChanged(this, new SelectionChangedEventArgs(oldSelection, newSelection));
-			
 			OnPropertyChanged(SelectedItemsProperty.PropertyName);
+			
+			SelectionPropertyChanged(this, new SelectionChangedEventArgs(oldSelection, newSelection));
 		}
 
 		static void SelectionPropertyChanged(SelectableItemsView selectableItemsView, SelectionChangedEventArgs args)

@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platform.UWP
 			if (oldListViewBase != null)
 			{
 				oldListViewBase.ClearValue(ListViewBase.SelectionModeProperty);
-				oldListViewBase.ClearValue(ListViewBase.SelectedItemProperty);
 				oldListViewBase.SelectionChanged -= OnNativeSelectionChanged;
 			}
 
@@ -27,30 +26,31 @@ namespace Xamarin.Forms.Platform.UWP
 
 			base.OnElementChanged(args);
 			_selectableItemsView = args.NewElement;
-			_selectableItemsView.SelectionChanged += OnSelectionChanged;
+
+			if (_selectableItemsView != null)
+			{
+				_selectableItemsView.SelectionChanged += OnSelectionChanged;
+			}
 
 			var newListViewBase = ListViewBase;
 
-			newListViewBase.SetBinding(ListViewBase.SelectionModeProperty,
-				new Windows.UI.Xaml.Data.Binding
-				{
-					Source = _selectableItemsView,
-					Path = new Windows.UI.Xaml.PropertyPath("SelectionMode"),
-					Converter = new SelectionModeConvert(),
-					Mode = Windows.UI.Xaml.Data.BindingMode.TwoWay
-				});
+			if (newListViewBase != null)
+			{
+				newListViewBase.SetBinding(ListViewBase.SelectionModeProperty,
+						new Windows.UI.Xaml.Data.Binding
+						{
+							Source = _selectableItemsView,
+							Path = new Windows.UI.Xaml.PropertyPath("SelectionMode"),
+							Converter = new SelectionModeConvert(),
+							Mode = Windows.UI.Xaml.Data.BindingMode.TwoWay
+						});
 
-			newListViewBase.SelectionChanged += OnNativeSelectionChanged;
-
+				newListViewBase.SelectionChanged += OnNativeSelectionChanged;
+			}
+			UpdateNativeSelection();
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
-		{
-			base.OnElementPropertyChanged(sender, changedProperty);
-
-		}
-
-		void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+		void UpdateNativeSelection()
 		{
 			switch (ListViewBase.SelectionMode)
 			{
@@ -58,19 +58,28 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 				case UWPListViewSelectionMode.Single:
 					ListViewBase.SelectionChanged -= OnNativeSelectionChanged;
-					ListViewBase.SelectedItem =
-						ListViewBase.Items.First(item =>
-							((ItemTemplatePair)item).Item ==  _selectableItemsView.SelectedItem
-						);
+					if (_selectableItemsView != null)
+					{
+						if (_selectableItemsView.SelectedItem == null)
+						{
+							ListViewBase.SelectedItem = null;
+						}
+						else
+						{
+							ListViewBase.SelectedItem =
+								ListViewBase.Items.First(item =>
+									((ItemTemplatePair)item).Item == _selectableItemsView.SelectedItem
+								);
+						}
+					}
 					ListViewBase.SelectionChanged += OnNativeSelectionChanged;
 					break;
 				case UWPListViewSelectionMode.Multiple:
 					break;
 				case UWPListViewSelectionMode.Extended:
 					ListViewBase.SelectionChanged -= OnNativeSelectionChanged;
-					var nativeSelectedItems = ListViewBase.SelectedItems.ToList();
 					ListViewBase.SelectedItems.Clear();
-					foreach (var nativeItem in nativeSelectedItems)
+					foreach (var nativeItem in ListViewBase.Items)
 					{
 						var itemPair = (ItemTemplatePair)nativeItem;
 						if (_selectableItemsView.SelectedItems.Contains(itemPair.Item))
@@ -83,30 +92,39 @@ namespace Xamarin.Forms.Platform.UWP
 				default:
 					break;
 			}
+
+		}
+
+		void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			UpdateNativeSelection();
 		}
 
 		void OnNativeSelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
 		{
-			switch (ListViewBase.SelectionMode)
+			if (Element != null)
 			{
-				case UWPListViewSelectionMode.None:
-					break;
-				case UWPListViewSelectionMode.Single:
-					var selectedItem = (ItemTemplatePair)ListViewBase.SelectedItem;
-					Element.SetValueFromRenderer(SelectableItemsView.SelectedItemProperty, selectedItem.Item);
-					break;
-				case UWPListViewSelectionMode.Multiple:
-					break;
-				case UWPListViewSelectionMode.Extended:
-					var selectedItems = 
-						ListViewBase.SelectedItems
-							.Cast<ItemTemplatePair>()
-							.Select(a => a.Item)
-							.ToList();
-					Element.SetValueFromRenderer(SelectableItemsView.SelectedItemsProperty, selectedItems);
-					break;
-				default:
-					break;
+				switch (ListViewBase.SelectionMode)
+				{
+					case UWPListViewSelectionMode.None:
+						break;
+					case UWPListViewSelectionMode.Single:
+						var selectedItem = (ItemTemplatePair)ListViewBase.SelectedItem;
+						Element.SetValueFromRenderer(SelectableItemsView.SelectedItemProperty, selectedItem.Item);
+						break;
+					case UWPListViewSelectionMode.Multiple:
+						break;
+					case UWPListViewSelectionMode.Extended:
+						var selectedItems =
+							ListViewBase.SelectedItems
+								.Cast<ItemTemplatePair>()
+								.Select(a => a.Item)
+								.ToList();
+						Element.SetValueFromRenderer(SelectableItemsView.SelectedItemsProperty, selectedItems);
+						break;
+					default:
+						break;
+				}
 			}
 		}
 
