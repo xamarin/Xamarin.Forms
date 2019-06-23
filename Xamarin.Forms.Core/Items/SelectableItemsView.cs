@@ -100,7 +100,6 @@ namespace Xamarin.Forms
 			var selectableItemsView = (SelectableItemsView)bindable;
 			var oldSelection = (IList<object>)oldValue ?? s_empty;
 			var newSelection = (IList<object>)newValue ?? s_empty;
-
 			selectableItemsView.SelectedItemsPropertyChanged(oldSelection, newSelection);
 		}
 
