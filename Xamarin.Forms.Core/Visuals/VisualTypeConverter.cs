@@ -71,9 +71,13 @@ namespace Xamarin.Forms
 			{
 				Log.Warning("Visual", $"Unable to load a dependent assembly for {assembly.FullName}. It cannot be scanned for Visual types.");
 			}
+			catch (ReflectionTypeLoadException)
+			{
+				Log.Warning("Visual", $"Unable to load a dependent assembly for {assembly.FullName}. Types cannot be loaded.");
+			}
 		}
 
-		static void Register(Type visual, Dictionary<string, IVisual> mappings)
+			static void Register(Type visual, Dictionary<string, IVisual> mappings)
 		{
 			IVisual registeredVisual = CreateVisual(visual);
 			if (registeredVisual == null)
