@@ -74,6 +74,18 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.AreEqual(eventLabelText, "Event: Completed (fired 1)");
 		}
 
+		[Test]
+		[UiTest(typeof(Entry), "ClearButtonMode")]
+		[Category(UITestCategories.ManualReview)]
+		public void ClearButtonMode()
+		{
+			var remote = new StateViewContainerRemote(App, Test.Entry.ClearButtonMode, PlatformViewType);
+			remote.GoTo();
+
+			App.WaitForElement(q => q.Marked("Toggle ClearButtonMode"));
+			App.Tap(q => q.Marked("Toggle ClearButtonMode"));
+		}
+
 		protected override void FixtureTeardown()
 		{
 			App.NavigateBack();

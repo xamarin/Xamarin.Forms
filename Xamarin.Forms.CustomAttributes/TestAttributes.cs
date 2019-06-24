@@ -535,7 +535,8 @@ namespace Xamarin.Forms.CustomAttributes
 			PasswordColor,
 			MaxLength,
 			IsReadOnly,
-			IsPasswordNumeric
+			IsPasswordNumeric,
+			ClearButtonMode
 		}
 
 		public enum Frame

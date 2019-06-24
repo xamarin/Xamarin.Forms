@@ -39,6 +39,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SelectionLengthProperty = BindableProperty.Create(nameof(SelectionLength), typeof(int), typeof(Entry), 0, validateValue: (b, v) => (int)v >= 0);
 
+		public static readonly BindableProperty ClearButtonModeProperty = BindableProperty.Create(nameof(ClearButtonMode), typeof(ClearButtonMode), typeof(Entry), ClearButtonMode.Never);
+
 		readonly Lazy<PlatformConfigurationRegistry<Entry>> _platformConfigurationRegistry;
 
 		public Entry()
@@ -106,7 +108,7 @@ namespace Xamarin.Forms
 			get { return (bool)GetValue(IsTextPredictionEnabledProperty); }
 			set { SetValue(IsTextPredictionEnabledProperty, value); }
 		}
-    
+
 		public ReturnType ReturnType
 		{
 			get => (ReturnType)GetValue(ReturnTypeProperty);
@@ -135,6 +137,12 @@ namespace Xamarin.Forms
 		{
 			get => GetValue(ReturnCommandParameterProperty);
 			set => SetValue(ReturnCommandParameterProperty, value);
+		}
+
+		public ClearButtonMode ClearButtonMode
+		{
+			get => (ClearButtonMode)GetValue(ClearButtonModeProperty);
+			set => SetValue(ClearButtonModeProperty, value);
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>
