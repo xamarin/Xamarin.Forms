@@ -47,7 +47,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(
 			nameof(HorizontalScrollBarVisibility),
 			typeof(ScrollBarVisibility),
-			typeof(ListView),
+			typeof(ItemsView),
 			ScrollBarVisibility.Default);
 
 		public ScrollBarVisibility HorizontalScrollBarVisibility
@@ -60,7 +60,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create(
 			nameof(VerticalScrollBarVisibility),
 			typeof(ScrollBarVisibility),
-			typeof(ListView),
+			typeof(ItemsView),
 			ScrollBarVisibility.Default);
 
 		public ScrollBarVisibility VerticalScrollBarVisibility

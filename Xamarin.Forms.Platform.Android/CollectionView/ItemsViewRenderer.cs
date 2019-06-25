@@ -317,12 +317,12 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsView.ScrollToRequested += ScrollToRequested;
 		}
 
-		private void UpdateVerticalScrollBarVisibility()
+		void UpdateVerticalScrollBarVisibility()
 		{
 			ScrollHelper.UpdateVerticalScrollBarVisibility(ItemsView.VerticalScrollBarVisibility);
 		}
 
-		private void UpdateHorizontalScrollBarVisibility()
+		void UpdateHorizontalScrollBarVisibility()
 		{
 			ScrollHelper.UpdateHorizontalScrollBarVisibility(ItemsView.HorizontalScrollBarVisibility);
 		}

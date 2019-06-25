@@ -181,7 +181,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (horizontalScrollBarVisibility == ScrollBarVisibility.Default)
 				horizontalScrollBarVisibility = _defaultHorizontalScrollVisibility;
-			_recyclerView.ScrollBarStyle = Views.ScrollbarStyles.OutsideOverlay;
+
 			_recyclerView.HorizontalScrollBarEnabled = horizontalScrollBarVisibility == ScrollBarVisibility.Always;
 		}
 

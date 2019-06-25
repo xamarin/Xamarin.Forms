@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return ItemsViewController.GetIndexForItem(args.Item);
 		}
 
-		private void UpdateVerticalScrollBarVisibility()
+		void UpdateVerticalScrollBarVisibility()
 		{
 			if (_defaultVerticalScrollVisibility == null)
 				_defaultVerticalScrollVisibility = ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator;
@@ -178,7 +178,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void UpdateHorizontalScrollBarVisibility()
+		void UpdateHorizontalScrollBarVisibility()
 		{
 			if (_defaultHorizontalScrollVisibility == null)
 				_defaultHorizontalScrollVisibility = ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator;
