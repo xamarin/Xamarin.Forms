@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		
+
 		[Test]
 		public async Task NavigatedFiresAfterContentIsCreatedWhenUsingTemplate()
 		{
@@ -324,6 +324,23 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.Navigation.PopAsync();
 			Assert.IsFalse(appearing);
 		}
+
+
+		[Test]
+		public async Task OnNavigatedOnlyFiresOnce()
+		{
+			int navigated = 0;
+			Shell shell = new Shell();
+			shell.Navigated += (_, __) =>
+			{
+				navigated++;
+			};
+
+			var item = CreateShellItem(shellContentRoute: ContentRoute, shellSectionRoute: SectionRoute, shellItemRoute: ItemRoute);
+			shell.Items.Add(item);
+			Assert.AreEqual(1, navigated);
+		}
+
 
 
 
