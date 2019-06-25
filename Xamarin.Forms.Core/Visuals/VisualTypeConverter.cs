@@ -63,7 +63,7 @@ namespace Xamarin.Forms
 					if (typeof(IVisual).IsAssignableFrom(type) && type != typeof(IVisual))
 						Register(type, mappings);
 			}
-			catch(NotSupportedException)
+			catch (NotSupportedException)
 			{
 				Log.Warning("Visual", $"Cannot scan assembly {assembly.FullName} for Visual types.");
 			}
@@ -77,7 +77,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-			static void Register(Type visual, Dictionary<string, IVisual> mappings)
+		static void Register(Type visual, Dictionary<string, IVisual> mappings)
 		{
 			IVisual registeredVisual = CreateVisual(visual);
 			if (registeredVisual == null)
@@ -96,7 +96,7 @@ namespace Xamarin.Forms
 			mappings[fullName] = registeredVisual;
 			mappings[$"{name}Visual"] = registeredVisual;
 			mappings[$"{fullName}Visual"] = registeredVisual;
-			
+
 		}
 
 		static IVisual CreateVisual(Type visualType)
