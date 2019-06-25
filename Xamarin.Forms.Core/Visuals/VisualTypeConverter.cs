@@ -96,7 +96,6 @@ namespace Xamarin.Forms
 			mappings[fullName] = registeredVisual;
 			mappings[$"{name}Visual"] = registeredVisual;
 			mappings[$"{fullName}Visual"] = registeredVisual;
-
 		}
 
 		static IVisual CreateVisual(Type visualType)
