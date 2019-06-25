@@ -32,9 +32,9 @@ namespace Xamarin.Forms.Controls.Issues
 		string _disappearText = "You should see an Image. Clicking this should cause the image to disappear";
 		string _appearText = "Clicking this should cause the images to all appear";
 		string _theListView = "theListViewAutomationId";
-		string _fileName = "coffee.png";
+		string _fileName = "xamarinlogo.png";
 		string _fileNameAutomationId = "CoffeeAutomationId";
-		string _uriImage = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Xamarin.Forms.Controls/coffee.png";
+		string _uriImage = "https://github.com/xamarin/Xamarin.Forms/blob/3216ce4ccd096f8b9f909bbeea572dcf2a8c4466/Xamarin.Forms.ControlGallery.iOS/Resources/xamarinlogo.png?raw=true";
 		bool _isUri = false;
 		string _nextTestId = "NextTest";
 		string _activeTestId = "activeTestId";
@@ -123,6 +123,7 @@ namespace Xamarin.Forms.Controls.Issues
 			StackLayout layout = null;
 			layout = new StackLayout()
 			{
+				AutomationId = "layoutContainer",
 				Children =
 				{
 					labelActiveTest,
@@ -200,13 +201,33 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ImageCellFromFileSourceAppearsAndDisappearsCorrectly()
 		{
-			RunTest(nameof(ListView), false);
+			string className = "ImageView";
+			SetupTest(nameof(ListView), false);
+
+			var images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
+			var imageVisible = images.Where(x => x.Class.Contains(className)).ToArray();
+
+			Assert.AreEqual(1, imageVisible.Length);
+			SetImageSourceToNull();
+
+			images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
+			imageVisible = images.Where(x => x.Class.Contains(className)).ToArray();
 		}
 
 		[Test]
 		public void ImageCellFromUriSourceAppearsAndDisappearsCorrectly()
 		{
-			RunTest(nameof(ListView), true);
+			string className = "ImageView";
+			SetupTest(nameof(ListView), true);
+
+			var images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
+			var imageVisible = images.Where(x => x.Class.Contains(className)).ToArray();
+
+			Assert.AreEqual(1, imageVisible.Length);
+			SetImageSourceToNull();
+
+			images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
+			imageVisible = images.Where(x => x.Class.Contains(className)).ToArray();
 		}
 #endif
 
