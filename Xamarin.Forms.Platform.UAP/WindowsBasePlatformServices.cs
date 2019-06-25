@@ -145,6 +145,19 @@ namespace Xamarin.Forms.Platform.UWP
 			Launcher.LaunchUriAsync(uri).WatchForError();
 		}
 
+		public bool TryOpenUriAction(Uri uri)
+		{
+			try
+			{
+				OpenUriAction(uri);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		public void StartTimer(TimeSpan interval, Func<bool> callback)
 		{
 			var timerTick = 0L;

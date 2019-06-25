@@ -100,7 +100,7 @@ namespace Xamarin.Forms
 			//this doesn't seem to work
 			using (var value = new TypedValue())
 			{
-				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true)) 
+				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true))
 				{
 					size = value.Data;
 				}
@@ -670,6 +670,19 @@ namespace Xamarin.Forms
 				// foreground). If we run into a situation where that's not the case, we'll have to do some work to
 				// make sure this uses the active activity when launching the Intent
 				_context.StartActivity(intent);
+			}
+
+			public bool TryOpenUriAction(Uri uri)
+			{
+				try
+				{
+					OpenUriAction(uri);
+					return true;
+				}
+				catch
+				{
+					return false;
+				}
 			}
 
 			public void StartTimer(TimeSpan interval, Func<bool> callback)

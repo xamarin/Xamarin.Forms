@@ -278,6 +278,11 @@ namespace Xamarin.Forms
 
 			public void OpenUriAction(Uri uri)
 			{
+				TryOpenUriAction(uri);
+			}
+
+			public bool TryOpenUriAction(Uri uri)
+			{
 				NSUrl url;
 
 				if (uri.Scheme == "tel" || uri.Scheme == "mailto")
@@ -285,9 +290,9 @@ namespace Xamarin.Forms
 				else
 					url = NSUrl.FromString(uri.OriginalString) ?? new NSUrl(uri.Scheme, uri.Host, uri.PathAndQuery);
 #if __MOBILE__
-				UIApplication.SharedApplication.OpenUrl(url);
+				return UIApplication.SharedApplication.OpenUrl(url);
 #else
-				NSWorkspace.SharedWorkspace.OpenUrl(url);
+				return NSWorkspace.SharedWorkspace.OpenUrl(url);
 #endif
 			}
 

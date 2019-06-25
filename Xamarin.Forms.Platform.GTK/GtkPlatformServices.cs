@@ -90,6 +90,19 @@ namespace Xamarin.Forms.Platform.GTK
 			System.Diagnostics.Process.Start(uri.AbsoluteUri);
 		}
 
+		public bool TryOpenUriAction(Uri uri)
+		{
+			try
+			{
+				OpenUriAction(uri);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		public void StartTimer(TimeSpan interval, Func<bool> callback)
 		{
 			GLib.Timeout.Add((uint)interval.TotalMilliseconds, () =>

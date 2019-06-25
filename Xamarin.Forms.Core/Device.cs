@@ -229,7 +229,12 @@ namespace Xamarin.Forms
             PlatformServices.OpenUriAction(uri);
         }
 
-        public static void StartTimer(TimeSpan interval, Func<bool> callback)
+		public static bool TryOpenUri(Uri uri)
+		{
+			return PlatformServices.TryOpenUriAction(uri);
+		}
+
+		public static void StartTimer(TimeSpan interval, Func<bool> callback)
         {
             PlatformServices.StartTimer(interval, callback);
         }

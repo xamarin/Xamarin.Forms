@@ -29,6 +29,8 @@ namespace Xamarin.Forms.Internals
 
 		void OpenUriAction(Uri uri);
 
+		bool TryOpenUriAction(Uri uri);
+
 		void StartTimer(TimeSpan interval, Func<bool> callback);
 
 		string RuntimePlatform { get; }
