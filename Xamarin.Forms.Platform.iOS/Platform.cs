@@ -37,29 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_renderer = new PlatformRenderer(this);
 			_modals = new List<Page>();
 
-			var busyCount = 0;
-			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
-			{
-				if (!PageIsChildOfPlatform(sender))
-					return;
-				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
-				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = busyCount > 0;
-			});
-
-			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
-			{
-				if (!PageIsChildOfPlatform(sender))
-					return;
-				PresentAlert(arguments);
-			});
-
-			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
-			{
-				if (!PageIsChildOfPlatform(sender))
-					return;
-
-				PresentActionSheet(arguments);
-			});
+			SubscribeToAlertsAndActionSheets();
 		}
 
 		internal UIViewController ViewController
@@ -71,20 +49,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IDisposable.Dispose()
 		{
+			Dispose(true);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
 			if (_disposed)
+			{
 				return;
+			}
+
 			_disposed = true;
 
-			Page.DescendantRemoved -= HandleChildRemoved;
-			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
-			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
-			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
-
-			Page.DisposeModalAndChildRenderers();
-			foreach (var modal in _modals)
-				modal.DisposeModalAndChildRenderers();
-
-			_renderer.Dispose();
+			if (disposing)
+			{
+				_renderer.Dispose();
+			}
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
@@ -220,6 +200,25 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnBindingContextChanged();
 		}
 
+		internal static UIEdgeInsets SafeAreaInsetsForWindow
+		{
+			get
+			{
+				UIEdgeInsets safeAreaInsets;
+
+				if (!Forms.IsiOS11OrNewer)
+					safeAreaInsets = new UIEdgeInsets(UIApplication.SharedApplication.StatusBarFrame.Size.Height, 0, 0, 0);
+				else if (UIApplication.SharedApplication.KeyWindow != null)
+					safeAreaInsets = UIApplication.SharedApplication.KeyWindow.SafeAreaInsets;
+				else if (UIApplication.SharedApplication.Windows.Length > 0)
+					safeAreaInsets = UIApplication.SharedApplication.Windows[0].SafeAreaInsets;
+				else
+					safeAreaInsets = UIEdgeInsets.Zero;
+
+				return safeAreaInsets;
+			}
+		}
+
 		internal void DidAppear()
 		{
 			_animateModals = false;
@@ -295,7 +294,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var viewRenderer = CreateRenderer(view);
 				SetRenderer(view, viewRenderer);
 
-				_renderer.View.AddSubview(viewRenderer.NativeView);
+				var nativeView = viewRenderer.NativeView;
+
+				_renderer.View.AddSubview(nativeView);
 				if (viewRenderer.ViewController != null)
 					_renderer.AddChildViewController(viewRenderer.ViewController);
 				viewRenderer.NativeView.Frame = new RectangleF(0, 0, _renderer.View.Bounds.Width, _renderer.View.Bounds.Height);
@@ -515,5 +516,49 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		#endregion
+
+		internal void SubscribeToAlertsAndActionSheets()
+		{
+			var busyCount = 0;
+			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
+				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = busyCount > 0;
+			});
+
+			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+				PresentAlert(arguments);
+			});
+
+			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+
+				PresentActionSheet(arguments);
+			});
+		}
+
+		internal void UnsubscribeFromAlertsAndActionsSheets()
+		{
+			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+		}
+
+		internal void CleanUpPages()
+		{
+			Page.DescendantRemoved -= HandleChildRemoved;
+
+			Page.DisposeModalAndChildRenderers();
+
+			foreach (var modal in _modals)
+				modal.DisposeModalAndChildRenderers();
+		}
 	}
 }

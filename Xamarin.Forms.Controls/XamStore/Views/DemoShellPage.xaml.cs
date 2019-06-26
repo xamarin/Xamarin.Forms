@@ -29,7 +29,9 @@ namespace Xamarin.Forms.Controls.XamStore
 			InitializeComponent();
 			ViewModel = new HomeViewModel();
 			NavigationPage.SetBackButtonTitle(this, "");
-			//AddSearchHandler("Search", SearchBoxVisiblity.Expanded);
+			//AddSearchHandler("Search", SearchBoxVisibility.Expanded);
+			AutomationProperties.SetName(this, ViewModel.Title);
+			AutomationProperties.SetHelpText(this, "this is just a demo");
 		}
 
 		protected override void OnAppearing()
@@ -49,7 +51,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			(sender as ListView).SelectedItem = null;
 		}
 
-		protected void AddSearchHandler(string placeholder, SearchBoxVisiblity visibility)
+		protected void AddSearchHandler(string placeholder, SearchBoxVisibility visibility)
 		{
 			var searchHandler = new BasePage.CustomSearchHandler();
 
@@ -157,6 +159,8 @@ namespace Xamarin.Forms.Controls.XamStore
 				OnPropertyChanged(nameof(Id));
 			}
 		}
+
+		public string Title => "Demo Page";
 
 		public HomeViewModel()
 		{

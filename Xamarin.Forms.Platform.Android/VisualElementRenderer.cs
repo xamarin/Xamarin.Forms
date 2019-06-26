@@ -11,7 +11,7 @@ using Android.Support.V4.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer, 
+	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer, IDisposedState,
 		IEffectControlProvider where TElement : VisualElement
 	{
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
@@ -140,9 +140,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected bool TabStop { get; set; } = true;
 
-		protected void UpdateTabStop() => TabStop = Element.IsTabStop;
+		protected void UpdateTabStop()
+		{
+			TabStop = Element.IsTabStop;
+			UpdateParentPageTraversalOrder();
+		}
 
-		protected void UpdateTabIndex() => TabIndex = Element.TabIndex;
+		protected void UpdateTabIndex()
+		{
+			TabIndex = Element.TabIndex;
+			UpdateParentPageTraversalOrder();
+		}
 
 		bool CheckCustomNextFocus(AView focused, FocusSearchDirection direction)
 		{
@@ -158,7 +166,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (CheckCustomNextFocus(focused, direction))
 				return base.FocusSearch(focused, direction);
 
-			VisualElement element = Element as VisualElement;
+			var element = Element as ITabStopElement;
 			int maxAttempts = 0;
 			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
 			if (tabIndexes == null)
@@ -175,7 +183,7 @@ namespace Xamarin.Forms.Platform.Android
 			do
 			{
 				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
-				var renderer = element.GetRenderer();
+				var renderer = (element as VisualElement)?.GetRenderer();
 				control = (renderer as ITabStop)?.TabStop;
 			} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
 
@@ -233,6 +241,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (AutoTrack && Tracker == null)
 				SetTracker(new VisualElementTracker(this));
 
+			if (oldElement != null && element != null)
+				Tracker?.UpdateLayout();
+
 			if (element != null)
 				SendVisualElementInitialized(element, this);
 
@@ -257,10 +268,14 @@ namespace Xamarin.Forms.Platform.Android
 		/// </summary>
 		protected virtual bool ManageNativeControlLifetime => true;
 
+		bool CheckFlagsForDisposed() => (_flags & VisualElementRendererFlags.Disposed) != 0;
+		bool IDisposedState.IsDisposed => CheckFlagsForDisposed();
+
 		protected override void Dispose(bool disposing)
 		{
-			if ((_flags & VisualElementRendererFlags.Disposed) != 0)
+			if (CheckFlagsForDisposed())
 				return;
+
 			_flags |= VisualElementRendererFlags.Disposed;
 
 			if (disposing)
@@ -350,6 +365,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTabStop();
 			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
 				UpdateTabIndex();
+			else if (e.PropertyName == nameof(Element.Parent))
+				UpdateParentPageTraversalOrder();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -375,6 +392,16 @@ namespace Xamarin.Forms.Platform.Android
 
 				renderer?.UpdateLayout();
 			}
+		}
+
+		void UpdateParentPageTraversalOrder()
+		{
+			IViewParent parentRenderer = Parent;
+			while (parentRenderer != null && !(parentRenderer is IOrderedTraversalController))
+				parentRenderer = parentRenderer.Parent;
+
+			if (parentRenderer is IOrderedTraversalController controller)
+				controller.UpdateTraversalOrder();
 		}
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)

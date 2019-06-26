@@ -18,6 +18,7 @@ using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
 using AView = Android.Views.View;
 using AMenu = Android.Views.Menu;
 using AColor = Android.Graphics.Color;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -73,7 +74,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = Context.GetFragmentManager());
 		bool IsBottomTabPlacement => (Element != null) ? Element.OnThisPlatform().GetToolbarPlacement() == ToolbarPlacement.Bottom : false;
 
 		public Color BarItemColor
@@ -231,7 +232,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			base.OnElementChanged(e);
 
-			var activity = (FormsAppCompatActivity)Context;
+			var activity = Context.GetActivity();
 
 			if (e.OldElement != null)
 				((IPageController)e.OldElement).InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
@@ -520,21 +521,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					tab.SetText(page.Title);
 				}
 			}
-			else if (e.PropertyName == Page.IconProperty.PropertyName)
+			else if (e.PropertyName == Page.IconImageSourceProperty.PropertyName)
 			{
 				var page = (Page)sender;
 				var index = Element.Children.IndexOf(page);
-				FileImageSource icon = page.Icon;
-
 				if (IsBottomTabPlacement)
 				{
 					var menuItem = _bottomNavigationView.Menu.GetItem(index);
-					menuItem.SetIcon(GetIconDrawable(icon));
+					_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
+					{
+						menuItem.SetIcon(icon);
+					});
 				}
 				else
 				{
 					TabLayout.Tab tab = _tabLayout.GetTabAt(index);
-					SetTabIcon(tab, icon);
+					SetTabIconImageSource(page, tab);
 				}
 			}
 		}
@@ -655,12 +657,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				FileImageSource icon = child.Icon;
-				if (string.IsNullOrEmpty(icon))
-					continue;
-
 				var menuItem = bottomNavigationView.Menu.GetItem(i);
-				menuItem.SetIcon(GetIconDrawable(icon));
+				_ = this.ApplyDrawableAsync(child, Page.IconImageSourceProperty, Context, icon =>
+				{
+					menuItem.SetIcon(icon);
+				});
 			}
 		}
 
@@ -677,22 +678,41 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				FileImageSource icon = child.Icon;
-				if (string.IsNullOrEmpty(icon))
-					continue;
-
 				TabLayout.Tab tab = tabs.GetTabAt(i);
-				SetTabIcon(tab, icon);
+				SetTabIconImageSource(child, tab);
 			}
 		}
 
+		[Obsolete("GetIconDrawable is obsolete as of 4.0.0. Please override SetTabIconImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected virtual Drawable GetIconDrawable(FileImageSource icon) =>
-			Context.GetDrawable(icon);
+			Context.GetDrawable(icon as FileImageSource);
 
+
+		[Obsolete("SetTabIcon is obsolete as of 4.0.0. Please use SetTabIconImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected virtual void SetTabIcon(TabLayout.Tab tab, FileImageSource icon)
 		{
-			tab.SetIcon(GetIconDrawable(icon));
-			this.SetIconColorFilter(tab);
+		}
+
+
+		protected virtual void SetTabIconImageSource(TabLayout.Tab tab, Drawable icon)
+		{
+			tab.SetIcon(icon);
+			SetIconColorFilter(tab);
+		}
+
+		void SetTabIconImageSource(Page page, TabLayout.Tab tab)
+		{
+			_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
+			{
+				SetTabIconImageSource(tab, icon);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				SetTabIcon(tab, page.Icon as FileImageSource);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+			});
 		}
 
 		void UpdateBarBackgroundColor()

@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		public StoreShell() 
 		{
 			InitializeComponent();
+			CurrentItem = _storeItem;
 		}
 
 		protected override void Init()
@@ -39,9 +40,12 @@ namespace Xamarin.Forms.Controls.XamStore
 			{
 				Glyph = "\uf2fb",
 				FontFamily = fontFamily,
-				Size = 20
+				Size = 20,
+				AutomationId = "shellIcon"
 			};
-			CurrentItem = _storeItem;
+
+			FlyoutIcon.SetAutomationPropertiesHelpText("This as Shell FlyoutIcon");
+			FlyoutIcon.SetAutomationPropertiesName("SHELLMAINFLYOUTICON");
 			Routing.RegisterRoute("demo", typeof(DemoShellPage));
 			Routing.RegisterRoute("demo/demo", typeof(DemoShellPage));
 		}

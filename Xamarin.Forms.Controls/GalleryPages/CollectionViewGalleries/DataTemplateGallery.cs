@@ -17,17 +17,13 @@
 					{
 						descriptionLabel,
 						GalleryBuilder.NavButton("Vertical List (Code)", () => 
-							new TemplateCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
+							new TemplateCodeCollectionViewGallery(ListItemsLayout.Vertical), Navigation),
 						GalleryBuilder.NavButton("Horizontal List (Code)", () => 
-							new TemplateCodeCollectionViewGallery(ListItemsLayout.HorizontalList), Navigation),
+							new TemplateCodeCollectionViewGallery(ListItemsLayout.Horizontal), Navigation),
 						GalleryBuilder.NavButton("Vertical Grid (Code)", () => 
 							new TemplateCodeCollectionViewGridGallery (), Navigation),
 						GalleryBuilder.NavButton("Horizontal Grid (Code)", () => 
 							new TemplateCodeCollectionViewGridGallery (ItemsLayoutOrientation.Horizontal), Navigation),
-
-						GalleryBuilder.NavButton("ItemSizing Strategy", () => 
-							new VariableSizeTemplateGridGallery (ItemsLayoutOrientation.Horizontal), Navigation),
-
                         GalleryBuilder.NavButton("DataTemplateSelector", () =>
                             new DataTemplateSelectorGallery(), Navigation),
 					}
