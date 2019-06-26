@@ -21,7 +21,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _disposed;
 		bool _navAnimationInProgress;
 		NavigationModel _navModel = new NavigationModel();
-		Page _pendingRootChange = null;
 		internal static string PackageName { get; private set; }
 		internal static string GetPackageName() => PackageName ?? Android.Platform.PackageName;
 

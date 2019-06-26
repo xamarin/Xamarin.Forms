@@ -5,7 +5,6 @@ using Android.Graphics.Drawables;
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
 using Android.Views;
-using Xamarin.Forms.Platform.Android.FastRenderers;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 
@@ -119,8 +118,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				{
 					Element.PropertyChanged -= OnElementPropertyChanged;
 				}
-
-				_gestureManager?.Dispose();
 
 				if (_visualElementTracker != null)
 				{
