@@ -9,8 +9,8 @@ namespace Xamarin.Forms
 			MenuItem = menuItem;
 
 			SetBinding(TitleProperty, new Binding("Text", BindingMode.OneWay, source: menuItem));
-			SetBinding(IconProperty, new Binding("Icon", BindingMode.OneWay, source: menuItem));
-			SetBinding(FlyoutIconProperty, new Binding("Icon", BindingMode.OneWay, source: menuItem));
+			SetBinding(IconProperty, new Binding("IconImageSource", BindingMode.OneWay, source: menuItem));
+			SetBinding(FlyoutIconProperty, new Binding("IconImageSource", BindingMode.OneWay, source: menuItem));
 
 			Shell.SetMenuItemTemplate(this, Shell.GetMenuItemTemplate(MenuItem));
 			MenuItem.PropertyChanged += OnMenuItemPropertyChanged;
