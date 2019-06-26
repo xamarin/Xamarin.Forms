@@ -34,7 +34,11 @@ namespace Xamarin.Forms.Platform.iOS
 			_safeForReload = ItemsSource?.ItemCount > 0;
 
 			UpdateLayout(layout);
+
+			
 		}
+
+		
 
 		public void UpdateLayout(ItemsViewLayout layout)
 		{
@@ -97,6 +101,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var count = ItemsSource.ItemCountInGroup(section);
 
+			System.Diagnostics.Debug.WriteLine($">>>>>> GetItemsCount, section = {section}, count = {count}");
+
 			CheckForEmptySource();
 
 			return count;
@@ -114,6 +120,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			_wasEmpty = totalCount == 0;
+
+			System.Diagnostics.Debug.WriteLine($">>>>>> CheckForEmptySource, _wasEmpty = {_wasEmpty}, totalCount = {totalCount}");
 
 			UpdateEmptyViewVisibility(_wasEmpty);
 		}
@@ -354,6 +362,9 @@ namespace Xamarin.Forms.Platform.iOS
 				_emptyUIView = NativeView;
 				_emptyViewFormsElement = FormsElement;
 			}
+
+			System.Diagnostics.Debug.WriteLine($">>>>>> UpdateEmptyView, ItemsSource?.ItemCount = {ItemsSource?.ItemCount}");
+
 
 			// If the empty view is being displayed, we might need to update it
 			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);

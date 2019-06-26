@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (indexPath.Section > 0)
+				if (indexPath.Section != _group)
 				{
 					throw new ArgumentOutOfRangeException(nameof(indexPath));
 				}
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
 
-			_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));
+			_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));			
 		}
 
 		void Remove(NotifyCollectionChangedEventArgs args)
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Reload();
 				return;
 			}
-
+	
 			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
 			_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));

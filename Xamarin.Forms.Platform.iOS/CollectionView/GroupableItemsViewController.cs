@@ -11,21 +11,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		// Keep a cached value for the current state of grouping around so we can avoid hitting the 
 		// BindableProperty all the time 
-		bool _isGroupingEnabled;
+		bool _isGrouped;
 
 		public GroupableItemsViewController(GroupableItemsView groupableItemsView, ItemsViewLayout layout) 
 			: base(groupableItemsView, layout)
 		{
-			_isGroupingEnabled = GroupableItemsView.IsGrouped;
+			_isGrouped = GroupableItemsView.IsGrouped;
 		}
 
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
-			if (!_isGroupingEnabled)
-			{
-				return ItemsSource.ItemCount > 0 ? 1 : 0;
-			}
-
 			return ItemsSource.GroupCount;
 		}
 
@@ -42,7 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void UpdateItemsSource()
 		{
-			_isGroupingEnabled = GroupableItemsView.IsGrouped;
+			_isGrouped = GroupableItemsView.IsGrouped;
 			base.UpdateItemsSource();
 		}
 
@@ -153,7 +148,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal CGSize GetReferenceSizeForHeader(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
-			if (!_isGroupingEnabled)
+			if (!_isGrouped)
 			{
 				return CGSize.Empty;
 			}
@@ -170,7 +165,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal CGSize GetReferenceSizeForFooter(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
-			if (!_isGroupingEnabled)
+			if (!_isGrouped)
 			{
 				return CGSize.Empty;
 			}
