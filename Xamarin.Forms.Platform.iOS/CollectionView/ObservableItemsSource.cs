@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return NSIndexPath.Create(-1, -1);
 		}
 
-		public int GroupCount => 1;
+		public int GroupCount => _itemsSource.Count == 0 ? 0 : 1;
 
 		public int ItemCount => _itemsSource.Count;
 

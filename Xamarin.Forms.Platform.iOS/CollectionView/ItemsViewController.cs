@@ -13,7 +13,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public ItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialConstraintsSet;
-		bool _safeForReload;
 		bool _wasEmpty;
 		bool _currentBackgroundIsEmptyView;
 		bool _disposed;
@@ -29,16 +28,8 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsView = itemsView;
 			ItemsSource = CreateItemsViewSource();
 
-			// If we already have data, the UICollectionView will have items and we'll be safe to call
-			// ReloadData if the ItemsSource changes in the future (see UpdateItemsSource for more).
-			_safeForReload = ItemsSource?.ItemCount > 0;
-
 			UpdateLayout(layout);
-
-			
 		}
-
-		
 
 		public void UpdateLayout(ItemsViewLayout layout)
 		{
@@ -101,8 +92,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var count = ItemsSource.ItemCountInGroup(section);
 
-			System.Diagnostics.Debug.WriteLine($">>>>>> GetItemsCount, section = {section}, count = {count}");
-
 			CheckForEmptySource();
 
 			return count;
@@ -120,8 +109,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			_wasEmpty = totalCount == 0;
-
-			System.Diagnostics.Debug.WriteLine($">>>>>> CheckForEmptySource, _wasEmpty = {_wasEmpty}, totalCount = {totalCount}");
 
 			UpdateEmptyViewVisibility(_wasEmpty);
 		}
@@ -155,54 +142,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public virtual void UpdateItemsSource()
 		{
-			if (_safeForReload)
-			{
-				UpdateItemsSourceAndReload();
-			}
-			else
-			{
-				// Okay, thus far this UICollectionView has never had any items in it. At this point, if
-				// we set the ItemsSource and try to call ReloadData(), it'll crash. AFAICT this is a bug, but
-				// until it's fixed (or we can figure out another way to go from empty -> having items), we'll
-				// have to use this crazy workaround
-				EmptyCollectionViewReloadWorkaround();
-			}
-		}
-
-		void UpdateItemsSourceAndReload()
-		{
 			ItemsSource = CreateItemsViewSource();
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
-		void EmptyCollectionViewReloadWorkaround()
+		public override nint NumberOfSections(UICollectionView collectionView)
 		{
-			var enumerator = ItemsView.ItemsSource.GetEnumerator();
-
-			if (!enumerator.MoveNext())
-			{
-				// The source we're updating to is empty, so we can just update as normal; it won't crash
-				UpdateItemsSourceAndReload();
-			}
-			else
-			{
-				// Grab the first item from the new ItemsSource and create a usable source for the UICollectionView
-				// from that
-				var firstItem = new List<object> { enumerator.Current };
-				ItemsSource = ItemsSourceFactory.Create(firstItem, CollectionView);
-
-				var sectionToInsert = new NSIndexSet(0);
-
-				UIView.PerformWithoutAnimation(() =>
-				{
-					CollectionView.InsertSections(sectionToInsert);
-				});
-
-				// Okay, from now on we can just call ReloadData and things will work fine
-				_safeForReload = true;
-				UpdateItemsSource();
-			}
+			return ItemsSource.GroupCount;
 		}
 
 		protected virtual void UpdateDefaultCell(DefaultCell cell, NSIndexPath indexPath)
@@ -362,9 +309,6 @@ namespace Xamarin.Forms.Platform.iOS
 				_emptyUIView = NativeView;
 				_emptyViewFormsElement = FormsElement;
 			}
-
-			System.Diagnostics.Debug.WriteLine($">>>>>> UpdateEmptyView, ItemsSource?.ItemCount = {ItemsSource?.ItemCount}");
-
 
 			// If the empty view is being displayed, we might need to update it
 			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);

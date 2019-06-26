@@ -19,11 +19,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_isGrouped = GroupableItemsView.IsGrouped;
 		}
 
-		public override nint NumberOfSections(UICollectionView collectionView)
-		{
-			return ItemsSource.GroupCount;
-		}
-
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
 			// Use the BindableProperty here (instead of _isGroupingEnabled) because the cached value might not be set yet
