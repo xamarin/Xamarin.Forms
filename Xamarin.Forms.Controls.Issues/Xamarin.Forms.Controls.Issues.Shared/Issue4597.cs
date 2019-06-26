@@ -5,6 +5,7 @@ using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.Linq;
+using System.Threading;
 
 #if UITEST
 using Xamarin.UITest;
@@ -30,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 		ListView _listView;
 
 		string _disappearText = "You should see an Image. Clicking this should cause the image to disappear";
-		string _appearText = "Clicking this should cause the images to all appear";
+		string _appearText = "Clicking this should cause the image to reappear";
 		string _theListView = "theListViewAutomationId";
 		string _fileName = "xamarinlogo.png";
 		string _fileNameAutomationId = "CoffeeAutomationId";
@@ -98,7 +99,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var switchToUri = new Switch
 			{
 				AutomationId = _switchUriId,
-				IsToggled = false
+				IsToggled = false,
+				HeightRequest = 60
 			};
 			var sourceLabel = new Label { Text = _imageFromFile };
 
@@ -116,19 +118,29 @@ namespace Xamarin.Forms.Controls.Issues
 					sourceLabel.Text = _imageFromFile;
 			};
 
-			var switchWithCaption = new Grid() { HeightRequest = 60 };
-			switchWithCaption.AddChild(sourceLabel, 0, 0);
-			switchWithCaption.AddChild(switchToUri, 1, 0);
+
+			foreach(var view in imageControls)
+			{
+				view.BackgroundColor = Color.Red;
+			}
 
 			StackLayout layout = null;
 			layout = new StackLayout()
 			{
 				AutomationId = "layoutContainer",
 				Children =
-				{
-					labelActiveTest,
+				{					
+					new StackLayout()
+					{
+						Orientation = StackOrientation.Horizontal,
+						Children =
+						{
+							labelActiveTest,
+							switchToUri,
+							sourceLabel						
+						}
+					},
 					button,
-					switchWithCaption,
 					new Button()
 					{
 						Text = "Load Next Image Control to Test",
@@ -248,11 +260,20 @@ namespace Xamarin.Forms.Controls.Issues
 
 		UITest.Queries.AppResult TestForImageVisible()
 		{
-			var imageVisible = RunningApp.WaitForElement(_fileNameAutomationId);
-
-			Assert.Greater(imageVisible[0].Rect.Height, 0);
-			Assert.Greater(imageVisible[0].Rect.Width, 0);
-			return imageVisible[0];
+			
+			var imageVisible = RunningApp.WaitForElement(_fileNameAutomationId)[0];
+			int count = 0;
+			// Wait for image to load
+			while(imageVisible.Rect.Height <= 1 && count < 10)
+			{
+				Thread.Sleep(4000);
+				imageVisible = RunningApp.WaitForElement(_fileNameAutomationId)[0];
+				count++;
+			}
+						
+			Assert.Greater(imageVisible.Rect.Height, 1);
+			Assert.Greater(imageVisible.Rect.Width, 1);
+			return imageVisible;
 		}
 
 		void TestForImageNotVisible(UITest.Queries.AppResult previousFinding)
