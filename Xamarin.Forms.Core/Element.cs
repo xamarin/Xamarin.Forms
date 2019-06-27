@@ -191,7 +191,7 @@ namespace Xamarin.Forms
 					((IElement)RealParent).RemoveResourcesChangedListener(OnParentResourcesChanged);
 
 					if(value != null)
-						Log.Warning("Element", $"{this} is already a child of {RealParent}. Remove from {RealParent} before adding to {value}.");
+						Log.Warning("Element", $"{this} is already a child of {RealParent}. Remove {this} from {RealParent} before adding to {value}.");
 				}
 
 				RealParent = value;
