@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (context == null)
 				throw new InvalidOperationException("Visible item not found");
 
-			(Carousel as ICarouselViewController).SetCurrentItem(context);
+			Carousel.SetCurrentItem(context);
 		}
 
 		void UpdateSpacing()

@@ -8,7 +8,6 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class CarouselViewController : ItemsViewController
 	{
-		ICarouselViewController CarouselController => _carouselView as ICarouselViewController;
 		CarouselView _carouselView;
 		ItemsViewLayout _layout;
 		nfloat _previousOffSetX;
@@ -73,19 +72,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
-			CarouselController.SetIsDragging(true);
+			_carouselView.SetIsDragging(true);
 			UpdateVisualStates();
 		}
 
 		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
 		{
-			CarouselController.SetIsDragging(false);
+			_carouselView.SetIsDragging(false);
 			UpdateVisualStates();
 		}
 
 		public override void ScrollAnimationEnded(UIScrollView scrollView)
 		{
-			CarouselController.SetIsScrolling(false);
+			_carouselView.SetIsScrolling(false);
 		}
 
 		public override void DecelerationEnded(UIScrollView scrollView)
@@ -97,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_currentItemIdex = GetIndexForItem(_currentItem);
 
 			if (_currentItem != null)
-				CarouselController.SetCurrentItem(_currentItem);
+				_carouselView.SetCurrentItem(_currentItem);
 		}
 
 		public override void Scrolled(UIScrollView scrollView)
@@ -107,9 +106,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var newOffSetY = scrollView.ContentOffset.Y;
 			//TODO: rmarinho Handle RTL
 			if (_layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal)
-				CarouselController.SendScrolled(scrollView.ContentOffset.X, (_previousOffSetX > newOffSetX) ? ScrollDirection.Left : ScrollDirection.Right);
+				_carouselView.SendScrolled(scrollView.ContentOffset.X, (_previousOffSetX > newOffSetX) ? ScrollDirection.Left : ScrollDirection.Right);
 			else
-				CarouselController.SendScrolled(scrollView.ContentOffset.Y, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
+				_carouselView.SendScrolled(scrollView.ContentOffset.Y, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
 
 			UpdateVisualStateForOfScreenCell();
 
@@ -147,7 +146,7 @@ namespace Xamarin.Forms.Platform.iOS
 			//We are ending dragging and position is being update
 			if (e.Item == _currentItem || e.Index == _currentItemIdex.Row)
 				return;
-			CarouselController.SetIsScrolling(true);
+			_carouselView.SetIsScrolling(true);
 		}
 
 		void UpdateVisualStates()

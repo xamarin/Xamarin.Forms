@@ -72,17 +72,8 @@ namespace Xamarin.Forms
 		Down
 	}
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public interface ICarouselViewController : IViewController
-	{
-		void SendScrolled(double value, ScrollDirection direction);
-		void SetCurrentItem(object item);
-		void SetIsScrolling(bool value);
-		void SetIsDragging(bool value);
-	}
-
 	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : ItemsView, ICarouselViewController, IPaddingElement
+	public class CarouselView : ItemsView, IPaddingElement
 	{
 		public const string CurrentItemVisualState = "CurrentItem";
 		public const string NextItemVisualState = "NextItem";
@@ -117,7 +108,7 @@ namespace Xamarin.Forms
 
 		public List<View> VisibleViews => (List<View>)GetValue(VisibleViewsProperty);
 
-		public static readonly BindablePropertyKey IsScrollingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsScrolling), typeof(bool), typeof(CarouselView), false);
+		static readonly BindablePropertyKey IsScrollingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsScrolling), typeof(bool), typeof(CarouselView), false);
 
 		public static readonly BindableProperty IsScrollingProperty = IsScrollingPropertyKey.BindableProperty;
 
@@ -323,7 +314,7 @@ namespace Xamarin.Forms
 			return 0;
 		}
 
-		void ICarouselViewController.SendScrolled(double value, ScrollDirection direction)
+		public void SendScrolled(double value, ScrollDirection direction)
 		{
 			if (_previousScrolledDirection != direction)
 			{
@@ -335,17 +326,17 @@ namespace Xamarin.Forms
 			_previousScrolledDirection = direction;
 		}
 
-		void ICarouselViewController.SetCurrentItem(object item)
+		public void SetCurrentItem(object item)
 		{
 			SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
-		void ICarouselViewController.SetIsScrolling(bool value)
+		public void SetIsScrolling(bool value)
 		{
 			SetValue(IsScrollingPropertyKey, value);
 		}
 
-		void ICarouselViewController.SetIsDragging(bool value)
+		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);
 		}
