@@ -34,7 +34,14 @@ namespace Xamarin.Forms
 		public IStyle Style
 		{
 			get { return _style; }
-			set { SetStyle(ImplicitStyle, ClassStyles, value); }
+			set
+			{
+				if (_style == value)
+					return;
+				if (value != null && !value.TargetType.IsAssignableFrom(TargetType))
+					throw new ArgumentException($"Style TargetType {value.TargetType.FullName} is not compatible with element target type {TargetType}");
+				SetStyle(ImplicitStyle, ClassStyles, value);
+			}
 		}
 
 		public IList<string> StyleClass
