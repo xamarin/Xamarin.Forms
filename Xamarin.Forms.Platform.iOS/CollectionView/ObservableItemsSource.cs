@@ -9,14 +9,18 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class ObservableItemsSource : IItemsViewSource
 	{
 		readonly UICollectionView _collectionView;
-		readonly int _group;
+		readonly bool _grouped;
+		readonly int _section;
 		readonly IList _itemsSource;
 		bool _disposed;
 
-		public ObservableItemsSource(IList itemSource, UICollectionView collectionView, int group = 0)
+		public ObservableItemsSource(IList itemSource, UICollectionView collectionView, int group = -1)
 		{
 			_collectionView = collectionView;
-			_group = group;
+		
+			_section = group < 0 ? 0 : group;
+			_grouped = group >= 0;
+
 			_itemsSource = itemSource;
 
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
@@ -60,7 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (this[n] == item)
 				{
-					return NSIndexPath.Create(0, n);
+					return NSIndexPath.Create(_section, n);
 				}
 			}
 
@@ -75,7 +79,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (indexPath.Section != _group)
+				if (indexPath.Section != _section)
 				{
 					throw new ArgumentOutOfRangeException(nameof(indexPath));
 				}
@@ -120,7 +124,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			for (int n = 0; n < count; n++)
 			{
-				result[n] = NSIndexPath.Create(_group, startIndex + n);
+				result[n] = NSIndexPath.Create(_section, startIndex + n);
 			}
 
 			return result;
@@ -131,7 +135,17 @@ namespace Xamarin.Forms.Platform.iOS
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
 
-			_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));			
+			_collectionView.PerformBatchUpdates(() =>
+			{
+				if (!_grouped && _collectionView.NumberOfSections() != GroupCount)
+				{
+					// We had an empty non-grouped list, and now we're trying to add an item;
+					// we need to give it a section as well
+					_collectionView.InsertSections(new NSIndexSet(0));
+				}
+
+				_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));
+			}, null);
 		}
 
 		void Remove(NotifyCollectionChangedEventArgs args)
@@ -148,7 +162,18 @@ namespace Xamarin.Forms.Platform.iOS
 	
 			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
-			_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
+
+			_collectionView.PerformBatchUpdates(() =>
+			{
+				_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
+
+				if (!_grouped && _collectionView.NumberOfSections() != GroupCount)
+				{
+					// We had a non-grouped list with items, and we're removing the last one;
+					// we also need to remove the group it was in
+					_collectionView.DeleteSections(new NSIndexSet(0));
+				}
+			}, null);
 		}
 
 		void Replace(NotifyCollectionChangedEventArgs args)
@@ -176,8 +201,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (count == 1)
 			{
 				// For a single item, we can use MoveItem and get the animation
-				var oldPath = NSIndexPath.Create(_group, args.OldStartingIndex);
-				var newPath = NSIndexPath.Create(_group, args.NewStartingIndex);
+				var oldPath = NSIndexPath.Create(_section, args.OldStartingIndex);
+				var newPath = NSIndexPath.Create(_section, args.NewStartingIndex);
 
 				_collectionView.MoveItem(oldPath, newPath);
 				return;

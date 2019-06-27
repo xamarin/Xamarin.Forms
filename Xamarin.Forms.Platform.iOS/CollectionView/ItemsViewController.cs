@@ -149,6 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
+			CheckForEmptySource();
 			return ItemsSource.GroupCount;
 		}
 
