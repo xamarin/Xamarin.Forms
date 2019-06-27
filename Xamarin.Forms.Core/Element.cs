@@ -190,7 +190,7 @@ namespace Xamarin.Forms
 				{
 					((IElement)RealParent).RemoveResourcesChangedListener(OnParentResourcesChanged);
 
-					if(value != null)
+					if(value != null && (RealParent is Layout || RealParent is IControlTemplated))
 						Log.Warning("Element", $"{this} is already a child of {RealParent}. Remove {this} from {RealParent} before adding to {value}.");
 				}
 
