@@ -42,22 +42,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			layout.Children.Add(carouselView);
 
-			var indicatorsView = new IndicatorsView
-			{
-				//BackgroundColor = Color.Red,
-				//IndicatorsTintColor = Color.Blue,
-				//SelectedIndicatorTintColor = Color.Yellow,
-				//IndicatorsShape = IndicatorsShape.Square,
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.End,
-				HeightRequest = 30,
-				InputTransparent = true
-			};
 			StackLayout stacklayoutInfo = GetReadOnlyInfo(carouselView);
-
-			IndicatorsView.SetItemsSourceBy(indicatorsView, carouselView);
-
-			layout.Children.Add(indicatorsView);
 
 			var generator = new ItemsSourceGenerator(carouselView, initialItems: nItems, itemsSourceType: ItemsSourceType.ObservableCollection);
 
@@ -71,7 +56,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			Grid.SetRow(positionControl, 1);
 			Grid.SetRow(stacklayoutInfo, 2);
 			Grid.SetRow(carouselView, 3);
-			Grid.SetRow(indicatorsView, 3);
 
 			Content = layout;
 			generator.CollectionChanged += (sender, e) => {
