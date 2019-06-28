@@ -25,11 +25,6 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsViewController = itemsViewController;
 		}
 
-		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
-		{
-			ItemsViewLayout?.WillDisplayCell(collectionView, cell, path);
-		}
-
 		public override UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
 			nint section)
 		{

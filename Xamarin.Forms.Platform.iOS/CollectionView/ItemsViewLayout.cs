@@ -13,7 +13,6 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly ItemsLayout _itemsLayout;
 		bool _determiningCellSize;
 		bool _disposed;
-		bool _needCellSizeUpdate;
 
 		protected ItemsViewLayout(ItemsLayout itemsLayout)
 		{
@@ -79,16 +78,6 @@ namespace Xamarin.Forms.Platform.iOS
 		internal ItemSizingStrategy ItemSizingStrategy { get; set; }
 
 		public abstract void ConstrainTo(CGSize size);
-
-		public virtual void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
-		{
-			if (_needCellSizeUpdate)
-			{
-				// Our cell size/estimate is out of date, probably because we moved from zero to one item; update it
-				_needCellSizeUpdate = false;
-				DetermineCellSize();
-			}
-		}
 
 		public virtual UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
 			nint section)
@@ -270,11 +259,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ConstrainTo(size);
 			UpdateCellConstraints();
-		}
-
-		public void SetNeedCellSizeUpdate()
-		{
-			_needCellSizeUpdate = true;
 		}
 
 		public override CGPoint TargetContentOffset(CGPoint proposedContentOffset, CGPoint scrollingVelocity)

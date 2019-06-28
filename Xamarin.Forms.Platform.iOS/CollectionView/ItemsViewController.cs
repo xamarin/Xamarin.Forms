@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialConstraintsSet;
-		bool _wasEmpty;
+		bool _isEmpty;
 		bool _currentBackgroundIsEmptyView;
 		bool _disposed;
 
@@ -99,18 +99,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CheckForEmptySource()
 		{
-			var totalCount = ItemsSource.ItemCount;
+			var wasEmpty = _isEmpty;
 
-			if (_wasEmpty && totalCount > 0)
+			_isEmpty = ItemsSource.ItemCount == 0;
+
+			if (wasEmpty != _isEmpty)
 			{
-				// We've moved from no items to having at least one item; it's likely that the layout needs to update
-				// its cell size/estimate
-				ItemsViewLayout?.SetNeedCellSizeUpdate();
+				UpdateEmptyViewVisibility(_isEmpty);
 			}
-
-			_wasEmpty = totalCount == 0;
-
-			UpdateEmptyViewVisibility(_wasEmpty);
 		}
 
 		public override void ViewDidLoad()
@@ -149,7 +145,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
-			CheckForEmptySource();
+			CheckForEmptySource(); 
 			return ItemsSource.GroupCount;
 		}
 
