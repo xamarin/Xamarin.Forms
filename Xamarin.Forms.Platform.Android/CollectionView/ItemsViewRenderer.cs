@@ -139,10 +139,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element != null)
 				{
 					TearDownOldElement(Element as ItemsView);
-				}
 
-				if (Element != null)
-				{
 					if (Platform.GetRenderer(Element) == this)
 					{
 						Element.ClearValue(Platform.RendererProperty);
@@ -222,6 +219,9 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			// Stop watching the old adapter to see if it's empty (if we are watching)
+			Unwatch(ItemsViewAdapter ?? GetAdapter());
+
 			UpdateAdapter();
 
 			UpdateEmptyView();
@@ -230,9 +230,6 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void UpdateAdapter()
 		{
 			var oldItemViewAdapter = ItemsViewAdapter;
-
-			// Stop watching the old adapter to see if it's empty (if we are watching)
-			Unwatch(oldItemViewAdapter);
 
 			ItemsViewAdapter = new ItemsViewAdapter(ItemsView);
 
