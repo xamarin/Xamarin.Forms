@@ -21,25 +21,10 @@ steps:
       workingFolder: '$(System.DefaultWorkingDirectory)/build/scripts'
       failOnStandardError: false
 
-
-  - powershell: |
-       $preXamForms = $env:XAMARINFORMSPACKAGEVERSION
-       $prefix = $env:SUFFIX
-       Write-Host("Pre FormsVersion = $preXamForms $prefix")
-
-       if(!$preXamForms)
-       {
-          $formsNugetVersion = $env:major + "." + $env:minor + "." + $env:patch + "." + $env:buildversion
-          if($prefix)
-          {
-            $formsNugetVersion = $formsNugetVersion +"-"+$prefix
-          }
-          Write-Host("FormsVersion = $formsNugetVersion")
-          Write-Host("##{0}[task.setvariable variable=XamarinFormsPackageVersion]{1}" -f "vso",$formsNugetVersion.ToString() )
-       }
-
-    failOnStderr: true
-    displayName: 'Set Nuget version'
+  - task: NuGetToolInstaller@0
+    displayName: 'Use NuGet'
+    inputs:
+      versionSpec: $(nugetVersion)
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
@@ -49,8 +34,7 @@ steps:
       packagesToPack: '.nuspec/*.nuspec'
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/debug'
       versioningScheme: byEnvVar
-      versionEnvVar: XamarinFormsPackageVersion
-      buildProperties: 'IdAppend=$(FormsIdAppend)'
+      versionEnvVar: nugetPackageVersion
       configuration: $(buildConfiguration)
 
 
@@ -61,18 +45,18 @@ steps:
       packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/debug/*.nupkg'
       publishVstsFeed: '$(VstsFeed)'
       allowPackageConflicts: true
+    continueOnError: true
 
 
   - powershell: |
        $buildConfiguration = "Release"
-       $formsNugetVersion = "" + $env:XAMARINFORMSPACKAGEVERSION
+       $formsNugetVersion = "" + $env:nugetPackageVersion
 
        Write-Host("Update nuspecs")
        Get-ChildItem './.nuspec/*.nuspec' -Recurse | Foreach-Object {
             (Get-Content $_) | Foreach-Object  {
                 $_ -replace '\$version\$', $formsNugetVersion `
                    -replace '\$Configuration\$', $buildConfiguration `
-                   -replace '\$IdAppend\$', ''
            } | Set-Content $_
        }
     failOnStderr: true
@@ -87,9 +71,8 @@ steps:
       packagesToPack: '.nuspec/*.nuspec'
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/release'
       versioningScheme: byEnvVar
-      versionEnvVar: XamarinFormsPackageVersion
-      buildProperties: 'IdAppend=$(FormsIdAppend)'
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'],'refs/tags/'))
+      versionEnvVar: nugetPackageVersion
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: nuget'

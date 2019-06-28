@@ -19,6 +19,10 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		const string _drawableDefType = "drawable";
 
+		readonly static Lazy<ImageCache> _lruCache = new Lazy<ImageCache>(() => new ImageCache());
+		static ImageCache GetCache() => _lruCache.Value;
+
+
 		public static Type DrawableClass { get; set; }
 
 		public static Type ResourceClass { get; set; }
@@ -102,6 +106,18 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
+		static bool IsDrawableSourceValid(this IVisualElementRenderer renderer, BindableObject bindable, out BindableObject element)
+		{
+			if ((renderer is IDisposedState disposed && disposed.IsDisposed) || (renderer != null && renderer.View == null))
+				element = null;
+			else if (bindable != null)
+				element = bindable;
+			else
+				element = renderer.Element;
+
+			return element != null;
+		}
+
 		internal static Task ApplyDrawableAsync(this IShellContext shellContext, BindableObject bindable, BindableProperty imageSourceProperty, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
@@ -120,6 +136,7 @@ namespace Xamarin.Forms.Platform.Android
 			return renderer.ApplyDrawableAsync(null, imageSourceProperty, context, onSet, onLoading, cancellationToken);
 		}
 
+
 		internal static async Task ApplyDrawableAsync(this IVisualElementRenderer renderer,
 												BindableObject bindable,
 												BindableProperty imageSourceProperty,
@@ -128,17 +145,14 @@ namespace Xamarin.Forms.Platform.Android
 												Action<bool> onLoading = null,
 												CancellationToken cancellationToken = default(CancellationToken))
 		{
-			_ = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_ = context ?? throw new ArgumentNullException(nameof(context));
 			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
 			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
 
-			// TODO: it might be good to make sure the renderer has not been disposed
-
 			// make sure things are good before we start
-			var element = bindable ?? renderer.Element;
+			BindableObject element = null;
 
-			if (element == null || renderer.View == null)
+			if (!renderer.IsDrawableSourceValid(bindable, out element))
 				return;
 
 			onLoading?.Invoke(true);
@@ -146,20 +160,49 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				try
 				{
-					using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
+					string cacheKey = String.Empty;
+
+					// Todo improve for other sources
+					// volley the requests better up front so that if the same request comes in it isn't requeued
+					if (initialSource is UriImageSource uri && uri.CachingEnabled)
 					{
-						// TODO: it might be good to make sure the renderer has not been disposed
+						cacheKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
+						var cacheObject = await GetCache().GetAsync(cacheKey, uri.CacheValidity, async () =>
+						{
+							var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken);
+							return drawable;
+						});
 
-						// we are back, so update the working element
-						element = bindable ?? renderer.Element;
+						Drawable returnValue = null;
+						if (cacheObject is Bitmap bitmap)
+							returnValue = new BitmapDrawable(context.Resources, bitmap);
+						else
+							returnValue = cacheObject as Drawable;
 
-						// makse sure things are good now that we are back
-						if (element == null || renderer.View == null)
+						if (!renderer.IsDrawableSourceValid(bindable, out element))
 							return;
 
 						// only set if we are still on the same image
 						if (element.GetValue(imageSourceProperty) == initialSource)
-							onSet(drawable);
+						{
+							using (returnValue)
+								onSet(returnValue);
+						}
+					}
+					else
+					{
+
+						using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
+						{
+							if (!renderer.IsDrawableSourceValid(bindable, out element))
+								return;
+
+							// only set if we are still on the same image
+							if (element.GetValue(imageSourceProperty) == initialSource)
+							{
+								onSet(drawable);
+							}
+						}
 					}
 				}
 				finally
@@ -179,40 +222,15 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		internal static async Task ApplyDrawableAsync(this Context context, BindableObject bindable, BindableProperty imageSourceProperty, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task ApplyDrawableAsync(this Context context,
+												BindableObject bindable,
+												BindableProperty imageSourceProperty,
+												Action<Drawable> onSet,
+												Action<bool> onLoading = null,
+												CancellationToken cancellationToken = default(CancellationToken))
 		{
-			_ = context ?? throw new ArgumentNullException(nameof(context));
-			_ = bindable ?? throw new ArgumentNullException(nameof(bindable));
-			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
-			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
 
-			onLoading?.Invoke(true);
-			if (bindable.GetValue(imageSourceProperty) is ImageSource initialSource)
-			{
-				try
-				{
-					using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
-					{
-						// only set if we are still on the same image
-						if (bindable.GetValue(imageSourceProperty) == initialSource)
-							onSet(drawable);
-					}
-				}
-				finally
-				{
-					if (onLoading != null)
-					{
-						// only mark as finished if we are still on the same image
-						if (bindable.GetValue(imageSourceProperty) == initialSource)
-							onLoading.Invoke(false);
-					}
-				}
-			}
-			else
-			{
-				onSet(null);
-				onLoading?.Invoke(false);
-			}
+			await ApplyDrawableAsync(null, bindable, imageSourceProperty, context, onSet, onLoading, cancellationToken);
 		}
 
 		public static Bitmap GetBitmap(this Resources resource, FileImageSource fileImageSource)
@@ -231,9 +249,19 @@ namespace Xamarin.Forms.Platform.Android
 			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource));
 		}
 
+		public static Bitmap GetBitmap(this Resources resource, string name, Context context)
+		{
+			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource, context.PackageName));
+		}
+
 		public static Task<Bitmap> GetBitmapAsync(this Resources resource, string name)
 		{
 			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource));
+		}
+
+		public static Task<Bitmap> GetBitmapAsync(this Resources resource, string name, Context context)
+		{
+			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource, context.PackageName));
 		}
 
 		[Obsolete("GetDrawable(this Resources, string) is obsolete as of version 2.5. "
@@ -287,9 +315,19 @@ namespace Xamarin.Forms.Platform.Android
 			return IdFromTitle(name, LayoutClass);
 		}
 
+		public static int GetLayout(this Context context, string name)
+		{
+			return IdFromTitle(name, LayoutClass, "layout", context);
+		}
+
 		public static int GetStyleByName(string name)
 		{
 			return IdFromTitle(name, StyleClass);
+		}
+
+		public static int GetStyle(this Context context, string name)
+		{
+			return IdFromTitle(name, StyleClass, "style", context);
 		}
 
 		public static void Init(Assembly masterAssembly)
@@ -312,7 +350,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static int IdFromTitle(string title, Type resourceType, string defType, Resources resource)
 		{
-			return IdFromTitle(title, resourceType, defType, resource, Platform.PackageName);
+			return IdFromTitle(title, resourceType, defType, resource, AppCompat.Platform.GetPackageName());
 		}
 
 		static int IdFromTitle(string title, Type resourceType, string defType, Context context)

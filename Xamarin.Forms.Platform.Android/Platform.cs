@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 
 		internal static string PackageName { get; private set; }
+		internal static string GetPackageName() => PackageName ?? AppCompat.Platform.PackageName;
+
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
@@ -336,9 +338,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
 		{
+			Profile.FrameBegin(nameof(CreateRenderer));
 			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
 				?? new DefaultRenderer(context);
+			Profile.FramePartition(element.GetType().Name);
 			renderer.SetElement(element);
+			Profile.FrameEnd();
 
 			return renderer;
 		}
@@ -1082,13 +1087,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (ShouldShowActionBarTitleArea())
 			{
 				actionBar.Title = view.Title;
-				_ = _context.ApplyDrawableAsync(view, NavigationPage.TitleIconProperty, icon =>
+				_ = _context.ApplyDrawableAsync(view, NavigationPage.TitleIconImageSourceProperty, icon =>
 				{
 					if (icon != null)
 						actionBar.SetLogo(icon);
 				});
-				var titleIcon = NavigationPage.GetTitleIcon(view);
-				useLogo = titleIcon != null && titleIcon.IsEmpty;
+				var titleIcon = NavigationPage.GetTitleIconImageSource(view);
+				useLogo = titleIcon != null && !titleIcon.IsEmpty;
 				showHome = true;
 				showTitle = true;
 			}
@@ -1188,7 +1193,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion
 
-		internal class DefaultRenderer : VisualElementRenderer<View>
+		internal class DefaultRenderer : VisualElementRenderer<View>, ILayoutChanges
 		{
 			public bool NotReallyHandled { get; private set; }
 			IOnTouchListener _touchListener;

@@ -47,11 +47,15 @@ namespace Xamarin.Forms.Platform.Android
 		public override int GetItemViewType(int position)
 		{
 			var item = _listItems[position];
-			var dataTemplate = Shell.ItemTemplate ?? DefaultItemTemplate;
-			if (item.Element is MenuItem)
+			DataTemplate dataTemplate = null;
+			if (item.Element is IMenuItemController)
 			{
-				dataTemplate = Shell.MenuItemTemplate ?? DefaultMenuItemTemplate;
+				dataTemplate = Shell.GetMenuItemTemplate(item.Element) ?? Shell.MenuItemTemplate ?? DefaultMenuItemTemplate;
 			}
+			else
+			{
+				dataTemplate = Shell.GetItemTemplate(item.Element) ?? Shell.ItemTemplate ?? DefaultItemTemplate;
+			}	
 
 			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
 			var id = ((IDataTemplateController)template).Id;
@@ -140,6 +144,7 @@ namespace Xamarin.Forms.Platform.Android
 			var template = _templateMap[viewType];
 
 			var content = (View)template.CreateContent();
+			content.Parent = _shellContext.Shell;
 
 			var linearLayout = new LinearLayoutWithFocus(parent.Context)
 			{
@@ -158,7 +163,7 @@ namespace Xamarin.Forms.Platform.Android
 			container.LayoutParameters = new LP(LP.MatchParent, LP.WrapContent);
 			linearLayout.AddView(container);
 
-			return new ElementViewHolder(content, linearLayout, bar, _selectedCallback); ;
+			return new ElementViewHolder(content, linearLayout, bar, _selectedCallback);
 		}
 
 		protected virtual List<AdapterListItem> GenerateItemList()
