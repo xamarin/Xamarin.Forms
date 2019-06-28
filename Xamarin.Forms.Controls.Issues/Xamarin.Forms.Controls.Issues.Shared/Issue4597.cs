@@ -213,33 +213,34 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ImageCellFromFileSourceAppearsAndDisappearsCorrectly()
 		{
-			string className = "ImageView";
-			SetupTest(nameof(ListView), false);
-
-			var images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
-			var imageVisible = images.Where(x => x.Class != null && x.Class.Contains(className)).ToArray();
-
-			Assert.AreEqual(1, imageVisible.Length);
-			SetImageSourceToNull();
-
-			images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
-			imageVisible = images.Where(x => x.Class != null && x.Class.Contains(className)).ToArray();
+			ImageCellTest(true);
 		}
 
 		[Test]
 		public void ImageCellFromUriSourceAppearsAndDisappearsCorrectly()
 		{
-			string className = "ImageView";
-			SetupTest(nameof(ListView), true);
+			ImageCellTest(false);
+		}
 
-			var images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
-			var imageVisible = images.Where(x => x.Class != null && x.Class.Contains(className)).ToArray();
+		void ImageCellTest(bool fileSource)
+		{
+			string className = "ImageView";
+			SetupTest(nameof(ListView), fileSource);
+
+			var imageVisible =
+				RunningApp.RetryUntilPresent(GetImage, 10, 2000);
 
 			Assert.AreEqual(1, imageVisible.Length);
 			SetImageSourceToNull();
 
-			images = RunningApp.Query(app => app.Marked(_theListView).Descendant());
-			imageVisible = images.Where(x => x.Class != null && x.Class.Contains(className)).ToArray();
+			imageVisible = GetImage();
+
+			UITest.Queries.AppResult[] GetImage()
+			{
+				return RunningApp
+					.Query(app => app.Marked(_theListView).Descendant())
+					.Where(x => x.Class != null && x.Class.Contains(className)).ToArray();
+			}
 		}
 #endif
 
@@ -260,16 +261,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 		UITest.Queries.AppResult TestForImageVisible()
 		{
-			
-			var imageVisible = RunningApp.WaitForElement(_fileNameAutomationId)[0];
-			int count = 0;
-			// Wait for image to load
-			while(imageVisible.Rect.Height <= 1 && count < 10)
+			var images = RunningApp.RetryUntilPresent(() =>
 			{
-				Thread.Sleep(4000);
-				imageVisible = RunningApp.WaitForElement(_fileNameAutomationId)[0];
-				count++;
-			}
+				var result = RunningApp.WaitForElement(_fileNameAutomationId);
+
+				if (result[0].Rect.Height > 1)
+					return result;
+
+				return new UITest.Queries.AppResult[0];
+			}, 10, 4000);
+
+			Assert.AreEqual(1, images.Length);
+			var imageVisible = images[0];
 						
 			Assert.Greater(imageVisible.Rect.Height, 1);
 			Assert.Greater(imageVisible.Rect.Width, 1);
