@@ -360,7 +360,7 @@ namespace Xamarin.Forms.Platform.iOS
 			alert.AddTextField(uiTextField =>
 			{
 				uiTextField.Placeholder = arguments.Placeholder;
-				uiTextField.ShouldChangeCharacters = (field, range, replacementString) => arguments.MaxLength == null || field.Text.Length <= arguments.MaxLength.Value;
+				uiTextField.ShouldChangeCharacters = (field, range, replacementString) => arguments.MaxLength == null || field.Text.Length + replacementString.Length - range.Length <= arguments.MaxLength.Value;
 				uiTextField.ApplyKeyboard(arguments.Keyboard);
 			});
 			var oldFrame = alert.View.Frame;
