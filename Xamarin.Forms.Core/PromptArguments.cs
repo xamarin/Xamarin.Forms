@@ -4,7 +4,7 @@ namespace Xamarin.Forms.Internals
 {
 	public class PromptArguments
 	{
-		public PromptArguments(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int? maxLength = null)
+		public PromptArguments(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int? maxLength = null, Keyboard keyboard = default)
 		{
 			Title = title;
 			Message = message;
@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Internals
 			Cancel = cancel;
 			Placeholder = placeholder;
 			MaxLength = maxLength;
+			Keyboard = keyboard ?? Keyboard.Default;
 			PromptResult = new TaskCompletionSource<string>();
 		}
 
@@ -26,6 +27,8 @@ namespace Xamarin.Forms.Internals
 		public string Placeholder { get; }
 
 		public int? MaxLength { get; }
+
+		public Keyboard Keyboard { get; }
 
 		public TaskCompletionSource<string> PromptResult { get; }
 

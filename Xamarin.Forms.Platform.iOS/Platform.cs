@@ -361,6 +361,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				uiTextField.Placeholder = arguments.Placeholder;
 				uiTextField.ShouldChangeCharacters = (field, range, replacementString) => arguments.MaxLength == null || field.Text.Length <= arguments.MaxLength.Value;
+				uiTextField.ApplyKeyboard(arguments.Keyboard);
 			});
 			var oldFrame = alert.View.Frame;
 			alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);

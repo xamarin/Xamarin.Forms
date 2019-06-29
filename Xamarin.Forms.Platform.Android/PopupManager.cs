@@ -148,8 +148,11 @@ namespace Xamarin.Forms.Platform.Android
 				};
 
 				editText.LayoutParameters = layoutParams;
+				editText.InputType = arguments.Keyboard.ToInputType();
+				if (arguments.Keyboard == Keyboard.Numeric)
+					editText.KeyListener = LocalizedDigitsKeyListener.Create(editText.InputType);
 
-				if(arguments.MaxLength != null)
+				if (arguments.MaxLength != null)
 					editText.SetFilters(new IInputFilter[]{ new InputFilterLengthFilter(arguments.MaxLength.Value)});
 
 				frameLayout.AddView(editText);
