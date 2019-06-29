@@ -1,4 +1,4 @@
-﻿using Android.Content;
+using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Support.V7.Widget;
@@ -98,6 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 		AppCompatAutoCompleteTextView _textBlock;
 		bool _disposed;
 		SearchHandlerAppearanceTracker _searchHandlerAppearanceTracker;
+		LinearLayout _linearLayout;
 
 		public ShellSearchView(Context context, IShellContext shellContext) : base(context)
 		{
@@ -123,43 +124,50 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
-
-			if (disposing)
+			if (!_disposed && disposing)
 			{
 				_disposed = true;
 
-				_searchHandlerAppearanceTracker?.Dispose();
 				SearchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
-
 				_textBlock.ItemClick -= OnTextBlockItemClicked;
 				_textBlock.RemoveTextChangedListener(this);
 				_textBlock.SetOnEditorActionListener(null);
-				_textBlock.Adapter.Dispose();
-				_textBlock.Adapter = null;
-				_textBlock.DropDownBackground.Dispose();
 				_textBlock.SetDropDownBackgroundDrawable(null);
 
 				_clearButton.Click -= OnClearButtonClicked;
 				_clearPlaceholderButton.Click -= OnClearPlaceholderButtonClicked;
 				_searchButton.Click -= OnSearchButtonClicked;
 
+				_linearLayout.RemoveView(_searchButton);
+				_linearLayout.RemoveView(_textBlock);
+				_linearLayout.RemoveView(_clearButton);
+				_linearLayout.RemoveView(_clearPlaceholderButton);
+				_cardView.RemoveView(_linearLayout);
+				RemoveView(_cardView);
+
+				_searchHandlerAppearanceTracker?.Dispose();
+				_textBlock.Adapter.Dispose();
+				_textBlock.DropDownBackground.Dispose();
 				_textBlock.Dispose();
 				_clearButton.Dispose();
 				_searchButton.Dispose();
-				_cardView.Dispose();
 				_clearPlaceholderButton.Dispose();
+				_cardView.Dispose();
+				_linearLayout.Dispose();
+
+				_textBlock.Adapter = null;
+				_textBlock = null;
+				_clearButton = null;
+				_searchButton = null;
+				_cardView = null;
+				_clearPlaceholderButton = null;
+				_shellContext = null;
+				_searchHandlerAppearanceTracker = null;
+				_linearLayout = null;
+				SearchHandler = null;
 			}
 
-			_textBlock = null;
-			_clearButton = null;
-			_searchButton = null;
-			_cardView = null;
-			_clearPlaceholderButton = null;
-			_shellContext = null;
-			_searchHandlerAppearanceTracker = null;
-
-			SearchHandler = null;
+			base.Dispose(disposing);
 		}
 
 		protected virtual void LoadView(SearchHandler searchHandler)
@@ -173,12 +181,12 @@ namespace Xamarin.Forms.Platform.Android
 			using (lp = new LayoutParams(LP.MatchParent, LP.MatchParent))
 				_cardView.LayoutParameters = lp;
 
-			var linearLayout = new LinearLayout(context);
+			_linearLayout = new LinearLayout(context);
 			using (lp = new LP(LP.MatchParent, LP.MatchParent))
-				linearLayout.LayoutParameters = lp;
-			linearLayout.Orientation = Orientation.Horizontal;
+				_linearLayout.LayoutParameters = lp;
+			_linearLayout.Orientation = Orientation.Horizontal;
 
-			_cardView.AddView(linearLayout);
+			_cardView.AddView(_linearLayout);
 
 			int padding = (int)context.ToPixels(8);
 
@@ -213,10 +221,10 @@ namespace Xamarin.Forms.Platform.Android
 			_clearButton = CreateImageButton(context, searchHandler, SearchHandler.ClearIconProperty, Resource.Drawable.abc_ic_clear_material, 0, padding, nameof(SearchHandler.ClearIcon));
 			_clearPlaceholderButton = CreateImageButton(context, searchHandler, SearchHandler.ClearPlaceholderIconProperty, -1, 0, padding, nameof(SearchHandler.ClearPlaceholderIcon));
 
-			linearLayout.AddView(_searchButton);
-			linearLayout.AddView(_textBlock);
-			linearLayout.AddView(_clearButton);
-			linearLayout.AddView(_clearPlaceholderButton);
+			_linearLayout.AddView(_searchButton);
+			_linearLayout.AddView(_textBlock);
+			_linearLayout.AddView(_clearButton);
+			_linearLayout.AddView(_clearPlaceholderButton);
 		
 			UpdateClearButtonState();
 
@@ -229,8 +237,6 @@ namespace Xamarin.Forms.Platform.Android
 			_searchButton.Click += OnSearchButtonClicked;
 			
 			AddView(_cardView);
-
-			linearLayout.Dispose();
 		}
 
 		protected virtual void OnSearchHandlerPropertyChanged(object sender, PropertyChangedEventArgs e)

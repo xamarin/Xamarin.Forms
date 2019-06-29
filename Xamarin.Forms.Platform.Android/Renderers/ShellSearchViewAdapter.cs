@@ -1,4 +1,4 @@
-﻿using Android.Views;
+using Android.Views;
 using Android.Widget;
 using Java.Lang;
 using System;
@@ -19,30 +19,33 @@ namespace Xamarin.Forms.Platform.Android
 		Filter _filter;
 		IReadOnlyList<object> _emptyList = new List<object>();
 		IReadOnlyList<object> ListProxy => SearchController.ListProxy ?? _emptyList;
+		bool _disposed;
 
 		public ShellSearchViewAdapter(SearchHandler searchHandler, IShellContext shellContext)
 		{
 			_searchHandler = searchHandler ?? throw new ArgumentNullException(nameof(searchHandler));
 			_shellContext = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
-			SearchController.ListProxyChanged += OnListPropxyChanged;
+			SearchController.ListProxyChanged += OnListProxyChanged;
 			_searchHandler.PropertyChanged += OnSearchHandlerPropertyChanged;
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
-
-			if (disposing)
+			if (!_disposed && disposing)
 			{
-				SearchController.ListProxyChanged -= OnListPropxyChanged;
+				_disposed = true;
+
+				SearchController.ListProxyChanged -= OnListProxyChanged;
 				_searchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
+				
 				_filter.Dispose();
+
+				_filter = null;
+				_shellContext = null;
+				_searchHandler = null;
 			}
 
-			_filter = null;
-			_shellContext = null;
-			_searchHandler = null;
-			_defaultTemplate = null;
+			base.Dispose(disposing);
 		}
 		
 		public Filter Filter => _filter ?? (_filter = new CustomFilter(this));
@@ -112,7 +115,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void OnListPropxyChanged(object sender, ListProxyChangedEventArgs e)
+		void OnListProxyChanged(object sender, ListProxyChangedEventArgs e)
 		{
 			NotifyDataSetChanged();
 		}

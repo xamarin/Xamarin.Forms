@@ -1,6 +1,5 @@
-﻿using Android.Support.V4.App;
+using Android.Support.V4.App;
 using System;
-using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -9,7 +8,5 @@ namespace Xamarin.Forms.Platform.Android
 		Fragment Fragment { get; }
 
 		ShellItem ShellItem { get; set; }
-
-		event EventHandler Destroyed;
 	}
 }

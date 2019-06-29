@@ -1,6 +1,5 @@
-﻿using Android.Content;
+using Android.Content;
 using Android.Graphics.Drawables;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
 using Android.Util;
@@ -23,18 +22,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion IShellFlyoutContentRenderer
 
-        IShellContext _shellContext;
-        bool _disposed;
-        HeaderContainer _headerView;
-        ViewGroup _rootView;
-        Drawable _defaultBackgroundColor;
+		IShellContext _shellContext;
+		bool _disposed;
+		HeaderContainer _headerView;
+		ViewGroup _rootView;
+		Drawable _defaultBackgroundColor;
 		ImageView _bgImage;
+		AppBarLayout _appBar;
+		RecyclerView _recycler;
+		ShellFlyoutRecyclerAdapter _adapter;
         View _flyoutHeader;
         int _actionBarHeight;
 
-        public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
-        {
-            _shellContext = shellContext;
+		public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
+		{
+			_shellContext = shellContext;
 
 			LoadView(shellContext);
 		}
@@ -51,12 +53,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var coordinator = LayoutInflater.FromContext(context).Inflate(Resource.Layout.FlyoutContent, null);
-			var recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);
-			var appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
+
+			_recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);
+
+			_appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
 
 			_rootView = coordinator as ViewGroup;
 
-			appBar.AddOnOffsetChangedListener(this);
+			_appBar.AddOnOffsetChangedListener(this);
 
 			_actionBarHeight = (int)context.ToPixels(56);
 
@@ -73,13 +77,12 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				ScrollFlags = AppBarLayout.LayoutParams.ScrollFlagScroll
 			};
-			appBar.AddView(_headerView);
+			_appBar.AddView(_headerView);
 
-			var adapter = new ShellFlyoutRecyclerAdapter(shellContext, OnElementSelected);
-			recycler.SetPadding(0, (int)context.ToPixels(20), 0, 0);
-			recycler.SetClipToPadding(false);
-			recycler.SetLayoutManager(new LinearLayoutManager(context, (int)Orientation.Vertical, false));
-			recycler.SetAdapter(adapter);
+			_adapter = new ShellFlyoutRecyclerAdapter(shellContext, OnElementSelected);
+			_recycler.SetClipToPadding(false);
+			_recycler.SetLayoutManager(new LinearLayoutManager(context, (int)Orientation.Vertical, false));
+			_recycler.SetAdapter(_adapter);
 
 			var metrics = context.Resources.DisplayMetrics;
 			var width = Math.Min(metrics.WidthPixels, metrics.HeightPixels);
@@ -179,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_rootView.IndexOfChild(_bgImage) == -1)
 				{
-					if(_bgImage.SetElevation(float.MinValue))
+					if (_bgImage.SetElevation(float.MinValue))
 						_rootView.AddView(_bgImage);
 					else
 						_rootView.AddView(_bgImage, 0);
@@ -245,32 +248,46 @@ namespace Xamarin.Forms.Platform.Android
 			_headerView.SetPadding(0, -verticalOffset, 0, 0);
 		}
 
-        protected override void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _shellContext.Shell.PropertyChanged -= OnShellPropertyChanged;
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed && disposing)
+			{
+				_disposed = true;
 
-                    if (_flyoutHeader != null)
-                        _flyoutHeader.MeasureInvalidated += OnFlyoutHeaderMeasureInvalidated;
+				_shellContext.Shell.PropertyChanged -= OnShellPropertyChanged;
 
-                    _headerView.Dispose();
-                    _rootView.Dispose();
-                    _defaultBackgroundColor?.Dispose();
-					_bgImage?.Dispose();
+				if (_flyoutHeader != null)
+					_flyoutHeader.MeasureInvalidated -= OnFlyoutHeaderMeasureInvalidated;
+
+				if (_appBar != null)
+				{
+					_appBar.RemoveOnOffsetChangedListener(this);
+					_appBar.RemoveView(_headerView);
 				}
 
-                _flyoutHeader = null;
-                _defaultBackgroundColor = null;
-				_bgImage = null;
-				_rootView = null;
-                _headerView = null;
-                _shellContext = null;
-                _disposed = true;
-            }
+				if (_recycler != null)
+				{
+					_recycler.SetLayoutManager(null);
+					_recycler.SetAdapter(null);
+					_recycler.Dispose();
+				}
 
+				_adapter?.Dispose();
+				_headerView.Dispose();
+				_rootView.Dispose();
+				_defaultBackgroundColor?.Dispose();
+				_bgImage?.Dispose();
+
+                _flyoutHeader = null;
+				_rootView = null;
+				_headerView = null;
+				_shellContext = null;
+				_appBar = null;
+				_recycler = null;
+				_adapter = null;
+				_defaultBackgroundColor = null;
+				_bgImage = null;
+			}
 			base.Dispose(disposing);
 		}
 
@@ -286,10 +303,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			public HeaderContainer(Context context, IAttributeSet attribs, int defStyleAttr) : base(context, attribs, defStyleAttr)
-			{
-			}
-
-			protected HeaderContainer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
 			{
 			}
 

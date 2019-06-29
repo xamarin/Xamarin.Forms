@@ -1,4 +1,4 @@
-﻿using Android.Content;
+using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Support.Design.Widget;
@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 		FrameLayout _navigationArea;
 		AView _outerLayout;
 		IShellBottomNavViewAppearanceTracker _appearanceTracker;
+		bool _disposed;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -76,30 +77,39 @@ namespace Xamarin.Forms.Platform.Android
 			return _outerLayout;
 		}
 
-		// Use OnDestory become OnDestroyView may fire before events are completed.
-		public override void OnDestroy()
+		void IDisposable.Dispose()
 		{
-			UnhookEvents(ShellItem);
-			if (_bottomView != null)
+			Dispose(true);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed && disposing)
 			{
-				_bottomView?.SetOnNavigationItemSelectedListener(null);
-				_bottomView?.Background?.Dispose();
-				_bottomView?.Dispose();
-				_bottomView = null;
+				_disposed = true;
 
-				_navigationArea?.Dispose();
-				_navigationArea = null;
+				UnhookEvents(ShellItem);
 
-				_appearanceTracker?.Dispose();
-				_appearanceTracker = null;
+				((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
 
-				_outerLayout?.Dispose();
-				_outerLayout = null;
+				if (_bottomView != null)
+				{
+					_bottomView.SetOnNavigationItemSelectedListener(null);
+
+					_bottomView.Background?.Dispose();
+					_bottomView.Dispose();
+					_navigationArea?.Dispose();
+					_appearanceTracker?.Dispose();
+					_outerLayout?.Dispose();
+					
+					_bottomView = null;
+					_navigationArea = null;
+					_appearanceTracker = null;
+					_outerLayout = null;
+				}
 			}
 
-			((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
-
-			base.OnDestroy();
+			base.Dispose(disposing);
 		}
 
 		protected virtual void SetAppearance(ShellAppearance appearance) => _appearanceTracker.SetAppearance(_bottomView, appearance);

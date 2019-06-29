@@ -1,4 +1,4 @@
-﻿using Android.Content.Res;
+using Android.Content.Res;
 using Android.Graphics.Drawables;
 using Android.Support.Design.Internal;
 using Android.Support.Design.Widget;
@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 		ColorStateList _defaultList;
 		bool _disposed;
 		Color _lastColor = Color.Default;
+		ColorStateList _colorStateList;
 
 		public ShellBottomNavViewAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
 		{
@@ -52,11 +53,9 @@ namespace Xamarin.Forms.Platform.Android
 #endif
 			}
 
-			var colorStateList = MakeColorStateList(titleColor, disabledColor, unselectedColor);
-			bottomView.ItemTextColor = colorStateList;
-			bottomView.ItemIconTintList = colorStateList;
-
-			colorStateList.Dispose();
+			_colorStateList = MakeColorStateList(titleColor, disabledColor, unselectedColor);
+			bottomView.ItemTextColor = _colorStateList;
+			bottomView.ItemIconTintList = _colorStateList;
 
 			SetBackgroundColor(bottomView, backgroundColor);
 		}
@@ -135,17 +134,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (!_disposed && disposing)
 			{
-				if (disposing)
-				{
-					_defaultList?.Dispose();
-				}
+				_disposed = true;
+
+				_defaultList?.Dispose();
+				_colorStateList?.Dispose();
 
 				_shellItem = null;
 				_shellContext = null;
 				_defaultList = null;
-				_disposed = true;
+				_colorStateList = null;
 			}
 		}
 

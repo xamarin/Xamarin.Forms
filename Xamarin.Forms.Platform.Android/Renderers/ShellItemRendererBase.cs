@@ -1,4 +1,3 @@
-﻿using Android.OS;
 using Android.Support.V4.App;
 using Android.Views;
 using System;
@@ -23,14 +22,13 @@ namespace Xamarin.Forms.Platform.Android
 			set { ShellItem = value; }
 		}
 
-		public event EventHandler Destroyed;
-
 		#endregion IShellItemRenderer
 
 		readonly Dictionary<Element, IShellObservableFragment> _fragmentMap = new Dictionary<Element, IShellObservableFragment>();
 		IShellObservableFragment _currentFragment;
 		ShellSection _shellSection;
 		Page _displayedPage;
+		bool _disposed;
 
 		protected ShellItemRendererBase(IShellContext shellContext)
 		{
@@ -82,18 +80,27 @@ namespace Xamarin.Forms.Platform.Android
 			return ShellContext.CreateFragmentForPage(page);
 		}
 
-		public override void OnDestroy()
+		void IDisposable.Dispose()
 		{
-			base.OnDestroy();
+			Dispose(true);
+		}
 
-			foreach (var item in _fragmentMap)
-				item.Value.Fragment.Dispose();
-			_fragmentMap.Clear();
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed && disposing)
+			{
+				_disposed = true;
 
-			ShellSection = null;
-			DisplayedPage = null;
+				foreach (var item in _fragmentMap)
+					item.Value.Fragment.Dispose();
 
-			Destroyed?.Invoke(this, EventArgs.Empty);
+				_fragmentMap.Clear();
+
+				ShellSection = null;
+				DisplayedPage = null;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		protected abstract ViewGroup GetNavigationTarget();
@@ -158,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 					// We need to handle this after we know what the target is
 					// because we might accidentally remove an already added target.
 					// Then there would be two transactions in a row, one removing and one adding
-					// the same fragement and things get really screwy when you do that.
+					// the same fragment and things get really screwy when you do that.
 					break;
 
 				default:
@@ -188,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (target == _currentFragment)
 				return Task.FromResult(true);
 
-			var t = ChildFragmentManager.BeginTransaction();
+			var t = ChildFragmentManager.BeginTransactionEx();
 
 			if (animated)
 				SetupAnimation(navSource, t, page);
@@ -200,11 +207,11 @@ namespace Xamarin.Forms.Platform.Android
 					trackFragment = target;
 
 					if (_currentFragment != null)
-						t.Hide(_currentFragment.Fragment);
+						t.HideEx(_currentFragment.Fragment);
 
 					if (!target.Fragment.IsAdded)
-						t.Add(GetNavigationTarget().Id, target.Fragment);
-					t.Show(target.Fragment);
+						t.AddEx(GetNavigationTarget().Id, target.Fragment);
+					t.ShowEx(target.Fragment);
 					break;
 
 				case ShellNavigationSource.Pop:
@@ -213,11 +220,11 @@ namespace Xamarin.Forms.Platform.Android
 					trackFragment = _currentFragment;
 
 					if (_currentFragment != null)
-						t.Remove(_currentFragment.Fragment);
+						t.RemoveEx(_currentFragment.Fragment);
 
 					if (!target.Fragment.IsAdded)
-						t.Add(GetNavigationTarget().Id, target.Fragment);
-					t.Show(target.Fragment);
+						t.AddEx(GetNavigationTarget().Id, target.Fragment);
+					t.ShowEx(target.Fragment);
 					break;
 			}
 
@@ -237,10 +244,9 @@ namespace Xamarin.Forms.Platform.Android
 				result.TrySetResult(true);
 			}
 
-			t.CommitAllowingStateLoss();
+			t.CommitAllowingStateLossEx();
 
 			_currentFragment = target;
-
 
 			return result.Task;
 		}
@@ -346,23 +352,23 @@ namespace Xamarin.Forms.Platform.Android
 
 		void RemoveAllButCurrent(Fragment skip)
 		{
-			var trans = ChildFragmentManager.BeginTransaction();
+			var trans = ChildFragmentManager.BeginTransactionEx();
 			foreach (var kvp in _fragmentMap)
 			{
 				var f = kvp.Value.Fragment;
 				if (kvp.Value == _currentFragment || kvp.Value.Fragment == skip || !f.IsAdded)
 					continue;
-				trans.Remove(f);
+				trans.RemoveEx(f);
 			};
-			trans.CommitAllowingStateLoss();
+			trans.CommitAllowingStateLossEx();
 		}
 
 		void RemoveAllPushedPages(ShellSection shellSection, bool keepCurrent)
 		{
-			if (shellSection.Stack.Count <= 1 || (keepCurrent && shellSection.Stack.Count == 2))
+			if (shellSection.Stack.Count <= 1 || keepCurrent && shellSection.Stack.Count == 2)
 				return;
 
-			var t = ChildFragmentManager.BeginTransaction();
+			var t = ChildFragmentManager.BeginTransactionEx();
 
 			foreach (var kvp in _fragmentMap.ToList())
 			{
@@ -374,17 +380,17 @@ namespace Xamarin.Forms.Platform.Android
 				if (keepCurrent && kvp.Value.Fragment == _currentFragment)
 					continue;
 
-				t.Remove(kvp.Value.Fragment);
+				t.RemoveEx(kvp.Value.Fragment);
 			}
 
-			t.CommitAllowingStateLoss();
+			t.CommitAllowingStateLossEx();
 		}
 
 		void RemoveFragment(Fragment fragment)
 		{
-			var t = ChildFragmentManager.BeginTransaction();
-			t.Remove(fragment);
-			t.CommitAllowingStateLoss();
+			var t = ChildFragmentManager.BeginTransactionEx();
+			t.RemoveEx(fragment);
+			t.CommitAllowingStateLossEx();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using Android.OS;
+using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
@@ -54,6 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 		ShellContent _shellContent;
 		Toolbar _toolbar;
 		IShellToolbarTracker _toolbarTracker;
+		bool _disposed;
 
 		public ShellContentFragment(IShellContext shellContext, ShellContent shellContent)
 		{
@@ -137,32 +138,44 @@ namespace Xamarin.Forms.Platform.Android
 			return _root;
 		}
 
-		// Use OnDestroy instead of OnDestroyView because OnDestroyView will be
-		// called before the animation completes. This causes tons of tiny issues.
-		public override void OnDestroy()
+		protected override void Dispose(bool disposing)
 		{
-			base.OnDestroy();
-
-			_shellPageContainer.RemoveAllViews();
-			_renderer?.Dispose();
-			_root?.Dispose();
-			_toolbarTracker.Dispose();
-			_appearanceTracker.Dispose();
-
-			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
-
-			if (_shellContent != null)
+			if (_disposed && disposing)
 			{
-				((IShellContentController)_shellContent).RecyclePage(_page);
-				_page.ClearValue(Platform.RendererProperty);
+				_disposed = true;
+
+				((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
+
+				if (_shellPageContainer != null)
+				{
+					_shellPageContainer?.RemoveAllViews();
+					
+					if(_root is ViewGroup vg)
+						vg.RemoveView(_shellPageContainer);
+				}
+
+				if (_shellContent != null)
+				{
+					((IShellContentController)_shellContent).RecyclePage(_page);
+					_page.ClearValue(Platform.RendererProperty);
+				}
+
+				_appearanceTracker?.Dispose();
+				_toolbarTracker?.Dispose();
+				_toolbar?.Dispose();
+				_root?.Dispose();
+				_renderer?.Dispose();
+
+				_appearanceTracker = null;
+				_toolbarTracker = null;
+				_toolbar = null;
+				_root = null;
+				_renderer = null;
 				_page = null;
+				_shellContent = null;
 			}
 
-			_appearanceTracker = null;
-			_toolbar = null;
-			_toolbarTracker = null;
-			_root = null;
-			_renderer = null;
+			base.Dispose(disposing);
 		}
 
 		protected virtual void ResetAppearance() => _appearanceTracker.ResetAppearance(_toolbar, _toolbarTracker);

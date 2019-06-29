@@ -1,4 +1,4 @@
-﻿using Android.Database;
+using Android.Database;
 using Android.OS;
 using Android.Support.V4.App;
 using Java.Lang;
@@ -64,14 +64,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
-			if (disposing && !_disposed)
+			if (!_disposed && disposing)
 			{
-				((INotifyCollectionChanged)_shellSection.Items).CollectionChanged -= OnItemsCollectionChanged;
-				_shellSection = null;
 				_disposed = true;
-
+				
+				((INotifyCollectionChanged)_shellSection.Items).CollectionChanged -= OnItemsCollectionChanged;
+			
+				_shellSection = null;
 			}
+
+			base.Dispose(disposing);
 		}
 	}
 }

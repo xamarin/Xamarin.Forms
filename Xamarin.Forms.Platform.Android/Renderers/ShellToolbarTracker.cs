@@ -1,4 +1,4 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
@@ -128,20 +128,21 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					_shellContext.Shell.FlyoutIsPresented = !_shellContext.Shell.FlyoutIsPresented;
 			}
-
-			v.Dispose();
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			if (_disposed)
-				return;
-
-			if (disposing)
+			if (!_disposed && disposing)
 			{
+				_disposed = true;
+
+				if (_backButtonBehavior != null)
+					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+
+				((IShellController)_shellContext.Shell).RemoveFlyoutBehaviorObserver(this);
+
 				UpdateTitleView(_shellContext.AndroidContext, _toolbar, null);
 
-				_drawerToggle?.Dispose();
 				if (_searchView != null)
 				{
 					_searchView.View.RemoveFromParent();
@@ -150,21 +151,18 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView.Dispose();
 				}
 
-				((IShellController)_shellContext.Shell).RemoveFlyoutBehaviorObserver(this);
+				_drawerToggle?.Dispose();
 
-				if (_backButtonBehavior != null)
-					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+				_backButtonBehavior = null;
+				SearchHandler = null;
+				Page = null;
+				_shellContext = null;
+				_drawerToggle = null;
+				_searchView = null;
+				_toolbar = null;
+				_drawerLayout = null;
 			}
 
-			_backButtonBehavior = null;
-			SearchHandler = null;
-			_shellContext = null;
-			_drawerToggle = null;
-			_searchView = null;
-			Page = null;
-			_toolbar = null;
-			_drawerLayout = null;
-			_disposed = true;
 			base.Dispose(disposing);
 		}
 

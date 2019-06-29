@@ -113,14 +113,11 @@ namespace Xamarin.Forms.Platform.Android
 		IShellToolbarAppearanceTracker _toolbarAppearanceTracker;
 		IShellToolbarTracker _toolbarTracker;
 		FormsViewPager _viewPager;
+		bool _disposed;
 
 		public ShellSectionRenderer(IShellContext shellContext)
 		{
 			_shellContext = shellContext;
-		}
-
-		protected ShellSectionRenderer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
-		{
 		}
 
 		public event EventHandler AnimationFinished;
@@ -171,38 +168,41 @@ namespace Xamarin.Forms.Platform.Android
 			return _rootView = root;
 		}
 
-		// Use OnDestroy instead of OnDestroyView because OnDestroyView will be
-		// called before the animation completes. This causes tons of tiny issues.
-		public override void OnDestroy()
+		protected override void Dispose(bool disposing)
 		{
-			if (_rootView != null)
+			if (!_disposed && disposing)
 			{
-				UnhookEvents();
+				_disposed = true;
 
-				var adapter = _viewPager.Adapter;
-				_viewPager.Adapter = null;
-				adapter.Dispose();
+				if (_rootView != null)
+				{
+					UnhookEvents();
 
-				_viewPager.RemoveOnPageChangeListener(this);
+					_viewPager.RemoveOnPageChangeListener(this);
 
-				_toolbarAppearanceTracker.Dispose();
-				_tabLayoutAppearanceTracker.Dispose();
-				_toolbarTracker.Dispose();
-				_tablayout.Dispose();
-				_toolbar.Dispose();
-				_viewPager.Dispose();
-				_rootView.Dispose();
+					var adapter = _viewPager.Adapter;
+					_viewPager.Adapter = null;
+					adapter.Dispose();
+
+					_toolbarAppearanceTracker.Dispose();
+					_tabLayoutAppearanceTracker.Dispose();
+					_toolbarTracker.Dispose();
+					_tablayout.Dispose();
+					_toolbar.Dispose();
+					_viewPager.Dispose();
+					_rootView.Dispose();
+				}
+
+				_toolbarAppearanceTracker = null;
+				_tabLayoutAppearanceTracker = null;
+				_toolbarTracker = null;
+				_tablayout = null;
+				_toolbar = null;
+				_viewPager = null;
+				_rootView = null;
 			}
 
-			_toolbarAppearanceTracker = null;
-			_tabLayoutAppearanceTracker = null;
-			_toolbarTracker = null;
-			_tablayout = null;
-			_toolbar = null;
-			_viewPager = null;
-			_rootView = null;
-
-			base.OnDestroy();
+			base.Dispose(disposing);
 		}
 
 		protected virtual void OnAnimationFinished(EventArgs e)

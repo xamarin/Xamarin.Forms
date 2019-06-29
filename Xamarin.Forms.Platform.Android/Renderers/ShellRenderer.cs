@@ -1,4 +1,4 @@
-﻿using Android.Content;
+using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Support.V4.App;
@@ -152,8 +152,6 @@ namespace Xamarin.Forms.Platform.Android
 			AndroidContext = context;
 		}
 
-		
-
 		protected Context AndroidContext { get; }
 		protected Shell Element { get; private set; }
 		FragmentManager FragmentManager => AndroidContext.GetFragmentManager();
@@ -166,7 +164,6 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual IShellFlyoutContentRenderer CreateShellFlyoutContentRenderer()
 		{
 			return new ShellFlyoutTemplatedContentRenderer(this);
-			//return new ShellFlyoutContentRenderer(this, AndroidContext);
 		}
 
 		protected virtual IShellFlyoutRenderer CreateShellFlyoutRenderer()
@@ -236,7 +233,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void SwitchFragment(FragmentManager manager, AView targetView, ShellItem newItem, bool animate = true)
 		{
 			if (AndroidContext.IsDesignerContext())
-				return; 
+				return;
 
 			var previousRenderer = _currentRenderer;
 			_currentRenderer = CreateShellItemRenderer(newItem);
@@ -246,21 +243,12 @@ namespace Xamarin.Forms.Platform.Android
 			FragmentTransaction transaction = manager.BeginTransaction();
 
 			if (animate)
-				transaction.SetTransition((int)global::Android.App.FragmentTransit.EnterMask);
+				transaction.SetTransitionEx((int)global::Android.App.FragmentTransit.EnterMask);
 
-			transaction.Replace(_frameLayout.Id, fragment);
-			transaction.CommitAllowingStateLoss();
-
-			void OnDestroyed (object sender, EventArgs args)
-			{
-				previousRenderer.Destroyed -= OnDestroyed;
-
-				previousRenderer.Dispose();
-				previousRenderer = null;
-			}
-
-			if (previousRenderer != null)
-				previousRenderer.Destroyed += OnDestroyed;
+			transaction.ReplaceEx(_frameLayout.Id, fragment);
+			transaction.CommitAllowingStateLossEx();
+			
+			previousRenderer?.Dispose();
 		}
 
 		void OnElementSizeChanged(object sender, EventArgs e)
@@ -361,19 +349,20 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (!_disposed && disposing)
 			{
-				if (disposing)
-				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-					Element.SizeChanged -= OnElementSizeChanged;
-				}
+				_disposed = true;
+			
+				Element.PropertyChanged -= OnElementPropertyChanged;
+				Element.SizeChanged -= OnElementSizeChanged;
+
+				_flyoutRenderer.Dispose();
+				_currentRenderer.Dispose();
 
 				Element = null;
+				
 				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
 				// TODO: set large fields to null.
-
-				_disposed = true;
 			}
 		}
 

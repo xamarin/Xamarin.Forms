@@ -1,9 +1,8 @@
-﻿using Android.Graphics.Drawables;
+using Android.Graphics.Drawables;
 using Android.Support.V7.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-
 	public class ShellToolbarAppearanceTracker : IShellToolbarAppearanceTracker
 	{
 		bool _disposed;
@@ -47,13 +46,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (!_disposed && disposing)
 			{
-				if (disposing)
-				{
-				}
-				_shellContext = null;
 				_disposed = true;
+			
+				_shellContext = null;
 			}
 		}
 

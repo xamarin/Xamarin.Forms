@@ -1,4 +1,4 @@
-﻿using Android.Runtime;
+using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
@@ -22,7 +22,12 @@ namespace Xamarin.Forms.Platform.Android
 		List<AdapterListItem> _listItems;
 
 		Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
-		readonly Action<Element> _selectedCallback;
+		
+		Action<Element> _selectedCallback;
+		
+		bool _disposed;
+		
+		ElementViewHolder _elementViewHolder;
 
 		public ShellFlyoutRecyclerAdapter(IShellContext shellContext, Action<Element> selectedCallback)
 		{
@@ -163,7 +168,9 @@ namespace Xamarin.Forms.Platform.Android
 			container.LayoutParameters = new LP(LP.MatchParent, LP.WrapContent);
 			linearLayout.AddView(container);
 
-			return new ElementViewHolder(content, linearLayout, bar, _selectedCallback);
+			_elementViewHolder = new ElementViewHolder(content, linearLayout, bar, _selectedCallback);
+
+			return _elementViewHolder;
 		}
 
 		protected virtual List<AdapterListItem> GenerateItemList()
@@ -242,6 +249,24 @@ namespace Xamarin.Forms.Platform.Android
 			return grid;
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed && disposing)
+			{
+				_disposed = true;
+
+				((IShellController)Shell).StructureChanged -= OnShellStructureChanged;
+
+				_elementViewHolder?.Dispose();
+
+				_listItems = null;
+				_selectedCallback = null;
+				_elementViewHolder = null;
+			}
+
+			base.Dispose(disposing);
+		}
+
 		public class AdapterListItem
 		{
 			public AdapterListItem(Element element, bool drawTopLine = false)
@@ -256,9 +281,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public class ElementViewHolder : RecyclerView.ViewHolder
 		{
-			readonly Action<Element> _selectedCallback;
+			Action<Element> _selectedCallback;
 			Element _element;
 			AView _itemView;
+			bool _disposed;
 
 			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : base(itemView)
 			{
@@ -320,6 +346,22 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				_selectedCallback(Element);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (!_disposed && disposing)
+				{
+					_disposed = true;
+
+					_itemView.Click -= OnClicked;
+
+					Element = null;
+					_itemView = null;
+					_selectedCallback = null;
+				}
+
+				base.Dispose(disposing);
 			}
 		}
 	}
