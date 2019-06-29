@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Internals
 			Placeholder = placeholder;
 			MaxLength = maxLength;
 			Keyboard = keyboard ?? Keyboard.Default;
-			PromptResult = new TaskCompletionSource<string>();
+			Result = new TaskCompletionSource<string>();
 		}
 
 		public string Title { get; }
@@ -34,11 +34,11 @@ namespace Xamarin.Forms.Internals
 
 		public Keyboard Keyboard { get; }
 
-		public TaskCompletionSource<string> PromptResult { get; }
+		public TaskCompletionSource<string> Result { get; }
 
-		public void SetPromptResult(string text)
+		public void SetResult(string text)
 		{
-			PromptResult.TrySetResult(text);
+			Result.TrySetResult(text);
 		}
 	}
 }

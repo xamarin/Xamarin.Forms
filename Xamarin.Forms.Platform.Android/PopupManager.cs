@@ -158,9 +158,9 @@ namespace Xamarin.Forms.Platform.Android
 				frameLayout.AddView(editText);
 				alertDialog.SetView(frameLayout);
 
-				alertDialog.SetButton((int)DialogButtonType.Positive, arguments.Accept, (o, args) => arguments.SetPromptResult(editText.Text));
-				alertDialog.SetButton((int)DialogButtonType.Negative, arguments.Cancel, (o, args) => arguments.SetPromptResult(null));
-				alertDialog.CancelEvent += (o, args) => { arguments.SetPromptResult(null); };
+				alertDialog.SetButton((int)DialogButtonType.Positive, arguments.Accept, (o, args) => arguments.SetResult(editText.Text));
+				alertDialog.SetButton((int)DialogButtonType.Negative, arguments.Cancel, (o, args) => arguments.SetResult(null));
+				alertDialog.CancelEvent += (o, args) => { arguments.SetResult(null); };
 
 				alertDialog.Window.SetSoftInputMode(SoftInput.StateVisible);
 				alertDialog.Show();

@@ -197,7 +197,7 @@ namespace Xamarin.Forms
 		{
 			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard);
 			MessagingCenter.Send(this, PromptSignalName, args);
-			return args.PromptResult.Task;
+			return args.Result.Task;
 		}
 
 		public void ForceLayout()
