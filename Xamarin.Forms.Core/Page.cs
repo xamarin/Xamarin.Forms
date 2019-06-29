@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 
 		public const string AlertSignalName = "Xamarin.SendAlert";
 
+		public const string PromptSignalName = "Xamarin.SendPrompt";
+
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
@@ -189,6 +191,13 @@ namespace Xamarin.Forms
 			var args = new AlertArguments(title, message, accept, cancel);
 			MessagingCenter.Send(this, AlertSignalName, args);
 			return args.Result.Task;
+		}
+
+		public Task<string> DisplayPromptAsync(string title, string message, string accept, string cancel, string placeholder = null, int? maxLength = null)
+		{
+			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength);
+			MessagingCenter.Send(this, PromptSignalName, args);
+			return args.PromptResult.Task;
 		}
 
 		public void ForceLayout()
