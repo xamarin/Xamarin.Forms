@@ -1,11 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Internals
 {
 	public class PromptArguments
 	{
-		public PromptArguments(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int? maxLength = null, Keyboard keyboard = default)
+		public PromptArguments(string title, string message, string accept, string cancel, string placeholder = null, int? maxLength = null, Keyboard keyboard = default)
 		{
+			if (string.IsNullOrWhiteSpace(accept) || string.IsNullOrWhiteSpace(cancel))
+				throw new Exception($"You must provide a value for {nameof(accept)} and {nameof(cancel)}");
+
 			Title = title;
 			Message = message;
 			Accept = accept;
