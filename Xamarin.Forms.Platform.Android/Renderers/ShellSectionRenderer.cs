@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.Android
 			AnimationFinished?.Invoke(this, e);
 		}
 
-		protected virtual void OnItemsCollectionChagned(object sender, NotifyCollectionChangedEventArgs e) =>
+		protected virtual void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
 			_tablayout.Visibility = (ShellSection.Items.Count > 1) ? ViewStates.Visible : ViewStates.Gone;
 
 		protected virtual void OnShellItemPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -243,14 +243,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void HookEvents()
 		{
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnItemsCollectionChagned;
+			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnItemsCollectionChanged;
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, ShellSection);
 			ShellSection.PropertyChanged += OnShellItemPropertyChanged;
 		}
 
 		void UnhookEvents()
 		{
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnItemsCollectionChagned;
+			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnItemsCollectionChanged;
 			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
 			ShellSection.PropertyChanged -= OnShellItemPropertyChanged;
 		}
