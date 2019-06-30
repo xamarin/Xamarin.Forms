@@ -20,10 +20,10 @@ namespace Xamarin.Forms.Platform.Android
 			
 			Content = CreateRenderer(view, Context);
 			AddView(Content.View);
-			Content.Element.MeasureInvalidated += ElementMeasureInvalidated;
+			Content.Element.MeasureInvalidated += OnElementMeasureInvalidated;
 		}
 
-		void ElementMeasureInvalidated(object sender, System.EventArgs e)
+		void OnElementMeasureInvalidated(object sender, System.EventArgs e)
 		{
 			RequestLayout();
 		}
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Content?.Element != null)
 			{
-				Content.Element.MeasureInvalidated -= ElementMeasureInvalidated;
+				Content.Element.MeasureInvalidated -= OnElementMeasureInvalidated;
 			}
 
 			if (Content?.View != null)

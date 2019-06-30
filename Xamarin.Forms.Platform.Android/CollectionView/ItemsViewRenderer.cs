@@ -299,11 +299,11 @@ namespace Xamarin.Forms.Platform.Android
 			// Keep track of the ItemsLayout's property changes
 			if (_layout != null)
 			{
-				_layout.PropertyChanged += LayoutOnPropertyChanged;
+				_layout.PropertyChanged += OnLayoutPropertyChanged;
 			}
 
 			// Listen for ScrollTo requests
-			ItemsView.ScrollToRequested += ScrollToRequested;
+			ItemsView.ScrollToRequested += OnScrollToRequested;
 		}
 
 		protected virtual void TearDownOldElement(ItemsView oldElement)
@@ -316,14 +316,14 @@ namespace Xamarin.Forms.Platform.Android
 			// Stop listening for layout property changes
 			if (_layout != null)
 			{
-				_layout.PropertyChanged -= LayoutOnPropertyChanged;
+				_layout.PropertyChanged -= OnLayoutPropertyChanged;
 			}
 
 			// Stop listening for property changes
 			oldElement.PropertyChanged -= OnElementPropertyChanged;
 
 			// Stop listening for ScrollTo requests
-			oldElement.ScrollToRequested -= ScrollToRequested;
+			oldElement.ScrollToRequested -= OnScrollToRequested;
 
 			if (ItemsViewAdapter != null)
 			{
@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
+		protected virtual void OnLayoutPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
 		{
 			if (propertyChanged.Is(GridItemsLayout.SpanProperty))
 			{
@@ -482,7 +482,7 @@ namespace Xamarin.Forms.Platform.Android
 			AddItemDecoration(_itemDecoration);
 		}
 
-		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		void OnScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
 			ScrollTo(args);
 		}

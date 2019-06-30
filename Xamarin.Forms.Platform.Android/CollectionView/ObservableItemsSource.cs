@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 			_itemsSource = itemSource;
 			_adapter = adapter;
 
-			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
+			((INotifyCollectionChanged)itemSource).CollectionChanged += OnCollectionChanged;
 		}
 
 		public int Count => _itemsSource.Count;
@@ -34,14 +34,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (disposing)
 				{
-					((INotifyCollectionChanged)_itemsSource).CollectionChanged -= CollectionChanged;
+					((INotifyCollectionChanged)_itemsSource).CollectionChanged -= OnCollectionChanged;
 				}
 
 				_disposed = true;
 			}
 		}
 
-		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
 			{

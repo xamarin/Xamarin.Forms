@@ -1,4 +1,4 @@
-﻿using Android.Support.V7.Widget;
+using Android.Support.V7.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_recyclerView != null)
 			{
-				_recyclerView.ScrollChange += RecyclerViewScrollChange;
+				_recyclerView.ScrollChange += OnRecyclerViewScrollChange;
 			}
 		}
 
@@ -36,14 +36,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_recyclerView != null)
 				{
-					_recyclerView.ScrollChange -= RecyclerViewScrollChange;
+					_recyclerView.ScrollChange -= OnRecyclerViewScrollChange;
 				}
 			}
 
 			base.Dispose(disposing);
 		}
 
-		void RecyclerViewScrollChange(object sender, global::Android.Views.View.ScrollChangeEventArgs e)
+		void OnRecyclerViewScrollChange(object sender, global::Android.Views.View.ScrollChangeEventArgs e)
 		{
 			CanSnap = true;
 		}
