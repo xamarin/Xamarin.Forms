@@ -43,7 +43,6 @@ namespace Xamarin.Forms.Platform.Android
 			var unselectedColor = controller.EffectiveTabBarUnselectedColor;
 			var titleColor = controller.EffectiveTabBarTitleColor;
 
-
 			if (_defaultList == null)
 			{
 #if __ANDROID_28__
@@ -65,27 +64,25 @@ namespace Xamarin.Forms.Platform.Android
 			if (_lastColor.IsDefault)
 				_lastColor = color;
 
-			using (var menuView = bottomView.GetChildAt(0) as BottomNavigationMenuView)
+			var menuView = bottomView.GetChildAt(0) as BottomNavigationMenuView;
+
+			if (menuView == null)
 			{
-				if (menuView == null)
-				{
-					bottomView.SetBackground(new ColorDrawable(color.ToAndroid()));
-				}
-				else
-				{
-					var index = _shellItem.Items.IndexOf(_shellItem.CurrentItem);
-					using (var menu = bottomView.Menu)
-						index = Math.Min(index, menu.Size() - 1);
+				bottomView.SetBackground(new ColorDrawable(color.ToAndroid()));
+			}
+			else
+			{
+				var index = _shellItem.Items.IndexOf(_shellItem.CurrentItem);
 
-					using (var child = menuView.GetChildAt(index))
-					{
-						var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
+				var menu = bottomView.Menu;
+				index = Math.Min(index, menu.Size() - 1);
 
-						bottomView.Background?.Dispose();
-						bottomView.SetBackground(new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint));
-						_lastColor = color;
-					}
-				}
+				var child = menuView.GetChildAt(index);
+				var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
+
+				bottomView.SetBackground(new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint));
+
+				_lastColor = color;
 			}
 		}
 
@@ -148,6 +145,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-#endregion IDisposable
+		#endregion IDisposable
 	}
 }

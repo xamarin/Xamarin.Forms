@@ -211,7 +211,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected virtual void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
-			_tablayout.Visibility = (ShellSection.Items.Count > 1) ? ViewStates.Visible : ViewStates.Gone;
+			_tablayout.Visibility = ShellSection.Items.Count > 1 ? ViewStates.Visible : ViewStates.Gone;
 
 		protected virtual void OnShellItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{

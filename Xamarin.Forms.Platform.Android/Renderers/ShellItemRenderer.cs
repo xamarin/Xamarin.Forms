@@ -1,4 +1,3 @@
-using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Support.Design.Widget;
@@ -48,6 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 		FrameLayout _navigationArea;
 		AView _outerLayout;
 		IShellBottomNavViewAppearanceTracker _appearanceTracker;
+		BottomSheetDialog _bottomSheetDialog;
 		bool _disposed;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 			_bottomView.SetBackgroundColor(Color.White.ToAndroid());
 			_bottomView.SetOnNavigationItemSelectedListener(this);
 
-			if(ShellItem == null)
+			if (ShellItem == null)
 				throw new ArgumentException("Active Shell Item not set. Have you added any Shell Items to your Shell?", nameof(ShellItem));
 
 			HookEvents(ShellItem);
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Platform.Android
 					_navigationArea?.Dispose();
 					_appearanceTracker?.Dispose();
 					_outerLayout?.Dispose();
-					
+
 					_bottomView = null;
 					_navigationArea = null;
 					_appearanceTracker = null;
@@ -128,77 +128,69 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual BottomSheetDialog CreateMoreBottomSheet(Action<ShellSection, BottomSheetDialog> selectCallback)
 		{
 			var bottomSheetDialog = new BottomSheetDialog(Context);
-			var bottomSheetLayout = new LinearLayout(Context);
-			using (var bottomShellLP = new LP(LP.MatchParent, LP.WrapContent))
-				bottomSheetLayout.LayoutParameters = bottomShellLP;
-			bottomSheetLayout.Orientation = Orientation.Vertical;
+			var bottomSheetLayout = new LinearLayout(Context)
+			{
+				LayoutParameters = new LP(LP.MatchParent, LP.WrapContent),
+				Orientation = Orientation.Vertical
+			};
 			// handle the more tab
 			for (int i = 4; i < ShellItem.Items.Count; i++)
 			{
 				var shellContent = ShellItem.Items[i];
 
-				using (var innerLayout = new LinearLayout(Context))
+				var innerLayout = new LinearLayout(Context);
+				innerLayout.SetClipToOutline(true);
+				innerLayout.SetBackground(CreateItemBackgroundDrawable());
+				innerLayout.SetPadding(0, (int)Context.ToPixels(6), 0, (int)Context.ToPixels(6));
+				innerLayout.Orientation = Orientation.Horizontal;
+				innerLayout.LayoutParameters = new LP(LP.MatchParent, LP.WrapContent);
+
+				// technically the unhook isn't needed
+				// we dont even unhook the events that dont fire
+				void clickCallback(object s, EventArgs e)
 				{
-					innerLayout.SetClipToOutline(true);
-					innerLayout.SetBackground(CreateItemBackgroundDrawable());
-					innerLayout.SetPadding(0, (int)Context.ToPixels(6), 0, (int)Context.ToPixels(6));
-					innerLayout.Orientation = Orientation.Horizontal;
-					using (var param = new LP(LP.MatchParent, LP.WrapContent))
-						innerLayout.LayoutParameters = param;
-
-					// technically the unhook isn't needed
-					// we dont even unhook the events that dont fire
-					void clickCallback(object s, EventArgs e)
-					{
-						selectCallback(shellContent, bottomSheetDialog);
-						if (!innerLayout.IsDisposed())
-							innerLayout.Click -= clickCallback;
-					}
-					innerLayout.Click += clickCallback;
-
-					var image = new ImageView(Context);
-					var lp = new LinearLayout.LayoutParams((int)Context.ToPixels(32), (int)Context.ToPixels(32))
-					{
-						LeftMargin = (int)Context.ToPixels(20),
-						RightMargin = (int)Context.ToPixels(20),
-						TopMargin = (int)Context.ToPixels(6),
-						BottomMargin = (int)Context.ToPixels(6),
-						Gravity = GravityFlags.Center
-					};
-					image.LayoutParameters = lp;
-					lp.Dispose();
-
-					image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());
-					ShellContext.ApplyDrawableAsync(shellContent, ShellSection.IconProperty, icon =>
-					{
-						if (!image.IsDisposed())
-							image.SetImageDrawable(icon);
-					});
-
-					innerLayout.AddView(image);
-
-					using (var text = new TextView(Context))
-					{
-						text.Typeface = "sans-serif-medium".ToTypeFace();
-						text.SetTextColor(AColor.Black);
-						text.Text = shellContent.Title;
-						lp = new LinearLayout.LayoutParams(0, LP.WrapContent)
-						{
-							Gravity = GravityFlags.Center,
-							Weight = 1
-						};
-						text.LayoutParameters = lp;
-						lp.Dispose();
-
-						innerLayout.AddView(text);
-					}
-
-					bottomSheetLayout.AddView(innerLayout);
+					selectCallback(shellContent, bottomSheetDialog);
+					if (!innerLayout.IsDisposed())
+						innerLayout.Click -= clickCallback;
 				}
+				innerLayout.Click += clickCallback;
+
+				var image = new ImageView(Context);
+				var lp = new LinearLayout.LayoutParams((int)Context.ToPixels(32), (int)Context.ToPixels(32))
+				{
+					LeftMargin = (int)Context.ToPixels(20),
+					RightMargin = (int)Context.ToPixels(20),
+					TopMargin = (int)Context.ToPixels(6),
+					BottomMargin = (int)Context.ToPixels(6),
+					Gravity = GravityFlags.Center
+				};
+				image.LayoutParameters = lp;
+
+				image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());
+				ShellContext.ApplyDrawableAsync(shellContent, BaseShellItem.IconProperty, icon =>
+				{
+					if (!image.IsDisposed())
+						image.SetImageDrawable(icon);
+				});
+
+				innerLayout.AddView(image);
+
+				var text = new TextView(Context);
+				text.Typeface = "sans-serif-medium".ToTypeFace();
+				text.SetTextColor(AColor.Black);
+				text.Text = shellContent.Title;
+				text.LayoutParameters = new LinearLayout.LayoutParams(0, LP.WrapContent)
+				{
+					Gravity = GravityFlags.Center,
+					Weight = 1
+				};
+
+				innerLayout.AddView(text);
+
+				bottomSheetLayout.AddView(innerLayout);
 			}
 
 			bottomSheetDialog.SetContentView(bottomSheetLayout);
-			bottomSheetLayout.Dispose();
 
 			return bottomSheetDialog;
 		}
@@ -210,14 +202,15 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnShellSectionChanged();
 
 			var index = ShellItem.Items.IndexOf(ShellSection);
-			using (var menu = _bottomView.Menu)
-			{
-				index = Math.Min(index, menu.Size() - 1);
-				if (index < 0)
-					return;
-				using (var menuItem = menu.GetItem(index))
-					menuItem.SetChecked(true);
-			}
+			var menu = _bottomView.Menu;
+
+			index = Math.Min(index, menu.Size() - 1);
+			
+			if (index < 0)
+				return;
+			
+			var menuItem = menu.GetItem(index);
+			menuItem.SetChecked(true);
 		}
 
 		protected override void OnDisplayedPageChanged(Page newPage, Page oldPage)
@@ -238,9 +231,9 @@ namespace Xamarin.Forms.Platform.Android
 			var id = item.ItemId;
 			if (id == MoreTabId)
 			{
-				var bottomSheetDialog = CreateMoreBottomSheet(OnMoreItemSelected);
-				bottomSheetDialog.Show();
-				bottomSheetDialog.DismissEvent += OnMoreSheetDismissed;
+				_bottomSheetDialog = CreateMoreBottomSheet(OnMoreItemSelected);
+				_bottomSheetDialog.Show();
+				_bottomSheetDialog.DismissEvent += OnMoreSheetDismissed;
 			}
 			else
 			{
@@ -263,10 +256,18 @@ namespace Xamarin.Forms.Platform.Android
 			ChangeSection(shellSection);
 
 			dialog.Dismiss();
-			dialog.Dispose();
 		}
 
-		protected virtual void OnMoreSheetDismissed(object sender, EventArgs e) => OnShellSectionChanged();
+		protected virtual void OnMoreSheetDismissed(object sender, EventArgs e)
+		{
+			OnShellSectionChanged();
+
+			if (_bottomSheetDialog != null)
+			{
+				_bottomSheetDialog.DismissEvent -= OnMoreSheetDismissed;
+				_bottomSheetDialog.Dispose();
+			}
+		}
 
 		protected override void OnShellItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -315,25 +316,26 @@ namespace Xamarin.Forms.Platform.Android
 
 			var currentIndex = shellItem.Items.IndexOf(ShellSection);
 
-			List<IMenuItem> menuItems = new List<IMenuItem>();
-			List<Task> loadTasks = new List<Task>();
+			var loadTasks = new List<Task>();
+
 			for (int i = 0; i < end; i++)
 			{
 				var item = shellItem.Items[i];
-				using (var title = new Java.Lang.String(item.Title))
+				var title = new Java.Lang.String(item.Title);
+
+				var menuItem = menu.Add(0, i, 0, title);
+
+				loadTasks.Add(ShellContext.ApplyDrawableAsync(item, BaseShellItem.IconProperty, icon =>
 				{
-					var menuItem = menu.Add(0, i, 0, title);
-					menuItems.Add(menuItem);
-					loadTasks.Add(ShellContext.ApplyDrawableAsync(item, ShellSection.IconProperty, icon =>
-					{
-						if (icon != null)
-							menuItem.SetIcon(icon);
-					}));
-					UpdateShellSectionEnabled(item, menuItem);
-					if (item == ShellSection)
-					{
-						menuItem.SetChecked(true);
-					}
+					if (icon != null)
+						menuItem.SetIcon(icon);
+				}));
+
+				UpdateShellSectionEnabled(item, menuItem);
+
+				if (item == ShellSection)
+				{
+					menuItem.SetChecked(true);
 				}
 			}
 
@@ -341,9 +343,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var moreString = new Java.Lang.String("More");
 				var menuItem = menu.Add(0, MoreTabId, 0, moreString);
-				moreString.Dispose();
 
 				menuItem.SetIcon(Resource.Drawable.abc_ic_menu_overflow_material);
+
 				if (currentIndex >= maxBottomItems - 1)
 					menuItem.SetChecked(true);
 			}
@@ -354,14 +356,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (loadTasks.Count > 0)
 				await Task.WhenAll(loadTasks);
-
-			foreach (var menuItem in menuItems)
-				menuItem.Dispose();
 		}
 
 		protected virtual void UpdateShellSectionEnabled(ShellSection shellSection, IMenuItem menuItem)
 		{
 			bool tabEnabled = shellSection.IsEnabled;
+
 			if (menuItem.IsEnabled != tabEnabled)
 				menuItem.SetEnabled(tabEnabled);
 		}
@@ -374,8 +374,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetupMenu()
 		{
-			using (var menu = _bottomView.Menu)
-				SetupMenu(menu, _bottomView.MaxItemCount, ShellItem);
+			SetupMenu(_bottomView.Menu, _bottomView.MaxItemCount, ShellItem);
 		}
 
 		void UpdateTabBarVisibility()
@@ -384,11 +383,9 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			bool visible = Shell.GetTabBarIsVisible(DisplayedPage);
-			using (var menu = _bottomView.Menu)
-			{
-				if (menu.Size() == 1)
-					visible = false;
-			}
+
+			if (_bottomView.Menu.Size() == 1)
+				visible = false;
 
 			_bottomView.Visibility = visible ? ViewStates.Visible : ViewStates.Gone;
 		}

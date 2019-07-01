@@ -1,4 +1,3 @@
-using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
@@ -142,6 +141,7 @@ namespace Xamarin.Forms.Platform.Android
 				((IShellController)_shellContext.Shell).RemoveFlyoutBehaviorObserver(this);
 
 				UpdateTitleView(_shellContext.AndroidContext, _toolbar, null);
+				UpdateToolbarItems(_toolbar, null);
 
 				if (_searchView != null)
 				{
@@ -393,13 +393,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (baseDrawable != null)
 				{
-					using (var constant = baseDrawable.GetConstantState())
-					using (var newDrawable = constant.NewDrawable())
-					using (var iconDrawable = newDrawable.Mutate())
-					{
-						iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-						menuItem.SetIcon(iconDrawable);
-					}
+					var iconDrawable = baseDrawable
+						.GetConstantState()
+						.NewDrawable()
+						.Mutate();
+
+					iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+					menuItem.SetIcon(iconDrawable);
 				}
 			});
 		}
@@ -453,32 +453,30 @@ namespace Xamarin.Forms.Platform.Android
 
 			foreach (var item in page.ToolbarItems)
 			{
-				using (var title = new Java.Lang.String(item.Text))
-				{
-					var menuitem = menu.Add(title);
-					UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
+				var title = new Java.Lang.String(item.Text);
+				var menuitem = menu.Add(title);
 
-					menuitem.SetTitleOrContentDescription(item);
-					menuitem.SetEnabled(item.IsEnabled);
-					menuitem.SetShowAsAction(ShowAsAction.Always);
-					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
-					
-					if(TintColor != Color.Default)
-					{
-						var view = toolbar.FindViewById(menuitem.ItemId);
-						if (view is ATextView  textView)
-							textView.SetTextColor(TintColor.ToAndroid());
-					}
+				UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
 
-					menuitem.Dispose();
+				menuitem.SetTitleOrContentDescription(item);
+				menuitem.SetEnabled(item.IsEnabled);
+				menuitem.SetShowAsAction(ShowAsAction.Always);
+				menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
 
-				}
-			}
+                if (TintColor != Color.Default)
+                {
+                    var view = toolbar.FindViewById(menuitem.ItemId);
+                    if (view is ATextView textView)
+                        textView.SetTextColor(TintColor.ToAndroid());
+                }
+            }
 
 			SearchHandler = Shell.GetSearchHandler(page);
+
 			if (SearchHandler != null && SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Hidden)
 			{
 				var context = _shellContext.AndroidContext;
+
 				if (_searchView == null)
 				{
 					_searchView = GetSearchView(context);
@@ -487,9 +485,7 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView.LoadView();
 					_searchView.View.ViewAttachedToWindow += OnSearchViewAttachedToWindow;
 
-					var lp = new LP(LP.MatchParent, LP.MatchParent);
-					_searchView.View.LayoutParameters = lp;
-					lp.Dispose();
+					_searchView.View.LayoutParameters = new LP(LP.MatchParent, LP.MatchParent);
 					_searchView.SearchConfirmed += OnSearchConfirmed;
 				}
 
@@ -497,12 +493,10 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var placeholder = new Java.Lang.String(SearchHandler.Placeholder);
 					var item = menu.Add(placeholder);
-					placeholder.Dispose();
 
 					item.SetEnabled(SearchHandler.IsSearchEnabled);
 					item.SetIcon(Resource.Drawable.abc_ic_search_api_material);
-					using (var icon = item.Icon)
-						icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+					item.Icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
 					item.SetShowAsAction(ShowAsAction.IfRoom | ShowAsAction.CollapseActionView);
 
 					if (_searchView.View.Parent != null)
@@ -510,11 +504,11 @@ namespace Xamarin.Forms.Platform.Android
 
 					_searchView.ShowKeyboardOnAttached = true;
 					item.SetActionView(_searchView.View);
-					item.Dispose();
 				}
 				else if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Expanded)
 				{
 					_searchView.ShowKeyboardOnAttached = false;
+
 					if (_searchView.View.Parent != _toolbar)
 						_toolbar.AddView(_searchView.View);
 				}
@@ -530,8 +524,6 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView = null;
 				}
 			}
-
-			menu.Dispose();
 		}
 
 		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
@@ -543,6 +535,7 @@ namespace Xamarin.Forms.Platform.Android
 			for (int i = 0; i < _toolbar.ChildCount; i++)
 			{
 				var child = _toolbar.GetChildAt(i);
+
 				if (child is AppCompatImageButton button)
 				{
 					// we want the newly added button which will need layout
@@ -550,8 +543,6 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						button.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
 					}
-
-					button.Dispose();
 				}
 			}
 		}
@@ -582,11 +573,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			protected override void Dispose(bool disposing)
 			{
-				base.Dispose(disposing);
-				if (disposing && _iconBitmap != null)
+				if (disposing)
 				{
-					_iconBitmap.Dispose();
+					_iconBitmap?.Dispose();
 				}
+
+				base.Dispose(disposing);
 			}
 
 			public FlyoutIconDrawerDrawable(Context context, Color defaultColor, Drawable icon, string text) : base(context)
@@ -610,12 +602,14 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else if (!string.IsNullOrEmpty(_text))
 				{
-					var paint = new Paint { AntiAlias = true };
-					paint.TextSize = _defaultSize;
-					paint.Color = pressed ? _pressedBackgroundColor.ToAndroid() : _defaultColor.ToAndroid();
-					paint.SetStyle(Paint.Style.Fill);
-					var y = (Bounds.Height() + paint.TextSize) / 2;
-					canvas.DrawText(_text, 0, y, paint);
+					using (var paint = new Paint { AntiAlias = true })
+					{
+						paint.TextSize = _defaultSize;
+						paint.Color = pressed ? _pressedBackgroundColor.ToAndroid() : _defaultColor.ToAndroid();
+						paint.SetStyle(Paint.Style.Fill);
+						var y = (Bounds.Height() + paint.TextSize) / 2;
+						canvas.DrawText(_text, 0, y, paint);
+					}
 				}
 			}
 		}

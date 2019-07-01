@@ -32,8 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 			var titleArgb = title.ToAndroid(ShellRenderer.DefaultTitleColor).ToArgb();
 
 			toolbar.SetTitleTextColor(titleArgb);
-			using (var colorDrawable = new ColorDrawable(background.ToAndroid(ShellRenderer.DefaultBackgroundColor)))
-				toolbar.SetBackground(colorDrawable);
+			toolbar.SetBackground(new ColorDrawable(background.ToAndroid(ShellRenderer.DefaultBackgroundColor)));
 			toolbarTracker.TintColor = foreground.IsDefault ? ShellRenderer.DefaultForegroundColor : foreground;
 		}
 

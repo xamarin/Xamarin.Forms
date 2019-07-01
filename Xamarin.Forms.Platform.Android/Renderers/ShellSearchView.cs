@@ -175,16 +175,16 @@ namespace Xamarin.Forms.Platform.Android
 			var query = searchHandler.Query;
 			var placeholder = searchHandler.Placeholder;
 
-			LP lp;
 			var context = Context;
-			_cardView = new CardView(context);
-			using (lp = new LayoutParams(LP.MatchParent, LP.MatchParent))
-				_cardView.LayoutParameters = lp;
+			_cardView = new CardView(context)
+			{
+				LayoutParameters = new LayoutParams(LP.MatchParent, LP.MatchParent)
+			};
 
-			_linearLayout = new LinearLayout(context);
-			using (lp = new LP(LP.MatchParent, LP.MatchParent))
-				_linearLayout.LayoutParameters = lp;
-			_linearLayout.Orientation = Orientation.Horizontal;
+			_linearLayout = new LinearLayout(context)
+			{
+				LayoutParameters = new LP(LP.MatchParent, LP.MatchParent), Orientation = Orientation.Horizontal
+			};
 
 			_cardView.AddView(_linearLayout);
 
@@ -192,26 +192,26 @@ namespace Xamarin.Forms.Platform.Android
 
 			_searchButton = CreateImageButton(context, searchHandler, SearchHandler.QueryIconProperty, Resource.Drawable.abc_ic_search_api_material, padding, 0, "SearchIcon");
 
-			lp = new LinearLayout.LayoutParams(0, LP.MatchParent)
-			{
-				Gravity = GravityFlags.Fill,
-				Weight = 1
-			};
 			_textBlock = new AppCompatAutoCompleteTextView(context)
 			{
-				LayoutParameters = lp,
+				LayoutParameters = new LinearLayout.LayoutParams(0, LP.MatchParent)
+				{
+					Gravity = GravityFlags.Fill, 
+					Weight = 1
+				},
 				Text = query,
 				Hint = placeholder,
-				ImeOptions = ImeAction.Done
+				ImeOptions = ImeAction.Done,
+				Enabled = searchHandler.IsSearchEnabled
 			};
-			lp.Dispose();
-			_textBlock.Enabled = searchHandler.IsSearchEnabled;
+		
 			_textBlock.SetBackground(null);
 			_textBlock.SetPadding(padding, 0, padding, 0);
 			_textBlock.SetSingleLine(true);
 			_textBlock.Threshold = 1;
 			_textBlock.Adapter = new ShellSearchViewAdapter(SearchHandler, _shellContext);
 			_textBlock.ItemClick += OnTextBlockItemClicked;
+		
 			if (Forms.IsMarshmallowOrNewer)
 				_textBlock.SetDropDownBackgroundDrawable(new ClipDrawableWrapper(_textBlock.DropDownBackground));
 
@@ -225,7 +225,7 @@ namespace Xamarin.Forms.Platform.Android
 			_linearLayout.AddView(_textBlock);
 			_linearLayout.AddView(_clearButton);
 			_linearLayout.AddView(_clearPlaceholderButton);
-		
+
 			UpdateClearButtonState();
 
 			// hook all events down here to avoid getting events while doing setup
@@ -235,7 +235,7 @@ namespace Xamarin.Forms.Platform.Android
 			_clearButton.Click += OnClearButtonClicked;
 			_clearPlaceholderButton.Click += OnClearPlaceholderButtonClicked;
 			_searchButton.Click += OnSearchButtonClicked;
-			
+
 			AddView(_cardView);
 		}
 
@@ -330,13 +330,11 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					result.SetImageDrawable(null);
 			});
-			var lp = new LinearLayout.LayoutParams((int)Context.ToPixels(22), LP.MatchParent)
+			result.LayoutParameters = new LinearLayout.LayoutParams((int)Context.ToPixels(22), LP.MatchParent)
 			{
 				LeftMargin = leftMargin,
 				RightMargin = rightMargin
 			};
-			result.LayoutParameters = lp;
-			lp.Dispose();
 			result.SetBackground(null);
 
 			return result;
