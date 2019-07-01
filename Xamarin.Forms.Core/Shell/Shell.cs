@@ -484,7 +484,7 @@ namespace Xamarin.Forms
 				filteredQuery.Add(key, q.Value);
 			}
 
-			if (baseShellItem != null && baseShellItem is ShellContent)
+			if (baseShellItem is ShellContent)
 				baseShellItem.ApplyQueryAttributes(filteredQuery);
 			else if (isLastItem)
 				element.SetValue(ShellContent.QueryAttributesProperty, query);
