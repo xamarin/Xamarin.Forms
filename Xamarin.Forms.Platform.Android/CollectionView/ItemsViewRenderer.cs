@@ -33,14 +33,20 @@ namespace Xamarin.Forms.Platform.Android
 		DataChangeObserver _dataChangeViewObserver;
 		bool _watchingForEmpty;
 
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = 0;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = 0;
+
 		RecyclerView.ItemDecoration _itemDecoration;
 
-		public ItemsViewRenderer(Context context) : base(context)
+		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
 
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
+
+			VerticalScrollBarEnabled = false;
+			HorizontalScrollBarEnabled = false;
 		}
 
 		ScrollHelper ScrollHelper => _scrollHelper ?? (_scrollHelper = new ScrollHelper(this));
@@ -319,12 +325,29 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			ScrollHelper.UpdateVerticalScrollBarVisibility(ItemsView.VerticalScrollBarVisibility);
+			if (_defaultVerticalScrollVisibility == 0)
+				_defaultVerticalScrollVisibility = VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			var newVerticalScrollVisibility = ItemsView.VerticalScrollBarVisibility;
+
+			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			ScrollHelper.UpdateHorizontalScrollBarVisibility(ItemsView.HorizontalScrollBarVisibility);
+			if (_defaultHorizontalScrollVisibility == 0)
+				_defaultHorizontalScrollVisibility =
+					HorizontalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			var newHorizontalScrollVisiblility = ItemsView.HorizontalScrollBarVisibility;
+
+			if (newHorizontalScrollVisiblility == ScrollBarVisibility.Default)
+				newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
+
+			HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
 		}
 
 		protected virtual void TearDownOldElement(ItemsView oldElement)
