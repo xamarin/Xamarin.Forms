@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ShellContent item = ShellSection.Items[i];
 				var page = ((IShellContentController)item).GetOrCreateContent();
 				var renderer = Platform.CreateRenderer(page);
-				Platform.SetRenderer(page, renderer);				 
+				Platform.SetRenderer(page, renderer);
 				AddChildViewController(renderer.ViewController);
 
 				if (item == currentItem)
