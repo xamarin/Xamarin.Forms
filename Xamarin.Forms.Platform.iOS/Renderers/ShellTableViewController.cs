@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnHeaderSizeChanged(object sender, EventArgs e)
 		{
 			_headerSize = HeaderMax;
-			TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
+			SetHeaderContentInset();			
 			LayoutParallax();
 		}
 
@@ -45,11 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var parent = TableView.Superview;
 
-			if (_headerView != null && IsFlyoutFixed)
-				TableView.Frame =
-					new CGRect(0, HeaderTopMargin, parent.Bounds.Width, parent.Bounds.Height);
-			else
-				TableView.Frame = parent.Bounds;
+			TableView.Frame = parent.Bounds;
 
 			if (_headerView != null)
 			{
@@ -58,6 +54,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_headerView.Frame = new CGRect(leftMargin, _headerOffset + HeaderTopMargin, parent.Frame.Width, _headerSize);
 			}
+		}
+
+		void SetHeaderContentInset()
+		{
+			if (_headerView != null)
+				TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax + (nfloat)HeaderTopMargin, 0, 0, 0);
+			else
+				TableView.ContentInset = new UIEdgeInsets(Platform.SafeAreaInsetsForWindow.Top, 0, 0, 0);
 		}
 
 		public override void ViewDidLoad()
@@ -69,16 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Forms.IsiOS11OrNewer)
 				TableView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
 
-			if (_headerView != null)
-			{
-				if(IsFlyoutFixed)
-					TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
-				else
-					TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax + (nfloat)HeaderTopMargin, 0, 0, 0);
-			}
-			else
-				TableView.ContentInset = new UIEdgeInsets(Platform.SafeAreaInsetsForWindow.Top, 0, 0, 0);
-
+			SetHeaderContentInset();
 			TableView.Source = _source;
 		}
 
@@ -112,6 +107,7 @@ namespace Xamarin.Forms.Platform.iOS
 				case FlyoutHeaderBehavior.Default:
 				case FlyoutHeaderBehavior.Fixed:
 					_headerSize = HeaderMax;
+					_headerOffset = 0;
 					break;
 
 				case FlyoutHeaderBehavior.Scroll:
@@ -121,6 +117,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				case FlyoutHeaderBehavior.CollapseOnScroll:
 					_headerSize = Math.Max(_headerMin, Math.Min(HeaderMax, HeaderMax - (e.ContentOffset.Y + HeaderTopMargin) - HeaderMax));
+					_headerOffset = 0;
 					break;
 			}
 
