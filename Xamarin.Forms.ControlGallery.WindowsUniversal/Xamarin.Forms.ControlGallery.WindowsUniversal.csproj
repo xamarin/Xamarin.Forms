@@ -163,10 +163,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="xamarinlogo.png">
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="xamarinlogo.png" />
     <Content Include="xamarinstore.jpg" />
   </ItemGroup>
   <ItemGroup>
