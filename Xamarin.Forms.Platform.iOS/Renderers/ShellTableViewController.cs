@@ -44,20 +44,19 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var parent = TableView.Superview;
-			TableView.Frame = parent.Bounds.Inset(0, SafeAreaOffset);
+
+			if (_headerView != null && IsFlyoutFixed)
+				TableView.Frame =
+					new CGRect(0, HeaderTopMargin, parent.Bounds.Width, parent.Bounds.Height);
+			else
+				TableView.Frame = parent.Bounds;
+
 			if (_headerView != null)
 			{
-				_headerView.Frame = new CGRect(0, _headerOffset + SafeAreaOffset, parent.Frame.Width, _headerSize);
+				var margin = _headerView.Margin;
+				var leftMargin = margin.Left - margin.Right;
 
-				var headerHeight = Math.Max(_headerMin, _headerSize + _headerOffset);
-				if (_headerOffset < 0)
-				{
-					CAShapeLayer shapeLayer = new CAShapeLayer();
-					CGRect rect = new CGRect(0, _headerOffset * -1, parent.Frame.Width, headerHeight);
-					var path = CGPath.FromRect(rect);
-					shapeLayer.Path = path;
-					_headerView.Layer.Mask = shapeLayer;
-				}
+				_headerView.Frame = new CGRect(leftMargin, _headerOffset + HeaderTopMargin, parent.Frame.Width, _headerSize);
 			}
 		}
 
@@ -69,7 +68,17 @@ namespace Xamarin.Forms.Platform.iOS
 			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 			if (Forms.IsiOS11OrNewer)
 				TableView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
-			TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
+
+			if (_headerView != null)
+			{
+				if(IsFlyoutFixed)
+					TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
+				else
+					TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax + (nfloat)HeaderTopMargin, 0, 0, 0);
+			}
+			else
+				TableView.ContentInset = new UIEdgeInsets(Platform.SafeAreaInsetsForWindow.Top, 0, 0, 0);
+
 			TableView.Source = _source;
 		}
 
@@ -93,6 +102,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnScrolled(object sender, UIScrollView e)
 		{
+			if (_headerView == null)
+				return;
+
 			var headerBehavior = _context.Shell.FlyoutHeaderBehavior;
 
 			switch (headerBehavior)
@@ -104,18 +116,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 				case FlyoutHeaderBehavior.Scroll:
 					_headerSize = HeaderMax;
-					_headerOffset = Math.Min(0, -(HeaderMax + e.ContentOffset.Y));
+					_headerOffset = Math.Min(0, -(HeaderMax + e.ContentOffset.Y + HeaderTopMargin));
 					break;
 
 				case FlyoutHeaderBehavior.CollapseOnScroll:
-					_headerSize = Math.Max(_headerMin, Math.Min(HeaderMax, HeaderMax - e.ContentOffset.Y - HeaderMax));
+					_headerSize = Math.Max(_headerMin, Math.Min(HeaderMax, HeaderMax - (e.ContentOffset.Y + HeaderTopMargin) - HeaderMax));
 					break;
 			}
 
 			LayoutParallax();
 		}
 
-		float SafeAreaOffset => (float)Platform.SafeAreaInsetsForWindow.Top;
 		double HeaderMax => _headerView?.MeasuredHeight ?? 0;
+		double HeaderTopMargin => (_headerView != null) ? _headerView.Margin.Top - _headerView.Margin.Bottom : 0;
+		bool IsFlyoutFixed => _context.Shell.FlyoutHeaderBehavior == FlyoutHeaderBehavior.Default || _context.Shell.FlyoutHeaderBehavior == FlyoutHeaderBehavior.Fixed;
 	}
 }
