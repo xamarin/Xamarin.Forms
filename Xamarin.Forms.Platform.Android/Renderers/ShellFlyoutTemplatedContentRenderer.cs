@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Platform.Android
         Drawable _defaultBackgroundColor;
 		ImageView _bgImage;
         View _flyoutHeader;
+        int _actionBarHeight;
 
         public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
         {
@@ -57,14 +58,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			appBar.AddOnOffsetChangedListener(this);
 
-			int actionBarHeight = (int)context.ToPixels(56);
+			_actionBarHeight = (int)context.ToPixels(56);
+
 			_flyoutHeader = ((IShellController)shellContext.Shell).FlyoutHeader;
 			_flyoutHeader.MeasureInvalidated += OnFlyoutHeaderMeasureInvalidated;
 			_headerView = new HeaderContainer(context, _flyoutHeader)
 			{
 				MatchWidth = true
 			};
-			_headerView.SetMinimumHeight(actionBarHeight);
+			_headerView.SetMinimumHeight(_actionBarHeight);
 			_headerView.LayoutParameters = new AppBarLayout.LayoutParams(LP.MatchParent, LP.WrapContent)
 			{
 				ScrollFlags = AppBarLayout.LayoutParams.ScrollFlagScroll
@@ -84,11 +86,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ActionBarSize, tv, true))
 				{
-					actionBarHeight = TypedValue.ComplexToDimensionPixelSize(tv.Data, metrics);
+					_actionBarHeight = TypedValue.ComplexToDimensionPixelSize(tv.Data, metrics);
 				}
 			}
 
-			width -= actionBarHeight;
+			width -= _actionBarHeight;
 
 			coordinator.LayoutParameters = new LP(width, LP.MatchParent);
 
@@ -191,6 +193,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_flyoutHeader != null)
 				margin = _flyoutHeader.Margin;
+
+			var minimumHeight = Convert.ToInt32(_actionBarHeight + context.ToPixels(margin.Top) - context.ToPixels(margin.Bottom));
+			_headerView.SetMinimumHeight(minimumHeight);
 
 			switch (_shellContext.Shell.FlyoutHeaderBehavior)
 			{
