@@ -164,7 +164,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="xamarinlogo.png" />
-    <Content Include="xamarinstore.jpg" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
