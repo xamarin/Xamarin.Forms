@@ -33,6 +33,29 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void ShellChildrenBindingContext()
+		{
+			var shell = new Shell();
+
+			var shellItem = new ShellItem();
+			var shellSection = new ShellSection();
+			var contentPage = new ContentPage();
+			var shellContent = new ShellContent { Content = contentPage };
+			shellSection.Items.Add(shellContent);
+			shellItem.Items.Add(shellSection);
+			shell.Items.Add(shellItem);
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+
+			Assert.AreSame(shell.BindingContext, viewModel);
+			Assert.AreSame(shellItem.BindingContext, viewModel);
+			Assert.AreSame(shellSection.BindingContext, viewModel);
+			Assert.AreSame(shellContent.BindingContext, viewModel);
+			Assert.AreSame(contentPage.BindingContext, viewModel);
+		}
+
+		[Test]
 		public void NavigationProxyWireUpTest()
 		{
 			var page = new ContentPage();

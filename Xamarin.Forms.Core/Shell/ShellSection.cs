@@ -558,6 +558,16 @@ namespace Xamarin.Forms
 			}
 		}
 
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			foreach (ShellContent shellContent in Items)
+			{
+				SetInheritedBindingContext(shellContent, BindingContext);
+			}
+		}
+
 		class NavigationImpl : NavigationProxy
 		{
 			readonly ShellSection _owner;
