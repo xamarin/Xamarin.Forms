@@ -257,11 +257,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_header != null)
 			{
 				tabThickness = HeaderHeight;
-				CGRect frame;
-				if (Forms.IsiOS11OrNewer)
-					frame = new CGRect(View.Bounds.X, View.SafeAreaInsets.Top, View.Bounds.Width, HeaderHeight);
-				else
-					frame = new CGRect(View.Bounds.X, TopLayoutGuide.Length, View.Bounds.Width, HeaderHeight);
+				var headerTop = Forms.IsiOS11OrNewer ? View.SafeAreaInsets.Top : TopLayoutGuide.Length;
+				CGRect frame = new CGRect(View.Bounds.X, headerTop, View.Bounds.Width, HeaderHeight);
 				_blurView.Frame = frame;
 				_header.View.Frame = frame;
 			}
