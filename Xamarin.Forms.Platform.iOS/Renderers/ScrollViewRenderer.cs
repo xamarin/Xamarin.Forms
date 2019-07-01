@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
 			ScrollAnimationEnded += HandleScrollAnimationEnded;
-			Scrolled += HandleScrolled;			
+			Scrolled += HandleScrolled;
 		}
 
 		ScrollView ScrollView
