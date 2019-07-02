@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Android.Content;
 using Android.Graphics;
 using Android.Support.V7.Widget;
-using Android.Util;
 using Android.Views;
-using Android.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.CollectionView;
 using Xamarin.Forms.Platform.Android.FastRenderers;
@@ -382,7 +378,7 @@ namespace Xamarin.Forms.Platform.Android
 				_recyclerViewScrollListener = null;
 			}
 
-            if (ItemsViewAdapter != null)
+			if (ItemsViewAdapter != null)
             {
 				Unwatch(ItemsViewAdapter);
 				
