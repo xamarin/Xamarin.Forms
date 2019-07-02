@@ -26,6 +26,9 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isAnimating;
 		Dictionary<ShellContent, IVisualElementRenderer> _renderers = new Dictionary<ShellContent, IVisualElementRenderer>();
 		IShellPageRendererTracker _tracker;
+		bool _didLayoutSubviews;
+		int _lastTabThickness = Int32.MinValue;
+		Thickness _lastInset;
 
 		ShellSection ShellSection { get; set; }
 
@@ -37,6 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			_didLayoutSubviews = true;
 			base.ViewDidLayoutSubviews();
 
 			_containerArea.Frame = View.Bounds;
@@ -282,7 +286,17 @@ namespace Xamarin.Forms.Platform.iOS
 				bottom = BottomLayoutGuide.Length;
 			}
 
-			((IShellSectionController)ShellSection).SendInsetChanged(new Thickness(left, top, right, bottom), tabThickness);
+
+			if (_didLayoutSubviews)
+			{
+				var newInset = new Thickness(left, top, right, bottom);
+				if (newInset != _lastTabThickness || tabThickness != _lastTabThickness)
+				{
+					_lastTabThickness = tabThickness;
+					_lastInset = new Thickness(left, top, right, bottom);
+					((IShellSectionController)ShellSection).SendInsetChanged(_lastInset, _lastTabThickness);
+				}
+			}
 		}
 	}
 }

@@ -113,10 +113,15 @@ namespace Xamarin.Forms.Platform.iOS
 					var top = (float)tabThickness;
 
 					var delta = _scrollView.ContentInset.Top - top;
-					_scrollView.ContentInset = new UIEdgeInsets(top, 0, 0, 0);
+					var newInset = new UIEdgeInsets(top, 0, 0, 0);
 
-					var currentOffset = _scrollView.ContentOffset;
-					_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta);
+					if (newInset != _scrollView.ContentInset)
+					{
+						_scrollView.ContentInset = newInset;
+
+						var currentOffset = _scrollView.ContentOffset;
+						_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta);
+					}
 				}
 
 				_scrollView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Always;
@@ -125,14 +130,19 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var top = (float)(inset.Top);
 
-				if(_isInItems)
+				if (_isInItems)
 					top += (float)tabThickness;
 
 				var delta = _scrollView.ContentInset.Top - top;
-				_scrollView.ContentInset = new UIEdgeInsets(top, (float)inset.Left, (float)inset.Bottom, (float)inset.Right);
+				var newInset = new UIEdgeInsets(top, (float)inset.Left, (float)inset.Bottom, (float)inset.Right);
 
-				var currentOffset = _scrollView.ContentOffset;
-				_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta - inset.Bottom);
+				if (newInset != _scrollView.ContentInset)
+				{
+					_scrollView.ContentInset = newInset;
+
+					var currentOffset = _scrollView.ContentOffset;
+					_scrollView.ContentOffset = new PointF(currentOffset.X, currentOffset.Y + delta - inset.Bottom);
+				}
 			}
 		}
 
