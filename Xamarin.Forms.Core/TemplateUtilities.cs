@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms
 {
-	internal static class TemplateUtilities
+	public static class TemplateUtilities
 	{
 		public static async Task<Element> FindTemplatedParentAsync(Element element)
 		{
