@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using NUnit.Framework;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -323,5 +324,32 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(layout1.Position, bcl.Position);
 			Assert.AreEqual(layout1.Spacing, bcl.Spacing);
 		}
+
+		[Test]
+		public void ButtonCornerRadiusSetInExplicitStyle()
+		{
+			var xaml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+			             <ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+			                          xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+			                          x:Class=""Xamarin.Forms.Core.UnitTests.MyTestContentPage"">
+			                 <ContentPage.Resources>
+			                     <Style TargetType=""Button"">
+			                         <Setter Property=""TextColor"" Value=""White""></Setter>
+			                     </Style>
+			                     <Style x:Key=""ButtonStyle"" TargetType=""Button"">
+			                         <Setter Property=""CornerRadius"" Value=""0""></Setter>
+			                         <Setter Property=""TextColor"" Value=""Yellow""></Setter>
+			                     </Style>
+			                 </ContentPage.Resources>
+			                     <Button x:Name=""Button0"" Style=""{StaticResource ButtonStyle}"" />
+			             </ContentPage>";
+
+			var contentPage = new MyTestContentView();
+			contentPage.LoadFromXaml(xaml);
+
+			Assert.AreEqual(0, contentPage.FindByName<Button>("Button0").CornerRadius);
+		}
+
+		class MyTestContentView : ContentView { }
 	}	
 }
