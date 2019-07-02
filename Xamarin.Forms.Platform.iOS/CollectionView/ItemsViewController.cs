@@ -63,6 +63,12 @@ namespace Xamarin.Forms.Platform.iOS
 				if (disposing)
 				{
 					ItemsSource?.Dispose();
+
+					//clear data
+					CollectionView.DataSource = null;
+					CollectionView.ReloadData();
+					CollectionView.RemoveFromSuperview();
+					CollectionView.Dispose();
 				}
 
 				_disposed = true;
