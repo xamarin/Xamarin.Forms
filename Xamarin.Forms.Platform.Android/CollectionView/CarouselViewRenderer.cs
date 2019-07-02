@@ -92,7 +92,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			Carousel = newElement as CarouselView;
 
-			UpdateSpacing();
 			UpdateIsSwipeEnabled();
 			_isUpdatingPositionFromForms = true;
 			//Goto to the Correct Position
@@ -164,11 +163,6 @@ namespace Xamarin.Forms.Platform.Android
 				throw new InvalidOperationException("Visible item not found");
 
 			Carousel.SetCurrentItem(context);
-		}
-
-		void UpdateSpacing()
-		{
-
 		}
 	}
 }
