@@ -117,7 +117,6 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-		internal RelativeBindingSource RelativeSource => this.Source as RelativeBindingSource;
 
 		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
 		{
