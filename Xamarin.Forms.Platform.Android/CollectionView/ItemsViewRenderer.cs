@@ -379,7 +379,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (ItemsViewAdapter != null)
-            {
+			{
 				Unwatch(ItemsViewAdapter);
 				
 				SetAdapter(null);
