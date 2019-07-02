@@ -10,8 +10,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		float _previousHorizontalOffset, _previousVerticalOffset;
 
-		public ItemsViewLayout ItemsViewLayout { get; private set; }
-		public ItemsViewController ItemsViewController { get; private set; }
+		public ItemsViewLayout ItemsViewLayout { get; }
+		public ItemsViewController ItemsViewController { get; }
 		public SelectableItemsViewController SelectableItemsViewController
 		{
 			get => ItemsViewController as SelectableItemsViewController;
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ItemsViewLayout == null)
 			{
-				return default(UIEdgeInsets);
+				return default;
 			}
 
 			return ItemsViewLayout.GetInsetForSection(collectionView, layout, section);
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ItemsViewLayout == null)
 			{
-				return default(nfloat);
+				return default;
 			}
 
 			return ItemsViewLayout.GetMinimumInteritemSpacingForSection(collectionView, layout, section);
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ItemsViewLayout == null)
 			{
-				return default(nfloat);
+				return default;
 			}
 
 			return ItemsViewLayout.GetMinimumLineSpacingForSection(collectionView, layout, section);
