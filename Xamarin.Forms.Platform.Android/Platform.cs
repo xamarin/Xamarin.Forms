@@ -26,6 +26,10 @@ namespace Xamarin.Forms.Platform.Android
 		, IPlatform
 #pragma warning restore
 	{
+
+		internal static string PackageName { get; private set; }
+		internal static string GetPackageName() => PackageName ?? AppCompat.Platform.PackageName;
+
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
@@ -63,7 +67,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_embedded = embedded;
 			_context = context ?? throw new ArgumentNullException(nameof(context), "Somehow we're getting a null context passed in");
-			_activity = context as Activity;
+			PackageName = context.PackageName;
+			_activity = context.GetActivity();
 
 			if (!embedded)
 			{
@@ -333,9 +338,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
 		{
+			Profile.FrameBegin(nameof(CreateRenderer));
 			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
 				?? new DefaultRenderer(context);
+			Profile.FramePartition(element.GetType().Name);
 			renderer.SetElement(element);
+			Profile.FrameEnd();
 
 			return renderer;
 		}
@@ -420,13 +428,11 @@ namespace Xamarin.Forms.Platform.Android
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					var icon = item.Icon;
-					if (!string.IsNullOrEmpty(icon))
+					_ = _context.ApplyDrawableAsync(item, MenuItem.IconImageSourceProperty, iconDrawable =>
 					{
-						Drawable iconDrawable = _context.GetFormsDrawable(icon);
 						if (iconDrawable != null)
 							menuItem.SetIcon(iconDrawable);
-					}
+					});
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
@@ -455,6 +461,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void SetPage(Page newRoot)
 		{
+			if (Page == newRoot)
+			{
+				return;
+			}
+
 			var layout = false;
 			List<IVisualElementRenderer> toDispose = null;
 
@@ -571,7 +582,7 @@ namespace Xamarin.Forms.Platform.Android
 				ClearMasterDetailToggle();
 				return;
 			}
-			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || string.IsNullOrEmpty(CurrentMasterDetailPage.Master.Icon) ||
+			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || CurrentMasterDetailPage.Master.IconImageSource.IsEmpty ||
 				(MasterDetailPageController.ShouldShowSplitMode && CurrentMasterDetailPage.IsPresented))
 			{
 				//clear out existing icon;
@@ -772,7 +783,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void GetNewMasterDetailToggle()
 		{
-			int icon = ResourceManager.GetDrawableByName(CurrentMasterDetailPage.Master.Icon);
 			var drawer = GetRenderer(CurrentMasterDetailPage) as MasterDetailRenderer;
 			if (drawer == null)
 				return;
@@ -781,6 +791,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return;
 			}
+
+			// TODO: this must be changed to support the other image source types
+			var fileImageSource = CurrentMasterDetailPage.Master.IconImageSource as FileImageSource;
+			if (fileImageSource == null)
+					throw new InvalidOperationException("Icon property must be a FileImageSource on Master page");
+
+			int icon = ResourceManager.GetDrawableByName(fileImageSource);
 
 			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
@@ -814,7 +831,7 @@ namespace Xamarin.Forms.Platform.Android
 				_activity.InvalidateOptionsMenu();
 			else if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 				_activity.InvalidateOptionsMenu();
-			else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
+			else if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
 				_activity.InvalidateOptionsMenu();
 		}
 
@@ -857,7 +874,7 @@ namespace Xamarin.Forms.Platform.Android
 				modalRenderer = CreateRenderer(modal, _context);
 				SetRenderer(modal, modalRenderer);
 
-				if (modal.BackgroundColor == Color.Default && modal.BackgroundImage == null)
+				if (modal.BackgroundColor == Color.Default && modal.BackgroundImageSource == null)
 					modalRenderer.View.SetWindowBackground();
 			}
 			modalRenderer.Element.Layout(new Rectangle(0, 0, _context.FromPixels(_renderer.Width), _context.FromPixels(_renderer.Height)));
@@ -1070,22 +1087,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (ShouldShowActionBarTitleArea())
 			{
 				actionBar.Title = view.Title;
-				FileImageSource titleIcon = NavigationPage.GetTitleIcon(view);
-				if (!string.IsNullOrWhiteSpace(titleIcon))
+				_ = _context.ApplyDrawableAsync(view, NavigationPage.TitleIconImageSourceProperty, icon =>
 				{
-					var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, titleIcon));
-					if (iconBitmap != null && iconBitmap.Bitmap != null)
-						actionBar.SetLogo(iconBitmap);
-
-					useLogo = true;
-					showHome = true;
-					showTitle = true;
-				}
-				else
-				{
-					showHome = true;
-					showTitle = true;
-				}
+					if (icon != null)
+						actionBar.SetLogo(icon);
+				});
+				var titleIcon = NavigationPage.GetTitleIconImageSource(view);
+				useLogo = titleIcon != null && !titleIcon.IsEmpty;
+				showHome = true;
+				showTitle = true;
 			}
 
 			ActionBarDisplayOptions options = 0;
@@ -1183,7 +1193,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion
 
-		internal class DefaultRenderer : VisualElementRenderer<View>
+		internal class DefaultRenderer : VisualElementRenderer<View>, ILayoutChanges
 		{
 			public bool NotReallyHandled { get; private set; }
 			IOnTouchListener _touchListener;

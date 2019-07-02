@@ -11,7 +11,6 @@ using AView = Android.Views.View;
 using MaterialCardView = Android.Support.Design.Card.MaterialCardView;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Frame), typeof(MaterialFrameRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -33,7 +32,7 @@ namespace Xamarin.Forms.Material.Android
 		readonly MotionEventHelper _motionEventHelper;
 
 		public MaterialFrameRenderer(Context context)
-			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialTheme))
+			: base(MaterialContextThemeWrapper.Create(context))
 		{
 			_gestureManager = new GestureManager(this);
 			_effectControlProvider = new EffectControlProvider(this);
@@ -192,11 +191,9 @@ namespace Xamarin.Forms.Material.Android
 				return;
 
 			var cornerRadius = Element.CornerRadius;
-			if (cornerRadius < 0f && _defaultCornerRadius < 0f)
-				return;
 
 			if (_defaultCornerRadius < 0f)
-				_defaultCornerRadius = Radius;
+				_defaultCornerRadius = Context.ToPixels(MaterialColors.kFrameCornerRadiusDefault);
 
 			if (cornerRadius < 0f)
 				Radius = _defaultCornerRadius;

@@ -1,4 +1,4 @@
-﻿using Android.OS;
+using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
@@ -41,14 +41,18 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var stack = shellSection.Stack.ToList();
-			bool result = ((IShellController)_shellContext.Shell).ProposeNavigation(ShellNavigationSource.ShellContentChanged, 
+			bool result = ((IShellController)_shellContext.Shell).ProposeNavigation(ShellNavigationSource.ShellContentChanged,
 				(ShellItem)shellSection.Parent, shellSection, shellContent, stack, true);
 
 			if (result)
 			{
+				var page = ((IShellContentController)shellContent).Page;
+				if (page == null)
+					throw new ArgumentNullException(nameof(page), "Shell Content Page is Null");
+
 				ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
 
-				_toolbarTracker.Page = ((IShellContentController)shellContent).Page;
+				_toolbarTracker.Page = page;
 			}
 			else
 			{
@@ -98,6 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 		IShellToolbarAppearanceTracker _toolbarAppearanceTracker;
 		IShellToolbarTracker _toolbarTracker;
 		ViewPager _viewPager;
+		NestedScrollView _scrollview;
 
 		public ShellSectionRenderer(IShellContext shellContext)
 		{
@@ -122,7 +127,7 @@ namespace Xamarin.Forms.Platform.Android
 			var root = inflater.Inflate(Resource.Layout.RootLayout, null).JavaCast<CoordinatorLayout>();
 
 			_toolbar = root.FindViewById<Toolbar>(Resource.Id.main_toolbar);
-			var scrollview = root.FindViewById<NestedScrollView>(Resource.Id.main_scrollview);
+			_scrollview = root.FindViewById<NestedScrollView>(Resource.Id.main_scrollview);
 			_tablayout = root.FindViewById<TabLayout>(Resource.Id.main_tablayout);
 
 			_viewPager = new FormsViewPager(Context)
@@ -145,7 +150,7 @@ namespace Xamarin.Forms.Platform.Android
 			_toolbarTracker.Page = currentPage;
 
 			_viewPager.CurrentItem = currentIndex;
-			scrollview.AddView(_viewPager);
+			_scrollview.AddView(_viewPager);
 
 			if (shellSection.Items.Count == 1)
 			{
@@ -157,8 +162,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			HookEvents();
 
-			scrollview.Dispose();
-
 			return _rootView = root;
 		}
 
@@ -166,8 +169,6 @@ namespace Xamarin.Forms.Platform.Android
 		// called before the animation completes. This causes tons of tiny issues.
 		public override void OnDestroy()
 		{
-			base.OnDestroy();
-
 			if (_rootView != null)
 			{
 				UnhookEvents();
@@ -176,25 +177,29 @@ namespace Xamarin.Forms.Platform.Android
 				_viewPager.Adapter = null;
 				adapter.Dispose();
 
+				_viewPager.RemoveOnPageChangeListener(this);
+				_scrollview.RemoveView(_viewPager);
+
 				_toolbarAppearanceTracker.Dispose();
 				_tabLayoutAppearanceTracker.Dispose();
-				_viewPager.RemoveOnPageChangeListener(this);
-				_rootView.Dispose();
 				_toolbarTracker.Dispose();
-
 				_tablayout.Dispose();
 				_toolbar.Dispose();
 				_viewPager.Dispose();
+				_scrollview.Dispose();
 				_rootView.Dispose();
 			}
 
 			_toolbarAppearanceTracker = null;
 			_tabLayoutAppearanceTracker = null;
 			_toolbarTracker = null;
-			_toolbar = null;
 			_tablayout = null;
-			_rootView = null;
+			_toolbar = null;
 			_viewPager = null;
+			_scrollview = null;
+			_rootView = null;
+
+			base.OnDestroy();
 		}
 
 		protected virtual void OnAnimationFinished(EventArgs e)

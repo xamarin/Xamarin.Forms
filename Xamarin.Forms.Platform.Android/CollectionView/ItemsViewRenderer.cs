@@ -9,7 +9,7 @@ using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using AView = Android.Views.View;
+using AViewCompat = Android.Support.V4.View.ViewCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly EffectControlProvider _effectControlProvider;
 
 		protected ItemsViewAdapter ItemsViewAdapter;
-		
+
 		int? _defaultLabelFor;
 		bool _disposed;
 
@@ -31,6 +31,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		EmptyViewAdapter _emptyViewAdapter;
 		DataChangeObserver _dataChangeViewObserver;
+		bool _watchingForEmpty;
+
+		RecyclerView.ItemDecoration _itemDecoration;
 
 		public ItemsViewRenderer(Context context) : base(context)
 		{
@@ -47,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
-			ClipBounds = new Rect(0,0, Width, Height);
+			AViewCompat.SetClipBounds(this, new Rect(0, 0, Width, Height));
 
 			// After a direct (non-animated) scroll operation, we may need to make adjustments
 			// to align the target item; if an adjustment is pending, execute it here.
@@ -203,6 +206,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateEmptyView();
 			}
+			else if (changedProperty.Is(ItemsView.ItemSizingStrategyProperty))
+			{
+				UpdateAdapter();
+			}
 		}
 
 		protected virtual void UpdateItemsSource()
@@ -212,9 +219,9 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			// Stop watching the old adapter to see if it's empty (if we _are_ watching)
+			// Stop watching the old adapter to see if it's empty (if we are watching)
 			Unwatch(ItemsViewAdapter ?? GetAdapter());
-			
+
 			UpdateAdapter();
 
 			UpdateEmptyView();
@@ -222,28 +229,41 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateAdapter()
 		{
+			var oldItemViewAdapter = ItemsViewAdapter;
+
 			ItemsViewAdapter = new ItemsViewAdapter(ItemsView);
+
 			SwapAdapter(ItemsViewAdapter, true);
+
+			oldItemViewAdapter?.Dispose();
 		}
 
 		void Unwatch(Adapter adapter)
 		{
-			if (adapter != null && _dataChangeViewObserver != null)
+			if (_watchingForEmpty && adapter != null && _dataChangeViewObserver != null)
 			{
 				adapter.UnregisterAdapterDataObserver(_dataChangeViewObserver);
 			}
+
+			_watchingForEmpty = false;
 		}
 
 		// TODO hartez 2018/10/24 19:25:14 I don't like these method names; too generic 	
 		// TODO hartez 2018/11/05 22:37:42 Also, thinking all the EmptyView stuff should be moved to a helper	
 		void Watch(Adapter adapter)
 		{
+			if (_watchingForEmpty)
+			{
+				return;
+			}
+
 			if (_dataChangeViewObserver == null)
 			{
 				_dataChangeViewObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
 			}
 
 			adapter.RegisterAdapterDataObserver(_dataChangeViewObserver);
+			_watchingForEmpty = true;
 		}
 
 		protected virtual void SetUpNewElement(ItemsView newElement)
@@ -270,10 +290,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			_layout = ItemsView.ItemsLayout;
 			SetLayoutManager(SelectLayoutManager(_layout));
-			
+
 			UpdateSnapBehavior();
 			UpdateBackgroundColor();
 			UpdateFlowDirection();
+			UpdateItemSpacing();
 
 			// Keep track of the ItemsLayout's property changes
 			if (_layout != null)
@@ -284,7 +305,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Listen for ScrollTo requests
 			ItemsView.ScrollToRequested += ScrollToRequested;
 		}
-		
+
 		protected virtual void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
@@ -304,12 +325,13 @@ namespace Xamarin.Forms.Platform.Android
 			// Stop listening for ScrollTo requests
 			oldElement.ScrollToRequested -= ScrollToRequested;
 
-			var adapter = GetAdapter();
-
-			if (adapter != null)
+			if (ItemsViewAdapter != null)
 			{
+				Unwatch(ItemsViewAdapter);
+				
 				SetAdapter(null);
-				adapter.Dispose();
+
+				ItemsViewAdapter.Dispose();
 			}
 
 			if (_snapManager != null)
@@ -317,20 +339,30 @@ namespace Xamarin.Forms.Platform.Android
 				_snapManager.Dispose();
 				_snapManager = null;
 			}
+
+			if (_itemDecoration != null)
+			{
+				RemoveItemDecoration(_itemDecoration);
+			}
 		}
 
-		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
+		protected virtual void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
 		{
-			if(propertyChanged.Is(GridItemsLayout.SpanProperty))
+			if (propertyChanged.Is(GridItemsLayout.SpanProperty))
 			{
 				if (GetLayoutManager() is GridLayoutManager gridLayoutManager)
 				{
 					gridLayoutManager.SpanCount = ((GridItemsLayout)_layout).Span;
 				}
-			} 
+			}
 			else if (propertyChanged.IsOneOf(ItemsLayout.SnapPointsTypeProperty, ItemsLayout.SnapPointsAlignmentProperty))
 			{
 				UpdateSnapBehavior();
+			}
+			else if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty,
+				GridItemsLayout.HorizontalItemSpacingProperty, GridItemsLayout.VerticalItemSpacingProperty))
+			{
+				UpdateItemSpacing();
 			}
 		}
 
@@ -369,7 +401,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateEmptyView()
 		{
-			if (ItemsViewAdapter == null)
+			if (ItemsViewAdapter == null || ItemsView == null)
 			{
 				return;
 			}
@@ -381,11 +413,12 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_emptyViewAdapter == null)
 				{
-					_emptyViewAdapter = new EmptyViewAdapter();
+					_emptyViewAdapter = new EmptyViewAdapter(ItemsView);
 				}
 
 				_emptyViewAdapter.EmptyView = emptyView;
 				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
+
 				Watch(ItemsViewAdapter);
 			}
 			else
@@ -433,6 +466,22 @@ namespace Xamarin.Forms.Platform.Android
 			return ItemsViewAdapter.GetPositionForItem(args.Item);
 		}
 
+		protected virtual void UpdateItemSpacing()
+		{
+			if (_layout == null)
+			{
+				return;
+			}
+
+			if (_itemDecoration != null)
+			{
+				RemoveItemDecoration(_itemDecoration);
+			}
+
+			_itemDecoration = new SpacingItemDecoration(_layout);
+			AddItemDecoration(_itemDecoration);
+		}
+
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
 			ScrollTo(args);
@@ -441,7 +490,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
 			var position = DeterminePosition(args);
-			
+
 			if (args.IsAnimated)
 			{
 				ScrollHelper.AnimateScrollToPosition(position, args.ScrollToPosition);

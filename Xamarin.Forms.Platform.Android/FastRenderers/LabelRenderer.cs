@@ -11,7 +11,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class LabelRenderer : FormsTextView, IVisualElementRenderer, IViewRenderer, ITabStop
+	public class LabelRenderer : FormsTextView, IVisualElementRenderer, IViewRenderer, ITabStop
 	{
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 
-		Label Element
+		protected Label Element
 		{
 			get { return _element; }
 			set
@@ -77,6 +77,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				_element?.SendViewInitialized(this);
 			}
 		}
+		protected global::Android.Widget.TextView Control => this;
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
@@ -167,6 +168,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
+
 				BackgroundManager.Dispose(this);
 				if (_visualElementTracker != null)
 				{
@@ -180,10 +186,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementRenderer = null;
 				}
 
+				_spannableString?.Dispose();
+				_labelTextColorDefault?.Dispose();
+
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
 				}
@@ -202,7 +209,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return _motionEventHelper.HandleMotionEvent(Parent, e);
 		}
 
-		void OnElementChanged(ElementChangedEventArgs<Label> e)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 
@@ -237,7 +244,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			ElementPropertyChanged?.Invoke(this, e);
 

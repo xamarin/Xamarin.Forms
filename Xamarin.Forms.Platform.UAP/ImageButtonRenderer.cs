@@ -54,16 +54,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_measured = true;
 
+			// The size needs to be the entire size needed for the button (including padding, borders, etc.)
+			// Not just the size of the image.
+			var btn = Control;
+			btn.Measure(new Windows.Foundation.Size(widthConstraint, heightConstraint));
 
-			var result = new Size
-			{
-				Width = ((BitmapSource)_image.Source).PixelWidth,
-				Height = ((BitmapSource)_image.Source).PixelHeight
-			};
+			var size = new Size(Math.Ceiling(btn.DesiredSize.Width), Math.Ceiling(btn.DesiredSize.Height));
 
-			return new SizeRequest(result);
+			return new SizeRequest(size);
 		}
-
 
 		protected async override void OnElementChanged(ElementChangedEventArgs<ImageButton> e)
 		{
@@ -209,7 +208,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			_image.Margin = new WThickness(0);
 
-			Control.Padding = new WThickness(
+			// Apply the padding to the containing button, not the image
+			_formsButton.Padding = new WThickness(
 					Element.Padding.Left,
 					Element.Padding.Top,
 					Element.Padding.Right,

@@ -23,8 +23,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			XamlLoader.FallbackTypeResolver = null;
 			XamlLoader.ValueCreatedCallback = null;
 			XamlLoader.InstantiationFailedCallback = null;
-			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = null;
 #pragma warning disable 0618
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = null;
 			Xamarin.Forms.Xaml.Internals.XamlLoader.DoNotThrowOnExceptions = false;
 #pragma warning restore 0618
 		}
@@ -285,7 +285,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[Test]
 		public void UnknownGenericType()
 		{
-			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? 
+				(p.Any(i => i.TypeName == "MyCustomButton`1") ? typeof(ProxyGenericButton<>) : typeof(MockView));
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -295,7 +296,28 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				 </ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
-			Assert.That(page.Content, Is.TypeOf<MockView>());
+			Assert.That(page.Content, Is.TypeOf<ProxyGenericButton<MockView>>());
+		}
+
+		[Test]
+		public void InvalidGenericType()
+		{
+			int exceptionCount = 0;
+#pragma warning disable 0618 // Type or member is obsolete
+			Forms.Internals.ResourceLoader.ExceptionHandler = _ => exceptionCount++;
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
+#pragma warning restore 0618 // Type or member is obsolete
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+					<local:MyCustomButton x:TypeArguments=""local:MyCustomType"" />
+				 </ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.Null);
+			Assert.That(exceptionCount, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -365,7 +387,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				</ContentPage>";
 
 			var exceptions = new List<Exception>();
+#pragma warning disable CS0618 // Type or member is obsolete
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 			Assert.That(page.Content, Is.TypeOf<Button>());
@@ -533,7 +557,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					</ContentPage>";
 
 			var exceptions = new List<Exception>();
+#pragma warning disable CS0618 // Type or member is obsolete
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+#pragma warning restore CS0618 // Type or member is obsolete
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 			Assert.That(exceptions.Count, Is.EqualTo(2));
 		}
@@ -549,7 +575,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					</ContentPage>";
 
 			var exceptions = new List<Exception>();
+#pragma warning disable CS0618 // Type or member is obsolete
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+#pragma warning restore CS0618 // Type or member is obsolete
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 			Assert.That(exceptions.Count, Is.EqualTo(1));
 		}
@@ -564,14 +592,16 @@ namespace Xamarin.Forms.Xaml.UnitTests
 								<StackLayout>
 									<ListView ItemsSource=""{x:Static Foo}"" />
 									<ListView ItemsSource=""{local:Missing Test}"" />
+									<Label Text=""{Binding Foo"" />
 								</StackLayout>
 						</ContentPage>";
-
 			var exceptions = new List<Exception>();
+#pragma warning disable CS0618 // Type or member is obsolete
 			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+#pragma warning restore CS0618 // Type or member is obsolete
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 			Assert.That(exceptions.Count, Is.GreaterThan(1));
-    	}
+		}
 
 		[Test]
 		public void CanResolveRootNode()
@@ -579,7 +609,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			string assemblyName = null;
 			string clrNamespace = null;
 			string typeName = null;
-
 
 			XamlLoader.FallbackTypeResolver = (fallbackTypeInfos, type) =>
 			{
@@ -608,7 +637,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			string clrNamespace = null;
 			string typeName = null;
 
-
 			XamlLoader.FallbackTypeResolver = (fallbackTypeInfos, type) =>
 			{
 				assemblyName = fallbackTypeInfos?[1].AssemblyName;
@@ -628,7 +656,92 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(clrNamespace, Is.EqualTo("my.namespace"));
 			Assert.That(typeName, Is.EqualTo("MissingType"));
 		}
+
+		[Test]
+		public void IgnoreNamedMissingTypeException()
+		{
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+						<StackLayout>
+							<local:Missing x:Name=""MyName"" />
+							<Button x:Name=""button"" />
+							<Button x:Name=""button"" />
+						</StackLayout>
+					</ContentPage>";
+			var exceptions = new List<Exception>();
+#pragma warning disable CS0618 // Type or member is obsolete
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+#pragma warning restore CS0618 // Type or member is obsolete
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.GreaterThan(1));
+		}
+
+		[Test]
+		public void IgnoreFindByNameInvalidCastException()
+		{
+			var xaml = @"
+						<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+							<Label x:Name=""MyName"" />
+						</ContentPage>";
+
+			var exceptions = new List<Exception>();
+#pragma warning disable CS0618 // Type or member is obsolete
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+#pragma warning restore CS0618 // Type or member is obsolete
+			var content = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.DoesNotThrow(() => content.FindByName<Button>("MyName"));
+			Assert.That(exceptions.Count, Is.GreaterThanOrEqualTo(1));
+		}
+    
+		[Test]
+		public void TextAsRandomContent()
+		{
+			var xaml = @"
+						<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+								xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+								<StackLayout>
+									<Label>xyz</Label>
+									<StackLayout>foo</StackLayout>
+									<Label><Label.FormattedText>bar</Label.FormattedText></Label>
+								</StackLayout>
+						</ContentPage>";
+			XamlLoader.Create(xaml, true);
+			var exceptions = new List<Exception>();
+#pragma warning disable CS0618 // Type or member is obsolete
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+#pragma warning restore CS0618 // Type or member is obsolete
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.GreaterThanOrEqualTo(1));
+		}
+
+		[Test]
+		public void MissingGenericRootTypeProvidesCorrectTypeName()
+		{
+			var xaml = @"
+					<local:GenericContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+						xmlns:local=""clr-namespace:MissingNamespace""
+						x:TypeArguments=""x:Object"" />";
+
+			XamlLoader.FallbackTypeResolver = (p, type) =>
+			{
+				if (type != null)
+					return type;
+				Assert.That(p.Select(i => i.TypeName), Has.Some.EqualTo("GenericContentPage`1"));
+				return typeof(ProxyGenericContentPage<>);
+			};
+
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
 	}
+
+	public class ProxyGenericContentPage<T> : ContentPage { }
+
+	public class ProxyGenericButton<T> : Button { }
 
 	public class InstantiateThrows
 	{

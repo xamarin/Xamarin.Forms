@@ -8,7 +8,6 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
-using System.Linq;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -191,6 +190,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
+		//should this be the default color on the BP for iOS? 
+		readonly Color _defaultColor = Color.White;
+
 		public Task<UIImage> LoadImageAsync(
 			ImageSource imagesource, 
 			CancellationToken cancelationToken = default(CancellationToken), 
@@ -200,7 +202,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var fontsource = imagesource as FontImageSource;
 			if (fontsource != null)
 			{
-				var iconcolor = fontsource.Color != Color.Default ? fontsource.Color : Color.White;
+				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
 				var imagesize = new SizeF((float)fontsource.Size, (float)fontsource.Size);
 				var font = UIFont.FromName(fontsource.FontFamily ?? string.Empty, (float)fontsource.Size) ??
 					UIFont.SystemFontOfSize((float)fontsource.Size);
@@ -217,7 +219,7 @@ namespace Xamarin.Forms.Platform.iOS
 				image = UIGraphics.GetImageFromCurrentImageContext();
 				UIGraphics.EndImageContext();
 
-				if (iconcolor != Color.Default)
+				if (iconcolor != _defaultColor)
 					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
 			}
 			return Task.FromResult(image);

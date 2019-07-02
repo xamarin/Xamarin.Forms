@@ -5,10 +5,18 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Items")]
+	[EditorBrowsable(EditorBrowsableState.Always)]
+	public class Tab : ShellSection
+	{
+	}
+
+	[ContentProperty(nameof(Items))]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class ShellSection : ShellGroupItem, IShellSectionController, IPropertyPropagationController
 	{
 		#region PropertyKeys
@@ -59,30 +67,26 @@ namespace Xamarin.Forms
 			callback(DisplayedPage);
 		}
 
-		Task IShellSectionController.GoToPart(List<string> parts, Dictionary<string, string> queryData)
+		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
 		{
-			var shellContentRoute = parts[0];
+			ShellContent shellContent = request.Request.Content;
 
-			var items = Items;
-			for (int i = 0; i < items.Count; i++)
+			if (shellContent == null)
+				return Task.FromResult(true);
+
+			if (request.Request.GlobalRoutes.Count > 0)
 			{
-				ShellContent shellContent = items[i];
-				if (Routing.CompareRoutes(shellContent.Route, shellContentRoute, out var isImplicit))
+				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
+				Device.BeginInvokeOnMainThread(async () =>
 				{
-					Shell.ApplyQueryAttributes(shellContent, queryData, parts.Count == 1);
-
-					if (CurrentItem != shellContent)
-						SetValueFromRenderer(CurrentItemProperty, shellContent);
-
-					if (!isImplicit)
-						parts.RemoveAt(0);
-					if (parts.Count > 0)
-					{
-						return GoToAsync(parts, queryData, false);
-					}
-					break;
-				}
+					await GoToAsync(request, queryData, false);
+				});
 			}
+
+			Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
+
+			if (CurrentItem != shellContent)
+				SetValueFromRenderer(CurrentItemProperty, shellContent);
 
 			return Task.FromResult(true);
 		}
@@ -161,7 +165,7 @@ namespace Xamarin.Forms
 			set { SetValue(CurrentItemProperty, value); }
 		}
 
-		public ShellContentCollection Items => (ShellContentCollection)GetValue(ItemsProperty);
+		public IList<ShellContent> Items => (IList<ShellContent>)GetValue(ItemsProperty);
 
 		public IReadOnlyList<Page> Stack => _navStack;
 
@@ -185,10 +189,7 @@ namespace Xamarin.Forms
 
 		ShellItem ShellItem => Parent as ShellItem;
 
-#if DEBUG
-		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
-		public static implicit operator ShellSection(ShellContent shellContent)
+		internal static ShellSection CreateFromShellContent(ShellContent shellContent)
 		{
 			var shellSection = new ShellSection();
 
@@ -197,9 +198,25 @@ namespace Xamarin.Forms
 			shellSection.Route = Routing.GenerateImplicitRoute(contentRoute);
 
 			shellSection.Items.Add(shellContent);
-			shellSection.SetBinding(TitleProperty, new Binding("Title", BindingMode.OneWay, source: shellContent));
-			shellSection.SetBinding(IconProperty, new Binding("Icon", BindingMode.OneWay, source: shellContent));
+
+			shellSection.SetBinding(TitleProperty, new Binding(nameof(Title), BindingMode.OneWay, source: shellContent));
+			shellSection.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellContent));
+			shellSection.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: shellContent));
+
 			return shellSection;
+		}
+
+		internal static ShellSection CreateFromTemplatedPage(TemplatedPage page)
+		{
+			return CreateFromShellContent((ShellContent)page);
+		}
+
+#if DEBUG
+		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
+#endif
+		public static implicit operator ShellSection(ShellContent shellContent)
+		{
+			return CreateFromShellContent(shellContent);
 		}
 
 #if DEBUG
@@ -210,8 +227,9 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		public virtual async Task GoToAsync(List<string> routes, IDictionary<string, string> queryData, bool animate)
+		internal async Task GoToAsync(NavigationRequest request, IDictionary<string, string> queryData, bool animate)
 		{
+			List<string> routes = request.Request.GlobalRoutes;
 			if (routes == null || routes.Count == 0)
 			{
 				await Navigation.PopToRootAsync(animate);
@@ -232,9 +250,12 @@ namespace Xamarin.Forms
 						continue;
 					}
 
-					while (_navStack.Count > i + 1)
+					if (request.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
 					{
-						await OnPopAsync(false);
+						while (_navStack.Count > i + 1)
+						{
+							await OnPopAsync(false);
+						}
 					}
 				}
 
@@ -304,6 +325,8 @@ namespace Xamarin.Forms
 
 			UpdateDisplayedPage();
 		}
+
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement => Items;
 
 		protected virtual void OnInsertPageBefore(Page page, Page before)
 		{
@@ -535,7 +558,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public class NavigationImpl : NavigationProxy
+		class NavigationImpl : NavigationProxy
 		{
 			readonly ShellSection _owner;
 
