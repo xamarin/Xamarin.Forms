@@ -171,7 +171,7 @@ namespace Xamarin.Forms
 				_expression.Apply(resolvedSource, targetObject, targetProperty);						
 		}		
 
-		private void ApplyAncestorTypeBinding(
+		void ApplyAncestorTypeBinding(
 			Element target,
 			BindableProperty targetProperty,
 			Element currentElement = null,
