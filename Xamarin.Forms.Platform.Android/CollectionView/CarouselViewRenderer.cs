@@ -118,6 +118,24 @@ namespace Xamarin.Forms.Platform.Android
 			return base.OnTouchEvent(e);
 		}
 
+		// TODO: Do we want to do this through the ScrollListener?
+		public override void OnScrollStateChanged(int state)
+		{
+			base.OnScrollStateChanged(state);
+
+			if (_isSwipeEnabled)
+			{
+				if (state == ScrollStateDragging)
+				{
+					Carousel.SetIsDragging(true);
+				}
+				else
+				{
+					Carousel.SetIsDragging(false);
+				}
+			}	
+		}
+
 		void UpdateIsSwipeEnabled()
 		{
 			_isSwipeEnabled = Carousel.IsSwipeEnabled;
