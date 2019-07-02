@@ -14,6 +14,8 @@ namespace Xamarin.Forms.Platform.Android
 			CarouselViewRenderer _renderer;
 			int _oldPosition;
 			int _initialPosition;
+			int _previousOffSetX;
+			int _previousOffSetY;
 			bool _scrollingToInitialPosition = true;
 
 			public ScrollListener(CarouselViewRenderer renderer, int initialPosition)
@@ -32,6 +34,17 @@ namespace Xamarin.Forms.Platform.Android
 					_scrollingToInitialPosition = !(_initialPosition == adapterPosition);
 					return;
 				}
+
+				var newOffSetX = recyclerView.ComputeHorizontalScrollOffset();
+				var newOffSetY = recyclerView.ComputeVerticalScrollOffset();
+				//TODO: rmarinho Handle RTL
+				if (dx != 0)
+					_renderer.Carousel.SendScrolled(newOffSetX, (_previousOffSetX > newOffSetX) ? ScrollDirection.Left : ScrollDirection.Right);
+				else
+					_renderer.Carousel.SendScrolled(newOffSetY, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
+
+				_previousOffSetX = newOffSetX;
+				_previousOffSetY = newOffSetY;
 
 				if (_oldPosition != adapterPosition)
 				{
