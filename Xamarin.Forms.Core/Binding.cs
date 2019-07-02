@@ -224,7 +224,7 @@ namespace Xamarin.Forms
 			}			
 		}
 
-		private bool ElementFitsAncestorTypeAndLevel(Element element, int level)
+		bool ElementFitsAncestorTypeAndLevel(Element element, int level)
 		{			
 			if (level < RelativeSource.AncestorLevel)
 				return false;
