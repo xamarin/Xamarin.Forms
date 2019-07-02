@@ -476,7 +476,7 @@ namespace Xamarin.Forms
 			_trackingTemplatedParent = true;
 		}
 
-		private void OnTargetTemplatedParentChanged(object sender, EventArgs e)
+		void OnTargetTemplatedParentChanged(object sender, EventArgs e)
 		{
 			if (!(sender is Element elem) ||
 				!(this.Binding is Binding binding))
