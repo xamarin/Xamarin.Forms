@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
-		public void RemovGroup()
+		public void RemoveGroup()
 		{
 			RunningApp.WaitForElement("Avengers");
 			RunningApp.Tap("RemoveGroup");
