@@ -138,7 +138,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void ApplyRelativeSourceBinding(
+		void ApplyRelativeSourceBinding(
 			BindableObject targetObject, 
 			BindableProperty targetProperty)
 		{
