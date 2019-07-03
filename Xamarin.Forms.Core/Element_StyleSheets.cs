@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using Xamarin.Forms.Internals;
@@ -38,21 +39,43 @@ namespace Xamarin.Forms
 		IStyleSelectable IStyleSelectable.Parent => Parent;
 
 		//on parent set, or on parent stylesheet changed, reapply all
-		void ApplyStyleSheetsOnParentSet()
+		internal void ApplyStyleSheets()
 		{
-			var parent = Parent;
-			if (parent == null)
-				return;
 			var sheets = new List<StyleSheet>();
-			while (parent != null) {
+			Element parent = this;
+			while (parent != null)
+			{
 				var resourceProvider = parent as IResourcesProvider;
 				var vpSheets = resourceProvider?.GetStyleSheets();
 				if (vpSheets != null)
 					sheets.AddRange(vpSheets);
 				parent = parent.Parent;
 			}
-			for (var i = sheets.Count - 1; i >= 0; i--)
-				((IStyle)sheets[i]).Apply(this);
+
+			ApplyStyleSheets(sheets, this);
+		}
+
+		void ApplyStyleSheets(IList<StyleSheet> sheets, Element element)
+		{
+			if (element == null)
+				return;
+
+			for (var i = (sheets?.Count ?? 0) - 1; i >= 0; i--)
+			{
+				((IStyle)sheets[i]).Apply(element);
+			}
+
+			foreach (Element child in element.AllChildren)
+			{
+				var mergedSheets = sheets;
+				var resourceProvider = child as IResourcesProvider;
+				var childSheets = resourceProvider?.GetStyleSheets();
+				if (childSheets?.Any() ?? false)
+				{
+					mergedSheets = new List<StyleSheet>(childSheets.Concat(sheets));
+				}
+				ApplyStyleSheets(mergedSheets, child);
+			}
 		}
 	}
 }

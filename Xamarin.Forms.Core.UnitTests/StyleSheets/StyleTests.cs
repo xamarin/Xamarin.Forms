@@ -98,5 +98,38 @@ namespace Xamarin.Forms.StyleSheets.UnitTests
 			app.MainPage = page;
 			Assert.That((page.Content as Label).TextColor, Is.EqualTo(Color.Red));
 		}
+
+		[Test]
+		public void StyleSheetsOnAppAreAppliedBeforePageStyleSheet()
+		{
+			var app = new MockApplication();
+			app.Resources.Add(StyleSheet.FromString("label{ color: white; background-color: blue; }"));
+			var page = new ContentPage
+			{
+				Content = new Label()
+			};
+			page.Resources.Add(StyleSheet.FromString("label{ color: red; }"));
+			app.MainPage = page;
+			Assert.That((page.Content as Label).TextColor, Is.EqualTo(Color.Red));
+			Assert.That((page.Content as Label).BackgroundColor, Is.EqualTo(Color.Blue));
+		}
+
+		[Test]
+		public void StyleSheetsOnChildAreReAppliedWhenParentStyleSheetAdded()
+		{
+			var app = new MockApplication();
+			var page = new ContentPage
+			{
+				Content = new Label()
+			};
+			page.Resources.Add(StyleSheet.FromString("label{ color: red; }"));
+			app.MainPage = page;
+			Assert.That((page.Content as Label).TextColor, Is.EqualTo(Color.Red));
+
+			app.Resources.Add(StyleSheet.FromString("label{ color: white; background-color: blue; }"));
+			Assert.That((page.Content as Label).BackgroundColor, Is.EqualTo(Color.Blue));
+			Assert.That((page.Content as Label).TextColor, Is.EqualTo(Color.Red));
+		}
+
 	}
 }

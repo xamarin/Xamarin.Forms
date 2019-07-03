@@ -847,14 +847,6 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.Undefined);
 		}
 
-		internal override void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
-		{
-			if (e == ResourcesChangedEventArgs.StyleSheets)
-				ApplyStyleSheets();
-			else
-				base.OnResourcesChanged(sender, e);
-		}
-
 		internal override void OnParentResourcesChanged(IEnumerable<KeyValuePair<string, object>> values)
 		{
 			if (values == null)
