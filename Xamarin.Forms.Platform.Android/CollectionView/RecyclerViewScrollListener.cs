@@ -58,16 +58,19 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 
 			_itemsView.SendScrolled(itemsViewScrolledEventArgs);
 
+			if (lastVisibleItemIndex == -1)
+				return;
+
 			switch (_itemsView.RemainingItemsThreshold)
 			{
 				case -1:
 					return;
 				case 0:
-					if (firstVisibleItemIndex == _itemsViewAdapter.ItemCount - 1)
+					if (lastVisibleItemIndex == _itemsViewAdapter.ItemCount - 1)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 				default:
-					if (_itemsViewAdapter.ItemCount - 1 - firstVisibleItemIndex <= _itemsView.RemainingItemsThreshold)
+					if (_itemsViewAdapter.ItemCount - 1 - lastVisibleItemIndex <= _itemsView.RemainingItemsThreshold)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
@@ -75,6 +78,10 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 
 		static int CalculateCenterItemIndex(int firstVisibleItemIndex, int lastVisibleItemIndex, LinearLayoutManager linearLayoutManager)
 		{
+			// This can happen if a layout pass has not happened yet
+			if (firstVisibleItemIndex == -1)
+				return firstVisibleItemIndex;
+
 			var keyValuePairs = new Dictionary<int, int>();
 			for (var i = firstVisibleItemIndex; i <= lastVisibleItemIndex; i++)
 			{
