@@ -12,15 +12,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public ItemsViewLayout ItemsViewLayout { get; }
 		public ItemsViewController ItemsViewController { get; }
-		public SelectableItemsViewController SelectableItemsViewController
-		{
-			get => ItemsViewController as SelectableItemsViewController;
-		}
+		public SelectableItemsViewController SelectableItemsViewController => ItemsViewController as SelectableItemsViewController;
 
-		public GroupableItemsViewController GroupableItemsViewController
-		{
-			get => ItemsViewController as GroupableItemsViewController;
-		}
+		public GroupableItemsViewController GroupableItemsViewController => ItemsViewController as GroupableItemsViewController;
 
 		public UICollectionViewDelegator(ItemsViewLayout itemsViewLayout, ItemsViewController itemsViewController)
 		{
@@ -42,11 +36,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void Scrolled(UIScrollView scrollView)
 		{
-			var indexPathsForVisibleItems = ItemsViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row);
+			var indexPathsForVisibleItems = ItemsViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row).ToList();
 			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
 			var centerPoint = new CGPoint(ItemsViewController.CollectionView.Center.X + ItemsViewController.CollectionView.ContentOffset.X, ItemsViewController.CollectionView.Center.Y + ItemsViewController.CollectionView.ContentOffset.Y);
 			var centerIndexPath = ItemsViewController.CollectionView.IndexPathForItemAtPoint(centerPoint);
-			var centerItemIndex = centerIndexPath == null ? firstVisibleItemIndex : centerIndexPath.Row;
+			var centerItemIndex = centerIndexPath?.Row ?? firstVisibleItemIndex;
 			var lastVisibleItemIndex = (int)indexPathsForVisibleItems.Last().Item;
 			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
 			{
@@ -69,19 +63,14 @@ namespace Xamarin.Forms.Platform.iOS
 				case -1:
 					return;
 				case 0:
-					if (lastVisibleItemIndex == ItemsViewController.ItemsViewSource.Count - 1)
+					if (lastVisibleItemIndex == ItemsViewController.ItemsSource.ItemCount - 1)
 						ItemsViewController.ItemsView.SendRemainingItemsThresholdReached();
 					break;
 				default:
-					if (ItemsViewController.ItemsViewSource.Count - 1 - lastVisibleItemIndex <= ItemsViewController.ItemsView.RemainingItemsThreshold)
+					if (ItemsViewController.ItemsSource.ItemCount - 1 - lastVisibleItemIndex <= ItemsViewController.ItemsView.RemainingItemsThreshold)
 						ItemsViewController.ItemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
-		}
-
-		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
-		{
-			ItemsViewLayout?.WillDisplayCell(collectionView, cell, path);
 		}
 
 		public override UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
