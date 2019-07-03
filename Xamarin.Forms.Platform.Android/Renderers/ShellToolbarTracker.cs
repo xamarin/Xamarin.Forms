@@ -131,10 +131,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (disposing)
+			{
 				if (_backButtonBehavior != null)
 					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
 

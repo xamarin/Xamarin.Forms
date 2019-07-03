@@ -22,11 +22,11 @@ namespace Xamarin.Forms.Platform.Android
 		List<AdapterListItem> _listItems;
 
 		Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
-		
+
 		Action<Element> _selectedCallback;
-		
+
 		bool _disposed;
-		
+
 		ElementViewHolder _elementViewHolder;
 
 		public ShellFlyoutRecyclerAdapter(IShellContext shellContext, Action<Element> selectedCallback)
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				dataTemplate = Shell.GetItemTemplate(item.Element) ?? Shell.ItemTemplate ?? DefaultItemTemplate;
-			}	
+			}
 
 			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
 			var id = ((IDataTemplateController)template).Id;
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			AView ITabStop.TabStop => this;
 
-#region IVisualElementRenderer
+			#region IVisualElementRenderer
 
 			VisualElement IVisualElementRenderer.Element => Content?.BindingContext as VisualElement;
 
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android
 			public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 #pragma warning restore 67
 
-#endregion IVisualElementRenderer
+			#endregion IVisualElementRenderer
 
 			internal View Content { get; set; }
 
@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var grid = new Grid();
 			var groups = new VisualStateGroupList();
-			
+
 			var commonGroup = new VisualStateGroup();
 			commonGroup.Name = "CommonStates";
 			groups.Add(commonGroup);
@@ -251,10 +251,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (disposing)
+			{
 				((IShellController)Shell).StructureChanged -= OnShellStructureChanged;
 
 				_elementViewHolder?.Dispose();
@@ -350,10 +353,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			protected override void Dispose(bool disposing)
 			{
-				if (!_disposed && disposing)
-				{
-					_disposed = true;
+				if (_disposed)
+					return;
 
+				_disposed = true;
+
+				if (disposing)
+				{
 					_itemView.Click -= OnClicked;
 
 					Element = null;

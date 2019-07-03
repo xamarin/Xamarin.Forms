@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool TextView.IOnEditorActionListener.OnEditorAction(TextView v, ImeAction actionId, KeyEvent e)
 		{
 			// Fire Completed and dismiss keyboard for hardware / physical keyboards
-			if (actionId == ImeAction.Done || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up))
+			if (actionId == ImeAction.Done || actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up)
 			{
 				_textBlock.ClearFocus();
 				v.HideKeyboard();
@@ -124,10 +124,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (disposing)
+			{
 				SearchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
 				_textBlock.ItemClick -= OnTextBlockItemClicked;
 				_textBlock.RemoveTextChangedListener(this);
@@ -183,7 +186,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			_linearLayout = new LinearLayout(context)
 			{
-				LayoutParameters = new LP(LP.MatchParent, LP.MatchParent), Orientation = Orientation.Horizontal
+				LayoutParameters = new LP(LP.MatchParent, LP.MatchParent),
+				Orientation = Orientation.Horizontal
 			};
 
 			_cardView.AddView(_linearLayout);
@@ -196,7 +200,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				LayoutParameters = new LinearLayout.LayoutParams(0, LP.MatchParent)
 				{
-					Gravity = GravityFlags.Fill, 
+					Gravity = GravityFlags.Fill,
 					Weight = 1
 				},
 				Text = query,
@@ -204,14 +208,14 @@ namespace Xamarin.Forms.Platform.Android
 				ImeOptions = ImeAction.Done,
 				Enabled = searchHandler.IsSearchEnabled
 			};
-		
+
 			_textBlock.SetBackground(null);
 			_textBlock.SetPadding(padding, 0, padding, 0);
 			_textBlock.SetSingleLine(true);
 			_textBlock.Threshold = 1;
 			_textBlock.Adapter = new ShellSearchViewAdapter(SearchHandler, _shellContext);
 			_textBlock.ItemClick += OnTextBlockItemClicked;
-		
+
 			if (Forms.IsMarshmallowOrNewer)
 				_textBlock.SetDropDownBackgroundDrawable(new ClipDrawableWrapper(_textBlock.DropDownBackground));
 

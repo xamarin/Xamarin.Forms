@@ -64,12 +64,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				_disposed = true;
-				
 				((INotifyCollectionChanged)_shellSection.Items).CollectionChanged -= OnItemsCollectionChanged;
-			
+
 				_shellSection = null;
 			}
 

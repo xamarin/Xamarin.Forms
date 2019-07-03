@@ -131,10 +131,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (disposing)
+			{
 				_defaultList?.Dispose();
 				_colorStateList?.Dispose();
 

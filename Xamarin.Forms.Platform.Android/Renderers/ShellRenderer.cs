@@ -247,7 +247,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			transaction.ReplaceEx(_frameLayout.Id, fragment);
 			transaction.CommitAllowingStateLossEx();
-			
+
 			previousRenderer?.Dispose();
 		}
 
@@ -320,15 +320,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var bounds = Bounds;
 
-				var paint = new Paint();
+				using (var paint = new Paint())
+				{
+					paint.Color = _color;
 
-				paint.Color = _color;
+					canvas.DrawRect(new Rect(0, 0, bounds.Right, _topSize), paint);
 
-				canvas.DrawRect(new Rect(0, 0, bounds.Right, _topSize), paint);
-
-				canvas.DrawRect(new Rect(0, bounds.Bottom - _bottomSize, bounds.Right, bounds.Bottom), paint);
-
-				paint.Dispose();
+					canvas.DrawRect(new Rect(0, bounds.Bottom - _bottomSize, bounds.Right, bounds.Bottom), paint);
+				}
 			}
 
 			public override void SetAlpha(int alpha)
@@ -349,10 +348,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				_disposed = true;
-			
 				Element.PropertyChanged -= OnElementPropertyChanged;
 				Element.SizeChanged -= OnElementSizeChanged;
 
@@ -360,9 +362,6 @@ namespace Xamarin.Forms.Platform.Android
 				_currentRenderer.Dispose();
 
 				Element = null;
-				
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
 			}
 		}
 

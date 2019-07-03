@@ -45,10 +45,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				_disposed = true;
-			
 				_shellContext = null;
 			}
 		}

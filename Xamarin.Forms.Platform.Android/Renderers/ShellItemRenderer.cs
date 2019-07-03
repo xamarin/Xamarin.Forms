@@ -84,10 +84,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (disposing)
+			{
 				UnhookEvents(ShellItem);
 
 				((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
@@ -205,10 +208,10 @@ namespace Xamarin.Forms.Platform.Android
 			var menu = _bottomView.Menu;
 
 			index = Math.Min(index, menu.Size() - 1);
-			
+
 			if (index < 0)
 				return;
-			
+
 			var menuItem = menu.GetItem(index);
 			menuItem.SetChecked(true);
 		}

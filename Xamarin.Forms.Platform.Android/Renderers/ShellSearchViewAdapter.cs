@@ -31,14 +31,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
+			_disposed = true;
+
+			if (disposing)
+			{
 				SearchController.ListProxyChanged -= OnListProxyChanged;
 				_searchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
-				
-				_filter.Dispose();
+
+				_filter?.Dispose();
 
 				_filter = null;
 				_shellContext = null;
@@ -47,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.Dispose(disposing);
 		}
-		
+
 		public Filter Filter => _filter ?? (_filter = new CustomFilter(this));
 
 		public override int Count => ListProxy.Count;
