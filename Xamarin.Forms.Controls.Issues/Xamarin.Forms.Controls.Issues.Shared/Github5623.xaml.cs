@@ -54,14 +54,11 @@ namespace Xamarin.Forms.Controls.Issues
 			try
 			{
 				var itemsSource = (sender as CollectionView).ItemsSource as ObservableCollection<Model5623>;
-
-				if (itemsSource.Count == _maximumItemCount)
-				{
-					System.Diagnostics.Debug.WriteLine("Count: " + itemsSource.Count);
-					return;
-				}
-
 				var nextSet = await GetNextSetAsync();
+
+				// nothing to add
+				if (nextSet.Count == 0)
+					return;
 
 				Device.BeginInvokeOnMainThread(() =>
 				{
@@ -95,8 +92,12 @@ namespace Xamarin.Forms.Controls.Issues
 			return await Task.Run(() =>
 			{
 				var collection = new ObservableCollection<Model5623>();
+				var count = _pageSize;
 
-				for (var i = _itemCount; i < _itemCount + _pageSize; i++)
+				if (_itemCount + count > _maximumItemCount)
+					count = _maximumItemCount - _itemCount;
+
+				for (var i = _itemCount; i < _itemCount + count; i++)
 				{
 					collection.Add(new Model5623((BindingContext as ViewModel5623).ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems)
 					{
@@ -105,7 +106,7 @@ namespace Xamarin.Forms.Controls.Issues
 					});
 				}
 
-				_itemCount += _pageSize;
+				_itemCount += count;
 
 				return collection;
 			});
