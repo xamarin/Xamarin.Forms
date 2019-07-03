@@ -348,7 +348,7 @@ namespace Xamarin.Forms
 		protected internal virtual void CleanUp()
 		{
 			// Unhook everything that's referencing the main page so it can be collected
-			// This is only comes up if we're disposing of an embedded Forms app, and will
+			// This only comes up if we're disposing of an embedded Forms app, and will
 			// eventually go away when we fully support multiple windows
 			if (_mainPage != null)
 			{
