@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ItemsViewLayout == null)
 			{
-				return default;
+				return default(UIEdgeInsets);
 			}
 
 			return ItemsViewLayout.GetInsetForSection(collectionView, layout, section);
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ItemsViewLayout == null)
 			{
-				return default;
+				return default(nfloat);
 			}
 
 			return ItemsViewLayout.GetMinimumInteritemSpacingForSection(collectionView, layout, section);
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ItemsViewLayout == null)
 			{
-				return default;
+				return default(nfloat);
 			}
 
 			return ItemsViewLayout.GetMinimumLineSpacingForSection(collectionView, layout, section);
