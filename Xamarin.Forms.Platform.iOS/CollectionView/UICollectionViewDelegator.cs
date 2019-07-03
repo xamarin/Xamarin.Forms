@@ -37,6 +37,10 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void Scrolled(UIScrollView scrollView)
 		{
 			var indexPathsForVisibleItems = ItemsViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row).ToList();
+
+			if (indexPathsForVisibleItems.Count == 0)
+				return;
+
 			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
 			var centerPoint = new CGPoint(ItemsViewController.CollectionView.Center.X + ItemsViewController.CollectionView.ContentOffset.X, ItemsViewController.CollectionView.Center.Y + ItemsViewController.CollectionView.ContentOffset.Y);
 			var centerIndexPath = ItemsViewController.CollectionView.IndexPathForItemAtPoint(centerPoint);
