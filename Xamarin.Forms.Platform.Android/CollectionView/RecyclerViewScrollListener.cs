@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 	public class RecyclerViewScrollListener : RecyclerView.OnScrollListener
 	{
 		bool _disposed;
-		int _horizontallOffset, _verticalOffset;
+		int _horizontalOffset, _verticalOffset;
 		ItemsView _itemsView;
 		ItemsViewAdapter _itemsViewAdapter;
 
@@ -16,11 +16,6 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 		{
 			_itemsView = itemsView;
 			_itemsViewAdapter = itemsViewAdapter;
-		}
-
-		public override void OnScrollStateChanged(RecyclerView recyclerView, int newState)
-		{
-			base.OnScrollStateChanged(recyclerView, newState);
 		}
 
 		public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
@@ -31,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			// They are currently provided in place of LayoutManager's default offset calculation
 			// because it does not report accurate values in the presence of uneven rows.
 			// See https://stackoverflow.com/questions/27507715/android-how-to-get-the-current-x-offset-of-recyclerview
-			_horizontallOffset += dx;
+			_horizontalOffset += dx;
 			_verticalOffset += dy;
 
 			var firstVisibleItemIndex = -1;
@@ -49,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			{
 				HorizontalDelta = dx,
 				VerticalDelta = dy,
-				HorizontalOffset = _horizontallOffset,
+				HorizontalOffset = _horizontalOffset,
 				VerticalOffset = _verticalOffset,
 				FirstVisibleItemIndex = firstVisibleItemIndex,
 				CenterItemIndex = centerItemIndex,
@@ -58,6 +53,8 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 
 			_itemsView.SendScrolled(itemsViewScrolledEventArgs);
 
+			// Don't send RemainingItemsThresholdReached event for non-linear layout managers
+			// This can also happen if a layout pass has not happened yet
 			if (lastVisibleItemIndex == -1)
 				return;
 
