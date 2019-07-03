@@ -329,10 +329,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void ButtonCornerRadiusSetInExplicitStyle()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
-			             <ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
-			                          xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
-			                          x:Class=""Xamarin.Forms.Core.UnitTests.MyTestContentPage"">
-			                 <ContentPage.Resources>
+			             <ContentView xmlns=""http://xamarin.com/schemas/2014/forms""
+			                          xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+			                 <ContentView.Resources>
 			                     <Style TargetType=""Button"">
 			                         <Setter Property=""TextColor"" Value=""White""></Setter>
 			                     </Style>
@@ -340,16 +339,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			                         <Setter Property=""CornerRadius"" Value=""0""></Setter>
 			                         <Setter Property=""TextColor"" Value=""Yellow""></Setter>
 			                     </Style>
-			                 </ContentPage.Resources>
-			                     <Button x:Name=""Button0"" Style=""{StaticResource ButtonStyle}"" />
-			             </ContentPage>";
+			                 </ContentView.Resources>
+			                 <Button x:Name=""Button0"" Style=""{StaticResource ButtonStyle}"" />
+			             </ContentView>";
 
-			var contentPage = new MyTestContentView();
-			contentPage.LoadFromXaml(xaml);
+			var testView = new ContentView();
+			testView.LoadFromXaml(xaml);
 
-			Assert.AreEqual(0, contentPage.FindByName<Button>("Button0").CornerRadius);
+			Assert.AreEqual(0, testView.FindByName<Button>("Button0").CornerRadius);
 		}
-
-		class MyTestContentView : ContentView { }
 	}	
 }
