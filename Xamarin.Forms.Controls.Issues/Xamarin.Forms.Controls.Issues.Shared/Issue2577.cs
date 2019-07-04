@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			Master = new ContentPage { Title = "master page" };
+			(Master as ContentPage).Content = new ListView { AutomationId = "MasterList" };
+
 			Detail = new NavigationPage(new DetailPage());
 		}
 
@@ -62,10 +64,12 @@ namespace Xamarin.Forms.Controls.Issues
 			AppResult[] items = RunningApp.Query("OK");
 			Assert.AreNotEqual(items.Length, 0);
 			RunningApp.Tap("OK");
+			RunningApp.WaitForElement("MasterList");
 
 			RunningApp.Screenshot("Flyout menu is showing");
-
+			
 			RunningApp.SwipeRightToLeft();
+			RunningApp.WaitForNoElement("MasterList");
 
 			RunningApp.Tap("ToggleBackButton");
 
