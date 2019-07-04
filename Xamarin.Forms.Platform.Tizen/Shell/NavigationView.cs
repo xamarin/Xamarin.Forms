@@ -1,19 +1,21 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using ElmSharp;
 using EColor = ElmSharp.Color;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class NavigationView : Native.Box
+	public class NavigationView : Native.Box, INavigationView
 	{
 		EvasObject _header;
 		GenList _menu;
+		GenItemClass _defaultClass;
 		EColor _backgroundColor;
 		EColor _defaultBackgroundColor = EColor.White;
 
-		IList<Group> _groups;
-		GenItemClass _defaultClass;
+		List<Group> _groups;
+		IDictionary<Item, Element> _flyoutMenu = new Dictionary<Item, Element>();
 
 		public NavigationView(EvasObject parent) : base(parent)
 		{
@@ -26,7 +28,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			_menu.BackgroundColor = _defaultBackgroundColor;
 		}
 
-		public event EventHandler<GenListItemEventArgs> MenuItemSelected;
+		public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
 
 		public override EColor BackgroundColor
 		{
@@ -72,17 +74,46 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		public IList<Group> Menu
+		public void BuildMenu(List<List<Element>> flyoutGroups)
 		{
-			get
+			var groups = new List<Group>();
+			_flyoutMenu.Clear();
+
+			for (int i = 0; i < flyoutGroups.Count; i++)
 			{
-				return _groups;
+				var flyoutGroup = flyoutGroups[i];
+				var items = new List<Item>();
+				for (int j = 0; j < flyoutGroup.Count; j++)
+				{
+					string title = null;
+					string icon = null;
+					if (flyoutGroup[j] is BaseShellItem shellItem)
+					{
+						title = shellItem.Title;
+
+						if (shellItem.FlyoutIcon is FileImageSource flyoutIcon)
+						{
+							icon = flyoutIcon.File;
+						}
+					}
+					else if (flyoutGroup[j] is MenuItem menuItem)
+					{
+						title = menuItem.Text;
+						if (menuItem.Icon != null)
+						{
+							icon = menuItem.Icon.File;
+						}
+					}
+					Item item = new Item(title, icon);
+					items.Add(item);
+
+					_flyoutMenu.Add(item, flyoutGroup[j]);
+				}
+				var group = new Group(items);
+				groups.Add(group);
 			}
-			set
-			{
-				_groups = value;
-				UpdateMenu();
-			}
+			_groups = groups;
+			UpdateMenu();
 		}
 
 		void Initialize(EvasObject parent)
@@ -95,7 +126,9 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			_menu.ItemSelected += (s, e) =>
 			{
-				MenuItemSelected?.Invoke(this, e);
+				_flyoutMenu.TryGetValue(e.Item.Data as Item, out Element element);
+
+				SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(element, -1));
 			};
 
 			_menu.Show();
