@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnHeaderSizeChanged(object sender, EventArgs e)
 		{
 			_headerSize = HeaderMax;
-			SetHeaderContentInset();			
+			SetHeaderContentInset();
 			LayoutParallax();
 		}
 
