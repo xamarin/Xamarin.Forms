@@ -336,7 +336,7 @@ namespace Xamarin.Forms.Platform.UWP
 				changed(this, e);
 		}
 
-		protected void UpdateTabStop()
+		protected virtual void UpdateTabStop()
 		{
 			if (_control == null)
 				return;

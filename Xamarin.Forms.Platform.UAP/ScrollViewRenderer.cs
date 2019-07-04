@@ -100,6 +100,12 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		protected override void UpdateTabStop()
+		{
+			if (Control != null)
+				Control.IsTabStop = false;
+		}
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
