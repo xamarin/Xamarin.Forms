@@ -78,7 +78,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					transaction.RemoveEx(_currentFragment);
 					transaction.SetTransitionEx((int)FragmentTransit.None);
 
-					_transaction = transaction;
+					if (IsAttachedToWindow)
+						ExecuteTransaction(transaction);
+					else
+						_transaction = transaction;
 
 					_currentFragment = null;
 				}
@@ -111,7 +114,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				transaction.AddEx(Id, fragment);
 				transaction.SetTransitionEx((int)FragmentTransit.None);
 
-				_transaction = transaction;
+				if (IsAttachedToWindow)
+					ExecuteTransaction(transaction);
+				else
+					_transaction = transaction;
 
 				_currentFragment = fragment;
 			}
@@ -124,13 +130,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_transaction == null)
 				return;
 
-			// We don't currently support fragment restoration 
-			// So we don't need to worry about loss of this fragment's state
-			_transaction.CommitAllowingStateLossEx();
-
-			// The transaction need to be executed after View as been attached
-			// So Fragment Manager can find the View being added
-			FragmentManager.ExecutePendingTransactionsEx();
+			ExecuteTransaction(_transaction);
 
 			_transaction = null;
 		}
@@ -169,6 +169,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			if (_fragmentManager == null)
 				_fragmentManager = fragmentManager;
+		}
+
+		private void ExecuteTransaction(FragmentTransaction transaction)
+		{
+			// We don't currently support fragment restoration 
+			// So we don't need to worry about loss of this fragment's state
+			transaction.CommitAllowingStateLossEx();
+
+			// The transaction need to be executed after View as been attached
+			// So Fragment Manager can find the View being added
+			FragmentManager.ExecutePendingTransactionsEx();
 		}
 	}
 }
