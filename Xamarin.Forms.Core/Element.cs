@@ -215,31 +215,32 @@ namespace Xamarin.Forms
 
 				OnPropertyChanged();
 
-				if (this.IsTemplateRoot)
-					this.TemplatedParent = value;
+				RefreshTemplatedParent();
 			}
 		}
 
 		internal event EventHandler TemplatedParentChanged;
 		
-		BindableObject _templatedParent;
 		public BindableObject TemplatedParent
 		{
-			get => _templatedParent ?? (_templatedParent = this.Parent?.TemplatedParent);
-			private set
+			get;
+			private set;
+		}
+
+		private void RefreshTemplatedParent()
+		{
+			var templatedParent = this.IsTemplateRoot
+				? this.Parent
+				: this.Parent?.TemplatedParent;
+			if (ReferenceEquals(templatedParent, this.TemplatedParent))
+				return;
+
+			this.TemplatedParent = templatedParent;
+			TemplatedParentChanged?.Invoke(this, null);
+			foreach (var element in this.LogicalChildren)
 			{
-				if (_templatedParent == value)
-					return;
-				_templatedParent = value;
-				TemplatedParentChanged?.Invoke(this, null);
-				foreach (var element in this.Descendants())
-				{
-					if (value == null)
-						// Item has been detached from its templated 
-						// parent, so reset all the stored values
-						element._templatedParent = null;
-					element.TemplatedParentChanged?.Invoke(element, null);
-				}
+				if (!element.IsTemplateRoot)
+					element.RefreshTemplatedParent();
 			}
 		}
 

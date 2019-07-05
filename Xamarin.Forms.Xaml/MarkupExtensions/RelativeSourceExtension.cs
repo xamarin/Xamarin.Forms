@@ -29,29 +29,29 @@ namespace Xamarin.Forms.Xaml
 		{
 			if (AncestorType != null)
 			{
-				RelativeBindingSourceMode mode;
+				RelativeBindingSourceMode actualMode;
 
-				if ( Mode != RelativeBindingSourceMode.FindAncestor && 
-					Mode != RelativeBindingSourceMode.FindAncestorBindingContext )
+				if (Mode != RelativeBindingSourceMode.FindAncestor && 
+					Mode != RelativeBindingSourceMode.FindAncestorBindingContext)
 				{
 					// Note to documenters:
 
 					// This permits "{Binding Source={RelativeSource AncestorType={x:Type MyType}}}" syntax
-					// where Mode hasn't been explicitly set, consistent with WPF/UWP.
+					// where Mode hasn't been explicitly set, consistent with WPF.
 
 					// Also, we assume FindAncestor is meant if the ancestor type is a visual 
 					// Element, otherwise assume FindAncestorBindingContext is intended. (The
 					// mode can also be explicitly set in XAML)
-					mode = typeof(Element).GetTypeInfo().IsAssignableFrom(AncestorType.GetTypeInfo())
+					actualMode = typeof(Element).GetTypeInfo().IsAssignableFrom(AncestorType.GetTypeInfo())
 						? RelativeBindingSourceMode.FindAncestor
 						: RelativeBindingSourceMode.FindAncestorBindingContext;
 				}
 				else
 				{
-					mode = Mode;
+					actualMode = Mode;
 				}
 
-				return new RelativeBindingSource(mode, AncestorType, AncestorLevel);
+				return new RelativeBindingSource(actualMode, AncestorType, AncestorLevel);
 			}
 			else if (Mode == RelativeBindingSourceMode.FindAncestor || 
 					Mode == RelativeBindingSourceMode.FindAncestorBindingContext)

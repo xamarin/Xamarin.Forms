@@ -117,8 +117,6 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-		internal RelativeBindingSource RelativeSource => this.Source as RelativeBindingSource;
-
 		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
 		{
 			object src = _source;
@@ -129,7 +127,7 @@ namespace Xamarin.Forms
 			if (src != null && isApplied && fromBindingContextChanged)
 				return;
 
-			if (RelativeSource != null) { 
+			if (Source is RelativeBindingSource) { 
 				ApplyRelativeSourceBinding(bindObj, targetProperty);
 			} else {
 				object bindingContext = src ?? Context ?? context;
@@ -145,10 +143,12 @@ namespace Xamarin.Forms
 		{
 			if (!(targetObject is Element elem))
 				throw new InvalidOperationException();
+			if (!(Source is RelativeBindingSource relativeSource))
+				return;
 
-			object resolvedSource = null;						
+			object resolvedSource = null;			
 
-			switch (RelativeSource.Mode)
+			switch (relativeSource.Mode)
 			{
 				case RelativeBindingSourceMode.Self:
 					resolvedSource = targetObject;
@@ -168,8 +168,7 @@ namespace Xamarin.Forms
 					throw new InvalidOperationException();
 			}
 
-			if ( resolvedSource != null )
-				_expression.Apply(resolvedSource, targetObject, targetProperty);						
+			_expression.Apply(resolvedSource, targetObject, targetProperty);						
 		}		
 
 		private void ApplyAncestorTypeBinding(
@@ -184,6 +183,8 @@ namespace Xamarin.Forms
 
 			if (currentElement.RealParent is Application)
 				return;
+			if (!(Source is RelativeBindingSource relativeSource))
+				return;
 
 			if (currentElement.RealParent != null)
 			{
@@ -191,7 +192,7 @@ namespace Xamarin.Forms
 				if (ElementFitsAncestorTypeAndLevel(currentElement.RealParent, currentLevel))
 				{
 					object resolvedSource;
-					if (RelativeSource.Mode == RelativeBindingSourceMode.FindAncestor)
+					if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor)
 						resolvedSource = currentElement.RealParent;
 					else
 						resolvedSource = currentElement.RealParent?.BindingContext;
@@ -226,17 +227,20 @@ namespace Xamarin.Forms
 		}
 
 		private bool ElementFitsAncestorTypeAndLevel(Element element, int level)
-		{			
-			if (level < RelativeSource.AncestorLevel)
+		{
+			if (!(Source is RelativeBindingSource relativeSource))
 				return false;
 
-			if (RelativeSource.Mode == RelativeBindingSourceMode.FindAncestor &&
-				RelativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.GetType().GetTypeInfo()))
+			if (level < relativeSource.AncestorLevel)
+				return false;
+
+			if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor &&
+				relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.GetType().GetTypeInfo()))
 				return true;
 
 			if (element.BindingContext != null &&
-				RelativeSource.Mode == RelativeBindingSourceMode.FindAncestorBindingContext &&
-				RelativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.BindingContext.GetType().GetTypeInfo()))
+				relativeSource.Mode == RelativeBindingSourceMode.FindAncestorBindingContext &&
+				relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.BindingContext.GetType().GetTypeInfo()))
 				return true;
 
 			return false;

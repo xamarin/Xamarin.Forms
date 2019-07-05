@@ -134,19 +134,34 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void RelativeSourceTemplatedParentBinding()
 		{
-			var cc = new CustomControl
+			var cc1 = new CustomControl
 			{
-				CustomText = "RelativeSource Binding!",
+				CustomText = "RelativeSource Binding 1!",
 				ControlTemplate = new ControlTemplate(typeof(MyCustomControlTemplate))				
 			};
+			var cc2 = new CustomControl
+			{
+				CustomText = "RelativeSource Binding 2!",
+				ControlTemplate = new ControlTemplate(typeof(MyCustomControlTemplate))
+			};
 
-			var realLabel = cc.LogicalChildren[0] as Label;
-			Assert.AreEqual(realLabel.Text, cc.CustomText);
+			var realLabel = cc1.LogicalChildren[0].LogicalChildren[0] as Label;
+			Assert.AreEqual(cc1.CustomText, realLabel.Text);
+			Assert.AreEqual(realLabel.TemplatedParent, cc1);
+
+			// Test reparenting
+			((StackLayout)realLabel.Parent).Children.Remove(realLabel);
+			Assert.IsNull(realLabel.TemplatedParent);
+			Assert.IsNull(realLabel.Text);
+			((StackLayout)cc2.LogicalChildren[0]).Children.Add(realLabel);
+			Assert.AreEqual(realLabel.TemplatedParent, cc2);
+			Assert.AreEqual(cc2.CustomText, realLabel.Text);
 		}
 	}
 
 	public class CustomControl : ContentView
 	{
+		StackLayout _layout = new StackLayout();
 		public CustomControl()
 		{
 		}
@@ -171,12 +186,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		#endregion
 	}
 
-	public class MyCustomControlTemplate : Label
+	public class MyCustomControlTemplate : StackLayout
 	{
+		Label _label = new Label();
+
 		public MyCustomControlTemplate()
 		{
-			this.SetBinding(
-				TextProperty, 
+			this.Children.Add(_label);
+
+			_label.SetBinding(
+				Label.TextProperty, 
 				new Binding(
 					nameof(CustomControl.CustomText), 
 					source: RelativeBindingSource.TemplatedParent));

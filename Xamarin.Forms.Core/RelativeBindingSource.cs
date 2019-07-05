@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 namespace Xamarin.Forms
 {
