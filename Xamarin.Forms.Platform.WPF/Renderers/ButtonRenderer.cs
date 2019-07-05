@@ -58,7 +58,10 @@ namespace Xamarin.Forms.Platform.WPF
 			else if (e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorderColor();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName)
+			{
 				UpdateBorderWidth();
+				UpdatePadding();
+			}
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
 		}
