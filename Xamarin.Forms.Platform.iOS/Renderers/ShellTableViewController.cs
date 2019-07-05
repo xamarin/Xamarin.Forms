@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var parent = TableView.Superview;
 
-			if (_headerView != null && (_context.Shell.FlyoutHeaderBehavior != FlyoutHeaderBehavior.Scroll))
+			if (_headerView != null)
 				TableView.Frame =
 					new CGRect(parent.Bounds.X, HeaderTopMargin, parent.Bounds.Width, parent.Bounds.Height - HeaderTopMargin);
 			else
@@ -70,18 +70,25 @@ namespace Xamarin.Forms.Platform.iOS
 				var leftMargin = margin.Left - margin.Right;
 
 				_headerView.Frame = new CGRect(leftMargin, _headerOffset + HeaderTopMargin, parent.Frame.Width, _headerSize);
+
+				if (_context.Shell.FlyoutHeaderBehavior == FlyoutHeaderBehavior.Scroll && HeaderTopMargin > 0 && _headerOffset < 0)
+				{
+					var headerHeight = Math.Max(_headerMin, _headerSize + _headerOffset);
+					CAShapeLayer shapeLayer = new CAShapeLayer();
+					CGRect rect = new CGRect(0, _headerOffset * -1, parent.Frame.Width, headerHeight);
+					var path = CGPath.FromRect(rect);
+					shapeLayer.Path = path;
+					_headerView.Layer.Mask = shapeLayer;
+				}
+				else if (_headerView.Layer.Mask != null)
+					_headerView.Layer.Mask = null;
 			}
 		}
 
 		void SetHeaderContentInset()
 		{
 			if (_headerView != null)
-			{
-				if(_context.Shell.FlyoutHeaderBehavior != FlyoutHeaderBehavior.Scroll)
-					TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
-				else
-					TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax + (nfloat)HeaderTopMargin, 0, 0, 0);
-			}
+				TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
 			else
 				TableView.ContentInset = new UIEdgeInsets(Platform.SafeAreaInsetsForWindow.Top, 0, 0, 0);
 		}
@@ -140,7 +147,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				case FlyoutHeaderBehavior.Scroll:
 					_headerSize = HeaderMax;
-					_headerOffset = Math.Min(0, -(HeaderMax + e.ContentOffset.Y + HeaderTopMargin));
+					_headerOffset = Math.Min(0, -(HeaderMax + e.ContentOffset.Y));
 					break;
 
 				case FlyoutHeaderBehavior.CollapseOnScroll:
