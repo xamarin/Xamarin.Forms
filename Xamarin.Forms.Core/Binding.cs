@@ -137,7 +137,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void ApplyRelativeSourceBinding(
+		void ApplyRelativeSourceBinding(
 			BindableObject targetObject, 
 			BindableProperty targetProperty)
 		{
@@ -171,7 +171,7 @@ namespace Xamarin.Forms
 			_expression.Apply(resolvedSource, targetObject, targetProperty);						
 		}		
 
-		private void ApplyAncestorTypeBinding(
+		void ApplyAncestorTypeBinding(
 			Element target,
 			BindableProperty targetProperty,
 			Element currentElement = null,
@@ -226,7 +226,7 @@ namespace Xamarin.Forms
 			}			
 		}
 
-		private bool ElementFitsAncestorTypeAndLevel(Element element, int level)
+		bool ElementFitsAncestorTypeAndLevel(Element element, int level)
 		{
 			if (!(Source is RelativeBindingSource relativeSource))
 				return false;
