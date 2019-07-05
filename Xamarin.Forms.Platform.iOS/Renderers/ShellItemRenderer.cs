@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Foundation;
+using ObjCRuntime;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ShellItemRenderer : UITabBarController, IShellItemRenderer, IAppearanceObserver
+	public class ShellItemRenderer : UITabBarController, IShellItemRenderer, IAppearanceObserver, IUINavigationControllerDelegate
 	{
 		#region IShellItemRenderer
 
@@ -69,8 +71,24 @@ namespace Xamarin.Forms.Platform.iOS
 					ShellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, renderer.ShellSection);
 					CurrentRenderer = renderer;
 				}
+
+				if (ReferenceEquals(value, MoreNavigationController))
+				{
+					MoreNavigationController.WeakDelegate = this;
+				}
 			}
-		}		
+		}
+
+		[Export("navigationController:didShowViewController:animated:")]
+		public virtual void DidShowViewController(UINavigationController navigationController, [Transient]UIViewController viewController, bool animated)
+		{
+			var renderer = RendererForViewController(this.SelectedViewController);
+			if (renderer != null)
+			{
+				ShellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, renderer.ShellSection);
+				CurrentRenderer = renderer;
+			}
+		}
 
 		public override void ViewDidLayoutSubviews()
 		{
