@@ -9,6 +9,8 @@
     <Import_RootNamespace>Xamarin.Forms.Controls.Issues</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ShellInsets.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CollectionViewGrouping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5412.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\GarbageCollectionHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4879.cs" />
@@ -521,6 +523,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39458.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39853.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultipleClipToBounds.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_TemplateMarkup.xaml.cs">
+	  <DependentUpon>_TemplateMarkup.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)PerformanceGallery\PerformanceDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PerformanceGallery\PerformanceGallery.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PerformanceGallery\PerformanceScenario.cs" />
@@ -979,6 +985,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue6077.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3548.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6614.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5239.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1227,9 +1234,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5801.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)_TemplateMarkup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5801.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)A11yTabIndex.xaml">
       <SubType>Designer</SubType>
