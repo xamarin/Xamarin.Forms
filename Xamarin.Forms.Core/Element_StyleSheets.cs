@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
@@ -19,14 +16,18 @@ namespace Xamarin.Forms
 		internal string _cssFallbackTypeName;
 
 		string[] _styleSelectableNameAndBaseNames;
-		string[] IStyleSelectable.NameAndBases {
-			get {
-				if (_styleSelectableNameAndBaseNames == null) {
+		string[] IStyleSelectable.NameAndBases
+		{
+			get
+			{
+				if (_styleSelectableNameAndBaseNames == null)
+				{
 					var list = new List<string>();
 					if (_cssFallbackTypeName != null)
 						list.Add(_cssFallbackTypeName);
 					var t = GetType();
-					while (t != typeof(BindableObject)) {
+					while (t != typeof(BindableObject))
+					{
 						list.Add(t.Name);
 						t = t.GetTypeInfo().BaseType;
 					}
@@ -55,7 +56,7 @@ namespace Xamarin.Forms
 			ApplyStyleSheets(sheets, this);
 		}
 
-		void ApplyStyleSheets(IList<StyleSheet> sheets, Element element)
+		void ApplyStyleSheets(List<StyleSheet> sheets, Element element)
 		{
 			if (element == null)
 				return;
@@ -72,7 +73,8 @@ namespace Xamarin.Forms
 				var childSheets = resourceProvider?.GetStyleSheets();
 				if (childSheets?.Any() ?? false)
 				{
-					mergedSheets = new List<StyleSheet>(childSheets.Concat(sheets));
+					mergedSheets = new List<StyleSheet>(childSheets);
+					mergedSheets.AddRange(sheets);
 				}
 				ApplyStyleSheets(mergedSheets, child);
 			}
