@@ -20,7 +20,7 @@ namespace Xamarin.Forms
 		BindableProperty _targetProperty;
 		WeakReference<object> _weakSource;
 		WeakReference<BindableObject> _weakTarget;
-		List<WeakReference<Element>> _ancestryChange;
+		List<WeakReference<Element>> _ancestryChain;
 
 		internal BindingExpression(BindingBase binding, string path)
 		{
@@ -494,26 +494,26 @@ namespace Xamarin.Forms
 			ClearAncestryChangeSubscriptions();
 			if (chain == null)
 				return;
-			_ancestryChange = new List<WeakReference<Element>>();
+			_ancestryChain = new List<WeakReference<Element>>();
 			foreach (var elem in chain)
 			{
 				elem.ParentSet += OnElementParentSet;
-				_ancestryChange.Add(new WeakReference<Element>(elem));
+				_ancestryChain.Add(new WeakReference<Element>(elem));
 			}
 		}
 
 		private void ClearAncestryChangeSubscriptions(int beginningWith = 0)
 		{
-			if (_ancestryChange == null || _ancestryChange.Count == 0)
+			if (_ancestryChain == null || _ancestryChain.Count == 0)
 				return;
-			int count = _ancestryChange.Count;
+			int count = _ancestryChain.Count;
 			for (int i = beginningWith; i < count; i++)
 			{
 				Element elem;
-				var weakElement = _ancestryChange.Last();
+				var weakElement = _ancestryChain.Last();
 				if (weakElement.TryGetTarget(out elem))
 					elem.ParentSet -= OnElementParentSet;
-				_ancestryChange.RemoveAt(_ancestryChange.Count - 1);
+				_ancestryChain.RemoveAt(_ancestryChain.Count - 1);
 			}
 		}
 
@@ -521,9 +521,9 @@ namespace Xamarin.Forms
 		// chain is no longer valid.
 		private int FindAncestryIndex(Element elem)
 		{
-			for (int i = 0; i < _ancestryChange.Count; i++)
+			for (int i = 0; i < _ancestryChain.Count; i++)
 			{
-				WeakReference<Element> weak = _ancestryChange[i];
+				WeakReference<Element> weak = _ancestryChain[i];
 				Element chainMember = null;
 				if (!weak.TryGetTarget(out chainMember))
 					return -1;
@@ -553,7 +553,7 @@ namespace Xamarin.Forms
 					binding.Unapply();
 					return;
 				}
-				if (index + 1 < _ancestryChange.Count)
+				if (index + 1 < _ancestryChain.Count)
 					ClearAncestryChangeSubscriptions(index + 1);
 
 				// Force the binding expression to resolve to null
