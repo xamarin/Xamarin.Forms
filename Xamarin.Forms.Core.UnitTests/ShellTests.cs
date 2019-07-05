@@ -37,12 +37,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var shell = new Shell();
 
-			var shellItem = new ShellItem();
-			var shellSection = new ShellSection();
-			var contentPage = new ContentPage();
-			var shellContent = new ShellContent { Content = contentPage };
-			shellSection.Items.Add(shellContent);
-			shellItem.Items.Add(shellSection);
+			var shellItem = CreateShellItem();
 			shell.Items.Add(shellItem);
 
 			object viewModel = new object();
@@ -50,8 +45,88 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreSame(shell.BindingContext, viewModel);
 			Assert.AreSame(shellItem.BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].Items[0].BindingContext, viewModel);
+			Assert.AreSame((shellItem.Items[0].Items[0].Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenAddingNewShellItem()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var shellItem = CreateShellItem();
+			shell.Items.Add(shellItem);
+
+			Assert.AreSame(shellItem.BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].Items[0].BindingContext, viewModel);
+			Assert.AreSame((shellItem.Items[0].Items[0].Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenAddingNewShellSection()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var shellSection = CreateShellSection();
+			shell.Items[0].Items.Add(shellSection);
+
 			Assert.AreSame(shellSection.BindingContext, viewModel);
+			Assert.AreSame(shellSection.Items[0].BindingContext, viewModel);
+			Assert.AreSame((shellSection.Items[0].Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenAddingNewShellContent()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var shellContent = CreateShellContent();
+			shell.Items[0].Items[0].Items.Add(shellContent);
+
 			Assert.AreSame(shellContent.BindingContext, viewModel);
+			Assert.AreSame((shellContent.Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenChangingContent()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var contentPage = new ContentPage();
+
+			shell.Items[0].Items[0].Items[0].Content = contentPage;
+			Assert.AreSame(contentPage.BindingContext, viewModel);
+		}
+
+		[Test]
+		public async Task ShellPropagateBindingContextWhenPushingContent()
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var contentPage = new ContentPage();
+			await shell.Navigation.PushAsync(contentPage);
+
 			Assert.AreSame(contentPage.BindingContext, viewModel);
 		}
 
