@@ -210,6 +210,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (e.OldElement != null)
 			{
 				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
+				this.MaybeRequestLayout();
 			}
 
 			if (e.NewElement != null)
