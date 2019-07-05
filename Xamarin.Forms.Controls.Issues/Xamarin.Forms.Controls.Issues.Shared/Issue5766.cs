@@ -7,13 +7,28 @@ using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.Collections.Generic;
 
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 5766, "Frame size gets corrupted when ListView is scrolled", PlatformAffected.Android)]
-	public class Issue5766 : ContentPage
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.Layout)]
+#endif
+	public class Issue5766 : TestContentPage
 	{
-		public Issue5766()
+		const string SmallText = "small";
+		const string BigText = "big string > big frame";
+		const string StartText = "start";
+		const string EndText = "end";
+		const string List = "lstMain";
+
+		protected override void Init()
 		{
 			var grid = new Grid
 			{
@@ -30,8 +45,9 @@ namespace Xamarin.Forms.Controls.Issues
 			}, 0, 0);
 			grid.AddChild(new ListView
 			{
+				AutomationId = List,
 				HasUnevenRows = true,
-				ItemsSource = Enumerable.Range(0, 99).Select(i => i % 2 == 0 ? "small" : "big string > big frame"),
+				ItemsSource = (new[] { StartText }).Concat(Enumerable.Range(0, 99).Select(i => i % 2 != 0 ? SmallText : BigText)).Concat(new[] { EndText }),
 				ItemTemplate = new DataTemplate(() =>
 				{
 					var text = new Label
@@ -66,5 +82,52 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = grid;
 		}
+
+#if UITEST && __ANDROID__
+		UITest.Queries.AppRect[] GetLabels(IApp RunningApp, string label)
+		{
+			return RunningApp
+				.Query(q => q.Class("FormsTextView"))
+				.Where(x => x.Text == label)
+				.Select(x => x.Rect)
+				.ToArray();
+		}
+
+		bool RectIsEquals(UITest.Queries.AppRect[] left, UITest.Queries.AppRect[] right)
+		{
+			if (left.Length != right.Length)
+				return false;
+
+			for (int i = 0; i < left.Length; i++)
+			{
+				if (left[i].X != right[i].X || 
+					left[i].Y != right[i].Y || 
+					left[i].Width != right[i].Width || 
+					left[i].Height != right[i].Height)
+					return false;
+			}
+
+			return true;
+		}
+
+		[Test]
+		public void Issue5766Test()
+		{
+			RunningApp.WaitForElement(StartText);
+			var start = GetLabels(RunningApp, StartText);
+			var smalls = GetLabels(RunningApp, SmallText);
+			var bigs = GetLabels(RunningApp, BigText);
+
+			RunningApp.ScrollDownTo(EndText, List, ScrollStrategy.Gesture, 0.9, 15000, timeout: TimeSpan.FromMinutes(1));
+			RunningApp.ScrollUpTo(StartText, List, ScrollStrategy.Gesture, 0.9, 15000, timeout: TimeSpan.FromMinutes(1));
+
+			var startAfter = GetLabels(RunningApp, StartText);
+			Assert.IsTrue(RectIsEquals(start, startAfter));
+			var smallAfter = GetLabels(RunningApp, SmallText);
+			Assert.IsTrue(RectIsEquals(smalls, smallAfter));
+			var bigAfter = GetLabels(RunningApp, BigText);
+			Assert.IsTrue(RectIsEquals(bigs, bigAfter));
+		}
+#endif
 	}
 }
