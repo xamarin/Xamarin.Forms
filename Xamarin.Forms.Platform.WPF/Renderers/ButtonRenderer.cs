@@ -36,6 +36,9 @@ namespace Xamarin.Forms.Platform.WPF
 				if (Element.BorderWidth != 0)
 					UpdateBorderWidth();
 
+				if (Element.IsSet(Button.PaddingProperty) && Element.Padding != (Thickness)Button.PaddingProperty.DefaultValue)
+					UpdatePadding();
+
 				UpdateFont();
 			}
 
@@ -56,6 +59,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateBorderColor();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName)
 				UpdateBorderWidth();
+			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
 
 		void HandleButtonClick(object sender, RoutedEventArgs e)
@@ -184,6 +189,16 @@ namespace Xamarin.Forms.Platform.WPF
 
 			_isDisposed = true;
 			base.Dispose(disposing);
+		}
+
+		void UpdatePadding()
+		{
+			Control.Padding = new WThickness(
+				Element.Padding.Left,
+				Element.Padding.Top,
+				Element.Padding.Right,
+				Element.Padding.Bottom
+			);
 		}
 	}
 }
