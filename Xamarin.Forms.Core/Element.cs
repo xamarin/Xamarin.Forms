@@ -233,7 +233,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void RefreshTemplatedParent()
+		void RefreshTemplatedParent()
 		{
 			var templatedParent = this.IsTemplateRoot
 				? this.Parent

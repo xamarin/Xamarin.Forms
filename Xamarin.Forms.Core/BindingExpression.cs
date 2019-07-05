@@ -502,7 +502,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void ClearAncestryChangeSubscriptions(int beginningWith = 0)
+		void ClearAncestryChangeSubscriptions(int beginningWith = 0)
 		{
 			if (_ancestryChain == null || _ancestryChain.Count == 0)
 				return;
@@ -519,7 +519,7 @@ namespace Xamarin.Forms
 
 		// Returns -1 if the member is not in the chain or the
 		// chain is no longer valid.
-		private int FindAncestryIndex(Element elem)
+		int FindAncestryIndex(Element elem)
 		{
 			for (int i = 0; i < _ancestryChain.Count; i++)
 			{
