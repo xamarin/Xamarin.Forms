@@ -2,6 +2,7 @@
 using System.Linq;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using UIKit;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -14,15 +15,16 @@ namespace Xamarin.Forms.Platform.iOS
 			_modal = modal;
 
 			var elementConfiguration = modal.Element as IElementConfiguration<Page>;
-			if (elementConfiguration?.On<PlatformConfiguration.iOS>().ModalPresentationStyle() == PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FormSheet)
-				ModalPresentationStyle = UIKit.UIModalPresentationStyle.FormSheet;
+			if (elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle() is PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
+				ModalPresentationStyle = style.ToNativeModalPresentationStyle();
 
-			View.BackgroundColor = UIColor.White;
+			UpdateBackgroundColor();
 			View.AddSubview(modal.ViewController.View);
 			TransitioningDelegate = modal.ViewController.TransitioningDelegate;
 			AddChildViewController(modal.ViewController);
 
 			modal.ViewController.DidMoveToParentViewController(this);
+			((Page)modal.Element).PropertyChanged += OnModalPagePropertyChanged;
 		}
 
 		public override void DismissViewController(bool animated, Action completionHandler)
@@ -89,14 +91,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
-			View.BackgroundColor = UIColor.White;
+			UpdateBackgroundColor();
 			base.ViewWillAppear(animated);
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
+			{
+				if (_modal?.Element is Page modalPage)
+					modalPage.PropertyChanged -= OnModalPagePropertyChanged;
+
 				_modal = null;
+			}
+
 			base.Dispose(disposing);
 		}
 
@@ -111,6 +119,18 @@ namespace Xamarin.Forms.Platform.iOS
 		public override UIViewController ChildViewControllerForStatusBarStyle()
 		{
 			return ChildViewControllers?.LastOrDefault();
+		}
+
+		void OnModalPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == Page.ModalBackgroundColorProperty.PropertyName)
+				UpdateBackgroundColor();
+		}
+
+		void UpdateBackgroundColor()
+		{
+			Color modalBkgndColor = ((Page)_modal.Element).ModalBackgroundColor;
+			View.BackgroundColor = modalBkgndColor.IsDefault ? UIColor.White : modalBkgndColor.ToUIColor();
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -71,6 +72,21 @@ namespace Xamarin.Forms.Platform.iOS
 				textInput.AutocapitalizationType = capSettings;
 				textInput.AutocorrectionType = suggestionsEnabled ? UITextAutocorrectionType.Yes : UITextAutocorrectionType.No;
 				textInput.SpellCheckingType = spellcheckEnabled ? UITextSpellCheckingType.Yes : UITextSpellCheckingType.No;
+			}
+		}
+
+		public static UIModalPresentationStyle ToNativeModalPresentationStyle(this PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
+		{
+			switch (style)
+			{
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FormSheet:
+					return UIModalPresentationStyle.FormSheet;
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FullScreen:
+					return UIModalPresentationStyle.FullScreen;
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.OverFullScreen:
+					return UIModalPresentationStyle.OverFullScreen;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(style));
 			}
 		}
 

@@ -6,6 +6,7 @@ using CoreGraphics;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -112,6 +113,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			modal.DisposeModalAndChildRenderers();
 
+			if (IsModalPresentedOverContext(modal))
+				GetCurentPage(Page)?.SendAppearing();
+
 			return modal;
 		}
 
@@ -143,6 +147,9 @@ namespace Xamarin.Forms.Platform.iOS
 		Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
 			EndEditing();
+
+			if (_appeared && IsModalPresentedOverContext(modal))
+				GetCurentPage(Page)?.SendDisappearing();
 
 			_modals.Add(modal);
 
@@ -561,6 +568,25 @@ namespace Xamarin.Forms.Platform.iOS
 				modal.DisposeModalAndChildRenderers();
 
 			(Page.Parent as IDisposable)?.Dispose();
+		}
+
+		Page GetCurentPage(Page currentPage)
+		{
+			if (_modals.LastOrDefault() is Page modal)
+				return modal;
+			else if (currentPage is MasterDetailPage mdp)
+				return GetCurentPage(mdp.Detail);
+			else if (currentPage is IPageContainer<Page> pc)
+				return GetCurentPage(pc.CurrentPage);
+			else
+				return currentPage;
+		}
+
+		static bool IsModalPresentedOverContext(Page modal)
+		{
+			var elementConfiguration = modal as IElementConfiguration<Page>;
+			var presentationStyle = elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle();
+			return presentationStyle != null && presentationStyle == PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.OverFullScreen;
 		}
 	}
 }
