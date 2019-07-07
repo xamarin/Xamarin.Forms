@@ -61,7 +61,9 @@ namespace Xamarin.Forms.Platform.Android
 			_actionBarHeight = (int)context.ToPixels(56);
 
 			_flyoutHeader = ((IShellController)shellContext.Shell).FlyoutHeader;
-			_flyoutHeader.MeasureInvalidated += OnFlyoutHeaderMeasureInvalidated;
+			if(_flyoutHeader != null)
+				_flyoutHeader.MeasureInvalidated += OnFlyoutHeaderMeasureInvalidated;
+
 			_headerView = new HeaderContainer(context, _flyoutHeader)
 			{
 				MatchWidth = true
