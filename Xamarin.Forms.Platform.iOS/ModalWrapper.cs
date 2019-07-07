@@ -4,6 +4,7 @@ using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using UIKit;
 using Foundation;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -29,7 +30,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ModalPresentationStyle = result;
 			}
 
-			View.BackgroundColor = UIColor.White;
+			UpdateBackgroundColor();
 			View.AddSubview(modal.ViewController.View);
 			TransitioningDelegate = modal.ViewController.TransitioningDelegate;
 			AddChildViewController(modal.ViewController);
@@ -39,6 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Forms.IsiOS13OrNewer)
 				PresentationController.Delegate = this;
 #endif
+			((Page)modal.Element).PropertyChanged += OnModalPagePropertyChanged;
 		}
 #if __XCODE11__
 		[Export("presentationControllerDidDismiss:")]
@@ -111,14 +113,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
-			View.BackgroundColor = UIColor.White;
+			UpdateBackgroundColor();
 			base.ViewWillAppear(animated);
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
+			{
+				if (_modal?.Element is Page modalPage)
+					modalPage.PropertyChanged -= OnModalPagePropertyChanged;
+
 				_modal = null;
+			}
+
 			base.Dispose(disposing);
 		}
 
@@ -133,6 +141,18 @@ namespace Xamarin.Forms.Platform.iOS
 		public override UIViewController ChildViewControllerForStatusBarStyle()
 		{
 			return ChildViewControllers?.LastOrDefault();
+		}
+
+		void OnModalPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == Page.ModalBackgroundColorProperty.PropertyName)
+				UpdateBackgroundColor();
+		}
+
+		void UpdateBackgroundColor()
+		{
+			Color modalBkgndColor = ((Page)_modal.Element).ModalBackgroundColor;
+			View.BackgroundColor = modalBkgndColor.IsDefault ? UIColor.White : modalBkgndColor.ToUIColor();
 		}
 	}
 }

@@ -7,6 +7,7 @@ using CoreGraphics;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
@@ -161,7 +162,6 @@ namespace Xamarin.Forms.Platform.iOS
 		Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
 			EndEditing();
-
 
 			var elementConfiguration = modal as IElementConfiguration<Page>;
 
@@ -680,6 +680,18 @@ namespace Xamarin.Forms.Platform.iOS
 			_modals.Clear();
 
 			(Page.Parent as IDisposable)?.Dispose();
+		}
+
+		Page GetCurentPage(Page currentPage)
+		{
+			if (_modals.LastOrDefault() is Page modal)
+				return modal;
+			else if (currentPage is MasterDetailPage mdp)
+				return GetCurentPage(mdp.Detail);
+			else if (currentPage is IPageContainer<Page> pc)
+				return GetCurentPage(pc.CurrentPage);
+			else
+				return currentPage;
 		}
 	}
 }

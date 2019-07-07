@@ -5,5 +5,6 @@
 		FullScreen,
 		FormSheet,
 		Automatic
+		OverFullScreen
 	}
 }
