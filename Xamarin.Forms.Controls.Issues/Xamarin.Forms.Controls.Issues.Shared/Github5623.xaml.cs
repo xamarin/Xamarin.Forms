@@ -27,12 +27,12 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 5623, "CollectionView with Incremental Collection (RemainingItemsThreshold)", PlatformAffected.All)]
 	public partial class Github5623 : TestContentPage
 	{
+#if APP
 		int _itemCount = 10;
 		const int MaximumItemCount = 100;
 		const int PageSize = 10;
 		static readonly SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
 
-#if APP
 		public Github5623()
 		{
 			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement (q => q.Marked ("CollectionView5623"));
 			
-			var elementQuery = RunningApp.Query(c => c.Marked((_maximumItemCount - 1).ToString()));
+			var elementQuery = RunningApp.Query(c => c.Marked((99).ToString()));
 			var elementAvailable = elementQuery.Any();
 			var attempt = 0;
 
