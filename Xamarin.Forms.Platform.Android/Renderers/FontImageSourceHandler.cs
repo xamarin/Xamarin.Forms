@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.IO;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Android.Content;
@@ -10,7 +9,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
-		static Dictionary<string, Typeface> TypefaceCache = new Dictionary<string, Typeface>();
+		static ConcurrentDictionary<string, Typeface> TypefaceCache = new ConcurrentDictionary<string, Typeface>();
 
 		public Task<Bitmap> LoadImageAsync(
 			ImageSource imagesource,
@@ -29,11 +28,8 @@ namespace Xamarin.Forms.Platform.Android
 					AntiAlias = true,
 				};
 
-				if (!TypefaceCache.TryGetValue(fontsource.FontFamily, out Typeface typeface))
-				{
-					typeface = fontsource.FontFamily.ToTypeFace();
-					TypefaceCache.Add(fontsource.FontFamily, typeface);
-				}
+				var typeface = TypefaceCache.GetOrAdd(fontsource.FontFamily, fontFamily => fontFamily.ToTypeFace());
+                
 				paint.SetTypeface(typeface);
 
 				var width = (int)(paint.MeasureText(fontsource.Glyph) + .5f);
