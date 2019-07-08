@@ -42,6 +42,38 @@ namespace Xamarin.Forms
 			set { SetValue(TextProperty, value); }
 		}
 
+		public string TextPlatformNeutral
+		{
+			get
+			{
+				switch (Device.RuntimePlatform)
+				{
+					case Device.UWP:
+						return Text.Replace("\n", "\r");
+					default:
+						return Text;
+				}
+			}
+			set
+			{
+				string newContent;
+				switch (Device.RuntimePlatform)
+				{
+					case Device.UWP:
+						newContent = value.Replace("\r", "\n");
+						break;
+					default:
+						newContent = value;
+						break;
+				}
+
+				if (Text == newContent)
+					return;
+				Text = newContent;
+				OnPropertyChanged("TextPlatformNeutral");
+			}
+		}
+
 		public Color TextColor
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
