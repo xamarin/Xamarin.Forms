@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.WPF
 				await TryUpdateSource().ConfigureAwait(false);
 				UpdateAspect();
 
-				if (Element.IsSet(Button.PaddingProperty) && Element.Padding != (Thickness)Button.PaddingProperty.DefaultValue)
+				if (Element.IsSet(Button.PaddingProperty))
 					UpdatePadding();
 			}
 		}

@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.WPF
 				if (Element.BorderWidth != 0)
 					UpdateBorderWidth();
 
-				if (Element.IsSet(Button.PaddingProperty) && Element.Padding != (Thickness)Button.PaddingProperty.DefaultValue)
+				if (Element.IsSet(Button.PaddingProperty))
 					UpdatePadding();
 
 				UpdateFont();
