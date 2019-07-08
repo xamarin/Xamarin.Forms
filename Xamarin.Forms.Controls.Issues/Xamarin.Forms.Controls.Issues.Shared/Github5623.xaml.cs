@@ -28,24 +28,18 @@ namespace Xamarin.Forms.Controls.Issues
 	public partial class Github5623 : TestContentPage
 	{
 		int _itemCount = 10;
-		int _maximumItemCount = 100;
-		int _pageSize = 10;
-		static SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
+		const int MaximumItemCount = 100;
+		const int PageSize = 10;
+		static readonly SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
 
+#if APP
 		public Github5623()
 		{
-#if APP
 			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
 
 			InitializeComponent();
 
 			BindingContext = new ViewModel5623();
-#endif
-		}
-
-		protected override void Init()
-		{
-
 		}
 
 		async void CollectionView_RemainingItemsThresholdReached(object sender, System.EventArgs e)
@@ -92,10 +86,10 @@ namespace Xamarin.Forms.Controls.Issues
 			return await Task.Run(() =>
 			{
 				var collection = new ObservableCollection<Model5623>();
-				var count = _pageSize;
+				var count = PageSize;
 
-				if (_itemCount + count > _maximumItemCount)
-					count = _maximumItemCount - _itemCount;
+				if (_itemCount + count > MaximumItemCount)
+					count = MaximumItemCount - _itemCount;
 
 				for (var i = _itemCount; i < _itemCount + count; i++)
 				{
@@ -111,12 +105,18 @@ namespace Xamarin.Forms.Controls.Issues
 				return collection;
 			});
 		}
+#endif
+
+		protected override void Init()
+		{
+
+		}
 
 #if UITEST
 		[Test]
 		public void CollectionViewInfiniteScroll()
 		{
-			RunningApp.WaitForElement (q => q.Marked ("CollectionView"));
+			RunningApp.WaitForElement (q => q.Marked ("CollectionView5623"));
 			
 			var elementQuery = RunningApp.Query(c => c.Marked((_maximumItemCount - 1).ToString()));
 			var elementAvailable = elementQuery.Any();
@@ -127,6 +127,7 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.ScrollDown();
 
 				elementAvailable = elementQuery.Any();
+
 				if (elementAvailable)
 					break;
 
