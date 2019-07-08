@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Ignore("Shell test is only supported on Android and iOS")]
 #endif
 		[Test]
-		public void Issue6738Test()
+		public void FlyoutNavigationBetweenItemsWithNavigationStacks()
 		{
 			RunningApp.WaitForElement(pushPageButton.AutomationId);
 			RunningApp.Tap(pushPageButton.AutomationId);
