@@ -207,9 +207,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				_disposed = true;
+				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
+
+				if (Element != null)
+				{
+					MasterDetailPageController.BackButtonPressed -= OnBackButtonPressed;
+					Element.PropertyChanged -= HandlePropertyChanged;
+					Element.Appearing -= MasterDetailPageAppearing;
+					Element.Disappearing -= MasterDetailPageDisappearing;
+				}
+
+				if (_masterLayout?.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
+				if (!this.IsDisposed())
+					RemoveDrawerListener(this);
 
 				if (_tracker != null)
 				{
@@ -226,25 +245,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_masterLayout != null)
 				{
-					if (_masterLayout.ChildView != null)
-						_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
-
 					RemoveView(_masterLayout);
 					_masterLayout.Dispose();
 					_masterLayout = null;
 				}
 
-				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
-
-				RemoveDrawerListener(this);
-
 				if (Element != null)
 				{
-					MasterDetailPageController.BackButtonPressed -= OnBackButtonPressed;
-					Element.PropertyChanged -= HandlePropertyChanged;
-					Element.Appearing -= MasterDetailPageAppearing;
-					Element.Disappearing -= MasterDetailPageDisappearing;
-
 					Element.ClearValue(Android.Platform.RendererProperty);
 					Element = null;
 				}
