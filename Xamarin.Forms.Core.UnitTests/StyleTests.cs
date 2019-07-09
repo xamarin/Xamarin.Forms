@@ -818,6 +818,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			var content = parentView.Content;
 			Assert.That(Equals(content?.Parent, parentView));
 		}
+	
+		class MyPage : ContentPage
+		{
+		}
+
+		class MyContentView : ContentView
+		{
+		}
 
 		[Test]
 		public void MismatchTargetTypeThrowsError1()
@@ -841,14 +849,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			var s = new Style(typeof(View));
 			var t = new Button();
 			Assert.DoesNotThrow(() => t.Style = s);
-    }
-
-		class MyPage : ContentPage
-		{
-		}
-
-		class MyContentView : ContentView
-		{
-		}
+    	}
 	}
 }
