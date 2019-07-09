@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __ANDROID__
-		UITest.Queries.AppRect[] GetLabels(IApp RunningApp, string label)
+		internal static UITest.Queries.AppRect[] GetLabels(IApp RunningApp, string label)
 		{
 			return RunningApp
 				.Query(q => q.Class("FormsTextView"))
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 				.ToArray();
 		}
 
-		bool RectIsEquals(UITest.Queries.AppRect[] left, UITest.Queries.AppRect[] right)
+		internal static bool RectIsEquals(UITest.Queries.AppRect[] left, UITest.Queries.AppRect[] right)
 		{
 			if (left.Length != right.Length)
 				return false;
