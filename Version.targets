@@ -1,7 +1,14 @@
 ﻿<Project>
  <PropertyGroup>
+    <NightlyTag>nightly</NightlyTag>
+ </PropertyGroup>
+ <PropertyGroup>
     <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' != ''">$(SYSTEM_PULLREQUEST_TARGETBRANCH)</GitBranch>
     <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' == '' and '$(BUILD_SOURCEBRANCHNAME)' != ''">$(BUILD_SOURCEBRANCHNAME)</GitBranch>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GitSemVerLabel  Condition="$(CI) and '$(BUILD_REASON)' == 'Schedule'">$(NightlyTag)</GitSemVerLabel>
+    <GitSemVerDashLabel  Condition="$(CI) and '$(BUILD_REASON)' == 'Schedule'">-$(GitSemVerLabel)</GitSemVerDashLabel>
   </PropertyGroup>
 
   <Target Name="SetVersions"
@@ -25,22 +32,21 @@
     <PropertyGroup>
       <VersionMetadataLabel>@(VersionMetadata -> '%(Identity)', '-')</VersionMetadataLabel>
       <VersionMetadataPlusLabel Condition="'$(VersionMetadataLabel)' != ''">+$(VersionMetadataLabel)</VersionMetadataPlusLabel>
-
-      <GitSemVerDashLabel Condition="'$(GitSemVerDashLabel)' != '' and '$(GitCommits)' != '0'">$(GitSemVerDashLabel).$(GitCommits)</GitSemVerDashLabel>
       <Version>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)</Version>
-      <PackageVersion>$(Version)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+      <PackageVersion>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+      <PackageVersion Condition="$(CI)">$(GitSemVerMajor).$(GitSemVerMinor).$(GitBaseVersionPatch).$(BUILDVERSION)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
     </PropertyGroup>
 
     <PropertyGroup>
       <InformationalVersion>$(PackageVersion)</InformationalVersion>
       <FileVersion>$(Version).$(GitCommits)</FileVersion>
-      <AssemblyVersion>$(Version).0</AssemblyVersion>
+      <AssemblyVersion>2.0.0.0</AssemblyVersion> <!-- THIS SHALL REMAIN 2.0.0.0 -->
     </PropertyGroup>
 
     <ItemGroup>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
         <_Parameter1>Version</_Parameter1>
-        <_Parameter2>$(Version)</_Parameter2>
+        <_Parameter2>2.0.0.0</_Parameter2> <!-- THIS SHALL REMAIN 2.0.0.0 -->
       </AssemblyAttribute>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
         <_Parameter1>PackageVersion</_Parameter1>
@@ -48,8 +54,9 @@
       </AssemblyAttribute>
     </ItemGroup>
 
+    <Message Condition="$(CI) and '$(BUILD_REASON)' == 'Schedule'" Importance="high" Text="##vso[build.addbuildtag]$(NightlyTag)"/>
     <Message Condition="$(CI)" Importance="high" Text="##vso[build.updatebuildnumber]$(PackageVersion)"/>
-    <Message Condition="$(CI)" Importance="high" Text="##vso[task.setvariable variable=packageversion;isOutput=true;]$(PackageVersion)"/>
+    <Message Condition="$(CI)" Importance="high" Text="##vso[task.setvariable variable=XamarinFormsPackageVersion;isOutput=true;]$(PackageVersion)"/>
   </Target>
 
   <Target Name="VersionInfoReport" DependsOnTargets="SetVersions" AfterTargets="GitInfoReport">

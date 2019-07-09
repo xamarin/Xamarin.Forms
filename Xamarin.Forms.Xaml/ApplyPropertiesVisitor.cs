@@ -406,18 +406,18 @@ namespace Xamarin.Forms.Xaml
 			if (eventInfo == null || IsNullOrEmpty(stringValue))
 				return false;
 
-			var methodInfo = rootElement.GetType().GetRuntimeMethods().FirstOrDefault(mi => mi.Name == (string)value);
-			if (methodInfo == null) {
-				exception = new XamlParseException($"No method {value} found on type {rootElement.GetType()}", lineInfo);
-				return false;
+			foreach (var mi in rootElement.GetType().GetRuntimeMethods()) {
+				if (mi.Name == (string)value) {
+					try {
+						eventInfo.AddEventHandler(element, mi.CreateDelegate(eventInfo.EventHandlerType, mi.IsStatic ? null : rootElement));
+						return true;
+					} catch (ArgumentException) {
+						// incorrect method signature
+					}
+				}
 			}
 
-			try {
-				eventInfo.AddEventHandler(element, methodInfo.CreateDelegate(eventInfo.EventHandlerType, methodInfo.IsStatic ? null : rootElement));
-				return true;
-			} catch (ArgumentException ae) {
-				exception = new XamlParseException($"Method {stringValue} does not have the correct signature", lineInfo, ae);
-			}
+			exception = new XamlParseException($"No method {value} with correct signature found on type {rootElement.GetType()}", lineInfo);
 			return false;
 		}
 
@@ -695,7 +695,7 @@ namespace Xamarin.Forms.Xaml
 			((IDataTemplate)dt).LoadTemplate = () => {
 #pragma warning restore 0612
 				var cnode = node.Clone();
-				var context = new HydrationContext { ParentContext = Context, RootElement = Context.RootElement };
+				var context = new HydrationContext { ParentContext = Context, RootElement = Context.RootElement, ExceptionHandler = Context.ExceptionHandler };
 				cnode.Accept(new XamlNodeVisitor((n, parent) => n.Parent = parent), node.Parent); //set parents for {StaticResource}
 				cnode.Accept(new ExpandMarkupsVisitor(context), null);
 				cnode.Accept(new NamescopingVisitor(context), null);

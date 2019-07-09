@@ -46,16 +46,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void SetContentDescription()
 			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
 
+		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
+		}
+
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>
 			_buttonLayoutManager?.OnViewAttachedToWindow(attachedView);
 
 		void AView.IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView) =>
 			_buttonLayoutManager?.OnViewDetachedFromWindow(detachedView);
-
-		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
-		{
-			return base.GetDesiredSize(widthConstraint, heightConstraint);
-		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
@@ -196,6 +196,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		VisualElement IBorderVisualElementRenderer.Element => Element;
 		AView IBorderVisualElementRenderer.View => Control;
 		event EventHandler<VisualElementChangedEventArgs> IBorderVisualElementRenderer.ElementChanged
+		{
+			add => ((IVisualElementRenderer)this).ElementChanged += value;
+			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
+		}
+
+		event EventHandler<VisualElementChangedEventArgs> IButtonLayoutRenderer.ElementChanged
 		{
 			add => ((IVisualElementRenderer)this).ElementChanged += value;
 			remove => ((IVisualElementRenderer)this).ElementChanged -= value;

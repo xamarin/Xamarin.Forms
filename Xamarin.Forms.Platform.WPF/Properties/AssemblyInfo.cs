@@ -4,6 +4,8 @@ using System.Windows;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.WPF;
 
+[assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
+
 [assembly: ExportRenderer(typeof(Layout), typeof(LayoutRenderer))]
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
 [assembly: ExportRenderer(typeof(Button), typeof(ButtonRenderer))]
@@ -19,7 +21,7 @@ using Xamarin.Forms.Platform.WPF;
 [assembly: ExportRenderer(typeof(Slider), typeof(SliderRenderer))]
 [assembly: ExportRenderer(typeof(WebView), typeof(WebViewRenderer))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
-[assembly: ExportRenderer(typeof(Switch), typeof(SwitchRenderer))]
+[assembly: ExportRenderer(typeof(CheckBox), typeof(CheckBoxRenderer))]
 [assembly: ExportRenderer(typeof(DatePicker), typeof(DatePickerRenderer))]
 [assembly: ExportRenderer(typeof(Picker), typeof(PickerRenderer))]
 [assembly: ExportRenderer(typeof(Stepper), typeof(StepperRenderer))]
