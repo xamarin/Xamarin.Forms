@@ -579,11 +579,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					break;
 
 				default:
-#if __MOBILE__
-					Control.Text = Element.Text;
-#else
-					Control.StringValue = Element.Text;
-#endif
+					UpdateText();
 					break;
 			}
 		}
