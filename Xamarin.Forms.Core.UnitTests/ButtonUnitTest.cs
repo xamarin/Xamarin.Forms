@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using NUnit.Framework;
-using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
