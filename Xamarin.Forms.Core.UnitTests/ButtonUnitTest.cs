@@ -324,29 +324,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(layout1.Position, bcl.Position);
 			Assert.AreEqual(layout1.Spacing, bcl.Spacing);
 		}
-
-		[Test]
-		public void ButtonCornerRadiusSetInExplicitStyle()
-		{
-			var xaml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
-			             <ContentView xmlns=""http://xamarin.com/schemas/2014/forms""
-			                          xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
-			                 <ContentView.Resources>
-			                     <Style TargetType=""Button"">
-			                         <Setter Property=""TextColor"" Value=""White""></Setter>
-			                     </Style>
-			                     <Style x:Key=""ButtonStyle"" TargetType=""Button"">
-			                         <Setter Property=""CornerRadius"" Value=""0""></Setter>
-			                         <Setter Property=""TextColor"" Value=""Yellow""></Setter>
-			                     </Style>
-			                 </ContentView.Resources>
-			                 <Button x:Name=""Button0"" Style=""{StaticResource ButtonStyle}"" />
-			             </ContentView>";
-
-			var testView = new ContentView();
-			testView.LoadFromXaml(xaml);
-
-			Assert.AreEqual(0, testView.FindByName<Button>("Button0").CornerRadius);
-		}
 	}	
 }

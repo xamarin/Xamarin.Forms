@@ -30,4 +30,14 @@
       <Link>BaseTestFixture.cs</Link>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ButtonCornerRadius.xaml.cs">
+      <DependentUpon>ButtonCornerRadius.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="ButtonCornerRadius.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
