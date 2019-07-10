@@ -152,8 +152,8 @@ namespace Xamarin.Forms.Platform.Android
 				if (arguments.Keyboard == Keyboard.Numeric)
 					editText.KeyListener = LocalizedDigitsKeyListener.Create(editText.InputType);
 
-				if (arguments.MaxLength != null)
-					editText.SetFilters(new IInputFilter[]{ new InputFilterLengthFilter(arguments.MaxLength.Value)});
+				if (arguments.MaxLength > -1)
+					editText.SetFilters(new IInputFilter[]{ new InputFilterLengthFilter(arguments.MaxLength)});
 
 				frameLayout.AddView(editText);
 				alertDialog.SetView(frameLayout);
