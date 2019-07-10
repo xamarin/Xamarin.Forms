@@ -74,7 +74,10 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateBorderRadius()
 		{
 			if (_contentPresenter != null)
-				_contentPresenter.CornerRadius = new Windows.UI.Xaml.CornerRadius(BorderRadius);
+			{
+				var radius = BorderRadius == -1 ? 0 : BorderRadius;
+				_contentPresenter.CornerRadius = new Windows.UI.Xaml.CornerRadius(radius);
+			}
 		}
 
 		public void UpdateCharacterSpacing(int characterSpacing)

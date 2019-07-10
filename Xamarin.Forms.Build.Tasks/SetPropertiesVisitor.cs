@@ -382,6 +382,11 @@ namespace Xamarin.Forms.Build.Tasks
 			if (dataTypeNode is null)
 				yield break;
 
+			if (   dataTypeNode is ElementNode enode
+				&& enode.XmlType.NamespaceUri == XamlParser.X2009Uri
+				&& enode.XmlType.Name == "NullExtension")
+				yield break;
+
 			if (!((dataTypeNode as ValueNode)?.Value is string dataType))
 				throw new XamlParseException("x:DataType expects a string literal", dataTypeNode as IXmlLineInfo);
 
@@ -665,7 +670,13 @@ namespace Xamarin.Forms.Build.Tasks
 			else
 				il.Emit(Ldarg_0);
 			var locs = new Dictionary<TypeReference, VariableDefinition>();
-			il.Append(DigProperties(properties.Take(properties.Count - 1), locs, null, node as IXmlLineInfo, module));
+			Instruction pop = null;
+			il.Append(DigProperties(properties.Take(properties.Count - 1), locs, () => {
+				if (pop == null)
+					pop = Instruction.Create(Pop);
+
+				return pop;
+			}, node as IXmlLineInfo, module));
 
 			foreach (var loc in locs.Values)
 				setter.Body.Variables.Add(loc);
@@ -681,6 +692,12 @@ namespace Xamarin.Forms.Build.Tasks
 
 				il.Emit(Stloc, loc);
 				il.Emit(Ldloca, loc);
+			} else {
+				if (pop == null)
+					pop = Instruction.Create(Pop);
+
+				il.Emit(Dup);
+				il.Emit(Brfalse, pop);
 			}
 
 			if (lastIndexArg != null) {
@@ -702,6 +719,11 @@ namespace Xamarin.Forms.Build.Tasks
 				il.Emit(Call, setterRef);
 
 			il.Emit(Ret);
+
+			if (pop != null) {
+				il.Append(pop);
+				il.Emit(Ret);
+			}
 
 			context.Body.Method.DeclaringType.Methods.Add(setter);
 
@@ -924,31 +946,34 @@ namespace Xamarin.Forms.Build.Tasks
 			while (declaringType.IsNested)
 				declaringType = declaringType.DeclaringType;
 			var handler = declaringType.AllMethods().FirstOrDefault(md => {
-				if (md.Name != value as string)
+				if (md.methodDef.Name != value as string)
 					return false;
 
 				//check if the handler signature matches the Invoke signature;
 				var invoke = module.ImportReference(eventinfo.EventType.ResolveCached().GetMethods().First(eventmd => eventmd.Name == "Invoke"));
 				invoke = invoke.ResolveGenericParameters(eventinfo.EventType, module);
-				if (!md.ReturnType.InheritsFromOrImplements(invoke.ReturnType) || invoke.Parameters.Count != md.Parameters.Count)
+				if (!md.methodDef.ReturnType.InheritsFromOrImplements(invoke.ReturnType) || invoke.Parameters.Count != md.methodDef.Parameters.Count)
 					return false;
 
 				if (!invoke.ContainsGenericParameter)
 					for (var i = 0; i < invoke.Parameters.Count;i++)
-						if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(md.Parameters[i].ParameterType))
+						if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(md.methodDef.Parameters[i].ParameterType))
 							return false;
 				//TODO check generic parameters if any
 
 				return true;
 			});
-			if (handler == null) 
+			MethodReference handlerRef = null;
+			if (handler.methodDef != null)
+				handlerRef = handler.methodDef.ResolveGenericParameters(handler.declTypeRef, module);
+			if (handler.methodDef == null) 
 				throw new XamlParseException($"EventHandler \"{value}\" with correct signature not found in type \"{declaringType}\"", iXmlLineInfo);
 
 			//FIXME: eventually get the right ctor instead fo the First() one, just in case another one could exists (not even sure it's possible).
 			var ctor = module.ImportReference(eventinfo.EventType.ResolveCached().GetConstructors().First());
 			ctor = ctor.ResolveGenericParameters(eventinfo.EventType, module);
 
-			if (handler.IsStatic) {
+			if (handler.methodDef.IsStatic) {
 				yield return Create(Ldnull);
 			} else {
 				if (context.Root is VariableDefinition)
@@ -961,11 +986,11 @@ namespace Xamarin.Forms.Build.Tasks
 					throw new InvalidProgramException();
 			}
 
-			if (handler.IsVirtual) {
+			if (handler.methodDef.IsVirtual) {
 				yield return Create(Ldarg_0);
-				yield return Create(Ldvirtftn, handler);
+				yield return Create(Ldvirtftn, handlerRef);
 			} else
-				yield return Create(Ldftn, handler);
+				yield return Create(Ldftn, handlerRef);
 
 			yield return Create(Newobj, module.ImportReference(ctor));
 			//Check if the handler has the same signature as the ctor (it should)

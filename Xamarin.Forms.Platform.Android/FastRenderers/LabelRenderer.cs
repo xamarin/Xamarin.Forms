@@ -169,6 +169,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
+
 				BackgroundManager.Dispose(this);
 				if (_visualElementTracker != null)
 				{
@@ -182,10 +187,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementRenderer = null;
 				}
 
+				_spannableString?.Dispose();
+				_labelTextColorDefault?.Dispose();
+
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
 				}

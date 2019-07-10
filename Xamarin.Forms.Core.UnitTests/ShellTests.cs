@@ -33,6 +33,104 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void ShellChildrenBindingContext()
+		{
+			var shell = new Shell();
+
+			var shellItem = CreateShellItem();
+			shell.Items.Add(shellItem);
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+
+			Assert.AreSame(shell.BindingContext, viewModel);
+			Assert.AreSame(shellItem.BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].Items[0].BindingContext, viewModel);
+			Assert.AreSame((shellItem.Items[0].Items[0].Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenAddingNewShellItem()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var shellItem = CreateShellItem();
+			shell.Items.Add(shellItem);
+
+			Assert.AreSame(shellItem.BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].BindingContext, viewModel);
+			Assert.AreSame(shellItem.Items[0].Items[0].BindingContext, viewModel);
+			Assert.AreSame((shellItem.Items[0].Items[0].Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenAddingNewShellSection()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var shellSection = CreateShellSection();
+			shell.Items[0].Items.Add(shellSection);
+
+			Assert.AreSame(shellSection.BindingContext, viewModel);
+			Assert.AreSame(shellSection.Items[0].BindingContext, viewModel);
+			Assert.AreSame((shellSection.Items[0].Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenAddingNewShellContent()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var shellContent = CreateShellContent();
+			shell.Items[0].Items[0].Items.Add(shellContent);
+
+			Assert.AreSame(shellContent.BindingContext, viewModel);
+			Assert.AreSame((shellContent.Content as BindableObject).BindingContext, viewModel);
+		}
+
+		[Test]
+		public void ShellPropagateBindingContextWhenChangingContent()
+		{
+			var shell = new Shell();
+
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var contentPage = new ContentPage();
+
+			shell.Items[0].Items[0].Items[0].Content = contentPage;
+			Assert.AreSame(contentPage.BindingContext, viewModel);
+		}
+
+		[Test]
+		public async Task ShellPropagateBindingContextWhenPushingContent()
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+
+			object viewModel = new object();
+			shell.BindingContext = viewModel;
+			var contentPage = new ContentPage();
+			await shell.Navigation.PushAsync(contentPage);
+
+			Assert.AreSame(contentPage.BindingContext, viewModel);
+		}
+
+		[Test]
 		public void NavigationProxyWireUpTest()
 		{
 			var page = new ContentPage();
@@ -129,6 +227,22 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("app://tab2/IMPL_tab21", typeof(ShellItem)));
 		}
 
+		[Test]
+		public async Task FailWhenAddingDuplicatedRouting()
+		{
+			var route = "dogs";
+			Routing.RegisterRoute(route, typeof(ShellItem));
+
+			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute("dogs", typeof(ContentPage)));
+		}
+
+		[Test]
+		public async Task SucceedWhenAddingDuplicateRouteOfSameType()
+		{
+			var route = "dogs";
+			Routing.RegisterRoute(route, typeof(ShellItem));
+			Routing.RegisterRoute(route, typeof(ShellItem));
+		}
 
 		[Test]
 		public async Task RelativeGoTo()
@@ -221,6 +335,64 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 		[Test]
+		public async Task NavigationWithQueryStringThenWithoutQueryString()
+		{
+			var shell = new Shell();
+
+			var one = new ShellItem { Route = "one" };
+			var two = new ShellItem { Route = "two" };
+
+			var tabone = MakeSimpleShellSection("tabone", "content");
+			var tabfour = MakeSimpleShellSection("tabfour", "content", null);
+
+			one.Items.Add(tabone);
+			two.Items.Add(tabfour);
+
+			shell.Items.Add(one);
+			shell.Items.Add(two);
+
+			ShellTestPage pagetoTest = new ShellTestPage();
+			await shell.GoToAsync(new ShellNavigationState($"//two/tabfour/content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			two.CurrentItem.CurrentItem.ContentTemplate = new DataTemplate(() =>
+			{
+				pagetoTest = new ShellTestPage();
+				pagetoTest.BindingContext = pagetoTest;
+				return pagetoTest;
+			});
+
+
+			await shell.GoToAsync(new ShellNavigationState($"//one/tabone/content"));
+			await shell.GoToAsync(new ShellNavigationState($"//two/tabfour/content"));
+
+			var page = (two.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
+			Assert.AreEqual(null, (page as ShellTestPage).SomeQueryParameter);
+		}
+
+
+		[Test]
+		public async Task NavigationBetweenShellContentsPassesQueryString()
+		{
+			var shell = new Shell();
+
+			var item = CreateShellItem(shellSectionRoute: "section2");
+			var content = CreateShellContent(shellContentRoute: "content");
+			item.Items[0].Items.Add(content);
+
+			Routing.RegisterRoute("details", typeof(ShellTestPage));
+
+			shell.Items.Add(item);
+
+
+			await shell.GoToAsync(new ShellNavigationState($"//section2/details?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			await shell.GoToAsync(new ShellNavigationState($"//content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			await shell.GoToAsync(new ShellNavigationState($"//section2/details?{nameof(ShellTestPage.SomeQueryParameter)}=4321"));
+
+			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
+			Assert.AreEqual("4321", testPage.SomeQueryParameter);
+		}
+
+
+		[Test]
 		public async Task NavigationWithQueryStringAndNoDataTemplate()
 		{
 			var shell = new Shell();
@@ -239,7 +411,6 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			await shell.GoToAsync(new ShellNavigationState($"//two/tabfour/content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
 			Assert.AreEqual("1234", (two.CurrentItem.CurrentItem.Content as ShellTestPage).SomeQueryParameter);
-
 		}
 
 		[Test]
@@ -580,5 +751,26 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(0, shell.Items[1].Items.Count);
 			Assert.AreEqual(3, shell.Items[0].Items.Count);
 		}
+
+
+		[Test]
+		public async Task NavigatedFiresAfterContentIsCreatedWhenUsingTemplate()
+		{
+
+			var shell = new Shell();
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1");
+
+			shell.Items.Add(item1);
+			Routing.RegisterRoute("cat", typeof(ContentPage));
+			Routing.RegisterRoute("details", typeof(ContentPage));
+
+			await shell.GoToAsync("cat");
+			await shell.GoToAsync("details");
+
+			Assert.AreEqual("//rootlevelcontent1/cat/details", shell.CurrentState.Location.ToString());
+			await shell.GoToAsync("//rootlevelcontent1/details");
+			Assert.AreEqual("//rootlevelcontent1/details", shell.CurrentState.Location.ToString());
+		}
+
 	}
 }

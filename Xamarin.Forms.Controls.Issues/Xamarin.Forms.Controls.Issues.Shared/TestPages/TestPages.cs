@@ -518,6 +518,9 @@ namespace Xamarin.Forms.Controls
 		protected abstract void Init();
 	}
 
+#if UITEST
+	[Category(UITestCategories.TabbedPage)]
+#endif
 	public abstract class TestTabbedPage : TabbedPage
 	{
 #if UITEST
@@ -579,6 +582,35 @@ namespace Xamarin.Forms.Controls
 #if APP
 			Init();
 #endif
+		}
+
+		public ContentPage AddTopTab(string title)
+		{
+			ContentPage page = new ContentPage();
+			Items[0].Items[0].Items.Add(new ShellContent()
+			{
+				Title = title,
+				Content = page
+			});
+			return page;
+		}
+
+		public ContentPage AddBottomTab(string title)
+		{
+
+			ContentPage page = new ContentPage();
+			Items[0].Items.Add(new ShellSection()
+			{
+				Items =
+				{
+					new ShellContent()
+					{
+						Content = page,
+						Title = title
+					}
+				}
+			});
+			return page;
 		}
 
 		public ContentPage CreateContentPage()
