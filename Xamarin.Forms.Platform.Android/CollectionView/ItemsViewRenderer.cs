@@ -33,8 +33,8 @@ namespace Xamarin.Forms.Platform.Android
 		DataChangeObserver _dataChangeViewObserver;
 		bool _watchingForEmpty;
 
-		ScrollBarVisibility _defaultHorizontalScrollVisibility = 0;
-		ScrollBarVisibility _defaultVerticalScrollVisibility = 0;
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
 
 		RecyclerView.ItemDecoration _itemDecoration;
 
@@ -325,7 +325,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			if (_defaultVerticalScrollVisibility == 0)
+			if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
 				_defaultVerticalScrollVisibility = VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
 
 			var newVerticalScrollVisibility = ItemsView.VerticalScrollBarVisibility;
@@ -338,7 +338,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			if (_defaultHorizontalScrollVisibility == 0)
+			if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
 				_defaultHorizontalScrollVisibility =
 					HorizontalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
 

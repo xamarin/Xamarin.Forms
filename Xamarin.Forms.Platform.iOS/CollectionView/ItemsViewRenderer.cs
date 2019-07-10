@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Platform.iOS
 					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = false;
 					break;
 				case (ScrollBarVisibility.Default):
-					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = (bool)_defaultVerticalScrollVisibility;
+					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = _defaultVerticalScrollVisibility.Value;
 					break;
 			}
 		}
@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Platform.iOS
 					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = false;
 					break;
 				case (ScrollBarVisibility.Default):
-					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = (bool)_defaultHorizontalScrollVisibility;
+					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = _defaultHorizontalScrollVisibility.Value;
 					break;
 			}
 		}

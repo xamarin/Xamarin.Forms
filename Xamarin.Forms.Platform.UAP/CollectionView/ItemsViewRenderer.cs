@@ -383,7 +383,7 @@ namespace Xamarin.Forms.Platform.UWP
 					ScrollViewer.SetVerticalScrollBarVisibility(Control, UwpScrollBarVisibility.Hidden);
 					break;
 				case (ScrollBarVisibility.Default):
-					ScrollViewer.SetVerticalScrollBarVisibility(Control, (UwpScrollBarVisibility)_defaultVerticalScrollVisibility);
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, _defaultVerticalScrollVisibility.Value);
 					break;
 			}
 		}
@@ -402,7 +402,7 @@ namespace Xamarin.Forms.Platform.UWP
 					ScrollViewer.SetHorizontalScrollBarVisibility(Control, UwpScrollBarVisibility.Hidden);
 					break;
 				case (ScrollBarVisibility.Default):
-					ScrollViewer.SetHorizontalScrollBarVisibility(Control, (UwpScrollBarVisibility)_defaultHorizontalScrollVisibility);
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, _defaultHorizontalScrollVisibility.Value);
 					break;
 			}
 		}
