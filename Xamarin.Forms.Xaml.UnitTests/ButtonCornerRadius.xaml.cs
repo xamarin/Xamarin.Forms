@@ -3,7 +3,6 @@ using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ButtonCornerRadius : ContentPage
 	{
 		public ButtonCornerRadius()
