@@ -17,7 +17,7 @@ using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using MButton = Android.Support.Design.Button.MaterialButton;
 using Xamarin.Forms.Platform.Android;
-
+using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -352,7 +352,7 @@ namespace Xamarin.Forms.Material.Android
 		AView ITabStop.TabStop => this;
 
 		// IButtonLayoutRenderer
-		AppCompatButton IButtonLayoutRenderer.View => this;
+		AButton IButtonLayoutRenderer.View => this;
 
 		Button IButtonLayoutRenderer.Element => this.Element;
 

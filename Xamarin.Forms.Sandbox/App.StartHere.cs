@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Sandbox
 	{
 		void InitializeMainPage()
 		{
-			MainPage = new ShellPage();
+			MainPage = new MainPage2();
 		}
 	}
 }

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Sandbox.MainPage2">
+    <ContentPage.Resources>
+        <DataTemplate x:Key="AdvancedEmptyView">
+            <Label Text="No results matched your filter."
+                   BackgroundColor="Red"
+                   HorizontalOptions="Fill"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center"
+                   VerticalTextAlignment="Center" />
+        </DataTemplate>
+    </ContentPage.Resources>
+    <StackLayout>
+        <Button Text="Add"
+                Clicked="Button_Clicked_1" />
+        <CollectionView x:Name="_collView">
+            <CollectionView.EmptyView>
+                <Label Text="No items" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <ContentView>
+                        <StackLayout BackgroundColor="White">
+                            <StackLayout Orientation="Horizontal">
+                                <StackLayout HorizontalOptions="FillAndExpand">
+                                    <Label Text="{Binding Id}"></Label>
+                                    <Label Text="{Binding Name}"></Label>
+                                </StackLayout>
+                                <Button Text="Remove"
+                                        Clicked="Button_Clicked" />
+                            </StackLayout>
+                            <BoxView HeightRequest="1"
+                                     HorizontalOptions="Fill"
+                                     BackgroundColor="Black" />
+                        </StackLayout>
+                    </ContentView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>
