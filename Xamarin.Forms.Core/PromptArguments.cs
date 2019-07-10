@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Internals
 {
 	public class PromptArguments
 	{
-		public PromptArguments(string title, string message, string accept, string cancel, string placeholder = null, int? maxLength = null, Keyboard keyboard = default)
+		public PromptArguments(string title, string message, string accept, string cancel, string placeholder = null, int? maxLength = null, Keyboard keyboard = default(Keyboard))
 		{
 			if (string.IsNullOrWhiteSpace(accept) || string.IsNullOrWhiteSpace(cancel))
 				throw new Exception($"You must provide a value for {nameof(accept)} and {nameof(cancel)}.");
