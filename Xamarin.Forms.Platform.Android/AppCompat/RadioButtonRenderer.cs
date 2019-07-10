@@ -7,16 +7,21 @@ using Android.Support.V7.Widget;
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
+using AWidget = Android.Widget;
 using AButton = Android.Widget.Button;
+using Android.Graphics.Drawables;
+using Android.Widget;
 
-	namespace Xamarin.Forms.Platform.Android.FastRenderers
+namespace Xamarin.Forms.Platform.Android
 {
-	public class ButtonRenderer : AppCompatButton,
+	public class RadioButtonRenderer : AppCompatRadioButton,
 		IBorderVisualElementRenderer, IButtonLayoutRenderer, IVisualElementRenderer, IViewRenderer, ITabStop,
-		AView.IOnAttachStateChangeListener, AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener
+		AView.IOnAttachStateChangeListener, AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener,
+		CompoundButton.IOnCheckedChangeListener
 	{
 		float _defaultFontSize;
 		int? _defaultLabelFor;
@@ -35,20 +40,13 @@ using AButton = Android.Widget.Button;
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 
-		public ButtonRenderer(Context context) : base(context)
-		{
-			Initialize();
-		}
-
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use ButtonRenderer(Context) instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public ButtonRenderer() : base(Forms.Context)
+		public RadioButtonRenderer(Context context) : base(context)
 		{
 			Initialize();
 		}
 
 		protected Button Element => Button;
-		protected AppCompatButton Control => this;
+		protected AppCompatRadioButton Control => this;
 
 		VisualElement IBorderVisualElementRenderer.Element => Element;
 
@@ -83,26 +81,10 @@ using AButton = Android.Widget.Button;
 		{
 			((IElementController)Button).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, hasFocus);
 		}
-	
+
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			if (_isDisposed)
-			{
-				return new SizeRequest();
-			}
-
-			var hint = Control.Hint;
-
-			if (!string.IsNullOrWhiteSpace(hint))
-			{
-				Control.Hint = string.Empty;
-			}
-
-			var result  = _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
-
-			Control.Hint = hint;
-
-			return result;
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -121,6 +103,24 @@ using AButton = Android.Widget.Button;
 			Button = (Button)element;
 
 			Performance.Start(out string reference);
+
+			if (oldElement != null)
+			{
+				oldElement.PropertyChanged -= OnElementPropertyChanged;
+			}
+
+
+			element.PropertyChanged += OnElementPropertyChanged;
+
+			if (_tracker == null)
+			{
+				// Can't set up the tracker in the constructor because it access the Element (for now)
+				SetTracker(new VisualElementTracker(this));
+			}
+			if (_visualElementRenderer == null)
+			{
+				_visualElementRenderer = new VisualElementRenderer(this);
+			}
 
 			OnElementChanged(new ElementChangedEventArgs<Button>(oldElement as Button, Button));
 
@@ -146,15 +146,6 @@ using AButton = Android.Widget.Button;
 			ViewRenderer.MeasureExactly(this, Element, Context);
 		}
 
-
-		public override void Draw(Canvas canvas)
-		{
-			if (_backgroundTracker?.BackgroundDrawable != null)
-				_backgroundTracker.BackgroundDrawable.DrawCircle(canvas, canvas.Width, canvas.Height, base.Draw);
-			else
-				base.Draw(canvas);
-		}
-
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
@@ -170,6 +161,7 @@ using AButton = Android.Widget.Button;
 				SetOnTouchListener(null);
 				RemoveOnAttachStateChangeListener(this);
 				OnFocusChangeListener = null;
+				SetOnCheckedChangeListener(null);
 
 				if (Element != null)
 				{
@@ -204,24 +196,9 @@ using AButton = Android.Widget.Button;
 
 		protected virtual void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
-			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
-		
-			if (e.OldElement != null)
-			{
-				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
-			}
-
 			if (e.NewElement != null && !_isDisposed)
 			{
 				this.EnsureId();
-
-				if (_tracker == null)
-				{
-					// Can't set up the tracker in the constructor because it access the Element (for now)
-					SetTracker(new VisualElementTracker(this));
-				}
-
-				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 
 				_textColorSwitcher = new Lazy<TextColorSwitcher>(
 					() => new TextColorSwitcher(TextColors, e.NewElement.UseLegacyColorManagement()));
@@ -230,11 +207,13 @@ using AButton = Android.Widget.Button;
 				UpdateTextColor();
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
-				UpdateCharacterSpacing();
 				_buttonLayoutManager?.Update();
-
+				UpdateButtonImage(true);
+				UpdateIsChecked();
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
+
+			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -247,13 +226,17 @@ using AButton = Android.Widget.Button;
 			{
 				UpdateFont();
 			}
-			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
-			{
-				UpdateCharacterSpacing();
-			}
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 			{
 				UpdateInputTransparent();
+			}
+			else if (e.PropertyName == RadioButton.IsCheckedProperty.PropertyName)
+			{
+				UpdateIsChecked();
+			}
+			else if (e.PropertyName == RadioButton.ButtonSourceProperty.PropertyName)
+			{
+				UpdateButtonImage(false);
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);
@@ -289,13 +272,13 @@ using AButton = Android.Widget.Button;
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_buttonLayoutManager = new ButtonLayoutManager(this);
 			_backgroundTracker = new BorderBackgroundManager(this);
-			_visualElementRenderer = new VisualElementRenderer(this);
 
 			SoundEffectsEnabled = false;
 			SetOnClickListener(this);
 			SetOnTouchListener(this);
 			AddOnAttachStateChangeListener(this);
 			OnFocusChangeListener = this;
+			SetOnCheckedChangeListener(this);
 
 			Tag = this;
 		}
@@ -352,12 +335,40 @@ using AButton = Android.Widget.Button;
 			_textColorSwitcher.Value.UpdateTextColor(this, Button.TextColor);
 		}
 
-		void UpdateCharacterSpacing()
+		void UpdateButtonImage(bool isInitializing)
 		{
-			if (Forms.IsLollipopOrNewer)
+			if (Element == null || _isDisposed)
+				return;
+
+			ImageSource buttonSource = ((RadioButton)Element).ButtonSource;
+			if (buttonSource != null && !buttonSource.IsEmpty)
 			{
-				LetterSpacing = Button.CharacterSpacing.ToEm();
+				Drawable currButtonImage = Control.ButtonDrawable;
+
+				this.ApplyDrawableAsync(RadioButton.ButtonSourceProperty, Context, image =>
+				{
+					if (image == currButtonImage)
+						return;
+					Control.SetButtonDrawable(image);
+
+					Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				});
 			}
+			else if(!isInitializing)
+				Control.SetButtonDrawable(null);
+		}
+
+		void UpdateIsChecked()
+		{
+			if (Element == null || Control == null)
+				return;
+
+			Checked = ((RadioButton)Element).IsChecked;
+		}
+
+		void IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
+		{
+			((IElementController)Element).SetValueFromRenderer(RadioButton.IsCheckedProperty, isChecked);
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => ShadowRadius;
@@ -380,5 +391,6 @@ using AButton = Android.Widget.Button;
 		AButton IButtonLayoutRenderer.View => this;
 
 		Button IButtonLayoutRenderer.Element => this.Element;
+
 	}
 }

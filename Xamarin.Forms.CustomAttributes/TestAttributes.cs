@@ -202,7 +202,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Editor,
 			DatePicker,
 			CheckBox,
-			SwipeView
+			SwipeView,
+			RadioButton
 		}
 
 		public enum Layouts
@@ -763,6 +764,12 @@ namespace Xamarin.Forms.CustomAttributes
 			UncheckedColor
 		}
 
+		public enum RadioButton
+		{
+			IsChecked,
+			ButtonSource,
+		}
+
 		public enum TimePicker
 		{
 			Format,
@@ -886,4 +893,3 @@ namespace Xamarin.Forms.CustomAttributes
 		}
 	}
 }
-

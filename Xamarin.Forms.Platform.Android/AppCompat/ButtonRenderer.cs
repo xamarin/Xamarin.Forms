@@ -10,6 +10,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
+using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
