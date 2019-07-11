@@ -390,55 +390,53 @@ namespace Xamarin.Forms
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
 			var queryData = ParseQueryString(queryString);
-			var path = uri.AbsolutePath;
-
-			path = path.TrimEnd('/');
-
-			var parts = path.Substring(1).Split('/').ToList();
-
-			if (parts.Count < 2)
-				throw new InvalidOperationException("Path must be at least 2 items long in Shell navigation");
-
-			var shellRoute = parts[0];
-
-			var expectedShellRoute = Routing.GetRoute(this) ?? string.Empty;
-			if (expectedShellRoute != shellRoute)
-				throw new NotImplementedException();
-			else
-				parts.RemoveAt(0);
 
 			ApplyQueryAttributes(this, queryData, false);
 
 			var shellItem = navigationRequest.Request.Item;
+			var shellSection = navigationRequest.Request.Section;
+			ShellContent shellContent = navigationRequest.Request.Content;
+
 			if (shellItem != null)
 			{
 				ApplyQueryAttributes(shellItem, queryData, navigationRequest.Request.Section == null);
 
 				if (CurrentItem != shellItem)
+				{
 					SetValueFromRenderer(CurrentItemProperty, shellItem);
+				}
 
-				parts.RemoveAt(0);
+				if (shellSection != null)
+				{
+					Shell.ApplyQueryAttributes(shellSection, queryData, navigationRequest.Request.Content == null);
+					if (shellItem.CurrentItem != shellSection)
+					{
+						shellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, shellSection);
+					}
 
-				if (parts.Count > 0)
-					await shellItem.GoToPart(navigationRequest, queryData);
+					if (shellContent != null)
+					{
+						Shell.ApplyQueryAttributes(shellContent, queryData, navigationRequest.Request.GlobalRoutes.Count == 0);
+						if (shellSection.CurrentItem != shellContent)
+						{
+							shellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);							
+						}
+					}
+				}
+
+				if (navigationRequest.Request.GlobalRoutes.Count > 0)
+				{
+					// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
+					Device.BeginInvokeOnMainThread(async () =>
+					{
+						await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, false);
+					});
+				}
 			}
 			else
 			{
 				await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate);
 			}
-
-			//if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
-			//{
-			//	var shellItem = ShellItem.GetShellItemFromRouteName(shellItemRoute);
-
-			//	ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
-
-			//	if (CurrentItem != shellItem)
-			//		SetValueFromRenderer(CurrentItemProperty, shellItem);
-
-			//	if (parts.Count > 0)
-			//		await ((IShellItemController)shellItem).GoToPart(parts, queryData);
-			//}
 
 			_accumulateNavigatedEvents = false;
 
@@ -449,9 +447,6 @@ namespace Xamarin.Forms
 
 		internal static void ApplyQueryAttributes(Element element, IDictionary<string, string> query, bool isLastItem)
 		{
-			if (query.Count == 0)
-				return;
-
 			string prefix = "";
 			if (!isLastItem)
 			{
@@ -487,10 +482,10 @@ namespace Xamarin.Forms
 				filteredQuery.Add(key, q.Value);
 			}
 
-			if (baseShellItem != null)
+			if (baseShellItem is ShellContent)
 				baseShellItem.ApplyQueryAttributes(filteredQuery);
 			else if (isLastItem)
-				ShellContent.ApplyQueryAttributes(element, query);
+				element.SetValue(ShellContent.QueryAttributesProperty, query);
 		}
 
 		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack)
@@ -542,6 +537,12 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty CurrentStateProperty = CurrentStatePropertyKey.BindableProperty;
 
+		public static readonly BindableProperty FlyoutBackgroundImageProperty =
+			BindableProperty.Create(nameof(FlyoutBackgroundImage), typeof(ImageSource), typeof(Shell), default(ImageSource), BindingMode.OneTime);
+
+		public static readonly BindableProperty FlyoutBackgroundImageAspectProperty =
+			BindableProperty.Create(nameof(FlyoutBackgroundImageAspect), typeof(Aspect), typeof(Shell), default(Aspect), BindingMode.OneTime);
+
 		public static readonly BindableProperty FlyoutBackgroundColorProperty =
 			BindableProperty.Create(nameof(FlyoutBackgroundColor), typeof(Color), typeof(Shell), Color.Default, BindingMode.OneTime);
 
@@ -592,6 +593,19 @@ namespace Xamarin.Forms
 		}
 
 		public ShellNavigationState CurrentState => (ShellNavigationState)GetValue(CurrentStateProperty);
+
+		[TypeConverter(typeof(ImageSourceConverter))]
+		public ImageSource FlyoutBackgroundImage
+		{
+			get => (ImageSource)GetValue(FlyoutBackgroundImageProperty);
+			set => SetValue(FlyoutBackgroundImageProperty, value);
+		}
+
+		public Aspect FlyoutBackgroundImageAspect
+		{
+			get => (Aspect)GetValue(FlyoutBackgroundImageAspectProperty);
+			set => SetValue(FlyoutBackgroundImageAspectProperty, value);
+		}
 
 		public Color FlyoutBackgroundColor
 		{
@@ -801,12 +815,15 @@ namespace Xamarin.Forms
 				_accumulatedEvent = args;
 			else
 			{
-				/* Removing this check for now as it doesn't properly cover all implicit scenarios
-				 * if (args.Current.Location.AbsolutePath.TrimEnd('/') != _lastNavigating.Location.AbsolutePath.TrimEnd('/'))
-					throw new InvalidOperationException($"Navigation: Current location doesn't match navigation uri {args.Current.Location.AbsolutePath} != {_lastNavigating.Location.AbsolutePath}");
-					*/
-				Navigated?.Invoke(this, args);
-				//System.Diagnostics.Debug.WriteLine("Navigated: " + args.Current.Location);
+				var content = CurrentItem?.CurrentItem?.CurrentItem;
+				if (content != null)
+				{
+					content.OnAppearing(() => Navigated?.Invoke(this, args));
+				}
+				else
+				{
+					Navigated?.Invoke(this, args);
+				}
 			}
 		}
 
@@ -819,6 +836,12 @@ namespace Xamarin.Forms
 
 		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
 		{
+			if (oldValue is ShellItem oldShellItem)
+				oldShellItem.SendDisappearing();
+
+			if (newValue is ShellItem newShellItem)
+				newShellItem.SendAppearing();
+
 			var shell = (Shell)bindable;
 			UpdateChecked(shell);
 
@@ -1084,6 +1107,25 @@ namespace Xamarin.Forms
 			protected override Task OnPushAsync(Page page, bool animated) => SectionProxy.PushAsync(page, animated);
 
 			protected override void OnRemovePage(Page page) => SectionProxy.RemovePage(page);
+
+			protected override Task<Page> OnPopModal(bool animated)
+			{
+				if (ModalStack.Count > 0)
+					ModalStack[ModalStack.Count - 1].SendDisappearing();
+
+				if (ModalStack.Count == 1)
+					_shell.CurrentItem.SendAppearing();
+
+				return base.OnPopModal(animated);
+			}
+			protected override Task OnPushModal(Page modal, bool animated)
+			{
+				if (ModalStack.Count == 0)
+					_shell.CurrentItem.SendDisappearing();
+
+				modal.SendAppearing();
+				return base.OnPushModal(modal, animated);
+			}
 		}
 	}
 }

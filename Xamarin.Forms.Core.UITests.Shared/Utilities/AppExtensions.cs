@@ -4,11 +4,31 @@ using System.Linq;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Xamarin.Forms.Core.UITests
 {
 	internal static class AppExtensions
 	{
+		public static T[] RetryUntilPresent<T>(
+			this IApp app,
+			Func<T[]> func,
+			int retryCount = 10,
+			int delayInMs = 2000)
+		{
+			var results = func();
+
+			int counter = 0;
+			while ((results == null || results.Length == 0) && counter < retryCount)
+			{
+				Thread.Sleep(delayInMs);
+				results = func();
+				counter++;
+			}
+
+			return results;
+		}
+
 		public static AppRect ScreenBounds(this IApp app)
 		{
 			return app.Query(Queries.Root()).First().Rect;
@@ -28,7 +48,7 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			const string goToTestButtonQuery = "* marked:'GoToTestButton'";
 
-			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to disappear", TimeSpan.FromSeconds(10));
+			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to appear", TimeSpan.FromMinutes(2));
 
 			var text = Regex.Match(page, "'(?<text>[^']*)'").Groups["text"].Value;
 

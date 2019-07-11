@@ -98,6 +98,7 @@
     <Compile Include="CollectionView\TemplatedItemViewHolder.cs" />
     <Compile Include="CollectionView\TextViewHolder.cs" />
     <Compile Include="Elevation.cs" />
+    <Compile Include="Extensions\DrawableExtensions.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
     <Compile Include="Extensions\ScrollViewExtensions.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="ITabStop.cs" />
     <Compile Include="IPickerRenderer.cs" />
     <Compile Include="PickerManager.cs" />
+    <Compile Include="EntryAccessibilityDelegate.cs" />
     <Compile Include="Renderers\CircularProgress.cs" />
     <Compile Include="Renderers\PickerEditText.cs" />
     <Compile Include="Renderers\FontImageSourceHandler.cs" />
@@ -225,7 +227,6 @@
     <Compile Include="Renderers\ShellBottomNavViewAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellItemRenderer.cs" />
     <Compile Include="Renderers\ShellContentFragment.cs" />
-    <Compile Include="Renderers\ShellFlyoutContentRenderer.cs" />
     <Compile Include="Renderers\ShellFlyoutRecyclerAdapter.cs" />
     <Compile Include="Renderers\ShellFlyoutRenderer.cs" />
     <Compile Include="Renderers\ShellFlyoutTemplatedContentRenderer.cs" />
