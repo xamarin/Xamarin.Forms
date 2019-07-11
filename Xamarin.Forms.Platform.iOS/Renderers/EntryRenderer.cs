@@ -234,6 +234,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Control.ResignFirstResponder();
 			((IEntryController)Element).SendCompleted();
+
+			if (Element.ReturnType == ReturnType.Next)
+			{
+				FocusSearch(true);
+			}
+
 			return false;
 		}
 
