@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 			button1.IsVisible = true;
 		}
 
-#if UITEST
+#if UITEST && __WINDOWS__
 		[Test]
 		public void ReplaceRenderer()
 		{
@@ -89,9 +89,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("Step2");
 			RunningApp.Tap("Step2");
 
-			RunningApp.WaitFor(() => RunningApp.Query("ResultLabel").FirstOrDefault()?.Text == "Step 2 OK");
+			var resultLabel = RunningApp.Query("ResultLabel").FirstOrDefault();
 
-			Assert.AreEqual("Step 2 OK", label.Text);
+			Assert.AreEqual("Step 2 OK", resultLabel.Description);
 		}
 #endif
 	}
