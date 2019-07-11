@@ -513,7 +513,7 @@ namespace Xamarin.Forms
 			
 		}
 
-		public void OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
 
 		}
