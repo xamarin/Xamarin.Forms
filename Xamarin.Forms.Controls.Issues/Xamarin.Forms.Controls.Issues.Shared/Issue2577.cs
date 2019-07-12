@@ -14,6 +14,11 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 2577, "Hamburger icon not shown when using FormsAppCompatActivity", PlatformAffected.Android)]
 	public class Issue2577 : TestMasterDetailPage
 	{
+		const string NavButton = "NavigateButton";
+		const string ToggleBackButton = "ToggleBackButton";
+		const string MasterList = "MasterList";
+		const string ArrowButton = "OK";
+
 		protected override void Init()
 		{
 			Master = new ContentPage
@@ -27,8 +32,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		class DetailPage : ContentPage
 		{
-		    const string NavButton = "NavigateButton";
-			const string ToggleBackButton = "ToggleBackButton";
+		    
 			
 			public NavigationPage ParentPage => Parent as NavigationPage;
 
@@ -60,26 +64,26 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue2577Test()
 		{
-			RunningApp.WaitForElement("NavigateButton");
-			RunningApp.Tap("NavigateButton");
+			RunningApp.WaitForElement(NavButton);
+			RunningApp.Tap(NavButton);
 
-			RunningApp.WaitForElement("ToggleBackButton");
+			RunningApp.WaitForElement(ToggleBackButton);
 
 			RunningApp.Screenshot("Hamburger menu icon is visible");
 
-			AppResult[] items = RunningApp.Query("OK");
+			AppResult[] items = RunningApp.Query(ArrowButton);
 			Assert.AreNotEqual(items.Length, 0);
-			RunningApp.Tap("OK");
-			RunningApp.WaitForElement("MasterList");
+			RunningApp.Tap(ArrowButton);
+			RunningApp.WaitForElement(MasterList);
 
 			RunningApp.Screenshot("Flyout menu is showing");
 			
 			RunningApp.SwipeRightToLeft();
-			RunningApp.WaitForNoElement("MasterList");
+			RunningApp.WaitForNoElement(MasterList);
 
-			RunningApp.Tap("ToggleBackButton");
+			RunningApp.Tap(ToggleBackButton);
 
-			items = RunningApp.Query("OK");
+			items = RunningApp.Query(ArrowButton);
 			Assert.AreEqual(items.Length, 0);
 
 			RunningApp.Screenshot("Back arrow is showing");
@@ -88,7 +92,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			RunningApp.TapCoordinates(backArrow.Rect.CenterX, backArrow.Rect.CenterY);
 
-			RunningApp.WaitForElement("NavigateButton");
+			RunningApp.WaitForElement(NavButton);
 
 			RunningApp.Screenshot("Back at first screen");
 		}
