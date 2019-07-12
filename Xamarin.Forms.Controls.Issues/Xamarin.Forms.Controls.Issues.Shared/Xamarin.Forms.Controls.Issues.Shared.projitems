@@ -611,7 +611,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue4748.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VisualControlsPage.xaml.cs">
       <SubType>Code</SubType>
-      <DependentUpon>%(Filename)</DependentUpon>
+      <DependentUpon>VisualControlsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue5470.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5724.cs" />
@@ -1182,7 +1182,7 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5003.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1229,7 +1229,7 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5268.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
