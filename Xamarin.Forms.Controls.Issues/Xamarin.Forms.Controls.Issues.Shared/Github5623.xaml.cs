@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
 using System;
 using System.Security.Cryptography;
+using Xamarin.Forms.Xaml;
+using System.Threading;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest;
+using Xamarin.UITest.Queries;
 using NUnit.Framework;
 using Xamarin.Forms.Core.UITests;
 using System.Linq;
@@ -116,29 +117,22 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void CollectionViewInfiniteScroll()
 		{
-			RunningApp.WaitForElement (q => q.Marked ("CollectionView5623"));
-			
-			var elementQuery = RunningApp.Query(c => c.Marked((99).ToString()));
-			var elementAvailable = elementQuery.Any();
-			var attempt = 0;
+			RunningApp.WaitForElement ("CollectionView5623");
 
-			while (!elementAvailable)
+			var colView = RunningApp.Query("CollectionView5623").Single();
+
+			AppResult[] lastCellResults = null;
+
+			RunningApp.RetryUntilPresent(() =>
 			{
-				RunningApp.ScrollDown();
+				RunningApp.DragCoordinates(colView.Rect.CenterX, colView.Rect.Y + colView.Rect.Height - 50, colView.Rect.CenterX, colView.Rect.Y + 5);
 
-				elementAvailable = elementQuery.Any();
+				lastCellResults = RunningApp.Query("99");
 
-				if (elementAvailable)
-					break;
+				return lastCellResults;
+			}, 100, 1);
 
-				++attempt;
-
-				if (attempt == 30)
-				{
-					Assert.Fail("Failed to find the last element");
-					break;
-				}
-			}
+			Assert.IsTrue(lastCellResults?.Any() ?? false);
 		}
 #endif
 	}
@@ -186,14 +180,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public int Height { get; set; } = 200;
 
-		public string HeightText { get; private set; } 
+		public string HeightText { get; private set; }
 
 		public Model5623(bool isUneven)
 		{
 			var byteArray = new byte[4];
 			provider.GetBytes(byteArray);
 
-			if(isUneven)
+			if (isUneven)
 				Height = 100 + (BitConverter.ToInt32(byteArray, 0) % 300 + 300) % 300;
 
 			HeightText = "(Height: " + Height + ")";
