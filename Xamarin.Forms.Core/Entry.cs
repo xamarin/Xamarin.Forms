@@ -39,7 +39,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SelectionLengthProperty = BindableProperty.Create(nameof(SelectionLength), typeof(int), typeof(Entry), 0, validateValue: (b, v) => (int)v >= 0);
 
-		public static readonly BindableProperty ClearButtonModeProperty = BindableProperty.Create(nameof(ClearButtonMode), typeof(ClearButtonMode), typeof(Entry), ClearButtonMode.Never);
+		public static readonly BindableProperty ClearButtonVisibilityProperty = BindableProperty.Create(nameof(ClearButtonVisibility), typeof(ClearButtonVisibility), typeof(Entry), ClearButtonVisibility.Never);
 
 		readonly Lazy<PlatformConfigurationRegistry<Entry>> _platformConfigurationRegistry;
 
@@ -139,10 +139,10 @@ namespace Xamarin.Forms
 			set => SetValue(ReturnCommandParameterProperty, value);
 		}
 
-		public ClearButtonMode ClearButtonMode
+		public ClearButtonVisibility ClearButtonVisibility
 		{
-			get => (ClearButtonMode)GetValue(ClearButtonModeProperty);
-			set => SetValue(ClearButtonModeProperty, value);
+			get => (ClearButtonVisibility)GetValue(ClearButtonVisibilityProperty);
+			set => SetValue(ClearButtonVisibilityProperty, value);
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>

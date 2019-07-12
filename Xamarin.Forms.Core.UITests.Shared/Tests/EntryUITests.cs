@@ -75,15 +75,15 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
-		[UiTest(typeof(Entry), "ClearButtonMode")]
+		[UiTest(typeof(Entry), "ClearButtonVisibility")]
 		[Category(UITestCategories.ManualReview)]
-		public void ClearButtonMode()
+		public void ClearButtonVisibility()
 		{
-			var remote = new StateViewContainerRemote(App, Test.Entry.ClearButtonMode, PlatformViewType);
+			var remote = new StateViewContainerRemote(App, Test.Entry.ClearButtonVisibility, PlatformViewType);
 			remote.GoTo();
 
-			App.WaitForElement(q => q.Marked("Toggle ClearButtonMode"));
-			App.Tap(q => q.Marked("Toggle ClearButtonMode"));
+			App.WaitForElement(q => q.Marked("Toggle ClearButtonVisibility"));
+			App.Tap(q => q.Marked("Toggle ClearButtonVisibility"));
 		}
 
 		protected override void FixtureTeardown()

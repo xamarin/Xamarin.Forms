@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCursorColor();
 			UpdateIsReadOnly();
 
-			if (Element.ClearButtonMode != ClearButtonMode.Never)
+			if (Element.ClearButtonVisibility != ClearButtonVisibility.Never)
 				UpdateClearButtonVisibility();
 		}
 
@@ -194,7 +194,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCursorColor();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
-			else if (e.PropertyName == Entry.ClearButtonModeProperty.PropertyName)
+			else if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
 				UpdateClearButtonVisibility();
 
 			base.OnElementPropertyChanged(sender, e);
@@ -511,7 +511,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateClearButtonVisibility()
 		{
-			Control.ClearButtonMode = Element.ClearButtonMode == ClearButtonMode.WhileEditing ? UITextFieldViewMode.WhileEditing : UITextFieldViewMode.Never;
+			Control.ClearButtonMode = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing ? UITextFieldViewMode.WhileEditing : UITextFieldViewMode.Never;
 		}
 	}
 }

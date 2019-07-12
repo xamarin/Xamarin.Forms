@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateCursorSelection();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
-			if (e.PropertyName == Entry.ClearButtonModeProperty.PropertyName)
+			if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
 				UpdateClearBtnOnPropertyChanged();
 
 			base.OnElementPropertyChanged(sender, e);
@@ -515,7 +515,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateClearBtnOnElementChanged()
 		{
-			bool showClearBtn = Element.ClearButtonMode == ClearButtonMode.WhileEditing;
+			bool showClearBtn = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
 			if (showClearBtn && Element.IsFocused)
 			{
 				UpdateClearBtn(true);
@@ -528,7 +528,7 @@ namespace Xamarin.Forms.Platform.Android
 			bool isFocused = Element.IsFocused;
 			if (isFocused)
 			{
-				bool showClearBtn = Element.ClearButtonMode == ClearButtonMode.WhileEditing;
+				bool showClearBtn = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
 				UpdateClearBtn(showClearBtn);
 
 				if (!showClearBtn && isFocused)
@@ -538,7 +538,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateClearBtnOnFocusChanged(bool isFocused)
 		{
-			if (Element.ClearButtonMode == ClearButtonMode.WhileEditing)
+			if (Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing)
 			{
 				UpdateClearBtn(isFocused);
 				ListenForCloseBtnTouch(isFocused);
@@ -547,7 +547,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateClearBtnOnTyping()
 		{
-			if (Element.ClearButtonMode == ClearButtonMode.WhileEditing)
+			if (Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing)
 				UpdateClearBtn(true);
 		}
 

@@ -91,12 +91,12 @@ namespace Xamarin.Forms.Controls
 			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchPasswordButton);
 			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchNumericButton);
 
-			var switchClearBtnModeButton = new Button { Text = "Toggle ClearButtonMode" };
-			var clearBtnModelContainer = new ViewContainer<Entry>(Test.Entry.ClearButtonMode,
-				new Entry { Text = "I should have clear button visible", ClearButtonMode = ClearButtonMode.WhileEditing });
-			switchClearBtnModeButton.Clicked += (o, a) =>
-				clearBtnModelContainer.View.ClearButtonMode = clearBtnModelContainer.View.ClearButtonMode == ClearButtonMode.Never ? ClearButtonMode.WhileEditing : ClearButtonMode.Never;
-			clearBtnModelContainer.ContainerLayout.Children.Add(switchClearBtnModeButton);
+			var switchClearBtnVisibilityBtn = new Button { Text = "Toggle ClearButtonVisibility" };
+			var clearBtnModelContainer = new ViewContainer<Entry>(Test.Entry.ClearButtonVisibility,
+				new Entry { Text = "I should have clear button visible", ClearButtonVisibility = ClearButtonVisibility.WhileEditing });
+			switchClearBtnVisibilityBtn.Clicked += (o, a) =>
+				clearBtnModelContainer.View.ClearButtonVisibility = clearBtnModelContainer.View.ClearButtonVisibility == ClearButtonVisibility.Never ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never;
+			clearBtnModelContainer.ContainerLayout.Children.Add(switchClearBtnVisibilityBtn);
 
 			Add (isPasswordContainer);
 			Add (completedContainer);

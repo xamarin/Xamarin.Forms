@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 						{
 							foreach(Entry e in layout.Children.OfType<Entry>())
 							{
-								e.ClearButtonMode = e.ClearButtonMode == ClearButtonMode.Never ? ClearButtonMode.WhileEditing : ClearButtonMode.Never;
+								e.ClearButtonVisibility = e.ClearButtonVisibility == ClearButtonVisibility.Never ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never;
 							}
 						})
 					}

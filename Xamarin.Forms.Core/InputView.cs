@@ -39,7 +39,7 @@ namespace Xamarin.Forms
 		}
 	}
 
-	public enum ClearButtonMode
+	public enum ClearButtonVisibility
 	{
 		Never,
 		WhileEditing
