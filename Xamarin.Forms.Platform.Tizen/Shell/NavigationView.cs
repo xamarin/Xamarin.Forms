@@ -86,22 +86,22 @@ namespace Xamarin.Forms.Platform.Tizen
 				for (int j = 0; j < flyoutGroup.Count; j++)
 				{
 					string title = null;
-					string icon = null;
+					ImageSource icon = null;
 					if (flyoutGroup[j] is BaseShellItem shellItem)
 					{
 						title = shellItem.Title;
 
 						if (shellItem.FlyoutIcon is FileImageSource flyoutIcon)
 						{
-							icon = flyoutIcon.File;
+							icon = flyoutIcon;
 						}
 					}
 					else if (flyoutGroup[j] is MenuItem menuItem)
 					{
 						title = menuItem.Text;
-						if (menuItem.Icon != null)
+						if (menuItem.IconImageSource != null)
 						{
-							icon = menuItem.Icon.File;
+							icon = menuItem.IconImageSource;
 						}
 					}
 					Item item = new Item(title, icon);
@@ -152,15 +152,14 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (part == "elm.swallow.icon")
 					{
 						var icon = ((Item)obj).Icon;
-
 						if (icon != null)
 						{
-							var image = new ElmSharp.Image(parent)
+							var image = new Native.Image(parent)
 							{
 								MinimumWidth = Forms.ConvertToScaledPixel(24),
 								MinimumHeight = Forms.ConvertToScaledPixel(24)
 							};
-							var result = image.Load(ResourcePath.GetPath(icon));
+							var result = image.LoadFromImageSourceAsync(icon);
 							return image;
 						}
 						else
@@ -214,9 +213,9 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		public string Title { get; set; }
 
-		public string Icon { get; set; }
+		public ImageSource Icon { get; set; }
 
-		public Item(string title, string icon = null)
+		public Item(string title, ImageSource icon = null)
 		{
 			Title = title;
 			Icon = icon;

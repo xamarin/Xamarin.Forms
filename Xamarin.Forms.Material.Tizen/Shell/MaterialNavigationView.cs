@@ -43,9 +43,9 @@ namespace Xamarin.Forms.Material.Tizen
 					else if (flyoutGroup[j] is MenuItem menuItem)
 					{
 						title = menuItem.Text;
-						if (menuItem.Icon != null)
+						if (menuItem.IconImageSource != null && menuItem.IconImageSource is FileImageSource fileImageSource)
 						{
-							icon = menuItem.Icon.File;
+							icon = fileImageSource.File;
 						}
 					}
 					MItem item = new MItem(title, icon);
