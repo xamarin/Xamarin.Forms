@@ -1173,6 +1173,18 @@ namespace Xamarin.Forms.Platform.iOS
 				List.NotifyRowTapped(indexPath.Section, indexPath.Row, formsCell);
 			}
 
+			public override void WillDisplay(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
+			{
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					if (!_estimatedRowHeight)
+					{
+						// Our cell size/estimate is out of date, probably because we moved from zero to one item; update it
+						DetermineEstimatedRowHeight();
+					}
+				});
+			}
+
 			public override nint RowsInSection(UITableView tableview, nint section)
 			{
 				int countOverride;
