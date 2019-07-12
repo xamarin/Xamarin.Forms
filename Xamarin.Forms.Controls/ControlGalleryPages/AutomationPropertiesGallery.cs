@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls
 					labeledByInstructions = $"The following Entry should read aloud \"EditBox {EntryPlaceholder} for {EntryHelpText}.\", plus native instructions on how to use an Entry element. This text comes from the Entry placeholder and text of the Label.";
 					imageInstructions = $"The following Image should read aloud \"{ImageName}. {ImageHelpText}\". You should be able to tap the image and hear an alert box.";
 					boxInstructions = $"The following Box should read aloud \"{BoxName}. {BoxHelpText}\". You should be able to tap the box and hear an alert box.";
-					toolbarInstructions = $"The Toolbar should have a coffee cup icon. Activating the coffee cup should read aloud \"{toolbarItemName}\". The Toolbar should also show the text \"{toolbarItem2Text}\". Activating this item should read aloud \"{toolbarItem2Text}\".";
+					toolbarInstructions = $"The Toolbar should have a coffee cup icon. Activating the coffee cup should read aloud \"{toolbarItemName}\". The Toolbar should also show the text \"{toolbarItem2Text}\". Activating this item should read aloud \"{toolbarItem2Text}. {toolbarItemHint2}\".";
 					break;
 				case Device.UWP:
 					screenReader = "Narrator";
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Controls
 			this.SetAutomationPropertiesName("Accessibility Gallery Page");
 			this.SetAutomationPropertiesHelpText("Demonstrates accessibility settings");
 
-			var toolbarItem = new ToolbarItem { Icon = "coffee.png" };
+			var toolbarItem = new ToolbarItem { IconImageSource = "coffee.png" };
 			toolbarItem.SetAutomationPropertiesName(toolbarItemName);
 			ToolbarItems.Add(toolbarItem);
 			toolbarItem.Command = new Command(() => { Navigation.PushAsync(new ContentPage()); });

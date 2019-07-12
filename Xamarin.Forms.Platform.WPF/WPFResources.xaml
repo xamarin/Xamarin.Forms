@@ -353,7 +353,7 @@
 			</Grid.RowDefinitions>
 
 			<Image Grid.Column="0" Grid.RowSpan="2"
-				Source="{Binding ImageSource, Converter={StaticResource ImageConverter}}"
+				DataContext="{Binding ImageSource, Converter={StaticResource ImageConverter}}" Source="{Binding Value}"
 				VerticalAlignment="Center" />
 
 			<TextBlock Grid.Column="1" Grid.Row="0"
@@ -382,7 +382,7 @@
 
 	<DataTemplate x:Key="EntryCell">
 
-		<wpf:FormsTextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" />
+		<wpf:FormsTextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" IsEnabled="{Binding IsEnabled}"/>
 
 	</DataTemplate>
 

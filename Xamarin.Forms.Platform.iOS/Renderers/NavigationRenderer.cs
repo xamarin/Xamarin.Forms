@@ -231,6 +231,8 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBarTextColor();
 			UpdateUseLargeTitles();
 			UpdateHideNavigationBarSeparator();
+			if (Forms.IsiOS11OrNewer)
+				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			// If there is already stuff on the stack we need to push it
 			navPage.Pages.ForEach(async p => await PushPageAsync(p, false));
@@ -723,9 +725,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (NavPage == null)
 				return;
-			if (_ignorePopCall) 
+			if (_ignorePopCall)
 				return;
-			
+
 			_ignorePopCall = true;
 			if (Element.Navigation.NavigationStack.Contains(pageBeingRemoved))
 				await (NavPage as INavigationPageController)?.RemoveAsyncInner(pageBeingRemoved, false, true);
@@ -741,35 +743,36 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			EventHandler handler = (o, e) => masterDetailPage.IsPresented = !masterDetailPage.IsPresented;
-
-			bool shouldUseIcon = masterDetailPage.Master.Icon != null;
-			if (shouldUseIcon)
+			await masterDetailPage.Master.ApplyNativeImageAsync(Page.IconImageSourceProperty, icon =>
 			{
-				try
+				if (icon != null)
 				{
-					var icon = await masterDetailPage.Master.Icon.GetNativeImageAsync();
-					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, handler);
+					try
+					{
+						containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, OnItemTapped);
+					}
+					catch (Exception)
+					{
+						// Throws Exception otherwise would catch more specific exception type
+					}
 				}
-				catch (Exception)
-				{
-					// Throws Exception otherwise would catch more specific exception type
-					shouldUseIcon = false;
-				}
-			}
 
-			if (!shouldUseIcon)
-			{
-				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, handler);
-			}
-			if (containerController.NavigationItem.LeftBarButtonItem != null)
-			{
+				if(icon == null || containerController.NavigationItem.LeftBarButtonItem == null)
+				{
+					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, OnItemTapped);
+				}
+
 				if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
 					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
 #if __MOBILE__
 				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
 				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
 #endif
+			});
+
+			void OnItemTapped(object sender, EventArgs e)
+			{
+				masterDetailPage.IsPresented = !masterDetailPage.IsPresented;
 			}
 		}
 
@@ -1034,7 +1037,7 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdatePrefersStatusBarHidden();
 				else if (e.PropertyName == LargeTitleDisplayProperty.PropertyName)
 					UpdateLargeTitles();
-				else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName ||
+				else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 					UpdateTitleArea(Child);
 			}
@@ -1063,7 +1066,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 
-			public bool NeedsTitleViewContainer(Page page) => NavigationPage.GetTitleIcon(page) != null || NavigationPage.GetTitleView(page) != null;
+			public bool NeedsTitleViewContainer(Page page) => NavigationPage.GetTitleIconImageSource(page) != null || NavigationPage.GetTitleView(page) != null;
 
 			internal void UpdateBackButtonTitle(Page page) => UpdateBackButtonTitle(page.Title, NavigationPage.GetBackButtonTitle(page));
 
@@ -1084,7 +1087,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (page == null)
 					return;
 
-				FileImageSource titleIcon = NavigationPage.GetTitleIcon(page);
+				ImageSource titleIcon = NavigationPage.GetTitleIconImageSource(page);
 				View titleView = NavigationPage.GetTitleView(page);
 				bool needContainer = titleView != null || titleIcon != null;
 
@@ -1115,12 +1118,12 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			async void UpdateTitleImage(Container titleViewContainer, FileImageSource titleIcon)
+			async void UpdateTitleImage(Container titleViewContainer, ImageSource titleIcon)
 			{
 				if (titleViewContainer == null)
 					return;
 
-				if (string.IsNullOrWhiteSpace(titleIcon))
+				if (titleIcon == null || titleIcon.IsEmpty)
 				{
 					titleViewContainer.Icon = null;
 				}
@@ -1297,6 +1300,8 @@ namespace Xamarin.Forms.Platform.iOS
 			return (UIViewController)Platform.GetRenderer(Current);
 		}
 
+		public override UIViewController ChildViewControllerForHomeIndicatorAutoHidden => (UIViewController)Platform.GetRenderer(Current);
+
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
@@ -1344,7 +1349,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 								break;
 							}
-							else if(view.Class.Name == "UINavigationItemButtonView")
+							else if (view.Class.Name == "UINavigationItemButtonView")
 							{
 								if (view.Subviews.Length == 0)
 									NavBarLabel = null;
@@ -1472,7 +1477,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (_child.Element.Bounds != layoutBounds)
 						Layout.LayoutChildIntoBoundingRegion(_child.Element, layoutBounds);
 				}
-				else if(_icon != null && Superview != null)
+				else if (_icon != null && Superview != null)
 				{
 					_icon.Center = new PointF(Superview.Frame.Width / 2 - Frame.X, Superview.Frame.Height / 2);
 				}

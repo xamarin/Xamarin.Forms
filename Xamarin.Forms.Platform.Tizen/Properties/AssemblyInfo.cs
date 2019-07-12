@@ -13,6 +13,7 @@ using Xamarin.Forms.Platform.Tizen;
 [assembly: ExportRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer))]
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer))]
+[assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
 [assembly: ExportRenderer(typeof(Button), typeof(ButtonRenderer))]

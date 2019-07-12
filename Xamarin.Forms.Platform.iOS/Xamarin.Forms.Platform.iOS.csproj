@@ -2,6 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Description>iOS Backend for Xamarin.Forms</Description>
+    <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,7 +12,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Xamarin.Forms.Platform.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -33,7 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -44,9 +42,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="System.Net.Http" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\3bar%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ContextActionCell.cs" />
@@ -148,6 +143,7 @@
     <Compile Include="Extensions\LabelExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
+    <Compile Include="IOSDeviceInfo.cs" />
     <Compile Include="Renderers\ImageElementManager.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeViewWrapper.cs" />
@@ -156,6 +152,8 @@
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
+    <Compile Include="Renderers\IAccessibilityElementsController.cs" />
+    <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
@@ -214,6 +212,7 @@
     <Compile Include="Extensions\FontExtensions.Shared.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
+    <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -263,9 +262,6 @@
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\3bar.png" />
   </ItemGroup>
   <ItemGroup />
 </Project>

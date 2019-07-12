@@ -30,6 +30,7 @@ namespace Xamarin.Forms
 		const int TabletCrossover = 600;
 
 		static bool? s_isLollipopOrNewer;
+		static bool? s_isMarshmallowOrNewer;
 
 		[Obsolete("Context is obsolete as of version 2.5. Please use a local context instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -53,6 +54,35 @@ namespace Xamarin.Forms
 					s_isLollipopOrNewer = (int)Build.VERSION.SdkInt >= 21;
 				return s_isLollipopOrNewer.Value;
 			}
+		}
+
+		internal static bool IsMarshmallowOrNewer
+		{
+			get
+			{
+				if (!s_isMarshmallowOrNewer.HasValue)
+					s_isMarshmallowOrNewer = (int)Build.VERSION.SdkInt >= 23;
+				return s_isMarshmallowOrNewer.Value;
+			}
+		}
+
+		public static float GetFontSizeNormal(Context context)
+		{
+			float size = 50;
+			if (!IsLollipopOrNewer)
+				return size;
+
+			// Android 5.0+
+			//this doesn't seem to work
+			using (var value = new TypedValue())
+			{
+				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true)) 
+				{
+					size = value.Data;
+				}
+			}
+
+			return size;
 		}
 
 		public static Color GetColorButtonNormal(Context context)
@@ -274,21 +304,15 @@ namespace Xamarin.Forms
 		{
 			bool _disposed;
 			readonly Context _formsActivity;
-			readonly Size _pixelScreenSize;
-			readonly double _scalingFactor;
+			Size _scaledScreenSize;
+			Size _pixelScreenSize;
+			double _scalingFactor;
 
 			Orientation _previousOrientation = Orientation.Undefined;
 
 			public AndroidDeviceInfo(Context formsActivity)
 			{
-				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
-				{
-					_scalingFactor = display.Density;
-					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
-					ScaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
-				}
-
-				CheckOrientationChanged(formsActivity.Resources.Configuration.Orientation);
+				CheckOrientationChanged(formsActivity);
 
 				// This will not be an implementation of IDeviceInfoProvider when running inside the context
 				// of layoutlib, which is what the Android Designer does.
@@ -305,7 +329,7 @@ namespace Xamarin.Forms
 				get { return _pixelScreenSize; }
 			}
 
-			public override Size ScaledScreenSize { get; }
+			public override Size ScaledScreenSize => _scaledScreenSize;
 
 			public override double ScalingFactor
 			{
@@ -335,17 +359,31 @@ namespace Xamarin.Forms
 				base.Dispose(disposing);
 			}
 
-			void CheckOrientationChanged(Orientation orientation)
+			void UpdateScreenMetrics(Context formsActivity)
 			{
+				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
+				{
+					_scalingFactor = display.Density;
+					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
+					_scaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
+				}
+			}
+
+			void CheckOrientationChanged(Context formsActivity)
+			{
+				var orientation = formsActivity.Resources.Configuration.Orientation;
+
 				if (!_previousOrientation.Equals(orientation))
 					CurrentOrientation = orientation.ToDeviceOrientation();
 
 				_previousOrientation = orientation;
+
+				UpdateScreenMetrics(formsActivity);
 			}
 
 			void ConfigurationChanged(object sender, EventArgs e)
 			{
-				CheckOrientationChanged(_formsActivity.Resources.Configuration.Orientation);
+				CheckOrientationChanged(_formsActivity);
 			}
 		}
 

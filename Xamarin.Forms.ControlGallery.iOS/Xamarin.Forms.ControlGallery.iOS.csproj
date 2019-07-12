@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;HAVE_OPENTK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -30,7 +30,6 @@
     <MtouchUseLlvm>False</MtouchUseLlvm>
     <MtouchUseThumb>False</MtouchUseThumb>
     <MtouchOptimizePNGs>False</MtouchOptimizePNGs>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <MtouchEnableBitcode>False</MtouchEnableBitcode>
     <OptimizePNGs>True</OptimizePNGs>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
@@ -38,24 +37,26 @@
     <MtouchFloat32>False</MtouchFloat32>
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignProvision />
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
+    <DefineConstants>HAVE_OPENTK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchLink>None</MtouchLink>
     <MtouchArch>i386, x86_64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG;__UNIFIED__;__MOBILE__;__IOS__</DefineConstants>
+    <DefineConstants>DEBUG;__UNIFIED__;__MOBILE__;__IOS__;HAVE_OPENTK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -79,20 +80,21 @@
     <CodesignProvision>Automatic</CodesignProvision>
     <CodesignResourceRules />
     <CodesignExtraArgs />
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
+    <DefineConstants>HAVE_OPENTK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
@@ -101,6 +103,7 @@
     <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
+    <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="SearchbarEffect.cs" />
     <Compile Include="CustomRenderer40251.cs" />
     <Compile Include="Main.cs" />
@@ -117,6 +120,10 @@
     <Compile Include="CustomRenderers.cs" />
     <Compile Include="CustomRendererBugzila38731.cs" />
     <Compile Include="CustomApplication.cs" />
+    <Compile Include="..\xamarin.forms.controls\gallerypages\openglgalleries\AdvancedOpenGLGallery.cs">
+      <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
+    </Compile>
+    <Compile Include="CustomEffects\GradientEffect.cs" />
     <Compile Include="CustomRenderers\CustomRenderer.cs" />
     <Compile Include="CustomRenderers\RoundedLabelRenderer.cs" />
   </ItemGroup>
@@ -320,6 +327,10 @@
       <Link>Resources\Fonts\Roboto-Regular.ttf</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </BundleResource>
+    <BundleResource Include="Resources\button_add%402x.png" />
+    <BundleResource Include="Resources\icon_search%402x.png" />
+    <BundleResource Include="Resources\icon_bookmark%402x.png" />
+    <BundleResource Include="Resources\xamarinstore.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -330,6 +341,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="netstandard" />
+    <Reference Include="OpenTK-1.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AdvancedColorPicker" Version="2.0.1" />
@@ -388,6 +400,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Fonts\" />
+    <Folder Include="CustomEffects\" />
     <Folder Include="CustomRenderers\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

@@ -12,11 +12,10 @@ using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly: Dependency(typeof(TestCloudService))]
-[assembly: Dependency(typeof(StringProvider))]
 [assembly: Dependency(typeof(CacheService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
-[assembly: ExportEffect(typeof(BorderEffect), "BorderEffect")]
+[assembly: ExportEffect(typeof(BorderEffect), nameof(BorderEffect))]
 namespace Xamarin.Forms.ControlGallery.iOS
 {
 	public class BorderEffect : PlatformEffect
@@ -72,14 +71,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				((DisposeLabel)Element).SendRendererDisposed();
 			}
 			base.Dispose(disposing);
-		}
-	}
-
-	public class StringProvider : IStringProvider
-	{
-		public string CoreGalleryTitle
-		{
-			get { return "iOS Core Gallery"; }
 		}
 	}
 
@@ -360,7 +351,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				StartPressed40911();
 			};
 
-			page.Layout.Children.Add(button);
+			page._40911Layout.Children.Add(button);
 		}
 
 		public void StartPressed40911()

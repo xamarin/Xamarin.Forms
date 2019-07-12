@@ -18,7 +18,6 @@ using AView = Android.Views.View;
 using MButton = Android.Support.Design.Button.MaterialButton;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Button), typeof(MaterialButtonRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -41,10 +40,11 @@ namespace Xamarin.Forms.Material.Android
 		ButtonLayoutManager _buttonLayoutManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 
-		public MaterialButtonRenderer(Context context) : this(context, null) { }
+		public MaterialButtonRenderer(Context context)
+			: this(MaterialContextThemeWrapper.Create(context), null) { }
 
 		public MaterialButtonRenderer(Context context, BindableObject element)
-			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialTheme))
+			: base(MaterialContextThemeWrapper.Create(context))
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_buttonLayoutManager = new ButtonLayoutManager(this,
@@ -178,12 +178,6 @@ namespace Xamarin.Forms.Material.Android
 		{
 			_buttonLayoutManager?.OnLayout(changed, left, top, right, bottom);
 			base.OnLayout(changed, left, top, right, bottom);
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			_buttonLayoutManager?.Update();
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
 		}
 
 		void UpdateFont()
@@ -326,10 +320,6 @@ namespace Xamarin.Forms.Material.Android
 		VisualElement IBorderVisualElementRenderer.Element => Element;
 		AView IBorderVisualElementRenderer.View => this;
 
-		// IButtonLayoutRenderer
-		Button IButtonLayoutRenderer.Element => Element;
-		AppCompatButton IButtonLayoutRenderer.View => this;
-
 		// IVisualElementRenderer
 		VisualElement IVisualElementRenderer.Element => Element;
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
@@ -338,9 +328,7 @@ namespace Xamarin.Forms.Material.Android
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			_buttonLayoutManager?.Update();
-			Measure(widthConstraint, heightConstraint);
-			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element) =>
@@ -362,6 +350,17 @@ namespace Xamarin.Forms.Material.Android
 
 		// ITabStop
 		AView ITabStop.TabStop => this;
+
+		// IButtonLayoutRenderer
+		AppCompatButton IButtonLayoutRenderer.View => this;
+
+		Button IButtonLayoutRenderer.Element => this.Element;
+
+		event EventHandler<VisualElementChangedEventArgs> IButtonLayoutRenderer.ElementChanged
+		{
+			add => ((IVisualElementRenderer)this).ElementChanged += value;
+			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
+		}
 	}
 }
 #endif

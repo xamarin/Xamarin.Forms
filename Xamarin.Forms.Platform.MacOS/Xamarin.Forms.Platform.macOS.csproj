@@ -24,7 +24,6 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <ConsolePause>false</ConsolePause>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>
@@ -85,6 +84,7 @@
     <Compile Include="Controls\FormsNSDatePicker.cs" />
     <Compile Include="Extensions\FlowDirectionExtensions.cs" />
     <Compile Include="FormsApplicationDelegate.cs" />
+    <Compile Include="MacDeviceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PlatformRenderer.cs" />
     <Compile Include="Platform.cs" />
@@ -235,6 +235,10 @@
       <Link>VisualElementRenderer.cs</Link>
     </Compile>
     <Compile Include="Extensions\NSMenuExtensions.cs" />
+    <Compile Include="Controls\FormsNSSlider.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\DisposeHelpers.cs">
+      <Link>DisposeHelpers.cs</Link>
+    </Compile>
     <Compile Include="Extensions\FontExtensions.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\FontExtensions.Shared.cs">
       <Link>Extensions\FontExtensions.Shared.cs</Link>

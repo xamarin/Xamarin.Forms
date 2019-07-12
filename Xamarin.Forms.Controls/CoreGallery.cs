@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Controls
 
 			var toCrashButton = new Button { Text = "Crash Me" };
 
-			var masterPage = new ContentPage { Title = "Menu", Icon = "bank.png", Content = toCrashButton };
+			var masterPage = new ContentPage { Title = "Menu", IconImageSource = "bank.png", Content = toCrashButton };
 			var detailPage = new CoreRootPage(this, NavigationBehavior.PushModalAsync) { Title = "DetailPage" };
 
 			bool toggle = false;
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Controls
 			Children.Add(new NavigationPage(new Page())
 			{
 				Title = "Rubriques",
-				Icon = "coffee.png",
+				IconImageSource = "coffee.png",
 				BarBackgroundColor = Color.Blue,
 				BarTextColor = Color.Aqua
 			});
@@ -217,6 +217,7 @@ namespace Xamarin.Forms.Controls
 				new CoreViewContainer ("SwapRoot - NavigationPage", typeof(CoreNavigationPage)),
 				new CoreViewContainer ("SwapRoot - TabbedPage", typeof(CoreTabbedPage)),
 				new CoreViewContainer ("SwapRoot - BottomNavigation TabbedPage", typeof(CoreTabbedPageAsBottomNavigation)),
+				new CoreViewContainer ("SwapRoot - Store Shell", typeof(XamStore.StoreShell)),
 			};
 
 			var template = new DataTemplate(typeof(TextCell));
@@ -279,6 +280,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
+				new GalleryPageFactory(() => new Issues.A11yTabIndex(), "Accessibility TabIndex"),
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
@@ -380,7 +382,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new MultiGallery(), "Multi Gallery - Legacy"),
 				new GalleryPageFactory(() => new NavigationPropertiesGallery(), "Navigation Properties"),
 #if HAVE_OPENTK
-				new GalleryPageFactory(() => new OpenGLGallery(), "OpenGLGallery - Legacy"),
+				new GalleryPageFactory(() => new BasicOpenGLGallery(), "Basic OpenGL Gallery - Legacy"),
+				new GalleryPageFactory(() => new AdvancedOpenGLGallery(), "Advanced OpenGL Gallery - Legacy"),
 #endif
 				new GalleryPageFactory(() => new PickerGallery(), "Picker Gallery - Legacy"),
 				new GalleryPageFactory(() => new ProgressBarGallery(), "ProgressBar Gallery - Legacy"),
@@ -406,6 +409,12 @@ namespace Xamarin.Forms.Controls
 
 		public CorePageView(Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
 		{
+			var galleryFactory = DependencyService.Get<IPlatformSpecificCoreGalleryFactory>();
+
+			var platformPages = galleryFactory?.GetPages();
+			if (platformPages != null)
+				_pages.AddRange(platformPages.Select(p => new GalleryPageFactory(p.Create, p.Title + " (Platform Specifc)")));
+
 			_titleToPage = _pages.ToDictionary(o => o.Title);
 
 			// avoid NRE for root pages without NavigationBar
@@ -505,9 +514,9 @@ namespace Xamarin.Forms.Controls
 		{
 			ValidateRegistrar();
 
-			IStringProvider stringProvider = DependencyService.Get<IStringProvider>();
+			var galleryFactory = DependencyService.Get<IPlatformSpecificCoreGalleryFactory>();
 
-			Title = stringProvider.CoreGalleryTitle;
+			Title = galleryFactory?.Title ?? "Core Gallery";
 
 			var corePageView = new CorePageView(rootPage, navigationBehavior);
 
@@ -525,6 +534,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Text = "Go to Test Cases",
 				AutomationId = "GoToTestButton",
+				TabIndex = -2,
 				Command = new Command(async () =>
 				{
 					if (!string.IsNullOrEmpty(searchBar.Text))
@@ -541,6 +551,7 @@ namespace Xamarin.Forms.Controls
 					searchBar,
 					new Button {
 						Text = "Click to Force GC",
+						TabIndex = -2,
 						Command = new Command(() => {
 							GC.Collect ();
 							GC.WaitForPendingFinalizers ();
@@ -582,9 +593,11 @@ namespace Xamarin.Forms.Controls
 	}
 
 	[Preserve(AllMembers = true)]
-	public interface IStringProvider
+	public interface IPlatformSpecificCoreGalleryFactory
 	{
-		string CoreGalleryTitle { get; }
+		string Title { get; }
+
+		IEnumerable<(Func<Page> Create, string Title)> GetPages();
 	}
 	[Preserve(AllMembers = true)]
 	public static class CoreGallery

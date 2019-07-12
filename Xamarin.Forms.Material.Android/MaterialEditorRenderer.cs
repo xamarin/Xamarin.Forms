@@ -8,7 +8,6 @@ using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.Platform.Android;
 using AView = Android.Views.View;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Editor), typeof(MaterialEditorRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 namespace Xamarin.Forms.Material.Android
 {
 	public class MaterialEditorRenderer : EditorRendererBase<MaterialFormsTextInputLayout>
@@ -28,7 +27,6 @@ namespace Xamarin.Forms.Material.Android
 			var view = inflater.Inflate(Resource.Layout.TextInputLayoutFilledBox, null);
 			_textInputLayout = (MaterialFormsTextInputLayout)view;
 			_textInputEditText = _textInputLayout.FindViewById<MaterialFormsEditText>(Resource.Id.materialformsedittext);
-			UpdatePlaceholderText();
 
 			return _textInputLayout;
 		}
