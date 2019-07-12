@@ -28,14 +28,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 		class DetailPage : ContentPage
 		{
+		    const string NavButton = "NavigateButton";
+			const string ToggleBackButton = "ToggleBackButton";
+			
 			public NavigationPage ParentPage => Parent as NavigationPage;
 
 			public DetailPage()
 			{
-				var button = new Button { Text = "Click me", AutomationId = "NavigateButton" };
+				var button = new Button { Text = "Click me", AutomationId = NavButton };
 				button.Clicked += async (o, s) =>
 				{
-					var button2 = new Button { Text = "Toggle back button", AutomationId = "ToggleBackButton" };
+					var button2 = new Button { Text = "Toggle back button", AutomationId = ToggleBackButton };
 
 					var page = new ContentPage { Content = new StackLayout { Children = {
 							new Label { Text = "If there is no hamburger button, this test has failed. If you cannot toggle the back arrow, this test has failed." },
