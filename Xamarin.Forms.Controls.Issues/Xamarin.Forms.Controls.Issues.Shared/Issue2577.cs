@@ -17,7 +17,11 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			Master = new ContentPage { Title = "master page" };
-			(Master as ContentPage).Content = new ListView { AutomationId = "MasterList" };
+			Master = new ContentPage
+			{
+				Title = "master page",
+				Content = new ListView { AutomationId = MasterList }
+			};
 
 			Detail = new NavigationPage(new DetailPage());
 		}
@@ -50,7 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-#if UITEST
+#if UITEST && __ANDROID__
 		[Test]
 		public void Issue2577Test()
 		{
@@ -78,7 +82,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			RunningApp.Screenshot("Back arrow is showing");
 
-			var backArrow = RunningApp.Query(e => e.Class("AppCompatImageButton")).First(e => e.Label == null);
+			var backArrow = RunningApp.Query(e => e.Class("Toolbar").Descendant("AppCompatImageButton")).Last();
 
 			RunningApp.TapCoordinates(backArrow.Rect.CenterX, backArrow.Rect.CenterY);
 
