@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			Master = new ContentPage { Title = "master page" };
 			Master = new ContentPage
 			{
 				Title = "master page",
