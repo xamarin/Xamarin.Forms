@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.EmptyViewGalleries;
-using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGalleries;
-=======
-﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
+
+using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.EmptyViewGalleries;
->>>>>>> [Controls] Refactor Carousel examples
+using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGalleries;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionGalleries;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollModeGalleries;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.AlternateLayoutGalleries;

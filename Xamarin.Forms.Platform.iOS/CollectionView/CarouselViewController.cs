@@ -46,13 +46,13 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateVisualStates();
 		}
 
-		protected override string DetermineCellReusedId()
+		protected override string DetermineCellReuseId()
 		{
 			if (_carouselView.ItemTemplate != null)
 			{
 				return CarouselTemplatedCell.ReuseId;
 			}
-			return base.DetermineCellReusedId();
+			return base.DetermineCellReuseId();
 		}
 
 		protected override void RegisterViewTypes()
