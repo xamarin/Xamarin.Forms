@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms.Platform;
@@ -7,8 +9,14 @@ namespace Xamarin.Forms
 {
 	public class ScrolledDirectionEventArgs : EventArgs
 	{
-		public double NewValue { get; set; }
-		public ScrollDirection Direction { get; set; }
+		public ScrolledDirectionEventArgs(ScrollDirection direction, double newValue)
+		{
+			Direction = direction;
+			NewValue = newValue;
+
+		}
+		public double NewValue { get; private set; }
+		public ScrollDirection Direction { get; private set; }
 	}
 
 	public enum ScrollDirection
@@ -19,14 +27,14 @@ namespace Xamarin.Forms
 		Down
 	}
 
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface ICarouselViewController : IViewController
 	{
-		void NotifyPositionChanged(int newPosition);
 		void SendScrolled(double value, ScrollDirection direction);
 	}
 
 	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : SelectableItemsView
+	public class CarouselView : SelectableItemsView, ICarouselViewController
 	{
 		public static readonly BindableProperty IsSwipeEnabledProperty = BindableProperty.Create(nameof(IsSwipeEnabled), typeof(bool), typeof(CarouselView), true);
 
@@ -45,7 +53,7 @@ namespace Xamarin.Forms
 			set { SetValue(ItemSpacingProperty, value); }
 		}
 
-		public static readonly BindableProperty AnimateTransitionProperty = 
+		public static readonly BindableProperty AnimateTransitionProperty =
 		BindableProperty.Create(nameof(AnimateTransition), typeof(bool), typeof(CarouselView), true);
 
 		public bool AnimateTransition
@@ -61,7 +69,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty PositionChangedCommandProperty =
 			BindableProperty.Create(nameof(PositionChangedCommand), typeof(ICommand), typeof(CarouselView));
 
-		public static readonly BindableProperty PositionChangedCommandPropertyProperty =
+		public static readonly BindableProperty PositionChangedCommandParameterProperty =
 			BindableProperty.Create(nameof(PositionChangedCommandParameter), typeof(object),
 				typeof(CarouselView));
 
@@ -73,14 +81,14 @@ namespace Xamarin.Forms
 
 		public ICommand PositionChangedCommand
 		{
-			get => (ICommand)GetValue(SelectionChangedCommandProperty);
-			set => SetValue(SelectionChangedCommandProperty, value);
+			get => (ICommand)GetValue(PositionChangedCommandProperty);
+			set => SetValue(PositionChangedCommandProperty, value);
 		}
 
 		public object PositionChangedCommandParameter
 		{
-			get => GetValue(SelectionChangedCommandParameterProperty);
-			set => SetValue(SelectionChangedCommandParameterProperty, value);
+			get => GetValue(PositionChangedCommandParameterProperty);
+			set => SetValue(PositionChangedCommandParameterProperty, value);
 		}
 
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
@@ -110,12 +118,10 @@ namespace Xamarin.Forms
 
 			carousel.PositionChanged?.Invoke(carousel, args);
 
-
 			carousel.OnPositionChanged(args);
 		}
 
 		public event EventHandler<ScrolledDirectionEventArgs> Scrolled;
-
 
 		public CarouselView()
 		{
@@ -126,6 +132,33 @@ namespace Xamarin.Forms
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
 			SelectionMode = SelectionMode.Single;
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			if (propertyName.Equals(SelectableItemsView.SelectedItemProperty.PropertyName))
+			{
+				SetValueCore(PositionProperty, GetPositionForItem(SelectedItem));
+			}
+			base.OnPropertyChanged(propertyName);
+		}
+
+		int GetPositionForItem(object item)
+		{
+			var itemSource = ItemsSource as IList;
+			for (int n = 0; n < itemSource.Count; n++)
+			{
+				if (itemSource[n] == item)
+				{
+					return n;
+				}
+			}
+			return 0;
+		}
+
+		public void SendScrolled(double value, ScrollDirection direction)
+		{
+			Scrolled?.Invoke(this, new ScrolledDirectionEventArgs(direction, value));
 		}
 	}
 }

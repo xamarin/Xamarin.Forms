@@ -9,13 +9,6 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class IndicatorsViewRenderer : ViewRenderer<IndicatorsView, UIPageControl>
 	{
-		public nint Count { get; private set; }
-		public int Position { get; private set; }
-
-		public IndicatorsViewRenderer()
-		{
-
-		}
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return new SizeRequest(new Size(widthConstraint, heightConstraint));
@@ -41,9 +34,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateCurrentPageIndicatorTintColor();
 			}
-			else if (changedProperty.Is(IndicatorsView.ItemsSourceByProperty))
+			else if (changedProperty.IsOneOf(IndicatorsView.ItemsSourceByProperty, IndicatorsView.PositionProperty, IndicatorsView.CountProperty))
 			{
-				UpdateItemsSource();
+				UpdateIndicators();
 			}
 		}
 
@@ -54,18 +47,12 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			Count = 5;
-			Position = 2;
 			SetNativeControl(new UIPageControl());
 
 			UpdatePageIndicatorTintColor();
 			UpdateCurrentPageIndicatorTintColor();
 			UpdateIndicators();
-		}
 
-		void UpdateItemsSource()
-		{
-			throw new NotImplementedException();
 		}
 
 		void UpdatePageIndicatorTintColor()
@@ -91,8 +78,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Control == null)
 				return;
 
-			Control.Pages = Count;
-			Control.CurrentPage = Position;
+			Control.Pages = Element.Count;
+			Control.CurrentPage = Element.Position;
 			UpdateShapes();
 		}
 

@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class SelectableItemsViewRenderer : ItemsViewRenderer
 	{
-		SelectableItemsView SelectableItemsView => (SelectableItemsView)ItemsView;
+		internal SelectableItemsView SelectableItemsView => (SelectableItemsView)ItemsView;
 		SelectableItemsViewAdapter SelectableItemsViewAdapter => (SelectableItemsViewAdapter)ItemsViewAdapter;
 
 		public SelectableItemsViewRenderer(Context context) : base(context)
