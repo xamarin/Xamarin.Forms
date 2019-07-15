@@ -8,6 +8,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		ItemsViewLayout _layout;
 		bool _disposed;
+		bool? _defaultHorizontalScrollVisibility;
+		bool? _defaultVerticalScrollVisibility;
 
 		public ItemsViewRenderer()
 		{
@@ -47,6 +49,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateItemSizingStrategy();
 			}
+			else if (changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			{
+				UpdateHorizontalScrollBarVisibility();
+			}
+			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
 		}
 
 		protected virtual ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification)
@@ -85,9 +95,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateLayout();
 			ItemsViewController = CreateController(newElement, _layout);
+			 
+			if (Forms.IsiOS11OrNewer)
+			{
+				// We set this property to keep iOS from trying to be helpful about insetting all the 
+				// CollectionView content when we're in landscape mode (to avoid the notch)
+				// The SetUseSafeArea Platform Specific is already taking care of this for us 
+				// That said, at some point it's possible folks will want a PS for controlling this behavior
+				ItemsViewController.CollectionView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
+			}
+
 			SetNativeControl(ItemsViewController.View);
 			ItemsViewController.CollectionView.BackgroundColor = UIColor.Clear;
 			ItemsViewController.UpdateEmptyView();
+
+			UpdateHorizontalScrollBarVisibility();
+			UpdateVerticalScrollBarVisibility();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -134,6 +157,44 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return ItemsViewController.GetIndexForItem(args.Item);
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			if (_defaultVerticalScrollVisibility == null)
+				_defaultVerticalScrollVisibility = ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator;
+
+			switch (Element.VerticalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = true;
+					break;
+				case (ScrollBarVisibility.Never):
+					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = false;
+					break;
+				case (ScrollBarVisibility.Default):
+					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = _defaultVerticalScrollVisibility.Value;
+					break;
+			}
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_defaultHorizontalScrollVisibility == null)
+				_defaultHorizontalScrollVisibility = ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator;
+
+			switch (Element.HorizontalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = true;
+					break;
+				case (ScrollBarVisibility.Never):
+					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = false;
+					break;
+				case (ScrollBarVisibility.Default):
+					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = _defaultHorizontalScrollVisibility.Value;
+					break;
+			}
 		}
 
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)

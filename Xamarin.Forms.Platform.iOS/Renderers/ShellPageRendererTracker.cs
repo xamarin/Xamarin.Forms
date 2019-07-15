@@ -56,6 +56,7 @@ namespace Xamarin.Forms.Platform.iOS
 		SearchHandler _searchHandler;
 		Page _page;
 		NSCache _nSCache;
+		SearchHandlerAppearanceTracker _searchHandlerAppearanceTracker;
 
 		BackButtonBehavior BackButtonBehavior { get; set; }
 		UINavigationItem NavigationItem { get; set; }
@@ -119,12 +120,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (oldPage != null)
 			{
+				oldPage.Appearing -= PageAppearing;
 				oldPage.PropertyChanged -= OnPagePropertyChanged;
 				((INotifyCollectionChanged)oldPage.ToolbarItems).CollectionChanged -= OnToolbarItemsChanged;
 			}
 
 			if (newPage != null)
 			{
+				newPage.Appearing += PageAppearing;
 				newPage.PropertyChanged += OnPagePropertyChanged;
 				((INotifyCollectionChanged)newPage.ToolbarItems).CollectionChanged += OnToolbarItemsChanged;
 				SetBackButtonBehavior(Shell.GetBackButtonBehavior(newPage));
@@ -141,6 +144,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void OnRendererSet()
 		{
 			NavigationItem = ViewController.NavigationItem;
+
 			if (!Forms.IsiOS11OrNewer)
 			{
 				ViewController.AutomaticallyAdjustsScrollViewInsets = false;
@@ -257,12 +261,16 @@ namespace Xamarin.Forms.Platform.iOS
 				icon = await image.GetNativeImageAsync();
 			else
 				icon = DrawHamburger();
-			
 
 			var barButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, OnMenuButtonPressed);
 
 			barButtonItem.AccessibilityIdentifier = "OK";
 			NavigationItem.LeftBarButtonItem = barButtonItem;
+			if (image == null)
+				return;
+			NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
+			NavigationItem.LeftBarButtonItem.SetAccessibilityHint(image);
+			NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(image);
 		}
 
 		UIImage DrawHamburger()
@@ -284,7 +292,7 @@ namespace Xamarin.Forms.Platform.iOS
 			float start = 4f;
 			ctx.SetLineWidth(size);
 
-			for(int i = 0; i< 3; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				ctx.MoveTo(1f, start + i * (size * 2));
 				ctx.AddLineToPoint(22f, start + i * (size * 2));
@@ -451,6 +459,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void AttachSearchController()
 		{
+
 			if (SearchHandler.ShowsResults)
 			{
 				_resultsRenderer = _context.CreateShellSearchResultsRenderer();
@@ -503,6 +512,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			searchBar.ShowsBookmarkButton = SearchHandler.ClearPlaceholderEnabled;
+
+			_searchHandlerAppearanceTracker = new SearchHandlerAppearanceTracker(searchBar, SearchHandler);
 		}
 
 		void BookmarkButtonClicked(object sender, EventArgs e)
@@ -512,6 +523,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void DettachSearchController()
 		{
+			_searchHandlerAppearanceTracker.Dispose();
+			_searchHandlerAppearanceTracker = null;
 			if (Forms.IsiOS11OrNewer)
 			{
 				RemoveSearchController(NavigationItem);
@@ -541,7 +554,17 @@ namespace Xamarin.Forms.Platform.iOS
 		async void SetSearchBarIcon(UISearchBar searchBar, ImageSource source, UISearchBarIcon icon)
 		{
 			var result = await source.GetNativeImageAsync();
-			searchBar.SetImageforSearchBarIcon(result, icon, UIControlState.Normal);
+			var newResult = result.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
+			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Normal);
+			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Highlighted);
+			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Selected);
+		}
+
+		void PageAppearing(object sender, EventArgs e)
+		{
+			//UIKIt will try to override our colors when the SearchController is inside the NavigationBar
+			//Best way was to force them to be set again when page is Appearing / ViewDidLoad
+			_searchHandlerAppearanceTracker?.UpdateSearchBarColors();
 		}
 
 		#endregion SearchHandler
@@ -555,24 +578,26 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
+				return;
+
+			if (disposing)
 			{
-				if (disposing)
-				{
-					Page.PropertyChanged -= OnPagePropertyChanged;
-					((INotifyCollectionChanged)Page.ToolbarItems).CollectionChanged -= OnToolbarItemsChanged;
-					((IShellController)_context.Shell).RemoveFlyoutBehaviorObserver(this);
-				}
-
-				SearchHandler = null;
-				Page = null;
-				SetBackButtonBehavior(null);
-				_rendererRef = null;
-				NavigationItem = null;
-				_disposed = true;
+				_searchHandlerAppearanceTracker?.Dispose();
+				Page.Appearing -= PageAppearing;
+				Page.PropertyChanged -= OnPagePropertyChanged;
+				((INotifyCollectionChanged)Page.ToolbarItems).CollectionChanged -= OnToolbarItemsChanged;
+				((IShellController)_context.Shell).RemoveFlyoutBehaviorObserver(this);
 			}
-		}
 
+			SearchHandler = null;
+			Page = null;
+			SetBackButtonBehavior(null);
+			_rendererRef = null;
+			NavigationItem = null;
+			_searchHandlerAppearanceTracker = null;
+			_disposed = true;
+		}
 		#endregion IDisposable Support
 	}
 }

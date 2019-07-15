@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>,
 		AView.IOnAttachStateChangeListener, AView.IOnClickListener, AView.IOnTouchListener,
-		IBorderVisualElementRenderer, IButtonLayoutRenderer
+		IBorderVisualElementRenderer, IButtonLayoutRenderer, IDisposedState
 	{
 		BorderBackgroundManager _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
@@ -46,17 +46,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void SetContentDescription()
 			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
 
+		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
+		}
+
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>
 			_buttonLayoutManager?.OnViewAttachedToWindow(attachedView);
 
 		void AView.IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView) =>
 			_buttonLayoutManager?.OnViewDetachedFromWindow(detachedView);
-
-		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
-		{
-			_buttonLayoutManager?.Update();
-			return base.GetDesiredSize(widthConstraint, heightConstraint);
-		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
@@ -202,6 +201,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
 		}
 
+		event EventHandler<VisualElementChangedEventArgs> IButtonLayoutRenderer.ElementChanged
+		{
+			add => ((IVisualElementRenderer)this).ElementChanged += value;
+			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
+		}
+
 		AppCompatButton IButtonLayoutRenderer.View => Control;
+		bool IDisposedState.IsDisposed => _isDisposed;
 	}
 }

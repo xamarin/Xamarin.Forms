@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
 	[DebuggerDisplay("Title = {Title}, Route = {Route}")]
 	public class BaseShellItem : NavigableElement, IPropertyPropagationController, IVisualController, IFlowDirectionController, ITabStopElement
 	{
+		public event EventHandler Appearing;
+		public event EventHandler Disappearing;
+
+		bool _hasAppearing;
+
 		#region PropertyKeys
 
 		internal static readonly BindablePropertyKey IsCheckedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsChecked), typeof(bool), typeof(BaseShellItem), false);
@@ -105,6 +112,51 @@ namespace Xamarin.Forms
 			set => SetValue(IsTabStopProperty, value);
 		}
 
+		internal virtual void SendAppearing()
+		{
+			if (_hasAppearing)
+				return;
+
+			_hasAppearing = true;
+			OnAppearing();
+			Appearing?.Invoke(this, EventArgs.Empty);
+		}
+
+		internal virtual void SendDisappearing()
+		{
+			if (!_hasAppearing)
+				return;
+
+			_hasAppearing = false;
+			OnDisappearing();
+			Disappearing?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected virtual void OnAppearing()
+		{
+		}
+
+		protected virtual void OnDisappearing()
+		{
+		}
+
+		internal void OnAppearing(Action action)
+		{
+			if (_hasAppearing)
+				action();
+			else
+			{
+				EventHandler eventHandler = null;
+				eventHandler = (_, __) =>
+				{
+					this.Appearing -= eventHandler;
+					action();
+				};
+
+				this.Appearing += eventHandler;
+			}
+		}
+
 		protected virtual void OnTabStopPropertyChanged(bool oldValue, bool newValue) { }
 
 		protected virtual bool TabStopDefaultValueCreator() => true;
@@ -131,6 +183,39 @@ namespace Xamarin.Forms
 
 			var shellItem = (BaseShellItem)bindable;
 			shellItem.FlyoutIcon = (ImageSource)newValue;
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
+			if (Parent != null)
+			{
+				if (propertyName == Shell.ItemTemplateProperty.PropertyName || propertyName == nameof(Parent))
+					Propagate(Shell.ItemTemplateProperty, this, Parent, true);
+			}
+		}
+
+		internal static void PropagateFromParent(BindableProperty property, Element me)
+		{
+			if (me == null || me.Parent == null)
+				return;
+
+			Propagate(property, me.Parent, me, false);
+		}
+
+		internal static void Propagate(BindableProperty property, BindableObject from, BindableObject to, bool onlyToImplicit)
+		{
+			if (from == null || to == null)
+				return;
+
+			if (onlyToImplicit && Routing.IsImplicit(from))
+				return;
+
+			if (to is Shell)
+				return;
+
+			if (from.IsSet(property) && !to.IsSet(property))
+				to.SetValue(property, from.GetValue(property));
 		}
 
 		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)

@@ -85,8 +85,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			Measure(widthConstraint, heightConstraint);
-			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), MinimumSize());
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -162,6 +161,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 				RemoveOnAttachStateChangeListener(this);
+				OnFocusChangeListener = null;
+
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
 
 				_automationPropertiesProvider?.Dispose();
 				_tracker?.Dispose();
@@ -173,8 +178,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
 				}
@@ -189,11 +192,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return false;
 
 			return base.OnTouchEvent(e);
-		}
-
-		Size MinimumSize()
-		{
-			return new Size();
 		}
 
 		protected virtual void OnElementChanged(ElementChangedEventArgs<Button> e)
@@ -239,12 +237,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_buttonLayoutManager?.OnLayout(changed, l, t, r, b);
 			base.OnLayout(changed, l, t, r, b);
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			_buttonLayoutManager?.Update();
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
 		}
 
 		void SetTracker(VisualElementTracker tracker)
@@ -351,5 +343,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		AppCompatButton IButtonLayoutRenderer.View => this;
+
+		Button IButtonLayoutRenderer.Element => this.Element;
 	}
 }

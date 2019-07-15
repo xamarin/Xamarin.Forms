@@ -1,5 +1,6 @@
 using System;
 using Xamarin.Forms.Internals;
+using ASize = Android.Util.Size;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -7,6 +8,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly ItemContentView _itemContentView;
 		readonly DataTemplate _template;
+		DataTemplate _selectedTemplate;
 
 		public View View { get; private set; }
 
@@ -34,15 +36,22 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			View.BindingContext = null;
 			itemsView.RemoveLogicalChild(View);
-			_itemContentView.Recycle();
 		}
 
-		public void Bind(object itemBindingContext, ItemsView itemsView)
+		public void Bind(object itemBindingContext, ItemsView itemsView, 
+			Action<ASize> reportMeasure = null, ASize size = null)
 		{
 			var template = _template.SelectDataTemplate(itemBindingContext, itemsView);
 
-			View = (View)template.CreateContent();
-			_itemContentView.RealizeContent(View);
+			if(template != _selectedTemplate)
+			{
+				_itemContentView.Recycle();
+				View = (View)template.CreateContent();
+				_itemContentView.RealizeContent(View);
+				_selectedTemplate = template;
+			}
+
+			_itemContentView.HandleItemSizingStrategy(reportMeasure, size); 
 
 			// Set the binding context before we add it as a child of the ItemsView; otherwise, it will
 			// inherit the ItemsView's binding context

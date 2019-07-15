@@ -136,7 +136,7 @@ namespace Xamarin.Forms
 
 		[Obsolete("Image is obsolete as of 4.0.0. Please use ImageSource instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public ImageSource Image
+		public FileImageSource Image
 		{
 			get { return GetValue(ImageProperty) as FileImageSource; }
 			set { SetValue(ImageProperty, value); }
@@ -283,6 +283,9 @@ namespace Xamarin.Forms
 			var oldVal = (int)bindable.GetValue(Button.CornerRadiusProperty);
 
 			if (oldVal == val)
+				return;
+
+			if (button.cornerOrBorderRadiusSetting) // retain until BorderRadiusProperty removed
 				return;
 
 			button.cornerOrBorderRadiusSetting = true;

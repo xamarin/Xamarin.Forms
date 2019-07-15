@@ -42,10 +42,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AccessibilityExtensions.cs" />
+    <Compile Include="CollectionView\ItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
+    <Compile Include="FormsCheckBox.cs" />
     <Compile Include="IImageVisualElementRenderer.cs" />
     <Compile Include="ImageButtonRenderer.cs" />
-    <Compile Include="CollectionViewRenderer.cs" />
+    <Compile Include="CollectionView\CollectionViewRenderer.cs" />
     <Compile Include="FormsCancelButton.cs" />
     <Compile Include="AlertDialog.cs" />
     <Compile Include="IDontGetFocus.cs" />
@@ -63,6 +66,8 @@
     <Compile Include="ImageElementManager.cs" />
     <Compile Include="InterceptVisualStateManager.cs" />
     <Compile Include="HorizontalTextAlignmentConverter.cs" />
+    <Compile Include="Items\ObservableItemTemplateCollection.cs" />
+    <Compile Include="Items\TemplatedItemSourceFactory.cs" />
     <Compile Include="ITitleIconProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
     <Compile Include="Items\FormsGridView.cs" />
@@ -84,6 +89,7 @@
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CheckBoxRenderer.cs" />
     <Compile Include="TextBlockExtensions.cs" />
     <Compile Include="TitleViewManager.cs" />
     <Compile Include="UriImageSourceHandler.cs" />
@@ -105,9 +111,6 @@
     <Compile Include="TabbedPageRenderer.cs" />
     <Compile Include="ToolbarPlacementHelper.cs" />
     <EmbeddedResource Include="Properties\Xamarin.Forms.Platform.UAP.rd.xml" />
-    <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Forms.cs" />
     <Compile Include="WindowsPage.cs" />
     <Compile Include="WindowsPlatform.cs" />
@@ -194,6 +197,10 @@
     <Page Include="AutoSuggestStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FormsCheckBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="FormsCommandBarStyle.xaml">
       <SubType>Designer</SubType>

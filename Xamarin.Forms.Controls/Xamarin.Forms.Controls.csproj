@@ -5,8 +5,6 @@
   <PropertyGroup>
     <XFDisableTargetsValidation>True</XFDisableTargetsValidation>
   </PropertyGroup>
-  <Import Project="..\.nuspec\Xamarin.Forms.DefaultItems.props" />
-	<Import Project="..\.nuspec\Xamarin.Forms.DefaultItems.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>TRACE;DEBUG;PERF;APP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -30,8 +28,6 @@
     <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj" />
   </ItemGroup>
-  <Import Project="..\.nuspec\Xamarin.Forms.targets" Condition="'$(BuildingInsideVisualStudio)' == 'true' AND Exists('$(__XFBuildTasksLocation)Xamarin.Forms.Build.Tasks.dll')" />
-  <Import Project="..\.nuspec\Xamarin.Forms.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
 
   <ItemGroup>
     <EmbeddedResource Include="BuildNumber.txt" />
@@ -60,10 +56,16 @@
     <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\EmptyViewGalleries\EmptyViewSwapGallery.xaml">
 	<Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\MultipleBoundSelection.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\PreselectedItemsGallery.xaml">
        <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\DataTemplateSelectorGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\SelectionChangedCommandParameter.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\MapElementsGallery.xaml">
@@ -129,6 +131,27 @@
     <EmbeddedResource Update="GalleryPages\ControlTemplateXamlPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\BasicGrouping.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\GroupingNoTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\GroupingPlusSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\MeasureFirstStrategy.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\SomeEmptyGroups.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\SwitchGrouping.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
   </ItemGroup>
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
     <CreateItem Include="blank.config">

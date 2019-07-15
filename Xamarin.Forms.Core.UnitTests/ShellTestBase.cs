@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		[SetUp]
 		public override void Setup()
 		{
-			Device.SetFlags(new[] { Shell.ShellExperimental });
 			base.Setup();
 
 		}
@@ -21,6 +20,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override void TearDown()
 		{
 			base.TearDown();
+			Routing.Clear();
 
 		}
 
@@ -43,7 +43,11 @@ namespace Xamarin.Forms.Core.UnitTests
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ShellTestPage : ContentPage
 		{
-			public string SomeQueryParameter { get; set; }
+			public string SomeQueryParameter
+			{
+				get;
+				set;
+			}
 		}
 
 		protected ShellItem CreateShellItem(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null, string shellSectionRoute = null, string shellItemRoute = null)
