@@ -335,7 +335,6 @@ namespace Xamarin.Forms
 		{
 			SetValue(IsScrollingPropertyKey, value);
 		}
-
 		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);
