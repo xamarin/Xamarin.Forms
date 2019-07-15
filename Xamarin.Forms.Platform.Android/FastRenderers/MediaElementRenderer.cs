@@ -458,6 +458,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					break;
 
 				case MediaInfo.VideoRenderingStart:
+					_view.SetBackground(null);
 					Controller.CurrentState = MediaElementState.Playing;
 					break;
 			}
