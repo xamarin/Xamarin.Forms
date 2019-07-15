@@ -233,6 +233,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			base.OnElementChanged(e);
 
 			var activity = Context.GetActivity();
+			var isDesigner = activity == null && Context.IsDesignerContext();
 
 			if (e.OldElement != null)
 				((IPageController)e.OldElement).InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
@@ -269,7 +270,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						var viewPagerParams = new AWidget.RelativeLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
 						viewPagerParams.AddRule(AWidget.LayoutRules.Above, _bottomNavigationView.Id);
 
-						FormsViewPager pager = _viewPager = CreateFormsViewPager(activity, e.NewElement);
+						FormsViewPager pager = _viewPager = CreateFormsViewPager(isDesigner ? Context : activity, e.NewElement);
 
 						pager.Id = Platform.GenerateViewId();
 						pager.AddOnPageChangeListener(this);
@@ -285,12 +286,20 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					if (_tabLayout == null)
 					{
 						TabLayout tabs;
-						if (FormsAppCompatActivity.TabLayoutResource > 0)
-							tabs = _tabLayout = activity.LayoutInflater.Inflate(FormsAppCompatActivity.TabLayoutResource, null).JavaCast<TabLayout>();
-						else
-							tabs = _tabLayout = new TabLayout(activity) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
 
-						FormsViewPager pager = _viewPager = CreateFormsViewPager(activity, e.NewElement);
+						if (!isDesigner)
+						{
+							if (FormsAppCompatActivity.TabLayoutResource > 0)
+								tabs = _tabLayout = activity.LayoutInflater.Inflate(FormsAppCompatActivity.TabLayoutResource, null).JavaCast<TabLayout>();
+							else
+								tabs = _tabLayout = new TabLayout(activity) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
+						}
+						else // Previewer
+						{
+							tabs = _tabLayout = new TabLayout(Context) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
+						}
+
+						FormsViewPager pager = _viewPager = CreateFormsViewPager(isDesigner ? Context : activity, e.NewElement);
 
 						pager.Id = Platform.GenerateViewId();
 						pager.AddOnPageChangeListener(this);
@@ -312,8 +321,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateBarBackgroundColor();
 				UpdateBarTextColor();
 				UpdateItemIconColor();
-				UpdateSwipePaging();
-				UpdateOffscreenPageLimit();
+				if (!isDesigner)
+				{
+					UpdateSwipePaging();
+					UpdateOffscreenPageLimit();
+				}
 			}
 		}
 
