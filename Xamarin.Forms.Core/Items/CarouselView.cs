@@ -23,13 +23,13 @@ namespace Xamarin.Forms
 			set { SetValue(PeekAreaInsetsProperty, value); }
 		}
 
-		public static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(List<View>), typeof(CarouselView), null);
+		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(List<View>), typeof(CarouselView), null);
 
 		public static readonly BindableProperty VisibleViewsProperty = VisibleViewsPropertyKey.BindableProperty;
 
 		public List<View> VisibleViews => (List<View>)GetValue(VisibleViewsProperty);
 
-		public static readonly BindablePropertyKey IsDraggingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsDragging), typeof(bool), typeof(CarouselView), false);
+		static readonly BindablePropertyKey IsDraggingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsDragging), typeof(bool), typeof(CarouselView), false);
 
 		public static readonly BindableProperty IsDraggingProperty = IsDraggingPropertyKey.BindableProperty;
 
