@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
 	[RenderWith(typeof(_LabelRenderer))]
-	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, ILineHeightElement, IElementConfiguration<Label>, IDecorableTextElement
+	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, ILineHeightElement, IElementConfiguration<Label>, IDecorableTextElement, IPaddingElement
 	{
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
@@ -87,6 +87,8 @@ namespace Xamarin.Forms
 					((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 				}
 			});
+
+		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
@@ -204,6 +206,12 @@ namespace Xamarin.Forms
 			set => SetValue(MaxLinesProperty, value);
 		}
 
+		public Thickness Padding
+		{
+			get { return (Thickness)GetValue(PaddingProperty); }
+			set { SetValue(PaddingProperty, value); }
+		}
+
 		double IFontElement.FontSizeDefaultValueCreator() =>
 			Device.GetNamedSize(NamedSize.Default, (Label)this);
 
@@ -217,7 +225,7 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue) =>
-         	InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
@@ -243,7 +251,7 @@ namespace Xamarin.Forms
 
 		void SetupSpanGestureRecognizers(System.Collections.IEnumerable gestureRecognizers)
 		{
-			foreach(GestureRecognizer gestureRecognizer in gestureRecognizers)
+			foreach (GestureRecognizer gestureRecognizer in gestureRecognizers)
 				GestureController.CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = gestureRecognizer });
 		}
 
@@ -368,6 +376,16 @@ namespace Xamarin.Forms
 						spans.RemoveAt(i);
 
 			return spans;
+		}
+
+		Thickness IPaddingElement.PaddingDefaultValueCreator()
+		{
+			return default(Thickness);
+		}
+
+		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
+		{
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 	}
 }

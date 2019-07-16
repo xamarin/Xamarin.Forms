@@ -74,9 +74,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			//We need to clear the Hint or else it will interfere with the sizing of the Label
 			var hint = Control.Hint;
-			if(!string.IsNullOrEmpty(hint))
+			if (!string.IsNullOrEmpty(hint))
 				Control.Hint = string.Empty;
-		
+
 			SizeRequest result = base.GetDesiredSize(widthConstraint, heightConstraint);
 
 			//Set Hint back after sizing
@@ -138,6 +138,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			}
 			UpdateTextDecorations();
+			UpdatePadding();
 			_motionEventHelper.UpdateElement(e.NewElement);
 		}
 
@@ -163,6 +164,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
+			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
 
 		void UpdateColor()
@@ -251,7 +254,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateMaxLines()
 		{
-			Control.SetMaxLines(Element);	
+			Control.SetMaxLines(Element);
 		}
 
 		void UpdateText()
@@ -277,6 +280,17 @@ namespace Xamarin.Forms.Platform.Android
 
 				_wasFormatted = false;
 			}
+
+			_lastSizeRequest = null;
+		}
+
+		void UpdatePadding()
+		{
+			Control.SetPadding(
+				(int)Context.ToPixels(Element.Padding.Left),
+				(int)Context.ToPixels(Element.Padding.Top),
+				(int)Context.ToPixels(Element.Padding.Right),
+				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
 		}

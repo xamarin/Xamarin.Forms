@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Label;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -80,7 +81,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			rect.Height = childHeight;
 			rect.Width = finalSize.Width;
-			
+
 			Control.Arrange(rect);
 			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return finalSize;
@@ -148,6 +149,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaxLines(Control);
 				UpdateDetectReadingOrderFromContent(Control);
 				UpdateLineHeight(Control);
+				UpdatePadding(Control);
 			}
 		}
 
@@ -178,6 +180,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateLineHeight(Control);
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines(Control);
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding(Control);
 			base.OnElementPropertyChanged(sender, e);
 		}
 
@@ -371,7 +375,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void UpdateLineHeight(TextBlock textBlock) 
+		void UpdateLineHeight(TextBlock textBlock)
 		{
 			if (textBlock == null)
 				return;
@@ -392,6 +396,15 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				textBlock.MaxLines = 0;
 			}
+		}
+
+		void UpdatePadding(TextBlock textBlock)
+		{
+			textBlock.Padding = new WThickness(
+					Element.Padding.Left,
+					Element.Padding.Top,
+					Element.Padding.Right,
+					Element.Padding.Bottom);
 		}
 	}
 }
