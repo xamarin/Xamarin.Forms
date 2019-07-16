@@ -37,12 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var newOffSetX = recyclerView.ComputeHorizontalScrollOffset();
 				var newOffSetY = recyclerView.ComputeVerticalScrollOffset();
-				//TODO: rmarinho Handle RTL
-				if (dx != 0)
-					_renderer.Carousel.SendScrolled(newOffSetX, (_previousOffSetX > newOffSetX) ? ScrollDirection.Left : ScrollDirection.Right);
-				else
-					_renderer.Carousel.SendScrolled(newOffSetY, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
-
+			
 				_previousOffSetX = newOffSetX;
 				_previousOffSetY = newOffSetY;
 
