@@ -142,8 +142,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateItemSizingStrategy()
 		{
-			// We're changing the strategy for a CollectionView mid-stream; 
-			// we'll just have to swap out the whole UICollectionViewLayout
 			UpdateLayout();
 		}
 
