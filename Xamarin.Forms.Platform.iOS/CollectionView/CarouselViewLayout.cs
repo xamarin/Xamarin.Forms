@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using CoreGraphics;
 using UIKit;
 
@@ -8,10 +9,11 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		CarouselView _carouselView;
 		bool _addInsets = true;
-
-		public CarouselViewLayout(ListItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy, CarouselView carouselView) : base(itemsLayout, itemSizingStrategy)
+		readonly ItemsLayout _itemsLayout;
+		public CarouselViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy, CarouselView carouselView) : base(itemsLayout, itemSizingStrategy)
 		{
 			_carouselView = carouselView;
+			_itemsLayout = itemsLayout;
 		}
 
 		public override bool ShouldInvalidateLayout(UICollectionViewLayoutAttributes preferredAttributes, UICollectionViewLayoutAttributes originalAttributes)
@@ -42,8 +44,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		internal void UpdateConstraints(CGSize size)
+		{
+			ConstrainTo(size);
+			UpdateCellConstraints();
+		}
+
 		public override nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
+			if (_itemsLayout is ListItemsLayout listItemsLayout)
+				return (nfloat)listItemsLayout.ItemSpacing;
+
 			return base.GetMinimumInteritemSpacingForSection(collectionView, layout, section);
 		}
 

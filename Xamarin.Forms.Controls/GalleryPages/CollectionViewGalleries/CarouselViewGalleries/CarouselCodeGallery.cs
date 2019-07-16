@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGalleries;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
@@ -16,6 +17,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				}
 			};
@@ -23,8 +25,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			new ListItemsLayout(orientation)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center,
-				ItemSpacing = 10
+				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
 
 			var itemTemplate = ExampleTemplates.CarouselTemplate();
@@ -51,11 +52,33 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var positionControl = new PositionControl(carouselView, nItems);
 			layout.Children.Add(positionControl);
 
+			var spacingModifier = new SpacingModifier(carouselView, "Update Spacing");
+
+			layout.Children.Add(spacingModifier);
+
 			layout.Children.Add(stacklayoutInfo);
 
+			var stckPeek = new StackLayout { Orientation = StackOrientation.Horizontal };
+			stckPeek.Children.Add(new Label { Text = "Peek" });
+			var padi = new Slider
+			{
+				Maximum = 100,
+				Minimum = 0,
+				Value = 30
+			};
+
+			padi.ValueChanged += (s, e) => {
+				var peek = padi.Value;
+				carouselView.PeekAreaInsets = new Thickness(peek, 0, peek, 0);
+			};
+
+			stckPeek.Children.Add(padi);
+			stacklayoutInfo.Children.Add(stckPeek);
+			
 			Grid.SetRow(positionControl, 1);
 			Grid.SetRow(stacklayoutInfo, 2);
-			Grid.SetRow(carouselView, 3);
+			Grid.SetRow(spacingModifier, 3);
+			Grid.SetRow(carouselView, 4);
 
 			Content = layout;
 			generator.CollectionChanged += (sender, e) => {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -16,6 +17,17 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override ItemsViewController CreateController(ItemsView newElement, ItemsViewLayout layout)
 		{
 			return new CarouselViewController(newElement as CarouselView, layout);
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
+		{
+			base.OnElementPropertyChanged(sender, changedProperty);
+
+			if (changedProperty.Is(CarouselView.PeekAreaInsetsProperty))
+			{
+				(CarouselViewController.Layout as CarouselViewLayout).UpdateConstraints(Frame.Size);
+				CarouselViewController.Layout.InvalidateLayout();
+			}
 		}
 
 		protected override ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification, ItemSizingStrategy itemSizingStrategy)
