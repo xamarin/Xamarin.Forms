@@ -44,13 +44,13 @@ namespace Xamarin.Forms
 			set { SetValue(IsBounceEnabledProperty, value); }
 		}
 
-		public static readonly BindableProperty NumberOfVisibleItemsProperty =
-			BindableProperty.Create(nameof(NumberOfVisibleItems), typeof(int), typeof(CarouselView), 1);
+		public static readonly BindableProperty NumberOfSideItemsProperty =
+			BindableProperty.Create(nameof(NumberOfSideItems), typeof(int), typeof(CarouselView), 0);
 
-		public int NumberOfVisibleItems
+		public int NumberOfSideItems
 		{
-			get { return (int)GetValue(NumberOfVisibleItemsProperty); }
-			set { SetValue(NumberOfVisibleItemsProperty, value); }
+			get { return (int)GetValue(NumberOfSideItemsProperty); }
+			set { SetValue(NumberOfSideItemsProperty, value); }
 		}
 
 		public static readonly BindableProperty IsSwipeEnabledProperty =

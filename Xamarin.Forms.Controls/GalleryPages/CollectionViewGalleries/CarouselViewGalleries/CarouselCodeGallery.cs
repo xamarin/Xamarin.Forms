@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 				Position = 2,
-				NumberOfVisibleItems = 1,
+			//	NumberOfSideItems = 1,
 				Margin = new Thickness(0,10,0,40),
 				PeekAreaInsets = new Thickness(30,0,30,0),
 				BackgroundColor = Color.LightGray

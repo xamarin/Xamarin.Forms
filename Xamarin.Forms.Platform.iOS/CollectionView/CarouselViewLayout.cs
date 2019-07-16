@@ -30,9 +30,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			//TODO: Should we scale the items 
 			var aspectRation = size.Width / size.Height;
-
-			var width = (size.Width - _carouselView.PeekAreaInsets.Left - _carouselView.PeekAreaInsets.Right) / _carouselView.NumberOfVisibleItems;
-			var height = size.Height / _carouselView.NumberOfVisibleItems;
+			var numberOfVisibleItems = _carouselView.NumberOfSideItems * 2 + 1;
+			var width = (size.Width - _carouselView.PeekAreaInsets.Left - _carouselView.PeekAreaInsets.Right) / numberOfVisibleItems;
+			var height = size.Height / numberOfVisibleItems;
 
 			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
 			{
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
 			var insets = base.GetInsetForSection(collectionView, layout, section);
-			if(!_addInsets)
+			if (!_addInsets)
 			{
 				return insets;
 			}
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var bottom = insets.Bottom + (float)_carouselView.PeekAreaInsets.Bottom;
 
 			//We give some insets so the user can be able to scroll to the first and last item
-			if (_carouselView.NumberOfVisibleItems > 1)
+			if (_carouselView.NumberOfSideItems > 0)
 			{
 				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
 				{
