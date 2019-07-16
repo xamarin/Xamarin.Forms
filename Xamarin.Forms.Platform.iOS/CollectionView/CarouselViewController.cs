@@ -60,6 +60,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
+		public override void ScrollAnimationEnded(UIScrollView scrollView)
+		{
+
+		}
+
 		public override void DecelerationStarted(UIScrollView scrollView)
 		{
 
@@ -95,9 +100,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var newOffSetX = scrollView.ContentOffset.X;
 			var newOffSetY = scrollView.ContentOffset.Y;
 
-			//UpdateVisualStateForOfScreenCell();
+			UpdateVisualStateForOfScreenCell();
 
-			//UpdateVisualStates();
+			UpdateVisualStates();
 
 			_previousOffSetX = newOffSetX;
 			_previousOffSetY = newOffSetY;
@@ -202,7 +207,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateIntialPosition()
 		{
 			if (_carouselView.Position != 0)
-				_carouselView.ScrollTo(_carouselView.Position, 1, ScrollToPosition.Center);
+				_carouselView.ScrollTo(_carouselView.Position, -1, ScrollToPosition.Center);
 		}
 	}
 }
