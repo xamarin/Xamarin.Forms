@@ -28,7 +28,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-
 			var cell = base.GetCell(collectionView, indexPath);
 
 			var element = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element;
@@ -36,8 +35,6 @@ namespace Xamarin.Forms.Platform.iOS
 				VisualStateManager.GoToState(element, CarouselView.DefaultItemVisualState);
 			return cell;
 		}
-
-
 
 		public override void ViewDidAppear(bool animated)
 		{

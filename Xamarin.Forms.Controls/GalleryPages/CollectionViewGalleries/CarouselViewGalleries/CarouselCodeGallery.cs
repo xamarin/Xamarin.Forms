@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Auto }
+					new RowDefinition { Height = GridLength.Star }
 				}
 			};
 			var itemsLayout =
@@ -31,8 +31,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var carouselView = new CarouselView
 			{
 				ItemsLayout = itemsLayout,
-				ItemTemplate = itemTemplate,
-				Position = 2,
+				ItemTemplate = itemTemplate
+				//Position = 2,
 				//NumberOfVisibleItems = 3,
 				//ItemSpacing = 10,
 				//HeightRequest = 500,

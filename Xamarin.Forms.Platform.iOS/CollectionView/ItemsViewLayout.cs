@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemSizingStrategy = itemSizingStrategy;
 
 			_itemsLayout = itemsLayout;
-			ItemSizingStrategy = itemSizingStrategy;
 			_itemsLayout.PropertyChanged += LayoutOnPropertyChanged;
 
 			var scrollDirection = itemsLayout.Orientation == ItemsLayoutOrientation.Horizontal

@@ -13,6 +13,16 @@ namespace Xamarin.Forms.Platform.iOS
 			_carouselView = carouselView;
 		}
 
+		public override bool ShouldInvalidateLayout(UICollectionViewLayoutAttributes preferredAttributes, UICollectionViewLayoutAttributes originalAttributes)
+		{
+			return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
+		}
+
+		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
+		{
+			return false;
+		}
+
 		public override void ConstrainTo(CGSize size)
 		{
 			//TODO: Should we scale the items 
