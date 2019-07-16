@@ -1,77 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
-
-	public class CoverFlowItemsLayout : ItemsLayout
-	{
-		public CoverFlowItemsLayout(ItemsLayoutOrientation orientation) : base(orientation)
-		{
-		}
-		public static readonly BindableProperty ViewPointOffSetProperty =
-			BindableProperty.Create(nameof(SnapPointsAlignment), typeof(double), typeof(CoverFlowItemsLayout), 2.2);
-
-		public double ViewPointOffSet
-		{
-			get => (double)GetValue(ViewPointOffSetProperty);
-			set => SetValue(ViewPointOffSetProperty, value);
-		}
-
-		public static readonly IItemsLayout Vertical = new CoverFlowItemsLayout(ItemsLayoutOrientation.Vertical);
-		public static readonly IItemsLayout Horizontal = new CoverFlowItemsLayout(ItemsLayoutOrientation.Horizontal);
-	}
-
-	public class StackedItemsLayout : ItemsLayout
-	{
-		// TODO hartez 2018/08/29 17:28:42 Consider changing this name to LinearItemsLayout; not everything using it is a list (e.g., Carousel)	
-		public StackedItemsLayout(ItemsLayoutOrientation orientation) : base(orientation)
-		{
-		}
-
-		public static readonly BindableProperty ViewPointOffSetProperty =
-			BindableProperty.Create(nameof(SnapPointsAlignment), typeof(double), typeof(CoverFlowItemsLayout), 2.2);
-
-		public double ViewPointOffSet
-		{
-			get => (double)GetValue(ViewPointOffSetProperty);
-			set => SetValue(ViewPointOffSetProperty, value);
-		}
-
-		public static readonly IItemsLayout Vertical = new StackedItemsLayout(ItemsLayoutOrientation.Vertical);
-		public static readonly IItemsLayout Horizontal = new StackedItemsLayout(ItemsLayoutOrientation.Horizontal);
-
-		// TODO hartez 2018/08/29 20:31:54 Need something like these previous two, but as a carousel default	
-	}
-
-
-	public class ScrolledDirectionEventArgs : EventArgs
-	{
-		public ScrolledDirectionEventArgs(ScrollDirection direction, double newValue, double delta)
-		{
-			Direction = direction;
-			NewValue = newValue;
-			Delta = delta;
-		}
-		public double Delta { get; private set; }
-		public double NewValue { get; private set; }
-		public ScrollDirection Direction { get; private set; }
-	}
-
-	public enum ScrollDirection
-	{
-		Left,
-		Right,
-		Up,
-		Down
-	}
-
 	[RenderWith(typeof(_CarouselViewRenderer))]
 	public class CarouselView : ItemsView
 	{
@@ -80,9 +14,6 @@ namespace Xamarin.Forms
 		public const string PreviousItemVisualState = "PreviousItem";
 		public const string VisibleItemVisualState = "VisibleItem";
 		public const string DefaultItemVisualState = "DefaultItem";
-
-		double _previousScrolled;
-		ScrollDirection _previousScrolledDirection;
 
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
@@ -97,12 +28,6 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty VisibleViewsProperty = VisibleViewsPropertyKey.BindableProperty;
 
 		public List<View> VisibleViews => (List<View>)GetValue(VisibleViewsProperty);
-
-		static readonly BindablePropertyKey IsScrollingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsScrolling), typeof(bool), typeof(CarouselView), false);
-
-		public static readonly BindableProperty IsScrollingProperty = IsScrollingPropertyKey.BindableProperty;
-
-		public bool IsScrolling => (bool)GetValue(IsScrollingProperty);
 
 		public static readonly BindablePropertyKey IsDraggingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsDragging), typeof(bool), typeof(CarouselView), false);
 
@@ -137,13 +62,13 @@ namespace Xamarin.Forms
 			set { SetValue(IsSwipeEnabledProperty, value); }
 		}
 
-		public static readonly BindableProperty AnimateTransitionProperty =
-		BindableProperty.Create(nameof(AnimateTransition), typeof(bool), typeof(CarouselView), true);
+		public static readonly BindableProperty IsScrollAnimatedProperty =
+		BindableProperty.Create(nameof(IsScrollAnimated), typeof(bool), typeof(CarouselView), true);
 
-		public bool AnimateTransition
+		public bool IsScrollAnimated
 		{
-			get { return (bool)GetValue(AnimateTransitionProperty); }
-			set { SetValue(AnimateTransitionProperty, value); }
+			get { return (bool)GetValue(IsScrollAnimatedProperty); }
+			set { SetValue(IsScrollAnimatedProperty, value); }
 		}
 
 		public static readonly BindableProperty CurrentItemProperty =
@@ -231,7 +156,6 @@ namespace Xamarin.Forms
 
 		public event EventHandler<CurrentItemChangedEventArgs> CurrentItemChanged;
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
-		public event EventHandler<ScrolledDirectionEventArgs> Scrolled;
 
 		public CarouselView()
 		{
@@ -274,11 +198,10 @@ namespace Xamarin.Forms
 
 			//user is interacting with the carousel we don't need to scroll to item 
 			if (!carousel.IsDragging)
-				carousel.ScrollTo(args.CurrentPosition, -1, ScrollToPosition.Center, animate: carousel.AnimateTransition);
+				carousel.ScrollTo(args.CurrentPosition, 1, ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
 
 			carousel.OnPositionChanged(args);
 		}
-
 
 		static int GetPositionForItem(CarouselView carouselView, object item)
 		{
@@ -294,27 +217,11 @@ namespace Xamarin.Forms
 			return 0;
 		}
 
-		public void SendScrolled(double value, ScrollDirection direction)
-		{
-			if (_previousScrolledDirection != direction)
-			{
-				_previousScrolled = 0;
-			}
-			var delta = Math.Abs(value - _previousScrolled);
-			Scrolled?.Invoke(this, new ScrolledDirectionEventArgs(direction, value, delta));
-			_previousScrolled = value;
-			_previousScrolledDirection = direction;
-		}
-
 		public void SetCurrentItem(object item)
 		{
 			SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
-		public void SetIsScrolling(bool value)
-		{
-			SetValue(IsScrollingPropertyKey, value);
-		}
 		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);

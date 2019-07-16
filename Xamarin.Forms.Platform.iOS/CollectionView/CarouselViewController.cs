@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
 			_carouselView = itemsView;
-			_carouselView.ScrollToRequested += ScrollToRequested;
 			_layout = layout;
 			Delegator.CarouselViewController = this;
 			CollectionView.AllowsSelection = false;
@@ -59,7 +58,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal void TeardDown()
 		{
-			_carouselView.ScrollToRequested -= ScrollToRequested;
 		}
 
 		public override void DecelerationStarted(UIScrollView scrollView)
@@ -79,11 +77,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateVisualStates();
 		}
 
-		public override void ScrollAnimationEnded(UIScrollView scrollView)
-		{
-			_carouselView.SetIsScrolling(false);
-		}
-
 		public override void DecelerationEnded(UIScrollView scrollView)
 		{
 			var templatedCells = FindVisibleCells();
@@ -101,15 +94,10 @@ namespace Xamarin.Forms.Platform.iOS
 			//TODO: How to handle the inertial values it would be easy for negative values but not for overscroll 
 			var newOffSetX = scrollView.ContentOffset.X;
 			var newOffSetY = scrollView.ContentOffset.Y;
-			//TODO: rmarinho Handle RTL
-			if (_layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal)
-				_carouselView.SendScrolled(scrollView.ContentOffset.X, (_previousOffSetX > newOffSetX) ? ScrollDirection.Left : ScrollDirection.Right);
-			else
-				_carouselView.SendScrolled(scrollView.ContentOffset.Y, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
 
-			UpdateVisualStateForOfScreenCell();
+			//UpdateVisualStateForOfScreenCell();
 
-			UpdateVisualStates();
+			//UpdateVisualStates();
 
 			_previousOffSetX = newOffSetX;
 			_previousOffSetY = newOffSetY;
@@ -136,14 +124,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			_cells = newCells;
-		}
-
-		void ScrollToRequested(object sender, ScrollToRequestEventArgs e)
-		{
-			//We are ending dragging and position is being update
-			if (e.Item == _currentItem || e.Index == _currentItemIdex.Row)
-				return;
-			_carouselView.SetIsScrolling(true);
 		}
 
 		void UpdateVisualStates()
@@ -222,7 +202,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateIntialPosition()
 		{
 			if (_carouselView.Position != 0)
-				_carouselView.ScrollTo(_carouselView.Position, -1, ScrollToPosition.Center);
+				_carouselView.ScrollTo(_carouselView.Position, 1, ScrollToPosition.Center);
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			var animateLabel = new Label { Text = "Animate: ", VerticalTextAlignment = TextAlignment.Center };
 			var animateSwitch = new Switch { BindingContext = carousel };
-			animateSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.AnimateTransition), BindingMode.TwoWay);
+			animateSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsScrollAnimated), BindingMode.TwoWay);
 
 			var swipeLabel = new Label { Text = "Swipe: ", VerticalTextAlignment = TextAlignment.Center };
 			var swipeSwitch = new Switch { BindingContext = carousel };
