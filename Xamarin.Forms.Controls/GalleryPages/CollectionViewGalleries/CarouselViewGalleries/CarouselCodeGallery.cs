@@ -23,7 +23,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			new ListItemsLayout(orientation)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center
+				SnapPointsAlignment = SnapPointsAlignment.Center,
+				ItemSpacing = 10
 			};
 
 			var itemTemplate = ExampleTemplates.CarouselTemplate();
@@ -31,13 +32,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var carouselView = new CarouselView
 			{
 				ItemsLayout = itemsLayout,
-				ItemTemplate = itemTemplate
-				//Position = 2,
-				//NumberOfVisibleItems = 3,
-				//ItemSpacing = 10,
-				//HeightRequest = 500,
-				//Padding = new Thickness(60,0,60,0),
-				//BackgroundColor = Color.Green
+				ItemTemplate = itemTemplate,
+				Position = 2,
+				NumberOfVisibleItems = 1,
+				Margin = new Thickness(0,10,0,40),
+				PeekAreaInsets = new Thickness(30,0,30,0),
+				BackgroundColor = Color.LightGray
 			};
 
 			layout.Children.Add(carouselView);

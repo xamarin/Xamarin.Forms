@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class CarouselViewLayout : ItemsViewLayout
 	{
 		CarouselView _carouselView;
+		bool _addInsets = true;
 
 		public CarouselViewLayout(ListItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy, CarouselView carouselView) : base(itemsLayout, itemSizingStrategy)
 		{
@@ -28,7 +29,7 @@ namespace Xamarin.Forms.Platform.iOS
 			//TODO: Should we scale the items 
 			var aspectRation = size.Width / size.Height;
 
-			var width = (size.Width - _carouselView.Padding.Left - _carouselView.Padding.Right) / _carouselView.NumberOfVisibleItems;
+			var width = (size.Width - _carouselView.PeekAreaInsets.Left - _carouselView.PeekAreaInsets.Right) / _carouselView.NumberOfVisibleItems;
 			var height = size.Height / _carouselView.NumberOfVisibleItems;
 
 			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
@@ -49,10 +50,14 @@ namespace Xamarin.Forms.Platform.iOS
 		public override UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
 			var insets = base.GetInsetForSection(collectionView, layout, section);
-			var left = insets.Left + (float)_carouselView.Padding.Left;
-			var right = insets.Right + (float)_carouselView.Padding.Right;
-			var top = insets.Top + (float)_carouselView.Padding.Top;
-			var bottom = insets.Bottom + (float)_carouselView.Padding.Bottom;
+			if(!_addInsets)
+			{
+				return insets;
+			}
+			var left = insets.Left + (float)_carouselView.PeekAreaInsets.Left;
+			var right = insets.Right + (float)_carouselView.PeekAreaInsets.Right;
+			var top = insets.Top + (float)_carouselView.PeekAreaInsets.Top;
+			var bottom = insets.Bottom + (float)_carouselView.PeekAreaInsets.Bottom;
 
 			//We give some insets so the user can be able to scroll to the first and last item
 			if (_carouselView.NumberOfVisibleItems > 1)
@@ -61,7 +66,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					left = left + ItemSize.Width;
 					right = right + ItemSize.Width;
-					return new UIEdgeInsets(insets.Top, ItemSize.Width, insets.Bottom, ItemSize.Width);
+					return new UIEdgeInsets(insets.Top, left, insets.Bottom, right);
 				}
 				else
 				{

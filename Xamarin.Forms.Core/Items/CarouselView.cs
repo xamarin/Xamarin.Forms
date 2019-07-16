@@ -73,7 +73,7 @@ namespace Xamarin.Forms
 	}
 
 	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : ItemsView, IPaddingElement
+	public class CarouselView : ItemsView
 	{
 		public const string CurrentItemVisualState = "CurrentItem";
 		public const string NextItemVisualState = "NextItem";
@@ -84,22 +84,12 @@ namespace Xamarin.Forms
 		double _previousScrolled;
 		ScrollDirection _previousScrolledDirection;
 
-		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
+		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
-		public Thickness Padding
+		public Thickness PeekAreaInsets
 		{
-			get { return (Thickness)GetValue(PaddingElement.PaddingProperty); }
-			set { SetValue(PaddingElement.PaddingProperty, value); }
-		}
-
-		Thickness IPaddingElement.PaddingDefaultValueCreator()
-		{
-			return default(Thickness);
-		}
-
-		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
-		{
-			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+			get { return (Thickness)GetValue(PeekAreaInsetsProperty); }
+			set { SetValue(PeekAreaInsetsProperty, value); }
 		}
 
 		public static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(List<View>), typeof(CarouselView), null);
@@ -145,15 +135,6 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(IsSwipeEnabledProperty); }
 			set { SetValue(IsSwipeEnabledProperty, value); }
-		}
-
-		public static readonly BindableProperty ItemSpacingProperty =
-				BindableProperty.Create(nameof(ItemSpacing), typeof(double), typeof(CarouselView), 0.0);
-
-		public double ItemSpacing
-		{
-			get { return (double)GetValue(ItemSpacingProperty); }
-			set { SetValue(ItemSpacingProperty, value); }
 		}
 
 		public static readonly BindableProperty AnimateTransitionProperty =
@@ -257,7 +238,6 @@ namespace Xamarin.Forms
 			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CarouselView));
 			ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
-
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
