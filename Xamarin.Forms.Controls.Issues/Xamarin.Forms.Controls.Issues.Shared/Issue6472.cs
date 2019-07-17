@@ -115,29 +115,6 @@ namespace Xamarin.Forms.Controls.Issues
 				});
 			};
 
-			//var buttonAddRangeButton = new Button
-			//{
-			//	Text = "Add items with AddRange",
-			//	AutomationId = AddItemsAddRangeButtonAutomationId
-			//};
-
-			//buttonAddRangeButton.Clicked += (s, a) =>
-			//{
-			//	Task.Run(() =>
-			//	{
-			//		staticData.TestCollection..AddRange(new [] { new testData
-			//		{
-			//			recordId = 42,
-			//			recordText = "THE answer"
-			//		},
-			//		new testData
-			//		{
-			//			recordId = 1337,
-			//			recordText = "1337 HaxX0r"
-			//		}});
-			//	});
-			//};
-
 			var listView = new ListView
 			{
 				ItemTemplate = new DataTemplate(() =>
