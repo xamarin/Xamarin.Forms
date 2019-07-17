@@ -129,6 +129,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				};
 
 				caption.SetBinding(Button.TextProperty, new Binding("Caption"));
+				caption.SetBinding(Button.AutomationIdProperty, new Binding("Caption"));
 				caption.Clicked += (sender, e) =>
 				{
 					App.Current.MainPage.DisplayAlert("Button works", (sender as Button).Text, "Ok");

@@ -38,7 +38,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			//	NumberOfSideItems = 1,
 				Margin = new Thickness(0,10,0,40),
 				PeekAreaInsets = new Thickness(30,0,30,0),
-				BackgroundColor = Color.LightGray
+				BackgroundColor = Color.LightGray,
+				AutomationId = "TheCarouselView"
 			};
 
 			layout.Children.Add(carouselView);

@@ -8,11 +8,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		public PositionControl(CarouselView carousel, int itemsCount)
 		{
 			var animateLabel = new Label { Text = "Animate: ", VerticalTextAlignment = TextAlignment.Center };
-			var animateSwitch = new Switch { BindingContext = carousel };
+			var animateSwitch = new Switch { BindingContext = carousel, AutomationId = "AnimateSwitch" };
 			animateSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsScrollAnimated), BindingMode.TwoWay);
 
 			var swipeLabel = new Label { Text = "Swipe: ", VerticalTextAlignment = TextAlignment.Center };
-			var swipeSwitch = new Switch { BindingContext = carousel };
+			var swipeSwitch = new Switch { BindingContext = carousel, AutomationId = "SwipeSwitch" };
 			swipeSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsSwipeEnabled), BindingMode.TwoWay);
 
 			_slider = new Slider
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			UpdatePositionCount(itemsCount);
 
 			var indexLabel = new Label { Text = "Go To Position: ", VerticalTextAlignment = TextAlignment.Center };
-			var label = new Label { WidthRequest = 20, BackgroundColor = Color.LightCyan };
+			var label = new Label { WidthRequest = 20, BackgroundColor = Color.LightCyan, AutomationId = "CurrentPositionLabel" };
 			label.SetBinding(Label.TextProperty, nameof(carousel.Position));
 			label.BindingContext = carousel;
 			var indexButton = new Button { Text = "Go" };
