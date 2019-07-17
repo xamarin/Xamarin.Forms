@@ -86,12 +86,14 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementChanged(e);
 
 			SearchView searchView = Control;
+			var isDesigner = Context.IsDesignerContext();
 
 			if (searchView == null)
 			{
 				searchView = CreateNativeControl();
 				searchView.SetIconifiedByDefault(false);
-				searchView.Iconified = false;
+				if (!isDesigner)
+					searchView.Iconified = false;
 				SetNativeControl(searchView);
 				_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
 
@@ -104,7 +106,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			}
 
-			ClearFocus(searchView);
+			if (!isDesigner)
+				ClearFocus(searchView);
 			UpdateInputType();
 			UpdatePlaceholder();
 			UpdateText();
@@ -210,14 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ClearFocus(SearchView view)
 		{
-			try
-			{
-				view.ClearFocus();
-			}
-			catch (Java.Lang.UnsupportedOperationException)
-			{
-				// silently catch these as they happen in the previewer due to some bugs in Android
-			}
+			view.ClearFocus();
 		}
 
 		void UpdateFont()
