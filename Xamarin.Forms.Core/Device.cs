@@ -224,7 +224,7 @@ namespace Xamarin.Forms
 			return iOS;
 		}
 
-		[Obsolete("Use Launcher.OpenUri (or CanOpen, or TryOpen) from Xamarin.Essentials")]
+		[Obsolete("OpenUri is obsolete as of version 4.3.0. Use Launcher.OpenUri (or CanOpen, or TryOpen) from Xamarin.Essentials")]
 		public static void OpenUri(Uri uri)
 		{
 			PlatformServices.OpenUriAction(uri);
