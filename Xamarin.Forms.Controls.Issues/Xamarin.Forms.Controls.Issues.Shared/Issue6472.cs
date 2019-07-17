@@ -18,6 +18,12 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 6472, "[Bug][iOS] listview / observable collection throwing native error on load", PlatformAffected.iOS)]
 	public class Issue6472 : TestContentPage
 	{
+		const string ListViewAutomationId = "TheListview";
+		const string ClearButtonAutomationId = "ClearButton";
+		const string UiThreadButtonAutomationId = "UiThreadButton";
+		const string OtherThreadButtonAutomationId = "OtherThreadButton";
+		const string AddItemsAddRangeButtonAutomationId = "AddItemsAddRangeButton";
+
 		class testData
 		{
 			public int recordId { get; set; }
@@ -34,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 					TestCollection.Clear();
 					for (int i = 0; i < 11; i++)
 					{
-						testData tdn = new testData
+						var tdn = new testData
 						{
 							recordId = i,
 							recordText = i.ToString()
@@ -47,7 +53,92 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			ListView listView = new ListView
+			var clearButton = new Button
+			{
+				Text = "Clear collection",
+				AutomationId = ClearButtonAutomationId
+			};
+
+			clearButton.Clicked += (s, a) =>
+			{
+				staticData.TestCollection.Clear();
+			};
+
+			var buttonAddElementUiThreadButton = new Button
+			{
+				Text = "Add item from UI thread",
+				AutomationId = UiThreadButtonAutomationId
+			};
+
+			buttonAddElementUiThreadButton.Clicked += (s, a) =>
+			{
+				staticData.TestCollection.Add(new testData
+				{
+					recordId = 1,
+					recordText = "Just one"
+				});
+
+				staticData.TestCollection.Add(new testData
+				{
+					recordId = 2,
+					recordText = "Just two"
+				});
+
+				staticData.TestCollection.Add(new testData
+				{
+					recordId = 3,
+					recordText = "Just three"
+				});
+			};
+
+			var buttonAddElementOtherThreadButton = new Button
+			{
+				Text = "Add item from other thread",
+				AutomationId = OtherThreadButtonAutomationId
+			};
+
+			buttonAddElementOtherThreadButton.Clicked += (s, a) =>
+			{
+				Task.Run(() =>
+				{
+					staticData.TestCollection.Add(new testData
+					{
+						recordId = 42,
+						recordText = "THE answer"
+					});
+
+					staticData.TestCollection.Add(new testData
+					{
+						recordId = 1337,
+						recordText = "1337 HaxX0r"
+					});
+				});
+			};
+
+			//var buttonAddRangeButton = new Button
+			//{
+			//	Text = "Add items with AddRange",
+			//	AutomationId = AddItemsAddRangeButtonAutomationId
+			//};
+
+			//buttonAddRangeButton.Clicked += (s, a) =>
+			//{
+			//	Task.Run(() =>
+			//	{
+			//		staticData.TestCollection..AddRange(new [] { new testData
+			//		{
+			//			recordId = 42,
+			//			recordText = "THE answer"
+			//		},
+			//		new testData
+			//		{
+			//			recordId = 1337,
+			//			recordText = "1337 HaxX0r"
+			//		}});
+			//	});
+			//};
+
+			var listView = new ListView
 			{
 				ItemTemplate = new DataTemplate(() =>
 				{
@@ -70,9 +161,17 @@ namespace Xamarin.Forms.Controls.Issues
 					};
 					return new ViewCell { View = stackAccountLayout };
 				}),
-				AutomationId = "TheListview"
+				AutomationId = ListViewAutomationId
 			};
-			Content = listView;
+
+			var stack = new StackLayout();
+			stack.Children.Add(buttonAddElementOtherThreadButton);
+			stack.Children.Add(buttonAddElementUiThreadButton);
+			stack.Children.Add(clearButton);
+			stack.Children.Add(listView);
+
+
+			Content = stack;
 			listView.ItemsSource = staticData.TestCollection;
 		}
 
@@ -86,8 +185,17 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue6472Test() 
 		{
-			RunningApp.WaitForElement ("TheListview");
+			RunningApp.WaitForElement (ListViewAutomationId);
 			RunningApp.Screenshot ("We got here without an exception while loading the data and data is visible");
+
+			RunningApp.Tap(ClearButtonAutomationId);
+			RunningApp.Tap(UiThreadButtonAutomationId);
+			RunningApp.Tap(OtherThreadButtonAutomationId);
+
+			RunningApp.Tap(ClearButtonAutomationId);
+			RunningApp.Tap(OtherThreadButtonAutomationId);
+			RunningApp.Tap(UiThreadButtonAutomationId);
+
 		}
 #endif
 	}
