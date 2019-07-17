@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class ItemsViewAdapter : RecyclerView.Adapter
 	{
 		protected readonly ItemsView ItemsView;
-		readonly Func<View, Context, ItemContentView> _createItemContentView;
+		readonly Func<Context, ItemContentView> _createItemContentView;
 		internal readonly IItemsViewSource ItemsSource;
 
 		bool _disposed;
@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		int _headerOffset = 0;
 		bool _hasFooter;
 
-		internal ItemsViewAdapter(ItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
+		internal ItemsViewAdapter(ItemsView itemsView, Func<Context, ItemContentView> createItemContentView = null)
 		{
 			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
 
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_createItemContentView == null)
 			{
-				_createItemContentView = (view, context) => new ItemContentView(context);
+				_createItemContentView = (context) => new ItemContentView(context);
 			}
 		}
 
@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platform.Android
 				return new TextViewHolder(view);
 			}
 
-			var itemContentView = new ItemContentView(context);
+			var itemContentView = _createItemContentView(context);
 			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
 		}
 
