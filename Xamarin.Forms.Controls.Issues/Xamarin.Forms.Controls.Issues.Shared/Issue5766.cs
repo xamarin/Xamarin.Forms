@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
-		public void Issue5766Test()
+		public void FrameSizeGetsCorruptedWhenListViewIsScrolled()
 		{
 			RunningApp.WaitForElement(StartText1);
 			var start = GetLabels(RunningApp, StartText1);
