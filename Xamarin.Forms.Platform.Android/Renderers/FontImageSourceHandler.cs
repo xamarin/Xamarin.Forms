@@ -9,8 +9,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
-		static ConcurrentDictionary<string, Typeface> TypefaceCache = new ConcurrentDictionary<string, Typeface>();
-
 		public Task<Bitmap> LoadImageAsync(
 			ImageSource imagesource,
 			Context context,
@@ -28,9 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 					AntiAlias = true,
 				};
 
-				var typeface = TypefaceCache.GetOrAdd(fontsource.FontFamily, fontFamily => fontFamily.ToTypeFace());
-                
-				paint.SetTypeface(typeface);
+				paint.SetTypeface(fontsource.FontFamily.ToTypeFace());
 
 				var width = (int)(paint.MeasureText(fontsource.Glyph) + .5f);
 				var baseline = (int)(-paint.Ascent() + .5f);
