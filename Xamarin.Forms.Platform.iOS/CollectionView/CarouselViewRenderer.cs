@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void TearDownOldElement(ItemsView oldElement)
 		{
-			CarouselViewController?.TeardDown();
+			CarouselViewController?.TearDown();
 			base.TearDownOldElement(oldElement);
 		}
 	}
