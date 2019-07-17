@@ -13,7 +13,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class ButtonRenderer : AppCompatButton,
+	public class ButtonRenderer : AppCompatButton,
 		IBorderVisualElementRenderer, IButtonLayoutRenderer, IVisualElementRenderer, IViewRenderer, ITabStop,
 		AView.IOnAttachStateChangeListener, AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener
 	{
@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		BorderBackgroundManager _backgroundTracker;
 		ButtonLayoutManager _buttonLayoutManager;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> _platformElementConfiguration;
-		private Button _button;
+		Button _button;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -46,7 +46,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			Initialize();
 		}
 
-		public VisualElement Element => Button;
+		protected Button Element => Button;
+		protected AppCompatButton Control => this;
+
+		VisualElement IBorderVisualElementRenderer.Element => Element;
+
+		VisualElement IVisualElementRenderer.Element => Element;
 		AView IVisualElementRenderer.View => this;
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
@@ -80,8 +85,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			Measure(widthConstraint, heightConstraint);
-			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), MinimumSize());
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -157,6 +161,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 				RemoveOnAttachStateChangeListener(this);
+				OnFocusChangeListener = null;
+
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
 
 				_automationPropertiesProvider?.Dispose();
 				_tracker?.Dispose();
@@ -168,8 +178,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
 				}
@@ -186,12 +194,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return base.OnTouchEvent(e);
 		}
 
-		Size MinimumSize()
-		{
-			return new Size();
-		}
-
-		void OnElementChanged(ElementChangedEventArgs<Button> e)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
 			if (e.NewElement != null && !_isDisposed)
 			{
@@ -212,7 +215,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Button.TextColorProperty.PropertyName)
 			{
@@ -234,12 +237,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_buttonLayoutManager?.OnLayout(changed, l, t, r, b);
 			base.OnLayout(changed, l, t, r, b);
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			_buttonLayoutManager?.Update();
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
 		}
 
 		void SetTracker(VisualElementTracker tracker)
@@ -345,12 +342,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return _platformElementConfiguration;
 		}
 
-		Button IButtonLayoutRenderer.Element => Button;
 		AppCompatButton IButtonLayoutRenderer.View => this;
-		event EventHandler<VisualElementChangedEventArgs> IButtonLayoutRenderer.ElementChanged
-		{
-			add => ((IVisualElementRenderer)this).ElementChanged += value;
-			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
-		}
+
+		Button IButtonLayoutRenderer.Element => this.Element;
 	}
 }

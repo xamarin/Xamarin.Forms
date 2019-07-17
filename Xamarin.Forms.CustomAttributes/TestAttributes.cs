@@ -199,7 +199,8 @@ namespace Xamarin.Forms.CustomAttributes
 			ImageCell,
 			EntryCell,
 			Editor,
-			DatePicker
+			DatePicker,
+			CheckBox
 		}
 
 		public enum Layouts
@@ -569,7 +570,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Clicked,
 			Command,
 			Image,
-			Pressed
+			Pressed,
+			Padding
 		}
 
 		public enum ImageSource
@@ -604,6 +606,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			TextColor,
 			Text,
+			Padding,
 			FormattedText,
 			FontAttibutesBold,
 			FontAttributesItalic,
@@ -714,7 +717,15 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Switch
 		{
 			IsToggled,
-			OnColor
+			OnColor,
+			ThumbColor
+		}
+
+		public enum CheckBox
+		{
+			IsChecked,
+			CheckedColor,
+			UncheckedColor
 		}
 
 		public enum TimePicker

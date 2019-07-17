@@ -52,13 +52,13 @@ namespace Xamarin.Forms.Platform.iOS
 			var context = Groups[section][row];
 
 			DataTemplate template = null;
-			if (context is MenuItem)
+			if (context is IMenuItemController)
 			{
-				template = _context.Shell.MenuItemTemplate ?? DefaultMenuItemTemplate;
+				template = Shell.GetMenuItemTemplate(context) ?? _context.Shell.MenuItemTemplate ?? DefaultMenuItemTemplate;
 			}
 			else
 			{
-				template = _context.Shell.ItemTemplate ?? DefaultItemTemplate;
+				template = Shell.GetItemTemplate(context) ?? _context.Shell.ItemTemplate ?? DefaultItemTemplate;
 			}
 
 			var cellId = ((IDataTemplateController)template.SelectDataTemplate(context, _context.Shell)).IdString;

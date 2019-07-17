@@ -52,6 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void LayoutSubviews()
 		{
+			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
 			double height = Bounds.Height;
@@ -224,7 +225,7 @@ namespace Xamarin.Forms.Platform.iOS
 						var offset = Control.ContentOffset;
 						offset.Y += point.Y;
 						Control.SetContentOffset(offset, true);
-					});
+					}, this);
 				}
 
 				var listView = e.NewElement;
@@ -711,7 +712,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_tableViewController != null)
 				_tableViewController.UpdateRefreshControlColor(color == Color.Default ? null : color.ToUIColor());
-    }
+		}
 
 		void UpdateVerticalScrollBarVisibility()
 		{
@@ -817,11 +818,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			protected override void UpdateEstimatedRowHeight(UITableView tableView)
 			{
-				var estimatedRowheight  = GetEstimatedRowHeight(tableView);
+				var estimatedRowHeight = GetEstimatedRowHeight(tableView);
 				//if we are providing 0 we are disabling EstimatedRowHeight,
 				//this works fine on newer versions, but iOS10 it will cause a crash so we leave the default value
-				if (estimatedRowheight == 0 && Forms.IsiOS11OrNewer)
-					tableView.EstimatedRowHeight = estimatedRowheight;
+				if (estimatedRowHeight > 0 || (estimatedRowHeight == 0 && Forms.IsiOS11OrNewer))
+					tableView.EstimatedRowHeight = estimatedRowHeight;
 			}
 
 			internal Cell GetPrototypicalCell(NSIndexPath indexPath)
@@ -1247,7 +1248,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateShortNameListener();
 
-				if(List.OnThisPlatform().RowAnimationsEnabled())
+				if (List.OnThisPlatform().RowAnimationsEnabled())
 					_uiTableView.ReloadData();
 				else
 					PerformWithoutAnimation(() => { _uiTableView.ReloadData(); });
@@ -1551,7 +1552,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewWillAppear(bool animated)
 		{
 			(TableView?.Source as ListViewRenderer.ListViewDataSource)?.Cleanup();
-			if (!_list.IsRefreshing || !_refresh.Refreshing) return;
+			if (!_list.IsRefreshing || !_refresh.Refreshing)
+				return;
 
 			// Restart the refreshing to get the animation to trigger
 			UpdateIsRefreshing(false);
