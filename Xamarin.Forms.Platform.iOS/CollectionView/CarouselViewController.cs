@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
-			UpdateIntialPosition();
+			UpdateInitialPosition();
 			UpdateVisualStates();
 		}
 
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.RegisterClassForCell(typeof(CarouselTemplatedCell), CarouselTemplatedCell.ReuseId);
 		}
 
-		internal void TeardDown()
+		internal void TearDown()
 		{
 		}
 
@@ -204,7 +204,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return (currentCell, previousCell, nextCell);
 		}
 
-		void UpdateIntialPosition()
+		void UpdateInitialPosition()
 		{
 			if (_carouselView.Position != 0)
 				_carouselView.ScrollTo(_carouselView.Position, -1, ScrollToPosition.Center);
