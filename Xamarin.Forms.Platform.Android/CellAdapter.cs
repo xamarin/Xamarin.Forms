@@ -235,7 +235,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				ActionModeContext = cell;
 
-                _actionModeNeedsUpdates = true;
+				if(ActionModeContext.IsContextActionsLegacyModeEnabled == false)
+					_actionModeNeedsUpdates = true;
+
                 _actionMode?.Invalidate();
 				_supportActionMode?.Invalidate();
 			}

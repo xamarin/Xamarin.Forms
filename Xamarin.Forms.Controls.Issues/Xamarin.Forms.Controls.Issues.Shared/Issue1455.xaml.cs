@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
+using System.Windows.Input;
 
 #if UITEST
 using Xamarin.UITest.Queries;
@@ -27,18 +28,47 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
+		MyViewModel ViewModel
+		{
+			get {
+				return (MyViewModel)BindingContext;
+			}
+		}
+
 		protected override void Init()
 		{
 			BindingContext = new MyViewModel();
 		}
 
+
 		[Preserve(AllMembers = true)]
-		public class MyViewModel
+		public class MyViewModel : PropertyChangedBase
 		{
+			private bool _isContextActionsLegacyModeEnabled;
+
+			public bool IsContextActionsLegacyModeEnabled
+			{
+				get
+				{
+					return _isContextActionsLegacyModeEnabled;
+				}
+				set
+				{
+					_isContextActionsLegacyModeEnabled = value;
+					OnPropertyChanged();
+				}
+			}
+
+			public ICommand ToggleLegacyMode { get; }
+
 			public ObservableCollection<ContextMenuItem> Items { get; private set; }
 
 			public MyViewModel()
 			{
+				IsContextActionsLegacyModeEnabled = false;
+
+				ToggleLegacyMode = new Command(() => IsContextActionsLegacyModeEnabled = !IsContextActionsLegacyModeEnabled);
+
 				Items = new ObservableCollection<ContextMenuItem>();
 
 				Items.Add(new ContextMenuItem { Item1Text = "Lorem", Text = "Cell 1", Type = ContextMenuItemType.Temp1 });
@@ -81,6 +111,18 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("Clicked another cell and changed menu items");
 
 			Assert.AreEqual(1, RunningApp.Query(c => c.Marked("Hendrerit")).Length);
+
+			RunningApp.Back();
+
+			RunningApp.WaitForElement("Toggle LegacyMode");
+			RunningApp.Tap(q => q.Marked("Toggle LegacyMode"));
+
+			RunningApp.TouchAndHold(q => q.Marked("Cell 4"));
+			RunningApp.Screenshot("Long Press Cell 4 to show context actions");
+			RunningApp.Tap(q => q.Marked("Cell 5"));
+			RunningApp.Screenshot("Clicked another cell and changed menu items");
+
+			Assert.AreEqual(1, RunningApp.Query(c => c.Marked("Vestibulum")).Length);
 		}
 #endif
 	}
