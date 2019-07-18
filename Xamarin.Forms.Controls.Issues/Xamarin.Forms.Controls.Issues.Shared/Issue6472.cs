@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __IOS__
 		[Test]
-		public void Issue6472Test() 
+		public void ListViewDoesNotThrowExceptionWithObservableCollection() 
 		{
 			RunningApp.WaitForElement (ListViewAutomationId);
 			RunningApp.Screenshot ("We got here without an exception while loading the data and data is visible");
