@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -25,14 +26,18 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			var remote = new StateViewContainerRemote(App, Test.VisualElement.Focus, PlatformViewType);
 			remote.GoTo();
-			bool isFocused = System.Convert.ToBoolean( App.Query("FocusStateLabel")[0].ReadText());
-			Assert.IsFalse(isFocused);
+			
+			Assert.IsFalse(IsFocused());
 			remote.TapView();
-			isFocused = System.Convert.ToBoolean(App.Query("FocusStateLabel")[0].ReadText());
-			Assert.IsTrue(isFocused);
-			App.Tap("FocusStateLabel");
-			isFocused = System.Convert.ToBoolean(App.Query("FocusStateLabel")[0].ReadText());
-			Assert.IsFalse(isFocused);
+			Assert.IsTrue(IsFocused());
+			App.Tap("Go"); // Won't do anything, we just need to take focus away from the Entry
+			Assert.IsFalse(IsFocused());
+		}
+
+		bool IsFocused()
+		{
+			var focusedText = App.Query(q => q.Marked("FocusStateLabel").All())[0].ReadText();
+			return System.Convert.ToBoolean(focusedText);
 		}
 
 		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
@@ -56,7 +61,7 @@ namespace Xamarin.Forms.Core.UITests
 		[Test]
 		[UiTest(typeof(Entry), "Completed")]
 		[Category(UITestCategories.UwpIgnore)]
-		public void Completed()
+		public virtual void Completed()
 		{
 			var remote = new EventViewContainerRemote(App, Test.Entry.Completed, PlatformViewType);
 			remote.GoTo();

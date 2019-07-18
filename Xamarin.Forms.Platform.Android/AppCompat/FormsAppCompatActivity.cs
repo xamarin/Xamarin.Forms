@@ -81,8 +81,43 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		static void RegisterHandler(Type target, Type handler, Type filter)
+		{
+			Type current = Registrar.Registered.GetHandlerType(target);
+			if (current != filter)
+				return;
+
+			Registrar.Registered.Register(target, handler);
+		}
+
+		// This is currently being used by the previewer please do not change or remove this
+		static void RegisterHandlers()
+		{
+			RegisterHandler(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
+			RegisterHandler(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
+			RegisterHandler(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
+			RegisterHandler(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
+			RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
+			RegisterHandler(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
+			RegisterHandler(typeof(CheckBox), typeof(CheckBoxRenderer), typeof(CheckBoxDesignerRenderer));
+
+			if (Forms.Flags.Contains(Flags.UseLegacyRenderers))
+			{
+				RegisterHandler(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
+				RegisterHandler(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
+			}
+			else
+			{
+				RegisterHandler(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
+				RegisterHandler(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
+				RegisterHandler(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
+			}
+		}
+
 		protected void LoadApplication(Application application)
 		{
+			Profile.FrameBegin();
 			if (!_activityCreated)
 			{
 				throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
@@ -90,26 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!_renderersAdded)
 			{
-				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
-
-				if (Forms.Flags.Contains(Flags.FastRenderersExperimental))
-				{
-					RegisterHandlerForDefaultRenderer(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
-				}
-				else
-				{
-					RegisterHandlerForDefaultRenderer(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
-				}
-
+				RegisterHandlers();
 				_renderersAdded = true;
 			}
 
@@ -127,7 +143,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			application.PropertyChanged += AppOnPropertyChanged;
 
+			Profile.FramePartition(nameof(SetMainPage));
+
 			SetMainPage();
+
+			Profile.FrameEnd();
 		}
 
 		protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
@@ -191,6 +211,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			PopupManager.Unsubscribe(this);
 
+			_layout.RemoveView(Platform);
+
 			Platform?.Dispose();
 
 			// call at the end to avoid race conditions with Platform dispose
@@ -207,6 +229,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_layout.HideKeyboard(true);
 
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Don't listen for power save mode changes while we're paused
+				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+			}
+
 			// Stop animations or other ongoing actions that could consume CPU
 			// Commit unsaved changes, build only if users expect such changes to be permanently saved when thy leave such as a draft email
 			// Release system resources, such as broadcast receivers, handles to sensors (like GPS), or any resources that may affect battery life when your activity is paused.
@@ -215,12 +243,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnPause;
-
-			if (Forms.IsLollipopOrNewer)
-			{
-				// Don't listen for power save mode changes while we're paused
-				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
-			}
 
 			OnStateChanged();
 		}
@@ -298,7 +320,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (args.PropertyName == nameof(_application.MainPage))
-				InternalSetPage(_application.MainPage);
+				SetMainPage();
 			if (args.PropertyName == PlatformConfiguration.AndroidSpecific.Application.WindowSoftInputModeAdjustProperty.PropertyName)
 				SetSoftInputMode();
 		}
@@ -347,13 +369,10 @@ namespace Xamarin.Forms.Platform.Android
 				_application.SendSleep();
 		}
 
+		// This is currently being used by the previewer please do not change or remove this
 		void RegisterHandlerForDefaultRenderer(Type target, Type handler, Type filter)
 		{
-			Type current = Registrar.Registered.GetHandlerType(target);
-			if (current != filter)
-				return;
-
-			Registrar.Registered.Register(target, handler);
+			RegisterHandler(target, handler, filter);
 		}
 
 		void SetMainPage()

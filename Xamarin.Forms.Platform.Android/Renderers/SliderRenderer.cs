@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
 				{
-					defaultthumbcolorfilter = seekBar.Thumb.ColorFilter;
+					defaultthumbcolorfilter = seekBar.Thumb.GetColorFilter();
 					defaultprogresstintmode = seekBar.ProgressTintMode;
 					defaultprogressbackgroundtintmode = seekBar.ProgressBackgroundTintMode;
 					defaultprogresstintlist = seekBar.ProgressTintList;
@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMinimumTrackColor();
 				else if (e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName)
 					UpdateMaximumTrackColor();
-				else if (e.PropertyName == Slider.ThumbImageProperty.PropertyName)
+				else if (e.PropertyName == Slider.ThumbImageSourceProperty.PropertyName)
 					UpdateThumbImage();
 				else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
 					UpdateThumbColor();
@@ -133,7 +133,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateMinimumTrackColor();
 			UpdateMaximumTrackColor();
-			if (!string.IsNullOrEmpty(Element.ThumbImage))
+			var thumbImage = Element.ThumbImageSource;
+			if (thumbImage != null && !thumbImage.IsEmpty)
 			{
 				UpdateThumbImage();
 			}
@@ -177,31 +178,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void UpdateThumbColor()
+		void UpdateThumbColor()
 		{
-			if (Element != null)
-			{
-				if (Element.ThumbColor == Color.Default)
-				{
-					Control.Thumb.SetColorFilter(defaultthumbcolorfilter);
-				}
-				else
-				{
-					Control.Thumb.SetColorFilter(Element.ThumbColor.ToAndroid(), PorterDuff.Mode.SrcIn);
-				}
-
-			}
+			Control.Thumb.SetColorFilter(Element.ThumbColor, defaultthumbcolorfilter, PorterDuff.Mode.SrcIn);
 		}
 
-		private void UpdateThumbImage()
+		void UpdateThumbImage()
 		{
-			if (Element != null)
+			this.ApplyDrawableAsync(Slider.ThumbImageSourceProperty, Context, drawable =>
 			{
-				if (string.IsNullOrEmpty(Element.ThumbImage))
-					Control.SetThumb(defaultthumb);
-				else
-					Control.SetThumb(Context.GetDrawable(Element.ThumbImage));
-			}
+				Control.SetThumb(drawable ?? defaultthumb);
+			});
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)

@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <Description>iOS Backend for Xamarin.Forms</Description>
+    <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -8,7 +12,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Xamarin.Forms.Platform.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -30,7 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
@@ -41,9 +42,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="System.Net.Http" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\3bar%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ContextActionCell.cs" />
@@ -113,12 +111,18 @@
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
     <Compile Include="CollectionView\CollectionViewRenderer.cs" />
     <Compile Include="CollectionView\EmptySource.cs" />
+    <Compile Include="CollectionView\GroupableItemsViewController.cs" />
+    <Compile Include="CollectionView\GroupableItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\HorizontalDefaultSupplementalView.cs" />
+    <Compile Include="CollectionView\HorizontalTemplatedHeaderView.cs" />
     <Compile Include="CollectionView\IItemsViewSource.cs" />
+    <Compile Include="CollectionView\IndexPathExtensions.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ItemsViewCell.cs" />
     <Compile Include="CollectionView\DefaultCell.cs" />
     <Compile Include="CollectionView\HorizontalDefaultCell.cs" />
     <Compile Include="CollectionView\ItemsViewController.cs" />
+    <Compile Include="CollectionView\ObservableGroupedSource.cs" />
     <Compile Include="CollectionView\ScrollToPositionExtensions.cs" />
     <Compile Include="CollectionView\SelectableItemsViewController.cs" />
     <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
@@ -133,7 +137,9 @@
     <Compile Include="CollectionView\SnapHelpers.cs" />
     <Compile Include="CollectionView\TemplatedCell.cs" />
     <Compile Include="CollectionView\HorizontalTemplatedCell.cs" />
+    <Compile Include="CollectionView\VerticalDefaultSupplementalView.cs" />
     <Compile Include="CollectionView\VerticalTemplatedCell.cs" />
+    <Compile Include="CollectionView\VerticalTemplatedHeaderView.cs" />
     <Compile Include="DisposeHelpers.cs" />
     <Compile Include="EffectUtilities.cs" />
     <Compile Include="ExportCellAttribute.cs" />
@@ -145,6 +151,9 @@
     <Compile Include="Extensions\LabelExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
+    <Compile Include="IOSDeviceInfo.cs" />
+    <Compile Include="ModalWrapper.cs" />
+    <Compile Include="Renderers\FormsCheckBox.cs" />
     <Compile Include="Renderers\ImageElementManager.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeViewWrapper.cs" />
@@ -153,6 +162,9 @@
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
+    <Compile Include="Renderers\IAccessibilityElementsController.cs" />
+    <Compile Include="Renderers\PageContainer.cs" />
+    <Compile Include="Renderers\CheckBoxRendererBase.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
@@ -211,6 +223,8 @@
     <Compile Include="Extensions\FontExtensions.Shared.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
+    <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -260,14 +274,6 @@
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\3bar.png" />
   </ItemGroup>
   <ItemGroup />
 </Project>

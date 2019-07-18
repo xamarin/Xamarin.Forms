@@ -6,10 +6,11 @@ using Android.Widget;
 using Xamarin.Forms;
 using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.Platform.Android;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Material.Android
 {
-	public class MaterialEntryRenderer : EntryRendererBase<MaterialFormsTextInputLayout>
+	public class MaterialEntryRenderer : EntryRendererBase<MaterialFormsTextInputLayout>, ITabStop
 	{
 		MaterialFormsEditText _textInputEditText;
 		MaterialFormsTextInputLayout _textInputLayout;
@@ -18,6 +19,8 @@ namespace Xamarin.Forms.Material.Android
 			base(MaterialContextThemeWrapper.Create(context))
 		{
 		}
+
+		protected override AView ControlUsedForAutomation => EditText;
 
 		protected override MaterialFormsTextInputLayout CreateNativeControl()
 		{
@@ -63,6 +66,7 @@ namespace Xamarin.Forms.Material.Android
 			_textInputEditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
+		AView ITabStop.TabStop => EditText;
 	}
 }
 #endif

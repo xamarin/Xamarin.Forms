@@ -5,11 +5,12 @@ using Android.Widget;
 using Xamarin.Forms;
 using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.Platform.Android;
+using AView = Android.Views.View;
 
 
 namespace Xamarin.Forms.Material.Android
 {
-	public class MaterialDatePickerRenderer : DatePickerRendererBase<MaterialPickerTextInputLayout>
+	public class MaterialDatePickerRenderer : DatePickerRendererBase<MaterialPickerTextInputLayout>, ITabStop
 	{
 		MaterialPickerTextInputLayout _textInputLayout;
 		MaterialPickerEditText _textInputEditText;
@@ -18,6 +19,7 @@ namespace Xamarin.Forms.Material.Android
 		{
 		}
 
+		protected override AView ControlUsedForAutomation => EditText;
 		protected override EditText EditText => _textInputEditText;
 
 		protected override MaterialPickerTextInputLayout CreateNativeControl()
@@ -34,6 +36,7 @@ namespace Xamarin.Forms.Material.Android
 		{
 			base.OnElementChanged(e);
 			_textInputLayout.SetHint(string.Empty, Element);
+			UpdateBackgroundColor();
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -47,6 +50,7 @@ namespace Xamarin.Forms.Material.Android
 		protected override void UpdateTextColor() => ApplyTheme();
 		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
 
+		AView ITabStop.TabStop => EditText;
 	}
 }
 #endif

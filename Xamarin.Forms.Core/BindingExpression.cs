@@ -322,10 +322,10 @@ namespace Xamarin.Forms
 				{
 					ParameterInfo parameter = null;
 					ParameterInfo[] array = property.GetIndexParameters();
-					for (int i = 0; i < array.Length; i++)
+
+					if (array.Length > 0)
 					{
-						parameter = array[i];
-						break;
+						parameter = array[0];
 					}
 
 					if (parameter != null)
@@ -448,6 +448,8 @@ namespace Xamarin.Forms
 					value = original;
 					return false;
 				}
+
+				convertTo = Nullable.GetUnderlyingType(convertTo) ?? convertTo;
 
 				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
@@ -615,7 +617,14 @@ namespace Xamarin.Forms
 					}
 				}
 
-				Device.BeginInvokeOnMainThread(() => _expression.Apply());
+				if (Device.IsInvokeRequired)
+				{
+					Device.BeginInvokeOnMainThread(() => _expression.Apply());
+				}
+				else
+				{
+					_expression.Apply();
+				}
 			}
 
 			public bool TryGetValue(object source, out object value)

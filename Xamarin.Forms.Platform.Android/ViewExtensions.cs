@@ -77,5 +77,40 @@ namespace Xamarin.Forms.Platform.Android
 				view.Id = Platform.GenerateViewId();
 			}
 		}
+
+		public static bool GetClipToOutline(this AView view)
+		{
+			if (view.IsDisposed() || !Forms.IsLollipopOrNewer)
+				return false;
+
+			return view.ClipToOutline;
+		}
+
+		public static void SetClipToOutline(this AView view, bool value)
+		{
+			if (view.IsDisposed() || !Forms.IsLollipopOrNewer)
+				return;
+
+			view.ClipToOutline = value;
+		}
+
+		public static bool SetElevation(this AView view, float value)
+		{
+			if (view.IsDisposed() || !Forms.IsLollipopOrNewer)
+				return false;
+
+			view.Elevation = value;
+			return true;
+		}
+		
+		internal static void MaybeRequestLayout(this AView view)
+		{
+			var isInLayout = false;
+			if ((int)Build.VERSION.SdkInt >= 18)
+				isInLayout = view.IsInLayout;
+
+			if (!isInLayout && !view.IsLayoutRequested)
+				view.RequestLayout();
+		}
 	}
 }

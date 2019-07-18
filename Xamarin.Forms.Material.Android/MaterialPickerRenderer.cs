@@ -5,11 +5,12 @@ using Android.Widget;
 using Xamarin.Forms;
 using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.Platform.Android;
+using AView = Android.Views.View;
 
 
 namespace Xamarin.Forms.Material.Android
 {
-	public class MaterialPickerRenderer : Platform.Android.AppCompat.PickerRendererBase<MaterialPickerTextInputLayout>
+	public class MaterialPickerRenderer : Platform.Android.AppCompat.PickerRendererBase<MaterialPickerTextInputLayout>, ITabStop
 	{
 		MaterialPickerTextInputLayout _textInputLayout;
 		MaterialPickerEditText _textInputEditText;
@@ -19,6 +20,7 @@ namespace Xamarin.Forms.Material.Android
 		}
 
 		protected override EditText EditText => _textInputEditText;
+		protected override AView ControlUsedForAutomation => EditText;
 
 		protected override MaterialPickerTextInputLayout CreateNativeControl()
 		{
@@ -28,6 +30,12 @@ namespace Xamarin.Forms.Material.Android
 			_textInputEditText = _textInputLayout.FindViewById<MaterialPickerEditText>(Resource.Id.materialformsedittext);
 			
 			return _textInputLayout;
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
+		{
+			base.OnElementChanged(e);
+			UpdateBackgroundColor();
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -42,6 +50,8 @@ namespace Xamarin.Forms.Material.Android
 		protected override void UpdateTitleColor() => ApplyTheme();
 		protected override void UpdateTextColor() => ApplyTheme();
 		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
+
+		AView ITabStop.TabStop => EditText;
 	}
 }
 #endif

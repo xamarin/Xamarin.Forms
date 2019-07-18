@@ -76,7 +76,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void CreatePlaceholderLabel()
 		{
 			if (Control == null)
+			{
 				return;
+			}
 
 			Control.AddSubview(_placeholderLabel);
 
@@ -329,7 +331,7 @@ namespace Xamarin.Forms.Platform.iOS
 				TextView.Text = currentControlText.Substring(0, Element.MaxLength);
 		}
 
-		bool ShouldChangeText(UITextView textView, NSRange range, string text)
+		protected virtual bool ShouldChangeText(UITextView textView, NSRange range, string text)
 		{
 			var newLength = textView.Text.Length + text.Length - range.Length;
 			return newLength <= Element.MaxLength;
@@ -362,10 +364,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override RectangleF Frame
 			{
-				get
-				{
-					return base.Frame;
-				}
+				get => base.Frame;
 				set
 				{
 					base.Frame = value;

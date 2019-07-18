@@ -8,6 +8,8 @@ using Android.Support.V4.View;
 using Android.Content.Res;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.AppCompat;
+using Xamarin.Forms.Platform.Android;
+using Android.Widget;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -21,7 +23,7 @@ namespace Xamarin.Forms.Material.Android
 		private ColorStateList _unfocusedUnderlineColorsList;
 		private ColorStateList _focusedUnderlineColorsList;
 		static readonly int[][] s_colorStates = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };
-		bool _isDisposed = false;
+		bool _disposed = false;
 
 		public MaterialFormsTextInputLayoutBase(Context context) : base(context)
 		{
@@ -62,7 +64,7 @@ namespace Xamarin.Forms.Material.Android
 
 		internal void ApplyTheme(Color formsTextColor, Color formsPlaceHolderColor)
 		{
-			if (_isDisposed)
+			if (_disposed)
 				return;
 
 			if(!_isSetup)
@@ -98,6 +100,9 @@ namespace Xamarin.Forms.Material.Android
 		 * */
 		void OnFocusChange(object sender, FocusChangeEventArgs e)
 		{
+			if (EditText == null)
+				return;
+
 			Device.BeginInvokeOnMainThread(() => ApplyTheme());
 
 			// propagate the focus changed event to the View Renderer base class
@@ -108,24 +113,33 @@ namespace Xamarin.Forms.Material.Android
 
 		internal void SetHint(string hint, VisualElement element)
 		{
-			if (HintEnabled != !String.IsNullOrWhiteSpace(hint))
+			HintEnabled = !string.IsNullOrWhiteSpace(hint);
+			if (HintEnabled)
 			{
-				HintEnabled = !String.IsNullOrWhiteSpace(hint);
-				Hint = hint ?? String.Empty;
-				EditText.Hint = String.Empty;
 				element?.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.VerticalOptionsChanged);
+				Hint = hint;
+				// EditText.Hint => Hint
+				// It is impossible to reset it but you can make it invisible.
+				EditText.SetHintTextColor(global::Android.Graphics.Color.Transparent);
 			}
-			else
+		}
+
+		public override EditText EditText
+		{
+			get
 			{
-				Hint = hint ?? String.Empty;
+				if (this.IsDisposed())
+					return null;
+
+				return base.EditText;
 			}
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_isDisposed)
+			if (!_disposed)
 			{
-				_isDisposed = true;
+				_disposed = true;
 				if (EditText != null)
 					EditText.FocusChange -= OnFocusChange;
 			}
