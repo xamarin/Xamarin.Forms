@@ -233,7 +233,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			base.OnElementChanged(e);
 
 			var activity = Context.GetActivity();
-			var isDesigner = activity == null && Context.IsDesignerContext();
+			var isDesigner = Context.IsDesignerContext();
+			var themeContext = isDesigner ? Context : activity;
 
 			if (e.OldElement != null)
 				((IPageController)e.OldElement).InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
@@ -270,7 +271,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						var viewPagerParams = new AWidget.RelativeLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
 						viewPagerParams.AddRule(AWidget.LayoutRules.Above, _bottomNavigationView.Id);
 
-						FormsViewPager pager = _viewPager = CreateFormsViewPager(isDesigner ? Context : activity, e.NewElement);
+						FormsViewPager pager = _viewPager = CreateFormsViewPager(themeContext, e.NewElement);
 
 						pager.Id = Platform.GenerateViewId();
 						pager.AddOnPageChangeListener(this);
@@ -287,19 +288,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					{
 						TabLayout tabs;
 
-						if (!isDesigner)
-						{
-							if (FormsAppCompatActivity.TabLayoutResource > 0)
-								tabs = _tabLayout = activity.LayoutInflater.Inflate(FormsAppCompatActivity.TabLayoutResource, null).JavaCast<TabLayout>();
-							else
-								tabs = _tabLayout = new TabLayout(activity) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
-						}
-						else // Previewer
-						{
-							tabs = _tabLayout = new TabLayout(Context) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
-						}
+						if (FormsAppCompatActivity.TabLayoutResource > 0 && !isDesigner)
+							tabs = _tabLayout = activity.LayoutInflater.Inflate(FormsAppCompatActivity.TabLayoutResource, null).JavaCast<TabLayout>();
+						else
+							tabs = _tabLayout = new TabLayout(themeContext) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
 
-						FormsViewPager pager = _viewPager = CreateFormsViewPager(isDesigner ? Context : activity, e.NewElement);
+						FormsViewPager pager = _viewPager = CreateFormsViewPager(themeContext, e.NewElement);
 
 						pager.Id = Platform.GenerateViewId();
 						pager.AddOnPageChangeListener(this);
