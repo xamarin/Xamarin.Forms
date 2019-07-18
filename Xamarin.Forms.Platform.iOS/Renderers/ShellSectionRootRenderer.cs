@@ -26,6 +26,9 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isAnimating;
 		Dictionary<ShellContent, IVisualElementRenderer> _renderers = new Dictionary<ShellContent, IVisualElementRenderer>();
 		IShellPageRendererTracker _tracker;
+		bool _didLayoutSubviews;
+		int _lastTabThickness = Int32.MinValue;
+		Thickness _lastInset;
 
 		ShellSection ShellSection { get; set; }
 
@@ -37,6 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			_didLayoutSubviews = true;
 			base.ViewDidLayoutSubviews();
 
 			_containerArea.Frame = View.Bounds;
@@ -65,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UIVisualEffect blurEffect = UIBlurEffect.FromStyle(UIBlurEffectStyle.ExtraLight);
 			_blurView = new UIVisualEffectView(blurEffect);
 
-			View.AddSubview(_blurView);		
+			View.AddSubview(_blurView);
 
 			UpdateHeaderVisibility();
 
@@ -102,7 +106,10 @@ namespace Xamarin.Forms.Platform.iOS
 						_renderers.Remove(shellContent);
 						oldRenderer.NativeView.RemoveFromSuperview();
 						oldRenderer.ViewController.RemoveFromParentViewController();
+						var element = oldRenderer.Element;
 						oldRenderer.Dispose();
+						element?.ClearValue(Platform.RendererProperty);
+
 					}
 				}
 			}
@@ -138,7 +145,6 @@ namespace Xamarin.Forms.Platform.iOS
 				var page = ((IShellContentController)item).GetOrCreateContent();
 				var renderer = Platform.CreateRenderer(page);
 				Platform.SetRenderer(page, renderer);
-
 				AddChildViewController(renderer.ViewController);
 
 				if (item == currentItem)
@@ -254,16 +260,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void LayoutHeader()
 		{
-			if (_header == null)
-				return;
-
-			CGRect frame;
-			if (Forms.IsiOS11OrNewer)
-				frame = new CGRect(View.Bounds.X, View.SafeAreaInsets.Top, View.Bounds.Width, HeaderHeight);
-			else
-				frame = new CGRect(View.Bounds.X, TopLayoutGuide.Length, View.Bounds.Width, HeaderHeight);
-			_blurView.Frame = frame;
-			_header.View.Frame = frame;
+			int tabThickness = 0;
+			if (_header != null)
+			{
+				tabThickness = HeaderHeight;
+				var headerTop = Forms.IsiOS11OrNewer ? View.SafeAreaInsets.Top : TopLayoutGuide.Length;
+				CGRect frame = new CGRect(View.Bounds.X, headerTop, View.Bounds.Width, HeaderHeight);
+				_blurView.Frame = frame;
+				_header.View.Frame = frame;
+			}
 
 			nfloat left;
 			nfloat top;
@@ -284,7 +289,17 @@ namespace Xamarin.Forms.Platform.iOS
 				bottom = BottomLayoutGuide.Length;
 			}
 
-			((IShellSectionController)ShellSection).SendInsetChanged(new Thickness(left, top, right, bottom), HeaderHeight);
+
+			if (_didLayoutSubviews)
+			{
+				var newInset = new Thickness(left, top, right, bottom);
+				if (newInset != _lastTabThickness || tabThickness != _lastTabThickness)
+				{
+					_lastTabThickness = tabThickness;
+					_lastInset = new Thickness(left, top, right, bottom);
+					((IShellSectionController)ShellSection).SendInsetChanged(_lastInset, _lastTabThickness);
+				}
+			}
 		}
 	}
 }

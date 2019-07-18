@@ -65,6 +65,9 @@
     <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\DataTemplateSelectorGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\SelectionChangedCommandParameter.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\MapGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
@@ -125,6 +128,33 @@
     <EmbeddedResource Update="GalleryPages\ControlTemplateXamlPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\BasicGrouping.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\GroupingNoTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\GroupingPlusSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\MeasureFirstStrategy.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\SomeEmptyGroups.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\SwitchGrouping.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\ScrollModeGalleries\ScrollModeTestGallery.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\SelectionChangedCommandParameter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
   </ItemGroup>
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
     <CreateItem Include="blank.config">

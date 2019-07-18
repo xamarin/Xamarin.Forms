@@ -93,5 +93,24 @@ namespace Xamarin.Forms.Platform.Android
 
 			view.ClipToOutline = value;
 		}
+
+		public static bool SetElevation(this AView view, float value)
+		{
+			if (view.IsDisposed() || !Forms.IsLollipopOrNewer)
+				return false;
+
+			view.Elevation = value;
+			return true;
+		}
+		
+		internal static void MaybeRequestLayout(this AView view)
+		{
+			var isInLayout = false;
+			if ((int)Build.VERSION.SdkInt >= 18)
+				isInLayout = view.IsInLayout;
+
+			if (!isInLayout && !view.IsLayoutRequested)
+				view.RequestLayout();
+		}
 	}
 }

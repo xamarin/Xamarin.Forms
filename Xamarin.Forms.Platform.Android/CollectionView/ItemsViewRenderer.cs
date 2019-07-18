@@ -30,20 +30,29 @@ namespace Xamarin.Forms.Platform.Android
 		ScrollHelper _scrollHelper;
 
 		EmptyViewAdapter _emptyViewAdapter;
-		DataChangeObserver _dataChangeViewObserver;
-		bool _watchingForEmpty;
+		readonly DataChangeObserver _emptyCollectionObserver;
+		readonly DataChangeObserver _itemsUpdateScrollObserver;
+
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
 
 		RecyclerView.ItemDecoration _itemDecoration;
 
-		public ItemsViewRenderer(Context context) : base(context)
+		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
 
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
+
+			_emptyCollectionObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
+			_itemsUpdateScrollObserver = new DataChangeObserver(AdjustScrollForItemUpdate);
+
+			VerticalScrollBarEnabled = false;
+			HorizontalScrollBarEnabled = false;
 		}
 
-		ScrollHelper ScrollHelper => _scrollHelper ?? (_scrollHelper = new ScrollHelper(this));
+		ScrollHelper ScrollHelper => _scrollHelper = _scrollHelper ?? new ScrollHelper(this);
 
 		// TODO hartez 2018/10/24 19:27:12 Region all the interface implementations	
 
@@ -139,10 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element != null)
 				{
 					TearDownOldElement(Element as ItemsView);
-				}
 
-				if (Element != null)
-				{
 					if (Platform.GetRenderer(Element) == this)
 					{
 						Element.ClearValue(Platform.RendererProperty);
@@ -213,6 +219,18 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateAdapter();
 			}
+			else if (changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			{
+				UpdateHorizontalScrollBarVisibility();
+			}
+			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
+			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
+			{
+				UpdateItemsUpdatingScrollMode();
+			}
 		}
 
 		protected virtual void UpdateItemsSource()
@@ -222,10 +240,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			// Stop watching the old adapter to see if it's empty (if we are watching)
-			Unwatch(ItemsViewAdapter ?? GetAdapter());
+			// Stop watching the old adapter 
+			var adapter = ItemsViewAdapter ?? GetAdapter();
+			_emptyCollectionObserver.Stop(adapter);
+			_itemsUpdateScrollObserver.Stop(adapter);
 
 			UpdateAdapter();
+
+			// Set up any properties which require observing data changes in the adapter
+			UpdateItemsUpdatingScrollMode();
 
 			UpdateEmptyView();
 		}
@@ -239,34 +262,6 @@ namespace Xamarin.Forms.Platform.Android
 			SwapAdapter(ItemsViewAdapter, true);
 
 			oldItemViewAdapter?.Dispose();
-		}
-
-		void Unwatch(Adapter adapter)
-		{
-			if (_watchingForEmpty && adapter != null && _dataChangeViewObserver != null)
-			{
-				adapter.UnregisterAdapterDataObserver(_dataChangeViewObserver);
-			}
-
-			_watchingForEmpty = false;
-		}
-
-		// TODO hartez 2018/10/24 19:25:14 I don't like these method names; too generic 	
-		// TODO hartez 2018/11/05 22:37:42 Also, thinking all the EmptyView stuff should be moved to a helper	
-		void Watch(Adapter adapter)
-		{
-			if (_watchingForEmpty)
-			{
-				return;
-			}
-
-			if (_dataChangeViewObserver == null)
-			{
-				_dataChangeViewObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
-			}
-
-			adapter.RegisterAdapterDataObserver(_dataChangeViewObserver);
-			_watchingForEmpty = true;
 		}
 
 		protected virtual void SetUpNewElement(ItemsView newElement)
@@ -299,14 +294,44 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFlowDirection();
 			UpdateItemSpacing();
 
+			UpdateHorizontalScrollBarVisibility();
+			UpdateVerticalScrollBarVisibility();
+
 			// Keep track of the ItemsLayout's property changes
 			if (_layout != null)
 			{
-				_layout.PropertyChanged += LayoutOnPropertyChanged;
+				_layout.PropertyChanged += LayoutPropertyChanged;
 			}
 
 			// Listen for ScrollTo requests
 			ItemsView.ScrollToRequested += ScrollToRequested;
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
+				_defaultVerticalScrollVisibility = VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			var newVerticalScrollVisibility = ItemsView.VerticalScrollBarVisibility;
+
+			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
+				_defaultHorizontalScrollVisibility =
+					HorizontalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			var newHorizontalScrollVisiblility = ItemsView.HorizontalScrollBarVisibility;
+
+			if (newHorizontalScrollVisiblility == ScrollBarVisibility.Default)
+				newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
+
+			HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
 		}
 
 		protected virtual void TearDownOldElement(ItemsView oldElement)
@@ -319,7 +344,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Stop listening for layout property changes
 			if (_layout != null)
 			{
-				_layout.PropertyChanged -= LayoutOnPropertyChanged;
+				_layout.PropertyChanged -= LayoutPropertyChanged;
 			}
 
 			// Stop listening for property changes
@@ -330,11 +355,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (ItemsViewAdapter != null)
 			{
-				Unwatch(ItemsViewAdapter);
-				
+				// Stop watching for empty items or scroll adjustments
+				_emptyCollectionObserver.Stop(ItemsViewAdapter);
+				_itemsUpdateScrollObserver.Stop(ItemsViewAdapter);
+
+				// Unhook whichever adapter is active
 				SetAdapter(null);
 
-				ItemsViewAdapter.Dispose();
+				_emptyViewAdapter?.Dispose();
+				ItemsViewAdapter?.Dispose();
 			}
 
 			if (_snapManager != null)
@@ -349,7 +378,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
+		protected virtual void LayoutPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
 		{
 			if (propertyChanged.Is(GridItemsLayout.SpanProperty))
 			{
@@ -422,14 +451,32 @@ namespace Xamarin.Forms.Platform.Android
 				_emptyViewAdapter.EmptyView = emptyView;
 				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
 
-				Watch(ItemsViewAdapter);
+				_emptyCollectionObserver.Start(ItemsViewAdapter);
 			}
 			else
 			{
-				Unwatch(ItemsViewAdapter);
+				_emptyCollectionObserver.Stop(ItemsViewAdapter);
 			}
 
 			UpdateEmptyViewVisibility();
+		}
+
+		protected virtual void UpdateItemsUpdatingScrollMode()
+		{
+			if (ItemsViewAdapter == null || ItemsView == null)
+			{
+				return;
+			}
+
+			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView)
+			{
+				// Keeping the current items in view is the default, so we don't need to watch for data changes
+				_itemsUpdateScrollObserver.Stop(ItemsViewAdapter);
+			}
+			else
+			{
+				_itemsUpdateScrollObserver.Start(ItemsViewAdapter);
+			}
 		}
 
 		protected virtual void ReconcileFlowDirectionAndLayout()
@@ -524,6 +571,19 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				SwapAdapter(ItemsViewAdapter, true);
 				SetLayoutManager(SelectLayoutManager(_layout));
+			}
+		}
+
+		internal void AdjustScrollForItemUpdate()
+		{
+			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
+			{
+				ScrollTo(new ScrollToRequestEventArgs(ItemsViewAdapter.ItemCount, 0,
+					Xamarin.Forms.ScrollToPosition.MakeVisible, true));
+			}
+			else if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)
+			{
+				ScrollHelper.UndoNextScrollAdjustment();
 			}
 		}
 	}
