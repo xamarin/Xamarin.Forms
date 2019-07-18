@@ -132,6 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholder();
 			UpdatePassword();
 			UpdateText();
+			UpdateCharacterSpacing();
 			UpdateColor();
 			UpdateKeyboard();
 			UpdateHorizontalTextAlignment();
@@ -154,9 +155,14 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
+			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -340,6 +346,8 @@ namespace Xamarin.Forms.Platform.iOS
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 			}
+
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 		}
 
 		void UpdateText()
@@ -347,6 +355,12 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			Control.AttributedText = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 		}
 
 		void UpdateMaxLength()

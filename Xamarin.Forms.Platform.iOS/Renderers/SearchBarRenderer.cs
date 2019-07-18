@@ -78,6 +78,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateHorizontalTextAlignment();
 				UpdateVerticalTextAlignment();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 				UpdateMaxLength();
 				UpdateKeyboard();
 			}
@@ -99,14 +100,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == SearchBar.CancelButtonColorProperty.PropertyName)
 				UpdateCancelButton();
 			else if (e.PropertyName == SearchBar.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
+			{
 				UpdateFont();
+			}
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
@@ -188,6 +196,15 @@ namespace Xamarin.Forms.Platform.iOS
 			_textWasTyped = true;
 			_typedText = a.SearchText;
 			UpdateOnTextChanged();
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			_textField = _textField ?? Control.FindDescendantView<UITextField>();
+			if (_textField == null)
+				return;
+			_textField.AttributedText = _textField.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+			_textField.AttributedPlaceholder = _textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 		}
 
 		void UpdateHorizontalTextAlignment()
@@ -275,11 +292,14 @@ namespace Xamarin.Forms.Platform.iOS
 					? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
 
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+
 			}
 			else
 			{
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, targetColor.IsDefault 
 					? ColorExtensions.SeventyPercentGrey.ToColor() : targetColor);
+				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 			}
 		}
 

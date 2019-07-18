@@ -116,9 +116,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
-		{
-		}
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
 		public Color TextColor
 		{
@@ -155,6 +153,12 @@ namespace Xamarin.Forms
 		{
 			get { return (string)GetValue(FontFamilyProperty); }
 			set { SetValue(FontFamilyProperty, value); }
+		}
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		[TypeConverter(typeof(FontSizeConverter))]
@@ -510,6 +514,16 @@ namespace Xamarin.Forms
 		static void OnCommandParameterChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			((SearchHandler)bindable).OnCommandParameterChanged();
+		}
+
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+
 		}
 
 		static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)

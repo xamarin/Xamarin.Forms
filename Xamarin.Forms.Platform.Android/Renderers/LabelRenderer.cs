@@ -74,9 +74,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			//We need to clear the Hint or else it will interfere with the sizing of the Label
 			var hint = Control.Hint;
-			if(!string.IsNullOrEmpty(hint))
+			if (!string.IsNullOrEmpty(hint))
 				Control.Hint = string.Empty;
-		
+
 			SizeRequest result = base.GetDesiredSize(widthConstraint, heightConstraint);
 
 			//Set Hint back after sizing
@@ -118,6 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateText();
 				UpdateLineBreakMode();
+				UpdateCharacterSpacing();
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
@@ -132,8 +133,12 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateGravity();
 				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
+					UpdateCharacterSpacing();
+
 			}
 			UpdateTextDecorations();
+			UpdatePadding();
 			_motionEventHelper.UpdateElement(e.NewElement);
 		}
 
@@ -147,6 +152,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
@@ -157,6 +164,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
+			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
 
 		void UpdateColor()
@@ -225,6 +234,14 @@ namespace Xamarin.Forms.Platform.Android
 			_view.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
 		}
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer && Control is TextView textControl)
+			{
+				textControl.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+		}
+
 
 		void UpdateLineHeight()
 		{
@@ -237,7 +254,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateMaxLines()
 		{
-			Control.SetMaxLines(Element);	
+			Control.SetMaxLines(Element);
 		}
 
 		void UpdateText()
@@ -263,6 +280,17 @@ namespace Xamarin.Forms.Platform.Android
 
 				_wasFormatted = false;
 			}
+
+			_lastSizeRequest = null;
+		}
+
+		void UpdatePadding()
+		{
+			Control.SetPadding(
+				(int)Context.ToPixels(Element.Padding.Left),
+				(int)Context.ToPixels(Element.Padding.Top),
+				(int)Context.ToPixels(Element.Padding.Right),
+				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
 		}

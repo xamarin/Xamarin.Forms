@@ -177,8 +177,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceHolderText();
 			EditText.Text = Element.Text;
 			UpdateInputType();
-
 			UpdateColor();
+			UpdateCharacterSpacing();
 			UpdateHorizontalTextAlignment();
 			UpdateVerticalTextAlignment();
 			UpdateFont();
@@ -246,6 +246,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHorizontalTextAlignment();
 			else if(e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
 				UpdateVerticalTextAlignment();
+			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
@@ -375,6 +377,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (currentControlText.Length > Element.MaxLength)
 				EditText.Text = currentControlText.Substring(0, Element.MaxLength);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
 		}
 
 		void UpdateReturnType()
