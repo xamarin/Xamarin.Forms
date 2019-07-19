@@ -92,6 +92,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				searchView = CreateNativeControl();
 				searchView.SetIconifiedByDefault(false);
+				// set Iconified calls onSearchClicked 
+				// https://github.com/aosp-mirror/platform_frameworks_base/blob/6d891937a38220b0c712a1927f969e74bea3a0f3/core/java/android/widget/SearchView.java#L674-L680
+				// which causes requestFocus. The designer does not support focuses.
 				if (!isDesigner)
 					searchView.Iconified = false;
 				SetNativeControl(searchView);
