@@ -51,7 +51,16 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
-		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create("MaxLines", typeof(int), typeof(Button), 1);
+		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(Button), LineBreakMode.WordWrap,
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
+
+		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create(nameof(MaxLines), typeof(int), typeof(Button), -1, propertyChanged: (bindable, oldvalue, newvalue) =>
+		{
+			if (bindable != null)
+			{
+				((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+			}
+		});
 
 		public Thickness Padding
 		{
@@ -147,6 +156,12 @@ namespace Xamarin.Forms
 		{
 			get { return (int)GetValue(MaxLinesProperty); }
 			set { SetValue(MaxLinesProperty, value); }
+		}
+
+		public LineBreakMode LineBreakMode
+		{
+			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
+			set { SetValue(LineBreakModeProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore
