@@ -52,6 +52,14 @@ namespace Xamarin.Forms
 			set => SetValue(RemainingItemsThresholdReachedCommandProperty, value);
 		}
 
+		public static readonly BindableProperty RemainingItemsThresholdReachedCommandParameterProperty = BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommandParameter), typeof(object), typeof(ItemsView), default(object));
+
+		public object RemainingItemsThresholdReachedCommandParameter
+		{
+			get => GetValue(RemainingItemsThresholdReachedCommandParameterProperty);
+			set => SetValue(RemainingItemsThresholdReachedCommandParameterProperty, value);
+		}
+
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(
 			nameof(HorizontalScrollBarVisibility),
 			typeof(ScrollBarVisibility),
@@ -158,14 +166,12 @@ namespace Xamarin.Forms
 
 		public void SendRemainingItemsThresholdReached()
 		{
-			var e = EventArgs.Empty;
+			RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
 
-			RemainingItemsThresholdReached?.Invoke(this, e);
+			if (RemainingItemsThresholdReachedCommand?.CanExecute(RemainingItemsThresholdReachedCommandParameter) == true)
+				RemainingItemsThresholdReachedCommand?.Execute(RemainingItemsThresholdReachedCommandParameter);
 
-			if (RemainingItemsThresholdReachedCommand?.CanExecute(null) == true)
-				RemainingItemsThresholdReachedCommand?.Execute(null);
-
-			OnRemainingItemsThresholdReached(e);
+			OnRemainingItemsThresholdReached();
 		}
 
 		public void SendScrolled(ItemsViewScrolledEventArgs e)
@@ -179,7 +185,7 @@ namespace Xamarin.Forms
 
 		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
 
-		public event EventHandler<EventArgs> RemainingItemsThresholdReached;
+		public event EventHandler RemainingItemsThresholdReached;
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
@@ -199,7 +205,7 @@ namespace Xamarin.Forms
 			ScrollToRequested?.Invoke(this, e);
 		}
 
-		protected virtual void OnRemainingItemsThresholdReached(EventArgs e)
+		protected virtual void OnRemainingItemsThresholdReached()
 		{
 			
 		}
