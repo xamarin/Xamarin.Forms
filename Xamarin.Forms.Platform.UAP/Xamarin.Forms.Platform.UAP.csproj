@@ -53,7 +53,7 @@
     <Compile Include="AlertDialog.cs" />
     <Compile Include="IDontGetFocus.cs" />
     <Compile Include="FontImageSourceHandler.cs" />
-    <Compile Include="Items\ItemContentControl.cs" />
+    <Compile Include="CollectionView\ItemContentControl.cs" />
     <Compile Include="FormsPivot.cs" />
     <Compile Include="AlignmentExtensions.cs" />
     <Compile Include="BrushHelpers.cs" />
@@ -66,8 +66,8 @@
     <Compile Include="ImageElementManager.cs" />
     <Compile Include="InterceptVisualStateManager.cs" />
     <Compile Include="HorizontalTextAlignmentConverter.cs" />
-    <Compile Include="Items\ObservableItemTemplateCollection.cs" />
-    <Compile Include="Items\TemplatedItemSourceFactory.cs" />
+    <Compile Include="CollectionView\ObservableItemTemplateCollection.cs" />
+    <Compile Include="CollectionView\TemplatedItemSourceFactory.cs" />
     <Compile Include="ITitleIconProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
     <Compile Include="Items\FormsGridView.cs" />
@@ -219,7 +219,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Items\ItemsViewStyles.xaml">
+    <Page Include="CollectionView\ItemsViewStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -274,6 +274,9 @@
     <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Items\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
