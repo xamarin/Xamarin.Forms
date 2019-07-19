@@ -10,6 +10,7 @@ using Android.Util;
 using Android.Views;
 using Java.Lang;
 using Android.Widget;
+using Android.Views.InputMethods;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -31,7 +32,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override FormsEditText CreateNativeControl()
 		{
-			return new FormsEditText(Context);
+			return new FormsEditText(Context)
+			{
+				ImeOptions = ImeAction.Done
+			};
 		}
 
 		protected override EditText EditText => Control;
@@ -128,6 +132,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateText();
 			UpdateInputType();
 			UpdateTextColor();
+			UpdateCharacterSpacing();
 			UpdateFont();
 			UpdateMaxLength();
 			UpdatePlaceholderColor();
@@ -147,6 +152,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == Editor.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
@@ -229,6 +236,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (keyboard == Keyboard.Numeric)
 			{
 				edit.KeyListener = GetDigitsKeyListener(edit.InputType);
+			}
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 		}
 

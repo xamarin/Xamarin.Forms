@@ -61,3 +61,12 @@ AndroidNative/gradlew.bat
 !EmbeddingTestBeds/Embedding.iOS/*.designer.cs
 /.mfractor
 /.idea
+*.nupkg
+*.pdb
+# temporary vim files
+*.swp
+tools/
+!tools/mdoc/**/*
+caketools/
+*.binlog
+.ionide/**

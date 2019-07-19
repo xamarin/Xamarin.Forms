@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_measured = true;
 
-			return Control.Source.GetDesiredSize();
+			return new SizeRequest(Control.Source.GetImageSourceSize());
 		}
 
 		protected override void Dispose(bool disposing)
@@ -120,7 +120,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected async Task UpdateSource()
 		{
-			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);		}
+			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);
+		}
 
 		void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)
 		{

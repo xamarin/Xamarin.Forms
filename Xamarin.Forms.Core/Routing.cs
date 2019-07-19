@@ -10,6 +10,7 @@ namespace Xamarin.Forms
 		static Dictionary<string, RouteFactory> s_routes = new Dictionary<string, RouteFactory>();
 
 		internal const string ImplicitPrefix = "IMPL_";
+		const string _pathSeparator = "/";
 
 		internal static string GenerateImplicitRoute(string source)
 		{
@@ -21,13 +22,11 @@ namespace Xamarin.Forms
 		{
 			return source.StartsWith(ImplicitPrefix, StringComparison.Ordinal);
 		}
-		internal static bool IsImplicit(Element source)
+		internal static bool IsImplicit(BindableObject source)
 		{
 			return IsImplicit(GetRoute(source));
 		}
-
-		internal static bool CompareWithRegisteredRoutes(string compare) => s_routes.ContainsKey(compare);
-
+		
 		internal static void Clear()
 		{
 			s_routes.Clear();
@@ -42,7 +41,7 @@ namespace Xamarin.Forms
 			return bindable.GetType().Name + ++s_routeCount;
 		}
 
-		public static string[] GetRouteKeys()
+		internal static string[] GetRouteKeys()
 		{
 			string[] keys = new string[s_routes.Count];
 			s_routes.Keys.CopyTo(keys, 0);
@@ -70,7 +69,7 @@ namespace Xamarin.Forms
 			return result;
 		}
 
-		public static string GetRoute(Element obj)
+		public static string GetRoute(BindableObject obj)
 		{
 			return (string)obj.GetValue(RouteProperty);
 		}
@@ -84,9 +83,23 @@ namespace Xamarin.Forms
 			return $"{source}/";
 		}
 
+		internal static Uri RemoveImplicit(Uri uri)
+		{
+			uri = ShellUriHandler.FormatUri(uri);
+
+			string[] parts = uri.OriginalString.TrimEnd(_pathSeparator[0]).Split(_pathSeparator[0]);
+
+			List<string> toKeep = new List<string>();
+			for (int i = 0; i < parts.Length; i++)
+				if (!IsImplicit(parts[i]))
+					toKeep.Add(parts[i]);
+
+			return new Uri(string.Join(_pathSeparator, toKeep), UriKind.Relative);
+		}
+
 		public static string FormatRoute(List<string> segments)
 		{
-			var route = FormatRoute(String.Join("/", segments));
+			var route = FormatRoute(String.Join(_pathSeparator, segments));
 			return route;
 		}
 
@@ -99,7 +112,7 @@ namespace Xamarin.Forms
 		{
 			if (!String.IsNullOrWhiteSpace(route))
 				route = FormatRoute(route);
-			ValidateRoute(route);
+			ValidateRoute(route, factory);
 
 			s_routes[route] = factory;
 		}
@@ -112,12 +125,7 @@ namespace Xamarin.Forms
 
 		public static void RegisterRoute(string route, Type type)
 		{
-			if(!String.IsNullOrWhiteSpace(route))
-				route = FormatRoute(route);
-
-			ValidateRoute(route);
-
-			s_routes[route] = new TypeRouteFactory(type);
+			RegisterRoute(route, new TypeRouteFactory(type));
 		}
 
 		public static void SetRoute(Element obj, string value)
@@ -125,10 +133,12 @@ namespace Xamarin.Forms
 			obj.SetValue(RouteProperty, value);
 		}
 
-		static void ValidateRoute(string route)
+		static void ValidateRoute(string route, RouteFactory routeFactory)
 		{
 			if (string.IsNullOrWhiteSpace(route))
-				throw new ArgumentNullException("Route cannot be an empty string");
+				throw new ArgumentNullException(nameof(route), "Route cannot be an empty string");
+
+			routeFactory = routeFactory ?? throw new ArgumentNullException(nameof(routeFactory), "Route Factory cannot be null");
 
 			var uri = new Uri(route, UriKind.RelativeOrAbsolute);
 
@@ -138,6 +148,10 @@ namespace Xamarin.Forms
 				if (IsImplicit(part))
 					throw new ArgumentException($"Route contains invalid characters in \"{part}\"");
 			}
+
+			RouteFactory existingRegistration = null;
+			if(s_routes.TryGetValue(route, out existingRegistration) && !existingRegistration.Equals(routeFactory))
+				throw new ArgumentException($"Duplicated Route: \"{route}\"");
 		}
 
 		class TypeRouteFactory : RouteFactory
@@ -152,6 +166,18 @@ namespace Xamarin.Forms
 			public override Element GetOrCreate()
 			{
 				return (Element)Activator.CreateInstance(_type);
+			}
+			public override bool Equals(object obj)
+			{
+				if ((obj is TypeRouteFactory typeRouteFactory))
+					return typeRouteFactory._type == _type;
+
+				return false;
+			}
+
+			public override int GetHashCode()
+			{
+				return _type.GetHashCode();
 			}
 		}
 	}
