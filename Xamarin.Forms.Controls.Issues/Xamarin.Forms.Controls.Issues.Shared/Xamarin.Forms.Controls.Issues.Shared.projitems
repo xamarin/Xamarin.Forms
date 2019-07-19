@@ -15,6 +15,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue6609.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6802.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellInsets.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewGrouping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5412.cs" />
