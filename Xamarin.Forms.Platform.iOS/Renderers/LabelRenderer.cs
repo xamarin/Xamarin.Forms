@@ -174,6 +174,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
+				UpdateTextType();
 			}
 
 			base.OnElementChanged(e);
@@ -218,7 +219,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdatePadding();
 		}
 
-
 		protected override NativeLabel CreateNativeControl()
 		{
 #if __MOBILE__
@@ -226,6 +226,8 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			return new NativeLabel(RectangleF.Empty);
 #endif
+			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
+				UpdateTextType();
 		}
 
 		void ElementPropertyChanging(object sender, PropertyChangingEventArgs e)
@@ -544,5 +546,46 @@ namespace Xamarin.Forms.Platform.MacOS
 				height: size.Height + TextInsets.Top + TextInsets.Bottom);
 		}
 #endif
+
+		void UpdateTextType()
+		{
+			if (Element.Text == null)
+				return;
+
+			switch (Element.TextType)
+			{
+				case TextType.Html:
+#if __MOBILE__
+					var attr = new NSAttributedStringDocumentAttributes
+					{
+						DocumentType = NSDocumentType.HTML
+					};
+
+					var nsError = new NSError();
+
+					Control.AttributedText = new NSAttributedString(Element.Text, attr, ref nsError);
+
+#else
+					var attr = new NSAttributedStringDocumentAttributes
+					{
+						DocumentType = NSDocumentType.HTML
+					};
+
+					var htmlData = new NSMutableData();
+					htmlData.SetData(Element.Text);
+
+					Control.AttributedStringValue = new NSAttributedString(htmlData, attr, out _);
+#endif
+					break;
+
+				default:
+#if __MOBILE__
+					Control.Text = Element.Text;
+#else
+					Control.StringValue = Element.Text;
+#endif
+					break;
+			}
+		}
 	}
 }

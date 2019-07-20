@@ -634,7 +634,8 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentStart,
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
-			MaxLines
+			MaxLines,
+			TextType
 		}
 
 		public enum MasterDetailPage

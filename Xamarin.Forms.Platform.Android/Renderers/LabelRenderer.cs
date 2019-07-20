@@ -122,6 +122,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
+				UpdateTextType();
 			}
 			else
 			{
@@ -135,7 +136,8 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
 					UpdateCharacterSpacing();
-
+				if (e.OldElement.TextType != e.NewElement.TextType)
+					UpdateTextType();
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
@@ -164,8 +166,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
-			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Label.HtmlProperty.PropertyName)
+				UpdateTextType();
 		}
 
 		void UpdateColor()
@@ -293,6 +297,19 @@ namespace Xamarin.Forms.Platform.Android
 				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
+		}
+		
+		void UpdateTextType()
+		{
+			if (string.IsNullOrWhiteSpace(Element.Text))
+				return;
+
+			if (Forms.IsNougatOrNewer)
+				Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
+			else
+#pragma warning disable CS0618 // Type or member is obsolete
+				Control.SetText(Html.FromHtml(Element.Text), TextView.BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
