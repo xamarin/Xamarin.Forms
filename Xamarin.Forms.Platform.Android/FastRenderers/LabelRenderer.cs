@@ -251,6 +251,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateGravity();
 				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+				if (e.OldElement?.TextType != e.NewElement.TextType)
+					UpdateTextType();
+
 				UpdatePadding();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -281,6 +284,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
+				UpdateTextType();
 		}
 
 		void UpdateColor()
@@ -414,6 +419,31 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
+		}
+
+		void UpdateTextType()
+		{
+			if (Element.Text == null)
+				return;
+
+			switch (Element.TextType)
+			{
+
+				case TextType.Html:
+					if (Forms.IsNougatOrNewer)
+						Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), BufferType.Spannable);
+					else
+#pragma warning disable CS0618 // Type or member is obsolete
+						Control.SetText(Html.FromHtml(Element.Text), BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+					_lastSizeRequest = null;
+					break;
+
+				default:
+					UpdateText();
+					break;
+			}
 		}
 	}
 }
