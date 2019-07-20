@@ -217,6 +217,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
+				UpdateTextType();
 		}
 
 		protected override NativeLabel CreateNativeControl()
@@ -226,8 +228,6 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			return new NativeLabel(RectangleF.Empty);
 #endif
-			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
-				UpdateTextType();
 		}
 
 		void ElementPropertyChanging(object sender, PropertyChangingEventArgs e)
