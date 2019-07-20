@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
-			else if (e.PropertyName == Label.HtmlProperty.PropertyName)
+			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateTextType();
 		}
 
@@ -301,15 +301,27 @@ namespace Xamarin.Forms.Platform.Android
 		
 		void UpdateTextType()
 		{
-			if (string.IsNullOrWhiteSpace(Element.Text))
+			if (Element.Text == null)
 				return;
 
-			if (Forms.IsNougatOrNewer)
-				Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
-			else
+			switch (Element.TextType)
+			{
+
+				case TextType.Html:
+					if (Forms.IsNougatOrNewer)
+						Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
+					else
 #pragma warning disable CS0618 // Type or member is obsolete
-				Control.SetText(Html.FromHtml(Element.Text), TextView.BufferType.Spannable);
+						Control.SetText(Html.FromHtml(Element.Text), TextView.BufferType.Spannable);
 #pragma warning restore CS0618 // Type or member is obsolete
+
+					_lastSizeRequest = null;
+					break;
+
+				default:
+					UpdateText();
+					break;
+			}
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
