@@ -449,87 +449,91 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual void UpdateToolbarItems(Toolbar toolbar, Page page)
-		{
-			var menu = toolbar.Menu;
-			menu.Clear();
+        protected virtual void UpdateToolbarItems(Toolbar toolbar, Page page)
+        {
+            var menu = toolbar.Menu;
+            menu.Clear();
 
-			foreach (var item in page.ToolbarItems)
-			{
-				var title = new Java.Lang.String(item.Text);
-				var menuitem = menu.Add(title);
-
-				UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
-
-				menuitem.SetTitleOrContentDescription(item);
-				menuitem.SetEnabled(item.IsEnabled);
-				menuitem.SetShowAsAction(ShowAsAction.Always);
-				menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
-
-                if (TintColor != Color.Default)
+            if (page != null)
+            {
+                foreach (var item in page.ToolbarItems)
                 {
-                    var view = toolbar.FindViewById(menuitem.ItemId);
-                    if (view is ATextView textView)
-                        textView.SetTextColor(TintColor.ToAndroid());
+                    var title = new Java.Lang.String(item.Text);
+                    var menuitem = menu.Add(title);
+
+                    UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
+
+                    menuitem.SetTitleOrContentDescription(item);
+                    menuitem.SetEnabled(item.IsEnabled);
+                    menuitem.SetShowAsAction(ShowAsAction.Always);
+                    menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
+
+                    if (TintColor != Color.Default)
+                    {
+                        var view = toolbar.FindViewById(menuitem.ItemId);
+                        if (view is ATextView textView)
+                            textView.SetTextColor(TintColor.ToAndroid());
+                    }
                 }
+
+                SearchHandler = Shell.GetSearchHandler(page);
+            }
+            else
+            {
+                SearchHandler = null;
             }
 
-			SearchHandler = Shell.GetSearchHandler(page);
+            if (SearchHandler != null && SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Hidden)
+            {
+                var context = _shellContext.AndroidContext;
 
-			if (SearchHandler != null && SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Hidden)
-			{
-				var context = _shellContext.AndroidContext;
+                if (_searchView == null)
+                {
+                    _searchView = GetSearchView(context);
+                    _searchView.SearchHandler = SearchHandler;
 
-				if (_searchView == null)
-				{
-					_searchView = GetSearchView(context);
-					_searchView.SearchHandler = SearchHandler;
+                    _searchView.LoadView();
+                    _searchView.View.ViewAttachedToWindow += OnSearchViewAttachedToWindow;
 
-					_searchView.LoadView();
-					_searchView.View.ViewAttachedToWindow += OnSearchViewAttachedToWindow;
+                    _searchView.View.LayoutParameters = new LP(LP.MatchParent, LP.MatchParent);
+                    _searchView.SearchConfirmed += OnSearchConfirmed;
+                }
 
-					_searchView.View.LayoutParameters = new LP(LP.MatchParent, LP.MatchParent);
-					_searchView.SearchConfirmed += OnSearchConfirmed;
-				}
+                if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Collapsible)
+                {
+                    var placeholder = new Java.Lang.String(SearchHandler.Placeholder);
+                    var item = menu.Add(placeholder);
 
-				if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Collapsible)
-				{
-					var placeholder = new Java.Lang.String(SearchHandler.Placeholder);
-					var item = menu.Add(placeholder);
+                    item.SetEnabled(SearchHandler.IsSearchEnabled);
+                    item.SetIcon(Resource.Drawable.abc_ic_search_api_material);
+                    item.Icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+                    item.SetShowAsAction(ShowAsAction.IfRoom | ShowAsAction.CollapseActionView);
 
-					item.SetEnabled(SearchHandler.IsSearchEnabled);
-					item.SetIcon(Resource.Drawable.abc_ic_search_api_material);
-					item.Icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-					item.SetShowAsAction(ShowAsAction.IfRoom | ShowAsAction.CollapseActionView);
+                    if (_searchView.View.Parent != null)
+                        _searchView.View.RemoveFromParent();
 
-					if (_searchView.View.Parent != null)
-						_searchView.View.RemoveFromParent();
+                    _searchView.ShowKeyboardOnAttached = true;
+                    item.SetActionView(_searchView.View);
+                }
+                else if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Expanded)
+                {
+                    _searchView.ShowKeyboardOnAttached = false;
 
-					_searchView.ShowKeyboardOnAttached = true;
-					item.SetActionView(_searchView.View);
-				}
-				else if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Expanded)
-				{
-					_searchView.ShowKeyboardOnAttached = false;
+                    if (_searchView.View.Parent != _toolbar)
+                        _toolbar.AddView(_searchView.View);
+                }
+            }
+            else if (_searchView != null)
+            {
+                _searchView.View.RemoveFromParent();
+                _searchView.View.ViewAttachedToWindow -= OnSearchViewAttachedToWindow;
+                _searchView.SearchConfirmed -= OnSearchConfirmed;
+                _searchView.Dispose();
+                _searchView = null;
+            }
+        }
 
-					if (_searchView.View.Parent != _toolbar)
-						_toolbar.AddView(_searchView.View);
-				}
-			}
-			else
-			{
-				if (_searchView != null)
-				{
-					_searchView.View.RemoveFromParent();
-					_searchView.View.ViewAttachedToWindow -= OnSearchViewAttachedToWindow;
-					_searchView.SearchConfirmed -= OnSearchConfirmed;
-					_searchView.Dispose();
-					_searchView = null;
-				}
-			}
-		}
-
-		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
+        void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
 		{
 			// We only need to do this tint hack when using collapsed search handlers
 			if (SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Collapsible)
