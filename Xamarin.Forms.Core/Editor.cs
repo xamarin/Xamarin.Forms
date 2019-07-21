@@ -28,6 +28,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty AutoSizeProperty = BindableProperty.Create(nameof(AutoSize), typeof(EditorAutoSizeOption), typeof(Editor), defaultValue: EditorAutoSizeOption.Disabled, propertyChanged: (bindable, oldValue, newValue)
 			=> ((Editor)bindable)?.InvalidateMeasure());
 
+		public static readonly BindableProperty CrossPlatformOptionProperty = BindableProperty.Create(nameof(CrossPlatformOption), typeof(EditorCrossPlatformOption), typeof(Editor), null, BindingMode.TwoWay);
+
 		readonly Lazy<PlatformConfigurationRegistry<Editor>> _platformConfigurationRegistry;
 
 		public EditorAutoSizeOption AutoSize
@@ -36,41 +38,42 @@ namespace Xamarin.Forms
 			set { SetValue(AutoSizeProperty, value); }
 		}
 
-		public string Text
+		public EditorCrossPlatformOption CrossPlatformOption
 		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
+			get { return (EditorCrossPlatformOption)GetValue(CrossPlatformOptionProperty); }
+			set { SetValue(CrossPlatformOptionProperty, value); }
 		}
 
-		public string TextPlatformNeutral
+		public string Text
 		{
-			get
-			{
-				switch (Device.RuntimePlatform)
+			get {
+				// Return the desired format to the application, regardless of the platform or existing content
+				switch (CrossPlatformOption)
 				{
-					case Device.UWP:
-						return Text.Replace("\n", "\r");
+					case EditorCrossPlatformOption.PreferNewline:
+						return Text?.Replace("\r", "\n");
+					case EditorCrossPlatformOption.PreferCrLf:
+						return Text?.Replace("\n", "\r");
 					default:
-						return Text;
+						return (string)GetValue(TextProperty);
 				}
 			}
 			set
 			{
-				string newContent;
-				switch (Device.RuntimePlatform)
+				// Preserve current behaviour
+				if (CrossPlatformOption == EditorCrossPlatformOption.Default)
 				{
-					case Device.UWP:
-						newContent = value.Replace("\r", "\n");
-						break;
-					default:
-						newContent = value;
-						break;
+					SetValue(TextProperty, value);
+					return;
 				}
 
-				if (Text == newContent)
-					return;
-				Text = newContent;
-				OnPropertyChanged("TextPlatformNeutral");
+				// The value of CrossPlatformOption doesn't matter as we can convert incoming new lines into what the editor expects.
+				if (Device.RuntimePlatform == Device.UWP)
+					// On UWP the editor expects \n for new lines. 
+					SetValue(TextProperty, value?.Replace("\r", "\n"));
+				else
+					// On other platforms it's \r
+					SetValue(TextProperty, value?.Replace("\n", "\r"));
 			}
 		}
 
