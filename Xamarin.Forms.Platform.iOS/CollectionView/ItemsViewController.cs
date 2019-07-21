@@ -67,6 +67,12 @@ namespace Xamarin.Forms.Platform.iOS
 					//clear data
 					CollectionView.DataSource = null;
 					CollectionView.ReloadData();
+					CollectionView.CollectionViewLayout.InvalidateLayout();
+
+					Delegator?.Dispose();
+					Delegator = null;
+					CollectionView.Delegate?.Dispose();
+					CollectionView.Delegate = null;
 					CollectionView.RemoveFromSuperview();
 					CollectionView.Dispose();
 				}
