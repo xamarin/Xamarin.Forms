@@ -83,6 +83,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				UpdateCornerRadius();
 				UpdateBorder();
 				UpdateTextColor();
+				ButtonElementManager.UpdateDisabledTextColor(e.NewElement, Control);
 				_buttonLayoutManager?.Update();
 
 				ApplyTheme();
@@ -117,6 +118,11 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (e.PropertyName == Button.TextColorProperty.PropertyName)
 			{
 				UpdateTextColor();
+				updatedTheme = true;
+			}
+			if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+			{
+				ButtonElementManager.UpdateDisabledTextColor(Element, Control);
 				updatedTheme = true;
 			}
 			else if (e.PropertyName == Button.FontProperty.PropertyName)

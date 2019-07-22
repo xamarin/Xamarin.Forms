@@ -85,5 +85,11 @@ namespace Xamarin.Forms.Platform.iOS
 			element?.SendReleased();
 			element?.SendClicked();
 		}
+
+		public static void UpdateDisabledTextColor(Button button, UIButton nativeButton)
+		{
+			var title = new NSAttributedString(nativeButton.CurrentTitle, new UIStringAttributes { ForegroundColor = button.DisabledTextColor.ToUIColor() });
+			nativeButton.SetAttributedTitle(title, UIControlState.Disabled);
+		}
 	}
 }
