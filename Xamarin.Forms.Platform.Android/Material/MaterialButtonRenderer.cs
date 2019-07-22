@@ -292,8 +292,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			else
 				text = textColor.ToAndroid();
 
-			// apply
-			SetTextColor(MaterialColors.CreateButtonTextColors(background, text));
+			// apply			
+			SetTextColor(MaterialColors.CreateButtonTextColors(background, text, Element.DisabledTextColor.ToAndroid()));
 			ViewCompat.SetBackgroundTintList(this, MaterialColors.CreateButtonBackgroundColors(background));
 		}
 

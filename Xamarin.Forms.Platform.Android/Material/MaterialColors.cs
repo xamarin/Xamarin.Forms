@@ -98,6 +98,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		public static readonly int[][] ButtonStates =
 		{
 			new int[] { global::Android.Resource.Attribute.StateEnabled },
+			new int[] { -global::Android.Resource.Attribute.StateEnabled },
 			new int[] { }
 		};
 
@@ -123,9 +124,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		// State list from material-components-android
 		// https://github.com/material-components/material-components-android/blob/3637c23078afc909e42833fd1c5fd47bb3271b5f/lib/java/com/google/android/material/button/res/color/mtrl_btn_text_color_selector.xml
-		public static ColorStateList CreateButtonTextColors(AColor primary, AColor text)
+		public static ColorStateList CreateButtonTextColors(AColor primary, AColor text, AColor disabledTextColor)
 		{
-			var colors = new int[] { text, primary.WithAlpha(0.38) };
+			var colors = new int[] { text, disabledTextColor, primary.WithAlpha(0.38) };
 			return new ColorStateList(ButtonStates, colors);
 		}
 
