@@ -22,6 +22,9 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue6946 : TestContentPage
 	{
+		const string ClickMeId = "ClickMeAutomationId";
+		const string BoxViewId = "BoxViewAutomationId";
+
 		protected override void Init()
 		{
 			var boxView = new BoxView()
@@ -33,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Color = Color.Red,
 				TranslationX = 101,
 				TranslationY = 201,
-				AutomationId = "BoxViewId"
+				AutomationId = BoxViewId
 			};
 
 			Button button = new Button()
@@ -45,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					boxView.HeightRequest = 160;
 				}),
-				AutomationId = "ClickMeId"
+				AutomationId = ClickMeId
 			};
 
 			Content =
@@ -64,9 +67,9 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void WrongTranslationBehaviorWhenChangingHeightRequestAndSettingAnchor()
 		{
-			var rect = RunningApp.WaitForElement("BoxViewId")[0].Rect;
-			RunningApp.Tap("ClickMeId");
-			var rect2 = RunningApp.WaitForElement("BoxViewId")[0].Rect;
+			var rect = RunningApp.WaitForElement(BoxViewId)[0].Rect;
+			RunningApp.Tap(ClickMeId);
+			var rect2 = RunningApp.WaitForElement(BoxViewId)[0].Rect;
 
 			Assert.AreEqual(rect.X, rect2.X);
 			Assert.AreEqual(rect.Y, rect2.Y);
