@@ -23,7 +23,7 @@ ListView {
 }
 
 .AddButton {
-    background-color: transparent;
+    background-color: Yellow;
     width: 60;
     height: 60;
     border: 0;

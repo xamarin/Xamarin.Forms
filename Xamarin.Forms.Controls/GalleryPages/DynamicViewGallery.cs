@@ -21,11 +21,12 @@ namespace Xamarin.Forms.Controls
 						}
 					}, null) },
 				{ nameof(ProgressBar), (() => new ProgressBar(), null) },
+				{ nameof(FloatingActionButton), (() => new FloatingActionButton { ImageSource = "bank.png", HorizontalOptions = LayoutOptions.Center }, null) },
 				{ nameof(Button), (() => new Button { Text = "Button" }, null) },
 				{ nameof(Label), (() => new Label { Text = "label" }, null) },
 				{ nameof(Entry), (() => new Entry(), null) },
 				{ nameof(Editor), (() => new Editor(), null) },
-				{ nameof(Image), (() => new Image { Source = ImageSource.FromFile("cover1.jpg") }, null) },
+				{ nameof(Image), (() => new Image { Source = "cover1.jpg" }, null) },
 				{ nameof(ImageButton),(() => new ImageButton { Source = "bank.png"}, null) },
 				{ nameof(WebView), (() => new WebView(), null) },
 				{ nameof(SearchBar), (() => new SearchBar(), null) },

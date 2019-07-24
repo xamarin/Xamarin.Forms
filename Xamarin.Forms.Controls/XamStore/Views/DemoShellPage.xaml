@@ -2,27 +2,34 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:local="clr-namespace:Xamarin.Forms.Controls.XamStore;assembly=Xamarin.Forms.Controls"
-             x:Class="Xamarin.Forms.Controls.XamStore.DemoShellPage" Title="{Binding Title}" Padding="50">
-  
+             x:Class="Xamarin.Forms.Controls.XamStore.DemoShellPage" Title="{Binding Title}" Padding="50" 
+             x:Name="thisPage">
+
     <ContentPage.Resources>
         <StyleSheet Source="../Styles/Global.css"/>
         <StyleSheet Source="../Styles/HomeView.css"/>
         <ResourceDictionary>
-             <local:SelectedTabColorConverter x:Key="conv"/>
+            <local:SelectedTabColorConverter x:Key="conv"/>
             <local:InverseBoolConverter x:Key="boolConv"/>
+            <FontImageSource Glyph="{x:Static local:Icons.Add}" FontFamily="{x:Static local:Icons.FontFamily}" Color="White" x:Key="addIcon"/>
+            <FontImageSource Glyph="{x:Static local:Icons.Heart}" FontFamily="{x:Static local:Icons.FontFamily}" Color="White" x:Key="heartIcon"/>
+            <FontImageSource Glyph="{x:Static local:Icons.Music}" FontFamily="{x:Static local:Icons.FontFamily}" Color="White" x:Key="musicIcon"/>
+            <FontImageSource Glyph="{x:Static local:Icons.Octocat}" FontFamily="{x:Static local:Icons.FontFamily}" Color="White" x:Key="octocatIcon"/>
+            <FontImageSource Glyph="{x:Static local:Icons.Game}" FontFamily="{x:Static local:Icons.FontFamily}" Color="White" x:Key="gameIcon"/>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Name="SearchButton" Order="Primary" Icon="icon_search.png" Priority="0" Command="{Binding SearchCommand}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <RelativeLayout>
-            <StackLayout
+        <AbsoluteLayout>
+            <RelativeLayout>
+                <StackLayout
                 x:Name="toggleButtons"
                 RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}"
                 HeightRequest="60"
                 Orientation="Horizontal">
-                <Button
+                    <Button
                     TextColor="{Binding IsFullTabSelected, Converter={StaticResource conv}, ConverterParameter='#ffffff;#34686e'}"
                     HorizontalOptions="FillAndExpand"
                     VerticalOptions="Fill"
@@ -30,25 +37,25 @@
                     Text="FULL LIST"
                     Command="{Binding ToggleCommand}" CommandParameter="full"
                     >
-                </Button>
-                <Button
+                    </Button>
+                    <Button
                     StyleClass="MainTab"
                     HorizontalOptions="FillAndExpand"
                     VerticalOptions="Fill"
                     Image="icon_bookmark.png"
                     Command="{Binding ToggleCommand}" 
                     CommandParameter="bookmarked">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsFullTabSelected}" Value="true">
-                            <Setter Property="Image" Value="icon_bookmark.png" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsFullTabSelected}" Value="false">
-                            <Setter Property="Image" Value="icon_bookmark_selected.png" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-            </StackLayout>
-            <BoxView 
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsFullTabSelected}" Value="true">
+                                <Setter Property="Image" Value="icon_bookmark.png" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsFullTabSelected}" Value="false">
+                                <Setter Property="Image" Value="icon_bookmark_selected.png" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </StackLayout>
+                <BoxView 
                 IsVisible="{Binding IsFullTabSelected}"
                 RelativeLayout.YConstraint =
                             "{ConstraintExpression Type=RelativeToView,
@@ -61,7 +68,7 @@
                     Property=Width,
                 Factor=0.5}"
                 StyleClass="SelectedIndicator"/>
-            <BoxView 
+                <BoxView 
                 IsVisible="{Binding IsFullTabSelected, Converter={StaticResource boolConv}}"
                 RelativeLayout.YConstraint=
                             "{ConstraintExpression Type=RelativeToView,
@@ -78,7 +85,7 @@
                     Property=Width,
                     Factor=0.5}"
                 StyleClass="SelectedIndicator"/>
-            <ActivityIndicator 
+                <ActivityIndicator 
                             RelativeLayout.XConstraint =
                                         "{ConstraintExpression Type=RelativeToParent,
                                          Property=Width,
@@ -91,7 +98,7 @@
                                          Factor=1}"
                             IsRunning="{Binding IsBusy}" 
                             IsVisible="{Binding IsBusy}"/>
-                        <ListView 
+                <ListView 
                             RelativeLayout.YConstraint =
                                         "{ConstraintExpression Type=RelativeToView,
                                         ElementName=toggleButtons,
@@ -102,32 +109,46 @@
                                 Property=Width,
                             Factor=1}"
                             ItemsSource="{Binding Entries}" x:Name="EntriesListView" ItemTapped="OnItemTapped" ItemSelected="OnItemSelected">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <TextCell Text="{Binding Title}" TextColor="#FFFFFF">
-                                        <TextCell.ContextActions>
-                                            <MenuItem Text="Delete" IsDestructive="true" 
-                                                      Command="{Binding BindingContext.DeleteEntryCommand, Source={x:Reference EntriesListView}" 
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextCell Text="{Binding Title}" TextColor="#FFFFFF">
+                                <TextCell.ContextActions>
+                                    <MenuItem Text="Delete" IsDestructive="true" 
+                                                      Command="{Binding BindingContext.DeleteEntryCommand, Source={x:Reference EntriesListView}}" 
                                                       CommandParameter="{Binding .}" />
-                                        </TextCell.ContextActions>
-                                    </TextCell>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <Button 
-                            RelativeLayout.XConstraint =
-                                        "{ConstraintExpression Type=RelativeToParent,
-                                         Property=Width,
-                                         Factor=0.5,
-                                         Constant=-30}"
-                            RelativeLayout.YConstraint =
-                                        "{ConstraintExpression Type=RelativeToParent,
-                                         Property=Height,
-                                         Factor=1,
-                                        Constant=-80}"
-                            Command="{Binding NavToAddCommand}"
-                            StyleClass="AddButton"
-                            Image="button_add.png"/>
-        </RelativeLayout>
+                                </TextCell.ContextActions>
+                            </TextCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </RelativeLayout>
+
+            <StackLayout AbsoluteLayout.LayoutBounds="1, 1, 56, 1" AbsoluteLayout.LayoutFlags="PositionProportional,HeightProportional" >
+                <StackLayout VerticalOptions="EndAndExpand" x:Name="PopupMenu" Opacity="0" HeightRequest="0" IsClippedToBounds="true">
+                    <FloatingActionButton VerticalOptions="EndAndExpand" HorizontalOptions="Center"
+                            BackgroundColor="Red"
+                            Size="Mini"
+                            ImageSource="{StaticResource heartIcon}" />
+                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center"
+                            BackgroundColor="Orange"
+                            Size="Mini"
+                            ImageSource="{StaticResource musicIcon}" />
+                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center"
+                            BackgroundColor="Green"
+                            Size="Mini"
+                            ImageSource="{StaticResource octocatIcon}" />
+                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center"
+                            BackgroundColor="Blue"
+                            Size="Mini"
+                            ImageSource="{StaticResource gameIcon}" />
+                </StackLayout>
+                <FloatingActionButton VerticalOptions="End" x:Name="TogglePopupButton" HorizontalOptions="Center"
+                                      BackgroundColor="{OnPlatform iOS=Magenta, Default=Default}"
+                                      Command="{Binding ShowPopupMenuCommand, Source={x:Reference thisPage}}"
+                                      ImageSource="{StaticResource gameIcon}" />
+            </StackLayout>
+
+        </AbsoluteLayout>
+
     </ContentPage.Content>
 </ContentPage>

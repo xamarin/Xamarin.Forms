@@ -8,9 +8,11 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.XamStore
 {
+	[XamlCompilation(XamlCompilationOptions.Compile)]
 	[Preserve(AllMembers = true)]
 	public partial class DemoShellPage : ContentPage
 	{
+		public ICommand ShowPopupMenuCommand { get; private set; }
 
 		HomeViewModel _vm;
 
@@ -26,6 +28,8 @@ namespace Xamarin.Forms.Controls.XamStore
 
 		public DemoShellPage()
 		{
+			ShowPopupMenuCommand = new Command(ShowPopupMenu);
+
 			InitializeComponent();
 			ViewModel = new HomeViewModel();
 			NavigationPage.SetBackButtonTitle(this, "");
@@ -78,6 +82,27 @@ namespace Xamarin.Forms.Controls.XamStore
 		protected void RemoveSearchHandler()
 		{
 			ClearValue(Shell.SearchHandlerProperty);
+		}
+
+		bool _popupMenuExpanded;
+		async void ShowPopupMenu()
+		{
+			const uint rate = 44;
+			const uint length = 500;
+			Easing easing = Easing.SpringIn;
+
+			double startingHeight = _popupMenuExpanded ? PopupMenu.Height : 0;
+			double endingHeight = _popupMenuExpanded ? 0 : PopupMenu.Children.Count * 56;
+			ImageSource image = new FontImageSource { FontFamily = Icons.FontFamily, Glyph = _popupMenuExpanded ? Icons.Add : Icons.Card, Color = Color.White };
+
+			PopupMenu.Animate("expando", input => { PopupMenu.HeightRequest = input; PopupMenu.Opacity = input; }, startingHeight, endingHeight, rate, length, easing);
+
+			await TogglePopupButton.RotateTo(360, length, easing);
+			TogglePopupButton.Rotation = 0;
+
+			TogglePopupButton.ImageSource = image;
+
+			_popupMenuExpanded = !_popupMenuExpanded;
 		}
 	}
 

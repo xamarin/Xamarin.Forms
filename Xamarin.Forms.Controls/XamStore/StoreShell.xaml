@@ -41,7 +41,9 @@
 				</StackLayout>
 			</ContentView>
 		</DataTemplate>
-	</Shell.Resources>
+       
+    </Shell.Resources>
+
 
 	<Shell.FlyoutHeader>
 		<local:FlyoutHeader />
