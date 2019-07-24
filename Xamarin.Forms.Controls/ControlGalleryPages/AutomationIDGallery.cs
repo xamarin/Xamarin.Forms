@@ -54,7 +54,10 @@ namespace Xamarin.Forms.Controls
 					BackgroundColor = Color.Red
 				});
 				rootLayout.Children.Add (new Button { AutomationId = "btnHello", Text = "Hello" });
+
+#pragma warning disable 0618 // Retain until Date is removed
 				rootLayout.Children.Add (new DatePicker { AutomationId = "dtPicker", Date = DateTime.Parse ("01/01/2014") });
+#pragma warning restore
 				rootLayout.Children.Add (new TimePicker { AutomationId = "tPicker", Time = new TimeSpan (14, 45, 50)  });
 				rootLayout.Children.Add (new Label { AutomationId = "lblHello", Text = "Hello Label" });
 				rootLayout.Children.Add (new Editor { AutomationId = "editorHello", Text = "Hello Editor" });

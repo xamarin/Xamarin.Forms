@@ -344,9 +344,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 		static ContentPage DatePickerPage()
 		{
+#pragma warning disable 0618 // Retain until Date is removed
 			var pickerInit = new DatePicker { Date = new DateTime(1978, 12, 24), TextColor = Color.Red };
 			var pickerColorDefaultToggle = new DatePicker { Date = new DateTime(1978, 12, 24) };
-
+#pragma warning restore
 			var defaultText = "Should have default color text";
 			var pickerColorLabel = new Label { Text = defaultText };
 

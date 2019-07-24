@@ -43,7 +43,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateMinimumDate();
 				UpdateMaximumDate();
+#pragma warning disable 0618
 				UpdateDate(e.NewElement.Date);
+#pragma warning restore
 				UpdateFlowDirection();
 			}
 
@@ -80,8 +82,10 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == DatePicker.DateProperty.PropertyName)
+#pragma warning disable 0618
+			if (e.PropertyName == DatePicker.DateProperty.PropertyName || e.PropertyName == DatePicker.SelectedDateProperty.PropertyName)
 				UpdateDate(Element.Date);
+#pragma warning restore
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
@@ -100,12 +104,14 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (Element == null)
 				return;
-
+#pragma warning disable 0618
 			if (Element.Date.CompareTo(e.NewDate.Date) != 0)
+#pragma warning restore
 			{
 				var date = e.NewDate.Date.Clamp(Element.MinimumDate, Element.MaximumDate);
+#pragma warning disable 0618
 				Element.Date = date;
-
+#pragma warning restore
 				// set the control date-time to clamped value, if it exceeded the limits at the time of installation.
 				if (date != e.NewDate.Date)
 				{

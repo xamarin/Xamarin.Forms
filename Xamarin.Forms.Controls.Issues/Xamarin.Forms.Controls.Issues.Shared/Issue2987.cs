@@ -16,11 +16,16 @@ namespace Xamarin.Forms.Controls.Issues
 			var datePicker = new DatePicker { AutomationId = "datePicker" };
 			datePicker.MinimumDate = new DateTime (2015, 1, 1);
 			datePicker.MaximumDate = new DateTime (2015, 6, 1);
+#pragma warning disable 0618 // Retain until Date is removed
 			datePicker.Date = DateTime.Now;
+#pragma warning restore
 			datePicker.Format = "MMM dd, yyyy";
+
+#pragma warning disable 0618 // Retain until Date is removed
 			datePicker.DateSelected += (object sender, DateChangedEventArgs e) => {
 				Debug.WriteLine ("Date changed");
 			};
+#pragma warning restore
 
 			Padding = Device.RuntimePlatform == Device.iOS ? new Thickness(10, 20, 10, 5) : new Thickness(10, 0, 10, 5);
 

@@ -102,8 +102,9 @@ namespace Xamarin.Forms.Controls.Issues
 			picker.SetBinding(Picker.ItemsSourceProperty, new Binding(nameof(Issue4187Model.PickerSource)));
 
 			var datePicker = new DatePicker();
+#pragma warning disable 0618 // Retain until Date is removed
 			datePicker.SetBinding(DatePicker.DateProperty, new Binding(nameof(Issue4187Model.Date)));
-
+#pragma warning restore
 			var entry = new Entry();
 			entry.SetBinding(Entry.TextProperty, new Binding(nameof(Issue4187Model.Text)));
 

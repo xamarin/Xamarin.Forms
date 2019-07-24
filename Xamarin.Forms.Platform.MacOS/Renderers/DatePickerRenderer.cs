@@ -47,8 +47,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-
+#pragma warning disable 0618
 			if (e.PropertyName == DatePicker.DateProperty.PropertyName ||
+#pragma warning restore
 				e.PropertyName == DatePicker.FormatProperty.PropertyName)
 				UpdateDateFromModel();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
@@ -101,16 +102,19 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Control == null || Element == null)
 				return;
-
+#pragma warning disable 0618
 			ElementController?.SetValueFromRenderer(DatePicker.DateProperty, e.ProposedDateValue.ToDateTime().Date);
+#pragma warning restore
 		}
 
 		void UpdateDateFromModel()
 		{
 			if (Control == null || Element == null)
 				return;
+#pragma warning disable 0618
 			if (_picker.DateValue.ToDateTime().Date != Element.Date.Date)
 				_picker.DateValue = Element.Date.ToNSDate();
+#pragma warning restore
 		}
 
 		void UpdateFont()

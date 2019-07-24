@@ -37,9 +37,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void Datetime (bool useCompiledXaml)
 			{
 				var layout = new BuiltInConversions (useCompiledXaml);
-
+#pragma warning disable 0618 // Retain until Date is removed
 				Assert.AreEqual (new DateTime (2015, 01, 16), layout.datetime0.Date);
 				Assert.AreEqual (new DateTime (2015, 01, 16), layout.datetime1.Date);
+#pragma warning restore
+				Assert.AreEqual(new DateTime(2015, 01, 16), layout.datetime0.SelectedDate);
+				Assert.AreEqual(new DateTime(2015, 01, 16), layout.datetime1.SelectedDate);
 			}
 
 			[TestCase(false)]

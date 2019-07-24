@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 				_originalHintTextColor = EditText.CurrentHintTextColor;
 			}
 
-			SetDate(Element.Date);
+			UpdateDisplayedDate();
 
 			UpdateFont();
 			UpdateMinimumDate();
@@ -76,9 +76,8 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-
-			if (e.PropertyName == DatePicker.DateProperty.PropertyName || e.PropertyName == DatePicker.FormatProperty.PropertyName)
-				SetDate(Element.Date);
+			if (e.PropertyName == DatePicker.SelectedDateProperty.PropertyName || e.PropertyName == DatePicker.FormatProperty.PropertyName)
+				UpdateDisplayedDate();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
@@ -112,7 +111,7 @@ namespace Xamarin.Forms.Platform.Android
 			DatePicker view = Element;
 			var dialog = new DatePickerDialog(Context, (o, e) =>
 			{
-				view.Date = e.Date;
+				view.SelectedDate = e.Date;
 				((IElementController)view).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 			}, year, month, day);
 
@@ -144,8 +143,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			DatePicker view = Element;
 			((IElementController)view).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
-
+	
+#pragma warning disable 0618
 			ShowPickerDialog(view.Date.Year, view.Date.Month - 1, view.Date.Day);
+#pragma warning restore
 		}
 
 		void ShowPickerDialog(int year, int month, int day)
@@ -165,9 +166,9 @@ namespace Xamarin.Forms.Platform.Android
 			Element.Unfocus();
 		}
 
-		void SetDate(DateTime date)
+		void UpdateDisplayedDate()
 		{
-			EditText.Text = date.ToString(Element.Format);
+			EditText.Text = Element.SelectedDate?.ToString(Element.Format);
 		}
 
 		void UpdateFont()

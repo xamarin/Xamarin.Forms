@@ -23,7 +23,9 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			StackLayout layout = new StackLayout() { Orientation = StackOrientation.Vertical };
 			DatePicker picker = new DatePicker();
+#pragma warning disable 0618 // Retain until Date is removed
 			picker.Date = new DateTime(2017, 10, 7, 0, 0, 0, DateTimeKind.Utc);
+#pragma warning restore
 			Label label = new Label() { Text = "On Droid this will show as 10/7/2017, on UWP it will show as 10/06/2017.  Local TimeZone for this test was EDT.", LineBreakMode = LineBreakMode.WordWrap };
 			layout.Children.Add(picker);
 			layout.Children.Add(label);

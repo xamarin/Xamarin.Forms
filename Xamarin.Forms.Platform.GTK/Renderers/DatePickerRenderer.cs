@@ -33,8 +33,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 					datePicker.DateChanged += OnDateChanged;
 					SetNativeControl(datePicker);
 				}
-
+#pragma warning disable 0618
 				UpdateDate(e.NewElement.Date);
+#pragma warning restore
 				UpdateMaximumDate();
 				UpdateMinimumDate();
 				UpdateTextColor();
@@ -47,9 +48,11 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-
-			if (e.PropertyName == DatePicker.DateProperty.PropertyName)
+#pragma warning disable 0618
+			if (e.PropertyName == DatePicker.DateProperty.PropertyName ||
+				e.PropertyName == DatePicker.SelectedDateProperty.PropertyName)
 				UpdateDate(Element.Date);
+#pragma warning restore
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
@@ -134,7 +137,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private void OnDateChanged(object sender, EventArgs e)
 		{
+#pragma warning disable 0618
 			ElementController?.SetValueFromRenderer(DatePicker.DateProperty, Control.CurrentDate.Date);
+#pragma warning restore
 		}
 
 		private bool OpenPicker()

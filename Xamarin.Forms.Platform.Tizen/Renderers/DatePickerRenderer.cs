@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public DatePickerRenderer()
 		{
-			RegisterPropertyHandler(DatePicker.DateProperty, UpdateDate);
+			RegisterPropertyHandler(DatePicker.SelectedDateProperty, UpdateDate);
 			RegisterPropertyHandler(DatePicker.FormatProperty, UpdateDate);
 			RegisterPropertyHandler(DatePicker.TextColorProperty, UpdateTextColor);
 			RegisterPropertyHandler(DatePicker.FontAttributesProperty, UpdateFontAttributes);
@@ -86,7 +86,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Element.IsEnabled)
 			{
 				var dialog = _lazyDialog.Value;
+#pragma warning disable 0618
 				dialog.Picker.DateTime = Element.Date;
+#pragma warning restore
 				dialog.Picker.MaximumDateTime = Element.MaximumDate;
 				dialog.Picker.MinimumDateTime = Element.MinimumDate;
 				// You need to call Show() after ui thread occupation because of EFL problem.
@@ -97,13 +99,13 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnDateTimeChanged(object sender, Native.DateChangedEventArgs dcea)
 		{
-			Element.Date = dcea.NewDate;
+			Element.SelectedDate = dcea.NewDate;
 			Control.Text = dcea.NewDate.ToString(Element.Format);
 		}
 
 		void UpdateDate()
 		{
-			Control.Text = Element.Date.ToString(Element.Format);
+			Control.Text = Element.SelectedDate?.ToString(Element.Format);
 		}
 
 		void UpdateTextColor()
