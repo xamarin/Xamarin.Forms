@@ -68,17 +68,23 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.Is(VisualElement.BackgroundColorProperty))
+			{
 				UpdateColor();
-			else if (e.PropertyName == FloatingActionButton.SizeProperty.PropertyName)
+			}
+			else if (e.Is(FloatingActionButton.SizeProperty))
 			{
 				UpdateBorder();
 				UpdateSize();
 			}
-			else if (e.PropertyName == Image.SourceProperty.PropertyName)
+			else if (e.Is(FloatingActionButton.ImageSourceProperty))
+			{
 				await TrySetImage();
-			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			}
+			else if (e.Is(VisualElement.IsEnabledProperty))
+			{
 				UpdateEnabled();
+			}
 		}
 
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
@@ -119,7 +125,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateSize()
 		{
 			var size = Element.Size == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
-
 			Control.Frame = new CGRect(Control.Frame.X, Control.Frame.Y, size, size);
 		}
 
