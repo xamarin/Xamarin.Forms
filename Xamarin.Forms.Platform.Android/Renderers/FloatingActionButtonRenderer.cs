@@ -1,28 +1,28 @@
 ﻿using Android.Content;
 using Android.Content.Res;
-using Android.Graphics;
-using Android.Graphics.Drawables;
 using Android.Support.V4.View;
 using Android.Views;
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
 using AFloatingButton = global::Android.Support.Design.Widget.FloatingActionButton;
+using Xamarin.Forms.Platform.Android.FastRenderers;
+using Android.Graphics.Drawables;
+using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class FloatingActionButtonRenderer : AFloatingButton,
 		IVisualElementRenderer, IViewRenderer, ITabStop,
-		AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener, AView.IOnAttachStateChangeListener
+		AView.IOnAttachStateChangeListener, AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener
 	{
-		const float SmallSize = 44f;
-		const float NormalSize = 56f;
+		const float SmallSize = 44;
+		const float NormalSize = 56;
 
+		ColorStateList _defaultBackgroundTintList;
 		int? _defaultLabelFor;
-		bool _isDisposed;
+		bool _disposed;
 		bool _inputTransparent;
 		AutomationPropertiesProvider _automationPropertiesProvider;
 		VisualElementTracker _tracker;
@@ -62,16 +62,29 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool IOnTouchListener.OnTouch(AView v, MotionEvent e) => ButtonElementManager.OnTouch(Button, Button, v, e);
 
+		void IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>
+			UpdateAll();
+
+		void IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView) { }
+
 		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
 		{
 			((IElementController)Button).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, hasFocus);
 		}
 
+		Size MinimumSize()
+		{
+			return new Size();
+		}
+
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			var size = MinimumSize();
-			Measure((int)size.Width, (int)size.Height);
-			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), size);
+			if (_disposed)
+			{
+				return new SizeRequest();
+			}
+			Measure(widthConstraint, heightConstraint);
+			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), MinimumSize());
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -96,7 +109,6 @@ namespace Xamarin.Forms.Platform.Android
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
 			}
 
-
 			element.PropertyChanged += OnElementPropertyChanged;
 
 			if (_tracker == null)
@@ -104,6 +116,7 @@ namespace Xamarin.Forms.Platform.Android
 				// Can't set up the tracker in the constructor because it access the Element (for now)
 				SetTracker(new VisualElementTracker(this));
 			}
+
 			if (_visualElementRenderer == null)
 			{
 				_visualElementRenderer = new VisualElementRenderer(this);
@@ -135,27 +148,33 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (_isDisposed)
+			if (_disposed)
 			{
 				return;
 			}
 
-			_isDisposed = true;
+			_disposed = true;
 
 			if (disposing)
 			{
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 				RemoveOnAttachStateChangeListener(this);
+				OnFocusChangeListener = null;
+
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
 
 				_automationPropertiesProvider?.Dispose();
 				_tracker?.Dispose();
 				_visualElementRenderer?.Dispose();
 
+				_defaultBackgroundTintList = null;
+
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
 				}
@@ -172,24 +191,18 @@ namespace Xamarin.Forms.Platform.Android
 			return base.OnTouchEvent(e);
 		}
 
-		Size MinimumSize()
-		{
-			var size = Element.Size == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
-			return new Xamarin.Forms.Size(size, size);
-		}
-
 		protected virtual void OnElementChanged(ElementChangedEventArgs<FloatingActionButton> e)
 		{
-			if (e.NewElement != null && !_isDisposed)
+			if (e.NewElement != null && !_disposed)
 			{
 				this.EnsureId();
 
-				UpdateInputTransparent();
 				UpdateColor();
-				UpdateEnabled();
-				TryUpdateBitmap();
+				UpdateSize();
+				UpdateInputTransparent();
+				UpdateImage();
 
-				//ElevationHelper.SetElevation(this, e.NewElement);
+				ElevationHelper.SetElevation(this, e.NewElement);
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
@@ -197,26 +210,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
-			{
-				UpdateInputTransparent();
-			}
-			else if (e.PropertyName == Image.SourceProperty.PropertyName)
-			{
-				TryUpdateBitmap();
-			}
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.Is(VisualElement.BackgroundColorProperty))
 			{
 				UpdateColor();
 			}
-			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			else if (e.Is(VisualElement.InputTransparentProperty))
 			{
-				UpdateEnabled();
+				UpdateInputTransparent();
 			}
-			else if (e.PropertyName == FloatingActionButton.SizeProperty.PropertyName)
+			else if (e.Is(FloatingActionButton.ImageSourceProperty))
 			{
-				_tracker?.UpdateLayout();
-				Size = Element.Size == FloatingActionButtonSize.Mini ? SizeMini : SizeNormal;
+				UpdateImage();
+			}
+			else if (e.Is(FloatingActionButton.SizeProperty))
+			{
+				UpdateSize();
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);
@@ -230,18 +238,70 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnLayout(changed, l, t, l + (int)size, t + (int)size);
 		}
 
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-		}
-
 		void SetTracker(VisualElementTracker tracker)
 		{
 			_tracker = tracker;
 		}
 
-		internal void OnNativeFocusChanged(bool hasFocus)
+		void UpdateAll()
 		{
+			UpdateColor();
+			UpdateImage();
+			UpdateSize();
+		}
+
+		void UpdateColor()
+		{
+			if (_defaultBackgroundTintList == null)
+				_defaultBackgroundTintList = BackgroundTintList;
+
+			if (!Element.IsSet(VisualElement.BackgroundColorProperty) || Element.BackgroundColor == Color.Default)
+				BackgroundTintList = _defaultBackgroundTintList;
+			else
+				BackgroundTintList = ColorStateList.ValueOf(Element.BackgroundColor.ToAndroid());
+		}
+
+		void UpdateImage()
+		{
+			if (Element == null)
+				return;
+
+			ImageSource elementImage = Element.ImageSource;
+
+			if (elementImage == null || elementImage.IsEmpty)
+			{
+				SetImageDrawable(null);
+				return;
+			}
+
+			Drawable existingImage = Drawable;
+
+			if (this is IVisualElementRenderer visualElementRenderer)
+			{
+				visualElementRenderer.ApplyDrawableAsync(FloatingActionButton.ImageSourceProperty, Context, image =>
+				{
+					if (image == existingImage)
+						return;
+
+					SetImageDrawable(image);
+				});
+			}
+		}
+
+		void UpdateInputTransparent()
+		{
+			if (Element == null || _disposed)
+			{
+				return;
+			}
+
+			_inputTransparent = Element.InputTransparent;
+		}
+
+		void UpdateSize()
+		{
+			Size = Element.Size == FloatingActionButtonSize.Mini ? SizeMini : SizeNormal;
+			_tracker?.UpdateLayout();
 		}
 
 		internal void SendVisualElementInitialized(VisualElement element, AView nativeView)
@@ -252,103 +312,18 @@ namespace Xamarin.Forms.Platform.Android
 		void Initialize()
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
-
 			SoundEffectsEnabled = false;
 			SetOnClickListener(this);
 			SetOnTouchListener(this);
 			AddOnAttachStateChangeListener(this);
 			OnFocusChangeListener = this;
 
+			LayoutParameters = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent)
+			{
+				Gravity = GravityFlags.CenterVertical | GravityFlags.CenterHorizontal
+			};
+
 			Tag = this;
-		}
-
-		void UpdateInputTransparent()
-		{
-			if (Element == null || _isDisposed)
-			{
-				return;
-			}
-
-			_inputTransparent = Element.InputTransparent;
-		}
-
-		void TryUpdateBitmap()
-		{
-			try
-			{
-				UpdateBitmap();
-			}
-			catch (Exception ex)
-			{
-				Internals.Log.Warning(nameof(FloatingActionButtonRenderer), "Error loading image: {0}", ex);
-			}
-			finally
-			{
-			}
-		}
-
-		void UpdateBitmap()
-		{
-			if (Element == null || Control == null || Control.IsDisposed())
-			{
-				return;
-			}
-
-			if (Control == null || Control.IsDisposed())
-				return;
-
-			if (Device.IsInvokeRequired)
-				throw new InvalidOperationException("Image Bitmap must not be updated from background thread");
-
-			var source = Element.ImageSource;
-
-			Bitmap bitmap = null;
-			Drawable drawable = null;
-
-			IImageSourceHandler handler;
-
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-			{
-				if (handler is FileImageSourceHandler)
-				{
-					drawable = Control.Context.GetDrawable((FileImageSource)source);
-				}
-
-				if (drawable == null)
-				{
-					try
-					{
-						bitmap = handler.LoadImageAsync(source, Control.Context).Result;
-					}
-					catch (TaskCanceledException)
-					{
-					}
-				}
-			}
-
-			if (!Control.IsDisposed())
-			{
-				if (bitmap == null && drawable != null)
-				{
-					Control.SetImageDrawable(drawable);
-				}
-				else
-				{
-					Control.SetImageBitmap(bitmap);
-				}
-			}
-
-			bitmap?.Dispose();
-		}
-
-		void UpdateColor()
-		{
-			Control.BackgroundTintList = ColorStateList.ValueOf(Element.BackgroundColor.ToAndroid());
-		}
-
-		void UpdateEnabled()
-		{
-			Control.Enabled = Element.IsEnabled;
 		}
 
 		IPlatformElementConfiguration<PlatformConfiguration.Android, FloatingActionButton> OnThisPlatform()
@@ -357,15 +332,6 @@ namespace Xamarin.Forms.Platform.Android
 				_platformElementConfiguration = Button.OnThisPlatform();
 
 			return _platformElementConfiguration;
-		}
-
-		void IOnAttachStateChangeListener.OnViewAttachedToWindow(global::Android.Views.View attachedView)
-		{
-			TryUpdateBitmap();
-		}
-
-		void IOnAttachStateChangeListener.OnViewDetachedFromWindow(global::Android.Views.View detachedView)
-		{
 		}
 	}
 }
