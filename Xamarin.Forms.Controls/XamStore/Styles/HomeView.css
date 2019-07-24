@@ -23,8 +23,16 @@ ListView {
 }
 
 .AddButton {
-    background-color: Yellow;
+    background-color: transparent;
     width: 60;
     height: 60;
     border: 0;
+}
+
+.PopupMenuButton {
+    -xf-size: mini;
+}
+
+.Purple {
+    background-color: blueviolet;
 }

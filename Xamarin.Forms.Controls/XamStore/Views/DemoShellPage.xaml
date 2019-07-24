@@ -125,21 +125,16 @@
 
             <StackLayout AbsoluteLayout.LayoutBounds="1, 1, 56, 1" AbsoluteLayout.LayoutFlags="PositionProportional,HeightProportional" >
                 <StackLayout VerticalOptions="EndAndExpand" x:Name="PopupMenu" Opacity="0" HeightRequest="0" IsClippedToBounds="true">
-                    <FloatingActionButton VerticalOptions="EndAndExpand" HorizontalOptions="Center"
+                    <FloatingActionButton VerticalOptions="EndAndExpand" HorizontalOptions="Center" StyleClass="PopupMenuButton"
                             BackgroundColor="Red"
-                            Size="Mini"
                             ImageSource="{StaticResource heartIcon}" />
-                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center"
+                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center" StyleClass="PopupMenuButton"
                             BackgroundColor="Orange"
-                            Size="Mini"
                             ImageSource="{StaticResource musicIcon}" />
-                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center"
+                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center" StyleClass="PopupMenuButton"
                             BackgroundColor="Green"
-                            Size="Mini"
                             ImageSource="{StaticResource octocatIcon}" />
-                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center"
-                            BackgroundColor="Blue"
-                            Size="Mini"
+                    <FloatingActionButton  VerticalOptions="End" HorizontalOptions="Center" StyleClass="PopupMenuButton, Purple"
                             ImageSource="{StaticResource gameIcon}" />
                 </StackLayout>
                 <FloatingActionButton VerticalOptions="End" x:Name="TogglePopupButton" HorizontalOptions="Center"
