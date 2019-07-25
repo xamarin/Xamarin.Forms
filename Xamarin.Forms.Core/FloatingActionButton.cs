@@ -6,7 +6,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_FloatingActionButtonRenderer))]
-	public class FloatingActionButton : View, IButtonController, IElementConfiguration<FloatingActionButton>
+	public class FloatingActionButton : View, IButtonController, IElementConfiguration<FloatingActionButton>, IImageElement
 	{
 		public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create(nameof(ImageSource), typeof(ImageSource), typeof(FloatingActionButton), null);
 
@@ -16,6 +16,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SizeProperty = BindableProperty.Create(nameof(Size), typeof(FloatingActionButtonSize), typeof(FloatingActionButton), FloatingActionButtonSize.Normal);
 
+		
 		public ImageSource ImageSource
 		{
 			get { return (ImageSource)GetValue(ImageSourceProperty); }
@@ -39,6 +40,12 @@ namespace Xamarin.Forms
 			get { return (FloatingActionButtonSize)GetValue(SizeProperty); }
 			set { SetValue(SizeProperty, value); }
 		}
+
+		Aspect IImageElement.Aspect => Aspect.AspectFit;
+
+		ImageSource IImageElement.Source => ImageSource;
+
+		bool IImageElement.IsOpaque => false;
 
 		public event EventHandler Clicked;
 		public event EventHandler Pressed;
@@ -82,6 +89,11 @@ namespace Xamarin.Forms
 				Released?.Invoke(this, EventArgs.Empty);
 			}
 		}
+
+		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageSourceProperty.PropertyName);
+
+		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
+			ImageElement.ImageSourcesSourceChanged(this, e);
 	}
 
 	public enum FloatingActionButtonSize

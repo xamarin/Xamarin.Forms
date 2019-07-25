@@ -1,4 +1,5 @@
 ﻿using CoreGraphics;
+using Foundation;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,10 +10,12 @@ using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, UIButton>
+	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, UIButton>, IImageVisualElementRenderer
 	{
 		const int SmallSize = 44;
 		const int NormalSize = 56;
+
+		IImageVisualElementRenderer ImageVisualElementRenderer => this;
 
 		public override SizeF SizeThatFits(SizeF size)
 		{
@@ -25,13 +28,23 @@ namespace Xamarin.Forms.Platform.iOS
 			return new SizeF(NormalSize, NormalSize);
 		}
 
+		public bool IsDisposed { get; private set; }
+
 		protected override void Dispose(bool disposing)
 		{
-			if (Control != null)
+			if (IsDisposed)
+				return;
+
+			if (disposing)
 			{
-				Control.TouchUpInside -= OnButtonTouchUpInside;
-				Control.TouchDown -= OnButtonTouchDown;
+				if (Control != null)
+				{
+					Control.TouchUpInside -= OnButtonTouchUpInside;
+					Control.TouchDown -= OnButtonTouchDown;
+				}
 			}
+
+			IsDisposed = true;
 
 			base.Dispose(disposing);
 		}
@@ -55,7 +68,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSize();
 				UpdateBorder();
 				UpdateColor();
-				await TrySetImage();
+				await UpdateImageAsync();
 			}
 		}
 
@@ -79,7 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.Is(FloatingActionButton.ImageSourceProperty))
 			{
-				await TrySetImage();
+				await UpdateImageAsync();
 			}
 			else if (e.Is(VisualElement.IsEnabledProperty))
 			{
@@ -133,52 +146,63 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Enabled = Element.IsEnabled;
 		}
 
-		protected virtual async Task TrySetImage()
+		async Task UpdateImageAsync()
 		{
+			if (IsDisposed || Control == null || Element == null)
+				return;
+
+			var imageRenderer = ImageVisualElementRenderer;
+			if (imageRenderer == null)
+				return;
+
 			try
 			{
-				await SetImage().ConfigureAwait(false);
+				await ImageElementManager.SetImage(imageRenderer, Element);
 			}
 			catch (Exception ex)
 			{
-				Log.Warning(nameof(FloatingActionButtonRenderer), "Error loading image: {0}", ex);
-			}
-			finally
-			{
+				Internals.Log.Warning(nameof(ImageRenderer), "Error loading image: {0}", ex);
 			}
 		}
 
-		protected async Task SetImage()
+
+		public UIImageView GetImage() => Control?.ImageView;
+
+		public void SetImage(UIImage image)
 		{
-			if (Element == null || Control == null)
-			{
+			if (IsDisposed || Control == null || Element == null)
 				return;
-			}
 
-			var source = Element.ImageSource;
+			var control = Control;
+			if (control == null)
+				return;
 
-			IImageSourceHandler handler;
-
-			if (source != null &&
-				(handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			if (image != null)
 			{
-				UIImage uiimage;
-				try
-				{
-					uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-				}
-				catch (OperationCanceledException)
-				{
-					uiimage = null;
-				}
-
-				if (Control != null)
-					Control.SetImage(uiimage, UIControlState.Normal);
+				control.SetImage(image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
+				control.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 			}
 			else
 			{
-				Control.SetImage(null, UIControlState.Normal);
+				control.SetImage(null, UIControlState.Normal);
 			}
+
+			UpdateEdgeInsets();
+		}
+
+		void UpdateEdgeInsets()
+		{
+			if (IsDisposed || Control == null || Element == null)
+				return;
+
+			var control = Control;
+			if (control == null)
+				return;
+
+			nfloat inset = Element.Size == FloatingActionButtonSize.Mini ? SmallSize * .2f : NormalSize * .3f;
+
+			var imageInsets = new UIEdgeInsets(inset, inset, inset, inset);
+			control.ImageEdgeInsets = imageInsets;
 		}
 
 		public override void LayoutSubviews()
