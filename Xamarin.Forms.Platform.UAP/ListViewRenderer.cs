@@ -84,9 +84,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 				ReloadData();
 
-				if (Element.SelectedItem != null)
-					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem, TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(Element.SelectedItem)));
-
 				UpdateGrouping();
 				UpdateHeader();
 				UpdateFooter();
@@ -95,6 +92,10 @@ namespace Xamarin.Forms.Platform.UWP
 				ClearSizeEstimate();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
+
+				// This should always be the last call here so the initial selection does not get cleared
+				if (Element.SelectedItem != null)
+					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem, TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(Element.SelectedItem)));
 			}
 		}
 
