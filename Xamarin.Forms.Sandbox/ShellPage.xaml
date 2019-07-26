@@ -22,7 +22,7 @@
                         </StackLayout>
                     </Shell.TitleView>-->
                     <StackLayout>
-                        <Button Text="I am a Button"  />
+                        <FloatingActionButton BackgroundColor="Magenta" HorizontalOptions="EndAndExpand" Margin="16" VerticalOptions="EndAndExpand" ImageSource="coffee.png" Size="Mini" />
                     </StackLayout>
                 </ContentPage>
             </ShellContent>

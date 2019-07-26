@@ -11,6 +11,6 @@
         </Grid>
     </NavigationPage.TitleView>
     <StackLayout>
-        <Button Text="I am a Button"  />
+        <FloatingActionButton BackgroundColor="Magenta" HorizontalOptions="EndAndExpand" Margin="16" VerticalOptions="EndAndExpand" ImageSource="coffee.png" Size="Normal" />
     </StackLayout>
 </ContentPage>

@@ -140,7 +140,7 @@
                 <FloatingActionButton VerticalOptions="End" x:Name="TogglePopupButton" HorizontalOptions="Center"
                                       BackgroundColor="{OnPlatform iOS=Magenta, Default=Default}"
                                       Command="{Binding ShowPopupMenuCommand, Source={x:Reference thisPage}}"
-                                      ImageSource="{StaticResource gameIcon}" />
+                                      ImageSource="{StaticResource addIcon}" />
             </StackLayout>
 
         </AbsoluteLayout>
