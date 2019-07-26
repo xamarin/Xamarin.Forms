@@ -660,6 +660,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			NSIndexPath _lastPath;
 
+			public override void TouchesBegan(NSSet touches, UIEvent evt)
+			{
+				Tapped(this);
+				base.TouchesBegan(touches, evt);
+			}
+
 			public SelectGestureRecognizer() : base(Tapped)
 			{
 				ShouldReceiveTouch = (recognizer, touch) =>
