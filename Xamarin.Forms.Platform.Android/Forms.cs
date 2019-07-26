@@ -73,12 +73,9 @@ namespace Xamarin.Forms
 
 		internal static BuildVersionCodes SdkInt {
 			get {
-				lock (s_lock)
-				{
-					if (!s_sdkInt.HasValue)
-						s_sdkInt = Build.VERSION.SdkInt;
-					return (BuildVersionCodes)s_sdkInt;
-				}
+				if (!s_sdkInt.HasValue)
+					s_sdkInt = Build.VERSION.SdkInt;
+				return (BuildVersionCodes)s_sdkInt;
 			}
 		}
 		internal static bool IsLollipopOrNewer
