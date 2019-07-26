@@ -60,7 +60,7 @@
     <Compile Include="FormsSlider.cs" />
     <Compile Include="FormsTextBox.cs" />
     <Compile Include="FormsComboBox.cs" />
-    <Compile Include="ImageExtensions.cs" />
+    <Compile Include="Extensions\AspectExtensions.cs" />
     <Compile Include="ITabStopOnDescendants.cs" />
     <Compile Include="ImageElementManager.cs" />
     <Compile Include="InterceptVisualStateManager.cs" />

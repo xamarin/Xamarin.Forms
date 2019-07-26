@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal static class ImageExtensions
+	internal static class AspectExtensions
 	{
 		public static Stretch ToStretch(this Aspect aspect)
 		{
