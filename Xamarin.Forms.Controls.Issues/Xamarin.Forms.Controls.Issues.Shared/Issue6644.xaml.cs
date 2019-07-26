@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 6644, "Android - CollectionView won't animate item remove if EmptyViewTemplate is provided ", PlatformAffected.Android)]
 	public partial class Issue6644 : ContentPage
 	{
+#if APP
 		public Issue6644()
 		{
 			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
@@ -25,4 +26,5 @@ namespace Xamarin.Forms.Controls.Issues
 				src.RemoveAt(0);
 		}
 	}
+#endif
 }
