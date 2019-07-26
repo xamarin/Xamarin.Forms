@@ -25,6 +25,6 @@ namespace Xamarin.Forms.Controls.Issues
 			if (src.Any())
 				src.RemoveAt(0);
 		}
-	}
 #endif
+	}
 }
