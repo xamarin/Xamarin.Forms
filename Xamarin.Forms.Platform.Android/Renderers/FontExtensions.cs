@@ -41,6 +41,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static Typeface ToTypeFace(this string fontfamily, FontAttributes attr = FontAttributes.None)
 		{
+			fontfamily = fontfamily ?? String.Empty;
 			return ToTypeface(fontfamily, attr);
 		}
 
@@ -59,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static bool IsAssetFontFamily(string name)
 		{
-			return name.Contains(".ttf#") || name.Contains(".otf#");
+			return name != null && (name.Contains(".ttf#") || name.Contains(".otf#"));
 		}
 
 		internal static Typeface ToTypeface(this IFontElement self)
@@ -73,6 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static Typeface ToTypeface(string fontFamily, FontAttributes fontAttributes)
 		{
+			fontFamily = fontFamily ?? String.Empty;
 			return Typefaces.GetOrAdd(new Tuple<string, FontAttributes>(fontFamily, fontAttributes), CreateTypeface);
 		}
 
@@ -114,6 +116,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static string FontNameToFontFile(string fontFamily)
 		{
+			fontFamily = fontFamily ?? String.Empty;
 			int hashtagIndex = fontFamily.IndexOf('#');
 			if (hashtagIndex >= 0)
 				return fontFamily.Substring(0, hashtagIndex);
