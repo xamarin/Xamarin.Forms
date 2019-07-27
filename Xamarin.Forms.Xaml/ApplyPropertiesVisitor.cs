@@ -235,7 +235,7 @@ namespace Xamarin.Forms.Xaml
 				serviceProvider = new XamlServiceProvider(node, Context);
 
 			if (serviceProvider != null && propertyName != XmlName.Empty)
-				((XamlValueTargetProvider)serviceProvider.IProvideValueTarget).TargetProperty = GetTargetProperty(source, propertyName, Context, node);
+				((XamlValueTargetProvider)serviceProvider.IProvideValueTarget).TargetProperty = GetProviderTargetProperty(source, propertyName, Context, node);
 
 			try {
 				if (markupExtension != null)
@@ -304,19 +304,30 @@ namespace Xamarin.Forms.Xaml
 			return null;
 		}
 
-		static object GetTargetProperty(object xamlelement, XmlName propertyName, HydrationContext context, IXmlLineInfo lineInfo)
+		static object GetProviderTargetProperty(object xamlelement, XmlName propertyName, HydrationContext context, IXmlLineInfo lineInfo)
 		{
 			var localName = propertyName.LocalName;
-			//If it's an attached BP, update elementType and propertyName
-			var bpOwnerType = xamlelement.GetType();
-			GetRealNameAndType(ref bpOwnerType, propertyName.NamespaceURI, ref localName, context, lineInfo);
-			var property = GetBindableProperty(bpOwnerType, localName, lineInfo, false);
+			Type ownerType = xamlelement.GetType();
+			GetRealNameAndType(ref ownerType, propertyName.NamespaceURI, ref localName, context, lineInfo);
 
+			object property = GetTargetProperty(xamlelement, ownerType, localName, lineInfo);
 			if (property != null)
 				return property;
-			
-			var elementType = xamlelement.GetType();
-			var propertyInfo = elementType.GetRuntimeProperties().FirstOrDefault(p => p.Name == localName);
+
+			EventInfo eventInfo = ownerType.GetRuntimeEvent(localName);
+			if (eventInfo != null)
+				return eventInfo;
+
+			return eventInfo;
+		}
+
+		static object GetTargetProperty(object xamlelement, Type bpOwnerType, string localName, IXmlLineInfo lineInfo)
+		{
+			var property = GetBindableProperty(bpOwnerType, localName, lineInfo, false);
+			if (property != null)
+				return property;
+
+			var propertyInfo = bpOwnerType.GetRuntimeProperties().FirstOrDefault(p => p.Name == localName);
 			return propertyInfo;
 		}
 
@@ -352,6 +363,10 @@ namespace Xamarin.Forms.Xaml
 			if (xpe == null && TrySetProperty(xamlelement, localName, value, lineInfo, serviceProvider, context, out xpe))
 				return;
 
+			//If the target is an event, and the value a binding or a ICommand, connect the command
+			if (xpe == null && TryConnectEventCommand(xamlelement, localName, attached, value, rootElement, lineInfo, out xpe))
+				return;
+
 			//If it's an already initialized property, add to it
 			if (xpe == null && TryAddToProperty(xamlelement, propertyName, value, xKey, lineInfo, serviceProvider, context, out xpe))
 				return;
@@ -361,6 +376,33 @@ namespace Xamarin.Forms.Xaml
 				context.ExceptionHandler(xpe);
 			else
 				throw xpe;
+		}
+
+		static bool TryConnectEventCommand(object element, string localName, bool attached, object value, object rootElement, IXmlLineInfo lineInfo, out Exception exception)
+		{
+			exception = null;
+
+			if (attached)
+				return false;
+			if (!(element.GetType().GetRuntimeEvent(localName) is EventInfo eventInfo))
+				return false;
+
+			if (value is EventToCommandSource eventToCommandSource && element is BindableObject bindable)
+			{
+				Delegate handler = Event2CommandHelper.GetHandler(bindable, eventInfo, eventToCommandSource);
+				eventInfo.AddEventHandler(element, handler);
+				return true;
+			}
+
+			//// Setting Command value to event
+			//if (value is System.Windows.Input.ICommand command)
+			//{
+			//	var handler = Event2CommandHelper.GetHandlerFor(element, localName, command);
+			//	eventInfo.AddEventHandler(element, handler);
+			//	return true;
+			//}
+
+			return false;
 		}
 
 		public static object GetPropertyValue(object xamlElement, XmlName propertyName, HydrationContext context, IXmlLineInfo lineInfo, out object targetProperty)

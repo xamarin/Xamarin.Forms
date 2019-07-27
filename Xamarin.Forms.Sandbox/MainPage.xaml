@@ -3,14 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xamarin.Forms.Sandbox.MainPage"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:sandbox="clr-namespace:Xamarin.Forms.Sandbox"
              ios:Page.UseSafeArea="true">
-
-    <NavigationPage.TitleView>
-        <Grid>
-            <Button Text="I am a Button"  />
-        </Grid>
-    </NavigationPage.TitleView>
     <StackLayout>
-        <Button Text="I am a Button"  />
+        <Button Text="Test"
+                Clicked="{EventToCommand ButtonClickedCommand}" />
+
+        <Button Text="Test with command param"
+                Clicked="{EventToCommand ButtonClicked2Command, CommandParameter={Binding SomeParam}}" />
+
+        <ListView ItemTapped="{EventToCommand ListViewItemTappedCommand, EventArgsParameterPath='Item'}"
+                  SelectionMode="None">
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>mono</x:String>
+                    <x:String>monodroid</x:String>
+                    <x:String>monotouch</x:String>
+                    <x:String>mononucleosis</x:String>
+                </x:Array>
+            </ListView.ItemsSource>
+        </ListView>
     </StackLayout>
 </ContentPage>

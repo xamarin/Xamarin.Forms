@@ -8,7 +8,7 @@ using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.StyleSheets;
 using System.Reflection;
 
-[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
+[assembly: XamlCompilation(XamlCompilationOptions.Skip)]
 namespace Xamarin.Forms.Sandbox
 {
 	public partial class App : Application
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Sandbox
 		public App()
 		{
 			Device.SetFlags(new[] { "Shell_Experimental", "CollectionView_Experimental" });
-			InitializeMainPage();
+			MainPage = new MainPage();
 		}
 
 		void AddStyleSheet()
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Sandbox
 			flags.Add("UseLegacyRenderers");
 			Device.SetFlags(flags.Select(x => x).Distinct().ToArray());
 		}
-				
+
 
 		ContentPage CreateContentPage(View view)
 		{
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Sandbox
 		}
 
 
-		StackLayout CreateStackLayout(IEnumerable<View> children, StackOrientation orientation = StackOrientation.Vertical )
+		StackLayout CreateStackLayout(IEnumerable<View> children, StackOrientation orientation = StackOrientation.Vertical)
 		{
 			var sl = new StackLayout() { Orientation = orientation };
 			foreach (var child in children)
