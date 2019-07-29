@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ChangeBackgroundButtonAutomationId = "ChangeBackgroundButton";
 		const string ListViewAutomationId = "TheListView";
 
-		public static string ChangeUITableViewAppereanceBgColor = "BIBBIDYBOBBIDIBOOOO";
+		public static string ChangeUITableViewAppearanceBgColor = "BIBBIDYBOBBIDIBOOOO";
 
 		ObservableCollection<string> _items = new ObservableCollection<string>();
 		public ObservableCollection<string> Items
@@ -59,13 +59,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var changeAppearanceButton = new Button()
 			{
-				Text = "Change Background through Appereance API",
+				Text = "Change Background through Appearance API",
 				AutomationId = ChangeBackgroundButtonAutomationId
 			};
 
 			changeAppearanceButton.Clicked += (s, a) =>
 			{
-				MessagingCenter.Send(this, ChangeUITableViewAppereanceBgColor);
+				MessagingCenter.Send(this, ChangeUITableViewAppearanceBgColor);
 			};
 
 			var stack = new StackLayout();
