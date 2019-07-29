@@ -15,6 +15,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			var swipeSwitch = new Switch { BindingContext = carousel, AutomationId = "SwipeSwitch" };
 			swipeSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsSwipeEnabled), BindingMode.TwoWay);
 
+			var bounceLabel = new Label { Text = "Bounce: ", VerticalTextAlignment = TextAlignment.Center };
+			var bounceSwitch = new Switch { BindingContext = carousel, AutomationId = "BounceSwitch" };
+			bounceSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsBounceEnabled), BindingMode.TwoWay);
+
 			_slider = new Slider
 			{
 				BackgroundColor = Color.Pink,
@@ -57,7 +61,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			var stacklayout = new StackLayout
 			{
 				Orientation = StackOrientation.Horizontal,
-				Children = { animateLabel, animateSwitch, swipeLabel, swipeSwitch }
+				Children = { animateLabel, animateSwitch, swipeLabel, swipeSwitch, bounceLabel, bounceSwitch }
 			};
 
 			layout.Children.Add(stacklayout);

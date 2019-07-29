@@ -30,6 +30,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (changedProperty.Is(CarouselView.IsSwipeEnabledProperty))
 				UpdateIsSwipeEnabled();
+			else if (changedProperty.Is(CarouselView.IsBounceEnabledProperty))
+				UpdateIsBounceEnabled();
 		}
 
 		protected override ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification, ItemSizingStrategy itemSizingStrategy)
@@ -47,6 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.SetUpNewElement(newElement);
 			UpdateIsSwipeEnabled();
+			UpdateIsBounceEnabled();
 		}
 
 		protected override void TearDownOldElement(ItemsView oldElement)
@@ -57,7 +60,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsSwipeEnabled()
 		{
+			if (CarouselView == null)
+				return;
+
 			CarouselViewController.CollectionView.ScrollEnabled = CarouselView.IsSwipeEnabled;
+		}
+
+		void UpdateIsBounceEnabled()
+		{
+			if (CarouselView == null)
+				return;
+
+			CarouselViewController.CollectionView.Bounces = CarouselView.IsBounceEnabled;
 		}
 	}
 }
