@@ -70,9 +70,9 @@
     <Compile Include="CollectionView\TemplatedItemSourceFactory.cs" />
     <Compile Include="ITitleIconProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
-    <Compile Include="Items\FormsGridView.cs" />
-    <Compile Include="Items\ItemTemplateEnumerator.cs" />
-    <Compile Include="Items\ItemTemplateContext.cs" />
+    <Compile Include="CollectionView\FormsGridView.cs" />
+    <Compile Include="CollectionView\ItemTemplateEnumerator.cs" />
+    <Compile Include="CollectionView\ItemTemplateContext.cs" />
     <Compile Include="ITitleProvider.cs" />
     <Compile Include="ITitleViewRendererController.cs" />
     <Compile Include="IToolbarProvider.cs" />
@@ -274,9 +274,6 @@
     <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Items\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
