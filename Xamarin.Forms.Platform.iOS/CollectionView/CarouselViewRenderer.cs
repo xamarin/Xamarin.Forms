@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platform.iOS
 				(CarouselViewController.Layout as CarouselViewLayout).UpdateConstraints(Frame.Size);
 				CarouselViewController.Layout.InvalidateLayout();
 			}
+			else if (changedProperty.Is(CarouselView.IsSwipeEnabledProperty))
+				UpdateIsSwipeEnabled();
 		}
 
 		protected override ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification, ItemSizingStrategy itemSizingStrategy)
@@ -41,10 +43,21 @@ namespace Xamarin.Forms.Platform.iOS
 			return new CarouselViewLayout(new ListItemsLayout(ItemsLayoutOrientation.Horizontal), itemSizingStrategy, CarouselView);
 		}
 
+		protected override void SetUpNewElement(ItemsView newElement)
+		{
+			base.SetUpNewElement(newElement);
+			UpdateIsSwipeEnabled();
+		}
+
 		protected override void TearDownOldElement(ItemsView oldElement)
 		{
 			CarouselViewController?.TearDown();
 			base.TearDownOldElement(oldElement);
+		}
+
+		void UpdateIsSwipeEnabled()
+		{
+			CarouselViewController.CollectionView.ScrollEnabled = CarouselView.IsSwipeEnabled;
 		}
 	}
 }
