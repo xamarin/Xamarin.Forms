@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Maps
 		public static readonly BindableProperty MoveToLastRegionOnLayoutChangeProperty = BindableProperty.Create(nameof(MoveToLastRegionOnLayoutChange), typeof(bool), typeof(Map), defaultValue: true);
 
 		readonly ObservableCollection<Pin> _pins = new ObservableCollection<Pin>();
-		readonly ObservableCollection<Polyline> _polylines = new ObservableCollection<Polyline>();
+		readonly ObservableCollection<MapElement> _mapElements = new ObservableCollection<MapElement>();
 		MapSpan _visibleRegion;
 
 		public Map(MapSpan region)
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Maps
 			set { SetValue(MoveToLastRegionOnLayoutChangeProperty, value); }
 		}
         
-		public IList<Polyline> Polylines => _polylines;
+		public IList<MapElement> MapElements => _mapElements;
 
 		public event EventHandler<MapClickedEventArgs> MapClicked;
 		

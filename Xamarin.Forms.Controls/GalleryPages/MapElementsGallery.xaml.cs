@@ -34,8 +34,8 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void RemovePolylineClicked(object sender, EventArgs e)
 		{
-			Map.Polylines.Remove(_currentPolyline);
-			_currentPolyline = Map.Polylines.LastOrDefault();
+			Map.MapElements.Remove(_currentPolyline);
+			_currentPolyline = Map.MapElements.OfType<Polyline>().LastOrDefault();
 
 			if (_currentPolyline == null)
 			{
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void AddNewPolyline()
 		{
-			Map.Polylines.Add(_currentPolyline = new Polyline());
+			Map.MapElements.Add(_currentPolyline = new Polyline());
 		}
 
 		void ChangeColorClicked(object sender, EventArgs e)
