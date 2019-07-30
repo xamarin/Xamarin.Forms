@@ -82,10 +82,10 @@ namespace Xamarin.Forms.Maps.Android
 						pin.PropertyChanged -= PinOnPropertyChanged;
 					}
 
-					((ObservableCollection<Polyline>)Element.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
-					foreach (Polyline polyline in Element.Polylines)
+					((ObservableCollection<MapElement>)Element.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
+					foreach (MapElement child in Element.MapElements)
 					{
-						polyline.PropertyChanged -= PolylineOnPropertyChanged;
+						child.PropertyChanged -= MapElementPropertyChanged;
 					}
 				}
 
@@ -126,10 +126,10 @@ namespace Xamarin.Forms.Maps.Android
 					pin.PropertyChanged -= PinOnPropertyChanged;
 				}
 
-				((ObservableCollection<Polyline>)oldMapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
-				foreach (Polyline polyline in oldMapModel.Polylines)
+				((ObservableCollection<MapElement>)oldMapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
+				foreach (MapElement child in oldMapModel.MapElements)
 				{
-					polyline.PropertyChanged -= PolylineOnPropertyChanged;
+					child.PropertyChanged -= MapElementPropertyChanged;
 				}
 
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Maps.Android
 			MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, OnMoveToRegionMessage, Map);
 
 			((INotifyCollectionChanged)Map.Pins).CollectionChanged += OnPinCollectionChanged;
-			((INotifyCollectionChanged)Map.Polylines).CollectionChanged += OnPolylineCollectionChanged;
+			((INotifyCollectionChanged)Map.MapElements).CollectionChanged += OnMapElementCollectionChanged;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -194,7 +194,7 @@ namespace Xamarin.Forms.Maps.Android
 				{
 					MoveToRegion(Element.LastMoveToRegion, false);
 					OnPinCollectionChanged(Element.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-					OnPolylineCollectionChanged(Element.Polylines, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					OnMapElementCollectionChanged(Element.MapElements, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 					_init = false;
 				}
 			}
@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Maps.Android
 					UpdateVisibleRegion(NativeMap.CameraPosition.Target);
 				}
 
-				if(Element.MoveToLastRegionOnLayoutChange)
+				if (Element.MoveToLastRegionOnLayoutChange)
 					MoveToRegion(Element.LastMoveToRegion, false);
 			}
 		}
@@ -455,27 +455,81 @@ namespace Xamarin.Forms.Maps.Android
 			Element.SetVisibleRegion(new MapSpan(new Position(pos.Latitude, pos.Longitude), dlat, dlong));
 		}
 
-		protected NativePolyline GetNativePolyline(Polyline polyline)
+		void MapElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			return _polylines?.Find(p => p.Id == (string)polyline.PolylineId);
-		}
-
-		protected Polyline GetPolylineFromNative(NativePolyline polyline)
-		{
-			Polyline targetPolyline = null;
-
-			for (int i = 0; i < Map.Polylines.Count; i++)
+			switch (sender)
 			{
-				var formsPolyline = Map.Polylines[i];
-				if ((string)formsPolyline.PolylineId == polyline.Id)
+				case Polyline polyline:
 				{
-					targetPolyline = formsPolyline;
+					PolylineOnPropertyChanged(polyline, e);
 					break;
 				}
 			}
-
-			return targetPolyline;
 		}
+		
+		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					AddMapElements(e.NewItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
+					AddMapElements(e.NewItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					if (_polylines != null)
+					{
+						foreach (var nativePolyline in _polylines)
+						{
+							nativePolyline.Remove();
+
+							var formsPolyline = GetFormsPolyline(nativePolyline);
+							if(formsPolyline != null)
+								formsPolyline.PropertyChanged -= MapElementPropertyChanged;
+						}
+					}
+
+                    AddMapElements(Element.MapElements);
+                    break;
+			}
+		}
+
+		void AddMapElements(IEnumerable<MapElement> mapElements)
+		{
+			foreach (var element in mapElements)
+			{
+				element.PropertyChanged += MapElementPropertyChanged;
+
+				switch (element)
+				{
+					case Polyline polyline:
+                        AddPolyline(polyline);
+                        break;
+				}
+			}
+		}
+
+		void RemoveMapElements(IEnumerable<MapElement> mapElements)
+		{
+			foreach (var element in mapElements)
+			{
+				element.PropertyChanged -= MapElementPropertyChanged;
+
+				switch (element)
+				{
+					case Polyline polyline:
+                        RemovePolyline(polyline);
+                        break;
+				}
+			}
+		}
+
+		#region Polylines
 
 		protected virtual PolylineOptions CreateNativePolyline(Polyline polyline)
 		{
@@ -492,9 +546,30 @@ namespace Xamarin.Forms.Maps.Android
 			return opts;
 		}
 
-		void PolylineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected NativePolyline GetNativePolyline(Polyline polyline)
 		{
-			var formsPolyline = (Polyline)sender;
+			return _polylines?.Find(p => p.Id == (string)polyline.MapElementId);
+		}
+
+		protected Polyline GetFormsPolyline(NativePolyline polyline)
+		{
+			Polyline targetPolyline = null;
+
+			for (int i = 0; i < Map.MapElements.Count; i++)
+			{
+				var element = Map.MapElements[i];
+				if ((string)element.MapElementId == polyline.Id)
+				{
+					targetPolyline = element as Polyline;
+					break;
+				}
+			}
+
+			return targetPolyline;
+		}
+
+		void PolylineOnPropertyChanged(Polyline formsPolyline, PropertyChangedEventArgs e)
+		{
 			var nativePolyline = GetNativePolyline(formsPolyline);
 
 			if (nativePolyline == null)
@@ -516,29 +591,7 @@ namespace Xamarin.Forms.Maps.Android
 			}
 		}
 
-		void OnPolylineCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			switch (e.Action)
-			{
-				case NotifyCollectionChangedAction.Add:
-					AddPolylines(e.NewItems.Cast<Polyline>());
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					RemovePolylines(e.OldItems.Cast<Polyline>());
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					RemovePolylines(e.OldItems.Cast<Polyline>());
-					AddPolylines(e.NewItems.Cast<Polyline>());
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					_polylines?.ForEach(p => p.Remove());
-					_polylines = null;
-					AddPolylines(Map.Polylines);
-					break;
-			}
-		}
-
-		void AddPolylines(IEnumerable<Polyline> polylines)
+		void AddPolyline(Polyline polyline)
 		{
 			var map = NativeMap;
 			if (map == null)
@@ -551,46 +604,26 @@ namespace Xamarin.Forms.Maps.Android
 				_polylines = new List<NativePolyline>();
 			}
 
-			_polylines.AddRange(polylines.Select(p =>
-			{
-				p.PropertyChanged += PolylineOnPropertyChanged;
+			var options = CreateNativePolyline(polyline);
+			var nativePolyline = map.AddPolyline(options);
 
-				var options = CreateNativePolyline(p);
-				var nativePolyline = map.AddPolyline(options);
+			polyline.MapElementId = nativePolyline.Id;
 
-				p.PolylineId = nativePolyline.Id;
-
-				return nativePolyline;
-			}));
+			_polylines.Add(nativePolyline);
 		}
 
-		void RemovePolylines(IEnumerable<Polyline> polylines)
+		void RemovePolyline(Polyline polyline)
 		{
-			var map = NativeMap;
+			var native = GetNativePolyline(polyline);
 
-			if (map == null)
+			if (native != null)
 			{
-				return;
-			}
-
-			if (_markers == null)
-			{
-				return;
-			}
-
-			foreach (var polyline in polylines)
-			{
-				polyline.PropertyChanged -= PolylineOnPropertyChanged;
-
-				var native = GetNativePolyline(polyline);
-
-				if (native != null)
-				{
-					native.Remove();
-					_polylines.Remove(native);
-				}
+				native.Remove();
+				_polylines.Remove(native);
 			}
 		}
+
+		#endregion
 
 		void IOnMapReadyCallback.OnMapReady(GoogleMap map)
 		{
