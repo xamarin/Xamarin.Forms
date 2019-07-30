@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.UITest.Helpers;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
@@ -20,7 +21,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		WebView webview;
 		WebView webview2;
-		int count;
 		ContentPage page1;
 		ContentPage page2;
 
@@ -34,49 +34,48 @@ namespace Xamarin.Forms.Controls.Issues
 			webview2.Navigated += Webview_Navigated;
 			page2 = new ContentPage { Content = webview2 };
 
-			count = 0;
 			Navigation.PushAsync(page1);
 			RunTest();
 		}
 
-		void RunTest()
+		async void RunTest()
 		{
-			Device.StartTimer(TimeSpan.FromSeconds(2), () =>
+			try
 			{
-				PushPopPages();
-				return false;
-			});
-		}
+				int count = 0;
+				while (count < 3)
+				{
+					await Task.Delay(2000);
+					count++;
 
-		async Task PushPopPages()
-		{
-			webview.Source = "https://xamarin.com";
-			await Navigation.PushAsync(page2);
+					webview.Source = "https://xamarin.com";
+					await Navigation.PushAsync(page2);
 
-			webview2.Source = "https://microsoft.com";
-			await Navigation.PopAsync();
+					webview2.Source = "https://microsoft.com";
+					await Navigation.PopAsync();
+				}
 
-			var done = count++ < 3;
-
-			if (done)
 				page1.Content = new Label { Text = "success", AutomationId = "success" };
 
-			if(!done)
+			}
+			catch(Exception exc)
 			{
-				RunTest();
+				page1.Content = new Label { Text = $"{exc}", AutomationId = "failure" };
 			}
 		}
 
 		void Webview_Navigated(object sender, WebNavigatedEventArgs e)
 		{
 			webview.EvaluateJavaScriptAsync("document.write('i executed this javascript woohoo');");
+
+			webview2.EvaluateJavaScriptAsync("document.write('i executed this javascript woohoo');");
 		}
 
 #if UITEST
 		[Test]
 		public void Issue6286_WebView_Test()
-		{	
-			RunningApp.WaitForElement(q => q.Marked("success"));
+		{
+			RunningApp.RetryUntilPresent(() => RunningApp.WaitForElement("success"));
 		}
 #endif
 	}
