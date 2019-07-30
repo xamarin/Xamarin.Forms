@@ -8,6 +8,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using SizeF = CoreGraphics.CGSize;
+using AVFoundation;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -93,6 +94,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateTextColor();
 				UpdateMaxLines();
+				UpdateLineBreakMode();
+
 				_buttonLayoutManager?.Update();
 			}
 		}
@@ -112,6 +115,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 		}
 
 		protected override void SetAccessibilityLabel()
@@ -157,6 +162,56 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateMaxLines()
 		{
 			Control.TitleLabel.Lines = Element.MaxLines;
+		}
+
+		void UpdateLineBreakMode()
+		{
+#if __MOBILE__
+			switch (Element.LineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					Control.LineBreakMode = UILineBreakMode.Clip;
+					break;
+				case LineBreakMode.WordWrap:
+					Control.LineBreakMode = UILineBreakMode.WordWrap;
+					break;
+				case LineBreakMode.CharacterWrap:
+					Control.LineBreakMode = UILineBreakMode.CharacterWrap;
+					break;
+				case LineBreakMode.HeadTruncation:
+					Control.LineBreakMode = UILineBreakMode.HeadTruncation;
+					break;
+				case LineBreakMode.MiddleTruncation:
+					Control.LineBreakMode = UILineBreakMode.MiddleTruncation;
+					break;
+				case LineBreakMode.TailTruncation:
+					Control.LineBreakMode = UILineBreakMode.TailTruncation;
+					break;
+			}
+#else
+			switch (Element.LineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					Control.LineBreakMode = NSLineBreakMode.Clipping;
+					break;
+				case LineBreakMode.WordWrap:
+					Control.LineBreakMode = NSLineBreakMode.ByWordWrapping;
+					break;
+				case LineBreakMode.CharacterWrap:
+					Control.LineBreakMode = NSLineBreakMode.CharWrapping;
+					break;
+				case LineBreakMode.HeadTruncation:
+					Control.LineBreakMode = NSLineBreakMode.TruncatingHead;
+					break;
+				case LineBreakMode.MiddleTruncation:
+					Control.LineBreakMode = NSLineBreakMode.TruncatingMiddle;
+					break;
+				case LineBreakMode.TailTruncation:
+					Control.LineBreakMode = NSLineBreakMode.TruncatingTail;
+					break;
+			}
+#endif
+
 		}
 
 		public void SetImage(UIImage image) => _buttonLayoutManager.SetImage(image);
