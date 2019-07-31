@@ -84,9 +84,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 				ReloadData();
 
-				// This should always be the last call here so the initial selection does not get cleared
-				
-
 				UpdateGrouping();
 				UpdateHeader();
 				UpdateFooter();
