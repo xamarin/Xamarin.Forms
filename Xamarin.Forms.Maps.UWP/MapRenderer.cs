@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Maps.UWP
 				var mapModel = e.OldElement;
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
-				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
 			}
 
 			if (e.NewElement != null)
@@ -51,9 +52,9 @@ namespace Xamarin.Forms.Maps.UWP
 				if (mapModel.Pins.Any())
 					LoadPins();
 
-				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged += OnPolylineCollectionChanged;
-				if (mapModel.Polylines.Any())
-					LoadPolylines();
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged += OnMapElementCollectionChanged;
+				if (mapModel.MapElements.Any())
+					LoadMapElements(mapModel.MapElements);
 
 				if (Control == null) return;
 
@@ -90,7 +91,7 @@ namespace Xamarin.Forms.Maps.UWP
 				if (Element != null)
 				{
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
-					((ObservableCollection<Polyline>)Element.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
+					((ObservableCollection<MapElement>)Element.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
 				}
 			}
 
@@ -159,43 +160,63 @@ namespace Xamarin.Forms.Maps.UWP
 			Control.Children.Add(new PushPin(pin));
 		}
 
-		void OnPolylineCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					foreach (Polyline polyline in e.NewItems)
-						LoadPolyline(polyline);
+					LoadMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					foreach (Polyline polyline in e.OldItems)
-						RemovePolyline(polyline);
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					foreach (Polyline polyline in e.OldItems)
-						RemovePolyline(polyline);
-					foreach (Polyline polyline in e.NewItems)
-						LoadPolyline(polyline);
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
+					LoadMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					Control.MapElements.Clear();
-					LoadPins();
+					LoadMapElements(Element.MapElements);
 					break;
 			}
 		}
 
-		void LoadPolylines()
+		void LoadMapElements(IEnumerable<MapElement> mapElements)
 		{
-			foreach (var polyline in Element.Polylines)
+			foreach (var mapElement in mapElements)
 			{
-				LoadPolyline(polyline);
+				mapElement.PropertyChanged += MapElementPropertyChanged;
+
+				switch (mapElement)
+				{
+					case Polyline polyline:
+						LoadPolyline(polyline);
+						break;
+				}
+			}
+		}
+
+		void RemoveMapElements(IEnumerable<MapElement> mapElements)
+		{
+			foreach (var mapElement in mapElements)
+			{
+				mapElement.PropertyChanged -= MapElementPropertyChanged;
+				Control.MapElements.Remove((Windows.UI.Xaml.Controls.Maps.MapElement)mapElement.MapElementId);
+			}
+		}
+
+		void MapElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (sender)
+			{
+				case Polyline polyline:
+					OnPolylinePropertyChanged(polyline, e);
+					break;
 			}
 		}
 
 		void LoadPolyline(Polyline polyline)
 		{
-			polyline.PropertyChanged += OnPolylinePropertyChanged;
-
 			if (polyline.Geopath.Any())
 			{
 				var mapPolyline = new MapPolyline()
@@ -209,27 +230,24 @@ namespace Xamarin.Forms.Maps.UWP
 					StrokeThickness = polyline.StrokeWidth
 				};
 
-				polyline.PolylineId = mapPolyline;
+				polyline.MapElementId = mapPolyline;
 
 				Control.MapElements.Add(mapPolyline);
 			}
 		}
 
-		void RemovePolyline(Polyline polyline)
+		void OnPolylinePropertyChanged(Polyline polyline, PropertyChangedEventArgs e)
 		{
-			polyline.PropertyChanged -= OnPolylinePropertyChanged;
-			Control.MapElements.Remove((MapPolyline)polyline.PolylineId);
-		}
+			var mapPolyline = (MapPolyline)polyline.MapElementId;
 
-		void OnPolylinePropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			var polyline = (Polyline)sender;
-			var mapPolyline = (MapPolyline)polyline.PolylineId;
-
-			if (mapPolyline == null || polyline.Geopath.Count == 0)
+			if (mapPolyline == null)
 			{
-				RemovePolyline(polyline);
 				LoadPolyline(polyline);
+				return;
+			}
+			else if(polyline.Geopath.Count == 0)
+			{
+				Control.MapElements.Remove(mapPolyline);
 				return;
 			}
 
