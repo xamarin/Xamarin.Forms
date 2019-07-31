@@ -112,5 +112,29 @@ namespace Xamarin.Forms.Platform.Android
 			if (!isInLayout && !view.IsLayoutRequested)
 				view.RequestLayout();
 		}
+
+		internal static T GetParentOfType<T>(this IViewParent view)
+		{
+			if (view is T t)
+				return t;
+
+			while (view != null)
+			{
+				if (view.Parent is T parent)
+					return parent;
+
+				view = view.Parent;
+			}
+
+			return default(T);
+		}
+
+		internal static T GetParentOfType<T>(this AView view) 
+		{
+			if (view is T t)
+				return t;
+
+			return view.Parent.GetParentOfType<T>();
+		}
 	}
 }
