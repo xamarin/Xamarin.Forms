@@ -14,17 +14,17 @@ namespace Xamarin.Forms
 		{
 			get
 			{
+				if (_dispatcher == null)
+				{
+					_dispatcher = this.GetDispatcher();
+				}
+
 				return _dispatcher;
 			}
 			internal set
 			{
 				_dispatcher = value;
 			}
-		}
-
-		protected BindableObject()
-		{
-			_dispatcher = this.GetDispatcher();
 		}
 
 		readonly Dictionary<BindableProperty, BindablePropertyContext> _properties = new Dictionary<BindableProperty, BindablePropertyContext>(4);
