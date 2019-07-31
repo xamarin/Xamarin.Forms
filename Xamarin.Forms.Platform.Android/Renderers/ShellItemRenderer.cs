@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using IMenu = Android.Views.IMenu;
@@ -341,6 +343,22 @@ namespace Xamarin.Forms.Platform.Android
 			SetupMenu();
 		}
 
+		protected override void OnShellItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnShellItemPropertyChanged(sender, e);
+
+			if (e.PropertyName == BaseShellItem.BadgeMoreTextProperty.PropertyName)
+			{
+				var itemCount = ShellItem.Items.Count;
+				var maxItems = _bottomView.MaxItemCount;
+
+				if (itemCount > maxItems)
+				{
+					ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxItems - 1).Any(x => x.IsChecked), MoreTabId);
+				}
+			}
+		}
+
 		protected override void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnShellSectionPropertyChanged(sender, e);
@@ -364,6 +382,30 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				SetupMenu();
 			}
+			// TODO: More text
+			else if (e.PropertyName == BaseShellItem.BadgeTextProperty.PropertyName ||
+				e.PropertyName == BaseShellItem.BadgeColorProperty.PropertyName ||
+				e.PropertyName == BaseShellItem.BadgeTextColorProperty.PropertyName ||
+				e.PropertyName == BaseShellItem.BadgeUnselectedColorProperty.PropertyName ||
+				e.PropertyName == BaseShellItem.BadgeUnselectedTextColorProperty.PropertyName ||
+				e.PropertyName == BaseShellItem.IsCheckedProperty.PropertyName)
+			{
+				var content = (ShellSection)sender;
+				var index = ShellItem.Items.IndexOf(content);
+
+				var itemCount = ShellItem.Items.Count;
+				var maxItems = _bottomView.MaxItemCount;
+
+				if (itemCount > maxItems && index > maxItems - 2)
+				{
+					ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxItems - 1).Any(x => x.IsChecked), MoreTabId);
+				}
+				else
+				{
+					var menuItem = _bottomView.Menu.FindItem(index);
+					ApplyBadge(content, content.BadgeText, content.IsChecked, menuItem.ItemId);
+				}
+			}
 		}
 
 		protected virtual void OnTabReselected(ShellSection shellSection)
@@ -385,7 +427,28 @@ namespace Xamarin.Forms.Platform.Android
 				_bottomView,
 				Context);
 
+			SetupBadges(shellItem, maxBottomItems, items);
+
 			UpdateTabBarVisibility();
+		}
+
+		protected void SetupBadges(ShellItem shellItem, int maxBottomItems, List<(string title, ImageSource icon, bool tabEnabled)> items)
+		{
+			int numberOfMenuItems = items.Count;
+			bool showMore = numberOfMenuItems > maxBottomItems;
+			int end = showMore ? maxBottomItems - 1 : numberOfMenuItems;
+
+			for (int i = 0; i < end; i++)
+			{
+				ShellSection shellSection = shellItem.Items[i];
+				ApplyBadge(shellSection, shellSection.BadgeText, shellSection.IsChecked, i);
+			}
+
+			if (showMore)
+			{
+				ApplyBadge(ShellItem, ShellItem.BadgeMoreText,
+					ShellItem.Items.Skip(maxBottomItems - 1).Any(x => x.IsChecked), MoreTabId);
+			}
 		}
 
 		protected virtual void UpdateShellSectionEnabled(ShellSection shellSection, IMenuItem menuItem)
@@ -393,6 +456,16 @@ namespace Xamarin.Forms.Platform.Android
 			bool tabEnabled = shellSection.IsEnabled;
 			if (menuItem.IsEnabled != tabEnabled)
 				menuItem.SetEnabled(tabEnabled);
+		}
+
+		protected virtual void ApplyBadge(BaseShellItem baseShellItem, string badgeText, bool isSelected, int itemId)
+		{
+			using (BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView)_bottomView.GetChildAt(0)))
+			{
+				BottomNavigationItemView itemView = bottomNavigationMenuView.FindViewById<BottomNavigationItemView>(itemId);
+
+				itemView.ApplyBadge(baseShellItem.GetBadgeEffectiveColor(isSelected), badgeText, baseShellItem.GetBadgeEffectiveTextColor(isSelected));
+			}
 		}
 
 		void OnDisplayedElementPropertyChanged(object sender, PropertyChangedEventArgs e)

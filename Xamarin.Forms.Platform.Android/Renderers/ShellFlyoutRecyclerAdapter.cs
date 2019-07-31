@@ -238,6 +238,7 @@ namespace Xamarin.Forms.Platform.Android
 			AView _itemView;
 			bool _disposed;
 
+
 			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : base(itemView)
 			{
 				_itemView = itemView;
@@ -290,7 +291,9 @@ namespace Xamarin.Forms.Platform.Android
 			void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 			{
 				if (e.PropertyName == BaseShellItem.IsCheckedProperty.PropertyName)
+				{
 					UpdateVisualState();
+				}
 			}
 
 			void OnClicked(object sender, EventArgs e)
