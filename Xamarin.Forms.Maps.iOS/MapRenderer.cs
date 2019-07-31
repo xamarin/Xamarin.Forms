@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Maps.MacOS
 					var mapModel = (Map)Element;
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
 					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
-					((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
+					((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
 					foreach (Pin pin in mapModel.Pins)
 					{
 						pin.PropertyChanged -= PinOnPropertyChanged;
@@ -123,10 +123,10 @@ namespace Xamarin.Forms.Maps.MacOS
 					pin.PropertyChanged -= PinOnPropertyChanged;
 				}
 
-				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged -= OnPolylineCollectionChanged;
-				foreach (Polyline polyline in mapModel.Polylines)
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
+				foreach (MapElement mapElement in mapModel.MapElements)
 				{
-					polyline.PropertyChanged -= PolylineOnPropertyChanged;
+					mapElement.PropertyChanged -= MapElementPropertyChanged;
 				}
 			}
 
@@ -173,8 +173,8 @@ namespace Xamarin.Forms.Maps.MacOS
 				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnPinCollectionChanged;
 				OnPinCollectionChanged(mapModel.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
-				((ObservableCollection<Polyline>)mapModel.Polylines).CollectionChanged += OnPolylineCollectionChanged;
-				OnPolylineCollectionChanged(mapModel.Polylines, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged += OnMapElementCollectionChanged;
+				OnMapElementCollectionChanged(mapModel.MapElements, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}
 
@@ -454,70 +454,76 @@ namespace Xamarin.Forms.Maps.MacOS
 			}
 		}
 
-		void OnPolylineCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					AddPolylines(e.NewItems.Cast<Polyline>());
+					AddMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemovePolylines(e.OldItems.Cast<Polyline>());
+					RemovePolylines(e.OldItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					RemovePolylines(e.OldItems.Cast<Polyline>());
-					AddPolylines(e.NewItems.Cast<Polyline>());
+					RemovePolylines(e.OldItems.Cast<MapElement>());
+					AddMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					var mkMapView = (MKMapView)Control;
 
 					if (mkMapView.Overlays != null)
 					{
-						var polylines = mkMapView.Overlays.OfType<MKPolyline>();
-						foreach (var mkPolyline in polylines)
+						var overlays = mkMapView.Overlays;
+						foreach (var overlay in overlays)
 						{
-							mkMapView.RemoveOverlay(mkPolyline);
+							mkMapView.RemoveOverlay(overlay);
 						}
 					}
 
-					AddPolylines(((Map)Element).Polylines);
+					AddMapElements(((Map)Element).MapElements);
 					break;
 			}
 		}
 
-		void AddPolylines(IEnumerable<Polyline> polylines)
+		void AddMapElements(IEnumerable<MapElement> mapElements)
 		{
-			foreach (var polyline in polylines)
+			foreach (var element in mapElements)
 			{
-				polyline.PropertyChanged += PolylineOnPropertyChanged;
+				element.PropertyChanged += MapElementPropertyChanged;
 
-				var mkPolyline = MKPolyline.FromCoordinates(polyline.Geopath
-					.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
-					.ToArray());
+				IMKOverlay overlay = null;
+				switch (element)
+				{
+					case Polyline polyline:
+						overlay = MKPolyline.FromCoordinates(polyline.Geopath
+							.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
+							.ToArray());
+						break;
+				}
 
-				polyline.PolylineId = mkPolyline;
+				element.MapElementId = overlay;
 
-				((MKMapView)Control).AddOverlay(mkPolyline);
+				((MKMapView)Control).AddOverlay(overlay);
 			}
 		}
 
-		void RemovePolylines(IEnumerable<Polyline> polylines)
+		void RemovePolylines(IEnumerable<MapElement> mapElements)
 		{
-			foreach (var polyline in polylines)
+			foreach (var element in mapElements)
 			{
-				polyline.PropertyChanged -= PolylineOnPropertyChanged;
+				element.PropertyChanged -= MapElementPropertyChanged;
 
-				var mkPolyline = (MKPolyline)polyline.PolylineId;
-				((MKMapView)Control).RemoveOverlay(mkPolyline);
+				var overlay = (IMKOverlay)element.MapElementId;
+				((MKMapView)Control).RemoveOverlay(overlay);
 			}
 		}
 
-		void PolylineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void MapElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var polyline = (Polyline)sender;
 
 			RemovePolylines(new[] { polyline });
-			AddPolylines(new[] { polyline });
+			AddMapElements(new[] { polyline });
 		}
 
 		protected MKOverlayRenderer GetViewForOverlay(MKMapView mapview, IMKOverlay overlay)
@@ -535,12 +541,12 @@ namespace Xamarin.Forms.Maps.MacOS
 			var map = (Map)Element;
 			Polyline targetPolyline = null;
 
-			for (int i = 0; i < map.Polylines.Count; i++)
+			for (int i = 0; i < map.MapElements.Count; i++)
 			{
-				var polyline = map.Polylines[i];
-				if (ReferenceEquals(polyline.PolylineId, mkPolyline))
+				var element = map.MapElements[i];
+				if (ReferenceEquals(element.MapElementId, mkPolyline))
 				{
-					targetPolyline = polyline;
+					targetPolyline = (Polyline)element;
 					break;
 				}
 			}
