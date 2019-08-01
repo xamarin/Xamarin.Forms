@@ -416,6 +416,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				List.SelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode.Single;
 
+				// UWP seems to reset the selected item when SelectionMode is set, make sure our items stays selected by doing this call
 				if (Element.SelectedItem != null)
 					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem, TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(Element.SelectedItem)));
 			}
