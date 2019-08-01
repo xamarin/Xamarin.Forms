@@ -427,7 +427,32 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void NotifyRowTapped(int groupIndex, int inGroupIndex, Cell cell = null, bool isContextMenuRequested = false)
+		public void NotifyRowTapped(int groupIndex, int inGroupIndex, Cell cell = null)
+		{
+			var group = TemplatedItems.GetGroup(groupIndex);
+
+			bool changed = _previousGroupSelected != groupIndex || _previousRowSelected != inGroupIndex;
+
+			_previousRowSelected = inGroupIndex;
+			_previousGroupSelected = groupIndex;
+
+			// A11y: Keyboards and screen readers can deselect items, allowing -1 to be possible
+			if (cell == null && inGroupIndex != -1)
+			{
+				cell = group[inGroupIndex];
+			}
+
+			// Set SelectedItem before any events so we don't override any changes they may have made.
+			if (SelectionMode != ListViewSelectionMode.None)
+				SetValueCore(SelectedItemProperty, cell?.BindingContext, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearDynamicResource | (changed ? SetValueFlags.RaiseOnEqual : 0));
+
+			cell?.OnTapped();
+
+			ItemTapped?.Invoke(this, new ItemTappedEventArgs(ItemsSource.Cast<object>().ElementAt(groupIndex), cell?.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void NotifyRowTapped(int groupIndex, int inGroupIndex, Cell cell, bool isContextMenuRequested)
 		{
 			var group = TemplatedItems.GetGroup(groupIndex);
 
@@ -461,7 +486,21 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void NotifyRowTapped(int index, Cell cell = null, bool isContextmenuRequested = false)
+		public void NotifyRowTapped(int index, Cell cell = null)
+		{
+			if (IsGroupingEnabled)
+			{
+				int leftOver;
+				int groupIndex = TemplatedItems.GetGroupIndexFromGlobal(index, out leftOver);
+
+				NotifyRowTapped(groupIndex, leftOver - 1, cell);
+			}
+			else
+				NotifyRowTapped(0, index, cell);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void NotifyRowTapped(int index, Cell cell, bool isContextmenuRequested)
 		{
 			if (IsGroupingEnabled)
 			{
