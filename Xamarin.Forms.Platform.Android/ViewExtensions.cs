@@ -116,7 +116,8 @@ namespace Xamarin.Forms.Platform.Android
 		internal static T GetParentOfType<T>(this IViewParent view)
 			where T : class
 		{
-			if (view is T t)
+			T t = view as T;
+			if (view != null)
 				return t;
 
 			while (view != null)
@@ -134,7 +135,8 @@ namespace Xamarin.Forms.Platform.Android
 		internal static T GetParentOfType<T>(this AView view)
 			where T : class
 		{
-			if (view is T t)
+			T t = view as T;
+			if (view != null)
 				return t;
 
 			return view.Parent.GetParentOfType<T>();
