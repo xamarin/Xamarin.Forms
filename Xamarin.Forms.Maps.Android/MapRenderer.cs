@@ -13,8 +13,8 @@ using Java.Lang;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Math = System.Math;
-using NativePolyline = Android.Gms.Maps.Model.Polyline;
-using NativePolygon = Android.Gms.Maps.Model.Polygon;
+using APolyline = Android.Gms.Maps.Model.Polyline;
+using APolygon = Android.Gms.Maps.Model.Polygon;
 
 namespace Xamarin.Forms.Maps.Android
 {
@@ -29,8 +29,8 @@ namespace Xamarin.Forms.Maps.Android
 		bool _init = true;
 
 		List<Marker> _markers;
-		List<NativePolyline> _polylines;
-		List<NativePolygon> _polygons;
+		List<APolyline> _polylines;
+		List<APolygon> _polygons;
 
 		public MapRenderer(Context context) : base(context)
 		{
@@ -544,7 +544,7 @@ namespace Xamarin.Forms.Maps.Android
 
 		#region Polylines
 
-		protected virtual PolylineOptions CreateNativePolyline(Polyline polyline)
+		protected virtual PolylineOptions CreatePolylineOptions(Polyline polyline)
 		{
 			var opts = new PolylineOptions();
 
@@ -559,12 +559,12 @@ namespace Xamarin.Forms.Maps.Android
 			return opts;
 		}
 
-		protected NativePolyline GetNativePolyline(Polyline polyline)
+		protected APolyline GetNativePolyline(Polyline polyline)
 		{
 			return _polylines?.Find(p => p.Id == (string)polyline.MapElementId);
 		}
 
-		protected Polyline GetFormsPolyline(NativePolyline polyline)
+		protected Polyline GetFormsPolyline(APolyline polyline)
 		{
 			Polyline targetPolyline = null;
 
@@ -614,10 +614,10 @@ namespace Xamarin.Forms.Maps.Android
 
 			if (_polylines == null)
 			{
-				_polylines = new List<NativePolyline>();
+				_polylines = new List<APolyline>();
 			}
 
-			var options = CreateNativePolyline(polyline);
+			var options = CreatePolylineOptions(polyline);
 			var nativePolyline = map.AddPolyline(options);
 
 			polyline.MapElementId = nativePolyline.Id;
@@ -640,7 +640,7 @@ namespace Xamarin.Forms.Maps.Android
 
 		#region Polygons
 
-		protected virtual PolygonOptions CreateNativePolygon(Polygon polygon)
+		protected virtual PolygonOptions CreatePolygonOptions(Polygon polygon)
 		{
 			var opts = new PolygonOptions();
 
@@ -666,12 +666,12 @@ namespace Xamarin.Forms.Maps.Android
 			return opts;
 		}
 
-		protected NativePolygon GetNativePolygon(Polygon polygon)
+		protected APolygon GetNativePolygon(Polygon polygon)
 		{
 			return _polygons?.Find(p => p.Id == (string)polygon.MapElementId);
 		}
 
-		protected Polygon GetPolygon(NativePolygon polygon)
+		protected Polygon GetFormsPolygon(APolygon polygon)
 		{
 			Polygon targetPolygon = null;
 
@@ -723,10 +723,10 @@ namespace Xamarin.Forms.Maps.Android
 
 			if (_polygons == null)
 			{
-				_polygons = new List<NativePolygon>();
+				_polygons = new List<APolygon>();
 			}
 
-			var options = CreateNativePolygon(polygon);
+			var options = CreatePolygonOptions(polygon);
 			var nativePolygon = map.AddPolygon(options);
 
 			polygon.MapElementId = nativePolygon.Id;
