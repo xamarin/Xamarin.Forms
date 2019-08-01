@@ -184,19 +184,24 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void LoadMapElements(IEnumerable<MapElement> mapElements)
 		{
-			foreach (var mapElement in mapElements)
+			foreach (var formsMapElement in mapElements)
 			{
-				mapElement.PropertyChanged += MapElementPropertyChanged;
+				Windows.UI.Xaml.Controls.Maps.MapElement nativeMapElement = null;
 
-				switch (mapElement)
+				switch (formsMapElement)
 				{
 					case Polyline polyline:
-						LoadPolyline(polyline);
+						nativeMapElement = LoadPolyline(polyline);
 						break;
 					case Polygon polygon:
-						LoadPolygon(polygon);
+						nativeMapElement = LoadPolygon(polygon);
 						break;
 				}
+
+				Control.MapElements.Add(nativeMapElement);
+
+				formsMapElement.PropertyChanged += MapElementPropertyChanged;
+				formsMapElement.MapElementId = nativeMapElement;
 			}
 		}
 
@@ -222,27 +227,36 @@ namespace Xamarin.Forms.Maps.UWP
 			}
 		}
 
+		protected Geopath PositionsToGeopath(IList<Position> positions)
+		{
+			// Geopath constructor throws an exception on an empty list
+			if (positions.Any())
+			{
+				return new Geopath(positions.Select(p => new BasicGeoposition
+				{
+					Latitude = p.Latitude,
+					Longitude = p.Longitude
+				}));
+			}
+			else
+			{
+				return new Geopath(new[]
+				{
+					new BasicGeoposition(), 
+				});
+			}
+		}
+
 		#region Polylines
 
-		void LoadPolyline(Polyline polyline)
+		protected virtual MapPolyline LoadPolyline(Polyline polyline)
 		{
-			if (polyline.Geopath.Any())
+			return new MapPolyline()
 			{
-				var mapPolyline = new MapPolyline()
-				{
-					Path = new Geopath(polyline.Geopath.Select(position => new BasicGeoposition()
-					{
-						Latitude = position.Latitude,
-						Longitude = position.Longitude
-					})),
-					StrokeColor = polyline.StrokeColor.IsDefault ? Colors.Black : polyline.StrokeColor.ToWindowsColor(),
-					StrokeThickness = polyline.StrokeWidth
-				};
-
-				polyline.MapElementId = mapPolyline;
-
-				Control.MapElements.Add(mapPolyline);
-			}
+				Path = PositionsToGeopath(polyline.Geopath),
+				StrokeColor = polyline.StrokeColor.IsDefault ? Colors.Black : polyline.StrokeColor.ToWindowsColor(),
+				StrokeThickness = polyline.StrokeWidth
+			};
 		}
 
 		void OnPolylinePropertyChanged(Polyline polyline, PropertyChangedEventArgs e)
@@ -251,12 +265,6 @@ namespace Xamarin.Forms.Maps.UWP
 
 			if (mapPolyline == null)
 			{
-				LoadPolyline(polyline);
-				return;
-			}
-			else if (polyline.Geopath.Count == 0)
-			{
-				Control.MapElements.Remove(mapPolyline);
 				return;
 			}
 
@@ -268,13 +276,9 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				mapPolyline.StrokeThickness = polyline.StrokeWidth;
 			}
-			else if (e.PropertyName == nameof(polyline.Geopath))
+			else if (e.PropertyName == nameof(Polyline.Geopath))
 			{
-				mapPolyline.Path = new Geopath(polyline.Geopath.Select(position => new BasicGeoposition()
-				{
-					Latitude = position.Latitude,
-					Longitude = position.Longitude
-				}));
+				mapPolyline.Path = PositionsToGeopath(polyline.Geopath);
 			}
 		}
 
@@ -282,26 +286,15 @@ namespace Xamarin.Forms.Maps.UWP
 
 		#region Polygons
 
-		void LoadPolygon(Polygon polygon)
+		protected virtual MapPolygon LoadPolygon(Polygon polygon)
 		{
-			if (polygon.Geopath.Any())
+			return new MapPolygon()
 			{
-				var mapPolygon = new MapPolygon()
-				{
-					Path = new Geopath(polygon.Geopath.Select(position => new BasicGeoposition()
-					{
-						Latitude = position.Latitude,
-						Longitude = position.Longitude
-					})),
-					StrokeColor = polygon.StrokeColor.IsDefault ? Colors.Black : polygon.StrokeColor.ToWindowsColor(),
-					StrokeThickness = polygon.StrokeWidth,
-					FillColor = polygon.FillColor.ToWindowsColor()
-				};
-
-				polygon.MapElementId = mapPolygon;
-
-				Control.MapElements.Add(mapPolygon);
-			}
+				Path = PositionsToGeopath(polygon.Geopath),
+				StrokeColor = polygon.StrokeColor.IsDefault ? Colors.Black : polygon.StrokeColor.ToWindowsColor(),
+				StrokeThickness = polygon.StrokeWidth,
+				FillColor = polygon.FillColor.ToWindowsColor()
+			};
 		}
 
 		void OnPolygonPropertyChanged(Polygon polygon, PropertyChangedEventArgs e)
@@ -310,12 +303,6 @@ namespace Xamarin.Forms.Maps.UWP
 
 			if (mapPolygon == null)
 			{
-				LoadPolygon(polygon);
-				return;
-			}
-			else if (polygon.Geopath.Count == 0)
-			{
-				Control.MapElements.Remove(mapPolygon);
 				return;
 			}
 
@@ -331,13 +318,9 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				mapPolygon.FillColor = polygon.FillColor.ToWindowsColor();
 			}
-			else if (e.PropertyName == nameof(polygon.Geopath))
+			else if (e.PropertyName == nameof(Polygon.Geopath))
 			{
-				mapPolygon.Path = new Geopath(polygon.Geopath.Select(position => new BasicGeoposition()
-				{
-					Latitude = position.Latitude,
-					Longitude = position.Longitude
-				}));
+				mapPolygon.Path = PositionsToGeopath(polygon.Geopath);
 			}
 		}
 

@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void ChangeFillClicked(object sender, EventArgs e)
 		{
-			var newColor = new Color(_random.NextDouble(), _random.NextDouble(), _random.NextDouble());
+			var newColor = new Color(_random.NextDouble(), _random.NextDouble(), _random.NextDouble(), _random.NextDouble());
 			switch (_selectedType)
 			{
 				case SelectedElementType.Polygon:
