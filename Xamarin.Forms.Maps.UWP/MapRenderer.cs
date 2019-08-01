@@ -56,7 +56,8 @@ namespace Xamarin.Forms.Maps.UWP
 				if (mapModel.MapElements.Any())
 					LoadMapElements(mapModel.MapElements);
 
-				if (Control == null) return;
+				if (Control == null)
+					return;
 
 				await Control.Dispatcher.RunIdleAsync(async (i) => await MoveToRegion(mapModel.LastMoveToRegion, MapAnimationKind.None));
 				await UpdateIsShowingUser();
@@ -192,6 +193,9 @@ namespace Xamarin.Forms.Maps.UWP
 					case Polyline polyline:
 						LoadPolyline(polyline);
 						break;
+					case Polygon polygon:
+						LoadPolygon(polygon);
+						break;
 				}
 			}
 		}
@@ -212,8 +216,13 @@ namespace Xamarin.Forms.Maps.UWP
 				case Polyline polyline:
 					OnPolylinePropertyChanged(polyline, e);
 					break;
+				case Polygon polygon:
+					OnPolygonPropertyChanged(polygon, e);
+					break;
 			}
 		}
+
+		#region Polylines
 
 		void LoadPolyline(Polyline polyline)
 		{
@@ -245,7 +254,7 @@ namespace Xamarin.Forms.Maps.UWP
 				LoadPolyline(polyline);
 				return;
 			}
-			else if(polyline.Geopath.Count == 0)
+			else if (polyline.Geopath.Count == 0)
 			{
 				Control.MapElements.Remove(mapPolyline);
 				return;
@@ -269,9 +278,75 @@ namespace Xamarin.Forms.Maps.UWP
 			}
 		}
 
+		#endregion
+
+		#region Polygons
+
+		void LoadPolygon(Polygon polygon)
+		{
+			if (polygon.Geopath.Any())
+			{
+				var mapPolygon = new MapPolygon()
+				{
+					Path = new Geopath(polygon.Geopath.Select(position => new BasicGeoposition()
+					{
+						Latitude = position.Latitude,
+						Longitude = position.Longitude
+					})),
+					StrokeColor = polygon.StrokeColor.IsDefault ? Colors.Black : polygon.StrokeColor.ToWindowsColor(),
+					StrokeThickness = polygon.StrokeWidth,
+					FillColor = polygon.FillColor.ToWindowsColor()
+				};
+
+				polygon.MapElementId = mapPolygon;
+
+				Control.MapElements.Add(mapPolygon);
+			}
+		}
+
+		void OnPolygonPropertyChanged(Polygon polygon, PropertyChangedEventArgs e)
+		{
+			var mapPolygon = (MapPolygon)polygon.MapElementId;
+
+			if (mapPolygon == null)
+			{
+				LoadPolygon(polygon);
+				return;
+			}
+			else if (polygon.Geopath.Count == 0)
+			{
+				Control.MapElements.Remove(mapPolygon);
+				return;
+			}
+
+			if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				mapPolygon.StrokeColor = polygon.StrokeColor.IsDefault ? Colors.Black : polygon.StrokeColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				mapPolygon.StrokeThickness = polygon.StrokeWidth;
+			}
+			else if (e.PropertyName == Polygon.FillColorProperty.PropertyName)
+			{
+				mapPolygon.FillColor = polygon.FillColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == nameof(polygon.Geopath))
+			{
+				mapPolygon.Path = new Geopath(polygon.Geopath.Select(position => new BasicGeoposition()
+				{
+					Latitude = position.Latitude,
+					Longitude = position.Longitude
+				}));
+			}
+		}
+
+		#endregion
+
 		async Task UpdateIsShowingUser(bool moveToLocation = true)
 		{
-			if (Control == null || Element == null) return;
+			if (Control == null || Element == null)
+				return;
 
 			if (Element.IsShowingUser)
 			{
@@ -284,7 +359,8 @@ namespace Xamarin.Forms.Maps.UWP
 						LoadUserPosition(userPosition.Coordinate, moveToLocation);
 				}
 
-				if (Control == null || Element == null) return;
+				if (Control == null || Element == null)
+					return;
 
 				if (_timer == null)
 				{
@@ -349,7 +425,8 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void LoadUserPosition(Geocoordinate userCoordinate, bool center)
 		{
-			if (Control == null || Element == null) return;
+			if (Control == null || Element == null)
+				return;
 
 			var userPosition = new BasicGeoposition
 			{

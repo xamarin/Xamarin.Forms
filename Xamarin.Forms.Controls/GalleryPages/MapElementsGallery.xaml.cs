@@ -13,49 +13,83 @@ namespace Xamarin.Forms.Controls.GalleryPages
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class MapElementsGallery : ContentPage
 	{
-		Polyline _currentPolyline;
+		enum SelectedElementType
+		{
+			Polyline,
+            Polygon
+		}
+
+		SelectedElementType _selectedType;
+		MapElement _currentElement;
 		Random _random = new Random();
 
 		public MapElementsGallery()
 		{
 			InitializeComponent();
-			AddNewPolyline();
+			ElementPicker.SelectedIndex = 0;
 		}
 
 		void MapClicked(object sender, MapClickedEventArgs e)
 		{
-			_currentPolyline.Geopath.Add(e.Position);
-		}
-
-		void AddPolylineClicked(object sender, EventArgs e)
-		{
-			AddNewPolyline();
-		}
-
-		void RemovePolylineClicked(object sender, EventArgs e)
-		{
-			Map.MapElements.Remove(_currentPolyline);
-			_currentPolyline = Map.MapElements.OfType<Polyline>().LastOrDefault();
-
-			if (_currentPolyline == null)
+			switch (_currentElement)
 			{
-				AddNewPolyline();
+				case Polyline polyline:
+                    polyline.Geopath.Add(e.Position);
+                    break;
+				case Polygon polygon:
+                    polygon.Geopath.Add(e.Position);
+                    break;
 			}
 		}
 
-		void AddNewPolyline()
+		void PickerSelectionChanged(object sender, EventArgs e)
 		{
-			Map.MapElements.Add(_currentPolyline = new Polyline());
+			Enum.TryParse((string)ElementPicker.SelectedItem, out _selectedType);
+            AddClicked(sender, e);
+		}
+
+		void AddClicked(object sender, EventArgs e)
+		{
+			switch (_selectedType)
+			{
+				case SelectedElementType.Polyline:
+                    _currentElement = new Polyline();
+                    break;
+				case SelectedElementType.Polygon:
+                    _currentElement = new Polygon();
+                    break;
+			}
+
+            Map.MapElements.Add(_currentElement);
+		}
+
+		void RemoveClicked(object sender, EventArgs e)
+		{
+			Map.MapElements.Remove(_currentElement);
+			_currentElement = Map.MapElements.LastOrDefault();
+
+			if (_currentElement == null)
+			{
+				AddClicked(sender, e);
+			}
 		}
 
 		void ChangeColorClicked(object sender, EventArgs e)
 		{
-			_currentPolyline.StrokeColor = new Color(_random.NextDouble(), _random.NextDouble(), _random.NextDouble());
+			_currentElement.StrokeColor = new Color(_random.NextDouble(), _random.NextDouble(), _random.NextDouble());
 		}
 
 		void ChangeWidthClicked(object sender, EventArgs e)
 		{
-			_currentPolyline.StrokeWidth = _random.Next(1, 50);
+			_currentElement.StrokeWidth = _random.Next(1, 50);
+		}
+
+		void ChangeFillClicked(object sender, EventArgs e)
+		{
+			if (_currentElement is Polygon polygon)
+			{
+                polygon.FillColor = new Color(_random.NextDouble(), _random.NextDouble(), _random.NextDouble(), _random.NextDouble());
+			}
 		}
 	}
 }

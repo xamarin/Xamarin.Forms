@@ -462,10 +462,10 @@ namespace Xamarin.Forms.Maps.MacOS
 					AddMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemovePolylines(e.OldItems.Cast<MapElement>());
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					RemovePolylines(e.OldItems.Cast<MapElement>());
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
 					AddMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Reset:
@@ -499,6 +499,11 @@ namespace Xamarin.Forms.Maps.MacOS
 							.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
 							.ToArray());
 						break;
+					case Polygon polygon:
+						overlay = MKPolygon.FromCoordinates(polygon.Geopath
+							.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
+							.ToArray());
+						break;
 				}
 
 				element.MapElementId = overlay;
@@ -507,7 +512,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			}
 		}
 
-		void RemovePolylines(IEnumerable<MapElement> mapElements)
+		void RemoveMapElements(IEnumerable<MapElement> mapElements)
 		{
 			foreach (var element in mapElements)
 			{
@@ -520,17 +525,20 @@ namespace Xamarin.Forms.Maps.MacOS
 
 		void MapElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			var polyline = (Polyline)sender;
+			var element = (MapElement)sender;
 
-			RemovePolylines(new[] { polyline });
-			AddMapElements(new[] { polyline });
+			RemoveMapElements(new[] { element });
+			AddMapElements(new[] { element });
 		}
 
-		protected MKOverlayRenderer GetViewForOverlay(MKMapView mapview, IMKOverlay overlay)
+		protected virtual MKOverlayRenderer GetViewForOverlay(MKMapView mapview, IMKOverlay overlay)
 		{
-			if (overlay is MKPolyline polyline)
+			switch (overlay)
 			{
-				return GetViewForPolyline(polyline);
+				case MKPolyline polyline:
+					return GetViewForPolyline(polyline);
+				case MKPolygon polygon:
+					return GetViewForPolygon(polygon);
 			}
 
 			return null;
@@ -564,6 +572,39 @@ namespace Xamarin.Forms.Maps.MacOS
 				StrokeColor = targetPolyline.StrokeColor.ToNSColor(Color.Black),
 #endif
 				LineWidth = targetPolyline.StrokeWidth
+			};
+		}
+
+		protected virtual MKPolygonRenderer GetViewForPolygon(MKPolygon mkPolygon)
+		{
+			var map = (Map)Element;
+			Polygon targetPolygon = null;
+
+			for (int i = 0; i < map.MapElements.Count; i++)
+			{
+				var element = map.MapElements[i];
+				if (ReferenceEquals(element.MapElementId, mkPolygon))
+				{
+					targetPolygon = (Polygon)element;
+					break;
+				}
+			}
+
+			if (targetPolygon == null)
+			{
+				return null;
+			}
+
+			return new MKPolygonRenderer(mkPolygon)
+			{
+#if __MOBILE__
+				StrokeColor = targetPolygon.StrokeColor.ToUIColor(Color.Black),
+				FillColor = targetPolygon.FillColor.ToUIColor(),
+#else
+				StrokeColor = targetPolyline.StrokeColor.ToNSColor(Color.Black),
+				StrokeColor = targetPolyline.FillColor.ToNSColor(),
+#endif
+				LineWidth = targetPolygon.StrokeWidth
 			};
 		}
 	}

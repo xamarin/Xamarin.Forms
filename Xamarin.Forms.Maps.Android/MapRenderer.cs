@@ -14,6 +14,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Math = System.Math;
 using NativePolyline = Android.Gms.Maps.Model.Polyline;
+using NativePolygon = Android.Gms.Maps.Model.Polygon;
 
 namespace Xamarin.Forms.Maps.Android
 {
@@ -29,6 +30,7 @@ namespace Xamarin.Forms.Maps.Android
 
 		List<Marker> _markers;
 		List<NativePolyline> _polylines;
+		List<NativePolygon> _polygons;
 
 		public MapRenderer(Context context) : base(context)
 		{
@@ -464,9 +466,14 @@ namespace Xamarin.Forms.Maps.Android
 					PolylineOnPropertyChanged(polyline, e);
 					break;
 				}
+				case Polygon polygon:
+				{
+					PolygonOnPropertyChanged(polygon, e);
+					break;
+				}
 			}
 		}
-		
+
 		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
@@ -489,13 +496,13 @@ namespace Xamarin.Forms.Maps.Android
 							nativePolyline.Remove();
 
 							var formsPolyline = GetFormsPolyline(nativePolyline);
-							if(formsPolyline != null)
+							if (formsPolyline != null)
 								formsPolyline.PropertyChanged -= MapElementPropertyChanged;
 						}
 					}
 
-                    AddMapElements(Element.MapElements);
-                    break;
+					AddMapElements(Element.MapElements);
+					break;
 			}
 		}
 
@@ -508,8 +515,11 @@ namespace Xamarin.Forms.Maps.Android
 				switch (element)
 				{
 					case Polyline polyline:
-                        AddPolyline(polyline);
-                        break;
+						AddPolyline(polyline);
+						break;
+					case Polygon polygon:
+						AddPolygon(polygon);
+						break;
 				}
 			}
 		}
@@ -523,8 +533,11 @@ namespace Xamarin.Forms.Maps.Android
 				switch (element)
 				{
 					case Polyline polyline:
-                        RemovePolyline(polyline);
-                        break;
+						RemovePolyline(polyline);
+						break;
+					case Polygon polygon:
+						RemovePolygon(polygon);
+						break;
 				}
 			}
 		}
@@ -577,11 +590,11 @@ namespace Xamarin.Forms.Maps.Android
 				return;
 			}
 
-			if (e.PropertyName == Polyline.StrokeColorProperty.PropertyName)
+			if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
 			{
 				nativePolyline.Color = formsPolyline.StrokeColor.ToAndroid(Color.Black);
 			}
-			else if (e.PropertyName == Polyline.StrokeWidthProperty.PropertyName)
+			else if (e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
 			{
 				nativePolyline.Width = formsPolyline.StrokeWidth;
 			}
@@ -625,6 +638,114 @@ namespace Xamarin.Forms.Maps.Android
 
 		#endregion
 
+		#region Polygons
+
+		protected virtual PolygonOptions CreateNativePolygon(Polygon polygon)
+		{
+			var opts = new PolygonOptions();
+
+			opts.InvokeStrokeColor(polygon.StrokeColor.ToAndroid(Color.Black));
+			opts.InvokeStrokeWidth(polygon.StrokeWidth);
+
+			if (!polygon.StrokeColor.IsDefault)
+				opts.InvokeFillColor(polygon.FillColor.ToAndroid());
+
+			// Will throw an exception when added to the map if Points is empty
+			if (polygon.Geopath.Count == 0)
+			{
+				opts.Points.Add(new LatLng(0, 0));
+			}
+			else
+			{
+				foreach (var position in polygon.Geopath)
+				{
+					opts.Points.Add(new LatLng(position.Latitude, position.Longitude));
+				}
+			}
+
+			return opts;
+		}
+
+		protected NativePolygon GetNativePolygon(Polygon polygon)
+		{
+			return _polygons?.Find(p => p.Id == (string)polygon.MapElementId);
+		}
+
+		protected Polygon GetPolygon(NativePolygon polygon)
+		{
+			Polygon targetPolygon = null;
+
+			for (int i = 0; i < Element.MapElements.Count; i++)
+			{
+				var element = Element.MapElements[i];
+				if ((string)element.MapElementId == polygon.Id)
+				{
+					targetPolygon = (Polygon)element;
+					break;
+				}
+			}
+
+			return targetPolygon;
+		}
+
+		void PolygonOnPropertyChanged(Polygon polygon, PropertyChangedEventArgs e)
+		{
+			var nativePolygon = GetNativePolygon(polygon);
+
+			if (nativePolygon == null)
+				return;
+
+			if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				nativePolygon.StrokeColor = polygon.StrokeColor.ToAndroid(Color.Black);
+			}
+			else if (e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				nativePolygon.StrokeWidth = polygon.StrokeWidth;
+			}
+			else if (e.PropertyName == Polygon.FillColorProperty.PropertyName)
+			{
+				nativePolygon.FillColor = polygon.FillColor.ToAndroid();
+			}
+			else if (e.PropertyName == nameof(polygon.Geopath))
+			{
+				nativePolygon.Points = polygon.Geopath.Select(p => new LatLng(p.Latitude, p.Longitude)).ToList();
+			}
+		}
+
+		void AddPolygon(Polygon polygon)
+		{
+			var map = NativeMap;
+			if (map == null)
+			{
+				return;
+			}
+
+			if (_polygons == null)
+			{
+				_polygons = new List<NativePolygon>();
+			}
+
+			var options = CreateNativePolygon(polygon);
+			var nativePolygon = map.AddPolygon(options);
+
+			polygon.MapElementId = nativePolygon.Id;
+
+			_polygons.Add(nativePolygon);
+		}
+
+		void RemovePolygon(Polygon polygon)
+		{
+			var native = GetNativePolygon(polygon);
+
+			if (native != null)
+			{
+				native.Remove();
+				_polygons.Remove(native);
+			}
+		}
+
+		#endregion
 		void IOnMapReadyCallback.OnMapReady(GoogleMap map)
 		{
 			NativeMap = map;
