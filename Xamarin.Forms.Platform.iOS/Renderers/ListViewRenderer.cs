@@ -949,6 +949,7 @@ namespace Xamarin.Forms.Platform.iOS
 			bool _disposed;
 			bool _wasEmpty;
 			bool _estimatedRowHeight;
+			NSIndexPath _lastTouchedCell;
 
 			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
@@ -991,13 +992,61 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
 			{
+				if (_uiTableView != null)
+				{
+					var heldSelectedRow = _uiTableView.IndexPathsForSelectedRows;
+					if (heldSelectedRow != null)
+						foreach (var row in heldSelectedRow)
+						{
+							var cell = _uiTableView.CellAt(row);
+							if (cell != null)
+								cell.Selected = true;
+						}
+				}
+
 				_isDragging = false;
 				_uiTableViewController.UpdateShowHideRefresh(false);
 			}
 
 			public override void DraggingStarted(UIScrollView scrollView)
 			{
+				if (_uiTableView != null)
+				{
+					if (_lastTouchedCell != null)
+					{
+						var lastTouchCell = _uiTableView.CellAt(_lastTouchedCell);
+						if (lastTouchCell != null)
+						{
+							lastTouchCell.Selected = false;
+						}
+
+						_lastTouchedCell = null;
+					}
+
+					var heldSelectedRow = _uiTableView.IndexPathsForSelectedRows;
+					if(heldSelectedRow != null)
+						foreach (var row in heldSelectedRow)
+						{
+							var cell = _uiTableView.CellAt(row);
+							if(cell != null)
+								cell.Selected = false;
+						}
+				}
+
 				_isDragging = true;
+			}
+
+			public override void RowHighlighted(UITableView tableView, NSIndexPath rowIndexPath)
+			{
+				TouchCell(rowIndexPath);
+			}
+
+			void TouchCell(NSIndexPath rowIndexPath)
+			{
+				var cell = _uiTableView.CellAt(rowIndexPath);
+				if(cell!= null)
+					cell.Selected = true;
+				_lastTouchedCell = rowIndexPath;
 			}
 
 			public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
@@ -1154,6 +1203,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 			{
+				_lastTouchedCell = null;
 				var cell = tableView.CellAt(indexPath);
 
 				if (cell == null)
