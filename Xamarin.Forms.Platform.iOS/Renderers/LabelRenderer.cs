@@ -166,12 +166,13 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				UpdateLineBreakMode();
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 				UpdateText();
 				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
+				UpdateCharacterSpacing();
 				UpdatePadding();
 			}
 
@@ -183,7 +184,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateLayout();
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
@@ -194,7 +195,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				UpdateText();
 				UpdateTextDecorations();
+				UpdateCharacterSpacing();
 			}
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -205,7 +209,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
@@ -267,7 +271,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
 #if __MOBILE__
-			Control.AttributedText = newAttributedText;
+			UpdateCharacterSpacing();
 #else
 			Control.AttributedStringValue = newAttributedText;
 #endif
@@ -306,7 +310,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 #if __MOBILE__
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
@@ -361,6 +365,17 @@ namespace Xamarin.Forms.Platform.MacOS
 					Control.LineBreakMode = NSLineBreakMode.TruncatingTail;
 					break;
 			}
+#endif
+		}
+
+		void UpdateCharacterSpacing()
+		{
+#if __MOBILE__
+
+			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedText = textAttr;
 #endif
 		}
 
