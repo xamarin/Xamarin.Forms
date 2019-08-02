@@ -15,7 +15,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
@@ -26,7 +25,6 @@
     </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -116,6 +114,7 @@
     <Compile Include="CollectionView\HorizontalDefaultSupplementalView.cs" />
     <Compile Include="CollectionView\HorizontalTemplatedHeaderView.cs" />
     <Compile Include="CollectionView\IItemsViewSource.cs" />
+    <Compile Include="CollectionView\IndexPathExtensions.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ItemsViewCell.cs" />
     <Compile Include="CollectionView\DefaultCell.cs" />
