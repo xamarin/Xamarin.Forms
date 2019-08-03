@@ -41,8 +41,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Description ("Test null reference in IOrderedTraversalController.UpdateTraversalOrder of Android PageRenderer")]
 		public void Issue7049TestsNullRefInUpdateTraversalOrder()
 		{
-			RunningApp.WaitForElement ("View1");
-			RunningApp.Tap ("View");
+			RunningApp.WaitForElement("View1");
+			RunningApp.Tap("View");
 			RunningApp.WaitForElement("View2");
 			RunningApp.Tap("View");
 			RunningApp.WaitForElement("View3");
