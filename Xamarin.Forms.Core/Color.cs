@@ -62,25 +62,31 @@ namespace Xamarin.Forms
 			get { return _b; }
 		}
 
-		readonly float _hue;
-
 		public double Hue
 		{
-			get { return _hue; }
+			get
+			{
+				ConvertToHsl(_r, _g, _b, out float h, out _, out _);
+				return h;
+			}
 		}
-
-		readonly float _saturation;
 
 		public double Saturation
 		{
-			get { return _saturation; }
+			get
+			{
+				ConvertToHsl(_r, _g, _b, out _, out float s, out _);
+				return s;
+			}
 		}
-
-		readonly float _luminosity;
 
 		public double Luminosity
 		{
-			get { return _luminosity; }
+			get
+			{
+				ConvertToHsl(_r, _g, _b, out _, out _, out float l);
+				return l;
+			}
 		}
 
 		public Color(double r, double g, double b, double a) : this(r, g, b, a, Mode.Rgb)
@@ -95,21 +101,16 @@ namespace Xamarin.Forms
 				default:
 				case Mode.Default:
 					_r = _g = _b = _a = -1;
-					_hue = _saturation = _luminosity = -1;
 					break;
 				case Mode.Rgb:
 					_r = (float)w.Clamp(0, 1);
 					_g = (float)x.Clamp(0, 1);
 					_b = (float)y.Clamp(0, 1);
 					_a = (float)z.Clamp(0, 1);
-					ConvertToHsl(_r, _g, _b, mode, out _hue, out _saturation, out _luminosity);
 					break;
 				case Mode.Hsl:
-					_hue = (float)w.Clamp(0, 1);
-					_saturation = (float)x.Clamp(0, 1);
-					_luminosity = (float)y.Clamp(0, 1);
 					_a = (float)z.Clamp(0, 1);
-					ConvertToRgb(_hue, _saturation, _luminosity, mode, out _r, out _g, out _b);
+					ConvertToRgb((float)w.Clamp(0, 1), (float)x.Clamp(0, 1), (float)y.Clamp(0, 1), out _r, out _g, out _b);
 					break;
 			}
 		}
@@ -124,16 +125,10 @@ namespace Xamarin.Forms
 
 		public Color MultiplyAlpha(double alpha)
 		{
-			switch (_mode)
-			{
-				default:
-				case Mode.Default:
-					throw new InvalidOperationException("Invalid on Color.Default");
-				case Mode.Rgb:
-					return new Color(_r, _g, _b, _a * alpha, Mode.Rgb);
-				case Mode.Hsl:
-					return new Color(_hue, _saturation, _luminosity, _a * alpha, Mode.Hsl);
-			}
+			if(_mode == Mode.Default)
+				throw new InvalidOperationException("Invalid on Color.Default");
+
+			return new Color(_r, _g, _b, _a * alpha, Mode.Rgb);
 		}
 
 		public Color AddLuminosity(double delta)
@@ -141,35 +136,39 @@ namespace Xamarin.Forms
 			if (_mode == Mode.Default)
 				throw new InvalidOperationException("Invalid on Color.Default");
 
-			return new Color(_hue, _saturation, _luminosity + delta, _a, Mode.Hsl);
+			ConvertToHsl(_r, _g, _b, out float h, out float s, out float l);
+			return new Color(h, s, l + delta, _a, Mode.Hsl);
 		}
 
 		public Color WithHue(double hue)
 		{
 			if (_mode == Mode.Default)
 				throw new InvalidOperationException("Invalid on Color.Default");
-			return new Color(hue, _saturation, _luminosity, _a, Mode.Hsl);
+
+			ConvertToHsl(_r, _g, _b, out _, out float s, out float l);
+			return new Color(hue, s, l, _a, Mode.Hsl);
 		}
 
 		public Color WithSaturation(double saturation)
 		{
 			if (_mode == Mode.Default)
 				throw new InvalidOperationException("Invalid on Color.Default");
-			return new Color(_hue, saturation, _luminosity, _a, Mode.Hsl);
+
+			ConvertToHsl(_r, _g, _b, out float h, out _, out float l);
+			return new Color(h, saturation, l, _a, Mode.Hsl);
 		}
 
 		public Color WithLuminosity(double luminosity)
 		{
 			if (_mode == Mode.Default)
 				throw new InvalidOperationException("Invalid on Color.Default");
-			return new Color(_hue, _saturation, luminosity, _a, Mode.Hsl);
+
+			ConvertToHsl(_r, _g, _b, out float h, out float s, out _);
+			return new Color(h, s, luminosity, _a, Mode.Hsl);
 		}
 
-		static void ConvertToRgb(float hue, float saturation, float luminosity, Mode mode, out float r, out float g, out float b)
+		static void ConvertToRgb(float hue, float saturation, float luminosity, out float r, out float g, out float b)
 		{
-			if (mode != Mode.Hsl)
-				throw new InvalidOperationException();
-
 			if (luminosity == 0)
 			{
 				r = g = b = 0;
@@ -207,7 +206,7 @@ namespace Xamarin.Forms
 			b = clr[2];
 		}
 
-		static void ConvertToHsl(float r, float g, float b, Mode mode, out float h, out float s, out float l)
+		static void ConvertToHsl(float r, float g, float b, out float h, out float s, out float l)
 		{
 			float v = Math.Max(r, g);
 			v = Math.Max(v, b);
@@ -291,8 +290,7 @@ namespace Xamarin.Forms
 				return true;
 			if (color1._mode == Mode.Default || color2._mode == Mode.Default)
 				return false;
-			if (color1._mode == Mode.Hsl && color2._mode == Mode.Hsl)
-				return color1._hue == color2._hue && color1._saturation == color2._saturation && color1._luminosity == color2._luminosity && color1._a == color2._a;
+
 			return color1._r == color2._r && color1._g == color2._g && color1._b == color2._b && color1._a == color2._a;
 		}
 
@@ -320,7 +318,7 @@ namespace Xamarin.Forms
 			if (x >= 'a' && x <= 'f')
 				return (uint)(x - 'a' + 10);
 			return 0;
-		} 
+		}
 
 		static uint ToHexD (char c)
 		{
@@ -354,14 +352,14 @@ namespace Xamarin.Forms
 				return FromRgb ((int)(ToHex (hex [idx++]) << 4 | ToHex (hex [idx++])),
 						(int)(ToHex (hex [idx++]) << 4 | ToHex (hex [idx++])),
 						(int)(ToHex (hex [idx++]) << 4 | ToHex (hex [idx])));
-				
+
 			case 8: //#aarrggbb
 				var a1 = ToHex (hex [idx++]) << 4 | ToHex (hex [idx++]);
 				return FromRgba ((int)(ToHex (hex [idx++]) << 4 | ToHex (hex [idx++])),
 						(int)(ToHex (hex [idx++]) << 4 | ToHex (hex [idx++])),
 						(int)(ToHex (hex [idx++]) << 4 | ToHex (hex [idx])),
 						(int)a1);
-				
+
 			default: //everything else will result in unexpected results
 				return Default;
 			}
