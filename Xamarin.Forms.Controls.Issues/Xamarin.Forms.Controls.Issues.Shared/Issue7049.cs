@@ -42,11 +42,11 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue7049TestsNullRefInUpdateTraversalOrder()
 		{
 			RunningApp.WaitForElement ("View1");
-			RunningApp.Tap ("View1");
+			RunningApp.Tap ("View");
 			RunningApp.WaitForElement("View2");
-			RunningApp.Tap("View2");
+			RunningApp.Tap("View");
 			RunningApp.WaitForElement("View3");
-			RunningApp.Tap("View3");
+			RunningApp.Tap("View");
 		}
 #endif
 	}
