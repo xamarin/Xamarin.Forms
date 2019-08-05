@@ -157,6 +157,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (_control != null && this is ITabStopOnDescendants)
 			{
+				_control.GotFocus -= OnGotFocus;
+				_control.GettingFocus -= OnGettingFocus;
+
 				_control.GotFocus += OnGotFocus;
 				_control.GettingFocus += OnGettingFocus;
 			}
