@@ -37,10 +37,19 @@ namespace Xamarin.Forms.Platform.Android
 		IOrderedTraversalController OrderedTraversalController => this;
 
 		double _previousHeight;
+		bool _isDisposed = false;
 
 		protected override void Dispose(bool disposing)
 		{
-			PageController?.SendDisappearing();
+			if (_isDisposed)
+				return;
+
+			if (disposing)
+			{
+				PageController?.SendDisappearing();
+			}
+
+			_isDisposed = true;
 			base.Dispose(disposing);
 		}
 
@@ -146,7 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 		void IOrderedTraversalController.UpdateTraversalOrder()
 		{
 			// traversal order wasn't added until API 22
-			if ((int)Build.VERSION.SdkInt < 22)
+			if ((int)Forms.SdkInt < 22)
 				return;
 
 			// since getting and updating the traversal order is expensive, let's only do it when a screen reader is active
