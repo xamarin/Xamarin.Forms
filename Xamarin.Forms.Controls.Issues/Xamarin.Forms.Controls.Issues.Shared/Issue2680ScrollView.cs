@@ -14,18 +14,18 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 2680, "[Enhancement] Add VerticalScrollMode/HorizontalScrollMode to ListView and ScrollView", PlatformAffected.All)]
 	public class Issue2680ScrollView : TestContentPage // or TestMasterDetailPage, etc ... 
 	{
-		public const string BtnDisable = "Disable scroll";
-		public const string BtnEnable = "Enable scroll";
+		public const string ButtonDisabledCaption = "Disable scroll";
+		public const string ButtonEnabledCaption = "Enable scroll";
 
-		public bool IsEnabled { get; set; } = false;
+		public bool IsScrollEnabled { get; set; } = false;
 
 		public void ToggleButtonText()
 		{
-			IsEnabled = !IsEnabled;
+			IsScrollEnabled = !IsScrollEnabled;
 			toggleButton.Text = ButtonText;
 		}
 
-		public string ButtonText => IsEnabled ? BtnDisable : BtnEnable;
+		public string ButtonText => IsScrollEnabled ? ButtonDisabledCaption : ButtonEnabledCaption;
 
 		protected override void Init()
 		{
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Controls.Issues
 		private void ToggleButtonOnClicked(object sender, EventArgs e)
 		{
 			ToggleButtonText();
-			scrollView.Orientation = IsEnabled ? ScrollOrientation.Vertical : ScrollOrientation.Neither;
+			scrollView.Orientation = IsScrollEnabled ? ScrollOrientation.Vertical : ScrollOrientation.Neither;
 		}
 
 		private ScrollView scrollView;
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue2680Test_ScrollEnabled()
 		{
 			RunningApp.Screenshot("I am at Issue 2680");
-			RunningApp.Tap(q => q.Button(BtnEnable));
+			RunningApp.Tap(q => q.Button(ButtonEnabledCaption));
 			for (var i = 0; i < 10; i++)
 			{
 				RunningApp.ScrollDown();
