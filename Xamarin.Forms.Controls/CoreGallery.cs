@@ -327,6 +327,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new VisualGallery(), "Visual Gallery"),
 				new GalleryPageFactory(() => new WebViewCoreGalleryPage(), "WebView Gallery"),
 				new GalleryPageFactory(() => new WkWebViewCoreGalleryPage(), "WkWebView Gallery"),
+				new GalleryPageFactory(() => new DataTemplatePageGallery(), "DataTemaplate Gallery"),
 				//pages
  				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
 				new GalleryPageFactory(() => new MasterDetailPageTabletPage(), "MasterDetailPage Tablet Page"),
@@ -341,7 +342,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ControlTemplatePage(), "ControlTemplated Gallery - Legacy"),
 				new GalleryPageFactory(() => new ControlTemplateXamlPage(), "ControlTemplated XAML Gallery - Legacy"),
 				new GalleryPageFactory(() => new DisposeGallery(), "Dispose Gallery - Legacy"),
-				new GalleryPageFactory(() => new EditorGallery(), "Editor Gallery - Legacy"),
+				new GalleryPageFactory(() => new DisposeGallery(), "Dispose Gallery - Legacy"),
 				new GalleryPageFactory(() => new EntryGallery(), "Entry Gallery - Legacy"),
 				new GalleryPageFactory(() => new FrameGallery (), "Frame Gallery - Legacy"),
 				new GalleryPageFactory(() => new GridGallery(), "Grid Gallery - Legacy"),
