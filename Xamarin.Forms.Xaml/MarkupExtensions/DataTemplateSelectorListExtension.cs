@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Xaml
 		}
 
 		public IList<DataTemplate> DataTemplates { get; }
-		
 
 		public DataTemplateSelectorList ProvideValue(IServiceProvider serviceProvider)
 		{
@@ -29,8 +28,6 @@ namespace Xamarin.Forms.Xaml
 			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
 
-
-
 			if (DataTemplates == null)
 				return null;
 
@@ -42,31 +39,35 @@ namespace Xamarin.Forms.Xaml
 			if (node == null)
 				return null;
 			
-			
-
 			var count = 0;
 			foreach (DataTemplate item in DataTemplates)
 			{
 				var elementNode = node.CollectionItems[count] as IElementNode;
-				//if(elementNode == null)
+				if (elementNode == null)
+					continue;
 
-				var dataType = elementNode.Properties.FirstOrDefault(f => f.Key == XmlName.xDataType);
-				//if(dataType == null)
-
-				//dataType.Key.
-				if (typeResolver.TryResolve((dataType.Value as MarkupNode)?.MarkupString.Replace("{","").Replace("}",""), out var type))
+				if(elementNode.Properties.TryGetValue(XmlName.xDataType, out var dataType))
 				{
-					templates.DataTemplates[type] = item;
+					string typeId;
+					if (dataType is MarkupNode markupNode)
+					{
+						typeId = markupNode.MarkupString.Replace("{", "").Replace("}", "");
+					}
+					else
+					{
+						typeId = (dataType as ValueNode)?.Value as string ?? string.Empty;
+					}
+					if (typeResolver.TryResolve(typeId, out var type))
+					{
+						templates.DataTemplates[type] = item;
+					}
+
+					count++;
 				}
-
-
-				count++;
 			}
 
 			return templates;
 		}
-
-
 
 		object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)
 		{

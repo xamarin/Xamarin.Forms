@@ -1,33 +1,80 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:galleryPages="clr-namespace:Xamarin.Forms.Controls.GalleryPages;assembly=Xamarin.Forms.Controls"
              x:Class="Xamarin.Forms.Controls.GalleryPages.DataTemplatePageGallery"
-             x:local="Xamarin.Forms.Controls.GalleryPages.DataTemplatePageGallery">
 
-    <ListView x:Name="ListViewWithTemplates">
-       <ListView.ItemTemplate>
-           <DataTemplateSelectorList>
-               <DataTemplate x:DataType="{galleryPages:FirstTestClass}">
-                 <ViewCell>
-                     <Label Text="{Binding StringValue}" BackgroundColor="Aquamarine"/>
-                 </ViewCell>
-             </DataTemplate>
+             x:Name="root">
 
-               <DataTemplate x:DataType="{galleryPages:SecondTestClass}">
-                   <ViewCell>
-                       <Label Text="{Binding StringValue}" BackgroundColor="Beige"/>
-                   </ViewCell>
-               </DataTemplate>
+    <ScrollView>
+        <StackLayout Spacing="10">
+            <Label Text="--------------------------------------------"/>
+            <ListView x:Name="ListViewWithTemplates" ItemsSource="{Binding Items}">
+                <ListView.ItemTemplate>
+                    <DataTemplateSelectorList>
+                        <DataTemplate x:DataType="galleryPages:FirstTestClass">
+                            <ViewCell>
+                                <StackLayout BackgroundColor="Aquamarine">
+                                    <Label Text="{Binding CountValue}" />
+                                    <Label Text="{Binding StringValue}" />
+                                </StackLayout>
 
-               <DataTemplate x:DataType="{galleryPages:ThirdTestClass}">
-                   <ViewCell>
-                       <Label Text="{Binding StringValue}" BackgroundColor="Lavender"/>
-                   </ViewCell>
-               </DataTemplate>
+                            </ViewCell>
+                        </DataTemplate>
 
-           </DataTemplateSelectorList>
-       </ListView.ItemTemplate>
-    </ListView>
+                        <DataTemplate x:DataType="{galleryPages:SecondTestClass}">
+                            <ViewCell>
+                                <StackLayout BackgroundColor="Beige">
+                                    <Label Text="{Binding CountValue}" />
+                                    <Label Text="{Binding DateTimeValue}" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+
+                        <DataTemplate x:DataType="{galleryPages:ThirdTestClass}">
+                            <ViewCell>
+                                <StackLayout BackgroundColor="Lavender">
+                                    <Label Text="{Binding CountValue}" />
+                                    <Label Text="{Binding IntValue}" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+
+                    </DataTemplateSelectorList>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Label Text="--------------------------------------------"/>
+            <StackLayout BindableLayout.ItemsSource="{Binding Items}">
+                <BindableLayout.ItemTemplateSelector>
+                    <DataTemplateSelectorList>
+                        <DataTemplate x:DataType="{galleryPages:FirstTestClass}">
+                            <StackLayout BackgroundColor="Aquamarine">
+                                    <Label Text="{Binding CountValue}" />
+                                    <Label Text="{Binding StringValue}" />
+                                </StackLayout>
+
+                        </DataTemplate>
+
+                        <DataTemplate x:DataType="galleryPages:SecondTestClass">
+                            <StackLayout BackgroundColor="Beige">
+                                    <Label Text="{Binding CountValue}" />
+                                    <Label Text="{Binding DateTimeValue}" />
+                                </StackLayout>
+                        </DataTemplate>
+
+                        <DataTemplate x:DataType="galleryPages:ThirdTestClass">
+                            <StackLayout BackgroundColor="Lavender">
+                                <Label Text="{Binding CountValue}" />
+                                    <Label Text="{Binding IntValue}" />
+                                </StackLayout>
+                        </DataTemplate>
+
+                    </DataTemplateSelectorList>
+                </BindableLayout.ItemTemplateSelector>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+
 
 </ContentPage>

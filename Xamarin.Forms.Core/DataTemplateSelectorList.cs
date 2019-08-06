@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms
 {
+
+	[ContentProperty(nameof(DataTemplates))]
 	public sealed class DataTemplateSelectorList : DataTemplateSelector
 	{
 		public DataTemplateSelectorList()
@@ -26,5 +28,6 @@ namespace Xamarin.Forms
 		}
 
 		public Dictionary<Type, DataTemplate> DataTemplates { get; }
+
 	}
 }
