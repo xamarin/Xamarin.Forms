@@ -49,10 +49,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 			// In theory we want to tap the center of the control. But Stepper lays out differently than the other controls,
 			// (it doesn't center vertically within its layout), so we need to adjust for it until someone fixes it
+
+#if __ANDROID__
 			if (menuItem == "Stepper")
 			{
 				result = RunningApp.WaitForElement(q => q.Marked("−"));
 			}
+#endif
 
 			var target = result.First().Rect;
 
@@ -90,7 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 
-		ContentPage CreateTestPage(View view)
+			ContentPage CreateTestPage(View view)
 		{
 			var layout = new Grid();
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
