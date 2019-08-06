@@ -52,6 +52,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.FromHsla (.1, .6, .2), color.WithHue (.1));
 			Assert.AreEqual (Color.FromHsla (.8, .1, .2), color.WithSaturation (.1));
 			Assert.AreEqual (Color.FromHsla (.8, .6, .1), color.WithLuminosity (.1));
+
+			color = Color.FromRgb(50, 100, 150);
+			Assert.That(color.WithHue(.1).Hue, Is.EqualTo(0.1).Within(0.01));
+			Assert.That(color.WithHue(.1).Saturation, Is.EqualTo(color.Saturation).Within(0.01));
+			Assert.That(color.WithHue(.1).Luminosity, Is.EqualTo(color.Luminosity).Within(0.01));
+
+			Assert.That(color.WithSaturation(.1).Hue, Is.EqualTo(color.Hue).Within(0.01));
+			Assert.That(color.WithSaturation(.1).Saturation, Is.EqualTo(.1).Within(0.01));
+			Assert.That(color.WithSaturation(.1).Luminosity, Is.EqualTo(color.Luminosity).Within(0.01));
+
+			Assert.That(color.WithLuminosity(.1).Hue, Is.EqualTo(color.Hue).Within(0.01));
+			Assert.That(color.WithLuminosity(.1).Saturation, Is.EqualTo(color.Saturation).Within(0.01));
+			Assert.That(color.WithLuminosity(.1).Luminosity, Is.EqualTo(.1).Within(0.01));
 		}
 
 		[Test]
