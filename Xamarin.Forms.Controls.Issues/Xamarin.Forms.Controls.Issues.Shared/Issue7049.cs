@@ -12,10 +12,10 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue (IssueTracker.Github, 7049, "Null reference exception on some Android devices - Xamarin.Forms.Platform.Android.PageRenderer.Xamarin.Forms.Platform.Android.IOrderedTraversalController.UpdateTraversalOrder", PlatformAffected.Android)]
 	public class Issue7049 : TestContentPage
 	{
-		private const string ContinueButton = "ContinueButton"
-		private const string View1 = "View1"
-		private const string View2 = "View2"
-		private const string View3 = "View3"
+		private const string ContinueButton = "ContinueButton";
+		private const string View1 = "View1";
+		private const string View2 = "View2";
+		private const string View3 = "View3";
 		
 		private bool _flag = true;
 
