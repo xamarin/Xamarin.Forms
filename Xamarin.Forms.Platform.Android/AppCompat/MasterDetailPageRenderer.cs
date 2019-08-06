@@ -1,4 +1,3 @@
-
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -208,9 +207,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				_disposed = true;
+				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
+
+				if (Element != null)
+				{
+					MasterDetailPageController.BackButtonPressed -= OnBackButtonPressed;
+					Element.PropertyChanged -= HandlePropertyChanged;
+					Element.Appearing -= MasterDetailPageAppearing;
+					Element.Disappearing -= MasterDetailPageDisappearing;
+				}
+
+				if (_masterLayout?.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
+				if (!this.IsDisposed())
+					RemoveDrawerListener(this);
 
 				if (_tracker != null)
 				{
@@ -232,17 +250,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_masterLayout = null;
 				}
 
-				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
-
-				RemoveDrawerListener(this);
-
 				if (Element != null)
 				{
-					MasterDetailPageController.BackButtonPressed -= OnBackButtonPressed;
-					Element.PropertyChanged -= HandlePropertyChanged;
-					Element.Appearing -= MasterDetailPageAppearing;
-					Element.Disappearing -= MasterDetailPageDisappearing;
-
 					Element.ClearValue(Android.Platform.RendererProperty);
 					Element = null;
 				}
@@ -325,7 +334,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Presented = Element.IsPresented;
 				_isPresentingFromCore = false;
 			}
-			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackgroundImage(Element);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(Element);
@@ -377,11 +386,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateBackgroundImage(Page view)
 		{
-			string backgroundImage = view.BackgroundImage;
-			if (!string.IsNullOrEmpty(backgroundImage))
-				this.SetBackground(Context.GetDrawable(backgroundImage));
-			else
-				this.SetBackground(null);
+			_ = this.ApplyDrawableAsync(view, Page.BackgroundImageSourceProperty, Context, drawable =>
+			{
+				if (drawable != null)
+					this.SetBackground(drawable);
+			});
 		}
 
 		void UpdateDetail()
@@ -389,10 +398,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_detailLayout.ChildView == null)
 				Update();
 			else
-				new Handler(Looper.MainLooper).Post(() => Update());
+				// Queue up disposal of the previous renderers after the current layout updates have finished
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
+				if (_detailLayout == null || _detailLayout.IsDisposed())
+					return;
+
 				Context.HideKeyboard(this);
 				_detailLayout.ChildView = Element.Detail;
 			}
@@ -414,26 +427,25 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateMaster()
 		{
-
 			if (_masterLayout.ChildView == null)
-				new Handler(Looper.MainLooper).Post(() => Update());
-			else
 				Update();
+			else
+				// Queue up disposal of the previous renderers after the current layout updates have finished
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
-				Android.MasterDetailContainer masterContainer = _masterLayout;
-				if (masterContainer == null)
+				if (_masterLayout == null || _masterLayout.IsDisposed())
 					return;
 
-				if (masterContainer.ChildView != null)
-					masterContainer.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+				if (_masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
 
-				masterContainer.ChildView = Element.Master;
-				if (Element.Master != null)
-					Element.Master.PropertyChanged += HandleMasterPropertyChanged;
+				_masterLayout.ChildView = Element.Master;
+
+				if (_masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged += HandleMasterPropertyChanged;
 			}
-
 		}
 
 		void UpdateSplitViewLayout()

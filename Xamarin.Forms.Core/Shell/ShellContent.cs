@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 #if NETSTANDARD1_0
 using System.Linq;
@@ -12,7 +13,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Content")]
+	[ContentProperty(nameof(Content))]
 	public class ShellContent : BaseShellItem, IShellContentController
 	{
 		static readonly BindablePropertyKey MenuItemsPropertyKey =
@@ -26,6 +27,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ContentTemplateProperty =
 			BindableProperty.Create(nameof(ContentTemplate), typeof(DataTemplate), typeof(ShellContent), null, BindingMode.OneTime);
+
+		internal static readonly BindableProperty QueryAttributesProperty =
+			BindableProperty.CreateAttached("QueryAttributes", typeof(IDictionary<string, string>), typeof(ShellContent), defaultValue: null, propertyChanged: OnQueryAttributesPropertyChanged);
 
 		public MenuItemCollection MenuItems => (MenuItemCollection)GetValue(MenuItemsProperty);
 
@@ -59,40 +63,62 @@ namespace Xamarin.Forms
 			}
 
 			if (result != null && result.Parent != this)
+			{
 				OnChildAdded(result);
-
-
-			if (_delayedQueryParams != null && result  != null) {
-				ApplyQueryAttributes(result, _delayedQueryParams);
-				_delayedQueryParams = null;
 			}
+
+			if (result == null)
+				throw new InvalidOperationException($"No Content found for {nameof(ShellContent)}, Title:{Title}, Route {Route}");
+
+			if (GetValue(QueryAttributesProperty) is IDictionary<string, string> delayedQueryParams)
+				result.SetValue(QueryAttributesProperty, delayedQueryParams);
 
 			return result;
 		}
 
 		void IShellContentController.RecyclePage(Page page)
 		{
-			if (ContentCache == page)
-			{
-				OnChildRemoved(page);
-				ContentCache = null;
-			}
 		}
 
 		Page _contentCache;
 		IList<Element> _logicalChildren = new List<Element>();
 		ReadOnlyCollection<Element> _logicalChildrenReadOnly;
 
-		public ShellContent()
-		{
-			((INotifyCollectionChanged)MenuItems).CollectionChanged += MenuItemsCollectionChanged;
-		}
+		public ShellContent() => ((INotifyCollectionChanged)MenuItems).CollectionChanged += MenuItemsCollectionChanged;
 
-
+		internal bool IsVisibleContent => Parent is ShellSection shellSection && shellSection.IsVisibleSection;
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
 
-		Page ContentCache {
-			get { return _contentCache; }
+		internal override void SendDisappearing()
+		{
+			base.SendDisappearing();
+			((ContentCache ?? Content) as Page)?.SendDisappearing();
+		}
+
+		internal override void SendAppearing()
+		{
+			// only fire Appearing when the Content Page exists on the ShellContent
+			var content = ContentCache ?? Content;
+			if (content == null)
+				return;
+
+			base.SendAppearing();
+			((ContentCache ?? Content) as Page)?.SendAppearing();
+		}
+
+		protected override void OnChildAdded(Element child)
+		{
+			base.OnChildAdded(child);
+			if (child is Page page && IsVisibleContent)
+			{
+				SendAppearing();
+				page.SendAppearing();
+			}
+		}
+
+		Page ContentCache
+		{
+			get => _contentCache;
 			set
 			{
 				_contentCache = value;
@@ -110,8 +136,9 @@ namespace Xamarin.Forms
 			shellContent.Route = Routing.GenerateImplicitRoute(pageRoute);
 
 			shellContent.Content = page;
-			shellContent.SetBinding(TitleProperty, new Binding("Title", BindingMode.OneWay, source: page));
-			shellContent.SetBinding(IconProperty, new Binding("Icon", BindingMode.OneWay, source: page));
+			shellContent.SetBinding(TitleProperty, new Binding(nameof(Title), BindingMode.OneWay, source: page));
+			shellContent.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: page));
+			shellContent.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: page));
 
 			return shellContent;
 		}
@@ -138,6 +165,10 @@ namespace Xamarin.Forms
 					// parent new item
 					shellContent.OnChildAdded(newElement);
 				}
+				else if(newValue != null)
+				{
+					throw new InvalidOperationException($"{nameof(ShellContent)} {nameof(Content)} should be of type {nameof(Page)}. Title {shellContent?.Title}, Route {shellContent?.Route} ");
+				}
 			}
 
 			if (shellContent.Parent?.Parent is ShellItem shellItem)
@@ -155,20 +186,22 @@ namespace Xamarin.Forms
 					OnChildRemoved(el);
 		}
 
-		IDictionary<string, string> _delayedQueryParams;
 		internal override void ApplyQueryAttributes(IDictionary<string, string> query)
 		{
 			base.ApplyQueryAttributes(query);
-			ApplyQueryAttributes(this, query);
+			SetValue(QueryAttributesProperty, query);
 
-			if (Content == null) {
-				_delayedQueryParams = query;
-				return;
-			}
-			ApplyQueryAttributes(Content as Page, query);
+			if (Content is BindableObject bindable)
+				bindable.SetValue(QueryAttributesProperty, query);
 		}
 
-		internal static void ApplyQueryAttributes(object content, IDictionary<string, string> query)
+		static void OnQueryAttributesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (newValue is IDictionary<string, string> query)
+				ApplyQueryAttributes(bindable, query);
+		}
+
+		static void ApplyQueryAttributes(object content, IDictionary<string, string> query)
 		{
 			if (content is IQueryAttributable attributable)
 				attributable.ApplyQueryAttributes(query);

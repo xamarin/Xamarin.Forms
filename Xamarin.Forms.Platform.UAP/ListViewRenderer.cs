@@ -33,12 +33,22 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _subscribedToItemClick;
 		bool _subscribedToTapped;
 		bool _disposed;
-		CollectionViewSource _collectionViewSource;
+		CollectionViewSource _collectionViewSource;	
 
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
 		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
 
 		protected WListView List { get; private set; }
+
+		protected class ListViewTransparent : WListView
+		{
+			public ListViewTransparent() : base() { }
+
+			// Container is not created when the item is null. 
+			// To prevent this, base container preparationan receives an empty object.
+			protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+				=> base.PrepareContainerForItemOverride(element, item ?? new object());
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
 		{
@@ -59,7 +69,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (List == null)
 				{
-					List = new WListView
+					List = new ListViewTransparent
 					{
 						IsSynchronizedWithCurrentItem = false,
 						ItemTemplate = (Windows.UI.Xaml.DataTemplate)WApp.Current.Resources["CellTemplate"],
@@ -73,9 +83,6 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 
 				ReloadData();
-
-				if (Element.SelectedItem != null)
-					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem));
 
 				UpdateGrouping();
 				UpdateHeader();
@@ -231,7 +238,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				ClearSizeEstimate();
 			}
-			else if (e.PropertyName == Specifics.SelectionModeProperty.PropertyName)
+			else if (e.PropertyName == ListView.SelectionModeProperty.PropertyName)
 			{
 				UpdateSelectionMode();
 			}
@@ -408,6 +415,10 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (Element.SelectionMode == ListViewSelectionMode.Single)
 			{
 				List.SelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode.Single;
+
+				// UWP seems to reset the selected item when SelectionMode is set, make sure our items stays selected by doing this call
+				if (Element.SelectedItem != null)
+					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem, TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(Element.SelectedItem)));
 			}
 		}
 
@@ -724,7 +735,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnListItemClicked(int index)
 		{
-			Element.NotifyRowTapped(index, cell: null);
+			Element.NotifyRowTapped(index);
 			_itemWasClicked = true;
 		}
 
@@ -768,9 +779,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override AutomationPeer OnCreateAutomationPeer()
 		{
-			return List == null
-				? new FrameworkElementAutomationPeer(this)
-				: new ListViewAutomationPeer(List);
+			if (List == null)
+				return new FrameworkElementAutomationPeer(this);
+
+			var automationPeer = new ListViewAutomationPeer(List);
+			// skip this renderer from automationPeer tree to avoid infinity loop
+			automationPeer.SetParent(new FrameworkElementAutomationPeer(Parent as FrameworkElement));
+			return automationPeer;
 		}
 
 	}

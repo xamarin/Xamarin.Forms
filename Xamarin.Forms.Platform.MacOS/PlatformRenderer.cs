@@ -10,7 +10,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		internal PlatformRenderer(Platform platform)
 		{
 			Platform = platform;
+#pragma warning disable CS0618 // Type or member is obsolete
 			View = new NSView(NSApplication.SharedApplication.Windows[0].Frame);
+#pragma warning restore CS0618 // Type or member is obsolete
 			_platformNavigation = new PlatformNavigation(this);
 		}
 
@@ -39,12 +41,16 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (disposing)
 			{
-				_platformNavigation.Dispose();
-				_platformNavigation = null;
+				if (!_disposed)
+				{
+					_platformNavigation.Dispose();
+					_platformNavigation = null;
+					Platform = null;
+				}
+				_disposed = true;
 			}
-			_disposed = true;
 			base.Dispose(disposing);
 		}
 	}

@@ -6,25 +6,28 @@ using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Views.Animations;
-using ARelativeLayout = Android.Widget.RelativeLayout;
 using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	internal class Platform : BindableObject, IPlatformLayout, INavigation, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		readonly Context _context;
 		readonly PlatformRenderer _renderer;
 		bool _disposed;
 		bool _navAnimationInProgress;
 		NavigationModel _navModel = new NavigationModel();
-		Page _pendingRootChange = null;
+		internal static string PackageName { get; private set; }
+		internal static string GetPackageName() => PackageName ?? Android.Platform.PackageName;
 
 		public Platform(Context context)
 		{
 			_context = context;
-
+			PackageName = context?.PackageName;
 			_renderer = new PlatformRenderer(context, this);
 
 			FormsAppCompatActivity.BackPressed += HandleBackPressed;
@@ -53,9 +56,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 			_disposed = true;
 
-			SetPage(null);
-
 			FormsAppCompatActivity.BackPressed -= HandleBackPressed;
+
+			SetPage(null);
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
@@ -152,6 +155,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			_navModel.PushModal(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			Task presentModal = PresentModal(modal, animated);
 
 			await presentModal;
@@ -242,24 +251,31 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal void SetPage(Page newRoot)
 		{
+			if (Page == newRoot)
+			{
+				return;
+			}
+
 			if (Page != null)
 			{
 				foreach (var rootPage in _navModel.Roots)
 				{
-					if ((Android.Platform.GetRenderer(rootPage) is ILifeCycleState nr))
+					if (Android.Platform.GetRenderer(rootPage) is ILifeCycleState nr)
 						nr.MarkedForDispose = true;
 				}
 
-				_pendingRootChange = newRoot;
-				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() =>
-				{
-					if (_pendingRootChange == newRoot)
-					{
-						_pendingRootChange = null;
-						SetPageInternal(newRoot);
-					}
-				});
+				var viewsToRemove = new List<AView>();
+				var renderersToDispose = new List<IVisualElementRenderer>();
+
+				for (int i = 0; i < _renderer.ChildCount; i++)
+					viewsToRemove.Add(_renderer.GetChildAt(i));
+
+				foreach (var root in _navModel.Roots)
+					renderersToDispose.Add(Android.Platform.GetRenderer(root));
+
+				SetPageInternal(newRoot);
+
+				Cleanup(viewsToRemove, renderersToDispose);
 			}
 			else
 			{
@@ -276,24 +292,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			pageRenderer.View.ImportantForAccessibility = importantForAccessibility;
 			if (forceFocus)
 				pageRenderer.View.SendAccessibilityEvent(global::Android.Views.Accessibility.EventTypes.ViewFocused);
-			
+
 		}
 
 		void SetPageInternal(Page newRoot)
 		{
 			var layout = false;
 
-			var viewsToRemove = new List<AView>();
-			var renderersToDispose = new List<IVisualElementRenderer>();
-
 			if (Page != null)
 			{
-				for (int i = 0; i < _renderer.ChildCount; i++)
-					viewsToRemove.Add(_renderer.GetChildAt(i));
-
-				foreach (var root in _navModel.Roots)
-					renderersToDispose.Add(Android.Platform.GetRenderer(root));
-
 				_navModel = new NavigationModel();
 
 				layout = true;
@@ -301,32 +308,46 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (newRoot == null)
 			{
-				Cleanup(viewsToRemove, renderersToDispose);
+				Page = null;
+
 				return;
 			}
 
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
-			AddChild(Page, layout);
 
-			Cleanup(viewsToRemove, renderersToDispose);
+			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
 		}
 
 		void Cleanup(List<AView> viewsToRemove, List<IVisualElementRenderer> renderersToDispose)
 		{
-			for (int i = 0; i < viewsToRemove.Count; i++)
+			// If trigger by dispose, cleanup now, otherwise queue it for later
+			if (_disposed)
 			{
-				AView view = viewsToRemove[i];
-				_renderer?.RemoveView(view);
+				DoCleanup();
+			}
+			else
+			{
+				new Handler(Looper.MainLooper).Post(DoCleanup);
 			}
 
-			for (int i = 0; i < renderersToDispose.Count; i++)
+			void DoCleanup()
 			{
-				IVisualElementRenderer rootRenderer = renderersToDispose[i];
-				rootRenderer?.Dispose();
+				for (int i = 0; i < viewsToRemove.Count; i++)
+				{
+					AView view = viewsToRemove[i];
+					_renderer?.RemoveView(view);
+				}
+
+				for (int i = 0; i < renderersToDispose.Count; i++)
+				{
+					IVisualElementRenderer rootRenderer = renderersToDispose[i];
+					rootRenderer?.Element.ClearValue(Android.Platform.RendererProperty);
+					rootRenderer?.Dispose();
+				}
 			}
 		}
 
@@ -360,8 +381,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void LayoutRootPage(Page page, int width, int height)
 		{
-			var activity = (FormsAppCompatActivity)_context;
-			page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
+			page.Layout(new Rectangle(0, 0, _context.FromPixels(width), _context.FromPixels(height)));
 		}
 
 		Task PresentModal(Page modal, bool animated)
@@ -422,9 +442,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			protected override void Dispose(bool disposing)
 			{
-				if (disposing && !_disposed)
+				if (_disposed)
+					return;
+
+				if (disposing)
 				{
-					_disposed = true;
 					RemoveAllViews();
 					if (_renderer != null)
 					{
@@ -441,6 +463,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					}
 				}
 
+				_disposed = true;
 				base.Dispose(disposing);
 			}
 
@@ -448,9 +471,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				if (changed)
 				{
-					var activity = (FormsAppCompatActivity)Context;
-
-					_modal.Layout(new Rectangle(0, 0, activity.FromPixels(r - l), activity.FromPixels(b - t)));
+					_modal.Layout(new Rectangle(0, 0, Context.FromPixels(r - l), Context.FromPixels(b - t)));
 					_backgroundView.Layout(0, 0, r - l, b - t);
 				}
 
@@ -468,6 +489,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		public static implicit operator ViewGroup(Platform canvas)
 		{
 			return canvas._renderer;
+		}
+
+		#endregion
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 
 		#endregion

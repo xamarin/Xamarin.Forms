@@ -22,27 +22,50 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionG
 			Grid.Children.Add(selectionModeSelector);
 
 			CollectionView.SelectionChanged += CollectionViewOnSelectionChanged;
-			CollectionView.SelectionChangedCommand = new Command(() =>
-				SelectedItemsCommand.Text = 
-				$"SelectionChangedCommand, selection is: {((CollectionViewGalleryTestItem)CollectionView.SelectedItem).Caption}");
+			CollectionView.SelectionChangedCommand = new Command(UpdateSelectionInfoCommand);
+
+			UpdateSelectionInfo(Enumerable.Empty<CollectionViewGalleryTestItem>(), Enumerable.Empty<CollectionViewGalleryTestItem>());
+			UpdateSelectionInfoCommand();
 		}
 
 		void CollectionViewOnSelectionChanged(object sender, SelectionChangedEventArgs args)
 		{
-			var previous = ToList(args.PreviousSelection);
-			var current = ToList(args.CurrentSelection);
-			SelectedItemsEvent.Text = $"Selected (from event): {current}; Was: {previous}";
+			UpdateSelectionInfo(args.CurrentSelection, args.PreviousSelection);
 		}
 
-		static string ToList(IReadOnlyList<object> items)
+		void UpdateSelectionInfo(IEnumerable<object> currentSelectedItems, IEnumerable<object> previousSelectedItems)
 		{
-			if (items == null)
+			var previous = previousSelectedItems.ToCommaSeparatedList();
+			var current = currentSelectedItems.ToCommaSeparatedList();
+
+			if (string.IsNullOrEmpty(previous))
 			{
-				return string.Empty;
+				previous = "[none]";
 			}
 
-			return items.Aggregate(string.Empty, 
-				(s, o) => s + (s.Length == 0 ? "" : ", ") + ((CollectionViewGalleryTestItem)o).Caption);
+			if (string.IsNullOrEmpty(current))
+			{
+				current = "[none]";
+			}
+
+			SelectedItemsEvent.Text = $"Selection (event): {current}";
+			PreviousItemsEvent.Text = $"Previous (event): {previous}";
+		}
+
+		void UpdateSelectionInfoCommand()
+		{
+			var current = "[none]";
+
+			if(CollectionView.SelectionMode == SelectionMode.Multiple)
+			{
+				current = CollectionView?.SelectedItems.ToCommaSeparatedList();
+			}
+			else if (CollectionView.SelectionMode == SelectionMode.Single)
+			{
+				current = ((CollectionViewGalleryTestItem)CollectionView?.SelectedItem)?.Caption;
+			}
+
+			SelectedItemsCommand.Text = $"Selection (command): {current}";
 		}
 	}
 }
