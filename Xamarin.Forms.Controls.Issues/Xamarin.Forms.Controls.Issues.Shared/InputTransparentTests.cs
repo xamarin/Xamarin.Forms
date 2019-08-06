@@ -41,6 +41,9 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.Tap(q => q.Marked(menuItem));
 			}
 
+			RunningApp.WaitForElement("LoadTest");
+			RunningApp.Tap("LoadTest");
+
 			// Find the start label
 			RunningApp.WaitForElement(q => q.Marked("Start"));
 
@@ -92,8 +95,12 @@ namespace Xamarin.Forms.Controls.Issues
 		ContentPage CreateTestPage(View view)
 		{
 			var layout = new Grid();
-			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-			layout.RowDefinitions.Add(new RowDefinition());
+			var rowDefinition1 = new RowDefinition { Height = GridLength.Auto };
+			var rowDefinition2 = new RowDefinition { Height = GridLength.Star };
+
+			layout.RowDefinitions.Add(rowDefinition1);
+			layout.RowDefinitions.Add(rowDefinition2);
+			layout.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
 			var abs = new AbsoluteLayout();
 			var box = new BoxView { Color = Color.BlanchedAlmond };
@@ -125,11 +132,24 @@ namespace Xamarin.Forms.Controls.Issues
 				toggleButton.Text = $"Toggle InputTransparent (now {view.InputTransparent})";
 			};
 
-			layout.Children.Add(toggleButton);
-			layout.Children.Add(abs);
+			// Occasionally when clicking on a menu item the test looks like it's triggering another click onto the following screen
+			// This aims to work around that by requiring 
+			var loadTest = new Button { AutomationId = "LoadTest", Text = "Click Here to Load Test" };
+			EventHandler handler = null;
+			handler = (_, __) =>
+			{
+				loadTest.Clicked -= handler;
+				rowDefinition1.Height = GridLength.Auto;
+				rowDefinition2.Height = GridLength.Star;
+				layout.Children.Insert(0, abs);
+				layout.Children.Add(toggleButton, 0, 0);
+			};
 
+			loadTest.Clicked += handler;
 			Grid.SetRow(abs, 1);
+			Grid.SetRowSpan(abs, 2);
 
+			layout.Children.Add(loadTest, 0, 2);
 			return new ContentPage {Content = layout};
 		}
 
