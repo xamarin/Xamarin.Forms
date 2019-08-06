@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Xaml
@@ -23,6 +24,9 @@ namespace Xamarin.Forms.Xaml
 				throw new ArgumentNullException(nameof(serviceProvider));
 
 			if (!(serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider lineInfo))
+				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
+
+			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
 
 
@@ -49,12 +53,14 @@ namespace Xamarin.Forms.Xaml
 				var dataType = elementNode.Properties.FirstOrDefault(f => f.Key == XmlName.xDataType);
 				//if(dataType == null)
 
-				var xx = dataType.Value;
+				//dataType.Key.
+				if (typeResolver.TryResolve((dataType.Value as MarkupNode)?.MarkupString.Replace("{","").Replace("}",""), out var type))
+				{
+					templates.DataTemplates[type] = item;
+				}
 
-				//lineInfo.
-				//typeResolver.TryResolve()
 
-				//templates.DataTemplates[item.TemplateDataType] = item;
+				
 			}
 
 			return templates;

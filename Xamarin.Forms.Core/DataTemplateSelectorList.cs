@@ -7,17 +7,17 @@ namespace Xamarin.Forms
 	{
 		public DataTemplateSelectorList()
 		{
-			DataTemplates = new Dictionary<string, DataTemplate>();
+			DataTemplates = new Dictionary<Type, DataTemplate>();
 		}
 
-		public DataTemplateSelectorList(Dictionary<string, DataTemplate> dataTemplates)
+		public DataTemplateSelectorList(Dictionary<Type, DataTemplate> dataTemplates)
 		{
-			DataTemplates = dataTemplates ?? new Dictionary<string, DataTemplate>();
+			DataTemplates = dataTemplates ?? new Dictionary<Type, DataTemplate>();
 		}
 
 		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 		{
-			if (DataTemplates.TryGetValue(item.GetType().Name, out DataTemplate template))
+			if (DataTemplates.TryGetValue(item.GetType(), out DataTemplate template))
 			{
 				return template;
 			}
@@ -25,6 +25,6 @@ namespace Xamarin.Forms
 			return new DataTemplate(item.GetType());
 		}
 
-		public Dictionary<string, DataTemplate> DataTemplates { get; }
+		public Dictionary<Type, DataTemplate> DataTemplates { get; }
 	}
 }
