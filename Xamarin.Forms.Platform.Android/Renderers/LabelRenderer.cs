@@ -122,7 +122,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
-				UpdateTextType();
 			}
 			else
 			{
@@ -136,8 +135,6 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
 					UpdateCharacterSpacing();
-				if (e.OldElement.TextType != e.NewElement.TextType)
-					UpdateTextType();
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
@@ -160,7 +157,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineBreakMode();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
-			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName
+				|| e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
@@ -168,8 +166,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
-			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
-				UpdateTextType();
 		}
 
 		void UpdateColor()
@@ -246,7 +242,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-
 		void UpdateLineHeight()
 		{
 			_lastSizeRequest = null;
@@ -278,7 +273,25 @@ namespace Xamarin.Forms.Platform.Android
 					_view.SetTextColor(_labelTextColorDefault);
 					_lastUpdateColor = Color.Default;
 				}
-				_view.Text = Element.Text;
+
+				switch (Element.TextType)
+				{
+
+					case TextType.Html:
+						if (Forms.IsNougatOrNewer)
+							Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
+						else
+#pragma warning disable CS0618 // Type or member is obsolete
+							Control.SetText(Html.FromHtml(Element.Text), TextView.BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+						break;
+
+					default:
+						_view.Text = Element.Text;
+
+						break;
+				}
+
 				UpdateColor();
 				UpdateFont();
 
@@ -297,31 +310,6 @@ namespace Xamarin.Forms.Platform.Android
 				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
-		}
-		
-		void UpdateTextType()
-		{
-			if (Element.Text == null)
-				return;
-
-			switch (Element.TextType)
-			{
-
-				case TextType.Html:
-					if (Forms.IsNougatOrNewer)
-						Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
-					else
-#pragma warning disable CS0618 // Type or member is obsolete
-						Control.SetText(Html.FromHtml(Element.Text), TextView.BufferType.Spannable);
-#pragma warning restore CS0618 // Type or member is obsolete
-
-					_lastSizeRequest = null;
-					break;
-
-				default:
-					UpdateText();
-					break;
-			}
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)

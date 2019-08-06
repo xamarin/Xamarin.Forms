@@ -254,8 +254,9 @@ namespace Xamarin.Forms.Controls
 
 			var toggleLabel = new Label
 			{
-				Text = "<h1>Hello world!</h1><p>Lorem <strong>ipsum</strong></p>",
-				TextType = TextType.Html
+				TextType = TextType.Html,
+				Text = "<h1>Hello world!</h1><p>Lorem <strong>ipsum</strong></p>"
+				
 			};
 
 			var gestureRecognizer = new TapGestureRecognizer();

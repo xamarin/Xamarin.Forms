@@ -251,8 +251,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateGravity();
 				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
-				if (e.OldElement?.TextType != e.NewElement.TextType)
-					UpdateTextType();
 
 				UpdatePadding();
 
@@ -266,7 +264,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateGravity();
-			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
+			else if (e.PropertyName == Label.TextColorProperty.PropertyName ||
+				e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
@@ -284,8 +283,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
-			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
-				UpdateTextType();
 		}
 
 		void UpdateColor()
@@ -385,7 +382,23 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					SetTextColor(_labelTextColorDefault);
 					_lastUpdateColor = Color.Default;
 				}
-				Text = Element.Text;
+
+				switch (Element.TextType)
+				{
+					case TextType.Html:
+						if (Forms.IsNougatOrNewer)
+							Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), BufferType.Spannable);
+						else
+#pragma warning disable CS0618 // Type or member is obsolete
+							Control.SetText(Html.FromHtml(Element.Text), BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+						break;
+
+					default:
+						Text = Element.Text;
+						break;
+				}
+				
 				UpdateColor();
 				UpdateFont();
 
@@ -419,31 +432,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
-		}
-
-		void UpdateTextType()
-		{
-			if (Element.Text == null)
-				return;
-
-			switch (Element.TextType)
-			{
-
-				case TextType.Html:
-					if (Forms.IsNougatOrNewer)
-						Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), BufferType.Spannable);
-					else
-#pragma warning disable CS0618 // Type or member is obsolete
-						Control.SetText(Html.FromHtml(Element.Text), BufferType.Spannable);
-#pragma warning restore CS0618 // Type or member is obsolete
-
-					_lastSizeRequest = null;
-					break;
-
-				default:
-					UpdateText();
-					break;
-			}
 		}
 	}
 }
