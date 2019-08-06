@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Xamarin.Forms;
+﻿using System.Collections.Generic;
 
 namespace Xamarin.Forms.Controls.GalleryPages
 {
@@ -10,56 +8,49 @@ namespace Xamarin.Forms.Controls.GalleryPages
 		{
 			InitializeComponent();
 
-			var list = new List<BaseClass>
+			var list = new List<BaseTestClass>
 			{
-				new First{ StringValue = "First"},
-				new Second{ StringValue = "Second"},
-				new Third{ StringValue = "Third"},
-				new First{ StringValue = "First"},
-				new Second{ StringValue = "Second"},
-				new Third{ StringValue = "Third"},
-				new First{ StringValue = "First"},
-				new Second{ StringValue = "Second"},
-				new Third{ StringValue = "Third"},
-				new First{ StringValue = "First"},
-				new Second{ StringValue = "Second"},
-				new Third{ StringValue = "Third"},
-				new First{ StringValue = "First"},
-				new Second{ StringValue = "Second"},
-				new Third{ StringValue = "Third"},
-				new First{ StringValue = "First"},
-				new Second{ StringValue = "Second"},
-				new Third{ StringValue = "Third"},
-				new First{ StringValue = "First"},
-				new Second{ StringValue = "Second"},
-				new Third{ StringValue = "Third"},
+				new FirstTestClass { StringValue = "First" },
+				new SecondTestClass { StringValue = "Second" },
+				new ThirdTestClass { StringValue = "Third" },
+				new FirstTestClass { StringValue = "First" },
+				new SecondTestClass { StringValue = "Second" },
+				new ThirdTestClass { StringValue = "Third" },
+				new FirstTestClass { StringValue = "First" },
+				new SecondTestClass { StringValue = "Second" },
+				new ThirdTestClass { StringValue = "Third" },
+				new FirstTestClass { StringValue = "First" },
+				new SecondTestClass { StringValue = "Second" },
+				new ThirdTestClass { StringValue = "Third" },
+				new FirstTestClass { StringValue = "First" },
+				new SecondTestClass { StringValue = "Second" },
+				new ThirdTestClass { StringValue = "Third" },
+				new FirstTestClass { StringValue = "First" },
+				new SecondTestClass { StringValue = "Second" },
+				new ThirdTestClass { StringValue = "Third" },
+				new FirstTestClass { StringValue = "First" },
+				new SecondTestClass { StringValue = "Second" },
+				new ThirdTestClass { StringValue = "Third" }
 			};
 
 			ListViewWithTemplates.ItemsSource = list;
 		}
+	}
 
+	public class BaseTestClass
+	{
+		public string StringValue { get; set; }
+	}
 
+	public class FirstTestClass : BaseTestClass
+	{
+	}
 
-		class BaseClass
-		{
-			public string StringValue { get; set; }
-		}
+	public class SecondTestClass : BaseTestClass
+	{
+	}
 
-
-		class First : BaseClass
-		{
-			
-		}
-
-		class Second : BaseClass
-		{
-			
-		}
-
-		class Third : BaseClass
-		{
-			
-		}
-
+	public class ThirdTestClass : BaseTestClass
+	{
 	}
 }

@@ -1,14 +1,30 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Xamarin.Forms.Controls.GalleryPages.DataTemplatePageGallery">
+             xmlns:galleryPages="clr-namespace:Xamarin.Forms.Controls.GalleryPages;assembly=Xamarin.Forms.Controls"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.DataTemplatePageGallery"
+             x:local="Xamarin.Forms.Controls.GalleryPages.DataTemplatePageGallery">
 
     <ListView x:Name="ListViewWithTemplates">
        <ListView.ItemTemplate>
            <DataTemplateSelectorList>
-         <DataTemplate>
+               <DataTemplate x:DataType="{galleryPages:FirstTestClass}">
+                 <ViewCell>
+                     <Label Text="{Binding StringValue}" BackgroundColor="Aquamarine"/>
+                 </ViewCell>
+             </DataTemplate>
 
-         </DataTemplate>
+               <DataTemplate x:DataType="{galleryPages:SecondTestClass}">
+                   <ViewCell>
+                       <Label Text="{Binding StringValue}" BackgroundColor="Beige"/>
+                   </ViewCell>
+               </DataTemplate>
+
+               <DataTemplate x:DataType="{galleryPages:ThirdTestClass}">
+                   <ViewCell>
+                       <Label Text="{Binding StringValue}" BackgroundColor="Lavender"/>
+                   </ViewCell>
+               </DataTemplate>
 
            </DataTemplateSelectorList>
        </ListView.ItemTemplate>

@@ -365,7 +365,6 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ControlTemplatePage(), "ControlTemplated Gallery - Legacy"),
 				new GalleryPageFactory(() => new ControlTemplateXamlPage(), "ControlTemplated XAML Gallery - Legacy"),
 				new GalleryPageFactory(() => new DisposeGallery(), "Dispose Gallery - Legacy"),
-				new GalleryPageFactory(() => new DisposeGallery(), "Dispose Gallery - Legacy"),
 				new GalleryPageFactory(() => new EntryGallery(), "Entry Gallery - Legacy"),
 				new GalleryPageFactory(() => new FrameGallery (), "Frame Gallery - Legacy"),
 				new GalleryPageFactory(() => new GridGallery(), "Grid Gallery - Legacy"),
