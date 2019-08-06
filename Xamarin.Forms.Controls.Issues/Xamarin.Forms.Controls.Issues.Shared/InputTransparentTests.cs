@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 
-			ContentPage CreateTestPage(View view)
+		ContentPage CreateTestPage(View view)
 		{
 			var layout = new Grid();
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
