@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Xaml
 				}
 
 
-				
+				count++;
 			}
 
 			return templates;
