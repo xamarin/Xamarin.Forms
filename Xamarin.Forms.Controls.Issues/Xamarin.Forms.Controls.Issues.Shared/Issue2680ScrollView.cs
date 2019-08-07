@@ -5,7 +5,7 @@ using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest; 
-using NUnit.Framework; 
+using NUnit.Framework;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
@@ -14,9 +14,6 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 2680, "[Enhancement] Add VerticalScrollMode/HorizontalScrollMode to ListView and ScrollView", PlatformAffected.All)]
 	public class Issue2680ScrollView : TestContentPage // or TestMasterDetailPage, etc ... 
 	{
-		public const string ButtonDisabledCaption = "Disable scroll";
-		public const string ButtonEnabledCaption = "Enable scroll";
-
 		public bool IsScrollEnabled { get; set; } = false;
 
 		public void ToggleButtonText()
@@ -29,27 +26,30 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			toggleButton = new Button
-			{
-				Text = ButtonText
-			};
-
 			// Initialize ui here instead of ctor 
 			var longStackLayout = new StackLayout();
 
+			toggleButton = new Button { Text = ButtonText, AutomationId = ToggleButtonMark };
+			toggleButton.Clicked += ToggleButtonOnClicked;
+
 			longStackLayout.Children.Add(toggleButton);
-			Enumerable.Range(1, 50).Select(i => new Label() { Text = $"Test label {i}" })
+
+			longStackLayout.Children.Add(new Label
+			{
+				Text = "First label",
+				AutomationId = FirstItemMark
+			});
+			Enumerable.Range(2, 50).Select(i => new Label { Text = $"Test label {i}" })
 				.ForEach(label => longStackLayout.Children.Add(label));
 
 			scrollView = new ScrollView
 			{
 				Orientation = ScrollOrientation.Neither,
+				AutomationId = ScrollViewMark,
 				Content = longStackLayout
 			};
 
 			Content = scrollView;
-
-			toggleButton.Clicked += ToggleButtonOnClicked;
 		}
 
 		private void ToggleButtonOnClicked(object sender, EventArgs e)
@@ -61,30 +61,32 @@ namespace Xamarin.Forms.Controls.Issues
 		private ScrollView scrollView;
 		private Button toggleButton;
 
+		private const string ScrollViewMark = "ScrollView";
+		private const string FirstItemMark = "FirstItem";
+		private const string ToggleButtonMark = "ToggleButton";
+
+		private const string ButtonDisabledCaption = "Disable scroll";
+		private const string ButtonEnabledCaption = "Enable scroll";
+
 #if UITEST
 		[Test] 
 		public void Issue2680Test_ScrollDisabled() 
 		{ 
-			RunningApp.Screenshot("I am at Issue 2680");
-			for (var i = 0; i < 10; i++)
-			{
-				RunningApp.ScrollDown();
-			}
-			RunningApp.WaitForElement(q => q.Marked("Test label 1")); 
-			RunningApp.Screenshot("I'm still seeing the first Label in non-scrollable ScrollView");
+			RunningApp.ScrollDown(ScrollViewMark);
+			RunningApp.ScrollDown(ScrollViewMark);
+
+			RunningApp.WaitForElement(FirstItemMark, timeout: TimeSpan.FromSeconds(5));
 		}
 
 		[Test]
 		public void Issue2680Test_ScrollEnabled()
 		{
-			RunningApp.Screenshot("I am at Issue 2680");
-			RunningApp.Tap(q => q.Button(ButtonEnabledCaption));
-			for (var i = 0; i < 10; i++)
-			{
-				RunningApp.ScrollDown();
-			}
-			RunningApp.WaitForNoElement(q => q.Marked("Test label 1"));
-			RunningApp.Screenshot("Cannot see the first Label in ScrollView after few scrolls");
+			RunningApp.Tap(q => q.Button(ToggleButtonMark));
+
+			RunningApp.ScrollDown(ScrollViewMark);
+			RunningApp.ScrollDown(ScrollViewMark);
+
+			RunningApp.WaitForNoElement(FirstItemMark, timeout: TimeSpan.FromSeconds(5));
 		}
 #endif
 	}
