@@ -10,8 +10,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 7061, "[Bug] NullReferenceException Closing Window During Animation", PlatformAffected.UWP)]
 	public class Issue7061 : TestContentPage
 	{
-		private Label _animatedLabel = new Label { Text = "Scaling out" };
-		private Label _explanationLabel = new Label { Text = "When you close the app while the animation is still running you should not get an exception" };
+		Label _animatedLabel = new Label { Text = "Scaling out" };
+		Label _explanationLabel = new Label { Text = "When you close the app while the animation is still running you should not get an exception" };
 
 		protected override void Init()
 		{
