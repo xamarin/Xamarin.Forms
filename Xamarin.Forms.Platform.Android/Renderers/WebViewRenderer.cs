@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		public const string AssetBaseUrl = "file:///android_asset/";
 
-		WebNavigationEvent _lastBackForwardEvent = WebNavigationEvent.NewPage;
+		WebNavigationEvent _eventState;
 		WebViewClient _webViewClient;
 		FormsWebChromeClient _webChromeClient;
 		bool _isDisposed = false;
@@ -37,13 +37,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void LoadHtml(string html, string baseUrl)
 		{
+			_eventState = WebNavigationEvent.NewPage;
 			Control.LoadDataWithBaseURL(baseUrl ?? AssetBaseUrl, html, "text/html", "UTF-8", null);
 		}
 
 		public void LoadUrl(string url)
 		{
 			if (!SendNavigatingCanceled(url))
+			{
+				_eventState = WebNavigationEvent.NewPage;
 				Control.LoadUrl(url);
+			}	
 		}
 
 		protected internal bool SendNavigatingCanceled(string url)
@@ -54,7 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (url == AssetBaseUrl)
 				return false;
 
-			var args = new WebNavigatingEventArgs(_lastBackForwardEvent, new UrlWebViewSource { Url = url }, url);
+			var args = new WebNavigatingEventArgs(_eventState, new UrlWebViewSource { Url = url }, url);
 			ElementController.SendNavigating(args);
 			UpdateCanGoBackForward();
 			UrlCanceled = args.Cancel ? null : url;
@@ -109,7 +113,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal WebNavigationEvent GetCurrentWebNavigationEvent()
 		{
-			return _lastBackForwardEvent;
+			return _eventState;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<WebView> e)
@@ -217,7 +221,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Control.CanGoBack())
 			{
-				_lastBackForwardEvent = WebNavigationEvent.Back;
+				_eventState = WebNavigationEvent.Back;
 				Control.GoBack();
 			}	
 
@@ -228,7 +232,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Control.CanGoForward())
 			{
-				_lastBackForwardEvent = WebNavigationEvent.Forward;
+				_eventState = WebNavigationEvent.Forward;
 				Control.GoForward();
 			}	
 
@@ -237,7 +241,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
-			_lastBackForwardEvent = WebNavigationEvent.Refresh;
+			_eventState = WebNavigationEvent.Refresh;
 			Control.Reload();
 		}
 
