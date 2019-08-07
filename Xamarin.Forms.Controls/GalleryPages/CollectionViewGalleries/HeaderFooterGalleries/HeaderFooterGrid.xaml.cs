@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.HeaderFoot
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class HeaderFooterGrid : ContentPage
 	{
-		readonly DemoFilteredItemSource _demoFilteredItemSource = new DemoFilteredItemSource(100);
+		readonly DemoFilteredItemSource _demoFilteredItemSource = new DemoFilteredItemSource(10);
 
 		public HeaderFooterGrid()
 		{

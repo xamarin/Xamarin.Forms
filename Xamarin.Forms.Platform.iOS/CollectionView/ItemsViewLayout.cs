@@ -428,32 +428,12 @@ namespace Xamarin.Forms.Platform.iOS
 			return UICollectionViewLayoutAttributes.CreateForSupplementaryView(kind, indexPath);
 		}
 
-		//UIView _header = null;
-		//UIView _footer = null;
 		public override void PrepareLayout()
 		{
 			base.PrepareLayout();
 
 			// PrepareLayout is the only good place to consistently track the content size changes
 			TrackOffsetAdjustment();
-
-		/*	if (_header == null)
-			{
-				_header = new UIView();
-				_header.Frame = new CoreGraphics.CGRect(0, -100, CollectionView.Frame.Width, 100);
-				_header.BackgroundColor = UIColor.Purple;
-				CollectionView.AddSubview(_header);
-
-
-				_footer = new UIView();
-				_footer.Frame = new CoreGraphics.CGRect(0, CollectionViewContentSize.Height, CollectionView.Frame.Width, 100);
-				_footer.BackgroundColor = UIColor.Green;
-				CollectionView.AddSubview(_footer);
-			}
-			else
-			{
-				_footer.Frame = new CoreGraphics.CGRect(0, CollectionViewContentSize.Height, CollectionView.Frame.Width, 100);
-			}*/
 		}
 
 		public override void PrepareForCollectionViewUpdates(UICollectionViewUpdateItem[] updateItems)
