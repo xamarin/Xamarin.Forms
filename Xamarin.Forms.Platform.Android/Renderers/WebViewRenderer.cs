@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		public const string AssetBaseUrl = "file:///android_asset/";
 
+		WebNavigationEvent _lastBackForwardEvent = WebNavigationEvent.NewPage;
 		WebViewClient _webViewClient;
 		FormsWebChromeClient _webChromeClient;
 		bool _isDisposed = false;
@@ -53,7 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (url == AssetBaseUrl)
 				return false;
 
-			var args = new WebNavigatingEventArgs(WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url);
+			var args = new WebNavigatingEventArgs(_lastBackForwardEvent, new UrlWebViewSource { Url = url }, url);
 			ElementController.SendNavigating(args);
 			UpdateCanGoBackForward();
 			UrlCanceled = args.Cancel ? null : url;
@@ -104,6 +105,11 @@ namespace Xamarin.Forms.Platform.Android
 		protected override AWebView CreateNativeControl()
 		{
 			return new AWebView(Context);
+		}
+
+		internal WebNavigationEvent GetCurrentWebNavigationEvent()
+		{
+			return _lastBackForwardEvent;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<WebView> e)
@@ -210,7 +216,10 @@ namespace Xamarin.Forms.Platform.Android
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
 		{
 			if (Control.CanGoBack())
+			{
+				_lastBackForwardEvent = WebNavigationEvent.Back;
 				Control.GoBack();
+			}	
 
 			UpdateCanGoBackForward();
 		}
@@ -218,13 +227,17 @@ namespace Xamarin.Forms.Platform.Android
 		void OnGoForwardRequested(object sender, EventArgs eventArgs)
 		{
 			if (Control.CanGoForward())
+			{
+				_lastBackForwardEvent = WebNavigationEvent.Forward;
 				Control.GoForward();
+			}	
 
 			UpdateCanGoBackForward();
 		}
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
+			_lastBackForwardEvent = WebNavigationEvent.Refresh;
 			Control.Reload();
 		}
 
