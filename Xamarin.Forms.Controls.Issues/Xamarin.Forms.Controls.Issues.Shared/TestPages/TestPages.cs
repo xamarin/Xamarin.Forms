@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		static int s_testsrun;
-		const int ConsecutiveTestLimit = 10;
+		const int ConsecutiveTestLimit = 20;
 
 		// Until we get more of our memory leak issues worked out, restart the app 
 		// after a specified number of tests so we don't get bogged down in GC
@@ -518,6 +518,9 @@ namespace Xamarin.Forms.Controls
 		protected abstract void Init();
 	}
 
+#if UITEST
+	[Category(UITestCategories.TabbedPage)]
+#endif
 	public abstract class TestTabbedPage : TabbedPage
 	{
 #if UITEST
@@ -561,6 +564,126 @@ namespace Xamarin.Forms.Controls
 #endif
 
 		protected abstract void Init();
+	}
+
+
+
+
+	public abstract class TestShell : Shell
+	{
+#if UITEST
+		public IApp RunningApp => AppSetup.RunningApp;
+
+		protected virtual bool Isolate => true;
+#endif
+
+		protected TestShell() : base()
+		{
+#if APP
+			Init();
+#endif
+		}
+
+		public ContentPage AddTopTab(string title)
+		{
+			ContentPage page = new ContentPage();
+			Items[0].Items[0].Items.Add(new ShellContent()
+			{
+				Title = title,
+				Content = page
+			});
+			return page;
+		}
+
+		public ContentPage AddBottomTab(string title)
+		{
+
+			ContentPage page = new ContentPage();
+			Items[0].Items.Add(new ShellSection()
+			{
+				Items =
+				{
+					new ShellContent()
+					{
+						Content = page,
+						Title = title
+					}
+				}
+			});
+			return page;
+		}
+
+		public ContentPage CreateContentPage(string shellItemTitle = null)
+		{
+			shellItemTitle = shellItemTitle ?? $"Item: {Items.Count}";
+			ContentPage page = new ContentPage();
+			ShellItem item = new ShellItem()
+			{
+				Title = shellItemTitle,
+				Items =
+				{
+					new ShellSection()
+					{
+						Items =
+						{
+							new ShellContent()
+							{
+								Content = page
+							}
+						}
+					}
+				}
+			};
+
+			Items.Add(item);
+			return page;
+
+		}
+#if UITEST
+		[SetUp]
+		public void Setup()
+		{
+			if (Isolate)
+			{
+				AppSetup.BeginIsolate();
+			}
+			else
+			{
+				AppSetup.EnsureMemory();
+				AppSetup.EnsureConnection();
+			}
+
+			AppSetup.NavigateToIssue(GetType(), RunningApp);
+		}
+
+		[TearDown]
+		public virtual void TearDown()
+		{
+			if (Isolate)
+			{
+				AppSetup.EndIsolate();
+			}
+		}
+
+		public void ShowFlyout(string flyoutIcon = "OK")
+		{
+			RunningApp.WaitForElement(flyoutIcon);
+			RunningApp.Tap(flyoutIcon);
+		}
+
+
+		public void TapInFlyout(string text, string flyoutIcon = "OK")
+		{
+			ShowFlyout(flyoutIcon);
+			RunningApp.WaitForElement(text);
+			RunningApp.Tap(text);
+		}
+
+
+#endif
+
+		protected abstract void Init();
+
 	}
 }
 

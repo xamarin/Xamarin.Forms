@@ -36,7 +36,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
+		public static readonly BindableProperty VerticalTextAlignmentProperty = TextAlignmentElement.VerticalTextAlignmentProperty;
+
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<SearchBar>> _platformConfigurationRegistry;
 
@@ -50,6 +54,12 @@ namespace Xamarin.Forms
 		{
 			get { return (TextAlignment)GetValue(TextAlignmentElement.HorizontalTextAlignmentProperty); }
 			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
+		}
+
+		public TextAlignment VerticalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(TextAlignmentElement.VerticalTextAlignmentProperty); }
+			set { SetValue(TextAlignmentElement.VerticalTextAlignmentProperty, value); }
 		}
 
 		public string Placeholder {
@@ -84,6 +94,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		bool IsEnabledCore
@@ -186,6 +202,11 @@ namespace Xamarin.Forms
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
+		}
+
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
 		}
 
 		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)

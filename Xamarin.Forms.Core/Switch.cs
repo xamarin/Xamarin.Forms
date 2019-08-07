@@ -13,7 +13,9 @@ namespace Xamarin.Forms
 				eh(bindable, new ToggledEventArgs((bool)newValue));
 		}, defaultBindingMode: BindingMode.TwoWay);
 
-		public static readonly BindableProperty OnColorProperty = BindableProperty.Create(nameof(OnColor), typeof(Color), typeof(Slider), Color.Default);
+		public static readonly BindableProperty OnColorProperty = BindableProperty.Create(nameof(OnColor), typeof(Color), typeof(Switch), Color.Default);
+
+		public static readonly BindableProperty ThumbColorProperty = BindableProperty.Create(nameof(ThumbColor), typeof(Color), typeof(Switch), Color.Default);
 
 		public Color OnColor
 		{
@@ -21,6 +23,11 @@ namespace Xamarin.Forms
 			set { SetValue(OnColorProperty, value); }
 		}
 
+		public Color ThumbColor
+		{
+			get { return (Color)GetValue(ThumbColorProperty); }
+			set { SetValue(ThumbColorProperty, value); }
+		}
 
 		readonly Lazy<PlatformConfigurationRegistry<Switch>> _platformConfigurationRegistry;
 

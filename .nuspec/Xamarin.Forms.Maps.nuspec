@@ -6,7 +6,7 @@
     <authors>Microsoft</authors>
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms maps xamarinforms xamarinformsmaps xamarin.forms.maps</tags>
-    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
+    <license type="expression">MIT</license>
     <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -18,14 +18,7 @@
       </group>
       <group targetFramework="MonoAndroid81">
         <dependency id="Xamarin.GooglePlayServices.Maps" version="60.1142.1"/>
-        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="27.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="27.0.2"/>
-        <dependency id="Xamarin.Forms" version="$version$"/>
-      </group>
-      <group targetFramework="MonoAndroid90">
-        <dependency id="Xamarin.GooglePlayServices.Maps" version="60.1142.1"/>
         <dependency id="Xamarin.Android.Support.v7.AppCompat" version="28.0.0.1"/>
-        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="28.0.0.1"/>
         <dependency id="Xamarin.Forms" version="$version$"/>
       </group>
       <group targetFramework="tizen40">

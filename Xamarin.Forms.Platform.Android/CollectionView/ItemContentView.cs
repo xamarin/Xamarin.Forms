@@ -7,6 +7,8 @@ namespace Xamarin.Forms.Platform.Android
 	internal class ItemContentView : ViewGroup
 	{
 		protected IVisualElementRenderer Content;
+		Size? _size;
+		Action<Size> _reportMeasure;
 
 		public ItemContentView(Context context) : base(context)
 		{
@@ -16,12 +18,34 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Content = CreateRenderer(view, Context);
 			AddView(Content.View);
+			Content.Element.MeasureInvalidated += ElementMeasureInvalidated;
+		}
+
+		void ElementMeasureInvalidated(object sender, System.EventArgs e)
+		{
+			RequestLayout();
 		}
 
 		internal void Recycle()
 		{
-			RemoveView(Content.View);
+			if (Content?.Element != null)
+			{
+				Content.Element.MeasureInvalidated -= ElementMeasureInvalidated;
+			}
+
+			if (Content?.View != null)
+			{
+				RemoveView(Content.View);
+			}
+
 			Content = null;
+			_size = null;
+		}
+
+		internal void HandleItemSizingStrategy(Action<Size> reportMeasure, Size? size)
+		{
+			_reportMeasure = reportMeasure;
+			_size = size;
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -46,43 +70,44 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			if (_size != null)
+			{
+				// If we're using ItemSizingStrategy.MeasureFirstItem and now we have a set size, use that
+				SetMeasuredDimension((int)_size.Value.Width, (int)_size.Value.Height);
+				return;
+			}
+
 			int pixelWidth = MeasureSpec.GetSize(widthMeasureSpec);
 			int pixelHeight = MeasureSpec.GetSize(heightMeasureSpec);
 
-			var width = Context.FromPixels(pixelWidth);
-			var height = Context.FromPixels(pixelHeight);
+			var width = MeasureSpec.GetMode(widthMeasureSpec) == MeasureSpecMode.Unspecified
+				? double.PositiveInfinity
+				: Context.FromPixels(pixelWidth);
+
+			var height = MeasureSpec.GetMode(heightMeasureSpec) == MeasureSpecMode.Unspecified
+				? double.PositiveInfinity
+				: Context.FromPixels(pixelHeight);
 
 			SizeRequest measure = Content.Element.Measure(width, height, MeasureFlags.IncludeMargins);
 
 			if (pixelWidth == 0)
 			{
-				pixelWidth = (int)Context.ToPixels(Content.Element.Width > 0
-					? Content.Element.Width
-					: measure.Request.Width);
+				pixelWidth = (int)Context.ToPixels(measure.Request.Width);
 			}
 
 			if (pixelHeight == 0)
 			{
-				pixelHeight = (int)Context.ToPixels(Content.Element.Height > 0
-					? Content.Element.Height
-					: measure.Request.Height);
+				pixelHeight = (int)Context.ToPixels(measure.Request.Height);
 			}
+
+			_reportMeasure?.Invoke(new Size(pixelWidth, pixelHeight));
+			_reportMeasure = null; // Make sure we only report back the measure once
 
 			SetMeasuredDimension(pixelWidth, pixelHeight);
 		}
 
 		static IVisualElementRenderer CreateRenderer(View view, Context context)
 		{
-			if (view == null)
-			{
-				throw new ArgumentNullException(nameof(view));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
 			var renderer = Platform.CreateRenderer(view, context);
 			Platform.SetRenderer(view, renderer);
 

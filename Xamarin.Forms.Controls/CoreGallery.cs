@@ -10,6 +10,8 @@ using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries;
+using Xamarin.Forms.Controls.Issues;
+
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
@@ -46,7 +48,7 @@ namespace Xamarin.Forms.Controls
 
 			var toCrashButton = new Button { Text = "Crash Me" };
 
-			var masterPage = new ContentPage { Title = "Menu", Icon = "bank.png", Content = toCrashButton };
+			var masterPage = new ContentPage { Title = "Menu", IconImageSource = "bank.png", Content = toCrashButton };
 			var detailPage = new CoreRootPage(this, NavigationBehavior.PushModalAsync) { Title = "DetailPage" };
 
 			bool toggle = false;
@@ -136,7 +138,7 @@ namespace Xamarin.Forms.Controls
 			Children.Add(new NavigationPage(new Page())
 			{
 				Title = "Rubriques",
-				Icon = "coffee.png",
+				IconImageSource = "coffee.png",
 				BarBackgroundColor = Color.Blue,
 				BarTextColor = Color.Aqua
 			});
@@ -217,6 +219,7 @@ namespace Xamarin.Forms.Controls
 				new CoreViewContainer ("SwapRoot - NavigationPage", typeof(CoreNavigationPage)),
 				new CoreViewContainer ("SwapRoot - TabbedPage", typeof(CoreTabbedPage)),
 				new CoreViewContainer ("SwapRoot - BottomNavigation TabbedPage", typeof(CoreTabbedPageAsBottomNavigation)),
+				new CoreViewContainer ("SwapRoot - Store Shell", typeof(XamStore.StoreShell)),
 			};
 
 			var template = new DataTemplate(typeof(TextCell));
@@ -279,6 +282,8 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
+				new GalleryPageFactory(() => new MemoryLeakGallery(), "Memory Leak"),
+				new GalleryPageFactory(() => new Issues.A11yTabIndex(), "Accessibility TabIndex"),
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
@@ -290,6 +295,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),
 				new GalleryPageFactory(() => new NativeBindingGalleryPage(), "Native Binding Controls Gallery"),
 				new GalleryPageFactory(() => new XamlNativeViews(), "Xaml Native Views Gallery"),
+				new GalleryPageFactory(() => new CharacterSpacingGallery(), "CharacterSpacing Views Gallery"),
 				new GalleryPageFactory(() => new AppLinkPageGallery(), "App Link Page Gallery"),
 				new GalleryPageFactory(() => new NestedNativeControlGalleryPage(), "Nested Native Controls Gallery"),
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
@@ -317,6 +323,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ButtonLayoutGalleryPage(VisualMarker.Material), "Button Layout Gallery (Material)"),
 				new GalleryPageFactory(() => new ButtonBorderBackgroundGalleryPage(), "Button Border & Background Gallery"),
 				new GalleryPageFactory(() => new ButtonBorderBackgroundGalleryPage(VisualMarker.Material), "Button Border & Background Gallery (Material)"),
+				new GalleryPageFactory(() => new CheckBoxCoreGalleryPage(), "CheckBox Gallery"),
 				new GalleryPageFactory(() => new DatePickerCoreGalleryPage(), "DatePicker Gallery"),
 				new GalleryPageFactory(() => new EditorCoreGalleryPage(), "Editor Gallery"),
 				new GalleryPageFactory(() => new FrameCoreGalleryPage(), "Frame Gallery"),
@@ -342,6 +349,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new VisualGallery(), "Visual Gallery"),
 				new GalleryPageFactory(() => new WebViewCoreGalleryPage(), "WebView Gallery"),
 				new GalleryPageFactory(() => new WkWebViewCoreGalleryPage(), "WkWebView Gallery"),
+				new GalleryPageFactory(() => new DynamicViewGallery(), "Dynamic ViewGallery"),
 				//pages
  				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
 				new GalleryPageFactory(() => new MasterDetailPageTabletPage(), "MasterDetailPage Tablet Page"),
@@ -531,6 +539,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Text = "Go to Test Cases",
 				AutomationId = "GoToTestButton",
+				TabIndex = -2,
 				Command = new Command(async () =>
 				{
 					if (!string.IsNullOrEmpty(searchBar.Text))
@@ -547,6 +556,7 @@ namespace Xamarin.Forms.Controls
 					searchBar,
 					new Button {
 						Text = "Click to Force GC",
+						TabIndex = -2,
 						Command = new Command(() => {
 							GC.Collect ();
 							GC.WaitForPendingFinalizers ();
@@ -556,6 +566,14 @@ namespace Xamarin.Forms.Controls
 
 				}
 			};
+
+			var secondaryWindowService = DependencyService.Get<ISecondaryWindowService>();
+			if (secondaryWindowService != null)
+			{
+				var openSecondWindowButton = new Button() { Text = "Open Secondary Window" };
+				openSecondWindowButton.Clicked += (obj, args) => { secondaryWindowService.OpenSecondaryWindow(new Issue2482()); };
+				stackLayout.Children.Add(openSecondWindowButton);
+			}
 
 			this.SetAutomationPropertiesName("Gallery");
 			this.SetAutomationPropertiesHelpText("Lists all gallery pages");

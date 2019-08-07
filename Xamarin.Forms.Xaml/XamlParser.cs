@@ -165,10 +165,7 @@ namespace Xamarin.Forms.Xaml
 
 						var attributes = ParseXamlAttributes(reader, out xmlns);
 						var prefixes = PrefixesToIgnore(xmlns);
-
-						IList<XmlType> typeArguments = null;
-						if (attributes.Any(kvp => kvp.Key == XmlName.xTypeArguments))
-							typeArguments = ((ValueNode)attributes.First(kvp => kvp.Key == XmlName.xTypeArguments).Value).Value as IList<XmlType>;
+						var typeArguments = GetTypeArguments(attributes);
 
 						node = new ElementNode(new XmlType(elementNsUri, elementName, typeArguments), elementNsUri,
 							reader as IXmlNamespaceResolver, elementXmlInfo.LineNumber, elementXmlInfo.LinePosition);
@@ -193,6 +190,15 @@ namespace Xamarin.Forms.Xaml
 				}
 			}
 			throw new XamlParseException("Closing PropertyElement expected", (IXmlLineInfo)reader);
+		}
+
+		internal static IList<XmlType> GetTypeArguments(XmlReader reader) => GetTypeArguments(ParseXamlAttributes(reader, out _));
+
+		static IList<XmlType> GetTypeArguments(IList<KeyValuePair<XmlName, INode>> attributes)
+		{
+			return attributes.Any(kvp => kvp.Key == XmlName.xTypeArguments)
+				? ((ValueNode)attributes.First(kvp => kvp.Key == XmlName.xTypeArguments).Value).Value as IList<XmlType>
+				: null;
 		}
 
 		static IList<KeyValuePair<XmlName, INode>> ParseXamlAttributes(XmlReader reader, out IList<KeyValuePair<string,string>> xmlns)
@@ -363,26 +369,6 @@ namespace Xamarin.Forms.Xaml
 			var typeArguments = xmlType.TypeArguments;
 			exception = null;
 
-			if (type != null && typeArguments != null)
-			{
-				XamlParseException innerexception = null;
-				var args = typeArguments.Select(delegate(XmlType xmltype) {
-					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out XamlParseException xpe);
-					if (xpe != null)
-					{
-						innerexception = xpe;
-						return null;
-					}
-					return t;
-				}).ToArray();
-				if (innerexception != null)
-				{
-					exception = innerexception;
-					return null;
-				}
-				type = type.MakeGenericType(args);
-			}
-
 #if NETSTANDARD2_0
 			if (type == null)
 			{
@@ -400,6 +386,31 @@ namespace Xamarin.Forms.Xaml
 							
 			if (XamlLoader.FallbackTypeResolver != null)
 				type = XamlLoader.FallbackTypeResolver(potentialTypes, type);
+
+			if (type != null && typeArguments != null)
+			{
+				XamlParseException innerexception = null;
+				var args = typeArguments.Select(delegate(XmlType xmltype) {
+					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out XamlParseException xpe);
+					if (xpe != null)
+					{
+						innerexception = xpe;
+						return null;
+					}
+					return t;
+				}).ToArray();
+				if (innerexception != null)
+				{
+					exception = innerexception;
+					return null;
+				}
+
+				try {
+					type = type.MakeGenericType(args);
+				} catch (InvalidOperationException) {
+					exception = new XamlParseException($"Type {type} is not a GenericTypeDefinition", xmlInfo);
+				}
+			}
 
 			if (type == null)
 				exception = new XamlParseException($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}", xmlInfo);

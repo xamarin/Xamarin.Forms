@@ -6,7 +6,7 @@
     <authors>Microsoft</authors>
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms xamarinforms xamarin.forms</tags>
-    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
+    <license type="expression">MIT</license>
     <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -14,18 +14,10 @@
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group targetFramework="MonoAndroid81">
-        <dependency id="Xamarin.Android.Support.v4" version="27.0.2"/>
-        <dependency id="Xamarin.Android.Support.Design" version="27.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="27.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.CardView" version="27.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="27.0.2"/>
-      </group>
-      <group targetFramework="MonoAndroid90">
         <dependency id="Xamarin.Android.Support.v4" version="28.0.0.1"/>
         <dependency id="Xamarin.Android.Support.Design" version="28.0.0.1"/>
         <dependency id="Xamarin.Android.Support.v7.AppCompat" version="28.0.0.1"/>
         <dependency id="Xamarin.Android.Support.v7.CardView" version="28.0.0.1"/>
-        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="28.0.0.1"/>
         <dependency id="Xamarin.Android.Support.CustomTabs" version="28.0.0.1"/>
       </group>
       <group targetFramework="uap10.0">
@@ -37,52 +29,56 @@
         <dependency id="Tizen.NET" version="4.0.0"/>
       </group>
     </dependencies>
-    <references>    
-        <group> 
-            <reference file="Xamarin.Forms.Core.dll" /> 
-            <reference file="Xamarin.Forms.Platform.dll" /> 
-            <reference file="Xamarin.Forms.Xaml.dll" /> 
-        </group>
-        <group targetFramework="Xamarin.iOS10"> 
-            <reference file="Xamarin.Forms.Core.dll" /> 
-            <reference file="Xamarin.Forms.Platform.dll" /> 
-            <reference file="Xamarin.Forms.Xaml.dll" /> 
-            <reference file="Xamarin.Forms.Platform.iOS.dll" />
-        </group>    
-        <group targetFramework="MonoAndroid90"> 
-            <reference file="Xamarin.Forms.Core.dll" /> 
-            <reference file="Xamarin.Forms.Platform.dll" /> 
-            <reference file="Xamarin.Forms.Xaml.dll" /> 
-            <reference file="FormsViewGroup.dll" /> 
-            <reference file="Xamarin.Forms.Platform.Android.dll" /> 
-        </group>
-        <group targetFramework="MonoAndroid81">
-          <reference file="Xamarin.Forms.Core.dll" />
-          <reference file="Xamarin.Forms.Platform.dll" />
-          <reference file="Xamarin.Forms.Xaml.dll" />
-          <reference file="FormsViewGroup.dll" />
-          <reference file="Xamarin.Forms.Platform.Android.dll" />
-        </group>   
-        <group targetFramework="uap10.0">   
-            <reference file="Xamarin.Forms.Core.dll" /> 
-            <reference file="Xamarin.Forms.Platform.dll" /> 
-            <reference file="Xamarin.Forms.Xaml.dll" /> 
-            <reference file="Xamarin.Forms.Platform.UAP.dll" /> 
-        </group>    
-        <group targetFramework="Xamarin.Mac">   
-            <reference file="Xamarin.Forms.Core.dll" /> 
-            <reference file="Xamarin.Forms.Platform.macOS.dll" />   
-            <reference file="Xamarin.Forms.Platform.dll" /> 
-            <reference file="Xamarin.Forms.Xaml.dll" /> 
-        </group>    
-        <group targetFramework="tizen40">   
-            <reference file="Xamarin.Forms.Core.dll" /> 
-            <reference file="Xamarin.Forms.Platform.Tizen.dll" />   
-            <reference file="Xamarin.Forms.Platform.dll" /> 
-            <reference file="Xamarin.Forms.Xaml.dll" /> 
-        </group>    
-    </references>
     
+    <!-- DO NOT DELETE THESE REFERENCES -->
+    <!-- IF YOU DELETE THESE REFERENCES THE PACKAGE WILL NOT WORK ON MAC -->
+    <!-- https://github.com/xamarin/Xamarin.Forms/pull/2575 -->
+    <!-- DO NOT DELETE THESE REFERENCES -->
+    <references>
+      <group>
+        <reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
+      </group>
+      <group targetFramework="Xamarin.iOS10">
+        <reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
+        <reference file="Xamarin.Forms.Platform.iOS.dll" />
+      </group>
+      <group targetFramework="MonoAndroid90">
+        <reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
+        <reference file="FormsViewGroup.dll" />
+        <reference file="Xamarin.Forms.Platform.Android.dll" />
+      </group>
+      <group targetFramework="MonoAndroid81">
+        <reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
+        <reference file="FormsViewGroup.dll" />
+        <reference file="Xamarin.Forms.Platform.Android.dll" />
+      </group>
+      <group targetFramework="uap10.0">
+        <reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
+        <reference file="Xamarin.Forms.Platform.UAP.dll" />
+      </group>
+      <group targetFramework="Xamarin.Mac">
+        <reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.macOS.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
+      </group>
+      <group targetFramework="tizen40">
+        <reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.Tizen.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
+      </group>
+    </references>
   </metadata>
 
   <files>
@@ -225,7 +221,8 @@
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\TabbedPageStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsEmbeddedPageWrapper.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\StepperControl.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Items\ItemsViewStyles.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Items" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\CollectionView\ItemsViewStyles.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Items" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsCheckBoxStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 
     <!--Mac-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />
