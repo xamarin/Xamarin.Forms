@@ -14,17 +14,9 @@ namespace Xamarin.Forms.ControlGallery.Android
 {
 	public class ContentDescriptionEffectRenderer : PlatformEffect
 	{
-
 		protected override void OnAttached()
 		{
-			Element.PropertyChanged += Element_PropertyChanged;
 		}
-
-		void Element_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine("Element_PropertyChanged " + e.PropertyName);
-		}
-
 
 		protected override void OnDetached()
 		{
@@ -34,37 +26,32 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 			System.Diagnostics.Debug.WriteLine("OnElementPropertyChanged" + args.PropertyName);
 
-
-			var button = Element as Button;
-			var renderer = Platform.Android.Platform.GetRenderer(button);
 			var viewGroup = Control as AViews.ViewGroup;
-			var nativeButton = Control as AWidget.Button;
+			var nativeView = Control as AViews.View;
 
-			if (nativeButton != null && viewGroup != null && viewGroup.ChildCount > 0)
+			if (nativeView != null && viewGroup != null && viewGroup.ChildCount > 0)
 			{
-				nativeButton = viewGroup.GetChildAt(0) as AWidget.Button;
+				nativeView = viewGroup.GetChildAt(0);
 			}
 
-			if (button == null || nativeButton == null)
+			if (nativeView == null)
 			{
 				return;
 			}
 
-			var info = AccessibilityNodeInfoCompat.Obtain(nativeButton);
-
-			var hasDelegate = ViewCompat.HasAccessibilityDelegate(nativeButton);
-			ViewCompat.OnInitializeAccessibilityNodeInfo(nativeButton, info);
+			var info = AccessibilityNodeInfoCompat.Obtain(nativeView);
+			ViewCompat.OnInitializeAccessibilityNodeInfo(nativeView, info);
 
 			System.Diagnostics.Debug.WriteLine(info.ContentDescription);
-			System.Diagnostics.Debug.WriteLine(nativeButton.ContentDescription);
+			System.Diagnostics.Debug.WriteLine(nativeView.ContentDescription);
 
-			button.SetValue(
+			Element.SetValue(
 				ContentDescriptionEffectProperties.NameAndHelpTextProperty,
 				info.ContentDescription);
 
-			button.SetValue(
+			Element.SetValue(
 				ContentDescriptionEffectProperties.ContentDescriptionProperty,
-				nativeButton.ContentDescription);
+				nativeView.ContentDescription);
 		}
 
 	}

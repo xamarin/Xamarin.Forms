@@ -55,29 +55,31 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (defaultContentDescription == null)
 				defaultContentDescription = control.ContentDescription;
-
-			string value = ConcatenateNameAndHelpText(bindableObject);
-
-			var contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
-
-			if (String.IsNullOrWhiteSpace(contentDescription) && bindableObject is Element element)
-				contentDescription = element.AutomationId;
-
-			control.ContentDescription = contentDescription;
 			
-//			string value = ConcatenateNameAndHelpText(element);
-//			string contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
-//
-//			control.ContentDescription = contentDescription;
-//
-//			if (control is IButtonLayoutRenderer buttonLayout)
-//			{
-//				var view = buttonLayout.View;
-//				var nameAndHelpTextDelegate = new NameAndHelpTextAccessibilityDelegate {
-//					AccessibilityText = contentDescription
-//				};
-//				ViewCompat.SetAccessibilityDelegate(buttonLayout.View, nameAndHelpTextDelegate);
-//			}
+			string value = ConcatenateNameAndHelpText(bindableObject);
+			string contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+			string automationId = (bindableObject as Element)?.AutomationId;
+
+			if (!string.IsNullOrWhiteSpace(automationId) && !string.IsNullOrWhiteSpace(contentDescription))
+			{
+				var target = control;
+				if (control is IButtonLayoutRenderer buttonLayoutRenderer)
+				{
+					target = buttonLayoutRenderer.View;
+				}
+				else if (control is AppCompat.SwitchRenderer switchRenderer)
+				{
+					target = switchRenderer.Control;
+				}
+				target.ContentDescription = automationId;
+				ViewCompat.SetAccessibilityDelegate(target, new NameAndHelpTextAccessibilityDelegate {
+					AccessibilityText = contentDescription
+				});
+			}
+			else
+			{
+				control.ContentDescription = string.IsNullOrWhiteSpace(contentDescription) ? automationId : contentDescription;
+			}
 		}
 
 		internal static void SetContentDescription(

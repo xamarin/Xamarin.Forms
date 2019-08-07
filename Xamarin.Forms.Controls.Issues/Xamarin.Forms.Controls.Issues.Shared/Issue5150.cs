@@ -50,39 +50,54 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 5150, "AutomationProperties.Name, AutomationProperties.HelpText on Button not read by Android TalkBack", PlatformAffected.Android)]
 	public class Issue5150 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		void AddButton(StackLayout layout, string automationId, string buttonText, string buttonName = null, string buttonHelp = null)
+		void AddView(StackLayout layout, View view, string labelPrefix, string automationId, string buttonName = null, string buttonHelp = null)
 		{
-			var button = new Button();
 			var automationIdLabel = new Label();
-			var contentDescriptionLabel = new Label();
-			var nameAndHelpTextLabel = new Label();
 			automationIdLabel.Text = $"AutomationId = {automationId}";
-			button.AutomationId = automationId;
-			button.Text = buttonText;
-			button.Effects.Add(new ContentDescriptionEffect());
-			button.PropertyChanged += (object sender, PropertyChangedEventArgs e) => {
+			automationIdLabel.AutomationId = $"{labelPrefix}-automationIdLabel";
+
+			var contentDescriptionLabel = new Label();
+			contentDescriptionLabel.AutomationId = $"{labelPrefix}-contentDescriptionLabel";
+			
+			var nameAndHelpTextLabel = new Label();
+			nameAndHelpTextLabel.AutomationId = $"{labelPrefix}-nameAndHelpTextLabel";
+
+			view.AutomationId = automationId;
+			view.Effects.Add(new ContentDescriptionEffect());
+			view.PropertyChanged += (object sender, PropertyChangedEventArgs e) => {
 				if (e.PropertyName == ContentDescriptionEffectProperties.ContentDescriptionProperty.PropertyName)
 				{
-					contentDescriptionLabel.Text = $"ContentDescription = {ContentDescriptionEffectProperties.GetContentDescription(button)}";
+					contentDescriptionLabel.Text = $"ContentDescription = {ContentDescriptionEffectProperties.GetContentDescription(view)}";
 				}
 
 				if (e.PropertyName == ContentDescriptionEffectProperties.NameAndHelpTextProperty.PropertyName)
 				{
-					nameAndHelpTextLabel.Text = $"Name + HelpText = {ContentDescriptionEffectProperties.GetNameAndHelpText(button)}";
+					nameAndHelpTextLabel.Text = $"Name + HelpText = {ContentDescriptionEffectProperties.GetNameAndHelpText(view)}";
 				}
 			};
-			layout.Children.Add(button);
+			layout.Children.Add(view);
 			layout.Children.Add(automationIdLabel);
 			layout.Children.Add(contentDescriptionLabel);
 			layout.Children.Add(nameAndHelpTextLabel);
 
-			button.SetValue(AutomationProperties.NameProperty, buttonName);
-			button.SetValue(AutomationProperties.HelpTextProperty, buttonHelp);
+			AutomationProperties.SetIsInAccessibleTree(view, true);
+			AutomationProperties.SetName(view, buttonName);
+			AutomationProperties.SetHelpText(view, buttonHelp);
+		}
+
+		void AddButton(StackLayout layout, string labelPrefix, string automationId, string buttonText, string buttonName = null, string buttonHelp = null)
+		{
+			var button = new Button();
+			button.Text = buttonText;
+			AddView(layout, button, labelPrefix, automationId, buttonName, buttonHelp);
 		}
 
 		protected override void Init()
 		{
+			var scrollView = new ScrollView();
 			var layout = new StackLayout();
+			scrollView.Content = layout;
+
 			layout.Children.Add(new Label
 			{
 				Text = "On the Android platform, the 'Name + Help Text' " +
@@ -91,16 +106,29 @@ namespace Xamarin.Forms.Controls.Issues
 					"ContentDescription."
 			});
 
-			AddButton(layout, "button1", "Button 1", buttonName: "Name 1");
-			AddButton(layout, "button2", "Button 2", buttonHelp: "Help 2.");
-			AddButton(layout, "button3", "Button 3", "Name 3", "Help 3.");
-			AddButton(layout, "button4", null , buttonHelp: "Help 4.");
+			AddButton(layout, "button1prop", "button1", "Button 1", "Name 1");
+			AddButton(layout, "button2prop", "button2", "Button 2", buttonHelp: "Help 2.");
+			AddButton(layout, "button3prop", "button3", "Button 3", "Name 3", "Help 3.");
+			AddButton(layout, "button4prop", "button4", null , buttonHelp: "Help 4.");
 
-			Content = layout;
+			AddView(layout, new Switch(), "switch1prop", "switch1", "Switch 1 Name", "Switch Help 1.");
+
+			var image = new Image();
+			image.Source = ImageSource.FromFile("coffee.png");
+			AddView(layout, image, "image1prop", "image1", "Coffee", "Get some coffee!");
+
+			Content = scrollView;
 		}
 
-
 #if UITEST
+		void Verify(string labelPrefix, string automationId, string expectedNameAndHelpText)
+		{
+			RunningApp.ScrollTo(automationId);
+			RunningApp.WaitForElement(q => q.Marked(automationId));
+			RunningApp.ScrollTo($"{labelPrefix}-nameAndHelpTextLabel");
+			RunningApp.WaitForElement(q => q.Text($"Name + HelpText = {expectedNameAndHelpText}"));
+		}
+
 		[Test]
 		[Category(UITestCategories.Button)]
 #if !__ANDROID__
@@ -108,23 +136,12 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		public void Issue5150Test() 
 		{
-			RunningApp.Screenshot ("I am at Issue 5150");
-			RunningApp.WaitForElement(q => q.Marked("button1"));
-			RunningApp.WaitForElement(q => q.Marked("button2"));
-			RunningApp.WaitForElement(q => q.Marked("button3"));
-			RunningApp.WaitForElement(q => q.Marked("button4"));
-
-			RunningApp.WaitForElement (q => q.Text("Name + HelpText = Name 1"));
-			RunningApp.Screenshot ("I see the label Name + HelpText = Name 1");
-
-			RunningApp.WaitForElement(q => q.Text("Name + HelpText = Button 2. Help 2."));
-			RunningApp.Screenshot("I see the label Name + HelpText = Button 2. Help 2.");
-
-			RunningApp.WaitForElement(q => q.Text("Name + HelpText = Name 3. Help 3."));
-			RunningApp.Screenshot("I see the label Name + HelpText = Name 3. Help 3.");
-
-			RunningApp.WaitForElement(q => q.Text("Name + HelpText = Help 4."));
-			RunningApp.Screenshot("I see the label Name + HelpText = Help 4.");
+			Verify("button1prop", "button1", "Name 1");
+			Verify("button2prop", "button2", "Button 2. Help 2.");
+			Verify("button3prop", "button3", "Name 3. Help 3.");
+			Verify("button4prop", "button4", "Help 4.");
+			Verify("switch1prop", "switch1", "Switch 1 Name. Switch Help 1.");
+			Verify("image1prop", "image1", "Coffee. Get some coffee!");
 		}
 #endif
 	}
