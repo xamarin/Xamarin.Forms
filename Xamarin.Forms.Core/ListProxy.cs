@@ -215,44 +215,13 @@ namespace Xamarin.Forms
 				sync.Callback(ProxiedEnumerable, sync.Context, () =>
 				{
 					e = e.WithCount(Count);
-					if (_dispatcher != null)
-					{
-						if (_dispatcher.IsInvokeRequired)
-						{
-							_dispatcher.BeginInvokeOnMainThread(action);
-						}
-						else
-						{
-							action();
-						}
-					}
-					else
-					{
-						Device.BeginInvokeOnMainThread(action);
-					}
+					_dispatcher.Dispatch(action);
 				}, false);
 			}
 			else
 			{
 				e = e.WithCount(Count);
-				if (Device.IsInvokeRequired)
-					if (_dispatcher != null)
-					{
-						if (_dispatcher.IsInvokeRequired)
-						{
-							_dispatcher.BeginInvokeOnMainThread(action);
-						}
-						else
-						{
-							action();
-						}
-					}
-					else
-					{
-						Device.BeginInvokeOnMainThread(action);
-					}
-				else
-					action();
+				_dispatcher.Dispatch(action);
 			}
 		}
 
