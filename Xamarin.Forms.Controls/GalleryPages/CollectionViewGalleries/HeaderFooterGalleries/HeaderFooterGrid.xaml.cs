@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.HeaderFoot
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class HeaderFooterGrid : ContentPage
 	{
-		readonly DemoFilteredItemSource _demoFilteredItemSource = new DemoFilteredItemSource(10);
+		readonly DemoFilteredItemSource _demoFilteredItemSource = new DemoFilteredItemSource(100);
 
 		public HeaderFooterGrid()
 		{
@@ -13,6 +13,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.HeaderFoot
 
 			CollectionView.ItemTemplate = ExampleTemplates.PhotoTemplate();
 			CollectionView.ItemsSource = _demoFilteredItemSource.Items;
+		}
+
+		void Handle_Clicked(object sender, System.EventArgs e)
+		{
+			if (sender is VisualElement ve && ve.Parent is StackLayout sl)
+				sl.Children.Add(new Label() { Text = "Grow" });
 		}
 	}
 }
