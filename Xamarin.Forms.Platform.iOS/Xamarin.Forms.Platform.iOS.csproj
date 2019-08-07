@@ -138,9 +138,7 @@
     <Compile Include="CollectionView\VerticalDefaultSupplementalView.cs" />
     <Compile Include="CollectionView\VerticalTemplatedCell.cs" />
     <Compile Include="CollectionView\VerticalTemplatedHeaderView.cs" />
-    <Compile Include="DispatcherProvider.cs" />
     <Compile Include="DisposeHelpers.cs" />
-    <Compile Include="Dispatcher.cs" />
     <Compile Include="EffectUtilities.cs" />
     <Compile Include="ExportCellAttribute.cs" />
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />

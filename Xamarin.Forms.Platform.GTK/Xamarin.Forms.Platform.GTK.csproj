@@ -133,8 +133,6 @@
     <Compile Include="Controls\TimePicker.cs" />
     <Compile Include="Controls\Page.cs" />
     <Compile Include="Controls\WebView.cs" />
-    <Compile Include="GtkDispatcherProvider.cs" />
-    <Compile Include="GtkDispatcher.cs" />
     <Compile Include="ElementChangedEventArgs.cs" />
     <Compile Include="ExportCellAttribute.cs" />
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />

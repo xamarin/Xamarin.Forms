@@ -96,11 +96,9 @@
     <Compile Include="CollectionView\SpacingItemDecoration.cs" />
     <Compile Include="CollectionView\StartSingleSnapHelper.cs" />
     <Compile Include="CollectionView\StartSnapHelper.cs" />
-    <Compile Include="Dispatcher.cs" />
     <Compile Include="CollectionView\TemplatedItemViewHolder.cs" />
     <Compile Include="CollectionView\TextViewHolder.cs" />
     <Compile Include="CollectionView\ItemViewType.cs" />
-    <Compile Include="DispatcherProvider.cs" />
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\DrawableExtensions.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />

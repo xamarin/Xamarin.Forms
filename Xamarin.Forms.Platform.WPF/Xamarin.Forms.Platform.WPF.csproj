@@ -92,8 +92,6 @@
     <Compile Include="Converters\ViewToRendererConverter.cs" />
     <Compile Include="CustomContextMenu.cs" />
     <Compile Include="Deserializer.cs" />
-    <Compile Include="Dispatcher.cs" />
-    <Compile Include="DispatcherProvider.cs" />
     <Compile Include="ElementChangedEventArgs.cs" />
     <Compile Include="Enums\Symbol.cs" />
     <Compile Include="ExportRendererAttribute.cs" />
