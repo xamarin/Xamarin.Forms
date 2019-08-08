@@ -33,6 +33,10 @@ namespace Xamarin.Forms
 		{
 		}
 
+		public ExportRendererAttribute(Type handler, Type target, Type[] supportedVisuals, short priority) : base(handler, target, supportedVisuals, priority)
+		{
+		}
+
 		internal bool Idiomatic { get; }
 
 		public override bool ShouldRegister()

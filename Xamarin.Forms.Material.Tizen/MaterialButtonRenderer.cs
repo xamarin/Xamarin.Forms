@@ -6,7 +6,7 @@ using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 using XFButton = Xamarin.Forms.Button;
 using EButton = ElmSharp.Button;
 
-[assembly: ExportRenderer(typeof(XFButton), typeof(MaterialButtonRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
+[assembly: ExportRenderer(typeof(XFButton), typeof(MaterialButtonRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialButtonRenderer : ButtonRenderer

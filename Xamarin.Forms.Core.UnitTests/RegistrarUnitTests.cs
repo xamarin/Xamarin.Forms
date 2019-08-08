@@ -10,14 +10,23 @@ using Xamarin.Forms.Core.UnitTests;
 [assembly: TestHandler(typeof(ButtonChild), typeof(ButtonChildTarget))]
 [assembly: TestHandler(typeof(Button), typeof(VisualButtonTarget), new[] { typeof(VisualMarkerUnitTests) })]
 [assembly: TestHandler(typeof(Slider), typeof(VisualSliderTarget), new[] { typeof(VisualMarkerUnitTests) })]
+[assembly: TestHandler(typeof(ButtonPriority), typeof(ButtonHigherPriorityTarget), priority: 1)]
+[assembly: TestHandlerLowerPriority(typeof(ButtonPriority), typeof(ButtonLowerPriorityTarget), priority: 0)]
 
 namespace Xamarin.Forms.Core.UnitTests
 {
 	internal class TestHandlerAttribute : HandlerAttribute
 	{
-		public TestHandlerAttribute (Type handler, Type target, Type[] supportedVisuals = null) : base(handler, target, supportedVisuals)
+		public TestHandlerAttribute (Type handler, Type target, Type[] supportedVisuals = null, short priority = 0) : base(handler, target, supportedVisuals, priority)
 		{
 			
+		}
+	}
+	internal class TestHandlerLowerPriority : HandlerAttribute
+	{
+		public TestHandlerLowerPriority(Type handler, Type target, Type[] supportedVisuals = null, short priority = 0) : base(handler, target, supportedVisuals, priority)
+		{
+
 		}
 	}
 
@@ -50,6 +59,40 @@ namespace Xamarin.Forms.Core.UnitTests
 	internal class ButtonTarget : IRegisterable {}
 
 	internal class SliderTarget : IRegisterable {}
+
+	internal class ButtonPriority { }
+	internal class ButtonLowerPriorityTarget : IRegisterable { }
+	internal class ButtonHigherPriorityTarget : IRegisterable { }
+
+	[TestFixture]
+	public class PriorityRegistrarTests : BaseTestFixture
+	{
+		[SetUp]
+		public override void Setup()
+		{
+			base.Setup();
+			Device.PlatformServices = new MockPlatformServices();
+			Internals.Registrar.RegisterAll(new[] {
+				typeof (TestHandlerAttribute),
+				typeof (TestHandlerLowerPriority)
+			});
+
+		}
+
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+			Device.PlatformServices = null;
+		}
+
+		[Test]
+		public void BasicTest()
+		{
+			IRegisterable renderWithTarget = Internals.Registrar.Registered.GetHandler(typeof(ButtonPriority));
+			Assert.AreEqual(typeof(ButtonHigherPriorityTarget), renderWithTarget.GetType());
+		}
+	}
 
 	[TestFixture]
 	public class VisualRegistrarTests : BaseTestFixture
