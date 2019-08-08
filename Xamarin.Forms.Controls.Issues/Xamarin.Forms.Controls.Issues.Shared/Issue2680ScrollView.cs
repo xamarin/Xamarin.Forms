@@ -52,21 +52,21 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = scrollView;
 		}
 
-		private void ToggleButtonOnClicked(object sender, EventArgs e)
+		void ToggleButtonOnClicked(object sender, EventArgs e)
 		{
 			ToggleButtonText();
 			scrollView.Orientation = IsScrollEnabled ? ScrollOrientation.Vertical : ScrollOrientation.Neither;
 		}
 
-		private ScrollView scrollView;
-		private Button toggleButton;
+		ScrollView scrollView;
+		Button toggleButton;
 
-		private const string ScrollViewMark = "ScrollView";
-		private const string FirstItemMark = "FirstItem";
-		private const string ToggleButtonMark = "ToggleButton";
+		const string ScrollViewMark = "ScrollView";
+		const string FirstItemMark = "FirstItem";
+		const string ToggleButtonMark = "ToggleButton";
 
-		private const string ButtonDisabledCaption = "Disable scroll";
-		private const string ButtonEnabledCaption = "Enable scroll";
+		const string ButtonDisabledCaption = "Disable scroll";
+		const string ButtonEnabledCaption = "Enable scroll";
 
 #if UITEST
 		[Test] 
