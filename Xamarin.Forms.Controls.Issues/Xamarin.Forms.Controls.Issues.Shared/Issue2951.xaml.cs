@@ -20,11 +20,11 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 #endif
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2951, "On Android, button background is not updated when color changes ")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2951, "On Android, button background is not updated when color changes ")]
 	public partial class Issue2951 : TestContentPage
 	{
-		public Issue2951 ()
+		public Issue2951()
 		{
 #if APP
 			InitializeComponent ();
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		async void ListView_ItemAppearing(object sender, ItemVisibilityEventArgs e)
 		{
-			if(e.ItemIndex == 2)
+			if (e.ItemIndex == 2)
 			{
 				await Task.Delay(10);
 #if APP
@@ -42,78 +42,86 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			BindingContext = new MyViewModel ();
+			BindingContext = new MyViewModel();
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class MyViewModel
 		{
 			public ObservableCollection<MyItemViewModel> Items { get; private set; }
 
 			public Command<MyItemViewModel> ButtonTapped { get; private set; }
 
-			public MyViewModel ()
+			public MyViewModel()
 			{
-				ButtonTapped = new Command<MyItemViewModel> (OnItemTapped);
+				ButtonTapped = new Command<MyItemViewModel>(OnItemTapped);
 
-				Items = new ObservableCollection<MyItemViewModel> ();
+				Items = new ObservableCollection<MyItemViewModel>();
 
-				Items.Add (new MyItemViewModel { Name = "A", IsStarted = false });
-				Items.Add (new MyItemViewModel { Name = "B", IsStarted = false });
-				Items.Add (new MyItemViewModel { Name = "C", IsStarted = false });
+				Items.Add(new MyItemViewModel { Name = "A", IsStarted = false });
+				Items.Add(new MyItemViewModel { Name = "B", IsStarted = false });
+				Items.Add(new MyItemViewModel { Name = "C", IsStarted = false });
 			}
 
-			void OnItemTapped (MyItemViewModel model)
+			void OnItemTapped(MyItemViewModel model)
 			{
-				if (model.IsStarted) {
-					Items.Remove (model);
-				} else {
+				if (model.IsStarted)
+				{
+					Items.Remove(model);
+				}
+				else
+				{
 					model.IsStarted = true;
 				}
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class MyItemViewModel : INotifyPropertyChanged
 		{
 			public event PropertyChangedEventHandler PropertyChanged;
 
 			string _name;
 
-			public string Name {
-				get { return _name; } 
-				set {
+			public string Name
+			{
+				get { return _name; }
+				set
+				{
 					_name = value;
-					OnPropertyChanged ("Name");
+					OnPropertyChanged("Name");
 				}
 			}
 
 			bool _isStarted;
 
-			public bool IsStarted {
-				get { return _isStarted; } 
-				set {
+			public bool IsStarted
+			{
+				get { return _isStarted; }
+				set
+				{
 					_isStarted = value;
-					OnPropertyChanged ("IsStarted");
+					OnPropertyChanged("IsStarted");
 				}
 			}
 
-			void OnPropertyChanged (string propertyName)
+			void OnPropertyChanged(string propertyName)
 			{
-				if (PropertyChanged != null) {
-					PropertyChanged (this, new PropertyChangedEventArgs (propertyName));
+				if (PropertyChanged != null)
+				{
+					PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 				}
 			}
 		}
 
 #if UITEST
 		[Test]
-		public void Issue2951Test ()
+		public void Issue2951Test()
 		{
 			RunningApp.WaitForElement("Ready");
-			var bt = RunningApp.WaitForElement (c => c.Marked ("btnChangeStatus"));
+			var bt = RunningApp.WaitForElement(c => c.Marked("btnChangeStatus"));
 
 			var buttons = RunningApp.QueryUntilPresent(() =>
 			 {
@@ -124,8 +132,8 @@ namespace Xamarin.Forms.Controls.Issues
 				 return null;
 			 });
 
-			Assert.That (buttons.Length, Is.EqualTo (3));
-			RunningApp.Tap(c => c.Marked ("btnChangeStatus").Index(1));
+			Assert.That(buttons.Length, Is.EqualTo(3));
+			RunningApp.Tap(c => c.Marked("btnChangeStatus").Index(1));
 
 			buttons = RunningApp.QueryUntilPresent(() =>
 			 {
@@ -136,9 +144,9 @@ namespace Xamarin.Forms.Controls.Issues
 				 return null;
 			 });
 
-			var text = buttons [1].Text ?? buttons [1].Label;
-			Assert.That (text, Is.EqualTo ("B"));
-			RunningApp.Tap(c => c.Marked ("btnChangeStatus").Index(1));
+			var text = buttons[1].Text ?? buttons[1].Label;
+			Assert.That(text, Is.EqualTo("B"));
+			RunningApp.Tap(c => c.Marked("btnChangeStatus").Index(1));
 
 			buttons = RunningApp.QueryUntilPresent(() =>
 			 {
@@ -149,13 +157,13 @@ namespace Xamarin.Forms.Controls.Issues
 				 return null;
 			 });
 
-			Assert.That (buttons.Length, Is.EqualTo (2));
+			Assert.That(buttons.Length, Is.EqualTo(2));
 			//TODO: we should check the color of the button
 			//var buttonTextColor = GetProperty<Color> ("btnChangeStatus", Button.BackgroundColorProperty);
 			//Assert.AreEqual (Color.Pink, buttonTextColor);
 		}
 
-	
+
 #endif
 	}
 }

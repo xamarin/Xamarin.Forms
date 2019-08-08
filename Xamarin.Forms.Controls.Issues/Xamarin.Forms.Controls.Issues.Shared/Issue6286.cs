@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 				page1.Content = new Label { Text = "success", AutomationId = "success" };
 
 			}
-			catch(Exception exc)
+			catch (Exception exc)
 			{
 				page1.Content = new Label { Text = $"{exc}", AutomationId = "failure" };
 			}

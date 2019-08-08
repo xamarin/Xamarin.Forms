@@ -24,10 +24,10 @@ namespace Xamarin.Forms.Controls.Issues
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
-    [Preserve(AllMembers = true)]
-    [Issue(IssueTracker.Github, 5623, "CollectionView with Incremental Collection (RemainingItemsThreshold)", PlatformAffected.All)]
-    public partial class Github5623 : TestContentPage
-    {
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 5623, "CollectionView with Incremental Collection (RemainingItemsThreshold)", PlatformAffected.All)]
+	public partial class Github5623 : TestContentPage
+	{
 #if APP
 		int _itemCount = 10;
 		const int MaximumItemCount = 100;
@@ -108,16 +108,16 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 
-        protected override void Init()
-        {
+		protected override void Init()
+		{
 
-        }
+		}
 
 #if UITEST
 		[Test]
 		public void CollectionViewInfiniteScroll()
 		{
-			RunningApp.WaitForElement ("CollectionView5623");
+			RunningApp.WaitForElement("CollectionView5623");
 
 			var colView = RunningApp.Query("CollectionView5623").Single();
 
@@ -135,62 +135,62 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.IsTrue(lastCellResults?.Any() ?? false);
 		}
 #endif
-    }
+	}
 
-    [Preserve(AllMembers = true)]
-    public class ViewModel5623
-    {
-        public ObservableCollection<Model5623> Items { get; set; }
+	[Preserve(AllMembers = true)]
+	public class ViewModel5623
+	{
+		public ObservableCollection<Model5623> Items { get; set; }
 
-        public Command RemainingItemsThresholdReachedCommand { get; set; }
+		public Command RemainingItemsThresholdReachedCommand { get; set; }
 
-        public ItemSizingStrategy ItemSizingStrategy { get; set; } = ItemSizingStrategy.MeasureAllItems;
+		public ItemSizingStrategy ItemSizingStrategy { get; set; } = ItemSizingStrategy.MeasureAllItems;
 
-        public ViewModel5623()
-        {
-            var collection = new ObservableCollection<Model5623>();
-            var pageSize = 10;
+		public ViewModel5623()
+		{
+			var collection = new ObservableCollection<Model5623>();
+			var pageSize = 10;
 
-            for (var i = 0; i < pageSize; i++)
-            {
-                collection.Add(new Model5623(ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems)
-                {
-                    Text = i.ToString(),
-                    BackgroundColor = i % 2 == 0 ? Color.AntiqueWhite : Color.Lavender
-                });
-            }
+			for (var i = 0; i < pageSize; i++)
+			{
+				collection.Add(new Model5623(ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems)
+				{
+					Text = i.ToString(),
+					BackgroundColor = i % 2 == 0 ? Color.AntiqueWhite : Color.Lavender
+				});
+			}
 
-            Items = collection;
+			Items = collection;
 
-            RemainingItemsThresholdReachedCommand = new Command(() =>
-            {
-                System.Diagnostics.Debug.WriteLine($"{nameof(RemainingItemsThresholdReachedCommand)} called");
-            });
-        }
-    }
+			RemainingItemsThresholdReachedCommand = new Command(() =>
+			{
+				System.Diagnostics.Debug.WriteLine($"{nameof(RemainingItemsThresholdReachedCommand)} called");
+			});
+		}
+	}
 
-    [Preserve(AllMembers = true)]
-    public class Model5623
-    {
-        RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+	[Preserve(AllMembers = true)]
+	public class Model5623
+	{
+		RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
 
-        public string Text { get; set; }
+		public string Text { get; set; }
 
-        public Color BackgroundColor { get; set; }
+		public Color BackgroundColor { get; set; }
 
-        public int Height { get; set; } = 200;
+		public int Height { get; set; } = 200;
 
-        public string HeightText { get; private set; }
+		public string HeightText { get; private set; }
 
-        public Model5623(bool isUneven)
-        {
-            var byteArray = new byte[4];
-            provider.GetBytes(byteArray);
+		public Model5623(bool isUneven)
+		{
+			var byteArray = new byte[4];
+			provider.GetBytes(byteArray);
 
-            if (isUneven)
-                Height = 100 + (BitConverter.ToInt32(byteArray, 0) % 300 + 300) % 300;
+			if (isUneven)
+				Height = 100 + (BitConverter.ToInt32(byteArray, 0) % 300 + 300) % 300;
 
-            HeightText = "(Height: " + Height + ")";
-        }
-    }
+			HeightText = "(Height: " + Height + ")";
+		}
+	}
 }
