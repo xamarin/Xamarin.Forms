@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest.Queries;
+using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 
@@ -112,14 +114,41 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("Ready");
 			var bt = RunningApp.WaitForElement (c => c.Marked ("btnChangeStatus"));
-			var buttons = RunningApp.Query (c => c.Marked ("btnChangeStatus"));
+
+			var buttons = RunningApp.QueryUntilPresent(() =>
+			 {
+				 var results = RunningApp.Query("btnChangeStatus");
+				 if (results.Length == 3)
+					 return results;
+
+				 return null;
+			 });
+
 			Assert.That (buttons.Length, Is.EqualTo (3));
 			RunningApp.Tap(c => c.Marked ("btnChangeStatus").Index(1));
-			buttons = RunningApp.Query (c => c.Marked ("btnChangeStatus"));
+
+			buttons = RunningApp.QueryUntilPresent(() =>
+			 {
+				 var results = RunningApp.Query("btnChangeStatus");
+				 if ((results[1].Text ?? results[1].Label) == "B")
+					 return results;
+
+				 return null;
+			 });
+
 			var text = buttons [1].Text ?? buttons [1].Label;
 			Assert.That (text, Is.EqualTo ("B"));
 			RunningApp.Tap(c => c.Marked ("btnChangeStatus").Index(1));
-			buttons = RunningApp.Query (c => c.Marked ("btnChangeStatus"));
+
+			buttons = RunningApp.QueryUntilPresent(() =>
+			 {
+				 var results = RunningApp.Query("btnChangeStatus");
+				 if (results.Length == 2)
+					 return results;
+
+				 return null;
+			 });
+
 			Assert.That (buttons.Length, Is.EqualTo (2));
 			//TODO: we should check the color of the button
 			//var buttonTextColor = GetProperty<Color> ("btnChangeStatus", Button.BackgroundColorProperty);

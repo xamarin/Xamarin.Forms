@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue6286_WebView_Test()
 		{
-			RunningApp.RetryUntilPresent(() => RunningApp.WaitForElement("success"));
+			RunningApp.QueryUntilPresent(() => RunningApp.WaitForElement("success"));
 		}
 #endif
 	}

@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			RunningApp.WaitForNoElement (q=>q.WebView(0).Css("#LinkID0"));
 			UITest.Queries.AppWebResult[] newElem = 
-			  RunningApp.RetryUntilPresent(()=>	RunningApp.Query (q => q.WebView (0).Css ("h1")));
+			  RunningApp.QueryUntilPresent(()=>	RunningApp.Query (q => q.WebView (0).Css ("h1")));
 
 			Assert.AreEqual ("#LocalHtmlPage", newElem[0].Id);
 
