@@ -150,7 +150,7 @@ namespace Xamarin.Forms
 			Profile.FrameEnd();
 		}
 
-		public static void Initialize(InitializationOptions options)
+		public static void Init(InitializationOptions options)
 		{
 			Profile.FrameBegin();
 			SetupInit(
@@ -296,7 +296,7 @@ namespace Xamarin.Forms
 					}
 
 					// css
-					var noCss = (flags & InitializationFlags.NoCss) != 0;
+					var noCss = (flags & InitializationFlags.DisableCss) != 0;
 					if (!noCss)
 						Registrar.RegisterStylesheets();
 				}

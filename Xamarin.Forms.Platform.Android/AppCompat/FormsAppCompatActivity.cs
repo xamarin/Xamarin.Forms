@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 	[Flags]
 	public enum ActivationFlags : long
 	{
-		FixedStatusBarColor = 1 << 0,
+		DisableSetStatusBarColor = 1 << 0,
 	}
 
 	public struct ActivationOptions
@@ -106,8 +106,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (current != filter)
 				return;
 
-				Registrar.Registered.Register(target, handler);
-			}
+			Registrar.Registered.Register(target, handler);
+		}
 
 		// This is currently being used by the previewer please do not change or remove this
 		static void RegisterHandlers()
@@ -188,7 +188,7 @@ namespace Xamarin.Forms.Platform.Android
 			OnCreate(savedInstanceState, default(ActivationFlags));
 		}
 
-		private void OnCreate(
+		void OnCreate(
 			Bundle savedInstanceState, 
 			ActivationFlags flags)
 		{
@@ -225,12 +225,12 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnCreate;
 
-				OnStateChanged();
+			OnStateChanged();
 
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Allow for the status bar color to be changed
-				if ((flags & ActivationFlags.FixedStatusBarColor) == 0)
+				if ((flags & ActivationFlags.DisableSetStatusBarColor) == 0)
 				{
 					Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
 				}

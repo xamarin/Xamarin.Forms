@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 	[Flags]
 	public enum InitializationFlags : long
 	{
-		NoCss = 1 << 0
+		DisableCss = 1 << 0
 	}
 
 
@@ -363,7 +363,7 @@ namespace Xamarin.Forms.Internals
 				Profile.FrameEnd();
 			}
 
-			if ((flags & InitializationFlags.NoCss) == 0)
+			if ((flags & InitializationFlags.DisableCss) == 0)
 				RegisterStylesheets();
 
 			Profile.FramePartition("DependencyService.Initialize");
