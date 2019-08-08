@@ -15,160 +15,160 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-    [Preserve(AllMembers = true)]
-    [Issue(IssueTracker.Github, 4597, "[Android] ImageCell not loading images and setting ImageSource to null has no effect",
-        PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 4597, "[Android] ImageCell not loading images and setting ImageSource to null has no effect",
+		PlatformAffected.Android)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Image)]
 	[NUnit.Framework.Category(UITestCategories.ListView)]
 	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
 #endif
-    public class Issue4597 : TestContentPage
-    {
-        ImageButton _imageButton;
-        Button _button;
-        Image _image;
-        ListView _listView;
+	public class Issue4597 : TestContentPage
+	{
+		ImageButton _imageButton;
+		Button _button;
+		Image _image;
+		ListView _listView;
 
-        string _disappearText = "You should see an Image. Clicking this should cause the image to disappear";
-        string _appearText = "Clicking this should cause the image to reappear";
-        string _theListView = "theListViewAutomationId";
-        string _fileName = "xamarinlogo.png";
-        string _fileNameAutomationId = "CoffeeAutomationId";
-        string _uriImage = "https://github.com/xamarin/Xamarin.Forms/blob/3216ce4ccd096f8b9f909bbeea572dcf2a8c4466/Xamarin.Forms.ControlGallery.iOS/Resources/xamarinlogo.png?raw=true";
-        bool _isUri = false;
-        string _nextTestId = "NextTest";
-        string _activeTestId = "activeTestId";
-        string _switchUriId = "SwitchUri";
-        string _imageFromUri = "Image From Uri";
-        string _imageFromFile = "Image From File";
+		string _disappearText = "You should see an Image. Clicking this should cause the image to disappear";
+		string _appearText = "Clicking this should cause the image to reappear";
+		string _theListView = "theListViewAutomationId";
+		string _fileName = "xamarinlogo.png";
+		string _fileNameAutomationId = "CoffeeAutomationId";
+		string _uriImage = "https://github.com/xamarin/Xamarin.Forms/blob/3216ce4ccd096f8b9f909bbeea572dcf2a8c4466/Xamarin.Forms.ControlGallery.iOS/Resources/xamarinlogo.png?raw=true";
+		bool _isUri = false;
+		string _nextTestId = "NextTest";
+		string _activeTestId = "activeTestId";
+		string _switchUriId = "SwitchUri";
+		string _imageFromUri = "Image From Uri";
+		string _imageFromFile = "Image From File";
 
-        protected override void Init()
-        {
-            Label labelActiveTest = new Label()
-            {
-                AutomationId = _activeTestId
-            };
+		protected override void Init()
+		{
+			Label labelActiveTest = new Label()
+			{
+				AutomationId = _activeTestId
+			};
 
-            _image = new Image() { Source = _fileName, AutomationId = _fileNameAutomationId };
-            _button = new Button() { ImageSource = _fileName, AutomationId = _fileNameAutomationId };
-            _imageButton = new ImageButton() { Source = _fileName, AutomationId = _fileNameAutomationId };
-            _listView = new ListView()
-            {
-                ItemTemplate = new DataTemplate(() =>
-                {
-                    var cell = new ImageCell();
-                    cell.SetBinding(ImageCell.ImageSourceProperty, ".");
-                    cell.AutomationId = _fileNameAutomationId;
-                    return cell;
-                }),
-                AutomationId = _theListView,
-                ItemsSource = new[] { _fileName },
-                HasUnevenRows = true,
-                BackgroundColor = Color.Purple
-            };
+			_image = new Image() { Source = _fileName, AutomationId = _fileNameAutomationId };
+			_button = new Button() { ImageSource = _fileName, AutomationId = _fileNameAutomationId };
+			_imageButton = new ImageButton() { Source = _fileName, AutomationId = _fileNameAutomationId };
+			_listView = new ListView()
+			{
+				ItemTemplate = new DataTemplate(() =>
+				{
+					var cell = new ImageCell();
+					cell.SetBinding(ImageCell.ImageSourceProperty, ".");
+					cell.AutomationId = _fileNameAutomationId;
+					return cell;
+				}),
+				AutomationId = _theListView,
+				ItemsSource = new[] { _fileName },
+				HasUnevenRows = true,
+				BackgroundColor = Color.Purple
+			};
 
-            View[] imageControls = new View[] { _image, _button, _imageButton, _listView };
+			View[] imageControls = new View[] { _image, _button, _imageButton, _listView };
 
-            Button button = null;
-            button = new Button()
-            {
-                AutomationId = "ClickMe",
-                Text = _disappearText,
-                Command = new Command(() =>
-                {
-                    if (button.Text == _disappearText)
-                    {
-                        _image.Source = null;
-                        _button.ImageSource = null;
-                        _imageButton.Source = null;
-                        _listView.ItemsSource = new string[] { null };
-                        Device.BeginInvokeOnMainThread(() => button.Text = _appearText);
-                    }
-                    else
-                    {
-                        _image.Source = _isUri ? _uriImage : _fileName;
-                        _button.ImageSource = _isUri ? _uriImage : _fileName;
-                        _imageButton.Source = _isUri ? _uriImage : _fileName;
-                        _listView.ItemsSource = new string[] { _isUri ? _uriImage : _fileName };
-                        Device.BeginInvokeOnMainThread(() => button.Text = _disappearText);
-                    }
-                })
-            };
+			Button button = null;
+			button = new Button()
+			{
+				AutomationId = "ClickMe",
+				Text = _disappearText,
+				Command = new Command(() =>
+				{
+					if (button.Text == _disappearText)
+					{
+						_image.Source = null;
+						_button.ImageSource = null;
+						_imageButton.Source = null;
+						_listView.ItemsSource = new string[] { null };
+						Device.BeginInvokeOnMainThread(() => button.Text = _appearText);
+					}
+					else
+					{
+						_image.Source = _isUri ? _uriImage : _fileName;
+						_button.ImageSource = _isUri ? _uriImage : _fileName;
+						_imageButton.Source = _isUri ? _uriImage : _fileName;
+						_listView.ItemsSource = new string[] { _isUri ? _uriImage : _fileName };
+						Device.BeginInvokeOnMainThread(() => button.Text = _disappearText);
+					}
+				})
+			};
 
-            var switchToUri = new Switch
-            {
-                AutomationId = _switchUriId,
-                IsToggled = false,
-                HeightRequest = 60
-            };
-            var sourceLabel = new Label { Text = _imageFromFile };
+			var switchToUri = new Switch
+			{
+				AutomationId = _switchUriId,
+				IsToggled = false,
+				HeightRequest = 60
+			};
+			var sourceLabel = new Label { Text = _imageFromFile };
 
-            switchToUri.Toggled += (_, e) =>
-            {
-                _isUri = e.Value;
+			switchToUri.Toggled += (_, e) =>
+			{
+				_isUri = e.Value;
 
-                // reset the images to visible
-                button.Text = _appearText;
-                button.SendClicked();
+				// reset the images to visible
+				button.Text = _appearText;
+				button.SendClicked();
 
-                if (_isUri)
-                    sourceLabel.Text = _imageFromUri;
-                else
-                    sourceLabel.Text = _imageFromFile;
-            };
+				if (_isUri)
+					sourceLabel.Text = _imageFromUri;
+				else
+					sourceLabel.Text = _imageFromFile;
+			};
 
 
-            foreach (var view in imageControls)
-            {
-                view.BackgroundColor = Color.Red;
-            }
+			foreach (var view in imageControls)
+			{
+				view.BackgroundColor = Color.Red;
+			}
 
-            StackLayout layout = null;
-            layout = new StackLayout()
-            {
-                AutomationId = "layoutContainer",
-                Children =
-                {
-                    new StackLayout()
-                    {
-                        Orientation = StackOrientation.Horizontal,
-                        Children =
-                        {
-                            labelActiveTest,
-                            switchToUri,
-                            sourceLabel
-                        }
-                    },
-                    button,
-                    new Button()
-                    {
-                        Text = "Load Next Image Control to Test",
-                        Command = new Command(() =>
-                        {
-                            var activeImage = layout.Children.Last();
-                            int nextIndex = imageControls.IndexOf(activeImage) + 1;
+			StackLayout layout = null;
+			layout = new StackLayout()
+			{
+				AutomationId = "layoutContainer",
+				Children =
+				{
+					new StackLayout()
+					{
+						Orientation = StackOrientation.Horizontal,
+						Children =
+						{
+							labelActiveTest,
+							switchToUri,
+							sourceLabel
+						}
+					},
+					button,
+					new Button()
+					{
+						Text = "Load Next Image Control to Test",
+						Command = new Command(() =>
+						{
+							var activeImage = layout.Children.Last();
+							int nextIndex = imageControls.IndexOf(activeImage) + 1;
 
-                            if(nextIndex >= imageControls.Length)
-                                nextIndex = 0;
+							if(nextIndex >= imageControls.Length)
+								nextIndex = 0;
 
-                            layout.Children.Remove(activeImage);
-                            layout.Children.Add(imageControls[nextIndex]);
-                            labelActiveTest.Text = imageControls[nextIndex].GetType().Name;
+							layout.Children.Remove(activeImage);
+							layout.Children.Add(imageControls[nextIndex]);
+							labelActiveTest.Text = imageControls[nextIndex].GetType().Name;
 
 							// reset the images to visible
 							button.Text = _appearText;
-                            button.SendClicked();
-                        }),
-                        AutomationId = _nextTestId
-                    },
-                    imageControls[0]
-                }
-            };
+							button.SendClicked();
+						}),
+						AutomationId = _nextTestId
+					},
+					imageControls[0]
+				}
+			};
 
-            Content = layout;
-            labelActiveTest.Text = imageControls[0].GetType().Name;
-        }
+			Content = layout;
+			labelActiveTest.Text = imageControls[0].GetType().Name;
+		}
 #if UITEST
 
 #if !__WINDOWS__
@@ -273,7 +273,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Assert.AreEqual(1, images.Length);
 			var imageVisible = images[0];
-						
+
 			Assert.Greater(imageVisible.Rect.Height, 1);
 			Assert.Greater(imageVisible.Rect.Width, 1);
 			return imageVisible;
@@ -308,5 +308,5 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.Tap(_switchUriId);
 		}
 #endif
-    }
+	}
 }
