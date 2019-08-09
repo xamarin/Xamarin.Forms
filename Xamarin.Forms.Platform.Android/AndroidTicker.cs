@@ -51,8 +51,9 @@ namespace Xamarin.Forms.Platform.Android
 		static bool IsAnimatorEnabled()
 		{
 			var resolver = global::Android.App.Application.Context?.ContentResolver;
-			if (resolver == null) {
-				return true;
+			if (resolver == null)
+			{
+				return false;
 			}
 
 			var scale = global::Android.Provider.Settings.Global.GetFloat(resolver, global::Android.Provider.Settings.Global.AnimatorDurationScale, 0);
