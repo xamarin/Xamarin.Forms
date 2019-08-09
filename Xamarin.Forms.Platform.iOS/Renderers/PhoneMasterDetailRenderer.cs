@@ -339,7 +339,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_detailController.AddChildViewController(detailRenderer.ViewController);
 
 			SetNeedsStatusBarAppearanceUpdate();
-			if (RespondsToSelector(new Selector("SetNeedsUpdateOfHomeIndicatorAutoHidden")))
+			if (RespondsToSelector(new ObjCRuntime.Selector("SetNeedsUpdateOfHomeIndicatorAutoHidden")))
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 
