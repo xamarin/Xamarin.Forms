@@ -190,7 +190,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appeared = true;
 			UpdateStatusBarPrefersHidden();
-			if (Forms.IsiOS11OrNewer)
+			if (RespondsToSelector(new Selector("SetNeedsUpdateOfHomeIndicatorAutoHidden")))
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
@@ -525,9 +525,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateHomeIndicatorAutoHidden()
 		{
-			if (Element == null || !Forms.IsiOS11OrNewer)
+			if (Element == null || !RespondsToSelector(new Selector("SetNeedsUpdateOfHomeIndicatorAutoHidden")))
 				return;
-
+            
 			SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 
