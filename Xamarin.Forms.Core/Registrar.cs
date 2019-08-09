@@ -363,7 +363,7 @@ namespace Xamarin.Forms.Internals
 				Profile.FrameEnd();
 			}
 
-			if ((flags & ActivationFlags.NoCss) == 0)
+			if ((flags & InitializationFlags.DisableCss) == 0)
 				RegisterStylesheets();
 
 			Profile.FramePartition("DependencyService.Initialize");

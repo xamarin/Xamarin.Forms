@@ -205,7 +205,6 @@ namespace Xamarin.Forms.Platform.Android
 			Bundle savedInstanceState, 
 			ActivationFlags flags)
 		{
-			Profile.FrameBegin();
 			_activityCreated = true;
 			if (!AllowFragmentRestore)
 			{
@@ -251,7 +250,6 @@ namespace Xamarin.Forms.Platform.Android
 				// Allow for the status bar color to be changed
 				if ((flags & ActivationFlags.DisableSetStatusBarColor) == 0)
 				{
-					Profile.FramePartition("Set DrawsSysBarBkgrnds");
 					Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
 				}
 			}
