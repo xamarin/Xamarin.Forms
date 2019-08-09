@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 			SetNeedsStatusBarAppearanceUpdate();
-			if (RespondsToSelector(new Selector("SetNeedsUpdateOfHomeIndicatorAutoHidden")))
+			if (RespondsToSelector(new ObjCRuntime.Selector("SetNeedsUpdateOfHomeIndicatorAutoHidden")))
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 
