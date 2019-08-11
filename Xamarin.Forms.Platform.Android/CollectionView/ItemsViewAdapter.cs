@@ -17,8 +17,6 @@ namespace Xamarin.Forms.Platform.Android
 		Size? _size;
 
 		bool _usingItemTemplate = false;
-		int _headerOffset = 0;
-		bool _hasFooter;
 
 		internal ItemsViewAdapter(ItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
@@ -27,13 +25,14 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
 
 			UpdateUsingItemTemplate();
-			UpdateHeaderOffset();
-			UpdateHasFooter();
 
 			ItemsView.PropertyChanged += ItemsViewPropertyChanged;
 
 			_createItemContentView = createItemContentView;
 			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
+
+			UpdateHasHeader();
+			UpdateHasFooter();
 
 			if (_createItemContentView == null)
 			{
@@ -41,15 +40,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void ItemsViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs property)
+		protected virtual void ItemsViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs property)
 		{
 			if (property.Is(ItemsView.HeaderProperty))
 			{
-				UpdateHeaderOffset();
-			}
-			else if (property.Is(ItemsView.ItemTemplateProperty))
-			{
-				UpdateUsingItemTemplate();
+				UpdateHasHeader();
 			}
 			else if (property.Is(ItemsView.ItemTemplateProperty))
 			{
@@ -93,7 +88,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var itemsSourcePosition = position - _headerOffset;
+			var itemsSourcePosition = position;
 
 			switch (holder)
 			{
@@ -147,7 +142,7 @@ namespace Xamarin.Forms.Platform.Android
 			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
 		}
 
-		public override int ItemCount => ItemsSource.Count + _headerOffset + (_hasFooter ? 1 : 0);
+		public override int ItemCount => ItemsSource.Count;
 
 		public override int GetItemViewType(int position)
 		{
@@ -192,7 +187,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (ItemsSource[n] == item)
 				{
-					return n + _headerOffset;
+					return n;
 				}
 			}
 
@@ -204,24 +199,24 @@ namespace Xamarin.Forms.Platform.Android
 			_usingItemTemplate = ItemsView.ItemTemplate != null;
 		}
 
-		void UpdateHeaderOffset()
+		void UpdateHasHeader()
 		{
-			_headerOffset = ItemsView.Header == null ? 0 : 1;
+			ItemsSource.HasHeader = ItemsView.Header != null;
 		}
 
 		void UpdateHasFooter()
 		{
-			_hasFooter = ItemsView.Footer != null;
+			ItemsSource.HasFooter = ItemsView.Footer != null;
 		}
 
 		bool IsHeader(int position)
 		{
-			return _headerOffset > 0 && position == 0;
+			return ItemsSource.IsHeader(position);
 		}
 
 		bool IsFooter(int position)
 		{
-			return _hasFooter && position > ItemsSource.Count;
+			return ItemsSource.IsFooter(position);
 		}
 
 		RecyclerView.ViewHolder CreateHeaderFooterViewHolder(object content, DataTemplate template, Context context)

@@ -19,13 +19,35 @@ namespace Xamarin.Forms.Platform.Android
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
-		public int Count => _itemsSource.Count;
+		public int Count => _itemsSource.Count + (HasHeader ? 1 : 0) + (HasFooter ? 1 : 0);
+		public object this[int index] => _itemsSource[AdjustIndexRequest(index)];
 
-		public object this[int index] => _itemsSource[index];
+		public bool HasHeader { get; set; }
+		public bool HasFooter { get; set; }
 
 		public void Dispose()
 		{
 			Dispose(true);
+		}
+
+		public bool IsFooter(int index)
+		{
+			if (!HasFooter)
+			{
+				return false;
+			}
+
+			if (HasHeader)
+			{
+				return index == _itemsSource.Count + 1;
+			}
+
+			return index == _itemsSource.Count;
+		}
+
+		public bool IsHeader(int index)
+		{
+			return HasHeader && index == 0;
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -39,6 +61,16 @@ namespace Xamarin.Forms.Platform.Android
 
 				_disposed = true;
 			}
+		}
+
+		int AdjustIndexRequest(int index)
+		{
+			return index - (HasHeader ? 1 : 0);
+		}
+
+		int AdjustNotifyIndex(int index)
+		{
+			return index + (HasHeader ? 1 : 0);
 		}
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -72,18 +104,19 @@ namespace Xamarin.Forms.Platform.Android
 			if (count == 1)
 			{
 				// For a single item, we can use NotifyItemMoved and get the animation
-				_adapter.NotifyItemMoved(args.OldStartingIndex, args.NewStartingIndex);
+				_adapter.NotifyItemMoved(AdjustNotifyIndex(args.OldStartingIndex), AdjustNotifyIndex(args.NewStartingIndex));
 				return;
 			}
 
-			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
-			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
+			var start = AdjustNotifyIndex(Math.Min(args.OldStartingIndex, args.NewStartingIndex));
+			var end = AdjustNotifyIndex(Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count);
 			_adapter.NotifyItemRangeChanged(start, end);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
 		{
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+			startIndex = AdjustNotifyIndex(startIndex);
 			var count = args.NewItems.Count;
 
 			if (count == 1)
@@ -107,6 +140,8 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			startIndex = AdjustNotifyIndex(startIndex);
+
 			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
 
@@ -122,6 +157,7 @@ namespace Xamarin.Forms.Platform.Android
 		void Replace(NotifyCollectionChangedEventArgs args)
 		{
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+			startIndex = AdjustNotifyIndex(startIndex);
 			var newCount = args.NewItems.Count;
 
 			if (newCount == args.OldItems.Count)
