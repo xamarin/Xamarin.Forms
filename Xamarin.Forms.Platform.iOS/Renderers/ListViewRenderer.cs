@@ -52,6 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void LayoutSubviews()
 		{
+			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
 			double height = Bounds.Height;
@@ -224,7 +225,7 @@ namespace Xamarin.Forms.Platform.iOS
 						var offset = Control.ContentOffset;
 						offset.Y += point.Y;
 						Control.SetContentOffset(offset, true);
-					});
+					}, this);
 				}
 
 				var listView = e.NewElement;
@@ -242,11 +243,11 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateHeader();
 				UpdateFooter();
 				UpdatePullToRefreshEnabled();
+				UpdateSpinnerColor();
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
 				UpdateSelectionMode();
-				UpdateSpinnerColor();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
 
@@ -1173,15 +1174,6 @@ namespace Xamarin.Forms.Platform.iOS
 				List.NotifyRowTapped(indexPath.Section, indexPath.Row, formsCell);
 			}
 
-			public override void WillDisplay(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
-			{
-				if (!_estimatedRowHeight)
-				{
-					// Our cell size/estimate is out of date, probably because we moved from zero to one item; update it
-					DetermineEstimatedRowHeight();
-				}
-			}
-
 			public override nint RowsInSection(UITableView tableview, nint section)
 			{
 				int countOverride;
@@ -1373,7 +1365,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			protected virtual void UpdateEstimatedRowHeight(UITableView tableView)
 			{
-
 				// We need to set a default estimated row height,
 				// because re-setting it later(when we have items on the TIL)
 				// will cause the UITableView to reload, and throw an Exception
@@ -1476,16 +1467,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (!_refresh.Refreshing)
 				{
-					_refresh.BeginRefreshing();
-
 					//hack: On iOS11 with large titles we need to adjust the scroll offset manually
 					//since our UITableView is not the first child of the UINavigationController
-					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height);
-
-					//hack: when we don't have cells in our UITableView the spinner fails to appear
-					CheckContentSize();
-
-					TableView.ScrollRectToVisible(new RectangleF(0, 0, _refresh.Bounds.Width, _refresh.Bounds.Height), true);
+					//This also forces the spinner color to be correct if we started refreshing immediately after changing it.
+					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, () =>
+					{
+						_refresh.BeginRefreshing();
+						//hack: when we don't have cells in our UITableView the spinner fails to appear
+						CheckContentSize();
+						TableView.ScrollRectToVisible(new RectangleF(0, 0, _refresh.Bounds.Width, _refresh.Bounds.Height), true);
+					});
 				}
 			}
 			else
@@ -1624,9 +1615,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateContentOffset(nfloat offset, Action completed = null)
 		{
-			if (!_usingLargeTitles)
-				return;
-
 			UIView.Animate(0.2, () => TableView.ContentOffset = new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), completed);
 		}
 	}

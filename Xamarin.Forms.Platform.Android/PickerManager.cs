@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static void OnKeyPress(object sender, AView.KeyEventArgs e)
 		{
-			if (availableKeys.Contains(e.KeyCode))
+			if (!availableKeys.Contains(e.KeyCode))
 			{
 				e.Handled = false;
 				return;
@@ -75,6 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (v is AView picker)
 				{
+					picker.HideKeyboard();
 					if (picker?.Parent is IPickerRenderer renderer1)
 						renderer1.OnClick();
 					else if (picker?.Parent?.Parent?.Parent is IPickerRenderer renderer2)

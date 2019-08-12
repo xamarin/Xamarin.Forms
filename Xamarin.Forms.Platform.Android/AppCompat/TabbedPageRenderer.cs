@@ -163,21 +163,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				RemoveAllViews();
-				foreach (Page pageToRemove in Element.Children)
+
+				if (Element != null)
 				{
-					IVisualElementRenderer pageRenderer = Android.Platform.GetRenderer(pageToRemove);
-					if (pageRenderer != null)
+					PageController.InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
+
+					foreach (Page pageToRemove in Element.Children)
 					{
-						pageRenderer.View.RemoveFromParent();
-						pageRenderer.Dispose();
+						TeardownPage(pageToRemove);
 					}
-					pageToRemove.PropertyChanged -= OnPagePropertyChanged;
-					pageToRemove.ClearValue(Android.Platform.RendererProperty);
 				}
+
+				RemoveAllViews();
 
 				if (_viewPager != null)
 				{
+					_viewPager.ClearOnPageChangeListeners();
 					_viewPager.Adapter.Dispose();
 					_viewPager.Dispose();
 					_viewPager = null;
@@ -185,7 +186,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_tabLayout != null)
 				{
-					_tabLayout.AddOnTabSelectedListener(null);
+					_tabLayout.ClearOnTabSelectedListeners();
 					_tabLayout.Dispose();
 					_tabLayout = null;
 				}
@@ -204,7 +205,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				if (Element != null)
-					PageController.InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
+				{
+					foreach (Page pageToRemove in Element.Children)
+					{
+						IVisualElementRenderer pageRenderer = Android.Platform.GetRenderer(pageToRemove);
+
+						pageRenderer?.Dispose();
+
+						pageToRemove.ClearValue(Android.Platform.RendererProperty);
+					}
+				}
 
 				_previousPage = null;
 			}
@@ -233,6 +243,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			base.OnElementChanged(e);
 
 			var activity = Context.GetActivity();
+			var isDesigner = Context.IsDesignerContext();
+			var themeContext = isDesigner ? Context : activity;
 
 			if (e.OldElement != null)
 				((IPageController)e.OldElement).InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
@@ -269,7 +281,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						var viewPagerParams = new AWidget.RelativeLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
 						viewPagerParams.AddRule(AWidget.LayoutRules.Above, _bottomNavigationView.Id);
 
-						FormsViewPager pager = _viewPager = CreateFormsViewPager(activity, e.NewElement);
+						FormsViewPager pager = _viewPager = CreateFormsViewPager(themeContext, e.NewElement);
 
 						pager.Id = Platform.GenerateViewId();
 						pager.AddOnPageChangeListener(this);
@@ -285,12 +297,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					if (_tabLayout == null)
 					{
 						TabLayout tabs;
-						if (FormsAppCompatActivity.TabLayoutResource > 0)
+
+						if (FormsAppCompatActivity.TabLayoutResource > 0 && !isDesigner)
 							tabs = _tabLayout = activity.LayoutInflater.Inflate(FormsAppCompatActivity.TabLayoutResource, null).JavaCast<TabLayout>();
 						else
-							tabs = _tabLayout = new TabLayout(activity) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
+							tabs = _tabLayout = new TabLayout(themeContext) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
 
-						FormsViewPager pager = _viewPager = CreateFormsViewPager(activity, e.NewElement);
+						FormsViewPager pager = _viewPager = CreateFormsViewPager(themeContext, e.NewElement);
 
 						pager.Id = Platform.GenerateViewId();
 						pager.AddOnPageChangeListener(this);
@@ -312,8 +325,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateBarBackgroundColor();
 				UpdateBarTextColor();
 				UpdateItemIconColor();
-				UpdateSwipePaging();
-				UpdateOffscreenPageLimit();
+				if (!isDesigner)
+				{
+					UpdateSwipePaging();
+					UpdateOffscreenPageLimit();
+				}
 			}
 		}
 
@@ -401,7 +417,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (tabs.Visibility != ViewStates.Gone)
 				{
 					//MinimumHeight is only available on API 16+
-					if ((int)Build.VERSION.SdkInt >= 16)
+					if ((int)Forms.SdkInt >= 16)
 						tabsHeight = Math.Min(height, Math.Max(tabs.MeasuredHeight, tabs.MinimumHeight));
 					else
 						tabsHeight = Math.Min(height, tabs.MeasuredHeight);

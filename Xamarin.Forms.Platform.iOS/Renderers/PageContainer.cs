@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public PageContainer(IAccessibilityElementsController parent)
 		{
+			AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 			_parent = parent;
 		}
 
@@ -61,6 +62,9 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("accessibilityElementCount")]
 		nint AccessibilityElementCount()
 		{
+			if (AccessibilityElements == null)
+				return 0;
+
 			// Note: this will only be called when VoiceOver is enabled
 			return AccessibilityElements.Count;
 		}
