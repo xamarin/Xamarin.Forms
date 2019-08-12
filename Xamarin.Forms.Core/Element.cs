@@ -121,6 +121,20 @@ namespace Xamarin.Forms
 		}
 
 		internal virtual ReadOnlyCollection<Element> LogicalChildrenInternal => EmptyChildren;
+		internal IEnumerable<Element> AllChildren
+		{
+			get
+			{
+				foreach (var child in LogicalChildrenInternal)
+					yield return child;
+
+				foreach (var child in ChildrenNotDrawnByThisElement)
+					yield return child;
+			}
+		}
+
+		internal virtual IEnumerable<Element> ChildrenNotDrawnByThisElement => EmptyChildren;
+
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ReadOnlyCollection<Element> LogicalChildren => LogicalChildrenInternal;
@@ -173,7 +187,13 @@ namespace Xamarin.Forms
 				OnPropertyChanging();
 
 				if (RealParent != null)
+				{
 					((IElement)RealParent).RemoveResourcesChangedListener(OnParentResourcesChanged);
+
+					if(value != null && (RealParent is Layout || RealParent is IControlTemplated))
+						Log.Warning("Element", $"{this} is already a child of {RealParent}. Remove {this} from {RealParent} before adding to {value}.");
+				}
+
 				RealParent = value;
 				if (RealParent != null)
 				{
@@ -194,8 +214,42 @@ namespace Xamarin.Forms
 				OnParentSet();
 
 				OnPropertyChanged();
+
+				RefreshTemplatedParent();
 			}
 		}
+
+		internal event EventHandler TemplatedParentChanged;
+
+		BindableObject _templatedParent;
+		public BindableObject TemplatedParent
+		{
+			get => _templatedParent;
+			private set
+			{
+				_templatedParent = value;
+				TemplatedParentChanged?.Invoke(this, null);
+				OnPropertyChanged();
+			}
+		}
+
+		void RefreshTemplatedParent()
+		{
+			var templatedParent = this.IsTemplateRoot
+				? this.Parent
+				: this.Parent?.TemplatedParent;
+			if (ReferenceEquals(templatedParent, this.TemplatedParent))
+				return;
+
+			this.TemplatedParent = templatedParent;			
+			foreach (var element in this.LogicalChildren)
+			{
+				if (!element.IsTemplateRoot)
+					element.RefreshTemplatedParent();
+			}
+		}
+
+		internal bool IsTemplateRoot { get; set; }
 
 		void IElement.RemoveResourcesChangedListener(Action<object, ResourcesChangedEventArgs> onchanged)
 		{
@@ -337,6 +391,11 @@ namespace Xamarin.Forms
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			base.OnPropertyChanged(propertyName);
+			foreach(var logicalChildren in ChildrenNotDrawnByThisElement)
+			{
+				if(logicalChildren is IPropertyPropagationController controller)
+					PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { logicalChildren });
+			}
 
 			if (_effects == null || _effects.Count == 0)
 				return;

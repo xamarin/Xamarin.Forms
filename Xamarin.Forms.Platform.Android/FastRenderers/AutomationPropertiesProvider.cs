@@ -19,8 +19,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 
 			var automationIdParent = s_defaultDrawerId;
-			if (!string.IsNullOrEmpty(page.Master?.Icon))
-				automationIdParent = page.Master.Icon.AutomationId;
+			var icon = page.Master?.IconImageSource;
+			if (icon != null && !icon.IsEmpty)
+				automationIdParent = page.Master.IconImageSource.AutomationId;
 			else if (!string.IsNullOrEmpty(page.AutomationId))
 				automationIdParent = page.AutomationId;
 
@@ -28,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			resourceIdClose = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdCloseSuffix}", "string", context.ApplicationInfo.PackageName);
 		}
 
-		internal static void SetAutomationId(AView control, VisualElement element, string value = null)
+		internal static void SetAutomationId(AView control, Element element, string value = null)
 		{
 			if (element == null || control == null)
 			{
@@ -45,17 +46,23 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		internal static void SetBasicContentDescription(
 			AView control,
-			BindableObject element,
+			BindableObject bindableObject,
 			ref string defaultContentDescription)
 		{
-			if (element == null || control == null)
+			if (bindableObject == null || control == null)
 				return;
 
 			if (defaultContentDescription == null)
 				defaultContentDescription = control.ContentDescription;
 
-			string value = ConcatenateNameAndHelpText(element);
-			control.ContentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+			string value = ConcatenateNameAndHelpText(bindableObject);
+
+			var contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+
+			if (String.IsNullOrWhiteSpace(contentDescription) && bindableObject is Element element)
+				contentDescription = element.AutomationId;
+
+			control.ContentDescription = contentDescription;
 		}
 
 		internal static void SetContentDescription(
@@ -70,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			SetBasicContentDescription(control, element, ref defaultContentDescription);
 		}
 
-		internal static void SetFocusable(AView control, VisualElement element, ref bool? defaultFocusable)
+		internal static void SetFocusable(AView control, Element element, ref bool? defaultFocusable)
 		{
 			if (element == null || control == null)
 			{
@@ -86,7 +93,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				(bool)((bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? defaultFocusable);
 		}
 
-		internal static void SetLabeledBy(AView control, VisualElement element)
+		internal static void SetLabeledBy(AView control, Element element)
 		{
 			if (element == null || control == null)
 				return;
@@ -111,14 +118,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return false;
 			}
 
+			if (Element is Picker)
+			{
+				return false;
+			}
+
 			var textView = Control as TextView;
 			if (textView == null)
 			{
 				return false;
 			}
 
-			// Let the specified Title/Placeholder take precedence, but don't set the ContentDescription (won't work anyway)
-			if (((Element as Picker)?.Title ?? (Element as Entry)?.Placeholder) != null)
+			// TODO: add EntryAccessibilityDelegate to Entry
+			// Let the specified Placeholder take precedence, but don't set the ContentDescription (won't work anyway)
+			if ((Element as Entry)?.Placeholder != null)
 			{
 				return true;
 			}
@@ -168,6 +181,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			_disposed = true;
 
+			if (Element != null)
+			{
+				Element.PropertyChanged -= OnElementPropertyChanged;
+			}
+
 			if (_renderer != null)
 			{
 				_renderer.ElementChanged -= OnElementChanged;
@@ -189,6 +207,27 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		bool SetHint()
 			=> SetHint(Control, Element, ref _defaultHint);
 
+		void SetLabeledBy()
+			=> SetLabeledBy(Control, Element);
+
+		internal static void AccessibilitySettingsChanged(AView control, Element element, ref string _defaultHint, ref string _defaultContentDescription, ref bool? _defaultFocusable)
+		{
+			SetHint(control, element, ref _defaultHint);
+			SetAutomationId(control, element);
+			SetContentDescription(control, element, ref _defaultContentDescription, ref _defaultHint);
+			SetFocusable(control, element, ref _defaultFocusable);
+			SetLabeledBy(control, element);
+		}
+
+		internal static void AccessibilitySettingsChanged(AView control, Element element)
+		{
+			string _defaultHint = String.Empty;
+			string _defaultContentDescription = String.Empty;
+			bool? _defaultFocusable = null;
+			AccessibilitySettingsChanged(control, element, ref _defaultHint, ref _defaultContentDescription, ref _defaultFocusable);
+		}
+
+
 		internal static string ConcatenateNameAndHelpText(BindableObject Element)
 		{
 			var name = (string)Element.GetValue(AutomationProperties.NameProperty);
@@ -202,9 +241,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return $"{name}. {helpText}";
 		}
 
-		void SetLabeledBy()
-			=> SetLabeledBy(Control, Element);
-
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
 		{
 			if (e.OldElement != null)
@@ -217,11 +253,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 			}
 
-			SetHint();
-			SetAutomationId();
-			SetContentDescription();
-			SetFocusable();
-			SetLabeledBy();
+			AccessibilitySettingsChanged(Control, Element, ref _defaultHint, ref _defaultContentDescription, ref _defaultFocusable);
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

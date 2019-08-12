@@ -9,6 +9,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public static class ToolbarItemExtensions
 	{
+		public static UIKit.UIBarButtonItem ToUIBarButtonItem(this Xamarin.Forms.ToolbarItem item, bool forceName)
+		{
+			return ToUIBarButtonItem(item, false, false);
+		}
+
 		public static UIBarButtonItem ToUIBarButtonItem(this ToolbarItem item, bool forceName = false, bool forcePrimary = false)
 		{
 			if (item.Order == ToolbarItemOrder.Secondary && !forcePrimary)
@@ -26,7 +31,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_forceName = forceName;
 				_item = item;
 
-				if (!string.IsNullOrEmpty(item.Icon?.File) && !forceName)
+				if (item.IconImageSource != null && !item.IconImageSource.IsEmpty && !forceName)
 					UpdateIconAndStyle();
 				else
 					UpdateTextAndStyle();
@@ -55,14 +60,14 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateIsEnabled();
 				else if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 				{
-					if (string.IsNullOrEmpty(_item.Icon?.File) || _forceName)
+					if (_item.IconImageSource == null || _item.IconImageSource.IsEmpty || _forceName)
 						UpdateTextAndStyle();
 				}
-				else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
+				else if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
 				{
 					if (!_forceName)
 					{
-						if (!string.IsNullOrEmpty(_item.Icon?.File))
+						if (_item.IconImageSource != null && !_item.IconImageSource.IsEmpty)
 							UpdateIconAndStyle();
 						else
 							UpdateTextAndStyle();
@@ -76,7 +81,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			async void UpdateIconAndStyle()
 			{
-				Image = await _item.Icon.GetNativeImageAsync();
+				Image = await _item.IconImageSource.GetNativeImageAsync();
 				Style = UIBarButtonItemStyle.Plain;
 			}
 
@@ -125,7 +130,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 					UpdateText();
-				else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
+				else if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
 					UpdateIcon();
 				else if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName)
 					UpdateIsEnabled();
@@ -138,9 +143,9 @@ namespace Xamarin.Forms.Platform.iOS
 			async void UpdateIcon()
 			{
 				UIImage image = null;
-				if (!string.IsNullOrEmpty(_item.Icon?.File))
+				if (_item.IconImageSource != null && !_item.IconImageSource.IsEmpty)
 				{
-					image = await _item.Icon.GetNativeImageAsync();
+					image = await _item.IconImageSource.GetNativeImageAsync();
 				}
 				((SecondaryToolbarItemContent)CustomView).Image = image;
 			}

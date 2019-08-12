@@ -21,17 +21,10 @@ steps:
       workingFolder: '$(System.DefaultWorkingDirectory)/build/scripts'
       failOnStandardError: false
 
-
-  - powershell: |
-       $formsNugetVersion = $env:major + "." + $env:minor + "." + $env:patch + "." + $env:buildversion
-       if($env:SUFFIX)
-       {
-          $formsNugetVersion = $formsNugetVersion +"-"+$env:SUFFIX
-       }
-       Write-Host("FormsVersion = $formsNugetVersion")
-       Write-Host("##{0}[task.setvariable variable=XamarinFormsPackageVersion]{1}" -f "vso",$formsNugetVersion.ToString() )
-    failOnStderr: true
-    displayName: 'Set Nuget version'
+  - task: NuGetToolInstaller@0
+    displayName: 'Use NuGet'
+    inputs:
+      versionSpec: $(nugetVersion)
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
@@ -41,29 +34,19 @@ steps:
       packagesToPack: '.nuspec/*.nuspec'
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/debug'
       versioningScheme: byEnvVar
-      versionEnvVar: XamarinFormsPackageVersion
-      buildProperties: 'IdAppend=$(FormsIdAppend)'
-
-
-  - task: NuGetCommand@2
-    displayName: 'NuGet push'
-    inputs:
-      command: push
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/debug/*.nupkg'
-      publishVstsFeed: '13fa23d7-5f2f-47f1-a87c-45a9f173dd74'
-      allowPackageConflicts: true
+      versionEnvVar: nugetPackageVersion
+      configuration: $(buildConfiguration)
 
 
   - powershell: |
        $buildConfiguration = "Release"
-       $formsNugetVersion = "" + $env:XAMARINFORMSPACKAGEVERSION
+       $formsNugetVersion = "" + $env:nugetPackageVersion
 
        Write-Host("Update nuspecs")
        Get-ChildItem './.nuspec/*.nuspec' -Recurse | Foreach-Object {
             (Get-Content $_) | Foreach-Object  {
                 $_ -replace '\$version\$', $formsNugetVersion `
                    -replace '\$Configuration\$', $buildConfiguration `
-                   -replace '\$IdAppend\$', ''
            } | Set-Content $_
        }
     failOnStderr: true
@@ -78,9 +61,8 @@ steps:
       packagesToPack: '.nuspec/*.nuspec'
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/release'
       versioningScheme: byEnvVar
-      versionEnvVar: XamarinFormsPackageVersion
-      buildProperties: 'IdAppend=$(FormsIdAppend)'
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'],'refs/tags/'))
+      versionEnvVar: nugetPackageVersion
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: nuget'
