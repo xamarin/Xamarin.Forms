@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	sealed class ListSource : IItemsViewSource
+	sealed class ListSource : IItemsViewSource, IList
 	{
-		private List<object> _itemsSource;
+		private IList _itemsSource;
 
 		public ListSource()
 		{
@@ -30,6 +30,16 @@ namespace Xamarin.Forms.Platform.Android
 		public bool HasHeader { get; set; }
 		public bool HasFooter { get; set; }
 
+		public bool IsReadOnly => _itemsSource.IsReadOnly;
+
+		public bool IsFixedSize => _itemsSource.IsFixedSize;
+
+		public object SyncRoot => _itemsSource.SyncRoot;
+
+		public bool IsSynchronized => _itemsSource.IsSynchronized;
+
+		object IList.this[int index] { get => _itemsSource[index]; set => _itemsSource[index] = value; }
+
 		public void Dispose()
 		{
 			
@@ -37,17 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public bool IsFooter(int index)
 		{
-			if (!HasFooter)
-			{
-				return false;
-			}
-
-			if (HasHeader)
-			{
-				return index == Count + 1;
-			}
-
-			return index == Count;
+			return HasFooter && index == Count - 1;
 		}
 
 		public bool IsHeader(int index)
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			throw new IndexOutOfRangeException($"{item} not found in source.");
+			return -1;
 		}
 
 		public object GetItem(int position)
@@ -81,6 +81,50 @@ namespace Xamarin.Forms.Platform.Android
 		int AdjustPosition(int index)
 		{
 			return index + (HasHeader ? 1 : 0);
+		}
+		public int Add(object value)
+		{
+			return _itemsSource.Add(value);
+		}
+
+		public bool Contains(object value)
+		{
+			return _itemsSource.Contains(value);
+		}
+
+		public void Clear()
+		{
+			_itemsSource.Clear();
+		}
+
+		public int IndexOf(object value)
+		{
+			return _itemsSource.IndexOf(value);
+		}
+
+		public void Insert(int index, object value)
+		{
+			_itemsSource.Insert(index, value);
+		}
+
+		public void Remove(object value)
+		{
+			_itemsSource.Remove(value);
+		}
+
+		public void RemoveAt(int index)
+		{
+			_itemsSource.RemoveAt(index);
+		}
+
+		public void CopyTo(Array array, int index)
+		{
+			_itemsSource.CopyTo(array, index);
+		}
+
+		public IEnumerator GetEnumerator()
+		{
+			return _itemsSource.GetEnumerator();
 		}
 	}
 }

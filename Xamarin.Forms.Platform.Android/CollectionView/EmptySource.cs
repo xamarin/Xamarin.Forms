@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public int GetPosition(object item)
 		{
-			throw new IndexOutOfRangeException("IItemsViewSource is empty");
+			return -1;
 		}
 
 		public object GetItem(int position)

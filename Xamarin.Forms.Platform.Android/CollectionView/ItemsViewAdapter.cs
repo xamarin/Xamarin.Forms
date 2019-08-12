@@ -7,20 +7,22 @@ using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ItemsViewAdapter : RecyclerView.Adapter
+	public class ItemsViewAdapter<TItemsView, TItemsViewSource> : RecyclerView.Adapter 
+		where TItemsView : ItemsView
+		where TItemsViewSource : IItemsViewSource
 	{
-		protected readonly ItemsView ItemsView;
+		protected readonly TItemsView ItemsView;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
-		internal readonly IItemsViewSource ItemsSource;
+		internal readonly TItemsViewSource ItemsSource;
 
 		bool _disposed;
 		Size? _size;
 
 		bool _usingItemTemplate = false;
 
-		internal ItemsViewAdapter(ItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
+		internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
+			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter<TItemsView, TItemsViewSource>));
 
 			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
 
@@ -29,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsView.PropertyChanged += ItemsViewPropertyChanged;
 
 			_createItemContentView = createItemContentView;
-			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
+			ItemsSource = CreateItemsSource();
 
 			UpdateHasHeader();
 			UpdateHasFooter();
@@ -40,17 +42,22 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		protected virtual TItemsViewSource CreateItemsSource()
+		{
+			return (TItemsViewSource)ItemsSourceFactory.Create(ItemsView, this);
+		}
+
 		protected virtual void ItemsViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs property)
 		{
-			if (property.Is(ItemsView.HeaderProperty))
+			if (property.Is(Xamarin.Forms.ItemsView.HeaderProperty))
 			{
 				UpdateHasHeader();
 			}
-			else if (property.Is(ItemsView.ItemTemplateProperty))
+			else if (property.Is(Xamarin.Forms.ItemsView.ItemTemplateProperty))
 			{
 				UpdateUsingItemTemplate();
 			}
-			else if (property.Is(ItemsView.FooterProperty))
+			else if (property.Is(Xamarin.Forms.ItemsView.FooterProperty))
 			{
 				UpdateHasFooter();
 			}
@@ -88,34 +95,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var itemsSourcePosition = position;
-
 			switch (holder)
 			{
 				case TextViewHolder textViewHolder:
-					textViewHolder.TextView.Text = ItemsSource.GetItem(itemsSourcePosition).ToString();
+					textViewHolder.TextView.Text = ItemsSource.GetItem(position).ToString();
 					break;
 				case TemplatedItemViewHolder templatedItemViewHolder:
-					BindTemplatedItemViewHolder(templatedItemViewHolder, ItemsSource.GetItem(itemsSourcePosition));
+					BindTemplatedItemViewHolder(templatedItemViewHolder, ItemsSource.GetItem(position));
 					break;
 			}
-		}
-
-		void BindTemplatedItemViewHolder(TemplatedItemViewHolder templatedItemViewHolder, object context)
-		{
-			if (ItemsView.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
-			{
-				templatedItemViewHolder.Bind(context, ItemsView, SetStaticSize, _size);
-			}
-			else
-			{
-				templatedItemViewHolder.Bind(context, ItemsView);
-			}
-		}
-
-		void SetStaticSize(Size size)
-		{
-			_size = size;
 		}
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
@@ -186,6 +174,23 @@ namespace Xamarin.Forms.Platform.Android
 			return ItemsSource.GetPosition(item);
 		}
 
+		protected void BindTemplatedItemViewHolder(TemplatedItemViewHolder templatedItemViewHolder, object context)
+		{
+			if (ItemsView.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
+			{
+				templatedItemViewHolder.Bind(context, ItemsView, SetStaticSize, _size);
+			}
+			else
+			{
+				templatedItemViewHolder.Bind(context, ItemsView);
+			}
+		}
+
+		void SetStaticSize(Size size)
+		{
+			_size = size;
+		}
+
 		void UpdateUsingItemTemplate()
 		{
 			_usingItemTemplate = ItemsView.ItemTemplate != null;
@@ -211,12 +216,12 @@ namespace Xamarin.Forms.Platform.Android
 			return ItemsSource.IsFooter(position);
 		}
 
-		RecyclerView.ViewHolder CreateHeaderFooterViewHolder(object content, DataTemplate template, Context context)
+		protected RecyclerView.ViewHolder CreateHeaderFooterViewHolder(object content, DataTemplate template, Context context)
 		{
 			if (template != null)
 			{
 				var footerContentView = new ItemContentView(context);
-				return new TemplatedItemViewHolder(footerContentView, template);
+				return new TemplatedItemViewHolder(footerContentView, template, isSelectionEnabled: false);
 			}
 
 			if (content is View formsView)
