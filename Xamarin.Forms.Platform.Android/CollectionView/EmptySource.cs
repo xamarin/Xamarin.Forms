@@ -9,8 +9,6 @@ namespace Xamarin.Forms.Platform.Android
 		public bool HasHeader { get; set; }
 		public bool HasFooter { get; set; }
 
-		public object this[int index] => throw new IndexOutOfRangeException("IItemsViewSource is empty");
-
 		public void Dispose()
 		{
 
@@ -34,6 +32,16 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return index == 0;
+		}
+
+		public int GetPosition(object item)
+		{
+			throw new IndexOutOfRangeException("IItemsViewSource is empty");
+		}
+
+		public object GetItem(int position)
+		{
+			throw new IndexOutOfRangeException("IItemsViewSource is empty");
 		}
 	}
 }

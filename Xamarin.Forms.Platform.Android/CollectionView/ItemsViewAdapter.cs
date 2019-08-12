@@ -93,10 +93,10 @@ namespace Xamarin.Forms.Platform.Android
 			switch (holder)
 			{
 				case TextViewHolder textViewHolder:
-					textViewHolder.TextView.Text = ItemsSource[itemsSourcePosition].ToString();
+					textViewHolder.TextView.Text = ItemsSource.GetItem(itemsSourcePosition).ToString();
 					break;
 				case TemplatedItemViewHolder templatedItemViewHolder:
-					BindTemplatedItemViewHolder(templatedItemViewHolder, ItemsSource[itemsSourcePosition]);
+					BindTemplatedItemViewHolder(templatedItemViewHolder, ItemsSource.GetItem(itemsSourcePosition));
 					break;
 			}
 		}
@@ -183,15 +183,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public virtual int GetPositionForItem(object item)
 		{
-			for (int n = 0; n < ItemsSource.Count; n++)
-			{
-				if (ItemsSource[n] == item)
-				{
-					return n;
-				}
-			}
-
-			return -1;
+			return ItemsSource.GetPosition(item);
 		}
 
 		void UpdateUsingItemTemplate()

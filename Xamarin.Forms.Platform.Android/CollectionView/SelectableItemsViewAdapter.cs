@@ -135,10 +135,10 @@ namespace Xamarin.Forms.Platform.Android
 					// Selection's not even on, so there's nothing to do here
 					return;
 				case SelectionMode.Single:
-					SelectableItemsView.SelectedItem = ItemsSource[adapterPosition];
+					SelectableItemsView.SelectedItem = ItemsSource.GetItem(adapterPosition);
 					return;
 				case SelectionMode.Multiple:
-					var item = ItemsSource[adapterPosition];
+					var item = ItemsSource.GetItem(adapterPosition);
 					var selectedItems = SelectableItemsView.SelectedItems;
 
 					if (selectedItems.Contains(item))

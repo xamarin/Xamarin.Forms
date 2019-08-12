@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -5,7 +6,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	sealed class ListSource : IItemsViewSource
 	{
-		private List<object> _internal;
+		private List<object> _itemsSource;
 
 		public ListSource()
 		{
@@ -13,19 +14,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ListSource(IEnumerable<object> enumerable) 
 		{
-			_internal = new List<object>(enumerable);
+			_itemsSource = new List<object>(enumerable);
 		}
 
 		public ListSource(IEnumerable enumerable)
 		{
 			foreach (object item in enumerable)
 			{
-				_internal.Add(item);
+				_itemsSource.Add(item);
 			}
 		}
 
-		public int Count => _internal.Count + (HasHeader ? 1 : 0) + (HasFooter ? 1 : 0);
-		public object this[int index] => _internal[AdjustIndexRequest(index)];
+		public int Count => _itemsSource.Count + (HasHeader ? 1 : 0) + (HasFooter ? 1 : 0);
 
 		public bool HasHeader { get; set; }
 		public bool HasFooter { get; set; }
@@ -55,9 +55,32 @@ namespace Xamarin.Forms.Platform.Android
 			return HasHeader && index == 0;
 		}
 
+		public int GetPosition(object item)
+		{
+			for (int n = 0; n < _itemsSource.Count; n++)
+			{
+				if (_itemsSource[n] == item)
+				{
+					return AdjustPosition(n);
+				}
+			}
+
+			throw new IndexOutOfRangeException($"{item} not found in source.");
+		}
+
+		public object GetItem(int position)
+		{
+			return _itemsSource[AdjustIndexRequest(position)];
+		}
+
 		int AdjustIndexRequest(int index)
 		{
 			return index - (HasHeader ? 1 : 0);
+		}
+
+		int AdjustPosition(int index)
+		{
+			return index + (HasHeader ? 1 : 0);
 		}
 	}
 }

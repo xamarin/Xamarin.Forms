@@ -20,7 +20,6 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		public int Count => _itemsSource.Count + (HasHeader ? 1 : 0) + (HasFooter ? 1 : 0);
-		public object this[int index] => _itemsSource[AdjustIndexRequest(index)];
 
 		public bool HasHeader { get; set; }
 		public bool HasFooter { get; set; }
@@ -48,6 +47,24 @@ namespace Xamarin.Forms.Platform.Android
 		public bool IsHeader(int index)
 		{
 			return HasHeader && index == 0;
+		}
+
+		public int GetPosition(object item)
+		{
+			for (int n = 0; n < _itemsSource.Count; n++)
+			{
+				if (_itemsSource[n] == item)
+				{
+					return AdjustNotifyIndex(n);
+				}
+			}
+
+			throw new IndexOutOfRangeException($"{item} not found in source.");
+		}
+
+		public object GetItem(int position)
+		{
+			return _itemsSource[AdjustIndexRequest(position)];
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -180,5 +197,7 @@ namespace Xamarin.Forms.Platform.Android
 			// have to be updated. So we just have to use NotifyDataSetChanged and let the RecyclerView update everything
 			_adapter.NotifyDataSetChanged();
 		}
+
+		
 	}
 }
