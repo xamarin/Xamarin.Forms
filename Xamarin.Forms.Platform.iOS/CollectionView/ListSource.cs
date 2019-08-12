@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.iOS
 					throw new ArgumentOutOfRangeException(nameof(indexPath));
 				}
 
-				return this[indexPath.Item];
+				return this[(int)indexPath.Item];
 			}
 		}
 
