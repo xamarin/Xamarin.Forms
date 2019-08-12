@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			System.Diagnostics.Process.Start(uri.AbsoluteUri);
 		}
-
+		
 		public void BeginInvokeOnMainThread(Action action)
 		{
 			System.Windows.Application.Current.Dispatcher.BeginInvoke(action);
@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.WPF
 		public string GetMD5Hash(string input)
 		{
 			// MSDN - Documentation -https://msdn.microsoft.com/en-us/library/system.security.cryptography.md5(v=vs.110).aspx
-			using (MD5 md5Hash = MD5.Create())
+			using (MD5 md5Hash = MD5.Create()) 
 			{
 				// Convert the input string to a byte array and compute the hash.
 				byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			return new WPFIsolatedStorageFile(IsolatedStorageFile.GetUserStoreForAssembly());
 		}
-
+		
 		public void StartTimer(TimeSpan interval, Func<bool> callback)
 		{
 			var timer = new DispatcherTimer { Interval = interval };

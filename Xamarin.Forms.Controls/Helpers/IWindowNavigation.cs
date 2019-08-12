@@ -6,6 +6,5 @@ namespace Xamarin.Forms.Controls
     {
 		Task OpenNewWindowAsync();
 		void NavigateToAnotherPage(Page page);	
-
 	}
 }

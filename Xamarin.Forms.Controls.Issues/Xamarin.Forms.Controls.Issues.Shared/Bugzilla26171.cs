@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init ()
 		{
-			 var map = MakeMap ();
+			var map = MakeMap ();
 
 			var label = new Label  { AutomationId = "lblValue" };
 

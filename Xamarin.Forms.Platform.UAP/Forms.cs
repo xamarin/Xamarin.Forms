@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 		static ApplicationExecutionState s_state;
 
 		public static bool IsInitialized { get; private set; }
-
+		
 		public static void Init(IActivatedEventArgs launchActivatedEventArgs, IEnumerable<Assembly> rendererAssemblies = null)
 		{
 			if (IsInitialized)
