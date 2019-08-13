@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Preserve(AllMembers = true)]
 		public class MyViewModel : PropertyChangedBase
 		{
-			private bool _isContextActionsLegacyModeEnabled;
+			bool _isContextActionsLegacyModeEnabled;
 
 			public bool IsContextActionsLegacyModeEnabled
 			{
