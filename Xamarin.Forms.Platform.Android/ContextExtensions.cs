@@ -127,8 +127,9 @@ namespace Xamarin.Forms.Platform.Android
 				_isDesigerContext = true;
 			else if (context is ContextWrapper contextWrapper)
 				return contextWrapper.BaseContext.IsDesignerContext();
+			else
+				_isDesigerContext = false;
 
-			_isDesigerContext = false;
 			return _isDesigerContext.Value;
 		}
 
