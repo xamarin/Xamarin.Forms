@@ -283,8 +283,9 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				var acceptEmptyServiceProvider = vardefref.VariableDefinition.VariableType.GetCustomAttribute(module, ("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "AcceptEmptyServiceProviderAttribute")) != null;
 				if (   vardefref.VariableDefinition.VariableType.FullName == "Xamarin.Forms.Xaml.BindingExtension"
-				    && (   node.Properties == null
-				        || !node.Properties.ContainsKey(new XmlName("", "Source"))))
+				    && (node.Properties == null || !node.Properties.ContainsKey(new XmlName("", "Source"))) //do not compile bindings if Source is set
+				    && bpRef != null //do not compile bindings if we're not gonna SetBinding
+					)
 					foreach (var instruction in CompileBindingPath(node, context, vardefref.VariableDefinition))
 						yield return instruction;
 
@@ -382,8 +383,25 @@ namespace Xamarin.Forms.Build.Tasks
 			if (dataTypeNode is null)
 				yield break;
 
-			if (!((dataTypeNode as ValueNode)?.Value is string dataType))
-				throw new XamlParseException("x:DataType expects a string literal", dataTypeNode as IXmlLineInfo);
+			if (   dataTypeNode is ElementNode enode
+				&& enode.XmlType.NamespaceUri == XamlParser.X2009Uri
+				&& enode.XmlType.Name == nameof(Xamarin.Forms.Xaml.NullExtension))
+				yield break;
+
+			string dataType = null;
+
+			if (   dataTypeNode is ElementNode elementNode
+				&& elementNode.XmlType.NamespaceUri == XamlParser.X2009Uri
+				&& elementNode.XmlType.Name == nameof(Xamarin.Forms.Xaml.TypeExtension)
+				&& elementNode.Properties.ContainsKey(new XmlName("", nameof(Xamarin.Forms.Xaml.TypeExtension.TypeName)))
+				&& (elementNode.Properties[new XmlName("", nameof(Xamarin.Forms.Xaml.TypeExtension.TypeName))] as ValueNode)?.Value is string stringtype)
+				dataType = stringtype;
+
+			if ((dataTypeNode as ValueNode)?.Value is string sType)
+				dataType = sType;
+
+			if (dataType is null)
+				throw new XamlParseException("x:DataType expects a string literal, an {x:Type} markup or {x:Null}", dataTypeNode as IXmlLineInfo);
 
 			var prefix = dataType.Contains(":") ? dataType.Substring(0, dataType.IndexOf(":", StringComparison.Ordinal)) : "";
 			var namespaceuri = node.NamespaceResolver.LookupNamespace(prefix) ?? "";
@@ -1328,9 +1346,9 @@ namespace Xamarin.Forms.Build.Tasks
 			//is there a RD.Add() overrides that accepts this ?
 			var nodeTypeRef = context.Variables[node].VariableType;
 			var module = context.Body.Method.Module;
-			if (module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary"),
+			if (module.ImportMethodReference(module.GetTypeDefinition(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary")),
 											 methodName: "Add",
-											 parameterTypes: new[] { (nodeTypeRef.Scope.Name, nodeTypeRef.Namespace, nodeTypeRef.Name) }) != null)
+											 parameterTypes: new[] { (nodeTypeRef) }) != null)
 				return true;
 
 			throw new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo);

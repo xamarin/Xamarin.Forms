@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static ViewExtensions()
 		{
-			s_apiLevel = (int)Build.VERSION.SdkInt;
+			s_apiLevel = (int)Forms.SdkInt;
 		}
 
 		public static void RemoveFromParent(this AView view)
@@ -101,6 +101,16 @@ namespace Xamarin.Forms.Platform.Android
 
 			view.Elevation = value;
 			return true;
+		}
+		
+		internal static void MaybeRequestLayout(this AView view)
+		{
+			var isInLayout = false;
+			if ((int)Build.VERSION.SdkInt >= 18)
+				isInLayout = view.IsInLayout;
+
+			if (!isInLayout && !view.IsLayoutRequested)
+				view.RequestLayout();
 		}
 	}
 }

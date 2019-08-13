@@ -18,6 +18,12 @@ namespace Xamarin.Forms.Platform.iOS
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
+#if DEBUG
+				if (oldvalue != null && newvalue != null)
+				{
+					Log.Warning("Renderer", $"{bindable} already has a renderer attached to it: {oldvalue}. Please figure out why and then fix it.", nameof(oldvalue));
+				}
+#endif
 				var view = bindable as VisualElement;
 				if (view != null)
 					view.IsPlatformEnabled = newvalue != null;
@@ -352,6 +358,26 @@ namespace Xamarin.Forms.Platform.iOS
 			PresentPopUp(window, alert);
 		}
 
+		void PresentPrompt(PromptArguments arguments)
+		{
+			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
+
+			var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
+			alert.AddTextField(uiTextField =>
+			{
+				uiTextField.Placeholder = arguments.Placeholder;
+				uiTextField.ShouldChangeCharacters = (field, range, replacementString) => arguments.MaxLength <= -1 || field.Text.Length + replacementString.Length - range.Length <= arguments.MaxLength;
+				uiTextField.ApplyKeyboard(arguments.Keyboard);
+			});
+			var oldFrame = alert.View.Frame;
+			alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);
+
+			alert.AddAction(CreateActionWithWindowHide(arguments.Cancel, UIAlertActionStyle.Cancel, () => arguments.SetResult(null), window));
+			alert.AddAction(CreateActionWithWindowHide(arguments.Accept, UIAlertActionStyle.Default, () => arguments.SetResult(alert.TextFields[0].Text), window));
+
+			PresentPopUp(window, alert);
+		}
+
 		void PresentActionSheet(ActionSheetArguments arguments)
 		{
 			var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
@@ -535,6 +561,13 @@ namespace Xamarin.Forms.Platform.iOS
 				PresentAlert(arguments);
 			});
 
+			MessagingCenter.Subscribe(this, Page.PromptSignalName, (Page sender, PromptArguments arguments) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+				PresentPrompt(arguments);
+			});
+
 			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
 			{
 				if (!PageIsChildOfPlatform(sender))
@@ -548,6 +581,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			MessagingCenter.Unsubscribe<Page, PromptArguments>(this, Page.PromptSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 		}
 

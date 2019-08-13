@@ -526,6 +526,12 @@ namespace Xamarin.Forms.CustomAttributes
 			HorizontalTextAlignmentPlaceholderStart,
 			HorizontalTextAlignmentPlaceholderCenter,
 			HorizontalTextAlignmentPlaceholderEnd,
+			VerticalTextAlignmentStart,
+			VerticalTextAlignmentCenter,
+			VerticalTextAlignmentEnd,
+			VerticalTextAlignmentPlaceholderStart,
+			VerticalTextAlignmentPlaceholderCenter,
+			VerticalTextAlignmentPlaceholderEnd,
 			FontAttributes,
 			FontFamily,
 			FontSize,
@@ -570,7 +576,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Clicked,
 			Command,
 			Image,
-			Pressed
+			Pressed,
+			Padding
 		}
 
 		public enum ImageSource
@@ -605,6 +612,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			TextColor,
 			Text,
+			Padding,
 			FormattedText,
 			FontAttibutesBold,
 			FontAttributesItalic,
@@ -678,9 +686,15 @@ namespace Xamarin.Forms.CustomAttributes
 			TextAlignmentStart,
 			TextAlignmentCenter,
 			TextAlignmentEnd,
+			TextVerticalAlignmentStart,
+			TextVerticalAlignmentCenter,
+			TextVerticalAlignmentEnd,
 			PlaceholderAlignmentStart,
 			PlaceholderAlignmentCenter,
 			PlaceholderAlignmentEnd,
+			PlaceholderVerticalAlignmentStart,
+			PlaceholderVerticalAlignmentCenter,
+			PlaceholderVerticalAlignmentEnd,
 			TextColor,
 			PlaceholderColor
 		}

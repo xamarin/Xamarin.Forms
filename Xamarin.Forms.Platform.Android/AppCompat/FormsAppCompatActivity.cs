@@ -3,6 +3,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -10,7 +11,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
-using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
@@ -23,6 +23,23 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
+	[Flags]
+	public enum ActivationFlags : long
+	{
+		DisableSetStatusBarColor = 1 << 0,
+	}
+
+	public struct ActivationOptions
+	{
+		public ActivationOptions(Bundle bundle)
+		{
+			this = default(ActivationOptions);
+			this.Bundle = bundle;
+		}
+		public Bundle Bundle;
+		public ActivationFlags Flags;
+	}
+
 	public class FormsAppCompatActivity : AppCompatActivity, IDeviceInfoProvider
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
@@ -39,6 +56,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool _renderersAdded;
 		bool _activityCreated;
 		PowerSaveModeBroadcastReceiver _powerSaveModeBroadcastReceiver;
+
+		static readonly ManualResetEventSlim PreviousActivityDestroying = new ManualResetEventSlim(true);
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
@@ -143,6 +162,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			application.PropertyChanged += AppOnPropertyChanged;
 
+			// Wait if old activity destroying is not finished
+			PreviousActivityDestroying.Wait();
+
 			Profile.FramePartition(nameof(SetMainPage));
 
 			SetMainPage();
@@ -156,7 +178,19 @@ namespace Xamarin.Forms.Platform.Android
 			ActivityResultCallbackRegistry.InvokeCallback(requestCode, resultCode, data);
 		}
 
+		protected void OnCreate(ActivationOptions options)
+		{
+			OnCreate(options.Bundle, options.Flags);
+		}
+
 		protected override void OnCreate(Bundle savedInstanceState)
+		{
+			OnCreate(savedInstanceState, default(ActivationFlags));
+		}
+
+		void OnCreate(
+			Bundle savedInstanceState, 
+			ActivationFlags flags)
 		{
 			_activityCreated = true;
 			if (!AllowFragmentRestore)
@@ -176,8 +210,10 @@ namespace Xamarin.Forms.Platform.Android
 				if (bar == null)
 					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
 			}
-			else
+			else 
+			{
 				bar = new AToolbar(this);
+			}
 
 			SetSupportActionBar(bar);
 
@@ -194,9 +230,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Allow for the status bar color to be changed
-				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+				if ((flags & ActivationFlags.DisableSetStatusBarColor) == 0)
+				{
+					Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+				}
 			}
-
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Listen for the device going into power save mode so we can handle animations being disabled
@@ -206,6 +244,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnDestroy()
 		{
+			PreviousActivityDestroying.Reset();
+
 			if (_application != null)
 				_application.PropertyChanged -= AppOnPropertyChanged;
 
@@ -214,6 +254,8 @@ namespace Xamarin.Forms.Platform.Android
 			_layout.RemoveView(Platform);
 
 			Platform?.Dispose();
+
+			PreviousActivityDestroying.Set();
 
 			// call at the end to avoid race conditions with Platform dispose
 			base.OnDestroy();
