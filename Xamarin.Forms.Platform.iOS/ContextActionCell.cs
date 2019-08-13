@@ -640,7 +640,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		public static void SetupSelection(UITableView table)
+		internal static void SetupSelection(UITableView table)
 		{
 			if (table.GestureRecognizers == null)
 				return;
