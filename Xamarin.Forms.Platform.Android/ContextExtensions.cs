@@ -115,7 +115,21 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
-		internal static bool IsDesignerContext(this Context context) => DesignMode.IsDesignModeEnabled;
+		static bool? _isDesigerContext;
+		internal static bool IsDesignerContext(this Context context)
+		{
+			if (_isDesigerContext.HasValue)
+				return _isDesigerContext.Value;
+
+			if (context == null)
+				_isDesigerContext = false;
+			else if ($"{context}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
+				_isDesigerContext = true;
+			else if (context is ContextWrapper contextWrapper)
+				return contextWrapper.BaseContext.IsDesignerContext();
+
+			return _isDesigerContext.Value;
+		}
 
 		public static AFragmentManager GetFragmentManager(this Context context)
 		{
