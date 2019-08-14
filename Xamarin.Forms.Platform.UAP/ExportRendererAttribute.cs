@@ -12,10 +12,6 @@ namespace Xamarin.Forms.Platform.UWP
 		public ExportRendererAttribute(Type handler, Type target, Type[] supportedVisuals) : base(handler, target, supportedVisuals)
 		{
 		}
-
-		public ExportRendererAttribute(Type handler, Type target, Type[] supportedVisuals, short priority) : base(handler, target, supportedVisuals, priority)
-		{
-		}
 	}
 
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
