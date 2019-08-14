@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
@@ -9,19 +10,15 @@ namespace Xamarin.Forms
 		{
 		}
 
-		protected HandlerAttribute(Type handler, Type target, Type[] supportedVisuals) : this(handler, target, supportedVisuals, 0)
-		{
-		}
-
-		protected HandlerAttribute(Type handler, Type target, Type[] supportedVisuals, short priority)
+		protected HandlerAttribute(Type handler, Type target, Type[] supportedVisuals)
 		{
 			SupportedVisuals = supportedVisuals ?? new[] { typeof(VisualMarker.DefaultVisual) };
 			TargetType = target;
 			HandlerType = handler;
-			Priority = priority;
+			Priority = 0;
 		}
 
-		internal short Priority { get; private set; }
+		[EditorBrowsable(EditorBrowsableState.Never)] public short Priority { get; set; }
 		internal Type[] SupportedVisuals { get; private set; }
 		internal Type HandlerType { get; private set; }
 

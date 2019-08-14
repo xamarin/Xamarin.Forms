@@ -4,7 +4,7 @@ using Xamarin.Forms.Material.Tizen;
 using Tizen.NET.MaterialComponents;
 using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 
-[assembly: ExportRenderer(typeof(CheckBox), typeof(MaterialCheckBoxRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, short.MinValue)]
+[assembly: ExportRenderer(typeof(CheckBox), typeof(MaterialCheckBoxRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialCheckBoxRenderer : CheckBoxRenderer

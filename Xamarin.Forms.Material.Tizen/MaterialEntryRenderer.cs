@@ -5,7 +5,7 @@ using Xamarin.Forms.Material.Tizen;
 using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 using XFEntry = Xamarin.Forms.Entry;
 
-[assembly: ExportRenderer(typeof(XFEntry), typeof(MaterialEntryRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, short.MinValue)]
+[assembly: ExportRenderer(typeof(XFEntry), typeof(MaterialEntryRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialEntryRenderer : EntryRenderer
