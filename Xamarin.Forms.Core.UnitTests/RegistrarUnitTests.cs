@@ -10,22 +10,24 @@ using Xamarin.Forms.Core.UnitTests;
 [assembly: TestHandler(typeof(ButtonChild), typeof(ButtonChildTarget))]
 [assembly: TestHandler(typeof(Button), typeof(VisualButtonTarget), new[] { typeof(VisualMarkerUnitTests) })]
 [assembly: TestHandler(typeof(Slider), typeof(VisualSliderTarget), new[] { typeof(VisualMarkerUnitTests) })]
-[assembly: TestHandler(typeof(ButtonPriority), typeof(ButtonHigherPriorityTarget), priority: 1)]
-[assembly: TestHandlerLowerPriority(typeof(ButtonPriority), typeof(ButtonLowerPriorityTarget), priority: 0)]
+[assembly: TestHandler(typeof(ButtonPriority), typeof(ButtonHigherPriorityTarget), Priority = 1)]
+[assembly: TestHandlerLowerPriority(typeof(ButtonPriority), typeof(ButtonLowerPriorityTarget), Priority = 0)]
 
 namespace Xamarin.Forms.Core.UnitTests
 {
 	internal class TestHandlerAttribute : HandlerAttribute
 	{
-		public TestHandlerAttribute (Type handler, Type target, Type[] supportedVisuals = null, short priority = 0) : base(handler, target, supportedVisuals, priority)
+		public TestHandlerAttribute (Type handler, Type target, Type[] supportedVisuals = null) : base(handler, target, supportedVisuals)
 		{
+			Priority = 0;
 			
 		}
 	}
 	internal class TestHandlerLowerPriority : HandlerAttribute
 	{
-		public TestHandlerLowerPriority(Type handler, Type target, Type[] supportedVisuals = null, short priority = 0) : base(handler, target, supportedVisuals, priority)
+		public TestHandlerLowerPriority(Type handler, Type target, Type[] supportedVisuals = null) : base(handler, target, supportedVisuals)
 		{
+			Priority = 0;
 
 		}
 	}
