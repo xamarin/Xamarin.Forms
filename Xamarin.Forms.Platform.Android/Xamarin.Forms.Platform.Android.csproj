@@ -71,7 +71,10 @@
     <Compile Include="CollectionView\CenterSnapHelper.cs" />
     <Compile Include="CollectionView\DataChangeObserver.cs" />
     <Compile Include="CollectionView\EmptySource.cs" />
+    <Compile Include="CollectionView\RecyclerViewScrollListener.cs" />
+    <Compile Include="CollectionView\GridLayoutSpanSizeLookup.cs" />
     <Compile Include="CollectionView\NongreedySnapHelper.cs" />
+    <Compile Include="CollectionView\SimpleViewHolder.cs" />
     <Compile Include="CollectionView\SingleSnapHelper.cs" />
     <Compile Include="CollectionView\EmptyViewAdapter.cs" />
     <Compile Include="CollectionView\EndSingleSnapHelper.cs" />
@@ -97,7 +100,9 @@
     <Compile Include="CollectionView\StartSnapHelper.cs" />
     <Compile Include="CollectionView\TemplatedItemViewHolder.cs" />
     <Compile Include="CollectionView\TextViewHolder.cs" />
+    <Compile Include="CollectionView\ItemViewType.cs" />
     <Compile Include="Elevation.cs" />
+    <Compile Include="Extensions\DrawableExtensions.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
     <Compile Include="Extensions\ScrollViewExtensions.cs" />
@@ -226,7 +231,6 @@
     <Compile Include="Renderers\ShellBottomNavViewAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellItemRenderer.cs" />
     <Compile Include="Renderers\ShellContentFragment.cs" />
-    <Compile Include="Renderers\ShellFlyoutContentRenderer.cs" />
     <Compile Include="Renderers\ShellFlyoutRecyclerAdapter.cs" />
     <Compile Include="Renderers\ShellFlyoutRenderer.cs" />
     <Compile Include="Renderers\ShellFlyoutTemplatedContentRenderer.cs" />
@@ -374,6 +378,9 @@
     <ProjectToBuild Include="Xamarin.Forms.Platform.Android.csproj">
       <Properties>CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);AndroidTargetFrameworkVersion=v8.1</Properties>
     </ProjectToBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\styles.xml" />
   </ItemGroup>
   <Target Name="BeforeBuild" Condition=" '$(CreateAllAndroidTargets)' == 'true' ">
     <!--  create 8.1 binaries-->
