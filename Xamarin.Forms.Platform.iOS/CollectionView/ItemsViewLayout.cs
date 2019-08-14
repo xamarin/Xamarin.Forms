@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return new UIEdgeInsets(0, 0, 0, (nfloat)gridItemsLayout.HorizontalItemSpacing * collectionView.NumberOfItemsInSection(section));
 				}
 
-				return new UIEdgeInsets(0,0,0,(nfloat)gridItemsLayout.VerticalItemSpacing*collectionView.NumberOfItemsInSection(section));
+				return new UIEdgeInsets(0,0, (nfloat)gridItemsLayout.VerticalItemSpacing * collectionView.NumberOfItemsInSection(section), 0);
 			}
 
 			return UIEdgeInsets.Zero;
