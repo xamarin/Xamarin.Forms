@@ -221,7 +221,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (NativeView == null)
 				return;
 
-			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => NativeView.EndEditing(true));
+			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => NativeView?.EndEditing(true));
 
 			uiTapGestureRecognizer.ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) => true;
 			uiTapGestureRecognizer.ShouldReceiveTouch = OnShouldReceiveTouch;
@@ -525,7 +525,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateHomeIndicatorAutoHidden()
 		{
-			if (Element == null || !Forms.IsiOS11OrNewer)
+			if (Element == null || !Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				return;
 
 			SetNeedsUpdateOfHomeIndicatorAutoHidden();
