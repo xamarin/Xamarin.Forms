@@ -1355,12 +1355,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Github3847.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="$(MSBuildThisFileDirectory)Issue6130.xaml.cs">
       <DependentUpon>Issue6130.xaml</DependentUpon>
     </Compile>
