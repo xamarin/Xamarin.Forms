@@ -19,16 +19,12 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public TestHandlerAttribute (Type handler, Type target, Type[] supportedVisuals = null) : base(handler, target, supportedVisuals)
 		{
-			Priority = 0;
-			
 		}
 	}
 	internal class TestHandlerLowerPriority : HandlerAttribute
 	{
 		public TestHandlerLowerPriority(Type handler, Type target, Type[] supportedVisuals = null) : base(handler, target, supportedVisuals)
 		{
-			Priority = 0;
-
 		}
 	}
 

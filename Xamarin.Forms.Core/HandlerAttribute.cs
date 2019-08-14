@@ -18,7 +18,8 @@ namespace Xamarin.Forms
 			Priority = 0;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)] public short Priority { get; set; }
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public short Priority { get; set; }
 		internal Type[] SupportedVisuals { get; private set; }
 		internal Type HandlerType { get; private set; }
 

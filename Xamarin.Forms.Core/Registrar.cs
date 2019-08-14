@@ -355,7 +355,7 @@ namespace Xamarin.Forms.Internals
 					{
 						var attribute = (HandlerAttribute)attributes[i];
 						if (attribute.ShouldRegister())
-							Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals);
+							Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals, attribute.Priority);
 					}
 				}
 
