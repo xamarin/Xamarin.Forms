@@ -164,22 +164,6 @@ namespace Xamarin.Forms
 			return ret;
 		}
 
-		static Page GetElementPage(Element element)
-		{
-			if (element == null)
-			{
-				return null;
-			}
-			else if (element is Page page)
-			{
-				return page;
-			}
-			else
-			{
-				return GetElementPage(element.Parent);
-			}
-		}
-
 		public static double GetNamedSize(NamedSize size, Element targetElement)
 		{
 			return GetNamedSize(size, targetElement.GetType());
