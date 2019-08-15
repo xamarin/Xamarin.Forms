@@ -13,7 +13,8 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		const float SmallSize = 44;
 		const float NormalSize = 56;
-
+		bool _disposed;
+		
 		protected override void OnElementChanged(ElementChangedEventArgs<FloatingActionButton> e)
 		{
 			base.OnElementChanged(e);
@@ -24,9 +25,9 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					var button = new FormsButton();
 
-					button.Click += OnButtonClick;
+					button.Click += OnClick;
 					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-					button.Loaded += ButtonOnLoaded;
+					button.Loaded += OnLoaded;
 
 					SetNativeControl(button);
 				}
@@ -45,7 +46,23 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void ButtonOnLoaded(object o, RoutedEventArgs routedEventArgs)
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (Control != null && disposing)
+			{
+				Control.Click -= OnClick;
+				Control.Loaded -= OnLoaded;
+			}
+
+			base.Dispose(disposing);
+		}
+
+		void OnLoaded(object o, RoutedEventArgs routedEventArgs)
 		{
 			WireUpFormsVsm();
 		}
@@ -87,7 +104,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
 
-		void OnButtonClick(object sender, RoutedEventArgs e)
+		void OnClick(object sender, RoutedEventArgs e)
 		{
 			((IButtonController)Element)?.SendReleased();
 			((IButtonController)Element)?.SendClicked();
