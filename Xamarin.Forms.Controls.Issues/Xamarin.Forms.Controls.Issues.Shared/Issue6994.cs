@@ -14,8 +14,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.ListView)]
-	[Category(UITestCategories.Label)]
+	[NUnit.Framework.Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(UITestCategories.Label)]
 #endif
 
 	[Preserve(AllMembers = true)]
