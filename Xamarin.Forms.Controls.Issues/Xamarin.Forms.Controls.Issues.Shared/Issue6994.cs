@@ -74,9 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 						await Task.Delay(20);
 						source.Clear();
 						await Task.Delay(2000);
-#pragma warning disable CS4014
-						Device.InvokeOnMainThreadAsync(() => instructions.Text = "Success");
-#pragma warning restore CS4014
+						await Device.InvokeOnMainThreadAsync(() => instructions.Text = "Success");
 					});
 
 				stackLayout.Children.Remove(instructions);
