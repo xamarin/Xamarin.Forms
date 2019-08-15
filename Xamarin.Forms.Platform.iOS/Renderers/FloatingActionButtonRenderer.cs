@@ -59,8 +59,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					SetNativeControl(CreateNativeControl());
 
-					Debug.Assert(Control != null, "Control != null");
-
 					Control.TouchUpInside += OnButtonTouchUpInside;
 					Control.TouchDown += OnButtonTouchDown;
 				}
