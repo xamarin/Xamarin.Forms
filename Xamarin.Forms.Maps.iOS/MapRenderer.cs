@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -627,8 +628,8 @@ namespace Xamarin.Forms.Maps.MacOS
 				StrokeColor = targetPolygon.StrokeColor.ToUIColor(Color.Black),
 				FillColor = targetPolygon.FillColor.ToUIColor(),
 #else
-				StrokeColor = targetPolyline.StrokeColor.ToNSColor(Color.Black),
-				StrokeColor = targetPolyline.FillColor.ToNSColor(),
+				StrokeColor = targetPolygon.StrokeColor.ToNSColor(Color.Black),
+				FillColor = targetPolygon.FillColor.ToNSColor(),
 #endif
 				LineWidth = targetPolygon.StrokeWidth
 			};
