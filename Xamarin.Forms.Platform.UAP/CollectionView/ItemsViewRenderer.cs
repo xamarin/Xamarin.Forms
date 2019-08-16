@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.UAP;
+using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -20,6 +21,10 @@ namespace Xamarin.Forms.Platform.UWP
 		CollectionViewSource _collectionViewSource;
 
 		protected ListViewBase ListViewBase { get; private set; }
+		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
+		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
+
+		protected ItemsControl ItemsControl { get; private set; }
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CollectionView> args)
 		{
@@ -39,6 +44,14 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (changedProperty.Is(ItemsView.ItemTemplateProperty))
 			{
 				UpdateItemTemplate();
+			}
+			else if(changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			{
+				UpdateHorizontalScrollBarVisibility();
+			}
+			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			{
+				UpdateVerticalScrollBarVisibility();
 			}
 		}
 
@@ -77,7 +90,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				_collectionViewSource = new CollectionViewSource
 				{
-					Source = TemplatedItemSourceFactory.Create(itemsSource, itemTemplate),
+					Source = TemplatedItemSourceFactory.Create(itemsSource, itemTemplate, Element),
 					IsSourceGrouped = false
 				};
 			}
@@ -170,9 +183,9 @@ namespace Xamarin.Forms.Platform.UWP
 			return horizontalListView;
 		}
 
-		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void LayoutPropertyChanged(object sender, PropertyChangedEventArgs property)
 		{
-			if (e.PropertyName == GridItemsLayout.SpanProperty.PropertyName)
+			if (property.Is(GridItemsLayout.SpanProperty))
 			{
 				if (ListViewBase is FormsGridView formsGridView)
 				{
@@ -181,7 +194,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void SetUpNewElement(ItemsView newElement)
+		protected virtual void SetUpNewElement(ItemsView newElement)
 		{
 			if (newElement == null)
 			{
@@ -193,19 +206,21 @@ namespace Xamarin.Forms.Platform.UWP
 				ListViewBase = SelectLayout(newElement.ItemsLayout);
 
 				_layout = newElement.ItemsLayout;
-				_layout.PropertyChanged += LayoutOnPropertyChanged;
+				_layout.PropertyChanged += LayoutPropertyChanged;
 
 				SetNativeControl(ListViewBase);
 			}
 
 			UpdateItemTemplate();
 			UpdateItemsSource();
+			UpdateVerticalScrollBarVisibility();
+			UpdateHorizontalScrollBarVisibility();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
 		}
 
-		void TearDownOldElement(ItemsView oldElement)
+		protected virtual void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
 			{
@@ -215,7 +230,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_layout != null)
 			{
 				// Stop tracking the old layout
-				_layout.PropertyChanged -= LayoutOnPropertyChanged;
+				_layout.PropertyChanged -= LayoutPropertyChanged;
 				_layout = null;
 			}
 
@@ -242,7 +257,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			for (int n = 0; n < _collectionViewSource.View.Count; n++)
 			{
-				if (_collectionViewSource.View[n] is ItemTemplatePair pair)
+				if (_collectionViewSource.View[n] is ItemTemplateContext pair)
 				{
 					if (pair.Item == args.Item)
 					{
@@ -352,6 +367,44 @@ namespace Xamarin.Forms.Platform.UWP
 			//{
 
 			//}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			if (_defaultVerticalScrollVisibility == null)
+				_defaultVerticalScrollVisibility = ScrollViewer.GetVerticalScrollBarVisibility(Control);
+
+			switch (Element.VerticalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, UwpScrollBarVisibility.Visible);
+					break;
+				case (ScrollBarVisibility.Never):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, UwpScrollBarVisibility.Hidden);
+					break;
+				case (ScrollBarVisibility.Default):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, _defaultVerticalScrollVisibility.Value);
+					break;
+			}
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_defaultHorizontalScrollVisibility == null)
+				_defaultHorizontalScrollVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(Control);
+
+			switch (Element.HorizontalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, UwpScrollBarVisibility.Visible);
+					break;
+				case (ScrollBarVisibility.Never):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, UwpScrollBarVisibility.Hidden);
+					break;
+				case (ScrollBarVisibility.Default):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, _defaultHorizontalScrollVisibility.Value);
+					break;
+			}
 		}
 
 		protected virtual async Task ScrollTo(ScrollToRequestEventArgs args)

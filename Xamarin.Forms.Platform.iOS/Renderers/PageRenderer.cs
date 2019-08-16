@@ -190,7 +190,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appeared = true;
 			UpdateStatusBarPrefersHidden();
-			if (Forms.IsiOS11OrNewer)
+			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
@@ -221,7 +221,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (NativeView == null)
 				return;
 
-			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => NativeView.EndEditing(true));
+			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => NativeView?.EndEditing(true));
 
 			uiTapGestureRecognizer.ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) => true;
 			uiTapGestureRecognizer.ShouldReceiveTouch = OnShouldReceiveTouch;
@@ -253,7 +253,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+				return;
+
+			if (disposing)
 			{
 				if (_shellSection != null)
 				{
@@ -289,8 +292,9 @@ namespace Xamarin.Forms.Platform.iOS
 				Element = null;
 				Container?.Dispose();
 				_pageContainer = null;
-				_disposed = true;
 			}
+
+			_disposed = true;
 
 			base.Dispose(disposing);
 		}
@@ -442,11 +446,11 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 				}
 			}
-			
+
 			Page.SetValueFromRenderer(Page.PaddingProperty, SafeAreaInsets);
 		}
 
-		
+
 		void UpdateStatusBarPrefersHidden()
 		{
 			if (Element == null)
@@ -521,7 +525,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateHomeIndicatorAutoHidden()
 		{
-			if (Element == null || !Forms.IsiOS11OrNewer)
+			if (Element == null || !Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				return;
 
 			SetNeedsUpdateOfHomeIndicatorAutoHidden();
