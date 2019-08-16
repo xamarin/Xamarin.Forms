@@ -377,7 +377,7 @@ namespace Xamarin.Forms
 			return GoToAsync(state, animate, false);
 		}
 
-		public Task GoToParametrized(string location, object parameter, bool animate = true)
+		public Task GoToParametrizedAsync(string location, object parameter, bool animate = true)
 		{
 			return GoToAsync(new ShellNavigationState(location, parameter), animate);
 		}
