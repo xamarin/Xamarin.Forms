@@ -56,21 +56,12 @@ namespace Xamarin.Forms
 			Binding binding = Binding.Create(sourceProperty, mode, converter, stringFormat: stringFormat);
 			self.SetBinding(targetProperty, binding);
 		}
-	}
-}
 
-
-namespace Xamarin.Forms.Internals
-{
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public static class BindableObjectExtensions
-	{
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static T GetPropertyIfSet<T>(this BindableObject bindableObject, BindableProperty bindableProperty, T returnIfNotSet)
 		{
 			if (bindableObject == null)
 				return returnIfNotSet;
-						
+
 			if (bindableObject.IsSet(bindableProperty))
 				return (T)bindableObject.GetValue(bindableProperty);
 
