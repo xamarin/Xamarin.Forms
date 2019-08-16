@@ -94,10 +94,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		void UpdateFont()
-		{
-			if (Control == null || Element == null)
-				return;
-
+		{ 
 			if (Control == null || Element == null)
 				return;
 
