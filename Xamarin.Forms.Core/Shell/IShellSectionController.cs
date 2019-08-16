@@ -15,8 +15,6 @@ namespace Xamarin.Forms
 
 		void AddDisplayedPageObserver(object observer, Action<Page> callback);
 
-		Task GoToPart(List<string> parts, Dictionary<string, string> queryData);
-
 		bool RemoveContentInsetObserver(IShellContentInsetObserver observer);
 
 		bool RemoveDisplayedPageObserver(object observer);

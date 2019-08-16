@@ -21,7 +21,9 @@ namespace Xamarin.Forms.Platform.Android
 		IImageRendererController,
 		AView.IOnFocusChangeListener,
 		AView.IOnClickListener,
-		AView.IOnTouchListener
+		AView.IOnTouchListener,
+		ILayoutChanges,
+		IDisposedState
 	{
 		bool _inputTransparent;
 		bool _disposed;
@@ -40,7 +42,8 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElement IVisualElementRenderer.Element => Element;
 		AView IVisualElementRenderer.View => this;
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
-		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
+		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;		
+		bool IDisposedState.IsDisposed => _disposed;
 
 		public ImageButton Element
 		{
@@ -80,6 +83,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
+
+				SetOnClickListener(null);
+				SetOnTouchListener(null);
+				OnFocusChangeListener = null;
 
 				ImageElementManager.Dispose(this);
 
@@ -91,11 +102,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
-					if (Android.Platform.GetRenderer(Element) == this)
+					if (Platform.GetRenderer(Element) == this)
 					{
-						Element.ClearValue(Android.Platform.RendererProperty);
+						Element.ClearValue(Platform.RendererProperty);
 					}
 
 					Element = null;
@@ -193,7 +202,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if(Drawable != null)
 			{
-				if ((int)Build.VERSION.SdkInt >= 18 && backgroundDrawable != null)
+				if ((int)Forms.SdkInt >= 18 && backgroundDrawable != null)
 				{
 					var outlineBounds = backgroundDrawable.GetPaddingBounds(canvas.Width, canvas.Height);
 					var width = (float)MeasuredWidth;

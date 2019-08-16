@@ -12,31 +12,28 @@ namespace Xamarin.Forms
 {
 	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>
 	{
-		static Application s_current;
 		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
 
+		public override IDispatcher Dispatcher => this.GetDispatcher();
+
 		IAppIndexingProvider _appIndexProvider;
-
 		ReadOnlyCollection<Element> _logicalChildren;
-
 		Page _mainPage;
 
-		static SemaphoreSlim SaveSemaphore = new SemaphoreSlim(1, 1);
+		static readonly SemaphoreSlim SaveSemaphore = new SemaphoreSlim(1, 1);
 
 		[Obsolete("Assign the LogWarningsListener")]
 		public static bool LogWarningsToApplicationOutput { get; set; }
-
-		bool MainPageSet { get; set; }
 
 		public Application()
 		{
 			var f = false;
 			if (f)
 				Loader.Load();
-			NavigationProxy = new NavigationImpl(this);
-			SetCurrentApplication(this);
 
+			SetCurrentApplication(this);
+			NavigationProxy = new NavigationImpl(this);
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
@@ -60,20 +57,9 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void SetCurrentApplication(Application value) => Current = value;
+		public static void SetCurrentApplication(Application value) => Current = value; 
 
-		public static Application Current
-		{
-			get { return s_current; }
-			set
-			{
-				if (s_current == value)
-					return;
-				if (value == null)
-					s_current = null; //Allow to reset current for unittesting
-				s_current = value;
-			}
-		}
+		public static Application Current { get; set; }
 
 		public Page MainPage
 		{
@@ -94,7 +80,6 @@ namespace Xamarin.Forms
 				}
 
 				_mainPage = value;
-				MainPageSet = true;
 
 				if (_mainPage != null)
 				{
@@ -125,7 +110,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public NavigationProxy NavigationProxy { get; }
+		public NavigationProxy NavigationProxy { get; private set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public int PanGestureId { get; set; }
@@ -195,9 +180,9 @@ namespace Xamarin.Forms
 
 		public async Task SavePropertiesAsync()
 		{
-			if (Device.IsInvokeRequired)
+			if (Dispatcher.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties);
+				Dispatcher.BeginInvokeOnMainThread(SaveProperties);
 			}
 			else
 			{
@@ -208,9 +193,9 @@ namespace Xamarin.Forms
 		// Don't use this unless there really is no better option
 		internal void SavePropertiesAsFireAndForget()
 		{
-			if (Device.IsInvokeRequired)
+			if (Dispatcher.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties);
+				Dispatcher.BeginInvokeOnMainThread(SaveProperties);
 			}
 			else
 			{
@@ -245,10 +230,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void ClearCurrent()
-		{
-			s_current = null;
-		}
+		public static void ClearCurrent() => Current = null;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static bool IsApplicationOrNull(Element element)
@@ -287,7 +269,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendResume()
 		{
-			s_current = this;
+			Current = this;
 			OnResume();
 		}
 
@@ -364,6 +346,21 @@ namespace Xamarin.Forms
 				SaveSemaphore.Release();
 			}
 
+		}
+
+		protected internal virtual void CleanUp()
+		{
+			// Unhook everything that's referencing the main page so it can be collected
+			// This only comes up if we're disposing of an embedded Forms app, and will
+			// eventually go away when we fully support multiple windows
+			if (_mainPage != null)
+			{
+				InternalChildren.Remove(_mainPage);
+				_mainPage.Parent = null;
+				_mainPage = null;
+			}
+
+			NavigationProxy = null;
 		}
 
 		class NavigationImpl : NavigationProxy

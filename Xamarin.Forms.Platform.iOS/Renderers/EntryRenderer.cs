@@ -10,7 +10,24 @@ using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific.Entry;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class EntryRenderer : ViewRenderer<Entry, UITextField>
+	public class EntryRenderer : EntryRendererBase<UITextField>
+	{
+		public EntryRenderer()
+		{
+			Frame = new RectangleF(0, 20, 320, 40);
+		}
+
+		protected override UITextField CreateNativeControl()
+		{
+			var textField = new UITextField(RectangleF.Empty);
+			textField.BorderStyle = UITextBorderStyle.RoundedRect;
+			textField.ClipsToBounds = true;
+			return textField;
+		}
+	}
+
+	public abstract class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>
+		where TControl : UITextField
 	{
 		UIColor _defaultTextColor;
 
@@ -30,9 +47,8 @@ namespace Xamarin.Forms.Platform.iOS
 		static readonly int baseHeight = 30;
 		static CGSize initialSize = CGSize.Empty;
 
-		public EntryRenderer()
+		public EntryRendererBase()
 		{
-			Frame = new RectangleF(0, 20, 320, 40);
 		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -77,13 +93,8 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
-		protected override UITextField CreateNativeControl()
-		{
-			var textField = new UITextField(RectangleF.Empty);
-			textField.BorderStyle = UITextBorderStyle.RoundedRect;
-			textField.ClipsToBounds = true;
-			return textField;
-		}
+		abstract protected override TControl CreateNativeControl();
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
@@ -121,9 +132,11 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholder();
 			UpdatePassword();
 			UpdateText();
+			UpdateCharacterSpacing();
 			UpdateColor();
 			UpdateKeyboard();
-			UpdateAlignment();
+			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateAdjustsFontSizeToFitWidth();
 			UpdateMaxLength();
 			UpdateReturnType();
@@ -142,9 +155,14 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
+			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -152,7 +170,9 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.IsTextPredictionEnabledProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
@@ -167,7 +187,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Specifics.AdjustsFontSizeToFitWidthProperty.PropertyName)
 				UpdateAdjustsFontSizeToFitWidth();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
@@ -220,15 +240,26 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Control.ResignFirstResponder();
 			((IEntryController)Element).SendCompleted();
+
+			if (Element.ReturnType == ReturnType.Next)
+			{
+				FocusSearch(true);
+			}
+
 			return false;
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 		}
 
-		protected internal virtual void UpdateColor()
+		void UpdateVerticalTextAlignment()
+		{
+			Control.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();
+		}
+
+		protected virtual void UpdateColor()
 		{
 			var textColor = Element.TextColor;
 
@@ -247,7 +278,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.AdjustsFontSizeToFitWidth = Element.OnThisPlatform().AdjustsFontSizeToFitWidth();
 		}
 
-		protected internal virtual void UpdateFont()
+		protected virtual void UpdateFont()
 		{
 			if (initialSize == CGSize.Empty)
 			{
@@ -295,7 +326,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SecureTextEntry = Element.IsPassword;
 		}
 
-		protected internal virtual void UpdatePlaceholder()
+		protected virtual void UpdatePlaceholder()
 		{
 			var formatted = (FormattedString)Element.Placeholder;
 
@@ -315,6 +346,8 @@ namespace Xamarin.Forms.Platform.iOS
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 			}
+
+			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 		}
 
 		void UpdateText()
@@ -322,6 +355,19 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedText = textAttr;
+
+			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+
+			if (placeHolder != null)
+				Control.AttributedPlaceholder = placeHolder;
 		}
 
 		void UpdateMaxLength()

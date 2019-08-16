@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Label;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -27,6 +29,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (span.IsSet(Span.TextDecorationsProperty))
 				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
+
+			run.CharacterSpacing = span.CharacterSpacing.ToEm();
 
 			return run;
 		}
@@ -77,7 +81,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			rect.Height = childHeight;
 			rect.Width = finalSize.Width;
-			
+
 			Control.Arrange(rect);
 			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return finalSize;
@@ -139,11 +143,13 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
+				UpdateCharacterSpacing(Control);
 				UpdateFont(Control);
 				UpdateLineBreakMode(Control);
 				UpdateMaxLines(Control);
 				UpdateDetectReadingOrderFromContent(Control);
 				UpdateLineHeight(Control);
+				UpdatePadding(Control);
 			}
 		}
 
@@ -162,6 +168,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateFont(Control);
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations(Control);
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing(Control);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -172,6 +180,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateLineHeight(Control);
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines(Control);
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding(Control);
 			base.OnElementPropertyChanged(sender, e);
 		}
 
@@ -298,6 +308,12 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		void UpdateCharacterSpacing(TextBlock textBlock)
+		{
+			textBlock.CharacterSpacing = Element.CharacterSpacing.ToEm();
+		}
+
+
 		void DetermineTruncatedTextWrapping(TextBlock textBlock)
 		{
 			if (Element.MaxLines > 1)
@@ -359,7 +375,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void UpdateLineHeight(TextBlock textBlock) 
+		void UpdateLineHeight(TextBlock textBlock)
 		{
 			if (textBlock == null)
 				return;
@@ -380,6 +396,15 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				textBlock.MaxLines = 0;
 			}
+		}
+
+		void UpdatePadding(TextBlock textBlock)
+		{
+			textBlock.Padding = new WThickness(
+					Element.Padding.Left,
+					Element.Padding.Top,
+					Element.Padding.Right,
+					Element.Padding.Bottom);
 		}
 	}
 }

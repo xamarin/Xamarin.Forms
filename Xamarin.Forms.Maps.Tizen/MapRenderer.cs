@@ -204,10 +204,12 @@ namespace Xamarin.Forms.Maps.Tizen
 				pin.PropertyChanged += PinOnPropertyChanged;
 				var coordinates = new Geocoordinates(pin.Position.Latitude, pin.Position.Longitude);
 				var nativePin = new TPin(coordinates);
-				pin.Id = nativePin;
+				pin.MarkerId = nativePin;
 				nativePin.Clicked += (s, e) =>
 				{
+#pragma warning disable CS0618
 					pin.SendTap();
+#pragma warning restore CS0618
 				};
 				Control.Add(nativePin);
 				_pins.Add(pin);
@@ -219,7 +221,7 @@ namespace Xamarin.Forms.Maps.Tizen
 			foreach (Pin pin in pins)
 			{
 				pin.PropertyChanged -= PinOnPropertyChanged;
-				Control.Remove((TPin)pin.Id);
+				Control.Remove((TPin)pin.MarkerId);
 				_pins.Remove(pin);
 			}
 		}
@@ -347,7 +349,7 @@ namespace Xamarin.Forms.Maps.Tizen
 		void PinOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			Pin pin = (Pin)sender;
-			var nativePin = pin.Id as TPin;
+			var nativePin = pin.MarkerId as TPin;
 
 			if (nativePin == null)
 			{
