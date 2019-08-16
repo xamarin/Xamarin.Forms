@@ -375,9 +375,14 @@ namespace Xamarin.Forms
 		public Task GoToAsync(ShellNavigationState state, bool animate = true)
 		{
 			return GoToAsync(state, animate, false);
-		}
+        }
 
-		internal async Task GoToAsync(ShellNavigationState state, bool animate, bool enableRelativeShellRoutes)
+        public Task GoToParametrized(string location, object parameter, bool animate = true)
+        {
+            return GoToAsync(new ShellNavigationState(location, parameter), animate);
+        }
+
+        internal async Task GoToAsync(ShellNavigationState state, bool animate, bool enableRelativeShellRoutes)
 		{
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
 			var accept = ProposeNavigation(ShellNavigationSource.Unknown, state, true);
@@ -390,8 +395,9 @@ namespace Xamarin.Forms
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
 			var queryData = ParseQueryString(queryString);
+            var parameter = state.Parameter;
 
-			ApplyQueryAttributes(this, queryData, false);
+            ApplyQueryAttributes(this, queryData, false);
 
 			var shellItem = navigationRequest.Request.Item;
 			var shellSection = navigationRequest.Request.Section;
@@ -429,14 +435,14 @@ namespace Xamarin.Forms
 					// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
 					Device.BeginInvokeOnMainThread(async () =>
 					{
-						await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, false);
-					});
+						await CurrentItem.CurrentItem.GoToAsync(navigationRequest, parameter, queryData, false);
+                    });
 				}
 			}
 			else
 			{
-				await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate);
-			}
+				await CurrentItem.CurrentItem.GoToAsync(navigationRequest, parameter, queryData, false);
+            }
 
 			_accumulateNavigatedEvents = false;
 

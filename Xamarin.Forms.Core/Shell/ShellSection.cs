@@ -67,7 +67,7 @@ namespace Xamarin.Forms
 			callback(DisplayedPage);
 		}
 
-		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
+		internal Task GoToPart(NavigationRequest request, object parameter, Dictionary<string, string> queryData)
 		{
 			ShellContent shellContent = request.Request.Content;
 
@@ -79,7 +79,7 @@ namespace Xamarin.Forms
 				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
 				Device.BeginInvokeOnMainThread(async () =>
 				{
-					await GoToAsync(request, queryData, false);
+					await GoToAsync(request, parameter, queryData, false);
 				});
 			}
 
@@ -227,7 +227,7 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		internal async Task GoToAsync(NavigationRequest request, IDictionary<string, string> queryData, bool animate)
+		internal async Task GoToAsync(NavigationRequest request, object parameter, IDictionary<string, string> queryData, bool animate)
 		{
 			List<string> routes = request.Request.GlobalRoutes;
 			if (routes == null || routes.Count == 0)
@@ -264,7 +264,11 @@ namespace Xamarin.Forms
 					break;
 
 				Shell.ApplyQueryAttributes(content, queryData, isLast);
-				await OnPushAsync(content, i == routes.Count - 1 && animate);
+
+                if (parameter != null)
+                    content.SendParameter(parameter);
+
+                await OnPushAsync(content, i == routes.Count - 1 && animate);
 			}
 
 			SendAppearanceChanged();

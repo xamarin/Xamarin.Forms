@@ -37,12 +37,12 @@ namespace Xamarin.Forms
 		static readonly BindablePropertyKey ItemsPropertyKey = BindableProperty.CreateReadOnly(nameof(Items), typeof(ShellSectionCollection), typeof(ShellItem), null,
 				defaultValueCreator: bo => new ShellSectionCollection { Inner = new ElementCollection<ShellSection>(((ShellItem)bo)._children) });
 
-		#endregion PropertyKeys
+        #endregion PropertyKeys
 
-		#region IShellItemController
+        #region IShellItemController
 
-		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
-		{
+        internal Task GoToPart(NavigationRequest request, object parameter, Dictionary<string, string> queryData)
+        {
 			var shellSection = request.Request.Section;
 
 			if (shellSection == null)
@@ -53,8 +53,8 @@ namespace Xamarin.Forms
 			if (CurrentItem != shellSection)
 				SetValueFromRenderer(CurrentItemProperty, shellSection);
 
-			return shellSection.GoToPart(request, queryData);
-		}
+            return shellSection.GoToPart(request, parameter, queryData);
+        }
 
 		bool IShellItemController.ProposeSection(ShellSection shellSection, bool setValue)
 		{

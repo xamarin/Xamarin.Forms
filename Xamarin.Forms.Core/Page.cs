@@ -261,9 +261,18 @@ namespace Xamarin.Forms
 
 			application.PopCanceled -= handler;
 			return !canceled;
-		}
+        }
 
-		protected override void OnBindingContextChanged()
+        internal void SendParameter(object parameter)
+        {
+            OnParameter(parameter);
+        }
+
+        protected virtual void OnParameter(object parameter)
+        {
+        }
+
+        protected override void OnBindingContextChanged()
 		{
 			base.OnBindingContextChanged();
 			foreach (ToolbarItem toolbarItem in ToolbarItems)
