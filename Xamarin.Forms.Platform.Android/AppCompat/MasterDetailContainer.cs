@@ -171,13 +171,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_fragmentManager = fragmentManager;
 		}
 
-		private void ExecuteTransaction(FragmentTransaction transaction)
+		void ExecuteTransaction(FragmentTransaction transaction)
 		{
 			// We don't currently support fragment restoration 
 			// So we don't need to worry about loss of this fragment's state
 			transaction.CommitAllowingStateLossEx();
 
-			// The transaction need to be executed after View as been attached
+			// The transaction need to be executed after View has been attached
 			// So Fragment Manager can find the View being added
 			FragmentManager.ExecutePendingTransactionsEx();
 		}
