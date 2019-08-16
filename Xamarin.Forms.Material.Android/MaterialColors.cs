@@ -160,6 +160,14 @@ namespace Xamarin.Forms.Material.Tizen
 			return new ColorStateList(ButtonStates, colors);
 		}
 
+		// State list from material-components-android
+		// https://github.com/material-components/material-components-android/blob/3637c23078afc909e42833fd1c5fd47bb3271b5f/lib/java/com/google/android/material/button/res/color/mtrl_btn_text_color_selector.xml
+		public static ColorStateList CreateButtonTextColors(PlatformColor primary, PlatformColor text, PlatformColor disabledColor)
+		{
+			var colors = new int[] { text, disabledColor };
+			return new ColorStateList(ButtonStates, colors);
+		}
+
 		public static ColorStateList CreateEntryFilledPlaceholderColors(PlatformColor inlineColor, PlatformColor floatingColor)
 		{
 			int[][] States =
