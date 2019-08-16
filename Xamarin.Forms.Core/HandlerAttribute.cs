@@ -5,9 +5,13 @@ namespace Xamarin.Forms
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public abstract class HandlerAttribute : Attribute
 	{
-		protected HandlerAttribute(Type handler, Type target, Type[] supportedVisuals = null)
+		protected HandlerAttribute(Type handler, Type target) : this(handler, target, null)
 		{
-			SupportedVisuals = supportedVisuals ?? new[] { typeof(VisualRendererMarker.Default) };
+		}
+
+		protected HandlerAttribute(Type handler, Type target, Type[] supportedVisuals)
+		{
+			SupportedVisuals = supportedVisuals ?? new[] { typeof(VisualMarker.DefaultVisual) };
 			TargetType = target;
 			HandlerType = handler;
 		}

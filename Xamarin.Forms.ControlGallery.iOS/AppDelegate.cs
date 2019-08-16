@@ -15,7 +15,7 @@ using Xamarin.Forms.Platform.iOS;
 [assembly: Dependency(typeof(CacheService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
-[assembly: ExportEffect(typeof(BorderEffect), "BorderEffect")]
+[assembly: ExportEffect(typeof(BorderEffect), nameof(BorderEffect))]
 namespace Xamarin.Forms.ControlGallery.iOS
 {
 	public class BorderEffect : PlatformEffect
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			App.IOSVersion = int.Parse(versionPart[0]);
 
 			Xamarin.Calabash.Start();
-			// Forms.SetFlags("CollectionView_Experimental", "Visual_Experimental", "Shell_Experimental");
+			// Forms.SetFlags("CollectionView_Experimental", "Shell_Experimental");
 			Forms.Init();
 			FormsMaps.Init();
 			FormsMaterial.Init();
@@ -180,6 +180,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 			MessagingCenter.Subscribe<Bugzilla40911>(this, Bugzilla40911.ReadyToSetUp40911Test, SetUp40911Test);
+			MessagingCenter.Subscribe<Issue5503>(this, Issue5503.ChangeUITableViewAppearanceBgColor, (s) =>
+			{
+				UITableView.Appearance.BackgroundColor = UITableView.Appearance.BackgroundColor == null ? UIColor.Red : null;
+			});
 
 			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
 			MessagingCenter.Subscribe<NativeBindingGalleryPage>(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
@@ -351,7 +355,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				StartPressed40911();
 			};
 
-			page.Layout.Children.Add(button);
+			page._40911Layout.Children.Add(button);
 		}
 
 		public void StartPressed40911()

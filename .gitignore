@@ -66,3 +66,5 @@ AndroidNative/gradlew.bat
 tools/
 !tools/mdoc/**/*
 caketools/
+*.binlog
+.ionide/**

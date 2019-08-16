@@ -130,9 +130,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
 			base.Dispose(disposing);
 
-			if (disposing && !_disposed)
+
+			if (disposing)
 			{
 				_disposed = true;
 				_renderer.Dispose();
@@ -145,8 +149,17 @@ namespace Xamarin.Forms.Platform.iOS
 				((IShellSectionController)_shellSection).NavigationRequested -= OnNavigationRequested;
 				((IShellController)_context.Shell).RemoveAppearanceObserver(this);
 				((IShellSectionController)ShellSection).RemoveDisplayedPageObserver(this);
+
+				foreach (var tracker in ShellSection.Stack)
+				{
+					if (tracker == null)
+						continue;
+
+					DisposePage(tracker);
+				}
 			}
 
+			_disposed = true;
 			_displayedPage = null;
 			_shellSection = null;
 			_appearanceTracker = null;
@@ -313,11 +326,13 @@ namespace Xamarin.Forms.Platform.iOS
 			((IShellSectionController)ShellSection).AddDisplayedPageObserver(this, OnDisplayedPageChanged);
 		}
 
-		protected virtual async void UpdateTabBarItem()
+		protected virtual void UpdateTabBarItem()
 		{
 			Title = ShellSection.Title;
-			var icon = await ShellSection.Icon.GetNativeImageAsync();
-			TabBarItem = new UITabBarItem(ShellSection.Title, icon, null);
+			_ = _context.ApplyNativeImageAsync(ShellSection, ShellSection.IconProperty, icon =>
+			{
+				TabBarItem = new UITabBarItem(ShellSection.Title, icon, null);
+			});
 		}
 
 		void DisposePage(Page page)

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using CoreAnimation;
+using CoreGraphics;
 using Xamarin.Forms.Internals;
 #if __MOBILE__
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -29,9 +30,14 @@ namespace Xamarin.Forms.Platform.MacOS
 		Rectangle _lastParentBounds;
 #endif
 		CALayer _layer;
+		CGPoint _originalAnchor;
 		int _updateCount;
 
-		public VisualElementTracker(IVisualElementRenderer renderer, bool trackFrame = true)
+		public VisualElementTracker(IVisualElementRenderer renderer) : this(renderer, true)
+		{
+		}
+
+		public VisualElementTracker(IVisualElementRenderer renderer, bool trackFrame)
 		{
 			Renderer = renderer ?? throw new ArgumentNullException("renderer");
 
@@ -237,6 +243,9 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 
 					// must reset transform prior to setting frame...
+					if(caLayer.AnchorPoint != _originalAnchor)
+						caLayer.AnchorPoint = _originalAnchor;
+
 					caLayer.Transform = transform;
 					uiview.Frame = target;
 					if (shouldRelayoutSublayers)
@@ -344,6 +353,8 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 				_isInteractive = Renderer.NativeView.UserInteractionEnabled;
 #endif
+
+				_originalAnchor = _layer.AnchorPoint;
 			}
 
 			OnUpdateNativeControl(_layer);

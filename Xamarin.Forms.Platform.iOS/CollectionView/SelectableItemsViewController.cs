@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Foundation;
 using UIKit;
 
@@ -6,35 +7,23 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SelectableItemsViewController : ItemsViewController
 	{
-		protected readonly SelectableItemsView SelectableItemsView;
+		SelectableItemsView SelectableItemsView => (SelectableItemsView)ItemsView;
 
 		public SelectableItemsViewController(SelectableItemsView selectableItemsView, ItemsViewLayout layout) 
 			: base(selectableItemsView, layout)
 		{
-			SelectableItemsView = selectableItemsView;
-			Delegator.SelectableItemsViewController = this;
 		}
 
 		// _Only_ called if the user initiates the selection change; will not be called for programmatic selection
 		public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			UpdateFormsSelection();
+			FormsSelectItem(indexPath);
 		}
 
 		// _Only_ called if the user initiates the selection change; will not be called for programmatic selection
 		public override void ItemDeselected(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			UpdateFormsSelection();
-		}
-
-		internal void ClearSelection()
-		{
-			var paths = CollectionView.GetIndexPathsForSelectedItems();
-
-			foreach (var path in paths)
-			{
-				CollectionView.DeselectItem(path, false);
-			}
+			FormsDeselectItem(indexPath);
 		}
 
 		// Called by Forms to mark an item selected 
@@ -44,29 +33,80 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.SelectItem(index, true, UICollectionViewScrollPosition.None);
 		}
 
-		void UpdateFormsSelection()
+		// Called by Forms to clear the native selection
+		internal void ClearSelection()
+		{
+			var selectedItemIndexes = CollectionView.GetIndexPathsForSelectedItems();
+
+			foreach (var index in selectedItemIndexes)
+			{
+				CollectionView.DeselectItem(index, true);
+			}
+		}
+
+		void FormsSelectItem(NSIndexPath indexPath)
 		{
 			var mode = SelectableItemsView.SelectionMode;
 
 			switch (mode)
 			{
 				case SelectionMode.None:
-					SelectableItemsView.SelectedItem = null;
-					// TODO hartez Clear SelectedItems
+					break;
+				case SelectionMode.Single:
+					SelectableItemsView.SelectedItem = GetItemAtIndex(indexPath);
+					break;
+				case SelectionMode.Multiple:
+					SelectableItemsView.SelectedItems.Add(GetItemAtIndex(indexPath));
+					break;
+			}
+		}
+
+		void FormsDeselectItem(NSIndexPath indexPath)
+		{
+			var mode = SelectableItemsView.SelectionMode;
+
+			switch (mode)
+			{
+				case SelectionMode.None:
+					break;
+				case SelectionMode.Single:
+					break;
+				case SelectionMode.Multiple:
+					SelectableItemsView.SelectedItems.Remove(GetItemAtIndex(indexPath));
+					break;
+			}
+		}
+
+		internal void UpdateNativeSelection()
+		{
+			if (SelectableItemsView == null)
+			{
+				return;
+			}
+
+			var mode = SelectableItemsView.SelectionMode;
+
+			switch (mode)
+			{
+				case SelectionMode.None:
 					return;
 				case SelectionMode.Single:
-					var paths = CollectionView.GetIndexPathsForSelectedItems();
-					if (paths.Length > 0)
+					var selectedItem = SelectableItemsView.SelectedItem;
+
+					if (selectedItem != null)
 					{
-						SelectableItemsView.SelectedItem = GetItemAtIndex(paths[0]);
+						SelectItem(selectedItem);
 					}
-					// TODO hartez Clear SelectedItems
+					else
+					{
+						// SelectedItem has been set to null; if an item is selected, we need to de-select it
+						ClearSelection();
+					}
+				
 					return;
 				case SelectionMode.Multiple:
-					// TODO hartez Handle setting SelectedItems to all the items at the selected paths	
-					return;
-				default:
-					throw new ArgumentOutOfRangeException();
+					SynchronizeNativeSelectionWithSelectedItems();
+					break;
 			}
 		}
 
@@ -90,7 +130,40 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 			}
 
-			UpdateFormsSelection();
+			UpdateNativeSelection();
+		}
+
+		void SynchronizeNativeSelectionWithSelectedItems()
+		{
+			var selectedItems = SelectableItemsView.SelectedItems;
+			var selectedIndexPaths = CollectionView.GetIndexPathsForSelectedItems();
+
+			foreach (var path in selectedIndexPaths)
+			{
+				var itemAtPath = GetItemAtIndex(path);
+				if (ShouldNotBeSelected(itemAtPath, selectedItems))
+				{
+					CollectionView.DeselectItem(path, true);
+				}
+			}
+
+			foreach (var item in selectedItems)
+			{
+				SelectItem(item);
+			}
+		}
+
+		bool ShouldNotBeSelected(object item, IList<object> selectedItems)
+		{
+			for (int n = 0; n < selectedItems.Count; n++)
+			{
+				if (selectedItems[n] == item)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }

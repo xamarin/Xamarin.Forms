@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <Description>Android Backend for Xamarin.Forms</Description>
+    <AssemblyName>Xamarin.Forms.Platform.Android</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -10,7 +14,6 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Xamarin.Forms.Platform.Android</RootNamespace>
-    <AssemblyName>Xamarin.Forms.Platform.Android</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
@@ -25,25 +28,21 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
     <Optimize>false</Optimize>
     <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">bin\Debug\monoandroid81\</OutputPath>
     <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">bin\Debug\monoandroid90\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>CS0109</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
     <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">bin\Release\monoandroid81\</OutputPath>
     <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">bin\Release\monoandroid90\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>CS0109</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -57,13 +56,11 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="ActivityResultCallbackRegistry.cs" />
     <Compile Include="AndroidApplicationLifecycleState.cs" />
     <Compile Include="AndroidTitleBarVisibility.cs" />
     <Compile Include="AppCompat\FrameRenderer.cs" />
+    <Compile Include="AppCompat\CheckBoxRendererBase.cs" />
     <Compile Include="BackgroundManager.cs" />
     <Compile Include="AppCompat\ILifeCycleState.cs" />
     <Compile Include="AppCompat\ShellFragmentContainer.cs" />
@@ -72,7 +69,10 @@
     <Compile Include="CollectionView\CenterSnapHelper.cs" />
     <Compile Include="CollectionView\DataChangeObserver.cs" />
     <Compile Include="CollectionView\EmptySource.cs" />
+    <Compile Include="CollectionView\RecyclerViewScrollListener.cs" />
+    <Compile Include="CollectionView\GridLayoutSpanSizeLookup.cs" />
     <Compile Include="CollectionView\NongreedySnapHelper.cs" />
+    <Compile Include="CollectionView\SimpleViewHolder.cs" />
     <Compile Include="CollectionView\SingleSnapHelper.cs" />
     <Compile Include="CollectionView\EmptyViewAdapter.cs" />
     <Compile Include="CollectionView\EndSingleSnapHelper.cs" />
@@ -93,13 +93,18 @@
     <Compile Include="CollectionView\SelectableViewHolder.cs" />
     <Compile Include="CollectionView\SizedItemContentView.cs" />
     <Compile Include="CollectionView\SnapManager.cs" />
+    <Compile Include="CollectionView\SpacingItemDecoration.cs" />
     <Compile Include="CollectionView\StartSingleSnapHelper.cs" />
     <Compile Include="CollectionView\StartSnapHelper.cs" />
     <Compile Include="CollectionView\TemplatedItemViewHolder.cs" />
     <Compile Include="CollectionView\TextViewHolder.cs" />
+    <Compile Include="CollectionView\ItemViewType.cs" />
     <Compile Include="Elevation.cs" />
+    <Compile Include="Extensions\DrawableExtensions.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
+    <Compile Include="Extensions\ScrollViewExtensions.cs" />
+    <Compile Include="Extensions\TextAlignmentExtensions.cs" />
     <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
     <Compile Include="AppCompat\PageExtensions.cs" />
     <Compile Include="Extensions\JavaObjectExtensions.cs" />
@@ -144,14 +149,15 @@
     <Compile Include="GetDesiredSizeDelegate.cs" />
     <Compile Include="IBorderVisualElementRenderer.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
+    <Compile Include="IDisposedState.cs" />
+    <Compile Include="ILayoutChanges.cs" />
+    <Compile Include="ImageCache.cs" />
+    <Compile Include="IScrollView.cs" />
     <Compile Include="ITabStop.cs" />
-    <Compile Include="Material\MaterialContextThemeWrapper.cs" />
-    <Compile Include="Material\MaterialFrameRenderer.cs" />
-    <Compile Include="Material\MaterialFormsEditText.cs" />
-    <Compile Include="Material\MaterialButtonRenderer.cs" />
-    <Compile Include="Material\MaterialEntryRenderer.cs" />
-    <Compile Include="Material\MaterialProgressBarRenderer.cs" />
     <Compile Include="IPickerRenderer.cs" />
+    <Compile Include="PickerManager.cs" />
+    <Compile Include="EntryAccessibilityDelegate.cs" />
+    <Compile Include="Renderers\CircularProgress.cs" />
     <Compile Include="Renderers\PickerEditText.cs" />
     <Compile Include="Renderers\FontImageSourceHandler.cs" />
     <Compile Include="Renderers\FormsWebViewClient.cs" />
@@ -200,6 +206,7 @@
     <Compile Include="Renderers\IImageSourceHandler.cs" />
     <Compile Include="Renderers\ImageExtensions.cs" />
     <Compile Include="Renderers\ImageLoaderSourceHandler.cs" />
+    <Compile Include="Renderers\IOrderedTraversalController.cs" />
     <Compile Include="Renderers\IShellBottomNavigationViewAppearanceTracker.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
     <Compile Include="Renderers\IShellFlyoutContentRenderer.cs" />
@@ -219,10 +226,10 @@
     <Compile Include="Renderers\MotionEventHelper.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\ScrollViewContainer.cs" />
+    <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellBottomNavViewAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellItemRenderer.cs" />
     <Compile Include="Renderers\ShellContentFragment.cs" />
-    <Compile Include="Renderers\ShellFlyoutContentRenderer.cs" />
     <Compile Include="Renderers\ShellFlyoutRecyclerAdapter.cs" />
     <Compile Include="Renderers\ShellFlyoutRenderer.cs" />
     <Compile Include="Renderers\ShellFlyoutTemplatedContentRenderer.cs" />
@@ -310,13 +317,13 @@
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Renderers\IPopupTrigger.cs" />
-    <Compile Include="Material\MaterialActivityIndicatorRenderer.cs" />
-    <Compile Include="Material\MaterialColors.cs" />
     <Compile Include="ButtonElementManager.cs" />
     <Compile Include="IButtonLayoutRenderer.cs" />
     <Compile Include="ButtonLayoutManager.cs" />
-    <Compile Include="Material\MaterialSliderRenderer.cs" />
-    <AndroidResource Include="Resources\color\white_disabled_material.xml" />
+    <Compile Include="IStepperRenderer.cs" />
+    <Compile Include="StepperRendererManager.cs" />
+    <Compile Include="AppCompat\CheckBoxRenderer.cs" />
+    <Compile Include="AppCompat\CheckBoxDesignerRenderer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -336,27 +343,10 @@
       <Name>Xamarin.Forms.Platform.Android.FormsViewGroup</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <PackageReference Include="Xamarin.Android.Support.Design">
-      <Version>28.0.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v4">
-      <Version>28.0.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView">
-      <Version>28.0.0.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
-    <PackageReference Include="Xamarin.Android.Support.Design">
-      <Version>27.0.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v4">
-      <Version>27.0.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView">
-      <Version>27.0.2.1</Version>
-    </PackageReference>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.1" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Layout\ShellContent.axml" />
@@ -388,30 +378,8 @@
       <Properties>CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);AndroidTargetFrameworkVersion=v8.1</Properties>
     </ProjectToBuild>
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <AndroidResource Include="Resources\Layout\TextInputLayoutFilledBox.axml">
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <AndroidResource Include="Resources\values\styles.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\MaterialActivityIndicatorBackground.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable\MaterialProgressBar.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\color\" />
+    <AndroidResource Include="Resources\values\styles.xml" />
   </ItemGroup>
   <Target Name="BeforeBuild" Condition=" '$(CreateAllAndroidTargets)' == 'true' ">
     <!--  create 8.1 binaries-->

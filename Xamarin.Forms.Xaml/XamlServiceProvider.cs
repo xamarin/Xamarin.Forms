@@ -170,16 +170,16 @@ namespace Xamarin.Forms.Xaml.Internals
 
 		public object FindByName(string name)
 		{
-			if (scope != null)
-				return scope.FindByName(name);
+			object value;
+			if ((value = scope?.FindByName(name)) != null)
+				return value;
 
 			for (var i = 0; i < objectAndParents.Length; i++) {
-				var bo = objectAndParents[i] as BindableObject;
-				if (bo == null) continue;
-				var ns = NameScope.GetNameScope(bo) as INameScope;
-				if (ns == null) continue;
-				var value = ns.FindByName(name);
-				if (value != null)
+				if (!(objectAndParents[i] is BindableObject bo))
+					continue;
+				if (!(NameScope.GetNameScope(bo) is INameScope ns))
+					continue;
+				if ((value = ns.FindByName(name)) != null)
 					return value;
 			}
 			return null;
@@ -201,19 +201,13 @@ namespace Xamarin.Forms.Xaml.Internals
 			Assembly currentAssembly)
 		{
 			this.currentAssembly = currentAssembly;
-			if (namespaceResolver == null)
-				throw new ArgumentNullException();
-			if (getTypeFromXmlName == null)
-				throw new ArgumentNullException();
-
-			this.namespaceResolver = namespaceResolver;
-			this.getTypeFromXmlName = getTypeFromXmlName;
+			this.namespaceResolver = namespaceResolver ?? throw new ArgumentNullException();
+			this.getTypeFromXmlName = getTypeFromXmlName ?? throw new ArgumentNullException();
 		}
 
 		Type IXamlTypeResolver.Resolve(string qualifiedTypeName, IServiceProvider serviceProvider)
 		{
-			XamlParseException e;
-			var type = Resolve(qualifiedTypeName, serviceProvider, out e);
+			var type = Resolve(qualifiedTypeName, serviceProvider, out XamlParseException e);
 			if (e != null)
 				throw e;
 			return type;
@@ -221,8 +215,7 @@ namespace Xamarin.Forms.Xaml.Internals
 
 		bool IXamlTypeResolver.TryResolve(string qualifiedTypeName, out Type type)
 		{
-			XamlParseException exception;
-			type = Resolve(qualifiedTypeName, null, out exception);
+			type = Resolve(qualifiedTypeName, null, out XamlParseException exception);
 			return exception == null;
 		}
 
@@ -234,28 +227,23 @@ namespace Xamarin.Forms.Xaml.Internals
 				return null;
 
 			string prefix, name;
-			if (split.Length == 2)
-			{
+			if (split.Length == 2) {
 				prefix = split[0];
 				name = split[1];
 			}
-			else
-			{
+			else {
 				prefix = "";
 				name = split[0];
 			}
 
 			IXmlLineInfo xmlLineInfo = null;
-			if (serviceProvider != null)
-			{
-				var lineInfoProvider = serviceProvider.GetService(typeof (IXmlLineInfoProvider)) as IXmlLineInfoProvider;
-				if (lineInfoProvider != null)
+			if (serviceProvider != null) {
+				if (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider lineInfoProvider)
 					xmlLineInfo = lineInfoProvider.XmlLineInfo;
 			}
 
 			var namespaceuri = namespaceResolver.LookupNamespace(prefix);
-			if (namespaceuri == null)
-			{
+			if (namespaceuri == null) {
 				exception = new XamlParseException(string.Format("No xmlns declaration for prefix \"{0}\"", prefix), xmlLineInfo);
 				return null;
 			}

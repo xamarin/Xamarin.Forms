@@ -46,13 +46,18 @@
     <PackageReference Include="NUnitTestAdapter" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core.UnitTests\MockDispatcherProvider.cs">
+      <Link>MockDispatcherProvider.cs</Link>
+    </Compile>
+	<Compile Include="..\Xamarin.Forms.Core.UnitTests\MockDispatcher.cs">
+      <Link>MockDispatcher.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Core.UnitTests\MockPlatformServices.cs">
       <Link>MockPlatformServices.cs</Link>
     </Compile>
     <Compile Include="DataPageTests.cs" />
     <Compile Include="DataSourceListTests.cs" />
     <Compile Include="IntegrationTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

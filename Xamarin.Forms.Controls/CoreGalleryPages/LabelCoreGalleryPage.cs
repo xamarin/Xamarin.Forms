@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls
 
 			var formattedTextContainer = new ViewContainer<Label>(Test.Label.FormattedText, new Label { FormattedText = formattedString });
 
-			const string longText = "Lorem ipsum dolor sit amet, cu mei malis petentium, dolor tempor delicata no qui, eos ex vitae utinam vituperata. Utroque habemus philosophia ut mei, doctus placerat eam cu. An inermis scaevola pro, quo legimus deleniti ei, equidem docendi urbanitas ea eum. Saepe doctus ut pri. Nec ex wisi dolorem. Duo dolor vituperatoribus ea. Id purto instructior per. Nec partem accusamus ne. Qui ad saepe accumsan appellantur, duis omnesque has et, vim nihil nemore scaevola ne. Ei populo appetere recteque cum, meliore splendide appellantur vix id.";
+			const string longText = "Lorem ipsum dolor sit amet, cu mei malis petentium, dolor tempor delicata no qui, eos ex vitae utinam vituperata. Utroque habemus philosophia ut mei, doctus placerat eam cu. An inermis scaevola pro, quo legimus deleniti ei, equidem docendi urbanitas ea eum. Saepe doctus ut pri. Nec ex wisi dolorem. Duo dolor vituperatoribus ea. Id purto instructior per. Nec partem accusamus ne. Qui ad saepe accumsan appellantur, duis omnesque has et, vim nihil nemore scaevola ne. Ei populo appetere recteque xum, meliore splendide appellantur vix id.";
 			var lineBreakModeCharacterWrapContainer = new ViewContainer<Label> (Test.Label.LineBreakModeCharacterWrap, new Label { Text = longText, LineBreakMode = LineBreakMode.CharacterWrap });
 			var lineBreakModeHeadTruncationContainer = new ViewContainer<Label> (Test.Label.LineBreakModeHeadTruncation, new Label { Text = longText, LineBreakMode = LineBreakMode.HeadTruncation });
 			var lineBreakModeMiddleTruncationContainer = new ViewContainer<Label> (Test.Label.LineBreakModeMiddleTruncation, new Label { Text = longText, LineBreakMode = LineBreakMode.MiddleTruncation });
@@ -107,7 +107,8 @@ namespace Xamarin.Forms.Controls
 					Text = "VerticalTextAlignment Start",
  					VerticalTextAlignment = TextAlignment.Center,
 					HeightRequest = alignmentTestsHeightRequest, 
-					WidthRequest = alignmentTestsWidthRequest
+					WidthRequest = alignmentTestsWidthRequest,
+					BackgroundColor = Color.Pink
 				}
 			);
 
@@ -116,7 +117,8 @@ namespace Xamarin.Forms.Controls
 					Text = "VerticalTextAlignment End",
  					VerticalTextAlignment = TextAlignment.End,
 					HeightRequest = alignmentTestsHeightRequest, 
-					WidthRequest = alignmentTestsWidthRequest
+					WidthRequest = alignmentTestsWidthRequest,
+					BackgroundColor = Color.Pink
 				}
 			);
 
@@ -125,7 +127,8 @@ namespace Xamarin.Forms.Controls
 					Text = "VerticalTextAlignment Start",
  					VerticalTextAlignment = TextAlignment.Start,
 					HeightRequest = alignmentTestsHeightRequest, 
-					WidthRequest = alignmentTestsWidthRequest
+					WidthRequest = alignmentTestsWidthRequest,
+					BackgroundColor = Color.Pink
 				}
 			);
 
@@ -218,6 +221,22 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
+			var formattedString2 = new FormattedString();
+			formattedString2.Spans.Add(new Span { BackgroundColor = Color.Red, TextColor = Color.Olive, Text = "Span 1 " });
+			var span2 = new Span { BackgroundColor = Color.Black, TextColor = Color.White, Text = "Span 2 (tap me) " };
+			span2.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(() => DisplayAlert("Congratulations!", "This is a tapped span", "ok")) });
+			formattedString2.Spans.Add(span2);
+			formattedString2.Spans.Add(new Span { BackgroundColor = Color.Pink, TextColor = Color.Purple, Text = "Span 3" });
+
+			var paddingContainer = new ViewContainer<Label>(Test.Label.Padding,
+				new Label
+				{
+					FormattedText = formattedString2,
+					BackgroundColor = Color.Yellow,
+					Padding = new Thickness(40, 20)
+				}
+			);
+
 			Add (namedSizeMediumBoldContainer);
 			Add (namedSizeMediumItalicContainer);
 			Add (namedSizeMediumUnderlineContainer);
@@ -252,6 +271,7 @@ namespace Xamarin.Forms.Controls
 			Add (maxlinesNoWrapContainer);
 			Add (maxlinesTailTruncContainer);
 			Add (maxlinesWordWrapContainer);
+			Add(paddingContainer);
 		}
 	}
 }
