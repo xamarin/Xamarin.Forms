@@ -283,8 +283,9 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				var acceptEmptyServiceProvider = vardefref.VariableDefinition.VariableType.GetCustomAttribute(module, ("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "AcceptEmptyServiceProviderAttribute")) != null;
 				if (   vardefref.VariableDefinition.VariableType.FullName == "Xamarin.Forms.Xaml.BindingExtension"
-				    && (   node.Properties == null
-				        || !node.Properties.ContainsKey(new XmlName("", "Source"))))
+				    && (node.Properties == null || !node.Properties.ContainsKey(new XmlName("", "Source"))) //do not compile bindings if Source is set
+				    && bpRef != null //do not compile bindings if we're not gonna SetBinding
+					)
 					foreach (var instruction in CompileBindingPath(node, context, vardefref.VariableDefinition))
 						yield return instruction;
 
@@ -380,6 +381,11 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			if (dataTypeNode is null)
+				yield break;
+
+			if (   dataTypeNode is ElementNode enode
+				&& enode.XmlType.NamespaceUri == XamlParser.X2009Uri
+				&& enode.XmlType.Name == "NullExtension")
 				yield break;
 
 			if (!((dataTypeNode as ValueNode)?.Value is string dataType))
@@ -941,31 +947,34 @@ namespace Xamarin.Forms.Build.Tasks
 			while (declaringType.IsNested)
 				declaringType = declaringType.DeclaringType;
 			var handler = declaringType.AllMethods().FirstOrDefault(md => {
-				if (md.Name != value as string)
+				if (md.methodDef.Name != value as string)
 					return false;
 
 				//check if the handler signature matches the Invoke signature;
 				var invoke = module.ImportReference(eventinfo.EventType.ResolveCached().GetMethods().First(eventmd => eventmd.Name == "Invoke"));
 				invoke = invoke.ResolveGenericParameters(eventinfo.EventType, module);
-				if (!md.ReturnType.InheritsFromOrImplements(invoke.ReturnType) || invoke.Parameters.Count != md.Parameters.Count)
+				if (!md.methodDef.ReturnType.InheritsFromOrImplements(invoke.ReturnType) || invoke.Parameters.Count != md.methodDef.Parameters.Count)
 					return false;
 
 				if (!invoke.ContainsGenericParameter)
 					for (var i = 0; i < invoke.Parameters.Count;i++)
-						if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(md.Parameters[i].ParameterType))
+						if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(md.methodDef.Parameters[i].ParameterType))
 							return false;
 				//TODO check generic parameters if any
 
 				return true;
 			});
-			if (handler == null) 
+			MethodReference handlerRef = null;
+			if (handler.methodDef != null)
+				handlerRef = handler.methodDef.ResolveGenericParameters(handler.declTypeRef, module);
+			if (handler.methodDef == null) 
 				throw new XamlParseException($"EventHandler \"{value}\" with correct signature not found in type \"{declaringType}\"", iXmlLineInfo);
 
 			//FIXME: eventually get the right ctor instead fo the First() one, just in case another one could exists (not even sure it's possible).
 			var ctor = module.ImportReference(eventinfo.EventType.ResolveCached().GetConstructors().First());
 			ctor = ctor.ResolveGenericParameters(eventinfo.EventType, module);
 
-			if (handler.IsStatic) {
+			if (handler.methodDef.IsStatic) {
 				yield return Create(Ldnull);
 			} else {
 				if (context.Root is VariableDefinition)
@@ -978,11 +987,11 @@ namespace Xamarin.Forms.Build.Tasks
 					throw new InvalidProgramException();
 			}
 
-			if (handler.IsVirtual) {
+			if (handler.methodDef.IsVirtual) {
 				yield return Create(Ldarg_0);
-				yield return Create(Ldvirtftn, handler);
+				yield return Create(Ldvirtftn, handlerRef);
 			} else
-				yield return Create(Ldftn, handler);
+				yield return Create(Ldftn, handlerRef);
 
 			yield return Create(Newobj, module.ImportReference(ctor));
 			//Check if the handler has the same signature as the ctor (it should)
@@ -1325,9 +1334,9 @@ namespace Xamarin.Forms.Build.Tasks
 			//is there a RD.Add() overrides that accepts this ?
 			var nodeTypeRef = context.Variables[node].VariableType;
 			var module = context.Body.Method.Module;
-			if (module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary"),
+			if (module.ImportMethodReference(module.GetTypeDefinition(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary")),
 											 methodName: "Add",
-											 parameterTypes: new[] { (nodeTypeRef.Scope.Name, nodeTypeRef.Namespace, nodeTypeRef.Name) }) != null)
+											 parameterTypes: new[] { (nodeTypeRef) }) != null)
 				return true;
 
 			throw new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo);

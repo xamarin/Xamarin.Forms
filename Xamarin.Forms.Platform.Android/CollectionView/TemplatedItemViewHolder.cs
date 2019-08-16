@@ -37,7 +37,8 @@ namespace Xamarin.Forms.Platform.Android
 			itemsView.RemoveLogicalChild(View);
 		}
 
-		public void Bind(object itemBindingContext, ItemsView itemsView)
+		public void Bind(object itemBindingContext, ItemsView itemsView, 
+			Action<Size> reportMeasure = null, Size? size = null)
 		{
 			var template = _template.SelectDataTemplate(itemBindingContext, itemsView);
 
@@ -48,6 +49,8 @@ namespace Xamarin.Forms.Platform.Android
 				_itemContentView.RealizeContent(View);
 				_selectedTemplate = template;
 			}
+
+			_itemContentView.HandleItemSizingStrategy(reportMeasure, size); 
 
 			// Set the binding context before we add it as a child of the ItemsView; otherwise, it will
 			// inherit the ItemsView's binding context

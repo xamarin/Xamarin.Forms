@@ -529,6 +529,12 @@ namespace Xamarin.Forms
 
 			public void BeginInvokeOnMainThread(Action action)
 			{
+				if (_context.IsDesignerContext())
+				{
+					action();
+					return;
+				}
+
 				if (s_handler == null || s_handler.Looper != Looper.MainLooper)
 				{
 					s_handler = new Handler(Looper.MainLooper);
@@ -625,6 +631,16 @@ namespace Xamarin.Forms
 						return _mediumSize;
 					case NamedSize.Large:
 						return _largeSize;
+					case NamedSize.Body:
+						return 16;
+					case NamedSize.Caption:
+						return 12;
+					case NamedSize.Header:
+						return 96;
+					case NamedSize.Subtitle:
+						return 16;
+					case NamedSize.Title:
+						return 24;
 					default:
 						throw new ArgumentOutOfRangeException("size");
 				}
