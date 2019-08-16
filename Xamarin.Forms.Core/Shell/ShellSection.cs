@@ -265,10 +265,10 @@ namespace Xamarin.Forms
 
 				Shell.ApplyQueryAttributes(content, queryData, isLast);
 
-                if (parameter != null)
-                    content.SendParameter(parameter);
+				if (parameter != null)
+					content.SendParameter(parameter);
 
-                await OnPushAsync(content, i == routes.Count - 1 && animate);
+				await OnPushAsync(content, i == routes.Count - 1 && animate);
 			}
 
 			SendAppearanceChanged();
@@ -611,7 +611,7 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(shellContent, BindingContext);
 			}
 		}
-    
+	
 		internal override void SendDisappearing()
 		{
 			base.SendDisappearing();

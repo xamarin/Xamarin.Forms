@@ -23,31 +23,31 @@ namespace Xamarin.Forms
 		{
 			get;
 			private set;
-        }
+		}
 
-        public object Parameter
-        {
-            get;
-            private set;
-        }
+		public object Parameter
+		{
+			get;
+			private set;
+		}
 
-        public ShellNavigationState() { }
+		public ShellNavigationState() { }
 		public ShellNavigationState(string location, object parameter = null)
-        {
+		{
 			var uri = ShellUriHandler.CreateUri(location);
 
 			if (uri.IsAbsoluteUri)
 				uri = new Uri($"/{uri.PathAndQuery}", UriKind.Relative);
 
 			FullLocation = uri;
-            Parameter = parameter;
-        }
+			Parameter = parameter;
+		}
 
-        public ShellNavigationState(Uri location, object parameter = null)
-        {
-            FullLocation = location;
-            Parameter = parameter;
-        }
+		public ShellNavigationState(Uri location, object parameter = null)
+		{
+			FullLocation = location;
+			Parameter = parameter;
+		}
 
 		public static implicit operator ShellNavigationState(Uri uri) => new ShellNavigationState(uri);
 		public static implicit operator ShellNavigationState(string value) => new ShellNavigationState(value);
