@@ -33,7 +33,7 @@ namespace Xamarin.Forms
 #if __MOBILE__
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
-		static bool? s_isiOS11OrNewer
+		static bool? s_isiOS11OrNewer;
 		static bool? s_isiOS13OrNewer;
 #endif
 
