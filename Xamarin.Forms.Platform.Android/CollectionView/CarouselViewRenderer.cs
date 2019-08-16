@@ -8,50 +8,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class CarouselViewRenderer : ItemsViewRenderer
 	{
-		//should this move to ItemsViewREnderer and be shared ?
-		class ScrollListener : global::Android.Support.V7.Widget.RecyclerView.OnScrollListener
-		{
-			CarouselViewRenderer _renderer;
-			int _oldPosition;
-			int _initialPosition;
-			int _previousOffSetX;
-			int _previousOffSetY;
-			bool _scrollingToInitialPosition = true;
-
-			public ScrollListener(CarouselViewRenderer renderer, int initialPosition)
-			{
-				_renderer = renderer;
-				_initialPosition = initialPosition;
-			}
-
-			public override void OnScrolled(global::Android.Support.V7.Widget.RecyclerView recyclerView, int dx, int dy)
-			{
-				base.OnScrolled(recyclerView, dx, dy);
-				var layoutManager = (recyclerView.GetLayoutManager() as LinearLayoutManager);
-				var adapterPosition = layoutManager.FindFirstVisibleItemPosition();
-				if (_scrollingToInitialPosition)
-				{
-					_scrollingToInitialPosition = !(_initialPosition == adapterPosition);
-					return;
-				}
-
-				var newOffSetX = recyclerView.ComputeHorizontalScrollOffset();
-				var newOffSetY = recyclerView.ComputeVerticalScrollOffset();
-			
-				_previousOffSetX = newOffSetX;
-				_previousOffSetY = newOffSetY;
-
-				if (_oldPosition != adapterPosition)
-				{
-					_oldPosition = adapterPosition;
-					_renderer.UpdatePosition(adapterPosition);
-				}
-			}
-		}
-
 		// TODO hartez 2018/08/29 17:13:17 Does this need to override SelectLayout so it ignores grids?	(Yes, and so it can warn on unknown layouts)
 		Context _context;
-		ScrollListener _scrollListener;
 		protected CarouselView Carousel;
 		bool _isSwipeEnabled;
 		bool _isUpdatingPositionFromForms;
@@ -66,12 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing)
 			{
-				if (_scrollListener != null)
-				{
-					RemoveOnScrollListener(_scrollListener);
-					_scrollListener.Dispose();
-					_scrollListener = null;
-				}
+				
 			}
 			base.Dispose(disposing);
 		}
@@ -92,8 +45,6 @@ namespace Xamarin.Forms.Platform.Android
 			//Goto to the Correct Position
 			Carousel.ScrollTo(Carousel.Position);
 			_isUpdatingPositionFromForms = false;
-			_scrollListener = new ScrollListener(this, Carousel.Position);
-			AddOnScrollListener(_scrollListener);
 		}
 
 		protected override void UpdateItemsSource()

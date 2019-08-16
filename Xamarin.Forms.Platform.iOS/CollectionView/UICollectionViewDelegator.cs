@@ -25,6 +25,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
+			CarouselViewController?.DraggingStarted(scrollView);
+
 			_previousHorizontalOffset = (float)scrollView.ContentOffset.X;
 			_previousVerticalOffset = (float)scrollView.ContentOffset.Y;
 		}
@@ -33,6 +35,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_previousHorizontalOffset = 0;
 			_previousVerticalOffset = 0;
+
+			CarouselViewController?.DraggingEnded(scrollView, willDecelerate);
 		}
 
 		public override void Scrolled(UIScrollView scrollView)
@@ -159,11 +163,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return GroupableItemsViewController.GetReferenceSizeForFooter(collectionView, layout, section);
 		}
-		
-		public override void Scrolled(UIScrollView scrollView)
-		{
-			CarouselViewController?.Scrolled(scrollView);
-		}
 
 		public override void DecelerationEnded(UIScrollView scrollView)
 		{
@@ -173,16 +172,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void DecelerationStarted(UIScrollView scrollView)
 		{
 			CarouselViewController?.DecelerationStarted(scrollView);
-		}
-
-		public override void DraggingStarted(UIScrollView scrollView)
-		{
-			CarouselViewController?.DraggingStarted(scrollView);
-		}
-
-		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
-		{
-			CarouselViewController?.DraggingEnded(scrollView, willDecelerate);
 		}
 
 		public override void ScrollAnimationEnded(UIScrollView scrollView)

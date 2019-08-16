@@ -5,8 +5,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 {
 	internal class CarouselCodeGallery : ContentPage
 	{
+		readonly Label _scrollInfoLabel = new Label();
+		readonly ItemsLayoutOrientation _orientation;
+
 		public CarouselCodeGallery(ItemsLayoutOrientation orientation)
 		{
+			_scrollInfoLabel.MaxLines = 1;
+			_scrollInfoLabel.LineBreakMode = LineBreakMode.TailTruncation;
+			_orientation = orientation;
+
 			Title = $"CarouselView (Code, {orientation})";
 
 			var nItems = 5;
@@ -42,6 +49,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				AutomationId = "TheCarouselView"
 			};
 
+			carouselView.Scrolled += CarouselView_Scrolled;
+
 			layout.Children.Add(carouselView);
 
 			StackLayout stacklayoutInfo = GetReadOnlyInfo(carouselView);
@@ -75,7 +84,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			stckPeek.Children.Add(padi);
 			stacklayoutInfo.Children.Add(stckPeek);
-			
+			stacklayoutInfo.Children.Add(_scrollInfoLabel);
+
 			Grid.SetRow(positionControl, 1);
 			Grid.SetRow(stacklayoutInfo, 2);
 			Grid.SetRow(spacingModifier, 3);
@@ -87,6 +97,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			};
 
 			generator.GenerateItems();
+		}
+
+		private void CarouselView_Scrolled(object sender, ItemsViewScrolledEventArgs e)
+		{
+			_scrollInfoLabel.Text = $"First item: {e.FirstVisibleItemIndex}, Last item: {e.LastVisibleItemIndex}";
+
+			double delta = 0, offset = 0;
+
+			if (_orientation == ItemsLayoutOrientation.Horizontal)
+			{
+				delta = e.HorizontalDelta;
+				offset = e.HorizontalOffset;
+			}
+			else
+			{
+				delta = e.VerticalDelta;
+				offset = e.VerticalOffset;
+			}
+
+			_scrollInfoLabel.Text += $", Delta: {delta}, Offset: {offset}";
 		}
 
 		static StackLayout GetReadOnlyInfo(CarouselView carouselView)

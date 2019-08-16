@@ -129,9 +129,6 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
-
-<<<<<<< HEAD
-=======
   <ItemGroup>
     <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\BasicGrouping.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -161,7 +158,6 @@
   <ItemGroup>
     <Folder Include="GalleryPages\CollectionViewGalleries\CarouselViewGalleries\" />
   </ItemGroup>
->>>>>>> [Controls] Fix csproj
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
     <CreateItem Include="blank.config">
       <Output TaskParameter="Include" ItemName="ConfigFile" />
