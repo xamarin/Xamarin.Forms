@@ -62,8 +62,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == CarouselView.IsSwipeEnabledProperty.PropertyName)
+			if (e.Is(CarouselView.IsSwipeEnabledProperty))
 				UpdateIsSwipeEnabled();
+			else if (e.Is(CarouselView.IsBounceEnabledProperty))
+				UpdateIsBounceEnabled();
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -109,6 +111,11 @@ namespace Xamarin.Forms.Platform.Android
 				throw new InvalidOperationException("Visible item not found");
 
 			Carousel.SetCurrentItem(context);
+		}
+
+		void UpdateIsBounceEnabled()
+		{
+			OverScrollMode = Carousel.IsBounceEnabled ? OverScrollMode.Always : OverScrollMode.Never;
 		}
 	}
 }
