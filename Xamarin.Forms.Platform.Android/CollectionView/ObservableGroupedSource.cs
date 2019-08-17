@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ObservableGroupedSource : IGroupedItemsViewSource, ICollectionChangedNotifier
+	internal class ObservableGroupedSource : IGroupableItemsViewSource, ICollectionChangedNotifier
 	{
 		readonly ICollectionChangedNotifier _notifier;
 		readonly IList _groupSource;
@@ -385,7 +385,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		(int, int) GetGroupAndIndex(int absolutePosition)
 		{
-			absolutePosition = SkipHeader(absolutePosition);
+			absolutePosition = AdjustIndexForHeader(absolutePosition);
 
 			var group = 0;
 			var localIndex = 0;
@@ -406,14 +406,14 @@ namespace Xamarin.Forms.Platform.Android
 			return (group, localIndex);
 		}
 
-		int SkipHeader(int index)
+		int AdjustIndexForHeader(int index)
 		{
 			return index - (HasHeader ? 1 : 0);
 		}
 
-		int AdjustPositionForHeader(int index)
+		int AdjustPositionForHeader(int position)
 		{
-			return index + (HasHeader ? 1 : 0);
+			return position + (HasHeader ? 1 : 0);
 		}
 
 		int CountItemsInGroups(int groupStartIndex, int groupCount)

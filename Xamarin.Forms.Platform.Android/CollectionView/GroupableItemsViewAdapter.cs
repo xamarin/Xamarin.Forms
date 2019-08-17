@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class GroupableItemsViewAdapter<TItemsView, TItemsViewSource> : SelectableItemsViewAdapter<TItemsView, TItemsViewSource> 
 		where TItemsView : GroupableItemsView
-		where TItemsViewSource : IGroupedItemsViewSource
+		where TItemsViewSource : IGroupableItemsViewSource
 	{
 		internal GroupableItemsViewAdapter(TItemsView groupableItemsView, 
 			Func<View, Context, ItemContentView> createView = null) : base(groupableItemsView, createView)

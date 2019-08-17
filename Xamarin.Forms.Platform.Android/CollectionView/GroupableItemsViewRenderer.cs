@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class GroupableItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> : SelectableItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource>
 		where TItemsView : GroupableItemsView
 		where TAdapter : GroupableItemsViewAdapter<TItemsView, TItemsViewSource>
-		where TItemsViewSource : IGroupedItemsViewSource
+		where TItemsViewSource : IGroupableItemsViewSource
 	{
 		public GroupableItemsViewRenderer(Context context) : base(context)
 		{

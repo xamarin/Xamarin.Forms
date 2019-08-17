@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 			return Create(itemsView.ItemsSource, adapter);
 		}
 
-		public static IGroupedItemsViewSource Create(GroupableItemsView itemsView, RecyclerView.Adapter adapter)
+		public static IGroupableItemsViewSource Create(GroupableItemsView itemsView, RecyclerView.Adapter adapter)
 		{
 			if (itemsView.IsGrouped)
 			{

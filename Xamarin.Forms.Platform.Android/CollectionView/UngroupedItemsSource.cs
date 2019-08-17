@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms.Platform.Android
 {
-	internal class UngroupedItemsSource : IGroupedItemsViewSource
+	internal class UngroupedItemsSource : IGroupableItemsViewSource
 	{
 		readonly IItemsViewSource _source;
 

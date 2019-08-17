@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool IsFooter(int position);
 	}
 
-	public interface IGroupedItemsViewSource : IItemsViewSource
+	public interface IGroupableItemsViewSource : IItemsViewSource
 	{
 		bool IsGroupHeader(int position);
 		bool IsGroupFooter(int position);
