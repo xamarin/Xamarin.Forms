@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Layout)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 3475, "LayoutCompression Performance Issues", PlatformAffected.iOS | PlatformAffected.Android)]
+	[Issue(IssueTracker.Github, 3475, "[iOS] LayoutCompression Performance Issues", PlatformAffected.iOS)]
 	public class Issue3475 : TestContentPage
 	{
 		string _withoutCompressionBtnId = "button1";
