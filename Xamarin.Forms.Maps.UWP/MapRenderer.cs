@@ -37,11 +37,14 @@ namespace Xamarin.Forms.Maps.UWP
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
+					Control.ActualCameraChanging += async (s, a) => await UpdateCameraAsync(a.Camera.Location.Position);
+					Control.ActualCameraChanged += async (s, a) => await UpdateCameraAsync(a.Camera.Location.Position);
 					Control.MapTapped += OnMapTapped;
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
+				UpdateCamera(Control.ActualCamera.Location.Position, raiseCameraChanged: false);
 				UpdateMapType();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
@@ -227,6 +230,29 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				return;
 			}
+		}
+
+		async Task UpdateCameraAsync(BasicGeoposition position, bool raiseCameraChanged = true)
+		{
+			try
+			{
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+				{
+					UpdateCamera(position, raiseCameraChanged);
+				});
+			}
+			catch (Exception)
+			{
+				return;
+			}
+		}
+
+		void UpdateCamera(BasicGeoposition position, bool raiseCameraChanged = true)
+		{
+			double zoomLevel = Control.ZoomLevel;
+			Element.SetCamera(
+				new Camera(new Position(position.Latitude, position.Longitude), zoomLevel),
+				raiseCameraChanged);
 		}
 
 		void LoadUserPosition(Geocoordinate userCoordinate, bool center)

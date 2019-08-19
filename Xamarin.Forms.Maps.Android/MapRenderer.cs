@@ -16,7 +16,7 @@ using Math = System.Math;
 
 namespace Xamarin.Forms.Maps.Android
 {
-	public class MapRenderer : ViewRenderer<Map, MapView>, GoogleMap.IOnCameraMoveListener, IOnMapReadyCallback
+	public class MapRenderer : ViewRenderer<Map, MapView>, GoogleMap.IOnCameraMoveListener, GoogleMap.IOnCameraIdleListener, IOnMapReadyCallback
 	{
 		const string MoveMessageName = "MapMoveToRegion";
 
@@ -85,6 +85,7 @@ namespace Xamarin.Forms.Maps.Android
 				{
 					NativeMap.MyLocationEnabled = false;
 					NativeMap.SetOnCameraMoveListener(null);
+					NativeMap.SetOnCameraIdleListener(null);
 					NativeMap.MarkerClick -= OnMarkerClick;
 					NativeMap.InfoWindowClick -= OnInfoWindowClick;
 					NativeMap.MapClick -= OnMapClick;
@@ -124,6 +125,7 @@ namespace Xamarin.Forms.Maps.Android
 				if (NativeMap != null)
 				{
 					NativeMap.SetOnCameraMoveListener(null);
+					NativeMap.SetOnCameraIdleListener(null);
 					NativeMap.MarkerClick -= OnMarkerClick;
 					NativeMap.InfoWindowClick -= OnInfoWindowClick;
 					NativeMap.MapClick -= OnMapClick;
@@ -179,10 +181,23 @@ namespace Xamarin.Forms.Maps.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 
+			// Fix for the following issue: https://github.com/xamarin/Xamarin.Forms/issues/1852
+			// Xamarin.Forms MapRenderer: MoveToRegion exception: Java.Lang.IllegalStateException:
+			// Error using newLatLngBounds(LatLngBounds, int): Map size can't be 0. Most likely, layout has not yet occured for the map view.
+			// Either wait until layout has occurred or use newLatLngBounds(LatLngBounds, int, int, int) which allows you to specify the map's dimensions.
+			int width = r - l;
+			int height = t - b;
+
+			if (width == 0 || height == 0)
+			{
+				return;
+			}
+
 			if (_init)
 			{
 				if (NativeMap != null)
 				{
+					UpdateCamera(raiseCameraChanged: false);
 					MoveToRegion(Element.LastMoveToRegion, false);
 					OnCollectionChanged(Element.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 					_init = false;
@@ -192,6 +207,7 @@ namespace Xamarin.Forms.Maps.Android
 			{
 				if (NativeMap != null)
 				{
+					UpdateCamera();
 					UpdateVisibleRegion(NativeMap.CameraPosition.Target);
 				}
 
@@ -208,6 +224,7 @@ namespace Xamarin.Forms.Maps.Android
 			}
 
 			map.SetOnCameraMoveListener(this);
+			map.SetOnCameraIdleListener(this);
 			map.MarkerClick += OnMarkerClick;
 			map.InfoWindowClick += OnInfoWindowClick;
 			map.MapClick += OnMapClick;
@@ -347,8 +364,10 @@ namespace Xamarin.Forms.Maps.Android
 		void MoveToRegion(MapSpan span, bool animate)
 		{
 			GoogleMap map = NativeMap;
-			if (map == null)
+			if (map == null || Height == 0 || Width == 0)
 			{
+				// Fix for the following issue: https://github.com/xamarin/Xamarin.Forms/issues/1852
+				// If map size is 0, an IllegalStateException will be thrown
 				return;
 			}
 
@@ -476,6 +495,11 @@ namespace Xamarin.Forms.Maps.Android
 			Element.SetVisibleRegion(new MapSpan(new Position(pos.Latitude, pos.Longitude), dlat, dlong));
 		}
 
+		void UpdateCamera(bool raiseCameraChanged = true)
+		{
+			Element.SetCamera(Convert(NativeMap.CameraPosition), raiseCameraChanged);
+		}
+
 		void IOnMapReadyCallback.OnMapReady(GoogleMap map)
 		{
 			NativeMap = map;
@@ -485,6 +509,18 @@ namespace Xamarin.Forms.Maps.Android
 		void GoogleMap.IOnCameraMoveListener.OnCameraMove()
 		{
 			UpdateVisibleRegion(NativeMap.CameraPosition.Target);
+			UpdateCamera();
+		}
+
+		void GoogleMap.IOnCameraIdleListener.OnCameraIdle()
+		{
+			UpdateCamera();
+		}
+
+		static Camera Convert(CameraPosition cameraPosition)
+		{
+			return new Camera(new Position(cameraPosition.Target.Latitude, cameraPosition.Target.Longitude),
+				cameraPosition.Zoom, cameraPosition.Bearing, cameraPosition.Tilt);
 		}
 	}
 }

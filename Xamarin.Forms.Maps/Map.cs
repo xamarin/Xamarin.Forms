@@ -32,6 +32,8 @@ namespace Xamarin.Forms.Maps
 
 		readonly ObservableCollection<Pin> _pins = new ObservableCollection<Pin>();
 		MapSpan _visibleRegion;
+		Camera _camera;
+		IProjector _projector;
 
 		public Map(MapSpan region)
 		{
@@ -101,6 +103,8 @@ namespace Xamarin.Forms.Maps
 		}
 
 		public event EventHandler<MapClickedEventArgs> MapClicked;
+
+		public event EventHandler<CameraChangedEventArgs> CameraChanged;
 		
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendMapClicked(Position position) => MapClicked?.Invoke(this, new MapClickedEventArgs(position));
@@ -118,6 +122,29 @@ namespace Xamarin.Forms.Maps
 					throw new ArgumentNullException(nameof(value));
 				OnPropertyChanging();
 				_visibleRegion = value;
+				OnPropertyChanged();
+			}
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetCamera(Camera value, bool raiseCameraChanged = true)
+		{
+			Camera = value;
+
+			if (raiseCameraChanged)
+				CameraChanged?.Invoke(this, new CameraChangedEventArgs(value));
+		}
+		public Camera Camera
+		{
+			get { return _camera; }
+			internal set
+			{
+				if (_camera == value)
+					return;
+				if (value == null)
+					throw new ArgumentNullException(nameof(value));
+				OnPropertyChanging();
+				_camera = value;
 				OnPropertyChanged();
 			}
 		}

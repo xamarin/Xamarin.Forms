@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -70,6 +71,8 @@ namespace Xamarin.Forms.Maps.MacOS
 				var mkMapView = (MKMapView)Control;
 				mkMapView.DidSelectAnnotationView -= MkMapViewOnAnnotationViewSelected;
 				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
+				mkMapView.DidChangeVisibleRegion -= MkMapViewOnDidChangeVisibleRegion;
+
 				mkMapView.GetViewForAnnotation = null;
 				if (mkMapView.Delegate != null)
 				{
@@ -145,6 +148,8 @@ namespace Xamarin.Forms.Maps.MacOS
 					mapView.GetViewForAnnotation = GetViewForAnnotation;
 					mapView.DidSelectAnnotationView += MkMapViewOnAnnotationViewSelected;
 					mapView.RegionChanged += MkMapViewOnRegionChanged;
+					mapView.DidChangeVisibleRegion += MkMapViewOnDidChangeVisibleRegion;
+					;
 #if __MOBILE__
 					mapView.AddGestureRecognizer(_mapClickedGestureRecognizer = new UITapGestureRecognizer(OnMapClicked));
 #endif
@@ -154,6 +159,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				if (mapModel.LastMoveToRegion != null)
 					MoveToRegion(mapModel.LastMoveToRegion, false);
 
+				UpdateCamera(raiseCameraChanged: false);
 				UpdateMapType();
 				UpdateIsShowingUser();
 				UpdateHasScrollEnabled();
@@ -386,6 +392,23 @@ namespace Xamarin.Forms.Maps.MacOS
 			var mkMapView = (MKMapView)Control;
 
 			mapModel.SetVisibleRegion(new MapSpan(new Position(mkMapView.Region.Center.Latitude, mkMapView.Region.Center.Longitude), mkMapView.Region.Span.LatitudeDelta, mkMapView.Region.Span.LongitudeDelta));
+			UpdateCamera();
+		}
+
+		void MkMapViewOnDidChangeVisibleRegion(object sender, EventArgs e)
+		{
+			if (Element == null)
+				return;
+
+			UpdateCamera();
+		}
+
+		void UpdateCamera(bool raiseCameraChanged = true)
+		{
+			var mapModel = (Map)Element;
+			var mkMapView = (MKMapView)Control;
+
+			mapModel.SetCamera(new Camera(new Position(mkMapView.Region.Center.Latitude, mkMapView.Region.Center.Longitude), GetCurrentZoom(mkMapView)), raiseCameraChanged);
 		}
 
 		void MoveToRegion(MapSpan mapSpan, bool animated = true)
@@ -466,6 +489,30 @@ namespace Xamarin.Forms.Maps.MacOS
 					((MKMapView)Control).MapType = MKMapType.Hybrid;
 					break;
 			}
+		}
+
+		static double GetCurrentZoom(MKMapView mapView)
+		{
+			var zoom1 = Math.Log(360 * mapView.Frame.Size.Width / (mapView.Region.Span.LongitudeDelta * 128), 2);
+
+			System.Diagnostics.Debug.WriteLine($"Zoom 1: {zoom1}");
+
+			var MERCATOR_RADIUS = 85445659.44705395;
+			var MAX_GOOGLE_LEVELS = 20;
+
+			double longitudeDelta = mapView.Region.Span.LongitudeDelta;
+			nfloat mapWidthInPixels = mapView.Bounds.Size.Width;
+			double zoomScale = longitudeDelta * MERCATOR_RADIUS * Math.PI / (180.0 * mapWidthInPixels);
+			double zoomer = MAX_GOOGLE_LEVELS - Math.Log( zoomScale, 2);
+			if ( zoomer < 0 ) zoomer = 0;
+			//  zoomer = round(zoomer);
+
+
+			System.Diagnostics.Debug.WriteLine($"Zoom 2: {zoomer}");
+
+			return zoomer;
+
+			
 		}
 	}
 }
