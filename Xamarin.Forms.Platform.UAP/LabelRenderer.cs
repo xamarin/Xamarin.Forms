@@ -153,17 +153,13 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateDetectReadingOrderFromContent(Control);
 				UpdateLineHeight(Control);
 				UpdatePadding(Control);
-				UpdateTextType(Control);
 			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Label.TextProperty.PropertyName ||
-				e.PropertyName == Label.FormattedTextProperty.PropertyName)
-			{
+			if (e.IsOneOf(Label.TextProperty,  Label.FormattedTextProperty, Label.TextTypeProperty))
 				UpdateText(Control);
-			}
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor(Control);
 			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
@@ -186,8 +182,6 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaxLines(Control);
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding(Control);
-			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
-				UpdateTextType(Control);
 				
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -334,10 +328,22 @@ namespace Xamarin.Forms.Platform.UWP
 			_perfectSizeValid = false;
 
 			if (textBlock == null)
-			{
 				return;
-			}
 
+			switch (Element.TextType)
+			{
+				case TextType.Html:
+					UpdateTextHtml(textBlock);
+					break;
+
+				default:
+					UpdateTextPlainText(textBlock);
+					break;
+			}
+		}
+
+		void UpdateTextPlainText(TextBlock textBlock)
+		{
 			Label label = Element;
 			if (label != null)
 			{
@@ -364,6 +370,27 @@ namespace Xamarin.Forms.Platform.UWP
 					}
 					_inlineHeights = heights;
 				}
+			}
+		}
+
+		void UpdateTextHtml(TextBlock textBlock)
+		{
+			var text = Element.Text ?? String.Empty;
+
+			// Just in case we are not given text with elements.
+			var modifiedText = string.Format("<div>{0}</div>", text);
+			modifiedText = Regex.Replace(modifiedText, "<br>", "<br></br>", RegexOptions.IgnoreCase);
+			// reset the text because we will add to it.
+			Control.Inlines.Clear();
+			try
+			{
+				var element = XElement.Parse(modifiedText);
+				LabelHtmlHelper.ParseText(element, Control.Inlines, Element);
+			}
+			catch (Exception)
+			{
+				// if anything goes wrong just show the html
+				textBlock.Text = Windows.Data.Html.HtmlUtilities.ConvertToText(Element.Text);
 			}
 		}
 
@@ -412,40 +439,6 @@ namespace Xamarin.Forms.Platform.UWP
 					Element.Padding.Top,
 					Element.Padding.Right,
 					Element.Padding.Bottom);
-		}
-		
-		void UpdateTextType(TextBlock textBlock)
-		{
-			if (Element.Text == null)
-				return;
-
-			switch (Element.TextType)
-			{
-				case TextType.Html:
-					_perfectSizeValid = false;
-					var text = Element.Text;
-
-					// Just in case we are not given text with elements.
-					var modifiedText = string.Format("<div>{0}</div>", text);
-					modifiedText = Regex.Replace(modifiedText, "<br>", "<br></br>", RegexOptions.IgnoreCase);
-					// reset the text because we will add to it.
-					Control.Inlines.Clear();
-					try
-					{
-						var element = XElement.Parse(modifiedText);
-						LabelHtmlHelper.ParseText(element, Control.Inlines, Element);
-					}
-					catch (Exception)
-					{
-						// if anything goes wrong just show the html
-						textBlock.Text = Windows.Data.Html.HtmlUtilities.ConvertToText(Element.Text);
-					}
-					break;
-
-				default:
-					UpdateText(textBlock);
-					break;
-			}
 		}
 	}
 }
