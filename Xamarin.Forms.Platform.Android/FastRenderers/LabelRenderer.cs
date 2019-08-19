@@ -387,10 +387,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				{
 					case TextType.Html:
 						if (Forms.IsNougatOrNewer)
-							Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), BufferType.Spannable);
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty, FromHtmlOptions.ModeCompact), BufferType.Spannable);
 						else
 #pragma warning disable CS0618 // Type or member is obsolete
-							Control.SetText(Html.FromHtml(Element.Text), BufferType.Spannable);
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty), BufferType.Spannable);
 #pragma warning restore CS0618 // Type or member is obsolete
 						break;
 

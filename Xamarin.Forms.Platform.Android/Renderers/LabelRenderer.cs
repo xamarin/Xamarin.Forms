@@ -157,8 +157,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineBreakMode();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
-			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName
-				|| e.PropertyName == Label.TextTypeProperty.PropertyName)
+			else if (e.IsOneOf(Label.TextProperty, Label.FormattedTextProperty, Label.TextTypeProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
@@ -279,10 +278,10 @@ namespace Xamarin.Forms.Platform.Android
 
 					case TextType.Html:
 						if (Forms.IsNougatOrNewer)
-							Control.SetText(Html.FromHtml(Element.Text, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
 						else
 #pragma warning disable CS0618 // Type or member is obsolete
-							Control.SetText(Html.FromHtml(Element.Text), TextView.BufferType.Spannable);
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty), TextView.BufferType.Spannable);
 #pragma warning restore CS0618 // Type or member is obsolete
 						break;
 
