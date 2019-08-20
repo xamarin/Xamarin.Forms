@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	sealed class ListSource : IItemsViewSource, IList
 	{
-		private IList _itemsSource;
+		IList _itemsSource;
 
 		public ListSource()
 		{
