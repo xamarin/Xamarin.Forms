@@ -45,6 +45,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ItemsViewController.UpdateEmptyView();
 			}
+			else if (changedProperty.IsOneOf(ItemsView.HeaderProperty, ItemsView.HeaderTemplateProperty))
+			{
+				ItemsViewController.UpdateHeaderView();
+			}
+			else if (changedProperty.IsOneOf(ItemsView.FooterProperty, ItemsView.FooterTemplateProperty))
+			{
+				ItemsViewController.UpdateFooterView();
+			}
 			else if (changedProperty.Is(ItemsView.ItemSizingStrategyProperty))
 			{
 				UpdateItemSizingStrategy();
@@ -112,6 +120,8 @@ namespace Xamarin.Forms.Platform.iOS
 			SetNativeControl(ItemsViewController.View);
 			ItemsViewController.CollectionView.BackgroundColor = UIColor.Clear;
 			ItemsViewController.UpdateEmptyView();
+			ItemsViewController.UpdateFooterView();
+			ItemsViewController.UpdateHeaderView();
 
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
@@ -160,17 +170,17 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateVerticalScrollBarVisibility()
 		{
 			if (_defaultVerticalScrollVisibility == null)
-				_defaultVerticalScrollVisibility = ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator;
+				_defaultVerticalScrollVisibility = ItemsViewController.CollectionView.ShowsVerticalScrollIndicator;
 
 			switch (Element.VerticalScrollBarVisibility)
 			{
-				case (ScrollBarVisibility.Always):
+				case ScrollBarVisibility.Always:
 					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = true;
 					break;
-				case (ScrollBarVisibility.Never):
+				case ScrollBarVisibility.Never:
 					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = false;
 					break;
-				case (ScrollBarVisibility.Default):
+				case ScrollBarVisibility.Default:
 					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = _defaultVerticalScrollVisibility.Value;
 					break;
 			}
@@ -183,13 +193,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			switch (Element.HorizontalScrollBarVisibility)
 			{
-				case (ScrollBarVisibility.Always):
+				case ScrollBarVisibility.Always:
 					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = true;
 					break;
-				case (ScrollBarVisibility.Never):
+				case ScrollBarVisibility.Never:
 					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = false;
 					break;
-				case (ScrollBarVisibility.Default):
+				case ScrollBarVisibility.Default:
 					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = _defaultHorizontalScrollVisibility.Value;
 					break;
 			}
@@ -199,7 +209,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var indexPath = DetermineIndex(args);
 
-			if (indexPath.Row < 0 || indexPath.Section < 0)
+			if (indexPath.Item < 0 || indexPath.Section < 0)
 			{
 				// Nothing found, nowhere to scroll to
 				return;
@@ -221,11 +231,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if (Element != null)
-				{
-					TearDownOldElement(Element);
-				}
-				ItemsViewController.Dispose();
+				TearDownOldElement(Element);
+
+				ItemsViewController?.Dispose();
+				ItemsViewController = null;
 			}
 
 			base.Dispose(disposing);

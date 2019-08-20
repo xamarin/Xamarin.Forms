@@ -6,8 +6,8 @@
     <authors>Microsoft</authors>
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms maps xamarinforms xamarinformsmaps xamarin.forms.maps gtk gtk-sharp linux</tags>
-    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
-    <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
+    <license type="expression">MIT</license>
+    <iconUrl>https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Assets/xamarin_128x128.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xamarin.Forms.Maps Renderer for GTK</description>
