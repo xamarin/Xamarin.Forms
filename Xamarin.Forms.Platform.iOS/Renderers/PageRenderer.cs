@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillLayoutSubviews();
 
-			AccessibilityElementsController.ResetAccessibilityElements();
+			Container?.ClearAccessibilityElements();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -322,11 +322,6 @@ namespace Xamarin.Forms.Platform.iOS
 						return UIKit.UIStatusBarAnimation.None;
 				}
 			}
-		}
-
-		void IAccessibilityElementsController.ResetAccessibilityElements()
-		{
-			Container?.ClearAccessibilityElements();
 		}
 
 		void UpdateUseSafeArea()
