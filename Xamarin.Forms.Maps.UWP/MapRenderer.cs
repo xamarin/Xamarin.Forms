@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
+using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
@@ -249,7 +250,7 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void UpdateCamera(BasicGeoposition position, bool raiseCameraChanged = true)
 		{
-			double zoomLevel = Control.ZoomLevel;
+			double zoomLevel = GetCurrentZoom(Control);
 			Element.SetCamera(
 				new Camera(new Position(position.Latitude, position.Longitude), zoomLevel),
 				raiseCameraChanged);
@@ -326,6 +327,22 @@ namespace Xamarin.Forms.Maps.UWP
 		void OnMapTapped(MapControl sender, MapInputEventArgs args)
 		{
 			Element?.SendMapClicked(new Position(args.Location.Position.Latitude, args.Location.Position.Longitude));
+		}
+
+		static double GetCurrentZoom(MapControl mapView)
+		{
+			// The bing maps zoom level is not computed the same way as the google maps one:
+			// we normalize it to have consistent values
+			const int tileSize = 256;
+
+			mapView.GetLocationFromOffset(new Windows.Foundation.Point(0, 0), out Geopoint nw);
+			mapView.GetLocationFromOffset(new Windows.Foundation.Point(mapView.ActualWidth, mapView.ActualHeight), out Geopoint se);
+
+			double longitudeDelta = Math.Abs(nw.Position.Longitude - se.Position.Longitude);
+			double width = mapView.ActualWidth;
+
+			var zoom = Math.Log(360 * width / (longitudeDelta * tileSize), 2);
+			return zoom;
 		}
 	}
 }

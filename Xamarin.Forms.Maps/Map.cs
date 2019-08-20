@@ -33,7 +33,6 @@ namespace Xamarin.Forms.Maps
 		readonly ObservableCollection<Pin> _pins = new ObservableCollection<Pin>();
 		MapSpan _visibleRegion;
 		Camera _camera;
-		IProjector _projector;
 
 		public Map(MapSpan region)
 		{
