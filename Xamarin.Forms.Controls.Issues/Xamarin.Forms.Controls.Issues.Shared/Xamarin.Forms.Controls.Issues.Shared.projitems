@@ -950,6 +950,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue6368.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6472.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6614.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7053.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
