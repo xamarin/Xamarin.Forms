@@ -38,14 +38,18 @@ namespace Xamarin.Forms.Maps.UWP
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
-					Control.ActualCameraChanging += async (s, a) => await UpdateCameraAsync(a.Camera.Location.Position);
+					Control.ActualCameraChanging += (s, a) =>
+					{
+						System.Diagnostics.Debug.WriteLine($"{DateTime.Now.Millisecond}: ActualCameraChanging");
+						UpdateCamera(a.Camera.Location.Position);
+					};
 					Control.ActualCameraChanged += async (s, a) => await UpdateCameraAsync(a.Camera.Location.Position);
+					Control.SizeChanged += OnSizeChanged;
 					Control.MapTapped += OnMapTapped;
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
-				UpdateCamera(Control.ActualCamera.Location.Position, raiseCameraChanged: false);
 				UpdateMapType();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
@@ -237,7 +241,7 @@ namespace Xamarin.Forms.Maps.UWP
 		{
 			try
 			{
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
 				{
 					UpdateCamera(position, raiseCameraChanged);
 				});
@@ -250,6 +254,11 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void UpdateCamera(BasicGeoposition position, bool raiseCameraChanged = true)
 		{
+			if (Control.ActualWidth == 0 || Control.ActualHeight == 0)
+			{
+				return;
+			}
+
 			double zoomLevel = GetCurrentZoom(Control);
 			Element.SetCamera(
 				new Camera(new Position(position.Latitude, position.Longitude), zoomLevel),
@@ -322,6 +331,28 @@ namespace Xamarin.Forms.Maps.UWP
 		void UpdateHasScrollEnabled()
 		{
 			Control.PanInteractionMode = Element.HasScrollEnabled ? MapPanInteractionMode.Auto : MapPanInteractionMode.Disabled;
+		}
+
+		async void OnSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			bool isLayoutInit = e.PreviousSize.Width == 0 && e.NewSize.Width > 0;
+			UpdateCamera(Control.ActualCamera.Location.Position, raiseCameraChanged: !isLayoutInit);
+
+			if (!isLayoutInit)
+			{
+				return;
+			}
+
+			// If move to region is called before the layout pass has been made, it won't work as expected.
+			try
+			{
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+					await MoveToRegion(Element.LastMoveToRegion, MapAnimationKind.None));
+			}
+			catch (Exception exc)
+			{
+				System.Diagnostics.Trace.TraceWarning($"MoveToRegion exception: {exc}");
+			}
 		}
 
 		void OnMapTapped(MapControl sender, MapInputEventArgs args)
