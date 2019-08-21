@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls
 
 		protected override void InitializeElement(FloatingActionButton element)
 		{
+			element.BackgroundColor = Color.Red;
 			element.Size = FloatingActionButtonSize.Normal;
 			element.HorizontalOptions = LayoutOptions.Center;
 		}
@@ -24,8 +25,8 @@ namespace Xamarin.Forms.Controls
 		{
 			base.Build(stackLayout);
 
-			var imageSourceContainer = new StateViewContainer<FloatingActionButton>(Test.FloatingActionButton.ImageSource, new FloatingActionButton { HorizontalOptions = LayoutOptions.Center, ImageSource = "oasissmall.jpg" });
-			var sizeContainer = new StateViewContainer<FloatingActionButton>(Test.FloatingActionButton.Size, new FloatingActionButton { HorizontalOptions = LayoutOptions.Center, Size = FloatingActionButtonSize.Mini });
+			var imageSourceContainer = new StateViewContainer<FloatingActionButton>(Test.FloatingActionButton.ImageSource, new FloatingActionButton { HorizontalOptions = LayoutOptions.Center, BackgroundColor = Color.Red, ImageSource = "oasissmall.jpg" });
+			var sizeContainer = new StateViewContainer<FloatingActionButton>(Test.FloatingActionButton.Size, new FloatingActionButton { HorizontalOptions = LayoutOptions.Center, BackgroundColor = Color.Green, Size = FloatingActionButtonSize.Mini });
 
 			Add(imageSourceContainer);
 			Add(sizeContainer);

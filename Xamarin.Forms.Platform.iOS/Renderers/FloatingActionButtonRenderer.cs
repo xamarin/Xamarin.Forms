@@ -9,6 +9,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, UIButton>, IImageVisualElementRenderer
 	{
+		bool _isDisposed;
+
 		IImageVisualElementRenderer ImageVisualElementRenderer => this;
 
 		public override SizeF SizeThatFits(SizeF size)
@@ -20,11 +22,9 @@ namespace Xamarin.Forms.Platform.iOS
 			return new SizeF(buttonSize, buttonSize);
 		}
 
-		public bool IsDisposed { get; private set; }
-
 		protected override void Dispose(bool disposing)
 		{
-			if (IsDisposed)
+			if (_isDisposed)
 				return;
 
 			if (disposing)
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			IsDisposed = true;
+			_isDisposed = true;
 
 			base.Dispose(disposing);
 		}
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		async Task UpdateImageAsync()
 		{
-			if (IsDisposed || Control == null || Element == null)
+			if (_isDisposed || Control == null || Element == null)
 				return;
 
 			var imageRenderer = ImageVisualElementRenderer;
@@ -154,12 +154,16 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
 
-		public UIImageView GetImage() => Control?.ImageView;
-
-		public void SetImage(UIImage image)
+		UIImageView IImageVisualElementRenderer.GetImage()
 		{
-			if (IsDisposed || Control == null || Element == null)
+			return Control?.ImageView;
+		}
+
+		void IImageVisualElementRenderer.SetImage(UIImage image)
+		{
+			if (_isDisposed || Control == null || Element == null)
 				return;
 
 			var control = Control;
@@ -181,7 +185,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateEdgeInsets()
 		{
-			if (IsDisposed || Control == null || Element == null)
+			if (_isDisposed || Control == null || Element == null)
 				return;
 
 			var control = Control;
