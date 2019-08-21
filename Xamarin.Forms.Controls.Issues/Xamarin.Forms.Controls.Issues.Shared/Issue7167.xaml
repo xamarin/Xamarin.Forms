@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<controls1:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls1="clr-namespace:Xamarin.Forms.Controls;assembly=Xamarin.Forms.Core.Android.UITests"
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.Issues.Issue7167">
     <ContentPage.Content>
@@ -33,4 +34,4 @@
             </StackLayout>
         </Grid>
     </ContentPage.Content>
-</ContentPage>
+</controls1:TestContentPage>
