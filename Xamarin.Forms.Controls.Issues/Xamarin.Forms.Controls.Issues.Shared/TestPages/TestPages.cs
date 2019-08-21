@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
+using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 
 #if UITEST
@@ -217,6 +219,7 @@ namespace Xamarin.Forms.Controls
 			IApp runningApp = null;
 			try
 			{
+				Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 				runningApp = InitializeApp();
 			}
 			catch (Exception e)

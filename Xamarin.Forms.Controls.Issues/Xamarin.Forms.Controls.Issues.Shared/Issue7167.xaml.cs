@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7167,
-		"[Bug] improved observablecollection with system.reactive. a lot of collectionchanges. a reset is sent and listview scrolls to the top", PlatformAffected.UWP)]
+		"[Bug] improved observablecollection with system.reactive. a lot of collectionchanges. a reset is sent and listview scrolls to the top")]
 	public partial class Issue7167 : TestContentPage
 	{
 		public Issue7167()
