@@ -98,7 +98,7 @@ namespace Xamarin.Forms
 
 	public enum FloatingActionButtonSize
 	{
-		Normal,
-		Mini
+		Normal = 56,
+		Mini = 40
 	}
 }

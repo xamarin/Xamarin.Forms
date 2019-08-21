@@ -17,9 +17,6 @@ namespace Xamarin.Forms.Platform.Android
 		IVisualElementRenderer, IViewRenderer, ITabStop,
 		AView.IOnAttachStateChangeListener, AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener
 	{
-		const float SmallSize = 44;
-		const float NormalSize = 56;
-
 		ColorStateList _defaultBackgroundTintList;
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -232,7 +229,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
-			var size = Element.Size == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
+			var size = (float)Element.Size;
 			size = Context.ToPixels(size);
 
 			base.OnLayout(changed, l, t, l + (int)size, t + (int)size);

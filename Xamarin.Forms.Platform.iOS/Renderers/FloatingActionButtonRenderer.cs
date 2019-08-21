@@ -1,20 +1,14 @@
 ﻿using CoreGraphics;
-using Foundation;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using UIKit;
-using Xamarin.Forms.Internals;
 using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, UIButton>, IImageVisualElementRenderer
 	{
-		const int SmallSize = 44;
-		const int NormalSize = 56;
-
 		IImageVisualElementRenderer ImageVisualElementRenderer => this;
 
 		public override SizeF SizeThatFits(SizeF size)
@@ -22,10 +16,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element == null)
 				return SizeF.Empty;
 
-			if (Element.Size == FloatingActionButtonSize.Mini)
-				return new SizeF(SmallSize, SmallSize);
-
-			return new SizeF(NormalSize, NormalSize);
+			var buttonSize = (float)Element.Size;
+			return new SizeF(buttonSize, buttonSize);
 		}
 
 		public bool IsDisposed { get; private set; }
@@ -115,8 +107,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var button = Element;
 
 			uiButton.ClipsToBounds = false;
-
-			nfloat cornerRadius = button.Size == FloatingActionButtonSize.Mini ? SmallSize / 2 : NormalSize / 2;
+			nfloat cornerRadius = (float)Element.Size / 2;
 			uiButton.Layer.CornerRadius = cornerRadius;
 			uiButton.Layer.ShadowColor = UIColor.Black.CGColor;
 			uiButton.Layer.ShadowOpacity = 0.4f;
@@ -135,7 +126,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateSize()
 		{
-			var size = Element.Size == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
+			var size = (float)Element.Size;
 			Control.Frame = new CGRect(Control.Frame.X, Control.Frame.Y, size, size);
 		}
 
@@ -197,7 +188,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null)
 				return;
 
-			nfloat inset = Element.Size == FloatingActionButtonSize.Mini ? SmallSize * .2f : NormalSize * .3f;
+			var size = (float)Element.Size;
+			nfloat inset = Element.Size == FloatingActionButtonSize.Mini ? size * .2f : size * .3f;
 
 			var imageInsets = new UIEdgeInsets(inset, inset, inset, inset);
 			control.ImageEdgeInsets = imageInsets;

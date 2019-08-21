@@ -236,6 +236,8 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum FloatingActionButton
 		{
 			Command,
+			ImageSource,
+			Size
 		}
 
 		public enum VisualElement
