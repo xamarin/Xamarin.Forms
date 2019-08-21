@@ -27,6 +27,25 @@
                 <Entry Grid.Row="1" Grid.Column="1" x:Name="ItemIndex" Keyboard="Numeric" Text="0" AutomationId="ItemIndexEntry"></Entry>
                 <Button Grid.Row="2" Grid.ColumnSpan="2" x:Name="ScrollTo" Text="Go" AutomationId="GoButton"/>
             </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Text="Group Name:"></Label>
+                <Entry Grid.Column="1" x:Name="GroupName" Text="" AutomationId="GroupIndexEntry"></Entry>
+                <Label Grid.Row="1" Text="Item Name:"></Label>
+                <Entry Grid.Row="1" Grid.Column="1" x:Name="ItemName" AutomationId="ItemIndexEntry"></Entry>
+                <Button Grid.Row="2" Grid.ColumnSpan="2" x:Name="ScrollToItem" Text="Go" AutomationId="GoItemButton"/>
+            </Grid>
             
             <CollectionView x:Name="CollectionView" IsGrouped="True">
 

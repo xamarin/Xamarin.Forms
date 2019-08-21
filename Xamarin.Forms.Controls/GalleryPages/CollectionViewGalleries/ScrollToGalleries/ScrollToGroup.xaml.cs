@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGalleries;
 using Xamarin.Forms.Xaml;
 
@@ -7,12 +8,32 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollToGa
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ScrollToGroup : ContentPage
 	{
+		SuperTeams _source = new SuperTeams();
+
 		public ScrollToGroup()
 		{
 			InitializeComponent();
-			CollectionView.ItemsSource = new SuperTeams();
+			CollectionView.ItemsSource = _source;
 
 			ScrollTo.Clicked += ScrollToClicked;
+			ScrollToItem.Clicked += ScrollToItemClicked;
+		}
+
+		void ScrollToItemClicked(object sender, EventArgs e)
+		{
+			var groupName = GroupName.Text;
+			var itemName = ItemName.Text;
+
+			var team = _source.FirstOrDefault(t => t.Name == groupName);
+
+			if (team == null)
+			{
+				return;
+			}
+
+			var member = team.FirstOrDefault(t => t.Name == itemName);
+
+			CollectionView.ScrollTo(member, team);
 		}
 
 		void ScrollToClicked(object sender, EventArgs e)

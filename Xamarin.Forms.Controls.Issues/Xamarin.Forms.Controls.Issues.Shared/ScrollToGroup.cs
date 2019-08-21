@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __IOS__ // Grouping for Android hasn't been merged yet
 		[Test]
-		public void ShouldBeAbleToScrollToGroupAndItemIndex()
+		public void CanScrollToGroupAndItemIndex()
 		{
 			RunningApp.WaitForElement("GroupIndexEntry");
 			RunningApp.Tap("GroupIndexEntry");
@@ -56,6 +56,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 			// Should scroll enough to display this item
 			RunningApp.WaitForElement("Avengers");
+		}
+
+		[Test]
+		public void CanScrollToGroupAndItem()
+		{
+			RunningApp.WaitForElement("GroupNameEntry");
+			RunningApp.Tap("GroupNameEntry");
+			RunningApp.ClearText();
+			RunningApp.EnterText("Heroes for Hire");
+
+			RunningApp.Tap("ItemNameEntry");
+			RunningApp.ClearText();
+			RunningApp.EnterText("Misty Knight");
+
+			// Should scroll enough to display this item
+			RunningApp.WaitForElement("Luke Cage");
 		}
 #endif
 	}
