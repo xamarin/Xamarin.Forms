@@ -280,6 +280,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			Control.AttributedStringValue = newAttributedText;
 #endif
+			_perfectSizeValid = false;
 		}
 
 #if __MOBILE__
@@ -384,6 +385,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
+				
+			_perfectSizeValid = false;
 #endif
 		}
 
@@ -429,6 +432,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #endif
+			_perfectSizeValid = false;
 		}
 
 		void UpdateTextHtml()
@@ -456,7 +460,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Control.AttributedStringValue = new NSAttributedString(htmlData, attr, out _);
 #endif
-			UpdateLayout();
+			_perfectSizeValid = false;
 		}
 
 		void UpdateFont()
