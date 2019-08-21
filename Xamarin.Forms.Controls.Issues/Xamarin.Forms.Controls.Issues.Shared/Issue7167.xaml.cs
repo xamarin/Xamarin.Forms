@@ -24,8 +24,9 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			InitializeComponent();
-			BindingContext = new Issue7167ViewModel();
 #endif
+			BindingContext = new Issue7167ViewModel();
+
 		}
 			
 		protected override void Init()
