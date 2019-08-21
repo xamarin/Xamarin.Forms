@@ -11,8 +11,6 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, FormsButton>
 	{
-		const float SmallSize = 44;
-		const float NormalSize = 56;
 		bool _disposed;
 		
 		protected override void OnElementChanged(ElementChangedEventArgs<FloatingActionButton> e)
@@ -122,9 +120,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateSize()
 		{
-			FloatingActionButtonSize elemSize = Element.Size;
-			var size = elemSize == FloatingActionButtonSize.Mini ? SmallSize : NormalSize;
-
+			var size = (float)Element.Size;
 			Control.Width = Control.Height = size;
 			Control.BorderRadius = (int)(size / 2d);
 		}
@@ -133,7 +129,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 			
-			var maxSize = Element.Size == FloatingActionButtonSize.Mini ? SmallSize * 0.5f : NormalSize * 0.5f;
+			var maxSize = (float)Element.Size * 0.5f;
 			var size = elementImage.GetImageSourceSize();
 			var image = new WImage
 			{
