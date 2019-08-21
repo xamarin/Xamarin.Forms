@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using Xamarin.Forms;
-using Xamarin.Forms.Platform.Tizen;
+﻿using Xamarin.Forms;
 using Xamarin.Forms.Material.Tizen;
-using TForms = Xamarin.Forms.Platform.Tizen.Forms;
-using Tizen.NET.MaterialComponents;
+using Xamarin.Forms.Platform.Tizen;
 
 [assembly: ExportRenderer(typeof(Shell), typeof(MaterialShellRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 namespace Xamarin.Forms.Material.Tizen
@@ -12,12 +9,12 @@ namespace Xamarin.Forms.Material.Tizen
 	{
 		protected override INavigationDrawer CreateNavigationDrawer()
 		{
-			return new MaterialNavigationDrawer(TForms.NativeParent);
+			return new MaterialNavigationDrawer(Forms.NativeParent);
 		}
 
 		protected override INavigationView CreateNavigationView()
 		{
-			return new MaterialNavigationView(TForms.NativeParent);
+			return new MaterialNavigationView(Forms.NativeParent);
 		}
 
 		protected override ShellItemRenderer CreateShellItem(ShellItem item)

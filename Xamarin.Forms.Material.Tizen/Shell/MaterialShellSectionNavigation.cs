@@ -1,5 +1,4 @@
 ﻿using Xamarin.Forms.Platform.Tizen;
-using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 
 namespace Xamarin.Forms.Material.Tizen
 {

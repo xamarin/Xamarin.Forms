@@ -1,4 +1,3 @@
-using System;
 using ElmSharp;
 using Tizen.NET.MaterialComponents;
 using Xamarin.Forms.Platform.Tizen;

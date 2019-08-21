@@ -1,5 +1,4 @@
 ﻿using Xamarin.Forms.Platform.Tizen;
-using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 
 namespace Xamarin.Forms.Material.Tizen
 {
@@ -11,7 +10,7 @@ namespace Xamarin.Forms.Material.Tizen
 
 		protected override IShellTabs CreateTabs()
 		{
-			return new MaterialShellTabs(TForms.NativeParent);
+			return new MaterialShellTabs(Forms.NativeParent);
 		}
 
 		protected override ShellSectionNavigation CreateShellSectionNavigation(IFlyoutController flyoutController, ShellSection section)
