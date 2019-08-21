@@ -41,9 +41,9 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Text="Group Name:"></Label>
-                <Entry Grid.Column="1" x:Name="GroupName" Text="" AutomationId="GroupIndexEntry"></Entry>
+                <Entry Grid.Column="1" x:Name="GroupName" Text="" AutomationId="GroupNameEntry"></Entry>
                 <Label Grid.Row="1" Text="Item Name:"></Label>
-                <Entry Grid.Row="1" Grid.Column="1" x:Name="ItemName" AutomationId="ItemIndexEntry"></Entry>
+                <Entry Grid.Row="1" Grid.Column="1" x:Name="ItemName" AutomationId="ItemNameEntry"></Entry>
                 <Button Grid.Row="2" Grid.ColumnSpan="2" x:Name="ScrollToItem" Text="Go" AutomationId="GoItemButton"/>
             </Grid>
             
