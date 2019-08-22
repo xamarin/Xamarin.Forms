@@ -130,7 +130,7 @@ namespace Xamarin.Forms.Controls.Issues
 			// Flyout Icon is not visible but you can still swipe open
 			RunningApp.Tap(DisableFlyoutBehavior);
 			RunningApp.WaitForNoElement(FlyoutIconAutomationId);
-			ShowFlyout(usingSwipe: true);
+			ShowFlyout(usingSwipe: true, testForFlyoutIcon: false);
 			RunningApp.WaitForElement(title);
 			RunningApp.Tap(title);
 
