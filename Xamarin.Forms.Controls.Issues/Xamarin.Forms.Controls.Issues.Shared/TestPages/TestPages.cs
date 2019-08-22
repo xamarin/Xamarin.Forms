@@ -221,8 +221,9 @@ namespace Xamarin.Forms.Controls
 				// then initializing the app causes a "NUnit.Framework.InconclusiveException" with the exception-
 				// message "App did not start for some reason. System.Argument.Exception: 1 is not supported code page.
 				// Parameter name: codepage."
-				if(Thread.CurrentThread.CurrentCulture != CultureInfo.InvariantCulture)
-					Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+				if(System.Threading.Thread.CurrentThread.CurrentCulture != System.Globalization.CultureInfo.InvariantCulture)
+					System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
 				runningApp = InitializeApp();
 			}
 			catch (Exception e)
