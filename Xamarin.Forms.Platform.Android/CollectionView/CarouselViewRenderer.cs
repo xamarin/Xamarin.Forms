@@ -13,11 +13,13 @@ namespace Xamarin.Forms.Platform.Android
 		protected CarouselView Carousel;
 		bool _isSwipeEnabled;
 		bool _isUpdatingPositionFromForms;
+		int _oldPosition;
+		int _initialPosition;
+		bool _scrollingToInitialPosition = true;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
 			_context = context;
-
 		}
 
 		protected override void Dispose(bool disposing)
@@ -43,6 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsSwipeEnabled();
 			_isUpdatingPositionFromForms = true;
 			//Goto to the Correct Position
+			_initialPosition = Carousel.Position;
 			Carousel.ScrollTo(Carousel.Position);
 			_isUpdatingPositionFromForms = false;
 		}
@@ -94,6 +97,24 @@ namespace Xamarin.Forms.Platform.Android
 					Carousel.SetIsDragging(false);
 				}
 			}	
+		}
+
+		public override void OnScrolled(int dx, int dy)
+		{
+			base.OnScrolled(dx, dy);
+			var layoutManager = GetLayoutManager() as LinearLayoutManager;
+			var adapterPosition = layoutManager.FindFirstVisibleItemPosition();
+			if (_scrollingToInitialPosition)
+			{
+				_scrollingToInitialPosition = !(_initialPosition == adapterPosition);
+				return;
+			}
+					
+			if (_oldPosition != adapterPosition)
+			{
+				_oldPosition = adapterPosition;
+				UpdatePosition(adapterPosition);
+			}
 		}
 
 		void UpdateIsSwipeEnabled()
