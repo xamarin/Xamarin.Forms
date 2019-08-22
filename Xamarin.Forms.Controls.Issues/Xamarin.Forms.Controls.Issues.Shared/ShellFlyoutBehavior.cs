@@ -164,6 +164,11 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(title);
 			RunningApp.Tap(title);
 
+			// FlyoutLocked ensure that the flyout and buttons are still visible
+			RunningApp.Tap(EnableBackButtonBehavior);
+			RunningApp.Tap(LockFlyoutBehavior);
+			RunningApp.WaitForElement(title);
+			RunningApp.Tap(EnableFlyoutBehavior);
 
 		}
 
