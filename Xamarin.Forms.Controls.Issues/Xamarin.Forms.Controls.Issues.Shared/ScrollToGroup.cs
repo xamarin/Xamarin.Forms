@@ -41,6 +41,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.ClearText();
 			RunningApp.EnterText("1");
 
+			RunningApp.Tap("GoButton");
+
 			// Should scroll enough to display this item
 			RunningApp.WaitForElement("Squirrel Girl");
 		}
@@ -57,6 +59,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.ClearText();
 			RunningApp.EnterText("1");
 
+			RunningApp.Tap("GoButton");
+
 			// Should scroll enough to display this item
 			RunningApp.WaitForElement("Avengers");
 		}
@@ -72,6 +76,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("ItemNameEntry");
 			RunningApp.ClearText();
 			RunningApp.EnterText("Misty Knight");
+
+			RunningApp.Tap("GoItemButton");
 
 			// Should scroll enough to display this item
 			RunningApp.WaitForElement("Luke Cage");
