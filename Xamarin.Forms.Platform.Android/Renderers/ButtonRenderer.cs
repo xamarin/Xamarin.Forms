@@ -134,6 +134,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
@@ -162,6 +164,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateText();
 			UpdateBitmap();
 			UpdateTextColor();
+			UpdateCharacterSpacing();
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
@@ -194,10 +197,7 @@ namespace Xamarin.Forms.Platform.Android
 					// Keep track of the image height so we can use it in OnLayout
 					_imageHeight = image?.IntrinsicHeight ?? -1;
 
-					// Invalidating here causes a crazy amount of increased measure invalidations
-					// when I tested with Issue4484 it caused about 800 calls to invalidate measure vs the 8 without this
-					// I'm pretty sure it gets into a layout / invalidation loop where these are invalidating mid layout				
-					//Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+					Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 				});
 				return;
 			}
@@ -225,10 +225,7 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 				}
 
-				// Invalidating here causes a crazy amount of increased measure invalidations
-				// when I tested with Issue4484 it caused about 800 calls to invalidate measure vs the 8 without this
-				// I'm pretty sure it gets into a layout / invalidation loop where these are invalidating mid layout				
-				//Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 			});
 		}
 
@@ -276,6 +273,14 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				Control.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => Control.ShadowRadius;

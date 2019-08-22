@@ -11,7 +11,7 @@ using Android.Support.V4.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer, 
+	public abstract class VisualElementRenderer<TElement> : FormsViewGroup, IVisualElementRenderer, IDisposedState,
 		IEffectControlProvider where TElement : VisualElement
 	{
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return base.DispatchTouchEvent(e);
-		}		  		
+		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use VisualElementRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -202,11 +202,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetElement(TElement element)
 		{
-			if (element == null)
-				throw new ArgumentNullException(nameof(element));
-
 			TElement oldElement = Element;
-			Element = element;
+			Element = element ?? throw new ArgumentNullException(nameof(element));
 
 			Performance.Start(out string reference);
 
@@ -215,13 +212,10 @@ namespace Xamarin.Forms.Platform.Android
 				oldElement.PropertyChanged -= _propertyChangeHandler;
 			}
 
-			// element may be allowed to be passed as null in the future
-			if (element != null)
-			{
-				Color currentColor = oldElement != null ? oldElement.BackgroundColor : Color.Default;
-				if (element.BackgroundColor != currentColor)
-					UpdateBackgroundColor();
-			}
+			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
+
+			if (element.BackgroundColor != currentColor)
+				UpdateBackgroundColor();
 
 			if (_propertyChangeHandler == null)
 				_propertyChangeHandler = OnElementPropertyChanged;
@@ -241,12 +235,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (AutoTrack && Tracker == null)
 				SetTracker(new VisualElementTracker(this));
 
+			if (oldElement != null)
+				Tracker?.UpdateLayout();
+
 			if (element != null)
 				SendVisualElementInitialized(element, this);
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
-			if (element != null && !string.IsNullOrEmpty(element.AutomationId))
+			if (!string.IsNullOrEmpty(element.AutomationId))
 				SetAutomationId(element.AutomationId);
 
 			SetContentDescription();
@@ -265,10 +262,14 @@ namespace Xamarin.Forms.Platform.Android
 		/// </summary>
 		protected virtual bool ManageNativeControlLifetime => true;
 
+		bool CheckFlagsForDisposed() => (_flags & VisualElementRendererFlags.Disposed) != 0;
+		bool IDisposedState.IsDisposed => CheckFlagsForDisposed();
+
 		protected override void Dispose(bool disposing)
 		{
-			if ((_flags & VisualElementRendererFlags.Disposed) != 0)
+			if (CheckFlagsForDisposed())
 				return;
+
 			_flags |= VisualElementRendererFlags.Disposed;
 
 			if (disposing)
@@ -277,6 +278,11 @@ namespace Xamarin.Forms.Platform.Android
 				SetOnTouchListener(null);
 
 				EffectUtilities.UnregisterEffectControlProvider(this, Element);
+
+				if (Element != null)
+				{
+					Element.PropertyChanged -= _propertyChangeHandler;
+				}
 
 				if (Tracker != null)
 				{
@@ -308,8 +314,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= _propertyChangeHandler;
-
 					if (Platform.GetRenderer(Element) == this)
 						Platform.SetRenderer(Element, null);
 
@@ -339,7 +343,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			ElevationHelper.SetElevation(this, e.NewElement);
 		}
-		
+
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
@@ -374,7 +378,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		static void UpdateLayout(IEnumerable<Element> children)
 		{
-			foreach (Element element in children)  	{
+			foreach (Element element in children)
+			{
 				var visualElement = element as VisualElement;
 				if (visualElement == null)
 					continue;

@@ -170,6 +170,8 @@ namespace Xamarin.Forms.Material.Android
 				UpdatePrimaryColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -178,12 +180,6 @@ namespace Xamarin.Forms.Material.Android
 		{
 			_buttonLayoutManager?.OnLayout(changed, left, top, right, bottom);
 			base.OnLayout(changed, left, top, right, bottom);
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			_buttonLayoutManager?.Update();
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
 		}
 
 		void UpdateFont()
@@ -293,6 +289,11 @@ namespace Xamarin.Forms.Material.Android
 			ViewCompat.SetBackgroundTintList(this, MaterialColors.CreateButtonBackgroundColors(background));
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			LetterSpacing = Element.CharacterSpacing.ToEm();
+		}
+
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> OnThisPlatform() =>
 			_platformElementConfiguration ?? (_platformElementConfiguration = Element.OnThisPlatform());
 
@@ -334,9 +335,7 @@ namespace Xamarin.Forms.Material.Android
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			_buttonLayoutManager?.Update();
-			Measure(widthConstraint, heightConstraint);
-			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element) =>
@@ -361,6 +360,14 @@ namespace Xamarin.Forms.Material.Android
 
 		// IButtonLayoutRenderer
 		AppCompatButton IButtonLayoutRenderer.View => this;
+
+		Button IButtonLayoutRenderer.Element => this.Element;
+
+		event EventHandler<VisualElementChangedEventArgs> IButtonLayoutRenderer.ElementChanged
+		{
+			add => ((IVisualElementRenderer)this).ElementChanged += value;
+			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
+		}
 	}
 }
 #endif

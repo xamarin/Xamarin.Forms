@@ -1,12 +1,212 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
+using static Xamarin.Forms.VisualElement;
 
 namespace Xamarin.Forms
 {
-	public class SearchHandler : BindableObject, ISearchHandlerController
+	public class SearchHandler : BindableObject, ISearchHandlerController, IPlaceholderElement, IFontElement, ITextElement, ITextAlignmentElement
 	{
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsFocused),
+			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedPropertyChanged);
+
+		public event EventHandler<EventArgs> Focused;
+		public event EventHandler<EventArgs> Unfocused;
+
+		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
+
+		public bool IsFocused
+		{
+			get { return (bool)GetValue(IsFocusedProperty); }
+		}
+
+		static void OnIsFocusedPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			var element = (SearchHandler)bindable;
+
+			if (element == null)
+			{
+				return;
+			}
+
+			var isFocused = (bool)newvalue;
+			if (isFocused)
+			{
+				element.Focused?.Invoke(element, new EventArgs());
+				element.OnFocused();
+			}
+			else
+			{
+				element.Unfocused?.Invoke(element, new EventArgs());
+				element.OnUnfocus();
+			}
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetIsFocused(bool value)
+		{
+			SetValueCore(IsFocusedPropertyKey.BindableProperty, value);
+		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<FocusRequestArgs> FocusChangeRequested;
+
+		public bool Focus()
+		{
+			if (IsFocused)
+				return true;
+
+			if (FocusChangeRequested == null)
+				return false;
+
+			var arg = new FocusRequestArgs { Focus = true };
+			FocusChangeRequested(this, arg);
+			return arg.Result;
+		}
+
+		public void Unfocus()
+		{
+			if (!IsFocused)
+				return;
+
+			FocusChangeRequested?.Invoke(this, new FocusRequestArgs());
+		}
+
+		protected virtual void OnFocused()
+		{
+			
+		}
+
+		protected virtual void OnUnfocus()
+		{
+			
+		}
+
+		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(Keyboard), typeof(SearchHandler), Keyboard.Default, coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
+
+		public Keyboard Keyboard
+		{
+			get { return (Keyboard)GetValue(KeyboardProperty); }
+			set { SetValue(KeyboardProperty, value); }
+		}
+
+		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
+
+		public static readonly BindableProperty VerticalTextAlignmentProperty = TextAlignmentElement.VerticalTextAlignmentProperty;
+
+		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)
+		{
+		}
+
+		public TextAlignment HorizontalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(TextAlignmentElement.HorizontalTextAlignmentProperty); }
+			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
+		}
+
+		public TextAlignment VerticalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(TextAlignmentElement.VerticalTextAlignmentProperty); }
+			set { SetValue(TextAlignmentElement.VerticalTextAlignmentProperty, value); }
+		}
+
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
+
+		public Color TextColor
+		{
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public static readonly BindableProperty CancelButtonColorProperty = BindableProperty.Create(nameof(CancelButtonColor), typeof(Color), typeof(SearchHandler), default(Color));
+
+		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
+
+		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
+
+		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
+
+		public static readonly BindableProperty PlaceholderProperty = PlaceholderElement.PlaceholderProperty;
+
+		public static readonly BindableProperty PlaceholderColorProperty = PlaceholderElement.PlaceholderColorProperty;
+
+		public Color CancelButtonColor
+		{
+			get { return (Color)GetValue(CancelButtonColorProperty); }
+			set { SetValue(CancelButtonColorProperty, value); }
+		}
+
+
+		public FontAttributes FontAttributes
+		{
+			get { return (FontAttributes)GetValue(FontAttributesProperty); }
+			set { SetValue(FontAttributesProperty, value); }
+		}
+
+		public string FontFamily
+		{
+			get { return (string)GetValue(FontFamilyProperty); }
+			set { SetValue(FontFamilyProperty, value); }
+		}
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+
+		[TypeConverter(typeof(FontSizeConverter))]
+		public double FontSize
+		{
+			get { return (double)GetValue(FontSizeProperty); }
+			set { SetValue(FontSizeProperty, value); }
+		}
+
+		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
+		{
+		}
+
+		void IFontElement.OnFontSizeChanged(double oldValue, double newValue)
+		{
+		}
+
+		double IFontElement.FontSizeDefaultValueCreator() =>
+			Device.GetNamedSize(NamedSize.Default, typeof(SearchHandler));
+
+		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
+		{
+		}
+
+		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
+		{
+		}
+
+		public Color PlaceholderColor
+		{
+			get => (Color)GetValue(PlaceholderElement.PlaceholderColorProperty);
+			set => SetValue(PlaceholderElement.PlaceholderColorProperty, value);
+		}
+
+		public string Placeholder
+		{
+			get => (string)GetValue(PlaceholderElement.PlaceholderProperty);
+			set => SetValue(PlaceholderElement.PlaceholderProperty, value);
+		}
+
+		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(SearchHandler), Color.Default);
+
+		public Color BackgroundColor
+		{
+			get { return (Color)GetValue(BackgroundColorProperty); }
+			set { SetValue(BackgroundColorProperty, value); }
+		}
+
 		event EventHandler<ListProxyChangedEventArgs> ISearchHandlerController.ListProxyChanged
 		{
 			add { _listProxyChanged += value; }
@@ -100,9 +300,6 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ItemTemplateProperty =
 			BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(SearchHandler), null, BindingMode.OneTime);
-
-		public static readonly BindableProperty PlaceholderProperty =
-			BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(SearchHandler), null, BindingMode.OneTime);
 
 		public static readonly BindableProperty QueryIconHelpTextProperty =
 			BindableProperty.Create(nameof(QueryIconHelpText), typeof(string), typeof(SearchHandler), null, BindingMode.OneTime,
@@ -223,12 +420,6 @@ namespace Xamarin.Forms
 			set { SetValue(ItemTemplateProperty, value); }
 		}
 
-		public string Placeholder
-		{
-			get { return (string)GetValue(PlaceholderProperty); }
-			set { SetValue(PlaceholderProperty, value); }
-		}
-
 		public string Query
 		{
 			get { return (string)GetValue(QueryProperty); }
@@ -325,13 +516,23 @@ namespace Xamarin.Forms
 			((SearchHandler)bindable).OnCommandParameterChanged();
 		}
 
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+
+		}
+
 		static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = (SearchHandler)bindable;
 			if (newValue == null)
 				self.ListProxy = null;
 			else
-				self.ListProxy = new ListProxy((IEnumerable)newValue);
+				self.ListProxy = new ListProxy((IEnumerable)newValue, dispatcher: self.Dispatcher);
 		}
 
 		static void OnQueryChanged(BindableObject bindable, object oldValue, object newValue)

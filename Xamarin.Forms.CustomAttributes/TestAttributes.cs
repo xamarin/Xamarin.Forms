@@ -199,7 +199,8 @@ namespace Xamarin.Forms.CustomAttributes
 			ImageCell,
 			EntryCell,
 			Editor,
-			DatePicker
+			DatePicker,
+			CheckBox
 		}
 
 		public enum Layouts
@@ -525,6 +526,12 @@ namespace Xamarin.Forms.CustomAttributes
 			HorizontalTextAlignmentPlaceholderStart,
 			HorizontalTextAlignmentPlaceholderCenter,
 			HorizontalTextAlignmentPlaceholderEnd,
+			VerticalTextAlignmentStart,
+			VerticalTextAlignmentCenter,
+			VerticalTextAlignmentEnd,
+			VerticalTextAlignmentPlaceholderStart,
+			VerticalTextAlignmentPlaceholderCenter,
+			VerticalTextAlignmentPlaceholderEnd,
 			FontAttributes,
 			FontFamily,
 			FontSize,
@@ -534,7 +541,8 @@ namespace Xamarin.Forms.CustomAttributes
 			PasswordColor,
 			MaxLength,
 			IsReadOnly,
-			IsPasswordNumeric
+			IsPasswordNumeric,
+			ClearButtonVisibility
 		}
 
 		public enum Frame
@@ -569,7 +577,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Clicked,
 			Command,
 			Image,
-			Pressed
+			Pressed,
+			Padding
 		}
 
 		public enum ImageSource
@@ -604,6 +613,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			TextColor,
 			Text,
+			Padding,
 			FormattedText,
 			FontAttibutesBold,
 			FontAttributesItalic,
@@ -677,9 +687,15 @@ namespace Xamarin.Forms.CustomAttributes
 			TextAlignmentStart,
 			TextAlignmentCenter,
 			TextAlignmentEnd,
+			TextVerticalAlignmentStart,
+			TextVerticalAlignmentCenter,
+			TextVerticalAlignmentEnd,
 			PlaceholderAlignmentStart,
 			PlaceholderAlignmentCenter,
 			PlaceholderAlignmentEnd,
+			PlaceholderVerticalAlignmentStart,
+			PlaceholderVerticalAlignmentCenter,
+			PlaceholderVerticalAlignmentEnd,
 			TextColor,
 			PlaceholderColor
 		}
@@ -714,7 +730,15 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Switch
 		{
 			IsToggled,
-			OnColor
+			OnColor,
+			ThumbColor
+		}
+
+		public enum CheckBox
+		{
+			IsChecked,
+			CheckedColor,
+			UncheckedColor
 		}
 
 		public enum TimePicker

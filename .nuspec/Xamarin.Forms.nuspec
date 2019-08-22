@@ -6,8 +6,8 @@
     <authors>Microsoft</authors>
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms xamarinforms xamarin.forms</tags>
-    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
-    <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
+    <license type="expression">MIT</license>
+    <iconUrl>https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Assets/xamarin_128x128.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Build native UIs for iOS, Android, UWP, macOS, Tizen and many more from a single, shared C# codebase</description>
@@ -221,7 +221,8 @@
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\TabbedPageStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsEmbeddedPageWrapper.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\StepperControl.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Items\ItemsViewStyles.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Items" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\CollectionView\ItemsViewStyles.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\CollectionView" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsCheckBoxStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 
     <!--Mac-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />

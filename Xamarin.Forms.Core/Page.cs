@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 
 		public const string AlertSignalName = "Xamarin.SendAlert";
 
+		public const string PromptSignalName = "Xamarin.SendPrompt";
+
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
@@ -58,13 +60,18 @@ namespace Xamarin.Forms
 			var toolbarItems = new ObservableCollection<ToolbarItem>();
 			toolbarItems.CollectionChanged += OnToolbarItemsCollectionChanged;
 			ToolbarItems = toolbarItems;
+
+			//if things were added in base ctor (through implicit styles), the items added aren't properly parented
+			if (InternalChildren.Count > 0)
+				InternalChildrenOnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, InternalChildren));
+
 			InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Page>>(() => new PlatformConfigurationRegistry<Page>(this));
 		}
 
 		[Obsolete("BackgroundImage is obsolete as of 4.0.0. Please use BackgroundImageSource instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public FileImageSource BackgroundImage
+		public string BackgroundImage
 		{
 			get { return GetValue(BackgroundImageProperty) as FileImageSource; }
 			set { SetValue(BackgroundImageProperty, value); }
@@ -144,6 +151,22 @@ namespace Xamarin.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
+		{
+			get
+			{
+				var titleviewPart1TheShell = Shell.GetTitleView(this);
+				var titleViewPart2TheNavBar = NavigationPage.GetTitleView(this);
+
+				if (titleviewPart1TheShell != null)
+					yield return titleviewPart1TheShell;
+
+				if (titleViewPart2TheNavBar != null)
+					yield return titleViewPart2TheNavBar;
+
+			}
+		}
+
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => 
 			_logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(InternalChildren));
 
@@ -172,6 +195,13 @@ namespace Xamarin.Forms
 
 			var args = new AlertArguments(title, message, accept, cancel);
 			MessagingCenter.Send(this, AlertSignalName, args);
+			return args.Result.Task;
+		}
+
+		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard))
+		{
+			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard);
+			MessagingCenter.Send(this, PromptSignalName, args);
 			return args.Result.Task;
 		}
 

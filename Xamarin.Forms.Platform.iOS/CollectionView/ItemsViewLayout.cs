@@ -13,11 +13,17 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly ItemsLayout _itemsLayout;
 		bool _determiningCellSize;
 		bool _disposed;
-		bool _needCellSizeUpdate;
+		bool _adjustContentOffset;
+		CGSize _adjustmentSize0;
+		CGSize _adjustmentSize1;
 
-		protected ItemsViewLayout(ItemsLayout itemsLayout)
+		public ItemsUpdatingScrollMode ItemsUpdatingScrollMode { get; set; }
+
+		protected ItemsViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy)
 		{
 			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewLayout));
+
+			ItemSizingStrategy = itemSizingStrategy;
 
 			_itemsLayout = itemsLayout;
 			_itemsLayout.PropertyChanged += LayoutOnPropertyChanged;
@@ -27,6 +33,15 @@ namespace Xamarin.Forms.Platform.iOS
 				: UICollectionViewScrollDirection.Vertical;
 
 			Initialize(scrollDirection);
+
+			if (Forms.IsiOS11OrNewer)
+			{
+				// `ContentInset` is actually the default value, but I'm leaving this here as a note to
+				// future maintainers; it's likely that someone will want a Platform Specific to change this behavior
+				// (Setting it to `SafeArea` lets you do the thing where the header/footer of your UICollectionView
+				// fills the screen width in landscape while your items are automatically shifted to avoid the notch)
+				SectionInsetReference = UICollectionViewFlowLayoutSectionInsetReference.ContentInset;
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -42,7 +57,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_itemsLayout != null)
 				{
-					_itemsLayout.PropertyChanged += LayoutOnPropertyChanged;
+					_itemsLayout.PropertyChanged -= LayoutOnPropertyChanged;
 				}
 			}
 
@@ -51,29 +66,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
 		{
+			HandlePropertyChanged(propertyChanged);
 		}
 
 		protected virtual void HandlePropertyChanged(PropertyChangedEventArgs propertyChanged)
 		{
+			if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty,
+				GridItemsLayout.HorizontalItemSpacingProperty, GridItemsLayout.VerticalItemSpacingProperty))
+			{
+				UpdateItemSpacing();
+			}
 		}
 
 		public nfloat ConstrainedDimension { get; set; }
 
 		public Func<UICollectionViewCell> GetPrototype { get; set; }
 
-		internal ItemSizingStrategy ItemSizingStrategy { get; set; }
+		internal ItemSizingStrategy ItemSizingStrategy { get; private set; }
 
 		public abstract void ConstrainTo(CGSize size);
-
-		public virtual void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
-		{
-			if (_needCellSizeUpdate)
-			{
-				// Our cell size/estimate is out of date, probably because we moved from zero to one item; update it
-				_needCellSizeUpdate = false;
-				DetermineCellSize();
-			}
-		}
 
 		public virtual UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
 			nint section)
@@ -84,12 +95,37 @@ namespace Xamarin.Forms.Platform.iOS
 		public virtual nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView,
 			UICollectionViewLayout layout, nint section)
 		{
+			if (_itemsLayout is GridItemsLayout gridItemsLayout)
+			{
+				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					return (nfloat)gridItemsLayout.VerticalItemSpacing;
+				}
+
+				return (nfloat)gridItemsLayout.HorizontalItemSpacing;
+			}
+
 			return (nfloat)0.0;
 		}
 
 		public virtual nfloat GetMinimumLineSpacingForSection(UICollectionView collectionView,
 			UICollectionViewLayout layout, nint section)
 		{
+			if (_itemsLayout is ListItemsLayout listViewLayout)
+			{
+				return (nfloat)listViewLayout.ItemSpacing;
+			}
+
+			if (_itemsLayout is GridItemsLayout gridItemsLayout)
+			{
+				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					return (nfloat)gridItemsLayout.HorizontalItemSpacing;
+				}
+
+				return (nfloat)gridItemsLayout.VerticalItemSpacing;
+			}
+
 			return (nfloat)0.0;
 		}
 
@@ -130,6 +166,19 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					return true;
 				}
+			}
+
+			if (Forms.IsiOS11OrNewer)
+			{
+				return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
+			}
+
+			// For iOS 10 and lower, we have to invalidate on header/footer changes here; otherwise, all of the 
+			// headers and footers will draw on top of one another
+			if (preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Header
+				|| preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Footer)
+			{
+				return true;
 			}
 
 			return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
@@ -217,11 +266,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ConstrainTo(size);
 			UpdateCellConstraints();
-		}
-
-		public void SetNeedCellSizeUpdate()
-		{
-			_needCellSizeUpdate = true;
 		}
 
 		public override CGPoint TargetContentOffset(CGPoint proposedContentOffset, CGPoint scrollingVelocity)
@@ -319,6 +363,204 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return SnapHelpers.AdjustContentOffset(CollectionView.ContentOffset, currentItem.Frame, viewport, alignment,
 				ScrollDirection);
+		}
+
+		protected virtual void UpdateItemSpacing()
+		{
+			if (_itemsLayout == null)
+			{
+				return;
+			}
+
+			InvalidateLayout();
+		}
+
+		public override UICollectionViewLayoutInvalidationContext GetInvalidationContext(UICollectionViewLayoutAttributes preferredAttributes, UICollectionViewLayoutAttributes originalAttributes)
+		{
+			if (Forms.IsiOS11OrNewer)
+			{
+				return base.GetInvalidationContext(preferredAttributes, originalAttributes);
+			}
+
+			var indexPath = preferredAttributes.IndexPath;
+
+			try
+			{
+				UICollectionViewLayoutInvalidationContext invalidationContext =
+					base.GetInvalidationContext(preferredAttributes, originalAttributes);
+
+				// Ensure that if this invalidation was triggered by header/footer changes, the header/footer
+				// are being invalidated
+				if (preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Header)
+				{
+					invalidationContext.InvalidateSupplementaryElements(UICollectionElementKindSectionKey.Header,
+						new[] { indexPath });
+				}
+				else if (preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Footer)
+				{
+					invalidationContext.InvalidateSupplementaryElements(UICollectionElementKindSectionKey.Footer,
+						new[] { indexPath });
+				}
+
+				return invalidationContext;
+			}
+			catch (MonoTouchException)
+			{
+				// This happens on iOS 10 if we have any empty groups in our ItemsSource. Catching here and 
+				// returning a UICollectionViewFlowLayoutInvalidationContext means that the application does not
+				// crash, though any group headers/footers will initially draw in the wrong location. It's possible to 
+				// work around this problem by forcing a full layout update after the headers/footers have been 
+				// drawn in the wrong places
+			}
+
+			return new UICollectionViewFlowLayoutInvalidationContext();
+		}
+
+		public override UICollectionViewLayoutAttributes LayoutAttributesForSupplementaryView(NSString kind, NSIndexPath indexPath)
+		{
+			if (Forms.IsiOS11OrNewer)
+			{
+				return base.LayoutAttributesForSupplementaryView(kind, indexPath);
+			}
+
+			// iOS 10 and lower doesn't create these and will throw an exception in GetViewForSupplementaryElement 
+			// without them, so we need to do it manually here
+			return UICollectionViewLayoutAttributes.CreateForSupplementaryView(kind, indexPath);
+		}
+
+		public override void PrepareLayout()
+		{
+			base.PrepareLayout();
+
+			// PrepareLayout is the only good place to consistently track the content size changes
+			TrackOffsetAdjustment();
+		}
+
+		public override void PrepareForCollectionViewUpdates(UICollectionViewUpdateItem[] updateItems)
+		{
+			base.PrepareForCollectionViewUpdates(updateItems);
+
+			if (ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)
+			{
+				// This is the default behavior for iOS, no need to do anything
+				return;
+			}
+
+			if (ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView
+			   || ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
+			{
+				// If this update will shift the visible items,  we'll have to adjust for 
+				// that later in TargetContentOffsetForProposedContentOffset
+				_adjustContentOffset = UpdateWillShiftVisibleItems(CollectionView, updateItems);
+			}
+		}
+
+		public override CGPoint TargetContentOffsetForProposedContentOffset(CGPoint proposedContentOffset)
+		{
+			if (_adjustContentOffset)
+			{
+				_adjustContentOffset = false;
+
+				// PrepareForCollectionViewUpdates detected that an item update was going to shift the viewport
+				// and we want to make sure it stays in place
+				return proposedContentOffset + ComputeOffsetAdjustment();
+			}
+
+			return base.TargetContentOffsetForProposedContentOffset(proposedContentOffset);
+		}
+
+		public override void FinalizeCollectionViewUpdates()
+		{
+			base.FinalizeCollectionViewUpdates();
+
+			if (ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
+			{
+				ForceScrollToLastItem(CollectionView);
+			}
+		}
+
+		void TrackOffsetAdjustment()
+		{
+			// Keep track of the previous sizes of the CollectionView content so we can adjust the viewport
+			// offsets if we're in ItemsUpdatingScrollMode.KeepItemsInView
+
+			// We keep track of the last two adjustments because the only place we can consistently track this
+			// is PrepareLayout, and by the time PrepareLayout has been called, the CollectionViewContentSize
+			// has already been updated
+
+			if (_adjustmentSize0.IsEmpty)
+			{
+				_adjustmentSize0 = CollectionViewContentSize;
+			}
+			else if (_adjustmentSize1.IsEmpty)
+			{
+				_adjustmentSize1 = CollectionViewContentSize;
+			}
+			else
+			{
+				_adjustmentSize0 = _adjustmentSize1;
+				_adjustmentSize1 = CollectionViewContentSize;
+			}
+		}
+
+		CGSize ComputeOffsetAdjustment()
+		{
+			return CollectionViewContentSize - _adjustmentSize0;
+		}
+
+		static bool UpdateWillShiftVisibleItems(UICollectionView collectionView, UICollectionViewUpdateItem[] updateItems)
+		{
+			// Find the first visible item
+			var firstPath = collectionView.IndexPathsForVisibleItems.FindFirst();
+
+			if (firstPath == null)
+			{
+				// No visible items to shift
+				return false;
+			}
+
+			// Determine whether any of the new items will be "before" the first visible item
+			foreach (var item in updateItems)
+			{
+				if (item.UpdateAction == UICollectionUpdateAction.Delete
+					|| item.UpdateAction == UICollectionUpdateAction.Insert
+					|| item.UpdateAction == UICollectionUpdateAction.Move)
+				{
+					if (item.IndexPathAfterUpdate == null)
+					{
+						continue;
+					}
+
+					if (item.IndexPathAfterUpdate.IsLessThanOrEqualToPath(firstPath))
+					{
+						// If any of these items will end up "before" the first visible item, then the items will shift
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		static void ForceScrollToLastItem(UICollectionView collectionView)
+		{
+			var sections = (int)collectionView.NumberOfSections();
+
+			if (sections == 0)
+			{
+				return;
+			}
+
+			for (int section = sections - 1; section >= 0; section--)
+			{
+				var itemCount = collectionView.NumberOfItemsInSection(section);
+				if (itemCount > 0)
+				{
+					var lastIndexPath = NSIndexPath.FromItemSection(itemCount - 1, section);
+					collectionView.ScrollToItem(lastIndexPath, UICollectionViewScrollPosition.Bottom, true);
+					return;
+				}
+			}
 		}
 	}
 }

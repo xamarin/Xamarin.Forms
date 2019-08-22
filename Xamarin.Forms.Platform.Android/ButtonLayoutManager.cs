@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _preserveInitialPadding;
 		bool _borderAdjustsPadding;
 		bool _maintainLegacyMeasurements;
+		bool _hasLayoutOccurred;
 
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer)
 			: this(renderer, false, false, false, true)
@@ -79,13 +80,30 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		internal SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			var previousHeight = View.MeasuredHeight;
+			var previousWidth = View.MeasuredWidth;
+
+			View.Measure(widthConstraint, heightConstraint);
+
+			// if the measure of the view has changed then trigger a request for layout
+			// if the measure hasn't changed then force a layout of the button
+			if (previousHeight != View.MeasuredHeight || previousWidth != View.MeasuredWidth)
+				View.MaybeRequestLayout();
+			else
+				View.ForceLayout();
+
+			return new SizeRequest(new Size(View.MeasuredWidth, View.MeasuredHeight), Size.Zero);
+		}
+
 		public void OnLayout(bool changed, int left, int top, int right, int bottom)
 		{
 			if (_disposed || _renderer == null || _element == null)
 				return;
 
 			AppCompatButton view = View;
-			if (view == null || view.Layout == null)
+			if (view == null)
 				return;
 
 			Drawable drawable = null;
@@ -141,6 +159,8 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 			}
+
+			_hasLayoutOccurred = true;
 		}
 
 		public void OnViewAttachedToWindow(AView attachedView)
@@ -276,30 +296,43 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
 
-			_renderer.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
-			{
-				switch (layout.Position)
+			Drawable existingImage = null;
+			var images = TextViewCompat.GetCompoundDrawablesRelative(view);
+			for (int i = 0; i < images.Length; i++)
+				if (images[i] != null)
 				{
-					case Button.ButtonContentLayout.ImagePosition.Top:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, image, null, null);
-						break;
-					case Button.ButtonContentLayout.ImagePosition.Right:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, image, null);
-						break;
-					case Button.ButtonContentLayout.ImagePosition.Bottom:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, null, image);
-						break;
-					default:
-						// Defaults to image on the left
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
-						break;
+					existingImage = images[i];
+					break;
 				}
 
-				// Invalidating here causes a crazy amount of increased measure invalidations
-				// when I tested with Issue4484 it caused about 800 calls to invalidate measure vs the 8 without this
-				// I'm pretty sure it gets into a layout / invalidation loop where these are invalidating mid layout				
-				//_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
-			});
+			if (_renderer is IVisualElementRenderer visualElementRenderer)
+			{
+				visualElementRenderer.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
+				{
+					if (image == existingImage)
+						return;
+
+					switch (layout.Position)
+					{
+						case Button.ButtonContentLayout.ImagePosition.Top:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, image, null, null);
+							break;
+						case Button.ButtonContentLayout.ImagePosition.Right:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, image, null);
+							break;
+						case Button.ButtonContentLayout.ImagePosition.Bottom:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, null, image);
+							break;
+						default:
+							// Defaults to image on the left
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
+							break;
+					}
+
+					if (_hasLayoutOccurred)
+						_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				});
+			}
 		}
 	}
 }

@@ -109,6 +109,7 @@
     <Compile Include="CustomRenderers.cs" />
     <Compile Include="ColorPicker.cs" />
     <Compile Include="SampleNativeControl.cs" />
+    <Compile Include="StaggeredCollectionViewRenderer.cs" />
     <Compile Include="TestCloudService.cs" />
     <Compile Include="_1909CustomRenderer.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
@@ -155,6 +156,13 @@
     <AndroidResource Include="Resources\drawable\icon_search.png" />
     <AndroidResource Include="Resources\drawable\icon_bookmark.png" />
     <AndroidResource Include="Resources\drawable\button_add.png" />
+    <AndroidResource Include="Resources\drawable\gamesflyout.png" />
+    <AndroidResource Include="Resources\drawable\filmflyout.png" />
+    <AndroidResource Include="Resources\drawable\headphoneflyout.png" />
+    <AndroidResource Include="Resources\drawable\newspaperflyout.png" />
+    <AndroidResource Include="Resources\drawable\booksflyout.png" />
+    <AndroidResource Include="Resources\drawable\homeflyout.png" />
+    <AndroidResource Include="Resources\drawable\xamarinlogo.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\Icon.png" />
