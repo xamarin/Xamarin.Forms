@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-
+using Xamarin.Forms.Xaml;
 #if UITEST
 using Xamarin.UITest;
 using Xamarin.Forms.Core.UITests;
@@ -14,24 +14,23 @@ using NUnit.Framework;
 
 
 namespace Xamarin.Forms.Controls.Issues
-{
+{ 
+#if APP
+	[XamlCompilation(XamlCompilationOptions.Compile)]
+#endif
+
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7167,
-		"[Bug] improved observablecollection with system.reactive. a lot of collectionchanges. a reset is sent and listview scrolls to the top")]
+		"[Bug] improved observablecollection. a lot of collectionchanges. a reset is sent and listview scrolls to the top", PlatformAffected.All)]
 	public partial class Issue7167 : TestContentPage
 	{
-		public Issue7167()
+
+		protected override void Init()
 		{
 #if APP
 			InitializeComponent();
 #endif
 			BindingContext = new Issue7167ViewModel();
-
-		}
-			
-		protected override void Init()
-		{
-			
 		}
 
 		void MyListView_OnItemSelected(object sender, SelectedItemChangedEventArgs e)
@@ -53,18 +52,26 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public  void Issue7167Test()
 		{
-			RunningApp.Print.Tree();
+
 			// arrange
 			RunningApp.Screenshot("Empty ListView");
 			RunningApp.Tap(q => q.Button(AddRangeCommandId));
 			RunningApp.Tap(q => q.Button(AddRangeCommandId));
-			RunningApp.ScrollDown("25", ScrollStrategy.Programmatically);
+			RunningApp.WaitForElement(c => c.Index(25).Property("Enabled", true));
+			RunningApp.Print.Tree();
+			RunningApp.ScrollDownTo(a => a.Marked("25").Property("text").Contains("25"),
+				b => b.Marked(ListViewId), ScrollStrategy.Auto);
 			RunningApp.WaitForElement(x => x.Marked("25"));
-			RunningApp.Tap(q => q.Marked(AddRangeCommandId));
-			RunningApp.Query(x => x.Marked(ListViewId).Child().Marked("25"));
+
 			// act
+			RunningApp.Tap(q => q.Marked(AddRangeCommandId));
 
 			// assert
+			RunningApp.Query(x => x.Marked(ListViewId).Child().Marked("25"));
+
+			RunningApp.Print.Tree();
+
+
 
 		}
 #endif
@@ -72,6 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 		
 	}
 
+	[Preserve (AllMembers = true)]
 	internal class Issue7167ViewModel
 	{
 		//private static readonly IEnumerable<string> _items = Enumerable.Range(0, 50).Select(num => num.ToString());
@@ -95,6 +103,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 	}
 
+	[Preserve (AllMembers = true)]
 	internal class ImprovedObservableCollection<T> : ObservableCollection<T>
 	{
 		bool _isActivated = true;
