@@ -7,7 +7,6 @@ using Android.Widget;
 using Android.Net;
 using Xamarin.Forms.Internals;
 using Android.Graphics.Drawables;
-using Android.Util;
 
 namespace Xamarin.Forms.Platform.Android
 {

@@ -202,7 +202,6 @@
     <Compile Include="PowerSaveModeBroadcastReceiver.cs" />
     <Compile Include="Renderers\AHorizontalScrollView.cs" />
     <Compile Include="Renderers\AndroidGIFImageParser.cs" />
-    <Compile Include="Renderers\ButtonDrawable.cs" />
     <Compile Include="Renderers\BottomNavigationViewUtils.cs" />
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Renderers\ColorChangeRevealDrawable.cs" />

@@ -273,6 +273,7 @@ namespace Xamarin.Forms
 
 		double IBorderElement.BorderWidthDefaultValue => (double)BorderWidthProperty.DefaultValue;
 
+
 		/// <summary>
 		/// Flag to prevent overwriting the value of CornerRadius
 		/// </summary>
@@ -339,6 +340,14 @@ namespace Xamarin.Forms
 		{
 		}
 
+
+		bool IImageElement.GetLoadAsAnimation() => false;
+		bool IImageElement.IsLoading => false;
+
+		bool IImageElement.IsAnimationPlaying => false;
+
+		bool IImageElement.IsAnimationAutoPlay => false;
+
 		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
 			ImageElement.ImageSourcesSourceChanged(this, e);
 
@@ -348,11 +357,15 @@ namespace Xamarin.Forms
 		void IImageController.SetIsLoading(bool isLoading)
 		{
 		}
+		void IImageController.OnAnimationFinishedPlaying()
+		{
+		}
 
 		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
 		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
+
 
 		[DebuggerDisplay("Image Position = {Position}, Spacing = {Spacing}")]
 		[TypeConverter(typeof(ButtonContentTypeConverter))]

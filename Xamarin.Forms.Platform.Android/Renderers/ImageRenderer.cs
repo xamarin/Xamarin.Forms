@@ -2,17 +2,18 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Android.Content;
+using Android.Graphics;
 using Android.Views;
 using AImageView = Android.Widget.ImageView;
 using Xamarin.Forms.Internals;
 
-// TODO GIF
 namespace Xamarin.Forms.Platform.Android
 {
 	internal interface IImageRendererController
 	{
 		void SkipInvalidate();
 		bool IsDisposed { get; }
+		void SetFormsAnimationDrawable(IFormsAnimationDrawable formsAnimationDrawable);
 	}
 
 	public class ImageRenderer : ViewRenderer<Image, AImageView>
@@ -36,14 +37,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isDisposed)
 				return;
-
-			if (Control != null)
-			{
-				if (Control.Drawable is FormsAnimationDrawable animation)
-					animation.AnimationStopped -= OnAnimationStopped;
-
-				Control.Reset();
-			}
 
 			_isDisposed = true;
 
@@ -80,8 +73,6 @@ namespace Xamarin.Forms.Platform.Android
 				await TryUpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
-			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
-				await StartStopAnimation();
 		}
 
 		void UpdateAspect()
@@ -131,28 +122,6 @@ namespace Xamarin.Forms.Platform.Android
 				return true;
 
 			return _motionEventHelper.HandleMotionEvent(Parent, e);
-		}
-
-		async Task StartStopAnimation()
-		{
-			if (_isDisposed || Element == null || Control == null)
-			{
-				return;
-			}
-
-			if (Element.IsLoading)
-				return;
-
-			if (!(Control.Drawable is FormsAnimationDrawable) && Element.IsAnimationPlaying)
-				await TryUpdateBitmap();
-
-			if (Control.Drawable is FormsAnimationDrawable animation)
-			{
-				if (Element.IsAnimationPlaying && !animation.IsRunning)
-					animation.Start();
-				else if (!Element.IsAnimationPlaying && animation.IsRunning)
-					animation.Stop();
-			}
 		}
 	}
 }
