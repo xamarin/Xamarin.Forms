@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			button.Clicked += (s, a) =>
 			{
-				label.TextType = label.TextType == TextType.Html ? TextType.PlainText : TextType.Html;
+				label.TextType = label.TextType == TextType.Html ? TextType.Text : TextType.Html;
 			};
 
 

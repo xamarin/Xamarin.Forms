@@ -238,7 +238,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextDecorations()
 		{
-			if (Element?.TextType != TextType.PlainText)
+			if (Element?.TextType != TextType.Text)
 				return;
 
 			if (!Element.IsSet(Label.TextDecorationsProperty))
@@ -378,7 +378,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 #if __MOBILE__
 
-			if (Element?.TextType != TextType.PlainText)
+			if (Element?.TextType != TextType.Text)
 				return;
 
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);

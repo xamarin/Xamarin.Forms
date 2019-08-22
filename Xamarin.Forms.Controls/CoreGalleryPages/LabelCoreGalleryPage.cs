@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Controls
 
 			gestureRecognizer.Tapped += (s, a) =>
 			{
-				toggleLabel.TextType = toggleLabel.TextType == TextType.Html ? TextType.PlainText : TextType.Html;
+				toggleLabel.TextType = toggleLabel.TextType == TextType.Html ? TextType.Text : TextType.Html;
 			};
 
 			toggleLabel.GestureRecognizers.Add(gestureRecognizer);
