@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
-using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
@@ -38,13 +37,9 @@ namespace Xamarin.Forms.Maps.UWP
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
-					Control.ActualCameraChanging += (s, a) =>
-					{
-						System.Diagnostics.Debug.WriteLine($"{DateTime.Now.Millisecond}: ActualCameraChanging");
-						UpdateCamera(a.Camera.Location.Position);
-					};
-					Control.ActualCameraChanged += async (s, a) => await UpdateCameraAsync(a.Camera.Location.Position);
-					Control.SizeChanged += OnSizeChanged;
+					Control.ActualCameraChanging += async (s, a) => await UpdateCamera(a.Camera.Location.Position);
+					Control.ActualCameraChanged += async (s, a) => await UpdateCamera(a.Camera.Location.Position);
+					Control.SizeChanged += async (s, a) => await OnSizeChanged(s, a);
 					Control.MapTapped += OnMapTapped;
 				}
 
@@ -237,32 +232,52 @@ namespace Xamarin.Forms.Maps.UWP
 			}
 		}
 
-		async Task UpdateCameraAsync(BasicGeoposition position, bool raiseCameraChanged = true)
-		{
-			try
-			{
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
-				{
-					UpdateCamera(position, raiseCameraChanged);
-				});
-			}
-			catch (Exception)
-			{
-				return;
-			}
-		}
-
-		void UpdateCamera(BasicGeoposition position, bool raiseCameraChanged = true)
+		Task UpdateCamera(BasicGeoposition position, bool raiseCameraChanged = true)
 		{
 			if (Control.ActualWidth == 0 || Control.ActualHeight == 0)
 			{
-				return;
+				return Task.CompletedTask;
 			}
 
-			double zoomLevel = GetCurrentZoom(Control);
-			Element.SetCamera(
-				new Camera(new Position(position.Latitude, position.Longitude), zoomLevel),
-				raiseCameraChanged);
+			return Task.Run(async () =>
+			{
+				try
+				{
+					await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+					{
+						double zoomLevel = GetCurrentZoom(Control);
+						if (!DidCameraPositionAndZoomChange(position, zoomLevel))
+						{
+							return;
+						}
+
+						Element.SetCamera(
+							new Camera(new Position(position.Latitude, position.Longitude), zoomLevel),
+							raiseCameraChanged);
+					});
+				}
+				catch (Exception exc)
+				{
+					System.Diagnostics.Trace.TraceWarning($"UpdateCamera exception: {exc}");
+				}
+			});
+		}
+
+		bool DidCameraPositionAndZoomChange(BasicGeoposition position, double zoomLevel)
+		{
+			if (Element.Camera != null)
+			{
+				var currentPosition = Element.Camera.Position;
+				var currentZoom = Element.Camera.Zoom;
+
+				if (currentPosition.Latitude == position.Latitude && currentPosition.Longitude == position.Longitude 
+					&& currentZoom == zoomLevel)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		void LoadUserPosition(Geocoordinate userCoordinate, bool center)
@@ -333,10 +348,12 @@ namespace Xamarin.Forms.Maps.UWP
 			Control.PanInteractionMode = Element.HasScrollEnabled ? MapPanInteractionMode.Auto : MapPanInteractionMode.Disabled;
 		}
 
-		async void OnSizeChanged(object sender, SizeChangedEventArgs e)
+		async Task OnSizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			bool isLayoutInit = e.PreviousSize.Width == 0 && e.NewSize.Width > 0;
-			UpdateCamera(Control.ActualCamera.Location.Position, raiseCameraChanged: !isLayoutInit);
+
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+				await UpdateCamera(Control.ActualCamera.Location.Position, raiseCameraChanged: !isLayoutInit));
 
 			if (!isLayoutInit)
 			{
