@@ -7,12 +7,12 @@
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Xamarin.Forms.Material.iOS</RootNamespace>
-    <AssemblyName>Xamarin.Forms.Material.iOS</AssemblyName>
+    <AssemblyName>Xamarin.Forms.Material</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <PackageId>Xamarin.Forms.Material.iOS</PackageId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
@@ -32,7 +32,6 @@
     </MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <DefineConstants>
@@ -56,9 +55,19 @@
     <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="72.2.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Xamarin.Forms.Platform.Android\Material\MaterialColors.cs">
+    <Compile Include="..\Xamarin.Forms.Material.Android\MaterialColors.cs">
       <Link>MaterialColors.cs</Link>
     </Compile>
+    <Compile Include="IMaterialEntryRenderer.cs" />
+    <Compile Include="IMaterialTextField.cs" />
+    <Compile Include="MaterialEditorRenderer.cs" />
+    <Compile Include="MaterialPickerRenderer.cs" />
+    <Compile Include="MaterialDatePickerRenderer.cs" />
+    <Compile Include="MaterialMultiLineTextField.cs" />
+    <Compile Include="MaterialTextManager.cs" />
+    <Compile Include="MaterialTimePickerRenderer.cs" />
+    <Compile Include="MaterialTextField.cs" />
+    <Compile Include="NoCaretMaterialTextField.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MaterialActivityIndicatorRenderer.cs" />
     <Compile Include="MaterialButtonRenderer.cs" />
@@ -66,12 +75,18 @@
     <Compile Include="MaterialFrameRenderer.cs" />
     <Compile Include="MaterialProgressBarRenderer.cs" />
     <Compile Include="MaterialSliderRenderer.cs" />
+    <Compile Include="MaterialStepperRenderer.cs" />
     <Compile Include="FormsMaterial.cs" />
+    <Compile Include="ReadOnlyMaterialTextField.cs" />
+    <Compile Include="MaterialCheckboxRenderer.cs" />
+    <Compile Include="MaterialFormsCheckBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS.csproj">
       <Project>{271193C1-6E7C-429C-A36D-3F1BE5267231}</Project>
       <Name>Xamarin.Forms.Platform.iOS</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>

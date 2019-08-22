@@ -1,9 +1,7 @@
 using System;
 using System.ComponentModel;
-using Android.App;
 using Android.Content;
 using Android.Webkit;
-using Android.Widget;
 using Android.OS;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Internals;
@@ -17,15 +15,17 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		public const string AssetBaseUrl = "file:///android_asset/";
 
+		WebNavigationEvent _eventState;
 		WebViewClient _webViewClient;
 		FormsWebChromeClient _webChromeClient;
-
+		bool _isDisposed = false;
 		protected internal IWebViewController ElementController => Element;
 		protected internal bool IgnoreSourceChanges { get; set; }
+		protected internal string UrlCanceled { get; set; }
 
 		public WebViewRenderer(Context context) : base(context)
 		{
-			AutoPackage = false;
+			AutoPackage = false;			
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use WebViewRenderer(Context) instead.")]
@@ -37,16 +37,40 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void LoadHtml(string html, string baseUrl)
 		{
+			_eventState = WebNavigationEvent.NewPage;
 			Control.LoadDataWithBaseURL(baseUrl ?? AssetBaseUrl, html, "text/html", "UTF-8", null);
 		}
 
 		public void LoadUrl(string url)
 		{
-			Control.LoadUrl(url);
+			if (!SendNavigatingCanceled(url))
+			{
+				_eventState = WebNavigationEvent.NewPage;
+				Control.LoadUrl(url);
+			}	
+		}
+
+		protected internal bool SendNavigatingCanceled(string url)
+		{
+			if (Element == null || string.IsNullOrWhiteSpace(url))
+				return true;
+
+			if (url == AssetBaseUrl)
+				return false;
+
+			var args = new WebNavigatingEventArgs(_eventState, new UrlWebViewSource { Url = url }, url);
+			ElementController.SendNavigating(args);
+			UpdateCanGoBackForward();
+			UrlCanceled = args.Cancel ? null : url;
+			return args.Cancel;
 		}
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
 			if (disposing)
 			{
 				if (Element != null)
@@ -57,6 +81,7 @@ namespace Xamarin.Forms.Platform.Android
 					ElementController.GoBackRequested -= OnGoBackRequested;
 					ElementController.GoForwardRequested -= OnGoForwardRequested;
 					ElementController.ReloadRequested -= OnReloadRequested;
+					ElementController.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
 
 					_webViewClient?.Dispose();
 					_webChromeClient?.Dispose();
@@ -86,6 +111,11 @@ namespace Xamarin.Forms.Platform.Android
 			return new AWebView(Context);
 		}
 
+		internal WebNavigationEvent GetCurrentWebNavigationEvent()
+		{
+			return _eventState;
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<WebView> e)
 		{
 			base.OnElementChanged(e);
@@ -103,6 +133,12 @@ namespace Xamarin.Forms.Platform.Android
 				_webChromeClient = GetFormsWebChromeClient();
 				_webChromeClient.SetContext(Context);
 				webView.SetWebChromeClient(_webChromeClient);
+
+				if(Context.IsDesignerContext())
+				{
+					SetNativeControl(webView);
+					return;
+				}
 
 				webView.Settings.JavaScriptEnabled = true;
 				webView.Settings.DomStorageEnabled = true;
@@ -129,6 +165,8 @@ namespace Xamarin.Forms.Platform.Android
 				newElementController.ReloadRequested += OnReloadRequested;
 
 				UpdateMixedContentMode();
+				UpdateEnableZoomControls();
+				UpdateDisplayZoomControls();
 			}
 
 			Load();
@@ -145,6 +183,12 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case "MixedContentMode":
 					UpdateMixedContentMode();
+					break;
+				case "EnableZoomControls":
+					UpdateEnableZoomControls();
+					break;
+				case "DisplayZoomControls":
+					UpdateDisplayZoomControls();
 					break;
 			}
 		}
@@ -176,7 +220,10 @@ namespace Xamarin.Forms.Platform.Android
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
 		{
 			if (Control.CanGoBack())
+			{
+				_eventState = WebNavigationEvent.Back;
 				Control.GoBack();
+			}	
 
 			UpdateCanGoBackForward();
 		}
@@ -184,13 +231,17 @@ namespace Xamarin.Forms.Platform.Android
 		void OnGoForwardRequested(object sender, EventArgs eventArgs)
 		{
 			if (Control.CanGoForward())
+			{
+				_eventState = WebNavigationEvent.Forward;
 				Control.GoForward();
+			}	
 
 			UpdateCanGoBackForward();
 		}
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
+			_eventState = WebNavigationEvent.Refresh;
 			Control.Reload();
 		}
 
@@ -204,10 +255,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateMixedContentMode()
 		{
-			if (Control != null && ((int)Build.VERSION.SdkInt >= 21))
+			if (Control != null && ((int)Forms.SdkInt >= 21))
 			{
 				Control.Settings.MixedContentMode = (MixedContentHandling)Element.OnThisPlatform().MixedContentMode();
 			}
+		}
+
+		void UpdateEnableZoomControls()
+		{
+			var value = Element.OnThisPlatform().ZoomControlsEnabled();
+			Control.Settings.SetSupportZoom(value);
+			Control.Settings.BuiltInZoomControls = value;
+		}
+
+		void UpdateDisplayZoomControls()
+		{
+			Control.Settings.DisplayZoomControls = Element.OnThisPlatform().ZoomControlsDisplayed();
 		}
 
 		class JavascriptResult : Java.Lang.Object, IValueCallback

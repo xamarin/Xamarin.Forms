@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		event EventHandler _controlChanging;
 		event EventHandler _controlChanged;
 
-
+		bool IsElementOrControlEmpty => Element == null || Control == null;
 
 		protected virtual TNativeView CreateNativeControl()
 		{
@@ -106,14 +106,21 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
-
-			if (disposing && Control != null && ManageNativeControlLifetime)
+			if (disposing)
 			{
-				Control.RemoveFromSuperview();
-				Control.Dispose();
-				Control = null;
+				_elementPropertyChanged = null;
+				_controlChanging = null;
+				_controlChanged = null;
+
+				if (Control != null && ManageNativeControlLifetime)
+				{
+					Control.RemoveFromSuperview();
+					Control.Dispose();
+					Control = null;
+				}
 			}
+
+			base.Dispose(disposing);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TView> e)
@@ -185,7 +192,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			if (Control == null)
+			if (IsElementOrControlEmpty)
 				return;
 #if __MOBILE__
 			if (color == Color.Default)
@@ -214,8 +221,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 			Control = uiview;
 
-			if (Element.BackgroundColor != Color.Default)
-				SetBackgroundColor(Element.BackgroundColor);
+			UpdateBackgroundColor();
 
 			UpdateIsEnabled();
 
@@ -233,9 +239,18 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 #endif
 
+		void UpdateBackgroundColor()
+		{
+			if (IsElementOrControlEmpty)
+				return;
+
+			if (Element.BackgroundColor != Color.Default)
+				SetBackgroundColor(Element.BackgroundColor);
+		}
+
 		void UpdateIsEnabled()
 		{
-			if (Element == null || Control == null)
+			if (IsElementOrControlEmpty)
 				return;
 
 			var uiControl = Control as NativeControl;
@@ -246,6 +261,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateFlowDirection()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			Control.UpdateFlowDirection(Element);
 		}
 

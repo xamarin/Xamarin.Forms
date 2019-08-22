@@ -185,14 +185,14 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		protected virtual void UpdateBackgroundImage()
 		{
-			Control.SetBackgroundImage(Page.BackgroundImage);
+			Control.SetBackgroundImage(Page.BackgroundImageSource);
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == Xamarin.Forms.Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Xamarin.Forms.Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackgroundImage();
 		}
 
@@ -225,10 +225,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			{
 				hasParentNavigation = parent is NavigationPage;
 
-				if (hasParentNavigation) break;
-
 				current = parent;
 
+				if (hasParentNavigation) break;
 			}
 			var hasAncestorNavigationPage = hasParentNavigation && NavigationPage.GetHasNavigationBar(current);
 			return hasAncestorNavigationPage;

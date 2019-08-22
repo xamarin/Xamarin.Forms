@@ -15,7 +15,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			renderer.ElementPropertyChanged += OnElementPropertyChanged;
 			renderer.ElementChanged += OnElementChanged;
-			renderer.LayoutChange += OnLayoutChange;
+
+			if(renderer is ILayoutChanges layoutChanges)
+				layoutChanges.LayoutChange += OnLayoutChange;
 		}
 
 		static void OnLayoutChange(object sender, global::Android.Views.View.LayoutChangeEventArgs e)
@@ -28,7 +30,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 			renderer.ElementChanged -= OnElementChanged;
-			renderer.LayoutChange -= OnLayoutChange;
+			if (renderer is ILayoutChanges layoutChanges)
+				layoutChanges.LayoutChange -= OnLayoutChange;
 
 			if (renderer.View is ImageView imageView)
 				imageView.SetImageDrawable(null);
@@ -58,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			var imageController = (IImageController)renderer.Element;
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName ||
-				e.PropertyName == Button.ImageProperty.PropertyName)
+				e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				try
 				{

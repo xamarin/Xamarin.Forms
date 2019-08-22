@@ -174,19 +174,39 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLayoutSubviews();
 
-			if (View.Subviews.Length < 2)
+			bool layoutMaster = false;
+			bool layoutDetails = false;
+
+			if (Forms.IsiOS13OrNewer)
+			{
+				layoutMaster = _masterController?.View?.Superview != null;
+				layoutDetails = _detailController?.View?.Superview != null;
+			}
+			else if (View.Subviews.Length < 2)
+			{
 				return;
+			}
+			else
+			{
+				layoutMaster = true;
+				layoutDetails = true;
+			}
 
-			var detailsBounds = _detailController.View.Frame;
-			var masterBounds = _masterController.View.Frame;
+			if (layoutMaster)
+			{
+				var masterBounds = _masterController.View.Frame;
+				_masterWidth = (nfloat)Math.Max(_masterWidth, masterBounds.Width);
 
-			_masterWidth = (nfloat)Math.Max(_masterWidth, masterBounds.Width);
+				if (!masterBounds.IsEmpty)
+					MasterDetailPage.MasterBounds = new Rectangle(0, 0, _masterWidth, masterBounds.Height);
+			}
 
-			if (!masterBounds.IsEmpty)
-				MasterDetailPage.MasterBounds = new Rectangle(0, 0, _masterWidth, masterBounds.Height);
-
-			if (!detailsBounds.IsEmpty)
-				MasterDetailPage.DetailBounds = new Rectangle(0, 0, detailsBounds.Width, detailsBounds.Height);
+			if (layoutDetails)
+			{
+				var detailsBounds = _detailController.View.Frame;
+				if (!detailsBounds.IsEmpty)
+					MasterDetailPage.DetailBounds = new Rectangle(0, 0, detailsBounds.Width, detailsBounds.Height);
+			}
 		}
 
 		public override void ViewDidLoad()
@@ -237,6 +257,17 @@ namespace Xamarin.Forms.Platform.iOS
 				return base.ChildViewControllerForStatusBarHidden();
 		}
 
+		public override UIViewController ChildViewControllerForHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (((MasterDetailPage)Element).Detail != null)
+					return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
+				else
+					return base.ChildViewControllerForHomeIndicatorAutoHidden;
+			}
+		}
+
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
 			if (e.OldElement != null)
@@ -269,7 +300,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Page.IconProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName)
+			if (e.PropertyName == Page.IconImageSourceProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName)
 				MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 		}
 
@@ -318,12 +349,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			if (!string.IsNullOrEmpty(((Page)Element).BackgroundImage))
-				View.BackgroundColor = UIColor.FromPatternImage(UIImage.FromBundle(((Page)Element).BackgroundImage));
-			else if (Element.BackgroundColor == Color.Default)
-				View.BackgroundColor = UIColor.White;
-			else
-				View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			_ = this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
+			{
+				if (bgImage != null)
+					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
+				else if (Element.BackgroundColor == Color.Default)
+					View.BackgroundColor = UIColor.White;
+				else
+					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			});
 		}
 
 		void UpdateControllers()

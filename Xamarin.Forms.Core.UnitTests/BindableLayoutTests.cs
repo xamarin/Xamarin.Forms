@@ -1,8 +1,10 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -47,10 +49,10 @@ namespace Xamarin.Forms.Core.UnitTests
 				IsPlatformEnabled = true,
 			};
 
-			var itemsSource = new ObservableCollection<int>();
+			var itemsSource = new ObservableCollection<int>() { 0, 1, 2, 3, 4 };
 			BindableLayout.SetItemsSource(layout, itemsSource);
 
-			itemsSource.Insert(0, 1);
+			itemsSource.Insert(2, 5);
 			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
 		}
 
@@ -69,6 +71,21 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
 
 			itemsSource.Remove(1);
+			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
+		}
+
+		[Test]
+		public void TracksRemoveAll()
+		{
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableRangeCollection<int>(Enumerable.Range(0, 10));
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			itemsSource.RemoveAll();
 			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
 		}
 
@@ -170,6 +187,28 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
 			Assert.AreEqual(itemsSource.Count, layout.Children.Cast<Frame>().Count());
+		}
+
+		[Test]
+		public void ContainerIsPassedInSelectTemplate()
+		{
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>(Enumerable.Range(0, 10));
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			int containerPassedCount = 0;
+			BindableLayout.SetItemTemplateSelector(layout, new MyDataTemplateSelectorTest((item, container) =>
+			{
+				if (container == layout)
+					++containerPassedCount;
+				return null;
+			}));
+
+			Assert.AreEqual(containerPassedCount, itemsSource.Count);
 		}
 
 		[Test]
@@ -353,6 +392,38 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				return dt;
 			}
+		}
+
+		class ObservableRangeCollection<T> : ObservableCollection<T>
+		{
+			public ObservableRangeCollection(IEnumerable<T> collection)
+				: base(collection)
+			{
+			}
+
+			public void RemoveAll()
+			{
+				CheckReentrancy();
+
+				var changedItems = new List<T>(Items);
+				foreach (var i in changedItems)
+					Items.Remove(i);
+
+				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
+				OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems, 0));
+			}
+		}
+
+		class MyDataTemplateSelectorTest : DataTemplateSelector
+		{
+			readonly Func<object, BindableObject, DataTemplate> _func;
+
+			public MyDataTemplateSelectorTest(Func<object, BindableObject, DataTemplate> func)
+				=> _func = func;
+
+			protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+				=> _func(item, container);
 		}
 	}
 }

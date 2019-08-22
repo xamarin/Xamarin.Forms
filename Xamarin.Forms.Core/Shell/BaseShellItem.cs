@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
-	public class BaseShellItem : NavigableElement, IPropertyPropagationController, IVisualController, IFlowDirectionController
+	[DebuggerDisplay("Title = {Title}, Route = {Route}")]
+	public class BaseShellItem : NavigableElement, IPropertyPropagationController, IVisualController, IFlowDirectionController, ITabStopElement
 	{
+		public event EventHandler Appearing;
+		public event EventHandler Disappearing;
+
+		bool _hasAppearing;
+
 		#region PropertyKeys
 
 		internal static readonly BindablePropertyKey IsCheckedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsChecked), typeof(bool), typeof(BaseShellItem), false);
@@ -26,6 +35,34 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleProperty =
 			BindableProperty.Create(nameof(Title), typeof(string), typeof(BaseShellItem), null, BindingMode.OneTime);
+
+		public static readonly BindableProperty TabIndexProperty =
+			BindableProperty.Create(nameof(TabIndex),
+							typeof(int),
+							typeof(BaseShellItem),
+							defaultValue: 0,
+							propertyChanged: OnTabIndexPropertyChanged,
+							defaultValueCreator: TabIndexDefaultValueCreator);
+
+		public static readonly BindableProperty IsTabStopProperty =
+			BindableProperty.Create(nameof(IsTabStop),
+									typeof(bool),
+									typeof(BaseShellItem),
+									defaultValue: true,
+									propertyChanged: OnTabStopPropertyChanged,
+									defaultValueCreator: TabStopDefaultValueCreator);
+
+		static void OnTabIndexPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
+			((BaseShellItem)bindable).OnTabIndexPropertyChanged((int)oldValue, (int)newValue);
+
+		static object TabIndexDefaultValueCreator(BindableObject bindable) =>
+			((BaseShellItem)bindable).TabIndexDefaultValueCreator();
+
+		static void OnTabStopPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
+			((BaseShellItem)bindable).OnTabStopPropertyChanged((bool)oldValue, (bool)newValue);
+
+		static object TabStopDefaultValueCreator(BindableObject bindable) =>
+			((BaseShellItem)bindable).TabStopDefaultValueCreator();
 
 		public ImageSource FlyoutIcon
 		{
@@ -59,12 +96,80 @@ namespace Xamarin.Forms
 			set { SetValue(TitleProperty, value); }
 		}
 
+		public int TabIndex
+		{
+			get => (int)GetValue(TabIndexProperty);
+			set => SetValue(TabIndexProperty, value);
+		}
+
+		protected virtual void OnTabIndexPropertyChanged(int oldValue, int newValue) { }
+
+		protected virtual int TabIndexDefaultValueCreator() => 0;
+
+		public bool IsTabStop
+		{
+			get => (bool)GetValue(IsTabStopProperty);
+			set => SetValue(IsTabStopProperty, value);
+		}
+
+		internal virtual void SendAppearing()
+		{
+			if (_hasAppearing)
+				return;
+
+			_hasAppearing = true;
+			OnAppearing();
+			Appearing?.Invoke(this, EventArgs.Empty);
+		}
+
+		internal virtual void SendDisappearing()
+		{
+			if (!_hasAppearing)
+				return;
+
+			_hasAppearing = false;
+			OnDisappearing();
+			Disappearing?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected virtual void OnAppearing()
+		{
+		}
+
+		protected virtual void OnDisappearing()
+		{
+		}
+
+		internal void OnAppearing(Action action)
+		{
+			if (_hasAppearing)
+				action();
+			else
+			{
+				EventHandler eventHandler = null;
+				eventHandler = (_, __) =>
+				{
+					this.Appearing -= eventHandler;
+					action();
+				};
+
+				this.Appearing += eventHandler;
+			}
+		}
+
+		protected virtual void OnTabStopPropertyChanged(bool oldValue, bool newValue) { }
+
+		protected virtual bool TabStopDefaultValueCreator() => true;
+
 		IVisual _effectiveVisual = Xamarin.Forms.VisualMarker.Default;
 		IVisual IVisualController.EffectiveVisual
 		{
 			get { return _effectiveVisual; }
 			set
 			{
+				if (value == _effectiveVisual)
+					return;
+
 				_effectiveVisual = value;
 				OnPropertyChanged(VisualElement.VisualProperty.PropertyName);
 			}
@@ -78,6 +183,39 @@ namespace Xamarin.Forms
 
 			var shellItem = (BaseShellItem)bindable;
 			shellItem.FlyoutIcon = (ImageSource)newValue;
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
+			if (Parent != null)
+			{
+				if (propertyName == Shell.ItemTemplateProperty.PropertyName || propertyName == nameof(Parent))
+					Propagate(Shell.ItemTemplateProperty, this, Parent, true);
+			}
+		}
+
+		internal static void PropagateFromParent(BindableProperty property, Element me)
+		{
+			if (me == null || me.Parent == null)
+				return;
+
+			Propagate(property, me.Parent, me, false);
+		}
+
+		internal static void Propagate(BindableProperty property, BindableObject from, BindableObject to, bool onlyToImplicit)
+		{
+			if (from == null || to == null)
+				return;
+
+			if (onlyToImplicit && Routing.IsImplicit(from))
+				return;
+
+			if (to is Shell)
+				return;
+
+			if (from.IsSet(property) && !to.IsSet(property))
+				to.SetValue(property, from.GetValue(property));
 		}
 
 		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)

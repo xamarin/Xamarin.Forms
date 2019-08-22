@@ -64,6 +64,9 @@ namespace Xamarin.Forms.Platform.Android
 			_bottomView.SetBackgroundColor(Color.White.ToAndroid());
 			_bottomView.SetOnNavigationItemSelectedListener(this);
 
+			if(ShellItem == null)
+				throw new ArgumentException("Active Shell Item not set. Have you added any Shell Items to your Shell?", nameof(ShellItem));
+
 			HookEvents(ShellItem);
 			SetupMenu();
 
@@ -126,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				using (var innerLayout = new LinearLayout(Context))
 				{
-					innerLayout.ClipToOutline = true;
+					innerLayout.SetClipToOutline(true);
 					innerLayout.SetBackground(CreateItemBackgroundDrawable());
 					innerLayout.SetPadding(0, (int)Context.ToPixels(6), 0, (int)Context.ToPixels(6));
 					innerLayout.Orientation = Orientation.Horizontal;
@@ -156,13 +159,17 @@ namespace Xamarin.Forms.Platform.Android
 					lp.Dispose();
 
 					image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());
-					SetImage(image, shellContent.Icon);
+					ShellContext.ApplyDrawableAsync(shellContent, ShellSection.IconProperty, icon =>
+					{
+						if (!image.IsDisposed())
+							image.SetImageDrawable(icon);
+					});
 
 					innerLayout.AddView(image);
 
 					using (var text = new TextView(Context))
 					{
-						text.SetTypeface(Typeface.Create("sans-serif-medium", TypefaceStyle.Normal), TypefaceStyle.Normal);
+						text.Typeface = "sans-serif-medium".ToTypeFace();
 						text.SetTextColor(AColor.Black);
 						text.Text = shellContent.Title;
 						lp = new LinearLayout.LayoutParams(0, LP.WrapContent)
@@ -307,7 +314,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var menuItem = menu.Add(0, i, 0, title);
 					menuItems.Add(menuItem);
-					loadTasks.Add(SetMenuItemIcon(menuItem, item.Icon));
+					loadTasks.Add(ShellContext.ApplyDrawableAsync(item, ShellSection.IconProperty, icon =>
+					{
+						if (icon != null)
+							menuItem.SetIcon(icon);
+					}));
 					UpdateShellSectionEnabled(item, menuItem);
 					if (item == ShellSection)
 					{
@@ -327,7 +338,7 @@ namespace Xamarin.Forms.Platform.Android
 					menuItem.SetChecked(true);
 			}
 
-			_bottomView.Visibility = end == 1 ? ViewStates.Gone : ViewStates.Visible;
+			UpdateTabBarVisibility();
 
 			_bottomView.SetShiftMode(false, false);
 
@@ -351,20 +362,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTabBarVisibility();
 		}
 
-		async void SetImage(ImageView image, ImageSource source)
-		{
-			image.SetImageDrawable(await Context.GetFormsDrawable(source));
-		}
-
-		async Task SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
-		{
-			if (source == null)
-				return;
-			var drawable = await Context.GetFormsDrawable(source);
-			menuItem.SetIcon(drawable);
-			drawable?.Dispose();
-		}
-
 		void SetupMenu()
 		{
 			using (var menu = _bottomView.Menu)
@@ -383,7 +380,7 @@ namespace Xamarin.Forms.Platform.Android
 					visible = false;
 			}
 
-			_bottomView.Visibility = (visible) ? ViewStates.Visible : ViewStates.Gone;
+			_bottomView.Visibility = visible ? ViewStates.Visible : ViewStates.Gone;
 		}
 	}
 }

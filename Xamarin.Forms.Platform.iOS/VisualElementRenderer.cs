@@ -159,9 +159,23 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected bool TabStop { get; set; } = true;
 
-		protected void UpdateTabStop () => TabStop = Element?.IsTabStop ?? true;
+		protected void UpdateTabStop()
+		{
+			if (Element == null)
+				return;
 
-		protected void UpdateTabIndex() => TabIndex = Element?.TabIndex ?? 0;
+			TabStop = Element.IsTabStop;
+			UpdateParentPageAccessibilityElements();
+		}
+
+		protected void UpdateTabIndex()
+		{
+			if (Element == null)
+				return;
+
+			TabIndex = Element.TabIndex;
+			UpdateParentPageAccessibilityElements();
+		}
 
 		public NativeView FocusSearch(bool forwardDirection)
 		{
@@ -176,7 +190,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			do
 			{
-				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
+				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex) as VisualElement;
 #if __MACOS__
 				var renderer = Platform.GetRenderer(element);
 				var control = (renderer as ITabStop)?.TabStop;
@@ -189,7 +203,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 #if __MACOS__
-		public override void KeyUp(NSEvent theEvent)
+		public override void KeyDown(NSEvent theEvent)
 		{
 			if (theEvent.KeyCode == (ushort)NSKey.Tab)
 			{
@@ -475,6 +489,18 @@ namespace Xamarin.Forms.Platform.MacOS
 			var clippableLayout = Element as Layout;
 			if (clippableLayout != null)
 				ClipsToBounds = clippableLayout.IsClippedToBounds;
+#endif
+		}
+
+		void UpdateParentPageAccessibilityElements()
+		{
+#if __MOBILE__
+			UIView parentRenderer = Superview;
+			while (parentRenderer != null && !(parentRenderer is IAccessibilityElementsController))
+				parentRenderer = parentRenderer.Superview;
+
+			if (parentRenderer is IAccessibilityElementsController controller)
+				controller.ResetAccessibilityElements();
 #endif
 		}
 

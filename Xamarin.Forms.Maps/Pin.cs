@@ -12,6 +12,8 @@ namespace Xamarin.Forms.Maps
 		public static readonly BindableProperty AddressProperty = BindableProperty.Create("Address", typeof(string), typeof(Pin), default(string));
 
 		public static readonly BindableProperty LabelProperty = BindableProperty.Create("Label", typeof(string), typeof(Pin), default(string));
+		private object _markerId;
+		private object _id;
 
 		public string Address
 		{
@@ -37,11 +39,38 @@ namespace Xamarin.Forms.Maps
 			set { SetValue(TypeProperty, value); }
 		}
 
-		// introduced to store the unique id for Android markers
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public object Id { get; set; }
 
+		// introduced to store the unique id for Android markers
+		[Obsolete("This property is obsolete as of 4.0.0. Please use MarkerId instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public new object Id
+		{
+			get => _id;
+			set
+			{
+				_id = value;
+				_markerId = value;
+			}
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public object MarkerId
+		{
+			get => _markerId;
+			set
+			{
+				_markerId = value;
+				// Keep Id working just in case someone has taken a dependency on it
+				_id = value;
+			}
+		}
+
+		[Obsolete("This event is obsolete as of 4.3.0. Please use MarkerClicked and/or InfoWindowClicked instead.")]
 		public event EventHandler Clicked;
+
+		public event EventHandler<PinClickedEventArgs> MarkerClicked;
+
+		public event EventHandler<PinClickedEventArgs> InfoWindowClicked;
 
 		public override bool Equals(object obj)
 		{
@@ -77,6 +106,7 @@ namespace Xamarin.Forms.Maps
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This method is obsolete as of 4.3.0.")]
 		public bool SendTap()
 		{
 			EventHandler handler = Clicked;
@@ -85,6 +115,22 @@ namespace Xamarin.Forms.Maps
 
 			handler(this, EventArgs.Empty);
 			return true;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool SendMarkerClick()
+		{
+			var args = new PinClickedEventArgs();
+			MarkerClicked?.Invoke(this, args);
+			return args.HideInfoWindow;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool SendInfoWindowClick()
+		{
+			var args = new PinClickedEventArgs();
+			InfoWindowClicked?.Invoke(this, args);
+			return args.HideInfoWindow;
 		}
 
 		bool Equals(Pin other)

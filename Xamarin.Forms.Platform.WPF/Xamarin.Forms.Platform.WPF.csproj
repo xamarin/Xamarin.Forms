@@ -16,22 +16,22 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>default</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>default</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,8 +53,8 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="2.0.0" />
-    <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" />
+    <PackageReference Include="OpenTK" Version="3.0.1" />
+    <PackageReference Include="OpenTK.GLControl" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Xamarin.Forms.Platform.UAP\TextBlockExtensions.cs">
@@ -160,7 +160,9 @@
     <Compile Include="Renderers\DatePickerRenderer.cs" />
     <Compile Include="Renderers\EditorRenderer.cs" />
     <Compile Include="Renderers\EntryRenderer.cs" />
+    <Compile Include="Renderers\FormsCheckBox.cs" />
     <Compile Include="Renderers\FrameRenderer.cs" />
+    <Compile Include="Renderers\ImageButtonRenderer.cs" />
     <Compile Include="Renderers\ImageRenderer.cs" />
     <Compile Include="Renderers\LabelRenderer.cs" />
     <Compile Include="Renderers\LayoutRenderer.cs" />
@@ -175,6 +177,7 @@
     <Compile Include="Renderers\SearchBarRenderer.cs" />
     <Compile Include="Renderers\SliderRenderer.cs" />
     <Compile Include="Renderers\StepperRenderer.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="Renderers\SwitchRenderer.cs" />
     <Compile Include="Renderers\TabbedPageRenderer.cs" />
     <Compile Include="Renderers\CellRenderer.cs" />
@@ -196,9 +199,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="OpenTK.dll.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -211,6 +211,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Assets\CheckBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Assets\Button.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

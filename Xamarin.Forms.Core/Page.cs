@@ -18,11 +18,17 @@ namespace Xamarin.Forms
 
 		public const string AlertSignalName = "Xamarin.SendAlert";
 
+		public const string PromptSignalName = "Xamarin.SendPrompt";
+
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
+		
+		public static readonly BindableProperty BackgroundImageSourceProperty = BindableProperty.Create(nameof(BackgroundImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
-		public static readonly BindableProperty BackgroundImageProperty = BindableProperty.Create("BackgroundImage", typeof(string), typeof(Page), default(string));
+		[Obsolete("BackgroundImageProperty is obsolete as of 4.0.0. Please use BackgroundImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty BackgroundImageProperty = BackgroundImageSourceProperty;
 
 		public static readonly BindableProperty IsBusyProperty = BindableProperty.Create("IsBusy", typeof(bool), typeof(Page), false, propertyChanged: (bo, o, n) => ((Page)bo).OnPageBusyChanged());
 
@@ -30,7 +36,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleProperty = BindableProperty.Create("Title", typeof(string), typeof(Page), null);
 
-		public static readonly BindableProperty IconProperty = BindableProperty.Create("Icon", typeof(FileImageSource), typeof(Page), default(FileImageSource));
+		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
+
+		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty IconProperty = IconImageSourceProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Page>> _platformConfigurationRegistry;
 
@@ -50,20 +60,41 @@ namespace Xamarin.Forms
 			var toolbarItems = new ObservableCollection<ToolbarItem>();
 			toolbarItems.CollectionChanged += OnToolbarItemsCollectionChanged;
 			ToolbarItems = toolbarItems;
+
+			//if things were added in base ctor (through implicit styles), the items added aren't properly parented
+			if (InternalChildren.Count > 0)
+				InternalChildrenOnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, InternalChildren));
+
 			InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Page>>(() => new PlatformConfigurationRegistry<Page>(this));
 		}
 
+		[Obsolete("BackgroundImage is obsolete as of 4.0.0. Please use BackgroundImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string BackgroundImage
 		{
-			get { return (string)GetValue(BackgroundImageProperty); }
+			get { return GetValue(BackgroundImageProperty) as FileImageSource; }
 			set { SetValue(BackgroundImageProperty, value); }
 		}
 
+		public ImageSource BackgroundImageSource
+		{
+			get { return (ImageSource)GetValue(BackgroundImageSourceProperty); }
+			set { SetValue(BackgroundImageSourceProperty, value); }
+		}
+
+		[Obsolete("Icon is obsolete as of 4.0.0. Please use IconImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FileImageSource Icon
 		{
-			get { return (FileImageSource)GetValue(IconProperty); }
+			get { return GetValue(IconProperty) as FileImageSource; }
 			set { SetValue(IconProperty, value); }
+		}
+
+		public ImageSource IconImageSource
+		{
+			get { return (ImageSource)GetValue(IconImageSourceProperty); }
+			set { SetValue(IconImageSourceProperty, value); }
 		}
 
 		public bool IsBusy
@@ -120,6 +151,22 @@ namespace Xamarin.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
+		{
+			get
+			{
+				var titleviewPart1TheShell = Shell.GetTitleView(this);
+				var titleViewPart2TheNavBar = NavigationPage.GetTitleView(this);
+
+				if (titleviewPart1TheShell != null)
+					yield return titleviewPart1TheShell;
+
+				if (titleViewPart2TheNavBar != null)
+					yield return titleViewPart2TheNavBar;
+
+			}
+		}
+
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => 
 			_logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(InternalChildren));
 
@@ -148,6 +195,13 @@ namespace Xamarin.Forms
 
 			var args = new AlertArguments(title, message, accept, cancel);
 			MessagingCenter.Send(this, AlertSignalName, args);
+			return args.Result.Task;
+		}
+
+		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard))
+		{
+			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard);
+			MessagingCenter.Send(this, PromptSignalName, args);
 			return args.Result.Task;
 		}
 
@@ -450,12 +504,5 @@ namespace Xamarin.Forms
 
 			_titleView = newTitleView;
 		}
-
-		// This is a dummy property for the Previewer
-		// Platform isn't needed anymore, but the Previewer will still try to set it via reflection
-		// and throw an NRE if it's not available; this fake property keeps it happy.
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		[Obsolete("This property is no longer used as of version 3.4.")]
-		internal object Platform { get; set; }
 	}
 }

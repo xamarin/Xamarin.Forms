@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -172,19 +173,18 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			int i = 0;
 			foreach (object item in _itemsSource)
 			{
-				layout.Children.Add(CreateItemView(item, i++));
+				layout.Children.Add(CreateItemView(item, layout));
 			}
 		}
 
-		View CreateItemView(object item, int index)
+		View CreateItemView(object item, Layout<View> layout)
 		{
-			return CreateItemView(item, index, _itemTemplate ?? _itemTemplateSelector?.SelectTemplate(item, null));
+			return CreateItemView(item, _itemTemplate ?? _itemTemplateSelector?.SelectTemplate(item, layout));
 		}
 
-		View CreateItemView(object item, int index, DataTemplate dataTemplate)
+		View CreateItemView(object item, DataTemplate dataTemplate)
 		{
 			if (dataTemplate != null)
 			{
@@ -206,63 +206,10 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			switch (e.Action)
-			{
-				case NotifyCollectionChangedAction.Add:
-					{
-						if (e.NewStartingIndex == -1)
-							goto case NotifyCollectionChangedAction.Reset;
-						int i = e.NewStartingIndex;
-						foreach (object item in e.NewItems)
-						{
-							layout.Children.Add(CreateItemView(item, i++));
-						}
-					}
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					{
-						if (e.OldStartingIndex == -1)
-							goto case NotifyCollectionChangedAction.Reset;
-						for (int i = 0; i < e.OldItems.Count; ++i)
-						{
-							layout.Children.RemoveAt(i + e.OldStartingIndex);
-						}
-					}
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					{
-						if (e.OldStartingIndex == -1)
-							goto case NotifyCollectionChangedAction.Reset;
-						int i = e.NewStartingIndex;
-						foreach (object item in e.NewItems)
-						{
-							layout.Children[i] = CreateItemView(item, i);
-							++i;
-						}
-					}
-					break;
-				case NotifyCollectionChangedAction.Move:
-					{
-						if (e.OldStartingIndex == -1 || e.NewStartingIndex == -1)
-							goto case NotifyCollectionChangedAction.Reset;
-						for (int i = 0; i < e.NewItems.Count; ++i)
-						{
-							int iFrom = e.OldStartingIndex + i;
-							int iTo = e.NewStartingIndex + i;
-							View fromView = layout.Children[iFrom];
-							View toView = layout.Children[iTo];
-							layout.Children.Remove(fromView);
-							layout.Children.Remove(toView);
-							layout.Children.Insert(iFrom, toView);
-							layout.Children.Insert(iTo, fromView);
-						}
-					}
-					break;
-
-				case NotifyCollectionChangedAction.Reset:
-					layout.Children.Clear();
-					break;
-			}
+			e.Apply(
+				insert: (item, index, _) => layout.Children.Insert(index, CreateItemView(item, layout)),
+				removeAt: (item, index) => layout.Children.RemoveAt(index),
+				reset: CreateChildren);
 		}
 	}
 }

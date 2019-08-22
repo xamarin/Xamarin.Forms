@@ -10,7 +10,6 @@ namespace Xamarin.Forms
 {
 	public abstract partial class Element : BindableObject, IElement, INameScope, IElementController
 	{
-
 		public static readonly BindableProperty MenuProperty = BindableProperty.CreateAttached(nameof(Menu), typeof(Menu), typeof(Element), null);
 
 		public static Menu GetMenu(BindableObject bindable)
@@ -44,6 +43,7 @@ namespace Xamarin.Forms
 		Element _parentOverride;
 
 		string _styleId;
+		
 
 		public string AutomationId
 		{
@@ -120,6 +120,20 @@ namespace Xamarin.Forms
 		}
 
 		internal virtual ReadOnlyCollection<Element> LogicalChildrenInternal => EmptyChildren;
+		internal IEnumerable<Element> AllChildren
+		{
+			get
+			{
+				foreach (var child in LogicalChildrenInternal)
+					yield return child;
+
+				foreach (var child in ChildrenNotDrawnByThisElement)
+					yield return child;
+			}
+		}
+
+		internal virtual IEnumerable<Element> ChildrenNotDrawnByThisElement => EmptyChildren;
+
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ReadOnlyCollection<Element> LogicalChildren => LogicalChildrenInternal;
@@ -172,7 +186,13 @@ namespace Xamarin.Forms
 				OnPropertyChanging();
 
 				if (RealParent != null)
+				{
 					((IElement)RealParent).RemoveResourcesChangedListener(OnParentResourcesChanged);
+
+					if(value != null && (RealParent is Layout || RealParent is IControlTemplated))
+						Log.Warning("Element", $"{this} is already a child of {RealParent}. Remove {this} from {RealParent} before adding to {value}.");
+				}
+
 				RealParent = value;
 				if (RealParent != null)
 				{
@@ -193,8 +213,42 @@ namespace Xamarin.Forms
 				OnParentSet();
 
 				OnPropertyChanged();
+
+				RefreshTemplatedParent();
 			}
 		}
+
+		internal event EventHandler TemplatedParentChanged;
+
+		BindableObject _templatedParent;
+		public BindableObject TemplatedParent
+		{
+			get => _templatedParent;
+			private set
+			{
+				_templatedParent = value;
+				TemplatedParentChanged?.Invoke(this, null);
+				OnPropertyChanged();
+			}
+		}
+
+		void RefreshTemplatedParent()
+		{
+			var templatedParent = this.IsTemplateRoot
+				? this.Parent
+				: this.Parent?.TemplatedParent;
+			if (ReferenceEquals(templatedParent, this.TemplatedParent))
+				return;
+
+			this.TemplatedParent = templatedParent;			
+			foreach (var element in this.LogicalChildren)
+			{
+				if (!element.IsTemplateRoot)
+					element.RefreshTemplatedParent();
+			}
+		}
+
+		internal bool IsTemplateRoot { get; set; }
 
 		void IElement.RemoveResourcesChangedListener(Action<object, ResourcesChangedEventArgs> onchanged)
 		{
@@ -306,7 +360,7 @@ namespace Xamarin.Forms
 		{
 			child.Parent = this;
 
-			child.ApplyBindings(skipBindingContext: false, fromBindingContextChanged:true);
+			child.ApplyBindings(skipBindingContext: false, fromBindingContextChanged: true);
 
 			ChildAdded?.Invoke(this, new ElementEventArgs(child));
 
@@ -336,6 +390,11 @@ namespace Xamarin.Forms
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			base.OnPropertyChanged(propertyName);
+			foreach(var logicalChildren in ChildrenNotDrawnByThisElement)
+			{
+				if(logicalChildren is IPropertyPropagationController controller)
+					PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { logicalChildren });
+			}
 
 			if (_effects == null || _effects.Count == 0)
 				return;
@@ -579,7 +638,8 @@ namespace Xamarin.Forms
 		internal INameScope GetNameScope()
 		{
 			var element = this;
-			do {
+			do
+			{
 				var ns = NameScope.GetNameScope(element);
 				if (ns != null)
 					return ns;
@@ -603,5 +663,41 @@ namespace Xamarin.Forms
 		{
 			SetValueCore(property, value, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings);
 		}
+
+		#region Obsolete IPlatform Stuff
+
+#pragma warning disable CS0618 // Type or member is obsolete
+		private IPlatform _platform;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+		// Platform isn't needed anymore, but the Previewer will still try to set it via reflection
+		// and throw an NRE if it's not available
+		// So even if this property eventually gets removed, we still need to keep something settable on
+		// Page called Platform
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("IPlatform is obsolete as of 3.5.0. Do not use this property.")]
+		public IPlatform Platform
+		{
+			get => _platform;
+			set
+			{
+				if (_platform == value)	
+					return;	
+				_platform = value;	
+				PlatformSet?.Invoke(this, EventArgs.Empty);	
+				foreach (Element descendant in Descendants())
+				{	
+					descendant._platform = _platform;	
+					descendant.PlatformSet?.Invoke(this, EventArgs.Empty);	
+				}
+			}
+		}
+
+		[Obsolete("PlatformSet is obsolete as of 3.5.0. Do not use this event.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler PlatformSet;
+
+		#endregion
 	}
 }
