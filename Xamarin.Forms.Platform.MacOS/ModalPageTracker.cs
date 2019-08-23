@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					modal.DisposeModalAndChildRenderers();
 					var removingIndex = Array.IndexOf(_renderer.ChildViewControllers, controller);
-					if(removingIndex > 0)
+					if(removingIndex >= 0)
 						_renderer.RemoveChildViewController(removingIndex);
 				}, modal);
 			return task;
