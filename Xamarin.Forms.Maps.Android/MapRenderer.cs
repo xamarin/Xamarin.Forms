@@ -519,8 +519,7 @@ namespace Xamarin.Forms.Maps.Android
 
 		static Camera Convert(CameraPosition cameraPosition)
 		{
-			return new Camera(new Position(cameraPosition.Target.Latitude, cameraPosition.Target.Longitude),
-				cameraPosition.Zoom, cameraPosition.Bearing, cameraPosition.Tilt);
+			return new Camera(new Position(cameraPosition.Target.Latitude, cameraPosition.Target.Longitude), cameraPosition.Zoom);
 		}
 	}
 }
