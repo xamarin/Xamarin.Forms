@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Controls
 	}
 
 	[Preserve(AllMembers = true)]
-	internal class CarouselData
+	public class CarouselData
 	{
 		public Color Color { get; set; }
 		public string Name { get; set; }
