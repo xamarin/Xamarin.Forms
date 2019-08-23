@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
+	[Preserve(AllMembers = true)]
 	internal class CarouselViewCoreGalleryPage : CoreGalleryPage<CarouselView>
 	{
 		protected override void InitializeElement(CarouselView element)
@@ -90,6 +92,7 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	internal class CarouselData
 	{
 		public Color Color { get; set; }
