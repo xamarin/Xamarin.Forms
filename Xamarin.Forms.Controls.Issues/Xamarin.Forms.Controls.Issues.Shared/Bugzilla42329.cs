@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			~ContentPageEx()
 			{
-				Success = "Desctructor called";
+				Success = "Destructor called";
 				Log.Warning("Bugzilla42329", DestructorMessage);
 			}
 		}
