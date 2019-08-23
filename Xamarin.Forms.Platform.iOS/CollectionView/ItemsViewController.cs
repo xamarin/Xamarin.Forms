@@ -230,6 +230,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CellContentSizeChanged(object sender, EventArgs e)
 		{
+			if (_disposed)
+				return;
+
 			Layout?.InvalidateLayout();
 		}
 
