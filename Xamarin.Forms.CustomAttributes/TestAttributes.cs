@@ -852,6 +852,13 @@ namespace Xamarin.Forms.CustomAttributes
 			CornerRadius
 		}
 
+		public enum CarouselView
+		{
+			IsSwipeEnabled,
+			NumberOfSideItems, 
+			PeekAreaInsets,
+			Position
+		}
 	}
 }
 
