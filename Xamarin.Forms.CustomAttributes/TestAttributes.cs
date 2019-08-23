@@ -855,6 +855,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum CarouselView
 		{
 			IsSwipeEnabled,
+			IsScrollAnimated,
 			NumberOfSideItems, 
 			PeekAreaInsets,
 			Position

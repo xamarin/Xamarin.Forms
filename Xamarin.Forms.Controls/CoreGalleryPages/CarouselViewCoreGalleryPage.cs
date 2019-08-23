@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Controls
 		{
 			base.InitializeElement(element);
 
+			element.IsScrollAnimated = true;
 			element.ItemsSource = GetCarouselItems();
 			element.ItemTemplate = GetCarouselTemplate();
 			element.ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal);
@@ -23,11 +24,13 @@ namespace Xamarin.Forms.Controls
 			base.Build(stackLayout);
 
 			var isSwipeEnabledContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.IsSwipeEnabled, new CarouselView { IsSwipeEnabled = false, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate()}, "IsSwipeEnabled", value => value.ToString());
+			var isScrollAnimatedContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.IsScrollAnimated, new CarouselView { IsScrollAnimated = false, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "IsScrollAnimated", value => value.ToString());
 			var numberOfSideItemsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.NumberOfSideItems, new CarouselView { NumberOfSideItems = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "NumberOfSideItems", value => value.ToString());
 			var peekAreaInsetsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.PeekAreaInsets, new CarouselView { PeekAreaInsets = new Thickness(24, 12, 36, 6), HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "PeekAreaInsets", value => value.ToString());
 			var positionContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.Position, new CarouselView { Position = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "Position", value => value.ToString());
 
 			Add(isSwipeEnabledContainer);
+			Add(isScrollAnimatedContainer);
 			Add(numberOfSideItemsContainer);
 			Add(peekAreaInsetsContainer);
 			Add(positionContainer);
