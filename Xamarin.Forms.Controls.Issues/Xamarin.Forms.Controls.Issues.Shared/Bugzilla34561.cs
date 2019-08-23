@@ -16,6 +16,12 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 34561, "[A] Navigation.PushAsync crashes when used in Context Actions (legacy)", PlatformAffected.Android)]
+
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(UITestCategories.ContextActions)]
+	[NUnit.Framework.Category(UITestCategories.Navigation)]
+#endif
 	public class Bugzilla34561 : TestContentPage
 	{
 		protected override void Init ()
