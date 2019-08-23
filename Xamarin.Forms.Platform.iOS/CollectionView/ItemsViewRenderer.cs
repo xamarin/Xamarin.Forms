@@ -208,18 +208,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		protected virtual void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
-			var indexPath = DetermineIndex(args);
-
-			if (!IsIndexPathValid(indexPath))
+			using (var indexPath = DetermineIndex(args))
 			{
-				// Specified path wasn't valid, or item wasn't found
-				return;
-			}
+				if (!IsIndexPathValid(indexPath))
+				{
+					// Specified path wasn't valid, or item wasn't found
+					return;
+				}
 
-			ItemsViewController.CollectionView.ScrollToItem(indexPath, 
-				args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection), args.IsAnimated);
+				ItemsViewController.CollectionView.ScrollToItem(indexPath,
+					args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection), args.IsAnimated);
+			}
 		}
 
 		protected override void Dispose(bool disposing)
