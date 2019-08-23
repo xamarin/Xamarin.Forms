@@ -211,7 +211,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(LabelPage2);
 			RunningApp.WaitForElement(Page2Title);
 			RunningApp.Tap(Page3Title);
-			RunningApp.WaitForElement("Desctructor called");
+			RunningApp.WaitForElement("Destructor called");
 			RunningApp.Tap("ok");
 		}
 #endif
