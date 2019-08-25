@@ -78,7 +78,8 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 		}
 
-#if UITEST
+#if UITEST && __WINDOWS__
+
 		[Test]
 		public void TabbedModalNavigation()
 		{
@@ -89,7 +90,6 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(Pop);
 			RunningApp.Tap(Pop);
 			RunningApp.WaitForElement(Page2);
-
 		}
 #endif
 	}
