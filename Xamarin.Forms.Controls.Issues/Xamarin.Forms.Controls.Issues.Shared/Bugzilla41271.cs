@@ -122,18 +122,14 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-#if UITEST
+#if UITEST && __WINDOWS__
 
 		string Cell;
 
 		[Test]
 		public void MemoryLeakInListViewTabbedPageUWP()
 		{
-#if __WINDOWS__
 			Cell = "California #60";
-#else
-			Cell = "California #20";
-#endif
 			for (int i = 1; i <= 10; i++)
 				ScrollListInPage($"List {i}");
 		}
@@ -146,5 +142,5 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.ScrollUpTo("California #1", ListMain, ScrollStrategy.Programmatically, 0.7, timeout: TimeSpan.FromMinutes(1));
 		}
 #endif
-		}
+	}
 }
