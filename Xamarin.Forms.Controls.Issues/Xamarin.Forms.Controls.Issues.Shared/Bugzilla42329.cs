@@ -172,6 +172,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public class _42329_Page3 : ContentPage
 		{
 			Label lblFlag;
+			Label otherLabel;
 			public _42329_Page3()
 			{
 				Title = Page3Title;
@@ -182,20 +183,29 @@ namespace Xamarin.Forms.Controls.Issues
 					HorizontalTextAlignment = TextAlignment.Center,
 					TextColor = Color.Red
 				};
+
+				otherLabel = new Label
+				{
+					HorizontalOptions = LayoutOptions.Center,
+					FontAttributes = FontAttributes.Bold,
+					AutomationId = Success
+
+				};
 				Content = new StackLayout
 				{
 					Children =
 					{
-						lblFlag
+						lblFlag,
+						otherLabel
 					}
 				};
 			}
 
-			protected override async void OnAppearing()
+			protected override void OnAppearing()
 			{
 				base.OnAppearing();
 				GarbageCollectionHelper.Collect();
-				await DisplayAlert("Alert", Success, "ok");
+				otherLabel.Text = Success;
 			}
 		}
 
@@ -211,8 +221,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(LabelPage2);
 			RunningApp.WaitForElement(Page2Title);
 			RunningApp.Tap(Page3Title);
-			RunningApp.WaitForElement("Destructor called");
-			RunningApp.Tap("ok");
+			RunningApp.WaitForElement(Success);
 		}
 #endif
 	}
