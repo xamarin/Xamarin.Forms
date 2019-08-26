@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void MapViewInTabbedPage()
 		{
