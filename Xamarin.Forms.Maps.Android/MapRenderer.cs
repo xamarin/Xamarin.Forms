@@ -5,10 +5,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Android;
 using Android.Content;
+using Android.Content.PM;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.OS;
+using Android.Support.V4.Content;
 using Java.Lang;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
@@ -162,7 +165,7 @@ namespace Xamarin.Forms.Maps.Android
 
 			if (e.PropertyName == Map.IsShowingUserProperty.PropertyName)
 			{
-				gmap.MyLocationEnabled = gmap.UiSettings.MyLocationButtonEnabled = Map.IsShowingUser;
+				SetUserVisible();
 			}
 			else if (e.PropertyName == Map.HasScrollEnabledProperty.PropertyName)
 			{
@@ -215,7 +218,7 @@ namespace Xamarin.Forms.Maps.Android
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ScrollGesturesEnabled = Map.HasScrollEnabled;
-			map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = Map.IsShowingUser;
+			SetUserVisible();
 			SetMapType();
 		}
 
@@ -474,6 +477,35 @@ namespace Xamarin.Forms.Maps.Android
 			double dlat = Math.Max(Math.Abs(ul.Latitude - lr.Latitude), Math.Abs(ur.Latitude - ll.Latitude));
 			double dlong = Math.Max(Math.Abs(ul.Longitude - lr.Longitude), Math.Abs(ur.Longitude - ll.Longitude));
 			Element.SetVisibleRegion(new MapSpan(new Position(pos.Latitude, pos.Longitude), dlat, dlong));
+		}
+
+		void SetUserVisible()
+		{
+			GoogleMap map = NativeMap;
+			if (map == null)
+			{
+				return;
+			}
+
+			if (Map.IsShowingUser)
+			{
+				var courseLocationPermission = ContextCompat.CheckSelfPermission(Context, Manifest.Permission.AccessCoarseLocation);
+				var fineLocationPermission = ContextCompat.CheckSelfPermission(Context, Manifest.Permission.AccessFineLocation);
+
+				if (courseLocationPermission == Permission.Granted || fineLocationPermission == Permission.Granted)
+				{
+					map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = true;
+				}
+				else
+				{
+					Log.Warning("Xamarin.Forms.MapRenderer", "Missing location permissions for IsShowingUser");
+					map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = false;
+				}
+			}
+			else
+			{
+				map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = false;
+			}
 		}
 
 		void IOnMapReadyCallback.OnMapReady(GoogleMap map)
