@@ -445,7 +445,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				DocumentType = NSDocumentType.HTML
 			};
 
-			var nsError = new NSError();
+			NSError nsError = null;
 
 			Control.AttributedText = new NSAttributedString(text, attr, ref nsError);
 
@@ -465,6 +465,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateFont()
 		{
+			if (Element?.TextType != TextType.Text)
+				return;
+
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
@@ -481,6 +484,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
+			if (Element?.TextType != TextType.Text)
+				return;
+
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();

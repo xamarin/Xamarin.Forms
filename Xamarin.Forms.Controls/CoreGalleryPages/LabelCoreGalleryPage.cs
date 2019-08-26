@@ -247,7 +247,7 @@ namespace Xamarin.Forms.Controls
 			var htmlLabelMultipleLinesContainer = new ViewContainer<Label>(Test.Label.TextType,
 				new Label
 				{
-					Text = "<h1>Hello world!</h1><p>Lorem <strong>ipsum</strong> bla di bla <i>blabla</i> blablabl ablabla blablablablabl ablabl ablablabl ablablabla blablablablablablab lablablabla blablab lablablabla blablabl ablablablab lablabla blab lablablabla blablab lablabla blablablablab lablabla blablab lablablabl ablablabla blablablablablabla blablabla</p>",
+					Text = "<h1>Hello world!</h1><p>Lorem <strong>ipsum</strong> bla di bla <i>blabla</i> blablabl&nbsp;ablabla & blablablablabl ablabl ablablabl ablablabla blablablablablablab lablablabla blablab lablablabla blablabl ablablablab lablabla blab lablablabla blablab lablabla blablablablab lablabla blablab lablablabl ablablabla blablablablablabla blablabla</p>",
 					TextType = TextType.Html,
 					MaxLines = 3
 				});
@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Controls
 			var toggleLabel = new Label
 			{
 				TextType = TextType.Html,
-				Text = "<h1>Hello world!</h1><p>Lorem <strong>ipsum</strong></p>"
+				Text = "<h1 style=\"color: red;\">Hello world!</h1><p>Lorem <strong>ipsum</strong></p>"
 				
 			};
 
