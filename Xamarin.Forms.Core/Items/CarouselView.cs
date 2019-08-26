@@ -198,7 +198,7 @@ namespace Xamarin.Forms
 
 			//user is interacting with the carousel we don't need to scroll to item 
 			if (!carousel.IsDragging)
-				carousel.ScrollTo(args.CurrentPosition, 1, ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
+				carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
 
 			carousel.OnPositionChanged(args);
 		}

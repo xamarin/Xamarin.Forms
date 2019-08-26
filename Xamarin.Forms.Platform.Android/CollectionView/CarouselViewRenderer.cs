@@ -8,14 +8,13 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class CarouselViewRenderer : ItemsViewRenderer
 	{
-		// TODO hartez 2018/08/29 17:13:17 Does this need to override SelectLayout so it ignores grids?	(Yes, and so it can warn on unknown layouts)
 		Context _context;
 		protected CarouselView Carousel;
 		bool _isSwipeEnabled;
 		bool _isUpdatingPositionFromForms;
-		//int _oldPosition;
-		//int _initialPosition;
-		//bool _scrollingToInitialPosition = true;
+		int _oldPosition;
+		int _initialPosition;
+		bool _scrollingToInitialPosition = true;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
@@ -43,11 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 			Carousel = newElement as CarouselView;
 
 			UpdateIsSwipeEnabled();
-			_isUpdatingPositionFromForms = true;
-			//Goto to the Correct Position
-			//_initialPosition = Carousel.Position;
-			Carousel.ScrollTo(Carousel.Position);
-			_isUpdatingPositionFromForms = false;
+			UpdateInitialPosition();
 		}
 
 		protected override void UpdateItemsSource()
@@ -85,6 +80,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnScrollStateChanged(state);
 
+			System.Diagnostics.Debug.WriteLine($"State {state}");
+
 			if (_isSwipeEnabled)
 			{
 				if (state == ScrollStateDragging)
@@ -98,48 +95,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-
-
 		public override void OnScrolled(int dx, int dy)
 		{
 			base.OnScrolled(dx, dy);
-			
-			var layoutManager = GetLayoutManager() as LinearLayoutManager;
-			var adapterFirstPosition = layoutManager.FindFirstVisibleItemPosition();
-			var adapterLastPosition = layoutManager.FindLastVisibleItemPosition();
-			int screenCenter = _context.Resources.DisplayMetrics.WidthPixels / 2;
-			int middleCenterPosition = 0;
-
-			System.Diagnostics.Debug.WriteLine($"First:{adapterFirstPosition} Last:{adapterLastPosition}");
-
-			for (int i = adapterFirstPosition; i <= adapterLastPosition; i++)
-			{
-				var listItem = layoutManager.GetChildAt(i);
-
-				if (listItem == null)
-					return;
-				int leftOffset = listItem.Left;
-				int rightOffset = listItem.Right;
-				System.Diagnostics.Debug.WriteLine($"Item {i} - Left:{middleCenterPosition} Center:{screenCenter} Right:{rightOffset}");
-				if (screenCenter > leftOffset && screenCenter < rightOffset)
-				{
-					middleCenterPosition = i;
-					
-					System.Diagnostics.Debug.WriteLine($"Changing position : {middleCenterPosition}");
-				}
-			}
-			//if (_scrollingToInitialPosition)
-			//{
-			//	_scrollingToInitialPosition = !(_initialPosition == middleCenterPosition);
-			//	return;
-			//}
-
-			//if (_oldPosition != middleCenterPosition)
-			//{
-			//	_oldPosition = middleCenterPosition;
-			//	UpdatePosition(middleCenterPosition);
-			//}
+			if()
+			//UpdatePositionFromScroll();
 		}
+
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
 		{
 			return new CarouselSpacingItemDecoration(itemsLayout, () => GetItemWidth(), () => GetItemHeight());
@@ -186,6 +148,55 @@ namespace Xamarin.Forms.Platform.Android
 			var numberOfItems = (Element as CarouselView).NumberOfSideItems * 2 + 1;
 
 			return Height;
+		}
+
+		void UpdatePositionFromScroll()
+		{
+			var layoutManager = GetLayoutManager() as LinearLayoutManager;
+			var adapterFirstPosition = layoutManager.FindFirstVisibleItemPosition();
+			var adapterLastPosition = layoutManager.FindLastVisibleItemPosition();
+			int screenCenter = _context.Resources.DisplayMetrics.WidthPixels / 2;
+			int middleCenterPosition = 0;
+			var itemWidth = GetItemWidth();
+
+			System.Diagnostics.Debug.WriteLine($"First:{adapterFirstPosition} Last:{adapterLastPosition}");
+
+			for (int i = adapterFirstPosition; i <= adapterLastPosition; i++)
+			{
+				var listItem = layoutManager.GetChildAt(i);
+
+				if (listItem == null)
+					return;
+				int rightOffset = listItem.Right;
+				int leftOffset = rightOffset - itemWidth;
+				System.Diagnostics.Debug.WriteLine($"Item {i} - Left:{leftOffset} Center:{screenCenter} Right:{rightOffset}");
+				if (screenCenter > leftOffset && screenCenter < rightOffset)
+				{
+					middleCenterPosition = i;
+
+					System.Diagnostics.Debug.WriteLine($"Changing position : {middleCenterPosition}");
+				}
+			}
+			if (_scrollingToInitialPosition)
+			{
+				_scrollingToInitialPosition = !(_initialPosition == middleCenterPosition);
+				return;
+			}
+
+			if (_oldPosition != middleCenterPosition)
+			{
+				_oldPosition = middleCenterPosition;
+				UpdatePosition(middleCenterPosition);
+			}
+		}
+
+		void UpdateInitialPosition()
+		{
+			_isUpdatingPositionFromForms = true;
+			//Goto to the Correct Position
+			_initialPosition = Carousel.Position;
+			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+			_isUpdatingPositionFromForms = false;
 		}
 
 	}
