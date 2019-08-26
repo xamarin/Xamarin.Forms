@@ -13,9 +13,9 @@ namespace Xamarin.Forms.Platform.Android
 		protected CarouselView Carousel;
 		bool _isSwipeEnabled;
 		bool _isUpdatingPositionFromForms;
-		int _oldPosition;
-		int _initialPosition;
-		bool _scrollingToInitialPosition = true;
+		//int _oldPosition;
+		//int _initialPosition;
+		//bool _scrollingToInitialPosition = true;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing)
 			{
-				
+
 			}
 			base.Dispose(disposing);
 		}
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsSwipeEnabled();
 			_isUpdatingPositionFromForms = true;
 			//Goto to the Correct Position
-			_initialPosition = Carousel.Position;
+			//_initialPosition = Carousel.Position;
 			Carousel.ScrollTo(Carousel.Position);
 			_isUpdatingPositionFromForms = false;
 		}
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 			// So we give it an alternate delegate for creating the views
 
 			ItemsViewAdapter = new ItemsViewAdapter(ItemsView,
-				(context) => new SizedItemContentView(context, () => Width, () => Height));
+				(context) => new SizedItemContentView(context, GetItemWidth, GetItemHeight));
 
 			SwapAdapter(ItemsViewAdapter, false);
 		}
@@ -81,7 +81,6 @@ namespace Xamarin.Forms.Platform.Android
 			return base.OnTouchEvent(e);
 		}
 
-		// TODO: Do we want to do this through the ScrollListener?
 		public override void OnScrollStateChanged(int state)
 		{
 			base.OnScrollStateChanged(state);
@@ -96,25 +95,54 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					Carousel.SetIsDragging(false);
 				}
-			}	
+			}
 		}
+
+
 
 		public override void OnScrolled(int dx, int dy)
 		{
 			base.OnScrolled(dx, dy);
+			
 			var layoutManager = GetLayoutManager() as LinearLayoutManager;
-			var adapterPosition = layoutManager.FindFirstVisibleItemPosition();
-			if (_scrollingToInitialPosition)
+			var adapterFirstPosition = layoutManager.FindFirstVisibleItemPosition();
+			var adapterLastPosition = layoutManager.FindLastVisibleItemPosition();
+			int screenCenter = _context.Resources.DisplayMetrics.WidthPixels / 2;
+			int middleCenterPosition = 0;
+
+			System.Diagnostics.Debug.WriteLine($"First:{adapterFirstPosition} Last:{adapterLastPosition}");
+
+			for (int i = adapterFirstPosition; i <= adapterLastPosition; i++)
 			{
-				_scrollingToInitialPosition = !(_initialPosition == adapterPosition);
-				return;
-			}
+				var listItem = layoutManager.GetChildAt(i);
+
+				if (listItem == null)
+					return;
+				int leftOffset = listItem.Left;
+				int rightOffset = listItem.Right;
+				System.Diagnostics.Debug.WriteLine($"Item {i} - Left:{middleCenterPosition} Center:{screenCenter} Right:{rightOffset}");
+				if (screenCenter > leftOffset && screenCenter < rightOffset)
+				{
+					middleCenterPosition = i;
 					
-			if (_oldPosition != adapterPosition)
-			{
-				_oldPosition = adapterPosition;
-				UpdatePosition(adapterPosition);
+					System.Diagnostics.Debug.WriteLine($"Changing position : {middleCenterPosition}");
+				}
 			}
+			//if (_scrollingToInitialPosition)
+			//{
+			//	_scrollingToInitialPosition = !(_initialPosition == middleCenterPosition);
+			//	return;
+			//}
+
+			//if (_oldPosition != middleCenterPosition)
+			//{
+			//	_oldPosition = middleCenterPosition;
+			//	UpdatePosition(middleCenterPosition);
+			//}
+		}
+		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
+		{
+			return new CarouselSpacingItemDecoration(itemsLayout, () => GetItemWidth(), () => GetItemHeight());
 		}
 
 		void UpdateIsSwipeEnabled()
@@ -138,5 +166,27 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			OverScrollMode = Carousel.IsBounceEnabled ? OverScrollMode.Always : OverScrollMode.Never;
 		}
+
+		int GetItemWidth()
+		{
+			var numberofSideItems = (Element as CarouselView).NumberOfSideItems;
+			var numberOfItems = numberofSideItems * 2 + 1;
+			int spacingWidth = 0;
+
+			if (Carousel.ItemsLayout is ListItemsLayout listItemsLayout && numberofSideItems > 0)
+				spacingWidth = (int)listItemsLayout.ItemSpacing * (numberOfItems - 1);
+
+			var itemWidth = (Width - (int)Context.ToPixels(spacingWidth)) / numberOfItems;
+
+			return itemWidth;
+		}
+
+		int GetItemHeight()
+		{
+			var numberOfItems = (Element as CarouselView).NumberOfSideItems * 2 + 1;
+
+			return Height;
+		}
+
 	}
 }
