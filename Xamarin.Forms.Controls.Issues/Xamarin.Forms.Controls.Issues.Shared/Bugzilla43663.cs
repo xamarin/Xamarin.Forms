@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Controls.Issues
 			DisplayAlert("Popped", Message, Cancel);
 		}
 
-#if UITEST
+#if UITEST && __WINDOWS__
 		[Test]
 		public void ModalNavigation()
 		{
