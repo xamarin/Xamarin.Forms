@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7167,
-		"[Bug] improved observablecollection. a lot of collectionchanges. a reset is sent and listview scrolls to the top", PlatformAffected.All)]
+		"[Bug] improved observablecollection. a lot of collectionchanges. a reset is sent and listview scrolls to the top", PlatformAffected.UWP)]
 	public partial class Issue7167 : TestContentPage
 	{
 
@@ -40,9 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-
 #if UITEST
-
 		const string ListViewId = "ListViewId";
 		const string AddCommandID = "AddCommandID";
 		const string ClearListCommandId = "ClearListCommandId";
@@ -52,8 +50,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public  void Issue7167Test()
 		{
-
 			// arrange
+			// add items to the list and scroll down till item "25"
 			RunningApp.Screenshot("Empty ListView");
 			RunningApp.Tap(q => q.Button(AddRangeCommandId));
 			RunningApp.Tap(q => q.Button(AddRangeCommandId));
@@ -64,15 +62,14 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(x => x.Marked("25"));
 
 			// act
+			// when adding additional items via a addrange and a CollectionChangedEventArgs.Action.Reset is sent
+			// then the listview shouldnt reset or it should not scroll to the top
 			RunningApp.Tap(q => q.Marked(AddRangeCommandId));
 
 			// assert
-			RunningApp.Query(x => x.Marked(ListViewId).Child().Marked("25"));
-
-			RunningApp.Print.Tree();
-
-
-
+			// assert that item "25" is still visible
+			var result = RunningApp.Query(x => x.Marked(ListViewId).Child().Marked("25"));
+			Assert.That(result?.Length <= 0);
 		}
 #endif
 
@@ -84,7 +81,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		//private static readonly IEnumerable<string> _items = Enumerable.Range(0, 50).Select(num => num.ToString());
 
-		private IEnumerable<string> CreateItems()
+		IEnumerable<string> CreateItems()
 		{
 			var itemCount = Items.Count();
 			return Enumerable.Range(itemCount, 50).Select(num => num.ToString());
@@ -107,11 +104,6 @@ namespace Xamarin.Forms.Controls.Issues
 	internal class ImprovedObservableCollection<T> : ObservableCollection<T>
 	{
 		bool _isActivated = true;
-
-		public ImprovedObservableCollection()
-		{
-			
-		}
 		public void AddRange(IEnumerable<T> source)
 		{
 			_isActivated = false;
