@@ -260,8 +260,10 @@ namespace Xamarin.Forms
 
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because Device.Info watches for orientation changes and we need a current activity for that
-			Profile.FramePartition("new AndroidDeviceInfo(activity)");
+			Profile.FramePartition("create AndroidDeviceInfo");
 			Device.Info = new AndroidDeviceInfo(activity);
+
+			Profile.FramePartition("setFlags");
 			Device.SetFlags(s_flags);
 
 			Profile.FramePartition("AndroidTicker");
@@ -534,6 +536,12 @@ namespace Xamarin.Forms
 
 			public void BeginInvokeOnMainThread(Action action)
 			{
+				if (_context.IsDesignerContext())
+				{
+					action();
+					return;
+				}
+
 				if (s_handler == null || s_handler.Looper != Looper.MainLooper)
 				{
 					s_handler = new Handler(Looper.MainLooper);
