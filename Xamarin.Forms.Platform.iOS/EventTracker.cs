@@ -203,6 +203,17 @@ namespace Xamarin.Forms.Platform.MacOS
 					tapGestureRecognizer.SendTapped(view);
 			});
 		}
+		Action<UITouchGestureRecognizer, TouchEventArgs> CreateTouchRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer, TouchGestureRecognizer touchRecognizer)
+		{
+			return new Action<UITouchGestureRecognizer, TouchEventArgs>((sender, ev) =>
+			{
+				EventTracker eventTracker = weakEventTracker.Target as EventTracker;
+				View view = eventTracker?._renderer?.Element as View;
+				if (weakRecognizer.Target is TouchGestureRecognizer touhGestureRecognizer && view != null)
+					touhGestureRecognizer.SendTouch(view, ev);
+			});
+		}
+
 
 		Action<UITapGestureRecognizer> CreateChildRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer)
 		{
@@ -427,6 +438,15 @@ namespace Xamarin.Forms.Platform.MacOS
 				return uiRecognizer;
 			}
 
+			var touchRecognizer = recognizer as TouchGestureRecognizer;
+			if (touchRecognizer != null)
+			{
+				var returnAction = CreateTouchRecognizerHandler(weakEventTracker, weakRecognizer, touchRecognizer);
+				var uiRecognizer = CreateTouchRecognizer(returnAction);
+				return uiRecognizer;
+			}
+
+
 			return null;
 		}
 
@@ -466,6 +486,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				ShouldRecognizeSimultaneously = ShouldRecognizeTapsTogether
 			};
 
+			return result;
+		}
+
+		UITouchGestureRecognizer CreateTouchRecognizer(Action<UITouchGestureRecognizer, TouchEventArgs> action)
+		{
+			var result = new UITouchGestureRecognizer(action);
 			return result;
 		}
 #else

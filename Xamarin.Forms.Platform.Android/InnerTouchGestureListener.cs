@@ -1,47 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Android.Content;
 using Android.Runtime;
-using Android.Support.V4.View;
 using Android.Views;
-using Object = Java.Lang.Object;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class InnerTouchGestureListener : GestureDetector.SimpleOnGestureListener, //GestureDetector.IOnGestureListener, GestureDetector.IOnDoubleTapListener ,
-		 global::Android.Views.View.IOnTouchListener        //global::Android.Views.View.IOnGenericMotionListener
+	class InnerTouchGestureListener : GestureDetector.SimpleOnGestureListener, AView.IOnTouchListener
 	{
-		TouchGestureHandler _touchGestureHandler;
 		bool _disposed;
+		TouchGestureHandler _touchGestureHandler;
+
 		public InnerTouchGestureListener(TouchGestureHandler touchGestureHandler)
 		{
-			if (touchGestureHandler == null)
-			{
-				throw new ArgumentNullException(nameof(touchGestureHandler));
-			}
-
-			_touchGestureHandler = touchGestureHandler;
-			
-			//_swipeCompletedDelegate = swipeGestureHandler.OnSwipeComplete;
-		}
-
-		public bool OnTouchEvent(MotionEvent ev)
-		{
-			if(!HasAnyGestures())
-				return false;
-
-			var x1 = ev.ActionMasked;
-			var x2 = ev.ActionIndex;
-
-
-			return _touchGestureHandler.OnTouch(ev);
-		}
-		
-
-		bool HasAnyGestures()
-		{
-			return _touchGestureHandler.HasAnyGestures();
+			_touchGestureHandler = touchGestureHandler ?? throw new ArgumentNullException(nameof(touchGestureHandler));
 		}
 
 		// This is needed because GestureRecognizer callbacks can be delayed several hundred milliseconds
@@ -51,6 +22,20 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
+		public bool OnTouch(AView v, MotionEvent e)
+		{
+			return _touchGestureHandler.OnTouch(e);
+		}
+
+		public bool OnCapturedPointer(AView view, MotionEvent e)
+		{
+			return _touchGestureHandler.OnTouch(e);
+		}
+
+		public bool OnTouchEvent(MotionEvent ev)
+		{
+			return HasAnyGestures() && _touchGestureHandler.OnTouch(ev);
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -69,15 +54,9 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
-		public bool OnCapturedPointer(global::Android.Views.View view, MotionEvent e)
+		bool HasAnyGestures()
 		{
-			return _touchGestureHandler.OnTouch(e);
+			return _touchGestureHandler.HasAnyGestures();
 		}
-
-		public bool OnTouch(global::Android.Views.View v, MotionEvent e)
-		{
-			return _touchGestureHandler.OnTouch(e);
-		}
-
 	}
 }

@@ -11,7 +11,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <BoxView BackgroundColor="Lavender" Grid.Row="0" >
+        <BoxView BackgroundColor="Lavender" Grid.Row="0" Margin="20" >
             <BoxView.GestureRecognizers>
                 <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated"/>
             </BoxView.GestureRecognizers>

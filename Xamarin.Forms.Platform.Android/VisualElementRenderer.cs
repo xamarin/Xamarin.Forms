@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 				return true; // IOW, intercepted
 			}
 
-			return _gestureManager.OnTouchEvent(ev) || base.OnInterceptTouchEvent(ev);
+			return base.OnInterceptTouchEvent(ev);
 		}
 
 		public override bool DispatchTouchEvent(MotionEvent e)
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 				return false; // IOW, not handled
 			}
 
-			return _gestureManager.OnTouchEvent(e) || base.DispatchTouchEvent(e);
+			return base.DispatchTouchEvent(e);
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use VisualElementRenderer(Context) instead.")]

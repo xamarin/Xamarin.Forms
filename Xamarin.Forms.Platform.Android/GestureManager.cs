@@ -15,8 +15,6 @@ namespace Xamarin.Forms.Platform.Android
 		readonly Lazy<GestureDetector> _tapAndPanAndSwipeDetector;
 		readonly Lazy<TouchGestureDetector> _touchGestureDetector;
 
-
-
 		bool _disposed;
 		bool _inputTransparent;
 		bool _isEnabled;
@@ -203,11 +201,9 @@ namespace Xamarin.Forms.Platform.Android
 					return view.GetChildElements(Point.Zero) ?? new List<GestureElement>();
 
 				return new List<GestureElement>();
-			}, context.FromPixels);
+			});
 
 			var listener = new InnerTouchGestureListener(handler);
-			//Control.SetOnTouchListener(listener);
-			//Control.SetOnCapturedPointerListener(listener);
 			return new TouchGestureDetector(context, listener);
 		}
 
