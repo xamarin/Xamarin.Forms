@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children = {
 					new Label { Text = "Turn on the Screen Reader. Swipe next to the WebView. You should be able to swipe between the elements on the webpage and hear the text announced. If not, this test has failed." },
-					new WebView { Source = "https://microsoft.com" }
+					new WebView { Source = "https://microsoft.com", VerticalOptions = LayoutOptions.FillAndExpand }
 				},
 			};
 
