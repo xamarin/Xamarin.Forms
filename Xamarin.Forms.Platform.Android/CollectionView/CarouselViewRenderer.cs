@@ -98,8 +98,8 @@ namespace Xamarin.Forms.Platform.Android
 		public override void OnScrolled(int dx, int dy)
 		{
 			base.OnScrolled(dx, dy);
-			//if()
-			//UpdatePositionFromScroll();
+
+			UpdatePositionFromScroll();
 		}
 
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
@@ -152,41 +152,29 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePositionFromScroll()
 		{
-			var layoutManager = GetLayoutManager() as LinearLayoutManager;
-			var adapterFirstPosition = layoutManager.FindFirstVisibleItemPosition();
-			var adapterLastPosition = layoutManager.FindLastVisibleItemPosition();
-			int screenCenter = _context.Resources.DisplayMetrics.WidthPixels / 2;
-			int middleCenterPosition = 0;
-			var itemWidth = GetItemWidth();
 
-			System.Diagnostics.Debug.WriteLine($"First:{adapterFirstPosition} Last:{adapterLastPosition}");
-
-			for (int i = adapterFirstPosition; i <= adapterLastPosition; i++)
-			{
-				var listItem = layoutManager.GetChildAt(i);
-
-				if (listItem == null)
-					return;
-				int rightOffset = listItem.Right;
-				int leftOffset = rightOffset - itemWidth;
-				System.Diagnostics.Debug.WriteLine($"Item {i} - Left:{leftOffset} Center:{screenCenter} Right:{rightOffset}");
-				if (screenCenter > leftOffset && screenCenter < rightOffset)
-				{
-					middleCenterPosition = i;
-
-					System.Diagnostics.Debug.WriteLine($"Changing position : {middleCenterPosition}");
-				}
-			}
-			if (_scrollingToInitialPosition)
-			{
-				_scrollingToInitialPosition = !(_initialPosition == middleCenterPosition);
+			var snapHelper = GetSnapManager()?.GetCurrentSnapHelper();
+			if (snapHelper == null)
 				return;
-			}
 
-			if (_oldPosition != middleCenterPosition)
+			var layoutManager = GetLayoutManager() as LayoutManager;
+
+			var snapView = snapHelper.FindSnapView(layoutManager);
+
+			if (snapView != null)
 			{
-				_oldPosition = middleCenterPosition;
-				UpdatePosition(middleCenterPosition);
+				int middleCenterPosition = layoutManager.GetPosition(snapView);
+				if (_scrollingToInitialPosition)
+				{
+					_scrollingToInitialPosition = !(_initialPosition == middleCenterPosition);
+					return;
+				}
+
+				if (_oldPosition != middleCenterPosition)
+				{
+					_oldPosition = middleCenterPosition;
+					UpdatePosition(middleCenterPosition);
+				}
 			}
 		}
 
