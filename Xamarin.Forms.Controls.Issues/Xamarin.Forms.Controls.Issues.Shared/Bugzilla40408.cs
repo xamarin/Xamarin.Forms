@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 
-#if UITEST
+#if UITEST && __WINDOWS__
 		[Test]
 		public void OnAppearingEvents()
 		{
