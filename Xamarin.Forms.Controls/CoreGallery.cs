@@ -295,6 +295,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),
 				new GalleryPageFactory(() => new NativeBindingGalleryPage(), "Native Binding Controls Gallery"),
 				new GalleryPageFactory(() => new XamlNativeViews(), "Xaml Native Views Gallery"),
+				new GalleryPageFactory(() => new CharacterSpacingGallery(), "CharacterSpacing Views Gallery"),
 				new GalleryPageFactory(() => new AppLinkPageGallery(), "App Link Page Gallery"),
 				new GalleryPageFactory(() => new NestedNativeControlGalleryPage(), "Nested Native Controls Gallery"),
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
@@ -562,7 +563,6 @@ namespace Xamarin.Forms.Controls
 							GC.Collect ();
 						})
 					}
-
 				}
 			};
 
@@ -570,7 +570,7 @@ namespace Xamarin.Forms.Controls
 			if (secondaryWindowService != null)
 			{
 				var openSecondWindowButton = new Button() { Text = "Open Secondary Window" };
-				openSecondWindowButton.Clicked += (obj, args) => { secondaryWindowService.OpenSecondaryWindow(new Issue2482()); };
+				openSecondWindowButton.Clicked += (obj, args) => { secondaryWindowService.OpenSecondaryWindow(typeof(Issue2482)); };
 				stackLayout.Children.Add(openSecondWindowButton);
 			}
 

@@ -10,7 +10,6 @@ namespace Xamarin.Forms
 {
 	public abstract partial class Element : BindableObject, IElement, INameScope, IElementController
 	{
-
 		public static readonly BindableProperty MenuProperty = BindableProperty.CreateAttached(nameof(Menu), typeof(Menu), typeof(Element), null);
 
 		public static Menu GetMenu(BindableObject bindable)
@@ -214,8 +213,42 @@ namespace Xamarin.Forms
 				OnParentSet();
 
 				OnPropertyChanged();
+
+				RefreshTemplatedParent();
 			}
 		}
+
+		internal event EventHandler TemplatedParentChanged;
+
+		BindableObject _templatedParent;
+		public BindableObject TemplatedParent
+		{
+			get => _templatedParent;
+			private set
+			{
+				_templatedParent = value;
+				TemplatedParentChanged?.Invoke(this, null);
+				OnPropertyChanged();
+			}
+		}
+
+		void RefreshTemplatedParent()
+		{
+			var templatedParent = this.IsTemplateRoot
+				? this.Parent
+				: this.Parent?.TemplatedParent;
+			if (ReferenceEquals(templatedParent, this.TemplatedParent))
+				return;
+
+			this.TemplatedParent = templatedParent;			
+			foreach (var element in this.LogicalChildren)
+			{
+				if (!element.IsTemplateRoot)
+					element.RefreshTemplatedParent();
+			}
+		}
+
+		internal bool IsTemplateRoot { get; set; }
 
 		void IElement.RemoveResourcesChangedListener(Action<object, ResourcesChangedEventArgs> onchanged)
 		{
