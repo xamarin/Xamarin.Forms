@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override void OnScrolled(int dx, int dy)
 		{
 			base.OnScrolled(dx, dy);
-			if()
+			//if()
 			//UpdatePositionFromScroll();
 		}
 

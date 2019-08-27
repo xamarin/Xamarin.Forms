@@ -27,12 +27,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		int _position;
 		ObservableCollection<CarouselItem> _items;
 		CarouselXamlSampleType _type;
-		public CarouselViewModel(CarouselXamlSampleType type, int intialItems = 5)
+		public CarouselViewModel(CarouselXamlSampleType type, int initialItems = 5)
 		{
 			_type = type;
 
 			var items = new List<CarouselItem>();
-			for (int i = 0; i < intialItems; i++)
+			for (int i = 0; i < initialItems; i++)
 			{
 				switch (_type)
 				{
