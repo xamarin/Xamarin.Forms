@@ -53,10 +53,10 @@ namespace Xamarin.Forms.Platform.Android
 			var resolver = global::Android.App.Application.Context?.ContentResolver;
 			if (resolver == null)
 			{
-				return false;
+				return true;
 			}
 
-			var scale = global::Android.Provider.Settings.Global.GetFloat(resolver, global::Android.Provider.Settings.Global.AnimatorDurationScale, 0);
+			var scale = global::Android.Provider.Settings.Global.GetFloat(resolver, global::Android.Provider.Settings.Global.AnimatorDurationScale, 1);
 			return scale > 0;
 		}
 
