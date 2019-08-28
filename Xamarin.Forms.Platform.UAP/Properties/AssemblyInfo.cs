@@ -29,7 +29,6 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(CheckBox), typeof(CheckBoxRenderer))]
 [assembly: ExportRenderer(typeof(TableView), typeof(TableViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
-[assembly: ExportRenderer(typeof(RefreshView), typeof(RefreshViewRenderer))]
 
 //ImageSources
 
