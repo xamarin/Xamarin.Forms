@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			// We are replacng one set of items with a set of equal size; we can do a simple item or range notification 
+			// We are replacing one set of items with a set of equal size; we can do a simple item or range notification 
 			var firstGroupIndex = Math.Min(newStartIndex, oldStartIndex);
 			var absolutePosition = GetAbsolutePosition(_groups[firstGroupIndex], 0);
 			
