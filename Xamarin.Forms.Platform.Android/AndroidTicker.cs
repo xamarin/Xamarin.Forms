@@ -56,7 +56,26 @@ namespace Xamarin.Forms.Platform.Android
 				return true;
 			}
 
-			var scale = global::Android.Provider.Settings.Global.GetFloat(resolver, global::Android.Provider.Settings.Global.AnimatorDurationScale, 1);
+float animationScale;
+
+if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1)
+{
+    animationScale = global::Android.Provider.Settings.Global.GetFloat(
+        resolver,
+        global::Android.Provider.Settings.Global.AnimatorDurationScale,
+        1);
+}
+else
+{
+    animationScale = global::Android.Provider.Settings.System.GetFloat(
+        resolver,
+#pragma warning disable
+        global::Android.Provider.Settings.System.AnimatorDurationScale,
+#pragma warning disable
+        1);
+}
+
+return animationScale > 0;
 			return scale > 0;
 		}
 
