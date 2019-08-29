@@ -98,37 +98,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool TryOffsetRefresh(UIView view, bool refreshing)
 		{
-			if (view is UITableView tableView)
-			{
-				if (tableView.ContentOffset.Y < 0)
-					return true;
-			
-				if (refreshing)
-					tableView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY - _refreshControlHeight), true);
-				else
-					tableView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY), true);
-
-				return true;
-			}
-
-			if (view is UICollectionView collectionView)
-			{
-				if (collectionView.ContentOffset.Y < 0)
-					return true;
-
-				if (refreshing)
-					collectionView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY - _refreshControlHeight), true);
-				else
-					collectionView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY), true);
-
-				return true;
-			}
-
-			if (view is UIWebView)
-			{
-				return true;
-			}
-
 			if (view is UIScrollView scrollView)
 			{
 				if (scrollView.ContentOffset.Y < 0)
@@ -139,6 +108,11 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY), true);
 
+				return true;
+			}
+
+			if (view is UIWebView)
+			{
 				return true;
 			}
 
@@ -159,38 +133,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_refreshControlParent = view;
 
-			if (view is UITableView tableView)
-			{
-				if (CanUseRefreshControlProperty())
-					tableView.RefreshControl = _refreshControl;
-				else
-					tableView.InsertSubview(_refreshControl, index);
-
-				_origininalY = tableView.ContentOffset.Y;
-				_refreshControlHeight = _refreshControl.Frame.Size.Height;
-
-				return true;
-			}
-
-			if (view is UICollectionView collectionView)
-			{
-				if (CanUseRefreshControlProperty())
-					collectionView.RefreshControl = _refreshControl;
-				else
-					collectionView.InsertSubview(_refreshControl, index);
-
-				_origininalY = collectionView.ContentOffset.Y;
-				_refreshControlHeight = _refreshControl.Frame.Size.Height;
-
-				return true;
-			}
-
-			if (view is UIWebView webView)
-			{
-				webView.ScrollView.InsertSubview(_refreshControl, index);
-				return true;
-			}
-
 			if (view is UIScrollView scrollView)
 			{
 				if (CanUseRefreshControlProperty())
@@ -203,6 +145,12 @@ namespace Xamarin.Forms.Platform.iOS
 				_origininalY = scrollView.ContentOffset.Y;
 				_refreshControlHeight = _refreshControl.Frame.Size.Height;
 
+				return true;
+			}
+
+			if (view is UIWebView webView)
+			{
+				webView.ScrollView.InsertSubview(_refreshControl, index);
 				return true;
 			}
 
