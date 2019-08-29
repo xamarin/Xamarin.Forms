@@ -239,6 +239,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateRowHeight();
 
 				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController) : new ListViewDataSource(e.NewElement, _tableViewController);
+				Control.Delegate = new ListViewTableViewDelegate(this);
 
 				UpdateHeader();
 				UpdateFooter();
@@ -945,6 +946,7 @@ namespace Xamarin.Forms.Platform.iOS
 			protected ListView List;
 			protected ITemplatedItemsView<Cell> TemplatedItemsView => List;
 			bool _isDragging;
+			bool _setupSelection;
 			bool _selectionFromNative;
 			bool _disposed;
 			bool _wasEmpty;
@@ -1000,6 +1002,19 @@ namespace Xamarin.Forms.Platform.iOS
 				_isDragging = true;
 			}
 
+			void SetupSelection(UITableViewCell nativeCell, UITableView tableView)
+			{
+				if (!(nativeCell is ContextActionsCell))
+					return;
+
+				if (_setupSelection)
+					return;
+
+				ContextActionsCell.SetupSelection(tableView);
+
+				_setupSelection = true;
+			}
+
 			public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 			{
 				Cell cell;
@@ -1036,6 +1051,8 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 					throw new NotSupportedException();
+
+				SetupSelection(nativeCell, tableView);
 
 				if (List.IsSet(Specifics.SeparatorStyleProperty))
 				{
@@ -1616,6 +1633,22 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateContentOffset(nfloat offset, Action completed = null)
 		{
 			UIView.Animate(0.2, () => TableView.ContentOffset = new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), completed);
+		}
+	}
+
+	internal class ListViewTableViewDelegate : UITableViewDelegate
+	{
+		readonly ListView _element;
+
+		public ListViewTableViewDelegate(ListViewRenderer renderer)
+		{
+			_element = renderer.Element;
+		}
+
+		public override void Scrolled(UIScrollView scrollView)
+		{
+			var args = new ScrolledEventArgs(scrollView.ContentOffset.X, scrollView.ContentOffset.Y);
+			_element?.SendScrolled(args);
 		}
 	}
 

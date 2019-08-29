@@ -217,6 +217,13 @@ namespace Xamarin.Forms.Controls
 			IApp runningApp = null;
 			try
 			{
+				// Issue 7207 - if current culture of the current thread is not set to the invariant culture
+				// then initializing the app causes a "NUnit.Framework.InconclusiveException" with the exception-
+				// message "App did not start for some reason. System.Argument.Exception: 1 is not supported code page.
+				// Parameter name: codepage."
+				if(System.Threading.Thread.CurrentThread.CurrentCulture != System.Globalization.CultureInfo.InvariantCulture)
+					System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
 				runningApp = InitializeApp();
 			}
 			catch (Exception e)
@@ -386,6 +393,9 @@ namespace Xamarin.Forms.Controls
 		public IApp RunningApp => AppSetup.RunningApp;
 
 		protected virtual bool Isolate => false;
+
+		IDispatcher _dispatcher = new FallbackDispatcher();
+		public override IDispatcher Dispatcher { get => _dispatcher; }
 #endif
 
 		protected TestCarouselPage()
@@ -527,6 +537,9 @@ namespace Xamarin.Forms.Controls
 		public IApp RunningApp => AppSetup.RunningApp;
 
 		protected virtual bool Isolate => false;
+
+		IDispatcher _dispatcher = new FallbackDispatcher();
+		public override IDispatcher Dispatcher { get => _dispatcher; }
 #endif
 
 		protected TestTabbedPage()
@@ -637,8 +650,33 @@ namespace Xamarin.Forms.Controls
 
 			Items.Add(item);
 			return page;
-
 		}
+
+
+		public ShellItem AddContentPage(ContentPage contentPage)
+		{
+			ContentPage page = new ContentPage();
+			ShellItem item = new ShellItem()
+			{
+				Items =
+				{
+					new ShellSection()
+					{
+						Items =
+						{
+							new ShellContent()
+							{
+								Content = contentPage
+							}
+						}
+					}
+				}
+			};
+
+			Items.Add(item);
+			return item;
+		}
+
 #if UITEST
 		[SetUp]
 		public void Setup()

@@ -7,8 +7,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class CarouselViewLayout : ItemsViewLayout
 	{
-		CarouselView _carouselView;
-		bool _addInsets = true;
+		readonly CarouselView _carouselView;
+		readonly bool _addInsets = true;
 		readonly ItemsLayout _itemsLayout;
 		public CarouselViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy, CarouselView carouselView) : base(itemsLayout, itemSizingStrategy)
 		{
@@ -75,14 +75,11 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
 				{
-					left = left + ItemSize.Width;
-					right = right + ItemSize.Width;
+					left += ItemSize.Width;
+					right += ItemSize.Width;
 					return new UIEdgeInsets(insets.Top, left, insets.Bottom, right);
 				}
-				else
-				{
-					return new UIEdgeInsets(ItemSize.Height, insets.Left, ItemSize.Height, insets.Right);
-				}
+				return new UIEdgeInsets(ItemSize.Height, insets.Left, ItemSize.Height, insets.Right);
 			}
 
 			return new UIEdgeInsets(top, left, bottom, right);

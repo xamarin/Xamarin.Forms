@@ -431,6 +431,7 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupDisplayBinding,
 			GroupShortNameBinding,
 			ScrollTo,
+			Scrolled,
 			FastScroll,
 			RefreshControlColor,
 			ScrollBarVisibility
@@ -541,7 +542,8 @@ namespace Xamarin.Forms.CustomAttributes
 			PasswordColor,
 			MaxLength,
 			IsReadOnly,
-			IsPasswordNumeric
+			IsPasswordNumeric,
+			ClearButtonVisibility
 		}
 
 		public enum Frame
@@ -634,7 +636,8 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentStart,
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
-			MaxLines
+			MaxLines,
+			TextType
 		}
 
 		public enum MasterDetailPage

@@ -176,6 +176,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ScrollAnimationEnded(UIScrollView scrollView)
 		{
+			GroupableItemsViewController?.HandleScrollAnimationEnded();
 			CarouselViewController?.ScrollAnimationEnded(scrollView);
 		}
 	}

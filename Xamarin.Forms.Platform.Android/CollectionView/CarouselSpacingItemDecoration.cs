@@ -7,9 +7,9 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class CarouselSpacingItemDecoration : RecyclerView.ItemDecoration
 	{
-		IItemsLayout _itemsLayout;
-		Func<int> _getWidth;
-		Func<int> _getHeight;
+		readonly IItemsLayout _itemsLayout;
+		readonly Func<int> _getWidth;
+		readonly Func<int> _getHeight;
 
 		public CarouselSpacingItemDecoration(IItemsLayout itemsLayout, Func<int> getWidth, Func<int> getHeight)
 		{
@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.Android
 			_getWidth = getWidth;
 			_getHeight = getHeight;
 		}
+
 		public override void GetItemOffsets(Rect outRect, AView view, RecyclerView parent, RecyclerView.State state)
 		{
 			base.GetItemOffsets(outRect, view, parent, state);
@@ -30,10 +31,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			// this is the first and last item , we need to give them some inset 
 			if (position == 0)
-				outRect.Left = width;
+				outRect.Left = width / itemCount;
 
 			if (position == itemCount - 1)
 				outRect.Right = width;
+
+			if (position == itemCount)
+				outRect.Left = width;
 		}
 	}
 }

@@ -6,9 +6,9 @@ using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class CarouselViewRenderer : ItemsViewRenderer
+	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
-		Context _context;
+		readonly Context _context;
 		protected CarouselView Carousel;
 		bool _isSwipeEnabled;
 		bool _isUpdatingPositionFromForms;
@@ -27,12 +27,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 
 			}
+
 			base.Dispose(disposing);
 		}
 
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
 			base.SetUpNewElement(newElement);
+
 			if (newElement == null)
 			{
 				Carousel = null;
@@ -47,13 +49,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void UpdateItemsSource()
 		{
-
 			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
 			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
 			// So we give it an alternate delegate for creating the views
 
-			ItemsViewAdapter = new ItemsViewAdapter(ItemsView,
-				(context) => new SizedItemContentView(context, GetItemWidth, GetItemHeight));
+			ItemsViewAdapter = new ItemsViewAdapter<ItemsView, IItemsViewSource>(ItemsView, 
+				(view, context) => new SizedItemContentView(context, () => Width, () => Height));
 
 			SwapAdapter(ItemsViewAdapter, false);
 		}
@@ -104,7 +105,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
 		{
-			return new CarouselSpacingItemDecoration(itemsLayout, () => GetItemWidth(), () => GetItemHeight());
+			return new CarouselSpacingItemDecoration(itemsLayout, GetItemWidth, GetItemHeight);
 		}
 
 		void UpdateIsSwipeEnabled()
@@ -117,7 +118,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (position == -1 || _isUpdatingPositionFromForms)
 				return;
 
-			var context = ItemsViewAdapter?.ItemsSource[position];
+			var context = ItemsViewAdapter?.ItemsSource.GetItem(position);
+
 			if (context == null)
 				throw new InvalidOperationException("Visible item not found");
 
@@ -144,16 +146,15 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		int GetItemHeight()
-		{
-			var numberOfItems = (Element as CarouselView).NumberOfSideItems * 2 + 1;
-
+		{ 	 
+			//TODO: Calculate item height.
 			return Height;
 		}
 
 		void UpdatePositionFromScroll()
 		{
-
 			var snapHelper = GetSnapManager()?.GetCurrentSnapHelper();
+
 			if (snapHelper == null)
 				return;
 
@@ -186,6 +187,5 @@ namespace Xamarin.Forms.Platform.Android
 			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center);
 			_isUpdatingPositionFromForms = false;
 		}
-
 	}
 }

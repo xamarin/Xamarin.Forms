@@ -159,9 +159,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				// TODO hartez 2018/09/17 16:42:54 This will need to be overridden to account for grouping	
-				// TODO hartez 2018/09/17 16:21:19 Handle LTR	
-				return NSIndexPath.Create(0, args.Index);
+				if (args.GroupIndex == -1)
+				{
+					return NSIndexPath.Create(0, args.Index);
+				}
+
+				return NSIndexPath.Create(args.GroupIndex, args.Index);
 			}
 
 			return ItemsViewController.GetIndexForItem(args.Item);
@@ -170,17 +173,17 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateVerticalScrollBarVisibility()
 		{
 			if (_defaultVerticalScrollVisibility == null)
-				_defaultVerticalScrollVisibility = ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator;
+				_defaultVerticalScrollVisibility = ItemsViewController.CollectionView.ShowsVerticalScrollIndicator;
 
 			switch (Element.VerticalScrollBarVisibility)
 			{
-				case (ScrollBarVisibility.Always):
+				case ScrollBarVisibility.Always:
 					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = true;
 					break;
-				case (ScrollBarVisibility.Never):
+				case ScrollBarVisibility.Never:
 					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = false;
 					break;
-				case (ScrollBarVisibility.Default):
+				case ScrollBarVisibility.Default:
 					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = _defaultVerticalScrollVisibility.Value;
 					break;
 			}
@@ -193,31 +196,31 @@ namespace Xamarin.Forms.Platform.iOS
 
 			switch (Element.HorizontalScrollBarVisibility)
 			{
-				case (ScrollBarVisibility.Always):
+				case ScrollBarVisibility.Always:
 					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = true;
 					break;
-				case (ScrollBarVisibility.Never):
+				case ScrollBarVisibility.Never:
 					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = false;
 					break;
-				case (ScrollBarVisibility.Default):
+				case ScrollBarVisibility.Default:
 					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = _defaultHorizontalScrollVisibility.Value;
 					break;
 			}
 		}
 
-		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		protected virtual void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
-			var indexPath = DetermineIndex(args);
-
-			if (indexPath.Item < 0 || indexPath.Section < 0)
+			using (var indexPath = DetermineIndex(args))
 			{
-				// Nothing found, nowhere to scroll to
-				return;
-			}
+				if (!IsIndexPathValid(indexPath))
+				{
+					// Specified path wasn't valid, or item wasn't found
+					return;
+				}
 
-			ItemsViewController.CollectionView.ScrollToItem(indexPath,
-				args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
-				args.IsAnimated);
+				ItemsViewController.CollectionView.ScrollToItem(indexPath,
+					args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection), args.IsAnimated);
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -231,14 +234,34 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if (Element != null)
-				{
-					TearDownOldElement(Element);
-				}
-				ItemsViewController.Dispose();
+				TearDownOldElement(Element);
+
+				ItemsViewController?.Dispose();
+				ItemsViewController = null;
 			}
 
 			base.Dispose(disposing);
+		}
+
+		bool IsIndexPathValid(NSIndexPath indexPath)
+		{
+			if (indexPath.Item < 0 || indexPath.Section < 0)
+			{
+				return false;
+			}
+
+			var collectionView = ItemsViewController.CollectionView;
+			if (indexPath.Section >= collectionView.NumberOfSections())
+			{
+				return false;
+			}
+
+			if (indexPath.Item >= collectionView.NumberOfItemsInSection(indexPath.Section))
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
