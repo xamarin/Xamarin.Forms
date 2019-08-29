@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void DisplayActionSheetAndDisplayAlertFromOnAppearing()
 		{
-			RunningApp.Tap("Close Alert");
+			RunningApp.Tap("Cancel");
 			RunningApp.Tap("Close Action Sheet");
 		}
 #endif
