@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 		object _currentItem;
 		NSIndexPath _currentItemIdex;
 		List<UICollectionViewCell> _cells;
+		bool _viewInitialized;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -35,11 +36,19 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		public override void ViewDidAppear(bool animated)
+		// Here because ViewDidAppear (and associates) are not fired consistently for this class
+		// See a more extensive explanation in the ItemsViewController.ViewWillLayoutSubviews method
+		public override void ViewWillLayoutSubviews()
 		{
-			base.ViewDidAppear(animated);
-			UpdateInitialPosition();
-			UpdateVisualStates();
+			base.ViewWillLayoutSubviews();
+
+			if (!_viewInitialized)
+			{
+				UpdateInitialPosition();
+				UpdateVisualStates();
+
+				_viewInitialized = true;
+			}
 		}
 
 		protected override string DetermineCellReuseId()
@@ -171,8 +180,8 @@ namespace Xamarin.Forms.Platform.iOS
 			TemplatedCell previousCell = null;
 			TemplatedCell nextCell = null;
 
-			var x = CollectionView.Center.X + CollectionView.ContentOffset.X;
-			var y = CollectionView.Center.Y + CollectionView.ContentOffset.Y;
+			var x = (float)(CollectionView.Center.X + CollectionView.ContentOffset.X);
+			var y = (float)(CollectionView.Center.Y + CollectionView.ContentOffset.Y);
 
 			var previousIndex = -1;
 			var currentIndex = -1;
@@ -180,7 +189,11 @@ namespace Xamarin.Forms.Platform.iOS
 			for (int i = 0; i < cells.Count(); i++)
 			{
 				var cell = cells[i];
-				if (cell.Center.X == x && cell.Center.Y == y)
+				var cellCenterX = (float)cell.Center.X;
+				var cellCenterY = (float)cell.Center.Y;
+
+				if ((_layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal && cellCenterX == x)
+					|| (_layout.ScrollDirection == UICollectionViewScrollDirection.Vertical && cellCenterY == y))
 				{
 					currentIndex = i;
 					if (i > 0)

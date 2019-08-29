@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGalleries;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
@@ -10,6 +12,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 		public CarouselCodeGallery(ItemsLayoutOrientation orientation)
 		{
+			On<iOS>().SetLargeTitleDisplay(LargeTitleDisplayMode.Never);
+
 			_scrollInfoLabel.MaxLines = 1;
 			_scrollInfoLabel.LineBreakMode = LineBreakMode.TailTruncation;
 			_orientation = orientation;
