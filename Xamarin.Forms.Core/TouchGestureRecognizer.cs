@@ -25,12 +25,12 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendTouch(View sender, TouchEventArgs eventArgs)
 		{
+			VisualStateManager.GoToState(sender, eventArgs.TouchState.ToString());
 			TouchUpdated?.Invoke(this, eventArgs);
 		}
 
 		public event EventHandler<TouchEventArgs> TouchUpdated;
 		public IList<TouchPoint> TouchPoints { get; set; }
-
 
 
 	}
