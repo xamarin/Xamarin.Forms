@@ -203,17 +203,17 @@ namespace Xamarin.Forms.Platform.MacOS
 					tapGestureRecognizer.SendTapped(view);
 			});
 		}
+
 		Action<UITouchGestureRecognizer, TouchEventArgs> CreateTouchRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer, TouchGestureRecognizer touchRecognizer)
 		{
 			return new Action<UITouchGestureRecognizer, TouchEventArgs>((sender, ev) =>
 			{
 				EventTracker eventTracker = weakEventTracker.Target as EventTracker;
 				View view = eventTracker?._renderer?.Element as View;
-				if (weakRecognizer.Target is TouchGestureRecognizer touhGestureRecognizer && view != null)
-					touhGestureRecognizer.SendTouch(view, ev);
+				if (weakRecognizer.Target is TouchGestureRecognizer touchGestureRecognizer && view != null)
+					touchGestureRecognizer.SendTouch(view, ev);
 			});
 		}
-
 
 		Action<UITapGestureRecognizer> CreateChildRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer)
 		{
@@ -438,14 +438,16 @@ namespace Xamarin.Forms.Platform.MacOS
 				return uiRecognizer;
 			}
 
+#if __MOBILE__
 			var touchRecognizer = recognizer as TouchGestureRecognizer;
 			if (touchRecognizer != null)
 			{
+				var eventTracker = weakEventTracker.Target as EventTracker;
 				var returnAction = CreateTouchRecognizerHandler(weakEventTracker, weakRecognizer, touchRecognizer);
-				var uiRecognizer = CreateTouchRecognizer(returnAction);
+				var uiRecognizer = CreateTouchRecognizer(returnAction, ()=> eventTracker?._renderer?.Element as View);
 				return uiRecognizer;
 			}
-
+#endif
 
 			return null;
 		}
@@ -489,9 +491,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			return result;
 		}
 
-		UITouchGestureRecognizer CreateTouchRecognizer(Action<UITouchGestureRecognizer, TouchEventArgs> action)
+		UITouchGestureRecognizer CreateTouchRecognizer(Action<UITouchGestureRecognizer, TouchEventArgs> action, Func<View> getView)
 		{
-			var result = new UITouchGestureRecognizer(action);
+			var result = new UITouchGestureRecognizer(action, getView);
 			return result;
 		}
 #else

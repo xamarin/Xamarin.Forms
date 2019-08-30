@@ -12,21 +12,17 @@ namespace Xamarin.Forms.Platform.iOS
 	class UITouchGestureRecognizer : UIGestureRecognizer
 	{
 		readonly Action<UITouchGestureRecognizer, TouchEventArgs> _action;
+		readonly Func<View> _getView;
 
 
 		/// <param name="action">Code to invoke when the gesture is recognized.</param>
 		/// <summary>Constructs a gesture recognizer and provides a method to invoke when the gesture is recognized.</summary>
 		/// <remarks>This overload allows the method that will be invoked to receive the recognizer that detected the gesture as a parameter.</remarks>
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public UITouchGestureRecognizer(Action<UITouchGestureRecognizer, TouchEventArgs> action)
+		public UITouchGestureRecognizer(Action<UITouchGestureRecognizer, TouchEventArgs> action, Func<View> getView)
 		{
 			_action = action;
-		}
-
-		
-		public override void Reset()
-		{
-			base.Reset();
+			_getView = getView;
 		}
 
 		/// <summary>
@@ -35,60 +31,75 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TouchesBegan(NSSet touches, UIEvent evt)
 		{
 			base.TouchesBegan(touches, evt);
-			//_action(this, GetTouchEventArgs(touches, evt));
-			_action(this, new TouchEventArgs
-			{
-				TouchState = TouchState.Pressed
-			});
+			State = UIGestureRecognizerState.Began;
+			_action(this, CreateTouchEventArgs(touches, evt));
 		}
 
 		public override void TouchesCancelled(NSSet touches, UIEvent evt)
 		{
 			base.TouchesCancelled(touches, evt);
-			_action(this, new TouchEventArgs
-			{
-				TouchState = TouchState.Released
-			});
+			State = UIGestureRecognizerState.Cancelled;
+			_action(this, CreateTouchEventArgs(touches, evt));
 		}
 
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
 		{
 			base.TouchesEnded(touches, evt);
-			_action(this, new TouchEventArgs
-			{
-				TouchState = TouchState.Released
-			});
+			State = UIGestureRecognizerState.Ended;
+			_action(this, CreateTouchEventArgs(touches, evt));
 		}
 
 		public override void TouchesMoved(NSSet touches, UIEvent evt)
 		{
 			base.TouchesMoved(touches, evt);
-			_action(this, new TouchEventArgs
-			{
-				TouchState = TouchState.Move
-			});
+			State = UIGestureRecognizerState.Changed;
+			_action(this, CreateTouchEventArgs(touches, evt));
 		}
 
-		TouchEventArgs GetTouchEventArgs(NSSet touches, UIEvent evt)
+
+		TouchEventArgs CreateTouchEventArgs(NSSet touches, UIEvent evt)
 		{
-			var ev = new TouchEventArgs();
-			switch (evt.Type)
+			return new TouchEventArgs((int)touches.Count, GetTouchState(touches, evt), GetTouchPoints(touches, evt));
+		}
+
+
+		TouchState GetTouchState(NSSet touches, UIEvent evt)
+		{
+			switch (State)
 			{
-				case UIEventType.Touches:
-					ev.TouchState = TouchState.Pressed;
-					break;
-				case UIEventType.Motion:
-					ev.TouchState = TouchState.Move;
-					break;
-				case UIEventType.RemoteControl:
-					break;
-				case UIEventType.Presses:
-					break;
+				case UIGestureRecognizerState.Possible:
+					return TouchState.Unknown;
+				case UIGestureRecognizerState.Began:
+					return TouchState.Pressed;
+				case UIGestureRecognizerState.Changed:
+					return TouchState.Move;
+				case UIGestureRecognizerState.Ended:
+					return TouchState.Released;
+				case UIGestureRecognizerState.Cancelled:
+					return TouchState.Cancelled;
+				case UIGestureRecognizerState.Failed:
+					return TouchState.Failed;
 				default:
-					throw new ArgumentOutOfRangeException();
+					return TouchState.Unknown;
+			}
+		}
+
+		IReadOnlyList<TouchPoint> GetTouchPoints(NSSet touches, UIEvent evt)
+		{
+			var points = new List<TouchPoint>((int)touches.Count);
+
+			foreach (UITouch touch in touches)
+			{
+				touch.PreviousLocationInView()
+
+				var point = touch.LocationInView(touch.View).ToPoint();
+				var view = _getView();
+				var isInView = view?.Bounds.Contains(point) ?? false;
+				points.Add(new TouchPoint(point, isInView));
 			}
 
-			return ev;
+			return points.AsReadOnly();
 		}
+
 	}
 }

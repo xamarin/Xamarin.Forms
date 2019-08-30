@@ -5,14 +5,14 @@ namespace Xamarin.Forms
 {
 	public class TouchEventArgs : EventArgs
 	{
-		public TouchEventArgs(long id, TouchState touchState, IReadOnlyList<TouchPoint> touchPoints)
+		public TouchEventArgs(int id, TouchState touchState, IReadOnlyList<TouchPoint> touchPoints)
 		{
 			Id = id;
 			TouchState = touchState;
 			TouchPoints = touchPoints;
 		}
 
-		public long Id { get; }
+		public int Id { get; }
 
 		public bool IsInContact { get; }
 
