@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
 using Xamarin.Forms.Internals;
+using CoreAnimation;
 
 #if __MOBILE__
 using UIKit;
@@ -11,7 +12,6 @@ using NativeImage = UIKit.UIImage;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using AppKit;
-using CoreAnimation;
 using NativeImage = AppKit.NSImage;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
@@ -30,8 +30,46 @@ namespace Xamarin.Forms.Platform.MacOS
 			renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 			renderer.ElementChanged -= OnElementChanged;
 			renderer.ControlChanged -= OnControlChanged;
+
+
+#if __MOBILE__
+			if (renderer.Control is FormsUIImageView imageView)
+			{
+				imageView.Animation.AnimationStopped -= OnAnimationStopped;
+				imageView.Animation.Dispose();
+				imageView.Animation = null;
+			}
+#endif
+
 		}
 
+
+		async static Task StartStopAnimation(IImageVisualElementRenderer renderer)
+		{
+#if __MOBILE__
+			if (renderer.IsDisposed || renderer.Element == null || renderer.Control == null)
+				return;
+
+
+			if (renderer.Control is FormsUIImageView imageView &&
+				renderer.Element is IImageElement imageElement &&
+				renderer.Element is IImageController imageController)
+			{
+				if (imageElement.IsLoading)
+					return;
+
+				if (imageView.Animation == null && imageElement.IsAnimationPlaying)
+					await SetImage(renderer, imageElement).ConfigureAwait(false);
+				if (imageView.Animation != null && imageElement.IsAnimationPlaying && !imageView.IsAnimating)
+					imageView.StartAnimating();
+				else if (imageView.Animation != null && !imageElement.IsAnimationPlaying && imageView.IsAnimating)
+					imageView.StopAnimating();
+			}
+#else
+			await Task.CompletedTask;
+#endif
+
+		}
 
 		static void OnControlChanged(object sender, EventArgs e)
 		{
@@ -53,7 +91,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
-		static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		static async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var renderer = sender as IImageVisualElementRenderer;
 			var imageElement = renderer.Element as IImageElement;
@@ -62,6 +100,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetOpacity(renderer, renderer.Element as IImageElement);
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				SetAspect(renderer, renderer.Element as IImageElement);
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				await StartStopAnimation(renderer).ConfigureAwait(false);
 		}
 
 
@@ -119,7 +159,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Control.Image?.Images != null && Control.Image.Images.Length > 1)
 			{
 				renderer.SetImage(null);
-			} 
+			}
 #else
 			if (Control.Image != null && Control.Image.Representations().Length > 1)
 			{
@@ -135,22 +175,61 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (oldSource is FileImageSource oldFile && source is FileImageSource newFile && oldFile == newFile)
 					return;
 
-				renderer.SetImage(null);
+#if __MOBILE__
+				if (Control is FormsUIImageView imageView)
+				{
+					if (imageView.Animation != null)
+					{
+						Control.StopAnimating();
+						imageView.Animation.AnimationStopped -= OnAnimationStopped;
+						imageView.Animation.Dispose();
+					}
+
+					renderer.SetImage(null);
+					imageView.Animation = null;
+				}
+#endif
+
 			}
 
 			imageController?.SetIsLoading(true);
+
+
+
+
+
+
 			try
 			{
-				var uiimage = await source.GetNativeImageAsync();
+#if __MOBILE__
+				IImageSourceHandlerEx handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandlerEx>(source);
+				bool useAnimation = imageElement.GetLoadAsAnimation() && handler != null;
+				if (useAnimation)
+				{
+					System.Diagnostics.Debug.Assert(handler is IImageSourceHandlerEx);
+					FormsCAKeyFrameAnimation animation = await ((IImageSourceHandlerEx)handler).LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale).ConfigureAwait(false);
 
-				if (renderer.IsDisposed)
-					return;
-
-				// only set if we are still on the same image
-				if (Control != null && imageElement.Source == source)
-					renderer.SetImage(uiimage);
+					if (animation != null && Control is FormsUIImageView imageView)
+					{
+						imageView.AutoPlay = (bool)Element.GetValue(Image.IsAnimationAutoPlayProperty);
+						imageView.Animation = animation;
+						animation.AnimationStopped += OnAnimationStopped;
+					}
+				}
 				else
-					uiimage?.Dispose();
+#endif
+				{
+					var uiimage = await source.GetNativeImageAsync();
+
+					if (renderer.IsDisposed)
+						return;
+
+					// only set if we are still on the same image
+					if (Control != null && imageElement.Source == source)
+						renderer.SetImage(uiimage);
+					else
+						uiimage?.Dispose();
+				}
 			}
 			finally
 			{
@@ -161,6 +240,20 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			(imageElement as IViewController)?.NativeSizeChanged();
 		}
+
+#if __MOBILE__
+		static void OnAnimationStopped(object sender, CAAnimationStateEventArgs e)
+		{
+			if(sender is FormsUIImageView imageView && 
+				e.Finished && 
+				imageView.Superview is IImageVisualElementRenderer renderer &&
+				renderer.Element is IImageController imageController)
+			{
+				imageController.OnAnimationFinishedPlaying();
+			}
+
+		}
+#endif
 
 		internal static async Task<NativeImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{

@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected ItemsViewController(TItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
-			CollectionView.RefreshControl;
 			ItemsView = itemsView;
 			ItemsViewLayout = layout;
 		}
