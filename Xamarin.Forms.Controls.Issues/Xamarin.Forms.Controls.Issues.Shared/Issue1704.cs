@@ -110,6 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 		Image _referenceImage;
 		Label _animatedImageLabel;
 		Image _animatedImage;
+		ImageButton _animatedImageButton;
 		Button _startStopButton;
 
 		public OnStartAnimationPage()
@@ -122,6 +123,11 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_referenceImage = new Image {
+				Source = "sweden.gif",
+				HorizontalOptions = LayoutOptions.Start
+			};
+			_animatedImageButton = new ImageButton
+			{
 				Source = "sweden.gif",
 				HorizontalOptions = LayoutOptions.Start
 			};
@@ -146,11 +152,13 @@ namespace Xamarin.Forms.Controls.Issues
 				if (!_animatedImage.IsAnimationPlaying)
 				{
 					_animatedImage.StartAnimation();
+					_animatedImageButton.StartAnimation();
 					_startStopButton.Text = "Stop Animation";
 				}
 				else
 				{
 					_animatedImage.StopAnimation();
+					_animatedImageButton.StopAnimation();
 					_startStopButton.Text = "Start Animation";
 				}
 			};
@@ -162,6 +170,7 @@ namespace Xamarin.Forms.Controls.Issues
 					_referenceImage,
 					_animatedImageLabel,
 					_animatedImage,
+					_animatedImageButton,
 					_startStopButton
 				}
 			};

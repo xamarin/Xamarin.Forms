@@ -33,7 +33,8 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElementRenderer _visualElementRenderer;
 		BorderBackgroundManager _backgroundTracker;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, ImageButton> _platformElementConfiguration;
-		private ImageButton _imageButton;
+		ImageButton _imageButton;
+		IFormsAnimationDrawable _formsAnimationDrawable;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -320,8 +321,16 @@ namespace Xamarin.Forms.Platform.Android
 			return _platformElementConfiguration;
 		}
 
-		void IImageRendererController.SetFormsAnimationDrawable(IFormsAnimationDrawable formsAnimationDrawable)
+		void IImageRendererController.SetFormsAnimationDrawable(IFormsAnimationDrawable value)
 		{
+			if (_formsAnimationDrawable != null)
+				_formsAnimationDrawable.AnimationStopped -= OnAnimationStopped;
+
+			_formsAnimationDrawable = value;
+			if (_formsAnimationDrawable != null)
+				_formsAnimationDrawable.AnimationStopped += OnAnimationStopped;
 		}
+		void OnAnimationStopped(object sender, FormsAnimationDrawableStateEventArgs e) =>
+			ImageElementManager.OnAnimationStopped(Element, e);
 	}
 }

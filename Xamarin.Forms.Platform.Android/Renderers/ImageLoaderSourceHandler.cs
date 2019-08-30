@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public sealed class ImageLoaderSourceHandler : IImageSourceHandlerEx
+	public sealed class ImageLoaderSourceHandler
 	{
 		public async Task<Bitmap> LoadImageAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
@@ -25,35 +25,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return bitmap;
-		}
-
-		public async Task<IFormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
-		{
-			var imageLoader = imagesource as UriImageSource;
-			FormsAnimationDrawable animation = null;
-			if (imageLoader?.Uri != null)
-			{
-				using (Stream imageStream = await imageLoader.GetStreamAsync(cancelationToken).ConfigureAwait(false))
-				using (var decoder = new AndroidGIFImageParser(context, 1, 1))
-				{
-					try
-					{
-						await decoder.ParseAsync(imageStream).ConfigureAwait(false);
-						animation = decoder.Animation;
-					}
-					catch (GIFDecoderFormatException)
-					{
-						animation = null;
-					}
-				}
-			}
-
-			if (animation == null)
-			{
-				Log.Warning(nameof(ImageLoaderSourceHandler), "Could not retrieve image or image data was invalid: {0}", imageLoader);
-			}
-
-			return animation;
 		}
 	}
 }
