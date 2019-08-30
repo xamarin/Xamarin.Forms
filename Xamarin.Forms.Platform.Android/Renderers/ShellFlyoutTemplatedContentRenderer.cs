@@ -31,8 +31,8 @@ namespace Xamarin.Forms.Platform.Android
 		AppBarLayout _appBar;
 		RecyclerView _recycler;
 		ShellFlyoutRecyclerAdapter _adapter;
-        View _flyoutHeader;
-        int _actionBarHeight;
+		View _flyoutHeader;
+		int _actionBarHeight;
 
 		public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
 		{
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 			_actionBarHeight = (int)context.ToPixels(56);
 
 			_flyoutHeader = ((IShellController)shellContext.Shell).FlyoutHeader;
-			if(_flyoutHeader != null)
+			if (_flyoutHeader != null)
 				_flyoutHeader.MeasureInvalidated += OnFlyoutHeaderMeasureInvalidated;
 
 			_headerView = new HeaderContainer(context, _flyoutHeader)
@@ -105,14 +105,14 @@ namespace Xamarin.Forms.Platform.Android
 			};
 
 			UpdateFlyoutHeaderBehavior();
-            _shellContext.Shell.PropertyChanged += OnShellPropertyChanged;
+			_shellContext.Shell.PropertyChanged += OnShellPropertyChanged;
 
-            UpdateFlyoutBackground();
-        }
+			UpdateFlyoutBackground();
+		}
 
 		void OnFlyoutHeaderMeasureInvalidated(object sender, EventArgs e)
 		{
-			if(_headerView != null)
+			if (_headerView != null)
 				UpdateFlyoutHeaderBehavior();
 		}
 
@@ -121,8 +121,8 @@ namespace Xamarin.Forms.Platform.Android
 			((IShellController)_shellContext.Shell).OnFlyoutItemSelected(element);
 		}
 
-        protected virtual void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
+		protected virtual void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
 			if (e.PropertyName == Shell.FlyoutHeaderBehaviorProperty.PropertyName)
 				UpdateFlyoutHeaderBehavior();
 			else if (e.IsOneOf(
@@ -130,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateFlyoutBackground();
-        }
+		}
 
 		protected virtual void UpdateFlyoutBackground()
 		{
@@ -194,10 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var context = _shellContext.AndroidContext;
 
-			Thickness margin = default(Thickness);
-
-			if (_flyoutHeader != null)
-				margin = _flyoutHeader.Margin;
+			var margin = _flyoutHeader?.Margin ?? default;
 
 			var minimumHeight = Convert.ToInt32(_actionBarHeight + context.ToPixels(margin.Top) - context.ToPixels(margin.Bottom));
 			_headerView.SetMinimumHeight(minimumHeight);
@@ -281,7 +278,7 @@ namespace Xamarin.Forms.Platform.Android
 				_defaultBackgroundColor?.Dispose();
 				_bgImage?.Dispose();
 
-                _flyoutHeader = null;
+				_flyoutHeader = null;
 				_rootView = null;
 				_headerView = null;
 				_shellContext = null;
@@ -291,6 +288,7 @@ namespace Xamarin.Forms.Platform.Android
 				_defaultBackgroundColor = null;
 				_bgImage = null;
 			}
+
 			base.Dispose(disposing);
 		}
 

@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				_searchHandlerAppearanceTracker?.Dispose();
 				_textBlock.Adapter.Dispose();
-				_textBlock.DropDownBackground.Dispose();
+				_textBlock.DropDownBackground?.Dispose();
 				_textBlock.Dispose();
 				_clearButton.Dispose();
 				_searchButton.Dispose();
@@ -158,7 +158,6 @@ namespace Xamarin.Forms.Platform.Android
 				_cardView.Dispose();
 				_linearLayout.Dispose();
 
-				_textBlock.Adapter = null;
 				_textBlock = null;
 				_clearButton = null;
 				_searchButton = null;
