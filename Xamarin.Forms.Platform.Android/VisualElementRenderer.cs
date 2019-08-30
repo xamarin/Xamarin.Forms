@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.Android
 			var element = Element as ITabStopElement;
 			int maxAttempts = 0;
 			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
-			if (tabIndexes == null)
+			if (tabIndexes == null || tabIndexes.Count > 0)
 				return base.FocusSearch(focused, direction);
 
 			int tabIndex = element.TabIndex;
