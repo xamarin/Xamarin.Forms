@@ -90,8 +90,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			foreach (UITouch touch in touches)
 			{
-				touch.PreviousLocationInView()
-
 				var point = touch.LocationInView(touch.View).ToPoint();
 				var view = _getView();
 				var isInView = view?.Bounds.Contains(point) ?? false;
