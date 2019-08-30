@@ -23,8 +23,19 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void TouchGestureRecognizer_OnTouchUpdated(object sender, TouchEventArgs e)
 		{
-			var logItem = $"N:{++_count}, Index={e.Id}, Event:{e.TouchState};";
+			var logItem = $"N:{++_count}, Touch:{e.TouchPoints.Count}, InView:{e.TouchPoints.All(a => a.IsInOriginalView)}, Event:{e.TouchState}; ";
+
+			if (_logs.Count > 0)
+			{
+				var first = _logs.First();
+				if (first.Contains(TouchState.Move.ToString()) && e.TouchState == TouchState.Move)
+				{
+					_logs.Remove(first);
+				}
+			}
+
 			_logs.Insert(0, logItem);
+
 			LogListView.ScrollTo(logItem,ScrollToPosition.MakeVisible,true);
 		}
 	}

@@ -5,14 +5,9 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public sealed class TouchGestureRecognizer : GestureRecognizer
+	public class TouchGestureRecognizer : GestureRecognizer
 	{
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(TapGestureRecognizer), null);
-
-
-		public TouchGestureRecognizer()
-		{
-		}
 
 		public ICommand Command
 		{
@@ -23,7 +18,7 @@ namespace Xamarin.Forms
 
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendTouch(View sender, TouchEventArgs eventArgs)
+		public virtual void SendTouch(View sender, TouchEventArgs eventArgs)
 		{
 			VisualStateManager.GoToState(sender, eventArgs.TouchState.ToString());
 			TouchUpdated?.Invoke(this, eventArgs);

@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 
 namespace Xamarin.Forms
 {
@@ -8,14 +6,14 @@ namespace Xamarin.Forms
 	public enum TouchState
 	{
 		Unknown = 0 << 0,
-		Entered = 1 << 0,
-		Exited = 1 << 2,
-		Cancelled = 1 << 3,
-		Failed = 1 << 4,
-		Changed = 1 << 5,
-		Pressed = 1 << 6,
-		Released = 1 << 7,
-		Hover = 1 << 8,
-		Move = 1 << 9,
+		Pressed = 1 << 1,
+		Released = 1 << 2,
+		Move = 1 << 3,
+		Cancelled = 1 << 4,
+		Failed = 1 << 5,
+		Changed = 1 << 6,
+		Entered = 1 << 7,
+		Exited = 1 << 8,
+		Hover = 1 << 9
 	}
 }

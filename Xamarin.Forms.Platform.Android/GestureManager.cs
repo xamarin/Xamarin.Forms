@@ -201,7 +201,7 @@ namespace Xamarin.Forms.Platform.Android
 					return view.GetChildElements(Point.Zero) ?? new List<GestureElement>();
 
 				return new List<GestureElement>();
-			});
+			}, context.FromPixels);
 
 			var listener = new InnerTouchGestureListener(handler);
 			return new TouchGestureDetector(context, listener);

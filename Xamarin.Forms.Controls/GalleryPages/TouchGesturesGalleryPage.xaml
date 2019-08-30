@@ -7,6 +7,9 @@
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.GalleryPages.TouchGesturesGalleryPage">
     <Grid>
+        <!--<ScrollView>
+
+        </ScrollView>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="250" />
             <RowDefinition Height="*" />
@@ -16,56 +19,6 @@
             <BoxView.GestureRecognizers>
                 <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
             </BoxView.GestureRecognizers>
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup x:Name="CommonStates">
-                    <VisualState x:Name="Entered">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="BurlyWood" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Exited">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="DarkSeaGreen" />
-                        </VisualState.Setters>
-                    </VisualState>
-
-                    <VisualState x:Name="Failed">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="Goldenrod" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Changed">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="Firebrick" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Pressed">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="Tomato" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Released">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="LightSeaGreen" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Hover">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="LightSkyBlue" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Cancelled">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="LavenderBlush" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Move">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="LightPink" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
 
         </BoxView>
 

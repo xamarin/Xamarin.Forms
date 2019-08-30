@@ -8,12 +8,14 @@ namespace Xamarin.Forms.Platform.Android
 {
 	class TouchGestureHandler
 	{
-		public TouchGestureHandler(Func<View> getView, Func<IList<GestureElement>> getChildElements)
+		public TouchGestureHandler(Func<View> getView, Func<IList<GestureElement>> getChildElements, Func<double, double> fromPixels)
 		{
 			GetView = getView;
 			GetChildElements = getChildElements;
+			_fromPixels = fromPixels;
 		}
 
+		Func<double, double> _fromPixels;
 		Func<IList<GestureElement>> GetChildElements { get; }
 
 		Func<View> GetView { get; }
@@ -34,23 +36,24 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 			}
 
-			var result = false;
 			foreach (TouchGestureRecognizer touchGesture in view.GestureRecognizers.GetGesturesFor<TouchGestureRecognizer>())
 			{
-				touchGesture.SendTouch(view, new TouchEventArgs { Id = ev.PointerCount, TouchState = GetTouchState(ev) });
-
-				if (GetTouchState(ev) == TouchState.Pressed)
-				{
-					return true;
-				}
+				touchGesture.SendTouch(view, CreateTouchEventArgs(ev));
 			}
 
-			return result;
+			return true;
 		}
 
-		TouchState GetTouchState(MotionEvent me)
+
+
+		TouchEventArgs CreateTouchEventArgs(MotionEvent motionEvent)
 		{
-			switch (me.Action)
+			return new TouchEventArgs(motionEvent.PointerCount, GetTouchState(motionEvent), GetTouchPoints(motionEvent));
+		}
+
+		TouchState GetTouchState(MotionEvent motionEvent)
+		{
+			switch (motionEvent.Action)
 			{
 				case MotionEventActions.Down:
 				case MotionEventActions.Pointer1Down:
@@ -71,10 +74,12 @@ namespace Xamarin.Forms.Platform.Android
 
 				case MotionEventActions.HoverEnter:
 					return TouchState.Entered;
+
 				case MotionEventActions.HoverExit:
 					return TouchState.Exited;
+
 				case MotionEventActions.HoverMove:
-					return TouchState.Move;
+					return TouchState.Hover;
 
 				case MotionEventActions.Mask:
 					return TouchState.Unknown;
@@ -86,13 +91,26 @@ namespace Xamarin.Forms.Platform.Android
 					return TouchState.Released;
 
 				case MotionEventActions.PointerIdMask:
-					return TouchState.Unknown;
 				case MotionEventActions.PointerIdShift:
 					return TouchState.Unknown;
 
 				default:
-					return TouchState.Unknown;
+				return TouchState.Unknown;
 			}
+		}
+
+		IReadOnlyList<TouchPoint> GetTouchPoints(MotionEvent me)
+		{
+			var points = new List<TouchPoint>(me.PointerCount);
+			for (int i = 0; i < me.PointerCount; i++)
+			{
+				var point = new Point(_fromPixels(me.GetX(i)), _fromPixels(me.GetY(i)));
+				var view = GetView();
+				var isInView = view?.Bounds.Contains(point) ?? false;
+				points.Add(new TouchPoint(point, isInView));
+			}
+
+			return points.AsReadOnly();
 		}
 	}
 }

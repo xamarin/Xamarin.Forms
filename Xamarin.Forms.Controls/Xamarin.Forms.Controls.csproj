@@ -98,6 +98,9 @@
     <EmbeddedResource Update="GalleryPages\VisualStateManagerGalleries\ValidationExample.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\VisualStateManagerGalleries\VisualStatesTouchStates.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\XamlPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
