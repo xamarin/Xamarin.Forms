@@ -20,9 +20,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsLoadingProperty = IsLoadingPropertyKey.BindableProperty;
 
-		public static readonly BindableProperty IsAnimationAutoPlayProperty = BindableProperty.Create(nameof(IsAnimationAutoPlay), typeof(bool), typeof(Image), false);
+		public static readonly BindableProperty IsAnimationAutoPlayProperty = ImageElement.IsAnimationAutoPlayProperty;
 
-		internal static readonly BindablePropertyKey IsAnimationPlayingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsAnimationPlaying), typeof(bool), typeof(Image), false);
+		internal static readonly BindablePropertyKey IsAnimationPlayingPropertyKey = ImageElement.IsAnimationPlayingPropertyKey;
 
 		public static readonly BindableProperty IsAnimationPlayingProperty = IsAnimationPlayingPropertyKey.BindableProperty;
 
@@ -87,7 +87,9 @@ namespace Xamarin.Forms
 
 		public event EventHandler AnimationFinishedPlaying;
 
-		public void OnAnimationFinishedPlaying()
+		bool IImageController.GetLoadAsAnimation() => ImageElement.GetLoadAsAnimation(this);
+
+		void IImageController.OnAnimationFinishedPlaying()
 		{
 			SetValue(IsAnimationPlayingProperty, false);
 			AnimationFinishedPlaying?.Invoke(this, null);
@@ -111,12 +113,6 @@ namespace Xamarin.Forms
 		public void SetIsLoading(bool isLoading)
 		{
 			SetValue(IsLoadingPropertyKey, isLoading);
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool GetLoadAsAnimation()
-		{
-			return IsSet(Image.IsAnimationAutoPlayProperty) || IsSet(Image.IsAnimationPlayingProperty);
 		}
 
 		public IPlatformElementConfiguration<T, Image> On<T>() where T : IConfigPlatform

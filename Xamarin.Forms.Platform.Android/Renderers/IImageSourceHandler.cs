@@ -9,9 +9,4 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		Task<Bitmap> LoadImageAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken));
 	}
-
-	public interface IImageSourceHandlerEx : IImageSourceHandler
-	{
-		Task<IFormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken));
-	}
 }

@@ -6,10 +6,13 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Util;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsAnimationDrawableStateEventArgs : EventArgs
+	// all this animation code will go away if/once we pull in GlideX
+	internal class FormsAnimationDrawableStateEventArgs : EventArgs
 	{
 		public FormsAnimationDrawableStateEventArgs(bool finished)
 		{
@@ -19,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		public bool Finished { get; set; }
 	}
 
-	public interface IFormsAnimationDrawable : IDisposable
+	internal interface IFormsAnimationDrawable : IDisposable
 	{
 		event EventHandler AnimationStarted;
 		event EventHandler<FormsAnimationDrawableStateEventArgs> AnimationStopped;
@@ -35,7 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 
 	}
 
-	public class FormsAnimationDrawable : AnimationDrawable, IFormsAnimationDrawable
+	internal class FormsAnimationDrawable : AnimationDrawable, IFormsAnimationDrawable
 	{
 		int _repeatCounter = 0;
 		int _frameCount = 0;
@@ -48,6 +51,47 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!Forms.IsLollipopOrNewer)
 				base.SetVisible(false, true);
+		}
+
+		public static async Task<IFormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
+		{
+			string file = ((FileImageSource)imagesource).File;
+			FormsAnimationDrawable animation = null;
+
+			BitmapFactory.Options options = new BitmapFactory.Options
+			{
+				InJustDecodeBounds = true
+			};
+
+			if (!FileImageSourceHandler.DecodeSynchronously)
+				await BitmapFactory.DecodeResourceAsync(context.Resources, ResourceManager.GetDrawableByName(file), options);
+			else
+				BitmapFactory.DecodeResource(context.Resources, ResourceManager.GetDrawableByName(file), options);
+
+			using (var stream = context.Resources.OpenRawResource(ResourceManager.GetDrawableByName(file)))
+			using (var decoder = new AndroidGIFImageParser(context, options.InDensity, options.InTargetDensity))
+			{
+				try
+				{
+					if (!FileImageSourceHandler.DecodeSynchronously)
+						await decoder.ParseAsync(stream).ConfigureAwait(false);
+					else
+						decoder.ParseAsync(stream).Wait();
+
+					animation = decoder.Animation;
+				}
+				catch (GIFDecoderFormatException)
+				{
+					animation = null;
+				}
+			}
+
+			if (animation == null)
+			{
+				Internals.Log.Warning(nameof(FileImageSourceHandler), "Could not retrieve image or image data was invalid: {0}", imagesource);
+			}
+
+			return animation;
 		}
 
 		public int RepeatCount { get; set; }

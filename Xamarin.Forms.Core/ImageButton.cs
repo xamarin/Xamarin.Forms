@@ -38,6 +38,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsPressedProperty = IsPressedPropertyKey.BindableProperty;
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
+
+		public static readonly BindableProperty IsAnimationAutoPlayProperty = ImageElement.IsAnimationAutoPlayProperty;
+
+		internal static readonly BindablePropertyKey IsAnimationPlayingPropertyKey = ImageElement.IsAnimationPlayingPropertyKey;
+
+		public static readonly BindableProperty IsAnimationPlayingProperty = IsAnimationPlayingPropertyKey.BindableProperty;
+
 		public event EventHandler Clicked;
 		public event EventHandler Pressed;
 		public event EventHandler Released;
@@ -196,20 +203,54 @@ namespace Xamarin.Forms
 		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
 
-		bool IImageElement.GetLoadAsAnimation() => false;
-		bool IImageElement.IsLoading => false;
+		public bool IsAnimationAutoPlay
+		{
+			get { return (bool)GetValue(IsAnimationAutoPlayProperty); }
+			set { SetValue(IsAnimationAutoPlayProperty, value); }
+		}
 
-		bool IImageElement.IsAnimationPlaying => false;
+		public bool IsAnimationPlaying
+		{
+			get { return (bool)GetValue(IsAnimationPlayingProperty); }
+			private set { SetValue(IsAnimationPlayingPropertyKey, value); }
+		}
 
-		bool IImageElement.IsAnimationAutoPlay => false;
+		public void StartAnimation()
+		{
+			if (!IsSet(IsAnimationAutoPlayProperty))
+				IsAnimationAutoPlay = false;
+
+			IsAnimationPlaying = true;
+		}
+
+		public void StopAnimation()
+		{
+			if (!IsSet(IsAnimationAutoPlayProperty))
+				IsAnimationAutoPlay = false;
+
+			IsAnimationPlaying = false;
+		}
+
+		public event EventHandler AnimationFinishedPlaying;
+
+		public void OnAnimationFinishedPlaying()
+		{
+			SetValue(IsAnimationPlayingProperty, false);
+			AnimationFinishedPlaying?.Invoke(this, null);
+		}
 
 		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
 		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
 
+		bool IImageController.GetLoadAsAnimation() => ImageElement.GetLoadAsAnimation(this);
+
 		void IImageController.OnAnimationFinishedPlaying()
 		{
+			SetValue(IsAnimationPlayingProperty, false);
+			AnimationFinishedPlaying?.Invoke(this, null);
 		}
+
 	}
 }

@@ -36,21 +36,22 @@ namespace Xamarin.Forms.Platform.Android
 			imageController?.SetIsLoading(true);
 
 			(imageView as IImageRendererController)?.SkipInvalidate();
+			imageView.Reset();
 			imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 
 			try
 			{
 				if (newImageSource != null)
 				{
-					var handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(newImageSource) as IImageSourceHandlerEx;
+					// all this animation code will go away if/once we pull in GlideX
 					IFormsAnimationDrawable animation = null;
 
-					if (handler != null && newView.GetLoadAsAnimation())
-						animation = await handler.LoadImageAnimationAsync(newImageSource, imageView.Context);
+					if (imageController.GetLoadAsAnimation())
+						animation = await FormsAnimationDrawable.LoadImageAnimationAsync(newImageSource, imageView.Context);
 
 					if(animation == null)
 					{
-						var imageViewHandler = Internals.Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
+						var imageViewHandler = Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
 						if (imageViewHandler != null)
 						{
 							await imageViewHandler.LoadImageAsync(newImageSource, imageView);
@@ -67,7 +68,13 @@ namespace Xamarin.Forms.Platform.Android
 					}
 					else
 					{
-						imageView.SetImageDrawable(animation.ImageDrawable);
+						if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource))
+							imageView.SetImageDrawable(animation.ImageDrawable);
+						else
+						{
+							animation?.Reset();
+							animation?.Dispose();
+						}
 					}
 				}
 				else
@@ -92,7 +99,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public static void Reset(this IFormsAnimationDrawable formsAnimation)
+		internal static void Reset(this IFormsAnimationDrawable formsAnimation)
 		{
 			if (formsAnimation is FormsAnimationDrawable animation)
 			{

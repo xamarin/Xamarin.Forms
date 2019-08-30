@@ -341,7 +341,7 @@ namespace Xamarin.Forms
 		}
 
 
-		bool IImageElement.GetLoadAsAnimation() => false;
+		bool IImageController.GetLoadAsAnimation() => false;
 		bool IImageElement.IsLoading => false;
 
 		bool IImageElement.IsAnimationPlaying => false;

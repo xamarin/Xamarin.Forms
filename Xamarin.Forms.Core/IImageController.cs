@@ -6,5 +6,6 @@ namespace Xamarin.Forms
 	{
 		void SetIsLoading(bool isLoading);
 		void OnAnimationFinishedPlaying();
+		bool GetLoadAsAnimation();
 	}
 }
