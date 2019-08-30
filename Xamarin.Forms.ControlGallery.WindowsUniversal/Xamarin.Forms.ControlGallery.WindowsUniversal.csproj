@@ -185,6 +185,7 @@
     <Content Include="scale-200\person.png" />
     <Content Include="scale-200\star-flyout.png" />
     <Content Include="scale-200\star.png" />
+    <Content Include="sweden.gif" />
     <Content Include="test.jpg" />
     <Content Include="oasis.jpg" />
     <Content Include="oasissmall.jpg" />

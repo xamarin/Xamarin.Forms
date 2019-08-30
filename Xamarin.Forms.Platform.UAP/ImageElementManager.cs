@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.UWP;
 
@@ -13,6 +14,16 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public static class ImageElementManager
 	{
+		static bool _nativeAnimationSupport = false;
+		static ImageElementManager()
+		{
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "AutoPlay"))
+				if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "IsPlaying"))
+					if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Play"))
+						if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Stop"))
+							_nativeAnimationSupport = true;
+		}
+
 		public static void Init(IImageVisualElementRenderer renderer)
 		{
 			renderer.ElementPropertyChanged += OnElementPropertyChanged;
@@ -34,6 +45,31 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect(renderer, controller);
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				StartStopAnimation(renderer, controller);
+		}
+
+
+		static void StartStopAnimation(IImageVisualElementRenderer renderer, IImageElement controller)
+		{
+			if (renderer.IsDisposed || controller == null)
+			{
+				return;
+			}
+
+			if (controller.IsLoading)
+				return;
+			
+			if (renderer.GetImage()?.Source is BitmapImage bitmapImage)
+			{
+				if (_nativeAnimationSupport)
+				{
+					if (controller.IsAnimationPlaying && !bitmapImage.IsPlaying)
+						bitmapImage.Play();
+					else if (!controller.IsAnimationPlaying && bitmapImage.IsPlaying)
+						bitmapImage.Stop();
+				}
+			}
 		}
 
 		static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -118,6 +154,20 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (renderer.IsDisposed)
 					return;
+
+
+				if (imagesource is BitmapImage bitmapImage)
+				{
+					if (_nativeAnimationSupport)
+					{
+						bitmapImage.AutoPlay = false;
+						if (imageElement.GetLoadAsAnimation())
+							bitmapImage.AutoPlay = imageElement.IsAnimationAutoPlay;
+
+						if (bitmapImage.IsPlaying && !bitmapImage.AutoPlay)
+							bitmapImage.Stop();
+					}
+				}
 
 				if (Control != null)
 					renderer.SetImage(imagesource);
