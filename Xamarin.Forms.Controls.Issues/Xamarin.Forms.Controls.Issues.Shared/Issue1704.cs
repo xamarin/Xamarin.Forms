@@ -58,6 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	}
 
+	[Preserve(AllMembers = true)]
 	class OnLoadAnimationPage : ContentPage
 	{
 		Label _referenceImageLabel;
@@ -104,6 +105,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	class OnStartAnimationPage : ContentPage
 	{
 		Label _referenceImageLabel;
@@ -152,27 +154,41 @@ namespace Xamarin.Forms.Controls.Issues
 				if (!_animatedImage.IsAnimationPlaying)
 				{
 					_animatedImage.StartAnimation();
-					_animatedImageButton.StartAnimation();
 					_startStopButton.Text = "Stop Animation";
 				}
 				else
 				{
 					_animatedImage.StopAnimation();
+					_startStopButton.Text = "Start Animation";
+				}
+
+				if (!_animatedImageButton.IsAnimationPlaying)
+				{
+					_animatedImageButton.StartAnimation();
+					_startStopButton.Text = "Stop Animation";
+				}
+				else
+				{
 					_animatedImageButton.StopAnimation();
 					_startStopButton.Text = "Start Animation";
 				}
 			};
 
-			Content = new StackLayout {
-				Padding = new Thickness(0, 16),
-				Children = {
-					_referenceImageLabel,
-					_referenceImage,
-					_animatedImageLabel,
-					_animatedImage,
-					_animatedImageButton,
-					_startStopButton
-				}
+			Content = new ScrollView()
+			{
+				Content =
+					new StackLayout
+					{
+						Padding = new Thickness(0, 16),
+						Children = {
+							_startStopButton,
+							_referenceImageLabel,
+							_referenceImage,
+							_animatedImageLabel,
+							_animatedImage,
+							_animatedImageButton
+						}
+					}
 			};
 		}
 
@@ -199,6 +215,7 @@ namespace Xamarin.Forms.Controls.Issues
 	// Large animated GIF that could trigger OOM scenarios and slow load times (12 MB compressed, 240 frames).
 	// http://media.giphy.com/media/mf8UbIDew7e8g/giphy.gif
 	//
+	[Preserve(AllMembers = true)]
 	class LoadImageSourceAnimationPage : ContentPage
 	{
 		Label _animatedImageLabel;
@@ -275,14 +292,18 @@ namespace Xamarin.Forms.Controls.Issues
 				IsRunning = false
 			};
 
-			Content = new StackLayout {
-				Padding = new Thickness(0, 16),
-				Children = {
-					_animatedImageLabel,
-					_animatedImage,
-					_imageSource,
-					_loadingIndicator,
-					_loadImageButton
+			Content = new ScrollView()
+			{
+				Content = new StackLayout
+				{
+					Padding = new Thickness(0, 16),
+					Children = {
+						_loadImageButton,
+						_animatedImageLabel,
+						_animatedImage,
+						_imageSource,
+						_loadingIndicator,
+					}
 				}
 			};
 		}
@@ -332,6 +353,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	class MiscPage : ContentPage
 	{
 		Label _noAnimationFallbackLabel;
