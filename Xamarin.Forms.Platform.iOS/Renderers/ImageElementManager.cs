@@ -194,26 +194,30 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			imageController?.SetIsLoading(true);
 
-
-
-
-
-
 			try
 			{
 #if __MOBILE__
-				IImageSourceHandlerEx handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandlerEx>(source);
-				bool useAnimation = imageElement.GetLoadAsAnimation() && handler != null;
-				if (useAnimation)
-				{
-					System.Diagnostics.Debug.Assert(handler is IImageSourceHandlerEx);
-					FormsCAKeyFrameAnimation animation = await ((IImageSourceHandlerEx)handler).LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale).ConfigureAwait(false);
+				bool useAnimation = imageController.GetLoadAsAnimation();
+				IAnimationSourceHandler handler = null;
+				if(useAnimation)
+					handler = Internals.Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(source);
 
-					if (animation != null && Control is FormsUIImageView imageView)
+				if (handler != null)
+				{					
+					FormsCAKeyFrameAnimation animation = await handler.LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale).ConfigureAwait(false);
+
+					if (animation != null && Control is FormsUIImageView imageView && imageElement.Source == source)
 					{
 						imageView.AutoPlay = (bool)Element.GetValue(Image.IsAnimationAutoPlayProperty);
+						if(imageView.Animation != null)
+							imageView.Animation.AnimationStopped -= OnAnimationStopped;
+
 						imageView.Animation = animation;
 						animation.AnimationStopped += OnAnimationStopped;
+					}
+					else
+					{
+						animation?.Dispose();
 					}
 				}
 				else
@@ -266,8 +270,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			try
 			{
-
-
 #if __MOBILE__
 				float scale = (float)UIScreen.MainScreen.Scale;
 #else

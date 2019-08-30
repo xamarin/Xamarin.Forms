@@ -121,12 +121,12 @@ namespace Xamarin.Forms.Platform.iOS
 		Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1);
 	}
 
-	public interface IImageSourceHandlerEx : IImageSourceHandler
+	public interface IAnimationSourceHandler : IRegisterable
 	{
 		Task<FormsCAKeyFrameAnimation> LoadImageAnimationAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1);
 	}
 
-	public sealed class FileImageSourceHandler : IImageSourceHandlerEx
+	public sealed class FileImageSourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
 		public Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public sealed class StreamImagesourceHandler : IImageSourceHandlerEx
+	public sealed class StreamImagesourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
 		public async Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public sealed class ImageLoaderSourceHandler : IImageSourceHandlerEx
+	public sealed class ImageLoaderSourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
 		public async Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{

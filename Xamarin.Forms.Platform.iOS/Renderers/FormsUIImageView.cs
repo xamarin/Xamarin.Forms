@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CoreGraphics;
-using Foundation;
+﻿using CoreGraphics;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -16,7 +11,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public FormsUIImageView(CGRect frame) : base(frame)
 		{
-			;
 		}
 
 		public override CGSize SizeThatFits(CGSize size)
