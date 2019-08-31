@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Android.OS;
 using Android.Support.V4.App;
+using Android.Views;
 using Java.Lang;
 using Xamarin.Forms.Internals;
 using FragmentTransit = Android.App.FragmentTransit;
@@ -13,13 +13,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _disposed;
 
 		readonly FragmentManager _fragmentManager;
-		readonly List<Fragment> _fragments;
 
 		public FormsFragmentPagerAdapter(MultiPage<T> page, FragmentManager fragmentManager) : base(fragmentManager)
 		{
 			_page = page;
 			_fragmentManager = fragmentManager;
-			_fragments = new List<Fragment>();
 		}
 
 		public override int Count => CountOverride;
@@ -28,11 +26,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		public override Fragment GetItem(int position)
 		{
-			var fragment = FragmentContainer.CreateInstance(_page.Children[position]);
-
-			_fragments.Add(fragment);
-
-			return fragment;
+			return FragmentContainer.CreateInstance(_page.Children[position]);
 		}
 
 		public override long GetItemId(int position)
@@ -62,28 +56,29 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 		}
 
+		public override void DestroyItem(ViewGroup container, int position, Object item)
+		{
+			FragmentTransaction transaction = _fragmentManager.BeginTransactionEx();
+		
+			transaction.RemoveEx((Fragment)item);
+			transaction.SetTransitionEx((int)FragmentTransit.None);
+			transaction.CommitAllowingStateLossEx();
+
+			base.DestroyItem(container, position, item);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+			{
+				return;
+			}
+
+			if (disposing)
 			{
 				_disposed = true;
 
 				_page = null;
-
-				if (!_fragmentManager.IsDestroyed)
-				{
-					FragmentTransaction transaction = _fragmentManager.BeginTransactionEx();
-			
-					foreach (Fragment fragment in _fragments)
-					{
-						transaction.RemoveEx(fragment);
-						transaction.SetTransitionEx((int)FragmentTransit.None);
-					}
-
-					transaction.CommitAllowingStateLossEx();
-
-					_fragmentManager.ExecutePendingTransactionsEx();
-				}
 			}
 
 			base.Dispose(disposing);

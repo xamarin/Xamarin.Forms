@@ -1,4 +1,4 @@
-﻿using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -57,14 +57,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __ANDROID__
 		[Test]
-		public void TabbedPageWithModalIssueTestsAllElementsPresent()
+		public void Issue4973Test()
 		{
 			RunningApp.Tap(q => q.Text("Tab5"));
 
 			RunningApp.WaitForElement(q => q.Text("Test"));
 
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
+			GarbageCollectionHelper.Collect();
 
 			RunningApp.Tap(q => q.Text("Tab1"));
 
