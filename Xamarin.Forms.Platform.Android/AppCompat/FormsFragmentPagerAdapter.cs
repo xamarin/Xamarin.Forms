@@ -10,9 +10,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	internal class FormsFragmentPagerAdapter<T> : FragmentPagerAdapter where T : Page
 	{
 		MultiPage<T> _page;
+		FragmentManager _fragmentManager;
 		bool _disposed;
-
-		readonly FragmentManager _fragmentManager;
 
 		public FormsFragmentPagerAdapter(MultiPage<T> page, FragmentManager fragmentManager) : base(fragmentManager)
 		{
@@ -79,6 +78,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_disposed = true;
 
 				_page = null;
+				_fragmentManager = null;
 			}
 
 			base.Dispose(disposing);

@@ -78,7 +78,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				RemoveAllViews();
 
 				_previousPage = null;
-			
+				_fragmentManager = null;
+
 				if (Element?.Children != null)
 				{
 					foreach (ContentPage pageToRemove in Element.Children)
