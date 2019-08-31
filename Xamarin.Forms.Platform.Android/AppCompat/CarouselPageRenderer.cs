@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		IPageController PageController => Element as IPageController;
 
-		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = Context.GetFragmentManager());
 
 		void IManageFragments.SetFragmentManager(FragmentManager childFragmentManager)
 		{
