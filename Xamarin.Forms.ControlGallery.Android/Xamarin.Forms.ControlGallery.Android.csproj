@@ -57,6 +57,7 @@
     <NoWarn>
     </NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+<MandroidExtraArgs>MONO_GC_PARAMS=bridge-implementation=new</MandroidExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -377,6 +378,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
     </TransformFile>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidEnvironment Include="Environment.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
