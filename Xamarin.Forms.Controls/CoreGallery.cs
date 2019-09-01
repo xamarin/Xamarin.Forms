@@ -122,17 +122,19 @@ namespace Xamarin.Forms.Controls
 		public CoreTabbedPageBase()
 		{
 			AutomationId = "TabbedPageRoot";
-
+			BarSelectedTextColor = Color.Red;
 
 			Device.StartTimer(TimeSpan.FromSeconds(6), () =>
 			{
 				BarBackgroundColor = Color.Maroon;
 				BarTextColor = Color.Yellow;
+				BarSelectedTextColor = Color.Orange;
 
 				Device.StartTimer(TimeSpan.FromSeconds(6), () =>
 				{
 					BarBackgroundColor = Color.Default;
 					BarTextColor = Color.Default;
+					BarSelectedTextColor = Color.Default;
 
 					return false;
 				});

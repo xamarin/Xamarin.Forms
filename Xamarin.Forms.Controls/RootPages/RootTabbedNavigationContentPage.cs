@@ -36,6 +36,9 @@ namespace Xamarin.Forms.Controls
 
 			Children.Add (tabOne);
 			Children.Add (tabTwo);
+
+			BarSelectedTextColor = Color.Green;
+			BarTextColor = Color.White;
 		}
 	}
 }
