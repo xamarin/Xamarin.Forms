@@ -113,10 +113,10 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (navSource)
 			{
 				case ShellNavigationSource.Push:
-					return new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight };
+					return new SlideNavigationTransitionInfo(); // { Effect = SlideNavigationTransitionEffect.FromRight }; Requires SDK 17763
 				case ShellNavigationSource.Pop:
 				case ShellNavigationSource.PopToRoot:
-					return new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft };
+					return new SlideNavigationTransitionInfo(); // { Effect = SlideNavigationTransitionEffect.FromLeft }; Requires SDK 17763
 				case ShellNavigationSource.ShellSectionChanged:
 					return null;
 			}
