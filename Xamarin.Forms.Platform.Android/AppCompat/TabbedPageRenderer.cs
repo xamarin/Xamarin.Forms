@@ -335,6 +335,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				((IPageController)tabbedPage).InternalChildren.CollectionChanged += OnChildrenCollectionChanged;
 				UpdateBarBackgroundColor();
 				UpdateBarTextColor();
+				UpdateBarSelectedTextColor();
 				UpdateItemIconColor();
 				if (!isDesigner)
 				{
@@ -366,6 +367,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.IsSwipePagingEnabledProperty.PropertyName)
 				UpdateSwipePaging();
+			else if (e.PropertyName == TabbedPage.BarSelectedTextColorProperty.PropertyName)
+				UpdateBarSelectedTextColor();
 		}
 
 		void SetNavigationRendererPadding(int paddingTop, int paddingBottom)
@@ -950,6 +953,41 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_bottomNavigationView.ItemTextColor = colors;
 			else
 				_tabLayout.TabTextColors = colors;
+		}
+
+		protected virtual void UpdateBarSelectedTextColor()
+		{
+			AColor selectedColor;
+			AColor unselectedColor;
+
+			if (Element != null)
+			{
+				selectedColor = Element.BarSelectedTextColor.ToAndroid();
+				unselectedColor = Element.BarTextColor.ToAndroid();
+			}
+			else
+			{
+				selectedColor = ((Color)TabbedPage.BarSelectedTextColorProperty.DefaultValue).ToAndroid();
+				unselectedColor = ((Color)TabbedPage.BarTextColorProperty.DefaultValue).ToAndroid();
+			}
+
+			for (int index = 0; index < _tabLayout.TabCount; index++)
+			{
+				var tab = _tabLayout.GetTabAt(index);
+				var icon = tab.Icon;
+
+				if (icon == null)
+				{
+					_tabLayout.TabTextColors = GetColorStateList(unselectedColor, selectedColor);
+					break;
+				}
+				else
+				{
+					var color = tab.IsSelected ? selectedColor : unselectedColor;
+					icon = ADrawableCompat.Wrap(icon);
+					icon.SetColorFilter(color, PorterDuff.Mode.SrcIn);
+				}
+			}
 		}
 
 		void SetIconColorFilter(TabLayout.Tab tab)
