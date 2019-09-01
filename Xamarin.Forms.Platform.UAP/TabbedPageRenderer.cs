@@ -237,7 +237,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateBarIcons();
 			else if (e.PropertyName == PageSpecifics.ToolbarPlacementProperty.PropertyName)
 				UpdateToolbarPlacement();
-			else if (e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName || e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName)
+			else if (e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName || e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName ||
+				     e.PropertyName == TabbedPage.BarSelectedTextColorProperty.PropertyName)
 				UpdateSelectedTabColors();
 		}
 
@@ -554,6 +555,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateSelectedTabColors()
 		{
+			if (Element.BarSelectedTextColor != Element.SelectedTabColor)
+				Element.SelectedTabColor = Element.BarSelectedTextColor;
+
 			// Retrieve all tab header textblocks
 			var allTabHeaderTextBlocks = Control.GetDescendantsByName<WTextBlock>(TabBarHeaderTextBlockName).ToArray();
 			if (allTabHeaderTextBlocks.Length != Control.Items.Count)
