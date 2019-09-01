@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.UWP
 	// Renders the actual page area where the contents gets rendered, as well as set of optional top-bar menu items and search box.
 	[Windows.UI.Xaml.Data.Bindable]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public sealed class ShellSectionRenderer : NavigationView, IAppearanceObserver
+	public sealed class ShellSectionRenderer : Microsoft.UI.Xaml.Controls.NavigationView, IAppearanceObserver
 	{
 		Windows.UI.Xaml.Controls.Frame Frame { get; }
 		Page Page;
@@ -19,11 +19,10 @@ namespace Xamarin.Forms.Platform.UWP
 		internal ShellSectionRenderer()
 		{
 			MenuItemTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ShellSectionMenuItemTemplate"];
-			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
-			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+			IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
 			AlwaysShowHeader = false;
-			PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+			PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Top;
 			ItemInvoked += MenuItemInvoked;
 
 			AutoSuggestBox = new Windows.UI.Xaml.Controls.AutoSuggestBox() { Width = 300 };
@@ -45,7 +44,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Page.ContainerArea = new Rectangle(0, 0, e.NewSize.Width, e.NewSize.Height);
 		}
 
-		void MenuItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+		void MenuItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
 		{
 			var shellContent = args.InvokedItemContainer?.DataContext as ShellContent;
 			var shellItem = ShellSection.RealParent as ShellItem;

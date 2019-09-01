@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media;
 namespace Xamarin.Forms.Platform.UWP
 {
 	[Windows.UI.Xaml.Data.Bindable]
-	public class ShellRenderer : NavigationView, IVisualElementRenderer, IAppearanceObserver, IFlyoutBehaviorObserver
+	public class ShellRenderer : Microsoft.UI.Xaml.Controls.NavigationView, IVisualElementRenderer, IAppearanceObserver, IFlyoutBehaviorObserver
 	{
 		internal static readonly Windows.UI.Color DefaultBackgroundColor = Windows.UI.Color.FromArgb(255, 3, 169, 244);
 		internal static readonly Windows.UI.Color DefaultForegroundColor = Windows.UI.Colors.White;
@@ -20,15 +20,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ShellRenderer()
 		{
-			if (!ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneDisplayMode"))
-				throw new PlatformNotSupportedException("Windows 10 October 2018 (1809) update required");
-
-			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackEnabled")) // Requires 1803 (17134)
 			IsBackEnabled = false;
-			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible")) // Requires 1803 (17134)
-			IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+			IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
-			PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal; // Requires 1809 (17763)
+			PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
 			IsPaneOpen = false;
 			Content = ItemRenderer = new ShellItemRenderer();
 			MenuItemTemplateSelector = new ShellFlyoutTemplateSelector();
@@ -62,7 +57,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor("NavigationViewBackButton", true);
 		}
 
-		void OnMenuItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+		void OnMenuItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
 		{
 			var item = args.InvokedItemContainer?.DataContext as Element;
 			if (item != null)
@@ -220,7 +215,7 @@ namespace Xamarin.Forms.Platform.UWP
 				case FlyoutBehavior.Disabled:
 					IsPaneToggleButtonVisible = false;
 					IsPaneVisible = false;
-					PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
 					IsPaneOpen = false;
 					break;
 
@@ -228,14 +223,14 @@ namespace Xamarin.Forms.Platform.UWP
 					IsPaneVisible = true;
 					IsPaneToggleButtonVisible = true;
 					bool shouldOpen = Shell.FlyoutIsPresented;
-					PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal; //This will trigger opening the flyout
+					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal; //This will trigger opening the flyout
 					IsPaneOpen = shouldOpen;
 					break;
 
 				case FlyoutBehavior.Locked:
 					IsPaneVisible = true;
 					IsPaneToggleButtonVisible = false;
-					PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Left;
 					break;
 			}
 		}
