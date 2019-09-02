@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Xaml
 
 			var namespaceuri = resolver.LookupNamespace(prefix);
 			if (namespaceuri == null)
-				throw new XamlParseException($"No xmlns declaration for prefix '{prefix}'.", lineinfo, null);
+				throw new XamlParseException($"No xmlns declaration for prefix '{prefix}'.", lineinfo, null, errorCode: "CSXF1840");
 			return new XmlType(namespaceuri, name, typeArguments);
 		}
 	}

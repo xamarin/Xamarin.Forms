@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Xaml
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
 			if (string.IsNullOrEmpty(TypeName)) {
 				var li = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider lip) ? lip.XmlLineInfo : new XmlLineInfo();
-				throw new XamlParseException("TypeName isn't set.", li);
+				throw new XamlParseException("TypeName isn't set.", li, errorCode: "CSXF1830");
 			}
 
 			return typeResolver.Resolve(TypeName, serviceProvider);

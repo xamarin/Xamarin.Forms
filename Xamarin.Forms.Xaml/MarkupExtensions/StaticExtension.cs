@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Xaml
 			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
 			if (string.IsNullOrEmpty(Member) || !Member.Contains("."))
-				throw new XamlParseException("Syntax for x:Static is [Member=][prefix:]typeName.staticMemberName", serviceProvider);
+				throw new XamlParseException("Syntax for x:Static is [Member=][prefix:]typeName.staticMemberName", serviceProvider, errorCode: "CSXF1820");
 
 			var dotIdx = Member.LastIndexOf('.');
 			var typename = Member.Substring(0, dotIdx);
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Xaml
 			if (finfo != null)
 				return finfo.GetValue(null);
 
-			throw new XamlParseException($"No static member found for {Member}", serviceProvider);
+			throw new XamlParseException($"No static member found for {Member}", serviceProvider, errorCode: "CSXF1821");
 		}
 	}
 }

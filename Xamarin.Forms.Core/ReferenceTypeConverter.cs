@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 
 			var referenceProvider = serviceProvider.GetService<IReferenceProvider>();
 			if (referenceProvider != null)
-				return referenceProvider.FindByName(value) ?? throw new XamlParseException($"Can't resolve name '{value}' on Element", serviceProvider);
+				return referenceProvider.FindByName(value) ?? throw new XamlParseException($"Can't resolve name '{value}' on Element", serviceProvider, errorCode: "CSXF1701");
 
 #pragma warning disable CS0612 // Type or member is obsolete
 			//legacy path

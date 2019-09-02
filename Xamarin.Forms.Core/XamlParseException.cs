@@ -14,9 +14,10 @@ namespace Xamarin.Forms.Xaml
 		{
 		}
 
-		public XamlParseException(string message)
+		public XamlParseException(string message, string errorCode = null)
 		   : base(message)
 		{
+			ErrorCode = errorCode;
 		}
 
 		public XamlParseException(string message, Exception innerException)
@@ -24,26 +25,45 @@ namespace Xamarin.Forms.Xaml
 		{
 		}
 
+		public string ErrorCode { get; }
+
+		public string ErrorSubcategory { get; }
+
+		public string HelpKeyword { get; }
+
 #if NETSTANDARD2_0
 		protected XamlParseException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
 			: base(info, context)
 		{
+			ErrorCode = info.GetString("errorCode");
+			ErrorSubcategory = info.GetString("errorCode");
+			HelpKeyword = info.GetString("helpKeyword");
+		}
+
+		[System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter = true)]
+		public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("errorSubcategory", ErrorSubcategory);
+			info.AddValue("errorCode", ErrorCode);
+			info.AddValue("helpKeyword", HelpKeyword);
 		}
 #endif
 
-		internal XamlParseException(string message, IServiceProvider serviceProvider, Exception innerException = null)
-			: this(message, GetLineInfo(serviceProvider), innerException)
+		internal XamlParseException(string message, IServiceProvider serviceProvider, Exception innerException = null, string errorCode = null)
+			: this(message, GetLineInfo(serviceProvider), innerException, errorCode)
 		{
 		}
 
-		public XamlParseException(string message, IXmlLineInfo xmlInfo, Exception innerException = null)
+		public XamlParseException(string message, IXmlLineInfo xmlInfo, Exception innerException = null, string errorCode = null)
 			: base(FormatMessage(message, xmlInfo), innerException)
 		{
 			_unformattedMessage = message;
 			XmlInfo = xmlInfo;
+			ErrorCode = errorCode;
 		}
 
-		public IXmlLineInfo XmlInfo { get; private set; }
+		public IXmlLineInfo XmlInfo { get; }
 		internal string UnformattedMessage => _unformattedMessage ?? Message;
 
 		static string FormatMessage(string message, IXmlLineInfo xmlinfo)

@@ -23,10 +23,10 @@ namespace Xamarin.Forms.Build.Tasks
 				typeNameNode = node.CollectionItems[0];
 
 			if (!(typeNameNode is ValueNode valueNode))
-				throw new XamlParseException("TypeName isn't set.", node as XmlLineInfo);
+				throw new XamlParseException("TypeName isn't set.", node as XmlLineInfo, errorCode: "CSXF1351");
 
 			var contentTypeRef = module.ImportReference(XmlTypeExtensions.GetTypeReference(valueNode.Value as string, module, node as BaseNode))
-				?? throw new XamlParseException($"Can't resolve type `{valueNode.Value}'.", node as IXmlLineInfo);
+				?? throw new XamlParseException($"Can't resolve type `{valueNode.Value}'.", node as IXmlLineInfo, errorCode: "CSXF1352");
 
 			var dataTemplateCtor = module.ImportCtorReference(typeRef, new[] { module.ImportReference(("mscorlib", "System", "Type")) });
 			return new List<Instruction> {

@@ -4,6 +4,7 @@
  				 xmlns:local="clr-namespace:Xamarin.Forms.Controls"
 				 x:Class="Xamarin.Forms.Controls.Issues.Bugzilla26032">
 	<RelativeLayout>
+        <Button Clicked="BtClick1234"></Button>
 		<ListView x:Name="List1"
 				  RelativeLayout.XConstraint="{ConstraintExpression Type=Constant, Constant=0}"
 				  RelativeLayout.YConstraint="{ConstraintExpression Type=Constant, Constant=0}"

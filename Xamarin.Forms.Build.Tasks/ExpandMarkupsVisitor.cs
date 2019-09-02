@@ -85,13 +85,13 @@ namespace Xamarin.Forms.Build.Tasks
 				return new ValueNode(expression.Substring(2), null);
 
 			if (expression[expression.Length - 1] != '}')
-				throw new XamlParseException("Markup expression missing its closing tag", xmlLineInfo);
+				throw new XamlParseException("Markup expression missing its closing tag", xmlLineInfo, errorCode: "CSXF1610");
 
 			if (!MarkupExpressionParser.MatchMarkup(out var match, expression, out var len))
-				throw new XamlParseException("Error while parsing markup expression", xmlLineInfo);
+				throw new XamlParseException("Error while parsing markup expression", xmlLineInfo, errorCode: "CSXF1611");
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0)
-				throw new XamlParseException("Markup expression not closed", xmlLineInfo);
+				throw new XamlParseException("Markup expression not closed", xmlLineInfo, errorCode: "CSXF1612");
 
 			var provider = new XamlServiceProvider(null, null);
 			provider.Add(typeof (ILContextProvider), new ILContextProvider(context));
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 				var namespaceuri = nsResolver.LookupNamespace(prefix) ?? "";
 				if (!string.IsNullOrEmpty(prefix) && string.IsNullOrEmpty(namespaceuri))
-					throw new XamlParseException($"Undeclared xmlns prefix '{prefix}'", xmlLineInfo);
+					throw new XamlParseException($"Undeclared xmlns prefix '{prefix}'", xmlLineInfo, errorCode: "CSXF1613");
 				//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
 				XmlType type;
 				try {
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Build.Tasks
 			protected override void SetPropertyValue(string prop, string strValue, object value, IServiceProvider serviceProvider)
 			{
 				if (value == null && strValue == null)
-					throw new XamlParseException($"No value found for property '{prop}' in markup expression", serviceProvider);
+					throw new XamlParseException($"No value found for property '{prop}' in markup expression", serviceProvider, errorCode: "CSXF1614");
 				var nsResolver = serviceProvider.GetService(typeof(IXmlNamespaceResolver)) as IXmlNamespaceResolver;
 				if (prop != null) {
 					var name = new XmlName(_node.NamespaceURI, prop);

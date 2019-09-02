@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Xaml
 		{
 			var xaml = GetXamlForType(callingType, view, out var useDesignProperties);
 			if (string.IsNullOrEmpty(xaml))
-				throw new XamlParseException(string.Format("No embeddedresource found for {0}", callingType), new XmlLineInfo());
+				throw new XamlParseException(string.Format("No embeddedresource found for {0}", callingType), new XmlLineInfo(), errorCode: "CSXF1841");
 			Load(view, xaml, useDesignProperties);
 		}
 

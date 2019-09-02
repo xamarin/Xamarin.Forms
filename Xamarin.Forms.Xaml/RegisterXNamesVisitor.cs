@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Xaml
 			catch (ArgumentException ae) {
 				if (ae.ParamName != "name")
 					throw ae;
-				var xpe = new XamlParseException($"An element with the name \"{(string)node.Value}\" already exists in this NameScope", node);
+				var xpe = new XamlParseException($"An element with the name \"{(string)node.Value}\" already exists in this NameScope", node, errorCode: "CSXF1831");
 				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(xpe);
 					return;

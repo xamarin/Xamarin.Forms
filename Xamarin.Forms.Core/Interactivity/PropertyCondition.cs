@@ -38,7 +38,7 @@ namespace Xamarin.Forms
 						try {
 							return Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 						} catch (AmbiguousMatchException e) {
-							throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", new XmlLineInfo(), innerException: e);
+							throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", new XmlLineInfo(), innerException: e, errorCode: "CSXF1690");
 						}
 					};
 					Value = s_valueConverter.Convert(Value, Property.ReturnType, minforetriever, null);
@@ -64,7 +64,7 @@ namespace Xamarin.Forms
 						try {
 							return Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 						} catch (AmbiguousMatchException e) {
-							throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", new XmlLineInfo(), innerException: e);
+							throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", new XmlLineInfo(), innerException: e, errorCode: "CSXF1691");
 						}
 					};
 					value = s_valueConverter.Convert(value, Property.ReturnType, minforetriever, null);

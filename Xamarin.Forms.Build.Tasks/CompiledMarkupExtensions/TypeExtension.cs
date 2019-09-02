@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Build.Tasks
 				typeNameNode = node.CollectionItems[0];
 
 			if (!(typeNameNode is ValueNode valueNode))
-				throw new XamlParseException("TypeName isn't set.", node as XmlLineInfo);
+				throw new XamlParseException("TypeName isn't set.", node as XmlLineInfo, errorCode: "CSXF1421");
 
 			if (!node.Properties.ContainsKey(name)) {
 				node.Properties[name] = typeNameNode;
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 			var typeref = module.ImportReference(XmlTypeExtensions.GetTypeReference(valueNode.Value as string, module, node as BaseNode));
 
-			context.TypeExtensions[node] = typeref ?? throw new XamlParseException($"Can't resolve type `{valueNode.Value}'.", node as IXmlLineInfo);
+			context.TypeExtensions[node] = typeref ?? throw new XamlParseException($"Can't resolve type `{valueNode.Value}'.", node as IXmlLineInfo, errorCode: "CSXF1422");
 
 			return new List<Instruction> {
 				Create(Ldtoken, module.ImportReference(typeref)),

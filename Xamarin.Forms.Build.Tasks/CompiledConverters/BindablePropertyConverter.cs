@@ -56,17 +56,17 @@ namespace Xamarin.Forms.Core.XamlC
 				typeName = parts [0];
 				propertyName = parts [1];
 			} else
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node);
+				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node, errorCode: "CSXF1201");
 
 			if (typeName == null || propertyName == null)
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node);
+				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node, errorCode: "CSXF1202");
 
 			var typeRef = XmlTypeExtensions.GetTypeReference(typeName, module, node);
 			if (typeRef == null)
-				throw new XamlParseException($"Can't resolve {typeName}", node);
+				throw new XamlParseException($"Can't resolve {typeName}", node, errorCode: "CSXF1203");
 			bpRef = GetBindablePropertyFieldReference(typeRef, propertyName, module);
 			if (bpRef == null)
-				throw new XamlParseException($"Can't resolve {propertyName} on {typeRef.Name}", node);
+				throw new XamlParseException($"Can't resolve {propertyName} on {typeRef.Name}", node, errorCode: "CSXF1204");
 			return bpRef;
 		}
 
@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Core.XamlC
 
 			//2. check that the VS is in a VSG
 			if (!(parent.Parent is IElementNode target) || target.XmlType.NamespaceUri != XamlParser.XFUri || target.XmlType.Name != nameof(VisualStateGroup))
-				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parent.Parent}", lineInfo);
+				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parent.Parent}", lineInfo, errorCode: "CSXF1205");
 
 			//3. if the VSG is in a VSGL, skip that as it could be implicit
 			if (   target.Parent is ListNode

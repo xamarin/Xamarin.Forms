@@ -24,7 +24,7 @@ namespace Xamarin.Forms.StyleSheets
 		{
 			using (var stream = assembly.GetManifestResourceStream(resourceId)) {
 				if (stream == null)
-					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo);
+					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo, errorCode: "CSXF1731");
 				using (var reader = new StreamReader(stream)) {
 					return FromReader(reader);
 				}

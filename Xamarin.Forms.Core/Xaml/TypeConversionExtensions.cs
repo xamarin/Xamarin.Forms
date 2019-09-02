@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Xaml
 				}
 				catch (Exception e)
 				{
-					exception = e as XamlParseException ?? new XamlParseException($"Type converter failed: {e.Message}", serviceProvider, e);
+					exception = e as XamlParseException ?? new XamlParseException($"Type converter failed: {e.Message}", serviceProvider, e, errorCode: "CSXF1751");
 					return null;
 				}
 				var converterType = converter?.GetType();
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Xaml
 							return convertFromStringInvariant.Invoke(converter, new object[] { str });
 						}
 						catch (Exception e) {
-							exception = new XamlParseException("Type conversion failed", serviceProvider, e);
+							exception = new XamlParseException("Type conversion failed", serviceProvider, e, errorCode: "CSXF1752");
 							return null;
 						}
 				}

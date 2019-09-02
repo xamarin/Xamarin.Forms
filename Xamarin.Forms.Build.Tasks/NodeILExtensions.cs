@@ -321,7 +321,7 @@ namespace Xamarin.Forms.Build.Tasks
 							break;
 						case "System.SByte":
 							if (found)
-								throw new XamlParseException($"Multi-valued enums are not valid on sbyte enum types", lineInfo);
+								throw new XamlParseException($"Multi-valued enums are not valid on sbyte enum types", lineInfo, errorCode: "CSXF1621");
 							sb = (sbyte)field.Constant;
 							break;
 						case "System.Int16":
@@ -349,7 +349,7 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			if (!found)
-				throw new XamlParseException($"Enum value not found for {value}", lineInfo);
+				throw new XamlParseException($"Enum value not found for {value}", lineInfo, errorCode: "CSXF1622");
 				
 			switch (typeRef.FullName) {
 			case "System.Byte":
@@ -369,7 +369,7 @@ namespace Xamarin.Forms.Build.Tasks
 			case "System.UInt64":
 				return Instruction.Create(OpCodes.Ldc_I4, (ulong)ul);
 			default:
-				throw new XamlParseException($"Enum value not found for {value}", lineInfo);
+				throw new XamlParseException($"Enum value not found for {value}", lineInfo, errorCode: "CSXF1623");
 			}
 		}
 

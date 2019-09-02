@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Xaml
 				&& UWP     == s_notset
 				&& WPF     == s_notset
 				&& Default == s_notset) {
-				throw new XamlParseException("OnPlatformExtension requires a value to be specified for at least one platform or Default.", serviceProvider);
+				throw new XamlParseException("OnPlatformExtension requires a value to be specified for at least one platform or Default.", serviceProvider, errorCode: "CSXF1796");
 			}
 
 			var valueProvider = serviceProvider?.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Xaml
 						minfo = bp.DeclaringType.GetRuntimeProperty(bp.PropertyName);
 					}
 					catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple properties with name '{bp.DeclaringType}.{bp.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new XamlParseException($"Multiple properties with name '{bp.DeclaringType}.{bp.PropertyName}' found.", serviceProvider, innerException: e, errorCode: "CSXF1797");
 					}
 					if (minfo != null)
 						return minfo;
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Xaml
 						return bp.DeclaringType.GetRuntimeMethod("Get" + bp.PropertyName, new[] { typeof(BindableObject) });
 					}
 					catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple methods with name '{bp.DeclaringType}.Get{bp.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new XamlParseException($"Multiple methods with name '{bp.DeclaringType}.Get{bp.PropertyName}' found.", serviceProvider, innerException: e, errorCode: "CSXF1798");
 					}
 				}
 

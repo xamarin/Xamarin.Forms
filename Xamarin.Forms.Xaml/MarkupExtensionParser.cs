@@ -32,12 +32,12 @@ namespace Xamarin.Forms.Xaml
 
 				//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
 				if (!typeResolver.TryResolve(match + "Extension", out type) && !typeResolver.TryResolve(match, out type))
-					throw new XamlParseException($"MarkupExtension not found for {match}", serviceProvider);
+					throw new XamlParseException($"MarkupExtension not found for {match}", serviceProvider, errorCode: "CSXF1784");
 				markupExtension = Activator.CreateInstance(type) as IMarkupExtension;
 			}
 
 			if (markupExtension == null)
-				throw new XamlParseException($"Missing public default constructor for MarkupExtension {match}", serviceProvider);
+				throw new XamlParseException($"Missing public default constructor for MarkupExtension {match}", serviceProvider, errorCode: "CSXF1785");
 
 			if (remaining == "}")
 				return markupExtension.ProvideValue(serviceProvider);
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Xaml
 					setter = t.GetRuntimeProperty(prop).SetMethod;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new XamlParseException($"Multiple properties with name  '{t}.{prop}' found.", serviceProvider, innerException: e);
+					throw new XamlParseException($"Multiple properties with name  '{t}.{prop}' found.", serviceProvider, innerException: e, errorCode: "CSXF1786");
 				}
 			}
 			else {
@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Xaml
 					setter = markupExtension.GetType().GetRuntimeProperty(prop).SetMethod;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new XamlParseException($"Multiple properties with name  '{markupExtension.GetType()}.{prop}' found.", serviceProvider, innerException: e);
+					throw new XamlParseException($"Multiple properties with name  '{markupExtension.GetType()}.{prop}' found.", serviceProvider, innerException: e, errorCode: "CSXF1787");
 				}
 
 			}
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Xaml
 						throw converterException;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new XamlParseException($"Multiple properties with name  '{markupExtension.GetType()}.{prop}' found.", serviceProvider, innerException: e);
+					throw new XamlParseException($"Multiple properties with name  '{markupExtension.GetType()}.{prop}' found.", serviceProvider, innerException: e, errorCode: "CSXF1788");
 				}
 			}
 

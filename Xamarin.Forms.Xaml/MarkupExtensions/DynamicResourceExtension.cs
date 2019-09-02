@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Xaml
 		DynamicResource IMarkupExtension<DynamicResource>.ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (Key == null)
-				throw new XamlParseException("DynamicResource markup require a Key", serviceProvider);
+				throw new XamlParseException("DynamicResource markup require a Key", serviceProvider, errorCode: "CSXF1792");
 			return new DynamicResource(Key);
 		}
 	}

@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.XamlC
 				yield break;
 
 			if (valueNode == null)
-				throw new XamlParseException("Missing Value for Setter", (IXmlLineInfo)node);
+				throw new XamlParseException("Missing Value for Setter", (IXmlLineInfo)node, errorCode: "CSXF1471");
 
 			//if it's an elementNode, there's probably no need to convert it
 			if (valueNode is IElementNode)

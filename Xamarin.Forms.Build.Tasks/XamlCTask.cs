@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Build.Tasks
 							LoggingHelper.LogMessage(Low, $"{new string(' ', 8)}failed.");
 							(thrownExceptions = thrownExceptions ?? new List<Exception>()).Add(e);
 							if (e is XamlParseException xpe)
-								LoggingHelper.LogError(null, null, null, xamlFilePath, xpe.XmlInfo.LineNumber, xpe.XmlInfo.LinePosition, 0, 0, xpe.Message, xpe.HelpLink, xpe.Source);
+								LoggingHelper.LogError(xpe.ErrorSubcategory, xpe.ErrorCode, xpe.HelpKeyword, xamlFilePath, xpe.XmlInfo.LineNumber, xpe.XmlInfo.LinePosition, 0, 0, xpe.Message, xpe.HelpLink, xpe.Source);
 							else if (e is XmlException xe)
 								LoggingHelper.LogError(null, null, null, xamlFilePath, xe.LineNumber, xe.LinePosition, 0, 0, xe.Message, xe.HelpLink, xe.Source);
 							else

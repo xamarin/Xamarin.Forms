@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			var split = xmlType.Split(':');
 			if (split.Length > 2)
-				throw new XamlParseException($"Type \"{xmlType}\" is invalid", node as IXmlLineInfo);
+				throw new XamlParseException($"Type \"{xmlType}\" is invalid", node as IXmlLineInfo, errorCode: "CSXF1661");
 
 			string prefix, name;
 			if (split.Length == 2) {
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			if (type == null)
-				throw new XamlParseException($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}", xmlInfo);
+				throw new XamlParseException($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}", xmlInfo, errorCode: "CSXF1662");
 
 			return module.ImportReference(type);
 		}

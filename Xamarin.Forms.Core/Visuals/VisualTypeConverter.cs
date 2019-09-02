@@ -126,7 +126,7 @@ namespace Xamarin.Forms
 				return VisualMarker.Default;
 			}
 
-			throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(IVisual)}");
+			throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(IVisual)}", errorCode: "CSXF1741");
 		}
 	}
 }

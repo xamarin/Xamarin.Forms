@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Xaml
 				throw new XamlParseException(
 					$"{nameof(RelativeBindingSourceMode.FindAncestor)} and " +
 					$"{nameof(RelativeBindingSourceMode.FindAncestorBindingContext)} " +
-					$"require {nameof(AncestorType)}.");
+					$"require {nameof(AncestorType)}.", errorCode: "CSXF1810");
 			}
 			else if (Mode == RelativeBindingSourceMode.Self)
 			{
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Xaml
 			}
 			else
 			{
-				throw new XamlParseException($"Invalid {nameof(Mode)}");
+				throw new XamlParseException($"Invalid {nameof(Mode)}", errorCode: "CSXF1811");
 			}
 		}
 

@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Xaml
 				value = CreateFromParameterizedConstructor(type, node);
 			else if (!type.GetTypeInfo().DeclaredConstructors.Any(ci => ci.IsPublic && ci.GetParameters().Length == 0) &&
 					 !ValidateCtorArguments(type, node, out ctorargname)) {
-				throw new XamlParseException($"The Property {ctorargname} is required to create a {type.FullName} object.", node);
+				throw new XamlParseException($"The Property {ctorargname} is required to create a {type.FullName} object.", node, errorCode: "CSXF1775");
 			}
 			else {
 				//this is a trick as the DataTemplate parameterless ctor is internal, and we can't CreateInstance(..., false) on WP7
@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Xaml
 					throw e.InnerException;
 				}
 				catch (MissingMemberException mme) {
-					throw new XamlParseException(mme.Message, node, mme);
+					throw new XamlParseException(mme.Message, node, mme, errorCode: "CSXF1776");
 				}
 			}
 
@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Xaml
 					value = markup.ProvideValue(serviceProvider);
 				}
 				catch (Exception e) {
-					var xamlpe = e as XamlParseException ?? new XamlParseException("Markup extension failed", serviceProvider, e);
+					var xamlpe = e as XamlParseException ?? new XamlParseException("Markup extension failed", serviceProvider, e, errorCode: "CSXF1777");
 					if (Context.ExceptionHandler != null) {
 						Context.ExceptionHandler(xamlpe);
 					}
@@ -297,7 +297,7 @@ namespace Xamarin.Forms.Xaml
 						.Value as string;
 				var name = new XmlName("", propname);
 				if (!enode.Properties.TryGetValue(name, out INode node))
-					throw new XamlParseException($"The Property {propname} is required to create a {ctorInfo.DeclaringType.FullName} object.", enode as IXmlLineInfo);
+					throw new XamlParseException($"The Property {propname} is required to create a {ctorInfo.DeclaringType.FullName} object.", enode as IXmlLineInfo, errorCode: "CSXF1778");
 				if (!enode.SkipProperties.Contains(name))
 					enode.SkipProperties.Add(name);
 				var value = Context.Values[node];

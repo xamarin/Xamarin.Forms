@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Xaml
 					SetPropertyValue(source, name, value, Context.RootElement, node, Context, node);
 					return;
 				}
-				xpe = xpe ?? new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node);
+				xpe = xpe ?? new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node, errorCode: "CSXF1761");
 				if (Context.ExceptionHandler != null)
 					Context.ExceptionHandler(xpe);
 				else
@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Xaml
 
 				var collection = GetPropertyValue(source, parentList.XmlName, Context, parentList, out _, out _) as IEnumerable;
 				if (collection == null)
-					xpe = new XamlParseException($"Property {parentList.XmlName.LocalName} is null or is not IEnumerable", node);
+					xpe = new XamlParseException($"Property {parentList.XmlName.LocalName} is null or is not IEnumerable", node, errorCode: "CSXF1762");
 
 				if (xpe == null && TryAddToResourceDictionary(collection as ResourceDictionary, value, xKey, node, out xpe))
 					return;
@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Xaml
 					addMethod.Invoke(collection, new[] { value });
 					return;
 				}
-				xpe = xpe ?? new XamlParseException($"Value of {parentList.XmlName.LocalName} does not have a Add() method", node);
+				xpe = xpe ?? new XamlParseException($"Value of {parentList.XmlName.LocalName} does not have a Add() method", node, errorCode: "CSXF1763");
 				if (Context.ExceptionHandler != null)
 					Context.ExceptionHandler(xpe);
 				else
@@ -293,7 +293,7 @@ namespace Xamarin.Forms.Xaml
 			if (exception == null && bindableFieldInfo == null) {
 				exception =
 					new XamlParseException(
-						Format("BindableProperty {0} not found on {1}", localName + "Property", elementType.Name), lineInfo);
+						Format("BindableProperty {0} not found on {1}", localName + "Property", elementType.Name), lineInfo, errorCode: "CSXF1764");
 			}
 
 			if (exception == null)
@@ -355,7 +355,7 @@ namespace Xamarin.Forms.Xaml
 			if (xpe == null && TryAddToProperty(xamlelement, propertyName, value, xKey, lineInfo, serviceProvider, context, out xpe))
 				return;
 
-			xpe = xpe ?? new XamlParseException($"Cannot assign property \"{localName}\": Property does not exist, or is not assignable, or mismatching type between value and property", lineInfo);
+			xpe = xpe ?? new XamlParseException($"Cannot assign property \"{localName}\": Property does not exist, or is not assignable, or mismatching type between value and property", lineInfo, errorCode: "CSXF1765");
 			if (context.ExceptionHandler != null)
 				context.ExceptionHandler(xpe);
 			else
@@ -381,7 +381,7 @@ namespace Xamarin.Forms.Xaml
 			if (xpe == null && TryGetProperty(xamlElement, localName, out value, lineInfo, context, out xpe, out targetProperty))
 				return value;
 
-			xpe = xpe ?? new XamlParseException($"Property {localName} is not found or does not have an accessible getter", lineInfo);
+			xpe = xpe ?? new XamlParseException($"Property {localName} is not found or does not have an accessible getter", lineInfo, errorCode: "CSXF1766");
 
 			return null;
 		}
@@ -411,7 +411,7 @@ namespace Xamarin.Forms.Xaml
 				}
 			}
 
-			exception = new XamlParseException($"No method {value} with correct signature found on type {rootElement.GetType()}", lineInfo);
+			exception = new XamlParseException($"No method {value} with correct signature found on type {rootElement.GetType()}", lineInfo, errorCode: "CSXF1767");
 			return false;
 		}
 
@@ -427,7 +427,7 @@ namespace Xamarin.Forms.Xaml
 				return false;
 
 			if (bindable == null) {
-				exception = new XamlParseException($"{elementType.Name} is not a BindableObject", lineInfo);
+				exception = new XamlParseException($"{elementType.Name} is not a BindableObject", lineInfo, errorCode: "CSXF1768");
 				return false;
 			}
 
@@ -461,7 +461,7 @@ namespace Xamarin.Forms.Xaml
 				return true;
 
 			if (property != null)
-				exception = new XamlParseException($"{elementType.Name} is not a BindableObject or does not support native bindings", lineInfo);
+				exception = new XamlParseException($"{elementType.Name} is not a BindableObject or does not support native bindings", lineInfo, errorCode: "CSXF1769");
 
 			return false;
 		}
@@ -487,7 +487,7 @@ namespace Xamarin.Forms.Xaml
 					try {
 						return property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) });
 					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple methods with name '{property.DeclaringType}.Get{property.PropertyName}' found.", lineInfo, innerException: e);
+						throw new XamlParseException($"Multiple methods with name '{property.DeclaringType}.Get{property.PropertyName}' found.", lineInfo, innerException: e, errorCode: "CSXF1770");
 					}
 				};
 			else
@@ -496,7 +496,7 @@ namespace Xamarin.Forms.Xaml
 					try {
 						return property.DeclaringType.GetRuntimeProperty(property.PropertyName);
 					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple properties with name '{property.DeclaringType}.{property.PropertyName}' found.", lineInfo, innerException: e);
+						throw new XamlParseException($"Multiple properties with name '{property.DeclaringType}.{property.PropertyName}' found.", lineInfo, innerException: e, errorCode: "CSXF1771");
 					}
 				};
 			var convertedValue = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider, out exception);
@@ -526,7 +526,7 @@ namespace Xamarin.Forms.Xaml
 			if (nativeBindingService != null && nativeBindingService.TrySetValue(element, property, convertedValue))
 				return true;
 
-			exception = new XamlParseException($"{elementType.Name} is not a BindableObject or does not support setting native BindableProperties", lineInfo);
+			exception = new XamlParseException($"{elementType.Name} is not a BindableObject or does not support setting native BindableProperties", lineInfo, errorCode: "CSXF1772");
 			return false;
 		}
 
@@ -599,7 +599,7 @@ namespace Xamarin.Forms.Xaml
 				try {
 					propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
 				} catch (AmbiguousMatchException e) {
-					throw new XamlParseException($"Multiple properties with name '{elementType}.{localName}' found.", lineInfo, innerException: e);
+					throw new XamlParseException($"Multiple properties with name '{elementType}.{localName}' found.", lineInfo, innerException: e, errorCode: "CSXF1773");
 				}
 				elementType = elementType.BaseType;
 			}
@@ -673,7 +673,7 @@ namespace Xamarin.Forms.Xaml
 			else if (value is StyleSheets.StyleSheet)
 				resourceDictionary.Add((StyleSheets.StyleSheet)value);
 			else {
-				exception = new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo);
+				exception = new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo, errorCode: "CSXF1774");
 				return false;
 			}
 			return true;

@@ -26,11 +26,11 @@ namespace Xamarin.Forms.Xaml
 
 			var resourceId = XamlResourceIdAttribute.GetResourceIdForPath(assembly, resourcePath);
 			if (resourceId == null)
-				throw new XamlParseException($"Resource '{resourcePath}' not found.", lineInfo);
+				throw new XamlParseException($"Resource '{resourcePath}' not found.", lineInfo, errorCode: "CSXF1832");
 
 			using (var stream = assembly.GetManifestResourceStream(resourceId)) {
 				if (stream == null)
-					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo);
+					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo, errorCode: "CSXF1833");
 				using (var reader = new StreamReader(stream)) {
 					rd.LoadFromXaml(reader.ReadToEnd());
 					return rd;
@@ -52,11 +52,11 @@ namespace Xamarin.Forms.Xaml
 
 			var resourceId = XamlResourceIdAttribute.GetResourceIdForPath(assembly, resourcePath);
 			if (resourceId == null)
-				throw new XamlParseException($"Resource '{resourcePath}' not found.", lineInfo);
+				throw new XamlParseException($"Resource '{resourcePath}' not found.", lineInfo, errorCode: "CSXF1834");
 
 			using (var stream = assembly.GetManifestResourceStream(resourceId)) {
 				if (stream == null)
-					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo);
+					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo, errorCode: "CSXF1835");
 				using (var reader = new StreamReader(stream))
 					return reader.ReadToEnd();
 			}

@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Xaml
 			if (serviceProvider == null)
 				throw new ArgumentNullException(nameof(serviceProvider));
 			if (Key == null)
-				throw new XamlParseException("you must specify a key in {StaticResource}", serviceProvider);
+				throw new XamlParseException("You must specify a key in {StaticResource}", serviceProvider, errorCode: "CSXF1825");
 			if (!(serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideParentValues valueProvider))
 				throw new ArgumentException();
 
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Xaml
 
 			if (   !TryGetResource(Key, valueProvider.ParentObjects, out var resource, out var resourceDictionary)
 				&& !TryGetApplicationLevelResource(Key, out resource, out resourceDictionary))
-				throw new XamlParseException($"StaticResource not found for key {Key}", xmlLineInfo);
+				throw new XamlParseException($"StaticResource not found for key {Key}", xmlLineInfo, errorCode: "CSXF1826");
 
 			if (System.Diagnostics.Debugger.IsAttached || _mockDebuggerIsAttached)
 				Diagnostics.ResourceDictionaryDiagnostics.OnStaticResourceResolved(resourceDictionary, Key, valueProvider.TargetObject, valueProvider.TargetProperty);

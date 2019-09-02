@@ -227,7 +227,7 @@ namespace Xamarin.Forms.Xaml.Internals
 
 			var namespaceuri = namespaceResolver.LookupNamespace(prefix);
 			if (namespaceuri == null) {
-				exception = new XamlParseException(string.Format("No xmlns declaration for prefix \"{0}\"", prefix), xmlLineInfo);
+				exception = new XamlParseException(string.Format("No xmlns declaration for prefix \"{0}\"", prefix), xmlLineInfo, errorCode: "CSXF1850");
 				return null;
 			}
 

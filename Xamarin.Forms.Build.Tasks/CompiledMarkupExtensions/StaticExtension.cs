@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var member = ((ValueNode)ntype).Value as string;
 
 			if (IsNullOrEmpty(member) || !member.Contains("."))
-				throw new XamlParseException("Syntax for x:Static is [Member=][prefix:]typeName.staticMemberName", node as IXmlLineInfo);
+				throw new XamlParseException("Syntax for x:Static is [Member=][prefix:]typeName.staticMemberName", node as IXmlLineInfo, errorCode: "CSXF1401");
 
 			var dotIdx = member.LastIndexOf('.');
 			var typename = member.Substring(0, dotIdx);
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var propertyDef = GetPropertyDefinition(typeRef, membername, module);
 
 			if (fieldRef == null && propertyDef == null)
-				throw new XamlParseException($"x:Static: unable to find a public -- or accessible internal -- static field, static property, const or enum value named {membername} in {typename}", node as IXmlLineInfo);
+				throw new XamlParseException($"x:Static: unable to find a public -- or accessible internal -- static field, static property, const or enum value named {membername} in {typename}", node as IXmlLineInfo, errorCode: "CSXF1402");
 
 			var fieldDef = fieldRef?.Resolve();
 			if (fieldRef != null) {

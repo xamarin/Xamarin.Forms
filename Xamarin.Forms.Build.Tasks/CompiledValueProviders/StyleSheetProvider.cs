@@ -28,16 +28,16 @@ namespace Xamarin.Forms.Core.XamlC
 				styleNode = ((IElementNode)node).CollectionItems[0];
 
 			if (sourceNode != null && styleNode != null)
-				throw new XamlParseException("StyleSheet can not have both a Source and a content", node);
+				throw new XamlParseException("StyleSheet can not have both a Source and a content", node, errorCode: "CSXF1501");
 
 			if (sourceNode == null && styleNode == null)
-				throw new XamlParseException("StyleSheet require either a Source or a content", node);
+				throw new XamlParseException("StyleSheet require either a Source or a content", node, errorCode: "CSXF1502");
 
 			if (styleNode != null && !(styleNode is ValueNode))
-				throw new XamlParseException("Style property or Content is not a string literal", node);
+				throw new XamlParseException("Style property or Content is not a string literal", node, errorCode: "CSXF1503");
 
 			if (sourceNode != null && !(sourceNode is ValueNode))
-				throw new XamlParseException("Source property is not a string literal", node);
+				throw new XamlParseException("Source property is not a string literal", node, errorCode: "CSXF1504");
 
 			if (styleNode != null) {
 				var style = (styleNode as ValueNode).Value as string;
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.XamlC
 				var resourcePath = ResourceDictionary.RDSourceTypeConverter.GetResourcePath(uri, rootTargetPath);
 				//fail early
 				if (XamlCTask.GetResourceIdForPath(module, resourcePath) == null)
-					throw new XamlParseException($"Resource '{source}' not found.", node);
+					throw new XamlParseException($"Resource '{source}' not found.", node, errorCode: "CSXF1505");
 
 				yield return Create(Ldstr, resourcePath); //resourcePath
 

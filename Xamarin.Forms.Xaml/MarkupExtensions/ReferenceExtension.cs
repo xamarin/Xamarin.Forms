@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Xaml
 					return value;
 			}
 
-			throw new XamlParseException($"Can not find the object referenced by `{Name}`", serviceProvider);
+			throw new XamlParseException($"Can not find the object referenced by `{Name}`", serviceProvider, errorCode: "CSXF1800");
 		}
 	}
 }

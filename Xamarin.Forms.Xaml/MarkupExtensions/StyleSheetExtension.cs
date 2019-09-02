@@ -20,12 +20,12 @@ namespace Xamarin.Forms.Xaml
 			IXmlLineInfo lineInfo;
 
 			if (!string.IsNullOrEmpty(Style) && Source != null)
-				throw new XamlParseException($"StyleSheet can not have both a Source and a content", serviceProvider);
+				throw new XamlParseException($"StyleSheet can not have both a Source and a content", serviceProvider, errorCode: "CSXF1827");
 
 			if (Source != null) {
 				lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
 				if (Source.IsAbsoluteUri)
-					throw new XamlParseException($"Source only accepts Relative URIs", lineInfo);
+					throw new XamlParseException($"Source only accepts Relative URIs", lineInfo, errorCode: "CSXF1828");
 
 				var rootObjectType = (serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider)?.RootObject.GetType();
 				if (rootObjectType == null)
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Xaml
 					return StyleSheet.FromReader(reader);
 			}
 
-			throw new XamlParseException($"StyleSheet require either a Source or a content", serviceProvider);
+			throw new XamlParseException($"StyleSheet require either a Source or a content", serviceProvider, errorCode: "CSXF1829");
 		}
 	}
 }

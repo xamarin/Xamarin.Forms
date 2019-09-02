@@ -40,7 +40,7 @@ namespace Xamarin.Forms
 				if (parentValuesProvider == null)
 				{
 					string msg = string.Format("Can't resolve {0}", parts[0]);
-					throw new XamlParseException(msg, lineinfo);
+					throw new XamlParseException(msg, lineinfo, errorCode: "CSXF1670");
 				}
 				object parent = parentValuesProvider.ParentObjects.Skip(1).FirstOrDefault();
 				if (parentValuesProvider.TargetObject is Setter)
@@ -61,7 +61,7 @@ namespace Xamarin.Forms
 					type = (parent as TriggerBase).TargetType;
 
 				if (type == null)
-					throw new XamlParseException($"Can't resolve {parts [0]}", lineinfo);
+					throw new XamlParseException($"Can't resolve {parts [0]}", lineinfo, errorCode: "CSXF1671");
 
 				return ConvertFrom(type, parts[0], lineinfo);
 			}
@@ -74,7 +74,7 @@ namespace Xamarin.Forms
 				}
 				return ConvertFrom(type, parts[1], lineinfo);
 			}
-			throw new XamlParseException($"Can't resolve {value}. Syntax is [[prefix:]Type.]PropertyName.", lineinfo);
+			throw new XamlParseException($"Can't resolve {value}. Syntax is [[prefix:]Type.]PropertyName.", lineinfo, errorCode: "CSXF1672");
 		}
 
 		public override object ConvertFromInvariantString(string value)
@@ -101,11 +101,11 @@ namespace Xamarin.Forms
 			string name = propertyName + "Property";
 			FieldInfo bpinfo = type.GetField(fi => fi.Name == name && fi.IsStatic && fi.IsPublic && fi.FieldType == typeof(BindableProperty));
 			if (bpinfo == null)
-				throw new XamlParseException($"Can't resolve {name} on {type.Name}", lineinfo);
+				throw new XamlParseException($"Can't resolve {name} on {type.Name}", lineinfo, errorCode: "CSXF1673");
 			var bp = bpinfo.GetValue(null) as BindableProperty;
 			var isObsolete = bpinfo.GetCustomAttribute<ObsoleteAttribute>() != null;
 			if (bp.PropertyName != propertyName && !isObsolete)
-				throw new XamlParseException($"The PropertyName of {type.Name}.{name} is not {propertyName}", lineinfo);
+				throw new XamlParseException($"The PropertyName of {type.Name}.{name} is not {propertyName}", lineinfo, errorCode: "CSXF1674");
 			return bp;
 		}
 
@@ -118,7 +118,7 @@ namespace Xamarin.Forms
 
 			// VisualStates must be in a VisualStateGroup
 			if(!(parents[2] is VisualStateGroup)) {
-				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parents[2]}.", lineInfo);
+				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parents[2]}.", lineInfo, errorCode: "CSXF1675");
 			}
 
 			var vsTarget = parents[3];
@@ -131,18 +131,18 @@ namespace Xamarin.Forms
 
 			if (!(parents[3] is VisualStateGroupList))
 			{
-				throw new XamlParseException($"Expected {nameof(VisualStateGroupList)} but found {parents[3]}.", lineInfo);
+				throw new XamlParseException($"Expected {nameof(VisualStateGroupList)} but found {parents[3]}.", lineInfo, errorCode: "CSXF1676");
 			}
 
 			if (!(parents[4] is Setter))
 			{
-				throw new XamlParseException($"Expected {nameof(Setter)} but found {parents[4]}.", lineInfo);
+				throw new XamlParseException($"Expected {nameof(Setter)} but found {parents[4]}.", lineInfo, errorCode: "CSXF1677");
 			}
 
 			// These must be part of a Style; verify that 
 			if (!(parents[5] is Style style))
 			{
-				throw new XamlParseException($"Expected {nameof(Style)} but found {parents[5]}.", lineInfo);
+				throw new XamlParseException($"Expected {nameof(Style)} but found {parents[5]}.", lineInfo, errorCode: "CSXF1678");
 			}
 
 			return style.TargetType;
