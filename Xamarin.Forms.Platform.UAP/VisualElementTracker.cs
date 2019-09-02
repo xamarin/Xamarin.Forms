@@ -356,6 +356,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var view = Element as View;
 			if (view == null)
 				return;
+			
 			HandleSwipe(e, view);
 			HandlePinch(e, view);
 			HandlePan(e, view);
@@ -367,6 +368,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var view = Element as View;
 			if (view == null)
 				return;
+			
 			_wasPinchGestureStartedSent = false;
 			_wasPanGestureStartedSent = false;
 			CallTouchGestureRecognizer(Element as View, e.Position.ToPoint(), TouchState.Move);
@@ -377,6 +379,7 @@ namespace Xamarin.Forms.Platform.UWP
 			uint id = e.Pointer.PointerId;
 			if (_fingers.Contains(id))
 				_fingers.Remove(id);
+			
 			SwipeComplete(false);
 			PinchComplete(false);
 			PanComplete(false);
@@ -388,6 +391,7 @@ namespace Xamarin.Forms.Platform.UWP
 			uint id = e.Pointer.PointerId;
 			if (_fingers.Contains(id))
 				_fingers.Remove(id);
+
 			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
@@ -398,8 +402,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			uint id = e.Pointer.PointerId;
 			if (!_fingers.Contains(id))
-				_fingers.Add(id);
-
+				_fingers.Add(id); 
+			
 			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), TouchState.Pressed);
 		}
 
@@ -408,10 +412,10 @@ namespace Xamarin.Forms.Platform.UWP
 			uint id = e.Pointer.PointerId;
 			if (_fingers.Contains(id))
 				_fingers.Remove(id);
+
 			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
-
 			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), TouchState.Released);
 		}
 
@@ -643,7 +647,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			//We can't handle ManipulationMode.Scale and System , so we don't support pinch/pan on a scrollview 
-			if (Element is ScrollView)
+			if (Element is ScrollView && !touchGesture)
 			{
 				if (hasPinchGesture)
 					Log.Warning("Gestures", "PinchGestureRecognizer is not supported on a ScrollView in Windows Platforms");
