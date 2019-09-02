@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using CoreGraphics;
 using UIKit;
 using Xamarin.Forms.Internals;
 using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
@@ -242,6 +243,10 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				SelectedViewController = controller;
+
+				UpdateBarTextColor();
+				UpdateSelectedTabColors();
+				UpdateBarSelectedTextColors();
 			}
 			else if (e.PropertyName == TabbedPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
@@ -253,7 +258,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
 			else if (e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName || e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName)
 				UpdateSelectedTabColors();
-			else if (e.PropertyName == TabbedPage.BarSelectedTextColorProperty.PropertyName)
+			else if (e.PropertyName == TabbedPage.BarSelectedTextColorProperty.PropertyName || e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName)
 				UpdateBarSelectedTextColors();
 			else if (e.PropertyName == PrefersHomeIndicatorAutoHiddenProperty.PropertyName)
 				UpdatePrefersHomeIndicatorAutoHiddenOnPages();
@@ -476,6 +481,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Tabbed == null || TabBar == null || TabBar.Items == null)
 				return;
 
+			var selectedColor = (Tabbed.SelectedTabColor.IsDefault ? Tabbed.BarSelectedTextColor : Tabbed.SelectedTabColor).ToUIColor();
+			var unselectedColor = (Tabbed.UnselectedTabColor.IsDefault ? Tabbed.BarTextColor : Tabbed.UnselectedTabColor).ToUIColor();
+
 			if (Tabbed.IsSet(TabbedPage.SelectedTabColorProperty) && Tabbed.SelectedTabColor != Color.Default)
 			{
 				if (Forms.IsiOS10OrNewer)
@@ -492,13 +500,45 @@ namespace Xamarin.Forms.Platform.iOS
 					TabBar.SelectedImageTintColor = UITabBar.Appearance.SelectedImageTintColor;
 			}
 
+			for (int index = 0; index < TabBar.Items.Length; index++)
+			{
+				if (TabBar.SelectedItem != TabBar.Items[index] && TabBar.Items[index].SelectedImage != null)
+				{
+					var overlayImage = CreateOverlayImage(TabBar.Items[index].SelectedImage, unselectedColor)
+						.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+					TabBar.Items[index].Image = overlayImage;
+				}
+			}
+
 			if (!Forms.IsiOS10OrNewer)
 				return;
 
 			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
-				TabBar.UnselectedItemTintColor = Tabbed.UnselectedTabColor.ToUIColor();
+			{
+				TabBar.UnselectedItemTintColor = unselectedColor;
+			}
 			else
 				TabBar.UnselectedItemTintColor = UITabBar.Appearance.TintColor;
+
+			UIImage CreateOverlayImage(UIImage image, UIColor color)
+			{
+				UIGraphics.BeginImageContextWithOptions(image.Size, false, image.CurrentScale);
+				color.SetFill();
+
+				var context = UIGraphics.GetCurrentContext();
+				context.TranslateCTM(0, image.Size.Height);
+				context.ScaleCTM(1.0f, -1.0f);
+				context.SetBlendMode(CGBlendMode.Normal);
+
+				var rect = new CGRect(0, 0, image.Size.Width, image.Size.Height);
+				context.ClipToMask(rect, image.CGImage);
+				context.FillRect(rect);
+
+				var newImage = UIGraphics.GetImageFromCurrentImageContext();
+				UIGraphics.EndImageContext();
+
+				return newImage;
+			}
 		}
 
 		void UpdateBarSelectedTextColors()
@@ -507,8 +547,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null || Tabbed == null || TabBar == null || TabBar.Items == null)
 				return;
 
-			UIColor selectedColor = control.BarSelectedTextColor.ToUIColor();
-			UIColor unselectedColor = control.BarTextColor.ToUIColor();
+			UIColor selectedColor = (control.BarSelectedTextColor.IsDefault ? control.SelectedTabColor : control.BarSelectedTextColor).ToUIColor();
+			UIColor unselectedColor = (control.BarTextColor.IsDefault ? control.UnselectedTabColor : control.BarTextColor).ToUIColor();
 
 			TabBar.UnselectedItemTintColor = unselectedColor;
 
@@ -521,9 +561,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (item == null)
 					return;
-
-				item.SetTitleTextAttributes(new UITextAttributes { TextColor = selected }, UIControlState.Selected);
+				
 				item.SetTitleTextAttributes(new UITextAttributes { TextColor = unselected }, UIControlState.Normal);
+				item.SetTitleTextAttributes(new UITextAttributes { TextColor = selected }, UIControlState.Selected);
 			}
 		}
 
