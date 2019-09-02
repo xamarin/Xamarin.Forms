@@ -35,15 +35,18 @@
 
         <Grid Grid.Row="1" x:Name="ListViewGrid" IsVisible="False">
             <ListView x:Name="TouchListView">
+                <ListView.GestureRecognizers>
+                    <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                </ListView.GestureRecognizers>
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Grid HeightRequest="80" Margin="10">
-                                <BoxView BackgroundColor="LightGray" Margin="20">
-                                    <BoxView.GestureRecognizers>
+                            <Grid HeightRequest="80" Margin="2">
+                                <Grid BackgroundColor="LightGreen" Margin="2">
+                                    <Grid.GestureRecognizers>
                                         <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
-                                    </BoxView.GestureRecognizers>
-                                </BoxView>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
                                 <Label VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding}"
                                        Opacity="0.5" />
                             </Grid>
@@ -57,12 +60,12 @@
             <!--<CollectionView x:Name="TouchCollectionView">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid HeightRequest="80" Margin="10">
-                            <BoxView BackgroundColor="LightGray" Margin="20">
-                                <BoxView.GestureRecognizers>
+                        <Grid HeightRequest="80" Margin="2">
+                            <Grid BackgroundColor="LightGreen" Margin="2">
+                                <Grid.GestureRecognizers>
                                     <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
-                                </BoxView.GestureRecognizers>
-                            </BoxView>
+                                </Grid.GestureRecognizers>
+                            </Grid>
                             <Label VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding}"
                                    Opacity="0.5" />
                         </Grid>
@@ -72,6 +75,9 @@
         </Grid>
         <Grid Grid.Row="1" x:Name="ScrollViewGrid" IsVisible="False">
             <ScrollView VerticalScrollBarVisibility="Always" HeightRequest="80">
+                <ScrollView.GestureRecognizers>
+                    <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                </ScrollView.GestureRecognizers>
                 <StackLayout>
                     <BoxView BackgroundColor="LightSalmon" Margin="10" WidthRequest="60" HeightRequest="60">
                         <BoxView.GestureRecognizers>

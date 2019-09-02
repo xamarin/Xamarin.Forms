@@ -106,6 +106,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// TODO hartez 2018/06/06 20:57:12 Find out what this does, and whether we really need it	
 			element.SendViewInitialized(this);
+
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
@@ -318,6 +319,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_recyclerViewScrollListener = new RecyclerViewScrollListener(ItemsView, ItemsViewAdapter);
 			AddOnScrollListener(_recyclerViewScrollListener);
+			SetOnTouchListener(GestureManager.CreateTouchGestureListener(() => Element as View, Context.FromPixels));
 		}
 
 		protected virtual void UpdateVerticalScrollBarVisibility()

@@ -94,6 +94,8 @@ namespace Xamarin.Forms.Platform.Android
 
 				Controller.ScrollToRequested += OnScrollToRequested;
 
+				SetOnTouchListener(GestureManager.CreateTouchGestureListener(() => Element as View, Context.FromPixels));
+
 				LoadContent();
 				UpdateBackgroundColor();
 				UpdateOrientation();
@@ -383,7 +385,7 @@ namespace Xamarin.Forms.Platform.Android
 				await Task.Delay(TimeSpan.FromMilliseconds(1));
 				
 				if (_disposed)
-                	return;
+					return;
 				
 				cycle++;
 

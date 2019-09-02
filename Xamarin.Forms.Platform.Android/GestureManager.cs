@@ -195,14 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 		TouchGestureDetector InitializeTouchGestureDetector()
 		{
 			var context = Control.Context;
-			var handler = new TouchGestureHandler(() => View, () =>
-			{
-				if (Element is View view)
-					return view.GetChildElements(Point.Zero) ?? new List<GestureElement>();
-
-				return new List<GestureElement>();
-			}, context.FromPixels);
-
+			var handler = new TouchGestureHandler(() => View, context.FromPixels);
 			var listener = new InnerTouchGestureListener(handler);
 			return new TouchGestureDetector(context, listener);
 		}
@@ -306,6 +299,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_isEnabled = Element.IsEnabled;
+		}
+
+		public static InnerTouchGestureListener CreateTouchGestureListener(Func<View> getView, Func<double, double> fromPixels)
+		{
+			return new InnerTouchGestureListener(new TouchGestureHandler(getView, fromPixels,true));
 		}
 	}
 }

@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 		public virtual void SendTouch(View sender, TouchEventArgs eventArgs)
 		{
 			VisualStateManager.GoToState(sender, eventArgs.TouchState.ToString());
-			TouchUpdated?.Invoke(this, eventArgs);
+			TouchUpdated?.Invoke(sender, eventArgs);
 		}
 
 		public event EventHandler<TouchEventArgs> TouchUpdated;

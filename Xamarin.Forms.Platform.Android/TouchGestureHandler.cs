@@ -8,14 +8,18 @@ namespace Xamarin.Forms.Platform.Android
 {
 	class TouchGestureHandler
 	{
-		public TouchGestureHandler(Func<View> getView, Func<IList<GestureElement>> getChildElements, Func<double, double> fromPixels)
+		readonly Func<double, double> _fromPixels;
+
+		readonly bool _onlyListen;
+
+		public TouchGestureHandler(Func<View> getView, Func<double, double> fromPixels, bool onlyListen = false)
 		{
 			GetView = getView;
-			GetChildElements = getChildElements;
+			GetChildElements = () => GetView()?.GetChildElements(Point.Zero) ?? new List<GestureElement>();
 			_fromPixels = fromPixels;
+			_onlyListen = onlyListen;
 		}
 
-		Func<double, double> _fromPixels;
 		Func<IList<GestureElement>> GetChildElements { get; }
 
 		Func<View> GetView { get; }
@@ -30,25 +34,38 @@ namespace Xamarin.Forms.Platform.Android
 		public bool OnTouch(MotionEvent ev)
 		{
 			View view = GetView();
+			var recognizers = view?.GestureRecognizers.GetGesturesFor<TouchGestureRecognizer>().ToList();
 
-			if (view == null)
+			if (recognizers != null && recognizers.Count > 0)
 			{
-				return false;
+				foreach (TouchGestureRecognizer touchGesture in recognizers)
+				{
+					touchGesture.SendTouch(view, CreateTouchEventArgs(ev));
+				}
+
+				return !_onlyListen;
 			}
 
-			foreach (TouchGestureRecognizer touchGesture in view.GestureRecognizers.GetGesturesFor<TouchGestureRecognizer>())
-			{
-				touchGesture.SendTouch(view, CreateTouchEventArgs(ev));
-			}
-
-			return true;
+			return false;
 		}
-
-
 
 		TouchEventArgs CreateTouchEventArgs(MotionEvent motionEvent)
 		{
 			return new TouchEventArgs(motionEvent.PointerCount, GetTouchState(motionEvent), GetTouchPoints(motionEvent));
+		}
+
+		IReadOnlyList<TouchPoint> GetTouchPoints(MotionEvent me)
+		{
+			var points = new List<TouchPoint>(me.PointerCount);
+			for (var i = 0; i < me.PointerCount; i++)
+			{
+				var point = new Point(_fromPixels(me.GetX(i)), _fromPixels(me.GetY(i)));
+				View view = GetView();
+				var isInView = view?.Bounds.Contains(point) ?? false;
+				points.Add(new TouchPoint(point, isInView));
+			}
+
+			return points.AsReadOnly();
 		}
 
 		TouchState GetTouchState(MotionEvent motionEvent)
@@ -95,22 +112,8 @@ namespace Xamarin.Forms.Platform.Android
 					return TouchState.Unknown;
 
 				default:
-				return TouchState.Unknown;
+					return TouchState.Unknown;
 			}
-		}
-
-		IReadOnlyList<TouchPoint> GetTouchPoints(MotionEvent me)
-		{
-			var points = new List<TouchPoint>(me.PointerCount);
-			for (int i = 0; i < me.PointerCount; i++)
-			{
-				var point = new Point(_fromPixels(me.GetX(i)), _fromPixels(me.GetY(i)));
-				var view = GetView();
-				var isInView = view?.Bounds.Contains(point) ?? false;
-				points.Add(new TouchPoint(point, isInView));
-			}
-
-			return points.AsReadOnly();
 		}
 	}
 }
