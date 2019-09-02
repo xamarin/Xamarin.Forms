@@ -84,6 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBarTextColor();
 			UpdateSelectedTabColors();
 			UpdateBarTranslucent();
+			UpdateBarSelectedTextColors();
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -225,6 +226,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
 			UpdateSelectedTabColors();
+			UpdateBarSelectedTextColors();
 		}
 
 		void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -251,6 +253,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
 			else if (e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName || e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName)
 				UpdateSelectedTabColors();
+			else if (e.PropertyName == TabbedPage.BarSelectedTextColorProperty.PropertyName)
+				UpdateBarSelectedTextColors();
 			else if (e.PropertyName == PrefersHomeIndicatorAutoHiddenProperty.PropertyName)
 				UpdatePrefersHomeIndicatorAutoHiddenOnPages();
 			else if (e.PropertyName == TabbedPageConfiguration.TranslucencyModeProperty.PropertyName)
@@ -495,6 +499,32 @@ namespace Xamarin.Forms.Platform.iOS
 				TabBar.UnselectedItemTintColor = Tabbed.UnselectedTabColor.ToUIColor();
 			else
 				TabBar.UnselectedItemTintColor = UITabBar.Appearance.TintColor;
+		}
+
+		void UpdateBarSelectedTextColors()
+		{
+			var control = (TabbedPage)Element;
+			if (control == null || Tabbed == null || TabBar == null || TabBar.Items == null)
+				return;
+
+			UIColor selectedColor = control.BarSelectedTextColor.ToUIColor();
+			UIColor unselectedColor = control.BarTextColor.ToUIColor();
+
+			TabBar.UnselectedItemTintColor = unselectedColor;
+
+			for (int index = 0; index < TabBar.Items.Length; index++)
+			{
+				UpdateItem(TabBar.Items[index], selectedColor, unselectedColor);
+			}
+
+			void UpdateItem(UITabBarItem item, UIColor selected, UIColor unselected)
+			{
+				if (item == null)
+					return;
+
+				item.SetTitleTextAttributes(new UITextAttributes { TextColor = selected }, UIControlState.Selected);
+				item.SetTitleTextAttributes(new UITextAttributes { TextColor = unselected }, UIControlState.Normal);
+			}
 		}
 
 		/// <summary>
