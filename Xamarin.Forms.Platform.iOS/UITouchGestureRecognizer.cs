@@ -31,41 +31,36 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TouchesBegan(NSSet touches, UIEvent evt)
 		{
 			base.TouchesBegan(touches, evt);
-			State = UIGestureRecognizerState.Began;
-			_action(this, CreateTouchEventArgs(touches, evt));
+			_action(this, CreateTouchEventArgs(touches, evt, UIGestureRecognizerState.Began));
 		}
 
 		public override void TouchesCancelled(NSSet touches, UIEvent evt)
 		{
 			base.TouchesCancelled(touches, evt);
-			State = UIGestureRecognizerState.Cancelled;
-			_action(this, CreateTouchEventArgs(touches, evt));
+			_action(this, CreateTouchEventArgs(touches, evt, UIGestureRecognizerState.Cancelled));
 		}
 
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
 		{
 			base.TouchesEnded(touches, evt);
-			State = UIGestureRecognizerState.Ended;
-			_action(this, CreateTouchEventArgs(touches, evt));
+			_action(this, CreateTouchEventArgs(touches, evt, UIGestureRecognizerState.Ended));
 		}
 
 		public override void TouchesMoved(NSSet touches, UIEvent evt)
 		{
 			base.TouchesMoved(touches, evt);
-			State = UIGestureRecognizerState.Changed;
-			_action(this, CreateTouchEventArgs(touches, evt));
+			_action(this, CreateTouchEventArgs(touches, evt, UIGestureRecognizerState.Changed));
+		}
+
+		TouchEventArgs CreateTouchEventArgs(NSSet touches, UIEvent evt, UIGestureRecognizerState state)
+		{
+			return new TouchEventArgs((int)touches.Count, GetTouchState(touches, evt, state), GetTouchPoints(touches, evt));
 		}
 
 
-		TouchEventArgs CreateTouchEventArgs(NSSet touches, UIEvent evt)
+		TouchState GetTouchState(NSSet touches, UIEvent evt, UIGestureRecognizerState state)
 		{
-			return new TouchEventArgs((int)touches.Count, GetTouchState(touches, evt), GetTouchPoints(touches, evt));
-		}
-
-
-		TouchState GetTouchState(NSSet touches, UIEvent evt)
-		{
-			switch (State)
+			switch (state)
 			{
 				case UIGestureRecognizerState.Possible:
 					return TouchState.Unknown;
