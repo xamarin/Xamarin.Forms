@@ -25,14 +25,15 @@ namespace Xamarin.Forms.Controls.Issues
 			InitializeComponent();
 		}
 
-	protected override void OnAppearing()
+		protected override void OnAppearing()
         {
             base.OnAppearing();
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 20; i++)
             {
                 announcements.Add(new AdItem("no_artwork", "Card Title", "SUBHEAD"));
             }
             CV.ItemsSource = announcements;
+			CV2.ItemsSource = announcements;
 		}
 
 	}
