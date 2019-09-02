@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Controls
 			AutomationId = hierarchy + "PageId";
 
 			var tabOne = new ContentPage {
+				IconImageSource = "bell",
 				Title = "Testing 123",
 				Content = new SwapHierachyStackLayout (hierarchy)
 			};
@@ -27,6 +28,7 @@ namespace Xamarin.Forms.Controls
 			};
 
 			var tabTwo = new ContentPage {
+				IconImageSource = "bank",
 				Title = "Testing 345",
 				Content = new StackLayout {
 					Children = {
@@ -40,8 +42,13 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 
+			// the tab colors appear to be fighting with the text colors
+			// this needs to be fixed.
 			UnselectedTabColor = Color.HotPink;
 			SelectedTabColor = Color.Green;
+			BarTextColor = Color.White;
+			BarSelectedTextColor = Color.Orange;
+
 
 			Children.Add (tabOne);
 			Children.Add (tabTwo);
