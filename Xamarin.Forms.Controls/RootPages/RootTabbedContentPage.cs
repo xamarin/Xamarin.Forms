@@ -42,13 +42,10 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 
-			// the tab colors appear to be fighting with the text colors
-			// this needs to be fixed.
 			UnselectedTabColor = Color.HotPink;
 			SelectedTabColor = Color.Green;
 			BarTextColor = Color.White;
 			BarSelectedTextColor = Color.Orange;
-
 
 			Children.Add (tabOne);
 			Children.Add (tabTwo);
