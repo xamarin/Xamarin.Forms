@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.UAP.Extensions;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -346,6 +348,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
+			CallTouchGestureRecognizer(Element as View, e.Position.ToPoint(), TouchState.Move);
 		}
 
 		void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -356,6 +359,7 @@ namespace Xamarin.Forms.Platform.UWP
 			HandleSwipe(e, view);
 			HandlePinch(e, view);
 			HandlePan(e, view);
+			CallTouchGestureRecognizer(Element as View, e.Position.ToPoint(), TouchState.Move);
 		}
 
 		void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -365,6 +369,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			_wasPinchGestureStartedSent = false;
 			_wasPanGestureStartedSent = false;
+			CallTouchGestureRecognizer(Element as View, e.Position.ToPoint(), TouchState.Move);
 		}
 
 		void OnPointerCanceled(object sender, PointerRoutedEventArgs e)
@@ -375,6 +380,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SwipeComplete(false);
 			PinchComplete(false);
 			PanComplete(false);
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), TouchState.Cancelled);
 		}
 
 		void OnPointerExited(object sender, PointerRoutedEventArgs e)
@@ -385,6 +391,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), TouchState.Exited);
 		}
 
 		void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -392,6 +399,8 @@ namespace Xamarin.Forms.Platform.UWP
 			uint id = e.Pointer.PointerId;
 			if (!_fingers.Contains(id))
 				_fingers.Add(id);
+
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), TouchState.Pressed);
 		}
 
 		void OnPointerReleased(object sender, PointerRoutedEventArgs e)
@@ -402,6 +411,8 @@ namespace Xamarin.Forms.Platform.UWP
 			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
+
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), TouchState.Released);
 		}
 
 		void OnRedrawNeeded(object sender, EventArgs e)
@@ -627,7 +638,8 @@ namespace Xamarin.Forms.Platform.UWP
 			bool hasSwipeGesture = gestures.GetGesturesFor<SwipeGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPinchGesture = gestures.GetGesturesFor<PinchGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPanGesture = gestures.GetGesturesFor<PanGestureRecognizer>().GetEnumerator().MoveNext();
-			if (!hasSwipeGesture && !hasPinchGesture && !hasPanGesture)
+			bool touchGesture = gestures.GetGesturesFor<TouchGestureRecognizer>().GetEnumerator().MoveNext();
+			if (!hasSwipeGesture && !hasPinchGesture && !hasPanGesture && !touchGesture)
 				return;
 
 			//We can't handle ManipulationMode.Scale and System , so we don't support pinch/pan on a scrollview 
@@ -660,6 +672,21 @@ namespace Xamarin.Forms.Platform.UWP
 		void HandleDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
 		{
 			doubleTappedRoutedEventArgs.Handled = true;
+		}
+
+		void CallTouchGestureRecognizer(View view, Point point, TouchState state)
+		{
+			if (view == null)
+				return;
+
+			var touchGestures = view.GestureRecognizers.GetGesturesFor<TouchGestureRecognizer>();
+			foreach (var recognizer in touchGestures)
+			{
+				recognizer.SendTouch(view, new TouchEventArgs(_fingers.Count, state, new List<TouchPoint>
+				{
+					new TouchPoint(point,view.Bounds.Contains(point))
+				}));
+			}
 		}
 	}
 }

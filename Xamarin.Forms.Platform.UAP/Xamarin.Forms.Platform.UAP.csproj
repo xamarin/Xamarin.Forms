@@ -44,6 +44,7 @@
     <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="DispatcherProvider.cs" />
+    <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="FormsCheckBox.cs" />
     <Compile Include="IImageVisualElementRenderer.cs" />
