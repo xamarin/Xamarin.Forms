@@ -194,7 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var context = _shellContext.AndroidContext;
 
-			var margin = _flyoutHeader?.Margin ?? default;
+			var margin = _flyoutHeader?.Margin ?? default(Thickness);
 
 			var minimumHeight = Convert.ToInt32(_actionBarHeight + context.ToPixels(margin.Top) - context.ToPixels(margin.Bottom));
 			_headerView.SetMinimumHeight(minimumHeight);
