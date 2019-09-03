@@ -30,7 +30,14 @@ namespace Xamarin.Forms.Platform.Android
 				return _defaultFocusable;
 
 			if (!_defaultFocusable.HasValue)
+			{
 				_defaultFocusable = Control.Focusable;
+				Control.ImportantForAccessibility = ImportantForAccessibility.Auto;
+			}
+			else
+			{
+				Control.ImportantForAccessibility = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable) ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
+			}
 
 			Control.Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
 

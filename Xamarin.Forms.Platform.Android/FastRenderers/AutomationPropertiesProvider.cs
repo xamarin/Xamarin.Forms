@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Widget;
 using AView = Android.Views.View;
+using IFA = Android.Views.ImportantForAccessibility;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -87,11 +88,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (!defaultFocusable.HasValue)
 			{
 				defaultFocusable = control.Focusable;
+				control.ImportantForAccessibility = IFA.Auto;
+			}
+			else
+			{
+				control.ImportantForAccessibility = (bool)((bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? defaultFocusable) ? IFA.Yes : IFA.No;
 			}
 
-			control.Focusable =
-				(bool)((bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? defaultFocusable);
-		}
+			control.Focusable = (bool)((bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? defaultFocusable);
+	}
 
 		internal static void SetLabeledBy(AView control, Element element)
 		{
