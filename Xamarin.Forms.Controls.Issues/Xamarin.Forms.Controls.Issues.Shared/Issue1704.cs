@@ -147,29 +147,33 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalOptions = LayoutOptions.Start
 			};
 
-			_animatedImage.AnimationFinishedPlaying += OnAnimationFinishedPlaying;
+			_animatedImage.PropertyChanged += (sender, args) =>
+			{
+				if (args.PropertyName == nameof(Image.IsAnimationPlaying))
+					OnAnimationFinishedPlaying(sender, args);
+			};
 
 			_startStopButton = new Button { Text = "Start Animation" };
 			_startStopButton.Clicked += (object sender, EventArgs e) => {
 				if (!_animatedImage.IsAnimationPlaying)
 				{
-					_animatedImage.StartAnimation();
+					_animatedImage.IsAnimationPlaying = true;
 					_startStopButton.Text = "Stop Animation";
 				}
 				else
 				{
-					_animatedImage.StopAnimation();
+					_animatedImage.IsAnimationPlaying = false;
 					_startStopButton.Text = "Start Animation";
 				}
 
 				if (!_animatedImageButton.IsAnimationPlaying)
 				{
-					_animatedImageButton.StartAnimation();
+					_animatedImageButton.IsAnimationPlaying = true;
 					_startStopButton.Text = "Stop Animation";
 				}
 				else
 				{
-					_animatedImageButton.StopAnimation();
+					_animatedImageButton.IsAnimationPlaying = false;
 					_startStopButton.Text = "Start Animation";
 				}
 			};
@@ -344,7 +348,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 							if (animationImage != null)
 							{
-								animationImage.StartAnimation();
+								animationImage.IsAnimationPlaying = true;
 							}
 						});
 					}
@@ -409,14 +413,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 				if (!_initNoAnimationImage.IsAnimationPlaying)
 				{
-					_noAnimationFallbackImage.StartAnimation();
-					_initNoAnimationImage.StartAnimation();
+					_initNoAnimationImage.IsAnimationPlaying = true;
+					_noAnimationFallbackImage.IsAnimationPlaying = true;
+
 					_initNoAnimationButton.Text = "Stop Animation";
 				}
 				else
 				{
-					_noAnimationFallbackImage.StopAnimation();
-					_initNoAnimationImage.StopAnimation();
+					_initNoAnimationImage.IsAnimationPlaying = false;
+					_noAnimationFallbackImage.IsAnimationPlaying = false;
+
 					_initNoAnimationButton.Text = "Start Animation";
 				}
 			};

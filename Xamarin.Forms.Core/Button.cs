@@ -357,9 +357,6 @@ namespace Xamarin.Forms
 		void IImageController.SetIsLoading(bool isLoading)
 		{
 		}
-		void IImageController.OnAnimationFinishedPlaying()
-		{
-		}
 
 		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
 		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);

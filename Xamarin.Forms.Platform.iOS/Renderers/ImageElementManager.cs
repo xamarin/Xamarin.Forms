@@ -214,6 +214,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 						imageView.Animation = animation;
 						animation.AnimationStopped += OnAnimationStopped;
+
+						if ((bool)Element.GetValue(Image.IsAnimationPlayingProperty))
+							imageView.StartAnimating();
 					}
 					else
 					{
@@ -251,9 +254,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			if(sender is FormsUIImageView imageView && 
 				e.Finished && 
 				imageView.Superview is IImageVisualElementRenderer renderer &&
-				renderer.Element is IImageController imageController)
+				renderer.Element is IElementController imageController)
 			{
-				imageController.OnAnimationFinishedPlaying();
+				imageController.SetValueFromRenderer(Image.IsAnimationPlayingProperty, false);
 			}
 
 		}

@@ -134,17 +134,30 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
                     imageController.SetIsLoading(false);
             }
 
-            if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
-            {
-                if (newImage.IsAnimationAutoPlay)
-                    updatedAnimation.Start();
-            }
-        }
+			if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
+			{
+				if (newImage.IsAnimationAutoPlay || newImage.IsAnimationPlaying)
+					updatedAnimation.Start();
+			}
+		}
 
-        internal static void OnAnimationStopped(IImageController imageElement, FormsAnimationDrawableStateEventArgs e)
+        internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
         {
-            if (imageElement != null && e.Finished)
-                imageElement.OnAnimationFinishedPlaying();
+            if (image != null && e.Finished)
+                image.SetValueFromRenderer(Image.IsAnimationPlayingProperty, false);
+            try
+            {
+                await Control.UpdateBitmap(newImage, previous).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(nameof(ImageElementManager), "Error loading image: {0}", ex);
+            }
+            finally
+            {
+                if (newImage is IImageController imageController)
+                    imageController.SetIsLoading(false);
+            }
         }
 
         static void UpdateAspect(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)

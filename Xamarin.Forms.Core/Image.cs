@@ -22,9 +22,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsAnimationAutoPlayProperty = ImageElement.IsAnimationAutoPlayProperty;
 
-		internal static readonly BindablePropertyKey IsAnimationPlayingPropertyKey = ImageElement.IsAnimationPlayingPropertyKey;
-
-		public static readonly BindableProperty IsAnimationPlayingProperty = IsAnimationPlayingPropertyKey.BindableProperty;
+		public static readonly BindableProperty IsAnimationPlayingProperty = ImageElement.IsAnimationPlayingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Image>> _platformConfigurationRegistry;
 
@@ -53,7 +51,7 @@ namespace Xamarin.Forms
 		public bool IsAnimationPlaying
 		{
 			get { return (bool)GetValue(IsAnimationPlayingProperty); }
-			private set { SetValue(IsAnimationPlayingPropertyKey, value); }
+			set { SetValue(IsAnimationPlayingProperty, value); }
 		}
 
 		[TypeConverter(typeof(ImageSourceConverter))]
@@ -69,31 +67,7 @@ namespace Xamarin.Forms
 			set { SetValue(IsAnimationAutoPlayProperty, value); }
 		}
 
-		public void StartAnimation()
-		{
-			if (!IsSet(IsAnimationAutoPlayProperty))
-				IsAnimationAutoPlay = false;
-
-			IsAnimationPlaying = true;
-		}
-
-		public void StopAnimation()
-		{
-			if (!IsSet(IsAnimationAutoPlayProperty))
-				IsAnimationAutoPlay = false;
-
-			IsAnimationPlaying = false;
-		}
-
-		public event EventHandler AnimationFinishedPlaying;
-
 		bool IImageController.GetLoadAsAnimation() => ImageElement.GetLoadAsAnimation(this);
-
-		void IImageController.OnAnimationFinishedPlaying()
-		{
-			SetValue(IsAnimationPlayingProperty, false);
-			AnimationFinishedPlaying?.Invoke(this, null);
-		}
 
 		protected override void OnBindingContextChanged()
 		{

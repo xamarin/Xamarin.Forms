@@ -5,7 +5,6 @@ namespace Xamarin.Forms
 	public interface IImageController : IViewController
 	{
 		void SetIsLoading(bool isLoading);
-		void OnAnimationFinishedPlaying();
 		bool GetLoadAsAnimation();
 	}
 }

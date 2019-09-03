@@ -41,9 +41,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsAnimationAutoPlayProperty = ImageElement.IsAnimationAutoPlayProperty;
 
-		internal static readonly BindablePropertyKey IsAnimationPlayingPropertyKey = ImageElement.IsAnimationPlayingPropertyKey;
-
-		public static readonly BindableProperty IsAnimationPlayingProperty = IsAnimationPlayingPropertyKey.BindableProperty;
+		public static readonly BindableProperty IsAnimationPlayingProperty = ImageElement.IsAnimationPlayingProperty;
 
 		public event EventHandler Clicked;
 		public event EventHandler Pressed;
@@ -212,31 +210,7 @@ namespace Xamarin.Forms
 		public bool IsAnimationPlaying
 		{
 			get { return (bool)GetValue(IsAnimationPlayingProperty); }
-			private set { SetValue(IsAnimationPlayingPropertyKey, value); }
-		}
-
-		public void StartAnimation()
-		{
-			if (!IsSet(IsAnimationAutoPlayProperty))
-				IsAnimationAutoPlay = false;
-
-			IsAnimationPlaying = true;
-		}
-
-		public void StopAnimation()
-		{
-			if (!IsSet(IsAnimationAutoPlayProperty))
-				IsAnimationAutoPlay = false;
-
-			IsAnimationPlaying = false;
-		}
-
-		public event EventHandler AnimationFinishedPlaying;
-
-		public void OnAnimationFinishedPlaying()
-		{
-			SetValue(IsAnimationPlayingProperty, false);
-			AnimationFinishedPlaying?.Invoke(this, null);
+			set { SetValue(IsAnimationPlayingProperty, value); }
 		}
 
 		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
@@ -245,12 +219,5 @@ namespace Xamarin.Forms
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
 
 		bool IImageController.GetLoadAsAnimation() => ImageElement.GetLoadAsAnimation(this);
-
-		void IImageController.OnAnimationFinishedPlaying()
-		{
-			SetValue(IsAnimationPlayingProperty, false);
-			AnimationFinishedPlaying?.Invoke(this, null);
-		}
-
 	}
 }
