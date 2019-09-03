@@ -68,13 +68,18 @@
     <Compile Include="BindingUnitTests.cs" />
     <Compile Include="ButtonUnitTest.cs" />
     <Compile Include="CarouselPageTests.cs" />
+    <Compile Include="CarouselViewTests.cs" />
     <Compile Include="CellTests.cs" />
     <Compile Include="ColorUnitTests.cs" />
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
+    <Compile Include="MockDispatcherProvider.cs" />
+    <Compile Include="MockDispatcher.cs" />
+    <Compile Include="DeviceUnitTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="ShellTestBase.cs" />
+    <Compile Include="ShellLifeCycleTests.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
     <Compile Include="CheckBoxUnitTests.cs" />
     <Compile Include="VisualTests.cs" />
@@ -87,6 +92,7 @@
     <Compile Include="MenuUnitTests.cs" />
     <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
+    <Compile Include="RelativeSourceBindingTests.cs" />
     <Compile Include="ShellTests.cs" />
     <Compile Include="SpanTests.cs" />
     <Compile Include="TabIndexTests.cs" />

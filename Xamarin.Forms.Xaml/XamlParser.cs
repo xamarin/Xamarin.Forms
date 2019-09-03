@@ -178,6 +178,7 @@ namespace Xamarin.Forms.Xaml
 							return node;
 						break;
 					case XmlNodeType.Text:
+					case XmlNodeType.CDATA:
 						node = new ValueNode(reader.Value.Trim(), (IXmlNamespaceResolver)reader, ((IXmlLineInfo)reader).LineNumber,
 							((IXmlLineInfo)reader).LinePosition);
 						nodes.Add(node);
@@ -369,26 +370,6 @@ namespace Xamarin.Forms.Xaml
 			var typeArguments = xmlType.TypeArguments;
 			exception = null;
 
-			if (type != null && typeArguments != null)
-			{
-				XamlParseException innerexception = null;
-				var args = typeArguments.Select(delegate(XmlType xmltype) {
-					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out XamlParseException xpe);
-					if (xpe != null)
-					{
-						innerexception = xpe;
-						return null;
-					}
-					return t;
-				}).ToArray();
-				if (innerexception != null)
-				{
-					exception = innerexception;
-					return null;
-				}
-				type = type.MakeGenericType(args);
-			}
-
 #if NETSTANDARD2_0
 			if (type == null)
 			{
@@ -406,6 +387,31 @@ namespace Xamarin.Forms.Xaml
 							
 			if (XamlLoader.FallbackTypeResolver != null)
 				type = XamlLoader.FallbackTypeResolver(potentialTypes, type);
+
+			if (type != null && typeArguments != null)
+			{
+				XamlParseException innerexception = null;
+				var args = typeArguments.Select(delegate(XmlType xmltype) {
+					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out XamlParseException xpe);
+					if (xpe != null)
+					{
+						innerexception = xpe;
+						return null;
+					}
+					return t;
+				}).ToArray();
+				if (innerexception != null)
+				{
+					exception = innerexception;
+					return null;
+				}
+
+				try {
+					type = type.MakeGenericType(args);
+				} catch (InvalidOperationException) {
+					exception = new XamlParseException($"Type {type} is not a GenericTypeDefinition", xmlInfo);
+				}
+			}
 
 			if (type == null)
 				exception = new XamlParseException($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}", xmlInfo);

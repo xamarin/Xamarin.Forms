@@ -157,6 +157,11 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith (typeof(MediaElementRenderer))]
 	internal class _MediaElementRenderer { }
+
+#if !TIZEN4_0
+	[RenderWith(typeof(RefreshViewRenderer))]
+#endif
+	internal class _RefreshViewRenderer { }
 }
 
 

@@ -163,9 +163,45 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				_disposed = true;
+				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
+			
+				if (NavigationPageController != null)
+				{
+					var navController = NavigationPageController;
+
+					navController.PushRequested -= OnPushed;
+					navController.PopRequested -= OnPopped;
+					navController.PopToRootRequested -= OnPoppedToRoot;
+					navController.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
+					navController.RemovePageRequested -= OnRemovePageRequested;
+				}
+
+				if (Current != null)
+				{
+					Current.PropertyChanged -= CurrentOnPropertyChanged;
+				}
+
+				FragmentManager fm = FragmentManager;
+
+				if (!fm.IsDestroyed)
+				{
+					FragmentTransaction trans = fm.BeginTransactionEx();
+					foreach (Fragment fragment in _fragmentStack)
+						trans.RemoveEx(fragment);
+					trans.CommitAllowingStateLossEx();
+					fm.ExecutePendingTransactionsEx();
+				}
+				
+				_toolbar.RemoveView(_titleView);
+				_titleView?.Dispose();
+				_titleView = null;
 
 				if (_titleViewRenderer != null)
 				{
@@ -173,10 +209,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_titleViewRenderer.Dispose();
 					_titleViewRenderer = null;
 				}
-
-				_toolbar.RemoveView(_titleView);
-				_titleView?.Dispose();
-				_titleView = null;
 
 				_toolbar.RemoveView(_titleIconView);
 				_titleIconView?.Dispose();
@@ -187,6 +219,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_toolbarTracker != null)
 				{
 					_toolbarTracker.CollectionChanged -= ToolbarTrackerOnCollectionChanged;
+
+					foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
+						item.PropertyChanged -= OnToolbarItemPropertyChanged;
+
 					_toolbarTracker.Target = null;
 					_toolbarTracker = null;
 				}
@@ -194,13 +230,19 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_toolbar != null)
 				{
 					_toolbar.SetNavigationOnClickListener(null);
+					_toolbar.Menu.Clear();
+
+					RemoveView(_toolbar);
+				
 					_toolbar.Dispose();
 					_toolbar = null;
 				}
 
-				if (_drawerLayout != null && _drawerListener != null)
+				if (_drawerLayout.IsAlive() && _drawerListener.IsAlive())
 				{
 					_drawerLayout.RemoveDrawerListener(_drawerListener);
+
+					RemoveView(_drawerLayout);
 				}
 
 				if (_drawerListener != null)
@@ -235,31 +277,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 						IVisualElementRenderer renderer = Android.Platform.GetRenderer(child);
 						renderer?.Dispose();
-					}
-
-					var navController = NavigationPageController;
-
-					navController.PushRequested -= OnPushed;
-					navController.PopRequested -= OnPopped;
-					navController.PopToRootRequested -= OnPoppedToRoot;
-					navController.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
-					navController.RemovePageRequested -= OnRemovePageRequested;
-				}
-
-				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
-
-				// API only exists on newer android YAY
-				if ((int)Build.VERSION.SdkInt >= 17)
-				{
-					FragmentManager fm = FragmentManager;
-
-					if (!fm.IsDestroyed)
-					{
-						FragmentTransaction trans = fm.BeginTransactionEx();
-						foreach (Fragment fragment in _fragmentStack)
-							trans.RemoveEx(fragment);
-						trans.CommitAllowingStateLossEx();
-						fm.ExecutePendingTransactionsEx();
 					}
 				}
 			}
@@ -310,8 +327,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				oldNavController.RemovePageRequested -= OnRemovePageRequested;
 
 				RemoveAllViews();
-				if (_toolbar != null)
-					AddView(_toolbar);
 			}
 
 			if (e.NewElement != null)
@@ -711,22 +726,24 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			AToolbar oldToolbar = _toolbar;
 
-			if (_titleViewRenderer != null)
-			{
-				Android.Platform.ClearRenderer(_titleViewRenderer.View);
-				_titleViewRenderer = null;
-			}
+			_toolbar.SetNavigationOnClickListener(null);
+			_toolbar.RemoveFromParent();
 
 			_toolbar.RemoveView(_titleView);
 			_titleView = null;
+
+			if (_titleViewRenderer != null)
+			{
+				Android.Platform.ClearRenderer(_titleViewRenderer.View);
+				_titleViewRenderer.Dispose();
+				_titleViewRenderer = null;
+			}
 
 			_toolbar.RemoveView(_titleIconView);
 			_titleIconView = null;
 
 			_imageSource = null;
 
-			_toolbar.RemoveFromParent();
-			_toolbar.SetNavigationOnClickListener(null);
 			_toolbar = null;
 
 			SetupToolbar();
@@ -839,10 +856,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (!removed)
 				{
 					UpdateToolbar();
-					if (_drawerToggle != null && NavigationPageController.StackDepth == 2)
+					if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && NavigationPage.GetHasBackButton(page))
 						AnimateArrowIn();
 				}
-				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2)
+				else if (_drawerToggle != null && NavigationPageController.StackDepth == 2 && NavigationPage.GetHasBackButton(page))
 					AnimateArrowOut();
 
 				AddTransitionTimer(tcs, fragment, FragmentManager, fragmentsToRemove, TransitionDuration, removed);
@@ -900,7 +917,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
 					menuItem.SetEnabled(controller.IsEnabled);
-					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));					
 					menuItem.SetTitleOrContentDescription(item);
 				}
 				else
@@ -949,14 +966,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (isNavigated)
 			{
-				if (toggle != null)
-				{
-					toggle.DrawerIndicatorEnabled = false;
-					toggle.SyncState();
-				}
-
 				if (NavigationPage.GetHasBackButton(currentPage) && !Context.IsDesignerContext())
 				{
+					if (toggle != null)
+					{
+						toggle.DrawerIndicatorEnabled = false;
+						toggle.SyncState();
+					}
+
 					var activity = (global::Android.Support.V7.App.AppCompatActivity)context.GetActivity();
 					var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext);
 					icon.Progress = 1;
@@ -964,6 +981,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 					var prevPage = Element.Peek(1);
 					_defaultNavigationContentDescription = bar.SetNavigationContentDescription(prevPage, _defaultNavigationContentDescription);
+				}
+				else if (_masterDetailPage != null)
+				{
+					toggle.DrawerIndicatorEnabled = _masterDetailPage.ShouldShowToolbarButton();
+					toggle.SyncState();
 				}
 			}
 			else
@@ -1037,6 +1059,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_ = this.ApplyDrawableAsync(currentPage, NavigationPage.TitleIconImageSourceProperty, Context, drawable =>
 				{
 					_titleIconView.SetImageDrawable(drawable);
+					FastRenderers.AutomationPropertiesProvider.AccessibilitySettingsChanged(_titleIconView, source);
 				});
 			}
 		}

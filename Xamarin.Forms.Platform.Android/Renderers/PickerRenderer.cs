@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isDisposed;
 		TextColorSwitcher _textColorSwitcher;
 		int _originalHintTextColor;
+		EntryAccessibilityDelegate _pickerAccessibilityDelegate;
 
 		public PickerRenderer(Context context) : base(context)
 		{
@@ -41,6 +42,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_isDisposed = true;
 				((INotifyCollectionChanged)Element.Items).CollectionChanged -= RowsCollectionChanged;
+
+				_pickerAccessibilityDelegate?.Dispose();
+				_pickerAccessibilityDelegate = null;
 			}
 
 			base.Dispose(disposing);
@@ -63,6 +67,8 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var textField = CreateNativeControl();
 
+					textField.SetAccessibilityDelegate(_pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
+
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
 
@@ -74,6 +80,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -87,6 +94,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -179,6 +188,14 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePicker();
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				Control.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+		}
+
 		void UpdateFont()
 		{
 			Control.Typeface = Element.ToTypeface();
@@ -203,6 +220,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (oldText != Control.Text)
 				((IVisualElementController)Element).NativeSizeChanged();
+
+			_pickerAccessibilityDelegate.ValueText = Control.Text;
 		}
 
 		void UpdateTextColor()

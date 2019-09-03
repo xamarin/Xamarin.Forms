@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollToGalleries;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class ScrollToGallery : ContentPage
 	{
@@ -17,9 +19,9 @@
 					{
 						descriptionLabel,
 						GalleryBuilder.NavButton("ScrollTo Index (Code, Horizontal List)", () =>
-							new ScrollToCodeGallery(ListItemsLayout.HorizontalList), Navigation),
+							new ScrollToCodeGallery(ListItemsLayout.Horizontal), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Index (Code, Vertical List)", () =>
-							new ScrollToCodeGallery(ListItemsLayout.VerticalList), Navigation),
+							new ScrollToCodeGallery(ListItemsLayout.Vertical), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Index (Code, Horizontal Grid)", () =>
 								new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal)),
 							Navigation),
@@ -28,17 +30,23 @@
 							Navigation),
 
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Horizontal List)", () =>
-							new ScrollToCodeGallery(ListItemsLayout.HorizontalList, ScrollToMode.Element,
+							new ScrollToCodeGallery(ListItemsLayout.Horizontal, ScrollToMode.Element,
 								ExampleTemplates.ScrollToItemTemplate), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Vertical List)", () =>
-							new ScrollToCodeGallery(ListItemsLayout.VerticalList, ScrollToMode.Element,
+							new ScrollToCodeGallery(ListItemsLayout.Vertical, ScrollToMode.Element,
 								ExampleTemplates.ScrollToItemTemplate), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Horizontal Grid)", () =>
 							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal),
 								ScrollToMode.Element, ExampleTemplates.ScrollToItemTemplate), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Vertical Grid)", () =>
 							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical),
-								ScrollToMode.Element, ExampleTemplates.ScrollToItemTemplate), Navigation)
+								ScrollToMode.Element, ExampleTemplates.ScrollToItemTemplate), Navigation),
+
+
+						GalleryBuilder.NavButton("ScrollTo Index (Grouped)", () =>
+							new ScrollToGroup(), Navigation)
+						
+						
 					}
 				}
 			};

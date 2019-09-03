@@ -83,6 +83,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
+
+				SetOnClickListener(null);
+				SetOnTouchListener(null);
+				OnFocusChangeListener = null;
 
 				ImageElementManager.Dispose(this);
 
@@ -94,11 +102,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-
-					if (Android.Platform.GetRenderer(Element) == this)
+					if (Platform.GetRenderer(Element) == this)
 					{
-						Element.ClearValue(Android.Platform.RendererProperty);
+						Element.ClearValue(Platform.RendererProperty);
 					}
 
 					Element = null;
@@ -196,7 +202,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if(Drawable != null)
 			{
-				if ((int)Build.VERSION.SdkInt >= 18 && backgroundDrawable != null)
+				if ((int)Forms.SdkInt >= 18 && backgroundDrawable != null)
 				{
 					var outlineBounds = backgroundDrawable.GetPaddingBounds(canvas.Width, canvas.Height);
 					var width = (float)MeasuredWidth;

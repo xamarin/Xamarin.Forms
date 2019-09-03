@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public SnapManager(ItemsView itemsView, RecyclerView recyclerView)
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(SnapManager));
+			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(SnapManager));
 			_recyclerView = recyclerView;
 			_itemsView = itemsView;
 		}
@@ -76,6 +76,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Use center snapping as the default
 			return new CenterSnapHelper();
+		}
+
+		internal SnapHelper GetCurrentSnapHelper()
+		{
+			return _snapHelper;
 		}
 
 		void DetachSnapHelper()

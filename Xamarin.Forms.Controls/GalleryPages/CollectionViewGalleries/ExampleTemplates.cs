@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
@@ -55,7 +56,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				{
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition { Height = GridLength.Auto } },
 					WidthRequest = 280,
-					HeightRequest = 310,
+					HeightRequest = 310
 				};
 
 				var image = new Image
@@ -89,6 +90,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate CarouselXamlTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				return new CarouselViewGalleries.ExampleTemplateCarousel();
+			});
+		}
+
 		public static DataTemplate CarouselTemplate()
 		{
 			return new DataTemplate(() =>
@@ -112,15 +121,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
 
-				var caption = new Label
+				var caption = new Button
 				{
 					BackgroundColor = Color.Gray,
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center,
 					Margin = new Thickness(5)
 				};
 
-				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
+				caption.SetBinding(Button.TextProperty, new Binding("Caption"));
+				caption.SetBinding(Button.AutomationIdProperty, new Binding("Caption"));
+				caption.Clicked += (sender, e) =>
+				{
+					App.Current.MainPage.DisplayAlert("Button works", (sender as Button).Text, "Ok");
+				};
 
 				grid.Children.Add(image);
 				grid.Children.Add(caption);
@@ -302,6 +315,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate RandomSizeTemplate()
+		{
+			var indexHeightConverter = new IndexRequestRandomConverter(50, 150);
+			var indexWidthConverter = new IndexRequestRandomConverter(50, 150);
+			var colorConverter = new IndexColorConverter();
+
+			return new DataTemplate(() =>
+			{
+				var layout = new Frame();
+
+				layout.SetBinding(VisualElement.HeightRequestProperty, new Binding("Index", converter: indexHeightConverter));
+				layout.SetBinding(VisualElement.WidthRequestProperty, new Binding("Index", converter: indexWidthConverter));
+				layout.SetBinding(VisualElement.BackgroundColorProperty, new Binding("Index", converter: colorConverter));
+
+				var label = new Label { FontSize = 30 };
+				label.SetBinding(Label.TextProperty, new Binding("Index"));
+
+				layout.Content = label;
+
+				return layout;
+			});
+		}
+
 		public static DataTemplate DynamicTextTemplate()
 		{
 			return new DataTemplate(() =>
@@ -384,6 +420,50 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate SpacingTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var templateLayout = new Grid
+				{
+					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition() },
+					WidthRequest = 120,
+					HeightRequest = 100,
+					BackgroundColor = Color.BlanchedAlmond
+				};
+
+				var image = new Image
+				{
+					HeightRequest = 100,
+					WidthRequest = 100,
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center,
+					Margin = new Thickness(2, 5, 2, 2),
+					AutomationId = "photo"
+				};
+
+				image.SetBinding(Image.SourceProperty, new Binding("Image"));
+
+				var caption = new Label
+				{
+					FontSize = 12,
+					HorizontalOptions = LayoutOptions.Fill,
+					HorizontalTextAlignment = TextAlignment.Center,
+					VerticalTextAlignment = TextAlignment.Center,
+					Margin = new Thickness(2, 0, 2, 2)
+				};
+
+				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
+
+				templateLayout.Children.Add(image);
+				templateLayout.Children.Add(caption);
+
+				Grid.SetRow(caption, 1);
+
+				return templateLayout;
+			});
+		}
+
 		static void More_Clicked(object sender, EventArgs e)
 		{
 			throw new NotImplementedException();
@@ -407,6 +487,34 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				var index = (int)value;
 
 				return index < _cutoff ? _lowValue : (object)_highValue;
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+		}
+
+		class IndexRequestRandomConverter : IValueConverter
+		{
+			readonly int _lowValue;
+			readonly int _highValue;
+			readonly Random _random;
+			readonly Dictionary<int, int> _dictionary = new Dictionary<int, int>();
+
+			public IndexRequestRandomConverter(int lowValue, int highValue)
+			{
+				_lowValue = lowValue;
+				_highValue = highValue;
+				_random = new Random(DateTime.UtcNow.Millisecond);
+			}
+
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				var index = (int)value;
+				if (!_dictionary.ContainsKey(index))
+				{
+					_dictionary[index] = _random.Next(_lowValue, _highValue);
+				}
+
+				return _dictionary[index];
 			}
 
 			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();

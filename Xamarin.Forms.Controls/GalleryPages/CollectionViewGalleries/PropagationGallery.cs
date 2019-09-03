@@ -17,7 +17,10 @@
 					{
 						descriptionLabel,
 						GalleryBuilder.NavButton("Propagate FlowDirection", () =>
-							new PropagateCodeGallery(ListItemsLayout.VerticalList), Navigation),
+							new PropagateCodeGallery(ListItemsLayout.Vertical), Navigation),
+
+						GalleryBuilder.NavButton("Propagate FlowDirection in EmptyView", () =>
+							new PropagateCodeGallery(ListItemsLayout.Vertical, 0), Navigation),
 					}
 				}
 			};

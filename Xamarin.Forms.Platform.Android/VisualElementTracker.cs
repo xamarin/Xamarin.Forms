@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// If we're running sufficiently new Android, we have to make sure to update the ClipBounds to
 			// match the new size of the ViewGroup
-			if ((int)Build.VERSION.SdkInt >= 18)
+			if ((int)Forms.SdkInt >= 18)
 			{
 				UpdateClipToBounds();
 			}
@@ -115,8 +115,6 @@ namespace Xamarin.Forms.Platform.Android
 			//On Width or Height changes, the anchors needs to be updated
 			UpdateAnchorX();
 			UpdateAnchorY();
-
-			MaybeRequestLayout();
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -150,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == VisualElement.XProperty.PropertyName || e.PropertyName == VisualElement.YProperty.PropertyName || e.PropertyName == VisualElement.WidthProperty.PropertyName ||
 				e.PropertyName == VisualElement.HeightProperty.PropertyName)
-				MaybeRequestLayout();
+				_renderer.View.MaybeRequestLayout();
 			else if (e.PropertyName == VisualElement.AnchorXProperty.PropertyName)
 				UpdateAnchorX();
 			else if (e.PropertyName == VisualElement.AnchorYProperty.PropertyName)
@@ -184,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 			_batchedProperties.Clear();
 
 			if (_layoutNeeded)
-				MaybeRequestLayout();
+				_renderer.View.MaybeRequestLayout();
 			_layoutNeeded = false;
 		}
 
@@ -197,16 +195,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateClipToBounds();
-		}
-
-		void MaybeRequestLayout()
-		{
-			var isInLayout = false;
-			if ((int)Build.VERSION.SdkInt >= 18)
-				isInLayout = _renderer.View.IsInLayout;
-
-			if (!isInLayout && !_renderer.View.IsLayoutRequested)
-				_renderer.View.RequestLayout();
 		}
 
 		void RendererOnElementChanged(object sender, VisualElementChangedEventArgs args)
@@ -292,7 +280,7 @@ namespace Xamarin.Forms.Platform.Android
 			bool shouldClip = layout.IsClippedToBounds;
 
 			// setClipBounds is only available in API 18 +
-			if ((int)Build.VERSION.SdkInt >= 18)
+			if ((int)Forms.SdkInt >= 18)
 			{
 				if (!(_renderer.View is ViewGroup viewGroup))
 				{
@@ -311,7 +299,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (!(_renderer.View.Parent is ViewGroup parent))
 					return;
 
-				if ((int)Build.VERSION.SdkInt >= 18 && parent.ClipChildren == shouldClip)
+				if ((int)Forms.SdkInt >= 18 && parent.ClipChildren == shouldClip)
 					return;
 
 				parent.SetClipChildren(shouldClip);

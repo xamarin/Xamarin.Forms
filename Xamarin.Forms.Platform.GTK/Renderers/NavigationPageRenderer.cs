@@ -158,9 +158,14 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			if (Widget?.Parent is EventBox parent)
 			{
-				parent.VisibleWindow = Page.CurrentPage?.Parent is Page parentPage
-					? parentPage.BackgroundImageSource.IsEmpty
-					: true;
+				if (Page.CurrentPage?.Parent is Page parentPage && parentPage.BackgroundImageSource != null)
+				{
+					parent.VisibleWindow = parentPage.BackgroundImageSource.IsEmpty;
+				}
+				else
+				{
+					parent.VisibleWindow = true;
+				}
 			}
 		}
 
@@ -248,6 +253,10 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			if (_currentPage != null)
 			{
 				_currentPage.PropertyChanged += OnCurrentPagePropertyChanged;
+				if (_toolbarTracker != null)
+				{
+					_toolbarTracker.ResetToolBar();
+				}
 			}
 
 			UpdateTitle();
