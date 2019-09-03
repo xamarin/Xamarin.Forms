@@ -125,7 +125,7 @@ namespace Xamarin.Forms
 		/// </summary>
 		public static void Run(this ICommand command)
 		{
-			if (command.CanExecute(null))
+			if (command?.CanExecute(null) == true)
 			{
 				command.Execute(null);
 			}
@@ -143,7 +143,7 @@ namespace Xamarin.Forms
 		/// </param>
 		public static void Run(this ICommand command, object parameter)
 		{
-			if (command.CanExecute(parameter))
+			if (command?.CanExecute(parameter) == true)
 			{
 				command.Execute(parameter);
 			}

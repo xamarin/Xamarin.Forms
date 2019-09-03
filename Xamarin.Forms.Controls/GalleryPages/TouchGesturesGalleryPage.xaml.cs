@@ -81,5 +81,10 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			CollectionViewGrid.IsVisible = false;
 			ScrollViewGrid.IsVisible = true;
 		}
+
+		void LongPressGestureRecognizer_OnLongPressed(object sender, EventArgs e)
+		{
+			DisplayAlert(null, "LongPressed", "OK");
+		}
 	}
 }

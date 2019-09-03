@@ -5,7 +5,7 @@ namespace Xamarin.Forms
 	[Flags]
 	public enum TouchState
 	{
-		Unknown = 0 << 0,
+		Default = 0 << 0,
 		Pressed = 1 << 1,
 		Released = 1 << 2,
 		Move = 1 << 3,

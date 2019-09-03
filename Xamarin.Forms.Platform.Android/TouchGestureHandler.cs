@@ -98,21 +98,17 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.HoverMove:
 					return TouchState.Hover;
 
+				case MotionEventActions.PointerIdMask:
+				case MotionEventActions.PointerIdShift:
 				case MotionEventActions.Mask:
-					return TouchState.Unknown;
-
 				case MotionEventActions.Move:
 					return TouchState.Move;
 
 				case MotionEventActions.Outside:
 					return TouchState.Released;
 
-				case MotionEventActions.PointerIdMask:
-				case MotionEventActions.PointerIdShift:
-					return TouchState.Unknown;
-
 				default:
-					return TouchState.Unknown;
+					return TouchState.Default;
 			}
 		}
 	}

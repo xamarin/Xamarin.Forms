@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 			switch (state)
 			{
 				case UIGestureRecognizerState.Possible:
-					return TouchState.Unknown;
+					return TouchState.Default;
 				case UIGestureRecognizerState.Began:
 					return TouchState.Pressed;
 				case UIGestureRecognizerState.Changed:
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.iOS
 				case UIGestureRecognizerState.Failed:
 					return TouchState.Failed;
 				default:
-					return TouchState.Unknown;
+					return TouchState.Default;
 			}
 		}
 
