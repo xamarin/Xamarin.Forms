@@ -114,8 +114,8 @@ namespace Xamarin.Forms.Build.Tasks
 						var ret = Instruction.Create(OpCodes.Ret);
 						il.Emit(OpCodes.Ldarg_0);
 						MethodReference baseCtor;
-						if (typeDef.BaseType.Resolve().GetConstructors().FirstOrDefault(c => c.HasParameters && c.Parameters.Count == 1 && c.Parameters[0].Name == "useCompiledXaml") != null) {
-							baseCtor = module.ImportReference(typeDef.BaseType.Resolve().GetConstructors().First(c => c.HasParameters && c.Parameters.Count == 1 && c.Parameters[0].Name == "useCompiledXaml"));
+						if (typeDef.BaseType.Resolve().GetConstructors().FirstOrDefault(c => c.HasParameters && c.Parameters.Count == 1 && c.Parameters[0].Name == "useCompiledXaml") is MethodDefinition baseCtorDef) {
+							baseCtor = module.ImportReference(baseCtorDef);
 							baseCtor = module.ImportReference(baseCtor.ResolveGenericParameters(typeDef.BaseType, module));
 							il.Emit(OpCodes.Ldarg_1);
 						}
