@@ -79,9 +79,9 @@ namespace Xamarin.Forms.Controls.Issues
 				Source = "ie_retro.gif",
 				HorizontalOptions = LayoutOptions.Start
 			};
-
+						
 			_animatedImageLabel = new Label {
-				Text = "Animated image.",
+				Text = "Animated image (if this image isn't animating make sure you are using Fast Renderers).",
 				FontSize = 12,
 				FontAttributes = FontAttributes.Bold,
 				Margin = new Thickness(0, 12, 0, 12)
@@ -189,7 +189,7 @@ namespace Xamarin.Forms.Controls.Issues
 							_referenceImageLabel,
 							_referenceImage,
 							_animatedImageLabel,
-							_animatedImage,
+							//_animatedImage,
 							_animatedImageButton
 						}
 					}

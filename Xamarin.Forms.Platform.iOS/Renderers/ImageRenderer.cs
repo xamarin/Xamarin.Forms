@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					var imageView = new FormsUIImageView(RectangleF.Empty);
+					var imageView = new FormsUIImageView();
 					imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 					imageView.ClipsToBounds = true;
 					SetNativeControl(imageView);

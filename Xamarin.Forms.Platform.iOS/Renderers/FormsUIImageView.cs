@@ -1,5 +1,6 @@
 ﻿using CoreGraphics;
 using UIKit;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -9,8 +10,20 @@ namespace Xamarin.Forms.Platform.iOS
 		FormsCAKeyFrameAnimation _animation;
 		bool _autoPlay;
 
-		public FormsUIImageView(CGRect frame) : base(frame)
+		public FormsUIImageView() : base(RectangleF.Empty)
 		{
+		}
+
+		public override UIImage Image
+		{
+			get
+			{
+				return base.Image;
+			}
+			set
+			{
+				base.Image = value;
+			}
 		}
 
 		public override CGSize SizeThatFits(CGSize size)

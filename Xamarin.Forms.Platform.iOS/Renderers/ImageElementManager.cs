@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 
 #if __MOBILE__
-			if (renderer.Control is FormsUIImageView imageView)
+			if (renderer.GetImage() is FormsUIImageView imageView && imageView.Animation != null)
 			{
 				imageView.Animation.AnimationStopped -= OnAnimationStopped;
 				imageView.Animation.Dispose();
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 
-			if (renderer.Control is FormsUIImageView imageView &&
+			if (renderer.GetImage() is FormsUIImageView imageView &&
 				renderer.Element is IImageElement imageElement &&
 				renderer.Element is IImageController imageController)
 			{

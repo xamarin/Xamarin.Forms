@@ -63,6 +63,9 @@ namespace Xamarin.Forms.Platform.Android
 			await TryUpdateBitmap(e.OldElement);
 
 			UpdateAspect();
+
+			if (e.NewElement is IImageController imageController && imageController.GetLoadAsAnimation())
+				UpdateAnimations();
 		}
 
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -73,6 +76,13 @@ namespace Xamarin.Forms.Platform.Android
 				await TryUpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
+			else if (e.IsOneOf(Image.IsAnimationAutoPlayProperty, Image.IsAnimationPlayingProperty))
+				UpdateAnimations();
+		}
+
+		void UpdateAnimations()
+		{
+			Log.Warning(nameof(ImageRenderer), "Animations do not work with Legacy Renderers. Please remove the \"UseLegacyRenderers\" flag or change your renderer to inherit from the fast image renderer.");
 		}
 
 		void UpdateAspect()
