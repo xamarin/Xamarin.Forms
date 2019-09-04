@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 			return _defaultContentDescription;
 		}
 
-		public static bool? SetFocusable(this global::Android.Views.View Control, Element Element, bool? _defaultFocusable = null)
+		public static bool? SetFocusable(this global::Android.Views.View Control, Element Element, bool? _defaultFocusable = null, ImportantForAccessibility? _defaultImportantForAccessibility = null)
 		{
 			if (Element == null)
 				return _defaultFocusable;
@@ -32,14 +32,16 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_defaultFocusable.HasValue)
 			{
 				_defaultFocusable = Control.Focusable;
-				Control.ImportantForAccessibility = ImportantForAccessibility.Auto;
 			}
-			else
+			if (!_defaultImportantForAccessibility.HasValue)
 			{
-				Control.ImportantForAccessibility = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable) ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
+				_defaultImportantForAccessibility = Control.ImportantForAccessibility;
 			}
 
-			Control.Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			bool? isInAccessibleTree = (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
+   bool focusable = (bool)(isInAccessibleTree ?? _defaultFocusable);
+   Control.Focusable = focusable;
+				Control.ImportantForAccessibility = !isInAccessibleTree.HasValue? (ImportantForAccessibility) _defaultImportantForAccessibility : (bool) isInAccessibleTree ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
 
 			return _defaultFocusable;
 		}
