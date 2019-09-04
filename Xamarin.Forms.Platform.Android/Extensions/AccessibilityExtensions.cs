@@ -39,9 +39,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			bool? isInAccessibleTree = (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
-   bool focusable = (bool)(isInAccessibleTree ?? _defaultFocusable);
-   Control.Focusable = focusable;
-				Control.ImportantForAccessibility = !isInAccessibleTree.HasValue? (ImportantForAccessibility) _defaultImportantForAccessibility : (bool) isInAccessibleTree ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
+			Control.Focusable = (bool)(isInAccessibleTree ?? _defaultFocusable);
+			Control.ImportantForAccessibility = !isInAccessibleTree.HasValue ? (ImportantForAccessibility)_defaultImportantForAccessibility : (bool)isInAccessibleTree ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
 
 			return _defaultFocusable;
 		}
@@ -119,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Element == null)
 				return;
-			
+
 			var elemValue = ConcatenateNameAndHint(Element);
 
 			if (string.IsNullOrWhiteSpace(elemValue))
