@@ -15,6 +15,7 @@ using Xamarin.Forms.Platform.Android;
 using Math = System.Math;
 using APolyline = Android.Gms.Maps.Model.Polyline;
 using APolygon = Android.Gms.Maps.Model.Polygon;
+using ACircle = Android.Gms.Maps.Model.Circle;
 
 namespace Xamarin.Forms.Maps.Android
 {
@@ -31,6 +32,7 @@ namespace Xamarin.Forms.Maps.Android
 		List<Marker> _markers;
 		List<APolyline> _polylines;
 		List<APolygon> _polygons;
+		List<ACircle> _circles;
 
 		public MapRenderer(Context context) : base(context)
 		{
@@ -504,6 +506,11 @@ namespace Xamarin.Forms.Maps.Android
 					PolygonOnPropertyChanged(polygon, e);
 					break;
 				}
+				case Circle circle:
+				{
+					CircleOnPropertyChanged(circle, e);
+					break;
+				}
 			}
 		}
 
@@ -522,17 +529,14 @@ namespace Xamarin.Forms.Maps.Android
 					AddMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					if (_polylines != null)
-					{
-						foreach (var nativePolyline in _polylines)
-						{
-							nativePolyline.Remove();
+					_polylines?.ForEach(p => p.Remove());
+					_polylines = null;
 
-							var formsPolyline = GetFormsPolyline(nativePolyline);
-							if (formsPolyline != null)
-								formsPolyline.PropertyChanged -= MapElementPropertyChanged;
-						}
-					}
+					_polygons?.ForEach(p => p.Remove());
+					_polygons = null;
+
+					_circles?.ForEach(c => c.Remove());
+					_circles = null;
 
 					AddMapElements(Element.MapElements);
 					break;
@@ -553,6 +557,9 @@ namespace Xamarin.Forms.Maps.Android
 					case Polygon polygon:
 						AddPolygon(polygon);
 						break;
+					case Circle circle:
+						AddCircle(circle);
+						break;
 				}
 			}
 		}
@@ -570,6 +577,9 @@ namespace Xamarin.Forms.Maps.Android
 						break;
 					case Polygon polygon:
 						RemovePolygon(polygon);
+						break;
+					case Circle circle:
+						RemoveCircle(circle);
 						break;
 				}
 			}
@@ -779,6 +789,112 @@ namespace Xamarin.Forms.Maps.Android
 		}
 
 		#endregion
+
+		#region Circles
+
+		protected virtual CircleOptions CreateCircleOptions(Circle circle)
+		{
+			var opts = new CircleOptions()
+				.InvokeCenter(new LatLng(circle.Center.Latitude, circle.Center.Longitude))
+				.InvokeRadius(circle.Radius.Meters)
+				.InvokeStrokeWidth(circle.StrokeWidth);
+
+			if (!circle.StrokeColor.IsDefault)
+				opts.InvokeStrokeColor(circle.StrokeColor.ToAndroid());
+
+			if (!circle.FillColor.IsDefault)
+				opts.InvokeFillColor(circle.FillColor.ToAndroid());
+
+			return opts;
+		}
+
+		protected ACircle GetNativeCircle(Circle circle)
+		{
+			return _circles?.Find(c => c.Id == (string)circle.MapElementId);
+		}
+
+		protected Circle GetFormsCircle(ACircle circle)
+		{
+			Circle targetCircle = null;
+
+			for (int i = 0; i < Element.MapElements.Count; i++)
+			{
+				var mapElement = Element.MapElements[i];
+				if ((string)mapElement.MapElementId == circle.Id)
+				{
+					targetCircle = mapElement as Circle;
+					break;
+				}
+			}
+
+			return targetCircle;
+		}
+
+		void CircleOnPropertyChanged(Circle formsCircle, PropertyChangedEventArgs e)
+		{
+			var nativeCircle = GetNativeCircle(formsCircle);
+
+			if (nativeCircle == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == Circle.FillColorProperty.PropertyName)
+			{
+				nativeCircle.FillColor = formsCircle.FillColor.ToAndroid();
+			}
+			else if (e.PropertyName == Circle.CenterProperty.PropertyName)
+			{
+				nativeCircle.Center = new LatLng(formsCircle.Center.Latitude, formsCircle.Center.Longitude);
+			}
+			else if (e.PropertyName == Circle.RadiusProperty.PropertyName)
+			{
+				nativeCircle.Radius = formsCircle.Radius.Meters;
+			}
+			else if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				nativeCircle.StrokeColor = formsCircle.StrokeColor.ToAndroid();
+			}
+			else if(e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				nativeCircle.StrokeWidth = formsCircle.StrokeWidth;
+			}
+		}
+
+		void AddCircle(Circle circle)
+		{
+			var map = NativeMap;
+			if (map == null)
+			{
+				return;
+			}
+
+			if (_circles == null)
+			{
+				_circles = new List<ACircle>();
+			}
+
+			var options = CreateCircleOptions(circle);
+			var nativeCircle = map.AddCircle(options);
+
+			circle.MapElementId = nativeCircle.Id;
+
+			_circles.Add(nativeCircle);
+		}
+
+		void RemoveCircle(Circle circle)
+		{
+			var native = GetNativeCircle(circle);
+
+			if (native != null)
+			{
+				native.Remove();
+				_circles.Remove(native);
+			}
+		}
+
+		#endregion
+
 		void IOnMapReadyCallback.OnMapReady(GoogleMap map)
 		{
 			NativeMap = map;

@@ -214,6 +214,9 @@ namespace Xamarin.Forms.Maps.UWP
 					case Polygon polygon:
 						nativeMapElement = LoadPolygon(polygon);
 						break;
+					case Circle circle:
+						nativeMapElement = LoadCircle(circle);
+						break;
 				}
 
 				Control.MapElements.Add(nativeMapElement);
@@ -241,6 +244,9 @@ namespace Xamarin.Forms.Maps.UWP
 					break;
 				case Polygon polygon:
 					OnPolygonPropertyChanged(polygon, e);
+					break;
+				case Circle circle:
+					OnCirclePropertyChanged(circle, e);
 					break;
 			}
 		}
@@ -339,6 +345,83 @@ namespace Xamarin.Forms.Maps.UWP
 			else if (e.PropertyName == nameof(Polygon.Geopath))
 			{
 				mapPolygon.Path = PositionsToGeopath(polygon.Geopath);
+			}
+		}
+
+		#endregion
+
+		#region Circles
+
+		protected virtual MapPolygon LoadCircle(Circle circle)
+		{
+			return new MapPolygon()
+			{
+				Path = GenerateCirclePath(circle),
+				StrokeColor = circle.StrokeColor.IsDefault ? Colors.Black : circle.StrokeColor.ToWindowsColor(),
+				StrokeThickness = circle.StrokeWidth,
+				FillColor = circle.FillColor.ToWindowsColor()
+			};
+		}
+
+		Geopath GenerateCirclePath(Circle circle)
+		{
+			const double EarthRadiusKm = 6371;
+
+			var positions = new List<Position>();
+			double latitude = DegreesToRadians(circle.Center.Latitude);
+			double longitude = DegreesToRadians(circle.Center.Longitude);
+			double distance = circle.Radius.Kilometers / EarthRadiusKm;
+
+			for (int angle = 0; angle <= 360; angle++)
+			{
+				double angleInRadians = DegreesToRadians(angle);
+				double latitudeInRadians = Math.Asin(Math.Sin(latitude) * Math.Cos(distance) +
+				                                     Math.Cos(latitude) * Math.Sin(distance) * Math.Cos(angleInRadians));
+				double longitudeInRadians =
+					longitude + Math.Atan2(Math.Sin(angleInRadians) * Math.Sin(distance) * Math.Cos(latitude),
+						Math.Cos(distance) - Math.Sin(latitude) * Math.Sin(latitudeInRadians));
+
+				positions.Add(new Position(RadiansToDegrees(latitudeInRadians), RadiansToDegrees(longitudeInRadians)));
+			}
+
+			return PositionsToGeopath(positions);
+		}
+
+		double DegreesToRadians(double degrees)
+		{
+			return degrees * Math.PI / 180.0;
+		}
+
+		double RadiansToDegrees(double radians)
+		{
+			return radians / Math.PI * 180.0;
+		}
+
+		void OnCirclePropertyChanged(Circle circle, PropertyChangedEventArgs e)
+		{
+			var mapPolygon = (MapPolygon)circle.MapElementId;
+
+			if (mapPolygon == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				mapPolygon.StrokeColor = circle.StrokeColor.IsDefault ? Colors.Black : circle.StrokeColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				mapPolygon.StrokeThickness = circle.StrokeWidth;
+			}
+			else if (e.PropertyName == Circle.FillColorProperty.PropertyName)
+			{
+				mapPolygon.FillColor = circle.FillColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == Circle.CenterProperty.PropertyName ||
+			         e.PropertyName == Circle.RadiusProperty.PropertyName)
+			{
+				mapPolygon.Path = GenerateCirclePath(circle);
 			}
 		}
 
