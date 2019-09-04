@@ -22,6 +22,9 @@ namespace Xamarin.Forms.Platform.Android
 			set { ShellItem = value; }
 		}
 
+		[Obsolete("Destroyed event is obsolete as of version 4.2.0.")]
+		public event EventHandler Destroyed;	
+		
 		#endregion IShellItemRenderer
 
 		readonly Dictionary<Element, IShellObservableFragment> _fragmentMap = new Dictionary<Element, IShellObservableFragment>();
@@ -78,6 +81,13 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual IShellObservableFragment CreateFragmentForPage(Page page)
 		{
 			return ShellContext.CreateFragmentForPage(page);
+		}
+
+		public override void OnDestroy()
+		{
+			base.OnDestroy();
+
+			Destroyed?.Invoke(this, EventArgs.Empty);
 		}
 
 		void IDisposable.Dispose()

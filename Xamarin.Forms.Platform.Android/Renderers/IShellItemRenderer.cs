@@ -8,5 +8,8 @@ namespace Xamarin.Forms.Platform.Android
 		Fragment Fragment { get; }
 
 		ShellItem ShellItem { get; set; }
+
+		[Obsolete("Destroyed event is obsolete as of version 4.2.0.")]
+		event EventHandler Destroyed;
 	}
 }

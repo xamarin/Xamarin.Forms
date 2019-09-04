@@ -2,7 +2,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
-using Android.Support.V4.Widget;
 using Android.Views;
 using System;
 using System.Collections.Specialized;
@@ -11,7 +10,6 @@ using System.Linq;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using AView = Android.Views.View;
 using Fragment = Android.Support.V4.App.Fragment;
-using LP = Android.Views.ViewGroup.LayoutParams;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
@@ -213,8 +211,19 @@ namespace Xamarin.Forms.Platform.Android
 			AnimationFinished?.Invoke(this, e);
 		}
 
-		protected virtual void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
+		[Obsolete("OnItemsCollectionChagned is obsolete as of version 4.2.0. Please use OnItemsCollectionChanged instead.")]
+		protected virtual void OnItemsCollectionChagned(object sender, NotifyCollectionChangedEventArgs e)
+		{
+		}
+
+		protected virtual void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
 			_tablayout.Visibility = ShellSection.Items.Count > 1 ? ViewStates.Visible : ViewStates.Gone;
+
+#pragma warning disable 618
+			OnItemsCollectionChagned(sender, e);
+#pragma warning restore 618
+		}
 
 		protected virtual void OnShellItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{

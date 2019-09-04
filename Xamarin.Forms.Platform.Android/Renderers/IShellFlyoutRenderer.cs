@@ -1,9 +1,8 @@
-using System;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public interface IShellFlyoutRenderer : IDisposable
+	public interface IShellFlyoutRenderer
 	{
 		AView AndroidView { get; }
 

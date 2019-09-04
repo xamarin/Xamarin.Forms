@@ -358,7 +358,9 @@ namespace Xamarin.Forms.Platform.Android
 				Element.PropertyChanged -= OnElementPropertyChanged;
 				Element.SizeChanged -= OnElementSizeChanged;
 
-				_flyoutRenderer.Dispose();
+				// This cast is necessary because IShellFlyoutRenderer doesn't implement IDisposable
+				(_flyoutRenderer as IDisposable)?.Dispose();
+
 				_currentRenderer.Dispose();
 
 				Element = null;
