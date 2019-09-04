@@ -118,11 +118,8 @@ namespace Xamarin.Forms
 		}
 	}
 
-	public static class CommandExtensions
+	internal static class CommandExtensions
 	{
-		/// <summary>
-		///     Calls command checking CanExecute method
-		/// </summary>
 		public static void Run(this ICommand command)
 		{
 			if (command?.CanExecute(null) == true)
@@ -131,16 +128,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		/// <summary>
-		///     Calls command checking CanExecute method
-		/// </summary>
-		/// <param name="command">
-		///     ICommand
-		/// </param>
-		/// <param name="parameter">
-		///     Data used by the command. If the command does not require data to be passed, this object can be
-		///     set to null.
-		/// </param>
 		public static void Run(this ICommand command, object parameter)
 		{
 			if (command?.CanExecute(parameter) == true)

@@ -6,6 +6,7 @@ using System.Text;
 using CoreGraphics;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -54,11 +55,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		TouchEventArgs CreateTouchEventArgs(NSSet touches, UIEvent evt, UIGestureRecognizerState state)
 		{
-			return new TouchEventArgs((int)touches.Count, GetTouchState(touches, evt, state), GetTouchPoints(touches, evt));
+			var touchState = GetTouchState(state);
+			return new TouchEventArgs((int)touches.Count, touchState, GetTouchPoints(touches, touchState));
 		}
 
 
-		TouchState GetTouchState(NSSet touches, UIEvent evt, UIGestureRecognizerState state)
+		TouchState GetTouchState(UIGestureRecognizerState state)
 		{
 			switch (state)
 			{
@@ -79,7 +81,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		IReadOnlyList<TouchPoint> GetTouchPoints(NSSet touches, UIEvent evt)
+		IReadOnlyList<TouchPoint> GetTouchPoints(NSSet touches, TouchState touchState)
 		{
 			var points = new List<TouchPoint>((int)touches.Count);
 
@@ -88,8 +90,10 @@ namespace Xamarin.Forms.Platform.iOS
 				var point = touch.LocationInView(touch.View).ToPoint();
 				var view = _getView();
 				var isInView = view?.Bounds.Contains(point) ?? false;
-				points.Add(new TouchPoint(point, isInView));
+				points.Add(new TouchPoint(touches.IndexOf(touch), point, touchState, isInView));
 			}
+
+
 
 			return points.AsReadOnly();
 		}

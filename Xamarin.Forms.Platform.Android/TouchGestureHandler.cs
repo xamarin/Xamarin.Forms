@@ -57,12 +57,13 @@ namespace Xamarin.Forms.Platform.Android
 		IReadOnlyList<TouchPoint> GetTouchPoints(MotionEvent me)
 		{
 			var points = new List<TouchPoint>(me.PointerCount);
+			var touchState = GetTouchState(me);
 			for (var i = 0; i < me.PointerCount; i++)
 			{
 				var point = new Point(_fromPixels(me.GetX(i)), _fromPixels(me.GetY(i)));
 				View view = GetView();
 				var isInView = view?.Bounds.Contains(point) ?? false;
-				points.Add(new TouchPoint(point, isInView));
+				points.Add(new TouchPoint(me.GetPointerId(i), point, touchState, isInView));
 			}
 
 			return points.AsReadOnly();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -14,7 +15,12 @@ namespace Xamarin.Forms
 
 		public int Id { get; }
 
-		public bool IsInContact { get; }
+		public bool IsInOriginalView { get => TouchPoints.All(a => a.IsInOriginalView); }
+
+		public int TouchCount
+		{
+			get => TouchPoints.Select(s => s.TouchId).Distinct().Count();
+		}
 
 		public IReadOnlyList<TouchPoint> TouchPoints { get; }
 

@@ -32,31 +32,19 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty NumberOfTouchesRequiredProperty =
 			BindableProperty.Create(nameof(NumberOfTouchesRequired), typeof(int), typeof(LongPressGestureRecognizer), 1);
 
-		public static readonly BindableProperty NumberOfTapsRequiredProperty =
-			BindableProperty.Create(nameof(NumberOfTapsRequired), typeof(int), typeof(LongPressGestureRecognizer), 1);
+		public static readonly BindableProperty PressDurationProperty = BindableProperty.Create(nameof(PressDuration), typeof(int),
+			typeof(LongPressGestureRecognizer), 1000);
 
-		public static readonly BindableProperty MinimumPressDurationProperty =
-			BindableProperty.Create(nameof(MinimumPressDuration), typeof(int), typeof(LongPressGestureRecognizer), TimeSpan.FromMilliseconds(1).Milliseconds);
+		public static readonly BindableProperty AllowMovementProperty =
+			BindableProperty.Create(nameof(AllowMovement), typeof(bool), typeof(LongPressGestureRecognizer), false);
 
-		public static readonly BindableProperty AllowableMovementProperty =
-			BindableProperty.Create(nameof(AllowableMovement), typeof(bool), typeof(LongPressGestureRecognizer), false);
+		CancellationTokenSource _cts;
 
-		public bool AllowableMovement
+
+		public bool AllowMovement
 		{
-			get => (bool)GetValue(AllowableMovementProperty);
-			set => SetValue(AllowableMovementProperty, value);
-		}
-
-		public ICommand StartedCommand
-		{
-			get => (ICommand)GetValue(StartedCommandProperty);
-			set => SetValue(StartedCommandProperty, value);
-		}
-
-		public object StartedCommandParameter
-		{
-			get => GetValue(StartedCommandParameterProperty);
-			set => SetValue(StartedCommandParameterProperty, value);
+			get => (bool)GetValue(AllowMovementProperty);
+			set => SetValue(AllowMovementProperty, value);
 		}
 
 		public ICommand CancelledCommand
@@ -89,63 +77,82 @@ namespace Xamarin.Forms
 			set => SetValue(IsLongPressingProperty, value);
 		}
 
-		public int MinimumPressDuration
-		{
-			get => (int)GetValue(MinimumPressDurationProperty);
-			set => SetValue(MinimumPressDurationProperty, value);
-		}
-
-		public int NumberOfTapsRequired
-		{
-			get => (int)GetValue(NumberOfTapsRequiredProperty);
-			set => SetValue(NumberOfTapsRequiredProperty, value);
-		}
-
 		public int NumberOfTouchesRequired
 		{
 			get => (int)GetValue(NumberOfTouchesRequiredProperty);
 			set => SetValue(NumberOfTouchesRequiredProperty, value);
 		}
 
-		public event EventHandler LongPressed;
+		public int PressDuration
+		{
+			get => (int)GetValue(PressDurationProperty);
+			set => SetValue(PressDurationProperty, value);
+		}
 
-		CancellationTokenSource _cts;
+		public ICommand StartedCommand
+		{
+			get => (ICommand)GetValue(StartedCommandProperty);
+			set => SetValue(StartedCommandProperty, value);
+		}
+
+		public object StartedCommandParameter
+		{
+			get => GetValue(StartedCommandParameterProperty);
+			set => SetValue(StartedCommandParameterProperty, value);
+		}
+
+		public event EventHandler LongPressed;
 
 		public override void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
+			if (TouchCount != NumberOfTouchesRequired)
+			{
+				Cancel();
+				return;
+			}
+
+			if (eventArgs.TouchState == TouchState.Move && !AllowMovement && Touches.All(a => a.Gesture == GestureType.None)) 
+			{
+				Cancel();
+			}
+
 			if (eventArgs.TouchState == TouchState.Pressed)
 			{
 				_cts?.Cancel();
 				_cts = new CancellationTokenSource();
 				IsLongPressing = true;
 				StartedCommand.Run(StartedCommandParameter);
-				Task.Delay(MinimumPressDuration, _cts.Token).ContinueWith(task =>
+				Task.Delay(PressDuration, _cts.Token).ContinueWith(task =>
 				{
 					if (_cts.IsCancellationRequested)
 					{
 						return;
 					}
+
 					Device.BeginInvokeOnMainThread(() =>
 					{
 						LongPressed?.Invoke(sender, new EventArgs());
 						FinishedCommand.Run(FinishedCommandParameter);
 						IsLongPressing = false;
 					});
-					
 				});
 			}
 
-			if (eventArgs.TouchState == TouchState.Released || eventArgs.TouchState == TouchState.Cancelled 
-			                                                || eventArgs.TouchState == TouchState.Failed
-			                                                || (eventArgs.TouchState == TouchState.Move 
-			                                                    && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView)))
+			if (eventArgs.TouchState == TouchState.Released || eventArgs.TouchState == TouchState.Cancelled ||
+			         eventArgs.TouchState == TouchState.Failed ||
+			         eventArgs.TouchState == TouchState.Move && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView))
 			{
-				_cts?.Cancel();
-				if (IsLongPressing)
-				{
-					IsLongPressing = false;
-					CancelledCommand.Run(CancelledCommandParameter);
-				}
+				Cancel();
+			}
+		}
+
+		void Cancel()
+		{
+			_cts?.Cancel();
+			if (IsLongPressing)
+			{
+				IsLongPressing = false;
+				CancelledCommand.Run(CancelledCommandParameter);
 			}
 		}
 	}
