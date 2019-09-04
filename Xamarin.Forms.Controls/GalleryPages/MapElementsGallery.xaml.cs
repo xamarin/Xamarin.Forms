@@ -92,37 +92,10 @@ namespace Xamarin.Forms.Controls.GalleryPages
 					}
 					else
 					{
-						_circle.Radius = CalculateDistance(_circle.Center, e.Position);
+						_circle.Radius = Distance.BetweenPositions(_circle.Center, e.Position);
 					}
 					break;
 			}
-		}
-
-		Distance CalculateDistance(Position position1, Position position2)
-		{
-			const double EarthRadiusKm = 6371;
-
-			var latitude1 = DegreeToRadian(position1.Latitude);
-			var longitude1 = DegreeToRadian(position1.Longitude);
-
-			var latitude2 = DegreeToRadian(position2.Latitude);
-			var longitude2 = DegreeToRadian(position2.Longitude);
-
-			var distance = Math.Sin((latitude2 - latitude1) / 2.0);
-			distance *= distance;
-
-			var intermediate = Math.Sin((longitude2 - longitude1) / 2.0);
-			intermediate *= intermediate;
-
-			distance = distance + Math.Cos(latitude1) * Math.Cos(latitude2) * intermediate;
-			distance = 2 * EarthRadiusKm * Math.Atan2(Math.Sqrt(distance), Math.Sqrt(1 - distance));
-
-			return Distance.FromKilometers(distance);
-		}
-
-		double DegreeToRadian(double degree)
-		{
-			return degree * Math.PI / 180.0;
 		}
 
 		void PickerSelectionChanged(object sender, EventArgs e)

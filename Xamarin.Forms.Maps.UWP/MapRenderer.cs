@@ -365,36 +365,24 @@ namespace Xamarin.Forms.Maps.UWP
 
 		Geopath GenerateCirclePath(Circle circle)
 		{
-			const double EarthRadiusKm = 6371;
-
 			var positions = new List<Position>();
-			double latitude = DegreesToRadians(circle.Center.Latitude);
-			double longitude = DegreesToRadians(circle.Center.Longitude);
-			double distance = circle.Radius.Kilometers / EarthRadiusKm;
+			double centerLatitude = circle.Center.Latitude.ToRadians();
+			double centerLongitude = circle.Center.Longitude.ToRadians();
+			double distance = circle.Radius.Kilometers / GeographyUtils.EarthRadiusKm;
 
 			for (int angle = 0; angle <= 360; angle++)
 			{
-				double angleInRadians = DegreesToRadians(angle);
-				double latitudeInRadians = Math.Asin(Math.Sin(latitude) * Math.Cos(distance) +
-				                                     Math.Cos(latitude) * Math.Sin(distance) * Math.Cos(angleInRadians));
-				double longitudeInRadians =
-					longitude + Math.Atan2(Math.Sin(angleInRadians) * Math.Sin(distance) * Math.Cos(latitude),
-						Math.Cos(distance) - Math.Sin(latitude) * Math.Sin(latitudeInRadians));
+				double angleInRadians = ((double)angle).ToRadians();
+				double latitude = Math.Asin(Math.Sin(centerLatitude) * Math.Cos(distance) +
+				                            Math.Cos(centerLatitude) * Math.Sin(distance) * Math.Cos(angleInRadians));
+				double longitude = centerLongitude +
+				                   Math.Atan2(Math.Sin(angleInRadians) * Math.Sin(distance) * Math.Cos(centerLatitude),
+					                   Math.Cos(distance) - Math.Sin(centerLatitude) * Math.Sin(latitude));
 
-				positions.Add(new Position(RadiansToDegrees(latitudeInRadians), RadiansToDegrees(longitudeInRadians)));
+				positions.Add(new Position(latitude.ToDegrees(), longitude.ToDegrees()));
 			}
 
 			return PositionsToGeopath(positions);
-		}
-
-		double DegreesToRadians(double degrees)
-		{
-			return degrees * Math.PI / 180.0;
-		}
-
-		double RadiansToDegrees(double radians)
-		{
-			return radians / Math.PI * 180.0;
 		}
 
 		void OnCirclePropertyChanged(Circle circle, PropertyChangedEventArgs e)
@@ -419,7 +407,7 @@ namespace Xamarin.Forms.Maps.UWP
 				mapPolygon.FillColor = circle.FillColor.ToWindowsColor();
 			}
 			else if (e.PropertyName == Circle.CenterProperty.PropertyName ||
-			         e.PropertyName == Circle.RadiusProperty.PropertyName)
+					 e.PropertyName == Circle.RadiusProperty.PropertyName)
 			{
 				mapPolygon.Path = GenerateCirclePath(circle);
 			}
