@@ -80,13 +80,28 @@ namespace Xamarin.Forms
 			set => SetValue(StartedCommandParameterProperty, value);
 		}
 
+		public event EventHandler<RotateGestureUpdatedEventArgs> Rotated;
+
 		public override void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
 			if (TouchCount != 2)
 			{
-				_total = 0;
-				Rotated?.Invoke(this, new RotateGestureUpdatedEventArgs(_total, 0, sender.Bounds.Center));
+				if(_total != 0)
+				{
+					_total = 0;
+					IsRotating = false;
+					Rotated?.Invoke(this, new RotateGestureUpdatedEventArgs(_total, 0, sender.Bounds.Center));
+					CancelledCommand.Run(CancelledCommandParameter);
+				}
+				
 				return;
+			}
+
+
+			if (Touches[0].TouchPoints.Count > 1 && Touches[1].TouchPoints.Count > 1 && _total == 0)
+			{
+				IsRotating = true;
+				StartedCommand.Run(StartedCommandParameter);
 			}
 
 			TouchPoint a1 = Touches[0].TouchPoints.First();
@@ -104,6 +119,6 @@ namespace Xamarin.Forms
 			Rotated?.Invoke(this, new RotateGestureUpdatedEventArgs(_total, delta, new Point(d2.X - d1.X, d2.Y - d1.Y)));
 		}
 
-		public event EventHandler<RotateGestureUpdatedEventArgs> Rotated;
+		
 	}
 }
