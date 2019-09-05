@@ -321,51 +321,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateLineBreakMode()
 		{
-#if __MOBILE__
-			switch (Element.LineBreakMode)
-			{
-				case LineBreakMode.NoWrap:
-					Control.LineBreakMode = UILineBreakMode.Clip;
-					break;
-				case LineBreakMode.WordWrap:
-					Control.LineBreakMode = UILineBreakMode.WordWrap;
-					break;
-				case LineBreakMode.CharacterWrap:
-					Control.LineBreakMode = UILineBreakMode.CharacterWrap;
-					break;
-				case LineBreakMode.HeadTruncation:
-					Control.LineBreakMode = UILineBreakMode.HeadTruncation;
-					break;
-				case LineBreakMode.MiddleTruncation:
-					Control.LineBreakMode = UILineBreakMode.MiddleTruncation;
-					break;
-				case LineBreakMode.TailTruncation:
-					Control.LineBreakMode = UILineBreakMode.TailTruncation;
-					break;
-			}
-#else
-			switch (Element.LineBreakMode)
-			{
-				case LineBreakMode.NoWrap:
-					Control.LineBreakMode = NSLineBreakMode.Clipping;
-					break;
-				case LineBreakMode.WordWrap:
-					Control.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-					break;
-				case LineBreakMode.CharacterWrap:
-					Control.LineBreakMode = NSLineBreakMode.CharWrapping;
-					break;
-				case LineBreakMode.HeadTruncation:
-					Control.LineBreakMode = NSLineBreakMode.TruncatingHead;
-					break;
-				case LineBreakMode.MiddleTruncation:
-					Control.LineBreakMode = NSLineBreakMode.TruncatingMiddle;
-					break;
-				case LineBreakMode.TailTruncation:
-					Control.LineBreakMode = NSLineBreakMode.TruncatingTail;
-					break;
-			}
-#endif
+			Control.LineBreakMode = Element.LineBreakMode.GetNativeLineBreakMode();
 		}
 
 		void UpdateCharacterSpacing()

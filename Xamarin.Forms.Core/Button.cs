@@ -62,9 +62,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create(nameof(MaxLines), typeof(int), typeof(Button), -1, propertyChanged: (bindable, oldvalue, newvalue) =>
 		{
-			if (bindable != null)
+			if (bindable is Button button)
 			{
-				((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+				button.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 			}
 		});
 

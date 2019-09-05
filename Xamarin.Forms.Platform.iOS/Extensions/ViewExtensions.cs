@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -36,5 +37,50 @@ namespace Xamarin.Forms.Platform.iOS
 				yield return current;
 			}
 		}
+
+#if __MOBILE__
+		public static UILineBreakMode GetNativeLineBreakMode(this LineBreakMode lineBreakMode)
+		{
+			switch (lineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					return UILineBreakMode.Clip;					
+				case LineBreakMode.WordWrap:
+					return UILineBreakMode.WordWrap;					
+				case LineBreakMode.CharacterWrap:
+					return UILineBreakMode.CharacterWrap;					
+				case LineBreakMode.HeadTruncation:
+					return UILineBreakMode.HeadTruncation;					
+				case LineBreakMode.MiddleTruncation:
+					return UILineBreakMode.MiddleTruncation;					
+				case LineBreakMode.TailTruncation:
+					return UILineBreakMode.TailTruncation;					
+			}
+
+			return UILineBreakMode.Clip;
+		}
+#else
+		public static NSLineBreakMode GetNativeLineBreakMode(this LineBreakMode lineBreakMode)
+		{
+			switch (lineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					return NSLineBreakMode.Clipping;					
+				case LineBreakMode.WordWrap:
+					return NSLineBreakMode.ByWordWrapping;					
+				case LineBreakMode.CharacterWrap:
+					return NSLineBreakMode.CharWrapping;					
+				case LineBreakMode.HeadTruncation:
+					return NSLineBreakMode.TruncatingHead;					
+				case LineBreakMode.MiddleTruncation:
+					return NSLineBreakMode.TruncatingMiddle;					
+				case LineBreakMode.TailTruncation:
+					return NSLineBreakMode.TruncatingTail;					
+			}
+
+			return NSLineBreakMode.Clipping;
+		}
+#endif
+
 	}
 }
