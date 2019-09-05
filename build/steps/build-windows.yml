@@ -15,7 +15,7 @@ parameters:
   nugetVersion: $(NUGET_VERSION)
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
   artifactsName: 'win_build'
-  nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/tools/'
+  nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
   nunitTestFolder: '$(build.sourcesdirectory)'
 
 jobs:
