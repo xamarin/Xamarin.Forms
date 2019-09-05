@@ -19,14 +19,21 @@ namespace Xamarin.Forms
 
 	public static class TouchStateExtensions
 	{
-		public static bool IsStartedTouch(this TouchState state)
+		public static bool IsTouching(this TouchState state)
 		{
-			return state == TouchState.Pressed || state == TouchState.Move || state == TouchState.Entered || state == TouchState.Hover || state == TouchState.Changed;
+			return state == TouchState.Pressed 
+			       || state == TouchState.Move 
+			       || state == TouchState.Entered 
+			       || state == TouchState.Hover 
+			       || state == TouchState.Changed;
 		}
 
 		public static bool IsFinishedTouch(this TouchState state)
 		{
-			return state == TouchState.Released || state == TouchState.Cancelled || state == TouchState.Exited || state == TouchState.Failed;
+			return state == TouchState.Released 
+			       || state == TouchState.Cancelled 
+			       || state == TouchState.Exited 
+			       || state == TouchState.Failed;
 		}
 	}
 }

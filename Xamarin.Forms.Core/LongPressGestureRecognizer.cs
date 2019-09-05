@@ -40,7 +40,6 @@ namespace Xamarin.Forms
 
 		CancellationTokenSource _cts;
 
-
 		public bool AllowMovement
 		{
 			get => (bool)GetValue(AllowMovementProperty);
@@ -111,7 +110,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if (eventArgs.TouchState == TouchState.Move && !AllowMovement && Touches.All(a => a.Gesture == GestureType.None)) 
+			if (eventArgs.TouchState == TouchState.Move && !AllowMovement && Touches.All(a => a.Gesture == GestureType.None))
 			{
 				Cancel();
 			}
@@ -139,8 +138,8 @@ namespace Xamarin.Forms
 			}
 
 			if (eventArgs.TouchState == TouchState.Released || eventArgs.TouchState == TouchState.Cancelled ||
-			         eventArgs.TouchState == TouchState.Failed ||
-			         eventArgs.TouchState == TouchState.Move && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView))
+			    eventArgs.TouchState == TouchState.Failed ||
+			    eventArgs.TouchState == TouchState.Move && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView))
 			{
 				Cancel();
 			}

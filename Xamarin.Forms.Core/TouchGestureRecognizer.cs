@@ -77,13 +77,13 @@ namespace Xamarin.Forms
 		{
 			foreach (var touchPoint in ev.TouchPoints)
 			{
-				if (touchPoint.TouchState.IsStartedTouch())
+				if (touchPoint.TouchState.IsTouching())
 				{
 					if (_touches.TryGetValue(touchPoint.TouchId, out var touch))
 					{
 						touch.TouchPoints.Add(touchPoint);
 						touch.Gesture = GestureDetector.DetectGesture(touch.TouchPoints
-							.Where(w => w.TouchState == TouchState.Move || w.TouchState == TouchState.Hover).Select(s => s.Point).ToArray());
+							.Where(w => w.TouchState.IsTouching()).Select(s => s.Point).ToArray());
 					}
 					else
 					{
@@ -183,7 +183,8 @@ namespace Xamarin.Forms
 
 				foreach (Point point in points)
 				{
-					var diagonalOnYAxis = (point.X - first.X) * (first.Y - last.Y) / (first.X - last.X) + first.Y;
+					var diagonalOnYAxis = ((point.X - first.X) * (point.Y - last.Y)) / (first.X - last.X) + first.Y;
+					//var diagonalOnYAxis = ((point.X - first.X) * (first.Y - last.Y)) / (first.X - last.X) + first.Y;
 					if (point.Y > diagonalOnYAxis)
 					{
 						pointsAboveDiagonal++;
