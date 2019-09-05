@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,6 +91,16 @@ namespace Xamarin.Forms.Controls.GalleryPages
 		void MultiTapPressGestureRecognizer_OnTapped(object sender, EventArgs e)
 		{
 			DisplayAlert(null, "Tapped", "OK");
+		}
+
+		void RotateGestureRecognizer_OnRotated(object sender, RotateGestureUpdatedEventArgs e)
+		{
+			var view = (sender as RotateGestureRecognizer).View;
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				view.Rotation = e.Total;
+			});
+			
 		}
 	}
 }

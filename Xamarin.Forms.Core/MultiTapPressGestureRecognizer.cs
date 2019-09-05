@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -87,14 +86,17 @@ namespace Xamarin.Forms
 			set => SetValue(StartedCommandParameterProperty, value);
 		}
 
+		public event EventHandler Tapped;
+
 		public override void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
 			if (eventArgs.TouchState == TouchState.Cancelled || eventArgs.TouchState == TouchState.Failed ||
-			    (eventArgs.TouchState == TouchState.Move && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView)))
+				eventArgs.TouchState == TouchState.Move && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView))
 			{
 				Cancel();
 				return;
 			}
+
 			_cts?.Cancel();
 			_cts = new CancellationTokenSource();
 
@@ -122,13 +124,12 @@ namespace Xamarin.Forms
 						{
 							return;
 						}
+
 						Cancel();
 					});
 				}
 			}
 		}
-
-		public event EventHandler Tapped;
 
 		void Cancel()
 		{
