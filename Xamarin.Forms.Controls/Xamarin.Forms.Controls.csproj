@@ -28,7 +28,7 @@
     <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <EmbeddedResource Include="BuildNumber.txt" />
     <EmbeddedResource Include="GalleryPages\crimson.jpg" />
@@ -50,11 +50,20 @@
     <EmbeddedResource Update="GalleryPages\BindableLayoutGalleryPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\GridGrouping.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\HeaderFooterGalleries\FooterOnlyString.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\CharacterSpacingGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\EmptyViewGalleries\EmptyViewSwapGallery.xaml">
-	<Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+	    <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\NestedGalleries\NestedCollectionViewGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\MultipleBoundSelection.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
@@ -66,6 +75,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\SelectionChangedCommandParameter.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\MapElementsGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\MapGallery.xaml">
@@ -127,9 +139,38 @@
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\ControlTemplateXamlPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
+    </EmbeddedResource>   
   </ItemGroup>
-
+  <ItemGroup>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\BasicGrouping.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\GroupingNoTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\GroupingPlusSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\MeasureFirstStrategy.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\SomeEmptyGroups.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\GroupingGalleries\SwitchGrouping.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\ScrollModeGalleries\ScrollModeTestGallery.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\SelectionChangedCommandParameter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GalleryPages\CollectionViewGalleries\CarouselViewGalleries\" />
+  </ItemGroup>
+  
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
     <CreateItem Include="blank.config">
       <Output TaskParameter="Include" ItemName="ConfigFile" />
