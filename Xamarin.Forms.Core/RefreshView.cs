@@ -20,12 +20,18 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty IsRefreshingProperty =
-			BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(RefreshView), false);
+			BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(RefreshView), false, BindingMode.TwoWay);
 
 		public bool IsRefreshing
 		{
 			get { return (bool)GetValue(IsRefreshingProperty); }
-			set { SetValue(IsRefreshingProperty, value); }
+			set
+			{
+				if ((bool)GetValue(IsRefreshingProperty) == value)
+					OnPropertyChanged(nameof(IsRefreshing));
+
+				SetValue(IsRefreshingProperty, value);
+			}
 		}
 
 		public static readonly BindableProperty CommandProperty =
