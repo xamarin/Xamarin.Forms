@@ -86,5 +86,10 @@ namespace Xamarin.Forms.Controls.GalleryPages
 		{
 			DisplayAlert(null, "LongPressed", "OK");
 		}
+
+		void MultiTapPressGestureRecognizer_OnTapped(object sender, EventArgs e)
+		{
+			DisplayAlert(null, "Tapped", "OK");
+		}
 	}
 }

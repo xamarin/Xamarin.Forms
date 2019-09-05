@@ -123,7 +123,7 @@ namespace Xamarin.Forms
 				StartedCommand.Run(StartedCommandParameter);
 				Task.Delay(PressDuration, _cts.Token).ContinueWith(task =>
 				{
-					if (_cts.IsCancellationRequested)
+					if (task.IsCanceled)
 					{
 						return;
 					}

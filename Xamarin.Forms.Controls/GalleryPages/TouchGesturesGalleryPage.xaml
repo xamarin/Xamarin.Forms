@@ -27,6 +27,7 @@
             <BoxView BackgroundColor="LightGray" Margin="20">
                 <BoxView.GestureRecognizers>
                     <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                    <MultiTapPressGestureRecognizer Tapped="MultiTapPressGestureRecognizer_OnTapped" NumberOfTapsRequired="3"/>
                     <LongPressGestureRecognizer LongPressed="LongPressGestureRecognizer_OnLongPressed"/>
                 </BoxView.GestureRecognizers>
             </BoxView>

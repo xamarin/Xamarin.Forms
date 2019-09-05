@@ -16,6 +16,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TouchCountProperty =
 			BindableProperty.Create(nameof(TouchCount), typeof(int), typeof(TouchGestureRecognizer), 0);
 
+		readonly Dictionary<int, Touch> _touches = new Dictionary<int, Touch>();
+
 		public TouchState State
 		{
 			get => (TouchState)GetValue(StateProperty);
@@ -28,16 +30,15 @@ namespace Xamarin.Forms
 			private set => SetValue(TouchCountProperty, value);
 		}
 
-		Dictionary<int, Touch> _touches = new Dictionary<int, Touch>();
-		public List<Touch> Touches { get => _touches.Values.ToList(); }
-
-		public View View { get; private set; }
+		public List<Touch> Touches => _touches.Values.ToList();
 
 		public bool UseVisualStateManager
 		{
 			get => (bool)GetValue(UseVisualStateManagerProperty);
 			set => SetValue(UseVisualStateManagerProperty, value);
 		}
+
+		public View View { get; private set; }
 
 		protected TouchState PreviousState { get; set; }
 
@@ -53,6 +54,7 @@ namespace Xamarin.Forms
 			{
 				View = sender;
 			}
+
 			CollectTouch(eventArgs);
 
 			PreviousState = State;
@@ -67,19 +69,21 @@ namespace Xamarin.Forms
 				VisualStateManager.GoToState(sender, State.ToString());
 			}
 
-			if(_touches.Count == 0)
+			if (_touches.Count == 0)
 			{
 				State = TouchState.Default;
 			}
 		}
 
+		public event EventHandler<TouchEventArgs> TouchUpdated;
+
 		void CollectTouch(TouchEventArgs ev)
 		{
-			foreach (var touchPoint in ev.TouchPoints)
+			foreach (TouchPoint touchPoint in ev.TouchPoints)
 			{
 				if (touchPoint.TouchState.IsTouching())
 				{
-					if (_touches.TryGetValue(touchPoint.TouchId, out var touch))
+					if (_touches.TryGetValue(touchPoint.TouchId, out Touch touch))
 					{
 						touch.TouchPoints.Add(touchPoint);
 						touch.Gesture = GestureDetector.DetectGesture(touch.TouchPoints
@@ -92,15 +96,10 @@ namespace Xamarin.Forms
 				}
 				else if (touchPoint.TouchState.IsFinishedTouch())
 				{
-	
 					_touches.Remove(touchPoint.TouchId);
 				}
 			}
-
 		}
-
-		public event EventHandler<TouchEventArgs> TouchUpdated;
-
 
 		static class GestureDetector
 		{
@@ -108,13 +107,13 @@ namespace Xamarin.Forms
 
 			public static GestureType DetectGesture(Point[] points)
 			{
-				if(points.Length == 0)
+				if (points.Length == 0)
 				{
 					return GestureType.None;
 				}
 
-				var first = points[0];
-				var last = points[points.Length - 1];
+				Point first = points[0];
+				Point last = points[points.Length - 1];
 
 				var xDiff = first.X - last.X;
 				var yDiff = first.Y - last.Y;
@@ -178,13 +177,12 @@ namespace Xamarin.Forms
 				var gestureType = GestureType.None;
 				var pointsAboveDiagonal = 0;
 				var pointsBelowDiagonal = 0;
-				var first = points[0];
-				var last = points[points.Length - 1];
+				Point first = points[0];
+				Point last = points[points.Length - 1];
 
 				foreach (Point point in points)
 				{
-					var diagonalOnYAxis = ((point.X - first.X) * (point.Y - last.Y)) / (first.X - last.X) + first.Y;
-					//var diagonalOnYAxis = ((point.X - first.X) * (first.Y - last.Y)) / (first.X - last.X) + first.Y;
+					var diagonalOnYAxis = (point.X - first.X) * (point.Y - last.Y) / (first.X - last.X) + first.Y;
 					if (point.Y > diagonalOnYAxis)
 					{
 						pointsAboveDiagonal++;
@@ -221,37 +219,5 @@ namespace Xamarin.Forms
 				return gestureType;
 			}
 		}
-	}
-
-	public class Touch
-	{
-		public Touch(int touchIndex, TouchPoint touchPoint, View view)
-		{
-			TouchIndex = touchIndex;
-			TouchPoints = new List<TouchPoint>(2) { touchPoint };
-			Target = view;
-		}
-		public int TouchIndex { get; }
-		public List<TouchPoint> TouchPoints { get; }
-		public GestureType Gesture { get; set; }
-		public View Target { get; }
-	}
-
-	public enum GestureType
-	{
-		None,
-		Up,
-		Down,
-		Right,
-		Left,
-		UpRight,
-		DownRight,
-		DownLeft,
-		UpLeft,
-		RightUp,
-		RightDown,
-		LeftDown,
-		LeftUp,
-		All
 	}
 }
