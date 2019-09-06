@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_referenceImage = new Image {
-				Source = "ie_retro.gif",
+				Source = "GifTwo.gif",
 				HorizontalOptions = LayoutOptions.Start
 			};
 						
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_animatedImage = new Image {
-				Source = "ie_retro.gif",
+				Source = "GifTwo.gif",
 				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start
 			};
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_referenceImage = new Image {
-				Source = "sweden.gif",
+				Source = "GifOne.gif",
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_animatedImage = new Image {
-				Source = "sweden.gif",
+				Source = "GifOne.gif",
 				IsAnimationAutoPlay = false,
 				HorizontalOptions = LayoutOptions.Start
 			};
@@ -382,7 +382,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_initNoAnimationImage = new Image {
-				Source = "ie_retro.gif",
+				Source = "GifTwo.gif",
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -425,7 +425,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_stressTestItertionEntry = new Entry { Text = _stressTestIterationCount.ToString() };
 
 			_stressTestImage = new Image {
-				Source = "ie_retro.gif",
+				Source = "GifTwo.gif",
 				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start,
 				IsVisible = false
@@ -486,11 +486,11 @@ namespace Xamarin.Forms.Controls.Issues
 				Device.BeginInvokeOnMainThread(() => {
 					if (i % 2 == 0)
 					{
-						_stressTestImage.Source = "ie_retro.gif";
+						_stressTestImage.Source = "GifTwo.gif";
 					}
 					else
 					{
-						_stressTestImage.Source = "sweden.gif";
+						_stressTestImage.Source = "GifOne.gif";
 					}
 
 					_stressTestProgressBar.Progress = (double)i / (double)_stressTestIterationCount;
