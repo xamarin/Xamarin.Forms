@@ -5,6 +5,7 @@
 	x:Class="Xamarin.Forms.Platform.UWP.Resources">
 
 	<ResourceDictionary.MergedDictionaries>
+        <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls"/>
         <ResourceDictionary Source="FormsCommandBarStyle.xaml" />
 		<ResourceDictionary Source="PageControlStyle.xaml" />
 		<ResourceDictionary Source="FormsProgressBarStyle.xaml" />
@@ -13,7 +14,7 @@
 		<ResourceDictionary Source="AutoSuggestStyle.xaml" />
 		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
-		<ResourceDictionary Source="SliderStyle.xaml" />
+        <ResourceDictionary Source="SliderStyle.xaml" />
 		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
 	</ResourceDictionary.MergedDictionaries>
 	
