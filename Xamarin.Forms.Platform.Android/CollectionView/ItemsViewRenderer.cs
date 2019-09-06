@@ -56,8 +56,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		ScrollHelper ScrollHelper => _scrollHelper = _scrollHelper ?? new ScrollHelper(this);
 
-		// TODO hartez 2018/10/24 19:27:12 Region all the interface implementations	
-
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
