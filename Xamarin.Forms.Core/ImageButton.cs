@@ -39,10 +39,6 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
-		public static readonly BindableProperty IsAnimationAutoPlayProperty = ImageElement.IsAnimationAutoPlayProperty;
-
-		public static readonly BindableProperty IsAnimationPlayingProperty = ImageElement.IsAnimationPlayingProperty;
-
 		public event EventHandler Clicked;
 		public event EventHandler Pressed;
 		public event EventHandler Released;
@@ -201,16 +197,14 @@ namespace Xamarin.Forms
 		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
 
-		public bool IsAnimationAutoPlay
+		bool IImageElement.IsAnimationAutoPlay
 		{
-			get { return (bool)GetValue(IsAnimationAutoPlayProperty); }
-			set { SetValue(IsAnimationAutoPlayProperty, value); }
+			get => false;
 		}
 
-		public bool IsAnimationPlaying
+		bool IImageElement.IsAnimationPlaying
 		{
-			get { return (bool)GetValue(IsAnimationPlayingProperty); }
-			set { SetValue(IsAnimationPlayingProperty, value); }
+			get => false;
 		}
 
 		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
@@ -218,6 +212,6 @@ namespace Xamarin.Forms
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
 
-		bool IImageController.GetLoadAsAnimation() => ImageElement.GetLoadAsAnimation(this);
+		bool IImageController.GetLoadAsAnimation() => false;
 	}
 }

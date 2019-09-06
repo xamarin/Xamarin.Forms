@@ -13,7 +13,7 @@ using System.IO;
 namespace Xamarin.Forms.Platform.Android
 {
 	// all this animation code will go away if/once we pull in GlideX
-	internal class FormsAnimationDrawableStateEventArgs : EventArgs
+	public class FormsAnimationDrawableStateEventArgs : EventArgs
 	{
 		public FormsAnimationDrawableStateEventArgs(bool finished)
 		{
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 		public bool Finished { get; set; }
 	}
 
-	internal interface IFormsAnimationDrawable : IDisposable
+	public interface IFormsAnimationDrawable : IDisposable
 	{
 		event EventHandler AnimationStarted;
 		event EventHandler<FormsAnimationDrawableStateEventArgs> AnimationStopped;
@@ -36,10 +36,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Start();
 		void Stop();
-
 	}
 
-	internal class FormsAnimationDrawable : AnimationDrawable, IFormsAnimationDrawable
+	public class FormsAnimationDrawable : AnimationDrawable, IFormsAnimationDrawable
 	{
 		int _repeatCounter = 0;
 		int _frameCount = 0;

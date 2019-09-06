@@ -77,30 +77,30 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
                 await StartStopAnimation(renderer, imageController, ImageElementManager).ConfigureAwait(false);
         }
 
-        async static Task StartStopAnimation(
-            IVisualElementRenderer renderer,
-            IImageController imageController,
-            IImageElement imageElement)
-        {
-            IImageRendererController imageRendererController = renderer as IImageRendererController;
-            var view = renderer.View as ImageView;
-            if (imageRendererController.IsDisposed || imageElement == null || view == null || view.IsDisposed())
-                return;
+		async static Task StartStopAnimation(
+			IVisualElementRenderer renderer,
+			IImageController imageController,
+			IImageElement imageElement)
+		{
+			IImageRendererController imageRendererController = renderer as IImageRendererController;
+			var view = renderer.View as ImageView;
+			if (imageRendererController.IsDisposed || imageElement == null || view == null || view.IsDisposed())
+				return;
 
-            if (imageElement.IsLoading)
-                return;
+			if (imageElement.IsLoading)
+				return;
 
-            if (!(view.Drawable is IFormsAnimationDrawable) && imageElement.IsAnimationPlaying)
-                await TryUpdateBitmap(imageRendererController, view, imageElement);
+			if (!(view.Drawable is FormsAnimationDrawable) && imageElement.IsAnimationPlaying)
+				await TryUpdateBitmap(imageRendererController, view, imageElement);
 
-            if (view.Drawable is IFormsAnimationDrawable animation)
-            {
-                if (imageElement.IsAnimationPlaying && !animation.IsRunning)
-                    animation.Start();
-                else if (!imageElement.IsAnimationPlaying && animation.IsRunning)
-                    animation.Stop();
-            }
-        }
+			if (view.Drawable is FormsAnimationDrawable animation)
+			{
+				if (imageElement.IsAnimationPlaying && !animation.IsRunning)
+					animation.Start();
+				else if (!imageElement.IsAnimationPlaying && animation.IsRunning)
+					animation.Stop();
+			}
+		}
 
 
         async static Task TryUpdateBitmap(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)
@@ -110,15 +110,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
                 return;
             }
 
-            if (Control.Drawable is IFormsAnimationDrawable currentAnimation)
-            {
-                rendererController.SetFormsAnimationDrawable(currentAnimation);
-                currentAnimation.Stop();
-            }
-            else
-            {
-                rendererController.SetFormsAnimationDrawable(null);
-            }
+			if (Control.Drawable is FormsAnimationDrawable currentAnimation)
+			{
+				rendererController.SetFormsAnimationDrawable(currentAnimation);
+				currentAnimation.Stop();
+			}
+			else
+			{
+				rendererController.SetFormsAnimationDrawable(null);
+			}
 
             try
             {
@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
                     imageController.SetIsLoading(false);
             }
 
-			if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
+			if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
 			{
 				if (newImage.IsAnimationAutoPlay || newImage.IsAnimationPlaying)
 					updatedAnimation.Start();
