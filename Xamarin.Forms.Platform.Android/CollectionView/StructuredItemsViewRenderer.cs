@@ -7,6 +7,8 @@ namespace Xamarin.Forms.Platform.Android
 		where TAdapter : StructuredItemsViewAdapter<TItemsView, TItemsViewSource>
 		where TItemsViewSource : IItemsViewSource
 	{
+		StructuredItemsView _itemsView;
+
 		public StructuredItemsViewRenderer(Context context) : base(context)
 		{
 		}
@@ -14,6 +16,18 @@ namespace Xamarin.Forms.Platform.Android
 		protected override TAdapter CreateAdapter()
 		{
 			return (TAdapter)new StructuredItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
+		}
+
+		protected override void SetUpNewElement(TItemsView newElement)
+		{
+			_itemsView = newElement;
+
+			base.SetUpNewElement(newElement);
+		}
+
+		protected override IItemsLayout GetItemsLayout()
+		{
+			return _itemsView.ItemsLayout;
 		}
 	}
 }

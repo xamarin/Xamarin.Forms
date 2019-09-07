@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class ItemsView : View
+	public abstract class ItemsView : View
 	{
 		List<Element> _logicalChildren = new List<Element>();
 
@@ -37,13 +37,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ItemsSourceProperty =
 			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null);
 
-		public IEnumerable ItemsSource 
+		public IEnumerable ItemsSource
 		{
 			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty = 
+		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty =
 			BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommand), typeof(ICommand), typeof(ItemsView), null);
 
 		public ICommand RemainingItemsThresholdReachedCommand
@@ -95,9 +95,9 @@ namespace Xamarin.Forms
 
 		public void AddLogicalChild(Element element)
 		{
-			if(element == null)
+			if (element == null)
 			{
-				return;	
+				return;
 			}
 
 			_logicalChildren.Add(element);
@@ -126,14 +126,18 @@ namespace Xamarin.Forms
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildren.AsReadOnly();
 #endif
 
-		public static readonly BindableProperty ItemsLayoutProperty =
-			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView), 
-				ListItemsLayout.Vertical);
+		internal static readonly BindableProperty InternalItemsLayoutProperty =
+			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
+				LinearItemsLayout.Vertical);
 
-		public IItemsLayout ItemsLayout
+
+		//	public abstract IItemsLayout ItemsLayout { get; }
+
+
+		protected IItemsLayout InternalItemsLayout
 		{
-			get => (IItemsLayout)GetValue(ItemsLayoutProperty);
-			set => SetValue(ItemsLayoutProperty, value);
+			get => (IItemsLayout)GetValue(InternalItemsLayoutProperty);
+			set => SetValue(InternalItemsLayoutProperty, value);
 		}
 
 		public static readonly BindableProperty ItemSizingStrategyProperty =

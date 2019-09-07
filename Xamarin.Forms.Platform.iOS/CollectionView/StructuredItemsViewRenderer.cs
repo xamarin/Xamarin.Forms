@@ -38,5 +38,24 @@ namespace Xamarin.Forms.Platform.iOS
 			StructuredItemsViewController.UpdateFooterView();
 			StructuredItemsViewController.UpdateHeaderView();
 		}
+
+		protected override ItemsViewLayout SelectLayout()
+		{
+			var itemSizingStrategy = StructuredItemsView.ItemSizingStrategy;
+			var layoutSpecification = StructuredItemsView.ItemsLayout;
+
+			if (layoutSpecification is GridItemsLayout gridItemsLayout)
+			{
+				return new GridViewLayout(gridItemsLayout, itemSizingStrategy);
+			}
+
+			if (layoutSpecification is LinearItemsLayout listItemsLayout)
+			{
+				return new ListViewLayout(listItemsLayout, itemSizingStrategy);
+			}
+
+			// Fall back to vertical list
+			return new ListViewLayout(new LinearItemsLayout(ItemsLayoutOrientation.Vertical), itemSizingStrategy);
+		}
 	}
 }

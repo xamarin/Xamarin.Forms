@@ -37,5 +37,15 @@
 			get => (DataTemplate)GetValue(FooterTemplateProperty);
 			set => SetValue(FooterTemplateProperty, value);
 		}
+
+		public static readonly BindableProperty ItemsLayoutProperty =
+			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
+				LinearItemsLayout.Vertical);
+
+		public IItemsLayout ItemsLayout
+		{
+			get => InternalItemsLayout;
+			set => InternalItemsLayout = value;
+		}
 	}
 }

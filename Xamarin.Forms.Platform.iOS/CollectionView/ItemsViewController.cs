@@ -6,7 +6,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Platform.iOS
 {
 	// TODO hartez 2018/06/01 14:21:24 Add a method for updating the layout	
-	public class ItemsViewController : UICollectionViewController
+	public abstract class ItemsViewController : UICollectionViewController
 	{
 		public IItemsViewSource ItemsSource { get; protected set; }
 		public ItemsView ItemsView { get; }
@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.RegisterClassForCell(typeof(VerticalCell), VerticalCell.ReuseId);
 		}
 
-		protected bool IsHorizontal => (ItemsView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
+		protected abstract bool IsHorizontal { get; }
 
 		internal void UpdateEmptyView()
 		{

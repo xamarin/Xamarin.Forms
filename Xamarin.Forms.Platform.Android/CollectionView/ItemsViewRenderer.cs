@@ -11,7 +11,7 @@ using AViewCompat = Android.Support.V4.View.ViewCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> : RecyclerView, IVisualElementRenderer, IEffectControlProvider 
+	public abstract class ItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> : RecyclerView, IVisualElementRenderer, IEffectControlProvider 
 		where TItemsView : ItemsView
 		where TAdapter : ItemsViewAdapter<TItemsView, TItemsViewSource>
 		where TItemsViewSource : IItemsViewSource
@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				case GridItemsLayout gridItemsLayout:
 					return CreateGridLayout(gridItemsLayout);
-				case ListItemsLayout listItemsLayout:
+				case LinearItemsLayout listItemsLayout:
 					var orientation = listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
 						? LinearLayoutManager.Horizontal
 						: LinearLayoutManager.Vertical;
@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateItemsSource();
 
-			_layout = ItemsView.ItemsLayout;
+			_layout = GetItemsLayout();
 			SetLayoutManager(SelectLayoutManager(_layout));
 
 			UpdateSnapBehavior();
@@ -326,6 +326,8 @@ namespace Xamarin.Forms.Platform.Android
 			_recyclerViewScrollListener = new RecyclerViewScrollListener<TItemsView, TItemsViewSource>(ItemsView, ItemsViewAdapter);
 			AddOnScrollListener(_recyclerViewScrollListener);
 		}
+
+		protected abstract IItemsLayout GetItemsLayout();
 
 		protected virtual void UpdateVerticalScrollBarVisibility()
 		{
@@ -418,7 +420,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateSnapBehavior();
 			}
-			else if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty,
+			else if (propertyChanged.IsOneOf(LinearItemsLayout.ItemSpacingProperty,
 				GridItemsLayout.HorizontalItemSpacingProperty, GridItemsLayout.VerticalItemSpacingProperty))
 			{
 				UpdateItemSpacing();
@@ -436,7 +438,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_snapManager == null)
 			{
-				_snapManager = new SnapManager(ItemsView, this);
+				_snapManager = new SnapManager(_layout, this);
 			}
 			return _snapManager;
 		}
