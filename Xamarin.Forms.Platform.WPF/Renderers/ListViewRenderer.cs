@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Platform.WPF
 		void OnNativeMouseUp(object sender, MouseButtonEventArgs e)
 			=> Element.NotifyRowTapped(Control.SelectedIndex, cell: null);
 
-		void OnNativeTouchUp(object sender, TouchEventArgs e)
+		void OnNativeTouchUp(object sender, System.Windows.Input.TouchEventArgs e)
 			=> Element.NotifyRowTapped(Control.SelectedIndex, cell: null);
 
 		void OnNativeStylusUp(object sender, StylusEventArgs e)
