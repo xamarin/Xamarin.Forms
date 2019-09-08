@@ -245,7 +245,6 @@ namespace Xamarin.Forms.Platform.iOS
 			nfloat opacity = 1;
 			masterFrame.Width = (int)(Math.Min(masterFrame.Width, masterFrame.Height) * 0.8);
 			var detailView = Platform.GetRenderer(MasterDetailPage.Detail).ViewController.View;
-			detailView.Superview.BackgroundColor = Xamarin.Forms.Color.Black.ToUIColor();
 
 			var isRTL = (Element as IVisualElementController)?.EffectiveFlowDirection.IsRightToLeft() == true;
 			if (isRTL)
@@ -352,6 +351,8 @@ namespace Xamarin.Forms.Platform.iOS
 			SetNeedsStatusBarAppearanceUpdate();
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
+
+			detailRenderer.ViewController.View.Superview.BackgroundColor = Xamarin.Forms.Color.Black.ToUIColor();
 		}
 
 		void UpdateLeftBarButton()
@@ -492,7 +493,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void ApplyDetailShadow(nfloat percent)
 		{
 			var detailView = Platform.GetRenderer(MasterDetailPage.Detail).ViewController.View;
-			detailView.Superview.BackgroundColor = Xamarin.Forms.Color.Black.ToUIColor();
 			var opacity = (nfloat)(0.5 + (0.5 * (1 - percent)));
 			detailView.Layer.Opacity = (float)opacity;
 		}
