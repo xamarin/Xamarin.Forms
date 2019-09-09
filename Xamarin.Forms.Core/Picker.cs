@@ -184,7 +184,12 @@ namespace Xamarin.Forms
 
 			if (newValue != null) {
 				((LockableObservableListWrapper)Items).IsLocked = true;
-				ResetItems();
+
+				//ResetItems(); // ResetItems can't be used here because it sets the SelectedItem to an Index that is out of date (at the first time -1) because SelectedItem and SelectedIndex can only be valid after the ItemsSource changed.
+
+				((LockableObservableListWrapper)Items).InternalClear();
+				foreach (object item in ItemsSource)
+					((LockableObservableListWrapper)Items).InternalAdd(GetDisplayMember(item));
 			} else {
 				((LockableObservableListWrapper)Items).InternalClear();
 				((LockableObservableListWrapper)Items).IsLocked = false;
