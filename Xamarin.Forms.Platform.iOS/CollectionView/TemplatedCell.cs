@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_size = Size.Zero;
 				}
 
-				// Create the content and renderer for the view and 
+				// Create the content and renderer for the view 
 				var view = template.CreateContent() as View;
 				var renderer = TemplateHelpers.CreateRenderer(view);
 				SetRenderer(renderer);
