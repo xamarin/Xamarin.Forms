@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {

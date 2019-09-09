@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using Xamarin.Forms.Xaml.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -76,7 +77,7 @@ namespace Xamarin.Forms.Xaml
 				return new ValueNode(expression.Substring(2), null);
 
 			if (expression[expression.Length - 1] != '}') {
-				var ex = new XamlParseException("Expression must end with '}'", xmlLineInfo, errorCode: "CSXF1780");
+				var ex = new XamlParseException("XF0024", xmlLineInfo, "}", expression[expression.Length - 1].ToString());
 				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(ex);
 					return null;
@@ -89,7 +90,7 @@ namespace Xamarin.Forms.Xaml
 
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0) {
-				var ex = new XamlParseException("Expression did not end in '}'", xmlLineInfo, errorCode: "CSXF1781");
+				var ex = new XamlParseException("XF0024", xmlLineInfo, "}", string.Empty);
 				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(ex);
 					return null;
@@ -139,7 +140,7 @@ namespace Xamarin.Forms.Xaml
 				else {
 					//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
 					if (!typeResolver.TryResolve(match + "Extension", out type) && !typeResolver.TryResolve(match, out type)) {
-						var ex = new XamlParseException($"MarkupExtension not found for {match}", serviceProvider, errorCode: "CSXF1782");
+						var ex = new XamlParseException("XF0050", serviceProvider.GetLineInfo(), "MarkupExtension", match);
 						if (ExceptionHandler != null) {
 							ExceptionHandler(ex);
 							return null;
@@ -173,7 +174,7 @@ namespace Xamarin.Forms.Xaml
 			protected override void SetPropertyValue(string prop, string strValue, object value, IServiceProvider serviceProvider)
 			{
 				if (value == null && strValue == null) {
-					var xpe = new XamlParseException($"No value found for property '{prop}' in markup expression", serviceProvider, errorCode: "CSXF1783");
+					var xpe = new XamlParseException("XF0002", serviceProvider.GetLineInfo(), prop, "MarkupExtension");
 					if (ExceptionHandler != null) {
 						ExceptionHandler(xpe);
 						return;

@@ -7,6 +7,7 @@ using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Build.Tasks;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Core.XamlC
 {
@@ -36,7 +37,7 @@ namespace Xamarin.Forms.Core.XamlC
 				}
 			} while (false);
 
-			throw new XamlParseException(String.Format("Cannot convert \"{0}\" into {1}", value, typeof(LayoutOptions)), node, errorCode: "CSXF1212");
+			throw new XamlParseException("CS0070", node, value, typeof(LayoutOptions).ToString());
 		}
 	}
 }

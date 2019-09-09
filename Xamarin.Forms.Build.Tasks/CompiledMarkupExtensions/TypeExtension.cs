@@ -6,6 +6,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
@@ -23,7 +24,7 @@ namespace Xamarin.Forms.Build.Tasks
 				typeNameNode = node.CollectionItems[0];
 
 			if (!(typeNameNode is ValueNode valueNode))
-				throw new XamlParseException("TypeName isn't set.", node as XmlLineInfo, errorCode: "CSXF1421");
+				throw new XamlParseException("XF0032", node as XmlLineInfo);
 
 			if (!node.Properties.ContainsKey(name)) {
 				node.Properties[name] = typeNameNode;
@@ -32,7 +33,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 			var typeref = module.ImportReference(XmlTypeExtensions.GetTypeReference(valueNode.Value as string, module, node as BaseNode));
 
-			context.TypeExtensions[node] = typeref ?? throw new XamlParseException($"Can't resolve type `{valueNode.Value}'.", node as IXmlLineInfo, errorCode: "CSXF1422");
+			context.TypeExtensions[node] = typeref ?? throw new XamlParseException("XF0001", node as IXmlLineInfo, valueNode.Value.ToString());
 
 			return new List<Instruction> {
 				Create(Ldtoken, module.ImportReference(typeref)),

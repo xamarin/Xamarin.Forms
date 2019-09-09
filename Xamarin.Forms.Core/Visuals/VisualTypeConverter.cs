@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms
 {
@@ -126,7 +126,7 @@ namespace Xamarin.Forms
 				return VisualMarker.Default;
 			}
 
-			throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(IVisual)}", errorCode: "CSXF1741");
+			throw new XamlParseException("CS0039", value, typeof(IVisual).ToString());
 		}
 	}
 }

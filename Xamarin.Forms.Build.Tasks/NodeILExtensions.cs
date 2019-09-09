@@ -7,6 +7,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Xaml.Internals;
+using Xamarin.Forms.Exceptions;
 
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
@@ -321,7 +322,7 @@ namespace Xamarin.Forms.Build.Tasks
 							break;
 						case "System.SByte":
 							if (found)
-								throw new XamlParseException($"Multi-valued enums are not valid on sbyte enum types", lineInfo, errorCode: "CSXF1621");
+								throw new XamlParseException("XF0070", lineInfo);
 							sb = (sbyte)field.Constant;
 							break;
 						case "System.Int16":
@@ -349,7 +350,7 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			if (!found)
-				throw new XamlParseException($"Enum value not found for {value}", lineInfo, errorCode: "CSXF1622");
+				throw new XamlParseException("XF0050", lineInfo, enumRef.Name, value);
 				
 			switch (typeRef.FullName) {
 			case "System.Byte":
@@ -369,7 +370,7 @@ namespace Xamarin.Forms.Build.Tasks
 			case "System.UInt64":
 				return Instruction.Create(OpCodes.Ldc_I4, (ulong)ul);
 			default:
-				throw new XamlParseException($"Enum value not found for {value}", lineInfo, errorCode: "CSXF1623");
+				throw new XamlParseException("XF0050", lineInfo, enumRef.Name, value);
 			}
 		}
 

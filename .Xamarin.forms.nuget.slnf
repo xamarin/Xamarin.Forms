@@ -33,7 +33,8 @@
       "Xamarin.Forms.Platform.WPF\\Xamarin.Forms.Platform.WPF.csproj",
       "Xamarin.Forms.Platform.iOS\\Xamarin.Forms.Platform.iOS.csproj",
       "Xamarin.Forms.Platform\\Xamarin.Forms.Platform.csproj",
-      "Xamarin.Forms.Xaml\\Xamarin.Forms.Xaml.csproj"
+      "Xamarin.Forms.Xaml\\Xamarin.Forms.Xaml.csproj",
+	  "Xamarin.Forms.Exceptions\\Xamarin.Forms.Exceptions.csproj"
     ]
   }
 }

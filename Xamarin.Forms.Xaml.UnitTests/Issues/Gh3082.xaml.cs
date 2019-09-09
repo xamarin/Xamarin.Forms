@@ -6,6 +6,7 @@ using Xamarin.Forms.Core.UnitTests;
 
 
 using Xamarin.Forms;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {

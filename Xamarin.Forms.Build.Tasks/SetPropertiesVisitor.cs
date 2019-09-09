@@ -9,6 +9,7 @@ using Mono.Cecil.Rocks;
 
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
@@ -164,7 +165,7 @@ namespace Xamarin.Forms.Build.Tasks
 					Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], name, node, Context, node));
 				}
 				else
-					throw new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node, errorCode: "CSXF1640");
+					throw new XamlParseException("XF0004", node, ((IElementNode)parentNode).XmlType.Name, nameof(ContentPropertyAttribute));
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is ListNode)
 			{
@@ -192,7 +193,7 @@ namespace Xamarin.Forms.Build.Tasks
 				} 
 				var adderTuple = propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).FirstOrDefault();
 				if (adderTuple == null)
-					throw new XamlParseException($"Can not Add() elements to {parent.VariableType}.{localname}", node, errorCode: "CSXF1641");
+					throw new XamlParseException("XF0003", node, $"{parent.VariableType}.{localname}");
 				var adderRef = Module.ImportReference(adderTuple.Item1);
 				adderRef = Module.ImportReference(adderRef.ResolveGenericParameters(adderTuple.Item2, Module));
 
@@ -401,12 +402,12 @@ namespace Xamarin.Forms.Build.Tasks
 				dataType = sType;
 
 			if (dataType is null)
-				throw new XamlParseException("x:DataType expects a string literal, an {x:Type} markup or {x:Null}", dataTypeNode as IXmlLineInfo, errorCode: "CSXF1642");
+				throw new XamlParseException("XF0021", dataTypeNode as IXmlLineInfo);
 
 			var prefix = dataType.Contains(":") ? dataType.Substring(0, dataType.IndexOf(":", StringComparison.Ordinal)) : "";
 			var namespaceuri = node.NamespaceResolver.LookupNamespace(prefix) ?? "";
 			if (!string.IsNullOrEmpty(prefix) && string.IsNullOrEmpty(namespaceuri))
-				throw new XamlParseException($"Undeclared xmlns prefix '{prefix}'", dataTypeNode as IXmlLineInfo, errorCode: "CSXF1643");
+				throw new XamlParseException("XF0022", dataTypeNode as IXmlLineInfo, prefix);
 
 			var dtXType = new XmlType(namespaceuri, dataType, null);
 
@@ -472,23 +473,23 @@ namespace Xamarin.Forms.Build.Tasks
 				if (lbIndex != -1) {
 					var rbIndex = p.LastIndexOf(']');
 					if (rbIndex == -1)
-						throw new XamlParseException("Binding: Indexer did not contain closing bracket", lineInfo, errorCode: "CSXF1644");
-					
+						throw new XamlParseException("XF0011", lineInfo);
+
 					var argLength = rbIndex - lbIndex - 1;
 					if (argLength == 0)
-						throw new XamlParseException("Binding: Indexer did not contain arguments", lineInfo, errorCode: "CSXF1645");
+						throw new XamlParseException("XF0012", lineInfo);
 
 					indexArg = p.Substring(lbIndex + 1, argLength).Trim();
 					if (indexArg.Length == 0)
-						throw new XamlParseException("Binding: Indexer did not contain arguments", lineInfo, errorCode: "CSXF1646");
-					
+						throw new XamlParseException("XF0012", lineInfo);
+
 					p = p.Substring(0, lbIndex);
 					p = p.Trim();
 				}
 
 				if (p.Length > 0) {
 					var property = previousPartTypeRef.GetProperty(pd => pd.Name == p && pd.GetMethod != null && pd.GetMethod.IsPublic, out var propDeclTypeRef)
-					                                  ?? throw new XamlParseException($"Binding: Property '{p}' not found on '{previousPartTypeRef}'", lineInfo, errorCode: "CSXF1647");
+					                                  ?? throw new XamlParseException("XF0010", lineInfo, p, previousPartTypeRef.ToString());
 					properties.Add((property, propDeclTypeRef, null));
 					previousPartTypeRef = property.PropertyType.ResolveGenericParameters(propDeclTypeRef);
 				}
@@ -499,7 +500,7 @@ namespace Xamarin.Forms.Build.Tasks
 					properties.Add((indexer, indexerDeclTypeRef, indexArg));
 					var indexType = indexer.GetMethod.Parameters[0].ParameterType.ResolveGenericParameters(indexerDeclTypeRef);
 					if (!TypeRefComparer.Default.Equals(indexType, module.TypeSystem.String) && !TypeRefComparer.Default.Equals(indexType, module.TypeSystem.Int32))
-						throw new XamlParseException($"Binding: Unsupported indexer index type: {indexType.FullName}", lineInfo, errorCode: "CSXF1648");
+						throw new XamlParseException("XF0013", lineInfo, indexType.FullName);
 					previousPartTypeRef = indexer.PropertyType.ResolveGenericParameters(indexerDeclTypeRef);
 				}
 			}
@@ -535,7 +536,7 @@ namespace Xamarin.Forms.Build.Tasks
 					else if (TypeRefComparer.Default.Equals(indexType, module.TypeSystem.Int32) && int.TryParse(indexArg, out int index))
 						yield return Create(Ldc_I4, index);
 					else
-						throw new XamlParseException($"Binding: {indexArg} could not be parsed as an index for a {property.Name}", lineInfo, errorCode: "CSXF1649");
+						throw new XamlParseException("XF0014", lineInfo, indexArg, property.Name);
 				}
 
 				var getMethod = module.ImportReference((module.ImportReference(property.GetMethod)).ResolveGenericParameters(propDeclTypeRef, module));
@@ -719,7 +720,7 @@ namespace Xamarin.Forms.Build.Tasks
 					il.Emit(Ldstr, lastIndexArg);
 				else if (TypeRefComparer.Default.Equals(indexType, module.TypeSystem.Int32)) {
 					if (!int.TryParse(lastIndexArg, out int index))
-						throw new XamlParseException($"Binding: {lastIndexArg} could not be parsed as an index for a {lastProperty.Name}", node as IXmlLineInfo, errorCode: "CSXF1650");
+						throw new XamlParseException("XF0014", node as IXmlLineInfo, lastIndexArg, lastProperty.Name);
 					il.Emit(Ldc_I4, index);
 				}
 			}
@@ -887,7 +888,7 @@ namespace Xamarin.Forms.Build.Tasks
 			if (CanAdd(parent, propertyName, valueNode, iXmlLineInfo, context))
 				return Add(parent, propertyName, valueNode, iXmlLineInfo, context);
 
-			throw new XamlParseException($"No property, bindable property, or event found for '{localName}', or mismatching type between value and property.", iXmlLineInfo, errorCode: "CSXF1651");
+			throw new XamlParseException("XF0023", iXmlLineInfo, localName);
 		}
 
 		public static IEnumerable<Instruction> GetPropertyValue(VariableDefinition parent, XmlName propertyName, ILContext context, IXmlLineInfo lineInfo, out TypeReference propertyType)
@@ -905,7 +906,7 @@ namespace Xamarin.Forms.Build.Tasks
 			if (CanGet(parent, localName, context, out _))
 				return Get(parent, localName, lineInfo, context, out propertyType);
 
-			throw new XamlParseException($"Property {localName} is not found or does not have an accessible getter", lineInfo, errorCode: "CSXF1652");
+			throw new XamlParseException("XF0023", lineInfo, localName);
 		}
 
 		static FieldReference GetBindablePropertyReference(VariableDefinition parent, string namespaceURI, ref string localName, out bool attached, ILContext context, IXmlLineInfo iXmlLineInfo)
@@ -979,8 +980,8 @@ namespace Xamarin.Forms.Build.Tasks
 			MethodReference handlerRef = null;
 			if (handler.methodDef != null)
 				handlerRef = handler.methodDef.ResolveGenericParameters(handler.declTypeRef, module);
-			if (handler.methodDef == null) 
-				throw new XamlParseException($"EventHandler \"{value}\" with correct signature not found in type \"{declaringType}\"", iXmlLineInfo, errorCode: "CSXF1653");
+			if (handler.methodDef == null)
+				throw new XamlParseException("CS1061", iXmlLineInfo, declaringType.ToString(), value.ToString(), value.ToString());
 
 			//FIXME: eventually get the right ctor instead fo the First() one, just in case another one could exists (not even sure it's possible).
 			var ctor = module.ImportReference(eventinfo.EventType.ResolveCached().GetConstructors().First());
@@ -1338,7 +1339,7 @@ namespace Xamarin.Forms.Build.Tasks
 				if (!resourceNamesInUse.TryGetValue(parent, out var names))
 					resourceNamesInUse[parent] = (names = new List<string>());
 				if (names.Contains(key))
-					throw new XamlParseException($"A resource with the key '{key}' is already present in the ResourceDictionary.", lineInfo, errorCode: "CSXF1654");
+					throw new XamlParseException("XF0025", lineInfo, key, nameof(ResourceDictionary));
 				names.Add(key);
 				return true;
 			}
@@ -1351,7 +1352,7 @@ namespace Xamarin.Forms.Build.Tasks
 											 parameterTypes: new[] { (nodeTypeRef) }) != null)
 				return true;
 
-			throw new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo, errorCode: "CSXF1660");
+			throw new XamlParseException("XF0026", lineInfo, nameof(ResourceDictionary));
 		}
 
 		static IEnumerable<Instruction> Add(VariableDefinition parent, XmlName propertyName, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)

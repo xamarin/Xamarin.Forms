@@ -10,6 +10,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 using static Microsoft.Build.Framework.MessageImportance;
 using static Mono.Cecil.Cil.OpCodes;
