@@ -5,8 +5,8 @@ namespace Xamarin.Forms
 {
 	internal class StreamWrapper : Stream
 	{
-		readonly Stream _wrapped;
-		readonly IDisposable _additionalDisposable;
+		Stream _wrapped;
+		IDisposable _additionalDisposable;
 
 		public StreamWrapper(Stream wrapped, IDisposable additionalDisposable)
 		{
@@ -43,8 +43,6 @@ namespace Xamarin.Forms
 			set { _wrapped.Position = value; }
 		}
 
-		public event EventHandler Disposed;
-
 		public override void Flush()
 		{
 			_wrapped.Flush();
@@ -73,8 +71,10 @@ namespace Xamarin.Forms
 		protected override void Dispose(bool disposing)
 		{
 			_wrapped.Dispose();
+
 			_additionalDisposable?.Dispose();
-			Disposed?.Invoke(this, EventArgs.Empty);
+			_additionalDisposable = null;
+
 			base.Dispose(disposing);
 		}
 	}
