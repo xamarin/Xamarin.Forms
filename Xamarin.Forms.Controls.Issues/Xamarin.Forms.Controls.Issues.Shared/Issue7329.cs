@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Children =
 					{
+						new ApiLabel(),
 						new Label() { Text = "If the List View can scroll the test has passed"},
 						listView
 					}
@@ -60,6 +61,12 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ScrollListViewInsideScrollView()
 		{
+
+#if __ANDROID__
+			if (!RunningApp.IsApiHigherThan(21))
+				return;
+#endif
+
 			RunningApp.WaitForElement("1");
 			RunningApp.ScrollDownTo("30", strategy: ScrollStrategy.Gesture);
 		}
