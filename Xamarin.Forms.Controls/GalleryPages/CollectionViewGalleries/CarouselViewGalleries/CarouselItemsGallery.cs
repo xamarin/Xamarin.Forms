@@ -12,9 +12,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			var viewModel = new CarouselItemsGalleryViewModel();
 
-			Title = $"CarouselView (Items)";
+			Title = $"CarouselView (Indicators)";
 
-			var layout = new Grid
+			var grid = new Grid
 			{
 				RowDefinitions = new RowDefinitionCollection
 				{
@@ -42,7 +42,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				EmptyView = "This is the empty view"
 			};
 
-			layout.Children.Add(carouselView, 0, 0);
+			var absolute = new AbsoluteLayout();
+			absolute.Children.Add(carouselView, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All);
+
+			var indicators = new IndicatorsView
+			{
+				Margin = new Thickness(15, 20),
+				IndicatorsColor = Color.Black,
+				SelectedIndicatorColor = Color.Red
+			};
+			indicators.SetItemsSourceBy(carouselView);
+			absolute.Children.Add(indicators, new Rectangle(.5, 1, -1, -1), AbsoluteLayoutFlags.PositionProportional);
+
+			grid.Children.Add(absolute, 0, 0);
 
 			var stacklayoutButtons = new StackLayout
 			{
@@ -92,9 +104,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			stacklayoutButtons.Children.Add(removeItemButton);
 			stacklayoutButtons.Children.Add(clearItemsButton);
 
-			layout.Children.Add(stacklayoutButtons, 0, 1);
+			grid.Children.Add(stacklayoutButtons, 0, 1);
 
-			Content = layout;
+			Content = grid;
 			BindingContext = viewModel;
 		}
 
