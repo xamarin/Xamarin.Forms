@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsPasswordProperty = BindableProperty.Create("IsPassword", typeof(bool), typeof(Entry), default(bool));
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Entry), null, BindingMode.TwoWay, propertyChanged: OnTextChanged);
+		public new static readonly BindableProperty TextProperty = InputView.TextProperty;
 
 		public new static readonly BindableProperty TextColorProperty = InputView.TextColorProperty;
 
@@ -68,12 +68,6 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(IsPasswordProperty); }
 			set { SetValue(IsPasswordProperty, value); }
-		}
-
-		public string Text
-		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
 		}
 
 		public FontAttributes FontAttributes
@@ -154,8 +148,6 @@ namespace Xamarin.Forms
 
 		public event EventHandler Completed;
 
-		public event EventHandler<TextChangedEventArgs> TextChanged;
-
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendCompleted()
 		{
@@ -168,13 +160,6 @@ namespace Xamarin.Forms
 					ReturnCommand.Execute(ReturnCommandParameter);
 				}
 			}
-		}
-
-		static void OnTextChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var entry = (Entry)bindable;
-
-			entry.TextChanged?.Invoke(entry, new TextChangedEventArgs((string)oldValue, (string)newValue));
 		}
 
 		public IPlatformElementConfiguration<T, Entry> On<T>() where T : IConfigPlatform

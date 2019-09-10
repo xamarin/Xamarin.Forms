@@ -8,8 +8,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_EditorRenderer))]
 	public class Editor : InputView, IEditorController, IFontElement, IElementConfiguration<Editor>
 	{
-		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
-			=> OnTextChanged((Editor)bindable, (string)oldValue, (string)newValue));
+		public new static readonly BindableProperty TextProperty = InputView.TextProperty;
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
@@ -36,12 +35,6 @@ namespace Xamarin.Forms
 		{
 			get { return (EditorAutoSizeOption)GetValue(AutoSizeProperty); }
 			set { SetValue(AutoSizeProperty, value); }
-		}
-
-		public string Text
-		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
 		}
 
 		public FontAttributes FontAttributes
@@ -102,8 +95,6 @@ namespace Xamarin.Forms
 
 		public event EventHandler Completed;
 
-		public event EventHandler<TextChangedEventArgs> TextChanged;
-
 		public Editor()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Editor>>(() => new PlatformConfigurationRegistry<Editor>(this));
@@ -117,13 +108,14 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendCompleted()
 			=> Completed?.Invoke(this, EventArgs.Empty);
-		
-		private static void OnTextChanged(Editor bindable, string oldValue, string newValue)
+
+		protected override void OnTextChanged(string oldValue, string newValue)
 		{
-			bindable.TextChanged?.Invoke(bindable, new TextChangedEventArgs(oldValue, newValue));
-			if (bindable.AutoSize == EditorAutoSizeOption.TextChanges)
+			base.OnTextChanged(oldValue, newValue);
+
+			if (AutoSize == EditorAutoSizeOption.TextChanges)
 			{
-				bindable.InvalidateMeasure();
+				InvalidateMeasure();
 			}
 		}
 	}

@@ -1,10 +1,16 @@
+using System;
+
 namespace Xamarin.Forms
 {
 	public class InputView : View, IPlaceholderElement, ITextElement
 	{
-		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create("Keyboard", typeof(Keyboard), typeof(InputView), Keyboard.Default,
+		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(InputView),
+			propertyChanged: (bindable, oldValue, newValue) => ((InputView)bindable).OnTextChanged((string)oldValue, (string)newValue));
+
+		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(Keyboard), typeof(InputView), Keyboard.Default,
 			coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
-		public static readonly BindableProperty IsSpellCheckEnabledProperty = BindableProperty.Create("IsSpellCheckEnabled", typeof(bool), typeof(InputView), true);
+
+		public static readonly BindableProperty IsSpellCheckEnabledProperty = BindableProperty.Create(nameof(IsSpellCheckEnabled), typeof(bool), typeof(InputView), true);
 
 		public static readonly BindableProperty MaxLengthProperty = BindableProperty.Create(nameof(MaxLength), typeof(int), typeof(int), int.MaxValue);
 
@@ -26,6 +32,12 @@ namespace Xamarin.Forms
 
 		internal InputView()
 		{
+		}
+
+		public string Text
+		{
+			get => (string)GetValue(TextProperty);
+			set => SetValue(TextProperty, value);
 		}
 
 		public Keyboard Keyboard
@@ -68,6 +80,13 @@ namespace Xamarin.Forms
 		{
 			get => (double)GetValue(CharacterSpacingProperty);
 			set => SetValue(CharacterSpacingProperty, value);
+		}
+
+		public event EventHandler<TextChangedEventArgs> TextChanged;
+
+		protected virtual void OnTextChanged(string oldValue, string newValue)
+		{
+			TextChanged?.Invoke(this, new TextChangedEventArgs(oldValue, newValue));
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
