@@ -291,10 +291,8 @@ namespace Xamarin.Forms.Xaml
 												.FirstOrDefault(fi => (fi.IsAssembly || fi.IsPublic) && fi.Name == localName + "Property");
 #endif
 			Exception exception = null;
-			if (exception == null && bindableFieldInfo == null) {
-				exception =
-					new XamlParseException("XF0010", lineInfo, localName + "Property", elementType.Name);
-			}
+			if (exception == null && bindableFieldInfo == null)
+				exception = new XamlParseException("XF0010", lineInfo, localName + "Property", elementType.Name);
 
 			if (exception == null)
 				return bindableFieldInfo.GetValue(null) as BindableProperty;

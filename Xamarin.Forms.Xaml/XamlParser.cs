@@ -414,7 +414,7 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			if (type == null)
-				exception = new XamlParseException("XF0045", xmlInfo, type.ToString(), xmlType.NamespaceUri);
+				exception = new XamlParseException("XF0045", xmlInfo, xmlType.Name, xmlType.NamespaceUri);
 
 			return type;
 		}

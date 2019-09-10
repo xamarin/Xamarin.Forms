@@ -11,7 +11,6 @@ namespace Xamarin.Forms.Exceptions
 #endif
 	public class XamlParseException : Exception
 	{
-		// readonly string _unformattedMessage;
 		[ImportMany]
 		static IEnumerable<IXamlException> exceptions { get; set; }
 

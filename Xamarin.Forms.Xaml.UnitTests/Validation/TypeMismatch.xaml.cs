@@ -26,9 +26,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ThrowsOnMismatchingType ([Values(true, false)]bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws(new XamlParseExceptionConstraint(7, 16, m => m.StartsWith("No property, bindable property", StringComparison.Ordinal)), () => MockCompiler.Compile(typeof(TypeMismatch)));
+					Assert.Throws(new XamlParseExceptionConstraint(7, 16, m => m.StartsWith("Position 7:16. No property, bindable property", StringComparison.Ordinal)), () => MockCompiler.Compile(typeof(TypeMismatch)));
 				else
-					Assert.Throws(new XamlParseExceptionConstraint(7, 16, m => m.StartsWith("Cannot assign property", StringComparison.Ordinal)), () => new TypeMismatch(useCompiledXaml));
+					Assert.Throws(new XamlParseExceptionConstraint(7, 16, m => m.StartsWith("Position 7:16. Cannot assign property", StringComparison.Ordinal)), () => new TypeMismatch(useCompiledXaml));
 			}
 		}
 	}

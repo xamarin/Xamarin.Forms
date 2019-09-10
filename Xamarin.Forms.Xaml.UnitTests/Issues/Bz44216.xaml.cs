@@ -49,9 +49,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void DonSetValueOnPrivateBP(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws(new XamlParseExceptionConstraint(7, 26, s => s.StartsWith("No property,", StringComparison.Ordinal)), () => MockCompiler.Compile(typeof(Bz44216)));
+					Assert.Throws(new XamlParseExceptionConstraint(7, 26, s => s.StartsWith("Position 7:26. No property,", StringComparison.Ordinal)), () => MockCompiler.Compile(typeof(Bz44216)));
 				else
-					Assert.Throws(new XamlParseExceptionConstraint(7, 26, s=> s.StartsWith("Cannot assign property", StringComparison.Ordinal)), () => new Bz44216(useCompiledXaml));
+					Assert.Throws(new XamlParseExceptionConstraint(7, 26, s => s.StartsWith("Position 7:26. Cannot assign property")), () => new Bz44216(useCompiledXaml));
 			}
 		}
 	}

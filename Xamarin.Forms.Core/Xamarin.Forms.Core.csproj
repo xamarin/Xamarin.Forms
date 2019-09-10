@@ -21,9 +21,6 @@
 		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
 		<PackageReference Include="System.ValueTuple" Version="4.5.0" />
 	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="System.Composition" Version="1.2.0" />
-	</ItemGroup>	
 	<PropertyGroup>
     <GitInfoReportImportance>high</GitInfoReportImportance>
   </PropertyGroup>

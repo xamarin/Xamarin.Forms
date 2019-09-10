@@ -26,9 +26,6 @@ namespace Xamarin.Forms.Exceptions
 				case 0102:
 					format.UnformattedMessage = "The type '{0}' already contains a definition for '{1}'";
 					break;
-				case 0618:
-					format.UnformattedMessage = "'{0}' is obsolete: '{1}'";
-					break;
 				case 1061:
 					format.UnformattedMessage = "'{0}' does not contain a definition for '{1}' and no extension method '{2}' accepting a first argument of type '{0}' could be found (are you missing a using directive or an assembly reference?).";
 					break;

@@ -103,9 +103,7 @@ namespace Xamarin.Forms
 				throw new XamlParseException("XF0002", lineinfo, name, type.Name);
 			var bp = bpinfo.GetValue(null) as BindableProperty;
 			var isObsolete = bpinfo.GetCustomAttribute<ObsoleteAttribute>() != null;
-			if (isObsolete)
-				throw new XamlParseException("CS0618", lineinfo, propertyName, $"{type.Name}.{name}");
-			if (bp.PropertyName != propertyName)
+			if (bp.PropertyName != propertyName && !isObsolete)
 				throw new XamlParseException("XF0010", lineinfo, $"{type.Name}.{name}", propertyName);
 			return bp;
 		}

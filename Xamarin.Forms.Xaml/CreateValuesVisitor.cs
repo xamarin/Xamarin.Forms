@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Xaml
 						.Value as string;
 				var name = new XmlName("", propname);
 				if (!enode.Properties.TryGetValue(name, out INode node))
-					throw new XamlParseException("XF0002", enode as IXmlLineInfo,  propname, ctorInfo.DeclaringType.FullName);=======
+					throw new XamlParseException("XF0002", enode as IXmlLineInfo,  propname, ctorInfo.DeclaringType.FullName);
 				if (!enode.SkipProperties.Contains(name))
 					enode.SkipProperties.Add(name);
 				var value = Context.Values[node];
