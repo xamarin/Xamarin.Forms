@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		void UpdateFont()
-		{ 
+		{
 			if (Control == null || Element == null)
 				return;
 
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			// Recreate the font with the default size
 			newFont = NSFont.FromDescription(newFont.FontDescriptor, originalFontSize.FloatValue);
 
-			// Apply the font 
+			// Apply the font
 			Control.Font = newFont;
 		}
 
