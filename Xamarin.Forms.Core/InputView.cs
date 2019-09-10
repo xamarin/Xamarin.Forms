@@ -1,6 +1,6 @@
 namespace Xamarin.Forms
 {
-	public class InputView : View
+	public class InputView : View, IPlaceholderElement, ITextElement
 	{
 		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create("Keyboard", typeof(Keyboard), typeof(InputView), Keyboard.Default,
 			coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
@@ -10,10 +10,18 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsReadOnlyProperty = BindableProperty.Create(nameof(IsReadOnly), typeof(bool), typeof(InputView), false);
 
+		public static readonly BindableProperty PlaceholderProperty = PlaceholderElement.PlaceholderProperty;
+
+		public static readonly BindableProperty PlaceholderColorProperty = PlaceholderElement.PlaceholderColorProperty;
+
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
+
 		public int MaxLength
 		{
-			get { return (int)GetValue(MaxLengthProperty); }
-			set { SetValue(MaxLengthProperty, value); }
+			get => (int)GetValue(MaxLengthProperty);
+			set => SetValue(MaxLengthProperty, value);
 		}
 
 		internal InputView()
@@ -22,20 +30,53 @@ namespace Xamarin.Forms
 
 		public Keyboard Keyboard
 		{
-			get { return (Keyboard)GetValue(KeyboardProperty); }
-			set { SetValue(KeyboardProperty, value); }
+			get => (Keyboard)GetValue(KeyboardProperty);
+			set => SetValue(KeyboardProperty, value);
 		}
 
 		public bool IsSpellCheckEnabled
 		{
-			get { return (bool)GetValue(IsSpellCheckEnabledProperty); }
-			set { SetValue(IsSpellCheckEnabledProperty, value); }
+			get => (bool)GetValue(IsSpellCheckEnabledProperty);
+			set => SetValue(IsSpellCheckEnabledProperty, value);
 		}
 
 		public bool IsReadOnly
 		{
-			get { return (bool)GetValue(IsReadOnlyProperty); }
-			set { SetValue(IsReadOnlyProperty, value); }
+			get => (bool)GetValue(IsReadOnlyProperty);
+			set => SetValue(IsReadOnlyProperty, value);
+		}
+
+		public string Placeholder
+		{
+			get => (string)GetValue(PlaceholderProperty);
+			set => SetValue(PlaceholderProperty, value);
+		}
+
+		public Color PlaceholderColor
+		{
+			get => (Color)GetValue(PlaceholderColorProperty);
+			set => SetValue(PlaceholderColorProperty, value);
+		}
+
+		public Color TextColor
+		{
+			get => (Color)GetValue(TextColorProperty);
+			set => SetValue(TextColorProperty, value);
+		}
+
+		public double CharacterSpacing
+		{
+			get => (double)GetValue(CharacterSpacingProperty);
+			set => SetValue(CharacterSpacingProperty, value);
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
 		}
 	}
 
