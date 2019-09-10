@@ -1,4 +1,4 @@
-﻿using Android.Animation;
+using Android.Animation;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using System;
@@ -12,6 +12,8 @@ namespace Xamarin.Forms.Platform.Android
 		readonly AColor _endColor;
 		readonly AColor _startColor;
 		float _progress;
+		bool _disposed;
+		ValueAnimator _animator;
 
 		public ColorChangeRevealDrawable(AColor startColor, AColor endColor, Point center) : base()
 		{
@@ -20,11 +22,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_startColor != _endColor)
 			{
-				ValueAnimator animator = ValueAnimator.OfFloat(0, 1);
-				animator.SetInterpolator(new global::Android.Views.Animations.DecelerateInterpolator());
-				animator.SetDuration(500);
-				animator.Update += OnUpdate;
-				animator.Start();
+				_animator = ValueAnimator.OfFloat(0, 1);
+				_animator.SetInterpolator(new global::Android.Views.Animations.DecelerateInterpolator());
+				_animator.SetDuration(500);
+				_animator.Update += OnUpdate;
+				_animator.Start();
 				_center = center;
 			}
 			else
@@ -54,14 +56,39 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Color = _endColor
 			};
+
 			canvas.DrawCircle(centerX, centerY, radius * _progress, paint);
 		}
 
 		void OnUpdate(object sender, ValueAnimator.AnimatorUpdateEventArgs e)
 		{
 			_progress = (float)e.Animation.AnimatedValue;
-			if (!this.IsDisposed())
-				InvalidateSelf();
+				
+			InvalidateSelf();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+                return;
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (_animator != null)
+				{
+					_animator.Update -= OnUpdate;
+			
+					_animator.Cancel();
+				
+					_animator.Dispose();
+
+					_animator = null;
+				}
+			}
+
+			base.Dispose(disposing);
 		}
 	}
 }

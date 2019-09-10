@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _disposed;
 		Color _lastColor = Color.Default;
 		ColorStateList _colorStateList;
+		ColorChangeRevealDrawable _colorChangeRevealDrawable;
 
 		public ShellBottomNavViewAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
 		{
@@ -80,7 +81,9 @@ namespace Xamarin.Forms.Platform.Android
 				var child = menuView.GetChildAt(index);
 				var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
 
-				bottomView.SetBackground(new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint));
+				_colorChangeRevealDrawable = new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint);
+
+				bottomView.SetBackground(_colorChangeRevealDrawable);
 
 				_lastColor = color;
 			}
@@ -140,11 +143,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_defaultList?.Dispose();
 				_colorStateList?.Dispose();
+				_colorChangeRevealDrawable?.Dispose();
 
 				_shellItem = null;
 				_shellContext = null;
 				_defaultList = null;
 				_colorStateList = null;
+				_colorChangeRevealDrawable = null;
 			}
 		}
 
