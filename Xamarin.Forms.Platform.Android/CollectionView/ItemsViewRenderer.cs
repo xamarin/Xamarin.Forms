@@ -533,10 +533,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (effectiveFlowDirection.IsRightToLeft())
 			{
 				linearLayoutManager.ReverseLayout = true;
-				return;
 			}
-
-			if (effectiveFlowDirection.IsLeftToRight())
+			else if (effectiveFlowDirection.IsLeftToRight())
 			{
 				linearLayoutManager.ReverseLayout = false;
 			}
