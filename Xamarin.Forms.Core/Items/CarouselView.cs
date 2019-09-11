@@ -216,11 +216,13 @@ namespace Xamarin.Forms
 			return 0;
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetCurrentItem(object item)
 		{
 			SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);
