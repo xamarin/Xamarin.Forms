@@ -1066,7 +1066,7 @@ namespace Xamarin.Forms
 
 		internal Element GetVisiblePage()
 		{
-			if (CurrentItem.CurrentItem is IShellSectionController scc)
+			if (CurrentItem?.CurrentItem is IShellSectionController scc)
 				return scc.PresentedPage;
 
 			return null;
