@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platform.Android
 		bool _disposed;
 		Color _lastColor = Color.Default;
 		ColorStateList _colorStateList;
-		ColorChangeRevealDrawable _colorChangeRevealDrawable;
 
 		public ShellBottomNavViewAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
 		{
@@ -67,6 +66,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			var menuView = bottomView.GetChildAt(0) as BottomNavigationMenuView;
 
+			var oldBackground = bottomView.Background;
+
 			if (menuView == null)
 			{
 				bottomView.SetBackground(new ColorDrawable(color.ToAndroid()));
@@ -81,12 +82,12 @@ namespace Xamarin.Forms.Platform.Android
 				var child = menuView.GetChildAt(index);
 				var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
 
-				_colorChangeRevealDrawable = new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint);
-
-				bottomView.SetBackground(_colorChangeRevealDrawable);
+				bottomView.SetBackground(new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint));
 
 				_lastColor = color;
 			}
+
+			oldBackground?.Dispose();
 		}
 
 		ColorStateList MakeColorStateList(Color titleColor, Color disabledColor, Color unselectedColor)
@@ -143,13 +144,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_defaultList?.Dispose();
 				_colorStateList?.Dispose();
-				_colorChangeRevealDrawable?.Dispose();
 
 				_shellItem = null;
 				_shellContext = null;
 				_defaultList = null;
 				_colorStateList = null;
-				_colorChangeRevealDrawable = null;
 			}
 		}
 

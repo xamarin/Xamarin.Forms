@@ -7,7 +7,6 @@ using Android.Views;
 using Android.Widget;
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
@@ -357,6 +356,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Element.PropertyChanged -= OnElementPropertyChanged;
 				Element.SizeChanged -= OnElementSizeChanged;
+
+				((IShellController)Element).RemoveAppearanceObserver(this);
 
 				// This cast is necessary because IShellFlyoutRenderer doesn't implement IDisposable
 				(_flyoutRenderer as IDisposable)?.Dispose();

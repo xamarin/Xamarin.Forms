@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+using System;
 using Android.Support.Design.Widget;
 using Android.Support.Design.Internal;
-
 #if __ANDROID_28__
 using ALabelVisibilityMode = Android.Support.Design.BottomNavigation.LabelVisibilityMode;
 #endif
@@ -41,8 +30,8 @@ namespace Xamarin.Forms.Platform.Android
 				shiftMode.Accessible = true;
 				shiftMode.SetBoolean(menuView, enableShiftMode);
 				shiftMode.Accessible = false;
-				shiftMode.Dispose();
 #endif
+
 				for (int i = 0; i < menuView.ChildCount; i++)
 				{
 					var child = menuView.GetChildAt(i);

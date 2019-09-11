@@ -4,18 +4,14 @@ using Android.Support.Design.Widget;
 using Android.Views;
 using Android.Widget;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using ColorStateList = Android.Content.Res.ColorStateList;
 using IMenu = Android.Views.IMenu;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using Orientation = Android.Widget.Orientation;
-using Typeface = Android.Graphics.Typeface;
-using TypefaceStyle = Android.Graphics.TypefaceStyle;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -95,21 +91,23 @@ namespace Xamarin.Forms.Platform.Android
 
 				((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
 
+				_appearanceTracker?.Dispose();
+
 				if (_bottomView != null)
 				{
 					_bottomView.SetOnNavigationItemSelectedListener(null);
 
 					_bottomView.Background?.Dispose();
 					_bottomView.Dispose();
-					_navigationArea?.Dispose();
-					_appearanceTracker?.Dispose();
-					_outerLayout?.Dispose();
-
-					_bottomView = null;
-					_navigationArea = null;
-					_appearanceTracker = null;
-					_outerLayout = null;
 				}
+
+				_navigationArea?.Dispose();
+				_outerLayout?.Dispose();
+
+				_bottomView = null;
+				_navigationArea = null;
+				_appearanceTracker = null;
+				_outerLayout = null;
 			}
 
 			base.Dispose(disposing);
@@ -310,7 +308,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void ResetAppearance() => _appearanceTracker.ResetAppearance(_bottomView);
 
-		protected virtual async void SetupMenu(IMenu menu, int maxBottomItems, ShellItem shellItem)
+		protected virtual void SetupMenu(IMenu menu, int maxBottomItems, ShellItem shellItem)
 		{
 			menu.Clear();
 			bool showMore = ShellItem.Items.Count > maxBottomItems;
@@ -319,8 +317,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			var currentIndex = shellItem.Items.IndexOf(ShellSection);
 
-			var loadTasks = new List<Task>();
-
 			for (int i = 0; i < end; i++)
 			{
 				var item = shellItem.Items[i];
@@ -328,11 +324,11 @@ namespace Xamarin.Forms.Platform.Android
 
 				var menuItem = menu.Add(0, i, 0, title);
 
-				loadTasks.Add(ShellContext.ApplyDrawableAsync(item, BaseShellItem.IconProperty, icon =>
+				ShellContext.ApplyDrawableAsync(item, BaseShellItem.IconProperty, icon =>
 				{
 					if (icon != null)
 						menuItem.SetIcon(icon);
-				}));
+				});
 
 				UpdateShellSectionEnabled(item, menuItem);
 
@@ -356,9 +352,6 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateTabBarVisibility();
 
 			_bottomView.SetShiftMode(false, false);
-
-			if (loadTasks.Count > 0)
-				await Task.WhenAll(loadTasks);
 		}
 
 		protected virtual void UpdateShellSectionEnabled(ShellSection shellSection, IMenuItem menuItem)
