@@ -69,5 +69,16 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 		}
+#if UITEST
+		[Test]
+		public void IsRefreshingAndCommandTest()
+		{
+			RunningApp.Tap(q => q.Button("Toggle Refresh"));
+			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: True"));
+			RunningApp.Screenshot("Refreshing");
+			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: False"));
+			RunningApp.Screenshot("Refreshed");
+		}
+#endif
 	}
 }
