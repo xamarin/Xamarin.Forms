@@ -1,3 +1,4 @@
+using System;
 using Android.Views;
 using ATextAlignment = Android.Views.TextAlignment;
 
@@ -39,6 +40,8 @@ namespace Xamarin.Forms.Platform.Android
 					return GravityFlags.Top;
 				case TextAlignment.End:
 					return GravityFlags.Bottom;
+				case TextAlignment.Justify:
+					throw new NotSupportedException("Justify is not supported for vertical alignment");
 				default:
 					return GravityFlags.CenterVertical;
 			}

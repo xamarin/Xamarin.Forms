@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			var isLtr = flowDirection.IsLeftToRight();
 			switch (alignment)
 			{
+				case TextAlignment.Justify:
+					return NSTextAlignment.Justified;
 				case TextAlignment.Center:
 					return NSTextAlignment.Center;
 				case TextAlignment.End:

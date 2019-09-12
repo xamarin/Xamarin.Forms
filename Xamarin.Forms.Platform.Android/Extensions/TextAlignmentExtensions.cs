@@ -1,6 +1,8 @@
-﻿using Android.OS;
+using Android.OS;
 using Android.Widget;
 using AGravityFlags = Android.Views.GravityFlags;
+using AJustificationMode = Android.Text.JustificationMode;
+using ATextAlignement = Android.Views.TextAlignment;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -10,8 +12,18 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if ((int)Build.VERSION.SdkInt < 17 || !hasRtlSupport)
 				view.Gravity = alignment.ToHorizontalGravityFlags() | orMask;
-			else
+			else if ((int)Build.VERSION.SdkInt < 26)
 				view.TextAlignment = alignment.ToTextAlignment();
+			else if (alignment == TextAlignment.Justify)
+			{
+				view.JustificationMode = AJustificationMode.InterWord;
+				view.TextAlignment = ATextAlignement.ViewStart;
+			}
+			else
+			{
+				view.JustificationMode = AJustificationMode.None;
+				view.TextAlignment = alignment.ToTextAlignment();
+			}
 		}
 
 		internal static void UpdateVerticalAlignment(this EditText view, TextAlignment alignment, AGravityFlags orMask = AGravityFlags.NoGravity)

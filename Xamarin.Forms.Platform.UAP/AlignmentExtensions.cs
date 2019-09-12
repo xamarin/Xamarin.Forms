@@ -1,3 +1,4 @@
+using System;
 using Windows.UI.Xaml;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -9,6 +10,8 @@ namespace Xamarin.Forms.Platform.UWP
 			var isLtr = flowDirection.IsLeftToRight();
 			switch (alignment)
 			{
+				case TextAlignment.Justify:
+					return Windows.UI.Xaml.TextAlignment.Justify;
 				case TextAlignment.Center:
 					return Windows.UI.Xaml.TextAlignment.Center;
 				case TextAlignment.End:
@@ -28,6 +31,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			switch (alignment)
 			{
+				case TextAlignment.Justify:
+					throw new NotSupportedException("Justify is not supported for vertical alignment");
 				case TextAlignment.Center:
 					return VerticalAlignment.Center;
 				case TextAlignment.End:

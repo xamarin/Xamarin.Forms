@@ -1,6 +1,7 @@
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.OS;
 using Android.Text;
 using Android.Util;
 using Android.Views;
@@ -120,7 +121,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineBreakMode();
 				UpdateCharacterSpacing();
 				UpdateLineHeight();
-				UpdateGravity();
+				UpdateGravityAndJustificationModel();
 				UpdateMaxLines();
 			}
 			else
@@ -129,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (e.OldElement.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
 				if (e.OldElement.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment || e.OldElement.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
-					UpdateGravity();
+					UpdateGravityAndJustificationModel();
 				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
 				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
@@ -150,7 +151,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
-				UpdateGravity();
+				UpdateGravityAndJustificationModel();
 			else if (e.IsOneOf(Label.TextColorProperty, Label.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
@@ -223,10 +224,12 @@ namespace Xamarin.Forms.Platform.Android
 				_view.PaintFlags |= PaintFlags.UnderlineText;
 		}
 
-		void UpdateGravity()
+		void UpdateGravityAndJustificationModel()
 		{
 			Label label = Element;
 
+			if ((int)Build.VERSION.SdkInt > 25)
+				_view.JustificationMode = label.HorizontalTextAlignment == Xamarin.Forms.TextAlignment.Justify ? JustificationMode.InterWord : JustificationMode.None;
 			_view.Gravity = label.HorizontalTextAlignment.ToHorizontalGravityFlags() | label.VerticalTextAlignment.ToVerticalGravityFlags();
 
 			_lastSizeRequest = null;

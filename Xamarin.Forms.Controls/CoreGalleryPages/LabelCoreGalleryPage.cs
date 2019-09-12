@@ -102,7 +102,16 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
-			var yAlignCenterContainer = new ViewContainer<Label> (Test.Label.VerticalTextAlignmentCenter, 
+			var xAlignJustifyContainer = new ViewContainer<Label>(Test.Label.HorizontalTextAlignmentJustify,
+				new Label {
+					Text = "HorizontalTextAlignment Justify with long text : " + longText,
+					HorizontalTextAlignment = TextAlignment.Justify,
+					HeightRequest = alignmentTestsHeightRequest,
+					WidthRequest = alignmentTestsWidthRequest
+				}
+			);
+
+			var yAlignCenterContainer = new ViewContainer<Label>(Test.Label.VerticalTextAlignmentCenter,
 				new Label {
 					Text = "VerticalTextAlignment Start",
  					VerticalTextAlignment = TextAlignment.Center,
@@ -299,6 +308,7 @@ namespace Xamarin.Forms.Controls
 			Add (xAlignCenterContainer);
 			Add (xAlignEndContainer);
 			Add (xAlignStartContainer);
+			Add (xAlignJustifyContainer);
 			Add (yAlignCenterContainer);
 			Add (yAlignEndContainer);
 			Add (yAlignStartContainer);
