@@ -1,6 +1,9 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -855,7 +858,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			t.Style = s;
 			
 			Assert.AreEqual(log.Messages.Count, 1);
-			Assert.AreEqual($"[Styles] Style TargetType {s.TargetType.FullName} is not compatible with element target type {t.TargetType}" + log.Messages.FirstOrDefault());
+			Assert.AreEqual(log.Messages.FirstOrDefault(), $"[Styles] Style TargetType Xamarin.Forms.Button is not compatible with element target type Xamarin.Forms.View");
 		}
 
 		[Test]
@@ -867,7 +870,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			t.Style = s;
 
 			Assert.AreEqual(log.Messages.Count, 1);
-			Assert.AreEqual($"[Styles] Style TargetType {s.TargetType.FullName} is not compatible with element target type {t.TargetType}" + log.Messages.FirstOrDefault());
+			Assert.AreEqual(log.Messages.FirstOrDefault(), $"[Styles] Style TargetType Xamarin.Forms.Button is not compatible with element target type Xamarin.Forms.Label");
 		}
 
 		[Test]
