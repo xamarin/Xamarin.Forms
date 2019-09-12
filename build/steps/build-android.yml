@@ -78,6 +78,11 @@ jobs:
         inputs:
           solution: ${{ parameters.buildTaskPath }}
 
+      - task: NuGetCommand@2
+        displayName: 'Nuget restore ${{ parameters.buildControlsPath  }}'
+        inputs:
+          solution: ${{ parameters.buildControlsPath }}
+
       - task: MSBuild@1
         displayName: 'Build ${{ parameters.buildControlsPath  }}'
         inputs:
