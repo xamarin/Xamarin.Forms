@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Msbuild.Sdk.Extras/2.0.41">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0</TargetFramework>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.0;uap10.0.14393</TargetFrameworks>
+    <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.14393'">10.0.16299.0</TargetPlatformVersion>
     <XFDisableTargetsValidation>True</XFDisableTargetsValidation>
   </PropertyGroup>
  <ItemGroup>
