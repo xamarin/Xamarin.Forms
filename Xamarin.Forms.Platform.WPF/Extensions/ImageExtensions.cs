@@ -10,12 +10,8 @@ using WImageSource = System.Windows.Media.ImageSource;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	/// <summary>Helper to convert xamarin image stuff to wpf image stuff.</summary>
 	public static class ImageExtensions
 	{
-		/// <summary>Convert xamarin stretch to wpf aspect.</summary>
-		/// <param name="aspect"></param>
-		/// <returns></returns>
 		public static Stretch ToStretch(this Aspect aspect)
 		{
 			switch (aspect)
@@ -30,10 +26,6 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		/// <summary>Convert a xamarin image source to a wpf image source.</summary>
-		/// <param name="source">Xamarin forms image source</param>
-		/// <param name="cancellationToken">Cancellation token for the operation.</param>
-		/// <returns>Wpf image source</returns>
 		public static async Task<WImageSource> ToWindowsImageSourceAsync(this ImageSource source, CancellationToken cancellationToken = default)
 		{
 			if (source == null || source.IsEmpty)
