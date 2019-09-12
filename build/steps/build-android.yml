@@ -9,6 +9,7 @@ parameters:
   postBuildSteps: []  # any additional steps to run after the build
   slnPath : 'Xamarin.Forms.sln'
   buildTaskPath : 'Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj'
+  buildControlsPath : 'Xamarin.Forms.Controls/Xamarin.Forms.Controls.csproj'
   androidPath : 'Xamarin.Forms.ControlGallery.Android'
   androidProjectPath : 'Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj'
   androidProjectArguments : ''
@@ -76,6 +77,11 @@ jobs:
         displayName: 'Build ${{ parameters.buildTaskPath  }}'
         inputs:
           solution: ${{ parameters.buildTaskPath }}
+
+      - task: MSBuild@1
+        displayName: 'Build ${{ parameters.buildControlsPath  }}'
+        inputs:
+          solution: ${{ parameters.buildControlsPath }}
 
       - task: MSBuild@1
         displayName: 'Build Android ${{ parameters.name }}'
