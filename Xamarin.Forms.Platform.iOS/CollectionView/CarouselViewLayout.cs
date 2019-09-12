@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var top = insets.Top + (float)_carouselView.PeekAreaInsets.Top;
 			var bottom = insets.Bottom + (float)_carouselView.PeekAreaInsets.Bottom;
 
-			// We give some insets so the user scroll to the first and last item
+			// We give some insets so the user can scroll to the first and last item
 			if (_carouselView.NumberOfSideItems > 0)
 			{
 				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
