@@ -1,6 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
+using System;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -17,10 +18,10 @@ namespace Xamarin.Forms.Controls.Issues
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 2, "Issue Description (Markup)", PlatformAffected.Default)]
-	public partial class _TemplateMarkup : TestContentPage
+	[Issue(IssueTracker.Github, 5108, "Frame with a shadow on iOS adds a shadow to the contents", PlatformAffected.iOS)]
+	public partial class Issue5108 : TestContentPage
 	{
-		public _TemplateMarkup()
+		public Issue5108()
 		{
 #if APP
 			InitializeComponent();
@@ -29,36 +30,41 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			BindingContext = new ViewModelIssue2();
 		}
 
-#if UITEST
-		[Test]
-		public void Issue2Test()
-		{
-			// Delete this and all other UITEST sections if there is no way to automate the test. Otherwise, be sure to rename the test and update the Category attribute on the class. Note that you can add multiple categories.
-			RunningApp.Screenshot("I am at Issue2");
-			RunningApp.WaitForElement(q => q.Marked("Issue2Label"));
-			RunningApp.Screenshot("I see the Label");
-		}
-#endif
-	}
 
-	[Preserve(AllMembers = true)]
-	public class ViewModelIssue2
-	{
-		public ViewModelIssue2()
+		private void MarginButton_Clicked(object sender, EventArgs e)
 		{
-			
-		}
-	}
+			if (myframe.Margin.Top == 20)
+				myframe.Margin = new Thickness(5);
+			else
+				myframe.Margin = new Thickness(20);
 
-	[Preserve(AllMembers = true)]
-	public class ModelIssue2
-	{
-		public ModelIssue2()
+		}
+
+		private void HasShadowButton_Clicked(object sender, EventArgs e)
 		{
-			
+			myframe.HasShadow = !myframe.HasShadow;
+		}
+
+		private void RadiusButton_Clicked(object sender, EventArgs e)
+		{
+			if (myframe.CornerRadius == 10)
+				myframe.CornerRadius = 20;
+			else
+				myframe.CornerRadius = 10;
+		}
+
+		Color? initialColor = null;
+		private void BackgroundButton_Clicked(object sender, EventArgs e)
+		{
+			if (!initialColor.HasValue)
+				initialColor = myframe.BackgroundColor;
+
+			if (myframe.BackgroundColor == initialColor.Value)
+				myframe.BackgroundColor = Color.HotPink;
+			else
+				myframe.BackgroundColor = initialColor.Value;
 		}
 	}
 }
