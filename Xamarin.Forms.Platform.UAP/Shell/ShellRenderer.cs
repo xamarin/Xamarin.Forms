@@ -29,9 +29,9 @@ namespace Xamarin.Forms.Platform.UWP
 			Content = ItemRenderer = CreateShellItemRenderer();
 			MenuItemTemplateSelector = CreateShellFlyoutTemplateSelector();
 			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
-			PaneClosing += (s, e) => OnPaneClosed();
+				PaneClosing += (s, e) => OnPaneClosed();
 			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
-			PaneOpening += (s, e) => OnPaneOpening();
+				PaneOpening += (s, e) => OnPaneOpening();
 			ItemInvoked += OnMenuItemInvoked;
 		}
 
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnPaneClosed()
 		{
-			if(Shell != null)
+			if (Shell != null)
 				Shell.FlyoutIsPresented = false;
 			UpdatePaneButtonColor("TogglePaneButton", true);
 			UpdatePaneButtonColor("NavigationViewBackButton", true);
@@ -154,13 +154,13 @@ namespace Xamarin.Forms.Platform.UWP
 		IEnumerable<object> IterateItems()
 		{
 			var groups = ((IShellController)Shell).GenerateFlyoutGrouping();
-			foreach(var group in groups)
+			foreach (var group in groups)
 			{
 				if (group.Count > 0 && group != groups[0])
 				{
 					yield return null; // Creates a seperator
 				}
-				foreach(var item in group)
+				foreach (var item in group)
 				{
 					yield return item;
 				}
@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.UWP
 		#endregion IAppearanceObserver
 
 		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
-		{			
+		{
 			switch (behavior)
 			{
 				case FlyoutBehavior.Disabled:

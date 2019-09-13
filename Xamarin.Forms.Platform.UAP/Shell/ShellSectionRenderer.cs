@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal void NavigateToShellSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
-			if(ShellSection != null)
+			if (ShellSection != null)
 			{
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
 				((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged -= ShellSectionRenderer_CollectionChanged;
@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Page = ((IShellContentController)shellContent).GetOrCreateContent();
 				Page.PropertyChanged += Page_PropertyChanged;
-				
+
 				Frame.Navigate((ContentPage)Page, GetTransitionInfo(source));
 				UpdateSearchHandler(Shell.GetSearchHandler(Page));
 			}
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		private void Page_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName == Shell.SearchHandlerProperty.PropertyName)
+			if (e.PropertyName == Shell.SearchHandlerProperty.PropertyName)
 			{
 				UpdateSearchHandler(Shell.GetSearchHandler(Page));
 			}
@@ -213,9 +213,9 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_currentSearchHandler != null)
 			{
-				if(_currentSearchHandler.QueryIcon is FileImageSource fis)
+				if (_currentSearchHandler.QueryIcon is FileImageSource fis)
 					AutoSuggestBox.QueryIcon = new BitmapIcon() { UriSource = new Uri("ms-appx:///" + fis.File) };
-				else 
+				else
 					AutoSuggestBox.QueryIcon = new SymbolIcon(Symbol.Find);
 			}
 		}

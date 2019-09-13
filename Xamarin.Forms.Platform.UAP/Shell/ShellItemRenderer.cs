@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.UWP
 				TextTrimming = Windows.UI.Xaml.TextTrimming.CharacterEllipsis,
 				TextWrapping = Windows.UI.Xaml.TextWrapping.NoWrap
 			};
-			_HeaderArea = new Windows.UI.Xaml.Controls.Grid() { Height=40, Padding = new Windows.UI.Xaml.Thickness(10,0,10,0) };
+			_HeaderArea = new Windows.UI.Xaml.Controls.Grid() { Height = 40, Padding = new Windows.UI.Xaml.Thickness(10, 0, 10, 0) };
 			_HeaderArea.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
 			_HeaderArea.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
 			_HeaderArea.Children.Add(_Title);
@@ -91,8 +91,8 @@ namespace Xamarin.Forms.Platform.UWP
 				inset += 45;
 			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
 			{
-			if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
-				inset += 45;
+				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
+					inset += 45;
 			}
 			_HeaderArea.Padding = new Windows.UI.Xaml.Thickness(inset, 0, 0, 0);
 		}
@@ -108,7 +108,10 @@ namespace Xamarin.Forms.Platform.UWP
 					var section = ShellItem.Items[i];
 					var btn = new Windows.UI.Xaml.Controls.AppBarButton()
 					{
-						Label = section.Title, Width = double.NaN, MinWidth = 68, MaxWidth = 200
+						Label = section.Title,
+						Width = double.NaN,
+						MinWidth = 68,
+						MaxWidth = 200
 					};
 					if (section.Icon is FileImageSource fis)
 						btn.Icon = new Windows.UI.Xaml.Controls.BitmapIcon() { UriSource = new Uri("ms-appx:///" + fis.File) };
@@ -144,10 +147,10 @@ namespace Xamarin.Forms.Platform.UWP
 				var a = (IShellAppearanceElement)appearance;
 				tabBarBackgroundColor = a.EffectiveTabBarBackgroundColor.ToWindowsColor();
 				tabBarForegroundColor = a.EffectiveTabBarForegroundColor.ToWindowsColor();
-				if(!appearance.TitleColor.IsDefault)
+				if (!appearance.TitleColor.IsDefault)
 					titleColor = appearance.TitleColor.ToWindowsColor();
 			}
-			_BottomBarArea.Background = _HeaderArea.Background = 
+			_BottomBarArea.Background = _HeaderArea.Background =
 				new Windows.UI.Xaml.Media.SolidColorBrush(tabBarBackgroundColor);
 			_Title.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(titleColor);
 			var tabbarForeground = new Windows.UI.Xaml.Media.SolidColorBrush(tabBarForegroundColor);
@@ -248,14 +251,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void SwitchSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
-			SectionRenderer.NavigateToShellSection(source, section, page, animate);			
-	    }
+			SectionRenderer.NavigateToShellSection(source, section, page, animate);
+		}
 
 		Page DisplayedPage { get; set; }
 
 		void UpdateDisplayedPage(Page page)
 		{
-			if(DisplayedPage != null)
+			if (DisplayedPage != null)
 			{
 				DisplayedPage.PropertyChanged -= OnPagePropertyChanged;
 			}
@@ -271,7 +274,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		private void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName == Shell.TabBarIsVisibleProperty.PropertyName)
+			if (e.PropertyName == Shell.TabBarIsVisibleProperty.PropertyName)
 			{
 				UpdateBottomBarVisibility();
 			}
@@ -316,7 +319,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNavigationRequested(object sender, NavigationRequestedEventArgs e)
 		{
-			SwitchSection((ShellNavigationSource)e.RequestType, (ShellSection)sender, e.Page, e.Animated);	
+			SwitchSection((ShellNavigationSource)e.RequestType, (ShellSection)sender, e.Page, e.Animated);
 		}
 
 		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
