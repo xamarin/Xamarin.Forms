@@ -1495,8 +1495,9 @@ namespace Xamarin.Forms.Platform.iOS
 						if (_refresh == null || _disposed)
 							return;
 
-						if(_isStartRefreshingPending)
+						if( _isStartRefreshingPending)
 							StartRefreshing();
+
 
 						//hack: when we don't have cells in our UITableView the spinner fails to appear
 						CheckContentSize();
@@ -1669,6 +1670,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public FormsRefreshControl(bool usingLargeTitles)
 		{
 			_usingLargeTitles = usingLargeTitles;
+			AccessibilityIdentifier = "RefreshControl";
 		}
 
 		public override bool Hidden
