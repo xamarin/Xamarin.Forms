@@ -299,19 +299,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-
-		internal void UpdateLayoutMeasurements()
-		{
-			if(_headerViewFormsElement != null)
-				RemeasureLayout(_headerViewFormsElement);
-
-			if (_footerViewFormsElement != null)
-				RemeasureLayout(_footerViewFormsElement);
-
-			if (_emptyViewFormsElement != null)
-				RemeasureLayout(_emptyViewFormsElement);
-
-		}
 		void OnFormsElementMeasureInvalidated(object sender, EventArgs e)
 		{
 			if (sender is VisualElement formsElement)
@@ -323,7 +310,6 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void HandleFormsElementMeasureInvalidated(VisualElement formsElement)
 		{
 			RemeasureLayout(formsElement);
-            UpdateHeaderFooterPosition();
         }
 
 		internal void UpdateView(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)

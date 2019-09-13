@@ -31,12 +31,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if (_headerViewFormsElement != null)
-					_headerViewFormsElement.MeasureInvalidated -= OnFormsElementMeasureInvalidated;
-
-				if (_footerViewFormsElement != null)
-					_footerViewFormsElement.MeasureInvalidated -= OnFormsElementMeasureInvalidated;
-
 				_headerUIView = null;
 				_headerViewFormsElement = null;
 				_footerUIView = null;
@@ -152,6 +146,15 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.HandleFormsElementMeasureInvalidated(formsElement);
 			UpdateHeaderFooterPosition();
+		}
+
+		internal void UpdateLayoutMeasurements()
+		{
+			if (_headerViewFormsElement != null)
+				HandleFormsElementMeasureInvalidated(_headerViewFormsElement);
+
+			if (_footerViewFormsElement != null)
+				HandleFormsElementMeasureInvalidated(_footerViewFormsElement);
 		}
 	}
 }
