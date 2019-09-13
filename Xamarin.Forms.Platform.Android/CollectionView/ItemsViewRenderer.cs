@@ -38,7 +38,9 @@ namespace Xamarin.Forms.Platform.Android
 		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
 		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
 
-		RecyclerView.ItemDecoration _itemDecoration;
+		ItemDecoration _itemDecoration;
+
+		protected virtual bool IsLayoutReversed { get; set; }
 
 		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
 		{
@@ -161,21 +163,30 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual LayoutManager SelectLayoutManager(IItemsLayout layoutSpecification)
 		{
+			LinearLayoutManager linearLayoutManager;
+
 			switch (layoutSpecification)
 			{
 				case GridItemsLayout gridItemsLayout:
-					return CreateGridLayout(gridItemsLayout);
+					linearLayoutManager = CreateGridLayout(gridItemsLayout);
+					break;
 				case LinearItemsLayout listItemsLayout:
 					var orientation = listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
 						? LinearLayoutManager.Horizontal
 						: LinearLayoutManager.Vertical;
 
-					return new LinearLayoutManager(Context, orientation, false);
+					linearLayoutManager = new LinearLayoutManager(Context, orientation, false);
+					break;
+				default:
+					// Fall back to plain old vertical list
+					// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
+					linearLayoutManager = new LinearLayoutManager(Context);
+					break;
 			}
 
-			// Fall back to plain old vertical list
-			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
-			return new LinearLayoutManager(Context);
+			linearLayoutManager.ReverseLayout = IsLayoutReversed;
+
+			return linearLayoutManager;
 		}
 
 		GridLayoutManager CreateGridLayout(GridItemsLayout gridItemsLayout)

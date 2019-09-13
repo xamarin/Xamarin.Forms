@@ -124,6 +124,7 @@
       <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
     </Compile>
     <Compile Include="ApiLabelRenderer.cs" />
+    <Compile Include="_7277CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\default.css" />
