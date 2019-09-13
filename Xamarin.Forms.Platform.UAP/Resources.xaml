@@ -15,7 +15,6 @@
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
 		<ResourceDictionary Source="SliderStyle.xaml" />
 		<ResourceDictionary Source="Items/ItemsViewStyles.xaml" />
-        <ResourceDictionary Source="Shell/ShellFlyoutTemplateSelectorStyles.xaml" />
 		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
 	    <ResourceDictionary Source="Shell/ShellStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
