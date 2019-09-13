@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		public static async Task<WImageSource> ToWindowsImageSourceAsync(this ImageSource source, CancellationToken cancellationToken = default)
+		public static async Task<WImageSource> ToWindowsImageSourceAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null || source.IsEmpty)
 				return null;
