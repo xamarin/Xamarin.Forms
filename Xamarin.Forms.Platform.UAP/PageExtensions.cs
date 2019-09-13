@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return Navigate(frame, page, null);
 		}
 
-		public static bool Navigate(this Windows.UI.Xaml.Controls.Frame frame, ContentPage page, Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo infoOverride)
+		internal static bool Navigate(this Windows.UI.Xaml.Controls.Frame frame, ContentPage page, Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo infoOverride)
 		{
 
 			if (page == null)
@@ -90,8 +90,12 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			Guid id = Guid.NewGuid();
+
 			FormsEmbeddedPageWrapper.Pages.Add(id, page);
-			return frame.Navigate(typeof(FormsEmbeddedPageWrapper), id, infoOverride);
+			if(infoOverride != null)
+				return frame.Navigate(typeof(FormsEmbeddedPageWrapper), id, infoOverride);
+
+			return frame.Navigate(typeof(FormsEmbeddedPageWrapper), id);
 		}
 	}
 }

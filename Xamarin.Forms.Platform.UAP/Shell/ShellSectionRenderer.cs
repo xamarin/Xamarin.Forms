@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal ShellSectionRenderer()
 		{
+			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellSectionRenderer));
 			MenuItemTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ShellSectionMenuItemTemplate"];
 			IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;

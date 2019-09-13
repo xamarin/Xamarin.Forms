@@ -8,10 +8,11 @@ using Windows.UI.Xaml.Input;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class ToolbarItemRenderer : Windows.UI.Xaml.Controls.Button
+	internal class ToolbarItemRenderer : Windows.UI.Xaml.Controls.Button
 	{
 		public ToolbarItemRenderer()
 		{
+			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ToolbarItemRenderer));
 			Click += OnClick;
 		}
 

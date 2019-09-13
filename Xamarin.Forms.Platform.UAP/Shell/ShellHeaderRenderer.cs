@@ -7,6 +7,8 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public ShellHeaderRenderer(Shell element)
 		{
+			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellHeaderRenderer));
+
 			SetElement(element);
 			SizeChanged += ShellHeaderRenderer_SizeChanged;
 		}

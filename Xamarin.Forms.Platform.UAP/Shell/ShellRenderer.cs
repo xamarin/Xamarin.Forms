@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ShellRenderer()
 		{
+			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellRenderer));
 			IsBackEnabled = false;
 			IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;

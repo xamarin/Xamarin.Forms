@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ShellItemRenderer()
 		{
+			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellItemRenderer));
 			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
 			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
 			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });

@@ -90,7 +90,6 @@
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PropertyChangedEventArgsExtensions.cs" />
     <Compile Include="RefreshViewRenderer.cs" />
-    <Compile Include="Shell\ShellAssemblyInfo.cs" />
     <Compile Include="Shell\ShellHeaderRenderer.cs" />
     <Compile Include="Shell\ShellItemRenderer.cs" />
     <Compile Include="Shell\ShellFlyoutTemplateSelector.cs" />
