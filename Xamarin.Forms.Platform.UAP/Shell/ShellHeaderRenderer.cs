@@ -3,7 +3,7 @@ using Windows.UI.Xaml;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ShellHeaderRenderer : Windows.UI.Xaml.Controls.ContentControl
+	public class ShellHeaderRenderer : Windows.UI.Xaml.Controls.ContentControl
 	{
 		public ShellHeaderRenderer(Shell element)
 		{

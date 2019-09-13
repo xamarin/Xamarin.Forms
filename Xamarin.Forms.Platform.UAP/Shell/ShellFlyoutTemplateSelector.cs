@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ShellFlyoutTemplateSelector : Windows.UI.Xaml.Controls.DataTemplateSelector
+	public class ShellFlyoutTemplateSelector : Windows.UI.Xaml.Controls.DataTemplateSelector
 	{
 		Windows.UI.Xaml.DataTemplate BaseShellItemTemplate { get; }
 		Windows.UI.Xaml.DataTemplate MenuItemTemplate { get; }

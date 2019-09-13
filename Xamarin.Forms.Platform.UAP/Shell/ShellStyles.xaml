@@ -19,12 +19,12 @@
         <StackPanel Orientation="Horizontal" />
     </ItemsPanelTemplate>
     <DataTemplate x:Key="ShellToolbarItemTemplate">
-        <xf:ToolbarItemRenderer ToolbarItem="{Binding}" Margin="0" Background="Transparent" BorderThickness="1"
+        <xf:ShellToolbarItemRenderer ToolbarItem="{Binding}" Margin="0" Background="Transparent" BorderThickness="1"
                       IsEnabled="{Binding IsEnabled}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}" >
             <Image Grid.Column="0" Grid.RowSpan="2" MaxHeight="32"
 				DataContext="{Binding Icon, Converter={StaticResource ImageConverter}}"
 				Source="{Binding Value}"
 				VerticalAlignment="Center" />
-        </xf:ToolbarItemRenderer>
+        </xf:ShellToolbarItemRenderer>
     </DataTemplate>
 </ResourceDictionary>

@@ -26,8 +26,8 @@ namespace Xamarin.Forms.Platform.UWP
 			IsSettingsVisible = false;
 			PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
 			IsPaneOpen = false;
-			Content = ItemRenderer = new ShellItemRenderer();
-			MenuItemTemplateSelector = new ShellFlyoutTemplateSelector();
+			Content = ItemRenderer = CreateShellItemRenderer();
+			MenuItemTemplateSelector = CreateShellFlyoutTemplateSelector();
 			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
 			PaneClosing += (s, e) => OnPaneClosed();
 			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void OnElementSet(Shell shell)
 		{
-			var shr = new ShellHeaderRenderer(shell);
+			var shr = CreateShellHeaderRenderer(shell);
 			PaneCustomContent = shr;
 			MenuItemsSource = IterateItems();
 			SwitchShellItem(shell.CurrentItem, false);
@@ -235,5 +235,10 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 			}
 		}
+
+		public virtual ShellFlyoutTemplateSelector CreateShellFlyoutTemplateSelector() => new ShellFlyoutTemplateSelector();
+		public virtual ShellHeaderRenderer CreateShellHeaderRenderer(Shell shell) => new ShellHeaderRenderer(shell);
+		public virtual ShellItemRenderer CreateShellItemRenderer() => new ShellItemRenderer(this);
+		public virtual ShellSectionRenderer CreateShellSectionRenderer() => new ShellSectionRenderer();
 	}
 }

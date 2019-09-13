@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Platform.UWP
 {
 	// Responsible for rendering the content title, as well as the bottom bar list of shell sections
-	internal class ShellItemRenderer : Windows.UI.Xaml.Controls.Grid, IAppearanceObserver, IFlyoutBehaviorObserver
+	public class ShellItemRenderer : Windows.UI.Xaml.Controls.Grid, IAppearanceObserver, IFlyoutBehaviorObserver
 	{
 		ShellSectionRenderer SectionRenderer { get; }
 		Windows.UI.Xaml.Controls.TextBlock _Title;
@@ -20,9 +20,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal ShellRenderer ShellContext { get; private set; }
 
-		public ShellItemRenderer()
+		public ShellItemRenderer(ShellRenderer shellContext)
 		{
 			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellItemRenderer));
+			ShellContext = shellContext;
 			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
 			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
 			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
@@ -48,7 +49,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SetColumn(_Toolbar, 1);
 			_HeaderArea.Children.Add(_Toolbar);
 
-			SectionRenderer = new ShellSectionRenderer();
+			SectionRenderer = shellContext.CreateShellSectionRenderer();
 			SetRow(SectionRenderer, 1);
 
 			Children.Add(SectionRenderer);

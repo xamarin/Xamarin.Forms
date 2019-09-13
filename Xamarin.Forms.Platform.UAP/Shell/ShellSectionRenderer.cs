@@ -8,15 +8,14 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	// Renders the actual page area where the contents gets rendered, as well as set of optional top-bar menu items and search box.
 	[Windows.UI.Xaml.Data.Bindable]
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public sealed class ShellSectionRenderer : Microsoft.UI.Xaml.Controls.NavigationView, IAppearanceObserver
+	public class ShellSectionRenderer : Microsoft.UI.Xaml.Controls.NavigationView, IAppearanceObserver
 	{
 		Windows.UI.Xaml.Controls.Frame Frame { get; }
 		Page Page;
 		ShellContent CurrentContent;
 		ShellSection ShellSection;
 
-		internal ShellSectionRenderer()
+		public ShellSectionRenderer()
 		{
 			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellSectionRenderer));
 			MenuItemTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ShellSectionMenuItemTemplate"];

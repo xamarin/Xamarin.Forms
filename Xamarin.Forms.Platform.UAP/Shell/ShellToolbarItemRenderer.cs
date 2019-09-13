@@ -8,11 +8,11 @@ using Windows.UI.Xaml.Input;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ToolbarItemRenderer : Windows.UI.Xaml.Controls.Button
+	public class ShellToolbarItemRenderer : Windows.UI.Xaml.Controls.Button
 	{
-		public ToolbarItemRenderer()
+		public ShellToolbarItemRenderer()
 		{
-			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ToolbarItemRenderer));
+			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellToolbarItemRenderer));
 			Click += OnClick;
 		}
 
@@ -29,6 +29,6 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		public static readonly DependencyProperty ToolbarItemProperty =
-			DependencyProperty.Register("ToolbarItem", typeof(ToolbarItem), typeof(ToolbarItemRenderer), new PropertyMetadata(null));
+			DependencyProperty.Register("ToolbarItem", typeof(ToolbarItem), typeof(ShellToolbarItemRenderer), new PropertyMetadata(null));
 	}
 }
