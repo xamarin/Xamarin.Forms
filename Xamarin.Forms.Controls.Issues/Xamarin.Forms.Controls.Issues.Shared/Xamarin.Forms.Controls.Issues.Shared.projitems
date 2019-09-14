@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterTemplate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewItemsUpdatingScrollMode.cs" />
+<<<<<<< HEAD
     <Compile Include="$(MSBuildThisFileDirectory)Issue3475.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6476.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7396.cs" />
@@ -41,6 +42,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue8008.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6640.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7556.cs" />
+=======
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5108.xaml.cs" />
+>>>>>>> 6baca6670... Resolved flawed merge, restored _Template page
     <Compile Include="$(MSBuildThisFileDirectory)Issue7329.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7290.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7240.cs" />
@@ -1449,6 +1453,7 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue6254.xaml.cs">
       <DependentUpon>Issue6254.xaml</DependentUpon>
     </Compile>
+<<<<<<< HEAD
     <Compile Update="$(MSBuildThisFileDirectory)Issue7357.xaml.cs">
       <DependentUpon>Issue7357.xaml</DependentUpon>
     </Compile>
@@ -1490,6 +1495,9 @@
     </Compile>
     <Compile Update="$(MSBuildThisFileDirectory)Issue7865.xaml.cs">
       <DependentUpon>Issue7865.xaml</DependentUpon>
+	</Compile>
+    <Compile Update="C:\Sources\GitHub\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue5108.xaml.cs">
+      <DependentUpon>Issue5108.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -1593,5 +1601,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <Page Include="$(MSBuildThisFileDirectory)Issue5108.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
