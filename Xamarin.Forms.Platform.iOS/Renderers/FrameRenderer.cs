@@ -58,6 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_shadowView = new ShadowView(Layer);
 					SetNeedsLayout();
 				}
+				_shadowView.UpdateBackgroundColor();
 				_shadowView.Layer.CornerRadius = Layer.CornerRadius;
 				_shadowView.Layer.BorderColor = Layer.BorderColor;
 			}
@@ -96,13 +97,23 @@ namespace Xamarin.Forms.Platform.iOS
 			public ShadowView(CALayer shadowee)
 			{
 				_shadowee = shadowee;
-				BackgroundColor = UIColor.Clear;
 				Layer.ShadowRadius = 5;
 				Layer.ShadowColor = UIColor.Black.CGColor;
 				Layer.ShadowOpacity = 0.8f;
 				Layer.ShadowOffset = new SizeF();
-				Layer.ShadowOpacity = 0.8f;
 				Layer.BorderWidth = 1;
+			}
+
+			public void UpdateBackgroundColor()
+			{
+				//Putting a transparent background under any shadowee having a background with alpha < 1
+				//Giving the Shadow a background of the same color when shadowee background == 1.
+				//The latter will result in a 'darker' shadow as you would expect from something that 
+				//isn't transparent. This also mimics the look as it was before with non-transparent Frames.
+				if (_shadowee.BackgroundColor.Alpha < 1) 
+					BackgroundColor = UIColor.Clear;
+				else
+					BackgroundColor = new UIColor(_shadowee.BackgroundColor);
 			}
 
 			public override void LayoutSubviews()
