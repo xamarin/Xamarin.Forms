@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextDecorations()
 		{
-			if (IsElementOrControlEmpty)
+			if (Element == null || Control == null)
 				return;
 
 			if (!Element.IsSet(Label.TextDecorationsProperty))
@@ -353,7 +353,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-			if (IsElementOrControlEmpty)
+			if (Element == null || Control == null)
 				return;
 
 			_formatted = Element.FormattedText;
