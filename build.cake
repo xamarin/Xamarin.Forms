@@ -21,6 +21,9 @@ PowerShell:
 #addin "nuget:?package=Cake.Xamarin&version=3.0.0"
 #addin "nuget:?package=Cake.Android.Adb&version=3.0.0"
 #addin "nuget:?package=Cake.Git&version=0.19.0"
+#addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
+#addin "nuget:?package=Cake.Boots&version=1.0.0.291"
+
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
@@ -40,6 +43,28 @@ var informationalVersion = gitVersion.InformationalVersion;
 var buildVersion = gitVersion.FullBuildMetaData;
 var nugetversion = Argument<string>("packageVersion", gitVersion.NuGetVersion);
 
+var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ?? 
+    (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
+
+string monoMajorVersion = "6.0.0";
+string monoPatchVersion = "319";
+string monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
+
+string monoSDK_windows = $"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
+string androidSDK_windows = "https://aka.ms/xamarin-android-commercial-d16-2-windows";
+string iOSSDK_windows = "";
+string macSDK_windows = "";
+
+string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d16-2-macos";
+string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
+string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-2/a8bceccedcc8366455ffd941b8fafce1d97f4676/39/package/xamarin.ios-12.14.0.110.pkg";
+string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-2/a8bceccedcc8366455ffd941b8fafce1d97f4676/39/package/xamarin.mac-5.14.0.110.pkg";
+
+string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
+string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
+string iosSDK = IsRunningOnWindows() ? "" : iOSSDK_macos;
+string macSDK  = IsRunningOnWindows() ? "" : macSDK_macos;
+
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
@@ -49,8 +74,57 @@ Task("Clean")
 {
     CleanDirectories("./**/obj", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
     CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
-
 });
+
+Task("provision")
+    .Does(async () =>
+    {
+        Information ("ANDROID_HOME: {0}", ANDROID_HOME);
+
+        var androidSdkSettings = new AndroidSdkManagerToolSettings { 
+            SdkRoot = ANDROID_HOME,
+            SkipVersionCheck = true
+        };
+
+        try { AcceptLicenses (androidSdkSettings); } catch { }
+
+        AndroidSdkManagerInstall (new [] {
+                "platforms;android-29"
+            }, androidSdkSettings);
+
+        var platform = IsRunningOnWindows() ? "windows" : "macos";
+
+        if(!String.IsNullOrWhiteSpace(androidSDK))
+            await Boots (androidSDK);
+
+        if(IsRunningOnWindows())
+        {
+            if(!String.IsNullOrWhiteSpace(monoSDK))
+            {
+                string monoPath = $"{System.IO.Path.GetTempPath()}/mono.msi";
+                DownloadFile(monoSDK, monoPath);
+
+                StartProcess("msiexec", new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                        .Append(@"/i")
+                        .Append(monoPath)
+                        .Append("/qn")
+                    }
+                );
+            }
+        }
+        else
+        {
+            if(!String.IsNullOrWhiteSpace(monoSDK))
+                await Boots(monoSDK);      
+
+            if(!String.IsNullOrWhiteSpace(iosSDK))
+                await Boots(iosSDK);
+                
+            if(!String.IsNullOrWhiteSpace(macSDK))
+                await Boots(macSDK);
+        }
+    });
 
 Task("NuGetPack")
     .IsDependentOn("Build")

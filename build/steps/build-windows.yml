@@ -34,6 +34,23 @@ jobs:
           BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
+    - script: build.cmd -Target provision
+      condition: eq(variables['provisioning'], 'false')
+  
+    - task: xamops.azdevex.provisionator-task.provisionator@1
+      displayName: Provisionate Xamarin
+      condition: eq(variables['provisioning'], 'true')
+      inputs:
+        provisioning_script: ${{ parameters.provisionatorPath }}
+        provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+          
+    - task: DotNetCoreInstaller@0
+      displayName: 'Install .net core $(DOTNET_VERSION)'
+      inputs:
+        version: $(DOTNET_VERSION)
+
+    - script: |
+        dotnet new globaljson --sdk-version $(DOTNET_VERSION)
 
     - task: NuGetToolInstaller@0
       displayName: 'Use NuGet ${{ parameters.nugetVersion }}'
