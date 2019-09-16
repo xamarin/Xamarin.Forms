@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (keyboard == Keyboard.Email)
 				textInput.KeyboardType = UIKeyboardType.EmailAddress;
 			else if (keyboard == Keyboard.Numeric)
-				textInput.KeyboardType = UIKeyboardType.DecimalPad;
+				textInput.KeyboardType = UIKeyboardType.NumbersAndPunctuation;
 			else if (keyboard == Keyboard.Telephone)
 				textInput.KeyboardType = UIKeyboardType.PhonePad;
 			else if (keyboard == Keyboard.Text)
