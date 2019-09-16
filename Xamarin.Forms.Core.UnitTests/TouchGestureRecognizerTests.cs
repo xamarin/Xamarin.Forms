@@ -242,14 +242,24 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(TouchState.Pressed, recognizer.State);
 
 			recognizer.SendTouch(view,
-				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(45, 55), TouchState.Move, true) }));
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(45, 50), TouchState.Move, true) }));
 			recognizer.SendTouch(view,
-				new TouchEventArgs(2, TouchState.Move, new List<TouchPoint> { new TouchPoint(2, new Point(55, 55), TouchState.Move, true) }));
+				new TouchEventArgs(2, TouchState.Move, new List<TouchPoint> { new TouchPoint(2, new Point(55, 50), TouchState.Move, true) }));
 
 			recognizer.SendTouch(view,
-				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(30, 65), TouchState.Move, true) }));
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(40, 50), TouchState.Move, true) }));
 			recognizer.SendTouch(view,
-				new TouchEventArgs(2, TouchState.Move, new List<TouchPoint> { new TouchPoint(2, new Point(65, 65), TouchState.Move, true) }));
+				new TouchEventArgs(2, TouchState.Move, new List<TouchPoint> { new TouchPoint(2, new Point(60, 50), TouchState.Move, true) }));
+
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(35, 50), TouchState.Move, true) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(2, TouchState.Move, new List<TouchPoint> { new TouchPoint(2, new Point(65, 50), TouchState.Move, true) }));
+
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(30, 60), TouchState.Move, true) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(2, TouchState.Move, new List<TouchPoint> { new TouchPoint(2, new Point(70, 60), TouchState.Move, true) }));
 
 			Assert.AreEqual(GestureType.LeftDown, recognizer.Touches[0].Gesture);
 			Assert.AreEqual(GestureType.RightDown, recognizer.Touches[1].Gesture);
