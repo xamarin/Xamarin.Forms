@@ -112,9 +112,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(calledFromMainThread, "Action not invoked from main thread.");
 			Assert.False(invoked, "Action invoked early.");
 
-			await Task.Delay(1);
-			var aggregateEx = Assert.Throws<AggregateException>(() => task.Wait(1000));
-			Assert.IsInstanceOf<ApplicationException>(aggregateEx.InnerException);
+			async Task MethodThatThrows() => await task;
+			Assert.ThrowsAsync<ApplicationException>(MethodThatThrows);
 			Assert.True(invoked, "Action not invoked.");
 		}
 
