@@ -17,6 +17,8 @@ variables:
   value: 10.2
 - name: NUGET_VERSION
   value: 5.0.2
+- name: winVmImage
+  value: Hosted Windows 2019 with VS2019
 
 resources:
   repositories:
@@ -46,6 +48,13 @@ pr:
     - 4.*
     - 3.*
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master 
+   
 jobs:
 - template: build/steps/build-windows.yml
   parameters:

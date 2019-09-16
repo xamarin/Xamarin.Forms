@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateRowHeight();
 
 				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController) : new ListViewDataSource(e.NewElement, _tableViewController);
-
+			
 				UpdateHeader();
 				UpdateFooter();
 				UpdatePullToRefreshEnabled();
@@ -360,7 +360,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TableHeaderView = _headerRenderer.NativeView;
 		}
 
-		async void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
+		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
 		{
 			if (Superview == null)
 			{
@@ -386,14 +386,16 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.Layer.RemoveAllAnimations();
 					//iOS11 hack
 					if (Forms.IsiOS11OrNewer)
-					{
-						await Task.Delay(1);
-					}
-					Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
+						this.QueueForLater(() =>
+						{
+							if (Control != null && !_disposed)
+								Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
+						});
+					else
+						Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
 				}
 			}
 		}
-
 
 		void UpdateFooter()
 		{
@@ -1218,6 +1220,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void Scrolled(UIScrollView scrollView)
 			{
+				var args = new ScrolledEventArgs(scrollView.ContentOffset.X, scrollView.ContentOffset.Y);
+				List?.SendScrolled(args);
 				if (_isDragging && scrollView.ContentOffset.Y < 0)
 				{
 					// If the refresh spinner is currently displayed and pull-to-refresh is not enabled,
@@ -1488,6 +1492,9 @@ namespace Xamarin.Forms.Platform.iOS
 					//This also forces the spinner color to be correct if we started refreshing immediately after changing it.
 					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, () =>
 					{
+						if (_refresh == null)
+							return;
+
 						_refresh.BeginRefreshing();
 						//hack: when we don't have cells in our UITableView the spinner fails to appear
 						CheckContentSize();

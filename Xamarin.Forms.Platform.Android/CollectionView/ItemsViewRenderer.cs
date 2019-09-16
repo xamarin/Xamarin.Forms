@@ -11,22 +11,25 @@ using AViewCompat = Android.Support.V4.View.ViewCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ItemsViewRenderer : RecyclerView, IVisualElementRenderer, IEffectControlProvider
+	public abstract class ItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> : RecyclerView, IVisualElementRenderer, IEffectControlProvider 
+		where TItemsView : ItemsView
+		where TAdapter : ItemsViewAdapter<TItemsView, TItemsViewSource>
+		where TItemsViewSource : IItemsViewSource
 	{
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 		readonly EffectControlProvider _effectControlProvider;
 
-		protected ItemsViewAdapter ItemsViewAdapter;
+		protected TAdapter ItemsViewAdapter;
 
 		int? _defaultLabelFor;
 		bool _disposed;
 
-		protected ItemsView ItemsView;
+		protected TItemsView ItemsView;
 
 		IItemsLayout _layout;
 		SnapManager _snapManager;
 		ScrollHelper _scrollHelper;
-		RecyclerViewScrollListener _recyclerViewScrollListener;
+		RecyclerViewScrollListener<TItemsView, TItemsViewSource> _recyclerViewScrollListener;
 
 		EmptyViewAdapter _emptyViewAdapter;
 		readonly DataChangeObserver _emptyCollectionObserver;
@@ -39,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
 		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
+			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource>));
 
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
@@ -52,8 +55,6 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		ScrollHelper ScrollHelper => _scrollHelper = _scrollHelper ?? new ScrollHelper(this);
-
-		// TODO hartez 2018/10/24 19:27:12 Region all the interface implementations	
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
@@ -97,7 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var oldElement = ItemsView;
-			var newElement = (ItemsView)element;
+			var newElement = (TItemsView)element;
 
 			TearDownOldElement(oldElement);
 			SetUpNewElement(newElement);
@@ -164,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				case GridItemsLayout gridItemsLayout:
 					return CreateGridLayout(gridItemsLayout);
-				case ListItemsLayout listItemsLayout:
+				case LinearItemsLayout listItemsLayout:
 					var orientation = listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
 						? LinearLayoutManager.Horizontal
 						: LinearLayoutManager.Vertical;
@@ -195,6 +196,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, newElement));
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, newElement);
+			OnElementChanged(new ElementChangedEventArgs<ItemsView>(oldElement, newElement));
+		}
+
+		protected virtual void OnElementChanged(ElementChangedEventArgs<ItemsView> elementChangedEvent)
+		{
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -203,7 +209,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// TODO hartez 2018/10/24 10:41:55 If the ItemTemplate changes from set to null, we need to make sure to clear the recyclerview pool	
 
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
+			if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemsSourceProperty))
 			{
 				UpdateItemsSource();
 			}
@@ -215,23 +221,24 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateFlowDirection();
 			}
-			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
+			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty, 
+				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
 				UpdateEmptyView();
 			}
-			else if (changedProperty.Is(ItemsView.ItemSizingStrategyProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemSizingStrategyProperty))
 			{
 				UpdateAdapter();
 			}
-			else if (changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.HorizontalScrollBarVisibilityProperty))
 			{
 				UpdateHorizontalScrollBarVisibility();
 			}
-			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.VerticalScrollBarVisibilityProperty))
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
-			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemsUpdatingScrollModeProperty))
 			{
 				UpdateItemsUpdatingScrollMode();
 			}
@@ -257,9 +264,9 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEmptyView();
 		}
 
-		protected virtual ItemsViewAdapter CreateAdapter()
+		protected virtual TAdapter CreateAdapter()
 		{
-			return new ItemsViewAdapter(ItemsView);
+			return (TAdapter)new ItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
 		}
 
 		void UpdateAdapter()
@@ -268,13 +275,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			ItemsViewAdapter = CreateAdapter();
 
-			if(GetAdapter() != _emptyViewAdapter)
+			if (GetAdapter() != _emptyViewAdapter)
 				SwapAdapter(ItemsViewAdapter, true);
 
 			oldItemViewAdapter?.Dispose();
 		}
 
-		protected virtual void SetUpNewElement(ItemsView newElement)
+		protected virtual void SetUpNewElement(TItemsView newElement)
 		{
 			if (newElement == null)
 			{
@@ -296,7 +303,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateItemsSource();
 
-			_layout = ItemsView.ItemsLayout;
+			_layout = GetItemsLayout();
 			SetLayoutManager(SelectLayoutManager(_layout));
 
 			UpdateSnapBehavior();
@@ -316,9 +323,11 @@ namespace Xamarin.Forms.Platform.Android
 			// Listen for ScrollTo requests
 			ItemsView.ScrollToRequested += ScrollToRequested;
 
-			_recyclerViewScrollListener = new RecyclerViewScrollListener(ItemsView, ItemsViewAdapter);
+			_recyclerViewScrollListener = new RecyclerViewScrollListener<TItemsView, TItemsViewSource>(ItemsView, ItemsViewAdapter);
 			AddOnScrollListener(_recyclerViewScrollListener);
 		}
+
+		protected abstract IItemsLayout GetItemsLayout();
 
 		protected virtual void UpdateVerticalScrollBarVisibility()
 		{
@@ -411,7 +420,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateSnapBehavior();
 			}
-			else if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty,
+			else if (propertyChanged.IsOneOf(LinearItemsLayout.ItemSpacingProperty,
 				GridItemsLayout.HorizontalItemSpacingProperty, GridItemsLayout.VerticalItemSpacingProperty))
 			{
 				UpdateItemSpacing();
@@ -420,12 +429,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateSnapBehavior()
 		{
-			if (_snapManager == null)
-			{
-				_snapManager = new SnapManager(ItemsView, this);
-			}
+			_snapManager = GetSnapManager();
 
 			_snapManager.UpdateSnapBehavior();
+		}
+
+		protected virtual SnapManager GetSnapManager()
+		{
+			if (_snapManager == null)
+			{
+				_snapManager = new SnapManager(_layout, this);
+			}
+			return _snapManager;
 		}
 
 		// TODO hartez 2018/08/09 09:30:17 Package up background color and flow direction providers so we don't have to re-implement them here	
@@ -595,7 +610,7 @@ namespace Xamarin.Forms.Platform.Android
 				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager	
 				SetLayoutManager(new LinearLayoutManager(Context));
 			}
-			else if(!showEmptyView && currAdapter != ItemsViewAdapter)
+			else if (!showEmptyView && currAdapter != ItemsViewAdapter)
 			{
 				SwapAdapter(ItemsViewAdapter, true);
 				SetLayoutManager(SelectLayoutManager(_layout));
