@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.UWP
 				layout.ForceLayout();
 		}
 
-		internal VisualElement Element { get; private set; }
+		internal VisualElement Element { get; set; }
 
 		public void SetElement(Shell shell)
 		{
@@ -28,7 +28,8 @@ namespace Xamarin.Forms.Platform.UWP
 				Element.MeasureInvalidated -= RootElementOnMeasureInvalidated;
 				Element = null;
 			}
-			var header = shell.FlyoutHeader;
+
+			var header = shell?.FlyoutHeader;
 			if (header is VisualElement visualElement)
 			{
 				Element = visualElement;
@@ -54,9 +55,7 @@ namespace Xamarin.Forms.Platform.UWP
 		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
 		{
 			if (Element == null)
-			{
 				return base.MeasureOverride(availableSize);
-			}
 
 			Size request = Element.Measure(availableSize.Width, availableSize.Height, MeasureFlags.IncludeMargins).Request;
 			Element.Layout(new Rectangle(Point.Zero, request));

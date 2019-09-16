@@ -48,33 +48,40 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var shellContent = args.InvokedItemContainer?.DataContext as ShellContent;
 			var shellItem = ShellSection.RealParent as ShellItem;
-			var result = ((IShellController)shellItem.RealParent).ProposeNavigation(ShellNavigationSource.Pop, shellItem, ShellSection, shellContent, null, true);
-			if (result)
+
+			if(shellItem.RealParent is IShellController controller)
 			{
-				ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
+				var result = controller.ProposeNavigation(ShellNavigationSource.Pop, shellItem, ShellSection, shellContent, null, true);
+				if (result)
+				{
+					ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
+				}
 			}
 		}
 
-		internal void NavigateToShellSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
+		internal void NavigateToShellSection(ShellNavigationSource source, ShellSection section, bool animate = true)
 		{
+			_ = section ?? throw new ArgumentNullException(nameof(section));
+
 			if (ShellSection != null)
 			{
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
-				((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged -= ShellSectionRenderer_CollectionChanged;
+				((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged -= OnShellSectionRendererCollectionChanged;
 				ShellSection = null;
 				MenuItemsSource = null;
 			}
+
 			ShellSection = section;
 			ShellSection.PropertyChanged += OnShellSectionPropertyChanged;
 			SelectedItem = null;
 			IsPaneVisible = section.Items.Count > 1;
 			MenuItemsSource = section.Items;
-			((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged += ShellSectionRenderer_CollectionChanged;
+			((System.Collections.Specialized.INotifyCollectionChanged)section.Items).CollectionChanged += OnShellSectionRendererCollectionChanged;
 			SelectedItem = section.CurrentItem;
 			NavigateToContent(source, section.CurrentItem, animate);
 		}
 
-		private void ShellSectionRenderer_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void OnShellSectionRendererCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			// This shouldn't be necessary, but MenuItemsSource doesn't appear to be listening for INCC
 			// Revisit once using WinUI instead.
@@ -94,14 +101,14 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (CurrentContent != null && Page != null)
 			{
-				Page.PropertyChanged -= Page_PropertyChanged;
+				Page.PropertyChanged -= OnPagePropertyChanged;
 				((IShellContentController)CurrentContent).RecyclePage(Page);
 			}
 			CurrentContent = shellContent;
 			if (shellContent != null)
 			{
 				Page = ((IShellContentController)shellContent).GetOrCreateContent();
-				Page.PropertyChanged += Page_PropertyChanged;
+				Page.PropertyChanged += OnPagePropertyChanged;
 
 				Frame.Navigate((ContentPage)Page, GetTransitionInfo(source));
 				UpdateSearchHandler(Shell.GetSearchHandler(Page));
@@ -123,7 +130,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return null;
 		}
 
-		private void Page_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Shell.SearchHandlerProperty.PropertyName)
 			{

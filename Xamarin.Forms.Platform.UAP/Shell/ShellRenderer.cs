@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Platform.UWP
 		internal static readonly Windows.UI.Color DefaultForegroundColor = Windows.UI.Colors.White;
 		internal static readonly Windows.UI.Color DefaultTitleColor = Windows.UI.Colors.White;
 		internal static readonly Windows.UI.Color DefaultUnselectedColor = Windows.UI.Color.FromArgb(180, 255, 255, 255);
+		const string TogglePaneButton = "TogglePaneButton";
+		const string NavigationViewBackButton = "NavigationViewBackButton";
 
 		ShellItemRenderer ItemRenderer { get; }
 
@@ -38,24 +40,24 @@ namespace Xamarin.Forms.Platform.UWP
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
-			UpdatePaneButtonColor("TogglePaneButton", !IsPaneOpen);
-			UpdatePaneButtonColor("NavigationViewBackButton", !IsPaneOpen);
+			UpdatePaneButtonColor(TogglePaneButton, !IsPaneOpen);
+			UpdatePaneButtonColor(NavigationViewBackButton, !IsPaneOpen);
 		}
 
 		void OnPaneOpening()
 		{
 			if (Shell != null)
 				Shell.FlyoutIsPresented = true;
-			UpdatePaneButtonColor("TogglePaneButton", false);
-			UpdatePaneButtonColor("NavigationViewBackButton", false);
+			UpdatePaneButtonColor(TogglePaneButton, false);
+			UpdatePaneButtonColor(NavigationViewBackButton, false);
 		}
 
 		void OnPaneClosed()
 		{
 			if (Shell != null)
 				Shell.FlyoutIsPresented = false;
-			UpdatePaneButtonColor("TogglePaneButton", true);
-			UpdatePaneButtonColor("NavigationViewBackButton", true);
+			UpdatePaneButtonColor(TogglePaneButton, true);
+			UpdatePaneButtonColor(NavigationViewBackButton, true);
 		}
 
 		void OnMenuItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
@@ -107,19 +109,28 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public void SetElement(VisualElement element)
 		{
-			if (Element != null)
+			if (Element != null && element != null)
 				throw new NotSupportedException("Reuse of the Shell Renderer is not supported");
-			Element = (Shell)element;
-			Element.SizeChanged += OnElementSizeChanged;
-			OnElementSet(Element);
-			Element.PropertyChanged += OnElementPropertyChanged;
-			ItemRenderer.SetShellContext(this);
-			_elementChanged?.Invoke(this, new VisualElementChangedEventArgs(null, Element));
-		}
 
+			if (element != null)
+			{
+				Element = (Shell)element;
+				Element.SizeChanged += OnElementSizeChanged;
+				OnElementSet(Element);
+				Element.PropertyChanged += OnElementPropertyChanged;
+				ItemRenderer.SetShellContext(this);
+				_elementChanged?.Invoke(this, new VisualElementChangedEventArgs(null, Element));
+			}
+			else if(Element != null)
+			{
+				Element.SizeChanged -= OnElementSizeChanged;
+				Element.PropertyChanged -= OnElementPropertyChanged;
+			}
+		}
+		
 		#endregion IVisualElementRenderer
 
-		protected internal Shell Element { get; private set; }
+		protected internal Shell Element { get; set; }
 
 		internal Shell Shell => Element;
 
@@ -158,7 +169,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (group.Count > 0 && group != groups[0])
 				{
-					yield return null; // Creates a seperator
+					yield return null; // Creates a separator
 				}
 				foreach (var item in group)
 				{
@@ -203,8 +214,8 @@ namespace Xamarin.Forms.Platform.UWP
 			var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
 			titleBar.BackgroundColor = titleBar.ButtonBackgroundColor = backgroundColor;
 			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = titleColor;
-			UpdatePaneButtonColor("TogglePaneButton", !IsPaneOpen);
-			UpdatePaneButtonColor("NavigationViewBackButton", !IsPaneOpen);
+			UpdatePaneButtonColor(TogglePaneButton, !IsPaneOpen);
+			UpdatePaneButtonColor(NavigationViewBackButton, !IsPaneOpen);
 		}
 
 		#endregion IAppearanceObserver

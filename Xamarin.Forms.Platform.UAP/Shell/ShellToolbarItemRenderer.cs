@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Click += OnClick;
 		}
 
-		private void OnClick(object sender, RoutedEventArgs e)
+		void OnClick(object sender, RoutedEventArgs e)
 		{
 			if (ToolbarItem is IMenuItemController controller)
 				controller?.Activate();

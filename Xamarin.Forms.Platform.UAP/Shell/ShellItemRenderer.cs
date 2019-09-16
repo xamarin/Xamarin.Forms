@@ -2,49 +2,64 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Windows.UI.Xaml.Controls;
 using Xamarin.Forms.Internals;
+using Windows.UI.Xaml;
+
+using UwpGrid = Windows.UI.Xaml.Controls.Grid;
+using UwpColumnDefinition = Windows.UI.Xaml.Controls.ColumnDefinition;
+using UwpRowDefinition = Windows.UI.Xaml.Controls.RowDefinition;
+using UwpGridLength = Windows.UI.Xaml.GridLength;
+using UwpGridUnitType = Windows.UI.Xaml.GridUnitType;
+using UwpDataTemplate = Windows.UI.Xaml.DataTemplate;
+using UwpThickness = Windows.UI.Xaml.Thickness;
+using UwpStyle = Windows.UI.Xaml.Style;
+using Windows.UI.Xaml.Media;
+using UwpApplication = Windows.UI.Xaml.Application;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	// Responsible for rendering the content title, as well as the bottom bar list of shell sections
-	public class ShellItemRenderer : Windows.UI.Xaml.Controls.Grid, IAppearanceObserver, IFlyoutBehaviorObserver
+	public class ShellItemRenderer : UwpGrid, IAppearanceObserver, IFlyoutBehaviorObserver
 	{
 		ShellSectionRenderer SectionRenderer { get; }
-		Windows.UI.Xaml.Controls.TextBlock _Title;
-		Windows.UI.Xaml.Controls.Border _BottomBarArea;
-		Windows.UI.Xaml.Controls.Grid _BottomBar;
-		Windows.UI.Xaml.Controls.Grid _HeaderArea;
-		Windows.UI.Xaml.Controls.ItemsControl _Toolbar;
+		TextBlock _Title;
+		Border _BottomBarArea;
+		UwpGrid _BottomBar;
+		UwpGrid _HeaderArea;
+		ItemsControl _Toolbar;
 
-		internal ShellItem ShellItem { get; private set; }
+		internal ShellItem ShellItem { get; set; }
 
-		internal ShellRenderer ShellContext { get; private set; }
+		internal ShellRenderer ShellContext { get; set; }
 
 		public ShellItemRenderer(ShellRenderer shellContext)
 		{
 			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellItemRenderer));
-			ShellContext = shellContext;
-			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
-			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
-			RowDefinitions.Add(new Windows.UI.Xaml.Controls.RowDefinition() { Height = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
+			_ = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
 
-			_Title = new Windows.UI.Xaml.Controls.TextBlock()
+			ShellContext = shellContext;
+			RowDefinitions.Add(new UwpRowDefinition() { Height = new UwpGridLength(1, UwpGridUnitType.Auto) });
+			RowDefinitions.Add(new UwpRowDefinition() { Height = new UwpGridLength(1, UwpGridUnitType.Star) });
+			RowDefinitions.Add(new UwpRowDefinition() { Height = new UwpGridLength(1, UwpGridUnitType.Auto) });
+
+			_Title = new TextBlock()
 			{
-				Style = Resources["SubtitleTextBlockStyle"] as Windows.UI.Xaml.Style,
-				VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Center,
-				TextTrimming = Windows.UI.Xaml.TextTrimming.CharacterEllipsis,
-				TextWrapping = Windows.UI.Xaml.TextWrapping.NoWrap
+				Style = Resources["SubtitleTextBlockStyle"] as UwpStyle,
+				VerticalAlignment = VerticalAlignment.Center,
+				TextTrimming = TextTrimming.CharacterEllipsis,
+				TextWrapping = TextWrapping.NoWrap
 			};
-			_HeaderArea = new Windows.UI.Xaml.Controls.Grid() { Height = 40, Padding = new Windows.UI.Xaml.Thickness(10, 0, 10, 0) };
-			_HeaderArea.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
-			_HeaderArea.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Auto) });
+			_HeaderArea = new UwpGrid() { Height = 40, Padding = new UwpThickness(10, 0, 10, 0) };
+			_HeaderArea.ColumnDefinitions.Add(new UwpColumnDefinition() { Width = new UwpGridLength(1, UwpGridUnitType.Star) });
+			_HeaderArea.ColumnDefinitions.Add(new UwpColumnDefinition() { Width = new UwpGridLength(1, UwpGridUnitType.Auto) });
 			_HeaderArea.Children.Add(_Title);
 			Children.Add(_HeaderArea);
 
-			_Toolbar = new Windows.UI.Xaml.Controls.ItemsControl()
+			_Toolbar = new ItemsControl()
 			{
-				ItemTemplate = Windows.UI.Xaml.Application.Current.Resources["ShellToolbarItemTemplate"] as Windows.UI.Xaml.DataTemplate,
-				ItemsPanel = Windows.UI.Xaml.Application.Current.Resources["ShellToolbarItemsPanelTemplate"] as Windows.UI.Xaml.Controls.ItemsPanelTemplate,
+				ItemTemplate = UwpApplication.Current.Resources["ShellToolbarItemTemplate"] as UwpDataTemplate,
+				ItemsPanel = UwpApplication.Current.Resources["ShellToolbarItemsPanelTemplate"] as ItemsPanelTemplate,
 			};
 			SetColumn(_Toolbar, 1);
 			_HeaderArea.Children.Add(_Toolbar);
@@ -54,8 +69,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Children.Add(SectionRenderer);
 
-			_BottomBar = new Windows.UI.Xaml.Controls.Grid() { HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Center };
-			_BottomBarArea = new Windows.UI.Xaml.Controls.Border() { Child = _BottomBar };
+			_BottomBar = new UwpGrid() { HorizontalAlignment = HorizontalAlignment.Center };
+			_BottomBarArea = new Border() { Child = _BottomBar };
 			SetRow(_BottomBarArea, 2);
 			Children.Add(_BottomBarArea);
 		}
@@ -89,12 +104,12 @@ namespace Xamarin.Forms.Platform.UWP
 			double inset = 10;
 			if (ShellContext.IsPaneToggleButtonVisible)
 				inset += 45;
-			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Controls.NavigationView", "IsBackButtonVisible"))
 			{
 				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
 					inset += 45;
 			}
-			_HeaderArea.Padding = new Windows.UI.Xaml.Thickness(inset, 0, 0, 0);
+			_HeaderArea.Padding = new UwpThickness(inset, 0, 0, 0);
 		}
 
 		void UpdateBottomBar()
@@ -106,7 +121,7 @@ namespace Xamarin.Forms.Platform.UWP
 				for (int i = 0; i < ShellItem.Items.Count; i++)
 				{
 					var section = ShellItem.Items[i];
-					var btn = new Windows.UI.Xaml.Controls.AppBarButton()
+					var btn = new AppBarButton()
 					{
 						Label = section.Title,
 						Width = double.NaN,
@@ -114,9 +129,9 @@ namespace Xamarin.Forms.Platform.UWP
 						MaxWidth = 200
 					};
 					if (section.Icon is FileImageSource fis)
-						btn.Icon = new Windows.UI.Xaml.Controls.BitmapIcon() { UriSource = new Uri("ms-appx:///" + fis.File) };
+						btn.Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:///" + fis.File) };
 					btn.Click += (s, e) => OnShellSectionClicked(section);
-					_BottomBar.ColumnDefinitions.Add(new Windows.UI.Xaml.Controls.ColumnDefinition() { Width = new Windows.UI.Xaml.GridLength(1, Windows.UI.Xaml.GridUnitType.Star) });
+					_BottomBar.ColumnDefinitions.Add(new UwpColumnDefinition() { Width = new UwpGridLength(1, UwpGridUnitType.Star) });
 					SetColumn(btn, i);
 					_BottomBar.Children.Add(btn);
 				}
@@ -151,10 +166,10 @@ namespace Xamarin.Forms.Platform.UWP
 					titleColor = appearance.TitleColor.ToWindowsColor();
 			}
 			_BottomBarArea.Background = _HeaderArea.Background =
-				new Windows.UI.Xaml.Media.SolidColorBrush(tabBarBackgroundColor);
-			_Title.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(titleColor);
-			var tabbarForeground = new Windows.UI.Xaml.Media.SolidColorBrush(tabBarForegroundColor);
-			foreach (var button in _BottomBar.Children.OfType<Windows.UI.Xaml.Controls.AppBarButton>())
+				new SolidColorBrush(tabBarBackgroundColor);
+			_Title.Foreground = new SolidColorBrush(titleColor);
+			var tabbarForeground = new SolidColorBrush(tabBarForegroundColor);
+			foreach (var button in _BottomBar.Children.OfType<AppBarButton>())
 				button.Foreground = tabbarForeground;
 			if (SectionRenderer is IAppearanceObserver iao)
 				iao.OnAppearanceChanged(appearance);
@@ -251,7 +266,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void SwitchSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
-			SectionRenderer.NavigateToShellSection(source, section, page, animate);
+			SectionRenderer.NavigateToShellSection(source, section, animate);
 		}
 
 		Page DisplayedPage { get; set; }
@@ -272,7 +287,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateToolbar();
 		}
 
-		private void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Shell.TabBarIsVisibleProperty.PropertyName)
 			{
@@ -288,31 +303,31 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		private void UpdateNavBarVisibility()
+		void UpdateNavBarVisibility()
 		{
 			if (DisplayedPage == null || Shell.GetNavBarIsVisible(DisplayedPage))
 			{
-				_HeaderArea.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				_HeaderArea.Visibility = Visibility.Visible;
 				Shell.SetFlyoutBehavior(Shell.Current, Xamarin.Forms.FlyoutBehavior.Flyout);
 			}
 			else
 			{
-				_HeaderArea.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				_HeaderArea.Visibility = Visibility.Collapsed;
 				Shell.SetFlyoutBehavior(Shell.Current, Xamarin.Forms.FlyoutBehavior.Disabled);
 			}
 		}
 
-		private void UpdatePageTitle()
+		void UpdatePageTitle()
 		{
 			_Title.Text = DisplayedPage?.Title ?? ShellSection?.Title ?? "";
 		}
 
-		private void UpdateBottomBarVisibility()
+		void UpdateBottomBarVisibility()
 		{
-			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
+			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		private void UpdateToolbar()
+		void UpdateToolbar()
 		{
 			_Toolbar.ItemsSource = DisplayedPage?.ToolbarItems;
 		}
