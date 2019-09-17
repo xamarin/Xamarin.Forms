@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void TouchGestureRecognizer_OnTouchUpdated(TouchGestureRecognizer sender, TouchEventArgs e)
 		{
-			var logItem = $"N:{++_count},{sender.View?.GetType().Name ?? "?"} Touch:{e.TouchCount}, InView:{e.IsInOriginalView}, Event:{e.TouchState}; ";
+			var logItem = $"N:{++_count},{sender?.Touches?.FirstOrDefault()?.Target.GetType().Name ?? "?"} Touch:{e.TouchCount}, InView:{e.IsInOriginalView}, Event:{e.TouchState}; ";
 
 			if (_logs.Count > 0)
 			{
@@ -95,12 +95,14 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void RotateGestureRecognizer_OnRotated(object sender, RotateGestureUpdatedEventArgs e)
 		{
-			var view = (sender as RotateGestureRecognizer).View;
-			Device.BeginInvokeOnMainThread(() =>
+			var view = (sender as RotateGestureRecognizer).Parent as View;
+			if (view != null)
 			{
-				view.Rotation = e.Total;
-			});
-			
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					view.Rotation = e.Total;
+				});
+			}
 		}
 	}
 }
