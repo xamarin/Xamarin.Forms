@@ -94,8 +94,8 @@ Task("provision")
 
         var platform = IsRunningOnWindows() ? "windows" : "macos";
 
-        //if(!String.IsNullOrWhiteSpace(androidSDK))
-          //  await Boots (androidSDK);
+        if(!String.IsNullOrWhiteSpace(androidSDK))
+            await Boots (androidSDK);
 
         if(IsRunningOnWindows())
         {
