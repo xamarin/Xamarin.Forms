@@ -553,11 +553,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FlyoutHeaderProperty =
 			BindableProperty.Create(nameof(FlyoutHeader), typeof(object), typeof(Shell), null, BindingMode.OneTime,
-				propertyChanged: OnFlyoutHeaderChanged);
+				propertyChanging: OnFlyoutHeaderChanging);
 
 		public static readonly BindableProperty FlyoutHeaderTemplateProperty =
 			BindableProperty.Create(nameof(FlyoutHeaderTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime,
-				propertyChanged: OnFlyoutHeaderTemplateChanged);
+				propertyChanging: OnFlyoutHeaderTemplateChanging);
 
 		public static readonly BindableProperty FlyoutIsPresentedProperty =
 			BindableProperty.Create(nameof(FlyoutIsPresented), typeof(bool), typeof(Shell), false, BindingMode.TwoWay);
@@ -911,13 +911,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		static void OnFlyoutHeaderChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnFlyoutHeaderChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shell = (Shell)bindable;
 			shell.OnFlyoutHeaderChanged(oldValue, newValue);
 		}
 
-		static void OnFlyoutHeaderTemplateChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnFlyoutHeaderTemplateChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shell = (Shell)bindable;
 			shell.OnFlyoutHeaderTemplateChanged((DataTemplate)oldValue, (DataTemplate)newValue);
