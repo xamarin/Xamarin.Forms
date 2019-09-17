@@ -7,8 +7,6 @@ namespace Xamarin.Forms
 {
 	public class TouchGestureRecognizer : GestureRecognizer
 	{
-		public static readonly BindableProperty UseVisualStateManagerProperty =
-			BindableProperty.Create(nameof(UseVisualStateManager), typeof(bool), typeof(TouchGestureRecognizer), true);
 
 		public static readonly BindableProperty StateProperty =
 			BindableProperty.Create(nameof(State), typeof(TouchState), typeof(TouchGestureRecognizer), TouchState.Default);
@@ -30,15 +28,10 @@ namespace Xamarin.Forms
 			private set => SetValue(TouchCountProperty, value);
 		}
 
-		public List<Touch> Touches => _touches.Values.ToList();
-
-		public bool UseVisualStateManager
+		public List<Touch> Touches
 		{
-			get => (bool)GetValue(UseVisualStateManagerProperty);
-			set => SetValue(UseVisualStateManagerProperty, value);
+			get => _touches.Values.ToList();
 		}
-
-		public View View { get; private set; }
 
 		protected TouchState PreviousState { get; set; }
 
@@ -50,12 +43,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendTouch(View sender, TouchEventArgs eventArgs)
 		{
-			if (View != sender)
-			{
-				View = sender;
-			}
-
-			CollectTouch(eventArgs);
+			CollectTouch(eventArgs, sender);
 
 			PreviousState = State;
 			State = eventArgs.TouchState;
@@ -64,8 +52,9 @@ namespace Xamarin.Forms
 			TouchUpdated?.Invoke(this, eventArgs);
 			OnTouch(sender, eventArgs);
 
-			if (UseVisualStateManager)
+			if (sender.HasVisualStateGroups())
 			{
+				//VisualStateManager.GetVisualStateGroups(sender)?.FirstOrDefault(f=>f.);
 				VisualStateManager.GoToState(sender, State.ToString());
 			}
 
@@ -77,7 +66,7 @@ namespace Xamarin.Forms
 
 		public event EventHandler<TouchEventArgs> TouchUpdated;
 
-		void CollectTouch(TouchEventArgs ev)
+		void CollectTouch(TouchEventArgs ev, View view)
 		{
 			foreach (TouchPoint touchPoint in ev.TouchPoints)
 			{
@@ -91,7 +80,7 @@ namespace Xamarin.Forms
 					}
 					else
 					{
-						_touches[touchPoint.TouchId] = new Touch(touchPoint.TouchId, touchPoint, View);
+						_touches[touchPoint.TouchId] = new Touch(touchPoint.TouchId, touchPoint, view);
 					}
 				}
 				else if (touchPoint.TouchState.IsFinishedTouch())
