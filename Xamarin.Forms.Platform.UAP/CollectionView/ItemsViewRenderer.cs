@@ -243,6 +243,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var item = FindBoundItem(args);
 
+			if (item == null)
+			{
+				// Item wasn't found in the list, so there's nothing to scroll to
+				return;
+			}
+
 			if (args.IsAnimated)
 			{
 				await ScrollHelpers.AnimateToItemAsync(list, item, args.ScrollToPosition);
@@ -262,6 +268,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
+				if (args.Index >= _collectionViewSource.View.Count)
+				{
+					return null;
+				}
+
 				return _collectionViewSource.View[args.Index];
 			}
 
