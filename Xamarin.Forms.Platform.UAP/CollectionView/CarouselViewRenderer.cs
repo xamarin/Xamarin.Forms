@@ -7,6 +7,7 @@ using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
 using WScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using WSnapPointsType = Windows.UI.Xaml.Controls.SnapPointsType;
 using WSnapPointsAlignment = Windows.UI.Xaml.Controls.Primitives.SnapPointsAlignment;
+using System;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -161,6 +162,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
 		{
 			CarouselView.SetIsDragging(e.IsIntermediate);
+			UpdatePositionFromScroll();
 		}
 
 		void UpdatePeekAreaInsets()
@@ -237,6 +239,54 @@ namespace Xamarin.Forms.Platform.UWP
 				if (listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
 					_scrollViewer.VerticalSnapPointsAlignment = GetWindowsSnapPointsAlignment(listItemsLayout.SnapPointsAlignment);
 			}
+		}
+
+		void UpdatePositionFromScroll()
+		{
+			double scrollViewerOffsetProportion = GetScrollViewerOffsetProportion(_scrollViewer);
+			double itemProportion = 1 / (double)ListViewBase.Items.Count;
+
+			for (int i = 1; i <= ListViewBase.Items.Count; i++)
+			{
+				System.Diagnostics.Debug.WriteLine(scrollViewerOffsetProportion);
+
+				if (scrollViewerOffsetProportion > 0.99)
+				{
+					UpdatePosition(ListViewBase.Items.Count);
+					break;
+				}
+				if (scrollViewerOffsetProportion > (i * itemProportion - itemProportion) && 	
+					scrollViewerOffsetProportion <= (i * itemProportion))
+				{
+					UpdatePosition(i - 1);
+					break;
+				}
+			}
+		}
+
+		void UpdatePosition(int position)
+		{
+			System.Diagnostics.Debug.WriteLine(position);
+
+			if (position == -1)
+				return;
+
+			if (!(ListViewBase.Items[position - 1] is ItemTemplateContext itemTemplateContext))
+				throw new InvalidOperationException("Visible item not found");
+
+			CarouselView.SetCurrentItem(itemTemplateContext.Item);
+		}
+
+		double GetScrollViewerOffsetProportion(ScrollViewer scrollViewer)
+		{
+			if (scrollViewer == null)
+				return 0;
+
+			var horizontalOffsetProportion = (scrollViewer.ScrollableWidth == 0) ? 0 : (scrollViewer.HorizontalOffset / scrollViewer.ScrollableWidth);
+			var verticalOffsetProportion = (scrollViewer.ScrollableHeight == 0) ? 0 : (scrollViewer.VerticalOffset / scrollViewer.ScrollableHeight);
+			var scrollViewerOffsetProportion = Math.Max(horizontalOffsetProportion, verticalOffsetProportion);
+
+			return scrollViewerOffsetProportion;
 		}
 
 		ListViewBase CreateCarouselListLayout(ItemsLayoutOrientation layoutOrientation)
