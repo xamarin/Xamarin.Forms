@@ -248,8 +248,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			for (int i = 1; i <= ListViewBase.Items.Count; i++)
 			{
-				System.Diagnostics.Debug.WriteLine(scrollViewerOffsetProportion);
-
 				if (scrollViewerOffsetProportion > 0.99)
 				{
 					UpdatePosition(ListViewBase.Items.Count);
@@ -266,9 +264,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdatePosition(int position)
 		{
-			System.Diagnostics.Debug.WriteLine(position);
-
-			if (position == -1)
+			if (position <= 0)
 				return;
 
 			if (!(ListViewBase.Items[position - 1] is ItemTemplateContext itemTemplateContext))
