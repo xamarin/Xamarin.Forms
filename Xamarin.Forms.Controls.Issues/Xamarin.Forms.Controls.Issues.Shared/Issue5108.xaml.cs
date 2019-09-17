@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 
-		private void MarginButton_Clicked(object sender, EventArgs e)
+		void MarginButton_Clicked(object sender, EventArgs e)
 		{
 			if (myframe.Margin.Top == 20)
 				myframe.Margin = new Thickness(5);
@@ -42,12 +42,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		private void HasShadowButton_Clicked(object sender, EventArgs e)
+		void HasShadowButton_Clicked(object sender, EventArgs e)
 		{
 			myframe.HasShadow = !myframe.HasShadow;
 		}
 
-		private void RadiusButton_Clicked(object sender, EventArgs e)
+		void RadiusButton_Clicked(object sender, EventArgs e)
 		{
 			if (myframe.CornerRadius == 10)
 				myframe.CornerRadius = 20;
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		Color? initialColor = null;
-		private void BackgroundButton_Clicked(object sender, EventArgs e)
+		void BackgroundButton_Clicked(object sender, EventArgs e)
 		{
 			if (!initialColor.HasValue)
 				initialColor = myframe.BackgroundColor;
