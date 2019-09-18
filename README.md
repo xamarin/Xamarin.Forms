@@ -110,7 +110,7 @@ Make sure you have nuget.exe 4.0 or above and the latest dotnet core sdk (2.0.3)
 
 ### UI Tests ###
 
-#### Run Android Tests ####
+##### Run Android Tests #####
 
 Depending on your environment setup, you might need to configure a few things before being able to debug / run UI tests, especially on Windows.
 
