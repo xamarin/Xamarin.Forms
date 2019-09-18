@@ -3,9 +3,27 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using static Xamarin.Forms.IndicatorView;
 
 namespace Xamarin.Forms
 {
+	public static class IndicatorViewExtensions
+	{
+		public static void SetItemsSourceBy(this IndicatorView indicatorView, CarouselView carouselView)
+		{
+			indicatorView.SetBinding(PositionProperty, new Binding
+			{
+				Path = nameof(CarouselView.Position),
+				Source = carouselView
+			});
+			indicatorView.SetBinding(ItemsSourceProperty, new Binding
+			{
+				Path = nameof(ItemsView.ItemsSource),
+				Source = carouselView
+			});
+		}
+	}
+
 	public class IndicatorView : StackLayout
 	{
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
@@ -87,23 +105,6 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public new IList<View> Children => base.Children;
-
-		public static void SetItemsSourceBy(IndicatorView indicatorsView, CarouselView carouselView)
-			=> indicatorsView.SetItemsSourceBy(carouselView);
-
-		public void SetItemsSourceBy(CarouselView carouselView)
-		{
-			SetBinding(PositionProperty, new Binding
-			{
-				Path = nameof(CarouselView.Position),
-				Source = carouselView
-			});
-			SetBinding(ItemsSourceProperty, new Binding
-			{
-				Path = nameof(ItemsView.ItemsSource),
-				Source = carouselView
-			});
-		}
 
 		protected virtual void ApplySelectedColor(View indicatorViewItem, int index)
 			=> indicatorViewItem.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
