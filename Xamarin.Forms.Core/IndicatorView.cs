@@ -26,7 +26,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SelectedIndicatorColorProperty = BindableProperty.Create(nameof(SelectedIndicatorColor), typeof(Color), typeof(IndicatorView), Color.Default, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
 
-		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorView), 10.0, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorView), -1.0, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
 
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorView), null, propertyChanged: (bindable, oldValue, newValue)
@@ -119,6 +119,7 @@ namespace Xamarin.Forms
 			var oldCount = Children.Count;
 			for (var i = 0; i < Count - oldCount && i < MaximumVisibleCount - oldCount; ++i)
 			{
+				var size = IndicatorSize > 0 ? IndicatorSize : 10;
 				var indicator = IndicatorTemplate?.CreateContent() as View ?? new Frame
 				{
 					Padding = 0,
@@ -126,9 +127,9 @@ namespace Xamarin.Forms
 					BorderColor = Color.Transparent,
 					VerticalOptions = LayoutOptions.Center,
 					HorizontalOptions = LayoutOptions.Center,
-					WidthRequest = IndicatorSize,
-					HeightRequest = IndicatorSize,
-					CornerRadius = (float)IndicatorSize / 2
+					WidthRequest = size,
+					HeightRequest = size,
+					CornerRadius = (float)size / 2
 				};
 				var itemTapGesture = new TapGestureRecognizer();
 				itemTapGesture.Tapped += (tapSender, tapArgs) => Position = IndexOf(tapSender as View);
