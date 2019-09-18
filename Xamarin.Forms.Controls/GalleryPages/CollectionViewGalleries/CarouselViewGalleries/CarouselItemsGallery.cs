@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var indicators = new IndicatorsView
 			{
 				Margin = new Thickness(15, 20),
-				IndicatorsColor = Color.Black,
+				IndicatorColor = Color.Black,
 				SelectedIndicatorColor = Color.Red
 			};
 			indicators.SetItemsSourceBy(carouselView);

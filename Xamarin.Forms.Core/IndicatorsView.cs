@@ -4,16 +4,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public enum IndicatorShape
-	{
-		Circle,
-		Square
-	}
-
 	public class IndicatorsView : StackLayout
 	{
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorsView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue) =>
@@ -26,7 +19,7 @@ namespace Xamarin.Forms
 			(bindable as IndicatorsView)?.ResetIndicatorsCount((int)oldValue, (int)newValue);
 		});
 
-		public static readonly BindableProperty MaxVisibleCountProperty = BindableProperty.Create(nameof(MaxVisibleCount), typeof(int), typeof(IndicatorsView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue) =>
+		public static readonly BindableProperty MaximumVisibleCountProperty = BindableProperty.Create(nameof(MaximumVisibleCount), typeof(int), typeof(IndicatorsView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			(bindable as IndicatorsView)?.ResetIndicatorsStyles();
 		});
@@ -36,12 +29,7 @@ namespace Xamarin.Forms
 			(bindable as IndicatorsView)?.ResetIndicatorsStyles();
 		});
 
-		public static readonly BindableProperty IndicatorShapeProperty = BindableProperty.Create(nameof(IndicatorShape), typeof(IndicatorShape), typeof(IndicatorsView), default(IndicatorShape), propertyChanged: (bindable, oldValue, newValue) =>
-		{
-			(bindable as IndicatorsView)?.ResetIndicatorsStyles();
-		});
-
-		public static readonly BindableProperty IndicatorsColorProperty = BindableProperty.Create(nameof(IndicatorsColor), typeof(Color), typeof(IndicatorsView), Color.Silver, propertyChanged: (bindable, oldValue, newValue) =>
+		public static readonly BindableProperty IndicatorColorProperty = BindableProperty.Create(nameof(IndicatorColor), typeof(Color), typeof(IndicatorsView), Color.Silver, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			(bindable as IndicatorsView)?.ResetIndicatorsStyles();
 		});
@@ -51,7 +39,7 @@ namespace Xamarin.Forms
 			(bindable as IndicatorsView)?.ResetIndicatorsStyles();
 		});
 
-		public static readonly BindableProperty IndicatorsSizeProperty = BindableProperty.Create(nameof(IndicatorsSize), typeof(double), typeof(IndicatorsView), 10.0, propertyChanged: (bindable, oldValue, newValue) =>
+		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorsView), 10.0, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			(bindable as IndicatorsView)?.ResetIndicatorsStyles();
 		});
@@ -78,10 +66,10 @@ namespace Xamarin.Forms
 			set => SetValue(CountProperty, value);
 		}
 
-		public int MaxVisibleCount
+		public int MaximumVisibleCount
 		{
-			get => (int)GetValue(MaxVisibleCountProperty);
-			set => SetValue(MaxVisibleCountProperty, value);
+			get => (int)GetValue(MaximumVisibleCountProperty);
+			set => SetValue(MaximumVisibleCountProperty, value);
 		}
 
 		public DataTemplate IndicatorTemplate
@@ -90,16 +78,10 @@ namespace Xamarin.Forms
 			set => SetValue(IndicatorTemplateProperty, value);
 		}
 
-		public IndicatorShape IndicatorShape
+		public Color IndicatorColor
 		{
-			get => (IndicatorShape)GetValue(IndicatorShapeProperty);
-			set => SetValue(IndicatorShapeProperty, value);
-		}
-
-		public Color IndicatorsColor
-		{
-			get => (Color)GetValue(IndicatorsColorProperty);
-			set => SetValue(IndicatorsColorProperty, value);
+			get => (Color)GetValue(IndicatorColorProperty);
+			set => SetValue(IndicatorColorProperty, value);
 		}
 
 		public Color SelectedIndicatorColor
@@ -108,10 +90,10 @@ namespace Xamarin.Forms
 			set => SetValue(SelectedIndicatorColorProperty, value);
 		}
 
-		public double IndicatorsSize
+		public double IndicatorSize
 		{
-			get => (double)GetValue(IndicatorsSizeProperty);
-			set => SetValue(IndicatorsSizeProperty, value);
+			get => (double)GetValue(IndicatorSizeProperty);
+			set => SetValue(IndicatorSizeProperty, value);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -145,12 +127,12 @@ namespace Xamarin.Forms
 			=> view.BackgroundColor = SelectedIndicatorColor;
 
 		protected virtual void ApplyUnselectedStyle(View view, int index)
-			=> view.BackgroundColor = IndicatorsColor;
+			=> view.BackgroundColor = IndicatorColor;
 
 		private void AddExtraIndicatorsItems()
 		{
 			var oldCount = Children.Count;
-			for (var i = 0; i < Count - oldCount && i < MaxVisibleCount - oldCount; ++i)
+			for (var i = 0; i < Count - oldCount && i < MaximumVisibleCount - oldCount; ++i)
 			{
 				var indicator = IndicatorTemplate?.CreateContent() as View ?? new Frame
 				{
@@ -159,11 +141,9 @@ namespace Xamarin.Forms
 					BorderColor = Color.Transparent,
 					VerticalOptions = LayoutOptions.Center,
 					HorizontalOptions = LayoutOptions.Center,
-					WidthRequest = IndicatorsSize,
-					HeightRequest = IndicatorsSize,
-					CornerRadius = IndicatorShape == IndicatorShape.Circle
-						? (float)IndicatorsSize / 2
-						: 0
+					WidthRequest = IndicatorSize,
+					HeightRequest = IndicatorSize,
+					CornerRadius = (float)IndicatorSize / 2
 				};
 				var itemTapGesture = new TapGestureRecognizer();
 				itemTapGesture.Tapped += (tapSender, tapArgs) => Position = IndexOf(tapSender as View);
