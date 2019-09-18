@@ -103,9 +103,6 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public new IList<View> Children => base.Children;
-
 		protected virtual void ApplySelectedColor(View indicatorViewItem, int index)
 			=> indicatorViewItem.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
 
@@ -147,14 +144,12 @@ namespace Xamarin.Forms
 			}
 		}
 
-		int IndexOf(View view) => Children.IndexOf(view);
-
-		void ApplyStyle(View view)
+		void ApplyColor(View view)
 		{
 			try
 			{
 				view.BatchBegin();
-				var index = IndexOf(view);
+				var index = Children.IndexOf(view);
 				if (index == Position)
 				{
 					ApplySelectedColor(view, index);
@@ -172,7 +167,7 @@ namespace Xamarin.Forms
 		{
 			foreach (var child in Children)
 			{
-				ApplyStyle(child);
+				ApplyColor(child);
 			}
 		}
 
