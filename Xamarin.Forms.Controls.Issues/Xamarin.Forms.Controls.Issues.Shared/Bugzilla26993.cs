@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("I am at BZ26993");
 
 #if __IOS__
-			RunningApp.WaitForElement(q => q.Class("WKWebView"));
+			RunningApp.WaitForElement(q => q.Class("WKWebView"), postTimeout: TimeSpan.FromSeconds(5));
 
 			RunningApp.Query(q => q.Class("WKWebView").Index(0).InvokeJS("document.getElementById('LinkID0').click()"));
 			RunningApp.Screenshot("Load local HTML");
