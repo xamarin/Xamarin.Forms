@@ -118,7 +118,7 @@ Depending on your environment setup, you might need to configure a few things be
 - If you receive an error about JAVA_HOME, please install the latest Java JDK and set your environment variable to the JDK directory (e.g. C:\Program Files\Java\jdk-13).
 - If you receive an error about a missing ApkFile, please generate an APK file for Xamarin.Forms.ControlGallery.Android. The easiest way to do this is to right click the project and select "Deploy". Note that if you rebuild the solution, you might lose the APK and will need to generate it again.
 
-After these steps are taken care of, you should be good to go. You can see all UI tests in the Test Explorer, search them for your own convenience, and quickly run individual tests.
+After these steps are taken care of, you should be good to go. You can see all UI tests in Test Explorer, search them for your own convenience, and quickly run individual tests.
 
 ##### Run UWP UI Tests #####
 
