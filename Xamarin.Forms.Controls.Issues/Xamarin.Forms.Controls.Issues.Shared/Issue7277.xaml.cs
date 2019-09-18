@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			RunningApp.QueryUntilPresent(() =>
 			{
-				RunningApp.DragCoordinates(colView.Rect.CenterX, colView.Rect.Y + colView.Rect.Height - 50, colView.Rect.CenterX, colView.Rect.Y + 5);
+				RunningApp.DragCoordinates(colView.Rect.CenterX, colView.Rect.Y + 5, colView.Rect.CenterX, colView.Rect.Y + colView.Rect.Height - 50);
 
 				lastCellResults = RunningApp.Query("99");
 
