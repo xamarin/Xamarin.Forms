@@ -20,10 +20,10 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
 
-		public static readonly BindableProperty IndicatorColorProperty = BindableProperty.Create(nameof(IndicatorColor), typeof(Color), typeof(IndicatorView), Color.Silver, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty IndicatorColorProperty = BindableProperty.Create(nameof(IndicatorColor), typeof(Color), typeof(IndicatorView), Color.Default, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
 
-		public static readonly BindableProperty SelectedIndicatorColorProperty = BindableProperty.Create(nameof(SelectedIndicatorColor), typeof(Color), typeof(IndicatorView), Color.Gray, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty SelectedIndicatorColorProperty = BindableProperty.Create(nameof(SelectedIndicatorColor), typeof(Color), typeof(IndicatorView), Color.Default, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
 
 		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorView), 10.0, propertyChanged: (bindable, oldValue, newValue)
@@ -105,11 +105,14 @@ namespace Xamarin.Forms
 			});
 		}
 
-		protected virtual void ApplySelectedStyle(View view, int index)
-			=> view.BackgroundColor = SelectedIndicatorColor;
+		protected virtual void ApplySelectedColor(View indicatorViewItem, int index)
+			=> indicatorViewItem.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
 
-		protected virtual void ApplyUnselectedStyle(View view, int index)
-			=> view.BackgroundColor = IndicatorColor;
+		protected virtual void ApplyRegularColor(View indicatorViewItem, int index)
+			=> indicatorViewItem.BackgroundColor = GetColorOrDefault(IndicatorColor, Color.Silver);
+
+		Color GetColorOrDefault(Color color, Color defaultColor)
+			=> color.IsDefault ? defaultColor : color;
 
 		void AddExtraIndicatorsItems()
 		{
@@ -152,10 +155,10 @@ namespace Xamarin.Forms
 				var index = IndexOf(view);
 				if (index == Position)
 				{
-					ApplySelectedStyle(view, index);
+					ApplySelectedColor(view, index);
 					return;
 				}
-				ApplyUnselectedStyle(view, index);
+				ApplyRegularColor(view, index);
 			}
 			finally
 			{
