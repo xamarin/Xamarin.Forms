@@ -44,7 +44,7 @@ namespace Xamarin.Forms
 			(bindable as IndicatorsView)?.ResetIndicatorsStyles();
 		});
 
-		internal static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorsView), null, propertyChanged: (bindable, oldValue, newValue) =>
+		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorsView), null, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			(bindable as IndicatorsView)?.ResetItemsSource(oldValue as IEnumerable);
 		});
@@ -96,7 +96,6 @@ namespace Xamarin.Forms
 			set => SetValue(IndicatorSizeProperty, value);
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public IEnumerable ItemsSource
 		{
 			get => GetValue(ItemsSourceProperty) as IEnumerable;
