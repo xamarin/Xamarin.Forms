@@ -61,10 +61,6 @@ namespace Xamarin.Forms
 			(bindable as IndicatorsView)?.ResetItemsSource(oldValue as IEnumerable);
 		});
 
-		static IndicatorsView()
-		{
-		}
-
 		public IndicatorsView()
 		{
 			Orientation = StackOrientation.Horizontal;
