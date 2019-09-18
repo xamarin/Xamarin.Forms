@@ -130,7 +130,7 @@ namespace Xamarin.Forms
 					CornerRadius = (float)size / 2
 				};
 				var itemTapGesture = new TapGestureRecognizer();
-				itemTapGesture.Tapped += (tapSender, tapArgs) => Position = IndexOf(tapSender as View);
+				itemTapGesture.Tapped += (tapSender, tapArgs) => Position = Children.IndexOf(tapSender as View);
 				indicator.GestureRecognizers.Add(itemTapGesture);
 				Children.Add(indicator);
 			}
