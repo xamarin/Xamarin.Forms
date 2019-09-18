@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var absolute = new AbsoluteLayout();
 			absolute.Children.Add(carouselView, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All);
 
-			var indicators = new IndicatorsView
+			var indicators = new IndicatorView
 			{
 				Margin = new Thickness(15, 20),
 				IndicatorColor = Color.Black,
