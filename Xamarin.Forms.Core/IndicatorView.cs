@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using static Xamarin.Forms.IndicatorView;
 
@@ -24,7 +23,8 @@ namespace Xamarin.Forms
 		}
 	}
 
-	public class IndicatorView : StackLayout
+	[ContentProperty(nameof(IndicatorLayout))]
+	public class IndicatorView : TemplatedView
 	{
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
@@ -50,9 +50,17 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorView), null, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetItemsSource((IEnumerable)oldValue));
 
+		public static readonly BindableProperty IndicatorLayoutProperty = BindableProperty.Create(nameof(IndicatorLayout), typeof(Layout<View>), typeof(IndicatorView), null, propertyChanged: TemplateUtilities.OnContentChanged);
+
 		public IndicatorView()
+			=> IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+
+		IList<View> Items => IndicatorLayout.Children;
+
+		public Layout<View> IndicatorLayout
 		{
-			Orientation = StackOrientation.Horizontal;
+			get => (Layout<View>)GetValue(IndicatorLayoutProperty);
+			set => SetValue(IndicatorLayoutProperty, value);
 		}
 
 		public int Position
@@ -75,7 +83,7 @@ namespace Xamarin.Forms
 
 		public DataTemplate IndicatorTemplate
 		{
-			get => GetValue(IndicatorTemplateProperty) as DataTemplate;
+			get => (DataTemplate)GetValue(IndicatorTemplateProperty);
 			set => SetValue(IndicatorTemplateProperty, value);
 		}
 
@@ -99,7 +107,7 @@ namespace Xamarin.Forms
 
 		public IEnumerable ItemsSource
 		{
-			get => GetValue(ItemsSourceProperty) as IEnumerable;
+			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
@@ -114,7 +122,7 @@ namespace Xamarin.Forms
 
 		void AddExtraIndicatorsItems()
 		{
-			var oldCount = Children.Count;
+			var oldCount = Items.Count;
 			for (var i = 0; i < Count - oldCount && i < MaximumVisibleCount - oldCount; ++i)
 			{
 				var size = IndicatorSize > 0 ? IndicatorSize : 10;
@@ -130,17 +138,17 @@ namespace Xamarin.Forms
 					CornerRadius = (float)size / 2
 				};
 				var itemTapGesture = new TapGestureRecognizer();
-				itemTapGesture.Tapped += (tapSender, tapArgs) => Position = Children.IndexOf(tapSender as View);
+				itemTapGesture.Tapped += (tapSender, tapArgs) => Position = Items.IndexOf(tapSender as View);
 				indicator.GestureRecognizers.Add(itemTapGesture);
-				Children.Add(indicator);
+				Items.Add(indicator);
 			}
 		}
 
 		void RemoveRedundantIndicatorsItems()
 		{
-			foreach (var item in Children.Where((v, i) => i >= Count).ToArray())
+			foreach (var item in Items.Where((v, i) => i >= Count).ToArray())
 			{
-				Children.Remove(item);
+				Items.Remove(item);
 			}
 		}
 
@@ -149,7 +157,7 @@ namespace Xamarin.Forms
 			try
 			{
 				view.BatchBegin();
-				var index = Children.IndexOf(view);
+				var index = Items.IndexOf(view);
 				if (index == Position)
 				{
 					ApplySelectedColor(view, index);
@@ -165,7 +173,7 @@ namespace Xamarin.Forms
 
 		void ResetIndicatorsStylesNonBatch()
 		{
-			foreach (var child in Children)
+			foreach (var child in Items)
 			{
 				ApplyColor(child as View);
 			}
