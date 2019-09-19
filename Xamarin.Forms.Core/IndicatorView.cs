@@ -30,7 +30,7 @@ namespace Xamarin.Forms
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
 
 		public static readonly BindableProperty CountProperty = BindableProperty.Create(nameof(Count), typeof(int), typeof(IndicatorView), default(int), propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsCount((int)oldValue, (int)newValue));
+			=> ((IndicatorView)bindable).ResetIndicatorsCount((int)oldValue));
 
 		public static readonly BindableProperty MaximumVisibleCountProperty = BindableProperty.Create(nameof(MaximumVisibleCount), typeof(int), typeof(IndicatorView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
@@ -48,7 +48,7 @@ namespace Xamarin.Forms
 			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
 
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorView), null, propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
+			=> ((IndicatorView)bindable).ResetItemsSource((IEnumerable)oldValue));
 
 		public IndicatorView()
 		{
@@ -103,11 +103,11 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		protected virtual void ApplySelectedColor(View indicatorViewItem, int index)
-			=> indicatorViewItem.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
+		protected virtual void ApplySelectedColor(View indicatorItemView, int index)
+			=> indicatorItemView.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
 
-		protected virtual void ApplyRegularColor(View indicatorViewItem, int index)
-			=> indicatorViewItem.BackgroundColor = GetColorOrDefault(IndicatorColor, Color.Silver);
+		protected virtual void ApplyRegularColor(View indicatorItemView, int index)
+			=> indicatorItemView.BackgroundColor = GetColorOrDefault(IndicatorColor, Color.Silver);
 
 		Color GetColorOrDefault(Color color, Color defaultColor)
 			=> color.IsDefault ? defaultColor : color;
@@ -167,7 +167,7 @@ namespace Xamarin.Forms
 		{
 			foreach (var child in Children)
 			{
-				ApplyColor(child);
+				ApplyColor(child as View);
 			}
 		}
 
@@ -184,17 +184,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void ResetIndicatorsCount(int oldValue, int newValue)
+		void ResetIndicatorsCount(int oldCount)
 		{
 			try
 			{
 				BatchBegin();
-				if (oldValue < 0)
+				if (oldCount < 0)
 				{
-					oldValue = 0;
+					oldCount = 0;
 				}
 
-				if (oldValue > newValue)
+				if (oldCount > Count)
 				{
 					RemoveRedundantIndicatorsItems();
 					return;
@@ -209,9 +209,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void ResetItemsSource(IEnumerable oldCollection)
+		void ResetItemsSource(IEnumerable oldItemsSource)
 		{
-			if (oldCollection is INotifyCollectionChanged oldObservableCollection)
+			if (oldItemsSource is INotifyCollectionChanged oldObservableCollection)
 			{
 				oldObservableCollection.CollectionChanged -= OnCollectionChanged;
 			}
