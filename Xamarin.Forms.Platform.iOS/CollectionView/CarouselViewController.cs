@@ -177,13 +177,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var cells = CollectionView.VisibleCells;
 
+			var epsilon = 1;
 
 			TemplatedCell currentCell = null;
 			TemplatedCell previousCell = null;
 			TemplatedCell nextCell = null;
 
-			var x = (float)(CollectionView.Center.X + CollectionView.ContentOffset.X);
-			var y = (float)(CollectionView.Center.Y + CollectionView.ContentOffset.Y);
+			var x = CollectionView.Center.X + CollectionView.ContentOffset.X;
+			var y = CollectionView.Center.Y + CollectionView.ContentOffset.Y;
 
 			var previousIndex = -1;
 			var currentIndex = -1;
@@ -191,11 +192,11 @@ namespace Xamarin.Forms.Platform.iOS
 			for (int i = 0; i < cells.Count(); i++)
 			{
 				var cell = cells[i];
-				var cellCenterX = (float)cell.Center.X;
-				var cellCenterY = (float)cell.Center.Y;
+				var cellCenterX = cell.Center.X;
+				var cellCenterY = cell.Center.Y;
 
-				if ((_layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal && cellCenterX == x)
-					|| (_layout.ScrollDirection == UICollectionViewScrollDirection.Vertical && cellCenterY == y))
+				if ((_layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal && Math.Abs(cellCenterX - x) < epsilon)
+					|| (_layout.ScrollDirection == UICollectionViewScrollDirection.Vertical && Math.Abs(cellCenterY - y) < epsilon))
 				{
 					currentIndex = i;
 					if (i > 0)
