@@ -81,12 +81,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		TextBlock _textBlock;
+		TextBlock _textBlock = null;
 
 		void UpdateLineBreakMode()
 		{
 			FrameworkElement element = Control;
-			_textBlock = null; 
 
 			while (_textBlock == null)
 			{
