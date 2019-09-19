@@ -289,7 +289,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new CarouselViewGallery(), "CarouselView Gallery"),           
 				new GalleryPageFactory(() => new CarouselViewCoreGalleryPage(), "CarouselView Core Gallery"),
-				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
+				new GalleryPageFactory(() => new CollectionViewGallery(), "_CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
 				new GalleryPageFactory(() => new EntryReturnTypeGalleryPage(), "Entry ReturnType "),

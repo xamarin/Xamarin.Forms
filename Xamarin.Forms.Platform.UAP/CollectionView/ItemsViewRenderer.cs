@@ -128,6 +128,8 @@ namespace Xamarin.Forms.Platform.UWP
 			ListViewBase.ItemsSource = _collectionViewSource.View;
 
 			UpdateEmptyViewVisibility();
+
+			ItemTemplateContext.Report();
 		}
 
 		void ItemsChanged(object sender, NotifyCollectionChangedEventArgs e)

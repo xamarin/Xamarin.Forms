@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ObservableItemTemplateCollection : ObservableCollection<ItemTemplateContext>
+	internal class ObservableItemTemplateCollection : IReadOnlyList<ItemTemplateContext>, INotifyCollectionChanged
 	{
 		readonly IList _itemsSource;
 		readonly DataTemplate _itemTemplate;
@@ -14,6 +16,25 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly double _itemWidth;
 		readonly Thickness _itemSpacing;
 		readonly INotifyCollectionChanged _notifyCollectionChanged;
+
+		public int Count => _itemsSource.Count;
+
+		readonly List<ItemTemplateContext> _itemTemplateContexts;
+
+		public ItemTemplateContext this[int index]
+		{
+			get
+			{
+				if (_itemTemplateContexts[index] == null)
+				{
+					_itemTemplateContexts[index] = new ItemTemplateContext(_itemTemplate, _itemsSource[index], _container, _itemHeight, _itemWidth, _itemSpacing);
+				}
+
+				return _itemTemplateContexts[index];
+			}
+		}
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public ObservableItemTemplateCollection(IList itemsSource, DataTemplate itemTemplate, BindableObject container, double? itemHeight = null, double? itemWidth = null, Thickness? itemSpacing = null)
 		{
@@ -37,9 +58,11 @@ namespace Xamarin.Forms.Platform.UWP
 			if (itemSpacing.HasValue)
 				_itemSpacing = itemSpacing.Value;
 
-			for (int n = 0; n < itemsSource.Count; n++)
+			_itemTemplateContexts = new List<ItemTemplateContext>(_itemsSource.Count);
+
+			for (int n = 0; n < _itemsSource.Count; n++)
 			{
-				Add(new ItemTemplateContext(itemTemplate, itemsSource[n], container, _itemHeight, _itemWidth, _itemSpacing));
+				_itemTemplateContexts.Add(null);
 			}
 
 			_notifyCollectionChanged.CollectionChanged += InnerCollectionChanged;
@@ -48,6 +71,11 @@ namespace Xamarin.Forms.Platform.UWP
 		public void CleanUp()
 		{
 			_notifyCollectionChanged.CollectionChanged -= InnerCollectionChanged;
+		}
+
+		void OnCollectionChanged(NotifyCollectionChangedEventArgs args)
+		{
+			CollectionChanged?.Invoke(this, args);
 		}
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -82,7 +110,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			for(int n = 0; n < count; n++)
 			{
-				Insert(startIndex, new ItemTemplateContext(_itemTemplate, args.NewItems[n], _container, _itemHeight, _itemWidth, _itemSpacing));
+				var itc = new ItemTemplateContext(_itemTemplate, args.NewItems[n], _container, _itemHeight, _itemWidth, _itemSpacing);
+				_itemTemplateContexts.Insert(startIndex + n, itc);
+ 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(args.Action, itc, startIndex + n));
 			}
 		}
 
@@ -94,7 +124,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				for (int n = 0; n < count; n++)
 				{
-					Move(args.OldStartingIndex + n, args.NewStartingIndex + n);
+					var toMove = _itemTemplateContexts[args.OldStartingIndex + n];
+					_itemTemplateContexts.RemoveAt(args.OldStartingIndex + n);
+					_itemTemplateContexts.Insert(args.NewStartingIndex + n, toMove);
+					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, 
+						args.NewStartingIndex + n, args.OldStartingIndex + n));
 				}
 
 				return;
@@ -102,7 +136,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 			for(int n = count - 1; n >= 0; n--)
 			{
-				Move(args.OldStartingIndex + n, args.NewStartingIndex + n);
+				//Move(args.OldStartingIndex + n, args.NewStartingIndex + n);
+
+				var toMove = _itemTemplateContexts[args.OldStartingIndex + n];
+				_itemTemplateContexts.RemoveAt(args.OldStartingIndex + n);
+				_itemTemplateContexts.Insert(args.NewStartingIndex + n, toMove);
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move,
+					toMove, args.NewStartingIndex + n, args.OldStartingIndex + n));
 			}
 		}
 
@@ -122,7 +162,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 			for(int n = startIndex + count - 1; n >= startIndex; n--)
 			{
-				RemoveAt(n);
+				//RemoveAt(n);
+				var toRemove = this[n];
+				_itemTemplateContexts.RemoveAt(n);
+
+				//OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
+				//	toRemove, n));
+
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
+					toRemove, n));
 			}
 		}
 
@@ -137,7 +185,7 @@ namespace Xamarin.Forms.Platform.UWP
 					var index = args.OldStartingIndex + n;
 					var oldItem = this[index];
 					var newItem = new ItemTemplateContext(_itemTemplate, args.NewItems[n], _container, _itemHeight, _itemWidth, _itemSpacing);
-					Items[index] = newItem;
+					_itemTemplateContexts[index] = newItem;
 					var update = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, index);
 					OnCollectionChanged(update);
 				}
@@ -152,14 +200,26 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void Reset()
 		{
-			Items.Clear();
+			_itemTemplateContexts.Clear();
+			_itemTemplateContexts.Capacity = _itemsSource.Count;
+
 			for (int n = 0; n < _itemsSource.Count; n++)
 			{
-				Items.Add(new ItemTemplateContext(_itemTemplate, _itemsSource[n], _container, _itemHeight, _itemWidth, _itemSpacing));
+				_itemTemplateContexts.Add(null);
 			}
 
 			var reset = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 			OnCollectionChanged(reset);
+		}
+
+		public IEnumerator<ItemTemplateContext> GetEnumerator()
+		{
+			return _itemTemplateContexts.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return _itemTemplateContexts.GetEnumerator();
 		}
 	}
 }
