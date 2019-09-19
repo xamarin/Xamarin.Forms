@@ -76,7 +76,26 @@ Task("Clean")
     CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
 });
 
-Task("provision")
+Task("provision-macsdk")
+    .Does(async () =>
+    {
+        if(!IsRunningOnWindows() && String.IsNullOrWhiteSpace(macSDK))
+        {
+            await Boots(macSDK);
+        }
+    });
+
+Task("provision-iossdk")
+    .Does(async () =>
+    {
+        if(!IsRunningOnWindows())
+        {   
+            if(!String.IsNullOrWhiteSpace(iosSDK))
+                await Boots(iosSDK);
+        }
+    });
+
+Task("provision-androidsdk")
     .Does(async () =>
     {
         Information ("ANDROID_HOME: {0}", ANDROID_HOME);
@@ -96,7 +115,11 @@ Task("provision")
 
         if(!String.IsNullOrWhiteSpace(androidSDK))
             await Boots (androidSDK);
+    });
 
+Task("provision-monosdk")
+    .Does(async () =>
+    {
         if(IsRunningOnWindows())
         {
             if(!String.IsNullOrWhiteSpace(monoSDK))
@@ -116,15 +139,15 @@ Task("provision")
         else
         {
             if(!String.IsNullOrWhiteSpace(monoSDK))
-                await Boots(monoSDK);      
-
-            if(!String.IsNullOrWhiteSpace(iosSDK))
-                await Boots(iosSDK);
-                
-            if(!String.IsNullOrWhiteSpace(macSDK))
-                await Boots(macSDK);
+                await Boots(monoSDK); 
         }
     });
+
+Task("provision")
+    .IsDependentOn("provision-macsdk")
+    .IsDependentOn("provision-iossdk")
+    .IsDependentOn("provision-monosdk")
+    .IsDependentOn("provision-androidsdk");
 
 Task("NuGetPack")
     .IsDependentOn("Build")
