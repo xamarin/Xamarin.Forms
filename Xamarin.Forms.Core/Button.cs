@@ -57,10 +57,19 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
+		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(Button), LineBreakMode.NoWrap,
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
+
 		public Thickness Padding
 		{
 			get { return (Thickness)GetValue(PaddingElement.PaddingProperty); }
 			set { SetValue(PaddingElement.PaddingProperty, value); }
+		}
+
+		public LineBreakMode LineBreakMode
+		{
+			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
+			set { SetValue(LineBreakModeProperty, value); }
 		}
 
 		Thickness IPaddingElement.PaddingDefaultValueCreator()

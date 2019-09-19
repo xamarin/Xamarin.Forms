@@ -9,6 +9,7 @@ using WThickness = Windows.UI.Xaml.Thickness;
 using WButton = Windows.UI.Xaml.Controls.Button;
 using WImage = Windows.UI.Xaml.Controls.Image;
 using Windows.UI.Xaml.Input;
+using Xamarin.Forms.Platform.UAP.Extensions;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -69,6 +70,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void ButtonOnLoaded(object o, RoutedEventArgs routedEventArgs)
 		{
 			WireUpFormsVsm();
+			UpdateLineBreakMode();
 		}
 
 		void WireUpFormsVsm()
@@ -78,6 +80,32 @@ namespace Xamarin.Forms.Platform.UWP
 				InterceptVisualStateManager.Hook(Control.GetFirstDescendant<Windows.UI.Xaml.Controls.Grid>(), Control, Element);
 			}
 		}
+
+		TextBlock _textBlock;
+
+		void UpdateLineBreakMode()
+		{
+			FrameworkElement element = Control;
+			_textBlock = null; 
+
+			while (_textBlock == null)
+			{
+				for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
+				{
+					var child = VisualTreeHelper.GetChild(element, i);
+					if (child is TextBlock tb)
+					{
+						_textBlock = tb;
+						break;
+					}
+					else if (child is FrameworkElement fe)
+						element = fe;
+				}
+			}
+
+			_textBlock.UpdateLineBreakMode(Element.LineBreakMode);
+		}
+
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -118,6 +146,10 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 			{
 				UpdatePadding();
+			}
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+			{
+				UpdateLineBreakMode();
 			}
 		}
 
