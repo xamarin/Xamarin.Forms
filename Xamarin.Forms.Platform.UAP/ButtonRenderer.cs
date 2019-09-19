@@ -105,7 +105,6 @@ namespace Xamarin.Forms.Platform.UWP
 			_textBlock.UpdateLineBreakMode(Element.LineBreakMode);
 		}
 
-
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);

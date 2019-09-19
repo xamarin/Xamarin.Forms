@@ -84,6 +84,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (measured.Height < minHeight)
 				measured.Height = minHeight;
 
+			var titleHeight = control.TitleLabel.Frame.Height;
+			if (titleHeight > measured.Height)
+				measured.Height = titleHeight;
+
 			return measured;
 		}
 
@@ -145,11 +149,13 @@ namespace Xamarin.Forms.Platform.iOS
 				_ = UpdateImageAsync();
 			else if (e.PropertyName == Button.TextProperty.PropertyName ||
 					 e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
-				UpdateText();
+				UpdateText(); 
 			else if (e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				UpdateEdgeInsets();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
 				UpdateEdgeInsets();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 		}
 
 		internal void UpdateText()
@@ -211,6 +217,42 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.SetAttributedTitle(disabled, UIControlState.Disabled);
 
 			UpdateEdgeInsets();
+			UpdateLineBreakMode();
+		}
+
+		void UpdateLineBreakMode()
+		{
+			var control = Control;
+			if (control == null)
+				return;
+
+			switch (_element.LineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					control.LineBreakMode = UILineBreakMode.Clip;
+					break;
+				case LineBreakMode.WordWrap:
+					control.LineBreakMode = UILineBreakMode.WordWrap;
+					var p = control.TitleLabel.Frame.Size.Height;
+					break;
+				case LineBreakMode.CharacterWrap:
+					control.LineBreakMode = UILineBreakMode.CharacterWrap;
+					break;
+				case LineBreakMode.HeadTruncation:
+					control.LineBreakMode = UILineBreakMode.HeadTruncation;
+					break;
+				case LineBreakMode.TailTruncation:
+					control.LineBreakMode = UILineBreakMode.TailTruncation;
+					break;
+				case LineBreakMode.MiddleTruncation:
+					control.LineBreakMode = UILineBreakMode.MiddleTruncation;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			//var height = control.TitleLabel.Frame.Size.Height;
+			//var buttonFrame = control.Frame;
+			//control.Frame = new CGRect(buttonFrame.X, buttonFrame.Y, buttonFrame.Width, height);
 		}
 
 		async Task UpdateImageAsync()
