@@ -25,8 +25,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool _disposed;
 
 		protected TItemsView ItemsView;
+		protected IItemsLayout ItemsLayout { get; private set; }
 
-		IItemsLayout _layout;
 		SnapManager _snapManager;
 		ScrollHelper _scrollHelper;
 		RecyclerViewScrollListener<TItemsView, TItemsViewSource> _recyclerViewScrollListener;
@@ -303,8 +303,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateItemsSource();
 
-			_layout = GetItemsLayout();
-			SetLayoutManager(SelectLayoutManager(_layout));
+			ItemsLayout = GetItemsLayout();
+			SetLayoutManager(SelectLayoutManager(ItemsLayout));
 
 			UpdateSnapBehavior();
 			UpdateBackgroundColor();
@@ -315,9 +315,9 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateVerticalScrollBarVisibility();
 
 			// Keep track of the ItemsLayout's property changes
-			if (_layout != null)
+			if (ItemsLayout != null)
 			{
-				_layout.PropertyChanged += LayoutPropertyChanged;
+				ItemsLayout.PropertyChanged += LayoutPropertyChanged;
 			}
 
 			// Listen for ScrollTo requests
@@ -365,9 +365,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// Stop listening for layout property changes
-			if (_layout != null)
+			if (ItemsLayout != null)
 			{
-				_layout.PropertyChanged -= LayoutPropertyChanged;
+				ItemsLayout.PropertyChanged -= LayoutPropertyChanged;
 			}
 
 			// Stop listening for property changes
@@ -414,10 +414,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (GetLayoutManager() is GridLayoutManager gridLayoutManager)
 				{
-					gridLayoutManager.SpanCount = ((GridItemsLayout)_layout).Span;
+					gridLayoutManager.SpanCount = ((GridItemsLayout)ItemsLayout).Span;
 				}
 			}
-			else if (propertyChanged.IsOneOf(ItemsLayout.SnapPointsTypeProperty, ItemsLayout.SnapPointsAlignmentProperty))
+			else if (propertyChanged.IsOneOf(Xamarin.Forms.ItemsLayout.SnapPointsTypeProperty, Xamarin.Forms.ItemsLayout.SnapPointsAlignmentProperty))
 			{
 				UpdateSnapBehavior();
 			}
@@ -439,7 +439,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_snapManager == null)
 			{
-				_snapManager = new SnapManager(_layout, this);
+				_snapManager = new SnapManager(ItemsLayout, this);
 			}
 			return _snapManager;
 		}
@@ -531,13 +531,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			var effectiveFlowDirection = ((IVisualElementController)Element).EffectiveFlowDirection;
 
-			if (effectiveFlowDirection.IsRightToLeft() && !linearLayoutManager.ReverseLayout)
+			if (effectiveFlowDirection.IsRightToLeft())
 			{
 				linearLayoutManager.ReverseLayout = true;
-				return;
 			}
-
-			if (effectiveFlowDirection.IsLeftToRight() && linearLayoutManager.ReverseLayout)
+			else if (effectiveFlowDirection.IsLeftToRight())
 			{
 				linearLayoutManager.ReverseLayout = false;
 			}
@@ -556,7 +554,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateItemSpacing()
 		{
-			if (_layout == null)
+			if (ItemsLayout == null)
 			{
 				return;
 			}
@@ -566,7 +564,7 @@ namespace Xamarin.Forms.Platform.Android
 				RemoveItemDecoration(_itemDecoration);
 			}
 
-			_itemDecoration = CreateSpacingDecoration(_layout);
+			_itemDecoration = CreateSpacingDecoration(ItemsLayout);
 			AddItemDecoration(_itemDecoration);
 		}
 
@@ -614,7 +612,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (!showEmptyView && currAdapter != ItemsViewAdapter)
 			{
 				SwapAdapter(ItemsViewAdapter, true);
-				SetLayoutManager(SelectLayoutManager(_layout));
+				SetLayoutManager(SelectLayoutManager(ItemsLayout));
 			}
 		}
 
