@@ -111,6 +111,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void MainMenuOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (e != null && e.PropertyName.Equals(Menu.BindingContextProperty.PropertyName))
+				return;
+
 			var nsMenu = NSApplication.SharedApplication.MainMenu;
 			if (nsMenu == null)
 			{
@@ -125,6 +128,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected virtual void SetupMainAppMenu(NSMenu nativeMenu)
 		{
 			var menu = Element.GetMenu(_application);
+
+			menu.BindingContext = _application.BindingContext;
+
 			menu.ToNSMenu(nativeMenu, NativeMenuItemCreator);
 		}
 

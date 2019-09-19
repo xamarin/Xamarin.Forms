@@ -91,5 +91,21 @@ namespace Xamarin.Forms
 		{
 			return _menus.GetEnumerator();
 		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			if (Count > 0)
+			{
+				for (var i = 0; i < Count; i++)
+				{
+					SetInheritedBindingContext(_menus[i], BindingContext);
+
+					for (var j = 0; j < _menus[i].Count; j++)
+						SetInheritedBindingContext(_menus[i][j], BindingContext);
+				}
+			}
+		}
 	}
 }

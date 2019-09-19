@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 					var subMenuItem = item.ToNSMenuItem(menuItemCreator: menuItemCreator);
 					GetAccelerators(subMenuItem, item);
 					subMenu.AddItem(subMenuItem);
+					item.BindingContext = menus.BindingContext;
 					item.PropertyChanged += (sender, e) => (sender as MenuItem)?.UpdateNSMenuItem(subMenuItem, new string[] { e.PropertyName });
 				}
 				if (!nsMenu.Items.Contains(menuItem))
