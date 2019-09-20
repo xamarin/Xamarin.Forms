@@ -32,8 +32,18 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
-			var stepperValue = Math.Round((double)value, 6);
-			return (stepperValue).Clamp(stepper.Minimum, stepper.Maximum);
+			//var stepperValue = Math.Round((double)value, 6);
+			if (stepper.Value < (double)value)
+			{
+				stepper.StepperPosition++;
+			}
+			if (stepper.Value > (double)value)
+			{
+				stepper.StepperPosition--;
+			}
+
+			var stepVal = stepper.StepperPosition * stepper.Increment;
+			return stepVal.Clamp(stepper.Minimum, stepper.Maximum);
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var stepper = (Stepper)bindable;
@@ -43,6 +53,8 @@ namespace Xamarin.Forms
 		});
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
+
+		public static readonly BindableProperty StepperPositionProperty = BindableProperty.Create("StepperPosition", typeof(int), typeof(Stepper), 0);
 
 		readonly Lazy<PlatformConfigurationRegistry<Stepper>> _platformConfigurationRegistry;
 
@@ -68,6 +80,7 @@ namespace Xamarin.Forms
 
 			Value = val.Clamp(min, max);
 			Increment = increment;
+			StepperPosition = (int)(Value / Increment);
 		}
 
 		public double Increment
@@ -94,8 +107,14 @@ namespace Xamarin.Forms
 			set { SetValue(ValueProperty, value); }
 		}
 
+		public int StepperPosition
+		{
+			get { return (int)GetValue(StepperPositionProperty); }
+			set { SetValue(StepperPositionProperty, value); }
+		}
+
 		public event EventHandler<ValueChangedEventArgs> ValueChanged;
-		
+
 		public IPlatformElementConfiguration<T, Stepper> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();

@@ -172,5 +172,22 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (initialValue, oldValue);
 			Assert.AreEqual (finalValue, newValue);
 		}
+
+		[Test]
+		public void TestReturnToZero()
+		{
+			var stepper = new Stepper(0, 10, 0, 0.5);
+
+			stepper.Value(0.5);
+			stepper.Value(1.0);
+			stepper.Value(1.5);
+			stepper.Value(2.0);
+			stepper.Value(1.5);
+			stepper.Value(1.0);
+			stepper.Value(0.5);
+			stepper.Value(0.0);
+
+			Assert.AreEqual(0.0, stepper.Value);
+		}
 	}
 }

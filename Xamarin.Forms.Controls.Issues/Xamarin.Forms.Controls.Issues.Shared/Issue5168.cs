@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Label header = new Label
 			{
-				Text = "Please make use of the stepper below to step up and back to zero to ensure no error value is displayed...",
+				Text = "Please make use of the stepper below to step up and back to zero to ensure no Exponent value is displayed...",
 				FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 				HorizontalOptions = LayoutOptions.Center
 			};
@@ -33,13 +33,19 @@ namespace Xamarin.Forms.Controls.Issues
 				Increment = 0.05
 			};
 
-			Label label = new Label
+			Label valueLabel = new Label
 			{
-				Text = stepper.Value.ToString()
+				Text = $"Value - {stepper.Value.ToString()}"
 			};
 
-			stepper.ValueChanged += (s, e) => {
-				label.Text = e.NewValue.ToString();
+			Label stepPosLabel = new Label
+			{
+				Text = $"Position - {stepper.StepperPosition.ToString()} * {stepper.Increment.ToString()}"
+			};
+
+			stepper.ValueChanged += (s, e) =>
+			{
+				valueLabel.Text = e.NewValue.ToString();
 			};
 
 			Content = new StackLayout
@@ -49,7 +55,8 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					header,
 					stepper,
-					label
+					valueLabel,
+					stepPosLabel
 				}
 			};
 		}
