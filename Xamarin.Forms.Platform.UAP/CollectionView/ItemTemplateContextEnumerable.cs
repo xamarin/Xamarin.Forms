@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ItemTemplateEnumerator : IEnumerable
+	internal class ItemTemplateContextEnumerable : IEnumerable
 	{
 		readonly IEnumerable _itemsSource;
 		readonly DataTemplate _formsDataTemplate;
@@ -11,7 +11,8 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly double _itemWidth;
 		readonly Thickness _itemSpacing;
 
-		public ItemTemplateEnumerator(IEnumerable itemsSource, DataTemplate formsDataTemplate, BindableObject container, double? itemHeight = null, double? itemWidth = null, Thickness? itemSpacing = null)
+		public ItemTemplateContextEnumerable(IEnumerable itemsSource, DataTemplate formsDataTemplate, BindableObject container, 
+			double? itemHeight = null, double? itemWidth = null, Thickness? itemSpacing = null)
 		{
 			_itemsSource = itemsSource;
 			_formsDataTemplate = formsDataTemplate;
