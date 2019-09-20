@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		int _originalHintTextColor;
 		AlertDialog _dialog;
+		TimePickerDialog _timePickerDialog;
+		bool _isDisposed;
 
 		bool Is24HourView
 		{
@@ -106,12 +108,30 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual TimePickerDialog CreateTimePickerDialog(int hours, int minutes)
 		{
-			var dialog = new TimePickerDialog(Context, this, hours, minutes, Is24HourView);
+            _timePickerDialog = new TimePickerDialog(Context, this, hours, minutes, Is24HourView);
+            if (Forms.IsLollipopOrNewer)
+				_timePickerDialog.CancelEvent += OnCancelButtonClicked;
 
-			if (Forms.IsLollipopOrNewer)
-				dialog.CancelEvent += OnCancelButtonClicked;
+			return _timePickerDialog;
+		}
 
-			return dialog;
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
+			if (disposing)
+			{
+				if (Forms.IsLollipopOrNewer)
+					_timePickerDialog.CancelEvent -= OnCancelButtonClicked;
+
+				_timePickerDialog?.Dispose();
+				_timePickerDialog = null;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		void IPickerRenderer.OnClick()
