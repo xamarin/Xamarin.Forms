@@ -243,6 +243,11 @@ namespace Xamarin.Forms.Platform.iOS
 			// https://stackoverflow.com/questions/37509990/migrating-from-uiwebview-to-wkwebview
 			public override void DecidePolicy(WKWebView webView, WKNavigationAction navigationAction, Action<WKNavigationActionPolicy> decisionHandler)
 			{
+				if (!navigationAction.TargetFrame.MainFrame)
+                {
+                    decisionHandler(WKNavigationActionPolicy.Allow);
+                    return;
+                }
 				var navEvent = WebNavigationEvent.NewPage;
 				var navigationType = navigationAction.NavigationType;
 				switch (navigationType)
