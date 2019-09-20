@@ -2,10 +2,10 @@
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class ItemTemplateEnumerator : IEnumerable, IEnumerator
+	internal class ItemTemplateEnumerator : IEnumerable
 	{
+		readonly IEnumerable _itemsSource;
 		readonly DataTemplate _formsDataTemplate;
-		readonly IEnumerator _innerEnumerator;
 		readonly BindableObject _container;
 		readonly double _itemHeight;
 		readonly double _itemWidth;
@@ -13,9 +13,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ItemTemplateEnumerator(IEnumerable itemsSource, DataTemplate formsDataTemplate, BindableObject container, double? itemHeight = null, double? itemWidth = null, Thickness? itemSpacing = null)
 		{
+			_itemsSource = itemsSource;
 			_formsDataTemplate = formsDataTemplate;
 			_container = container;
-			_innerEnumerator = itemsSource.GetEnumerator();
 
 			if (itemHeight.HasValue)
 				_itemHeight = itemHeight.Value;
@@ -29,26 +29,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public IEnumerator GetEnumerator()
 		{
-			return this;
-		}
-
-		public bool MoveNext()
-		{
-			var moveNext = _innerEnumerator.MoveNext();
-			
-			if (moveNext)
+			foreach (var item in _itemsSource)
 			{
-				Current = new ItemTemplateContext(_formsDataTemplate, _innerEnumerator.Current, _container, _itemHeight, _itemWidth, _itemSpacing);
+				yield return new ItemTemplateContext(_formsDataTemplate, item, _container, _itemHeight, _itemWidth, _itemSpacing);
 			}
-
-			return moveNext;
 		}
-
-		public void Reset()
-		{
-			_innerEnumerator.Reset();
-		}
-
-		public object Current { get; private set; }
 	}
 }
