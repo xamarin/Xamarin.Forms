@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using Xamarin.Forms.Platform;
 using static Xamarin.Forms.IndicatorView;
 
 namespace Xamarin.Forms
@@ -24,28 +25,32 @@ namespace Xamarin.Forms
 	}
 
 	[ContentProperty(nameof(IndicatorLayout))]
+	[RenderWith(typeof(_IndicatorViewRenderer))]
 	public class IndicatorView : TemplatedView
 	{
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
+			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty CountProperty = BindableProperty.Create(nameof(Count), typeof(int), typeof(IndicatorView), default(int), propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsCount((int)oldValue));
+			=> ((IndicatorView)bindable).ResetIndicatorCount((int)oldValue));
 
 		public static readonly BindableProperty MaximumVisibleCountProperty = BindableProperty.Create(nameof(MaximumVisibleCount), typeof(int), typeof(IndicatorView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
+			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
+			=> ((IndicatorView)bindable).ResetIndicatorStyles());
+
+		public static readonly BindableProperty HidesForSingleIndicatorProperty = BindableProperty.Create(nameof(HidesForSingleIndicator), typeof(bool), typeof(IndicatorView), true, propertyChanged: (bindable, oldValue, newValue)
+			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty IndicatorColorProperty = BindableProperty.Create(nameof(IndicatorColor), typeof(Color), typeof(IndicatorView), Color.Default, propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
+			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty SelectedIndicatorColorProperty = BindableProperty.Create(nameof(SelectedIndicatorColor), typeof(Color), typeof(IndicatorView), Color.Default, propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
+			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorView), -1.0, propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorsStyles());
+			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorView), null, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetItemsSource((IEnumerable)oldValue));
@@ -87,6 +92,12 @@ namespace Xamarin.Forms
 			set => SetValue(IndicatorTemplateProperty, value);
 		}
 
+		public bool HidesForSingleIndicator
+		{
+			get => (bool)GetValue(HidesForSingleIndicatorProperty);
+			set => SetValue(HidesForSingleIndicatorProperty, value);
+		}
+
 		public Color IndicatorColor
 		{
 			get => (Color)GetValue(IndicatorColorProperty);
@@ -111,16 +122,70 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		protected virtual void ApplySelectedColor(View indicatorItemView, int index)
-			=> indicatorItemView.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
+		void ResetIndicatorStyles()
+		{
+			try
+			{
+				BatchBegin();
+				ResetIndicatorStylesNonBatch();
+			}
+			finally
+			{
+				BatchCommit();
+			}
+		}
 
-		protected virtual void ApplyRegularColor(View indicatorItemView, int index)
-			=> indicatorItemView.BackgroundColor = GetColorOrDefault(IndicatorColor, Color.Silver);
+		void ResetIndicatorCount(int oldCount)
+		{
+			try
+			{
+				BatchBegin();
+				if (oldCount < 0)
+				{
+					oldCount = 0;
+				}
 
-		Color GetColorOrDefault(Color color, Color defaultColor)
-			=> color.IsDefault ? defaultColor : color;
+				if (oldCount > Count)
+				{
+					RemoveRedundantIndicatorItems();
+					return;
+				}
 
-		void AddExtraIndicatorsItems()
+				AddExtraIndicatorItems();
+			}
+			finally
+			{
+				ResetIndicatorStylesNonBatch();
+				BatchCommit();
+			}
+		}
+
+		void ResetIndicatorStylesNonBatch()
+		{
+			foreach (var child in Items)
+			{
+				ApplyColor(child as View);
+			}
+
+			IndicatorLayout.IsVisible = Count > 1 || !HidesForSingleIndicator;
+		}
+
+		void ResetItemsSource(IEnumerable oldItemsSource)
+		{
+			if (oldItemsSource is INotifyCollectionChanged oldObservableCollection)
+			{
+				oldObservableCollection.CollectionChanged -= OnCollectionChanged;
+			}
+
+			if (ItemsSource is INotifyCollectionChanged observableCollection)
+			{
+				observableCollection.CollectionChanged += OnCollectionChanged;
+			}
+
+			OnCollectionChanged(ItemsSource, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+		}
+
+		void AddExtraIndicatorItems()
 		{
 			var oldCount = Items.Count;
 			for (var i = 0; i < Count - oldCount && i < MaximumVisibleCount - oldCount; ++i)
@@ -144,7 +209,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void RemoveRedundantIndicatorsItems()
+		void RemoveRedundantIndicatorItems()
 		{
 			foreach (var item in Items.Where((v, i) => i >= Count).ToArray())
 			{
@@ -154,83 +219,23 @@ namespace Xamarin.Forms
 
 		void ApplyColor(View view)
 		{
-			try
+			var index = Items.IndexOf(view);
+			if (index == Position)
 			{
-				view.BatchBegin();
-				var index = Items.IndexOf(view);
-				if (index == Position)
-				{
-					ApplySelectedColor(view, index);
-					return;
-				}
-				ApplyRegularColor(view, index);
+				ApplySelectedColor(view);
+				return;
 			}
-			finally
-			{
-				view.BatchCommit();
-			}
+			ApplyRegularColor(view);
 		}
 
-		void ResetIndicatorsStylesNonBatch()
-		{
-			foreach (var child in Items)
-			{
-				ApplyColor(child as View);
-			}
-		}
+		void ApplySelectedColor(View indicatorItemView)
+			=> indicatorItemView.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
 
-		void ResetIndicatorsStyles()
-		{
-			try
-			{
-				BatchBegin();
-				ResetIndicatorsStylesNonBatch();
-			}
-			finally
-			{
-				BatchCommit();
-			}
-		}
+		void ApplyRegularColor(View indicatorItemView)
+			=> indicatorItemView.BackgroundColor = GetColorOrDefault(IndicatorColor, Color.Silver);
 
-		void ResetIndicatorsCount(int oldCount)
-		{
-			try
-			{
-				BatchBegin();
-				if (oldCount < 0)
-				{
-					oldCount = 0;
-				}
-
-				if (oldCount > Count)
-				{
-					RemoveRedundantIndicatorsItems();
-					return;
-				}
-
-				AddExtraIndicatorsItems();
-			}
-			finally
-			{
-				ResetIndicatorsStylesNonBatch();
-				BatchCommit();
-			}
-		}
-
-		void ResetItemsSource(IEnumerable oldItemsSource)
-		{
-			if (oldItemsSource is INotifyCollectionChanged oldObservableCollection)
-			{
-				oldObservableCollection.CollectionChanged -= OnCollectionChanged;
-			}
-
-			if (ItemsSource is INotifyCollectionChanged observableCollection)
-			{
-				observableCollection.CollectionChanged += OnCollectionChanged;
-			}
-
-			OnCollectionChanged(ItemsSource, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-		}
+		Color GetColorOrDefault(Color color, Color defaultColor)
+			=> color.IsDefault ? defaultColor : color;
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{

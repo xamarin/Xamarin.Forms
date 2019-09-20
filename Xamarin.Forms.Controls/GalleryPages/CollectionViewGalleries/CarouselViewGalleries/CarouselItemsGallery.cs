@@ -48,8 +48,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var indicators = new IndicatorView
 			{
 				Margin = new Thickness(15, 20),
-				IndicatorColor = Color.Black,
-				SelectedIndicatorColor = Color.Red
+				IndicatorColor = Color.Gray,
+				SelectedIndicatorColor = Color.Black
 			};
 			indicators.SetItemsSourceBy(carouselView);
 			absolute.Children.Add(indicators, new Rectangle(.5, 1, -1, -1), AbsoluteLayoutFlags.PositionProportional);
