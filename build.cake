@@ -79,7 +79,7 @@ Task("Clean")
 Task("provision-macsdk")
     .Does(async () =>
     {
-        if(!IsRunningOnWindows() && String.IsNullOrWhiteSpace(macSDK))
+        if(!IsRunningOnWindows() && !String.IsNullOrWhiteSpace(macSDK))
         {
             await Boots(macSDK);
         }
