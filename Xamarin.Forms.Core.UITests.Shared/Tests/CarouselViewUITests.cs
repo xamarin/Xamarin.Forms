@@ -37,6 +37,8 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Tap("Item: 1");
 
+			App.WaitForElement("Button works");
+
 #if __ANDROID__
 			Assert.AreEqual(App.Query(c => c.Class("AlertDialogLayout")).Count(), 1, "Alert not shown");
 #elif __iOS__
@@ -74,6 +76,8 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement("pos:1", "Did not scroll to second position");
 
 			App.Tap("Item: 1");
+
+			App.WaitForElement("Button works");
 
 #if __ANDROID__
 			Assert.AreEqual(App.Query(c => c.Class("AlertDialogLayout")).Count(), 1, "Alert not shown");
