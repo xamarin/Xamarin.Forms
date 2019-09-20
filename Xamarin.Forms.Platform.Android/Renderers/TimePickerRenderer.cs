@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		int _originalHintTextColor;
 		AlertDialog _dialog;
+		bool _isDisposed;
 
 		bool Is24HourView
 		{
@@ -112,6 +113,25 @@ namespace Xamarin.Forms.Platform.Android
 				dialog.CancelEvent += OnCancelButtonClicked;
 
 			return dialog;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
+			if (disposing)
+			{
+				if (Forms.IsLollipopOrNewer && _dialog != null)
+					_dialog.CancelEvent -= OnCancelButtonClicked;
+
+				_dialog?.Dispose();
+				_dialog = null;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		void IPickerRenderer.OnClick()
