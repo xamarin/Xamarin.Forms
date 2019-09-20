@@ -1,12 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using UWPListViewSelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class SelectableItemsViewRenderer : ItemsViewRenderer
+	public class SelectableItemsViewRenderer : StructuredItemsViewRenderer
 	{
 		SelectableItemsView _selectableItemsView;
 		bool _ignoreNativeSelectionChange;
@@ -28,9 +27,9 @@ namespace Xamarin.Forms.Platform.UWP
 			base.TearDownOldElement(oldElement);
 		}
 
-		protected override void SetUpNewElement(ItemsView newElement)
+		protected override void SetUpNewElement(ItemsView newElement, bool setUpProperties)
 		{
-			base.SetUpNewElement(newElement);
+			base.SetUpNewElement(newElement, setUpProperties);
 
 			if (newElement == null)
 			{
@@ -219,6 +218,5 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 		}
-
 	}
 }
