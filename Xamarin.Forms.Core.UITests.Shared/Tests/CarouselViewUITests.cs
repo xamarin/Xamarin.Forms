@@ -39,11 +39,6 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.WaitForElement("Button works");
 
-#if __ANDROID__
-			Assert.AreEqual(App.Query(c => c.Class("AlertDialogLayout")).Count(), 1, "Alert not shown");
-#elif __iOS__
-			App.Query(c => c.ClassFull("_UIAlertControllerView"));
-#endif
 			App.Tap(c => c.Marked("Ok"));
 
 			App.Tap("SwipeSwitch");
@@ -79,11 +74,6 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.WaitForElement("Button works");
 
-#if __ANDROID__
-			Assert.AreEqual(App.Query(c => c.Class("AlertDialogLayout")).Count(), 1, "Alert not shown");
-#elif __iOS__
-			App.Query(c => c.ClassFull("_UIAlertControllerView"));
-#endif
 			App.Tap(c => c.Marked("Ok"));
 
 			App.Tap("SwipeSwitch");
