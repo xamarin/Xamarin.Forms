@@ -138,55 +138,21 @@ namespace Xamarin.Forms
 		static void SelectionModePropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var selectableItemsView = (SelectableItemsView)bindable;
-
-			var oldMode = (SelectionMode)oldValue;
 			var newMode = (SelectionMode)newValue;
-
-			IList<object> previousSelection = new List<object>();
-			IList<object> newSelection = new List<object>();
-
-			switch (oldMode)
-			{
-				case SelectionMode.None:
-					break;
-				case SelectionMode.Single:
-					if (selectableItemsView.SelectedItem != null)
-					{
-						previousSelection.Add(selectableItemsView.SelectedItem);
-					}
-					break;
-				case SelectionMode.Multiple:
-					previousSelection = selectableItemsView.SelectedItems;
-					break;
-			}
 
 			switch (newMode)
 			{
 				case SelectionMode.None:
+					selectableItemsView.SelectedItem = null;
+					selectableItemsView.SelectedItems = null;
 					break;
 				case SelectionMode.Single:
-					if (selectableItemsView.SelectedItem != null)
-					{
-						newSelection.Add(selectableItemsView.SelectedItem);
-					}
+					selectableItemsView.SelectedItems = null;
 					break;
 				case SelectionMode.Multiple:
-					newSelection = selectableItemsView.SelectedItems;
+					selectableItemsView.SelectedItem = null;
 					break;
 			}
-
-			if (previousSelection.Count == newSelection.Count)
-			{
-				if (previousSelection.Count == 0 || (previousSelection[0] == newSelection[0]))
-				{
-					// Both selections are empty or have the same single item; no reason to signal a change
-					return;
-				}
-			}
-
-			var args = new SelectionChangedEventArgs(previousSelection, newSelection);
-
-			SelectionPropertyChanged(selectableItemsView, args);
 		}
 	}
 }
