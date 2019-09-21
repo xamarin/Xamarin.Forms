@@ -15,10 +15,9 @@
         VerticalOptions="CenterAndExpand" 
         Margin="15,10,0,20">
         <CarouselView.ItemsLayout>
-            <GridItemsLayout
+            <LinearItemsLayout
                 Orientation="Horizontal"
-                HorizontalItemSpacing="25"
-                />
+                ItemSpacing="25" />
         </CarouselView.ItemsLayout>
         <CarouselView.ItemTemplate>
             <DataTemplate>
@@ -77,11 +76,9 @@
         HeightRequest="225"
         Margin="15,10,0,20">
             <CarouselView.ItemsLayout>
-                <GridItemsLayout
+                <LinearItemsLayout
                 Orientation="Horizontal"
-                HorizontalItemSpacing="25"
-                Span="3"
-                />
+                ItemSpacing="25" />
             </CarouselView.ItemsLayout>
             <CarouselView.ItemTemplate>
                 <DataTemplate>
