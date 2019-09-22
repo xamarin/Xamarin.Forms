@@ -101,6 +101,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Forms.IsLollipopOrNewer)
 					_dialog.CancelEvent -= OnCancelButtonClicked;
 
+				_dialog?.Dispose();
 				_dialog = null;
 			}
 		}
@@ -124,7 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (Forms.IsLollipopOrNewer && _dialog != null)
+				if (Forms.IsLollipopOrNewer && _dialog.IsAlive())
 					_dialog.CancelEvent -= OnCancelButtonClicked;
 
 				_dialog?.Dispose();
