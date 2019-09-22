@@ -120,8 +120,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 
 			ItemsSource = CreateItemsViewSource();
-
-			// GetPrototype depends on ItemsSource, so assign it after setting items source
 			ItemsViewLayout.GetPrototype = GetPrototype;
 
 			Delegator = new UICollectionViewDelegator(ItemsViewLayout, this);
