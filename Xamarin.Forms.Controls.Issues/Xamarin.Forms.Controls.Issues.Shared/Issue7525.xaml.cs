@@ -70,14 +70,14 @@ namespace Xamarin.Forms.Controls.Issues
 			MainCarousel.Position = 1;
 		}
 
-		public List<Type> AvaiableViews { get; set; }
+		public List<Type> AvailableViews { get; set; }
 		public int Position { get { return _position; } set { _position = value; OnPropertyChanged(); } }
 
 		protected override void Init()
 		{	
 			Device.SetFlags(new List<string>(Device.Flags ?? new List<string>()) { "CollectionView_Experimental" });
 
-			AvaiableViews = new List<Type>() { typeof(Test1View), typeof(Test2View), typeof(Test3View) };
+			AvailableViews = new List<Type>() { typeof(Test1View), typeof(Test2View), typeof(Test3View) };
 
 			BindingContext = this;
 		}
