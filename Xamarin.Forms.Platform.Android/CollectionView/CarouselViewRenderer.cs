@@ -182,7 +182,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_initialPosition = Carousel.Position;
 			_oldPosition = _initialPosition;
-			Carousel.ScrollTo(_initialPosition, -1, Xamarin.Forms.ScrollToPosition.Center, false);
+      Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
+			_isUpdatingPositionFromForms = false;
 		}
 	}
 }
