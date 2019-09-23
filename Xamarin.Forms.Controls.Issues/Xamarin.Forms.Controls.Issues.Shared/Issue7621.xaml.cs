@@ -24,19 +24,19 @@ namespace Xamarin.Forms.Controls.Issues
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 5455, "ItemSizingStrategy MeasureAllItems does not work for iOS", PlatformAffected.iOS)]
-	public partial class Issue5455 : TestContentPage
+	[Issue(IssueTracker.Github, 7621, "[iOS] MeasureFirstItem is broken for CollectionView", PlatformAffected.iOS)]
+	public partial class Issue7621 : TestContentPage
 	{
 		bool isMeasuringAllItems = false;
 
 #if APP
-		public Issue5455()
+		public Issue7621()
 		{
 			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
 
 			InitializeComponent();
 
-			BindingContext = new ViewModel5455();
+			BindingContext = new ViewModel7621();
 		}
 #endif
 
@@ -59,13 +59,13 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ViewModel5455
+	public class ViewModel7621
 	{
-		public ObservableCollection<Model5455> Items { get; set; }
+		public ObservableCollection<Model7621> Items { get; set; }
 
-		public ViewModel5455()
+		public ViewModel7621()
 		{
-			var collection = new ObservableCollection<Model5455>();
+			var collection = new ObservableCollection<Model7621>();
 			Color[] _colors =
 			{
 				Color.Red,
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			for (var i = 0; i < 30; i++)
 			{
-				collection.Add(new Model5455
+				collection.Add(new Model7621
 				{
 					BackgroundColor = _colors[i % 4],
 					Source = _images[i % 4]
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
-	public class Model5455
+	public class Model7621
 	{
 		public Color BackgroundColor { get; set; }
 

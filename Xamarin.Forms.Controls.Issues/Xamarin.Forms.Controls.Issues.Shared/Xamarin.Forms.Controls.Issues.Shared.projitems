@@ -19,7 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewItemsUpdatingScrollMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3475.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue5455.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7621.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue6889.cs" />
@@ -1374,6 +1374,9 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue5455.xaml.cs">
       <DependentUpon>Issue5455.xaml</DependentUpon>
     </Compile>
+    <Compile Update="C:\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue5455.xaml.cs">
+      <DependentUpon>Issue7621.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue1455.xaml">
@@ -1412,7 +1415,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5455.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7621.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
