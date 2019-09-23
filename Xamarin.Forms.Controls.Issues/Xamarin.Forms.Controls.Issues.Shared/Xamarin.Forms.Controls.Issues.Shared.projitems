@@ -1056,6 +1056,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue6929.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ApiLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7525.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7395.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1400,7 +1401,7 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7357.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
