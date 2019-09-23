@@ -175,6 +175,7 @@ namespace Xamarin.Forms.Platform.WPF
 					CreateBrush(fontsource.Color));
 			return Task.FromResult(image);
 		}
+
 		private static Brush CreateBrush(Color color)
 		{
 			var wpColor = System.Windows.Media.Color.FromArgb(
@@ -212,7 +213,6 @@ namespace Xamarin.Forms.Platform.WPF
 					var width = glyphTypeface.AdvanceWidths[glyphIndex] * 1.0;
 					advanceWidths[n] = width;
 				}
-
 
 				var gr = new GlyphRun(glyphTypeface,
 					0, false,
