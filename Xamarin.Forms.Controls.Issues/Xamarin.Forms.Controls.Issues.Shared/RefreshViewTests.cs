@@ -29,7 +29,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var scrollViewContent =
 				new StackLayout()
 				{
-					AutomationId = "LayoutContainer"
 				};
 
 			Enumerable.Range(0, 1000).Select(_ => new Label() { Text = "Pull me down to refresh me" })
@@ -41,7 +40,8 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					HeightRequest = 2000,
 					BackgroundColor = Color.Green,
-					Content = scrollViewContent
+					Content = scrollViewContent,
+					AutomationId = "LayoutContainer"
 				},
 				Command = new Command(async () =>
 				{
@@ -87,7 +87,11 @@ namespace Xamarin.Forms.Controls.Issues
 		public void IsRefreshingAndCommandTest_SwipeDown()
 		{
 			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: False"));
-			RunningApp.ScrollDown("LayoutContainer", ScrollStrategy.Gesture);
+
+			var container = RunningApp.WaitForElement("LayoutContainer")[0];
+
+			RunningApp.Pan(new Drag(container.Rect, Drag.Direction.TopToBottom, Drag.DragLength.Medium));
+
 			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: True"));
 			RunningApp.Screenshot("Refreshing");
 			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: False"));
