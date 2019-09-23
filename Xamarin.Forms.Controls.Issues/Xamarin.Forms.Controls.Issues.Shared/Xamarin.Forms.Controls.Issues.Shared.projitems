@@ -1374,7 +1374,7 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue5455.xaml.cs">
       <DependentUpon>Issue5455.xaml</DependentUpon>
     </Compile>
-    <Compile Update="C:\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue5455.xaml.cs">
+    <Compile Update="$(MSBuildThisFileDirectory)Issue7621.xaml.cs">
       <DependentUpon>Issue7621.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
