@@ -172,19 +172,9 @@ namespace Xamarin.Forms.Platform.WPF
 					FontWeights.Normal,
 					FontStretches.Normal,
 					fontsource.Size,
-					CreateBrush(fontsource.Color));
+					fontsource.Color.ToBrush());
 			return Task.FromResult(image);
-		}
-
-		private static Brush CreateBrush(Color color)
-		{
-			var wpColor = System.Windows.Media.Color.FromArgb(
-			(byte)(color.A * 255),
-			(byte)(color.R * 255),
-			(byte)(color.G * 255),
-			(byte)(color.B * 255));
-			return new SolidColorBrush(wpColor);
-		}
+		}		
 
 		private static System.Windows.Media.ImageSource CreateGlyph(
 			string text,
