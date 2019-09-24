@@ -278,6 +278,24 @@ namespace Xamarin.Forms.Internals
 			}
 		}
 
+		public static bool AddStylesheetDefinition(string cssPropertyName, Type targetType, string bindablePropertyName)
+		{
+			if (string.IsNullOrWhiteSpace(cssPropertyName) || targetType == null ||
+				string.IsNullOrWhiteSpace(bindablePropertyName))
+				return false;
+
+			if (StyleProperties.Count == 0)
+				RegisterStylesheets();
+
+			var attribute = new StylePropertyAttribute(cssPropertyName, targetType, bindablePropertyName);
+
+			if (StyleProperties.TryGetValue(cssPropertyName, out var attrList))
+				attrList.Add(attribute);
+			else
+				StyleProperties[cssPropertyName] = new List<StylePropertyAttribute> { attribute };
+			return true;
+		}
+
 		public static void RegisterStylesheets(InitializationFlags flags)
 		{
 			if ((flags & InitializationFlags.DisableCss) == InitializationFlags.DisableCss)
@@ -385,7 +403,9 @@ namespace Xamarin.Forms.Internals
 				Profile.FrameEnd(frameName);
 			}
 
-			RegisterStylesheets(flags);
+			if ((flags & InitializationFlags.DisableCss) == 0)
+				RegisterStylesheets();
+
 			Profile.FramePartition("DependencyService.Initialize");
 			DependencyService.Initialize(assemblies);
 

@@ -363,4 +363,88 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 	}
+
+	[TestFixture]
+	public class StylePropertiesRegistrarUnitTests : BaseTestFixture
+	{
+		[SetUp]
+		public override void Setup()
+		{
+			base.Setup();
+			Internals.Registrar.RegisterAll(new Type[0]);
+		}
+
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+			Internals.Registrar.StyleProperties.Clear();
+		}
+
+		[Test]
+		public void StyleProperties_ShouldBeRegisteredUnderRegisterAll()
+		{
+			// Arrange & Act
+			var styleProperties = Internals.Registrar.StyleProperties;
+
+			// Assert
+			Assert.IsNotNull(styleProperties);
+			Assert.IsTrue(styleProperties.ContainsKey("background-color"));
+			Assert.AreEqual(1, styleProperties["background-color"].Count);
+		}
+
+		[TestCase("custom-anchor", typeof(Button), nameof(Button.AnchorY))]
+		[TestCase("-xf-super-batched", typeof(VisualElement), nameof(VisualElement.Batched))]
+		[TestCase("maybe", typeof(Grid), nameof(Grid.ColumnSpacing))]
+		public void AddStylesheetDefinition_WithCorrectParameters_ShouldReturnTrueAndRegisterNewStyleProperty(string cssPropertyName, Type targetType, string bindablePropertyName)
+		{
+			// Arrange
+			var styleProperties = Internals.Registrar.StyleProperties;
+
+			// Act
+			var result = Internals.Registrar.AddStylesheetDefinition(cssPropertyName, targetType, bindablePropertyName);
+
+			// Assert
+			Assert.IsTrue(result);
+			Assert.IsTrue(styleProperties.ContainsKey(cssPropertyName));
+			Assert.AreEqual(1, styleProperties[cssPropertyName].Count, 1);
+			Assert.AreEqual(targetType, styleProperties[cssPropertyName][0].TargetType);
+			Assert.AreEqual(bindablePropertyName, styleProperties[cssPropertyName][0].BindablePropertyName);
+		}
+
+		[TestCase("custom-anchor", null, nameof(Button.AnchorY))]
+		[TestCase("", typeof(Button), nameof(VisualElement.Batched))]
+		[TestCase("maybe", typeof(Grid), "")]
+		[TestCase("maybe", typeof(Grid), null)]
+		public void AddStylesheetDefinition_WithInCorrectParameters_ShouldReturnFalse(string cssPropertyName, Type targetType, string bindablePropertyName)
+		{
+			// Arrange
+			var styleProperties = Internals.Registrar.StyleProperties;
+
+			// Act
+			var result = Internals.Registrar.AddStylesheetDefinition(cssPropertyName, targetType, bindablePropertyName);
+
+			// Assert
+			Assert.IsFalse(result);
+			Assert.IsFalse(styleProperties.ContainsKey(cssPropertyName));
+		}
+
+		[TestCase("color", typeof(Button), nameof(Button.BorderColor))]
+		[TestCase("background-color", typeof(Button), nameof(Button.BorderColor))]
+		[TestCase("-xf-placeholder-color", typeof(Button), nameof(Button.BorderColor))]
+		public void AddStylesheetDefinition_WithCorrectParametersForExistedProperty_ShouldReturnTrueAndIncreasePropertiesCount(string cssPropertyName, Type targetType, string bindablePropertyName)
+		{
+			// Arrange
+			var styleProperties = Internals.Registrar.StyleProperties;
+
+			// Act
+			var initialCount = styleProperties[cssPropertyName].Count;
+			var result = Internals.Registrar.AddStylesheetDefinition(cssPropertyName, targetType, bindablePropertyName);
+			var finalCount = styleProperties[cssPropertyName].Count;
+
+			// Assert
+			Assert.IsTrue(result);
+			Assert.AreEqual(initialCount + 1, finalCount);
+		}
+	}
 }
