@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			};
 		}
 
-		private void Button_Clicked(object sender, System.EventArgs e)
+		void Button_Clicked(object sender, System.EventArgs e)
 		{
 			var button = sender as Button;
 
