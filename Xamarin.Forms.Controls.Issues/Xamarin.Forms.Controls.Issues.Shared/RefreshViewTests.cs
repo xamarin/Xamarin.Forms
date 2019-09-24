@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 				};
 
-			Enumerable.Range(0, 1000).Select(_ => new Label() { Text = "Pull me down to refresh me" })
+			Enumerable.Range(0, 10).Select(_ => new Label() { HeightRequest = 200, Text = "Pull me down to refresh me" })
 				.ForEach(x => scrollViewContent.Children.Add(x));
 
 			_refreshView = new RefreshView()
