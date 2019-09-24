@@ -104,8 +104,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(insertAutomationId);
 			RunningApp.Tap(insertAutomationId);
 
-			TapInFlyout(flyoutOtherTitle);
-			TapInFlyout(flyoutMainTitle);
+			TapInFlyout(flyoutOtherTitle, timeoutMessage: flyoutOtherTitle);
+			TapInFlyout(flyoutMainTitle, timeoutMessage: flyoutMainTitle);
 
 			RunningApp.WaitForElement(returnAutomationId);
 			RunningApp.Tap(returnAutomationId);

@@ -96,8 +96,6 @@ namespace Xamarin.Forms.Platform.Android
 				if (_bottomView != null)
 				{
 					_bottomView.SetOnNavigationItemSelectedListener(null);
-
-					_bottomView.Background?.Dispose();
 					_bottomView.Dispose();
 				}
 

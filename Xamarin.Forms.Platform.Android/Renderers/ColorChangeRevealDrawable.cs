@@ -15,6 +15,9 @@ namespace Xamarin.Forms.Platform.Android
 		bool _disposed;
 		ValueAnimator _animator;
 
+		internal AColor StartColor => _startColor;
+		internal AColor EndColor => _endColor;
+
 		public ColorChangeRevealDrawable(AColor startColor, AColor endColor, Point center) : base()
 		{
 			_startColor = startColor;
@@ -37,6 +40,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void Draw(Canvas canvas)
 		{
+			if (_disposed)
+				return;
+
 			if (_progress == 1)
 			{
 				canvas.DrawColor(_endColor);

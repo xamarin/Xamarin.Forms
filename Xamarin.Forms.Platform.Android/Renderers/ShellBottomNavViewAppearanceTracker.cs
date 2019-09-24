@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Platform.Android
 		ShellItem _shellItem;
 		ColorStateList _defaultList;
 		bool _disposed;
-		Color _lastColor = Color.Default;
 		ColorStateList _colorStateList;
 
 		public ShellBottomNavViewAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
@@ -61,33 +60,37 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void SetBackgroundColor(BottomNavigationView bottomView, Color color)
 		{
-			if (_lastColor.IsDefault)
-				_lastColor = color;
-
 			var menuView = bottomView.GetChildAt(0) as BottomNavigationMenuView;
-
 			var oldBackground = bottomView.Background;
+			var colorDrawable = oldBackground as ColorDrawable;
+			var colorChangeRevealDrawable = oldBackground as ColorChangeRevealDrawable;
+			AColor lastColor = colorChangeRevealDrawable?.EndColor ?? colorDrawable?.Color ?? Color.Default.ToAndroid();
+			var newColor = color.ToAndroid();
 
 			if (menuView == null)
 			{
-				bottomView.SetBackground(new ColorDrawable(color.ToAndroid()));
+				if (colorDrawable != null && lastColor == newColor)
+					return;
+
+				if (lastColor != color.ToAndroid() || colorDrawable == null)
+				{
+					bottomView.SetBackground(new ColorDrawable(color.ToAndroid()));
+				}
 			}
 			else
 			{
-				var index = _shellItem.Items.IndexOf(_shellItem.CurrentItem);
+				if (colorChangeRevealDrawable != null && lastColor == newColor)
+					return;
 
+				var index = _shellItem.Items.IndexOf(_shellItem.CurrentItem);
 				var menu = bottomView.Menu;
 				index = Math.Min(index, menu.Size() - 1);
 
 				var child = menuView.GetChildAt(index);
 				var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
 
-				bottomView.SetBackground(new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint));
-
-				_lastColor = color;
+				bottomView.SetBackground(new ColorChangeRevealDrawable(lastColor, newColor, touchPoint));
 			}
-
-			oldBackground?.Dispose();
 		}
 
 		ColorStateList MakeColorStateList(Color titleColor, Color disabledColor, Color unselectedColor)
