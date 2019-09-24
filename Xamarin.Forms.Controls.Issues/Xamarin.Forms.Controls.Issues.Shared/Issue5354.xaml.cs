@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		private void ButtonClicked(object sender, EventArgs e)
+		void ButtonClicked(object sender, EventArgs e)
 		{
 			var button = sender as Button;
 			var stackLayout = button.Parent as StackLayout;
