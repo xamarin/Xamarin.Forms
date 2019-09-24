@@ -27,6 +27,20 @@ jobs:
     dependsOn: ${{ parameters.dependsOn }}
     steps:
       - checkout: self
+      
+      - task: xamops.azdevex.provisionator-task.provisionator@1
+        displayName: Provisionate Xamarin
+        condition: eq(variables['provisioning'], 'true')
+        inputs:
+          provisioning_script: ${{ parameters.provisionatorPath }}
+          provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+      
+      - task: Bash@3
+        condition: eq(variables['provisioning'], 'false')
+        inputs:
+          targetType: 'filePath'
+          filePath: 'build.sh'
+          arguments: --target provision
 
       - task: NuGetToolInstaller@0
         displayName: 'Use NuGet'
