@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		private void ButtonClicked(object sender, EventArgs e)
+		void ButtonClicked(object sender, EventArgs e)
 		{
 			var button = sender as Button;
 			var grid = button.Parent.Parent as Grid;
