@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
+using System.IO;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -16,7 +17,7 @@ namespace Xamarin.Forms.Controls
 {
 	internal static class AppPaths
 	{
-		public static string ApkPath = "../../../Xamarin.Forms.ControlGallery.Android/bin/Debug/AndroidControlGallery.AndroidControlGallery-Signed.apk";
+		public static string ApkPath = "Xamarin.Forms.ControlGallery.Android/bin/Debug/AndroidControlGallery.AndroidControlGallery-Signed.apk";
 
 		public static string MacOSPath = "../../../Xamarin.Forms.ControlGallery.MacOS/bin/Debug/Xamarin.Forms.ControlGallery.MacOS.app";
 
@@ -60,7 +61,8 @@ namespace Xamarin.Forms.Controls
 #if __ANDROID__
 		static IApp InitializeAndroidApp()
 		{
-			var app = ConfigureApp.Android.ApkFile(AppPaths.ApkPath).Debug().StartApp(UITest.Configuration.AppDataMode.DoNotClear);
+			var fullApkPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\") + AppPaths.ApkPath);
+			var app = ConfigureApp.Android.ApkFile(fullApkPath).Debug().StartApp();
 
 			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
 			{
@@ -222,7 +224,7 @@ namespace Xamarin.Forms.Controls
 				// then initializing the app causes a "NUnit.Framework.InconclusiveException" with the exception-
 				// message "App did not start for some reason. System.Argument.Exception: 1 is not supported code page.
 				// Parameter name: codepage."
-				if(System.Threading.Thread.CurrentThread.CurrentCulture != System.Globalization.CultureInfo.InvariantCulture)
+				if (System.Threading.Thread.CurrentThread.CurrentCulture != System.Globalization.CultureInfo.InvariantCulture)
 					System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
 				runningApp = InitializeApp();
@@ -610,7 +612,7 @@ namespace Xamarin.Forms.Controls
 
 		public void AddTopTab(ContentPage page, string title = null)
 		{
-			if(Items.Count == 0)
+			if (Items.Count == 0)
 			{
 				var item = AddContentPage(page);
 				item.Items[0].Items[0].Title = title ?? page.Title;
@@ -668,7 +670,7 @@ namespace Xamarin.Forms.Controls
 			return item;
 		}
 
-		public ContentPage CreateContentPage(string shellItemTitle = null) 
+		public ContentPage CreateContentPage(string shellItemTitle = null)
 			=> CreateContentPage<ShellItem, ShellSection>(shellItemTitle);
 
 		public ContentPage CreateContentPage<TShellItem, TShellSection>(string shellItemTitle = null)
@@ -742,8 +744,8 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true)
-		{			
-			if(testForFlyoutIcon)
+		{
+			if (testForFlyoutIcon)
 				RunningApp.WaitForElement(flyoutIcon);
 
 			if (usingSwipe)
