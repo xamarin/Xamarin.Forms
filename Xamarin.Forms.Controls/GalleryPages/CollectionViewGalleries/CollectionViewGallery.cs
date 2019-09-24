@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				Text = "Enable CollectionView",
 				AutomationId = "EnableCollectionView"
 			};
-			button.Clicked += Button_Clicked;
+			button.Clicked += ButtonClicked;
 
 			Content = new ScrollView
 			{
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			};
 		}
 
-		void Button_Clicked(object sender, System.EventArgs e)
+		void ButtonClicked(object sender, System.EventArgs e)
 		{
 			var button = sender as Button;
 
