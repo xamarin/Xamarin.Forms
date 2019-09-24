@@ -12,11 +12,12 @@ parameters:
   releaseBuildConfiguration : 'Release'
   buildPlatform : 'any cpu'
   msbuildExtraArguments : ''
-  nugetVersion: $(NUGET_VERSION)
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
   artifactsName: 'win_build'
   nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/tools/'
   nunitTestFolder: '$(build.sourcesdirectory)'
+  DOTNET_VERSION: ''
+  NUGET_VERSION: ''
 
 jobs:
   - job: ${{ parameters.name }}
@@ -34,6 +35,20 @@ jobs:
           BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
+
+    - task: DotNetCoreInstaller@0
+      displayName: 'Install .net core ${{ parameters.DOTNET_VERSION }}'
+      inputs:
+        version: ${{ parameters.DOTNET_VERSION }}
+
+    - script: |
+        dotnet new globaljson --sdk-version ${{ parameters.DOTNET_VERSION }}
+
+    - task: NuGetToolInstaller@0
+      displayName: 'Use NuGet ${{ parameters.nugetVersion }}'
+      inputs:
+        versionSpec: ${{ parameters.nugetVersion }}
+
     - script: build.cmd -Target provision
       condition: eq(variables['provisioning'], 'false')
   
@@ -44,19 +59,6 @@ jobs:
         provisioning_script: ${{ parameters.provisionatorPath }}
         provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
           
-    - task: DotNetCoreInstaller@0
-      displayName: 'Install .net core $(DOTNET_VERSION)'
-      inputs:
-        version: $(DOTNET_VERSION)
-
-    - script: |
-        dotnet new globaljson --sdk-version $(DOTNET_VERSION)
-
-    - task: NuGetToolInstaller@0
-      displayName: 'Use NuGet ${{ parameters.nugetVersion }}'
-      inputs:
-        versionSpec: ${{ parameters.nugetVersion }}
-
     - task: NuGetCommand@2
       displayName: 'NuGet restore ${{ parameters.slnPath }}'
       inputs:

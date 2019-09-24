@@ -11,11 +11,9 @@ variables:
   value: Xamarin.Forms.sln
 - name: BuildVersion
   value: $[counter('$(Build.SourceBranchName)_counter', 1)]
-- name: XCODE_VERSION
-  value: 10.2
-- name: NUGET_VERSION
+- name: NUGET_VERSION_DEFAULT
   value: 5.2.0
-- name: DOTNET_VERSION
+- name: DOTNET_VERSION_DEFAULT
   value: 2.1.801
 - name: winVmImage
   value: Hosted Windows 2019 with VS2019
@@ -63,7 +61,9 @@ jobs:
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-
+    DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
+    nugetVersion: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
+    
 - template: build/steps/build-android.yml
   parameters:
     name: android_legacy
