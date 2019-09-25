@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 7395, "Changing ItemTemplate does not work as expected", PlatformAffected.Android)]
 	public class Issue7395 : TestContentPage
 	{
+		Label _instructions;
 		CollectionView _collectionView;
 
 		public Issue7395()
@@ -27,13 +28,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			_instructions = new Label
+			{
+				Text = "Press a button to apply an ItemTemplate."
+			};
+
 			var button1 = new Button
 			{
 				Text = "Two columns",
 				AutomationId = "TwoCol"
 			};
 
-			button1.Clicked += Button1_Clicked;
+			button1.Clicked += OnButton1Clicked;
 
 			var button2 = new Button
 			{
@@ -41,7 +47,7 @@ namespace Xamarin.Forms.Controls.Issues
 				AutomationId = "ThreeCol"
 			};
 
-			button2.Clicked += Button2_Clicked;
+			button2.Clicked += OnButton2Clicked;
 
 			_collectionView = new CollectionView
 			{
@@ -60,6 +66,8 @@ namespace Xamarin.Forms.Controls.Issues
 			_collectionView.ItemsSource = lines;
 
 			var stack = new StackLayout();
+
+			stack.Children.Add(_instructions);
 			stack.Children.Add(button1);
 			stack.Children.Add(button2);
 			stack.Children.Add(_collectionView);
@@ -67,17 +75,19 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = stack;
 		}
 
-		void Button1_Clicked(object sender, EventArgs e)
+		void OnButton1Clicked(object sender, EventArgs e)
 		{
 			_collectionView.ItemTemplate = CreateDataGridTemplate(2);
+			_instructions.Text = "If all cells are rendering correctly with 2 columns, everything is correct.";
 		}
 
-		void Button2_Clicked(object sender, EventArgs e)
+		void OnButton2Clicked(object sender, EventArgs e)
 		{
 			_collectionView.ItemTemplate = CreateDataGridTemplate(3);
+			_instructions.Text = "If all cells are rendering correctly with 3 columns, everything is correct.";
 		}
 
-		private DataTemplate CreateDataGridTemplate(int columns)
+		DataTemplate CreateDataGridTemplate(int columns)
 		{
 			DataTemplate template = new DataTemplate(() =>
 			{
