@@ -65,8 +65,11 @@ namespace Xamarin.Forms.Core.UITests
 			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterX, bottomY);
 
 			App.WaitForElement("pos:0", "Did not scroll to first position");
-
-			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterX, rect.Y - 1);
+			var topY = rect.Y - 1;
+#if __ANDROID__
+			topY = rect.Y - 10;
+#endif
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterX, topY);
 
 			App.WaitForElement("pos:1", "Did not scroll to second position");
 
@@ -79,7 +82,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap("SwipeSwitch");
 
 #if __ANDROID__
-			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterY, rect.Y + rect.Height - 1);
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterY, bottomY);
 
 			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 #endif
