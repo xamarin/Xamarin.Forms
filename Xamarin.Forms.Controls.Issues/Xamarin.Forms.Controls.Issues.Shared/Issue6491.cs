@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
@@ -34,6 +33,10 @@ namespace Xamarin.Forms.Controls.Issues
 				FontFamily = "FontAwesome5Free-Solid"
 			};
 
+			if (Device.RuntimePlatform == Device.UWP)
+				((FontImageSource)button.ImageSource).FontFamily = "Assets/Fonts/fa-solid-900.ttf#Font Awesome 5 Free";
+
+			stack.Children.Add(label);
 			stack.Children.Add(button);
 
 			Content = stack;
