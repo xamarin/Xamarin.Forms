@@ -13,7 +13,8 @@ parameters:
   androidProjectPath : 'Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj'
   androidProjectArguments : ''
   buildConfiguration : 'Debug'
-  nugetVersion: $(NUGET_VERSION)
+  DOTNET_VERSION: ''
+  NUGET_VERSION: ''
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
   provisionatorPath: 'build/provisioning/provisioning.csx'
   provisionatorExtraArguments: ''

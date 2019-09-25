@@ -45,9 +45,9 @@ jobs:
         dotnet new globaljson --sdk-version ${{ parameters.DOTNET_VERSION }}
 
     - task: NuGetToolInstaller@0
-      displayName: 'Use NuGet ${{ parameters.nugetVersion }}'
+      displayName: 'Use NuGet ${{ parameters.NUGET_VERSION }}'
       inputs:
-        versionSpec: ${{ parameters.nugetVersion }}
+        versionSpec: ${{ parameters.NUGET_VERSION }}
 
     - script: build.cmd -Target provision
       condition: eq(variables['provisioning'], 'false')

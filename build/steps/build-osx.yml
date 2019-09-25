@@ -28,7 +28,7 @@ steps:
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet'
     inputs:
-      versionSpec: $(nugetVersion)
+      versionSpec: $(NUGET_VERSION)
 
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
