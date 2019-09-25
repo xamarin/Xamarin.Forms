@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.WPF
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
 		public Task<System.Windows.Media.ImageSource> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default)
-		{
+		{			
 			var fontsource = imagesource as FontImageSource;
 			var image = CreateGlyph(
 					fontsource.Glyph,
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Platform.WPF
 					FontWeights.Normal,
 					FontStretches.Normal,
 					fontsource.Size,
-					fontsource.Color.ToBrush());
+					(fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToBrush());
 			return Task.FromResult(image);
 		}		
 
