@@ -2,21 +2,23 @@
   <PropertyGroup>
     <Description>Android Backend for Xamarin.Forms</Description>
     <AssemblyName>Xamarin.Forms.Platform.Android</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup>
     <TargetFrameworks>MonoAndroid81;MonoAndroid90;</TargetFrameworks>
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <RootNamespace>Xamarin.Forms.Platform.Android</RootNamespace>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>    
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AppCompat\Resource.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\Layout\BottomTabLayout.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\**\*" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Serialization" />
@@ -38,7 +40,6 @@
   </ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\**\*.xml" />
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup.csproj">
