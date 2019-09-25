@@ -24,7 +24,7 @@ steps:
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet'
     inputs:
-      versionSpec: $(nugetVersion)
+      versionSpec: $(NUGET_VERSION)
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
@@ -40,12 +40,12 @@ steps:
 
   - powershell: |
        $buildConfiguration = "Release"
-       $formsNugetVersion = "" + $env:nugetPackageVersion
+       $formsNUGET_VERSION = "" + $env:nugetPackageVersion
 
        Write-Host("Update nuspecs")
        Get-ChildItem './.nuspec/*.nuspec' -Recurse | Foreach-Object {
             (Get-Content $_) | Foreach-Object  {
-                $_ -replace '\$version\$', $formsNugetVersion `
+                $_ -replace '\$version\$', $formsNUGET_VERSION `
                    -replace '\$Configuration\$', $buildConfiguration `
            } | Set-Content $_
        }

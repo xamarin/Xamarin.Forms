@@ -19,8 +19,6 @@ variables:
   value: Hosted Windows 2019 with VS2019
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
-- name: provisioning
-  value: false
 
 resources:
   repositories:
@@ -110,7 +108,6 @@ jobs:
       - msbuild
       - Xamarin.iOS
   variables:
-    provisioningOSX : $(provisioning)
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
     provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
     buildConfiguration: $(DefaultBuildConfiguration)
@@ -132,7 +129,7 @@ jobs:
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
-    NUGET_VERSION: $(NUGET_VERSION)
+    NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
     nugetPackageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
   steps:
      - template: build/steps/build-nuget.yml
