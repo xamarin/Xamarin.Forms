@@ -15,9 +15,6 @@
     <Compile Remove="AppCompat\Resource.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Resources\Layout\BottomTabLayout.axml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\**\*" />
   </ItemGroup>
   <ItemGroup>
