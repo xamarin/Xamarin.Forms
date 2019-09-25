@@ -46,7 +46,7 @@ jobs:
       - task: NuGetToolInstaller@0
         displayName: 'Use NuGet'
         inputs:
-          versionSpec: ${{ parameters.nugetVersion }}
+          versionSpec: ${{ parameters.NUGET_VERSION }}
 
       - task: NuGetCommand@2
         displayName: 'NuGet restore ${{ parameters.slnPath }}'
