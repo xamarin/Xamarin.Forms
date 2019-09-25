@@ -18,6 +18,12 @@
 				<Label Text="{Binding }" />
 			</Frame>
 		</DataTemplate>
+        <DataTemplate x:Key="EmptyTemplate">
+			<Frame Padding="10"
+				   BackgroundColor="Fuschia">
+				<Label Text="No items here" />
+			</Frame>
+		</DataTemplate>
 		<local:BindableLayoutItemTemplateSelector x:Key="ItemTemplateSelector"
 												  IntTemplate="{StaticResource MyIntTemplate}"
 												  CharTemplate="{StaticResource MyCharTemplate}" />
@@ -31,8 +37,15 @@
 					HorizontalScrollBarVisibility="Always">
 			<StackLayout BindableLayout.ItemsSource="{Binding ItemsSource}"
 						 BindableLayout.ItemTemplateSelector="{StaticResource ItemTemplateSelector}"
+                         
 						 Spacing="7"
-						 Padding="10, 5" />
+						 Padding="10, 5">
+                <BindableLayout.EmptyView>
+                    <Grid BackgroundColor="Blue" >
+        <Label Text="No Results"/>
+                        </Grid>
+    </BindableLayout.EmptyView>
+                </StackLayout>
 		</ScrollView>
 		<StackLayout BackgroundColor="Green"
 					 Orientation="Horizontal"
