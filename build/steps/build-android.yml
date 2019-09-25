@@ -13,8 +13,8 @@ parameters:
   androidProjectPath : 'Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj'
   androidProjectArguments : ''
   buildConfiguration : 'Debug'
-  DOTNET_VERSION: ''
-  NUGET_VERSION: ''
+  DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
+  NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
   provisionatorPath: 'build/provisioning/provisioning.csx'
   provisionatorExtraArguments: ''
@@ -54,14 +54,14 @@ jobs:
           restoreSolution:  ${{ parameters.slnPath }}
           
       - task: DotNetCoreInstaller@0
-        displayName: 'Install .net core $(DOTNET_VERSION)'
+        displayName: 'Install .net core ${{ parameters.DOTNET_VERSION }}'
         inputs:
-          version: $(DOTNET_VERSION)
+          version: ${{ parameters.DOTNET_VERSION }}
 
       - script: |
           export PATH="$PATH:/Users/vsts/.dotnet/tools"
           export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-          dotnet new globaljson --sdk-version $(DOTNET_VERSION)
+          dotnet new globaljson --sdk-version ${{ parameters.DOTNET_VERSION }}
 
       - task: MSBuild@1
         displayName: 'Build ${{ parameters.buildTaskPath  }}'

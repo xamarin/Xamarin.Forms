@@ -16,8 +16,8 @@ parameters:
   artifactsName: 'win_build'
   nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/tools/'
   nunitTestFolder: '$(build.sourcesdirectory)'
-  DOTNET_VERSION: ''
-  NUGET_VERSION: ''
+  DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
+  NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
 
 jobs:
   - job: ${{ parameters.name }}
