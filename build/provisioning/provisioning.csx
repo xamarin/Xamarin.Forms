@@ -14,18 +14,22 @@ string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/je
 string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
 
 
+Item ("Mono", monoVersion);
+Item ("Xamarin.iOS", "13.2.0.42");
+Item ("Xamarin.Mac", "6.2.0.42");
+Item ("Xamarin.Android", "10.0.0.43");
+
 if (IsMac)
 {
 	Item (XreItem.Xcode_11_1_0_rc).XcodeSelect ();
 
-	if(!String.IsNullOrEmpty(androidSDK_macos))
+	/*if(!String.IsNullOrEmpty(androidSDK_macos))
 		Item (androidSDK_macos);
-	if(!String.IsNullOrEmpty(monoSDK_macos))
-		Item (monoSDK_macos);
 	if(!String.IsNullOrEmpty(iOSSDK_macos))
 		Item (iOSSDK_macos);
 	if(!String.IsNullOrEmpty(macSDK_macos))
 		Item (macSDK_macos);
+    */
 	ForceJavaCleanup();
 
     var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
@@ -41,14 +45,12 @@ if (IsMac)
 }
 else
 {
-	if(!String.IsNullOrEmpty(androidSDK_windows))
+/*	if(!String.IsNullOrEmpty(androidSDK_windows))
 		Item (androidSDK_windows);
-	if(!String.IsNullOrEmpty(monoSDK_windows))
-		Item (monoSDK_windows);
 	if(!String.IsNullOrEmpty(iOSSDK_windows))
 		Item (iOSSDK_windows);
 	if(!String.IsNullOrEmpty(macSDK_windows))
-		Item (macSDK_windows);
+		Item (macSDK_windows);*/
 }
 
 Item(XreItem.Java_OpenJDK_1_8_0_25);
