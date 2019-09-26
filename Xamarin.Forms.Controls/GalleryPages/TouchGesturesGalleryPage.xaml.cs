@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			TouchListView.ItemsSource = _testData;
 		}
 
-		void TouchGestureRecognizer_OnTouchUpdated(TouchGestureRecognizer sender, TouchEventArgs e)
+		void TouchGestureRecognizer_OnTouchUpdated(GestureRecognizer sender, TouchEventArgs e)
 		{
 			var logItem = $"N:{++_count},{sender?.Touches?.FirstOrDefault()?.Target.GetType().Name ?? "?"} Touch:{e.TouchCount}, InView:{e.IsInOriginalView}, Event:{e.TouchState}; ";
 

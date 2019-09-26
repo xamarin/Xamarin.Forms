@@ -642,7 +642,7 @@ namespace Xamarin.Forms.Platform.UWP
 			bool hasSwipeGesture = gestures.GetGesturesFor<SwipeGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPinchGesture = gestures.GetGesturesFor<PinchGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPanGesture = gestures.GetGesturesFor<PanGestureRecognizer>().GetEnumerator().MoveNext();
-			bool touchGesture = gestures.GetGesturesFor<TouchGestureRecognizer>().GetEnumerator().MoveNext();
+			bool touchGesture = gestures.GetGesturesFor<GestureRecognizer>().GetEnumerator().MoveNext();
 			if (!hasSwipeGesture && !hasPinchGesture && !hasPanGesture && !touchGesture)
 				return;
 
@@ -683,7 +683,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (view == null)
 				return;
 
-			var touchGestures = view.GestureRecognizers.GetGesturesFor<TouchGestureRecognizer>();
+			var touchGestures = view.GestureRecognizers.GetGesturesFor<GestureRecognizer>();
 			foreach (var recognizer in touchGestures)
 			{
 				recognizer.SendTouch(view, new TouchEventArgs(_fingers.Count, state, new List<TouchPoint>

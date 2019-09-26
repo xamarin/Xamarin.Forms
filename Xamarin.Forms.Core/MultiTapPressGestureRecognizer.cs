@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public class MultiTapPressGestureRecognizer : TouchGestureRecognizer
+	public class MultiTapPressGestureRecognizer : GestureRecognizer
 	{
 		public static readonly BindableProperty CommandProperty =
 			BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(MultiTapPressGestureRecognizer));

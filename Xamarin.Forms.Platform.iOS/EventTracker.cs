@@ -204,13 +204,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			});
 		}
 
-		Action<UITouchGestureRecognizer, TouchEventArgs> CreateTouchRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer, TouchGestureRecognizer touchRecognizer)
+		Action<UITouchGestureRecognizer, TouchEventArgs> CreateTouchRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer, GestureRecognizer touchRecognizer)
 		{
 			return new Action<UITouchGestureRecognizer, TouchEventArgs>((sender, ev) =>
 			{
 				EventTracker eventTracker = weakEventTracker.Target as EventTracker;
 				View view = eventTracker?._renderer?.Element as View;
-				if (weakRecognizer.Target is TouchGestureRecognizer touchGestureRecognizer && view != null)
+				if (weakRecognizer.Target is GestureRecognizer touchGestureRecognizer && view != null)
 					touchGestureRecognizer.SendTouch(view, ev);
 			});
 		}
@@ -439,7 +439,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 #if __MOBILE__
-			var touchRecognizer = recognizer as TouchGestureRecognizer;
+			var touchRecognizer = recognizer as GestureRecognizer;
 			if (touchRecognizer != null)
 			{
 				var eventTracker = weakEventTracker.Target as EventTracker;

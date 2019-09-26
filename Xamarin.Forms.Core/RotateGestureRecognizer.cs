@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public class RotateGestureRecognizer : TouchGestureRecognizer
+	public class RotateGestureRecognizer : GestureRecognizer
 	{
 		public static readonly BindableProperty CommandProperty =
 			BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(RotateGestureRecognizer));

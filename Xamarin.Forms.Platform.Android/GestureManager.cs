@@ -217,7 +217,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool ViewTouchGestures()
 		{
-			return View != null && View.GestureRecognizers.OfType<TouchGestureRecognizer>().Any();
+			return View != null && View.GestureRecognizers.OfType<GestureRecognizer>().Any();
 		}
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)

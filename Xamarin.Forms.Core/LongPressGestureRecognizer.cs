@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public class LongPressGestureRecognizer : TouchGestureRecognizer
+	public class LongPressGestureRecognizer : GestureRecognizer
 	{
 		public static readonly BindableProperty IsLongPressingProperty =
 			BindableProperty.Create(nameof(IsLongPressing), typeof(bool), typeof(LongPressGestureRecognizer));

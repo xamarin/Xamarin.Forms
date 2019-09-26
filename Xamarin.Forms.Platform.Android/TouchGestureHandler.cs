@@ -27,18 +27,18 @@ namespace Xamarin.Forms.Platform.Android
 		public bool HasAnyGestures()
 		{
 			View view = GetView();
-			return view != null && view.GestureRecognizers.OfType<TouchGestureRecognizer>().Any() ||
-			       GetChildElements().GetChildGesturesFor<TouchGestureRecognizer>().Any();
+			return view != null && view.GestureRecognizers.OfType<GestureRecognizer>().Any() ||
+			       GetChildElements().GetChildGesturesFor<GestureRecognizer>().Any();
 		}
 
 		public bool OnTouch(MotionEvent ev)
 		{
 			View view = GetView();
-			var recognizers = view?.GestureRecognizers.GetGesturesFor<TouchGestureRecognizer>().ToList();
+			var recognizers = view?.GestureRecognizers.GetGesturesFor<GestureRecognizer>().ToList();
 
 			if (recognizers != null && recognizers.Count > 0)
 			{
-				foreach (TouchGestureRecognizer touchGesture in recognizers)
+				foreach (GestureRecognizer touchGesture in recognizers)
 				{
 					touchGesture.SendTouch(view, CreateTouchEventArgs(ev));
 				}
