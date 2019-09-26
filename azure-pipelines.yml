@@ -19,8 +19,6 @@ variables:
   value: true
 - name: winVmImage
   value: Hosted Windows 2019 with VS2019
-- name: provisioning
-  value: true
   
 resources:
   repositories:
