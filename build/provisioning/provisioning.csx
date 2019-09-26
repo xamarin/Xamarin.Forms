@@ -13,44 +13,65 @@ string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVer
 string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
 string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
 
-
-Item ("Mono", monoVersion).Condition (FxVersionDiffers);
-Item ("Xamarin.iOS", "13.2.0.42").Condition (FxVersionDiffers);
-Item ("Xamarin.Mac", "6.2.0.42").Condition (FxVersionDiffers);
-Item ("Xamarin.Android", "10.0.0.43").Condition (FxVersionDiffers);
-
 if (IsMac)
 {
-	Item (XreItem.Xcode_11_1_0_rc).XcodeSelect ();
+	// Item (XreItem.Xcode_11_1_0_rc).XcodeSelect ();
 
-	/*if(!String.IsNullOrEmpty(androidSDK_macos))
-		Item (androidSDK_macos);
+  if(!String.IsNullOrEmpty(monoSDK_macos))
+    Item ("Mono", monoVersion)
+      .Condition (FxVersionDiffers)  
+      .Source (_ => monoSDK_macos);
+
+	if(!String.IsNullOrEmpty(androidSDK_macos))
+		Item ("Xamarin.Android", "10.0.0.43")
+      .Condition (FxVersionDiffers)  
+      .Source (_ => androidSDK_macos);
+
 	if(!String.IsNullOrEmpty(iOSSDK_macos))
-		Item (iOSSDK_macos);
+		Item ("Xamarin.iOS", "13.2.0.42")
+      .Condition (FxVersionDiffers)  
+      .Source (_ => iOSSDK_macos);
+
 	if(!String.IsNullOrEmpty(macSDK_macos))
-		Item (macSDK_macos);
-    */
+		Item ("Xamarin.Mac", "6.2.0.42")
+      .Condition (FxVersionDiffers)  
+      .Source (_ => macSDK_macos);
+    
 	ForceJavaCleanup();
 
     var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
     if (!string.IsNullOrEmpty(dotnetVersion))
-	{
+	  {
 		// VSTS installs into a non-default location. Let's hardcode it here because why not.
 		var vstsBaseInstallPath = Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".dotnet", "sdk");
 		var vstsInstallPath = Path.Combine (vstsBaseInstallPath, dotnetVersion);
 		var defaultInstallLocation = Path.Combine ("/usr/local/share/dotnet/sdk/", dotnetVersion);
 		if (Directory.Exists (vstsBaseInstallPath) && !Directory.Exists (vstsInstallPath))
 			ln (defaultInstallLocation, vstsInstallPath);
-	}
+	  }
 }
 else
 {
-/*	if(!String.IsNullOrEmpty(androidSDK_windows))
-		Item (androidSDK_windows);
+	if(!String.IsNullOrEmpty(androidSDK_windows))
+		Item ("Xamarin.Android", "10.0.0.43")
+      .Condition (FxVersionDiffers)  
+      .Source (_ => androidSDK_windows);
+
 	if(!String.IsNullOrEmpty(iOSSDK_windows))
-		Item (iOSSDK_windows);
+		Item ("Xamarin.iOS", "13.2.0.42")
+      .Condition (FxVersionDiffers)  
+      .Source (_ => iOSSDK_windows);
+
 	if(!String.IsNullOrEmpty(macSDK_windows))
-		Item (macSDK_windows);*/
+		Item ("Xamarin.Mac", "6.2.0.42")
+      .Condition (FxVersionDiffers)  
+      .Source (_ => macSDK_windows);
+      
+	if(!String.IsNullOrEmpty(monoSDK_windows))
+    Item ("Mono", monoVersion)
+      .Condition (FxVersionDiffers)  
+      .Source (_ => monoSDK_windows);
+
 }
 
 Item(XreItem.Java_OpenJDK_1_8_0_25);
