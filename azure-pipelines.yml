@@ -11,11 +11,11 @@ variables:
   value: Xamarin.Forms.sln
 - name: BuildVersion
   value: $[counter('$(Build.SourceBranchName)_counter', 1)]
-- name: NUGET_VERSION_DEFAULT
+- name: NUGET_VERSION
   value: 5.2.0
-- name: DOTNET_VERSION_DEFAULT
+- name: DOTNET_VERSION
   value: 2.1.801
-- name: winVmImage
+- name: winVmImage_default
   value: Hosted Windows 2019 with VS2019
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
@@ -53,14 +53,12 @@ jobs:
   parameters:
     name: win
     displayName: Build Windows Phase
-    vmImage: $(winVmImage)
+    vmImage: ${{ coalesce(variables.winVmImage, variables.winVmImage_default) }}
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-    DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
-    NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
     
 - template: build/steps/build-android.yml
   parameters:
@@ -71,8 +69,6 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-    DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
-    NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
 
 - template: build/steps/build-android.yml
   parameters:
@@ -83,8 +79,6 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-    DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
-    NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
 
 - template: build/steps/build-android.yml
   parameters:
@@ -95,8 +89,6 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-    DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
-    NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
 
 - job: osx
   displayName: OSX Phase
@@ -112,8 +104,6 @@ jobs:
     provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
     buildConfiguration: $(DefaultBuildConfiguration)
     slnPath: $(SolutionFile)
-    DOTNET_VERSION: ${{ coalesce(variables.DOTNET_VERSION, variables.DOTNET_VERSION_DEFAULT) }}
-    NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
   steps:
@@ -129,7 +119,6 @@ jobs:
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
-    NUGET_VERSION: ${{ coalesce(variables['NUGET_VERSION'], variables['NUGET_VERSION_DEFAULT']) }}
     nugetPackageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
   steps:
      - template: build/steps/build-nuget.yml

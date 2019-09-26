@@ -22,7 +22,7 @@ steps:
       failOnStandardError: false
 
   - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet'
+    displayName: 'Use NuGet: $(NUGET_VERSION)'
     inputs:
       versionSpec: $(NUGET_VERSION)
 

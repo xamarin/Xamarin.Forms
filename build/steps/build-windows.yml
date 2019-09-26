@@ -16,8 +16,6 @@ parameters:
   artifactsName: 'win_build'
   nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/tools/'
   nunitTestFolder: '$(build.sourcesdirectory)'
-  DOTNET_VERSION: ''
-  NUGET_VERSION: ''
 
 jobs:
   - job: ${{ parameters.name }}
@@ -36,18 +34,19 @@ jobs:
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
 
+
     - task: DotNetCoreInstaller@0
-      displayName: 'Install .net core ${{ parameters.DOTNET_VERSION }}'
+      displayName: "Install .net core $(DOTNET_VERSION)"
       inputs:
-        version: ${{ parameters.DOTNET_VERSION }}
+        version: $(DOTNET_VERSION)
 
     - script: |
-        dotnet new globaljson --sdk-version ${{ parameters.DOTNET_VERSION }}
+        dotnet new globaljson --sdk-version $(DOTNET_VERSION)
 
     - task: NuGetToolInstaller@0
-      displayName: 'Use NuGet ${{ parameters.NUGET_VERSION }}'
+      displayName: 'Use NuGet $(NUGET_VERSION)'
       inputs:
-        versionSpec: ${{ parameters.NUGET_VERSION }}
+        versionSpec: $(NUGET_VERSION)
 
     - script: build.cmd -Target provision
       condition: eq(variables['provisioning'], 'false')
