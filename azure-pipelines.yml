@@ -15,10 +15,10 @@ variables:
   value: 5.2.0
 - name: DOTNET_VERSION
   value: 2.1.801
-- name: winVmImage_default
-  value: Hosted Windows 2019 with VS2019
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
+- name: winVmImage
+  value: Hosted Windows 2019 with VS2019
 
 resources:
   repositories:
@@ -53,7 +53,7 @@ jobs:
   parameters:
     name: win
     displayName: Build Windows Phase
-    vmImage: ${{ coalesce(variables.winVmImage, variables.winVmImage_default) }}
+    vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
