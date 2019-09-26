@@ -1,36 +1,55 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.VisualStatesTrigger"
-			Title="VisualStateGroups Directly on VisualElements">
-	<ContentPage.Content>
-		<StackLayout>
-			<Entry>
-				<Entry.Triggers>
-					<EventTrigger Event="Focused">
-						<VisualStateTrigger GoToState="Focused" />
-					</EventTrigger>
-					<EventTrigger Event="TextChanged">
-						<VisualStateTrigger GoToState="Text" />
-					</EventTrigger>
-				</Entry.Triggers>
-				<VisualStateManager.VisualStateGroups>
-					<VisualStateGroup x:Name="ColorStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Focused">
-							<VisualState.Setters>
-								<Setter Property="BackgroundColor" Value="DarkRed"/>
-							</VisualState.Setters>
-						</VisualState>
-						<VisualState x:Name="Text">
-							<VisualState.Setters>
-								<Setter Property="BackgroundColor" Value="LightSalmon"/>
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
-				   
-				</VisualStateManager.VisualStateGroups>
-			</Entry>
-		</StackLayout>
-	</ContentPage.Content>
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.VisualStatesTrigger"
+             Title="VisualStateGroups Directly on VisualElements">
+    <ContentPage.Content>
+        <StackLayout>
+            <Entry>
+                <Entry.Triggers>
+                    <EventTrigger Event="Focused">
+                        <VisualStateTrigger GoToState="Focused" />
+                        <VisualStateTrigger GoToState="FocusedBox" Target="{x:Reference BoxForState}" />
+                    </EventTrigger>
+                    <EventTrigger Event="TextChanged">
+                        <VisualStateTrigger GoToState="Text" />
+                        <VisualStateTrigger GoToState="TextBox" Target="{x:Reference BoxForState}" />
+                    </EventTrigger>
+                </Entry.Triggers>
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="ColorStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Focused">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="DarkRed" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Text">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightSalmon" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Entry>
+            <BoxView WidthRequest="100" HeightRequest="50" BackgroundColor="LightSeaGreen" x:Name="BoxForState">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="ColorStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="FocusedBox">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="DarkRed" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="TextBox">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightSalmon" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </BoxView>
+        </StackLayout>
+    </ContentPage.Content>
 </ContentPage>
