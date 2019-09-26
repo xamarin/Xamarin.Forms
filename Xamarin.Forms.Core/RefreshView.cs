@@ -25,13 +25,7 @@ namespace Xamarin.Forms
 		public bool IsRefreshing
 		{
 			get { return (bool)GetValue(IsRefreshingProperty); }
-			set
-			{
-				if ((bool)GetValue(IsRefreshingProperty) == value)
-					OnPropertyChanged(nameof(IsRefreshing));
-
-				SetValue(IsRefreshingProperty, value);
-			}
+			set { SetValue(IsRefreshingProperty, value); }
 		}
 
 		public static readonly BindableProperty CommandProperty =
