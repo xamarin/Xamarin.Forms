@@ -14,10 +14,10 @@ string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/je
 string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
 
 
-Item ("Mono", monoVersion);
-Item ("Xamarin.iOS", "13.2.0.42");
-Item ("Xamarin.Mac", "6.2.0.42");
-Item ("Xamarin.Android", "10.0.0.43");
+Item ("Mono", monoVersion).Condition (FxVersionDiffers);
+Item ("Xamarin.iOS", "13.2.0.42").Condition (FxVersionDiffers);
+Item ("Xamarin.Mac", "6.2.0.42").Condition (FxVersionDiffers);
+Item ("Xamarin.Android", "10.0.0.43").Condition (FxVersionDiffers);
 
 if (IsMac)
 {
