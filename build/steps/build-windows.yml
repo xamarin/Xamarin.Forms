@@ -34,10 +34,11 @@ jobs:
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
     - script: build.cmd -Target provision
+      displayName: 'Cake Provision'
       condition: eq(variables['provisioning'], 'false')
   
     - task: xamops.azdevex.provisionator-task.provisionator@1
-      displayName: Provisionate Xamarin
+      displayName: 'Provisionator'
       condition: eq(variables['provisioning'], 'true')
       inputs:
         provisioning_script: ${{ parameters.provisionatorPath }}
@@ -51,6 +52,7 @@ jobs:
 
     - script: |
         dotnet new globaljson --sdk-version $(DOTNET_VERSION)
+      displayName: 'Add globaljson file'
       condition: ne(variables['DOTNET_VERSION'], '')
 
     - task: NuGetToolInstaller@0

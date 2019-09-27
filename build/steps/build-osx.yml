@@ -2,13 +2,14 @@ steps:
   - checkout: self
 
   - task: xamops.azdevex.provisionator-task.provisionator@1
-    displayName: Provisionate Xamarin
+    displayName: 'Provisionator'
     condition: eq(variables['provisioning'], 'true')
     inputs:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments)
       
   - task: Bash@3
+    displayName: 'Cake Provision'
     condition: eq(variables['provisioning'], 'false')
     inputs:
       targetType: 'filePath'
@@ -25,6 +26,7 @@ steps:
       export PATH="$PATH:/Users/vsts/.dotnet/tools"
       export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
       dotnet new globaljson --sdk-version $(DOTNET_VERSION)
+    displayName: 'Add globaljson file'
     condition: ne(variables['DOTNET_VERSION'], '')
       
   - task: NuGetToolInstaller@0
