@@ -50,15 +50,15 @@ string monoMajorVersion = "6.4.0";
 string monoPatchVersion = "198";
 string monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
 
-string monoSDK_windows = $"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
-string androidSDK_windows = "https://aka.ms/xamarin-android-commercial-d16-3-windows";
+string monoSDK_windows = ""; //$"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
+string androidSDK_windows = ""; //"https://aka.ms/xamarin-android-commercial-d16-3-windows";
 string iOSSDK_windows = "";
 string macSDK_windows = "";
 
-string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d16-3-macos";
-string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
-string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
-string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
+string androidSDK_macos = ""; //"https://aka.ms/xamarin-android-commercial-d16-3-macos";
+string monoSDK_macos = ""; //$"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
+string iOSSDK_macos = ""; //$"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
+string macSDK_macos = ""; //$"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
 
 string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
 string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
