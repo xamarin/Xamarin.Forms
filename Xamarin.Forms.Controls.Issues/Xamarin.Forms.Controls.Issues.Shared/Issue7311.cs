@@ -22,13 +22,21 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var picker = new Picker
 			{
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center,
 				ItemsSource = _items,
 				AutomationId = PickerId
 			};
 
-			Content = picker;
+			Content = new StackLayout()
+			{
+				Children =
+				{
+					new Label()
+					{
+						Text = "Open Picker. Click hardware back button to close picker. Click hardware button a second time and it should navigate back to gallery"
+					},
+					picker
+				}
+			};
 		}
 
 #if UITEST && __ANDROID__
