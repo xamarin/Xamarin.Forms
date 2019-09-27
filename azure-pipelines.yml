@@ -18,7 +18,7 @@ variables:
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: winVmImage
-  value: Hosted Windows 2019 with VS2019
+  value: Hosted VS2017
   
 resources:
   repositories:
