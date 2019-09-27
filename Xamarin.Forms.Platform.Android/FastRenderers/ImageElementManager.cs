@@ -61,10 +61,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
         }
 
         async static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var renderer = (sender as IVisualElementRenderer);
+		{
+			var renderer = (sender as IVisualElementRenderer);
+			var ImageElementManager = (IImageElement)renderer.Element;
+			var imageController = (IImageController)renderer.Element;
 
-            if (e.IsOneOf(Image.SourceProperty, Button.ImageSourceProperty))
+			if (e.IsOneOf(Image.SourceProperty, Button.ImageSourceProperty))
             {
                 await TryUpdateBitmap(renderer as IImageRendererController, (ImageView)renderer.View, (IImageElement)renderer.Element).ConfigureAwait(false);
 
@@ -74,8 +76,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
                 UpdateAspect(renderer as IImageRendererController, (ImageView)renderer.View, (IImageElement)renderer.Element);
             }
             else if (e.Is(Image.IsAnimationPlayingProperty))
-                await StartStopAnimation(renderer, imageController, ImageElementManager).ConfigureAwait(false);
-        }
+				await StartStopAnimation(renderer, imageController, ImageElementManager).ConfigureAwait(false);
+		}
 
 		async static Task StartStopAnimation(
 			IVisualElementRenderer renderer,
@@ -141,26 +143,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-        internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
-        {
-            if (image != null && e.Finished)
-                image.SetValueFromRenderer(Image.IsAnimationPlayingProperty, false);
-            try
-            {
-                await Control.UpdateBitmap(newImage, previous).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(nameof(ImageElementManager), "Error loading image: {0}", ex);
-            }
-            finally
-            {
-                if (newImage is IImageController imageController)
-                    imageController.SetIsLoading(false);
-            }
-        }
+		internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
+		{
+			if (image != null && e.Finished)
+				image.SetValueFromRenderer(Image.IsAnimationPlayingProperty, false);
+		}
 
-        static void UpdateAspect(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)
+		static void UpdateAspect(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)
         {
             if (newImage == null || rendererController.IsDisposed)
             {
