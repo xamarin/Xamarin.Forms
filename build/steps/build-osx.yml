@@ -29,6 +29,7 @@ steps:
       
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet'
+    condition: ne(variables['NUGET_VERSION'], '')
     inputs:
       versionSpec: $(NUGET_VERSION)
 

@@ -40,16 +40,6 @@ jobs:
           targetType: 'filePath'
           filePath: 'build.sh'
           arguments: --target provision
-
-      - task: NuGetToolInstaller@0
-        displayName: 'Use NuGet'
-        inputs:
-          versionSpec: $(NUGET_VERSION)
-
-      - task: NuGetCommand@2
-        displayName: 'NuGet restore ${{ parameters.slnPath }}'
-        inputs:
-          restoreSolution:  ${{ parameters.slnPath }}
           
       - task: DotNetCoreInstaller@0
         displayName: 'Install .net core $(DOTNET_VERSION)'
@@ -62,6 +52,17 @@ jobs:
           export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
           dotnet new globaljson --sdk-version $(DOTNET_VERSION)
         condition: ne(variables['DOTNET_VERSION'], '')
+
+      - task: NuGetToolInstaller@0
+        displayName: 'Use NuGet'
+        condition: ne(variables['NUGET_VERSION'], '')
+        inputs:
+          versionSpec: $(NUGET_VERSION)
+
+      - task: NuGetCommand@2
+        displayName: 'NuGet restore ${{ parameters.slnPath }}'
+        inputs:
+          restoreSolution:  ${{ parameters.slnPath }}
 
       - task: MSBuild@1
         displayName: 'Build ${{ parameters.buildTaskPath  }}'
