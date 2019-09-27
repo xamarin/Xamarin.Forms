@@ -65,6 +65,8 @@ string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
 string iosSDK = IsRunningOnWindows() ? "" : iOSSDK_macos;
 string macSDK  = IsRunningOnWindows() ? "" : macSDK_macos;
 
+string[] androidSdkManagerInstalls = new string[0]; //new [] { "platforms;android-29"};
+            
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
@@ -100,19 +102,17 @@ Task("provision-androidsdk")
     {
         Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 
-        var androidSdkSettings = new AndroidSdkManagerToolSettings { 
-            SdkRoot = ANDROID_HOME,
-            SkipVersionCheck = true
-        };
+        if(androidSdkManagerInstalls.Length > 0)
+        {
+            var androidSdkSettings = new AndroidSdkManagerToolSettings { 
+                SdkRoot = ANDROID_HOME,
+                SkipVersionCheck = true
+            };
 
-        try { AcceptLicenses (androidSdkSettings); } catch { }
+            try { AcceptLicenses (androidSdkSettings); } catch { }
 
-        AndroidSdkManagerInstall (new [] {
-                "platforms;android-29"
-            }, androidSdkSettings);
-
-        var platform = IsRunningOnWindows() ? "windows" : "macos";
-
+            AndroidSdkManagerInstall (androidSdkManagerInstalls, androidSdkSettings);
+        }
         if(!String.IsNullOrWhiteSpace(androidSDK))
             await Boots (androidSDK);
     });
