@@ -34,11 +34,11 @@ jobs:
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
 
-
-    - task: DotNetCoreInstaller@0
-      displayName: "Install .net core $(DOTNET_VERSION)"
-      inputs:
-        version: $(DOTNET_VERSION)
+    ${{ if ne(variables['DOTNET_VERSION'], '') }}:
+      - task: DotNetCoreInstaller@0
+        displayName: "Install .net core $(DOTNET_VERSION)"
+        inputs:
+          version: $(DOTNET_VERSION)
 
     - script: |
         dotnet new globaljson --sdk-version $(DOTNET_VERSION)

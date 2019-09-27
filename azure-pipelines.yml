@@ -13,8 +13,6 @@ variables:
   value: $[counter('$(Build.SourceBranchName)_counter', 1)]
 - name: NUGET_VERSION
   value: 5.0.2
-- name: DOTNET_VERSION
-  value: 2.2.402
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: winVmImage

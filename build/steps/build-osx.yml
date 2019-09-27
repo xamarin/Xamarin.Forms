@@ -15,10 +15,11 @@ steps:
       filePath: 'build.sh'
       arguments: --target provision
   
-  - task: DotNetCoreInstaller@0
-    displayName: 'Install .net core $(DOTNET_VERSION)'
-    inputs:
-      version: $(DOTNET_VERSION)
+  ${{ if ne(variables['DOTNET_VERSION'], '') }}:
+    - task: DotNetCoreInstaller@0
+      displayName: 'Install .net core $(DOTNET_VERSION)'
+      inputs:
+        version: $(DOTNET_VERSION)
 
   - script: |
       export PATH="$PATH:/Users/vsts/.dotnet/tools"
