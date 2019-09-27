@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
-	public class Issue7678Model
+	public class Issue7678DroidModel
 	{
 		public Color Color { get; set; }
 		public string Name { get; set; }
@@ -104,9 +104,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class Issue7678DroidViewModel : BindableObject
 	{
-		ObservableCollection<Issue7678Model> _items;
+		ObservableCollection<Issue7678DroidModel> _items;
   
-		public ObservableCollection<Issue7678Model> Items
+		public ObservableCollection<Issue7678DroidModel> Items
 		{
 			get { return _items; }
 			set
@@ -118,14 +118,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public async Task LoadItemsAsync()
 		{
-			Items = new ObservableCollection<Issue7678Model>();
+			Items = new ObservableCollection<Issue7678DroidModel>();
 
 			var random = new Random();
-			var items = new List<Issue7678Model>();
+			var items = new List<Issue7678DroidModel>();
 
 			for (int n = 0; n < 5; n++)
 			{
-				items.Add(new Issue7678Model
+				items.Add(new Issue7678DroidModel
 				{
 					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
 					Name = $"{n + 1}"
@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			await Task.Delay(500);
 
-			_items = new ObservableCollection<Issue7678Model>(items);
+			_items = new ObservableCollection<Issue7678DroidModel>(items);
 			OnPropertyChanged(nameof(Items));
 		}
 	}
