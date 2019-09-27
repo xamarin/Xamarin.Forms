@@ -51,16 +51,17 @@ jobs:
         inputs:
           restoreSolution:  ${{ parameters.slnPath }}
           
-      - ${{ if ne(variables['DOTNET_VERSION'], '') }}:
-        - task: DotNetCoreInstaller@0
-          displayName: 'Install .net core $(DOTNET_VERSION)'
-          inputs:
-            version: $(DOTNET_VERSION)
+      - task: DotNetCoreInstaller@0
+        displayName: 'Install .net core $(DOTNET_VERSION)'
+        condition: ne(variables['DOTNET_VERSION'], '')  
+        inputs:
+          version: $(DOTNET_VERSION)
 
       - script: |
           export PATH="$PATH:/Users/vsts/.dotnet/tools"
           export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
           dotnet new globaljson --sdk-version $(DOTNET_VERSION)
+        condition: ne(variables['DOTNET_VERSION'], '')
 
       - task: MSBuild@1
         displayName: 'Build ${{ parameters.buildTaskPath  }}'

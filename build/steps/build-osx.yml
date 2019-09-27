@@ -15,16 +15,17 @@ steps:
       filePath: 'build.sh'
       arguments: --target provision
   
-  - ${{ if ne(variables['DOTNET_VERSION'], '') }}:
-    - task: DotNetCoreInstaller@0
-      displayName: 'Install .net core $(DOTNET_VERSION)'
-      inputs:
-        version: $(DOTNET_VERSION)
+  - task: DotNetCoreInstaller@0
+    displayName: 'Install .net core $(DOTNET_VERSION)'
+    condition: ne(variables['DOTNET_VERSION'], '')
+    inputs:
+      version: $(DOTNET_VERSION)
 
   - script: |
       export PATH="$PATH:/Users/vsts/.dotnet/tools"
       export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
       dotnet new globaljson --sdk-version $(DOTNET_VERSION)
+    condition: ne(variables['DOTNET_VERSION'], '')
       
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet'
