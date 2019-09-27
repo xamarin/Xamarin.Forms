@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -33,14 +32,13 @@ namespace Xamarin.Forms
 
 		public List<Touch> Touches
 		{
-			get => _touches.Values.ToList();
+			get => new List<Touch>(_touches.Values);
 		}
 
 		protected TouchState PreviousState { get; set; }
 
 		public virtual void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
-			//override it and add your custom logic here.
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -72,8 +70,12 @@ namespace Xamarin.Forms
 					if (_touches.TryGetValue(touchPoint.TouchId, out Touch touch))
 					{
 						touch.TouchPoints.Add(touchPoint);
-						touch.Gesture = GestureDetector.DetectGesture(touch.TouchPoints
-							.Where(w => w.TouchState.IsTouching()).Select(s => s.Point).ToArray());
+						var points = new List<Point>();
+						foreach (var point in touch.TouchPoints)
+							if (point.TouchState.IsTouching())
+								points.Add(point.Point);
+
+						touch.Gesture = GestureDetector.DetectGesture(points.ToArray());
 					}
 					else
 					{
@@ -91,11 +93,11 @@ namespace Xamarin.Forms
 		{
 			const int GestureThreshold = 6;
 
-			internal static GestureType DetectGesture(Point[] points)
+			internal static GestureDirection DetectGesture(Point[] points)
 			{
 				if (points.Length == 0)
 				{
-					return GestureType.None;
+					return GestureDirection.None;
 				}
 
 				Point first = points[0];
@@ -137,7 +139,7 @@ namespace Xamarin.Forms
 					}
 				}
 
-				var gesture = GestureType.None;
+				var gesture = GestureDirection.None;
 
 				if (up || down)
 				{
@@ -147,20 +149,20 @@ namespace Xamarin.Forms
 					}
 					else
 					{
-						gesture = up ? GestureType.Up : GestureType.Down;
+						gesture = up ? GestureDirection.Up : GestureDirection.Down;
 					}
 				}
 				else if (left || right)
 				{
-					gesture = right ? GestureType.Right : GestureType.Left;
+					gesture = right ? GestureDirection.Right : GestureDirection.Left;
 				}
 
 				return gesture;
 			}
 
-			static GestureType ComplexGesture(Point[] points, bool up, bool down, bool right, bool left)
+			static GestureDirection ComplexGesture(Point[] points, bool up, bool down, bool right, bool left)
 			{
-				var gestureType = GestureType.None;
+				var gestureType = GestureDirection.None;
 				var pointsAboveDiagonal = 0;
 				var pointsBelowDiagonal = 0;
 				Point first = points[0];
@@ -183,22 +185,22 @@ namespace Xamarin.Forms
 				{
 					if (right)
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureType.RightUp : GestureType.UpRight;
+						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.RightUp : GestureDirection.UpRight;
 					}
 					else
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureType.LeftUp : GestureType.UpLeft;
+						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.LeftUp : GestureDirection.UpLeft;
 					}
 				}
 				else if (down)
 				{
 					if (right)
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureType.DownRight : GestureType.RightDown;
+						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.DownRight : GestureDirection.RightDown;
 					}
 					else
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureType.DownLeft : GestureType.LeftDown;
+						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.DownLeft : GestureDirection.LeftDown;
 					}
 				}
 

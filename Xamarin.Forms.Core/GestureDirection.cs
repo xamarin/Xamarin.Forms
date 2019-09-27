@@ -1,6 +1,6 @@
 namespace Xamarin.Forms
 {
-	public enum GestureType
+	public enum GestureDirection 
 	{
 		None,
 		Up,

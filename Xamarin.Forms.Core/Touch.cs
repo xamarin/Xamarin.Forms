@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 			Target = view;
 		}
 
-		public GestureType Gesture { get; set; }
+		public GestureDirection Gesture { get; set; }
 
 		public View Target { get; }
 

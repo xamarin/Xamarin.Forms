@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-	public class RotateGestureUpdatedEventArgs 
+	public class RotateGestureUpdatedEventArgs : EventArgs
 	{
 
 		public RotateGestureUpdatedEventArgs(double total, double delta, Point center)

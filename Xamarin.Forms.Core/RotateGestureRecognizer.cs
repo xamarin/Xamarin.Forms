@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Windows.Input;
+using Xamarin.Forms.Core.Internals;
 
 namespace Xamarin.Forms
 {

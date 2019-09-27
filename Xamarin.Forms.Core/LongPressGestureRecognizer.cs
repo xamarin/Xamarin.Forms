@@ -1,8 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Forms.Core.Internals;
 
 namespace Xamarin.Forms
 {
@@ -110,9 +110,20 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if (eventArgs.TouchState == TouchState.Move && !AllowMovement && Touches.All(a => a.Gesture == GestureType.None))
+			if (eventArgs.TouchState == TouchState.Move && !AllowMovement)
 			{
-				Cancel();
+				bool gestureIsNone = true;
+				foreach (var item in Touches)
+				{
+					if (item.Gesture != GestureDirection.None)
+					{
+						gestureIsNone = false;
+						break;
+					}
+				}
+
+				if(gestureIsNone)
+					Cancel();
 			}
 
 			if (eventArgs.TouchState == TouchState.Pressed)
@@ -138,10 +149,18 @@ namespace Xamarin.Forms
 			}
 
 			if (eventArgs.TouchState == TouchState.Released || eventArgs.TouchState == TouchState.Cancelled ||
-			    eventArgs.TouchState == TouchState.Failed ||
-			    eventArgs.TouchState == TouchState.Move && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView))
+				eventArgs.TouchState == TouchState.Failed ||
+				eventArgs.TouchState == TouchState.Move)
 			{
-				Cancel();
+				foreach (var item in eventArgs.TouchPoints)
+				{
+					if (!item.IsInOriginalView)
+					{
+						Cancel();
+						break;
+					}
+				}
+				
 			}
 		}
 
