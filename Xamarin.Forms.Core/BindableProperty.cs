@@ -324,7 +324,7 @@ namespace Xamarin.Forms
 			Type type = ReturnType;
 
 			// Dont support arbitrary IConvertible by limiting which types can use this
-			if (SimpleConvertTypes.TryGetValue(valueType, out Type[] convertableTo) && Array.IndexOf(convertableTo, type) != -1) {
+			if (SimpleConvertTypes.TryGetValue(valueType, out Type[]  convertibleTo) && Array.IndexOf( convertibleTo, type) != -1) {
 				value = Convert.ChangeType(value, type);
 				return true;
 			}
