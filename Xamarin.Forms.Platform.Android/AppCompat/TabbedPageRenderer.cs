@@ -856,8 +856,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				var items = CreateTabList();
 				var bottomSheetDialog = BottomNavigationViewUtils.CreateMoreBottomSheet(OnMoreItemSelected, Context, items, _bottomNavigationView.MaxItemCount);
-				bottomSheetDialog.Show();
 				bottomSheetDialog.DismissEvent += OnMoreSheetDismissed;
+				bottomSheetDialog.Show();
 			}
 			else
 			{
@@ -878,6 +878,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				using (var menuItem = menu.GetItem(index))
 					menuItem.SetChecked(true);
 			}
+
+			if(sender is BottomSheetDialog bsd)
+				bsd.DismissEvent -= OnMoreSheetDismissed;
 		}
 
 		void OnMoreItemSelected(int selectedIndex, BottomSheetDialog dialog)
@@ -886,6 +889,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Element.CurrentPage = Element.Children[selectedIndex];
 
 			dialog.Dismiss();
+			dialog.DismissEvent -= OnMoreSheetDismissed;
 			dialog.Dispose();
 		}
 
