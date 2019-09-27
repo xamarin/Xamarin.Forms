@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 7395, "Changing ItemTemplate does not work as expected", PlatformAffected.Android)]
 	public class Issue7395 : TestContentPage
 	{
-		Label _instructions;
 		CollectionView _collectionView;
 
 		public Issue7395()
@@ -28,9 +27,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			_instructions = new Label
+			var instructions = new Label
 			{
-				Text = "Press a button to apply an ItemTemplate."
+				Text = "Click Two Columns. If all cells render correctly with 2 columns, then click Three Columns. If all cells render correctly with 3 columns, then the test passes."
 			};
 
 			var button1 = new Button
@@ -67,7 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var stack = new StackLayout();
 
-			stack.Children.Add(_instructions);
+			stack.Children.Add(instructions);
 			stack.Children.Add(button1);
 			stack.Children.Add(button2);
 			stack.Children.Add(_collectionView);
@@ -78,13 +77,11 @@ namespace Xamarin.Forms.Controls.Issues
 		void OnButton1Clicked(object sender, EventArgs e)
 		{
 			_collectionView.ItemTemplate = CreateDataGridTemplate(2);
-			_instructions.Text = "If all cells are rendering correctly with 2 columns, everything is correct.";
 		}
 
 		void OnButton2Clicked(object sender, EventArgs e)
 		{
 			_collectionView.ItemTemplate = CreateDataGridTemplate(3);
-			_instructions.Text = "If all cells are rendering correctly with 3 columns, everything is correct.";
 		}
 
 		DataTemplate CreateDataGridTemplate(int columns)
