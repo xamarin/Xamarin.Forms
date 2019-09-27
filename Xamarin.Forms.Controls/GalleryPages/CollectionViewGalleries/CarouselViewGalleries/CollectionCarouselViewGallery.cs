@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		public ICommand ClearCommand => new Command(Clear);
 		public ICommand NewObservableCommand => new Command(NewObservable);
 		public ICommand NewItemsObservableCommand => new Command(NewItemsObservable);
-		public ICommand TheadCommand => new Command(async () => await Thead());
+		public ICommand TheadCommand => new Command(async () => await NewItemsThread());
 
 		void Clear()
 		{
@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			}
 		}
 
-		async Task Thead()
+		async Task NewItemsThread()
 		{
 			Clear();
 
