@@ -73,6 +73,34 @@ namespace Xamarin.Forms.Controls.Issues
 
 			++count;
 		}
+
+#if UITEST
+		[Test]
+		public void CollectionViewItemsLayoutUpdate()
+		{
+			RunningApp.WaitForElement("CollectionView5354");
+			RunningApp.WaitForElement("Button5354");
+			var colView = RunningApp.Query("CollectionView5354").Single();
+		
+			for(var i=0; i<3; i++)
+			{
+				RunningApp.WaitForNoElement("NoElement", timeout: TimeSpan.FromSeconds(3));
+				
+				AppResult[] lastCellResults = null;
+
+				RunningApp.QueryUntilPresent(() =>
+				{
+					 RunningApp.DragCoordinates(colView.Rect.CenterX, colView.Rect.Y + colView.Rect.Height - 50, colView.Rect.CenterX, colView.Rect.Y + 5);
+
+					 lastCellResults = RunningApp.Query("Image49");
+
+					 return lastCellResults;
+				}, 100, 1);
+
+				RunningApp.Tap("Button5354");
+			}
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
@@ -89,10 +117,11 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				collection.Add(new Model5354
 				{
-					Text = i.ToString(),
+					Text = "Image" + i,
 					Source = i % 2 == 0 ? 
 					"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Kamchatka_Brown_Bear_near_Dvuhyurtochnoe_on_2015-07-23.jpg/320px-Kamchatka_Brown_Bear_near_Dvuhyurtochnoe_on_2015-07-23.jpg" :
-					"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Elephant_%40_kabini.jpg/180px-Elephant_%40_kabini.jpg"
+					"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Elephant_%40_kabini.jpg/180px-Elephant_%40_kabini.jpg",
+					AutomationId = "Image" + i
 				});
 			}
 
@@ -106,6 +135,8 @@ namespace Xamarin.Forms.Controls.Issues
 		public string Text { get; set; }
 
 		public string Source { get; set; }
+
+		public string AutomationId { get; set; }
 
 		public Model5354()
 		{
