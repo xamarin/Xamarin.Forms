@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
+using System.IO;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -60,7 +61,8 @@ namespace Xamarin.Forms.Controls
 #if __ANDROID__
 		static IApp InitializeAndroidApp()
 		{
-			var app = ConfigureApp.Android.ApkFile(AppPaths.ApkPath).Debug().StartApp();
+			var fullApkPath = Path.Combine(TestContext.CurrentContext.TestDirectory, AppPaths.ApkPath);
+			var app = ConfigureApp.Android.ApkFile(fullApkPath).Debug().StartApp(UITest.Configuration.AppDataMode.DoNotClear);
 
 			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
 			{
@@ -701,14 +703,16 @@ namespace Xamarin.Forms.Controls
 			where TShellItem : ShellItem
 			where TShellSection : ShellSection
 		{
+			contentPage = contentPage ?? new ContentPage();
 			TShellItem item = Activator.CreateInstance<TShellItem>();
+			item.Title = contentPage.Title;
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
 			Items.Add(item);
 			item.Items.Add(shellSection);
 
 			shellSection.Items.Add(new ShellContent()
 			{
-				Content = contentPage ?? new ContentPage()
+				Content = contentPage
 			});
 
 			return item;
@@ -781,7 +785,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[SetUpFixture]
 	public class IssuesSetup
 	{
-		[SetUp]
+		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
 			AppSetup.RunningApp = AppSetup.Setup(null);

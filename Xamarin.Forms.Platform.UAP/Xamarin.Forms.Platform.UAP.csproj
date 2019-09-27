@@ -11,7 +11,7 @@
     <AssemblyName>Xamarin.Forms.Platform.UAP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,8 +40,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AccessibilityExtensions.cs" />
+    <Compile Include="CollectionView\CarouselViewRenderer.cs" />
+    <Compile Include="CollectionView\FormsListView.cs" />
+    <Compile Include="CollectionView\IEmptyView.cs" />
     <Compile Include="CollectionView\ItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\ScrollHelpers.cs" />
     <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\StructuredItemsViewRenderer.cs" />
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="DispatcherProvider.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
@@ -88,6 +93,13 @@
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PropertyChangedEventArgsExtensions.cs" />
+    <Compile Include="RefreshViewRenderer.cs" />
+    <Compile Include="Shell\ShellHeaderRenderer.cs" />
+    <Compile Include="Shell\ShellItemRenderer.cs" />
+    <Compile Include="Shell\ShellFlyoutTemplateSelector.cs" />
+    <Compile Include="Shell\ShellRenderer.cs" />
+    <Compile Include="Shell\ShellSectionRenderer.cs" />
+    <Compile Include="Shell\ShellToolbarItemRenderer.cs" />
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
@@ -236,6 +248,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Shell\ShellStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="SliderStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -268,6 +284,9 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.6</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.UI.Xaml">
+      <Version>2.1.190606001</Version>
+    </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.1</Version>
     </PackageReference>
@@ -276,7 +295,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
+    <SDKReference Include="WindowsMobile, Version=10.0.18362.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>

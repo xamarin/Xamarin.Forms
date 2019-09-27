@@ -1,6 +1,7 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Xamarin.Forms.Internals;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -67,6 +68,36 @@ namespace Xamarin.Forms.Platform.UWP
 			set => SetValue(FormsContainerProperty, value);
 		}
 
+		public static readonly DependencyProperty ItemHeightProperty = DependencyProperty.Register(
+			nameof(ItemHeight), typeof(double), typeof(ItemContentControl),
+			new PropertyMetadata(default(double)));
+
+		public double ItemHeight
+		{
+			get => (double)GetValue(ItemHeightProperty);
+			set => SetValue(ItemHeightProperty, value);
+		}
+
+		public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register(
+			nameof(ItemWidth), typeof(double), typeof(ItemContentControl),
+			new PropertyMetadata(default(double)));
+
+		public double ItemWidth
+		{
+			get => (double)GetValue(ItemWidthProperty);
+			set => SetValue(ItemWidthProperty, value);
+		}
+
+		public static readonly DependencyProperty ItemSpacingProperty = DependencyProperty.Register(
+			nameof(ItemSpacing), typeof(Thickness), typeof(ItemContentControl),
+			new PropertyMetadata(default(Thickness)));
+
+		public Thickness ItemSpacing
+		{
+			get => (Thickness)GetValue(ItemSpacingProperty);
+			set => SetValue(ItemSpacingProperty, value);
+		}
+
 		protected override void OnContentChanged(object oldContent, object newContent)
 		{
 			base.OnContentChanged(oldContent, newContent);
@@ -88,6 +119,13 @@ namespace Xamarin.Forms.Platform.UWP
 			var formsTemplate = FormsDataTemplate;
 			var container = FormsContainer;
 
+			var itemsView = container as ItemsView;
+
+			if (itemsView != null && _renderer?.Element != null)
+			{
+				itemsView.RemoveLogicalChild(_renderer.Element);
+			}
+
 			if (dataContext == null || formsTemplate == null || container == null)
 			{
 				return;
@@ -100,7 +138,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Content = _renderer.ContainerElement;
 
-			// TODO ezhart Add View as a logical child of the ItemsView
+			itemsView?.AddLogicalChild(view);
 			
 			BindableObject.SetInheritedBindingContext(_renderer.Element, dataContext);
 		}
@@ -118,17 +156,31 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			var formsElement = _renderer.Element;
+			if (ItemHeight != default || ItemWidth != default)
+			{
+				formsElement.Layout(new Rectangle(0, 0, ItemWidth, ItemHeight));
 
-			Size request = formsElement.Measure(availableSize.Width, availableSize.Height,
+				var wsize = new Windows.Foundation.Size(ItemWidth, ItemHeight);
+
+				(Content as FrameworkElement).Margin = new WThickness(ItemSpacing.Left, ItemSpacing.Top, ItemSpacing.Right, ItemSpacing.Bottom);
+
+				(Content as FrameworkElement).Measure(wsize);
+
+				return base.MeasureOverride(wsize);
+			}
+			else
+			{
+				Size request = formsElement.Measure(availableSize.Width, availableSize.Height,
 				MeasureFlags.IncludeMargins).Request;
 
-			formsElement.Layout(new Rectangle(0, 0, request.Width, request.Height));
+				formsElement.Layout(new Rectangle(0, 0, request.Width, request.Height));
 
-			var wsize = new Windows.Foundation.Size(request.Width, request.Height);
+				var wsize = new Windows.Foundation.Size(request.Width, request.Height);
 
-			(Content as FrameworkElement).Measure(wsize);
+				(Content as FrameworkElement).Measure(wsize);
 
-			return base.MeasureOverride(wsize);
+				return base.MeasureOverride(wsize);
+			}
 		}
 	}
 }
