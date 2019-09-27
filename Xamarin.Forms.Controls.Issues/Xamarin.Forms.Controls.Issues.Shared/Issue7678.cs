@@ -28,7 +28,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			var layout = new Grid();
+			var layout = new StackLayout();
+
+			var instructions = new Label
+			{
+				Margin = new Thickness(6),
+				Text = "The CarouselView below must show items. If you do not see any item, this test has failed."
+			};
 
 			var itemsLayout =
 				new LinearItemsLayout(ItemsLayoutOrientation.Horizontal)
@@ -45,6 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			carouselView.SetBinding(ItemsView.ItemsSourceProperty, "Items");
 
+			layout.Children.Add(instructions);
 			layout.Children.Add(carouselView);
 
 			Content = layout;
