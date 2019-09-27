@@ -14,7 +14,7 @@ variables:
 - name: NUGET_VERSION
   value: 5.0.2
 - name: DOTNET_VERSION
-  value: 2.1.801
+  value: 2.2.402
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: winVmImage
