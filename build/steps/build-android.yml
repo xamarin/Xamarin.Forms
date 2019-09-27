@@ -51,7 +51,7 @@ jobs:
         inputs:
           restoreSolution:  ${{ parameters.slnPath }}
           
-      ${{ if ne(variables['DOTNET_VERSION'], '') }}:
+      - ${{ if ne(variables['DOTNET_VERSION'], '') }}:
         - task: DotNetCoreInstaller@0
           displayName: 'Install .net core $(DOTNET_VERSION)'
           inputs:
