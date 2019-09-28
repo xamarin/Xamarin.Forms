@@ -128,11 +128,11 @@ Task("provision-monosdk")
             {
                 string monoPath = $"{System.IO.Path.GetTempPath()}mono.msi";
 
-                if(!String.IsNullOrWhiteSpace(EnvironmentVariable("winVmImage")))
-                    monoPath = $"mono.msi";
+                if(!String.IsNullOrWhiteSpace(EnvironmentVariable("Build.Repository.LocalPath")))
+                    monoPath = EnvironmentVariable("Build.Repository.LocalPath") + "\\" + "mono.msi";
 
-                Information("Mono Path", monoPath);
-                Information("Mono Version", monoSDK);
+                Information("Mono Path: {0}", monoPath);
+                Information("Mono Version: {0}", monoSDK);
                 DownloadFile(monoSDK, monoPath);
 
                 StartProcess("msiexec", new ProcessSettings {
