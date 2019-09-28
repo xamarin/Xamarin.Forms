@@ -124,11 +124,11 @@ Task("provision-monosdk")
         {
             if(!String.IsNullOrWhiteSpace(monoSDK))
             {
-                string monoPath = $"{System.IO.Path.GetTempPath()}/mono.msi";
+                string monoPath = $"{System.IO.Path.GetTempPath()}mono.msi";
 
                 if(!String.IsNullOrWhiteSpace(EnvironmentVariable("winVmImage")))
-                    monoPath = $"{System.IO.Path.GetTempPath()}/mono.msi";
-                    
+                    monoPath = $"mono.msi";
+
                 DownloadFile(monoSDK, monoPath);
 
                 StartProcess("msiexec", new ProcessSettings {
