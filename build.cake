@@ -55,10 +55,10 @@ string androidSDK_windows = "https://aka.ms/xamarin-android-commercial-d15-9-win
 string iOSSDK_windows = "https://download.visualstudio.microsoft.com/download/pr/71f33151-5db4-49cc-ac70-ba835a9f81e2/d256c6c50cd80ec0207783c5c7a4bc2f/xamarin.visualstudio.apple.sdk.4.12.3.83.vsix";
 string macSDK_windows = "";
 
-string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d15-9-macos";
+string androidSDK_macos = "";//"https://aka.ms/xamarin-android-commercial-d15-9-macos";
 string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
-string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.ios-12.4.0.64.pkg";
-string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.mac-5.4.0.64.pkg";
+string iOSSDK_macos = "";//"$"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.ios-12.4.0.64.pkg";
+string macSDK_macos = "";//"$"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.mac-5.4.0.64.pkg";
 
 string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
 string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
@@ -125,6 +125,10 @@ Task("provision-monosdk")
             if(!String.IsNullOrWhiteSpace(monoSDK))
             {
                 string monoPath = $"{System.IO.Path.GetTempPath()}/mono.msi";
+
+                if(!String.IsNullOrWhiteSpace(EnvironmentVariable("winVmImage")))
+                    monoPath = $"{System.IO.Path.GetTempPath()}/mono.msi";
+                    
                 DownloadFile(monoSDK, monoPath);
 
                 StartProcess("msiexec", new ProcessSettings {
