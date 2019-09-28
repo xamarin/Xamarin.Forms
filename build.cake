@@ -57,6 +57,8 @@ string macSDK_windows = "";
 
 monoMajorVersion = "6.4.0";
 monoPatchVersion = "198";
+monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
+
 string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d16-3-macos";
 string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
 string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
