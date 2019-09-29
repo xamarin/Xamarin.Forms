@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_carouselView = itemsView;
 			_layout = layout;
-			Delegator.CarouselViewController = this;
+			
 			CollectionView.AllowsSelection = false;
 			CollectionView.AllowsMultipleSelection = false;
 		}
@@ -44,6 +44,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_viewInitialized = true;
 			}
+		}
+
+		public override void ViewDidLoad()
+		{
+			base.ViewDidLoad();
+
+			Delegator.CarouselViewController = this;
 		}
 
 		protected override bool IsHorizontal => (_carouselView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
