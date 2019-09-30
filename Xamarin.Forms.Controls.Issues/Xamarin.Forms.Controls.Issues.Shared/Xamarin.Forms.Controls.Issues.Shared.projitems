@@ -1407,7 +1407,6 @@
       <DependentUpon>Issue7512.xaml</DependentUpon>
     </Compile>
     <Compile Update="$(MSBuildThisFileDirectory)Issue7593.xaml.cs">
-    <Compile Update="$(MSBuildThisFileDirectory)Issue7593.xaml.cs">
       <DependentUpon>Issue7593.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
