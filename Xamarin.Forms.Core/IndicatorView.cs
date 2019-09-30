@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
+using Xamarin.Flex;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -198,9 +198,9 @@ namespace Xamarin.Forms
 
 		void RemoveRedundantIndicatorItems()
 		{
-			foreach (var item in Items.Where((v, i) => i >= Count).ToArray())
+			while(Items.Count > Count)
 			{
-				Items.Remove(item);
+				Items.RemoveAt(0);
 			}
 		}
 
