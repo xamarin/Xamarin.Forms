@@ -3,27 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Xamarin.Forms.Platform;
-using static Xamarin.Forms.IndicatorView;
 
 namespace Xamarin.Forms
 {
-	public static class IndicatorViewExtensions
-	{
-		public static void SetItemsSourceBy(this IndicatorView indicatorView, CarouselView carouselView)
-		{
-			indicatorView.SetBinding(PositionProperty, new Binding
-			{
-				Path = nameof(CarouselView.Position),
-				Source = carouselView
-			});
-			indicatorView.SetBinding(ItemsSourceProperty, new Binding
-			{
-				Path = nameof(ItemsView.ItemsSource),
-				Source = carouselView
-			});
-		}
-	}
-
 	[ContentProperty(nameof(IndicatorLayout))]
 	[RenderWith(typeof(_IndicatorViewRenderer))]
 	public class IndicatorView : TemplatedView
