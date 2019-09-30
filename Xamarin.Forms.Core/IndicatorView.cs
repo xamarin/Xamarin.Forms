@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Xamarin.Flex;
 using Xamarin.Forms.Platform;
 
@@ -40,7 +42,10 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IndicatorLayoutProperty = BindableProperty.Create(nameof(IndicatorLayout), typeof(Layout<View>), typeof(IndicatorView), null, propertyChanged: TemplateUtilities.OnContentChanged);
 
 		public IndicatorView()
-			=> IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(IndicatorView), ExperimentalFlags.IndicatorViewExperimental);
+			IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+		}
 
 		IList<View> Items => IndicatorLayout.Children;
 

@@ -46,6 +46,15 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override UIPageControl CreateNativeControl()
 			=> new UIPageControl();
 
+		void UpdateControl()
+		{
+			var control = Element.IndicatorTemplate == null
+				? CreateNativeControl()
+				: (UIView)Element.IndicatorLayout.GetRenderer();
+
+			SetNativeControl(CreateNativeControl());
+		}
+
 		void UpdateCurrentPage()
 			=> Control.CurrentPage = Element.Position;
 
