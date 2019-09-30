@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					SetNativeControl(CreateNativeControl());
+					_defaultPagesIndicatorTintColor = Control.PageIndicatorTintColor;
+					_defaultCurrentPagesIndicatorTintColor = Control.CurrentPageIndicatorTintColor;
 				}
 				UpdatePagesIndicatorTintColor();
 				UpdateCurrentPagesIndicatorTintColor();
@@ -55,14 +57,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdatePagesIndicatorTintColor()
 		{
-			_defaultPagesIndicatorTintColor = _defaultPagesIndicatorTintColor ?? Control.PageIndicatorTintColor;
 			var color = Element.IndicatorColor;
 			Control.PageIndicatorTintColor = color.IsDefault ? _defaultPagesIndicatorTintColor : color.ToUIColor();
 		}
 
 		void UpdateCurrentPagesIndicatorTintColor()
 		{
-			_defaultCurrentPagesIndicatorTintColor = _defaultCurrentPagesIndicatorTintColor ?? Control.CurrentPageIndicatorTintColor;
 			var color = Element.IndicatorColor;
 			Control.CurrentPageIndicatorTintColor = color.IsDefault ? _defaultCurrentPagesIndicatorTintColor : color.ToUIColor();
 		}
