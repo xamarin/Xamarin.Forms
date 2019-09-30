@@ -189,9 +189,9 @@ namespace Xamarin.Forms
 					HeightRequest = size,
 					CornerRadius = (float)size / 2
 				};
-				var itemTapGesture = new TapGestureRecognizer();
-				itemTapGesture.Tapped += (tapSender, tapArgs) => Position = Items.IndexOf(tapSender as View);
-				indicator.GestureRecognizers.Add(itemTapGesture);
+				var tapGestureRecognizer = new TapGestureRecognizer();
+				tapGestureRecognizer.Tapped += (sender, args) => Position = Items.IndexOf(sender as View);
+				indicator.GestureRecognizers.Add(tapGestureRecognizer);
 				Items.Add(indicator);
 			}
 		}
