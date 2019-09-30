@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.Tap(q => q.Marked("Change ItemTemplate"));
 			RunningApp.WaitForElement(q => q.Marked("Item 1"));
-			RunningApp.Screenshot("Updated ItemTemplare");
+			RunningApp.Screenshot("Updated ItemTemplate");
 		}
 #endif
 	}
