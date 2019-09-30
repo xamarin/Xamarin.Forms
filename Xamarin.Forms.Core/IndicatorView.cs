@@ -144,13 +144,18 @@ namespace Xamarin.Forms
 
 		void ResetIndicatorStylesNonBatch()
 		{
-			foreach (var child in Items)
+			for (int index = 0; index < Items.Count; index++)
 			{
-				ApplyColor(child as View);
+				Items[index].BackgroundColor = index == Position
+					? GetColorOrDefault(SelectedIndicatorColor, Color.Gray)
+					: GetColorOrDefault(IndicatorColor, Color.Silver);
 			}
 
 			IndicatorLayout.IsVisible = Count > 1 || !HidesForSingleIndicator;
 		}
+
+		Color GetColorOrDefault(Color color, Color defaultColor)
+			=> color.IsDefault ? defaultColor : color;
 
 		void ResetItemsSource(IEnumerable oldItemsSource)
 		{
@@ -198,26 +203,6 @@ namespace Xamarin.Forms
 				Items.Remove(item);
 			}
 		}
-
-		void ApplyColor(View view)
-		{
-			var index = Items.IndexOf(view);
-			if (index == Position)
-			{
-				ApplySelectedColor(view);
-				return;
-			}
-			ApplyRegularColor(view);
-		}
-
-		void ApplySelectedColor(View indicatorItemView)
-			=> indicatorItemView.BackgroundColor = GetColorOrDefault(SelectedIndicatorColor, Color.Gray);
-
-		void ApplyRegularColor(View indicatorItemView)
-			=> indicatorItemView.BackgroundColor = GetColorOrDefault(IndicatorColor, Color.Silver);
-
-		Color GetColorOrDefault(Color color, Color defaultColor)
-			=> color.IsDefault ? defaultColor : color;
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
