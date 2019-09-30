@@ -175,7 +175,7 @@ namespace Xamarin.Forms
 		void AddExtraIndicatorItems()
 		{
 			var oldCount = Items.Count;
-			for (var i = 0; i < Count - oldCount && i < MaximumVisibleCount - oldCount; ++i)
+			for (var i = 0; i < Count - oldCount && i < MaximumVisibleCount - oldCount; i++)
 			{
 				var size = IndicatorSize > 0 ? IndicatorSize : 10;
 				var indicator = IndicatorTemplate?.CreateContent() as View ?? new Frame
