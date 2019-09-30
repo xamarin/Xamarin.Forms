@@ -159,14 +159,14 @@ namespace Xamarin.Forms
 
 		void ResetItemsSource(IEnumerable oldItemsSource)
 		{
-			if (oldItemsSource is INotifyCollectionChanged oldObservableCollection)
+			if (oldItemsSource is INotifyCollectionChanged oldCollection)
 			{
-				oldObservableCollection.CollectionChanged -= OnCollectionChanged;
+				oldCollection.CollectionChanged -= OnCollectionChanged;
 			}
 
-			if (ItemsSource is INotifyCollectionChanged observableCollection)
+			if (ItemsSource is INotifyCollectionChanged collection)
 			{
-				observableCollection.CollectionChanged += OnCollectionChanged;
+				collection.CollectionChanged += OnCollectionChanged;
 			}
 
 			OnCollectionChanged(ItemsSource, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
