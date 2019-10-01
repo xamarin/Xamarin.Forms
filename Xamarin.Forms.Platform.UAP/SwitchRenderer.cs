@@ -143,7 +143,9 @@ namespace Xamarin.Forms.Platform.UWP
 						 Storyboard.GetTargetProperty(t) == "Fill")
 				.KeyFrames.First();
 
-			if (_originalThumbOnBrush == nul (frame.Value is Windows.UI.Color color)
+			if (_originalThumbOnBrush == null)
+			{
+				if (frame.Value is Windows.UI.Color color)
 					_originalOnColorBrush = new SolidColorBrush(color);
 
 				if (frame.Value is Brush brush)
