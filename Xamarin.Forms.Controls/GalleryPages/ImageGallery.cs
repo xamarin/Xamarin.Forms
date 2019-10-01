@@ -19,6 +19,8 @@ namespace Xamarin.Forms.Controls
 			var rotate = new Image { Source = ImageSource.FromFile("cover1.jpg") };
 			var transparent = new Image { Source = ImageSource.FromFile("cover1.jpg") };
 			var embedded = new Image { Source = ImageSource.FromResource("Xamarin.Forms.Controls.GalleryPages.crimson.jpg", typeof(ImageGallery).GetTypeInfo().Assembly) };
+			var gif = new Image { IsAnimationAutoPlay = false, Source = Device.RuntimePlatform == Device.UWP ? "Assets/GifOne.gif" : "GifOne.gif" };
+			var autoPlayGif = new Image { IsAnimationAutoPlay = true, Source = Device.RuntimePlatform == Device.UWP ? "Assets/GifOne.gif" : "GifOne.gif" };
 
 			// let the stack shrink the images
 			normal.MinimumHeightRequest = normal.MinimumHeightRequest = 10;
@@ -55,6 +57,10 @@ namespace Xamarin.Forms.Controls
 									rotate,
 									new Label(){ Text = "Embedded"},
 									embedded,
+									new Label(){ Text = "Gif"},
+									embedded,
+									new Label(){ Text = "Autoplay Gif"},
+									autoPlayGif,
 									new Label(){ Text = "Horizontal"},
 									new StackLayout
 									{
