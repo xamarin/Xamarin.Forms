@@ -212,7 +212,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 			UpdateBackground();
-			UpdateFlowDirection();
 			UpdateMasterBehavior(View.Bounds.Size);
 			_tracker = new VisualElementTracker(this);
 			_events = new EventTracker(this);
@@ -340,8 +339,6 @@ namespace Xamarin.Forms.Platform.iOS
 				ToggleMaster();
 			else if (e.PropertyName == Xamarin.Forms.MasterDetailPage.IsGestureEnabledProperty.PropertyName)
 				base.PresentsWithGesture = this.MasterDetailPage.IsGestureEnabled;
-			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateFlowDirection();
 			else if (e.PropertyName == MasterDetailPage.MasterBehaviorProperty.PropertyName)
 				UpdateMasterBehavior(View.Bounds.Size);
 
