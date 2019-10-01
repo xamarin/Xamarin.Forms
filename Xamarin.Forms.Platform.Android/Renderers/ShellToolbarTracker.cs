@@ -458,21 +458,22 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				foreach (var item in page.ToolbarItems)
 				{
-					var title = new Java.Lang.String(item.Text);
-					var menuitem = menu.Add(title);
-
-					UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
-
-					menuitem.SetTitleOrContentDescription(item);
-					menuitem.SetEnabled(item.IsEnabled);
-					menuitem.SetShowAsAction(ShowAsAction.Always);
-					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
-
-					if (TintColor != Color.Default)
+					using (var title = new Java.Lang.String(item.Text))
+					using (var menuitem = menu.Add(title))
 					{
-						var view = toolbar.FindViewById(menuitem.ItemId);
-						if (view is ATextView textView)
-							textView.SetTextColor(TintColor.ToAndroid());
+						UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
+
+						menuitem.SetTitleOrContentDescription(item);
+						menuitem.SetEnabled(item.IsEnabled);
+						menuitem.SetShowAsAction(ShowAsAction.Always);
+						menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
+
+						if (TintColor != Color.Default)
+						{
+							var view = toolbar.FindViewById(menuitem.ItemId);
+							if (view is ATextView textView)
+								textView.SetTextColor(TintColor.ToAndroid());
+						}
 					}
 				}
 

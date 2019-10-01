@@ -363,6 +363,7 @@ namespace Xamarin.Forms.Platform.Android
 				(_flyoutRenderer as IDisposable)?.Dispose();
 
 				_currentRenderer.Dispose();
+				_currentRenderer = null;
 
 				Element = null;
 			}

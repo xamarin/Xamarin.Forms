@@ -265,6 +265,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_bottomSheetDialog.DismissEvent -= OnMoreSheetDismissed;
 				_bottomSheetDialog.Dispose();
+				_bottomSheetDialog = null;
 			}
 		}
 
