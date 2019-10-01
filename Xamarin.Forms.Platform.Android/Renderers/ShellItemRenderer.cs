@@ -117,7 +117,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			_disposed = true;
-			if(disposing)
+			if (disposing)
 				Destroy();
 
 			base.Dispose(disposing);

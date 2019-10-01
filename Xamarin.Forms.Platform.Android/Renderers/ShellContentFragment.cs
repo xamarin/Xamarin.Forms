@@ -167,7 +167,6 @@ namespace Xamarin.Forms.Platform.Android
 			_toolbar = null;
 			_root = null;
 			_renderer = null;
-			_page = null;
 			_shellContent = null;
 		}
 
@@ -177,8 +176,11 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			_disposed = true;
-			if(disposing)
+			if (disposing)
+			{
 				Destroy();
+				_page = null;
+			}
 
 			base.Dispose(disposing);
 		}

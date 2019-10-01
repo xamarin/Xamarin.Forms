@@ -101,8 +101,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void OnDestroy()
 		{
-			Destroy();
 			base.OnDestroy();
+			Destroy();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_disposed = true;
 
-			if(disposing)
+			if (disposing)
 				Destroy();
 
 			base.Dispose(disposing);
