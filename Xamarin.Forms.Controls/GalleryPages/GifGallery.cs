@@ -39,7 +39,11 @@ namespace Xamarin.Forms.Controls.GalleryPages
 				Text = "IsAnimationAutoPlay:"
 			};
 
-			var isAnimationAutoPlaySwitch = new Switch();
+			var isAnimationAutoPlaySwitch = new Switch
+			{
+				HorizontalOptions = LayoutOptions.Start,
+				VerticalOptions = LayoutOptions.Center
+			};
 
 			var IsAnimationPlayingLabel = new Label
 			{
@@ -50,6 +54,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 			var isAnimationPlayingSwitch = new Switch
 			{
+				HorizontalOptions = LayoutOptions.Start,
 				VerticalOptions = LayoutOptions.Center
 			};
 
