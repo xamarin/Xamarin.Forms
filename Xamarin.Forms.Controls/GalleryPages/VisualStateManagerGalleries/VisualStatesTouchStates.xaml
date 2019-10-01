@@ -4,7 +4,8 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.VisualStatesTouchStates">
+             x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.VisualStatesTouchStates"
+             Title="VisualStateGroups TouchGestureRecognizer and TouchStates">
     <ContentPage.Content>
         <Grid Margin="20">
             <BoxView BackgroundColor="LightGreen" Margin="20">
@@ -26,6 +27,7 @@
                         </VisualState>
                         <VisualState x:Name="Move">
                             <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.7" />
                                 <Setter Property="BackgroundColor" Value="LightSeaGreen" />
                             </VisualState.Setters>
                         </VisualState>
