@@ -234,7 +234,6 @@ namespace Xamarin.Forms
 			return itemSource[index];
 		}
 
-
 		static int GetPositionForItem(CarouselView carouselView, object item)
 		{
 			var itemSource = carouselView?.ItemsSource as IList;
