@@ -126,7 +126,7 @@ namespace Xamarin.Forms
 					Cancel();
 			}
 
-			if (eventArgs.TouchState == TouchState.Pressed)
+			if (eventArgs.TouchState == TouchState.Press)
 			{
 				_cts?.Cancel();
 				_cts = new CancellationTokenSource();
@@ -148,8 +148,8 @@ namespace Xamarin.Forms
 				});
 			}
 
-			if (eventArgs.TouchState == TouchState.Released || eventArgs.TouchState == TouchState.Cancelled ||
-				eventArgs.TouchState == TouchState.Failed ||
+			if (eventArgs.TouchState == TouchState.Release || eventArgs.TouchState == TouchState.Cancel ||
+				eventArgs.TouchState == TouchState.Fail ||
 				eventArgs.TouchState == TouchState.Move)
 			{
 				foreach (var item in eventArgs.TouchPoints)

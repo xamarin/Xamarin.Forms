@@ -19,14 +19,15 @@ namespace Xamarin.Forms
 
 		public class TouchStates
 		{
-			public const string Pressed = "Pressed";
-			public const string Released = "Released";
+			public const string Default = "Default";
+			public const string Press = "Press";
+			public const string Release = "Release";
 			public const string Move = "Move";
-			public const string Cancelled = "Cancelled";
-			public const string Failed = "Failed";
-			public const string Changed = "Changed";
-			public const string Entered = "Entered";
-			public const string Exited = "Exited";
+			public const string Cancel = "Cancel";
+			public const string Fail = "Fail";
+			public const string Change = "Change";
+			public const string Enter = "Enter";
+			public const string Exit = "Exit";
 			public const string Hover = "Hover";
 		}
 

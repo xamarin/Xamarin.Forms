@@ -16,12 +16,14 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackLayout Orientation="Horizontal" Grid.Row="0">
-            <Button Text="BoxView" Clicked="BoxViewTest_Click" HeightRequest="50"/>
-            <Button Text="ListView" Clicked="ListViewTest_Click" HeightRequest="50"/>
-            <Button Text="ScrollView" Clicked="ScrollViewTest_Click" HeightRequest="50"/>
-            <Button Text="CollectionView" Clicked="CollectionViewTest_Click" HeightRequest="50"/>
-        </StackLayout>
+        <ScrollView Grid.Row="0" Orientation="Horizontal">
+            <StackLayout Orientation="Horizontal" >
+                <Button Text="BoxView" Clicked="BoxViewTest_Click" HeightRequest="50"/>
+                <Button Text="ListView" Clicked="ListViewTest_Click" HeightRequest="50"/>
+                <Button Text="ScrollView" Clicked="ScrollViewTest_Click" HeightRequest="50"/>
+                <Button Text="CollectionView" Clicked="CollectionViewTest_Click" HeightRequest="50"/>
+            </StackLayout>
+        </ScrollView>
 
         <Grid Grid.Row="1" x:Name="BoxViewGrid">
             <BoxView BackgroundColor="LightGray" Margin="20">

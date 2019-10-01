@@ -78,23 +78,23 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Pointer2Down:
 				case MotionEventActions.Pointer3Down:
 				case MotionEventActions.ButtonPress:
-					return TouchState.Pressed;
+					return TouchState.Press;
 
 				case MotionEventActions.ButtonRelease:
 				case MotionEventActions.Up:
 				case MotionEventActions.Pointer1Up:
 				case MotionEventActions.Pointer2Up:
 				case MotionEventActions.Pointer3Up:
-					return TouchState.Released;
+					return TouchState.Release;
 
 				case MotionEventActions.Cancel:
-					return TouchState.Cancelled;
+					return TouchState.Cancel;
 
 				case MotionEventActions.HoverEnter:
-					return TouchState.Entered;
+					return TouchState.Enter;
 
 				case MotionEventActions.HoverExit:
-					return TouchState.Exited;
+					return TouchState.Exit;
 
 				case MotionEventActions.HoverMove:
 					return TouchState.Hover;
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platform.Android
 					return TouchState.Move;
 
 				case MotionEventActions.Outside:
-					return TouchState.Released;
+					return TouchState.Release;
 
 				default:
 					return TouchState.Default;

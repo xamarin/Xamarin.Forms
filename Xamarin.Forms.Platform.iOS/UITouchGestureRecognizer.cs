@@ -59,7 +59,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return new TouchEventArgs((int)touches.Count, touchState, GetTouchPoints(touches, touchState));
 		}
 
-
 		TouchState GetTouchState(UIGestureRecognizerState state)
 		{
 			switch (state)
@@ -67,15 +66,15 @@ namespace Xamarin.Forms.Platform.iOS
 				case UIGestureRecognizerState.Possible:
 					return TouchState.Default;
 				case UIGestureRecognizerState.Began:
-					return TouchState.Pressed;
+					return TouchState.Press;
 				case UIGestureRecognizerState.Changed:
 					return TouchState.Move;
 				case UIGestureRecognizerState.Ended:
-					return TouchState.Released;
+					return TouchState.Release;
 				case UIGestureRecognizerState.Cancelled:
-					return TouchState.Cancelled;
+					return TouchState.Cancel;
 				case UIGestureRecognizerState.Failed:
-					return TouchState.Failed;
+					return TouchState.Fail;
 				default:
 					return TouchState.Default;
 			}
@@ -93,10 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 				points.Add(new TouchPoint(touches.IndexOf(touch), point, touchState, isInView));
 			}
 
-
-
 			return points.AsReadOnly();
 		}
-
 	}
 }

@@ -4,13 +4,13 @@
 	{
 		public static bool IsFinishedTouch(this TouchState state)
 		{
-			return state == TouchState.Released || state == TouchState.Cancelled || state == TouchState.Exited || state == TouchState.Failed;
+			return state == TouchState.Release || state == TouchState.Cancel || state == TouchState.Exit || state == TouchState.Fail;
 		}
 
 		public static bool IsTouching(this TouchState state)
 		{
-			return state == TouchState.Pressed || state == TouchState.Move || state == TouchState.Entered || state == TouchState.Hover ||
-			       state == TouchState.Changed;
+			return state == TouchState.Press || state == TouchState.Move || state == TouchState.Enter || state == TouchState.Hover ||
+			       state == TouchState.Change;
 		}
 	}
 }

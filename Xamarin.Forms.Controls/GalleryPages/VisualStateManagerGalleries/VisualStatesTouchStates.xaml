@@ -13,13 +13,13 @@
                 </BoxView.GestureRecognizers>
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup x:Name="TouchStates">
-                        <VisualState x:Name="Pressed">
+                        <VisualState x:Name="Press">
                             <VisualState.Setters>
                                 <Setter Property="Scale" Value="0.7" />
                                 <Setter Property="BackgroundColor" Value="DarkGreen" />
                             </VisualState.Setters>
                         </VisualState>
-                        <VisualState x:Name="Released">
+                        <VisualState x:Name="Release">
                             <VisualState.Setters>
                                 <Setter Property="BackgroundColor" Value="LightGreen" />
                             </VisualState.Setters>

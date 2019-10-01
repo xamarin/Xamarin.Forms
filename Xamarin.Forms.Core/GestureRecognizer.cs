@@ -6,17 +6,17 @@ namespace Xamarin.Forms
 {
 	public class GestureRecognizer : Element, IGestureRecognizer
 	{
-		internal GestureRecognizer()
-		{
-		}
-
 		public static readonly BindableProperty StateProperty =
 			BindableProperty.Create(nameof(State), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default);
 
 		public static readonly BindableProperty TouchCountProperty =
-			BindableProperty.Create(nameof(TouchCount), typeof(int), typeof(GestureRecognizer), 0);
+			BindableProperty.Create(nameof(TouchCount), typeof(int), typeof(GestureRecognizer), 0, BindingMode.OneWayToSource);
 
 		readonly Dictionary<int, Touch> _touches = new Dictionary<int, Touch>();
+
+		internal GestureRecognizer()
+		{
+		}
 
 		public TouchState State
 		{
@@ -50,9 +50,9 @@ namespace Xamarin.Forms
 			State = eventArgs.TouchState;
 			TouchCount = _touches.Count;
 
-			TouchUpdated?.Invoke(this, eventArgs);
 			OnTouch(sender, eventArgs);
-
+			TouchUpdated?.Invoke(this, eventArgs);
+			
 			if (_touches.Count == 0)
 			{
 				State = TouchState.Default;
@@ -60,7 +60,6 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler<TouchEventArgs> TouchUpdated;
-
 		void CollectTouch(TouchEventArgs ev, View view)
 		{
 			foreach (TouchPoint touchPoint in ev.TouchPoints)
@@ -71,9 +70,13 @@ namespace Xamarin.Forms
 					{
 						touch.TouchPoints.Add(touchPoint);
 						var points = new List<Point>();
-						foreach (var point in touch.TouchPoints)
+						foreach (TouchPoint point in touch.TouchPoints)
+						{
 							if (point.TouchState.IsTouching())
+							{
 								points.Add(point.Point);
+							}
+						}
 
 						touch.Gesture = GestureDetector.DetectGesture(points.ToArray());
 					}

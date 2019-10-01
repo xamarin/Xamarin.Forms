@@ -383,7 +383,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SwipeComplete(false);
 			PinchComplete(false);
 			PanComplete(false);
-			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Cancelled);
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Cancel);
 		}
 
 		void OnPointerExited(object sender, PointerRoutedEventArgs e)
@@ -395,7 +395,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
-			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Exited);
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Exit);
 		}
 
 		void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -404,7 +404,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!_fingers.Contains(id))
 				_fingers.Add(id); 
 			
-			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Pressed);
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Press);
 		}
 
 		void OnPointerReleased(object sender, PointerRoutedEventArgs e)
@@ -416,7 +416,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
-			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Released);
+			CallTouchGestureRecognizer(Element as View, e.GetCurrentPoint(Control).ToPoint(), id, TouchState.Release);
 		}
 
 		void OnRedrawNeeded(object sender, EventArgs e)

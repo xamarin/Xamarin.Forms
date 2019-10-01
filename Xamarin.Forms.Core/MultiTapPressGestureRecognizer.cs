@@ -91,7 +91,7 @@ namespace Xamarin.Forms
 
 		public override void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
-			if (eventArgs.TouchState == TouchState.Cancelled || eventArgs.TouchState == TouchState.Failed ||
+			if (eventArgs.TouchState == TouchState.Cancel || eventArgs.TouchState == TouchState.Fail ||
 				eventArgs.TouchState == TouchState.Move && eventArgs.TouchPoints.Any(a => !a.IsInOriginalView))
 			{
 				Cancel();
@@ -101,7 +101,7 @@ namespace Xamarin.Forms
 			_cts?.Cancel();
 			_cts = new CancellationTokenSource();
 
-			if (State == TouchState.Released)
+			if (State == TouchState.Release)
 			{
 				_tapCount++;
 				if (!IsTapping)
