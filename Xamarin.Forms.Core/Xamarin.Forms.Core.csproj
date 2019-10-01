@@ -2,6 +2,9 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard1.0</TargetFrameworks>
 	</PropertyGroup>
+  <PropertyGroup Condition="'$(TestProperty)' == ''">
+    <TestProperty>Project Wins</TestProperty>
+  </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
