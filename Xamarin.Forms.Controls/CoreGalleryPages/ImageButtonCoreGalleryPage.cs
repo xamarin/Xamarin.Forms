@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Controls
 
 			var sourceContainer = new ViewContainer<ImageButton>(Test.ImageButton.Source, new ImageButton { Source = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Xamarin.Forms.Controls/coffee.png" });
 
-			var gifContainer = new ViewContainer<ImageButton>(Test.ImageButton.Source, new ImageButton { Source = Device.RuntimePlatform == Device.UWP ? "Assets/GifTwo.gif" : "GifTwo.gif" });
+			var gifContainer = new ViewContainer<ImageButton>(Test.ImageButton.Source, new ImageButton { Source = "GifTwo.gif" });
 
 			Add(aspectFillContainer);
 			Add(aspectFitContainer);

@@ -21,8 +21,8 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 			var itemsSource = new List<string>
 			{
-				Device.RuntimePlatform == Device.UWP ? "Assets/GifOne.gif" : "GifOne.gif",
-				Device.RuntimePlatform == Device.UWP ? "Assets/GifTwo.gif" : "GifTwo.gif",
+				"GifOne.gif",
+				"GifTwo.gif",
 				"https://devblogs.microsoft.com/wp-content/uploads/sites/44/2019/03/imagebutton-1.gif",
 				"https://upload.wikimedia.org/wikipedia/commons/1/13/Rotating_earth_%28huge%29.gif" // (Huge gif file)
 			};
