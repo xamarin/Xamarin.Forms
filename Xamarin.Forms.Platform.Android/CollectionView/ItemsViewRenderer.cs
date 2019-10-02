@@ -515,13 +515,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			var effectiveFlowDirection = ((IVisualElementController)Element).EffectiveFlowDirection;
 
-			if (effectiveFlowDirection.IsRightToLeft() && !linearLayoutManager.ReverseLayout)
+			if (effectiveFlowDirection.IsRightToLeft() && !linearLayoutManager.ReverseLayout && Context.GetActivity().Window.DecorView.LayoutDirection == LayoutDirection.Ltr)
 			{
 				linearLayoutManager.ReverseLayout = true;
-				return;
-			}
-
-			if (effectiveFlowDirection.IsLeftToRight() && linearLayoutManager.ReverseLayout)
+			} 
+			else if (effectiveFlowDirection.IsLeftToRight() && linearLayoutManager.ReverseLayout && Context.GetActivity().Window.DecorView.LayoutDirection == LayoutDirection.Rtl)
 			{
 				linearLayoutManager.ReverseLayout = false;
 			}
