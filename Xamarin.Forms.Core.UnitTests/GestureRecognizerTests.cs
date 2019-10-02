@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void OneTouchMoveDown()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void OneTouchMoveLeft()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void OneTouchMoveRight()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void OneTouchMoveUp()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void OneTouchPressed()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void OneTouchPressedAndMoveAndReleased()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void OneTouchPressedAndReleased()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TwoTouchMoveDownLeftRight()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -231,7 +231,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TwoTouchMoveLeftRightDown()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -277,7 +277,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TwoTouchMoveLeftRightUp()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -323,7 +323,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TwoTouchMoveUpLeftRight()
 		{
-			var recognizer = new TestGestureRecognizer();
+			var recognizer = new GestureRecognizer();
 			var view = new View();
 
 			recognizer.SendTouch(view,
@@ -355,11 +355,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(TouchState.Default, recognizer.State);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
-	}
-
-
-	class TestGestureRecognizer : GestureRecognizer
-	{
-
 	}
 }

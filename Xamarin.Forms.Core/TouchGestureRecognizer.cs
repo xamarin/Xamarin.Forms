@@ -1,5 +1,5 @@
 using System.Windows.Input;
-using Xamarin.Forms.Core.Internals;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace Xamarin.Forms.Core.Internals
+namespace Xamarin.Forms.Internals
 {
 	static class CommandExtensions
 	{
