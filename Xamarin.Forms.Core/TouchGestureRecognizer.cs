@@ -225,7 +225,7 @@ namespace Xamarin.Forms
 					break;
 			}
 
-			if (sender.HasVisualStateGroups() && TouchCount == 0)
+			if (sender.HasVisualStateGroups() && TouchCount == 0 && eventArgs.TouchState.IsFinishedTouch())
 			{
 				VisualStateManager.GoToState(sender, TouchState.Default.ToString());
 			}

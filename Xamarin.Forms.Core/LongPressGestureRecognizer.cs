@@ -119,6 +119,8 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler LongPressed;
+		public event EventHandler Pressed;
+		public event EventHandler Released;
 
 		public override void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
@@ -151,6 +153,7 @@ namespace Xamarin.Forms
 				_cts?.Cancel();
 				_cts = new CancellationTokenSource();
 				IsLongPressing = true;
+				Pressed?.Invoke(this, new EventArgs());
 				StartedCommand.Run(StartedCommandParameter);
 				Task.Delay(PressDuration, _cts.Token).ContinueWith(task =>
 				{
@@ -164,7 +167,6 @@ namespace Xamarin.Forms
 						LongPressed?.Invoke(sender, new EventArgs());
 						FinishedCommand.Run(FinishedCommandParameter);
 						Command.Run(CommandParameter);
-						IsLongPressing = false;
 					});
 				});
 			}
@@ -190,6 +192,7 @@ namespace Xamarin.Forms
 			{
 				IsLongPressing = false;
 				CancelledCommand.Run(CancelledCommandParameter);
+				Released?.Invoke(this, new EventArgs());
 			}
 		}
 	}
