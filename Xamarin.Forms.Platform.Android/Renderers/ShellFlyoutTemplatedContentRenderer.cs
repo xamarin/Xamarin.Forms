@@ -299,14 +299,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 			}
 
-			public HeaderContainer(Context context, IAttributeSet attribs) : base(context, attribs)
-			{
-			}
-
-			public HeaderContainer(Context context, IAttributeSet attribs, int defStyleAttr) : base(context, attribs, defStyleAttr)
-			{
-			}
-
 			protected override void LayoutView(double x, double y, double width, double height)
 			{
 				var context = Context;
