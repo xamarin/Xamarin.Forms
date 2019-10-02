@@ -146,6 +146,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				((IShellContentController)_shellContent).RecyclePage(_page);
 				_page.ClearValue(Platform.RendererProperty);
+				_page = null;
 			}
 
 			if (_shellPageContainer != null)
