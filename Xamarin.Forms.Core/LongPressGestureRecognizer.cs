@@ -38,6 +38,12 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty AllowMovementProperty =
 			BindableProperty.Create(nameof(AllowMovement), typeof(bool), typeof(LongPressGestureRecognizer), false);
 
+		public static readonly BindableProperty CommandProperty =
+			BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(LongPressGestureRecognizer));
+
+		public static readonly BindableProperty CommandParameterProperty =
+			BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(LongPressGestureRecognizer));
+
 		CancellationTokenSource _cts;
 
 		public bool AllowMovement
@@ -56,6 +62,18 @@ namespace Xamarin.Forms
 		{
 			get => GetValue(CancelledCommandParameterProperty);
 			set => SetValue(CancelledCommandParameterProperty, value);
+		}
+
+		public ICommand Command
+		{
+			get => (ICommand)GetValue(CommandProperty);
+			set => SetValue(CommandProperty, value);
+		}
+
+		public object CommandParameter
+		{
+			get => GetValue(CommandParameterProperty);
+			set => SetValue(CommandParameterProperty, value);
 		}
 
 		public ICommand FinishedCommand
@@ -112,8 +130,8 @@ namespace Xamarin.Forms
 
 			if (eventArgs.TouchState == TouchState.Move && !AllowMovement)
 			{
-				bool gestureIsNone = true;
-				foreach (var item in Touches)
+				var gestureIsNone = true;
+				foreach (Touch item in Touches)
 				{
 					if (item.Gesture != GestureDirection.None)
 					{
@@ -122,8 +140,10 @@ namespace Xamarin.Forms
 					}
 				}
 
-				if(gestureIsNone)
+				if (gestureIsNone)
+				{
 					Cancel();
+				}
 			}
 
 			if (eventArgs.TouchState == TouchState.Press)
@@ -143,16 +163,16 @@ namespace Xamarin.Forms
 					{
 						LongPressed?.Invoke(sender, new EventArgs());
 						FinishedCommand.Run(FinishedCommandParameter);
+						Command.Run(CommandParameter);
 						IsLongPressing = false;
 					});
 				});
 			}
 
-			if (eventArgs.TouchState == TouchState.Release || eventArgs.TouchState == TouchState.Cancel ||
-				eventArgs.TouchState == TouchState.Fail ||
-				eventArgs.TouchState == TouchState.Move)
+			if (eventArgs.TouchState == TouchState.Release || eventArgs.TouchState == TouchState.Cancel || eventArgs.TouchState == TouchState.Fail ||
+			    eventArgs.TouchState == TouchState.Move)
 			{
-				foreach (var item in eventArgs.TouchPoints)
+				foreach (TouchPoint item in eventArgs.TouchPoints)
 				{
 					if (!item.IsInOriginalView)
 					{
@@ -160,7 +180,6 @@ namespace Xamarin.Forms
 						break;
 					}
 				}
-				
 			}
 		}
 

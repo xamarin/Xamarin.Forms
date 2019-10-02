@@ -1,3 +1,4 @@
+using System;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
@@ -58,6 +59,16 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HoverCommandParameterProperty =
 			BindableProperty.Create(nameof(HoverCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+
+		public event EventHandler<TouchEventArgs> Press;
+		public event EventHandler<TouchEventArgs> Release;
+		public event EventHandler<TouchEventArgs> Move;
+		public event EventHandler<TouchEventArgs> Cancel;
+		public event EventHandler<TouchEventArgs> Fail;
+		public event EventHandler<TouchEventArgs> Change;
+		public event EventHandler<TouchEventArgs> Enter;
+		public event EventHandler<TouchEventArgs> Exit;
+		public event EventHandler<TouchEventArgs> Hover;
 
 		public ICommand CancelCommand
 		{
@@ -177,30 +188,39 @@ namespace Xamarin.Forms
 			switch (eventArgs.TouchState)
 			{
 				case TouchState.Press:
+					Press?.Invoke(this, eventArgs);
 					PressCommand.Run(PressCommandProperty);
 					break;
 				case TouchState.Release:
+					Release?.Invoke(this, eventArgs);
 					ReleaseCommand.Run(ReleaseCommandProperty);
 					break;
 				case TouchState.Move:
+					Move?.Invoke(this, eventArgs);
 					MoveCommand.Run(MoveCommandProperty);
 					break;
 				case TouchState.Cancel:
+					Cancel?.Invoke(this, eventArgs);
 					CancelCommand.Run(CancelCommandProperty);
 					break;
 				case TouchState.Fail:
+					Fail?.Invoke(this, eventArgs);
 					FailCommand.Run(FailCommandProperty);
 					break;
 				case TouchState.Change:
+					Change?.Invoke(this, eventArgs);
 					ChangeCommand.Run(ChangeCommandProperty);
 					break;
 				case TouchState.Enter:
+					Enter?.Invoke(this, eventArgs);
 					EnterCommand.Run(EnterCommandProperty);
 					break;
 				case TouchState.Exit:
+					Exit?.Invoke(this, eventArgs);
 					ExitCommand.Run(ExitCommandProperty);
 					break;
 				case TouchState.Hover:
+					Hover?.Invoke(this, eventArgs);
 					HoverCommand.Run(HoverCommandProperty);
 					break;
 			}

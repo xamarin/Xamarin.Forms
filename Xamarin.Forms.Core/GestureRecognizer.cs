@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms
 {
 	public class GestureRecognizer : Element, IGestureRecognizer
 	{
 		public static readonly BindableProperty StateProperty =
-			BindableProperty.Create(nameof(State), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default);
+			BindableProperty.Create(nameof(State), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default, BindingMode.OneWayToSource);
 
 		public static readonly BindableProperty TouchCountProperty =
 			BindableProperty.Create(nameof(TouchCount), typeof(int), typeof(GestureRecognizer), 0, BindingMode.OneWayToSource);
+
+		public static readonly BindableProperty TouchesProperty =
+			BindableProperty.Create(nameof(Touches), typeof(List<Touch>), typeof(GestureRecognizer), null, BindingMode.OneWayToSource);
 
 		readonly Dictionary<int, Touch> _touches = new Dictionary<int, Touch>();
 
@@ -21,7 +25,7 @@ namespace Xamarin.Forms
 		public TouchState State
 		{
 			get => (TouchState)GetValue(StateProperty);
-			set => SetValue(StateProperty, value);
+			private set => SetValue(StateProperty, value);
 		}
 
 		public int TouchCount
@@ -32,7 +36,8 @@ namespace Xamarin.Forms
 
 		public List<Touch> Touches
 		{
-			get => new List<Touch>(_touches.Values);
+			get => (List<Touch>)GetValue(TouchesProperty);
+			private set => SetValue(TouchesProperty, value);
 		}
 
 		protected TouchState PreviousState { get; set; }
@@ -49,10 +54,11 @@ namespace Xamarin.Forms
 			PreviousState = State;
 			State = eventArgs.TouchState;
 			TouchCount = _touches.Count;
+			OnPropertyChanged(nameof(Touches));
 
 			OnTouch(sender, eventArgs);
 			TouchUpdated?.Invoke(this, eventArgs);
-			
+
 			if (_touches.Count == 0)
 			{
 				State = TouchState.Default;
@@ -90,6 +96,8 @@ namespace Xamarin.Forms
 					_touches.Remove(touchPoint.TouchId);
 				}
 			}
+
+			Touches = new List<Touch>(_touches.Values);
 		}
 
 		internal static class GestureDetector
