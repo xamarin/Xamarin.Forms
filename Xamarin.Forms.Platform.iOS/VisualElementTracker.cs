@@ -254,14 +254,15 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 					return;
 				}
-#if __MOBILE__
 				caLayer.AnchorPoint = new PointF(anchorX, anchorY);
-#else
-				caLayer.AnchorPoint = new PointF(anchorX - 0.5f, anchorY - 0.5f);
-#endif
 				caLayer.Opacity = opacity;
 				const double epsilon = 0.001;
 
+#if !__MOBILE__
+				// fix position
+				transform = transform.Translate(anchorX * width, 0, 0);
+				transform = transform.Translate(0, anchorY * height, 0);
+#endif
 				// position is relative to anchor point
 				if (Math.Abs(anchorX - .5) > epsilon)
 					transform = transform.Translate((anchorX - .5f) * width, 0, 0);
