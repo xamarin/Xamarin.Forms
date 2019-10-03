@@ -269,6 +269,14 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Math.Abs(anchorY - .5) > epsilon)
 					transform = transform.Translate(0, (anchorY - .5f) * height, 0);
 
+#if !__MOBILE__
+				// Y-axe on macos is inverted				
+				translationY = -translationY;
+				// rotation direction on macos also inverted
+				rotationX = -rotationX;
+				rotationY = -rotationY;
+				rotation = -rotation;
+#endif
 				if (Math.Abs(translationX) > epsilon || Math.Abs(translationY) > epsilon)
 					transform = transform.Translate(translationX, translationY, 0);
 
