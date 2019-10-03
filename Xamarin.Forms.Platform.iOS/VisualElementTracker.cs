@@ -293,6 +293,10 @@ namespace Xamarin.Forms.Platform.MacOS
 					transform = transform.Rotate(rotationY * (float)Math.PI / 180.0f, 0.0f, 1.0f, 0.0f);
 
 				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
+#if !__MOBILE__
+				//otherwise scaled/rotated image clipped by parent bounds
+				caLayer.MasksToBounds = false;
+#endif
 
 				if (Foundation.NSThread.IsMain)
 				{
