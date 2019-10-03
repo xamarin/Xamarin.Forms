@@ -446,6 +446,30 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestBatchViaUsing()
+		{
+			var view = new View();
+			var committed = false;
+			view.BatchCommitted += (sender, arg) => committed = true;
+			var exceptionThrown = false;
+			try
+			{
+				using (view.Batch())
+				{
+					throw new Exception();
+				}
+			}
+			catch
+			{
+				exceptionThrown = true;
+			}
+
+			Assert.True(exceptionThrown);
+			Assert.False(view.Batched);
+			Assert.True(committed);
+		}
+
+		[Test]
 		public void IsPlatformEnabled ()
 		{
 			var view = new View ();
