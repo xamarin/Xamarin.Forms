@@ -21,9 +21,12 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsViewLayout = itemsViewLayout;
 			ItemsViewController = itemsViewController;
 		}
+		public CarouselViewController CarouselViewController { get; set; }
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
+			CarouselViewController?.DraggingStarted(scrollView);
+
 			_previousHorizontalOffset = (float)scrollView.ContentOffset.X;
 			_previousVerticalOffset = (float)scrollView.ContentOffset.Y;
 		}
@@ -32,6 +35,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_previousHorizontalOffset = 0;
 			_previousVerticalOffset = 0;
+
+			CarouselViewController?.DraggingEnded(scrollView, willDecelerate);
 		}
 
 		public override void Scrolled(UIScrollView scrollView)
@@ -41,6 +46,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (indexPathsForVisibleItems.Count == 0)
 				return;
 
+			var contentInset = scrollView.ContentInset;
+			var contentOffsetX = scrollView.ContentOffset.X + contentInset.Left;
+			var contentOffsetY = scrollView.ContentOffset.Y + contentInset.Top;
+
 			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
 			var centerPoint = new CGPoint(ItemsViewController.CollectionView.Center.X + ItemsViewController.CollectionView.ContentOffset.X, ItemsViewController.CollectionView.Center.Y + ItemsViewController.CollectionView.ContentOffset.Y);
 			var centerIndexPath = ItemsViewController.CollectionView.IndexPathForItemAtPoint(centerPoint);
@@ -48,10 +57,10 @@ namespace Xamarin.Forms.Platform.iOS
 			var lastVisibleItemIndex = (int)indexPathsForVisibleItems.Last().Item;
 			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
 			{
-				HorizontalDelta = scrollView.ContentOffset.X - _previousHorizontalOffset,
-				VerticalDelta = scrollView.ContentOffset.Y - _previousVerticalOffset,
-				HorizontalOffset = scrollView.ContentOffset.X,
-				VerticalOffset = scrollView.ContentOffset.Y,
+				HorizontalDelta = contentOffsetX - _previousHorizontalOffset,
+				VerticalDelta = contentOffsetY - _previousVerticalOffset,
+				HorizontalOffset = contentOffsetX,
+				VerticalOffset = contentOffsetY,
 				FirstVisibleItemIndex = firstVisibleItemIndex,
 				CenterItemIndex = centerItemIndex,
 				LastVisibleItemIndex = lastVisibleItemIndex
@@ -59,8 +68,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ItemsViewController.ItemsView.SendScrolled(itemsViewScrolledEventArgs);
 
-			_previousHorizontalOffset = (float)scrollView.ContentOffset.X;
-			_previousVerticalOffset = (float)scrollView.ContentOffset.Y;
+			_previousHorizontalOffset = (float)contentOffsetX;
+			_previousVerticalOffset = (float)contentOffsetY;
 
 			switch (ItemsViewController.ItemsView.RemainingItemsThreshold)
 			{
@@ -122,7 +131,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void CellDisplayingEnded(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath indexPath)
 		{
-			ItemsViewController.PrepareCellForRemoval(cell);
+			if (ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+			{
+				var actualWidth = collectionView.ContentSize.Width - collectionView.Bounds.Size.Width;
+				if (collectionView.ContentOffset.X >= actualWidth || collectionView.ContentOffset.X < 0)
+					return;
+			}
+			else
+			{
+				var actualHeight = collectionView.ContentSize.Height - collectionView.Bounds.Size.Height;
+
+				if (collectionView.ContentOffset.Y >= actualHeight || collectionView.ContentOffset.Y < 0)
+					return;
+			}
 		}
 
 		public override CGSize GetReferenceSizeForHeader(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
@@ -143,6 +164,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return GroupableItemsViewController.GetReferenceSizeForFooter(collectionView, layout, section);
+		}
+
+		public override void ScrollAnimationEnded(UIScrollView scrollView)
+		{
+			GroupableItemsViewController?.HandleScrollAnimationEnded();
 		}
 	}
 }

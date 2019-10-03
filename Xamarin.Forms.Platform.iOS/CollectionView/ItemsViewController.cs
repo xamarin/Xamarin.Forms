@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Drawing;
+using System.Threading.Tasks;
+using CoreGraphics;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
@@ -7,7 +9,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Platform.iOS
 {
 	// TODO hartez 2018/06/01 14:21:24 Add a method for updating the layout	
-	public class ItemsViewController : UICollectionViewController
+	public abstract class ItemsViewController : UICollectionViewController
 	{
 		public IItemsViewSource ItemsSource { get; protected set; }
 		public ItemsView ItemsView { get; }
@@ -38,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// If we're updating from a previous layout, we should keep any settings for the SelectableItemsViewController around
 			var selectableItemsViewController = Delegator?.SelectableItemsViewController;
-			Delegator = new UICollectionViewDelegator(ItemsViewLayout, this);
+			Delegator = CreateDelegator();
 
 			CollectionView.Delegate = Delegator;
 
@@ -48,9 +50,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// Make sure the new layout is sized properly
 				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
-				
+
 				CollectionView.SetCollectionViewLayout(ItemsViewLayout, false);
-				
+
 				// Reload the data so the currently visible cells get laid out according to the new layout
 				CollectionView.ReloadData();
 			}
@@ -58,29 +60,31 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
+				return;
+
+			if (disposing)
 			{
-				if (disposing)
-				{
-					ItemsSource?.Dispose();
+				ItemsSource?.Dispose();
+        CollectionView.DataSource = null;
+				CollectionView.ReloadData();
+				CollectionView.CollectionViewLayout.InvalidateLayout();
 
-					//clear data
-					CollectionView.DataSource = null;
-					CollectionView.ReloadData();
-					CollectionView.CollectionViewLayout.InvalidateLayout();
-
-					Delegator?.Dispose();
-					Delegator = null;
-					CollectionView.Delegate?.Dispose();
-					CollectionView.Delegate = null;
-					CollectionView.RemoveFromSuperview();
-					CollectionView.Dispose();
-				}
-
-				_disposed = true;
-
-				base.Dispose(disposing);
+				Delegator?.Dispose();
+				Delegator = null;
+				CollectionView.Delegate?.Dispose();
+				CollectionView.Delegate = null;
+				CollectionView.RemoveFromSuperview();
+				CollectionView.Dispose();
+        
+				_emptyUIView?.Dispose();
+				_emptyUIView = null;
+				_emptyViewFormsElement = null;
 			}
+
+			_disposed = true;
+
+			base.Dispose(disposing);
 		}
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
@@ -119,6 +123,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateEmptyViewVisibility(_isEmpty);
 			}
+
+			if (wasEmpty && !_isEmpty)
+			{
+				// If we're going from empty to having stuff, it's possible that we've never actually measured
+				// a prototype cell and our itemSize or estimatedItemSize are wrong/unset
+				// So trigger a constraint update; if we need a measurement, that will make it happen
+				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			}
 		}
 
 		public override void ViewDidLoad()
@@ -143,6 +155,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		protected virtual UICollectionViewDelegator CreateDelegator()
+		{
+			return new UICollectionViewDelegator(ItemsViewLayout, this);
+		}
+
 		protected virtual IItemsViewSource CreateItemsViewSource()
 		{
 			return ItemsSourceFactory.Create(ItemsView.ItemsSource, CollectionView);
@@ -157,7 +174,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
-			CheckForEmptySource(); 
+			CheckForEmptySource();
 			return ItemsSource.GroupCount;
 		}
 
@@ -173,12 +190,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateTemplatedCell(TemplatedCell cell, NSIndexPath indexPath)
 		{
-			ApplyTemplateAndDataContext(cell, indexPath);
+			cell.ContentSizeChanged -= CellContentSizeChanged;
 
-			if (cell is ItemsViewCell constrainedCell)
-			{
-				ItemsViewLayout.PrepareCellForLayout(constrainedCell);
-			}
+			cell.Bind(ItemsView, ItemsSource[indexPath]);
+
+			cell.ContentSizeChanged += CellContentSizeChanged;
+
+			ItemsViewLayout.PrepareCellForLayout(cell);
 		}
 
 		public virtual NSIndexPath GetIndexForItem(object item)
@@ -191,70 +209,21 @@ namespace Xamarin.Forms.Platform.iOS
 			return ItemsSource[index];
 		}
 
-		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
-		{
-			var template = ItemsView.ItemTemplate;
-			var item = ItemsSource[indexPath];
-
-			// Run this through the extension method in case it's really a DataTemplateSelector
-			template = template.SelectDataTemplate(item, ItemsView);
-
-			// Create the content and renderer for the view and 
-			var view = template.CreateContent() as View;
-			var renderer = CreateRenderer(view);
-			cell.SetRenderer(renderer);
-
-			// Bind the view to the data item
-			view.BindingContext = ItemsSource[indexPath];
-
-			// And make sure it's a "child" of the ItemsView
-			ItemsView.AddLogicalChild(view);
-
-			cell.ContentSizeChanged += CellContentSizeChanged;
-		}
-
 		void CellContentSizeChanged(object sender, EventArgs e)
 		{
+			if (_disposed)
+				return;
+
 			Layout?.InvalidateLayout();
 		}
 
-		internal void PrepareCellForRemoval(UICollectionViewCell cell)
-		{
-			if (cell is TemplatedCell templatedCell)
-			{
-				templatedCell.ContentSizeChanged -= CellContentSizeChanged;
-
-				var oldView = templatedCell.VisualElementRenderer?.Element;
-				if (oldView != null)
-				{
-					oldView.BindingContext = null;
-					ItemsView.RemoveLogicalChild(oldView);
-				}
-
-				templatedCell.PrepareForRemoval();
-			}
-		}
-
-		protected IVisualElementRenderer CreateRenderer(View view)
-		{
-			if (view == null)
-			{
-				throw new ArgumentNullException(nameof(view));
-			}
-
-			var renderer = Platform.CreateRenderer(view);
-			Platform.SetRenderer(view, renderer);
-
-			return renderer;
-		}
-
-		string DetermineCellReuseId()
+		protected virtual string DetermineCellReuseId()
 		{
 			if (ItemsView.ItemTemplate != null)
 			{
 				return ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
-					? HorizontalTemplatedCell.ReuseId
-					: VerticalTemplatedCell.ReuseId;
+					? HorizontalCell.ReuseId
+					: VerticalCell.ReuseId;
 			}
 
 			return ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
@@ -294,33 +263,98 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			CollectionView.RegisterClassForCell(typeof(HorizontalDefaultCell), HorizontalDefaultCell.ReuseId);
 			CollectionView.RegisterClassForCell(typeof(VerticalDefaultCell), VerticalDefaultCell.ReuseId);
-			CollectionView.RegisterClassForCell(typeof(HorizontalTemplatedCell),
-				HorizontalTemplatedCell.ReuseId);
-			CollectionView.RegisterClassForCell(typeof(VerticalTemplatedCell), VerticalTemplatedCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(HorizontalCell),
+				HorizontalCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(VerticalCell), VerticalCell.ReuseId);
 		}
+
+		protected abstract bool IsHorizontal { get; }
 
 		internal void UpdateEmptyView()
 		{
-			// Is EmptyView set on the ItemsView?
-			var emptyView = ItemsView?.EmptyView;
-
-			if (emptyView == null)
-			{
-				// Clear the cached Forms and native views
-				_emptyUIView = null;
-				_emptyViewFormsElement = null;
-			}
-			else
-			{
-				// Create the native renderer for the EmptyView, and keep the actual Forms element (if any)
-				// around for updating the layout later
-				var (NativeView, FormsElement) = RealizeEmptyView(emptyView, ItemsView.EmptyViewTemplate);
-				_emptyUIView = NativeView;
-				_emptyViewFormsElement = FormsElement;
-			}
+			UpdateView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ref _emptyUIView, ref _emptyViewFormsElement);
 
 			// If the empty view is being displayed, we might need to update it
 			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);
+		}
+
+		protected void UpdateSubview(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)
+		{
+			uiView?.RemoveFromSuperview();
+
+			if (formsElement != null)
+			{
+				ItemsView.RemoveLogicalChild(formsElement);
+				formsElement.MeasureInvalidated -= OnFormsElementMeasureInvalidated;
+			}
+
+			UpdateView(view, viewTemplate, ref uiView, ref formsElement);
+
+			if (uiView != null)
+			{
+				CollectionView.AddSubview(uiView);
+			}
+
+			if (formsElement != null)
+				ItemsView.AddLogicalChild(formsElement);
+
+			if (formsElement != null)
+			{
+				RemeasureLayout(formsElement);
+				formsElement.MeasureInvalidated += OnFormsElementMeasureInvalidated;
+			}
+			else if (uiView != null)
+			{
+				uiView.SizeToFit();
+			}
+		}
+
+		void RemeasureLayout(VisualElement formsElement)
+		{
+			if (IsHorizontal)
+			{
+				var request = formsElement.Measure(double.PositiveInfinity, CollectionView.Frame.Height, MeasureFlags.IncludeMargins);
+				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(formsElement, new Rectangle(0, 0, request.Request.Width, CollectionView.Frame.Height));
+			}
+			else
+			{
+				var request = formsElement.Measure(CollectionView.Frame.Width, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(formsElement, new Rectangle(0, 0, CollectionView.Frame.Width, request.Request.Height));
+			}
+		}
+
+		void OnFormsElementMeasureInvalidated(object sender, EventArgs e)
+		{
+			if (sender is VisualElement formsElement)
+			{
+				HandleFormsElementMeasureInvalidated(formsElement);
+			}
+		}
+
+		protected virtual void HandleFormsElementMeasureInvalidated(VisualElement formsElement)
+		{
+			RemeasureLayout(formsElement);
+        }
+
+		internal void UpdateView(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)
+		{
+			// Is view set on the ItemsView?
+			if (view == null)
+			{
+				if (formsElement != null)
+					Platform.GetRenderer(formsElement)?.DisposeRendererAndChildren();
+
+				uiView = null;
+				formsElement = null;
+			}
+			else
+			{
+				// Create the native renderer for the view, and keep the actual Forms element (if any)
+				// around for updating the layout later
+				var (NativeView, FormsElement) = TemplateHelpers.RealizeView(view, viewTemplate, ItemsView);
+				uiView = NativeView;
+				formsElement = FormsElement;
+			}
 		}
 
 		void UpdateEmptyViewVisibility(bool isEmpty)
@@ -340,6 +374,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_emptyViewFormsElement != null)
 				{
+					if (ItemsView.EmptyViewTemplate == null)
+					{
+						ItemsView.AddLogicalChild(_emptyViewFormsElement);
+					}
+
 					// Now that the native empty view's frame is sized to the UICollectionView, we need to handle
 					// the Forms layout for its content
 					_emptyViewFormsElement.Layout(_emptyUIView.Frame.ToRectangle());
@@ -351,40 +390,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_currentBackgroundIsEmptyView)
 				{
 					CollectionView.BackgroundView = _backgroundUIView;
+					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 
 				_currentBackgroundIsEmptyView = false;
 			}
-		}
-
-		public (UIView NativeView, VisualElement FormsElement) RealizeEmptyView(object emptyView, DataTemplate emptyViewTemplate)
-		{
-			if (emptyViewTemplate != null)
-			{
-				// Run this through the extension method in case it's really a DataTemplateSelector
-				emptyViewTemplate = emptyViewTemplate.SelectDataTemplate(emptyView, ItemsView);
-
-				// We have a template; turn it into a Forms view 
-				var templateElement = emptyViewTemplate.CreateContent() as View;
-				var renderer = CreateRenderer(templateElement);
-
-				// and set the EmptyView as its BindingContext
-				BindableObject.SetInheritedBindingContext(renderer.Element, emptyView);
-
-				return (renderer.NativeView, renderer.Element);
-			}
-
-			if (emptyView is View formsView)
-			{
-				// No template, and the EmptyView is a Forms view; use that
-				var renderer = CreateRenderer(formsView);
-
-				return (renderer.NativeView, renderer.Element);
-			}
-
-			// No template, EmptyView is not a Forms View, so just display EmptyView.ToString
-			var label = new UILabel { Text = emptyView.ToString() };
-			return (label, null);
 		}
 	}
 }

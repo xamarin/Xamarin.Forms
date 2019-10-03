@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
@@ -13,13 +16,20 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 	internal class ItemsSourceGenerator : ContentView
 	{
+		public event EventHandler<NotifyCollectionChangedEventArgs> CollectionChanged;
 		readonly ItemsView _cv;
 		private readonly ItemsSourceType _itemsSourceType;
 		readonly Entry _entry;
+		readonly Entry _entrySideItems;
+		int _count = 0;
 
-		public ItemsSourceGenerator(ItemsView cv, int initialItems = 1000,
+		CarouselView carousel => _cv as CarouselView;
+
+		public int Count => _count;
+		public ItemsSourceGenerator(ItemsView cv, int initialItems = 1000, 
 			ItemsSourceType itemsSourceType = ItemsSourceType.List)
 		{
+			_count = initialItems;
 			_cv = cv;
 			_itemsSourceType = itemsSourceType;
 			var layout = new StackLayout
@@ -29,14 +39,21 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			};
 
 			var button = new Button { Text = "Update", AutomationId = "btnUpdate"  };
-			var label = new Label { Text = "Item count:", VerticalTextAlignment = TextAlignment.Center };
-			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = initialItems.ToString(), WidthRequest = 200, AutomationId = "entryUpdate" };
+			var label = new Label { Text = "Items:", VerticalTextAlignment = TextAlignment.Center };
+			var labelSideItems = new Label { Text = "Side items:", VerticalTextAlignment = TextAlignment.Center };
+			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = initialItems.ToString(), WidthRequest = 100, AutomationId = "entryUpdate" };
+			_entrySideItems = new Entry { Keyboard = Keyboard.Numeric, Text = carousel?.NumberOfSideItems.ToString(), WidthRequest = 100, AutomationId = "entrySideItemsUpdate" };
 
 			layout.Children.Add(label);
 			layout.Children.Add(_entry);
+			layout.Children.Add(labelSideItems);
+			layout.Children.Add(_entrySideItems);
 			layout.Children.Add(button);
 
 			button.Clicked += GenerateItems;
+			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => {
+				(cv.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>).Remove(obj.BindingContext as CollectionViewGalleryTestItem);
+			});
 
 			Content = layout;
 		}
@@ -84,6 +101,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			}
 		}
 
+		ObservableCollection<CollectionViewGalleryTestItem> _obsCollection;
 		void GenerateObservableCollection()
 		{
 			if (int.TryParse(_entry.Text, out int count))
@@ -96,9 +114,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 						$"Item: {n}", _images[n % _images.Length], n));
 				}
 
-				_cv.ItemsSource = new ObservableCollection<CollectionViewGalleryTestItem>(items);
+				_obsCollection = new ObservableCollection<CollectionViewGalleryTestItem>(items);
+				_count = _obsCollection.Count;
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+				_cv.ItemsSource = _obsCollection;
 			}
 		}
+
+		void ObsItemsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			CollectionChanged?.Invoke(sender, e);
+		}
+
 
 		void GenerateMultiTestObservableCollection()
 		{
@@ -137,6 +165,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		void GenerateItems(object sender, EventArgs e)
 		{
 			GenerateItems();
+
+			if (carousel == null)
+				return;
+
+			if (int.TryParse(_entrySideItems.Text, out int count))
+				carousel.NumberOfSideItems = count;
 		}
 	}
 }
