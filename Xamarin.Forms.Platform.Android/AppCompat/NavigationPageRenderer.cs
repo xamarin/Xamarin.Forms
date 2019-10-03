@@ -1027,7 +1027,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (!textColor.IsDefault)
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
-			bar.Title = currentPage != null ? currentPage.Title : string.Empty;
+			bar.Title = currentPage?.Title : string.Empty;
 
 			UpdateTitleIcon();
 
