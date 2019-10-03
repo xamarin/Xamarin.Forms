@@ -1,10 +1,12 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2598, "Replacing page in CarouselPage does not work the first time", PlatformAffected.All)]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class GitHub2598 : TestCarouselPage
 	{
 		private ContentPage CreatePage(string labelText, Color bg)

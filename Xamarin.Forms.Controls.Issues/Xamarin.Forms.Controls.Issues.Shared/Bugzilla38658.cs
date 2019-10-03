@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue (IssueTracker.Bugzilla, 38658, "Rotation causes app containing CarouselPage to freeze", PlatformAffected.iOS)]
 	public class Bugzilla38658 : TestTabbedPage // or TestMasterDetailPage, etc ...
 	{
+		[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 		public class TestCarouselPage : CarouselPage
 		{
 			public TestCarouselPage ()
@@ -49,7 +50,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 			async void button_Clicked (object sender, EventArgs e)
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				await Navigation.PushAsync (new TestCarouselPage ());
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 		}
 

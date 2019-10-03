@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 39458, "[UWP/WinRT] Cannot Set CarouselPage.CurrentPage Inside Constructor", PlatformAffected.WinRT)]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class Bugzilla39458 : TestCarouselPage
 	{
 		public class ChildPage : ContentPage

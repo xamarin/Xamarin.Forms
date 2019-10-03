@@ -6,6 +6,7 @@ using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class CarouselPageRenderer : VisualElementRenderer<CarouselPage>
 	{
 		ViewPager _viewPager;

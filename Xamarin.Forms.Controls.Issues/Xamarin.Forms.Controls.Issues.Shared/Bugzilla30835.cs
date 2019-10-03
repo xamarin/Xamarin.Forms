@@ -22,7 +22,9 @@ namespace Xamarin.Forms.Controls.Issues
 			menuPage.Menu.ItemSelected += (sender, e) => NavigateTo (e.SelectedItem as MenuItem);
 
 			Master = menuPage;
+#pragma warning disable CS0618 // Type or member is obsolete
 			Detail = new NavigationPage (new HolderCarouselPages ());
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		void NavigateTo (MenuItem menu)
@@ -33,6 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Preserve (AllMembers = true)]
+		[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 		public class HolderCarouselPages : CarouselPage
 		{
 			public HolderCarouselPages ()
@@ -152,8 +155,10 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Add (new MenuItem () { 
 					Title = "Carousel", 
-					IconSource = "icon.png", 
+					IconSource = "icon.png",
+#pragma warning disable CS0618 // Type or member is obsolete
 					TargetType = typeof(HolderCarouselPages),
+#pragma warning restore CS0618 // Type or member is obsolete
 					TextColor = Color.White
 				});
 

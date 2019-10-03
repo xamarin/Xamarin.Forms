@@ -29,7 +29,10 @@ namespace Xamarin.Forms.Controls
 
 			var contentInCarosel = new Button { Text = "Carousel children" };
 			contentInCarosel.Clicked += async (sender, args) => {
-				await Navigation.PushModalAsync (new CarouselPage {
+#pragma warning disable CS0618 // Type or member is obsolete
+				await Navigation.PushModalAsync (new CarouselPage
+				{
+#pragma warning restore CS0618 // Type or member is obsolete
 					ItemTemplate = new DataTemplate (() => {
 						var page = new ContentPage();
 						page.SetBinding (BackgroundImageSourceProperty, ".");
@@ -58,7 +61,10 @@ namespace Xamarin.Forms.Controls
 
 			var carousel = new Button { Text = "CarouselPage" };
 			carousel.Clicked += async (sender, args) => {
-				await Navigation.PushAsync (new CarouselPage {
+#pragma warning disable CS0618 // Type or member is obsolete
+				await Navigation.PushAsync (new CarouselPage
+				{
+#pragma warning restore CS0618 // Type or member is obsolete
 					BackgroundImageSource = "crimson.jpg",
 					ItemsSource = new[] { "test1", "test2" }
 				});

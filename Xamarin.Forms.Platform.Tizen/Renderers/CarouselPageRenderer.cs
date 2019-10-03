@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.Tizen
 	/// <summary>
 	/// Renderer of a CarouselPage widget.
 	/// </summary>
+    	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class CarouselPageRenderer : VisualElementRenderer<CarouselPage>
 	{
 		Box _outterLayout;

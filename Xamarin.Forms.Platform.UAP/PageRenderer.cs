@@ -63,11 +63,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnLoaded(object sender, RoutedEventArgs args)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			var carouselPage = Element?.Parent as CarouselPage;
 			if (carouselPage != null && carouselPage.Children[0] != Element)
 			{
 				return;
 			}
+#pragma warning restore CS0618 // Type or member is obsolete
 			_loaded = true;
 			Unloaded += OnUnloaded;
 			Element?.SendAppearing();

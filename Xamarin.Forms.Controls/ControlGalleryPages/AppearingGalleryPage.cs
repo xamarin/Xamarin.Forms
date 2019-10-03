@@ -44,8 +44,10 @@ namespace Xamarin.Forms.Controls
 					})
 					},
 					new Button { Text =  CarouselPageTitle, Command = new Command (() => {
-						
+
+#pragma warning disable CS0618 // Type or member is obsolete
 						var page = new CarouselPage {
+#pragma warning restore CS0618 // Type or member is obsolete
 							Title = CarouselPageTitle,
 							Children = { initalPage, initalPage2 }
 						};
@@ -107,9 +109,11 @@ namespace Xamarin.Forms.Controls
 							{
 								switch (Parent)
 								{
+#pragma warning disable CS0618 // Type or member is obsolete
 									case CarouselPage cp:
 										cp.Children.Add( new AppearingPage(added_carouselpage_id++));
 										break;
+#pragma warning restore CS0618 // Type or member is obsolete
 									case TabbedPage tp:
 										tp.Children.Add( new AppearingPage(added_tabpage_id++));
 										break;

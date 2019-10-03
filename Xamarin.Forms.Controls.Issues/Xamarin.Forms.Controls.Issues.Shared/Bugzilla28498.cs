@@ -36,8 +36,10 @@ namespace Xamarin.Forms.Controls.Issues
 					Padding = 10
 				}
 			};
-				
+
+#pragma warning disable CS0618 // Type or member is obsolete
 			var carousel = new NavigationPage(new CarouselPage { Children = { carrouselChildPage } });
+#pragma warning restore CS0618 // Type or member is obsolete
 			var other = new NavigationPage(otherPage);
 			Detail = carousel;
 

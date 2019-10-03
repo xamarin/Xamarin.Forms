@@ -10,6 +10,7 @@ using Xamarin.Forms.Platform.GTK.Extensions;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class CarouselPageRenderer : AbstractPageRenderer<Carousel, CarouselPage>
 	{
 		private List<PageContainer> _pages;
@@ -59,6 +60,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			if (e.NewElement != null)
 			{
+#pragma warning disable IDE0019 // Use pattern matching
 				var newPage = e.NewElement as CarouselPage;
 
 				if (newPage == null)
@@ -75,6 +77,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				}
 
 				Init();
+#pragma warning restore IDE0019 // Use pattern matching
 			}
 		}
 
@@ -174,7 +177,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			if (current != null)
 			{
+#pragma warning disable RECS0030 // Suggests using the class declaring a static function when calling it
 				int index = Page.CurrentPage != null ? CarouselPage.GetIndex(Page.CurrentPage) : 0;
+#pragma warning restore RECS0030 // Suggests using the class declaring a static function when calling it
 
 				if (index < 0)
 					index = 0;

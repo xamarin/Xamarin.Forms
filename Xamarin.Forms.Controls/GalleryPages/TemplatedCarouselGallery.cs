@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls
 {
-	internal class TemplatedCarouselGallery
-		: CarouselPage
+#pragma warning disable CS0618 // Type or member is obsolete
+	class TemplatedCarouselGallery : CarouselPage
+#pragma warning restore CS0618 // Type or member is obsolete
 	{
 		ObservableCollection<Item> _items;
 		int _count = 0;

@@ -40,10 +40,12 @@ namespace Xamarin.Forms.Controls
 			((App)Application.Current).SetMainPage(new FlowDirectionGalleryMDP(direction));
 		}
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public static void PushCarouselPage(FlowDirection direction)
 		{
 			((App)Application.Current).SetMainPage(new FlowDirectionGalleryCarP(direction));
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
 
 		public static void PushTabbedPage(FlowDirection direction)
 		{
@@ -80,6 +82,7 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class FlowDirectionGalleryCarP : CarouselPage
 	{
 		public FlowDirectionGalleryCarP(FlowDirection direction)

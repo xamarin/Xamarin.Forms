@@ -223,10 +223,13 @@ namespace Xamarin.Forms.Controls
 			return mdp;
 		}
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public static CarouselPage MacDemoCarouselPage()
+#pragma warning restore CS0618 // Type or member is obsolete
 		{
-
+#pragma warning disable CS0618 // Type or member is obsolete
 			var carouselPage = new CarouselPage { BackgroundColor = Color.Yellow };
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			var btnGo = new Button { Text = "Goto To Page 1 " };
 			var btnGo1 = new Button { Text = "Goto To Page 3 " };

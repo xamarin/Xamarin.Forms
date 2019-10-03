@@ -22,7 +22,10 @@ namespace Xamarin.Forms.Controls.Issues
 			
 			button.Clicked += (sender, args) => {
 				Button button2 = null;
-				button.Navigation.PushAsync (new CarouselPage {
+#pragma warning disable CS0618 // Type or member is obsolete
+				button.Navigation.PushAsync (new CarouselPage
+				{
+#pragma warning restore CS0618 // Type or member is obsolete
 					Children = {
 						new ContentPage {
 							Content = button2 = new Button {

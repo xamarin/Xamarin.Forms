@@ -52,8 +52,11 @@ namespace Xamarin.Forms.Controls
 					return async () => {
 						var page = ActivatePage (type);
 						TrackOnInsights (page);
-						if (page is ContentPage || page is CarouselPage) {
-							
+#pragma warning disable CS0618 // Type or member is obsolete
+						if (page is ContentPage || page is CarouselPage)
+						{
+#pragma warning restore CS0618 // Type or member is obsolete
+
 							await Navigation.PushAsync (page);
 
 						}

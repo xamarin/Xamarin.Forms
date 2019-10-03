@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 29257, "CarouselPage.CurrentPage Does Not Work Properly When Used Inside a NavigationPage ")]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class Bugzilla29257 : TestContentPage 
 	{
 		List<string> _menuItems = new List<string> {
@@ -60,6 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_menu.SelectedItem = null;
 		}
 
+		[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 		public class TestPage : CarouselPage
 		{
 			public TestPage()

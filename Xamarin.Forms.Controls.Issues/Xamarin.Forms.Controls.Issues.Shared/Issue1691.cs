@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Github, 1691, "CarouselPage iOS CurrentPage bug")]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class Issue1691 : TestCarouselPage
 	{
 		int _currentIndex;

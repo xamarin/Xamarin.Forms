@@ -10,6 +10,7 @@ using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class CarouselPageRenderer : UIViewController, IVisualElementRenderer
 	{
 		bool _appeared;

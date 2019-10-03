@@ -23,7 +23,8 @@ namespace Xamarin.Forms.Controls
 		public const string ChangeRoot = "com.xamarin.ChangeRoot";
 	}
 	[Preserve(AllMembers = true)]
-	internal class CoreCarouselPage : CarouselPage
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	class CoreCarouselPage : CarouselPage
 	{
 		public CoreCarouselPage()
 		{
@@ -216,7 +217,9 @@ namespace Xamarin.Forms.Controls
 		public CoreRootView()
 		{
 			var roots = new[] {
+#pragma warning disable CS0618 // Type or member is obsolete
 				new CoreViewContainer ("SwapRoot - CarouselPage", typeof(CoreCarouselPage)),
+#pragma warning restore CS0618 // Type or member is obsolete
 				new CoreViewContainer ("SwapRoot - ContentPage", typeof(CoreContentPage)),
 				new CoreViewContainer ("SwapRoot - MasterDetailPage", typeof(CoreMasterDetailPage)),
 				new CoreViewContainer ("SwapRoot - NavigationPage", typeof(CoreNavigationPage)),
@@ -368,8 +371,10 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new BoundContentPage(), "BoundPage Gallery - Legacy"),
 				new GalleryPageFactory(() => new BackgroundImageGallery(), "BackgroundImage gallery"),
 				new GalleryPageFactory(() => new ButtonGallery(), "Button Gallery - Legacy"),
-				new GalleryPageFactory(() => new CarouselPageGallery(), "CarouselPage Gallery - Legacy"),
-				new GalleryPageFactory(() => new CellTypesListPage(), "Cells Gallery - Legacy"),
+#pragma warning disable CS0618 // Type or member is obsolete
+			new GalleryPageFactory(() => new CarouselPageGallery(), "CarouselPage Gallery - Legacy"),
+#pragma warning restore CS0618 // Type or member is obsolete
+			new GalleryPageFactory(() => new CellTypesListPage(), "Cells Gallery - Legacy"),
 				new GalleryPageFactory(() => new ClipToBoundsGallery(), "ClipToBounds Gallery - Legacy"),
 				new GalleryPageFactory(() => new ControlTemplatePage(), "ControlTemplated Gallery - Legacy"),
 				new GalleryPageFactory(() => new ControlTemplateXamlPage(), "ControlTemplated XAML Gallery - Legacy"),

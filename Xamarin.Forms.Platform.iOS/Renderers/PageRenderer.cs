@@ -196,8 +196,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			if (Element.Parent is CarouselPage)
 				return;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			Page.SendAppearing();
 		}
@@ -211,8 +213,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appeared = false;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			if (Element.Parent is CarouselPage)
 				return;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			Page.SendDisappearing();
 		}

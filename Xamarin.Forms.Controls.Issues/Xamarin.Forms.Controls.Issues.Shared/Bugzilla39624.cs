@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
@@ -6,6 +7,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 39624, "CarouselPage.Children Appear Out of Order", PlatformAffected.WinRT)]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class Bugzilla39624 : TestCarouselPage
 	{
 		protected override void Init ()

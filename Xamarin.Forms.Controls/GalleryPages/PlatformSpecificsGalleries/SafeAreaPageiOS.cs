@@ -118,7 +118,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 							var pageNotSafe = new SafeAreaPageiOS(restore,setRoot);
 							pageNotSafe.On<iOS>().SetUseSafeArea(false);
 							pageNotSafe.Title ="Not Using Safe Area";
+#pragma warning disable CS0618 // Type or member is obsolete
 							var carouselPage = new CarouselPage();
+#pragma warning restore CS0618 // Type or member is obsolete
 							carouselPage.Children.Add(pageSafe);
 							carouselPage.Children.Add(pageNotSafe);
 							setRoot.Execute(carouselPage);

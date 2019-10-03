@@ -8,6 +8,7 @@ using Foundation;
 namespace Xamarin.Forms.Platform.MacOS
 {
 	[Register("CarouselPageRenderer")]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class CarouselPageRenderer : NSPageController, IVisualElementRenderer
 	{
 		bool _appeared;

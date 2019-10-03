@@ -26,7 +26,10 @@ namespace Xamarin.Forms.Controls.Issues
 			
 			var lblCount = new Label { AutomationId = "lblCount" };
 
-			var myCarouselPage = new CarouselPage () {
+#pragma warning disable CS0618 // Type or member is obsolete
+			var myCarouselPage = new CarouselPage ()
+			{
+#pragma warning restore CS0618 // Type or member is obsolete
 
 				Children = {
 					new ContentPage { 

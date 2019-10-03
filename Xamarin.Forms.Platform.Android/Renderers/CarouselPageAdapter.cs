@@ -9,7 +9,8 @@ using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class CarouselPageAdapter : PagerAdapter, ViewPager.IOnPageChangeListener
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	class CarouselPageAdapter : PagerAdapter, ViewPager.IOnPageChangeListener
 	{
 		readonly Context _context;
 		readonly ViewPager _pager;

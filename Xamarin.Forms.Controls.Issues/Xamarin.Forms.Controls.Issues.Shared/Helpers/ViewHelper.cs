@@ -47,7 +47,9 @@ namespace Xamarin.Forms.Controls.Issues.Helpers
 				new NavigationPage(new Page()),
 				new Page(),
 				new ContentPage(),
+#pragma warning disable CS0618 // Type or member is obsolete
 				new CarouselPage(),
+#pragma warning restore CS0618 // Type or member is obsolete
 				new TabbedPage(),
 				new TemplatedPage(),
 			};

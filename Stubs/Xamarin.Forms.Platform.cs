@@ -153,6 +153,7 @@ namespace Xamarin.Forms.Platform
 	internal class _NavigationPageRenderer { }
 
 	[RenderWith (typeof (CarouselPageRenderer))]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	internal class _CarouselPageRenderer { }
 
 	[RenderWith (typeof (PageRenderer))]

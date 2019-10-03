@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4187, "Picker list shows up, when focus is set on other controls", PlatformAffected.Android)]
+	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
 	public class Issue4187 : TestCarouselPage
 	{
 		protected override void Init()
