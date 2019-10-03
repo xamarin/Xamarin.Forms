@@ -370,7 +370,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					// Now that the native empty view's frame is sized to the UICollectionView, we need to handle
 					// the Forms layout for its content
-					_emptyViewFormsElement.Layout(_emptyUIView.Frame.ToRectangle());
+					_emptyViewFormsElement.Layout(CollectionView.Frame.ToRectangle());
 				}
 			}
 			else

@@ -19,38 +19,30 @@
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
-
     <Grid RowSpacing="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <Grid Grid.Row="0" BackgroundColor="Black" HeightRequest="50"/>
-
+        <Grid Grid.Row="0" BackgroundColor="Black" HeightRequest="50">
+            <Label Text="If the red line is between Item 3 and Item 4, the test has passed." TextColor="White"/>
+        </Grid>
         <CollectionView Grid.Row="1">
             <CollectionView.EmptyView>
                 <ContentView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="Beige">
                     <StackLayout Style="{x:StaticResource StackLayoutStyle}">
                         <Label Text="Text1" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="14.5"/>
-
                         <Label Text="Text2" HorizontalTextAlignment="Center" TextColor="#636571" FontSize="14.5"/>
-
                         <Label Text="Text3" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="14.5"/>
-
                         <Label Text="Text4" HorizontalTextAlignment="Center" TextColor="#636571" FontSize="14.5"/>
-
                         <Label Text="Text5" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="14.5"/>
-
                         <Label Text="Text6" HorizontalTextAlignment="Center" TextColor="#636571" FontSize="14.5"/>
                     </StackLayout>
                 </ContentView>
             </CollectionView.EmptyView>
         </CollectionView>
-
         <Grid Grid.Row="2" BackgroundColor="Black" HeightRequest="50"/>
-
         <Grid Grid.Row="0" Grid.RowSpan="3" BackgroundColor="Red" HeightRequest="5" VerticalOptions="Center"/>
     </Grid>
 </controls:TestContentPage>
