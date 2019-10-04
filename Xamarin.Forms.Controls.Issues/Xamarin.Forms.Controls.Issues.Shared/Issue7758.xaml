@@ -25,9 +25,11 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" BackgroundColor="Black" HeightRequest="50">
-            <Label Text="If the red line is between Item 3 and Item 4, the test has passed." TextColor="White"/>
+        
+        <Grid Grid.Row="0" BackgroundColor="Black" Padding="10">
+            <Label Text="If the red line is not between Item 3 and Item 4, the test has failed. Change device orientation to landscape. If the red line is not between Item 3 and Item 4, the test has failed. If there is a visible white background during orientation change, the test has failed." TextColor="White"/>
         </Grid>
+        
         <CollectionView Grid.Row="1">
             <CollectionView.EmptyView>
                 <ContentView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="Beige">
@@ -42,7 +44,9 @@
                 </ContentView>
             </CollectionView.EmptyView>
         </CollectionView>
+        
         <Grid Grid.Row="2" BackgroundColor="Black" HeightRequest="50"/>
-        <Grid Grid.Row="0" Grid.RowSpan="3" BackgroundColor="Red" HeightRequest="5" VerticalOptions="Center"/>
+        
+        <Grid Grid.Row="1" BackgroundColor="Red" HeightRequest="5" VerticalOptions="Center"/>
     </Grid>
 </controls:TestContentPage> 
