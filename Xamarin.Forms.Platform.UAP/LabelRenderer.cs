@@ -182,6 +182,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var elementTextDecorations = Element.TextDecorations;
 
+			if (Control == null)
+			    return;
 			if (_textDecorationsDefault == 1)
 				_textDecorationsDefault = (int)textBlock.TextDecorations;
 
