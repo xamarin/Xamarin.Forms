@@ -542,11 +542,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			var effectiveFlowDirection = ((IVisualElementController)Element).EffectiveFlowDirection;
 
-			if (effectiveFlowDirection.IsRightToLeft())
+			if (effectiveFlowDirection.IsRightToLeft()
+				&& Context.GetActivity().Window.DecorView.LayoutDirection == LayoutDirection.Ltr)
 			{
 				linearLayoutManager.ReverseLayout = true;
 			}
-			else if (effectiveFlowDirection.IsLeftToRight())
+			else if (effectiveFlowDirection.IsLeftToRight()
+				&& Context.GetActivity().Window.DecorView.LayoutDirection == LayoutDirection.Rtl)
 			{
 				linearLayoutManager.ReverseLayout = false;
 			}
