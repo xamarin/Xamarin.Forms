@@ -143,6 +143,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_initialConstraintsSet = true;
 				UpdateEmptyView();
 			}
+   
+			UpdateEmptyViewLayout();
 		}
   
 		protected virtual UICollectionViewDelegator CreateDelegator()
@@ -266,6 +268,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// If the empty view is being displayed, we might need to update it
 			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);
+		}
+
+		internal void UpdateEmptyViewLayout()
+		{
+			if (_emptyUIView != null && _emptyViewFormsElement != null)
+				_emptyViewFormsElement.Layout(_emptyUIView.Frame.ToRectangle());
 		}
 
 		protected void UpdateSubview(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)
