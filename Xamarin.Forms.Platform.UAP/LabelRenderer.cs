@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateText(Control);
 
-				if (e.OldElement?.TextDecorations != e.NewElement.TextDecorations)
+				if (e.OldElement?.TextDecorations != e.NewElement?.TextDecorations)
 					UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
