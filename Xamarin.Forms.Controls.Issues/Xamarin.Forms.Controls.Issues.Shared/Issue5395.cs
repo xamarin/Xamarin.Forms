@@ -10,21 +10,48 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue5395()
 		{
-			var sl = new StackLayout();
-			sl.Children.Add(new Label() { Text = "Image should scale and rotate clockwise around its center" });
-			sl.Children.Add(new Rotator());
-			Content = sl; 
-		}
+			var sl = new StackLayout() { Orientation = StackOrientation.Vertical };
 
-		class Rotator : AbsoluteLayout
+			sl.Children.Add(new Label() { Text = "Image should rotate clockwise around its center" });
+			sl.Children.Add(new TestImage(0.5, 0.5, true, false));
+
+			sl.Children.Add(new Label() { Text = "Image should rotate clockwise around its top left corner" });
+			sl.Children.Add(new TestImage(0, 0, true, false));
+
+			sl.Children.Add(new Label() { Text = "Image should rotate clockwise around its top right corner" });
+			sl.Children.Add(new TestImage(1, 0, true, false));
+
+			sl.Children.Add(new Label() { Text = "Image should rotate clockwise around its bottom right corner" });
+			sl.Children.Add(new TestImage(1, 1, true, false));
+
+			sl.Children.Add(new Label() { Text = "Image should scale on its center" });
+			sl.Children.Add(new TestImage(0.5, 0.5, false, true));
+
+			Content = sl;
+		}
+		class TestImage : Image
 		{
-			public Rotator()
+			public TestImage(double anchorx, double anchory, bool rotate, bool scale)
 			{
-				var image = new Image { Aspect = Aspect.AspectFit, Source = "bank.png" };
-				Children.Add(image, new Rectangle(.5, .5, .5, .5), AbsoluteLayoutFlags.All);
-				VerticalOptions = HorizontalOptions = LayoutOptions.FillAndExpand;
-				image.RotateTo(3600, 10000);
-				image.ScaleTo(4, 10000);
+				VerticalOptions = HorizontalOptions = LayoutOptions.Center;
+				Aspect = Aspect.AspectFit;
+				Source = "bank.png";
+				WidthRequest = 30;
+				HeightRequest = 30;				
+				BackgroundColor = Color.Red;
+				AnchorX = anchorx;
+				AnchorY = anchory;
+				//TranslationX = -50;
+				//TranslationY = 25;
+				if (rotate)
+				{
+					this.RotateTo(3600, 10000);
+				}
+				if (scale)
+				{
+					this.ScaleTo(2, 4000);
+				}
+				Margin = 30;
 			}
 		}
 	}
