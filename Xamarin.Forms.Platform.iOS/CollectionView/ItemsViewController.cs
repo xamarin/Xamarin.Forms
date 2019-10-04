@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (wasEmpty != _isEmpty)
 			{
-				UpdateEmptyViewVisibility(_isEmpty);
+				UpdateEmptyView();
 			}
 
 			if (wasEmpty && !_isEmpty)
