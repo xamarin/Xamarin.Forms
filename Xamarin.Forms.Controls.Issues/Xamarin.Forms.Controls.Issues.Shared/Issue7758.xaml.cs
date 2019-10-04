@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
@@ -18,7 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
         {
-
+			
         }
     }
 }
