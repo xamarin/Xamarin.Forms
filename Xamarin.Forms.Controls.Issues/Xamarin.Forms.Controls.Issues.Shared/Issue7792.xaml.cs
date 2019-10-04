@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Windows.Input;
 
 #if UITEST
 using Xamarin.UITest;
@@ -16,7 +17,10 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue7792()
 		{
+#if APP
+ 			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
 			InitializeComponent();
+#endif
 			BindingContext = new Issue7792ViewModel();
 		}
 

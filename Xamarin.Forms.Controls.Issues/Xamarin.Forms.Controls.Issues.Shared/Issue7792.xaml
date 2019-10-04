@@ -5,10 +5,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
              mc:Ignorable="d"
-             x:Class="Xamarin.Forms.Controls.Issues.Issue7792">
+             x:Class="Xamarin.Forms.Controls.Issues.Issue7792"
+             Title="Issue 7792" >
     <ContentPage.Content>
-      <CarouselView 
-          ItemsSource="{Binding EmptyMonkeys}"
-          EmptyView="No items to display." />
+        <StackLayout>
+            <Label
+                Text="If you can see the text of the Carousel EmptyView below, the test passes."/>
+            <CarouselView
+                BackgroundColor="Yellow"
+                ItemsSource="{Binding IteEmptyItemsms}"
+                EmptyView="No items to display (EmptyView)." />
+        </StackLayout>
     </ContentPage.Content>
 </controls:TestContentPage>
