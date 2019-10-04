@@ -54,10 +54,10 @@ namespace Xamarin.Forms
 			PreviousState = State;
 			State = eventArgs.TouchState;
 			TouchCount = _touches.Count;
-			OnPropertyChanged(nameof(Touches));
 
 			OnTouch(sender, eventArgs);
 			TouchUpdated?.Invoke(this, eventArgs);
+			OnPropertyChanged(nameof(Touches));
 		}
 
 		public event EventHandler<TouchEventArgs> TouchUpdated;
@@ -97,7 +97,7 @@ namespace Xamarin.Forms
 
 		internal static class GestureDetector
 		{
-			const int GestureThreshold = 6;
+			const double GestureThreshold = 6.0;
 
 			internal static GestureDirection DetectGesture(Point[] points)
 			{
@@ -131,14 +131,14 @@ namespace Xamarin.Forms
 				{
 					if (Math.Abs(xDiff) > Math.Abs(yDiff))
 					{
-						if (Math.Abs(xDiff) / Math.Abs(yDiff) > 7.0)
+						if (Math.Abs(xDiff) / Math.Abs(yDiff) > GestureThreshold)
 						{
 							up = down = false;
 						}
 					}
 					else
 					{
-						if (Math.Abs(yDiff) / Math.Abs(xDiff) > 7.0)
+						if (Math.Abs(yDiff) / Math.Abs(xDiff) > GestureThreshold)
 						{
 							right = left = false;
 						}
@@ -151,7 +151,7 @@ namespace Xamarin.Forms
 				{
 					if (left || right)
 					{
-						gesture = ComplexGesture(points, up, down, right, left);
+						gesture = GetDirection(points, up, down, right, left);
 					}
 					else
 					{
@@ -166,9 +166,9 @@ namespace Xamarin.Forms
 				return gesture;
 			}
 
-			static GestureDirection ComplexGesture(Point[] points, bool up, bool down, bool right, bool left)
+			static GestureDirection GetDirection(Point[] points, bool up, bool down, bool right, bool left)
 			{
-				var gestureType = GestureDirection.None;
+				var gestureDirection = GestureDirection.None;
 				var pointsAboveDiagonal = 0;
 				var pointsBelowDiagonal = 0;
 				Point first = points[0];
@@ -191,26 +191,26 @@ namespace Xamarin.Forms
 				{
 					if (right)
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.RightUp : GestureDirection.UpRight;
+						gestureDirection = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.RightUp : GestureDirection.UpRight;
 					}
 					else
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.LeftUp : GestureDirection.UpLeft;
+						gestureDirection = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.LeftUp : GestureDirection.UpLeft;
 					}
 				}
 				else if (down)
 				{
 					if (right)
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.DownRight : GestureDirection.RightDown;
+						gestureDirection = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.DownRight : GestureDirection.RightDown;
 					}
 					else
 					{
-						gestureType = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.DownLeft : GestureDirection.LeftDown;
+						gestureDirection = pointsAboveDiagonal > pointsBelowDiagonal ? GestureDirection.DownLeft : GestureDirection.LeftDown;
 					}
 				}
 
-				return gestureType;
+				return gestureDirection;
 			}
 		}
 	}

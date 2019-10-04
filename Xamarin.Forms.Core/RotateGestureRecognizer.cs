@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
@@ -85,28 +84,29 @@ namespace Xamarin.Forms
 		{
 			if (TouchCount != 2)
 			{
-				if (_total != 0d)
+				if (_total != 0.0)
 				{
-					_total = 0d;
+					_total = 0.0;
 					IsRotating = false;
-					Rotated?.Invoke(this, new RotateGestureUpdatedEventArgs(_total, 0d, sender.Bounds.Center));
+					Rotated?.Invoke(this, new RotateGestureUpdatedEventArgs(_total, 0.0, sender.Bounds.Center));
+					Cancelled?.Invoke(this, new RotateGestureUpdatedEventArgs(_total, 0.0, sender.Bounds.Center));
 					CancelledCommand.Run(CancelledCommandParameter);
 				}
 
 				return;
 			}
 
-			if (Touches[0].TouchPoints.Count > 1 && Touches[1].TouchPoints.Count > 1 && _total == 0d)
+			if (Touches[0].TouchPoints.Count > 1 && Touches[1].TouchPoints.Count > 1 && _total == 0.0)
 			{
 				IsRotating = true;
 				StartedCommand.Run(StartedCommandParameter);
 			}
 
-			TouchPoint a1 = Touches[0].TouchPoints.First();
-			TouchPoint b1 = Touches[1].TouchPoints.First();
+			TouchPoint a1 = Touches[0].TouchPoints[0];
+			TouchPoint b1 = Touches[1].TouchPoints[0];
 
-			TouchPoint a2 = Touches[0].TouchPoints.Last();
-			TouchPoint b2 = Touches[1].TouchPoints.Last();
+			TouchPoint a2 = Touches[0].TouchPoints[Touches[0].TouchPoints.Count - 1];
+			TouchPoint b2 = Touches[1].TouchPoints[Touches[1].TouchPoints.Count - 1];
 
 			var d1 = new Point(a1.Point.X - b1.Point.X, a1.Point.Y - b1.Point.Y);
 			var d2 = new Point(a2.Point.X - b2.Point.X, a2.Point.Y - b2.Point.Y);
@@ -114,14 +114,14 @@ namespace Xamarin.Forms
 			var delta = Math.Atan2(d2.Y, d2.X) - Math.Atan2(d1.Y, d1.X);
 			_total += delta;
 
-			System.Diagnostics.Debug.WriteLine($"Total:{_total}; Delta:{delta}");
 			Rotated?.Invoke(this, new RotateGestureUpdatedEventArgs(_total, delta, new Point(d2.X - d1.X, d2.Y - d1.Y)));
-			if (_total >= DegreeRotationThreshold)
+			if (Math.Abs(_total) >= Math.Abs(DegreeRotationThreshold))
 			{
 				Command.Run(CommandParameter);
 			}
 		}
 
 		public event EventHandler<RotateGestureUpdatedEventArgs> Rotated;
+		public event EventHandler<RotateGestureUpdatedEventArgs> Cancelled;
 	}
 }
