@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_ = UpdateImageAsync();
 			else if (e.PropertyName == Button.TextProperty.PropertyName ||
 					 e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
-				UpdateText(); 
+				UpdateText();
 			else if (e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				UpdateEdgeInsets();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
@@ -233,7 +233,6 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 				case LineBreakMode.WordWrap:
 					control.LineBreakMode = UILineBreakMode.WordWrap;
-					var p = control.TitleLabel.Frame.Size.Height;
 					break;
 				case LineBreakMode.CharacterWrap:
 					control.LineBreakMode = UILineBreakMode.CharacterWrap;
@@ -250,9 +249,6 @@ namespace Xamarin.Forms.Platform.iOS
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-			//var height = control.TitleLabel.Frame.Size.Height;
-			//var buttonFrame = control.Frame;
-			//control.Frame = new CGRect(buttonFrame.X, buttonFrame.Y, buttonFrame.Width, height);
 		}
 
 		async Task UpdateImageAsync()
