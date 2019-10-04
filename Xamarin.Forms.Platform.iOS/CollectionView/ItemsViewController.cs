@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (wasEmpty != _isEmpty)
 			{
-				UpdateEmptyView();
+				UpdateEmptyViewVisibility(_isEmpty);
 			}
 
 			if (wasEmpty && !_isEmpty)
@@ -127,6 +127,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 			AutomaticallyAdjustsScrollViewInsets = false;
 			RegisterViewTypes();
+			UpdateEmptyView();
 		}
 
 		public override void ViewWillLayoutSubviews()
