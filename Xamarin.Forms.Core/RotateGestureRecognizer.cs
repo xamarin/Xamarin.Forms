@@ -28,7 +28,7 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(CancelledCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
 
 		public static readonly BindableProperty IsRotatingPropertyProperty =
-			BindableProperty.Create(nameof(IsRotating), typeof(bool), typeof(RotateGestureRecognizer), false);
+			BindableProperty.Create(nameof(IsRotating), typeof(bool), typeof(RotateGestureRecognizer), false, BindingMode.OneWayToSource);
 
 		double _total;
 
@@ -65,7 +65,7 @@ namespace Xamarin.Forms
 		public bool IsRotating
 		{
 			get => (bool)GetValue(IsRotatingPropertyProperty);
-			set => SetValue(IsRotatingPropertyProperty, value);
+			private set => SetValue(IsRotatingPropertyProperty, value);
 		}
 
 		public ICommand StartedCommand
@@ -79,6 +79,9 @@ namespace Xamarin.Forms
 			get => GetValue(StartedCommandParameterProperty);
 			set => SetValue(StartedCommandParameterProperty, value);
 		}
+
+		public event EventHandler<RotateGestureUpdatedEventArgs> Rotated;
+		public event EventHandler<RotateGestureUpdatedEventArgs> Cancelled;
 
 		public override void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
@@ -120,8 +123,5 @@ namespace Xamarin.Forms
 				Command.Run(CommandParameter);
 			}
 		}
-
-		public event EventHandler<RotateGestureUpdatedEventArgs> Rotated;
-		public event EventHandler<RotateGestureUpdatedEventArgs> Cancelled;
 	}
 }

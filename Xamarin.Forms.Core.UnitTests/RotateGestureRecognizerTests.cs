@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(2, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(55, 101), TouchState.Press, true) }));
 
-
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move,
 					new List<TouchPoint>
@@ -41,7 +40,6 @@ namespace Xamarin.Forms.Core.UnitTests
 						new TouchPoint(0, new Point(55, 103), TouchState.Move, true), 
 						new TouchPoint(0, new Point(55, 107), TouchState.Move, true)
 					}));
-
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move,
@@ -58,7 +56,6 @@ namespace Xamarin.Forms.Core.UnitTests
 						new TouchPoint(0, new Point(55, 110), TouchState.Move, true), 
 						new TouchPoint(0, new Point(55, 115), TouchState.Move, true)
 					}));
-
 
 			Assert.AreEqual(true, recognizer.IsRotating);
 
