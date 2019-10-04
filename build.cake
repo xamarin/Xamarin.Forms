@@ -51,7 +51,7 @@ string monoPatchVersion = "28";
 string monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
 
 string monoSDK_windows = $"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
-string androidSDK_windows = "https://aka.ms/xamarin-android-commercial-d15-9-windows";
+string androidSDK_windows = "";
 string iOSSDK_windows = "https://download.visualstudio.microsoft.com/download/pr/71f33151-5db4-49cc-ac70-ba835a9f81e2/d256c6c50cd80ec0207783c5c7a4bc2f/xamarin.visualstudio.apple.sdk.4.12.3.83.vsix";
 string macSDK_windows = "";
 
@@ -66,7 +66,7 @@ string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/je
 
 string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
 string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
-string iosSDK = IsRunningOnWindows() ? "" : iOSSDK_macos;
+string iosSDK = IsRunningOnWindows() ? iOSSDK_windows : iOSSDK_macos;
 string macSDK  = IsRunningOnWindows() ? "" : macSDK_macos;
 
 string[] androidSdkManagerInstalls = new string[0]; //new [] { "platforms;android-29"};
