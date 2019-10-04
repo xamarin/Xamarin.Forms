@@ -58,6 +58,11 @@ namespace Xamarin.Forms
 			OnTouch(sender, eventArgs);
 			TouchUpdated?.Invoke(this, eventArgs);
 			OnPropertyChanged(nameof(Touches));
+
+			if (TouchCount == 0)
+			{
+				State = TouchState.Default;
+			}
 		}
 
 		public event EventHandler<TouchEventArgs> TouchUpdated;
