@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 7758, "[iOS] EmptyView is not rendered in screen center", PlatformAffected.iOS)]
 	public partial class Issue7758 : TestContentPage
 	{
-        public Issue7758()
+		public Issue7758()
 		{
 #if APP
 			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
