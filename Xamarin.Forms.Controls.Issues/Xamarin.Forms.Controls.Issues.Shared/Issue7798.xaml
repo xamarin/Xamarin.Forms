@@ -8,6 +8,8 @@
              x:Class="Xamarin.Forms.Controls.Issues.Issue7798">
     <ContentPage.Content>
   <StackLayout Margin="20">
+      <Label
+          Text="Press the Button below and verify that the Carousel scroll position moves to monkey 9 (Proboscis Monkey)."/>
         <StackLayout Orientation="Horizontal"
                      HorizontalOptions="Center">
             <Label Text="Animate scroll: "
@@ -15,7 +17,7 @@
             <Switch x:Name="animateSwitch"
                     IsToggled="true" />
         </StackLayout>
-        <Button Text="Scroll to item 6"
+        <Button Text="Scroll to monkey 9 (Proboscis Monkey)"
                 Clicked="OnButtonClicked" />
         <CarouselView x:Name="carouselView"
                       ItemsSource="{Binding Monkeys}"
