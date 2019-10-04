@@ -254,29 +254,36 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 					return;
 				}
+#if !__MOBILE__
+				// Y-axe on macos is inverted				
+				translationY = -translationY;
+				anchorY = 1 - anchorY;
+
+				// rotation direction on macos also inverted
+				rotationX = -rotationX;
+				rotationY = -rotationY;
+				rotation = -rotation;
+
+				//otherwise scaled/rotated image clipped by parent bounds
+				caLayer.MasksToBounds = false;
+#endif
 				caLayer.AnchorPoint = new PointF(anchorX, anchorY);
 				caLayer.Opacity = opacity;
 				const double epsilon = 0.001;
 
 #if !__MOBILE__
-				// fix position
+				// fix position, position in macos is aslo relative to anchor point
+				// but it's (0,0) by default, so we don't need to substract 0.5
 				transform = transform.Translate(anchorX * width, 0, 0);
 				transform = transform.Translate(0, anchorY * height, 0);
-#endif
+#else
 				// position is relative to anchor point
 				if (Math.Abs(anchorX - .5) > epsilon)
 					transform = transform.Translate((anchorX - .5f) * width, 0, 0);
 				if (Math.Abs(anchorY - .5) > epsilon)
 					transform = transform.Translate(0, (anchorY - .5f) * height, 0);
-
-#if !__MOBILE__
-				// Y-axe on macos is inverted				
-				translationY = -translationY;
-				// rotation direction on macos also inverted
-				rotationX = -rotationX;
-				rotationY = -rotationY;
-				rotation = -rotation;
 #endif
+
 				if (Math.Abs(translationX) > epsilon || Math.Abs(translationY) > epsilon)
 					transform = transform.Translate(translationX, translationY, 0);
 
@@ -293,10 +300,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					transform = transform.Rotate(rotationY * (float)Math.PI / 180.0f, 0.0f, 1.0f, 0.0f);
 
 				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
-#if !__MOBILE__
-				//otherwise scaled/rotated image clipped by parent bounds
-				caLayer.MasksToBounds = false;
-#endif
 
 				if (Foundation.NSThread.IsMain)
 				{
