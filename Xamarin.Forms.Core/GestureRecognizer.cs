@@ -7,8 +7,8 @@ namespace Xamarin.Forms
 {
 	public class GestureRecognizer : Element, IGestureRecognizer
 	{
-		public static readonly BindableProperty StateProperty =
-			BindableProperty.Create(nameof(State), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default, BindingMode.OneWayToSource);
+		public static readonly BindableProperty TouchStateProperty =
+			BindableProperty.Create(nameof(TouchState), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default, BindingMode.OneWayToSource);
 
 		public static readonly BindableProperty TouchCountProperty =
 			BindableProperty.Create(nameof(TouchCount), typeof(int), typeof(GestureRecognizer), 0, BindingMode.OneWayToSource);
@@ -22,10 +22,10 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public TouchState State
+		public TouchState TouchState
 		{
-			get => (TouchState)GetValue(StateProperty);
-			private set => SetValue(StateProperty, value);
+			get => (TouchState)GetValue(TouchStateProperty);
+			private set => SetValue(TouchStateProperty, value);
 		}
 
 		public int TouchCount
@@ -51,8 +51,8 @@ namespace Xamarin.Forms
 		{
 			CollectTouch(eventArgs, sender);
 
-			PreviousState = State;
-			State = eventArgs.TouchState;
+			PreviousState = TouchState;
+			TouchState = eventArgs.TouchState;
 			TouchCount = _touches.Count;
 
 			OnTouch(sender, eventArgs);
@@ -61,7 +61,7 @@ namespace Xamarin.Forms
 
 			if (TouchCount == 0)
 			{
-				State = TouchState.Default;
+				TouchState = TouchState.Default;
 			}
 		}
 

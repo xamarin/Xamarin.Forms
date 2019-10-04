@@ -182,7 +182,7 @@ namespace Xamarin.Forms
 		{
 			if (sender.HasVisualStateGroups())
 			{
-				VisualStateManager.GoToState(sender, State.ToString());
+				VisualStateManager.GoToState(sender, TouchState.ToString());
 			}
 
 			switch (eventArgs.TouchState)

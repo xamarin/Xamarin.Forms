@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 55), TouchState.Move, true) }));
@@ -24,14 +24,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 70), TouchState.Move, true) }));
 
-			Assert.AreEqual(TouchState.Move, recognizer.State);
+			Assert.AreEqual(TouchState.Move, recognizer.TouchState);
 			Assert.AreEqual(GestureDirection.Down, recognizer.Touches[0].Gesture);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Release, new List<TouchPoint> { new TouchPoint(0, new Point(50, 80), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(48, 50), TouchState.Move, true) }));
@@ -53,14 +53,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(30, 50), TouchState.Move, true) }));
 
-			Assert.AreEqual(TouchState.Move, recognizer.State);
+			Assert.AreEqual(TouchState.Move, recognizer.TouchState);
 			Assert.AreEqual(GestureDirection.Left, recognizer.Touches[0].Gesture);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Release, new List<TouchPoint> { new TouchPoint(0, new Point(20, 50), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(52, 50), TouchState.Move, true) }));
@@ -82,14 +82,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(70, 50), TouchState.Move, true) }));
 
-			Assert.AreEqual(TouchState.Move, recognizer.State);
+			Assert.AreEqual(TouchState.Move, recognizer.TouchState);
 			Assert.AreEqual(GestureDirection.Right, recognizer.Touches[0].Gesture);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Release, new List<TouchPoint> { new TouchPoint(0, new Point(75, 50), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 42), TouchState.Move, true) }));
@@ -111,14 +111,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 28), TouchState.Move, true) }));
 
-			Assert.AreEqual(TouchState.Move, recognizer.State);
+			Assert.AreEqual(TouchState.Move, recognizer.TouchState);
 			Assert.AreEqual(GestureDirection.Up, recognizer.Touches[0].Gesture);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Release, new List<TouchPoint> { new TouchPoint(0, new Point(50, 20), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(1, 1), TouchState.Press, true) }));
 
 			Assert.AreEqual(1, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 			Assert.AreEqual(1, recognizer.Touches.Count);
 		}
 
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(1, 1), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(1, 2), TouchState.Move, true) }));
@@ -155,14 +155,14 @@ namespace Xamarin.Forms.Core.UnitTests
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(1, 4), TouchState.Move, true) }));
 
 			Assert.AreEqual(1, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Move, recognizer.State);
+			Assert.AreEqual(TouchState.Move, recognizer.TouchState);
 			Assert.AreEqual(4, recognizer.Touches[0].TouchPoints.Count);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Release, new List<TouchPoint> { new TouchPoint(0, new Point(1, 5), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -178,7 +178,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				new TouchEventArgs(1, TouchState.Release, new List<TouchPoint> { new TouchPoint(0, new Point(1, 2), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(2, TouchState.Press, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(30, 55), TouchState.Move, true) }));
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				new TouchEventArgs(2, TouchState.Release, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(2, TouchState.Press, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(45, 50), TouchState.Move, true) }));
@@ -270,7 +270,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				new TouchEventArgs(2, TouchState.Release, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -285,7 +285,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(2, TouchState.Press, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(45, 50), TouchState.Move, true) }));
@@ -316,7 +316,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				new TouchEventArgs(2, TouchState.Release, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 
@@ -331,7 +331,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			recognizer.SendTouch(view,
 				new TouchEventArgs(2, TouchState.Press, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Press, true) }));
 
-			Assert.AreEqual(TouchState.Press, recognizer.State);
+			Assert.AreEqual(TouchState.Press, recognizer.TouchState);
 
 			recognizer.SendTouch(view,
 				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(1, new Point(45, 45), TouchState.Move, true) }));
@@ -352,7 +352,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				new TouchEventArgs(2, TouchState.Release, new List<TouchPoint> { new TouchPoint(2, new Point(50, 50), TouchState.Release, true) }));
 
 			Assert.AreEqual(0, recognizer.TouchCount);
-			Assert.AreEqual(TouchState.Default, recognizer.State);
+			Assert.AreEqual(TouchState.Default, recognizer.TouchState);
 			Assert.AreEqual(0, recognizer.Touches.Count);
 		}
 	}

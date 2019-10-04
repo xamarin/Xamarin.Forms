@@ -101,7 +101,7 @@ namespace Xamarin.Forms
 			_cts?.Cancel();
 			_cts = new CancellationTokenSource();
 
-			if (State == TouchState.Release)
+			if (TouchState == TouchState.Release)
 			{
 				_tapCount++;
 				if (!IsTapping)
