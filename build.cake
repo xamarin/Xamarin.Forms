@@ -265,7 +265,6 @@ Task("DeployiOS")
 */
 Task("DeployAndroid")
     .Description("Builds and deploy Android Control Gallery")
-    .IsDependentOn("BuildHack")
     .Does(() =>
     { 
         MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
