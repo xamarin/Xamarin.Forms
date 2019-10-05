@@ -1,14 +1,14 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using UWPListViewSelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class SelectableItemsViewRenderer : ItemsViewRenderer
+	public class SelectableItemsViewRenderer : StructuredItemsViewRenderer
 	{
 		SelectableItemsView _selectableItemsView;
+		bool _ignoreNativeSelectionChange;
 
 		protected override void TearDownOldElement(ItemsView oldElement)
 		{
@@ -30,6 +30,11 @@ namespace Xamarin.Forms.Platform.UWP
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
 			base.SetUpNewElement(newElement);
+
+			if (newElement == null)
+			{
+				return;
+			}
 
 			_selectableItemsView = newElement as SelectableItemsView;
 
@@ -57,14 +62,24 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateNativeSelection();
 		}
 
+		protected override void UpdateItemsSource()
+		{
+			_ignoreNativeSelectionChange = true;
+
+			base.UpdateItemsSource();
+
+			_ignoreNativeSelectionChange = false;
+		}
+
 		void UpdateNativeSelection()
 		{
+			_ignoreNativeSelectionChange = true;
+
 			switch (ListViewBase.SelectionMode)
 			{
 				case UWPListViewSelectionMode.None:
 					break;
 				case UWPListViewSelectionMode.Single:
-					ListViewBase.SelectionChanged -= OnNativeSelectionChanged;
 					if (_selectableItemsView != null)
 					{
 						if (_selectableItemsView.SelectedItem == null)
@@ -85,13 +100,11 @@ namespace Xamarin.Forms.Platform.UWP
 										return item == _selectableItemsView.SelectedItem;
 									}
 								});
-									
 						}
 					}
-					ListViewBase.SelectionChanged += OnNativeSelectionChanged;
+					
 					break;
 				case UWPListViewSelectionMode.Multiple:
-					ListViewBase.SelectionChanged -= OnNativeSelectionChanged;
 					ListViewBase.SelectedItems.Clear();
 					foreach (var nativeItem in ListViewBase.Items)
 					{
@@ -104,7 +117,6 @@ namespace Xamarin.Forms.Platform.UWP
 							ListViewBase.SelectedItems.Add(nativeItem);
 						}
 					}
-					ListViewBase.SelectionChanged += OnNativeSelectionChanged;
 					break;
 				case UWPListViewSelectionMode.Extended:
 					break;
@@ -112,6 +124,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 			}
 
+			_ignoreNativeSelectionChange = false;
 		}
 
 		void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -121,6 +134,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNativeSelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
 		{
+			if (_ignoreNativeSelectionChange)
+			{
+				return;
+			}
+
 			if (Element is SelectableItemsView selectableItemsView)
 			{
 				switch (ListViewBase.SelectionMode)
@@ -200,6 +218,5 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 		}
-
 	}
 }

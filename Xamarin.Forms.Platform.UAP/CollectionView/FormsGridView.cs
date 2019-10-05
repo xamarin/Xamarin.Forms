@@ -1,17 +1,21 @@
 ﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Xamarin.Forms.Platform.UWP;
+using UWPApp = Windows.UI.Xaml.Application;
+using UWPControlTemplate = Windows.UI.Xaml.Controls.ControlTemplate;
 
-namespace Xamarin.Forms.Platform.UAP
+namespace Xamarin.Forms.Platform.UWP
 {
-	// TODO hartez 2018/06/06 10:01:48 Consider whether this should be internal; it might be that we just want to make the ItemsPanel resources configurable in CollectionViewRenderer
-	internal class FormsGridView : GridView
+	internal class FormsGridView : GridView, IEmptyView
 	{
 		int _maximumRowsOrColumns;
 		ItemsWrapGrid _wrapGrid;
+		ContentControl _emptyViewContentControl;
+		FrameworkElement _emptyView;
 
 		public FormsGridView()
 		{
+			Template = (UWPControlTemplate)UWPApp.Current.Resources["FormsListViewTemplate"];
+
 			// TODO hartez 2018/06/06 09:52:16 Do we need to clean this up? If so, where?	
 			RegisterPropertyChangedCallback(ItemsPanelProperty, ItemsPanelChanged);
 			Loaded += OnLoaded;
@@ -30,17 +34,27 @@ namespace Xamarin.Forms.Platform.UAP
 			}
 		}
 
+		public Visibility EmptyViewVisibility
+		{
+			get { return (Visibility)GetValue(EmptyViewVisibilityProperty); }
+			set { SetValue(EmptyViewVisibilityProperty, value); }
+		}
+
+		public static readonly DependencyProperty EmptyViewVisibilityProperty =
+			DependencyProperty.Register(nameof(EmptyViewVisibility), typeof(Visibility), 
+				typeof(FormsGridView), new PropertyMetadata(Visibility.Collapsed));
+
 		// TODO hartez 2018/06/06 10:01:32 Probably should just create a local enum for this?	
 		public void UseHorizontalItemsPanel()
 		{
 			ItemsPanel =
-				(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["HorizontalGridItemsPanel"];
+				(ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalGridItemsPanel"];
 		}
 
-		public void UseVerticalalItemsPanel()
+		public void UseVerticalItemsPanel()
 		{
 			ItemsPanel =
-				(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["VerticalGridItemsPanel"];
+				(ItemsPanelTemplate)UWPApp.Current.Resources["VerticalGridItemsPanel"];
 		}
 
 		void FindItemsWrapGrid()
@@ -63,6 +77,28 @@ namespace Xamarin.Forms.Platform.UAP
 		void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			FindItemsWrapGrid();
+		}
+
+		public void SetEmptyView(FrameworkElement emptyView)
+		{
+			_emptyView = emptyView;
+
+			if (_emptyViewContentControl != null)
+			{
+				_emptyViewContentControl.Content = emptyView;
+			}
+		}
+
+		protected override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+
+			_emptyViewContentControl = GetTemplateChild("EmptyViewContentControl") as ContentControl;
+
+			if (_emptyView != null)
+			{
+				_emptyViewContentControl.Content = _emptyView;
+			}
 		}
 	}
 }

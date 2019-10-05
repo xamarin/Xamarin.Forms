@@ -17,6 +17,7 @@ using LP = Android.Views.ViewGroup.LayoutParams;
 using R = Android.Resource;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
+using ATextView = global::Android.Widget.TextView;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -234,33 +235,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnBackButtonBehaviorChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName == BackButtonBehavior.IsEnabledProperty.PropertyName)
-			{
-				UpdateBackButtonBehaviorIsEnabled();
-				_drawerToggle.SyncState();
-			}
-
 			UpdateLeftBarButtonItem();
 		}
 
-		void UpdateBackButtonBehaviorIsEnabled()
-		{
-			if (_drawerLayout == null || _drawerToggle == null)
-				return;
-
-			bool isEnabled = _backButtonBehavior?.IsEnabled ?? true;
-
-			if (isEnabled)
-			{
-				_drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
-				_drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
-			}
-			else
-			{
-				_drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedClosed);
-				_drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeLockedClosed);
-			}
-		}
 
 		protected virtual void OnPageToolbarItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -314,6 +291,7 @@ namespace Xamarin.Forms.Platform.Android
 			var image = backButtonHandler.GetPropertyIfSet<ImageSource>(BackButtonBehavior.IconOverrideProperty, null);
 			var text = backButtonHandler.GetPropertyIfSet(BackButtonBehavior.TextOverrideProperty, String.Empty);
 			var command = backButtonHandler.GetPropertyIfSet<ICommand>(BackButtonBehavior.CommandProperty, null);
+			bool isEnabled = _backButtonBehavior.GetPropertyIfSet(BackButtonBehavior.IsEnabledProperty, true);
 
 			if (image == null)
 			{
@@ -349,9 +327,7 @@ namespace Xamarin.Forms.Platform.Android
 			if(icon == null)
 			{
 				icon = new DrawerArrowDrawable(context.GetThemedContext());
-
-				ADrawableCompat.SetTint(icon, tintColor.ToAndroid());
-				ADrawableCompat.SetTintMode(icon, PorterDuff.Mode.SrcAtop);
+				icon.SetColorFilter(tintColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
 			}
 
 			icon.Progress = (CanNavigateBack) ? 1 : 0;
@@ -361,14 +337,23 @@ namespace Xamarin.Forms.Platform.Android
 				_drawerToggle.DrawerIndicatorEnabled = false;
 				toolbar.NavigationIcon = icon;
 			}
-			else 
+			else if(_flyoutBehavior == FlyoutBehavior.Flyout)
 			{
-				toolbar.NavigationIcon = null;
-				_drawerToggle.DrawerIndicatorEnabled = true;
-				_drawerToggle.DrawerArrowDrawable = icon;
+				_drawerToggle.DrawerIndicatorEnabled = isEnabled;
+				if(isEnabled)
+				{
+					_drawerToggle.DrawerArrowDrawable = icon;
+					toolbar.NavigationIcon = null;
+				}
+				else
+					toolbar.NavigationIcon = icon;
+			}
+			else
+			{
+				_drawerToggle.DrawerIndicatorEnabled = false;
 			}
 
-			UpdateBackButtonBehaviorIsEnabled();
+
 			_drawerToggle.SyncState();
 
 			//this needs to be set after SyncState
@@ -443,7 +428,7 @@ namespace Xamarin.Forms.Platform.Android
 					_titleViewContainer = null;
 				}
 			}
-			else
+			else if(_titleViewContainer == null)
 			{
 				_titleViewContainer = new ContainerView(context, titleView);
 				_titleViewContainer.MatchHeight = _titleViewContainer.MatchWidth = true;
@@ -456,6 +441,10 @@ namespace Xamarin.Forms.Platform.Android
 				};
 
 				_toolbar.AddView(_titleViewContainer);
+			}
+			else
+			{
+				_titleViewContainer.View = titleView;
 			}
 		}
 
@@ -470,11 +459,24 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var menuitem = menu.Add(title);
 					UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
+
 					menuitem.SetTitleOrContentDescription(item);
 					menuitem.SetEnabled(item.IsEnabled);
-					menuitem.SetShowAsAction(ShowAsAction.Always);
+
+					if (item.Order != ToolbarItemOrder.Secondary)
+						menuitem.SetShowAsAction(ShowAsAction.Always);
+
 					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
+					
+					if(TintColor != Color.Default)
+					{
+						var view = toolbar.FindViewById(menuitem.ItemId);
+						if (view is ATextView  textView)
+							textView.SetTextColor(TintColor.ToAndroid());
+					}
+
 					menuitem.Dispose();
+
 				}
 			}
 
