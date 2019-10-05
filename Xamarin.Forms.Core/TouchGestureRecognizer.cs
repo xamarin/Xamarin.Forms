@@ -7,58 +7,58 @@ namespace Xamarin.Forms
 	public class TouchGestureRecognizer : GestureRecognizer
 	{
 		public static readonly BindableProperty PressCommandProperty =
-			BindableProperty.Create(nameof(PressCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(PressCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty PressCommandParameterProperty =
-			BindableProperty.Create(nameof(PressCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(PressCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty ReleaseCommandProperty =
-			BindableProperty.Create(nameof(ReleaseCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(ReleaseCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty ReleaseCommandParameterProperty =
-			BindableProperty.Create(nameof(ReleaseCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(ReleaseCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty MoveCommandProperty =
-			BindableProperty.Create(nameof(MoveCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(MoveCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty MoveCommandParameterProperty =
-			BindableProperty.Create(nameof(MoveCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(MoveCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty CancelCommandProperty =
-			BindableProperty.Create(nameof(CancelCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(CancelCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty CancelCommandParameterProperty =
-			BindableProperty.Create(nameof(CancelCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(CancelCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty FailCommandProperty =
-			BindableProperty.Create(nameof(FailCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(FailCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty FailCommandParameterProperty =
-			BindableProperty.Create(nameof(FailCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(FailCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty ChangeCommandProperty =
-			BindableProperty.Create(nameof(ChangeCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(ChangeCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty ChangeCommandParameterProperty =
-			BindableProperty.Create(nameof(ChangeCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(ChangeCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty EnterCommandProperty =
-			BindableProperty.Create(nameof(EnterCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(EnterCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty EnterCommandParameterProperty =
-			BindableProperty.Create(nameof(EnterCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(EnterCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty ExitCommandProperty =
-			BindableProperty.Create(nameof(ExitCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(ExitCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty ExitCommandParameterProperty =
-			BindableProperty.Create(nameof(ExitCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(ExitCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty HoverCommandProperty =
-			BindableProperty.Create(nameof(HoverCommand), typeof(ICommand), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(HoverCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
 		public static readonly BindableProperty HoverCommandParameterProperty =
-			BindableProperty.Create(nameof(HoverCommandParameter), typeof(object), typeof(RotateGestureRecognizer));
+			BindableProperty.Create(nameof(HoverCommandParameter), typeof(object), typeof(TouchGestureRecognizer));
 
 		public event EventHandler<TouchEventArgs> Press;
 		public event EventHandler<TouchEventArgs> Release;

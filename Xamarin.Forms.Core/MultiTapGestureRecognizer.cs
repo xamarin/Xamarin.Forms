@@ -7,31 +7,31 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class MultiTapPressGestureRecognizer : GestureRecognizer
+	public class MultiTapGestureRecognizer : GestureRecognizer
 	{
 		public static readonly BindableProperty CommandProperty =
-			BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(MultiTapPressGestureRecognizer));
+			BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(MultiTapGestureRecognizer));
 
 		public static readonly BindableProperty CommandParameterProperty =
-			BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(MultiTapPressGestureRecognizer));
+			BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(MultiTapGestureRecognizer));
 
 		public static readonly BindableProperty NumberOfTapsRequiredProperty =
-			BindableProperty.Create(nameof(NumberOfTapsRequired), typeof(int), typeof(MultiTapPressGestureRecognizer), 1);
+			BindableProperty.Create(nameof(NumberOfTapsRequired), typeof(int), typeof(MultiTapGestureRecognizer), 1);
 
 		public static readonly BindableProperty StartedCommandProperty =
-			BindableProperty.Create(nameof(StartedCommand), typeof(ICommand), typeof(MultiTapPressGestureRecognizer));
+			BindableProperty.Create(nameof(StartedCommand), typeof(ICommand), typeof(MultiTapGestureRecognizer));
 
 		public static readonly BindableProperty StartedCommandParameterProperty =
-			BindableProperty.Create(nameof(StartedCommandParameter), typeof(object), typeof(MultiTapPressGestureRecognizer));
+			BindableProperty.Create(nameof(StartedCommandParameter), typeof(object), typeof(MultiTapGestureRecognizer));
 
 		public static readonly BindableProperty CancelledCommandProperty =
-			BindableProperty.Create(nameof(CancelledCommand), typeof(ICommand), typeof(MultiTapPressGestureRecognizer));
+			BindableProperty.Create(nameof(CancelledCommand), typeof(ICommand), typeof(MultiTapGestureRecognizer));
 
 		public static readonly BindableProperty CancelledCommandParameterProperty =
-			BindableProperty.Create(nameof(CancelledCommandParameter), typeof(object), typeof(MultiTapPressGestureRecognizer));
+			BindableProperty.Create(nameof(CancelledCommandParameter), typeof(object), typeof(MultiTapGestureRecognizer));
 
 		public static readonly BindableProperty DelayBetweenTapsProperty = BindableProperty.Create(nameof(DelayBetweenTaps), typeof(int),
-			typeof(LongPressGestureRecognizer), 500);
+			typeof(MultiTapGestureRecognizer), 500);
 
 		CancellationTokenSource _cts;
 
