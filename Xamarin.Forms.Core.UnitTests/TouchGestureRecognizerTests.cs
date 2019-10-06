@@ -101,6 +101,52 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void EnterInView()
+		{
+			var eventCount = 0;
+			var commandCount = 0;
+			var recognizer = new TouchGestureRecognizer();
+			recognizer.Enter += (s, e) => eventCount++;
+			recognizer.EnterCommand = new Command(() => commandCount++);
+			var view = new View();
+
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Press, true) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Move, true) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Move, false) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Move, true) }));
+
+			Assert.AreEqual(1, eventCount);
+			Assert.AreEqual(1, commandCount);
+		}
+
+		[Test]
+		public void ExitFromView()
+		{
+			var eventCount = 0;
+			var commandCount = 0;
+			var recognizer = new TouchGestureRecognizer();
+			recognizer.Exit += (s, e) => eventCount++;
+			recognizer.ExitCommand = new Command(() => commandCount++);
+			var view = new View();
+
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Press, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Press, true) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Move, true) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Move, false) }));
+			recognizer.SendTouch(view,
+				new TouchEventArgs(1, TouchState.Move, new List<TouchPoint> { new TouchPoint(0, new Point(50, 50), TouchState.Move, true) }));
+
+			Assert.AreEqual(1, eventCount);
+			Assert.AreEqual(1, commandCount);
+		}
+
+		[Test]
 		public void Fail()
 		{
 			var eventCount = 0;

@@ -25,10 +25,26 @@
                                 <Setter Property="BackgroundColor" Value="LightGreen" />
                             </VisualState.Setters>
                         </VisualState>
-                        <VisualState x:Name="Move">
+                        <VisualState x:Name="Cancel">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Fail">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Enter">
                             <VisualState.Setters>
                                 <Setter Property="Scale" Value="0.7" />
-                                <Setter Property="BackgroundColor" Value="LightSeaGreen" />
+                                <Setter Property="BackgroundColor" Value="DarkGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Exit">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.7" />
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>

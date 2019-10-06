@@ -178,6 +178,8 @@ namespace Xamarin.Forms
 			set => SetValue(ReleaseCommandParameterProperty, value);
 		}
 
+		bool _previousTouchIsInOriginalView = true;
+
 		public override void OnTouch(View sender, TouchEventArgs eventArgs)
 		{
 			if (sender.HasVisualStateGroups())
@@ -224,6 +226,34 @@ namespace Xamarin.Forms
 					HoverCommand.Run(HoverCommandProperty);
 					break;
 			}
+
+
+			if (TouchCount > 0 && eventArgs.TouchState == TouchState.Move)
+			{
+				if (_previousTouchIsInOriginalView != eventArgs.IsInOriginalView)
+				{
+					if (!_previousTouchIsInOriginalView && eventArgs.IsInOriginalView)
+					{
+						if (sender.HasVisualStateGroups())
+						{
+							VisualStateManager.GoToState(sender, TouchState.Enter.ToString());
+						}
+						Enter?.Invoke(this, eventArgs);
+						EnterCommand.Run(EnterCommandProperty);
+					}
+					else
+					{
+						if (sender.HasVisualStateGroups())
+						{
+							VisualStateManager.GoToState(sender, TouchState.Exit.ToString());
+						}
+						Exit?.Invoke(this, eventArgs);
+						ExitCommand.Run(ExitCommandProperty);
+					}
+				}
+			}
+
+			_previousTouchIsInOriginalView = eventArgs.IsInOriginalView;
 
 			if (sender.HasVisualStateGroups() && TouchCount == 0 && eventArgs.TouchState.IsFinishedTouch())
 			{
