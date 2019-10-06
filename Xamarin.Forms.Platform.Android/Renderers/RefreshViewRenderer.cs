@@ -49,15 +49,19 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			set
 			{
-				_refreshing = value;
+				// Allow RefreshView.IsRefreshing to sync up with Refreshing
+				if (RefreshView != null && RefreshView.IsRefreshing != value)
+				{
+					RefreshView.IsRefreshing = value;
+					return;
+				}
 
-				if (RefreshView != null && RefreshView.IsRefreshing != _refreshing)
-					RefreshView.IsRefreshing = _refreshing;
+				_refreshing = value;
 
 				base.Refreshing = _refreshing;
 
-				if (base.Refreshing && Element is RefreshView refreshView && refreshView.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
-					refreshView.Command.Execute(refreshView?.CommandParameter);
+				if (base.Refreshing && RefreshView != null && RefreshView.Command != null && RefreshView.Command.CanExecute(RefreshView?.CommandParameter))
+					RefreshView.Command.Execute(RefreshView?.CommandParameter);
 			}
 		}
 

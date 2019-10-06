@@ -17,19 +17,28 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public bool IsRefreshing
 		{
-			get { return _isRefreshing; }
+			get
+			{
+				return _isRefreshing;
+			}
 			set
 			{
-				_isRefreshing = value;
+				var refreshView = Element;
 
-				if (Element != null && Element.IsRefreshing != _isRefreshing)
-					Element.IsRefreshing = _isRefreshing;
+				// Allow refreshView.IsRefreshing to sync up with Refreshing
+				if (refreshView != null && refreshView.IsRefreshing != value)
+				{
+					refreshView.IsRefreshing = value;
+					return;
+				}
+
+				_isRefreshing = value;
 
 				if (_isRefreshing)
 				{
 					_refreshControl.BeginRefreshing();
 
-					if (Element is RefreshView refreshView && refreshView.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
+					if (refreshView != null && refreshView.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
 						refreshView.Command.Execute(refreshView?.CommandParameter);
 				}
 				else
