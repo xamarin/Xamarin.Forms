@@ -52,6 +52,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Pan(new Drag(collectionView.Rect, Drag.Direction.TopToBottom, Drag.DragLength.Medium));
 
 			RunningApp.WaitForElement(q => q.Marked("Count: 20"));
+			RunningApp.WaitForNoElement(q => q.Marked("Count: 30"));
 
 			AppResult[] lastCellResults = null;
 
