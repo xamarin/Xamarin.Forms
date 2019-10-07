@@ -160,6 +160,12 @@ namespace Xamarin.Forms.Platform.UWP
 			IsPaneOpen = Shell.FlyoutIsPresented;
 			((IShellController)Element).AddFlyoutBehaviorObserver(this);
 			((IShellController)shell).AddAppearanceObserver(this, shell);
+			(shell as IShellController).ItemsCollectionChanged += OnItemsCollectionChanged;
+		}
+
+		void OnItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			MenuItemsSource = IterateItems();
 		}
 
 		IEnumerable<object> IterateItems()

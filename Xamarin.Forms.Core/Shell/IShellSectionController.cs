@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
@@ -24,5 +25,11 @@ namespace Xamarin.Forms
 		void SendPopped();
 		void SendPopping(Page page);
 		void SendPopped(Page page);
+
+		IReadOnlyList<ShellContent> GetItems();
+
+		int IndexOf(ShellContent content);
+
+		event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
 	}
 }

@@ -33,6 +33,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsEnabledProperty =
 			BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(BaseShellItem), true, BindingMode.OneWay);
 
+		public static readonly BindableProperty IsVisibleProperty =
+			BindableProperty.Create(nameof(IsVisible), typeof(bool), typeof(BaseShellItem), true, BindingMode.OneWay);
+
 		public static readonly BindableProperty TitleProperty =
 			BindableProperty.Create(nameof(Title), typeof(string), typeof(BaseShellItem), null, BindingMode.OneTime);
 
@@ -83,7 +86,11 @@ namespace Xamarin.Forms
 			get { return (bool)GetValue(IsEnabledProperty); }
 			set { SetValue(IsEnabledProperty, value); }
 		}
-
+		public bool IsVisible
+		{
+			get { return (bool)GetValue(IsVisibleProperty); }
+			set { SetValue(IsVisibleProperty, value); }
+		}
 		public string Route
 		{
 			get { return Routing.GetRoute(this); }

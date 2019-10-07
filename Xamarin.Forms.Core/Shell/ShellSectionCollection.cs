@@ -1,11 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
-	internal sealed class ShellSectionCollection :  IList<ShellSection>, INotifyCollectionChanged
+	internal sealed class ShellSectionCollection : IList<ShellSection>, INotifyCollectionChanged
 	{
+		public event NotifyCollectionChangedEventHandler VisibleItemsChanged;
+		IList<ShellSection> _inner;
+		ObservableCollection<ShellSection> _visibleContents = new ObservableCollection<ShellSection>();
+
+		public ShellSectionCollection()
+		{
+			VisibleItems = new ReadOnlyCollection<ShellSection>(_visibleContents);
+			_visibleContents.CollectionChanged += (_, args) =>
+			{
+				VisibleItemsChanged?.Invoke(VisibleItems, args);
+			};
+		}
+
+		public IReadOnlyList<ShellSection> VisibleItems { get; }
+
 		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
 		{
 			add { ((INotifyCollectionChanged)Inner).CollectionChanged += value; }
@@ -14,7 +30,84 @@ namespace Xamarin.Forms
 
 		public int Count => Inner.Count;
 		public bool IsReadOnly => Inner.IsReadOnly;
-		internal IList<ShellSection> Inner { get; set; }
+		internal IList<ShellSection> Inner
+		{
+			get => _inner;
+			set
+			{
+				_inner = value;
+				((INotifyCollectionChanged)_inner).CollectionChanged += InnerCollectionChanged;
+			}
+		}
+
+		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+			{
+				foreach (ShellSection element in e.NewItems)
+				{
+					element.PropertyChanged += OnElementPropertyChanged;
+					if (element is IShellSectionController controller)
+						controller.ItemsCollectionChanged += OnShellSectionControllerItemsCollectionChanged;
+
+					CheckVisibility(element);
+				}
+			}
+
+			if (e.OldItems != null)
+			{
+				foreach (ShellSection element in e.OldItems)
+				{
+					element.PropertyChanged -= OnElementPropertyChanged;
+					if (_visibleContents.Contains(element))
+						_visibleContents.Remove(element);
+
+					if (element is IShellSectionController controller)
+						controller.ItemsCollectionChanged += OnShellSectionControllerItemsCollectionChanged;
+				}
+			}
+		}
+
+		void OnShellSectionControllerItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			foreach (ShellContent content in (e.NewItems ?? e.OldItems ?? (IList)_inner))
+				CheckVisibility(content.Parent as ShellSection);
+		}
+
+		void CheckVisibility(ShellSection section)
+		{
+			if (section.IsVisible && section is IShellSectionController controller && controller.GetItems().Count > 0)
+			{
+				if (!_visibleContents.Contains(section))
+				{
+					int visibleIndex = 0;
+					for (var i = 0; i < _inner.Count; i++)
+					{
+						var item = _inner[i];
+						if (!item.IsVisible)
+							continue;
+
+						if (item == section)
+						{
+							_visibleContents.Insert(visibleIndex, section);
+							break;
+						}
+
+						visibleIndex++;
+					}
+				}
+			}
+			else if (_visibleContents.Contains(section))
+			{
+				_visibleContents.Remove(section);
+			}
+		}
+
+		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == BaseShellItem.IsVisibleProperty.PropertyName)
+				CheckVisibility((ShellSection)sender);
+		}
 
 		public ShellSection this[int index]
 		{

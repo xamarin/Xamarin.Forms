@@ -16,5 +16,10 @@ namespace Embedding.XF
 		{
 			InitializeComponent();
 		}
+
+		void Button_Clicked(object sender, EventArgs e)
+		{
+			this.Items[1].IsEnabled = !this.Items[1].IsEnabled;
+		}
 	}
 }

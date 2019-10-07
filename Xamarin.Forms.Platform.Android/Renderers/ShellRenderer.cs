@@ -240,10 +240,10 @@ namespace Xamarin.Forms.Platform.Android
 			Profile.FramePartition("AddAppearanceObserver");
 			((IShellController)shell).AddAppearanceObserver(this, shell);
 
-			// Previewer Hack
-			Profile.FramePartition("Previewer Hack");
-			if (AndroidContext.GetActivity() != null)
-				SwitchFragment(FragmentManager, _frameLayout, shell.CurrentItem, false);
+            // Previewer Hack
+            Profile.FramePartition("Previewer Hack");
+            if (AndroidContext.GetActivity() != null && shell.CurrentItem != null)
+			    SwitchFragment(FragmentManager, _frameLayout, shell.CurrentItem, false);
 
 			Profile.FrameEnd();
 		}
