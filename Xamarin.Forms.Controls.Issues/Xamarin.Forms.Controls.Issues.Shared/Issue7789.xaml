@@ -8,7 +8,10 @@
              x:Class="Xamarin.Forms.Controls.Issues.Issue7789">
     <ContentPage.Content>
     <StackLayout Margin="10">
-        <CarouselView>
+        <Label
+            Text="If the CarouselView below is rendered without problems, the test passes."/>
+        <CarouselView
+            BackgroundColor="GreenYellow">
             <CarouselView.ItemsSource>
                 <x:Array Type="{x:Type x:String}">
                     <x:String>Baboon</x:String>
