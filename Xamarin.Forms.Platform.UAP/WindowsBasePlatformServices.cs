@@ -80,7 +80,11 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!assemblies.Contains(thisAssembly))
 				assemblies.Add(thisAssembly);
 
-			Assembly xamlAssembly = typeof(Xamarin.Forms.Xaml.IMarkupExtension).GetTypeInfo().Assembly;
+			Assembly coreAssembly = typeof(Xamarin.Forms.Label).GetTypeInfo().Assembly;
+			if (!assemblies.Contains(coreAssembly))
+				assemblies.Add(coreAssembly);
+
+			Assembly xamlAssembly = typeof(Xamarin.Forms.Xaml.Extensions).GetTypeInfo().Assembly;
 			if (!assemblies.Contains(xamlAssembly))
 				assemblies.Add(xamlAssembly);
 
@@ -120,23 +124,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return new WindowsIsolatedStorage(ApplicationData.Current.LocalFolder);
 		}
 
-		public bool IsInvokeRequired
-		{
-			get
-			{
-				if (CoreApplication.Views.Count == 1)
-				{
-					return !_dispatcher.HasThreadAccess;
-				}
-
-				if (Window.Current?.Dispatcher != null)
-				{
-					return !Window.Current.Dispatcher.HasThreadAccess;
-				}
-
-				return true;
-			}
-		}
+		public bool IsInvokeRequired => !_dispatcher?.HasThreadAccess ?? true;
 
 		public string RuntimePlatform => Device.UWP;
 

@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Tizen
 {
 	internal class TizenPlatformServices : IPlatformServices
 	{
-		static MD5 checksum = MD5.Create();
+		static Lazy<MD5> checksum = new Lazy<MD5>(CreateChecksum);
 
 		static SynchronizationContext s_context;
 
@@ -67,7 +67,22 @@ namespace Xamarin.Forms.Platform.Tizen
 					pt = Device.Idiom == TargetIdiom.TV ? 28 : (Device.Idiom == TargetIdiom.Watch ? 32 : 25);
 					break;
 				case NamedSize.Large:
-					pt = Device.Idiom == TargetIdiom.TV ? 84 : (Device.Idiom == TargetIdiom.Watch ? 36 : 31);
+					pt = Device.Idiom == TargetIdiom.TV ? 32 : (Device.Idiom == TargetIdiom.Watch ? 36 : 31);
+					break;
+				case NamedSize.Body:
+					pt = Device.Idiom == TargetIdiom.TV ? 30 : (Device.Idiom == TargetIdiom.Watch ? 32 : 28);
+					break;
+				case NamedSize.Caption:
+					pt = Device.Idiom == TargetIdiom.TV ? 26 : (Device.Idiom == TargetIdiom.Watch ? 24 : 22);
+					break;
+				case NamedSize.Header:
+					pt = Device.Idiom == TargetIdiom.TV ? 84 : (Device.Idiom == TargetIdiom.Watch ? 36 : 138);
+					break;
+				case NamedSize.Subtitle:
+					pt = Device.Idiom == TargetIdiom.TV ? 30 : (Device.Idiom == TargetIdiom.Watch ? 30 : 28);
+					break;
+				case NamedSize.Title:
+					pt = Device.Idiom == TargetIdiom.TV ? 42 : (Device.Idiom == TargetIdiom.Watch ? 36 : 40);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(size));
@@ -146,7 +161,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		static readonly char[] HexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 		public string GetMD5Hash(string input)
 		{
-			byte[] bin = checksum.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
+			byte[] bin = checksum.Value.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
 			char[] hex = new char[32];
 			for (var i = 0; i < 16; ++i)
 			{
@@ -178,7 +193,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			public static AppDomain CurrentDomain { get; private set; }
 
-			readonly List<Assembly> _assemblies;
+			readonly HashSet<Assembly> _assemblies;
 
 			static AppDomain()
 			{
@@ -187,10 +202,21 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			AppDomain()
 			{
-				_assemblies = new List<Assembly>();
+				_assemblies = new HashSet<Assembly>();
 
 				// Add this renderer assembly to the list
 				_assemblies.Add(GetType().GetTypeInfo().Assembly);
+			}
+
+			public void AddAssemblies(Assembly[] assemblies)
+			{
+				foreach (var asm in assemblies)
+				{
+					if (!_assemblies.Contains(asm))
+					{
+						_assemblies.Add(asm);
+					}
+				}
 			}
 
 			internal void RegisterAssemblyRecursively(Assembly asm)
@@ -226,6 +252,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		public SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		static MD5 CreateChecksum()
+		{
+			return MD5.Create();
 		}
 	}
 }

@@ -1,22 +1,92 @@
-steps:
-    - task: NuGetToolInstaller@0
-      displayName: 'Use NuGet 4.8.1'
-      inputs:
-        versionSpec: 4.8.1
+parameters:
+  name: ''            # in the form type_platform_host
+  displayName: ''     # the human name
+  vmImage: ''         # the VM image
+  vmPool: ''         # the VM pool
+  targetFolder: ''    # the bootstrapper target
+  dependsOn: []       # the dependiencies
+  preBuildSteps: []   # any steps to run before the build
+  postBuildSteps: []  # any additional steps to run after the build
+  slnPath : 'Xamarin.Forms.sln'
+  buildConfiguration : 'Debug'
+  releaseBuildConfiguration : 'Release'
+  buildPlatform : 'any cpu'
+  msbuildExtraArguments : ''
+  artifactsTargetFolder: '$(build.artifactstagingdirectory)'
+  artifactsName: 'win_build'
+  nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
+  nunitTestFolder: '$(build.sourcesdirectory)'
 
-    - task: NuGetCommand@2
-      displayName: 'NuGet restore'
+jobs:
+  - job: ${{ parameters.name }}
+    displayName: ${{ parameters.displayName }}
+    timeoutInMinutes: 120
+    pool:
+      name: ${{ parameters.vmImage }}
+    dependsOn: ${{ parameters.dependsOn }}
+    strategy:
+      matrix:
+        debug:
+          BuildConfiguration:  ${{ parameters.buildConfiguration }}
+          BuildPlatform: ${{ parameters.buildPlatform }}
+        release:
+          BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
+          BuildPlatform: ${{ parameters.buildPlatform }}
+    steps:
+    - script: build.cmd -Target provision
+      displayName: 'Cake Provision'
+      condition: eq(variables['provisioning'], 'false')
+  
+    - task: xamops.azdevex.provisionator-task.provisionator@1
+      displayName: 'Provisionator'
+      condition: eq(variables['provisioning'], 'true')
       inputs:
-        restoreSolution: $(SolutionFile)
+        provisioning_script: ${{ parameters.provisionatorPath }}
+        provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+
+    #- task: DotNetCoreInstaller@0
+    #  displayName: "Install .net core $(DOTNET_VERSION)"
+    #  condition: ne(variables['DOTNET_VERSION'], '')
+    #  inputs:
+    #    version: $(DOTNET_VERSION)
+
+    #- script: |
+    #    dotnet new globaljson --sdk-version $(DOTNET_VERSION)
+    #  displayName: 'Add globaljson file'
+    #  condition: ne(variables['DOTNET_VERSION'], '')
+
+    - task: NuGetToolInstaller@0
+      displayName: 'Use NuGet $(NUGET_VERSION)'
+      condition: ne(variables['NUGET_VERSION'], '')
+      inputs:
+        versionSpec: $(NUGET_VERSION)
+          
+    - task: NuGetCommand@2
+      displayName: 'NuGet restore ${{ parameters.slnPath }}'
+      inputs:
+        restoreSolution: ${{ parameters.slnPath }}
 
     - task: MSBuild@1
-      displayName: 'Build solution'
+      displayName: 'Build solution ${{ parameters.slnPath }}'
+      name: winbuild
       inputs:
-        solution: $(SolutionFile)
+        solution: ${{ parameters.slnPath }}
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
-        msbuildArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
-        clean: true
+        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /p:JavaSdkDirectory="$(JAVA_HOME_8_X64)"
+
+    - task: VSTest@2
+      displayName: 'Unit Tests'
+      inputs:
+        testAssemblyVer2: |
+          **/bin/$(BuildConfiguration)/Xamarin.Forms.Core.UnitTests.dll
+          **/bin/$(BuildConfiguration)/Xamarin.Forms.Pages.UnitTests.dll
+          **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
+        searchFolder: ${{ parameters.nunitTestFolder }}
+        pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
+        codeCoverageEnabled: true
+        testRunTitle: '$(BuildConfiguration)_UnitTests'
+        configuration: '$(BuildConfiguration)'
 
     - task: CopyFiles@2
       displayName: 'Copy Files dlls'
@@ -110,20 +180,11 @@ steps:
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.dll
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.mdb
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.pdb
+          **/*.binlog
 
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-    - task: CopyFiles@2
-      displayName: 'Copy files test adapter'
-      inputs:
-        Contents: '**/NUnitTestAdapter.*/tools/*.dll'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)/testadapter'
-        CleanTargetFolder: true
-        OverWrite: true
-        flattenFolders: true
-
+        TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: win_build'
+      displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
       inputs:
-        ArtifactName: 'win_build'
+        ArtifactName: ${{ parameters.artifactsName }}

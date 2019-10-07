@@ -80,6 +80,23 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		internal SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			var previousHeight = View.MeasuredHeight;
+			var previousWidth = View.MeasuredWidth;
+
+			View.Measure(widthConstraint, heightConstraint);
+
+			// if the measure of the view has changed then trigger a request for layout
+			// if the measure hasn't changed then force a layout of the button
+			if (previousHeight != View.MeasuredHeight || previousWidth != View.MeasuredWidth)
+				View.MaybeRequestLayout();
+			else
+				View.ForceLayout();
+
+			return new SizeRequest(new Size(View.MeasuredWidth, View.MeasuredHeight), Size.Zero);
+		}
+
 		public void OnLayout(bool changed, int left, int top, int right, int bottom)
 		{
 			if (_disposed || _renderer == null || _element == null)
@@ -282,37 +299,40 @@ namespace Xamarin.Forms.Platform.Android
 			Drawable existingImage = null;
 			var images = TextViewCompat.GetCompoundDrawablesRelative(view);
 			for (int i = 0; i < images.Length; i++)
-				if(images[i] != null)
+				if (images[i] != null)
 				{
 					existingImage = images[i];
 					break;
 				}
 
-			_renderer.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
+			if (_renderer is IVisualElementRenderer visualElementRenderer)
 			{
-				if (image == existingImage)
-					return;
-
-				switch (layout.Position)
+				visualElementRenderer.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
 				{
-					case Button.ButtonContentLayout.ImagePosition.Top:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, image, null, null);
-						break;
-					case Button.ButtonContentLayout.ImagePosition.Right:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, image, null);
-						break;
-					case Button.ButtonContentLayout.ImagePosition.Bottom:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, null, image);
-						break;
-					default:
-						// Defaults to image on the left
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
-						break;
-				}
+					if (image == existingImage)
+						return;
 
-				if (_hasLayoutOccurred)
-					_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
-			});
+					switch (layout.Position)
+					{
+						case Button.ButtonContentLayout.ImagePosition.Top:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, image, null, null);
+							break;
+						case Button.ButtonContentLayout.ImagePosition.Right:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, image, null);
+							break;
+						case Button.ButtonContentLayout.ImagePosition.Bottom:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, null, image);
+							break;
+						default:
+							// Defaults to image on the left
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
+							break;
+					}
+
+					if (_hasLayoutOccurred)
+						_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				});
+			}
 		}
 	}
 }

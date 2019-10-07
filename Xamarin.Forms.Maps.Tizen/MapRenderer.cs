@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Tizen.Location;
 using Tizen.Maps;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform.Tizen;
 using TPin = Tizen.Maps.Pin;
 
@@ -40,7 +41,7 @@ namespace Xamarin.Forms.Maps.Tizen
 		{
 			if (Control == null)
 			{
-				var mapControl = new MapView(Platform.Tizen.Forms.NativeParent, FormsMaps.MapService);
+				var mapControl = new MapView(Forms.NativeParent, FormsMaps.MapService);
 
 				mapControl.RenderPost += OnVisibleRegionChanged;
 
@@ -207,7 +208,9 @@ namespace Xamarin.Forms.Maps.Tizen
 				pin.MarkerId = nativePin;
 				nativePin.Clicked += (s, e) =>
 				{
+#pragma warning disable CS0618
 					pin.SendTap();
+#pragma warning restore CS0618
 				};
 				Control.Add(nativePin);
 				_pins.Add(pin);

@@ -87,6 +87,10 @@
 	{
 	}
 
+	internal class _RefreshViewRenderer
+	{
+	}
+
 	internal class _ScrollViewRenderer
 	{
 	}
@@ -96,6 +100,10 @@
 	}
 
 	internal class _FrameRenderer
+	{
+	}
+
+	internal class _CheckBoxRenderer
 	{
 	}
 

@@ -1,5 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <PropertyGroup>
+    <Description>macOS Backend for Xamarin.Forms</Description>
+    <AssemblyName>Xamarin.Forms.Platform.macOS</AssemblyName>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -14,7 +18,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
@@ -70,6 +73,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\LabelExtensions.cs">
       <Link>Extensions\LabelExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\AccessibilityExtensions.cs">
+      <Link>Extensions\AccessibilityExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Flags.cs">
       <Link>Flags.cs</Link>
     </Compile>
@@ -124,6 +130,7 @@
     <Compile Include="Renderers\SearchBarRenderer.cs" />
     <Compile Include="Renderers\SliderRenderer.cs" />
     <Compile Include="Renderers\StepperRenderer.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="Renderers\SwitchRenderer.cs" />
     <Compile Include="Renderers\TimePickerRenderer.cs" />
     <Compile Include="Renderers\WebViewRenderer.cs" />
@@ -150,9 +157,6 @@
     <Compile Include="Controls\NavigationChildPageWrapper.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\NativeViewPropertyListener.cs">
       <Link>NativeViewPropertyListener.cs</Link>
-    </Compile>
-    <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Renderers\LayoutRenderer.cs" />
     <Compile Include="Extensions\NSImageExtensions.cs" />

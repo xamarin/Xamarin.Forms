@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
-
 
 [assembly: Dependency(typeof(WindowsSerializer))]
 
@@ -14,6 +12,7 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
 [assembly: ExportRenderer(typeof(Button), typeof(ButtonRenderer))]
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
+[assembly: ExportRenderer(typeof(CarouselView), typeof(CarouselViewRenderer))]
 [assembly: ExportRenderer(typeof(CollectionView), typeof(CollectionViewRenderer))]
 [assembly: ExportRenderer(typeof(ScrollView), typeof(ScrollViewRenderer))]
 [assembly: ExportRenderer(typeof(ProgressBar), typeof(ProgressBarRenderer))]
@@ -28,8 +27,11 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(DatePicker), typeof(DatePickerRenderer))]
 [assembly: ExportRenderer(typeof(Stepper), typeof(StepperRenderer))]
 [assembly: ExportRenderer(typeof(Entry), typeof(EntryRenderer))]
+[assembly: ExportRenderer(typeof(CheckBox), typeof(CheckBoxRenderer))]
 [assembly: ExportRenderer(typeof(TableView), typeof(TableViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
+[assembly: ExportRenderer(typeof(RefreshView), typeof(RefreshViewRenderer))]
+[assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 
 //ImageSources
 
@@ -55,6 +57,3 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: Dependency(typeof(WindowsResourcesProvider))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer))]
-
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]

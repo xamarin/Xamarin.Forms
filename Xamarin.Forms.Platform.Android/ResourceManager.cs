@@ -22,14 +22,47 @@ namespace Xamarin.Forms.Platform.Android
 		readonly static Lazy<ImageCache> _lruCache = new Lazy<ImageCache>(() => new ImageCache());
 		static ImageCache GetCache() => _lruCache.Value;
 
+		static Assembly _assembly;
+		static Type FindType(string name, string altName)
+		{
+			return _assembly.GetTypes().FirstOrDefault(x => x.Name == name || x.Name == altName);
+		}
+		static Type _drawableClass;
+		static Type _resourceClass;
+		static Type _styleClass;
+		static Type _layoutClass;
 
-		public static Type DrawableClass { get; set; }
+		public static Type DrawableClass { 
+			get { 
+				if (_drawableClass == null)
+					_drawableClass = FindType("Drawable", "Resource_Drawable");
+				return _drawableClass;
+			}
+		}
 
-		public static Type ResourceClass { get; set; }
+		public static Type ResourceClass { 
+			get { 
+				if (_resourceClass == null)
+					_resourceClass = FindType("Id", "Resource_Id");
+				return _resourceClass;
+			}
+		}
 
-		public static Type StyleClass { get; set; }
+		public static Type StyleClass { 
+			get { 
+				if (_styleClass == null)
+					_styleClass = FindType("Style", "Resource_Style");
+				return _styleClass;
+			}
+		}
 
-		public static Type LayoutClass { get; set; }
+		public static Type LayoutClass { 
+			get { 
+				if (_layoutClass == null)
+					_layoutClass = FindType("Layout", "Resource_Layout");
+				return _layoutClass;
+			}
+		}
 
 		internal static async Task<Drawable> GetFormsDrawableAsync(this Context context, ImageSource imageSource, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -106,6 +139,18 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
+		static bool IsDrawableSourceValid(this IVisualElementRenderer renderer, BindableObject bindable, out BindableObject element)
+		{
+			if ((renderer is IDisposedState disposed && disposed.IsDisposed) || (renderer != null && renderer.View == null))
+				element = null;
+			else if (bindable != null)
+				element = bindable;
+			else
+				element = renderer.Element;
+
+			return element != null;
+		}
+
 		internal static Task ApplyDrawableAsync(this IShellContext shellContext, BindableObject bindable, BindableProperty imageSourceProperty, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
@@ -133,17 +178,14 @@ namespace Xamarin.Forms.Platform.Android
 												Action<bool> onLoading = null,
 												CancellationToken cancellationToken = default(CancellationToken))
 		{
-			_ = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_ = context ?? throw new ArgumentNullException(nameof(context));
 			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
 			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
 
-			// TODO: it might be good to make sure the renderer has not been disposed
-
 			// make sure things are good before we start
-			var element = bindable ?? renderer.Element;
+			BindableObject element = null;
 
-			if (element == null)
+			if (!renderer.IsDrawableSourceValid(bindable, out element))
 				return;
 
 			onLoading?.Invoke(true);
@@ -170,20 +212,13 @@ namespace Xamarin.Forms.Platform.Android
 						else
 							returnValue = cacheObject as Drawable;
 
-						if (renderer is IDisposedState disposed && disposed.IsDisposed)
-							return;
-
-						// we are back, so update the working element
-						element = bindable ?? renderer.Element;
-
-						// makse sure things are good now that we are back
-						if (element == null || renderer.View == null)
+						if (!renderer.IsDrawableSourceValid(bindable, out element))
 							return;
 
 						// only set if we are still on the same image
 						if (element.GetValue(imageSourceProperty) == initialSource)
 						{
-							using(returnValue)
+							using (returnValue)
 								onSet(returnValue);
 						}
 					}
@@ -192,14 +227,7 @@ namespace Xamarin.Forms.Platform.Android
 
 						using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
 						{
-							if (renderer is IDisposedState disposed && disposed.IsDisposed)
-								return;
-
-							// we are back, so update the working element
-							element = bindable ?? renderer.Element;
-
-							// makse sure things are good now that we are back
-							if (element == null || renderer.View == null)
+							if (!renderer.IsDrawableSourceValid(bindable, out element))
 								return;
 
 							// only set if we are still on the same image
@@ -254,9 +282,19 @@ namespace Xamarin.Forms.Platform.Android
 			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource));
 		}
 
+		public static Bitmap GetBitmap(this Resources resource, string name, Context context)
+		{
+			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource, context.PackageName));
+		}
+
 		public static Task<Bitmap> GetBitmapAsync(this Resources resource, string name)
 		{
 			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource));
+		}
+
+		public static Task<Bitmap> GetBitmapAsync(this Resources resource, string name, Context context)
+		{
+			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass, _drawableDefType, resource, context.PackageName));
 		}
 
 		[Obsolete("GetDrawable(this Resources, string) is obsolete as of version 2.5. "
@@ -310,17 +348,24 @@ namespace Xamarin.Forms.Platform.Android
 			return IdFromTitle(name, LayoutClass);
 		}
 
+		public static int GetLayout(this Context context, string name)
+		{
+			return IdFromTitle(name, LayoutClass, "layout", context);
+		}
+
 		public static int GetStyleByName(string name)
 		{
 			return IdFromTitle(name, StyleClass);
 		}
 
+		public static int GetStyle(this Context context, string name)
+		{
+			return IdFromTitle(name, StyleClass, "style", context);
+		}
+
 		public static void Init(Assembly masterAssembly)
 		{
-			DrawableClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Drawable" || x.Name == "Resource_Drawable");
-			ResourceClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Id" || x.Name == "Resource_Id");
-			StyleClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Style" || x.Name == "Resource_Style");
-			LayoutClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Layout" || x.Name == "Resource_Layout");
+			_assembly = masterAssembly;
 		}
 
 		static int IdFromTitle(string title, Type type)
@@ -335,7 +380,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static int IdFromTitle(string title, Type resourceType, string defType, Resources resource)
 		{
-			return IdFromTitle(title, resourceType, defType, resource, Platform.PackageName);
+			return IdFromTitle(title, resourceType, defType, resource, AppCompat.Platform.GetPackageName());
 		}
 
 		static int IdFromTitle(string title, Type resourceType, string defType, Context context)

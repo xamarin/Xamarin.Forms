@@ -5,14 +5,13 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class SelectableItemsViewController : ItemsViewController
+	public class SelectableItemsViewController : StructuredItemsViewController
 	{
-		protected readonly SelectableItemsView SelectableItemsView;
+		SelectableItemsView SelectableItemsView => (SelectableItemsView)ItemsView;
 
 		public SelectableItemsViewController(SelectableItemsView selectableItemsView, ItemsViewLayout layout) 
 			: base(selectableItemsView, layout)
 		{
-			SelectableItemsView = selectableItemsView;
 		}
 
 		// _Only_ called if the user initiates the selection change; will not be called for programmatic selection
@@ -32,6 +31,17 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var index = GetIndexForItem(selectedItem);
 			CollectionView.SelectItem(index, true, UICollectionViewScrollPosition.None);
+		}
+
+		// Called by Forms to clear the native selection
+		internal void ClearSelection()
+		{
+			var selectedItemIndexes = CollectionView.GetIndexPathsForSelectedItems();
+
+			foreach (var index in selectedItemIndexes)
+			{
+				CollectionView.DeselectItem(index, true);
+			}
 		}
 
 		void FormsSelectItem(NSIndexPath indexPath)
@@ -86,6 +96,11 @@ namespace Xamarin.Forms.Platform.iOS
 					if (selectedItem != null)
 					{
 						SelectItem(selectedItem);
+					}
+					else
+					{
+						// SelectedItem has been set to null; if an item is selected, we need to de-select it
+						ClearSelection();
 					}
 				
 					return;

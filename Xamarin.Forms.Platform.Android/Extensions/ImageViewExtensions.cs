@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Android.Content;
+using Android.Graphics;
 using AImageView = Android.Widget.ImageView;
 
 namespace Xamarin.Forms.Platform.Android
@@ -48,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 						using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
 						{
 							// only set the image if we are still on the same one
-							if (!imageView.IsDisposed() && Equals(newView?.Source, newImageSource))
+							if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource))
 								imageView.SetImageDrawable(drawable);
 						}
 					}
@@ -61,12 +63,23 @@ namespace Xamarin.Forms.Platform.Android
 			finally
 			{
 				// only mark as finished if we are still working on the same image
-				if (Equals(newView?.Source, newImageSource))
+				if (SourceIsNotChanged(newView, newImageSource))
 				{
 					imageController?.SetIsLoading(false);
 					imageController?.NativeSizeChanged();
 				}
 			}
+
+
+			bool SourceIsNotChanged(IImageElement imageElement, ImageSource imageSource)
+			{
+				return (imageElement != null) ? imageElement.Source == imageSource : true;
+			}
+		}
+
+		internal static async void SetImage(this AImageView image, ImageSource source, Context context)
+		{
+			image.SetImageDrawable(await context.GetFormsDrawableAsync(source));
 		}
 	}
 }

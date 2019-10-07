@@ -5,16 +5,18 @@
 	x:Class="Xamarin.Forms.Platform.UWP.Resources">
 
 	<ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="FormsCommandBarStyle.xaml" />
+		<ResourceDictionary Source="FormsCommandBarStyle.xaml" />
 		<ResourceDictionary Source="PageControlStyle.xaml" />
 		<ResourceDictionary Source="FormsProgressBarStyle.xaml" />
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
+		<ResourceDictionary Source="FormsCheckBoxStyle.xaml" />
 		<ResourceDictionary Source="AutoSuggestStyle.xaml" />
 		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
 		<ResourceDictionary Source="SliderStyle.xaml" />
-		<ResourceDictionary Source="Items/ItemsViewStyles.xaml" />
-	</ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
+	    <ResourceDictionary Source="Shell/ShellStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 	
 	<uwp:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
 	<uwp:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
@@ -270,7 +272,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="ImageCell">
-		<Grid>
+		<Grid AutomationProperties.AutomationId="{Binding AutomationId}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition />
@@ -302,7 +304,7 @@
 	</DataTemplate>
 	
 	<DataTemplate x:Key="SwitchCell">
-		<Grid HorizontalAlignment="Stretch" x:Name="ParentGrid">
+		<Grid HorizontalAlignment="Stretch" x:Name="ParentGrid"  AutomationProperties.AutomationId="{Binding AutomationId}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
@@ -315,7 +317,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="EntryCell">
-        <uwp:EntryCellTextBox IsEnabled="{Binding IsEnabled}" Header="{Binding}" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding HorizontalTextAlignment,Converter={StaticResource HorizontalTextAlignmentConverter}}" PlaceholderText="{Binding Placeholder}"  InputScope="{Binding Keyboard,Converter={StaticResource KeyboardConverter}}" HorizontalAlignment="Stretch">
+        <uwp:EntryCellTextBox  AutomationProperties.AutomationId="{Binding AutomationId}" IsEnabled="{Binding IsEnabled}" Header="{Binding}" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding HorizontalTextAlignment,Converter={StaticResource HorizontalTextAlignmentConverter}}" PlaceholderText="{Binding Placeholder}"  InputScope="{Binding Keyboard,Converter={StaticResource KeyboardConverter}}" HorizontalAlignment="Stretch">
 			<uwp:EntryCellTextBox.HeaderTemplate>
 				<DataTemplate>
                     <TextBlock Text="{Binding Label}" IsHitTestVisible="False" Style="{ThemeResource BaseTextBlockStyle}" Foreground="{Binding LabelColor, Converter={StaticResource ColorConverter}, ConverterParameter=DefaultTextForegroundThemeBrush}" />

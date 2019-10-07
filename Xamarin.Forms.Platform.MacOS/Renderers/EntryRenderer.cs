@@ -72,13 +72,19 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			void HandleWindowDidResignKey(object sender, EventArgs args)
 			{
-				FocusChanged?.Invoke(this, new BoolEventArgs(false));
+				if (!_disposed)
+				{
+					FocusChanged?.Invoke(this, new BoolEventArgs(false));
+				}
 			}
 
 			void HandleWindowDidBecomeKey(object sender, EventArgs args)
 			{
-				if (Window != null && CurrentEditor == Window.FirstResponder)
-					FocusChanged?.Invoke(this, new BoolEventArgs(true));
+				if (!_disposed)
+				{
+					if (Window != null && CurrentEditor == Window.FirstResponder)
+						FocusChanged?.Invoke(this, new BoolEventArgs(true));
+				}
 			}
 		}
 
@@ -275,6 +281,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			var color = Element.IsEnabled && !targetColor.IsDefault ? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
 
 			Control.PlaceholderAttributedString = formatted.ToAttributed(Element, color);
+		}
+
+		protected override void SetAccessibilityLabel()
+		{
+			Control.AccessibilityLabel = (string)Element?.GetValue(AutomationProperties.NameProperty) ?? Control.PlaceholderAttributedString?.Value;
 		}
 
 		void UpdateText()

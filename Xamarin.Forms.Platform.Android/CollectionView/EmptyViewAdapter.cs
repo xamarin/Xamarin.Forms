@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public EmptyViewAdapter(ItemsView itemsView)
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(EmptyViewAdapter));
+			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(EmptyViewAdapter));
 			ItemsView = itemsView;
 		}
 
@@ -53,26 +53,32 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				templatedItemViewHolder.Recycle(ItemsView);
 			}
+			else if (holder is SimpleViewHolder emptyViewHolder)
+			{
+				emptyViewHolder.Recycle(ItemsView);
+			}
 
 			base.OnViewRecycled(holder);
 		}
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
 		{
-			if (EmptyView == null || EmptyViewTemplate == null)
+			if (EmptyView == null)
 			{
 				return;
 			}
 
-			if (holder is TemplatedItemViewHolder templatedItemViewHolder)
+			if (holder is SimpleViewHolder emptyViewHolder && emptyViewHolder.View != null)
+			{
+				// For templated empty views, this will happen on bind. But if we just have a plain-old View,
+				// we need to add it as a "child" of the ItemsView here so that stuff like Visual and FlowDirection
+				// propagate to the controls in the EmptyView
+				ItemsView.AddLogicalChild(emptyViewHolder.View);
+			}
+			else if (holder is TemplatedItemViewHolder templatedItemViewHolder && EmptyViewTemplate != null)
 			{
 				// Use EmptyView as the binding context for the template
 				templatedItemViewHolder.Bind(EmptyView, ItemsView);
-			}
-
-			if (!(holder is EmptyViewHolder emptyViewHolder))
-			{
-				return;
 			}
 		}
 
@@ -87,42 +93,20 @@ namespace Xamarin.Forms.Platform.Android
 				if (!(EmptyView is View formsView))
 				{
 					// No template, EmptyView is not a Forms View, so just display EmptyView.ToString
-					return new EmptyViewHolder(CreateTextView(EmptyView?.ToString(), context), null);
+					return SimpleViewHolder.FromText(EmptyView?.ToString(), context);
 				}
 
 				// EmptyView is a Forms View; display that
-				var itemContentControl = new SizedItemContentView(context, () => parent.Width, () => parent.Height);
-				itemContentControl.RealizeContent(formsView);
-				return new EmptyViewHolder(itemContentControl, formsView);
+				return SimpleViewHolder.FromFormsView(formsView, context, () => parent.Width, () => parent.Height);
 			}
 
 			var itemContentView = new SizedItemContentView(parent.Context, () => parent.Width, () => parent.Height);
-			return new TemplatedItemViewHolder(itemContentView, template);
+			return new TemplatedItemViewHolder(itemContentView, template, isSelectionEnabled: false);
 		}
 
 		public override int GetItemViewType(int position)
 		{
 			return _itemViewType;
-		}
-
-		static TextView CreateTextView(string text, Context context)
-		{
-			var textView = new TextView(context) { Text = text };
-			var layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent,
-				ViewGroup.LayoutParams.MatchParent);
-			textView.LayoutParameters = layoutParams;
-			textView.Gravity = GravityFlags.Center;
-			return textView;
-		}
-
-		internal class EmptyViewHolder : RecyclerView.ViewHolder
-		{
-			public EmptyViewHolder(global::Android.Views.View itemView, View rootElement) : base(itemView)
-			{
-				View = rootElement;
-			}
-
-			public View View { get; }
 		}
 	}
 }

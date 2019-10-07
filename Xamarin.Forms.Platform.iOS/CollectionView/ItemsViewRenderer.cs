@@ -4,10 +4,12 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ItemsViewRenderer : ViewRenderer<ItemsView, UIView>
+	public abstract class ItemsViewRenderer : ViewRenderer<ItemsView, UIView>
 	{
 		ItemsViewLayout _layout;
 		bool _disposed;
+		bool? _defaultHorizontalScrollVisibility;
+		bool? _defaultVerticalScrollVisibility;
 
 		public ItemsViewRenderer()
 		{
@@ -27,7 +29,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			TearDownOldElement(e.OldElement);
 			SetUpNewElement(e.NewElement);
-			
+
 			base.OnElementChanged(e);
 		}
 
@@ -47,25 +49,23 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateItemSizingStrategy();
 			}
+			else if (changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			{
+				UpdateHorizontalScrollBarVisibility();
+			}
+			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
+			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
+			{
+				UpdateItemsUpdatingScrollMode();
+			}
 		}
 
-		protected virtual ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification)
-		{
-			if (layoutSpecification is GridItemsLayout gridItemsLayout)
-			{
-				return new GridViewLayout(gridItemsLayout);
-			}
+		protected abstract ItemsViewLayout SelectLayout();
 
-			if (layoutSpecification is ListItemsLayout listItemsLayout)
-			{
-				return new ListViewLayout(listItemsLayout);
-			}
-
-			// Fall back to vertical list
-			return new ListViewLayout(new ListItemsLayout(ItemsLayoutOrientation.Vertical));
-		}
-
-		void TearDownOldElement(ItemsView oldElement)
+		protected virtual void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
 			{
@@ -85,9 +85,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateLayout();
 			ItemsViewController = CreateController(newElement, _layout);
+			 
+			if (Forms.IsiOS11OrNewer)
+			{
+				// We set this property to keep iOS from trying to be helpful about insetting all the 
+				// CollectionView content when we're in landscape mode (to avoid the notch)
+				// The SetUseSafeArea Platform Specific is already taking care of this for us 
+				// That said, at some point it's possible folks will want a PS for controlling this behavior
+				ItemsViewController.CollectionView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
+			}
+
 			SetNativeControl(ItemsViewController.View);
 			ItemsViewController.CollectionView.BackgroundColor = UIColor.Clear;
 			ItemsViewController.UpdateEmptyView();
+			UpdateHorizontalScrollBarVisibility();
+			UpdateVerticalScrollBarVisibility();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -95,8 +107,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateLayout()
 		{
-			_layout = SelectLayout(Element.ItemsLayout);
-			_layout.ItemSizingStrategy = Element.ItemSizingStrategy;
+			_layout = SelectLayout();
 
 			if (ItemsViewController != null)
 			{
@@ -106,49 +117,82 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateItemSizingStrategy()
 		{
-			if (ItemsViewController?.CollectionView?.VisibleCells.Length == 0)
-			{
-				// The CollectionView isn't really up and running yet, so we can just set the strategy and move on
-				_layout.ItemSizingStrategy = Element.ItemSizingStrategy;
-			}
-			else
-			{
-				// We're changing the strategy for a CollectionView mid-stream; 
-				// we'll just have to swap out the whole UICollectionViewLayout
-				UpdateLayout();
-			}
+			UpdateLayout();
 		}
 
-		protected virtual ItemsViewController CreateController(ItemsView newElement, ItemsViewLayout layout)
+		protected virtual void UpdateItemsUpdatingScrollMode()
 		{
-			return new ItemsViewController(newElement, layout);
+			_layout.ItemsUpdatingScrollMode = Element.ItemsUpdatingScrollMode;
 		}
+
+		protected abstract ItemsViewController CreateController(ItemsView newElement, ItemsViewLayout layout);
 
 		NSIndexPath DetermineIndex(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				// TODO hartez 2018/09/17 16:42:54 This will need to be overridden to account for grouping	
-				// TODO hartez 2018/09/17 16:21:19 Handle LTR	
-				return NSIndexPath.Create(0, args.Index);
+				if (args.GroupIndex == -1)
+				{
+					return NSIndexPath.Create(0, args.Index);
+				}
+
+				return NSIndexPath.Create(args.GroupIndex, args.Index);
 			}
 
 			return ItemsViewController.GetIndexForItem(args.Item);
 		}
 
-		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		void UpdateVerticalScrollBarVisibility()
 		{
-			var indexPath = DetermineIndex(args);
+			if (_defaultVerticalScrollVisibility == null)
+				_defaultVerticalScrollVisibility = ItemsViewController.CollectionView.ShowsVerticalScrollIndicator;
 
-			if (indexPath.Row < 0 || indexPath.Section < 0)
+			switch (Element.VerticalScrollBarVisibility)
 			{
-				// Nothing found, nowhere to scroll to
-				return;
+				case ScrollBarVisibility.Always:
+					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = true;
+					break;
+				case ScrollBarVisibility.Never:
+					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = false;
+					break;
+				case ScrollBarVisibility.Default:
+					ItemsViewController.CollectionView.ShowsVerticalScrollIndicator = _defaultVerticalScrollVisibility.Value;
+					break;
 			}
+		}
 
-			ItemsViewController.CollectionView.ScrollToItem(indexPath, 
-				args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
-				args.IsAnimated);
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_defaultHorizontalScrollVisibility == null)
+				_defaultHorizontalScrollVisibility = ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator;
+
+			switch (Element.HorizontalScrollBarVisibility)
+			{
+				case ScrollBarVisibility.Always:
+					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = true;
+					break;
+				case ScrollBarVisibility.Never:
+					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = false;
+					break;
+				case ScrollBarVisibility.Default:
+					ItemsViewController.CollectionView.ShowsHorizontalScrollIndicator = _defaultHorizontalScrollVisibility.Value;
+					break;
+			}
+		}
+
+		protected virtual void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		{
+			using (var indexPath = DetermineIndex(args))
+			{
+				if (!IsIndexPathValid(indexPath))
+				{
+					// Specified path wasn't valid, or item wasn't found
+					return;
+				}
+
+				ItemsViewController.CollectionView.ScrollToItem(indexPath,
+					args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection), args.IsAnimated);
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -162,14 +206,34 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if (Element != null)
-				{
-					TearDownOldElement(Element);
-				}
-				ItemsViewController.Dispose();
+				TearDownOldElement(Element);
+
+				ItemsViewController?.Dispose();
+				ItemsViewController = null;
 			}
 
 			base.Dispose(disposing);
+		}
+
+		bool IsIndexPathValid(NSIndexPath indexPath)
+		{
+			if (indexPath.Item < 0 || indexPath.Section < 0)
+			{
+				return false;
+			}
+
+			var collectionView = ItemsViewController.CollectionView;
+			if (indexPath.Section >= collectionView.NumberOfSections())
+			{
+				return false;
+			}
+
+			if (indexPath.Item >= collectionView.NumberOfItemsInSection(indexPath.Section))
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

@@ -1,11 +1,7 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.StyleSheets;
-
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
 
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Controls")]
@@ -47,7 +43,9 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("background-image", typeof(Page), nameof(Page.BackgroundImageSourceProperty))]
 [assembly: StyleProperty("border-color", typeof(IBorderElement), nameof(BorderElement.BorderColorProperty))]
 [assembly: StyleProperty("border-radius", typeof(ICornerElement), nameof(CornerElement.CornerRadiusProperty))]
-[assembly: StyleProperty("border-radius", typeof(IBorderElement), nameof(BorderElement.CornerRadiusProperty))]
+[assembly: StyleProperty("border-radius", typeof(Button), nameof(Button.CornerRadiusProperty))]
+[assembly: StyleProperty("border-radius", typeof(Frame), nameof(Frame.CornerRadiusProperty))]
+[assembly: StyleProperty("border-radius", typeof(ImageButton), nameof(BorderElement.CornerRadiusProperty))]
 [assembly: StyleProperty("border-width", typeof(IBorderElement), nameof(BorderElement.BorderWidthProperty))]
 [assembly: StyleProperty("color", typeof(IColorElement), nameof(ColorElement.ColorProperty), Inherited = true)]
 [assembly: StyleProperty("color", typeof(ITextElement), nameof(TextElement.TextColorProperty), Inherited = true)]
@@ -69,7 +67,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("min-width", typeof(VisualElement), nameof(VisualElement.MinimumWidthRequestProperty))]
 [assembly: StyleProperty("opacity", typeof(VisualElement), nameof(VisualElement.OpacityProperty))]
 [assembly: StyleProperty("padding", typeof(IPaddingElement), nameof(PaddingElement.PaddingProperty))]
-[assembly: StyleProperty("padding-left", typeof(IPaddingElement), nameof(PaddingElement.PaddingLeftProperty), PropertyOwnerType=typeof(PaddingElement))]
+[assembly: StyleProperty("padding-left", typeof(IPaddingElement), nameof(PaddingElement.PaddingLeftProperty), PropertyOwnerType = typeof(PaddingElement))]
 [assembly: StyleProperty("padding-top", typeof(IPaddingElement), nameof(PaddingElement.PaddingTopProperty), PropertyOwnerType = typeof(PaddingElement))]
 [assembly: StyleProperty("padding-right", typeof(IPaddingElement), nameof(PaddingElement.PaddingRightProperty), PropertyOwnerType = typeof(PaddingElement))]
 [assembly: StyleProperty("padding-bottom", typeof(IPaddingElement), nameof(PaddingElement.PaddingBottomProperty), PropertyOwnerType = typeof(PaddingElement))]
@@ -78,9 +76,10 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("text-decoration", typeof(IDecorableTextElement), nameof(DecorableTextElement.TextDecorationsProperty))]
 [assembly: StyleProperty("transform", typeof(VisualElement), nameof(VisualElement.TransformProperty))]
 [assembly: StyleProperty("transform-origin", typeof(VisualElement), nameof(VisualElement.TransformOriginProperty))]
-//[assembly: StyleProperty("vertical-align", /*typeof(Label), nameof(Label.VerticalTextAlignmentProperty)*/)]
+[assembly: StyleProperty("vertical-align", typeof(ITextAlignmentElement), nameof(TextAlignmentElement.VerticalTextAlignmentProperty))]
 [assembly: StyleProperty("visibility", typeof(VisualElement), nameof(VisualElement.IsVisibleProperty), Inherited = true)]
 [assembly: StyleProperty("width", typeof(VisualElement), nameof(VisualElement.WidthRequestProperty))]
+[assembly: StyleProperty("letter-spacing", typeof(ITextElement), nameof(TextElement.CharacterSpacingProperty), Inherited = true)]
 [assembly: StyleProperty("line-height", typeof(ILineHeightElement), nameof(LineHeightElement.LineHeightProperty), Inherited = true)]
 
 //flex
@@ -111,7 +110,8 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("-xf-spacing", typeof(StackLayout), nameof(StackLayout.SpacingProperty))]
 [assembly: StyleProperty("-xf-orientation", typeof(StackLayout), nameof(StackLayout.OrientationProperty))]
 [assembly: StyleProperty("-xf-visual", typeof(VisualElement), nameof(VisualElement.VisualProperty))]
-[assembly: StyleProperty("-xf-vertical-text-alignment", typeof(Label), nameof(Label.VerticalTextAlignmentProperty))]
+[assembly: StyleProperty("-xf-vertical-text-alignment", typeof(Label), nameof(TextAlignmentElement.VerticalTextAlignmentProperty))]
+[assembly: StyleProperty("-xf-thumb-color", typeof(Switch), nameof(Switch.ThumbColorProperty))]
 
 //shell
 [assembly: StyleProperty("-xf-flyout-background", typeof(Shell), nameof(Shell.FlyoutBackgroundColorProperty))]

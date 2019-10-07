@@ -14,6 +14,9 @@ namespace Xamarin.Forms
 	{
 		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
+
+		public override IDispatcher Dispatcher => this.GetDispatcher();
+
 		IAppIndexingProvider _appIndexProvider;
 		ReadOnlyCollection<Element> _logicalChildren;
 		Page _mainPage;
@@ -28,9 +31,9 @@ namespace Xamarin.Forms
 			var f = false;
 			if (f)
 				Loader.Load();
-			NavigationProxy = new NavigationImpl(this);
-			SetCurrentApplication(this);
 
+			SetCurrentApplication(this);
+			NavigationProxy = new NavigationImpl(this);
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
@@ -54,7 +57,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void SetCurrentApplication(Application value) => Current = value;
+		public static void SetCurrentApplication(Application value) => Current = value; 
 
 		public static Application Current { get; set; }
 
@@ -107,7 +110,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public NavigationProxy NavigationProxy { get; }
+		public NavigationProxy NavigationProxy { get; private set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public int PanGestureId { get; set; }
@@ -177,9 +180,9 @@ namespace Xamarin.Forms
 
 		public async Task SavePropertiesAsync()
 		{
-			if (Device.IsInvokeRequired)
+			if (Dispatcher.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties);
+				Dispatcher.BeginInvokeOnMainThread(SaveProperties);
 			}
 			else
 			{
@@ -190,9 +193,9 @@ namespace Xamarin.Forms
 		// Don't use this unless there really is no better option
 		internal void SavePropertiesAsFireAndForget()
 		{
-			if (Device.IsInvokeRequired)
+			if (Dispatcher.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties);
+				Dispatcher.BeginInvokeOnMainThread(SaveProperties);
 			}
 			else
 			{
@@ -343,6 +346,21 @@ namespace Xamarin.Forms
 				SaveSemaphore.Release();
 			}
 
+		}
+
+		protected internal virtual void CleanUp()
+		{
+			// Unhook everything that's referencing the main page so it can be collected
+			// This only comes up if we're disposing of an embedded Forms app, and will
+			// eventually go away when we fully support multiple windows
+			if (_mainPage != null)
+			{
+				InternalChildren.Remove(_mainPage);
+				_mainPage.Parent = null;
+				_mainPage = null;
+			}
+
+			NavigationProxy = null;
 		}
 
 		class NavigationImpl : NavigationProxy
