@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 namespace Xamarin.Forms
 {
@@ -9,8 +7,7 @@ namespace Xamarin.Forms
 	{
 		bool ProposeSection(ShellSection shellSection, bool setValue = true);
 
-		IReadOnlyList<ShellSection> GetItems();
-		int IndexOf(ShellSection section);
+		ReadOnlyCollection<ShellSection> GetItems();
 		event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
 	}
 }

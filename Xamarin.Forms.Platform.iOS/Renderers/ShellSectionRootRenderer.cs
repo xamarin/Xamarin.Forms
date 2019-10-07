@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var oldIndex = _currentIndex;
 				var oldItem = items[oldIndex];
 
-				_currentIndex = ShellSectionController.IndexOf(currentItem);
+				_currentIndex = ShellSectionController.GetItems().IndexOf(currentItem);
 
 				var oldRenderer = _renderers[oldItem];
 				var currentRenderer = _renderers[currentItem];

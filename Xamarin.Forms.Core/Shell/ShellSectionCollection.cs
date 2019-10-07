@@ -20,7 +20,7 @@ namespace Xamarin.Forms
 			};
 		}
 
-		public IReadOnlyList<ShellSection> VisibleItems { get; }
+		public ReadOnlyCollection<ShellSection> VisibleItems { get; }
 
 		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
 		{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 
@@ -45,7 +46,7 @@ namespace Xamarin.Forms
 
 		void UpdateCurrentState(ShellNavigationSource source);
 
-		IReadOnlyList<ShellItem> GetItems();
+		ReadOnlyCollection<ShellItem> GetItems();
 
 		event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
 	}

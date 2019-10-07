@@ -231,7 +231,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateSelectedIndex(bool animated = false)
 		{
-			SelectedIndex = ShellSectionController.IndexOf(ShellSection.CurrentItem);
+			SelectedIndex = ShellSectionController.GetItems().IndexOf(ShellSection.CurrentItem);
 			LayoutBar();
 
 			CollectionView.SelectItem(NSIndexPath.FromItemSection((int)SelectedIndex, 0), false, UICollectionViewScrollPosition.CenteredHorizontally);

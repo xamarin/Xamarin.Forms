@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 
 		IList<ShellItem> _inner;
 		ObservableCollection<ShellItem> _visibleContents = new ObservableCollection<ShellItem>();
-		public IReadOnlyList<ShellItem> VisibleItems { get; }
+		public ReadOnlyCollection<ShellItem> VisibleItems { get; }
 
 		public ShellItemCollection()
 		{

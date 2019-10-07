@@ -244,7 +244,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnShellSectionChanged();
 
-			var index = ((IShellItemController)ShellItem).IndexOf(ShellSection);
+			var index = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
 			using (var menu = _bottomView.Menu)
 			{
 				index = Math.Min(index, menu.Size() - 1);
@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.PropertyName == BaseShellItem.IsEnabledProperty.PropertyName)
 			{
 				var content = (ShellSection)sender;
-				var index = ((IShellItemController)ShellItem).IndexOf(content);
+				var index = ((IShellItemController)ShellItem).GetItems().IndexOf(content);
 
 				var itemCount = ((IShellItemController)ShellItem).GetItems().Count;
 				var maxItems = _bottomView.MaxItemCount;
@@ -372,7 +372,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void SetupMenu(IMenu menu, int maxBottomItems, ShellItem shellItem)
 		{
-            var currentIndex = ((IShellItemController)ShellItem).IndexOf(ShellSection);
+            var currentIndex = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
             var items = CreateTabList(shellItem);
 
 			BottomNavigationViewUtils.SetupMenu(

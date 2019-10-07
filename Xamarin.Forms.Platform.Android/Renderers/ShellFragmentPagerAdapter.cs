@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.Android
 			var shellContent = fragContainer?.ShellContentTab;
 			if (shellContent != null)
 			{
-				int index = SectionController.IndexOf(shellContent);
+				int index = SectionController.GetItems().IndexOf(shellContent);
 				if (index >= 0)
 					return index;
 			}

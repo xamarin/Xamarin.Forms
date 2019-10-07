@@ -79,10 +79,7 @@ namespace Xamarin.Forms
 			return accept;
 		}
 
-		IReadOnlyList<ShellSection> IShellItemController.GetItems() => ((ShellSectionCollection)Items).VisibleItems;
-
-		int IShellItemController.IndexOf(ShellSection section) =>
-			(ShellItemController.GetItems() as ReadOnlyCollection<ShellSection>).IndexOf(section);
+		ReadOnlyCollection<ShellSection> IShellItemController.GetItems() => ((ShellSectionCollection)Items).VisibleItems;
 
 		event NotifyCollectionChangedEventHandler IShellItemController.ItemsCollectionChanged
 		{

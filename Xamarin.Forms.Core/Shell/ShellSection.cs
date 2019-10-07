@@ -132,6 +132,8 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
+		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
+
 		void IShellSectionController.SendPopping(Page page)
 		{
 			if (_navStack.Count <= 1)
@@ -148,12 +150,8 @@ namespace Xamarin.Forms
 
 			RemovePage(page);
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
-		}		
+		}
 
-		IReadOnlyList<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
-
-		int IShellSectionController.IndexOf(ShellContent content) =>
-			(ShellSectionController.GetItems() as ReadOnlyCollection<ShellContent>).IndexOf(content);
 
 		event NotifyCollectionChangedEventHandler IShellSectionController.ItemsCollectionChanged
 		{

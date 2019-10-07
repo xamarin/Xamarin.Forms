@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (colorChangeRevealDrawable != null && lastColor == newColor)
 					return;
 
-				var index = ((IShellItemController)_shellItem).IndexOf(_shellItem.CurrentItem);
+				var index = ((IShellItemController)_shellItem).GetItems().IndexOf(_shellItem.CurrentItem);
 				var menu = bottomView.Menu;
 				index = Math.Min(index, menu.Size() - 1);
 
