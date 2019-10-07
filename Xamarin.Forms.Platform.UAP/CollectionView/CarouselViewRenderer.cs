@@ -155,11 +155,13 @@ namespace Xamarin.Forms.Platform.UWP
 		void OnScrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
 		{
 			CarouselView.SetIsDragging(true);
+			CarouselView.SetIsScrolling(true);
 		}
 
 		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
 		{
 			CarouselView.SetIsDragging(e.IsIntermediate);
+			CarouselView.SetIsScrolling(e.IsIntermediate);
 		}
 
 		void UpdatePeekAreaInsets()
