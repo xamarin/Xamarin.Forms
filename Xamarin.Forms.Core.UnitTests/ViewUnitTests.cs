@@ -446,7 +446,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void TestBatchViaUsing()
+		public void TestBatchRegularCase()
+		{
+			var view = new View();
+			var committed = false;
+			view.BatchCommitted += (sender, arg) => committed = true;
+			using (view.Batch())
+			{
+				Assert.True(view.Batched);
+			}
+			Assert.False(view.Batched);
+			Assert.True(committed);
+		}
+
+		[Test]
+		public void TestBatchWhenExceptionThrown()
 		{
 			var view = new View();
 			var committed = false;
@@ -456,6 +470,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				using (view.Batch())
 				{
+					Assert.True(view.Batched);
 					throw new Exception();
 				}
 			}
@@ -463,7 +478,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				exceptionThrown = true;
 			}
-
 			Assert.True(exceptionThrown);
 			Assert.False(view.Batched);
 			Assert.True(committed);
