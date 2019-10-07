@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using CoreGraphics;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
@@ -15,10 +12,12 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly Action<UITouchGestureRecognizer, TouchEventArgs> _action;
 		readonly Func<View> _getView;
 
-
 		/// <param name="action">Code to invoke when the gesture is recognized.</param>
 		/// <summary>Constructs a gesture recognizer and provides a method to invoke when the gesture is recognized.</summary>
-		/// <remarks>This overload allows the method that will be invoked to receive the recognizer that detected the gesture as a parameter.</remarks>
+		/// <remarks>
+		///     This overload allows the method that will be invoked to receive the recognizer that detected the gesture as a
+		///     parameter.
+		/// </remarks>
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public UITouchGestureRecognizer(Action<UITouchGestureRecognizer, TouchEventArgs> action, Func<View> getView)
 		{
@@ -27,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		/// <summary>
-		///   Is called when the fingers touch the screen.
+		///     Is called when the fingers touch the screen.
 		/// </summary>
 		public override void TouchesBegan(NSSet touches, UIEvent evt)
 		{
@@ -55,8 +54,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 		TouchEventArgs CreateTouchEventArgs(NSSet touches, UIEvent evt, UIGestureRecognizerState state)
 		{
-			var touchState = GetTouchState(state);
+			TouchState touchState = GetTouchState(state);
 			return new TouchEventArgs((int)touches.Count, touchState, GetTouchPoints(touches, touchState));
+		}
+
+		IReadOnlyList<TouchPoint> GetTouchPoints(NSSet touches, TouchState touchState)
+		{
+			var points = new List<TouchPoint>((int)touches.Count);
+
+			foreach (UITouch touch in touches)
+			{
+				View view = _getView();
+				Point point = touch.LocationInView(touch.View).ToPoint();
+				var isInView = view.Bounds.Contains(point);
+				points.Add(new TouchPoint(touches.IndexOf(touch), point, touchState, isInView));
+			}
+
+			return points.AsReadOnly();
 		}
 
 		TouchState GetTouchState(UIGestureRecognizerState state)
@@ -78,21 +92,6 @@ namespace Xamarin.Forms.Platform.iOS
 				default:
 					return TouchState.Default;
 			}
-		}
-
-		IReadOnlyList<TouchPoint> GetTouchPoints(NSSet touches, TouchState touchState)
-		{
-			var points = new List<TouchPoint>((int)touches.Count);
-
-			foreach (UITouch touch in touches)
-			{
-				var point = touch.LocationInView(touch.View).ToPoint();
-				var view = _getView();
-				var isInView = view?.Bounds.Contains(point) ?? false;
-				points.Add(new TouchPoint(touches.IndexOf(touch), point, touchState, isInView));
-			}
-
-			return points.AsReadOnly();
 		}
 	}
 }
