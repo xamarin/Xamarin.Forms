@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CoreGraphics;
-using Foundation;
+﻿using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -60,6 +56,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void RegisterViewTypes()
 		{
 			CollectionView.RegisterClassForCell(typeof(CarouselTemplatedCell), CarouselTemplatedCell.ReuseId);
+			base.RegisterViewTypes();
 		}
 
 		internal void TearDown()
@@ -74,6 +71,11 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
 		{
 			_carouselView.SetIsDragging(false);
+		}
+
+		internal void UpdateIsScrolling(bool isScrolling)
+		{
+			_carouselView.IsScrolling = isScrolling;
 		}
 
 		void UpdateInitialPosition()
