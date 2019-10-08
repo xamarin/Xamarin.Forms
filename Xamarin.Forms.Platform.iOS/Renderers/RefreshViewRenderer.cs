@@ -23,22 +23,15 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			set
 			{
-				var refreshView = Element;
-
-				// Allow refreshView.IsRefreshing to sync up with Refreshing
-				if (refreshView != null && refreshView.IsRefreshing != value)
-				{
-					refreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, value);
-					return;
-				}
-
 				_isRefreshing = value;
 
 				if (_isRefreshing)
 				{
 					_refreshControl.BeginRefreshing();
 
-					if (refreshView != null && refreshView.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
+					var refreshView = Element;
+
+					if (refreshView?.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
 						refreshView.Command.Execute(refreshView?.CommandParameter);
 				}
 				else
@@ -218,7 +211,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnRefresh(object sender, EventArgs e)
 		{
-			IsRefreshing = true;
+			var refreshView = Element;
+
+			// Allow IsRefreshing to fire the refresh command
+			if (!refreshView.IsRefreshing)
+				refreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, true);
+			else
+				UpdateIsRefreshing();
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

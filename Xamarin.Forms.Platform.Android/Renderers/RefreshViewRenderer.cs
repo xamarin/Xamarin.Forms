@@ -49,19 +49,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			set
 			{
-				// Allow RefreshView.IsRefreshing to sync up with Refreshing
-				if (RefreshView != null && RefreshView.IsRefreshing != value)
-				{
-					RefreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, value);
-					return;
-				}
-
 				_refreshing = value;
 
 				base.Refreshing = _refreshing;
 
-				if (base.Refreshing && RefreshView != null && RefreshView.Command != null && RefreshView.Command.CanExecute(RefreshView?.CommandParameter))
-					RefreshView.Command.Execute(RefreshView?.CommandParameter);
+				if (base.Refreshing && RefreshView?.Command != null && RefreshView.Command.CanExecute(RefreshView.CommandParameter))
+					RefreshView.Command.Execute(RefreshView.CommandParameter);
 			}
 		}
 
@@ -190,7 +183,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void OnRefresh()
 		{
-			Refreshing = true;
+			// Allow IsRefreshing to fire the refresh command
+			if (!RefreshView.IsRefreshing)
+				RefreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, true);
+			else
+				UpdateIsRefreshing();
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
