@@ -103,5 +103,55 @@ namespace Xamarin.Forms.Core.UnitTests
 			refreshView.Command = command;
 			Assert.IsFalse(refreshView.IsEnabled);
 		}
+
+		[Test]
+		public void IsRefreshingStaysFalseWithDisabledCommand()
+		{
+			RefreshView refreshView = new RefreshView();
+
+			bool canExecute = true;
+			refreshView.Command = new Command(() => { }, () => false);
+			refreshView.IsRefreshing = true;
+			Assert.IsFalse(refreshView.IsRefreshing);
+		}
+
+		[Test]
+		public void IsRefreshingSettableToTrue()
+		{
+			RefreshView refreshView = new RefreshView();
+			Assert.IsFalse(refreshView.IsRefreshing);
+
+			refreshView.IsRefreshing = true;
+			Assert.IsTrue(refreshView.IsRefreshing);
+		}
+
+		[Test]
+		public void IsRefreshingStaysFalseWithDisabledRefreshView()
+		{
+			RefreshView refreshView = new RefreshView();
+			refreshView.IsEnabled = false;
+			refreshView.IsRefreshing = true;
+			Assert.IsFalse(refreshView.IsRefreshing);
+		}
+
+		[Test]
+		public void IsRefreshingTogglesFalseWhenIsEnabledSetToFalse()
+		{
+			RefreshView refreshView = new RefreshView();
+			refreshView.IsRefreshing = true;
+			refreshView.IsEnabled = false;
+			Assert.IsFalse(refreshView.IsRefreshing);
+		}
+
+		[Test]
+		public void IsRefreshingEventFires()
+		{
+			RefreshView refreshView = new RefreshView();
+			bool eventFired = false;
+			refreshView.Refreshing += (_, __) => eventFired = true;
+			Assert.IsFalse(eventFired);
+			refreshView.IsRefreshing = true;
+			Assert.IsTrue(eventFired);
+		}
 	}
 }

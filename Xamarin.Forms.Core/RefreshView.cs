@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms.Platform;
 
@@ -9,6 +10,7 @@ namespace Xamarin.Forms
 	public class RefreshView : ContentView, IElementConfiguration<RefreshView>
 	{
 		readonly Lazy<PlatformConfigurationRegistry<RefreshView>> _platformConfigurationRegistry;
+		public event EventHandler Refreshing;
 
 		public RefreshView()
 		{
@@ -20,7 +22,36 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty IsRefreshingProperty =
-			BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(RefreshView), false, BindingMode.TwoWay);
+			BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(RefreshView), false, BindingMode.TwoWay, coerceValue:OnCoerceIsRefreshing, propertyChanged: OnIsRefreshingPropertyChanged);
+
+		static void OnIsRefreshingPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			bool value = (bool)newValue;
+
+			if(value)
+				((RefreshView)bindable).Refreshing?.Invoke(bindable, EventArgs.Empty);
+		}
+
+		static object OnCoerceIsRefreshing(BindableObject bindable, object value)
+		{
+			RefreshView view = (RefreshView)bindable;
+			bool newValue = (bool)value;
+
+			// IsRefreshing can always be toggled to false
+			if (!newValue)
+				return value;
+
+			if (!view.IsEnabled)
+				return false;
+
+			if (view.Command == null)
+				return value;
+
+			if (!view.Command.CanExecute(view.CommandParameter))
+				return false;
+
+			return value;
+		}
 
 		public bool IsRefreshing
 		{
@@ -92,6 +123,14 @@ namespace Xamarin.Forms
 		public IPlatformElementConfiguration<T, RefreshView> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
+			if (IsEnabledProperty.PropertyName == propertyName)
+				if (!IsEnabled && IsRefreshing)
+					IsRefreshing = false;
 		}
 	}
 }
