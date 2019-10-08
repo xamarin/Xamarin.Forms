@@ -26,12 +26,6 @@ namespace Xamarin.Forms.Material.iOS
 			// once/if it does start working it will be handled inside MaterialTextManager	
 		}
 
-		protected override void UpdateCharacterSpacing()
-		{
-			base.UpdateCharacterSpacing();
-			Control?.UpdatePlaceholder(this);
-		}
-
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
 		{
 			base.OnElementChanged(e);

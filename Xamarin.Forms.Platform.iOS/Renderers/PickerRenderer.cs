@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCharacterSpacing();
 		}
 
-        protected virtual void UpdateCharacterSpacing()
+        protected void UpdateCharacterSpacing()
         {
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
 
