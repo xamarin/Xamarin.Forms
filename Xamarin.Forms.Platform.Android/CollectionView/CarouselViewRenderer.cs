@@ -86,10 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 					Carousel.SetIsDragging(false);
 			}
 
-			if (state == ScrollStateIdle)
-				Carousel.SetIsScrolling(false);
-			else
-				Carousel.SetIsScrolling(true);
+			Carousel.IsScrolling = state != ScrollStateIdle;
 		}
 
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)

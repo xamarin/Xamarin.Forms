@@ -9,7 +9,7 @@
     <ContentPage.Content>
   <StackLayout Margin="20">
       <Label
-          Text="Press the Button's below and verify that the Carousel scroll position moves to monkey 9 (Proboscis Monkey)."/>
+          Text="Press the Button's below and verify that the Carousel scroll position moves to monkey 9 (Index = 8, Name = Proboscis Monkey)."/>
         <StackLayout Orientation="Horizontal"
                      HorizontalOptions="Center">
             <Label Text="Animate scroll: "
@@ -35,6 +35,9 @@
                                HorizontalOptions="Center"
                                VerticalOptions="CenterAndExpand">
                             <StackLayout>
+                                <Label Text="{Binding Index}" 
+                                       FontSize="Small"
+                                       HorizontalOptions="Center"/>
                                 <Label Text="{Binding Name}" 
                                        FontAttributes="Bold"
                                        FontSize="Large"

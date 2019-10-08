@@ -262,11 +262,5 @@ namespace Xamarin.Forms
 		{
 			SetValue(IsDraggingPropertyKey, value);
 		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SetIsScrolling(bool value)
-		{
-			IsScrolling = value;
-		}
 	}
 }
