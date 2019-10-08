@@ -8,57 +8,70 @@
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.Issues.Issue7817">
     <ContentPage.Content>
-    <StackLayout Margin="20">
+    <Grid
+        Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid
+            Grid.Row="0"
             BackgroundColor="Yellow">
             <Label
-                Text="A new item is added to the Carousel every 2 seconds. Change ItemsUpdatingScrollMode by selecting KeepLastItemInView in the Picker and verify that the behavior changes. The CarouselView must move the scroll to the latest item added."/>
+                LineBreakMode="WordWrap"
+                Text="Change ItemsUpdatingScrollMode by selecting KeepLastItemInView in the Picker and verify that the behavior changes. The CarouselView must move the scroll to the latest item added."/>
         </Grid>
-        <StackLayout Orientation="Horizontal"
-                      HorizontalOptions="Center">
-                <Label Text="UpdatingScrollMode: "
-                       VerticalTextAlignment="Center" />
-                <local:EnumPicker x:Name="enumPicker"
-                                  EnumType="{x:Type ItemsUpdatingScrollMode}"
-                                  SelectedIndex="0"
-                                  SelectedIndexChanged="OnItemsUpdatingScrollModeChanged" />
+        <StackLayout
+            Grid.Row="1"
+            Orientation="Horizontal"
+            HorizontalOptions="Center">
+            <Label
+                Text="UpdatingScrollMode: "
+                VerticalTextAlignment="Center" />
+            <local:EnumPicker x:Name="enumPicker"
+                              EnumType="{x:Type ItemsUpdatingScrollMode}"
+                              SelectedIndex="0"
+                              SelectedIndexChanged="OnItemsUpdatingScrollModeChanged" />
          </StackLayout>
-        <CarouselView x:Name="carouselView"
-                      ItemsSource="{Binding Monkeys}">
-        <CarouselView.ItemTemplate>
-            <DataTemplate>
-                <StackLayout>
-                    <Frame HasShadow="True"
-                           BorderColor="DarkGray"
-                           CornerRadius="5"
-                           Margin="20"
-                           HeightRequest="300"
-                           HorizontalOptions="Center"
-                           VerticalOptions="CenterAndExpand">
-                        <StackLayout>
-                            <Label Text="{Binding Name}" 
-                                    FontAttributes="Bold"
-                                    FontSize="Large"
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center" />
-                            <Image Source="{Binding ImageUrl}" 
-                                    Aspect="AspectFill"
-                                    HeightRequest="150"
-                                    WidthRequest="150"
-                                    HorizontalOptions="Center" />
-                            <Label Text="{Binding Location}"
-                                    HorizontalOptions="Center" />
-                            <Label Text="{Binding Details}"
-                                    FontAttributes="Italic"
-                                    HorizontalOptions="Center"
-                                    MaxLines="5"
-                                    LineBreakMode="TailTruncation" />
-                        </StackLayout>
-                    </Frame>
-                </StackLayout>
-            </DataTemplate>
-        </CarouselView.ItemTemplate>
+        <CarouselView
+            Grid.Row="2"
+            x:Name="carouselView"
+            ItemsSource="{Binding Monkeys}">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Frame HasShadow="True"
+                               BorderColor="DarkGray"
+                               CornerRadius="5"
+                               Margin="20"
+                               HeightRequest="300"
+                               HorizontalOptions="Center"
+                               VerticalOptions="CenterAndExpand">
+                            <StackLayout>
+                                <Label Text="{Binding Name}" 
+                                        FontAttributes="Bold"
+                                        FontSize="Large"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center" />
+                                <Image Source="{Binding ImageUrl}" 
+                                        Aspect="AspectFill"
+                                        HeightRequest="150"
+                                        WidthRequest="150"
+                                        HorizontalOptions="Center" />
+                                <Label Text="{Binding Location}"
+                                        HorizontalOptions="Center" />
+                                <Label Text="{Binding Details}"
+                                        FontAttributes="Italic"
+                                        HorizontalOptions="Center"
+                                        MaxLines="5"
+                                        LineBreakMode="TailTruncation" />
+                            </StackLayout>
+                        </Frame>
+                    </StackLayout>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
         </CarouselView>
-    </StackLayout>
+    </Grid>
     </ContentPage.Content>
 </controls:TestContentPage>
