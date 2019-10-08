@@ -102,16 +102,6 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 			return template;
 		}
-
-#if UITEST
-		[Test]
-		public void ChangeCollectionViewItemTemplateTest()
-		{
-			RunningApp.Tap(q => q.Marked("Change ItemTemplate"));
-			RunningApp.WaitForElement(q => q.Marked("Item 1"));
-			RunningApp.Screenshot("Updated ItemTemplate");
-		}
-#endif
 	}
 
 	[Preserve(AllMembers = true)]
