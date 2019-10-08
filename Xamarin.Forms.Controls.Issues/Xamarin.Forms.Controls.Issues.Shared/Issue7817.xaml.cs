@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -34,9 +35,10 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-		protected override void Init()
+		protected override async void Init()
 		{
 			BindingContext = new Issue7817ViewModel();
+			await ((Issue7817ViewModel)BindingContext).CreateCollectionAsync();
 		}
 
 		void OnItemsUpdatingScrollModeChanged(object sender, EventArgs e)
@@ -86,14 +88,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class Issue7817ViewModel : BindableObject
 	{
-		public Issue7817ViewModel()
-		{
-			CreateCollection();
-		}
-
 		public ObservableCollection<Issue7817Model> Monkeys { get; private set; } = new ObservableCollection<Issue7817Model>();
 
-		void CreateCollection()
+		public async Task CreateCollectionAsync()
 		{
 			Monkeys.Add(new Issue7817Model
 			{
@@ -104,6 +101,8 @@ namespace Xamarin.Forms.Controls.Issues
 				ImageUrl = "http://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Papio_anubis_%28Serengeti%2C_2009%29.jpg/200px-Papio_anubis_%28Serengeti%2C_2009%29.jpg"
 			});
 
+			await Task.Delay(2000);
+
 			Monkeys.Add(new Issue7817Model
 			{
 				Index = 1,
@@ -113,6 +112,8 @@ namespace Xamarin.Forms.Controls.Issues
 				ImageUrl = "http://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Capuchin_Costa_Rica.jpg/200px-Capuchin_Costa_Rica.jpg"
 			});
 
+			await Task.Delay(2000);
+
 			Monkeys.Add(new Issue7817Model
 			{
 				Index = 2,
@@ -120,6 +121,37 @@ namespace Xamarin.Forms.Controls.Issues
 				Location = "Central and East Africa",
 				Details = "The blue monkey or diademed monkey is a species of Old World monkey native to Central and East Africa, ranging from the upper Congo River basin east to the East African Rift and south to northern Angola and Zambia",
 				ImageUrl = "http://upload.wikimedia.org/wikipedia/commons/thumb/8/83/BlueMonkey.jpg/220px-BlueMonkey.jpg"
+			});
+
+			Monkeys.Add(new Issue7817Model
+			{
+				Index = 3,
+				Name = "Thomas's Langur",
+				Location = "Indonesia",
+				Details = "Thomas's langur is a species of primate in the family Cercopithecidae. It is endemic to North Sumatra, Indonesia. Its natural habitat is subtropical or tropical dry forests. It is threatened by habitat loss. Its native names are reungkah in Acehnese and kedih in Alas.",
+				ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Thomas%27s_langur_Presbytis_thomasi.jpg/142px-Thomas%27s_langur_Presbytis_thomasi.jpg"
+			});
+
+			await Task.Delay(2000);
+
+			Monkeys.Add(new Issue7817Model
+			{
+				Index = 4,
+				Name = "Purple-faced Langur",
+				Location = "Sri Lanka",
+				Details = "The purple-faced langur, also known as the purple-faced leaf monkey, is a species of Old World monkey that is endemic to Sri Lanka. The animal is a long-tailed arboreal species, identified by a mostly brown appearance, dark face (with paler lower face) and a very shy nature. The species was once highly prevalent, found in suburban Colombo and the \"wet zone\" villages (areas with high temperatures and high humidity throughout the year, whilst rain deluges occur during the monsoon seasons), but rapid urbanization has led to a significant decrease in the population level of the monkeys.",
+				ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Semnopithèque_blanchâtre_mâle.JPG/192px-Semnopithèque_blanchâtre_mâle.JPG"
+			});
+
+			await Task.Delay(2000);
+
+			Monkeys.Add(new Issue7817Model
+			{
+				Index = 5,
+				Name = "Gelada",
+				Location = "Ethiopia",
+				Details = "The gelada, sometimes called the bleeding-heart monkey or the gelada baboon, is a species of Old World monkey found only in the Ethiopian Highlands, with large populations in the Semien Mountains. Theropithecus is derived from the Greek root words for \"beast-ape.\" Like its close relatives the baboons, it is largely terrestrial, spending much of its time foraging in grasslands.",
+				ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Gelada-Pavian.jpg/320px-Gelada-Pavian.jpg"
 			});
 		}
 	}

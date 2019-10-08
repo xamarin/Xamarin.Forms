@@ -64,6 +64,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
+			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
+				UpdateItemsUpdatingScrollMode();
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
