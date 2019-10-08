@@ -28,8 +28,13 @@ namespace Xamarin.Forms
 		{
 			bool value = (bool)newValue;
 
-			if(value)
-				((RefreshView)bindable).Refreshing?.Invoke(bindable, EventArgs.Empty);
+			if (value)
+			{
+				var resfrehView = ((RefreshView)bindable);
+				resfrehView.Refreshing?.Invoke(bindable, EventArgs.Empty);
+				if(resfrehView.Command != null)
+					resfrehView.Command.Execute(resfrehView.CommandParameter);
+			}
 		}
 
 		static object OnCoerceIsRefreshing(BindableObject bindable, object value)
