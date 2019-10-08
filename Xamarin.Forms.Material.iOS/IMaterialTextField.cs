@@ -3,7 +3,7 @@ using MTextInputControllerBase = MaterialComponents.TextInputControllerBase;
 
 namespace Xamarin.Forms.Material.iOS
 {
-	internal interface IMaterialTextField
+	public interface IMaterialTextField
 	{
 		SemanticColorScheme ColorScheme { get; set; }
 		TypographyScheme TypographyScheme { get; set; }
