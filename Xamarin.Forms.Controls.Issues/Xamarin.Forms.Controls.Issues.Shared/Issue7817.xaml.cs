@@ -43,7 +43,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void OnItemsUpdatingScrollModeChanged(object sender, EventArgs e)
 		{
+#if APP
 			carouselView.ItemsUpdatingScrollMode = (ItemsUpdatingScrollMode)(sender as EnumPicker).SelectedItem;
+#endif
 		}
 	}
 
