@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Material.iOS
 		public static void UpdatePlaceholder(IMaterialTextField textField, IMaterialEntryRenderer element)
 		{
 			var placeholderText = element.Placeholder ?? String.Empty;
-			//textField.ActiveTextInputController.PlaceholderText = placeholderText;
+			textField.ActiveTextInputController.PlaceholderText = placeholderText;
 			ApplyTheme(textField, element);
 
 			var previous = textField.ActiveTextInputController.FloatingPlaceholderScale;
