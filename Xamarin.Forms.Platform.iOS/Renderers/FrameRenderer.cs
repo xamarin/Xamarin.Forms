@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetupLayer();
 		}
 
-		void SetupLayer()
+		public virtual void SetupLayer()
 		{
 			float cornerRadius = Element.CornerRadius;
 
