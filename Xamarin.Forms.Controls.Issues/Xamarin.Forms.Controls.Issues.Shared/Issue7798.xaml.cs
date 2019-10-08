@@ -40,11 +40,16 @@ namespace Xamarin.Forms.Controls.Issues
 			BindingContext = new Issue7798ViewModel();
 		}
 
-		void OnButtonClicked(object sender, EventArgs e)
+		void OnObjectButtonClicked(object sender, EventArgs e)
 		{
 			var viewModel = BindingContext as Issue7798ViewModel;
 			var monkey = viewModel.Monkeys.FirstOrDefault(m => m.Name == "Proboscis Monkey");
 			carouselView.ScrollTo(monkey, position: ScrollToPosition.MakeVisible, animate: animateSwitch.IsToggled);
+		}
+
+		void OnIndexButtonClicked(object sender, EventArgs e)
+		{
+			carouselView.ScrollTo(8, position: ScrollToPosition.MakeVisible, animate: animateSwitch.IsToggled);
 		}
 
 		void OnCarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)

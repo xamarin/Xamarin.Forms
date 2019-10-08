@@ -9,7 +9,7 @@
     <ContentPage.Content>
   <StackLayout Margin="20">
       <Label
-          Text="Press the Button below and verify that the Carousel scroll position moves to monkey 9 (Proboscis Monkey)."/>
+          Text="Press the Button's below and verify that the Carousel scroll position moves to monkey 9 (Proboscis Monkey)."/>
         <StackLayout Orientation="Horizontal"
                      HorizontalOptions="Center">
             <Label Text="Animate scroll: "
@@ -17,8 +17,10 @@
             <Switch x:Name="animateSwitch"
                     IsToggled="true" />
         </StackLayout>
-        <Button Text="Scroll to monkey 9 (Proboscis Monkey)"
-                Clicked="OnButtonClicked" />
+        <Button Text="Scroll by Object (Proboscis Monkey)"
+                Clicked="OnObjectButtonClicked" />
+         <Button Text="Scroll by Index (8 = Proboscis Monkey)"
+                Clicked="OnIndexButtonClicked" />
         <CarouselView x:Name="carouselView"
                       ItemsSource="{Binding Monkeys}"
                       Scrolled="OnCarouselViewScrolled">
