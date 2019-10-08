@@ -304,7 +304,7 @@ MSBuildSettings GetMSBuildSettings()
 {
     return new MSBuildSettings {
         PlatformTarget = PlatformTarget.MSIL,
-        MSBuildPlatform = (Cake.Common.Tools.MSBuild.MSBuildPlatform)1,
+        MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
         Configuration = configuration,
     };
 }
