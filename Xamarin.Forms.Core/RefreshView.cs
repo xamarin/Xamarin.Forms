@@ -29,7 +29,21 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty CommandProperty =
-			BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(RefreshView));
+			BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(RefreshView), propertyChanged: OnCommandChanged);
+
+		static void OnCommandChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (bindable is RefreshView refreshView)
+			{
+				if (oldValue is ICommand oldCommand)
+					oldCommand.CanExecuteChanged -= refreshView.RefreshCommandCanExecuteChanged;
+
+				if (newValue is ICommand newCommand)
+					newCommand.CanExecuteChanged += refreshView.RefreshCommandCanExecuteChanged;
+
+				refreshView.RefreshCommandCanExecuteChanged(bindable, EventArgs.Empty);
+			}
+		}
 
 		public ICommand Command
 		{
@@ -42,7 +56,7 @@ namespace Xamarin.Forms
 				typeof(object),
 				typeof(RefreshView),
 				null,
-				propertyChanged: (bindable, oldvalue, newvalue) => ((RefreshView)bindable).RefreshCommandCanExecuteChanged(bindable, EventArgs.Empty));
+				propertyChanged: (bindable, oldvalue, newvalue) => ((RefreshView)(bindable)).RefreshCommandCanExecuteChanged(((RefreshView)(bindable)).Command, EventArgs.Empty));
 
 		public object CommandParameter
 		{
@@ -53,7 +67,9 @@ namespace Xamarin.Forms
 		void RefreshCommandCanExecuteChanged(object sender, EventArgs eventArgs)
 		{
 			if (Command != null)
-				IsEnabled = Command.CanExecute(CommandParameter);
+				SetValueCore(IsEnabledProperty, Command.CanExecute(CommandParameter));
+			else
+				SetValueCore(IsEnabledProperty, true);
 		}
 
 		public static readonly BindableProperty RefreshColorProperty =
