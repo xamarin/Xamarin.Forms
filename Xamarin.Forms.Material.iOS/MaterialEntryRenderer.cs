@@ -11,6 +11,11 @@ namespace Xamarin.Forms.Material.iOS
 		protected override void UpdateColor() => Control?.UpdateTextColor(this);
 		protected virtual void ApplyTheme() => Control?.ApplyTheme(this);
 		protected override void UpdatePlaceholder() => Control?.UpdatePlaceholder(this);
+		protected override void UpdateAttributedPlaceHolder(NSAttributedString nSAttributedString)
+		{
+			// Attributed place holders don't currently work with Material Text Fields
+			// once/if it does start working it will be handled inside MaterialTextManager	
+		}
 
 		protected override void UpdateFont()
 		{

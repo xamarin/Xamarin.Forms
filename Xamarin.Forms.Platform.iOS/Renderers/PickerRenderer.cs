@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCharacterSpacing();
 		}
 
-        protected void UpdateCharacterSpacing()
+        protected virtual void UpdateCharacterSpacing()
         {
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
 
@@ -175,7 +175,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
 
 			if (placeHolder != null)
-				Control.AttributedPlaceholder = placeHolder;
+				UpdateAttributedPlaceHolder(placeHolder);
 		}
 
         protected internal virtual void UpdateFont()
@@ -196,18 +196,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceHolder(formatted.ToAttributed(Element, color));
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceHolder(formatted.ToAttributed(Element, color));
 			}
 
-			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
+			UpdateAttributedPlaceHolder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing));
 		}
 
+		protected virtual void UpdateAttributedPlaceHolder(NSAttributedString nSAttributedString) => 
+			Control.AttributedPlaceholder = nSAttributedString;
 
 		void UpdatePicker()
 		{
