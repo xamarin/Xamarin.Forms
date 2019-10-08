@@ -9,7 +9,12 @@
              x:Class="Xamarin.Forms.Controls.Issues.Issue7817">
     <ContentPage.Content>
     <StackLayout Margin="20">
-         <StackLayout Orientation="Horizontal"
+        <Grid
+            BackgroundColor="Yellow">
+            <Label
+                Text="A new item is added to the Carousel every 2 seconds. Change ItemsUpdatingScrollMode by selecting KeepLastItemInView in the Picker and verify that the behavior changes. The CarouselView must move the scroll to the latest item added."/>
+        </Grid>
+        <StackLayout Orientation="Horizontal"
                       HorizontalOptions="Center">
                 <Label Text="UpdatingScrollMode: "
                        VerticalTextAlignment="Center" />

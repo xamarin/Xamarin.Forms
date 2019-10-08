@@ -90,6 +90,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class Issue7817ViewModel : BindableObject
 	{
+		const int AddItemDelay = 2000;
+
 		public ObservableCollection<Issue7817Model> Monkeys { get; private set; } = new ObservableCollection<Issue7817Model>();
 
 		public async Task CreateCollectionAsync()
@@ -103,7 +105,7 @@ namespace Xamarin.Forms.Controls.Issues
 				ImageUrl = "http://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Papio_anubis_%28Serengeti%2C_2009%29.jpg/200px-Papio_anubis_%28Serengeti%2C_2009%29.jpg"
 			});
 
-			await Task.Delay(2000);
+			await Task.Delay(AddItemDelay);
 
 			Monkeys.Add(new Issue7817Model
 			{
@@ -114,7 +116,7 @@ namespace Xamarin.Forms.Controls.Issues
 				ImageUrl = "http://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Capuchin_Costa_Rica.jpg/200px-Capuchin_Costa_Rica.jpg"
 			});
 
-			await Task.Delay(2000);
+			await Task.Delay(AddItemDelay);
 
 			Monkeys.Add(new Issue7817Model
 			{
@@ -134,7 +136,7 @@ namespace Xamarin.Forms.Controls.Issues
 				ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Thomas%27s_langur_Presbytis_thomasi.jpg/142px-Thomas%27s_langur_Presbytis_thomasi.jpg"
 			});
 
-			await Task.Delay(2000);
+			await Task.Delay(AddItemDelay);
 
 			Monkeys.Add(new Issue7817Model
 			{
@@ -145,7 +147,7 @@ namespace Xamarin.Forms.Controls.Issues
 				ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Semnopithèque_blanchâtre_mâle.JPG/192px-Semnopithèque_blanchâtre_mâle.JPG"
 			});
 
-			await Task.Delay(2000);
+			await Task.Delay(AddItemDelay);
 
 			Monkeys.Add(new Issue7817Model
 			{
