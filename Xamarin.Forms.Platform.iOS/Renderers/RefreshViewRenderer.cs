@@ -31,8 +31,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 					var refreshView = Element;
 
-					if (refreshView?.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
-						refreshView.Command.Execute(refreshView?.CommandParameter);
+					if (refreshView?.Command != null && refreshView.Command.CanExecute(refreshView.CommandParameter))
+						refreshView.Command.Execute(refreshView.CommandParameter);
 				}
 				else
 					_refreshControl.EndRefreshing();
