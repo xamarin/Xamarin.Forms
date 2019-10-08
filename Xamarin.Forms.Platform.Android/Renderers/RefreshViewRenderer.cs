@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 				// Allow RefreshView.IsRefreshing to sync up with Refreshing
 				if (RefreshView != null && RefreshView.IsRefreshing != value)
 				{
-					RefreshView.IsRefreshing = value;
+					RefreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, value);
 					return;
 				}
 
