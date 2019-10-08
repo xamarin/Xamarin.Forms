@@ -1406,10 +1406,10 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue7357.xaml.cs">
       <DependentUpon>Issue7357.xaml</DependentUpon>
     </Compile>
-    <Compile Update="C:\Projects\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue7789.xaml.cs">
+    <Compile Update="$(MSBuildThisFileDirectory)Issue7789.xaml.cs">
       <DependentUpon>Issue7789.xaml</DependentUpon>
     </Compile>
-    <Compile Update="C:\Users\hartez\Documents\Xamarin\Xamarin.Forms\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Issue7519Xaml.xaml.cs">
+    <Compile Update="$(MSBuildThisFileDirectory)Issue7519Xaml.xaml.cs">
       <DependentUpon>Issue7519Xaml.xaml</DependentUpon>
     </Compile>
     <Compile Update="$(MSBuildThisFileDirectory)Issue5354.xaml.cs">
