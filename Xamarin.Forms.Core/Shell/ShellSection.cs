@@ -183,7 +183,7 @@ namespace Xamarin.Forms
 
 		public ShellSection()
 		{
-			ShellSectionController.ItemsCollectionChanged += ItemsCollectionChanged;
+			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
 			Navigation = new NavigationImpl(this);
 		}
 				
@@ -317,8 +317,7 @@ namespace Xamarin.Forms
 			else
 			{
 				IShellContentController currentItem = CurrentItem;
-				if (currentItem.Page != null)
-					DisplayedPage = currentItem.Page;
+				DisplayedPage = currentItem?.Page;
 			}
 
 			if (previousPage != DisplayedPage)
