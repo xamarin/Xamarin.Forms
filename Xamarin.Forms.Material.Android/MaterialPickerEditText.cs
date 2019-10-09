@@ -1,4 +1,8 @@
-﻿#if __ANDROID_28__
+﻿
+using Android.Support.V4.View;
+using Android.Text;
+using Java.Lang;
+#if __ANDROID_28__
 using System;
 using Android.Content;
 using Android.Graphics;
@@ -31,6 +35,24 @@ namespace Xamarin.Forms.Material.Android
 		{
 			base.OnFocusChanged(gainFocus, direction, previouslyFocusedRect);
 			PickerManager.OnFocusChanged(gainFocus, this, (IPopupTrigger)Parent.Parent);
+		}
+
+		public override void SetText(ICharSequence text, BufferType type)
+		{
+			if (ViewCompat.IsLaidOut(this) && text != null)
+			{
+				int textWidth = Width - CompoundPaddingLeft - CompoundPaddingRight;
+
+				string fullText = text.ToString();
+				string ellipsizedText = TextUtils.Ellipsize(fullText, Paint, textWidth, TextUtils.TruncateAt.End);
+
+				if (!string.IsNullOrEmpty(ellipsizedText))
+				{
+					text = new Java.Lang.String(ellipsizedText);
+				}
+			}
+
+			base.SetText(text, type);
 		}
 
 		protected override void Dispose(bool disposing)
