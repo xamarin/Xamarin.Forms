@@ -63,7 +63,7 @@ namespace Xamarin.Forms
 						_visibleContents.Remove(element);
 
 					if (element is IShellSectionController controller)
-						controller.ItemsCollectionChanged += OnShellSectionControllerItemsCollectionChanged;
+						controller.ItemsCollectionChanged -= OnShellSectionControllerItemsCollectionChanged;
 				}
 			}
 		}
