@@ -11,7 +11,7 @@ using WSnapPointsAlignment = Windows.UI.Xaml.Controls.Primitives.SnapPointsAlign
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class CarouselViewRenderer : ItemsViewRenderer
+	public class CarouselViewRenderer : ItemsViewRenderer<CarouselView>
 	{
 		ScrollViewer _scrollViewer;
 		public CarouselViewRenderer()
@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.UWP
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselView));
 		}
 
-		CarouselView CarouselView => (CarouselView)Element;
+		CarouselView CarouselView => Element;
 		protected override IItemsLayout Layout => CarouselView?.ItemsLayout;
 		UWPDataTemplate CarouselItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["CarouselItemsViewDefaultTemplate"];
 
@@ -30,9 +30,9 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.IsOneOf(ItemsView.ItemsSourceProperty, CarouselView.NumberOfSideItemsProperty, LinearItemsLayout.ItemSpacingProperty))
+			if (changedProperty.IsOneOf(CarouselView.ItemsSourceProperty, CarouselView.NumberOfSideItemsProperty, LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemsSource();
-			else if (changedProperty.Is(ItemsView.ItemTemplateProperty))
+			else if (changedProperty.Is(CarouselView.ItemTemplateProperty))
 				UpdateItemTemplate();
 			else if (changedProperty.Is(CarouselView.PeekAreaInsetsProperty))
 				UpdatePeekAreaInsets();
