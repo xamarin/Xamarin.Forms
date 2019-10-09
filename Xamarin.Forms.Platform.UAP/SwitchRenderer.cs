@@ -65,7 +65,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNativeToggled(object sender, RoutedEventArgs routedEventArgs)
 		{
-			((IElementController)Element).SetValueFromRenderer(Switch.IsToggledProperty, Control.IsOn);
+			if (Element.IsReadOnly)
+			{
+				if (Element.IsToggled != Control.IsOn)
+				{
+					Control.IsOn = !Control.IsOn;
+				}
+			}
+			else
+			{
+				((IElementController)Element).SetValueFromRenderer(Switch.IsToggledProperty, Control.IsOn);
+			}
 		}
 
 		void UpdateFlowDirection()

@@ -37,6 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 				e.NewElement.Toggled += OnElementToggled;
 				UpdateOnColor();
 				UpdateThumbColor();
+				UpdateIsReadonly();
 			}
 
 			base.OnElementChanged(e);
@@ -62,6 +63,14 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.ThumbTintColor = thumbColor.IsDefault ? _defaultThumbColor : thumbColor.ToUIColor();
 		}
 
+		void UpdateIsReadonly()
+		{
+			if (Element == null)
+				return;
+
+			Control.UserInteractionEnabled = !Element.IsReadOnly;
+		}
+
 		void OnControlValueChanged(object sender, EventArgs e)
 		{
 			((IElementController)Element).SetValueFromRenderer(Switch.IsToggledProperty, Control.On);
@@ -80,6 +89,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateOnColor();
 			if (e.PropertyName == Switch.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();
+			if (e.PropertyName == Switch.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadonly();
 		}
 	}
 }

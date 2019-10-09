@@ -33,7 +33,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
 		{
-			((IViewController)Element).SetValueFromRenderer(Switch.IsToggledProperty, isChecked);
+			if (Element.IsReadOnly)
+			{
+				if (Element.IsToggled != Control.Checked)
+				{
+					Control.Toggle();
+				}
+			}
+			else
+			{
+				((IViewController)Element).SetValueFromRenderer(Switch.IsToggledProperty, isChecked);
+			}
 			UpdateOnColor();
 		}
 

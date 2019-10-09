@@ -17,6 +17,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ThumbColorProperty = BindableProperty.Create(nameof(ThumbColor), typeof(Color), typeof(Switch), Color.Default);
 
+		public static readonly BindableProperty IsReadOnlyProperty = BindableProperty.Create(nameof(IsReadOnly), typeof(bool), typeof(Switch), false);
+
 		public Color OnColor
 		{
 			get { return (Color)GetValue(OnColorProperty); }
@@ -27,6 +29,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(ThumbColorProperty); }
 			set { SetValue(ThumbColorProperty, value); }
+		}
+
+		public bool IsReadOnly
+		{
+			get { return (bool)GetValue(IsReadOnlyProperty); }
+			set { SetValue(IsReadOnlyProperty, value); }
 		}
 
 		readonly Lazy<PlatformConfigurationRegistry<Switch>> _platformConfigurationRegistry;
