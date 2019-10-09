@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsSource = CreateItemsViewSource();
 			ItemsViewLayout.GetPrototype = GetPrototype;
 
-			Delegator = new UICollectionViewDelegator(ItemsViewLayout, this);
+			Delegator = CreateDelegator();
 			CollectionView.Delegate = Delegator;
 
 			if (!Forms.IsiOS11OrNewer)
