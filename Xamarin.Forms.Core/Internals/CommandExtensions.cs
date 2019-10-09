@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Internals
 	{
 		public static void Run(this ICommand command)
 		{
-			if (command?.CanExecute(null) == true)
+			if (command != null && command.CanExecute(null))
 			{
 				command.Execute(null);
 			}
@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Internals
 
 		public static void Run(this ICommand command, object parameter)
 		{
-			if (command?.CanExecute(parameter) == true)
+			if (command != null && command.CanExecute(parameter))
 			{
 				command.Execute(parameter);
 			}
