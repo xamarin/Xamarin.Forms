@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			if (Element.ItemsSource == null)
+			if (Element?.ItemsSource == null)
 			{
 				if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
 				{
@@ -205,16 +205,15 @@ namespace Xamarin.Forms.Platform.UWP
 			// Stop listening for ScrollTo requests
 			oldElement.ScrollToRequested -= ScrollToRequested;
 
+			if (CollectionViewSource != null)
+			{
+				CleanUpCollectionViewSource();
+			}
+
 			if (ListViewBase != null)
 			{
 				ListViewBase.ItemsSource = null;
 			}
-
-			if (CollectionViewSource != null)
-			{
-				CollectionViewSource.Source = null;
-			}
-
 		}
 
 		void UpdateVerticalScrollBarVisibility()
