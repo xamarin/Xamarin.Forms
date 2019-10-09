@@ -20,9 +20,9 @@ namespace Xamarin.Forms.Material.iOS
 		protected virtual void ApplyTheme() => Control?.ApplyTheme(this);
 		protected internal override void UpdatePlaceholder() => Control?.UpdatePlaceholder(this);
 
-		protected override void UpdateAttributedPlaceHolder(NSAttributedString nSAttributedString)
+		protected override void UpdateAttributedPlaceholder(NSAttributedString nSAttributedString)
 		{
-			// Attributed place holders don't currently work with Material Text Fields
+			// AttributedPlaceholder doesn't currently work with Material
 			// once/if it does start working it will be handled inside MaterialTextManager	
 		}
 
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Material.iOS
 		}
 
 		string IMaterialEntryRenderer.Placeholder => Element?.Title;
-		Color IMaterialEntryRenderer.PlaceholderColor => Element.TitleColor;
+		Color IMaterialEntryRenderer.PlaceholderColor => Element?.TitleColor ?? Color.Default;
 		Color IMaterialEntryRenderer.TextColor => Element?.TextColor ?? Color.Default;
 		Color IMaterialEntryRenderer.BackgroundColor => Element?.BackgroundColor ?? Color.Default;
 	}
