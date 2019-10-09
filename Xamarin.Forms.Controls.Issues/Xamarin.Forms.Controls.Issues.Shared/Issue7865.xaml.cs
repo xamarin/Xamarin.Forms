@@ -39,17 +39,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public void OnPositionChanged(object sender, PositionChangedEventArgs args)
 		{
-			IndicatorView.SelectionChanged -= IndicatorSelectionChanged;
 			IndicatorView.SelectedItem = (BindingContext as Issue7865ViewModel).Monkeys[args.CurrentPosition];
-			IndicatorView.SelectionChanged += IndicatorSelectionChanged;
-
 		}
 
 		public void IndicatorSelectionChanged(object sender, SelectionChangedEventArgs args)
-		{
-			ItemsCarousel.PositionChanged -= OnPositionChanged;
+		{		
 			ItemsCarousel.Position = (BindingContext as Issue7865ViewModel).Monkeys.IndexOf(args.CurrentSelection[0] as Issue7865Model);
-			ItemsCarousel.PositionChanged += OnPositionChanged;
 		}
 	}
 

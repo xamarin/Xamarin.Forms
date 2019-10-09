@@ -9,11 +9,15 @@
     <ContentPage.Content>
          <Grid>
              <Grid.RowDefinitions>
+                 <RowDefinition Height="Auto"/>
                  <RowDefinition Height="*"/>
                  <RowDefinition Height="100"/>
              </Grid.RowDefinitions>
-             <CarouselView
+             <Label
                  Grid.Row="0"
+                 Text="Changing the selected item in the CollectionView at the bottom must update the CarouselView position correctly (match)."/>
+             <CarouselView
+                 Grid.Row="1"
                  x:Name="ItemsCarousel"
                  ItemsSource="{Binding Monkeys}"
                  PositionChanged="OnPositionChanged">
@@ -57,7 +61,7 @@
                      </CarouselView.ItemTemplate>
              </CarouselView>
              <CollectionView
-                 Grid.Row="1"
+                 Grid.Row="2"
                  x:Name="IndicatorView"
                  Margin="0,6"
                  HorizontalOptions="Center"
