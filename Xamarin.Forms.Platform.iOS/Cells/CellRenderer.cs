@@ -60,7 +60,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected void UpdateBackground(UITableViewCell tableViewCell, Cell cell)
 		{
-			var uiBgColor = UITableView.Appearance.BackgroundColor ?? UIColor.White; // Must be set to a solid color or blending issues will occur
+			UIColor uiBgColor;
+
+			if (Forms.IsiOS13OrNewer)
+				uiBgColor = UITableView.Appearance.BackgroundColor ?? UIColor.Clear;
+			else
+				uiBgColor = UITableView.Appearance.BackgroundColor ?? UIColor.White; // Must be set to a solid color or blending issues will occur
 #if __MOBILE__
 			var defaultBgColor = cell.On<PlatformConfiguration.iOS>().DefaultBackgroundColor();
 #else
