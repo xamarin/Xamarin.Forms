@@ -1,5 +1,6 @@
 using Android.Support.V7.Widget;
 using AView = Android.Views.View;
+using ALayoutDirection = Android.Views.LayoutDirection;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -13,8 +14,11 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected static bool IsLayoutReversed(RecyclerView.LayoutManager layoutManager)
-		{
-			if (layoutManager is LinearLayoutManager linearLayoutManager)
+        {
+            if (layoutManager.LayoutDirection == (int)(ALayoutDirection.Rtl))
+                return true;
+
+            if (layoutManager is LinearLayoutManager linearLayoutManager)
 			{
 				return linearLayoutManager.ReverseLayout;
 			}

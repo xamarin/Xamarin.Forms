@@ -539,19 +539,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return;
 			}
-
-			var effectiveFlowDirection = ((IVisualElementController)Element).EffectiveFlowDirection;
-
-			if (effectiveFlowDirection.IsRightToLeft()
-				&& Context.GetActivity().Window.DecorView.LayoutDirection == LayoutDirection.Ltr)
-			{
-				linearLayoutManager.ReverseLayout = true;
-			}
-			else if (effectiveFlowDirection.IsLeftToRight()
-				&& Context.GetActivity().Window.DecorView.LayoutDirection == LayoutDirection.Rtl)
-			{
-				linearLayoutManager.ReverseLayout = false;
-			}
 		}
 
 		protected virtual int DetermineTargetPosition(ScrollToRequestEventArgs args)
