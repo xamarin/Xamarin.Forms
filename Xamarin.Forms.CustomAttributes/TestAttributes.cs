@@ -738,7 +738,8 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			IsToggled,
 			OnColor,
-			ThumbColor
+			ThumbColor,
+			IsReadOnly
 		}
 
 		public enum CheckBox

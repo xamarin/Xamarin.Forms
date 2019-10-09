@@ -43,9 +43,16 @@ namespace Xamarin.Forms.Controls
 			thumbColorContainer.ContainerLayout.Children.Add(changeThumbColorButton);
 			thumbColorContainer.ContainerLayout.Children.Add(clearThumbColorButton);
 
+			var isReadOnlyContainer = new StateViewContainer<Switch>(Test.Switch.IsReadOnly, new Switch());
+			isReadOnlyContainer.StateChangeButton.Command = new Command(() =>
+			{
+				isReadOnlyContainer.View.IsReadOnly = !isReadOnlyContainer.View.IsReadOnly;
+			});
+
 			Add(isToggledContainer);
 			Add(onColorContainer);
 			Add(thumbColorContainer);
+			Add(isReadOnlyContainer);
 		}
 	}
 }
