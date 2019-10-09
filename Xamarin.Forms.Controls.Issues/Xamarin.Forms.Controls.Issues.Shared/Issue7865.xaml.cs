@@ -39,12 +39,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public void OnPositionChanged(object sender, PositionChangedEventArgs args)
 		{
+#if APP
 			IndicatorView.SelectedItem = (BindingContext as Issue7865ViewModel).Monkeys[args.CurrentPosition];
+#endif
 		}
 
 		public void IndicatorSelectionChanged(object sender, SelectionChangedEventArgs args)
-		{		
+		{
+#if APP
 			ItemsCarousel.Position = (BindingContext as Issue7865ViewModel).Monkeys.IndexOf(args.CurrentSelection[0] as Issue7865Model);
+#endif
 		}
 	}
 
@@ -87,7 +91,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Details = "The capuchin monkeys are New World monkeys of the subfamily Cebinae. Prior to 2011, the subfamily contained only a single genus, Cebus.",
 				ImageUrl = "http://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Capuchin_Costa_Rica.jpg/200px-Capuchin_Costa_Rica.jpg"
 			});
-   
+
 			Monkeys.Add(new Issue7865Model
 			{
 				Index = 2,
