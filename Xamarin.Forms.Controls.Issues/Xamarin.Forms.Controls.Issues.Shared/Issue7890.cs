@@ -6,16 +6,28 @@ using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using System.Threading.Tasks;
+using Xamarin.Forms.Core.UITests;
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.ListView)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7890, "TemplatedItemsList incorrect grouped collection range removal", PlatformAffected.All)]
 	public class Issue7890 : TestContentPage
 	{
+		const int Count = 10;
+		const int RemoveFrom = 1;
+		const int RemoveCount = 5;
 		protected override void Init()
 		{
-			var items = Enumerable.Range(0, 10).Select(x => new DataGroup(x));
+			var items = Enumerable.Range(0, Count).Select(x => new DataGroup(x));
 			var source = new ObservableCollectionFast<DataGroup>(items);
 
 			var listView = new ListView()
@@ -34,10 +46,11 @@ namespace Xamarin.Forms.Controls.Issues
 						new Label() { Text = "Button click should remove items from 1 to 5"},
 						new Button()
 						{
+							AutomationId = "RemoveBtn",
 							Text = "remove",
 							Command = new Command(() =>
 							{
-								source.RemoveRange(1,5);
+								source.RemoveRange(RemoveFrom, RemoveCount);
 							})
 						},
 						listView
@@ -45,6 +58,22 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 		}
+
+#if UITEST
+		[Test]
+		public void RefreshingListViewCrashesWhenDisposedTest()
+		{
+			foreach (var c in Enumerable.Range(0, Count))
+			{
+				RunningApp.WaitForElement(q => q.Marked(c.ToString()));
+			}
+			RunningApp.Tap(q => q.Button("RemoveBtn"));
+			foreach (var c in Enumerable.Range(RemoveFrom, RemoveCount))
+			{
+				RunningApp.WaitForNoElement(q => q.Marked(c.ToString()));
+			}
+		}
+#endif
 
 		public class DataGroup : List<Data>
 		{
