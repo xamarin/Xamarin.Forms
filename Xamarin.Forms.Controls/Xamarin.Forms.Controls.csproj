@@ -89,6 +89,9 @@
     <EmbeddedResource Update="GalleryPages\TitleView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\VisualStateManagerGalleries\BindableCurrentState.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\VisualStateManagerGalleries\ButtonDisabledStatesGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

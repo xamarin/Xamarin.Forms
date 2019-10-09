@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.BindableCurrentState"
+             Title="VisualStateManager Bindable CurrentState">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label x:Name="label" Text="This is a label" HorizontalTextAlignment="Start" HorizontalOptions="Start" VisualStateManager.CurrentState="{Binding LabelState}">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="ColorStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Invalid">
+                            <VisualState.Setters>
+                                <Setter Property="TextColor" Value="DarkRed" />
+                                <Setter Property="FontSize" Value="20" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Label>
+
+            <Label Text="{Binding LabelState}"/>
+
+            <Button Text="Change Binding State" Clicked="OnClicked" />
+            <Button Text="Manual Change State" Clicked="OnClicked_Manual" />
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

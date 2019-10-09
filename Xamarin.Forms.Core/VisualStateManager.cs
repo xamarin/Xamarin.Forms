@@ -22,6 +22,15 @@ namespace Xamarin.Forms
 				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged, 
 				defaultValueCreator: bindable => new VisualStateGroupList {VisualElement = (VisualElement)bindable});
 
+		public static readonly BindableProperty CurrentStateProperty =
+			BindableProperty.Create("CurrentState ", typeof(string), typeof(VisualElement), null,
+				propertyChanged: (b, o, n) => GetBindableElementController(b).CurrentStep = n as string, defaultBindingMode:BindingMode.TwoWay);
+
+		static readonly BindableProperty BindableElementControllerProperty =
+			BindableProperty.CreateAttached("BindableElementController", typeof(BindableElementController), typeof(VisualElement), 
+				default(BindableElementController),
+				defaultValueCreator: (b) => new BindableElementController((VisualElement)b));
+
 		static void VisualStateGroupsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			if (oldValue is VisualStateGroupList oldVisualStateGroupList)
@@ -48,7 +57,7 @@ namespace Xamarin.Forms
 
 		public static bool GoToState(VisualElement visualElement, string name)
 		{
-			if (!visualElement.IsSet(VisualStateGroupsProperty))
+			if (!visualElement.HasVisualStateGroups())
 			{
 				return false;
 			}
@@ -88,16 +97,34 @@ namespace Xamarin.Forms
 					setter.Apply(visualElement);
 				}
 
+				visualElement.SetValue(VisualStateManager.CurrentStateProperty, group.CurrentState.Name);
+
 				return true;
 			}
 
 			return false;
 		}
 
+		public static string GetCurrentState(VisualElement element)
+		{
+			return GetBindableElementController(element).CurrentStep;
+		}
+
 		public static bool HasVisualStateGroups(this VisualElement element)
 		{
 			return element.IsSet(VisualStateGroupsProperty);
 		}
+
+		static BindableElementController GetBindableElementController(BindableObject b)
+		{
+			return (BindableElementController)b.GetValue(BindableElementControllerProperty);
+		}
+
+		static void SetBindableElementController(BindableObject b, BindableElementController value)
+		{
+			b.SetValue(BindableElementControllerProperty, value);
+		}
+
 	}
 
 	public class VisualStateGroupList : IList<VisualStateGroup>
@@ -420,6 +447,45 @@ namespace Xamarin.Forms
 		{
 			get => _internalList[index];
 			set => _internalList[index] = value;
+		}
+	}
+
+	class BindableElementController
+	{
+		readonly WeakReference<VisualElement> _weakReference;
+		string _currentStep;
+
+		public string CurrentStep 
+		{ 
+			get => _currentStep; 
+			set => SetCurrentStep(value);
+		}
+
+		public BindableElementController(VisualElement visualElement)
+		{
+			_weakReference = new WeakReference<VisualElement>(visualElement);
+		}
+
+		void SetCurrentStep(string step)
+		{
+			if (_currentStep == step)
+			{
+				return;
+			}
+			_currentStep = step;
+
+			if (string.IsNullOrEmpty(_currentStep))
+			{
+				return;
+			}
+
+			if (_weakReference.TryGetTarget(out var visualElement))
+			{
+				if (visualElement.HasVisualStateGroups())
+				{
+					VisualStateManager.GoToState(visualElement, _currentStep);
+				}
+			}
 		}
 	}
 }
