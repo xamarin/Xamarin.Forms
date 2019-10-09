@@ -14,8 +14,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var button = new Button
 			{
-				Text = "Enable CollectionView",
-				AutomationId = "EnableCollectionView"
+				Text = "Enable CarouselView",
+				AutomationId = "EnableCarouselView"
 			};
 			button.Clicked += ButtonClicked;
 
