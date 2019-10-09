@@ -291,8 +291,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_emptyViewFormsElement.Layout(CollectionView.Frame.ToRectangle());
 		}
 
-
-		void RemeasureLayout(VisualElement formsElement)
+		protected void RemeasureLayout(VisualElement formsElement)
 		{
 			if (IsHorizontal)
 			{
