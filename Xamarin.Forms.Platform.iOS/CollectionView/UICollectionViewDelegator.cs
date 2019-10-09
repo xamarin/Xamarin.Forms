@@ -172,5 +172,10 @@ namespace Xamarin.Forms.Platform.iOS
 			GroupableItemsViewController?.HandleScrollAnimationEnded();
 			CarouselViewController?.UpdateIsScrolling(false);
 		}
+
+		public override void DecelerationEnded(UIScrollView scrollView)
+		{
+			CarouselViewController?.UpdateIsScrolling(false);
+		}
 	}
 }
