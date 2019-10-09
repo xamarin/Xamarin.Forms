@@ -134,17 +134,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		internal string GetMarkupText()
 		{
 			StringBuilder sb = new StringBuilder();
-
-			sb.AppendFormat("<span ");
-
+			sb.Append("<span ");
 			sb = PrepareFormattingString(sb);
-
 			sb.Append(">");
-
 			sb.Append(GetDecoratedText());
-
 			sb.Append("</span>");
-
 			return sb.ToString();
 		}
 
@@ -239,7 +233,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			if (LineHeight != -1.0d)
 			{
-				_formattingString.Append($"linerelsize={(int)(LineHeight*100)}%");
+				_formattingString.Append($"linerelsize={(int)(LineHeight * 100)}%");
 			}
 
 			switch (LineBreakMode)

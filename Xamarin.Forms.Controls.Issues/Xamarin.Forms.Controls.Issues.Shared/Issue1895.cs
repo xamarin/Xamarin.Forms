@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls.TestCasesPages
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 1895, "ListView with static BindingContext somehow leaks memory", PlatformAffected.iOS | PlatformAffected.Android)]
@@ -26,9 +26,7 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 
 		static Page CreateWeakReferencedPage()
 		{
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
-			GC.Collect();
+			GarbageCollectionHelper.Collect();
 
 			var result = CreatePage();
 			s_pageRefs.Add(new WeakReference(result));

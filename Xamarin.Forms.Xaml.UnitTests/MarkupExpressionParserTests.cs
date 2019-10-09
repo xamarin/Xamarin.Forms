@@ -36,11 +36,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			public List<XmlName> SkipProperties { get; set; }
 
-			public Forms.Internals.INameScope Namescope {
-				get {
-					throw new NotImplementedException ();
-				}
-			}
+			public NameScopeRef NameScopeRef => throw new NotImplementedException();
 
 			public XmlType XmlType {
 				get;
@@ -170,11 +166,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				}
 			}
 
-			public object TargetObject {
-				get {
-					throw new NotImplementedException ();
-				}
-			}
+			public object TargetObject => null;
 
 			public object TargetProperty { get; set; } = null;
 		}

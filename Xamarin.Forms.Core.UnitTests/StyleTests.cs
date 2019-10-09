@@ -1,23 +1,45 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
 	[TestFixture]
 	public class StyleTests : BaseTestFixture
 	{
+		internal class Logger : LogListener
+		{
+			public IReadOnlyList<string> Messages {
+				get { return messages; }
+			}
+
+			public override void Warning(string category, string message)
+			{
+				messages.Add("[" + category + "] " + message);
+			}
+
+			readonly List<string> messages = new List<string>();
+		}
+
+		internal Logger log;
+
 		[SetUp]
 		public override void Setup ()
 		{
 			base.Setup ();
+			log = new Logger();
 			Device.PlatformServices = new MockPlatformServices ();
+			Log.Listeners.Add(log);
 		}
 
 		[TearDown]
 		public override void TearDown()
 		{
 			base.TearDown();
+			Log.Listeners.Remove(log);
 			Application.Current = null;
 		}
 
@@ -411,7 +433,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		[Test]
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=31207
-		public async void StyleDontHoldStrongReferences ()
+		public async Task StyleDontHoldStrongReferences ()
 		{
 			var style = new Style (typeof(Label));
 			var label = new Label ();
@@ -759,5 +781,108 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label0.TextColor, Is.EqualTo(Color.Pink));
 			Assert.That(label1.TextColor, Is.EqualTo(Color.Lavender));
 		}
+		
+		[Test]
+		public void ImplicitInheritedStyleForTemplatedElementIsAppliedCorrectlyForContentPage()
+		{
+			var controlTemplate = new ControlTemplate(typeof(ContentPresenter));
+
+			var rd0 = new ResourceDictionary {
+				new Style (typeof(ContentPage)) {
+					Setters = {
+						new Setter {Property = TemplatedPage.ControlTemplateProperty, Value = controlTemplate}
+					},
+					ApplyToDerivedTypes = true
+				}
+			};
+
+			var mockApp = new MockApplication();
+			mockApp.Resources = rd0;
+			mockApp.MainPage = new MyPage()
+			{
+				Content = new Button()
+			};
+
+			Application.Current = mockApp;
+
+			var parentPage = (ContentPage)mockApp.MainPage;
+			var pageContent = parentPage.Content;
+			Assert.That(Equals(pageContent?.Parent, parentPage));
+		}
+
+		[Test]
+		public void ImplicitInheritedStyleForTemplatedElementIsAppliedCorrectlyForContentView()
+		{
+			var controlTemplate = new ControlTemplate(typeof(ContentPresenter));
+
+			var rd0 = new ResourceDictionary {
+				new Style (typeof(ContentView)) {
+					Setters = {
+						new Setter {Property = TemplatedView.ControlTemplateProperty, Value = controlTemplate}
+					},
+					ApplyToDerivedTypes = true
+				}
+			};
+
+			var mockApp = new MockApplication();
+			mockApp.Resources = rd0;
+			mockApp.MainPage = new ContentPage()
+			{
+				Content = new MyContentView()
+				{
+					Content = new Button()
+				}
+			};
+
+			Application.Current = mockApp;
+
+			var parentView = (ContentView)((ContentPage)mockApp.MainPage).Content;
+			var content = parentView.Content;
+			Assert.That(Equals(content?.Parent, parentView));
+		}
+	
+		class MyPage : ContentPage
+		{
+		}
+
+		class MyContentView : ContentView
+		{
+		}
+
+		[Test]
+		public void MismatchTargetTypeLogsWarningMessage1()
+		{
+			var s = new Style(typeof(Button));
+			var t = new View();
+
+			t.Style = s;
+			
+			Assert.AreEqual(log.Messages.Count, 1);
+			Assert.AreEqual(log.Messages.FirstOrDefault(), $"[Styles] Style TargetType Xamarin.Forms.Button is not compatible with element target type Xamarin.Forms.View");
+		}
+
+		[Test]
+		public void MismatchTargetTypeLogsWarningMessage2()
+		{
+			var s = new Style(typeof(Button));
+			var t = new Label();
+
+			t.Style = s;
+
+			Assert.AreEqual(log.Messages.Count, 1);
+			Assert.AreEqual(log.Messages.FirstOrDefault(), $"[Styles] Style TargetType Xamarin.Forms.Button is not compatible with element target type Xamarin.Forms.Label");
+		}
+
+		[Test]
+		public void MatchTargetTypeDoesntLogWarningMessage()
+		{
+			var s = new Style(typeof(View));
+			var t = new Button();
+
+			t.Style = s;
+
+			Assert.That(log.Messages.Count, Is.EqualTo(0),
+				"A warning was logged: " + log.Messages.FirstOrDefault());
+    	}
 	}
 }

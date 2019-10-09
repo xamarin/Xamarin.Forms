@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string lblGroup = "lblGroup";
 
 		StackLayout _layout = new StackLayout { Spacing = 30, VerticalOptions = LayoutOptions.FillAndExpand };
-		ListView _listView = new ListView { VerticalOptions = LayoutOptions.Start, IsGroupingEnabled = true, RowHeight = 50, HeightRequest = 300 };
+		ListView _listView;
 		Label _label1 = new Label { VerticalOptions = LayoutOptions.Start };
 		Label _label2 = new Label { VerticalOptions = LayoutOptions.Start, AutomationId = lblItem };
 		Label _label3 = new Label { VerticalOptions = LayoutOptions.Start, AutomationId = lblGroup };
@@ -42,6 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			BindingContext = new ViewModel();
 
+			_listView = new ListView { VerticalOptions = LayoutOptions.Start, IsGroupingEnabled = true, RowHeight = 50, HeightRequest = 300 };
 			_listView.ItemTapped += _listView_ItemTapped;
 			_listView.SetBinding(ListView.ItemsSourceProperty, new Binding(nameof(ViewModel.Items)));
 			_listView.SetBinding(ListView.SelectedItemProperty, new Binding(nameof(ViewModel.SelectedItem)));
@@ -135,23 +136,23 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(A));
 			RunningApp.Tap(q => q.Marked(A));
 
-			Assert.AreEqual(A, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].Text);
-			Assert.AreEqual(Group_1, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].Text);
+			Assert.AreEqual(A, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].ReadText());
+			Assert.AreEqual(Group_1, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].ReadText());
 
 			RunningApp.Tap(q => q.Marked(B));
 
-			Assert.AreEqual(B, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].Text);
-			Assert.AreEqual(Group_1, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].Text);
+			Assert.AreEqual(B, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].ReadText());
+			Assert.AreEqual(Group_1, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].ReadText());
 
 			RunningApp.Tap(q => q.Marked(C));
 
-			Assert.AreEqual(C, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].Text);
-			Assert.AreEqual(Group_2, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].Text);
+			Assert.AreEqual(C, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].ReadText());
+			Assert.AreEqual(Group_2, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].ReadText());
 
 			RunningApp.Tap(q => q.Marked(D));
 
-			Assert.AreEqual(D, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].Text);
-			Assert.AreEqual(Group_2, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].Text);
+			Assert.AreEqual(D, RunningApp.WaitForElement(q => q.Marked(lblItem))[0].ReadText());
+			Assert.AreEqual(Group_2, RunningApp.WaitForElement(q => q.Marked(lblGroup))[0].ReadText());
 		}
 #endif
 	}

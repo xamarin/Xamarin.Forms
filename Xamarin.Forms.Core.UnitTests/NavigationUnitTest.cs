@@ -339,6 +339,49 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TitleViewSetProperty()
+		{
+			var root = new ContentPage();
+			var nav = new NavigationPage(root);
+
+			View target = new View();
+
+			NavigationPage.SetTitleView(root, target);
+
+			var result = NavigationPage.GetTitleView(root);
+
+			Assert.AreSame(result, target);
+		}
+
+		[Test]
+		public void TitleViewSetsParentWhenAdded()
+		{
+			var root = new ContentPage();
+			var nav = new NavigationPage(root);
+
+			View target = new View();
+
+			NavigationPage.SetTitleView(root, target);
+
+			Assert.AreSame(root, target.Parent);
+		}
+
+		[Test]
+		public void TitleViewClearsParentWhenRemoved()
+		{
+			var root = new ContentPage();
+			var nav = new NavigationPage(root);
+
+			View target = new View();
+
+			NavigationPage.SetTitleView(root, target);
+
+			NavigationPage.SetTitleView(root, null);
+
+			Assert.IsNull(target.Parent);
+		}
+
+		[Test]
 		public async Task NavigationChangedEventArgs ()
 		{
 			var rootPage = new ContentPage { Title = "Root" };
@@ -398,7 +441,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async void HandlesPopToRoot ()
+		public async Task HandlesPopToRoot ()
 		{
 			var root = new ContentPage { Title = "Root" };
 			var navPage = new NavigationPage (root);
@@ -446,7 +489,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async void NavigatesBackWhenBackButtonPressed ()
+		public async Task NavigatesBackWhenBackButtonPressed ()
 		{
 			var root = new ContentPage { Title = "Root" };
 			var navPage = new NavigationPage (root);
@@ -460,7 +503,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async void DoesNotNavigatesBackWhenBackButtonPressedIfHandled ()
+		public async Task DoesNotNavigatesBackWhenBackButtonPressedIfHandled ()
 		{
 			var root = new BackButtonPage { Title = "Root" };
 			var second = new BackButtonPage () {Handle = true};
@@ -519,7 +562,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async void TestRemovePage()
+		public async Task TestRemovePage()
 		{
 			var root = new ContentPage { Title = "Root" };
 			var newPage = new ContentPage();

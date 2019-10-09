@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using AView = Android.Views.View;
@@ -73,8 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateLayout()
 		{
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			VisualElement view = _renderer.Element;
 			AView aview = _renderer.View;
@@ -101,6 +101,13 @@ namespace Xamarin.Forms.Platform.Android
 				Performance.Start(reference, "MeasureAndLayout");
 				formsViewGroup.MeasureAndLayout(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly), x, y, x + width, y + height);
 				Performance.Stop(reference, "MeasureAndLayout");
+			}
+
+			// If we're running sufficiently new Android, we have to make sure to update the ClipBounds to
+			// match the new size of the ViewGroup
+			if ((int)Forms.SdkInt >= 18)
+			{
+				UpdateClipToBounds();
 			}
 
 			Performance.Stop(reference);
@@ -141,12 +148,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == VisualElement.XProperty.PropertyName || e.PropertyName == VisualElement.YProperty.PropertyName || e.PropertyName == VisualElement.WidthProperty.PropertyName ||
 				e.PropertyName == VisualElement.HeightProperty.PropertyName)
-				MaybeRequestLayout();
+				_renderer.View.MaybeRequestLayout();
 			else if (e.PropertyName == VisualElement.AnchorXProperty.PropertyName)
 				UpdateAnchorX();
 			else if (e.PropertyName == VisualElement.AnchorYProperty.PropertyName)
 				UpdateAnchorY();
-			else if (   e.PropertyName == VisualElement.ScaleProperty.PropertyName
+			else if (e.PropertyName == VisualElement.ScaleProperty.PropertyName
 					 || e.PropertyName == VisualElement.ScaleXProperty.PropertyName
 					 || e.PropertyName == VisualElement.ScaleYProperty.PropertyName)
 				UpdateScale();
@@ -175,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 			_batchedProperties.Clear();
 
 			if (_layoutNeeded)
-				MaybeRequestLayout();
+				_renderer.View.MaybeRequestLayout();
 			_layoutNeeded = false;
 		}
 
@@ -188,16 +195,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateClipToBounds();
-		}
-
-		void MaybeRequestLayout()
-		{
-			var isInLayout = false;
-			if ((int)Build.VERSION.SdkInt >= 18)
-				isInLayout = _renderer.View.IsInLayout;
-
-			if (!isInLayout && !_renderer.View.IsLayoutRequested)
-				_renderer.View.RequestLayout();
 		}
 
 		void RendererOnElementChanged(object sender, VisualElementChangedEventArgs args)
@@ -275,19 +272,39 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateClipToBounds()
 		{
-			var layout = _renderer.Element as Layout;
-			var parent = _renderer.View.Parent as ViewGroup;
-
-			if (parent == null || layout == null)
+			if (!(_renderer.Element is Layout layout))
+			{
 				return;
+			}
 
 			bool shouldClip = layout.IsClippedToBounds;
 
-			if ((int)Build.VERSION.SdkInt >= 18 && parent.ClipChildren == shouldClip)
-				return;
+			// setClipBounds is only available in API 18 +
+			if ((int)Forms.SdkInt >= 18)
+			{
+				if (!(_renderer.View is ViewGroup viewGroup))
+				{
+					return;
+				}
 
-			parent.SetClipChildren(shouldClip);
-			parent.Invalidate();
+				// Forms layouts should not impose clipping on their children
+				viewGroup.SetClipChildren(false);
+
+				// But if IsClippedToBounds is true, they _should_ enforce clipping at their own edges
+				viewGroup.ClipBounds = shouldClip ? new Rect(0, 0, viewGroup.Width, viewGroup.Height) : null;
+			}
+			else
+			{
+				// For everything in 17 and below, use the setClipChildren method
+				if (!(_renderer.View.Parent is ViewGroup parent))
+					return;
+
+				if ((int)Forms.SdkInt >= 18 && parent.ClipChildren == shouldClip)
+					return;
+
+				parent.SetClipChildren(shouldClip);
+				parent.Invalidate();
+			}
 		}
 
 		void UpdateIsVisible()

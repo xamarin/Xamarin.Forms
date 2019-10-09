@@ -2,6 +2,10 @@ using System;
 using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using Foundation;
+using System.Collections.Generic;
+using CoreGraphics;
+using System.Diagnostics;
 
 #if __MOBILE__
 using UIKit;
@@ -22,6 +26,22 @@ namespace Xamarin.Forms.Platform.MacOS
 		SizeRequest _perfectSize;
 
 		bool _perfectSizeValid;
+
+		FormattedString _formatted;
+
+		bool IsTextFormatted => _formatted != null;
+
+		static HashSet<string> s_perfectSizeSet = new HashSet<string>
+		{
+			Label.TextProperty.PropertyName,
+			Label.TextColorProperty.PropertyName,
+			Label.FontProperty.PropertyName,
+			Label.FormattedTextProperty.PropertyName,
+			Label.LineBreakModeProperty.PropertyName,
+			Label.LineHeightProperty.PropertyName,
+			Label.PaddingProperty.PropertyName,
+			Label.TextTypeProperty.PropertyName
+		};
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -110,15 +130,35 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Control.RecalculateSpanPositions(Element);
 
-		}		
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				if (Element != null)
+				{
+					Element.PropertyChanging -= ElementPropertyChanging;
+				}
+			}
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
+			_perfectSizeValid = false;
+
+			if (e.OldElement != null)
+			{
+				e.OldElement.PropertyChanging -= ElementPropertyChanging;
+			}
+
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NativeLabel(RectangleF.Empty));
+					e.NewElement.PropertyChanging += ElementPropertyChanging;
+					SetNativeControl(CreateNativeControl());
 #if !__MOBILE__
 					Control.Editable = false;
 					Control.Bezeled = false;
@@ -127,10 +167,14 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				UpdateLineBreakMode();
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 				UpdateText();
+				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
+				UpdateMaxLines();
+				UpdateCharacterSpacing();
+				UpdatePadding();
 			}
 
 			base.OnElementChanged(e);
@@ -141,7 +185,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateLayout();
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
@@ -149,15 +193,97 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateTextDecorations();
+				UpdateCharacterSpacing();
+			}
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateTextDecorations();
+			}
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding();
+			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
+				UpdateText();
+		}
+
+		protected override NativeLabel CreateNativeControl()
+		{
+#if __MOBILE__
+			return Element.Padding.IsEmpty ? new NativeLabel(RectangleF.Empty) : new FormsLabel(RectangleF.Empty);
+#else
+			return new NativeLabel(RectangleF.Empty);
+#endif
+		}
+
+		void ElementPropertyChanging(object sender, PropertyChangingEventArgs e)
+		{
+			if (s_perfectSizeSet.Contains(e.PropertyName))
+				_perfectSizeValid = false;
+		}
+
+		void UpdateTextDecorations()
+		{
+			if (IsElementOrControlEmpty)
+				return;
+
+			if (Element?.TextType != TextType.Text)
+				return;
+
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
+
+#if __MOBILE__
+			if (!(Control.AttributedText?.Length > 0))
+				return;
+#else
+			if (!(Control.AttributedStringValue?.Length > 0))
+				return;
+#endif
+
+			var textDecorations = Element.TextDecorations;
+#if __MOBILE__
+			var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
+			var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
+			var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
+
+#else
+			var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
+			var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
+			var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
+#endif
+			var range = new NSRange(0, newAttributedText.Length);
+
+			if ((textDecorations & TextDecorations.Strikethrough) == 0)
+				newAttributedText.RemoveAttribute(strikeThroughStyleKey, range);
+			else
+				newAttributedText.AddAttribute(strikeThroughStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
+
+			if ((textDecorations & TextDecorations.Underline) == 0)
+				newAttributedText.RemoveAttribute(underlineStyleKey, range);
+			else
+				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
+
+#if __MOBILE__
+			UpdateCharacterSpacing();
+#else
+			Control.AttributedStringValue = newAttributedText;
+#endif
+			_perfectSizeValid = false;
 		}
 
 #if __MOBILE__
@@ -193,7 +319,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 #if __MOBILE__
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
@@ -204,33 +330,26 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateLineBreakMode()
 		{
-			_perfectSizeValid = false;
 #if __MOBILE__
 			switch (Element.LineBreakMode)
 			{
 				case LineBreakMode.NoWrap:
 					Control.LineBreakMode = UILineBreakMode.Clip;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.WordWrap:
 					Control.LineBreakMode = UILineBreakMode.WordWrap;
-					Control.Lines = 0;
 					break;
 				case LineBreakMode.CharacterWrap:
 					Control.LineBreakMode = UILineBreakMode.CharacterWrap;
-					Control.Lines = 0;
 					break;
 				case LineBreakMode.HeadTruncation:
 					Control.LineBreakMode = UILineBreakMode.HeadTruncation;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.MiddleTruncation:
 					Control.LineBreakMode = UILineBreakMode.MiddleTruncation;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.TailTruncation:
 					Control.LineBreakMode = UILineBreakMode.TailTruncation;
-					Control.Lines = 1;
 					break;
 			}
 #else
@@ -238,68 +357,130 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				case LineBreakMode.NoWrap:
 					Control.LineBreakMode = NSLineBreakMode.Clipping;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.WordWrap:
 					Control.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-					Control.MaximumNumberOfLines = 0;
 					break;
 				case LineBreakMode.CharacterWrap:
 					Control.LineBreakMode = NSLineBreakMode.CharWrapping;
-					Control.MaximumNumberOfLines = 0;
 					break;
 				case LineBreakMode.HeadTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingHead;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.MiddleTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingMiddle;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.TailTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingTail;
-					Control.MaximumNumberOfLines = 1;
 					break;
 			}
 #endif
 		}
 
-		bool isTextFormatted;
+		void UpdateCharacterSpacing()
+		{
+#if __MOBILE__
+			if (IsElementOrControlEmpty)
+				return;
+
+			if (Element?.TextType != TextType.Text)
+				return;
+
+			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedText = textAttr;
+				
+			_perfectSizeValid = false;
+#endif
+		}
+
 		void UpdateText()
 		{
-			_perfectSizeValid = false;
-			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty, Label.TextColorProperty);
+            if (IsElementOrControlEmpty)
+                return;
 
-			var formatted = values[0] as FormattedString;
-			if (formatted == null && Element.LineHeight >= 0)
-				formatted = (string)values[1];
-
-			if (formatted != null)
+            switch (Element.TextType)
 			{
-#if __MOBILE__
-				Control.AttributedText = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#else
-				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#endif
-				isTextFormatted = true;
+				case TextType.Html:
+					UpdateTextHtml();
+					break;
+
+				default:
+					UpdateTextPlainText();
+					break;
+			}
+		}
+
+		void UpdateTextPlainText()
+		{
+			_formatted = Element.FormattedText;
+			if (_formatted == null && Element.LineHeight >= 0)
+				_formatted = Element.Text;
+
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
 			}
 			else
 			{
 #if __MOBILE__
-				Control.Text = (string)values[1];
+				Control.Text = Element.Text;
 #else
-				Control.StringValue = (string)values[1] ?? "";
+				Control.StringValue = Element.Text ?? "";
 #endif
-				isTextFormatted = false;
 			}
 			UpdateLayout();
 		}
 
+		void UpdateFormattedText()
+		{
+#if __MOBILE__
+			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
+#else
+			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
+#endif
+			_perfectSizeValid = false;
+		}
+
+		void UpdateTextHtml()
+		{
+			string text = Element.Text ?? string.Empty;
+
+#if __MOBILE__
+			var attr = new NSAttributedStringDocumentAttributes
+			{
+				DocumentType = NSDocumentType.HTML
+			};
+
+			NSError nsError = null;
+
+			Control.AttributedText = new NSAttributedString(text, attr, ref nsError);
+
+#else
+			var attr = new NSAttributedStringDocumentAttributes
+			{
+				DocumentType = NSDocumentType.HTML
+			};
+
+			var htmlData = new NSMutableData();
+			htmlData.SetData(text);
+
+			Control.AttributedStringValue = new NSAttributedString(htmlData, attr, out _);
+#endif
+			_perfectSizeValid = false;
+		}
+
 		void UpdateFont()
 		{
-			if (isTextFormatted)
+			if (Element?.TextType != TextType.Text)
 				return;
-			_perfectSizeValid = false;
+
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
+				return;
+			}
 
 #if __MOBILE__
 			Control.Font = Element.ToUIFont();
@@ -311,10 +492,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
-			if (isTextFormatted)
+			if (Element?.TextType != TextType.Text)
 				return;
 
-			_perfectSizeValid = false;
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
+				return;
+			}
 
 			var textColor = (Color)Element.GetValue(Label.TextColorProperty);
 
@@ -334,5 +519,98 @@ namespace Xamarin.Forms.Platform.MacOS
 			Layout();
 #endif
 		}
+
+		void UpdateMaxLines()
+		{
+			if (Element.MaxLines >= 0)
+			{
+#if __MOBILE__
+				Control.Lines = Element.MaxLines;
+
+				LayoutSubviews();
+#else
+				Control.MaximumNumberOfLines = Element.MaxLines;
+
+				Layout();
+#endif
+			}
+			else
+			{
+#if __MOBILE__
+				switch (Element.LineBreakMode)
+				{
+					case LineBreakMode.WordWrap:
+					case LineBreakMode.CharacterWrap:
+						Control.Lines = 0;
+						break;
+					case LineBreakMode.NoWrap:
+					case LineBreakMode.HeadTruncation:
+					case LineBreakMode.MiddleTruncation:
+					case LineBreakMode.TailTruncation:
+						Control.Lines = 1;
+						break;
+				}
+
+				LayoutSubviews();
+#else
+				switch (Element.LineBreakMode)
+				{
+					case LineBreakMode.WordWrap:
+					case LineBreakMode.CharacterWrap:
+						Control.MaximumNumberOfLines = 0;
+						break;
+					case LineBreakMode.NoWrap:
+					case LineBreakMode.HeadTruncation:
+					case LineBreakMode.MiddleTruncation:
+					case LineBreakMode.TailTruncation:
+						Control.MaximumNumberOfLines = 1;
+						break;
+				}
+
+				Layout();
+#endif
+			}
+		}
+
+		void UpdatePadding()
+		{
+			if (Element.Padding.IsEmpty)
+				return;
+
+#if __MOBILE__
+			var formsLabel = Control as FormsLabel;
+			if (formsLabel == null)
+			{
+				Debug.WriteLine($"{nameof(LabelRenderer)}: On iOS, a Label created with no padding will ignore padding changes");
+				return;
+			}
+
+			formsLabel.TextInsets = new UIEdgeInsets(
+					(float)Element.Padding.Top,
+					(float)Element.Padding.Left,
+					(float)Element.Padding.Bottom,
+					(float)Element.Padding.Right);
+			UpdateLayout();
+#endif
+		}
+
+#if __MOBILE__
+		class FormsLabel : NativeLabel
+		{
+			public UIEdgeInsets TextInsets { get; set; }
+
+			public FormsLabel(RectangleF frame) : base(frame)
+			{
+			}
+
+			public override void DrawText(RectangleF rect) => base.DrawText(TextInsets.InsetRect(rect));
+
+			public override SizeF SizeThatFits(SizeF size) => AddInsets(base.SizeThatFits(size));
+
+			SizeF AddInsets(SizeF size) => new SizeF(
+				width: size.Width + TextInsets.Left + TextInsets.Right,
+				height: size.Height + TextInsets.Top + TextInsets.Bottom);
+		}
+#endif
 	}
 }

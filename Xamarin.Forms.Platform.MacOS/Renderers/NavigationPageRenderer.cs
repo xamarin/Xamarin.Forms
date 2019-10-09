@@ -88,9 +88,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Element != null)
 				{
-					NavigationPage?.SendDisappearing();
+					if (NavigationPage != null)
+					{
+						NavigationPage.PushRequested -= OnPushRequested;
+						NavigationPage.PopRequested -= OnPopRequested;
+						NavigationPage.PopToRootRequested -= OnPopToRootRequested;
+						NavigationPage.RemovePageRequested -= OnRemovedPageRequested;
+						NavigationPage.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
+						NavigationPage.Popped -= OnPopped;
+						NavigationPage.PoppedToRoot -= OnPoppedToRoot;
+
+						NavigationPage.SendDisappearing();
+					}
 					((Element as IPageContainer<Page>)?.CurrentPage as Page)?.SendDisappearing();
 					Element.PropertyChanged -= OnElementPropertyChanged;
+					Platform.SetRenderer(Element, null);
 					Element = null;
 				}
 
@@ -100,7 +112,19 @@ namespace Xamarin.Forms.Platform.MacOS
 				_events?.Dispose();
 				_events = null;
 
+				if(_currentStack != null)
+				{
+					foreach (var childPageWrapper in _currentStack)
+					{
+						childPageWrapper.Dispose();
+					}
+					_currentStack.Clear();
+					_currentStack = null;
+				}
+
+				Platform.NativeToolbarTracker.Navigation = null;
 				_disposed = true;
+
 			}
 			base.Dispose(disposing);
 		}
@@ -175,22 +199,19 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			ConfigurePageRenderer();
 
-			var navPage = (NavigationPage)Element;
-
-			if (navPage.CurrentPage == null)
+			if (NavigationPage.CurrentPage == null)
 				throw new InvalidOperationException(
 					"NavigationPage must have a root Page before being used. Either call PushAsync with a valid Page, or pass a Page to the constructor before usage.");
 
-			Platform.NativeToolbarTracker.Navigation = navPage;
+			Platform.NativeToolbarTracker.Navigation = NavigationPage;
 
 			NavigationPage.PushRequested += OnPushRequested;
 			NavigationPage.PopRequested += OnPopRequested;
 			NavigationPage.PopToRootRequested += OnPopToRootRequested;
 			NavigationPage.RemovePageRequested += OnRemovedPageRequested;
 			NavigationPage.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
-
-			navPage.Popped += (sender, e) => Platform.NativeToolbarTracker.UpdateToolBar();
-			navPage.PoppedToRoot += (sender, e) => Platform.NativeToolbarTracker.UpdateToolBar();
+			NavigationPage.Popped += OnPopped;
+			NavigationPage.PoppedToRoot += OnPoppedToRoot;
 
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
@@ -199,7 +220,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			_events.LoadEvents(NativeView);
 			_tracker = new VisualElementTracker(this);
 
-			navPage.Pages.ForEach(async p => await PushPageAsync(p, false));
+			NavigationPage.Pages.ForEach(async p => await PushPageAsync(p, false));
 
 			UpdateBackgroundColor();
 		}
@@ -213,18 +234,45 @@ namespace Xamarin.Forms.Platform.MacOS
 			return pageRenderer;
 		}
 
-		//TODO: Implement InserPageBefore
+		void OnPopped(object sender, NavigationEventArgs e)
+		{
+			Platform.NativeToolbarTracker.UpdateToolBar();
+		}
+
+		void OnPoppedToRoot(object sender, NavigationEventArgs e)
+		{
+			Platform.NativeToolbarTracker.UpdateToolBar();
+		}
+
 		void InsertPageBefore(Page page, Page before)
 		{
 			if (before == null)
 				throw new ArgumentNullException(nameof(before));
 			if (page == null)
 				throw new ArgumentNullException(nameof(page));
+
+			var currentList = _currentStack.Reverse().ToList();
+			var beforePageIndex = currentList.IndexOf(p => p.Page == before);
+			var pageWrapper = new NavigationChildPageWrapper(page);
+			currentList.Insert(beforePageIndex, pageWrapper);
+			_currentStack = new Stack<NavigationChildPageWrapper>(currentList);
+
+			var vc = CreateViewControllerForPage(page);
+			vc.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
+			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Frame.Height));
+			vc.NativeView.WantsLayer = true;
+
+			var beforeRenderer = Platform.GetRenderer(before);
+			var beforeControllerIndex = ChildViewControllers.IndexOf(beforeRenderer.ViewController);
+
+			InsertChildViewController(vc.ViewController, beforeControllerIndex);
+			View.AddSubview(vc.NativeView, NSWindowOrderingMode.Below, beforeRenderer.NativeView);
 		}
 
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs e)
 		{
 			InsertPageBefore(e.Page, e.BeforePage);
+			Platform.NativeToolbarTracker.UpdateNavigationItems(true);
 		}
 
 		void OnPopRequested(object sender, NavigationRequestedEventArgs e)
@@ -257,15 +305,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			target?.Dispose();
 			if (removeFromStack)
 			{
-				var newStack = new Stack<NavigationChildPageWrapper>();
-				foreach (var stack in _currentStack)
-				{
-					if (stack.Page != page)
-					{
-						newStack.Push(stack);
-					}
-				}
-				_currentStack = newStack;
+				var newSource = _currentStack.Reverse().Where(w => w.Page != page);
+				_currentStack = new Stack<NavigationChildPageWrapper>(newSource);
 			}
 		}
 
@@ -310,11 +351,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (animated)
 			{
-				var previousPageRenderer = Platform.GetRenderer(previousPage);
+				var previousPageRenderer = CreateViewControllerForPage(previousPage);
 				var transitionStyle = NavigationPage.OnThisPlatform().GetNavigationTransitionPopStyle();
 
 				return await this.HandleAsyncAnimation(target.ViewController, previousPageRenderer.ViewController,
-					ToViewControllerTransitionOptions(transitionStyle), () => Platform.DisposeRendererAndChildren(target), true);
+					ToViewControllerTransitionOptions(transitionStyle), () => target.DisposeRendererAndChildren(), true);
 			}
 
 			RemovePage(page, false);

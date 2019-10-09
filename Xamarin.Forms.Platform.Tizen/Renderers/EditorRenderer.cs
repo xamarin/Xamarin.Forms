@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(InputView.IsSpellCheckEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Editor.PlaceholderProperty, UpdatePlaceholder);
 			RegisterPropertyHandler(Editor.PlaceholderColorProperty, UpdatePlaceholderColor);
+			RegisterPropertyHandler(InputView.IsReadOnlyProperty, UpdateIsReadOnly);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
@@ -26,7 +27,6 @@ namespace Xamarin.Forms.Platform.Tizen
 				var entry = Device.Idiom == TargetIdiom.Phone || Device.Idiom == TargetIdiom.TV ? new Native.EditfieldEntry(Forms.NativeParent, "multiline") : new Native.Entry(Forms.NativeParent)
 				{
 					IsSingleLine = false,
-					PropagateEvents = false,
 				};
 				entry.Focused += OnFocused;
 				entry.Unfocused += OnUnfocused;
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnTextChanged(object sender, EventArgs e)
 		{
-			Element.Text = ((Native.Entry)sender).Text;
+			Element.SetValueFromRenderer(Editor.TextProperty, ((Native.Entry)sender).Text);
 		}
 
 		bool _isSendComplate = false;
@@ -153,6 +153,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				return s;
 
 			return null;
+		}
+
+		void UpdateIsReadOnly()
+		{
+			Control.IsEditable = !Element.IsReadOnly;
 		}
 	}
 }

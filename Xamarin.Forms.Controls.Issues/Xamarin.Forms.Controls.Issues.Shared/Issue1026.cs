@@ -1,7 +1,7 @@
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 1026, "Label cropping", PlatformAffected.iOS | PlatformAffected.WinPhone, NavigationBehavior.PushModalAsync)]
@@ -9,10 +9,13 @@ namespace Xamarin.Forms.Controls
 	{
 		public Issue1026 ()
 		{
-			BackgroundColor = Color.FromHex("#dae1eb");
-			Content = 
+			var instructions = new Label { Text = "The label at the bottom of the form should read 'by subscribing," +
+				" you accept the general conditions.'; if the label is truncated, this test has failed." };
+
+			var scrollView = 
 				new ScrollView {
-				Content =
+					BackgroundColor = Color.FromHex("#dae1eb"),
+					Content =
 					new StackLayout {
 					Padding = new Thickness (0, 18),
 					Spacing = 10,
@@ -28,14 +31,6 @@ namespace Xamarin.Forms.Controls
 							BorderRadius = 0,
 #pragma warning restore
 						},
-//						new Label {
-//							Text = "or by email",
-//							TextColor = Color.FromHex ("#666"),
-//							XAlign = TextAlignment.Center,
-//							Font = Font.SystemFontOfSize (NamedSize.Small),
-//							WidthRequest = 262,
-//							HorizontalOptions = LayoutOptions.Center,
-//						},
 						new Entry {
 							Placeholder = "Professional email",
 							WidthRequest = 262,
@@ -96,6 +91,8 @@ namespace Xamarin.Forms.Controls
 				},
 
 			};
+
+			Content = new StackLayout { Children = { instructions, scrollView } };
 		}
 	}
 }

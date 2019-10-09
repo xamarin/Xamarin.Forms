@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			base.OnPreCreate();
 			Application.ClearCurrent();
-			MainWindow = new Window("FormsWindow");
+			MainWindow = PreloadedWindow.GetInstance() ?? new Window("FormsWindow");
 		}
 
 		protected override void OnTerminate()
@@ -102,12 +102,12 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (null == MainWindow)
 			{
-				throw new NullReferenceException("MainWindow is not prepared. This method should be called in OnCreated().");
+				throw new InvalidOperationException("MainWindow is not prepared. This method should be called in OnCreated().");
 			}
 
 			if (null == application)
 			{
-				throw new ArgumentNullException("application");
+				throw new ArgumentNullException(nameof(application));
 			}
 			_application = application;
 			Application.Current = application;
@@ -131,22 +131,16 @@ namespace Xamarin.Forms.Platform.Tizen
 				throw new InvalidOperationException("Call Forms.Init (UIApplication) before this");
 			}
 
-			if (_platform != null)
-			{
-				_platform.SetPage(page);
-				return;
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			if (_application != null)	
+			{	
+				_application.Platform = _platform;	
 			}
+#pragma warning restore CS0618 // Type or member is obsolete
 
-			_platform = Platform.CreatePlatform(BaseLayout);
 			_platform.HasAlpha = MainWindow.Alpha;
-			BaseLayout.SetContent(_platform.GetRootNativeView());
-
-			_platform.RootNativeViewChanged += (s, e) => BaseLayout.SetContent(e.RootNativeView);
-
-			if (_application != null)
-			{
-				_application.Platform = _platform;
-			}
 			_platform.SetPage(page);
 		}
 
@@ -157,15 +151,22 @@ namespace Xamarin.Forms.Platform.Tizen
 			MainWindow.Active();
 			MainWindow.Show();
 
-			var conformant = new Conformant(MainWindow);
-			conformant.Show();
+			if (MainWindow is PreloadedWindow precreated)
+			{
+				BaseLayout = precreated.BaseLayout;
+			}
+			else
+			{
+				var conformant = new Conformant(MainWindow);
+				conformant.Show();
 
-			var layout = new ELayout(conformant);
-			layout.SetTheme("layout", "application", "default");
-			layout.Show();
+				var layout = new ELayout(conformant);
+				layout.SetTheme("layout", "application", "default");
+				layout.Show();
 
-			BaseLayout = layout;
-			conformant.SetContent(BaseLayout);
+				BaseLayout = layout;
+				conformant.SetContent(BaseLayout);
+			}
 
 			MainWindow.AvailableRotations = DisplayRotation.Degree_0 | DisplayRotation.Degree_90 | DisplayRotation.Degree_180 | DisplayRotation.Degree_270;
 
@@ -191,6 +192,10 @@ namespace Xamarin.Forms.Platform.Tizen
 					}
 				}
 			};
+
+			_platform = Platform.CreatePlatform(BaseLayout);
+			BaseLayout.SetContent(_platform.GetRootNativeView());
+			_platform.RootNativeViewChanged += (s, e) => BaseLayout.SetContent(e.RootNativeView);
 		}
 
 		public void Run()

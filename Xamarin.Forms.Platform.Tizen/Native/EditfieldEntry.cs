@@ -1,13 +1,16 @@
-﻿using System;
+using System;
 using ElmSharp;
 using ELayout = ElmSharp.Layout;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
-	public class EditfieldEntry : Native.Entry, IMeasurable
+	public class EditfieldEntry : Native.Entry
 	{
 		public event EventHandler TextBlockFocused;
 		public event EventHandler TextBlockUnfocused;
+
+		public event EventHandler LayoutFocused;
+		public event EventHandler LayoutUnfocused;
 
 		public bool IsTextBlockFocused => _isTexstBlockFocused;
 
@@ -23,6 +26,47 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (!string.IsNullOrEmpty(style))
 				_editfieldLayout.SetTheme("layout", "editfield", style);
+		}
+
+		public override ElmSharp.Color BackgroundColor
+		{
+			get
+			{
+				return _editfieldLayout.BackgroundColor;
+			}
+			set
+			{
+				_editfieldLayout.BackgroundColor = value;
+			}
+		}
+
+		public void SetFocusOnTextBlock(bool isFocused)
+		{
+			AllowFocus(isFocused);
+			SetFocus(isFocused);
+			_isTexstBlockFocused = isFocused;
+
+			if (isFocused)
+				TextBlockFocused?.Invoke(this, EventArgs.Empty);
+			else
+				TextBlockUnfocused?.Invoke(this, EventArgs.Empty);
+		}
+
+		public override ElmSharp.Size Measure(int availableWidth, int availableHeight)
+		{
+			var textBlockSize = base.Measure(availableWidth, availableHeight);
+
+			// Calculate the minimum size by adding the width of a TextBlock and an Editfield.
+			textBlockSize.Width += _editfieldLayout.MinimumWidth;
+
+			// If the height of a TextBlock is shorter than Editfield, use the minimun height of the Editfield.
+			// Or add the height of the EditField to the TextBlock
+			if (textBlockSize.Height < _editfieldLayout.MinimumHeight)
+				textBlockSize.Height = _editfieldLayout.MinimumHeight;
+			else
+				textBlockSize.Height += _heightPadding;
+
+			return textBlockSize;
 		}
 
 		protected override IntPtr CreateHandle(EvasObject parent)
@@ -50,7 +94,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return _editfieldLayout;
 		}
 
-		ELayout CreateEditFieldLayout(EvasObject parent)
+		protected virtual ELayout CreateEditFieldLayout(EvasObject parent)
 		{
 			var layout = new ELayout(parent);
 			layout.SetTheme("layout", "editfield", "singleline");
@@ -59,11 +103,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				SetFocusOnTextBlock(false);
 				layout.SignalEmit("elm,state,unfocused", "");
+				LayoutUnfocused?.Invoke(this, EventArgs.Empty);
 			};
 			layout.Focused += (s, e) =>
 			{
 				AllowFocus(false);
 				layout.SignalEmit("elm,state,focused", "");
+				LayoutFocused?.Invoke(this, EventArgs.Empty);
 			};
 
 			layout.KeyDown += (s, e) =>
@@ -91,48 +137,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			};
 
 			return layout;
-		}
-
-		public override ElmSharp.Color BackgroundColor
-		{
-			get
-			{
-				return _editfieldLayout.BackgroundColor;
-			}
-			set
-			{
-				_editfieldLayout.BackgroundColor = value;
-			}
-
-		}
-
-		public void SetFocusOnTextBlock(bool isFocused)
-		{
-			AllowFocus(isFocused);
-			SetFocus(isFocused);
-			_isTexstBlockFocused = isFocused;
-
-			if (isFocused)
-				TextBlockFocused?.Invoke(this, EventArgs.Empty);
-			else
-				TextBlockUnfocused?.Invoke(this, EventArgs.Empty);
-		}
-
-		public new ElmSharp.Size Measure(int availableWidth, int availableHeight)
-		{
-			var textBlockSize = base.Measure(availableWidth, availableHeight);
-
-			// Calculate the minimum size by adding the width of a TextBlock and an Editfield.
-			textBlockSize.Width += _editfieldLayout.MinimumWidth;
-
-			// If the height of a TextBlock is shorter than Editfield, use the minimun height of the Editfield.
-			// Or add the height of the EditField to the TextBlock
-			if (textBlockSize.Height < _editfieldLayout.MinimumHeight)
-				textBlockSize.Height = _editfieldLayout.MinimumHeight;
-			else
-				textBlockSize.Height += _heightPadding;
-
-			return textBlockSize;
 		}
 	}
 }

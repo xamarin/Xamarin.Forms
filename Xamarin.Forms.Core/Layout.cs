@@ -102,7 +102,7 @@ namespace Xamarin.Forms
 
 		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
 		{
-			UpdateChildrenLayout();
+			InvalidateLayout();
 		}
 
 		internal ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
@@ -126,6 +126,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public sealed override SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			SizeRequest size = base.GetSizeRequest(widthConstraint - Padding.HorizontalThickness, heightConstraint - Padding.VerticalThickness);
@@ -137,7 +138,7 @@ namespace Xamarin.Forms
 		{
 			var parent = child.Parent as IFlowDirectionController;
 			bool isRightToLeft = false;
-			if (parent != null && (isRightToLeft = parent.EffectiveFlowDirection.IsRightToLeft()))
+			if (parent != null && (isRightToLeft = parent.ApplyEffectiveFlowDirectionToChildContainer && parent.EffectiveFlowDirection.IsRightToLeft()))
 				region = new Rectangle(parent.Width - region.Right, region.Y, region.Width, region.Height);
 
 			var view = child as View;
@@ -260,6 +261,8 @@ namespace Xamarin.Forms
 			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 				CompressedLayout.SetHeadlessOffset((VisualElement)LogicalChildrenInternal[i], isHeadless ? new Point(headlessOffset.X + Bounds.X, headlessOffset.Y + Bounds.Y) : new Point());
 
+			_lastLayoutSize = new Size(width, height);
+
 			LayoutChildren(x, y, w, h);
 
 			for (var i = 0; i < oldBounds.Length; i++)
@@ -272,15 +275,13 @@ namespace Xamarin.Forms
 					return;
 				}
 			}
-
-			_lastLayoutSize = new Size(width, height);
 		}
 
 		internal static void LayoutChildIntoBoundingRegion(View child, Rectangle region, SizeRequest childSizeRequest)
 		{
 			var parent = child.Parent as IFlowDirectionController;
 			bool isRightToLeft = false;
-			if (parent != null && (isRightToLeft = parent.EffectiveFlowDirection.IsRightToLeft()))
+			if (parent != null && (isRightToLeft = parent.ApplyEffectiveFlowDirectionToChildContainer && parent.EffectiveFlowDirection.IsRightToLeft()))
 				region = new Rectangle(parent.Width - region.Right, region.Y, region.Width, region.Height);
 
 			if (region.Size != childSizeRequest.Request)
@@ -364,23 +365,32 @@ namespace Xamarin.Forms
 				// This avoids a lot of unnecessary layout operations if something is triggering many property
 				// changes at once (e.g., a BindingContext change)
 
-				Device.BeginInvokeOnMainThread(() =>
+				if (Dispatcher != null)
 				{
-					// if thread safety mattered we would need to lock this and compareexchange above
-					IList<KeyValuePair<Layout, int>> copy = s_resolutionList;
-					s_resolutionList = new List<KeyValuePair<Layout, int>>();
-					s_relayoutInProgress = false;
+					Dispatcher.BeginInvokeOnMainThread(ResolveLayoutChanges);
+				}
+				else
+				{
+					Device.BeginInvokeOnMainThread(ResolveLayoutChanges);
+				}			
+			}
+		}
 
-					foreach (KeyValuePair<Layout, int> kvp in copy.OrderBy(kvp => kvp.Value))
-					{
-						Layout layout = kvp.Key;
-						double width = layout.Width, height = layout.Height;
-						if (!layout._allocatedFlag && width >= 0 && height >= 0)
-						{
-							layout.SizeAllocated(width, height);
-						}
-					}
-				});
+		internal void ResolveLayoutChanges()
+		{
+			// if thread safety mattered we would need to lock this and compareexchange above
+			IList<KeyValuePair<Layout, int>> copy = s_resolutionList;
+			s_resolutionList = new List<KeyValuePair<Layout, int>>();
+			s_relayoutInProgress = false;
+
+			foreach (KeyValuePair<Layout, int> kvp in copy)
+			{
+				Layout layout = kvp.Key;
+				double width = layout.Width, height = layout.Height;
+				if (!layout._allocatedFlag && width >= 0 && height >= 0)
+				{
+					layout.SizeAllocated(width, height);
+				}
 			}
 		}
 
@@ -416,8 +426,9 @@ namespace Xamarin.Forms
 
 			if (e.OldItems != null)
 			{
-				foreach (object item in e.OldItems)
+				for (int i = 0; i < e.OldItems.Count; i++)
 				{
+					object item = e.OldItems[i];
 					var v = item as View;
 					if (v == null)
 						continue;
@@ -428,8 +439,9 @@ namespace Xamarin.Forms
 
 			if (e.NewItems != null)
 			{
-				foreach (object item in e.NewItems)
+				for (int i = 0; i < e.NewItems.Count; i++)
 				{
+					object item = e.NewItems[i];
 					var v = item as View;
 					if (v == null)
 						continue;

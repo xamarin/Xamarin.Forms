@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				SetNativeControl(new EProgressBar(Forms.NativeParent)
 				{
-					Style = "process_medium",
+					Style = "process_small",
 					IsPulseMode = true,
 				});
 			}
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateIsRunning()
 		{
-			if (Element.IsRunning)
+			if (Element.IsRunning && Element.IsEnabled)
 			{
 				Control.PlayPulse();
 			}
@@ -44,6 +44,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				Control.StopPulse();
 			}
+		}
+
+		protected override void UpdateIsEnabled(bool initialize)
+		{
+			base.UpdateIsEnabled(initialize);
+			UpdateIsRunning();
 		}
 
 	};

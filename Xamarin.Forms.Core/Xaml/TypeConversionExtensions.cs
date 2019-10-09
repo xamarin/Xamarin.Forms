@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Xaml
 	static class TypeConversionExtensions
 	{
 		internal static object ConvertTo(this object value, Type toType, Func<ParameterInfo> pinfoRetriever,
-			IServiceProvider serviceProvider)
+			IServiceProvider serviceProvider, out Exception exception)
 		{
 			Func<TypeConverter> getConverter = () =>
 			{
@@ -53,11 +53,11 @@ namespace Xamarin.Forms.Xaml
 				return (TypeConverter)Activator.CreateInstance(convertertype);
 			};
 
-			return ConvertTo(value, toType, getConverter, serviceProvider);
+			return ConvertTo(value, toType, getConverter, serviceProvider, out exception);
 		}
 
 		internal static object ConvertTo(this object value, Type toType, Func<MemberInfo> minfoRetriever,
-			IServiceProvider serviceProvider)
+			IServiceProvider serviceProvider, out Exception exception)
 		{
 			Func<object> getConverter = () =>
 			{
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Xaml
 				return Activator.CreateInstance(convertertype);
 			};
 
-			return ConvertTo(value, toType, getConverter, serviceProvider);
+			return ConvertTo(value, toType, getConverter, serviceProvider, out exception);
 		}
 
 		static string GetTypeConverterTypeName(this IEnumerable<CustomAttributeData> attributes)
@@ -92,37 +92,62 @@ namespace Xamarin.Forms.Xaml
 		//Don't change the name or the signature of this, it's used by XamlC
 		public static object ConvertTo(this object value, Type toType, Type convertertype, IServiceProvider serviceProvider)
 		{
-			if (convertertype == null)
-				return value.ConvertTo(toType, (Func<object>)null, serviceProvider);
+			Exception exception = null;
+			object ret = null;
+			if (convertertype == null) {
+				ret = value.ConvertTo(toType, (Func<object>)null, serviceProvider, out exception);
+				if (exception != null)
+					throw exception;
+				return ret;
+			}
 			Func<object> getConverter = () => Activator.CreateInstance(convertertype);
-			;
-			return value.ConvertTo(toType, getConverter, serviceProvider);
+			ret = value.ConvertTo(toType, getConverter, serviceProvider, out exception);
+			if (exception != null)
+				throw exception;
+			return ret;
 		}
 
 		internal static object ConvertTo(this object value, Type toType, Func<object> getConverter,
-			IServiceProvider serviceProvider)
+			IServiceProvider serviceProvider, out Exception exception)
 		{
+			exception = null;
 			if (value == null)
 				return null;
 
-			var str = value as string;
-			if (str != null)
-			{
+			if (value is string str) {
 				//If there's a [TypeConverter], use it
-				object converter = getConverter?.Invoke();
-				var xfTypeConverter = converter as TypeConverter;
-				var xfExtendedTypeConverter = xfTypeConverter as IExtendedTypeConverter;
-				if (xfExtendedTypeConverter != null)
-					return value = xfExtendedTypeConverter.ConvertFromInvariantString(str, serviceProvider);
-				if (xfTypeConverter != null)
-					return value = xfTypeConverter.ConvertFromInvariantString(str);
+				object converter;
+				try { //minforetriver can fail
+					converter = getConverter?.Invoke();
+				}
+				catch (Exception e) {
+					exception = e;
+					return null;
+				}
+				try {
+					if (converter is IExtendedTypeConverter xfExtendedTypeConverter)
+						return xfExtendedTypeConverter.ConvertFromInvariantString(str, serviceProvider);
+					if (converter is TypeConverter xfTypeConverter)
+						return xfTypeConverter.ConvertFromInvariantString(str);
+				}
+				catch (Exception e)
+				{
+					exception = e as XamlParseException ?? new XamlParseException($"Type converter failed: {e.Message}", serviceProvider, e);
+					return null;
+				}
 				var converterType = converter?.GetType();
 				if (converterType != null)
 				{
 					var convertFromStringInvariant = converterType.GetRuntimeMethod("ConvertFromInvariantString",
 						new[] { typeof (string) });
 					if (convertFromStringInvariant != null)
-						return value = convertFromStringInvariant.Invoke(converter, new object[] { str });
+						try {
+							return convertFromStringInvariant.Invoke(converter, new object[] { str });
+						}
+						catch (Exception e) {
+							exception = new XamlParseException("Type conversion failed", serviceProvider, e);
+							return null;
+						}
 				}
 				var ignoreCase = (serviceProvider?.GetService(typeof(IConverterOptions)) as IConverterOptions)?.IgnoreCase ?? false;
 
@@ -131,45 +156,50 @@ namespace Xamarin.Forms.Xaml
 					toType = Nullable.GetUnderlyingType(toType);
 
 				//Obvious Built-in conversions
-				if (toType.GetTypeInfo().IsEnum)
-					return Enum.Parse(toType, str, ignoreCase);
-				if (toType == typeof(SByte))
-					return SByte.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(Int16))
-					return Int16.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(Int32))
-					return Int32.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(Int64))
-					return Int64.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(Byte))
-					return Byte.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(UInt16))
-					return UInt16.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(UInt32))
-					return UInt32.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(UInt64))
-					return UInt64.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof (Single))
-					return Single.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof (Double))
-					return Double.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof (Boolean))
-					return Boolean.Parse(str);
-				if (toType == typeof (TimeSpan))
-					return TimeSpan.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof (DateTime))
-					return DateTime.Parse(str, CultureInfo.InvariantCulture);
-				if (toType == typeof(Char)) {
-					char c = '\0';
-					Char.TryParse(str, out c);
-					return c;
+				try {
+					if (toType.GetTypeInfo().IsEnum)
+						return Enum.Parse(toType, str, ignoreCase);
+					if (toType == typeof(SByte))
+						return SByte.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Int16))
+						return Int16.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Int32))
+						return Int32.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Int64))
+						return Int64.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Byte))
+						return Byte.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(UInt16))
+						return UInt16.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(UInt32))
+						return UInt32.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(UInt64))
+						return UInt64.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Single))
+						return Single.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Double))
+						return Double.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Boolean))
+						return Boolean.Parse(str);
+					if (toType == typeof(TimeSpan))
+						return TimeSpan.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(DateTime))
+						return DateTime.Parse(str, CultureInfo.InvariantCulture);
+					if (toType == typeof(Char)) {
+						Char.TryParse(str, out var c);
+						return c;
+					}
+					if (toType == typeof(String) && str.StartsWith("{}", StringComparison.Ordinal))
+						return str.Substring(2);
+					if (toType == typeof(String))
+						return value;
+					if (toType == typeof(Decimal))
+						return Decimal.Parse(str, CultureInfo.InvariantCulture);
 				}
-				if (toType == typeof (String) && str.StartsWith("{}", StringComparison.Ordinal))
-					return str.Substring(2);
-				if (toType == typeof (String))
-					return value;
-				if (toType == typeof(Decimal))
-					return Decimal.Parse(str, CultureInfo.InvariantCulture);
+				catch (FormatException fe) {
+					exception = fe;
+					return null;
+				}
 			}
 
 			//if the value is not assignable and there's an implicit conversion, convert
@@ -196,17 +226,41 @@ namespace Xamarin.Forms.Xaml
 		{
 #if NETSTANDARD1_0
 			var mi = onType.GetRuntimeMethod("op_Implicit", new[] { fromType });
-#else
-			var bindingFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy;
-			var mi = onType.GetMethod("op_Implicit", bindingFlags, null, new[] { fromType }, null);
-#endif
 			if (mi == null) return null;
 			if (!mi.IsSpecialName) return null;
 			if (!mi.IsPublic) return null;
 			if (!mi.IsStatic) return null;
 			if (!toType.IsAssignableFrom(mi.ReturnType)) return null;
 
-			return mi;
+			return mi;		
+#else
+			var bindingAttr = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy;
+			IEnumerable<MethodInfo> mis = null;
+			try {
+				mis = new[] { onType.GetMethod("op_Implicit", bindingAttr, null, new[] { fromType }, null) };
+			} catch (AmbiguousMatchException) {
+				mis = new List<MethodInfo>();
+				foreach (var mi in onType.GetMethods(bindingAttr)) {
+					if (mi.Name != "op_Implicit") break;
+					var p = mi.GetParameters()?.FirstOrDefault();
+					if (p == null) continue;
+					if (!p.ParameterType.IsAssignableFrom(fromType)) continue;
+					((List<MethodInfo>)mis).Add(mi);
+				}
+			}
+
+			foreach (var mi in mis) {
+				if (mi == null) continue;
+				if (!mi.IsSpecialName) continue;
+				if (!mi.IsPublic) continue;
+				if (!mi.IsStatic) continue;
+				if (!toType.IsAssignableFrom(mi.ReturnType)) continue;
+
+				return mi;
+			}
+			return null;
+#endif
+
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 31145, "Picker cause memory leak holding entire Page in memory after it popped (WP8 SL only)", PlatformAffected.WinPhone)]
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls
 			{
 				_resultLabel.Text = $"Page2 IsAlive = {_page2Tracker.IsAlive} ({n++})";
                 await Task.Delay(1000);
-				GC.Collect();
+				GarbageCollectionHelper.Collect();
 			}
 
 			_resultLabel.Text = $"Page2 IsAlive = {_page2Tracker.IsAlive}";

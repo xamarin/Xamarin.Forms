@@ -12,6 +12,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 39821, "ViewExtension.TranslateTo cannot be invoked on Main thread")]
 	public class Bugzilla39821 : TestContentPage 
@@ -117,10 +120,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
+		[Ignore("Fails intermittently on TestCloud")]
+		[Category(Core.UITests.UITestCategories.ManualReview)]
 		public void DoesNotCrash()
 		{
 			RunningApp.Tap(q => q.Marked("Animate"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
+			RunningApp.WaitForElement(q => q.Marked("Success"), timeout:TimeSpan.FromSeconds(25));
 		}
 #endif
 	}

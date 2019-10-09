@@ -10,12 +10,16 @@ using System;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 56771, "Multi-item add in INotifyCollectionChanged causes a NSInternalInconsistencyException in bindings on iOS", PlatformAffected.iOS)]
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.ListView)]
+#endif
 	public class Bugzilla56771 : TestContentPage
 	{
 		const string Success = "Success";
@@ -35,6 +39,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			data.CollectionChanged += (_, e) =>
+			{
+				var log = $"<{DateTime.Now.ToLongTimeString()}> {e.Action} action fired.";
+				System.Diagnostics.Debug.WriteLine(log);
+			};
 			var label = new Label { Text = "Click the Add 2 button." };
 			var button = new Button
 			{
@@ -52,33 +61,14 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 				})
 			};
-			var buttonI = new Button
-			{
-				Text = "Insert odd",
-				AutomationId = BtnAdd,
-				Command = new Command(() =>
-				{
-					try
-					{
-						for (int j = 1; j < data.Count; j += 2)
-						{
-							data.Insert(j, $"Item {++i} inserted");
-						}
-					}
-					catch (ArgumentException)
-					{
-						label.Text = Success;
-					}
-				})
-			};
 			var button1 = new Button
 			{
 				Text = "Remove 2",
 				Command = new Command(() =>
 				{
-					if (data.Count > 3)
+					if (data.Count > 1)
 					{
-						data.RemoveRangeAt(2, 2);
+						data.RemoveRangeAt(0, 2);
 					}
 				})
 			};
@@ -95,7 +85,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = new StackLayout
 			{
-				Children = { label, button, buttonI, button1, button2, listView }
+				Children = { label, button, button1, button2, listView }
 			};
 
 			InitializeData();
@@ -131,9 +121,9 @@ namespace Xamarin.Forms.Controls.Issues
 			public void InsertRangeAt(int startIndex, params T[] items)
 			{
 				int idx = this.Count;
-				for (int i = items.Length - 1; i >= 0; i--)
+				foreach (var item in items)
 				{
-					base.Items.Insert(startIndex, items[i]);
+					base.Items.Insert(startIndex++, item);
 				}
 				if (idx < Count)
 				{

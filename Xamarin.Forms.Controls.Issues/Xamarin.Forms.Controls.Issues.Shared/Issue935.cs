@@ -9,6 +9,7 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+	[Preserve(AllMembers = true)]
 	public class Person 
 	{
 		public string Name { get; set; }
@@ -20,9 +21,9 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 
+	[Preserve(AllMembers = true)]
 	public class CustomViewCell : ViewCell 
 	{
-
 		public CustomViewCell ()
 		{
 			int tapsFired = 0;
@@ -33,15 +34,32 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "I have been selected:"
 			};
 
+			if (this is CustomViewCellBindingContext)
+				label.Text = "If you can read this text the UI Test has failed";
+
 			Tapped += (s, e) => {
 				tapsFired++;
 				label.Text = "I have been selected:" + tapsFired;
+
+				var cell = (CustomViewCell)s;
 			};
 
 			View = label;
 		}
 	}
 
+
+	[Preserve(AllMembers = true)]
+	public class CustomViewCellBindingContext : CustomViewCell
+	{
+		public CustomViewCellBindingContext()
+		{
+		}
+	}
+
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 935, "ViewCell.ItemTapped only fires once for ListView.SelectedItem", PlatformAffected.Android)]
 	public class Issue935 : TestContentPage
@@ -51,7 +69,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Title = "List Page";
 
 			var items = new [] {
-				new CustomViewCell (),
+				new CustomViewCellBindingContext()
 			};
 				
 			var cellTemplate = new DataTemplate (typeof(CustomViewCell));

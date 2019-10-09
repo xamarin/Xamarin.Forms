@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
@@ -8,24 +9,25 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ButtonRenderer))]
-	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement
+	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement, IImageController, IViewController, IButtonElement, IImageElement
 	{
-		const double DefaultSpacing = 10;
 		const int DefaultBorderRadius = 5;
-		const int DefaultCornerRadius = -1;
+		const double DefaultSpacing = 10;
 
-		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(Button), null, propertyChanged: (bo, o, n) => ((Button)bo).OnCommandChanged());
+		public static readonly BindableProperty CommandProperty = ButtonElement.CommandProperty;
 
-		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(Button), null,
-			propertyChanged: (bindable, oldvalue, newvalue) => ((Button)bindable).CommandCanExecuteChanged(bindable, EventArgs.Empty));
+		public static readonly BindableProperty CommandParameterProperty = ButtonElement.CommandParameterProperty;
 
 		public static readonly BindableProperty ContentLayoutProperty =
-			BindableProperty.Create("ContentLayout", typeof(ButtonContentLayout), typeof(Button), new ButtonContentLayout(ButtonContentLayout.ImagePosition.Left, DefaultSpacing));
+			BindableProperty.Create(nameof(ContentLayout), typeof(ButtonContentLayout), typeof(Button), new ButtonContentLayout(ButtonContentLayout.ImagePosition.Left, DefaultSpacing),
+				propertyChanged: (bindable, oldVal, newVal) => ((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Button), null,
 			propertyChanged: (bindable, oldVal, newVal) => ((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
@@ -40,33 +42,41 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty BorderColorProperty = BorderElement.BorderColorProperty;
 
 		[Obsolete("BorderRadiusProperty is obsolete as of 2.5.0. Please use CornerRadius instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty BorderRadiusProperty = BindableProperty.Create("BorderRadius", typeof(int), typeof(Button), defaultValue: DefaultBorderRadius,
 			propertyChanged: BorderRadiusPropertyChanged);
 
-		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create("CornerRadius", typeof(int), typeof(Button), defaultValue: DefaultCornerRadius,
+		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create("CornerRadius", typeof(int), typeof(Button), defaultValue: BorderElement.DefaultCornerRadius,
 			propertyChanged: CornerRadiusPropertyChanged);
 
-		public static readonly BindableProperty ImageProperty = BindableProperty.Create("Image", typeof(FileImageSource), typeof(Button), default(FileImageSource),
-			propertyChanging: (bindable, oldvalue, newvalue) => ((Button)bindable).OnSourcePropertyChanging((ImageSource)oldvalue, (ImageSource)newvalue),
-			propertyChanged: (bindable, oldvalue, newvalue) => ((Button)bindable).OnSourcePropertyChanged((ImageSource)oldvalue, (ImageSource)newvalue));
+		public static readonly BindableProperty ImageSourceProperty = ImageElement.ImageProperty;
+
+		[Obsolete("ImageProperty is obsolete as of 4.0.0. Please use ImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty ImageProperty = ImageElement.ImageProperty;
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
 		public Thickness Padding
 		{
-			get { return (Thickness)GetValue (PaddingElement.PaddingProperty); }
-			set { SetValue (PaddingElement.PaddingProperty, value); }
+			get { return (Thickness)GetValue(PaddingElement.PaddingProperty); }
+			set { SetValue(PaddingElement.PaddingProperty, value); }
 		}
 
-		Thickness IPaddingElement.PaddingDefaultValueCreator ()
+		Thickness IPaddingElement.PaddingDefaultValueCreator()
 		{
-			return default (Thickness);
+			return default(Thickness);
 		}
 
-		void IPaddingElement.OnPaddingPropertyChanged (Thickness oldValue, Thickness newValue)
+		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
+
+
+		internal static readonly BindablePropertyKey IsPressedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsPressed), typeof(bool), typeof(Button), default(bool));
+		public static readonly BindableProperty IsPressedProperty = IsPressedPropertyKey.BindableProperty;
+
 
 		readonly Lazy<PlatformConfigurationRegistry<Button>> _platformConfigurationRegistry;
 
@@ -77,6 +87,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("BorderRadius is obsolete as of 2.5.0. Please use CornerRadius instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public int BorderRadius
 		{
 			get { return (int)GetValue(BorderRadiusProperty); }
@@ -119,9 +130,17 @@ namespace Xamarin.Forms
 			set { SetValue(FontProperty, value); }
 		}
 
+		public ImageSource ImageSource
+		{
+			get { return (ImageSource)GetValue(ImageSourceProperty); }
+			set { SetValue(ImageSourceProperty, value); }
+		}
+
+		[Obsolete("Image is obsolete as of 4.0.0. Please use ImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FileImageSource Image
 		{
-			get { return (FileImageSource)GetValue(ImageProperty); }
+			get { return GetValue(ImageProperty) as FileImageSource; }
 			set { SetValue(ImageProperty, value); }
 		}
 
@@ -137,38 +156,39 @@ namespace Xamarin.Forms
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
-		bool IsEnabledCore
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+
+		bool IButtonElement.IsEnabledCore
 		{
 			set { SetValueCore(IsEnabledProperty, value); }
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendClicked()
-		{
-			if (IsEnabled == true)
-			{
-				Command?.Execute(CommandParameter);
-				Clicked?.Invoke(this, EventArgs.Empty);
-			}
-		}
+		public void SendClicked() => ButtonElement.ElementClicked(this, this);
+
+		public bool IsPressed => (bool)GetValue(IsPressedProperty);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendPressed()
-		{
-			if (IsEnabled == true)
-			{
-				Pressed?.Invoke(this, EventArgs.Empty); 
-			}
-		}
+		void IButtonElement.SetIsPressed(bool isPressed) => SetValue(IsPressedPropertyKey, isPressed);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendReleased()
-		{
-			if (IsEnabled == true)
-			{
-				Released?.Invoke(this, EventArgs.Empty);
-			}
-		}
+		public void SendPressed() => ButtonElement.ElementPressed(this, this);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendReleased() => ButtonElement.ElementReleased(this, this);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		void IButtonElement.PropagateUpClicked() => Clicked?.Invoke(this, EventArgs.Empty);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		void IButtonElement.PropagateUpPressed() => Pressed?.Invoke(this, EventArgs.Empty);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		void IButtonElement.PropagateUpReleased() => Released?.Invoke(this, EventArgs.Empty);
 
 		public FontAttributes FontAttributes
 		{
@@ -190,7 +210,6 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler Clicked;
-
 		public event EventHandler Pressed;
 
 		public event EventHandler Released;
@@ -205,32 +224,25 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
+		protected internal override void ChangeVisualState()
+		{
+			if (IsEnabled && IsPressed)
+			{
+				VisualStateManager.GoToState(this, ButtonElement.PressedVisualState);
+			}
+			else
+			{
+				base.ChangeVisualState();
+			}
+		}
+
 		protected override void OnBindingContextChanged()
 		{
-			FileImageSource image = Image;
+			ImageSource image = ImageSource;
 			if (image != null)
 				SetInheritedBindingContext(image, BindingContext);
 
 			base.OnBindingContextChanged();
-		}
-
-		protected override void OnPropertyChanging(string propertyName = null)
-		{
-			if (propertyName == CommandProperty.PropertyName)
-			{
-				ICommand cmd = Command;
-				if (cmd != null)
-					cmd.CanExecuteChanged -= CommandCanExecuteChanged;
-			}
-
-			base.OnPropertyChanging(propertyName);
-		}
-
-		void CommandCanExecuteChanged(object sender, EventArgs eventArgs)
-		{
-			ICommand cmd = Command;
-			if (cmd != null)
-				IsEnabledCore = cmd.CanExecute(CommandParameter);
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue) =>
@@ -248,54 +260,45 @@ namespace Xamarin.Forms
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
-		void OnCommandChanged()
-		{
-			if (Command != null)
-			{
-				Command.CanExecuteChanged += CommandCanExecuteChanged;
-				CommandCanExecuteChanged(this, EventArgs.Empty);
-			}
-			else
-				IsEnabledCore = true;
-		}
+		Aspect IImageElement.Aspect => Aspect.AspectFit;
+		ImageSource IImageElement.Source => ImageSource;
+		bool IImageElement.IsOpaque => false;
 
-		void OnSourceChanged(object sender, EventArgs eventArgs)
-		{
-			OnPropertyChanged(ImageProperty.PropertyName);
-			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
 
-		void OnSourcePropertyChanged(ImageSource oldvalue, ImageSource newvalue)
-		{
-			if (newvalue != null)
-			{
-				newvalue.SourceChanged += OnSourceChanged;
-				SetInheritedBindingContext(newvalue, BindingContext);
-			}
-			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
+		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageSourceProperty.PropertyName);
 
-		void OnSourcePropertyChanging(ImageSource oldvalue, ImageSource newvalue)
-		{
-			if (oldvalue != null)
-				oldvalue.SourceChanged -= OnSourceChanged;
-		}
+		int IBorderElement.CornerRadiusDefaultValue => (int)CornerRadiusProperty.DefaultValue;
+
+		Color IBorderElement.BorderColorDefaultValue => (Color)BorderColorProperty.DefaultValue;
+
+		double IBorderElement.BorderWidthDefaultValue => (double)BorderWidthProperty.DefaultValue;
+
+		/// <summary>
+		/// Flag to prevent overwriting the value of CornerRadius
+		/// </summary>
+		bool cornerOrBorderRadiusSetting = false;
 
 		static void BorderRadiusPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			if (newvalue == oldvalue)
 				return;
 
+			var button = (Button)bindable;
 			var val = (int)newvalue;
-			if (val == DefaultBorderRadius)
-				val = DefaultCornerRadius;
+			if (val == DefaultBorderRadius && !button.cornerOrBorderRadiusSetting)
+				val = BorderElement.DefaultCornerRadius;
 
 			var oldVal = (int)bindable.GetValue(Button.CornerRadiusProperty);
 
 			if (oldVal == val)
 				return;
 
+			if (button.cornerOrBorderRadiusSetting) // retain until BorderRadiusProperty removed
+				return;
+
+			button.cornerOrBorderRadiusSetting = true;
 			bindable.SetValue(Button.CornerRadiusProperty, val);
+			button.cornerOrBorderRadiusSetting = false;
 		}
 
 		static void CornerRadiusPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
@@ -303,8 +306,9 @@ namespace Xamarin.Forms
 			if (newvalue == oldvalue)
 				return;
 
+			var button = (Button)bindable;
 			var val = (int)newvalue;
-			if (val == DefaultCornerRadius)
+			if (val == BorderElement.DefaultCornerRadius && !button.cornerOrBorderRadiusSetting)
 				val = DefaultBorderRadius;
 
 #pragma warning disable 0618 // retain until BorderRadiusProperty removed
@@ -315,7 +319,9 @@ namespace Xamarin.Forms
 				return;
 
 #pragma warning disable 0618 // retain until BorderRadiusProperty removed
+			button.cornerOrBorderRadiusSetting = true;
 			bindable.SetValue(Button.BorderRadiusProperty, val);
+			button.cornerOrBorderRadiusSetting = false;
 #pragma warning restore
 		}
 
@@ -323,9 +329,30 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
+
 		void IBorderElement.OnBorderColorPropertyChanged(Color oldValue, Color newValue)
 		{
 		}
+
+		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
+			ImageElement.ImageSourcesSourceChanged(this, e);
+
+		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
+			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
+
+		void IImageController.SetIsLoading(bool isLoading)
+		{
+		}
+
+		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
+		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
+		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
 
 		[DebuggerDisplay("Image Position = {Position}, Spacing = {Spacing}")]
 		[TypeConverter(typeof(ButtonContentTypeConverter))]

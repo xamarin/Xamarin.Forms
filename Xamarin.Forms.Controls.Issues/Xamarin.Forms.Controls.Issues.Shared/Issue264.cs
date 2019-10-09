@@ -11,12 +11,13 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Github, 264, "PopModal NRE", PlatformAffected.Android | PlatformAffected.iOS)]
 	public class Issue264 : TestContentPage
 	{
-		Page _current;
-
 		protected override void Init ()
 		{
 			var aboutBtn = new Button {
@@ -68,7 +69,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public AboutPage()
 		{
-			BackgroundColor = Color.Black;
+			BackgroundColor = Color.Bisque;
 			Content = new Button { Text = "Close", Command = new Command (() => Navigation.PopModalAsync ()) };
 
 		}

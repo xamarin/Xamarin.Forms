@@ -4,229 +4,207 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Forms.Platform.GTK.Extensions;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
-    public class ImageRenderer : ViewRenderer<Image, Controls.ImageControl>
-    {
-        private bool _isDisposed;
+	public class ImageRenderer : ViewRenderer<Image, Controls.ImageControl>
+	{
+		bool _isDisposed;
 
-        protected override void Dispose(bool disposing)
-        {
-            if (_isDisposed)
-                return;
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
 
-            if (disposing)
-            {
-                if (Control != null)
-                {
-                    Control.Dispose();
-                    Control = null;
-                }
-            }
+			if (disposing)
+			{
+				if (Control != null)
+				{
+					Control.Dispose();
+					Control = null;
+				}
+			}
 
-            _isDisposed = true;
+			_isDisposed = true;
 
-            base.Dispose(disposing);
-        }
+			base.Dispose(disposing);
+		}
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
-        {
-            if (Control == null)
-            {
-                var image = new Controls.ImageControl();
-                SetNativeControl(image);
-            }
+		protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
+		{
+			if (Control == null)
+			{
+				var image = new Controls.ImageControl();
+				SetNativeControl(image);
+			}
 
-            if (e.NewElement != null)
-            {
-                SetImage(e.OldElement);
-                SetAspect();
-                SetOpacity();
-            }
+			if (e.NewElement != null)
+			{
+				SetImage(e.OldElement);
+				SetAspect();
+				SetOpacity();
+			}
 
-            base.OnElementChanged(e);
-        }
+			base.OnElementChanged(e);
+		}
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            base.OnElementPropertyChanged(sender, e);
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
 
-            if (e.PropertyName == Image.SourceProperty.PropertyName)
-                SetImage();
-            else if (e.PropertyName == Image.IsOpaqueProperty.PropertyName)
-                SetOpacity();
-            else if (e.PropertyName == Image.AspectProperty.PropertyName)
-                SetAspect();
-        }
+			if (e.PropertyName == Image.SourceProperty.PropertyName)
+				SetImage();
+			else if (e.PropertyName == Image.IsOpaqueProperty.PropertyName)
+				SetOpacity();
+			else if (e.PropertyName == Image.AspectProperty.PropertyName)
+				SetAspect();
+		}
 
-        protected override void OnSizeAllocated(Gdk.Rectangle allocation)
-        {
-            base.OnSizeAllocated(allocation);
+		protected override void OnSizeAllocated(Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated(allocation);
 
-            Control.SetSizeRequest(allocation.Width, allocation.Height);
-        }
+			Control.SetSizeRequest(allocation.Width, allocation.Height);
+		}
 
-        private async void SetImage(Image oldElement = null)
-        {
-            var source = Element.Source;
+		async void SetImage(Image oldElement = null)
+		{
+			var source = Element.Source;
 
-            if (oldElement != null)
-            {
-                var oldSource = oldElement.Source;
-                if (Equals(oldSource, source))
-                    return;
+			if (oldElement != null)
+			{
+				var oldSource = oldElement.Source;
+				if (Equals(oldSource, source))
+					return;
 
-                if (oldSource is FileImageSource && source is FileImageSource
-                    && ((FileImageSource)oldSource).File == ((FileImageSource)source).File)
-                    return;
+				if (oldSource is FileImageSource && source is FileImageSource
+					&& ((FileImageSource)oldSource).File == ((FileImageSource)source).File)
+					return;
 
-                Control.Pixbuf = null;
-            }
+				Control.Pixbuf = null;
+			}
 
-            IImageSourceHandler handler;
+			((IImageController)Element).SetIsLoading(true);
 
-            ((IImageController)Element).SetIsLoading(true);
+			var image = await source.GetNativeImageAsync();
 
-            if (source != null
-                && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-            {
-                Pixbuf image;
+			var imageView = Control;
+			if (imageView != null)
+				imageView.Pixbuf = image;
 
-                try
-                {
-                    image = await handler.LoadImageAsync(source);
-                }
-                catch (OperationCanceledException)
-                {
-                    image = null;
-                    Internals.Log.Warning("Image loading", "Image load cancelled");
-                }
-                catch(Exception ex)
-                {
-                    image = null;
-                    Internals.Log.Warning("Image loading", $"Image load failed: {ex}");
-                }
+			if (!_isDisposed)
+			{
+				((IVisualElementController)Element).NativeSizeChanged();
+				((IImageController)Element).SetIsLoading(false);
+			}
+		}
 
-                var imageView = Control;
-                if (imageView != null)
-                    imageView.Pixbuf = image;
+		void SetAspect()
+		{
+			switch (Element.Aspect)
+			{
+				case Aspect.AspectFit:
+					Control.Aspect = Controls.ImageAspect.AspectFit;
+					break;
+				case Aspect.AspectFill:
+					Control.Aspect = Controls.ImageAspect.AspectFill;
+					break;
+				case Aspect.Fill:
+					Control.Aspect = Controls.ImageAspect.Fill;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(Element.Aspect));
+			}
+		}
 
-                if (!_isDisposed)
-                    ((IVisualElementController)Element).NativeSizeChanged();
-            }
-            else
-                Control.Pixbuf = null;
+		void SetOpacity()
+		{
+			var opacity = Element.Opacity;
 
-            if (!_isDisposed)
-                ((IImageController)Element).SetIsLoading(false);
-        }
+			Control.SetAlpha(opacity);
+		}
+	}
 
-        private void SetAspect()
-        {
-            switch (Element.Aspect)
-            {
-                case Aspect.AspectFit:
-                    Control.Aspect = Controls.ImageAspect.AspectFit;
-                    break;
-                case Aspect.AspectFill:
-                    Control.Aspect = Controls.ImageAspect.AspectFill;
-                    break;
-                case Aspect.Fill:
-                    Control.Aspect = Controls.ImageAspect.Fill;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Element.Aspect));
-            }
-        }
+	public interface IImageSourceHandler : IRegisterable
+	{
+		Task<Pixbuf> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken =
+			default(CancellationToken), float scale = 1);
+	}
 
-        private void SetOpacity()
-        {
-            var opacity = Element.Opacity;
+	public sealed class FileImageSourceHandler : IImageSourceHandler
+	{
+		public Task<Pixbuf> LoadImageAsync(
+			ImageSource imagesource, 
+			CancellationToken cancelationToken = default(CancellationToken), 
+			float scale = 1f)
+		{
+			Pixbuf image = null;
+			var filesource = imagesource as FileImageSource;
 
-            Control.SetAlpha(opacity);
-        }
-    }
+			if (filesource != null)
+			{
+				var file = filesource.File;
+				if (!string.IsNullOrEmpty(file))
+				{
+					var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
 
-    public interface IImageSourceHandler : IRegisterable
-    {
-        Task<Pixbuf> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken =
-            default(CancellationToken), float scale = 1);
-    }
+					if (File.Exists(imagePath))
+					{
+						image = new Pixbuf(imagePath);
+					}
+				}
+			}
 
-    public sealed class FileImageSourceHandler : IImageSourceHandler
-    {
-        public Task<Pixbuf> LoadImageAsync(
-            ImageSource imagesource, 
-            CancellationToken cancelationToken = default(CancellationToken), 
-            float scale = 1f)
-        {
-            Pixbuf image = null;
-            var filesource = imagesource as FileImageSource;
+			return Task.FromResult(image);
+		}
+	}
 
-            if (filesource != null)
-            {
-                var file = filesource.File;
-                if (!string.IsNullOrEmpty(file))
-                {
-                    var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
+	public sealed class StreamImagesourceHandler : IImageSourceHandler
+	{
+		public async Task<Pixbuf> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1)
+		{
+			Pixbuf image = null;
 
-                    if (File.Exists(imagePath))
-                    {
-                        image = new Pixbuf(imagePath);
-                    }
-                }
-            }
+			var streamsource = imagesource as StreamImageSource;
+			if (streamsource?.Stream == null) return null;
+			using (
+				var streamImage = await((IStreamImageSource)streamsource)
+				.GetStreamAsync(cancelationToken).ConfigureAwait(false))
+			{
+				if (streamImage != null)
+					image = new Pixbuf(streamImage);
+			}
 
-            return Task.FromResult(image);
-        }
-    }
+			return image;
+		}
+	}
 
-    public sealed class StreamImagesourceHandler : IImageSourceHandler
-    {
-        public async Task<Pixbuf> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1)
-        {
-            Pixbuf image = null;
+	public sealed class UriImageSourceHandler : IImageSourceHandler
+	{
+		public async Task<Pixbuf> LoadImageAsync(
+			ImageSource imagesource,
+			CancellationToken cancelationToken = default(CancellationToken),
+			float scale = 1)
+		{
+			Pixbuf image = null;
 
-            var streamsource = imagesource as StreamImageSource;
-            if (streamsource?.Stream == null) return null;
-            using (
-                var streamImage = await((IStreamImageSource)streamsource)
-                .GetStreamAsync(cancelationToken).ConfigureAwait(false))
-            {
-                if (streamImage != null)
-                    image = new Pixbuf(streamImage);
-            }
+			var imageLoader = imagesource as UriImageSource;
 
-            return image;
-        }
-    }
+			if (imageLoader?.Uri == null)
+				return null;
 
-    public sealed class UriImageSourceHandler : IImageSourceHandler
-    {
-        public async Task<Pixbuf> LoadImageAsync(
-            ImageSource imagesource,
-            CancellationToken cancelationToken = default(CancellationToken),
-            float scale = 1)
-        {
-            Pixbuf image = null;
+			using (Stream streamImage = await imageLoader.GetStreamAsync(cancelationToken))
+			{
+				if (streamImage == null || !streamImage.CanRead)
+				{
+					return null;
+				}
 
-            var imageLoader = imagesource as UriImageSource;
+				image = new Pixbuf(streamImage);
+			}
 
-            if (imageLoader?.Uri == null)
-                return null;
-
-            using (Stream streamImage = await imageLoader.GetStreamAsync(cancelationToken))
-            {
-                if (streamImage == null || !streamImage.CanRead)
-                {
-                    return null;
-                }
-
-                image = new Pixbuf(streamImage);
-            }
-
-            return image;
-        }
-    }
+			return image;
+		}
+	}
 }

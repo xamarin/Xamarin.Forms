@@ -12,6 +12,9 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 35472, "PopAsync during ScrollToAsync throws NullReferenceException")]
 	public class Bugzilla35472 : TestNavigationPage
@@ -60,8 +63,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 			scrollToButton.Clicked += async (sender, args) => {
 				try {
-					// Deliberately not awaited so we can simulate a user navigating back
+#pragma warning disable 4014
+					// Deliberately not awaited so we can simulate a user navigating back before the scroll is finished
 					scrollView.ScrollToAsync (0, 1500, true);
+#pragma warning restore 4014
 					await Navigation.PopAsync ();
 					successLabel.IsVisible = true;
 				} catch (Exception ex) {

@@ -6,21 +6,32 @@ using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.Navigation)]
+	[NUnit.Framework.Category(UITestCategories.ManualReview)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 40005, "Navigation Bar back button does not show when using InsertPageBefore")]
 	public class Bugzilla40005 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
+		public const string GoToPage2 = "Go to Page 2";
+		public const string PageOneLabel = "Page 1";
+		public const string PageTwoLabel = "Page 2";
+		public const string InsertedPageLabel = "Inserted page";
+		public const string TestInstructions = "Click " + GoToPage2 + " and you should still see a back bar button";
+
 		public Bugzilla40005()
 		{
-			Application.Current.MainPage = new NavigationPage(new Page1());
 		}
 
 		protected override void Init()
 		{
+			Application.Current.MainPage = new NavigationPage(new Page1());
 		}
 
 		public class Page1 : ContentPage
@@ -29,29 +40,40 @@ namespace Xamarin.Forms.Controls
 
 			public Page1()
 			{
-				Button btn = new Button() {
-					Text = "Go to Page 2"
+				var btn = new Button()
+				{
+					Text = GoToPage2
 				};
-				btn.Clicked += async (sender, e) => {
+				btn.Clicked += async (sender, e) =>
+				{
 					await Navigation.PushAsync(new Page2());
 				};
 
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = "Page 1"
-					},
-					btn
-				}
+					Children =
+					{
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = PageOneLabel
+						},
+						btn,
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = TestInstructions
+						}
+					}
 				};
 			}
 
 			protected override void OnAppearing()
 			{
 				base.OnAppearing();
-				if(!pageInserted) {
+				if (!pageInserted)
+				{
 					Navigation.InsertPageBefore(new InsertedPage(), this);
 					pageInserted = true;
 				}
@@ -59,30 +81,32 @@ namespace Xamarin.Forms.Controls
 
 			protected override bool OnBackButtonPressed()
 			{
-				Debug.WriteLine("Hardware BackButton Pressed on Page1");
+				Debug.WriteLine($"Hardware BackButton Pressed on {PageOneLabel}");
 				return base.OnBackButtonPressed();
 			}
 		}
-
 
 		public class InsertedPage : ContentPage
 		{
 			public InsertedPage()
 			{
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = "Inserted page"
+					Children =
+					{
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = InsertedPageLabel
+						}
 					}
-				}
 				};
 			}
 
 			protected override bool OnBackButtonPressed()
 			{
-				Debug.WriteLine("Hardware BackButton Pressed on InsertedPage");
+				Debug.WriteLine($"Hardware BackButton Pressed on {InsertedPageLabel}");
 				return base.OnBackButtonPressed();
 			}
 		}
@@ -91,22 +115,37 @@ namespace Xamarin.Forms.Controls
 		{
 			public Page2()
 			{
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = "Page 2"
+					Children =
+					{
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = PageTwoLabel
+						}
 					}
-				}
 				};
 			}
 
 			protected override bool OnBackButtonPressed()
 			{
-				Debug.WriteLine("Hardware BackButton Pressed on Page2");
+				Debug.WriteLine($"Hardware BackButton Pressed on {PageTwoLabel}");
 				return base.OnBackButtonPressed();
 			}
 		}
+
+#if UITEST
+		[Test]
+		public void Bugzilla40005Test()
+		{
+			RunningApp.WaitForElement(q => q.Marked(PageOneLabel));
+			RunningApp.Tap(q => q.Marked(GoToPage2));
+			RunningApp.WaitForElement(q => q.Marked(PageTwoLabel));
+			RunningApp.Back();
+			RunningApp.WaitForElement(q => q.Marked(PageOneLabel));
+		}
+#endif
 	}
 }

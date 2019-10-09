@@ -11,12 +11,16 @@ using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 #if UITEST
 using NUnit.Framework;
 using Xamarin.UITest;
-
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 
+#if UITEST
+	[Category(UITestCategories.DisplayAlert)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1905, "AlertView doesn't scroll when text is to large", PlatformAffected.iOS | PlatformAffected.Android)]
 	public class Issue1905 : ContentPage
@@ -44,6 +48,10 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 
+#if UITEST
+	[Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1905, "Pull to refresh doesn't work if iOS 11 large titles is enabled", PlatformAffected.iOS, NavigationBehavior.PushModalAsync, issueTestNumber: 1)]
 	public class Issue1905LargeTitles : TestNavigationPage
@@ -67,6 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 			lst.RefreshCommand = new Command(async () =>
 			{
 				var newitems = new List<string>();
+				newitems.Add("data refreshed");
 				await Task.Delay(5000);
 				for (int i = 0; i < 1000; i++)
 				{
@@ -90,7 +99,13 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void TestIssue1905RefreshShows()
 		{
+			// wait for test to load
+			RunningApp.WaitForElement("btnRefresh");
 			RunningApp.Screenshot("Should show refresh control");
+
+			// wait for test to finish so it doesn't keep working
+			// in the background and break the next test
+			RunningApp.WaitForElement("data refreshed");
 		}
 #endif
 	}

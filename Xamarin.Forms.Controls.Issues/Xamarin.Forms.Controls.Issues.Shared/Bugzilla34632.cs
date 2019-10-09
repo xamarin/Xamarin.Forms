@@ -74,12 +74,20 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.Tap (q => q.Marked ("btnDismissModal"));
 				RunningApp.Tap (q => q.Marked ("btnMaster"));
 			}
+			else
+			{
+				// Wait for the test to finish loading before exiting otherwise
+				// the next UI test might start running while this is still loading
+				RunningApp.WaitForElement(q => q.Marked("btnModal"));
+			}
 		}
 
 		[TearDown]
-		public void TearDown() 
+		public override void TearDown() 
 		{
 			RunningApp.SetOrientationPortrait ();
+
+			base.TearDown();
 		}
 		#endif
 	}

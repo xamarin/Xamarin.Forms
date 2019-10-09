@@ -1,14 +1,15 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading.Tasks;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
-using System.Threading.Tasks;
+using Uri = System.Uri;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class WebViewRenderer : UIWebView, IVisualElementRenderer, IWebViewDelegate, IEffectControlProvider
+	public class WebViewRenderer : UIWebView, IVisualElementRenderer, IWebViewDelegate, IEffectControlProvider, ITabStop
 	{
 		EventTracker _events;
 		bool _ignoreSourceChanges;
@@ -41,6 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 			WebView.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
 			WebView.GoBackRequested += OnGoBackRequested;
 			WebView.GoForwardRequested += OnGoForwardRequested;
+			WebView.ReloadRequested += OnReloadRequested;
 			Delegate = new CustomWebViewDelegate(this);
 
 			BackgroundColor = UIColor.Clear;
@@ -81,8 +83,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void LoadUrl(string url)
 		{
-			var encodedStringUrl = new NSString(url).CreateStringByAddingPercentEscapes(NSStringEncoding.UTF8);
-			LoadRequest(new NSUrlRequest(new NSUrl(encodedStringUrl)));
+			var uri = new Uri(url);
+			var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
+			var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
+			LoadRequest(new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri)));
 		}
 
 		public override void LayoutSubviews()
@@ -105,6 +109,7 @@ namespace Xamarin.Forms.Platform.iOS
 				WebView.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
 				WebView.GoBackRequested -= OnGoBackRequested;
 				WebView.GoForwardRequested -= OnGoForwardRequested;
+				WebView.ReloadRequested -= OnReloadRequested;
 
 				_tracker?.Dispose();
 				_packager?.Dispose();
@@ -174,6 +179,11 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCanGoBackForward();
 		}
 
+		void OnReloadRequested(object sender, EventArgs eventArgs)
+		{
+			Reload();
+		}
+
 		void UpdateCanGoBackForward()
 		{
 			((IWebViewController)WebView).CanGoBack = CanGoBack;
@@ -210,8 +220,12 @@ namespace Xamarin.Forms.Platform.iOS
 				if (webView.IsLoading)
 					return;
 
-				_renderer._ignoreSourceChanges = true;
 				var url = GetCurrentUrl();
+
+				if (url == $"file://{NSBundle.MainBundle.BundlePath}/")
+					return;
+
+				_renderer._ignoreSourceChanges = true;
 				WebView.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = url });
 				_renderer._ignoreSourceChanges = false;
 
@@ -276,6 +290,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get { return null; }
 		}
+
+		UIView ITabStop.TabStop => this;
 
 		#endregion
 

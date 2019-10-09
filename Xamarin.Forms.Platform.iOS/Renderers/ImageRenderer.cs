@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -27,9 +28,14 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public class ImageRenderer : ViewRenderer<Image, UIImageView>
+	public class ImageRenderer : ViewRenderer<Image, UIImageView>, IImageVisualElementRenderer
 	{
 		bool _isDisposed;
+
+		public ImageRenderer() : base()
+		{
+			ImageElementManager.Init(this);
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -41,6 +47,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UIImage oldUIImage;
 				if (Control != null && (oldUIImage = Control.Image) != null)
 				{
+					ImageElementManager.Dispose(this);
 					oldUIImage.Dispose();
 				}
 			}
@@ -52,19 +59,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override async void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
-			if (Control == null)
-			{
-				var imageView = new UIImageView(RectangleF.Empty);
-				imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-				imageView.ClipsToBounds = true;
-				SetNativeControl(imageView);
-			}
-
 			if (e.NewElement != null)
 			{
-				SetAspect();
-				await TrySetImage(e.OldElement);
-				SetOpacity();
+				if (Control == null)
+				{
+					var imageView = new UIImageView(RectangleF.Empty);
+					imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+					imageView.ClipsToBounds = true;
+					SetNativeControl(imageView);
+				}
+
+				await TrySetImage(e.OldElement as Image);
 			}
 
 			base.OnElementChanged(e);
@@ -73,22 +78,9 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
+
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
-				await TrySetImage();
-			else if (e.PropertyName == Image.IsOpaqueProperty.PropertyName)
-				SetOpacity();
-			else if (e.PropertyName == Image.AspectProperty.PropertyName)
-				SetAspect();
-		}
-
-		void SetAspect()
-		{
-			if (_isDisposed || Element == null || Control == null)
-			{
-				return;
-			}
-
-			Control.ContentMode = Element.Aspect.ToUIViewContentMode();
+				await TrySetImage().ConfigureAwait(false);
 		}
 
 		protected virtual async Task TrySetImage(Image previous = null)
@@ -113,69 +105,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected async Task SetImage(Image oldElement = null)
 		{
-			if (_isDisposed || Element == null || Control == null)
-			{
-				return;
-			}
-
-			var source = Element.Source;
-
-			if (oldElement != null)
-			{
-				var oldSource = oldElement.Source;
-				if (Equals(oldSource, source))
-					return;
-
-				if (oldSource is FileImageSource && source is FileImageSource && ((FileImageSource)oldSource).File == ((FileImageSource)source).File)
-					return;
-
-				Control.Image = null;
-			}
-
-			IImageSourceHandler handler;
-
-			Element.SetIsLoading(true);
-
-			if (source != null &&
-			    (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-			{
-				UIImage uiimage;
-				try
-				{
-					uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-				}
-				catch (OperationCanceledException)
-				{
-					uiimage = null;
-				}
-
-				if (_isDisposed)
-					return;
-
-				var imageView = Control;
-				if (imageView != null)
-					imageView.Image = uiimage;
-
-				((IVisualElementController)Element).NativeSizeChanged();
-			}
-			else
-			{
-				Control.Image = null;
-			}
-
-			Element.SetIsLoading(false);
+			await ImageElementManager.SetImage(this, Element, oldElement).ConfigureAwait(false);
 		}
 
-		void SetOpacity()
-		{
-			if (_isDisposed || Element == null || Control == null)
-			{
-				return;
-			}
+		void IImageVisualElementRenderer.SetImage(UIImage image) => Control.Image = image;
 
-			Control.Opaque = Element.IsOpaque;
-		}
+		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
+
+		UIImageView IImageVisualElementRenderer.GetImage() => Control;
 	}
+
 
 	public interface IImageSourceHandler : IRegisterable
 	{
@@ -246,6 +185,45 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return image;
+		}
+	}
+
+	public sealed class FontImageSourceHandler : IImageSourceHandler
+	{
+		//should this be the default color on the BP for iOS? 
+		readonly Color _defaultColor = Color.White;
+
+		public Task<UIImage> LoadImageAsync(
+			ImageSource imagesource, 
+			CancellationToken cancelationToken = default(CancellationToken), 
+			float scale = 1f)
+		{
+			UIImage image = null;
+			var fontsource = imagesource as FontImageSource;
+			if (fontsource != null)
+			{
+				var font = UIFont.FromName(fontsource.FontFamily ?? string.Empty, (float)fontsource.Size) ??
+					UIFont.SystemFontOfSize((float)fontsource.Size);
+				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
+				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
+				var imagesize = ((NSString)fontsource.Glyph).GetSizeUsingAttributes(attString.GetUIKitAttributes(0, out _));
+				
+				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
+				var ctx = new NSStringDrawingContext();
+				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
+				attString.DrawString(new RectangleF(
+					imagesize.Width / 2 - boundingRect.Size.Width / 2,
+					imagesize.Height / 2 - boundingRect.Size.Height / 2,
+					imagesize.Width,
+					imagesize.Height));
+				image = UIGraphics.GetImageFromCurrentImageContext();
+				UIGraphics.EndImageContext();
+
+				if (iconcolor != _defaultColor)
+					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+			}
+			return Task.FromResult(image);
+
 		}
 	}
 }

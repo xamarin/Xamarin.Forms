@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Windows.Foundation;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Xamarin.Forms.Platform.UAP;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Label;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -25,6 +30,11 @@ namespace Xamarin.Forms.Platform.UWP
 				run.ApplyFont(span.Font);
 #pragma warning restore 618
 
+			if (span.IsSet(Span.TextDecorationsProperty))
+				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
+
+			run.CharacterSpacing = span.CharacterSpacing.ToEm();
+
 			return run;
 		}
 	}
@@ -37,16 +47,20 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _perfectSizeValid;
 		IList<double> _inlineHeights = new List<double>();
 
-		protected override AutomationPeer OnCreateAutomationPeer()
-		{
-			// We need an automation peer so we can interact with this in automated tests
-			if (Control == null)
-			{
-				return new FrameworkElementAutomationPeer(this);
-			}
+		//TODO: We need to revisit this later when we complete the UI Tests for UWP.
+		// Changing the AutomationPeer here prevents the Narrator from functioning properly.
+		// Oddly, it affects more than just the TextBlocks. It seems to break the entire scan mode.
 
-			return new FrameworkElementAutomationPeer(Control);
-		}
+		//protected override AutomationPeer OnCreateAutomationPeer()
+		//{
+		//	// We need an automation peer so we can interact with this in automated tests
+		//	if (Control == null)
+		//	{
+		//		return new FrameworkElementAutomationPeer(this);
+		//	}
+
+		//	return new TextBlockAutomationPeer(Control);
+		//}
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
@@ -70,6 +84,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			rect.Height = childHeight;
 			rect.Width = finalSize.Width;
+
 			Control.Arrange(rect);
 			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return finalSize;
@@ -128,17 +143,22 @@ namespace Xamarin.Forms.Platform.UWP
 				_isInitiallyDefault = Element.IsDefault();
 
 				UpdateText(Control);
+				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
+				UpdateCharacterSpacing(Control);
 				UpdateFont(Control);
 				UpdateLineBreakMode(Control);
+				UpdateMaxLines(Control);
 				UpdateDetectReadingOrderFromContent(Control);
+				UpdateLineHeight(Control);
+				UpdatePadding(Control);
 			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			if (e.IsOneOf(Label.TextProperty,  Label.FormattedTextProperty, Label.TextTypeProperty))
 				UpdateText(Control);
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor(Control);
@@ -146,6 +166,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlign(Control);
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont(Control);
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations(Control);
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing(Control);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -154,7 +178,45 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateDetectReadingOrderFromContent(Control);
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight(Control);
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines(Control);
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding(Control);
+				
 			base.OnElementPropertyChanged(sender, e);
+		}
+
+		void UpdateTextDecorations(TextBlock textBlock)
+		{
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
+
+			var elementTextDecorations = Element.TextDecorations;
+
+			if ((elementTextDecorations & TextDecorations.Underline) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+
+			if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
+
+			//TextDecorations are not updated in the UI until the text changes
+			if (textBlock.Inlines != null && textBlock.Inlines.Count > 0)
+			{
+				for (var i = 0; i < textBlock.Inlines.Count; i++)
+				{
+					var run = (Run)textBlock.Inlines[i];
+					run.Text = run.Text;
+				}
+			}
+			else
+			{
+				textBlock.Text = textBlock.Text;
+			}
+
 		}
 
 		void UpdateAlign(TextBlock textBlock)
@@ -231,20 +293,34 @@ namespace Xamarin.Forms.Platform.UWP
 				case LineBreakMode.HeadTruncation:
 					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
-					textBlock.TextWrapping = TextWrapping.NoWrap;
+					DetermineTruncatedTextWrapping(textBlock);
 					break;
 				case LineBreakMode.TailTruncation:
 					textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
-					textBlock.TextWrapping = TextWrapping.NoWrap;
+					DetermineTruncatedTextWrapping(textBlock);
 					break;
 				case LineBreakMode.MiddleTruncation:
 					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
-					textBlock.TextWrapping = TextWrapping.NoWrap;
+					DetermineTruncatedTextWrapping(textBlock);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
+
+		void UpdateCharacterSpacing(TextBlock textBlock)
+		{
+			textBlock.CharacterSpacing = Element.CharacterSpacing.ToEm();
+		}
+
+
+		void DetermineTruncatedTextWrapping(TextBlock textBlock)
+		{
+			if (Element.MaxLines > 1)
+				textBlock.TextWrapping = TextWrapping.Wrap;
+			else
+				textBlock.TextWrapping = TextWrapping.NoWrap;
 		}
 
 		void UpdateText(TextBlock textBlock)
@@ -254,6 +330,20 @@ namespace Xamarin.Forms.Platform.UWP
 			if (textBlock == null)
 				return;
 
+			switch (Element.TextType)
+			{
+				case TextType.Html:
+					UpdateTextHtml(textBlock);
+					break;
+
+				default:
+					UpdateTextPlainText(textBlock);
+					break;
+			}
+		}
+
+		void UpdateTextPlainText(TextBlock textBlock)
+		{
 			Label label = Element;
 			if (label != null)
 			{
@@ -283,6 +373,27 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		void UpdateTextHtml(TextBlock textBlock)
+		{
+			var text = Element.Text ?? String.Empty;
+
+			// Just in case we are not given text with elements.
+			var modifiedText = string.Format("<div>{0}</div>", text);
+			modifiedText = Regex.Replace(modifiedText, "<br>", "<br></br>", RegexOptions.IgnoreCase);
+			// reset the text because we will add to it.
+			Control.Inlines.Clear();
+			try
+			{
+				var element = XElement.Parse(modifiedText);
+				LabelHtmlHelper.ParseText(element, Control.Inlines, Element);
+			}
+			catch (Exception)
+			{
+				// if anything goes wrong just show the html
+				textBlock.Text = Windows.Data.Html.HtmlUtilities.ConvertToText(Element.Text);
+			}
+		}
+
 		void UpdateDetectReadingOrderFromContent(TextBlock textBlock)
 		{
 			if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
@@ -298,15 +409,36 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void UpdateLineHeight(TextBlock textBlock) 
+		void UpdateLineHeight(TextBlock textBlock)
 		{
 			if (textBlock == null)
 				return;
-			
+
 			if (Element.LineHeight >= 0)
 			{
 				textBlock.LineHeight = Element.LineHeight * textBlock.FontSize;
 			}
+		}
+
+		void UpdateMaxLines(TextBlock textBlock)
+		{
+			if (Element.MaxLines >= 0)
+			{
+				textBlock.MaxLines = Element.MaxLines;
+			}
+			else
+			{
+				textBlock.MaxLines = 0;
+			}
+		}
+
+		void UpdatePadding(TextBlock textBlock)
+		{
+			textBlock.Padding = new WThickness(
+					Element.Padding.Left,
+					Element.Padding.Top,
+					Element.Padding.Right,
+					Element.Padding.Bottom);
 		}
 	}
 }

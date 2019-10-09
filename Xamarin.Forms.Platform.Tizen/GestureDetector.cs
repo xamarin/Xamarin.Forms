@@ -11,16 +11,14 @@ namespace Xamarin.Forms.Platform.Tizen
 {
 	internal class GestureDetector
 	{
-		IDictionary<EGestureType, List<GestureHandler>> _handlerCache = new Dictionary<EGestureType, List<GestureHandler>>();
+		readonly IDictionary<EGestureType, List<GestureHandler>> _handlerCache = new Dictionary<EGestureType, List<GestureHandler>>();
 
 		readonly IVisualElementRenderer _renderer;
 		GestureLayer _gestureLayer;
 		double _doubleTapTime = 0;
 		double _longTapTime = 0;
-		int _horizontalSwipeTime = 0;
-		int _verticalSwipeTime = 0;
 		bool _inputTransparent = false;
-		bool _isEnabled = true;
+		bool _isEnabled;
 
 		View View => _renderer.Element as View;
 
@@ -74,7 +72,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				foreach (var handler in handlers)
 				{
-					(handler as GestureHandler).PropertyChanged -= OnGestureRecognizerPropertyChanged;
+					handler.PropertyChanged -= OnGestureRecognizerPropertyChanged;
 				}
 			}
 			_handlerCache.Clear();
@@ -267,9 +265,35 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (timeout > 0)
 				_gestureLayer.FlickTimeLimit = (int)(timeout * 1000);
-			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Start, (data) => { OnGestureStarted(type, data); });
-			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Move, (data) => { OnGestureMoved(type, data); });
-			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.End, (data) => { OnGestureCompleted(type, data); });
+
+			// Task to correct wrong coordinates information when applying EvasMap(Xamarin ex: Translation, Scale, Rotate property)
+			// Always change to the absolute coordinates of the pointer.
+			int startX = 0;
+			int startY = 0;
+			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Start, (data) =>
+			{
+				startX = _gestureLayer.EvasCanvas.Pointer.X;
+				startY = _gestureLayer.EvasCanvas.Pointer.Y;
+				data.X1 = startX;
+				data.Y1 = startY;
+				OnGestureStarted(type, data);
+			});
+			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Move, (data) =>
+			{
+				data.X1 = startX;
+				data.Y1 = startY;
+				data.X2 = _gestureLayer.EvasCanvas.Pointer.X;
+				data.Y2 = _gestureLayer.EvasCanvas.Pointer.Y;
+				OnGestureMoved(type, data);
+			});
+			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.End, (data) =>
+			{
+				data.X1 = startX;
+				data.Y1 = startY;
+				data.X2 = _gestureLayer.EvasCanvas.Pointer.X;
+				data.Y2 = _gestureLayer.EvasCanvas.Pointer.Y;
+				OnGestureCompleted(type, data);
+			});
 			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Abort, (data) => { OnGestureCanceled(type, data); });
 		}
 
@@ -441,34 +465,6 @@ namespace Xamarin.Forms.Platform.Tizen
 				foreach (var handler in cache[type])
 				{
 					if ((handler.Timeout * 1000) <= _longTapTime)
-						(handler as IGestureController)?.SendCompleted(View, data);
-					else
-						(handler as IGestureController)?.SendCanceled(View, data);
-				}
-			}
-		}
-
-		void OnFlickStarted(EGestureType type, object data)
-		{
-			var lineData = (GestureLayer.LineData)data;
-			_horizontalSwipeTime = Convert.ToInt32(lineData.HorizontalSwipeTimestamp);
-			_verticalSwipeTime = Convert.ToInt32(lineData.VerticalSwipeTimestamp);
-			OnGestureStarted(type, data);
-		}
-
-		void OnFlickCompleted(EGestureType type, object data)
-		{
-			var lineData = (GestureLayer.LineData)data;
-			_horizontalSwipeTime = Convert.ToInt32(lineData.HorizontalSwipeTimestamp - _horizontalSwipeTime);
-			_verticalSwipeTime = Convert.ToInt32(lineData.VerticalSwipeTimestamp - _verticalSwipeTime);
-			var cache = _handlerCache;
-
-			if (cache.ContainsKey(type))
-			{
-				foreach (var handler in cache[type])
-				{
-					if ((handler.Timeout * 1000) >= _horizontalSwipeTime ||
-						(handler.Timeout * 1000) >= _verticalSwipeTime)
 						(handler as IGestureController)?.SendCompleted(View, data);
 					else
 						(handler as IGestureController)?.SendCanceled(View, data);

@@ -13,6 +13,7 @@ using Xamarin.Forms.Xaml;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
 using Mono.Cecil.Mdb;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -24,25 +25,23 @@ namespace Xamarin.Forms.Build.Tasks
 		public string DependencyPaths { get; set; }
 		public string ReferencePath { get; set; }
 		[Obsolete("this is no longer used")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public int Verbosity { get; set; }
 		public bool DebugSymbols { get; set; }
 		public string DebugType { get; set; }
 
-		TaskLoggingHelper _log;
+		protected TaskLoggingHelper LoggingHelper { get; }
 
 		internal XamlTask()
 		{
-			_log = new TaskLoggingHelper(this);
+			LoggingHelper = new TaskLoggingHelper(this);
 		}
 
 		public IBuildEngine BuildEngine { get; set; }
 		public ITaskHost HostObject { get; set; }
 
-		protected Logger Logger { get; set; }
-
 		public bool Execute()
 		{
-			Logger = new Logger(_log);
 			IList<Exception> _;
 			return Execute(out _);
 		}

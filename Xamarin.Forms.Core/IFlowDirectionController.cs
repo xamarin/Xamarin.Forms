@@ -6,6 +6,6 @@ namespace Xamarin.Forms
 
 		double Width { get; }
 
-		void NotifyFlowDirectionChanged();
+		bool ApplyEffectiveFlowDirectionToChildContainer { get; }
 	}
 }

@@ -8,7 +8,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Issue (IssueTracker.Bugzilla, 29017, "Pin clicked does not work on iOS maps")]
 	public class Issue29017 : TestContentPage // or TestMasterDetailPage, etc ...
@@ -31,9 +31,10 @@ namespace Xamarin.Forms.Controls
 					new Button {
 						Text = "Add pins",
 						Command = new Command (() => {
-
 							foreach (var pin in map.Pins) {
+#pragma warning disable CS0618
 								pin.Clicked -= PinClicked;
+#pragma warning restore CS0618
 							}
 
 							map.Pins.Clear ();
@@ -54,8 +55,9 @@ namespace Xamarin.Forms.Controls
 									Type = PinType.Place,
 									Position = new Position (map.VisibleRegion.Center.Latitude + lat, map.VisibleRegion.Center.Longitude + lng)
 								};
-
+#pragma warning disable CS0618
 								pin.Clicked += PinClicked;
+#pragma warning restore CS0618
 								map.Pins.Add (pin);
 							}
 						})

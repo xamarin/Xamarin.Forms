@@ -27,6 +27,14 @@ namespace Xamarin.Forms.Controls
 #pragma warning restore 618
 
 #pragma warning disable 618
+			var namedSizeMediumUnderlineContainer = new ViewContainer<Label>(Test.Label.TextDecorationUnderline, new Label { Text = "Medium Underlined Font", Font = Font.SystemFontOfSize(NamedSize.Medium), TextDecorations = TextDecorations.Underline });
+#pragma warning restore 618
+
+#pragma warning disable 618
+			var namedSizeMediumStrikeContainer = new ViewContainer<Label>(Test.Label.TextDecorationStrike, new Label { Text = "Medium StrikeThrough Font", Font = Font.SystemFontOfSize(NamedSize.Medium), TextDecorations = TextDecorations.Strikethrough });
+#pragma warning restore 618
+
+#pragma warning disable 618
 			var namedSizeLargeContainer = new ViewContainer<Label> (Test.Label.FontNamedSizeLarge, new Label { Text = "Large Font", Font = Font.SystemFontOfSize (NamedSize.Large) });
 #pragma warning restore 618
 
@@ -53,7 +61,7 @@ namespace Xamarin.Forms.Controls
 
 			var formattedTextContainer = new ViewContainer<Label>(Test.Label.FormattedText, new Label { FormattedText = formattedString });
 
-			const string longText = "Lorem ipsum dolor sit amet, cu mei malis petentium, dolor tempor delicata no qui, eos ex vitae utinam vituperata. Utroque habemus philosophia ut mei, doctus placerat eam cu. An inermis scaevola pro, quo legimus deleniti ei, equidem docendi urbanitas ea eum. Saepe doctus ut pri. Nec ex wisi dolorem. Duo dolor vituperatoribus ea. Id purto instructior per. Nec partem accusamus ne. Qui ad saepe accumsan appellantur, duis omnesque has et, vim nihil nemore scaevola ne. Ei populo appetere recteque cum, meliore splendide appellantur vix id.";
+			const string longText = "Lorem ipsum dolor sit amet, cu mei malis petentium, dolor tempor delicata no qui, eos ex vitae utinam vituperata. Utroque habemus philosophia ut mei, doctus placerat eam cu. An inermis scaevola pro, quo legimus deleniti ei, equidem docendi urbanitas ea eum. Saepe doctus ut pri. Nec ex wisi dolorem. Duo dolor vituperatoribus ea. Id purto instructior per. Nec partem accusamus ne. Qui ad saepe accumsan appellantur, duis omnesque has et, vim nihil nemore scaevola ne. Ei populo appetere recteque xum, meliore splendide appellantur vix id.";
 			var lineBreakModeCharacterWrapContainer = new ViewContainer<Label> (Test.Label.LineBreakModeCharacterWrap, new Label { Text = longText, LineBreakMode = LineBreakMode.CharacterWrap });
 			var lineBreakModeHeadTruncationContainer = new ViewContainer<Label> (Test.Label.LineBreakModeHeadTruncation, new Label { Text = longText, LineBreakMode = LineBreakMode.HeadTruncation });
 			var lineBreakModeMiddleTruncationContainer = new ViewContainer<Label> (Test.Label.LineBreakModeMiddleTruncation, new Label { Text = longText, LineBreakMode = LineBreakMode.MiddleTruncation });
@@ -99,7 +107,8 @@ namespace Xamarin.Forms.Controls
 					Text = "VerticalTextAlignment Start",
  					VerticalTextAlignment = TextAlignment.Center,
 					HeightRequest = alignmentTestsHeightRequest, 
-					WidthRequest = alignmentTestsWidthRequest
+					WidthRequest = alignmentTestsWidthRequest,
+					BackgroundColor = Color.Pink
 				}
 			);
 
@@ -108,7 +117,8 @@ namespace Xamarin.Forms.Controls
 					Text = "VerticalTextAlignment End",
  					VerticalTextAlignment = TextAlignment.End,
 					HeightRequest = alignmentTestsHeightRequest, 
-					WidthRequest = alignmentTestsWidthRequest
+					WidthRequest = alignmentTestsWidthRequest,
+					BackgroundColor = Color.Pink
 				}
 			);
 
@@ -117,7 +127,8 @@ namespace Xamarin.Forms.Controls
 					Text = "VerticalTextAlignment Start",
  					VerticalTextAlignment = TextAlignment.Start,
 					HeightRequest = alignmentTestsHeightRequest, 
-					WidthRequest = alignmentTestsWidthRequest
+					WidthRequest = alignmentTestsWidthRequest,
+					BackgroundColor = Color.Pink
 				}
 			);
 
@@ -149,8 +160,121 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
+			var maxlinesContainer = new ViewContainer<Label>(Test.Label.MaxLines,
+				new Label {
+					Text = longText,
+					MaxLines = 2
+				}
+			);
+
+			var maxlinesCharWrapContainer = new ViewContainer<Label>(Test.Label.MaxLines,
+				new Label
+				{
+					Text = longText,
+					MaxLines = 2,
+					LineBreakMode = LineBreakMode.CharacterWrap
+				}
+			);
+
+			var maxlinesHeadTruncContainer = new ViewContainer<Label>(Test.Label.MaxLines,
+				new Label
+				{
+					Text = longText,
+					MaxLines = 2,
+					LineBreakMode = LineBreakMode.HeadTruncation
+				}
+			);
+
+			var maxlinesMiddleTruncContainer = new ViewContainer<Label>(Test.Label.MaxLines,
+				new Label
+				{
+					Text = longText,
+					MaxLines = 2,
+					LineBreakMode = LineBreakMode.MiddleTruncation
+				}
+			);
+
+			var maxlinesNoWrapContainer = new ViewContainer<Label>(Test.Label.MaxLines,
+				new Label
+				{
+					Text = longText,
+					MaxLines = 2,
+					LineBreakMode = LineBreakMode.NoWrap
+				}
+			);
+
+			var maxlinesTailTruncContainer = new ViewContainer<Label>(Test.Label.MaxLines,
+				new Label
+				{
+					Text = longText,
+					MaxLines = 2,
+					LineBreakMode = LineBreakMode.TailTruncation
+				}
+			);
+
+			var maxlinesWordWrapContainer = new ViewContainer<Label>(Test.Label.MaxLines,
+				new Label
+				{
+					Text = longText,
+					MaxLines = 2,
+					LineBreakMode = LineBreakMode.WordWrap
+				}
+			);
+
+			var formattedString2 = new FormattedString();
+			formattedString2.Spans.Add(new Span { BackgroundColor = Color.Red, TextColor = Color.Olive, Text = "Span 1 " });
+			var span2 = new Span { BackgroundColor = Color.Black, TextColor = Color.White, Text = "Span 2 (tap me) " };
+			span2.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(() => DisplayAlert("Congratulations!", "This is a tapped span", "ok")) });
+			formattedString2.Spans.Add(span2);
+			formattedString2.Spans.Add(new Span { BackgroundColor = Color.Pink, TextColor = Color.Purple, Text = "Span 3" });
+
+			var paddingContainer = new ViewContainer<Label>(Test.Label.Padding,
+				new Label
+				{
+					FormattedText = formattedString2,
+					BackgroundColor = Color.Yellow,
+					Padding = new Thickness(40, 20)
+				}
+			);
+			
+			var htmlLabelContainer = new ViewContainer<Label>(Test.Label.TextType,
+				new Label
+				{
+					Text = "<h1>Hello world!</h1>",
+					TextType = TextType.Html
+				});
+
+			var htmlLabelMultipleLinesContainer = new ViewContainer<Label>(Test.Label.TextType,
+				new Label
+				{
+					Text = "<h1>Hello world!</h1><p>Lorem <strong>ipsum</strong> bla di bla <i>blabla</i> blablabl&nbsp;ablabla & blablablablabl ablabl ablablabl ablablabla blablablablablablab lablablabla blablab lablablabla blablabl ablablablab lablabla blab lablablabla blablab lablabla blablablablab lablabla blablab lablablabl ablablabla blablablablablabla blablabla</p>",
+					TextType = TextType.Html,
+					MaxLines = 3
+				});
+
+			var toggleLabel = new Label
+			{
+				TextType = TextType.Html,
+				Text = "<h1 style=\"color: red;\">Hello world!</h1><p>Lorem <strong>ipsum</strong></p>"
+				
+			};
+
+			var gestureRecognizer = new TapGestureRecognizer();
+
+			gestureRecognizer.Tapped += (s, a) =>
+			{
+				toggleLabel.TextType = toggleLabel.TextType == TextType.Html ? TextType.Text : TextType.Html;
+			};
+
+			toggleLabel.GestureRecognizers.Add(gestureRecognizer);
+
+			var toggleHtmlPlainTextLabelContainer = new ViewContainer<Label>(Test.Label.TextType,
+				toggleLabel);
+
 			Add (namedSizeMediumBoldContainer);
 			Add (namedSizeMediumItalicContainer);
+			Add (namedSizeMediumUnderlineContainer);
+			Add (namedSizeMediumStrikeContainer);
 			Add (namedSizeLargeContainer);
 			Add (namedSizeMediumContainer);
 			Add (namedSizeMicroContainer);
@@ -174,6 +298,17 @@ namespace Xamarin.Forms.Controls
 			Add (styleSubtitleContainer);
 			Add (styleBodyContainer);
 			Add (styleCaptionContainer);
+			Add (maxlinesContainer);
+			Add (maxlinesCharWrapContainer);
+			Add (maxlinesHeadTruncContainer);
+			Add (maxlinesMiddleTruncContainer);
+			Add (maxlinesNoWrapContainer);
+			Add (maxlinesTailTruncContainer);
+			Add (maxlinesWordWrapContainer);
+			Add(paddingContainer);
+			Add (htmlLabelContainer);
+			Add (htmlLabelMultipleLinesContainer);
+			Add (toggleHtmlPlainTextLabelContainer);
 		}
 	}
 }

@@ -7,6 +7,8 @@ using Xamarin.Forms;
 
 #if __ANDROID__
 using Xamarin.Forms.Platform.Android;
+#elif TIZEN4_0
+using Xamarin.Forms.Platform.Tizen;
 #elif __IOS__
 using Xamarin.Forms.Platform.iOS;
 #endif
@@ -20,7 +22,7 @@ namespace Xamarin.Forms.Platform
 		}
 	}
 
-#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP
+#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
 	[RenderWith(typeof(BoxRenderer))]
 #else
 	[RenderWith (typeof(BoxViewRenderer))]
@@ -49,12 +51,24 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (ButtonRenderer))]
 	internal class _ButtonRenderer { }
 
+#if __ANDROID__
+	[RenderWith(typeof(ImageButtonRenderer))]
+#elif !TIZEN4_0
+	[RenderWith(typeof(ImageButtonRenderer))]
+#endif
+	internal class _ImageButtonRenderer { }
+
 	[RenderWith (typeof (TableViewRenderer))]
 	internal class _TableViewRenderer { }
 
 	[RenderWith (typeof (ListViewRenderer))]
 	internal class _ListViewRenderer { }
-	
+#if !TIZEN4_0	
+	[RenderWith (typeof (CollectionViewRenderer))]
+	internal class _CollectionViewRenderer { }
+	[RenderWith (typeof (CarouselViewRenderer))]
+	internal class _CarouselViewRenderer { }
+#endif
 	[RenderWith (typeof (SliderRenderer))]
 	internal class _SliderRenderer { }
 
@@ -91,25 +105,35 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (FrameRenderer))]
 	internal class _FrameRenderer { }
 
-#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP
-	[RenderWith (typeof (NavigationMenuRenderer))]
-	internal class _NavigationMenuRenderer { }
+#if __ANDROID__
+	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
+	// once previewer switches to appcompat then we can remove this
+	[RenderWith(typeof(CheckBoxDesignerRenderer))]
+	internal class _CheckBoxRenderer { }
+#endif
 
+#if __IOS__
+	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
+	// once previewer switches to appcompat then we can remove this
+	[RenderWith(typeof(CheckBoxRenderer))]
+	internal class _CheckBoxRenderer { }
+#endif
+
+#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
 	[RenderWith (typeof (OpenGLViewRenderer))]
 #else
 	[RenderWith (null)]
 #endif
-	
 	internal class _OpenGLViewRenderer { }
 
-#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP
+#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
 	[RenderWith (typeof (TabbedRenderer))]
 #else
 	[RenderWith (typeof (TabbedPageRenderer))]
 #endif
 	internal class _TabbedPageRenderer { }
 
-#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP
+#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
 	[RenderWith (typeof (NavigationRenderer))]
 #else
 	[RenderWith (typeof (NavigationPageRenderer))]
@@ -122,12 +146,18 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (PageRenderer))]
 	internal class _PageRenderer { }
 
-#if !__IOS__
+#if !__IOS__ && !TIZEN4_0
 	[RenderWith (typeof (MasterDetailRenderer))]
+#elif TIZEN4_0
+	[RenderWith (typeof(MasterDetailPageRenderer))]
 #else
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
 	internal class _MasterDetailPageRenderer { }
+#if !TIZEN4_0
+	[RenderWith(typeof(RefreshViewRenderer))]
+#endif
+	internal class _RefreshViewRenderer { }
 }
 
 

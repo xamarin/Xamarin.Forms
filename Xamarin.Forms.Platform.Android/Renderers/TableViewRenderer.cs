@@ -3,17 +3,23 @@ using Android.Content;
 using Android.Views;
 using AView = Android.Views.View;
 using AListView = Android.Widget.ListView;
+using System.ComponentModel;
+using Android.Support.V4.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class TableViewRenderer : ViewRenderer<TableView, AListView>
 	{
+		TableViewModelRenderer _adapter;
+		bool _disposed;
+
 		public TableViewRenderer(Context context) : base(context)
 		{
 			AutoPackage = false;
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use TableViewRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public TableViewRenderer()
 		{
 			AutoPackage = false;
@@ -50,14 +56,41 @@ namespace Xamarin.Forms.Platform.Android
 
 			TableView view = e.NewElement;
 
-			TableViewModelRenderer source = GetModelRenderer(listView, view);
-			listView.Adapter = source;
+			_adapter = GetModelRenderer(listView, view);
+			listView.Adapter = _adapter;
+		}
+		protected override void OnAttachedToWindow()
+		{
+			base.OnAttachedToWindow();
+
+			if (Forms.IsLollipopOrNewer && Control != null)
+				Control.NestedScrollingEnabled = (Parent.GetParentOfType<NestedScrollView>() != null);
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			if(disposing)
-				Control?.Adapter?.Dispose();
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				// Unhook the adapter from the ListView before disposing of it
+				if (Control != null)
+				{
+					Control.Adapter = null;
+				}
+
+				if (_adapter != null)
+				{
+					_adapter.Dispose();
+					_adapter = null;
+				}
+ 			} 
+
 
 			base.Dispose(disposing);
 		}

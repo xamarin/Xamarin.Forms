@@ -13,6 +13,32 @@ namespace Xamarin.Forms.Core.UnitTests
 			s_count++;
 		}
 
+		internal class TestSource
+		{
+			public int Count = 0;
+			public TestEventSource EventSource { get; set; }
+			public TestSource()
+			{
+				EventSource = new TestEventSource();
+				EventSource.TestEvent += EventSource_TestEvent;
+			}
+			public void Clean()
+			{
+				EventSource.TestEvent -= EventSource_TestEvent;
+			}
+
+			public void Fire()
+			{
+				EventSource.FireTestEvent();
+			}
+
+
+			void EventSource_TestEvent(object sender, EventArgs e)
+			{
+				Count++;
+			}
+		}
+
 		internal class TestEventSource
 		{
 			readonly WeakEventManager _weakEventManager;
@@ -29,8 +55,8 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			internal event EventHandler TestEvent
 			{
-				add { _weakEventManager.AddEventHandler(nameof(TestEvent), value); }
-				remove { _weakEventManager.RemoveEventHandler(nameof(TestEvent), value); }
+				add { _weakEventManager.AddEventHandler(value); }
+				remove { _weakEventManager.RemoveEventHandler(value); }
 			}
 
 			void OnTestEvent()
@@ -56,21 +82,34 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void AddHandlerWithEmptyEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
-			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler("", (sender, args) => { }));
+			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler((sender, args) => { }, ""));
 		}
 
 		[Test]
 		public void AddHandlerWithNullEventHandlerThrowsException()
 		{
 			var wem = new WeakEventManager();
-			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler("test", null));
+			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler(null, "test"));
 		}
 
 		[Test]
 		public void AddHandlerWithNullEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
-			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler(null, (sender, args) => { }));
+			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler((sender, args) => { }, null));
+		}
+
+		[Test]
+		public void CanRemoveEventHandler()
+		{
+			var source = new TestSource();
+			int beforeRun = source.Count;
+			source.Fire();
+
+			Assert.IsTrue(source.Count == 1);
+			source.Clean();
+			source.Fire();
+			Assert.IsTrue(source.Count == 1);
 		}
 
 		[Test]
@@ -125,29 +164,44 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void RemoveHandlerWithEmptyEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
-			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler("", (sender, args) => { }));
+			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler((sender, args) => { }, ""));
 		}
 
 		[Test]
 		public void RemoveHandlerWithNullEventHandlerThrowsException()
 		{
 			var wem = new WeakEventManager();
-			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler("test", null));
+			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler(null, "test"));
 		}
 
 		[Test]
 		public void RemoveHandlerWithNullEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
-			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler(null, (sender, args) => { }));
+			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler((sender, args) => { }, null));
 		}
 
 		[Test]
 		public void RemovingNonExistentHandlersShouldNotThrow()
 		{
 			var wem = new WeakEventManager();
-			wem.RemoveEventHandler("fake", (sender, args) => { });
-			wem.RemoveEventHandler("alsofake", Handler);
+			wem.RemoveEventHandler((sender, args) => { }, "fake");
+			wem.RemoveEventHandler(Handler, "alsofake");
+		}
+
+		[Test]
+		public void RemoveHandlerWithMultipleSubscriptionsRemovesOne()
+		{
+			int beforeRun = s_count;
+
+			var source = new TestEventSource();
+			source.TestEvent += Handler;
+			source.TestEvent += Handler;
+			source.TestEvent -= Handler;
+
+			source.FireTestEvent();
+
+			Assert.AreEqual (beforeRun + 1, s_count);
 		}
 
 		[Test]

@@ -30,7 +30,9 @@ namespace Xamarin.Forms.Platform.WPF
 
 		bool _invalidateArrangeNeeded;
 		bool _isPanning;
+#pragma warning disable 0414 // The private field 'field' is assigned but its value is never used
 		bool _isPinching;
+#pragma warning restore 0414
 
 		bool _touchFrameReportedEventSet;
 		int _touchPoints = 1;
@@ -273,22 +275,21 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				Children = new TransformCollection()
 				{
-					new ScaleTransform
+					new RotateTransform()
 					{
-						ScaleX = scale,
-						ScaleY = scale
+						CenterX = anchorX,
+						CenterY = anchorY,
+						Angle = Element.Rotation
 					},
 					new TranslateTransform()
 					{
 						X = offsetX,
 						Y = offsetY
 					},
-					new RotateTransform()
+					new ScaleTransform
 					{
-
-						CenterX = anchorX,
-						CenterY = anchorY,
-						Angle = Element.Rotation,
+						ScaleX = scale,
+						ScaleY = scale
 					}
 				}
 			};

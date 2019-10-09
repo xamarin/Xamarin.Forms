@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -17,6 +18,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		IVisualElementRenderer _footerRenderer;
 
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
+
+		bool? _defaultHorizontalScrollVisibility;
+		bool? _defaultVerticalScrollVisibility;
 
 		public const int DefaultRowHeight = 44;
 
@@ -37,23 +41,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && !_disposed)
-			{
-				_disposed = true;
+			if (_disposed)
+				return;
 
-				var viewsToLookAt = new Stack<NSView>(Subviews);
-				while (viewsToLookAt.Count > 0)
-				{
-					var view = viewsToLookAt.Pop();
-					var viewCellRenderer = view as ViewCellNSView;
-					if (viewCellRenderer != null)
-						viewCellRenderer.Dispose();
-					else
-					{
-						foreach (var child in view.Subviews)
-							viewsToLookAt.Push(child);
-					}
-				}
+			if (disposing)
+			{
+				foreach (NSView subview in Subviews)
+					DisposeSubviews(subview);
 
 				if (Element != null)
 				{
@@ -61,19 +55,51 @@ namespace Xamarin.Forms.Platform.MacOS
 					templatedItems.CollectionChanged -= OnCollectionChanged;
 					templatedItems.GroupedCollectionChanged -= OnGroupedCollectionChanged;
 				}
-			}
 
-			if (disposing)
-			{
-				ClearHeader();
+				if (_dataSource != null)
+				{
+					_dataSource.Dispose();
+					_dataSource = null;
+				}
+
+				if (_headerRenderer != null)
+				{
+					_headerRenderer.Element?.DisposeModalAndChildRenderers();
+					_headerRenderer = null;
+				}
 				if (_footerRenderer != null)
 				{
-					Platform.DisposeModelAndChildrenRenderers(_footerRenderer.Element);
+					_footerRenderer.Element?.DisposeModalAndChildRenderers();
 					_footerRenderer = null;
 				}
 			}
 
+			_disposed = true;
+
+
 			base.Dispose(disposing);
+		}
+
+		void DisposeSubviews(NSView view)
+		{
+			var ver = view as IVisualElementRenderer;
+
+			if (ver == null)
+			{
+				// VisualElementRenderers should implement their own dispose methods that will appropriately dispose and remove their child views.
+				// Attempting to do this work twice could cause a SIGSEGV (only observed in iOS8), so don't do this work here.
+				// Non-renderer views, such as separator lines, etc., can be removed here.
+
+				if (view is NSClipView)
+					return;
+
+				foreach (NSView subView in view.Subviews)
+					DisposeSubviews(subView);
+
+				view.RemoveFromSuperview();
+			}
+
+			view.Dispose();
 		}
 
 		protected override void SetBackgroundColor(Color color)
@@ -105,7 +131,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					{
 						AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable,
 						DocumentView = _table = CreateNSTableView(e.NewElement),
-						HasVerticalScroller = true
+						HasVerticalScroller = true,
+						DrawsBackground = false,
 					};
 					SetNativeControl(scroller);
 				}
@@ -124,10 +151,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
+				UpdateVerticalScrollBarVisibility();
+				UpdateHorizontalScrollBarVisibility();
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
-					_dataSource.OnItemSelected(null, new SelectedItemChangedEventArgs(selected));
+					_dataSource.OnItemSelected(null, new SelectedItemChangedEventArgs(selected, templatedItems.GetGlobalIndexOfItem(selected)));
 			}
 
 			base.OnElementChanged(e);
@@ -155,6 +184,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateFooter();
 			else if (e.PropertyName == "RefreshAllowed")
 				UpdatePullToRefreshEnabled();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibility();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -220,7 +253,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			_table.HeaderView = null;
 			if (_headerRenderer == null)
 				return;
-			Platform.DisposeModelAndChildrenRenderers(_headerRenderer.Element);
+			_headerRenderer.Element.DisposeModalAndChildRenderers();
 			_headerRenderer = null;
 		}
 
@@ -315,14 +348,115 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 		}
 
-		//TODO: Implement ScrollTo
 		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
 		{
+			var templatedItems = TemplatedItemsView.TemplatedItems;
+			var scrollArgs = (ITemplatedItemsListScrollToRequestedEventArgs)e;
+
+			var row = templatedItems?.GetGlobalIndexOfItem(scrollArgs.Item) ?? -1;
+			if (row == -1)
+				return;
+
+			var rowRect = _table.RectForRow(row);
+			var rowHeight = rowRect.Height;
+			var clipView = _table.Superview as NSClipView;
+			var clipViewHeight = clipView.Frame.Height;
+			var scrollToPosition = e.Position;
+
+			if (scrollToPosition == ScrollToPosition.MakeVisible)
+			{
+				var topVisibleY = clipView.Bounds.Y;
+				var bottomVisibleY = clipView.Bounds.Y + clipViewHeight - rowHeight;
+
+				if (topVisibleY > rowRect.Y)
+				{
+					scrollToPosition = ScrollToPosition.Start;
+				}
+				else if (bottomVisibleY < rowRect.Y)
+				{
+					scrollToPosition = ScrollToPosition.End;
+				}
+				else
+				{
+					return;
+				}
+			}
+
+			nfloat y = 0;
+			var scrollOrigin = rowRect.Location;
+
+			if (scrollToPosition == ScrollToPosition.Center)
+			{
+				y = (scrollOrigin.Y - clipViewHeight / 2) + rowHeight / 2;
+			}
+			else if (scrollToPosition == ScrollToPosition.End)
+			{
+				y = scrollOrigin.Y - clipViewHeight + rowHeight;
+			}
+			else
+			{
+				y = scrollOrigin.Y;
+			}
+
+			scrollOrigin.Y = y;
+
+			if (e.ShouldAnimate)
+			{
+				((NSView)clipView.Animator).SetBoundsOrigin(scrollOrigin);
+			}
+			else
+			{
+				clipView.SetBoundsOrigin(scrollOrigin);
+			}
 		}
 
 		//TODO: Implement Footer
 		void UpdateFooter()
 		{
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			if (_table?.EnclosingScrollView != null)
+			{
+				if (_defaultVerticalScrollVisibility == null)
+					_defaultVerticalScrollVisibility = _table.EnclosingScrollView.HasVerticalScroller;
+
+				switch (Element.VerticalScrollBarVisibility)
+				{
+					case (ScrollBarVisibility.Always):
+						_table.EnclosingScrollView.HasVerticalScroller = true;
+						break;
+					case (ScrollBarVisibility.Never):
+						_table.EnclosingScrollView.HasVerticalScroller = false;
+						break;
+					case (ScrollBarVisibility.Default):
+						_table.EnclosingScrollView.HasVerticalScroller = (bool)_defaultVerticalScrollVisibility;
+						break;
+				}
+			}
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_table?.EnclosingScrollView != null)
+			{
+				if (_defaultHorizontalScrollVisibility == null)
+					_defaultHorizontalScrollVisibility = _table.EnclosingScrollView.HasHorizontalScroller;
+
+				switch (Element.HorizontalScrollBarVisibility)
+				{
+					case (ScrollBarVisibility.Always):
+						_table.EnclosingScrollView.HasHorizontalScroller = true;
+						break;
+					case (ScrollBarVisibility.Never):
+						_table.EnclosingScrollView.HasHorizontalScroller = false;
+						break;
+					case (ScrollBarVisibility.Default):
+						_table.EnclosingScrollView.HasHorizontalScroller = (bool)_defaultHorizontalScrollVisibility;
+						break;
+				}
+			}
 		}
 
 		class FormsNSTableView : NSTableView

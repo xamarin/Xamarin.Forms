@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using CoreGraphics;
+using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -18,6 +20,8 @@ namespace Xamarin.Forms.Platform.iOS
 		string _typedText;
 		bool _useLegacyColorManagement;
 
+		UIToolbar _numericAccessoryView;
+
 		IElementController ElementController => Element as IElementController;
 
 		protected override void Dispose(bool disposing)
@@ -29,6 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.CancelButtonClicked -= OnCancelClicked;
 					Control.SearchButtonClicked -= OnSearchButtonClicked;
 					Control.TextChanged -= OnTextChanged;
+					Control.ShouldChangeTextInRange -= ShouldChangeText;
 
 					Control.OnEditingStarted -= OnEditingEnded;
 					Control.OnEditingStopped -= OnEditingStarted;
@@ -59,6 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.CancelButtonClicked += OnCancelClicked;
 					Control.SearchButtonClicked += OnSearchButtonClicked;
 					Control.TextChanged += OnTextChanged;
+					Control.ShouldChangeTextInRange += ShouldChangeText;
 
 					Control.OnEditingStarted += OnEditingStarted;
 					Control.OnEditingStopped += OnEditingEnded;
@@ -69,8 +75,12 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateIsEnabled();
 				UpdateCancelButton();
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+				UpdateVerticalTextAlignment();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
+				UpdateMaxLength();
+				UpdateKeyboard();
 			}
 
 			base.OnElementChanged(e);
@@ -90,20 +100,35 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == SearchBar.CancelButtonColorProperty.PropertyName)
 				UpdateCancelButton();
 			else if (e.PropertyName == SearchBar.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
+			{
 				UpdateFont();
+			}
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == SearchBar.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if(e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
+				UpdateMaxLength();
+			else if(e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
+				UpdateKeyboard();
+			else if(e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
+				UpdateKeyboard();
 		}
 
 		protected override void SetBackgroundColor(Color color)
@@ -120,8 +145,7 @@ namespace Xamarin.Forms.Platform.iOS
 			
 			Control.BarTintColor = color.ToUIColor(_defaultTintColor);
 
-			if (color.A < 1)
-				Control.SetBackgroundImage(new UIImage(), UIBarPosition.Any, UIBarMetrics.Default);
+			Control.SetBackgroundImage(new UIImage(), UIBarPosition.Any, UIBarMetrics.Default);
 
 			// updating BarTintColor resets the button color so we need to update the button color again
 			UpdateCancelButton();
@@ -129,10 +153,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 		{
-			if (nfloat.IsInfinity(size.Width) && Forms.IsiOS11OrNewer)
-				size.Width = nfloat.MaxValue;
-			
-			return base.SizeThatFits(size);
+			if (nfloat.IsInfinity(size.Width))
+				size.Width = (nfloat)(Element?.Parent is VisualElement parent ? parent.Width : Device.Info.ScaledScreenSize.Width);
+
+			var sizeThatFits = Control.SizeThatFits(size);
+
+			if (Forms.IsiOS11OrNewer)
+				return sizeThatFits;
+
+			////iOS10 hack because SizeThatFits always returns a width of 0
+			sizeThatFits.Width = (nfloat)Math.Max(sizeThatFits.Width, size.Width);
+
+			return sizeThatFits;
 		}
 
 		void OnCancelClicked(object sender, EventArgs args)
@@ -166,7 +198,17 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateOnTextChanged();
 		}
 
-		void UpdateAlignment()
+		void UpdateCharacterSpacing()
+		{
+			_textField = _textField ?? Control.FindDescendantView<UITextField>();
+			if (_textField == null)
+				return;
+
+			_textField.AttributedText = _textField.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+			_textField.AttributedPlaceholder = _textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+		}
+
+		void UpdateHorizontalTextAlignment()
 		{
 			_textField = _textField ?? Control.FindDescendantView<UITextField>();
 
@@ -174,6 +216,16 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_textField.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			_textField = _textField ?? Control.FindDescendantView<UITextField>();
+
+			if (_textField == null)
+				return;
+
+			_textField.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();
 		}
 
 		void UpdateCancelButton()
@@ -241,11 +293,14 @@ namespace Xamarin.Forms.Platform.iOS
 					? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
 
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+
 			}
 			else
 			{
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, targetColor.IsDefault 
 					? ColorExtensions.SeventyPercentGrey.ToColor() : targetColor);
+				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 			}
 		}
 
@@ -286,6 +341,61 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_textField.TextColor = targetColor.IsDefault ? _defaultTextColor : targetColor.ToUIColor();
 			}
+		}
+
+		void UpdateMaxLength()
+		{
+			var currentControlText = Control.Text;
+
+			if (currentControlText.Length > Element.MaxLength)
+				Control.Text = currentControlText.Substring(0, Element.MaxLength);
+		}
+
+		bool ShouldChangeText(UISearchBar searchBar, NSRange range, string text)
+		{
+			var newLength = searchBar?.Text?.Length + text.Length - range.Length;
+			return newLength <= Element?.MaxLength;
+		}
+
+		void UpdateKeyboard()
+		{
+			var keyboard = Element.Keyboard;
+			Control.ApplyKeyboard(keyboard);
+			if (!(keyboard is Internals.CustomKeyboard))
+			{
+				if (Element.IsSet(Xamarin.Forms.InputView.IsSpellCheckEnabledProperty))
+				{
+					if (!Element.IsSpellCheckEnabled)
+					{
+						Control.SpellCheckingType = UITextSpellCheckingType.No;
+					}
+				}
+			}
+
+			// iPhone does not have an enter key on numeric keyboards
+			if (Device.Idiom == TargetIdiom.Phone && (keyboard == Keyboard.Numeric || keyboard == Keyboard.Telephone))
+			{
+				_numericAccessoryView = _numericAccessoryView ?? CreateNumericKeyboardAccessoryView();
+				Control.InputAccessoryView = _numericAccessoryView;
+			}
+			else
+			{
+				Control.InputAccessoryView = null;
+			}
+
+			Control.ReloadInputViews();
+		}
+
+		UIToolbar CreateNumericKeyboardAccessoryView()
+		{
+			var keyboardWidth = UIScreen.MainScreen.Bounds.Width;
+			var accessoryView = new UIToolbar(new CGRect(0, 0, keyboardWidth, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
+
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
+			var searchButton = new UIBarButtonItem(UIBarButtonSystemItem.Search, OnSearchButtonClicked);
+			accessoryView.SetItems(new[] { spacer, searchButton }, false);
+
+			return accessoryView;
 		}
 	}
 }

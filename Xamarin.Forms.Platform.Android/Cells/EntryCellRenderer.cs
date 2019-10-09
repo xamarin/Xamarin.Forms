@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceholder();
 			UpdateKeyboard();
 			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateText();
 			UpdateIsEnabled();
 			UpdateHeight();
@@ -53,6 +54,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLabelColor();
 			else if (e.PropertyName == EntryCell.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == EntryCell.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == Cell.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
 			else if (e.PropertyName == "RenderHeight")
@@ -95,6 +98,12 @@ namespace Xamarin.Forms.Platform.Android
 			_view.EditText.UpdateHorizontalAlignment(entryCell.HorizontalTextAlignment, _view.Context.HasRtlSupport());
 		}
 
+		void UpdateVerticalTextAlignment()
+		{
+			var entryCell = (EntryCell)Cell;
+			_view.EditText.UpdateVerticalAlignment(entryCell.VerticalTextAlignment);
+		}
+
 		void UpdateIsEnabled()
 		{
 			var entryCell = (EntryCell)Cell;
@@ -120,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLabelColor()
 		{
-			_view.SetLabelTextColor(((EntryCell)Cell).LabelColor, global::Android.Resource.Color.PrimaryTextDark);
+			_view.SetLabelTextColor(((EntryCell)Cell).LabelColor, global::Android.Resource.Attribute.TextColor);
 		}
 
 		void UpdateFlowDirection()

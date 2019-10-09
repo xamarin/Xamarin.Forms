@@ -5,7 +5,7 @@ using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 1703, "Memory leak when navigating a page off of a navigation stack", PlatformAffected.Android | PlatformAffected.iOS | PlatformAffected.WinPhone)]
@@ -25,14 +25,14 @@ namespace Xamarin.Forms.Controls
 
 		static Page CreateWeakReferencedPage()
 		{
-			GC.Collect();
+			GarbageCollectionHelper.Collect();
 			var result = CreatePage();
 			s_pageRefs.Add(new WeakReference(result));
 
 			// Add a second unreferenced page to prove that the problem only exists
 			// when pages are actually navigated to/from
 			s_pageRefs.Add(new WeakReference(CreatePage()));
-			GC.Collect();
+			GarbageCollectionHelper.Collect();
 			return result;
 		}
 

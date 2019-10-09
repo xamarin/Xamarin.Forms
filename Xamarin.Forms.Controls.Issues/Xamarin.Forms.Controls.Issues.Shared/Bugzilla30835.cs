@@ -9,7 +9,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 30835, "Navigating to and from the Carousel page with MasterDetail page creates an Out of memory exception")]
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Controls
 
 			public MenuPage ()
 			{
-				Icon = "bank.png";
+				IconImageSource = "bank.png";
 				Title = "Carsousel Memory Bug";
 				BackgroundColor = Color.FromHex ("#000000");
 

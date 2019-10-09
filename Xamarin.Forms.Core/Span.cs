@@ -1,10 +1,11 @@
 using System;
+using System.ComponentModel;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : GestureElement, IFontElement, ITextElement, ILineHeightElement
+	public class Span : GestureElement, IFontElement, IStyleElement, ITextElement, ILineHeightElement, IDecorableTextElement
 	{
 		internal readonly MergedStyle _mergedStyle;
 
@@ -14,7 +15,9 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty StyleProperty = BindableProperty.Create(nameof(Style), typeof(Style), typeof(Span), default(Style),
-			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue, defaultBindingMode: BindingMode.OneTime);
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue, defaultBindingMode: BindingMode.OneWay);
+
+		public static readonly BindableProperty TextDecorationsProperty = DecorableTextElement.TextDecorationsProperty;
 
 		public Style Style
 		{
@@ -23,7 +26,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty BackgroundColorProperty
-			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color), defaultBindingMode: BindingMode.OneTime);
+			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color), defaultBindingMode: BindingMode.OneWay);
 
 		public Color BackgroundColor
 		{
@@ -39,7 +42,16 @@ namespace Xamarin.Forms
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+
 		[Obsolete("Foreground is obsolete as of version 3.1.0. Please use the TextColor property instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty ForegroundColorProperty = TextColorProperty;
 
 #pragma warning disable 618
@@ -51,7 +63,7 @@ namespace Xamarin.Forms
 #pragma warning restore 618
 
 		public static readonly BindableProperty TextProperty
-			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneTime);
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneWay);
 
 		public string Text
 		{
@@ -70,6 +82,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty LineHeightProperty = LineHeightElement.LineHeightProperty;
 
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Font Font
 		{
 			get { return (Font)GetValue(FontElement.FontProperty); }
@@ -95,9 +108,22 @@ namespace Xamarin.Forms
 			set { SetValue(FontElement.FontSizeProperty, value); }
 		}
 
-		public double LineHeight {
+		public TextDecorations TextDecorations
+		{
+			get { return (TextDecorations)GetValue(TextDecorationsProperty); }
+			set { SetValue(TextDecorationsProperty, value); }
+		}
+
+		public double LineHeight
+		{
 			get { return (double)GetValue(LineHeightElement.LineHeightProperty); }
 			set { SetValue(LineHeightElement.LineHeightProperty, value); }
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			this.PropagateBindingContext(GestureRecognizers);
+			base.OnBindingContextChanged();
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
@@ -123,14 +149,22 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+		}
+
 		internal override void ValidateGesture(IGestureRecognizer gesture)
 		{
-			if (gesture == null)
-				return;
-			if (gesture is PanGestureRecognizer)
-				throw new InvalidOperationException($"{nameof(PanGestureRecognizer)} is not supported on a {nameof(Span)}");
-			if (gesture is PinchGestureRecognizer)
-				throw new InvalidOperationException($"{nameof(PinchGestureRecognizer)} is not supported on a {nameof(Span)}");
+			switch (gesture)
+			{
+				case ClickGestureRecognizer click:
+				case TapGestureRecognizer tap:
+				case null:
+					break;
+				default:
+					throw new InvalidOperationException($"{gesture.GetType().Name} is not supported on a {nameof(Span)}");
+
+			}
 		}
 
 		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue)

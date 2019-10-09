@@ -2,7 +2,7 @@ using System;
 
 namespace Xamarin.Forms.Xaml
 {
-	[ContentProperty("Path")]
+	[ContentProperty(nameof(Path))]
 	[AcceptEmptyServiceProvider]
 	public sealed class TemplateBindingExtension : IMarkupExtension<BindingBase>
 	{
@@ -24,7 +24,15 @@ namespace Xamarin.Forms.Xaml
 
 		BindingBase IMarkupExtension<BindingBase>.ProvideValue(IServiceProvider serviceProvider)
 		{
-			return new TemplateBinding(Path, Mode, Converter, ConverterParameter, StringFormat);
+			return new Binding
+			{
+				Source = RelativeBindingSource.TemplatedParent,
+				Path = Path,
+				Mode = Mode,
+				Converter = Converter,
+				ConverterParameter = ConverterParameter,
+				StringFormat = StringFormat
+			};		
 		}
 
 		object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)

@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 				tvc = new EntryCellTableViewCell(item.GetType().FullName);
 			else
 			{
-				tvc.Cell.PropertyChanged -= OnCellPropertyChanged;
+				tvc.PropertyChanged -= HandlePropertyChanged;
 				tvc.TextFieldTextChanged -= OnTextFieldTextChanged;
 				tvc.KeyboardDoneButtonPressed -= OnKeyBoardDoneButtonPressed;
 			}
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetRealCell(item, tvc);
 
 			tvc.Cell = item;
-			tvc.Cell.PropertyChanged += OnCellPropertyChanged;
+			tvc.PropertyChanged += HandlePropertyChanged;
 			tvc.TextFieldTextChanged += OnTextFieldTextChanged;
 			tvc.KeyboardDoneButtonPressed += OnKeyBoardDoneButtonPressed;
 
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return tvc;
 		}
 
-		static void OnCellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		static void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var entryCell = (EntryCell)sender;
 			var realCell = (EntryCellTableViewCell)GetRealCell(entryCell);
@@ -154,22 +154,35 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public event EventHandler TextFieldTextChanged;
 
-			bool OnShouldReturn(UITextField view)
+			static bool OnShouldReturn(UITextField view)
 			{
-				var handler = KeyboardDoneButtonPressed;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
+                var realCell = GetRealCell<EntryCellTableViewCell>(view);
+                var handler = realCell?.KeyboardDoneButtonPressed;
+                if (handler != null)
+                    handler(realCell, EventArgs.Empty);
 
-				TextField.ResignFirstResponder();
+                view.ResignFirstResponder();
 				return true;
 			}
 
-			void TextFieldOnEditingChanged(object sender, EventArgs eventArgs)
+            static void TextFieldOnEditingChanged(object sender, EventArgs eventArgs)
 			{
-				var handler = TextFieldTextChanged;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
-			}
+                var realCell = GetRealCell<EntryCellTableViewCell>(sender as UIView);
+                var handler = realCell?.TextFieldTextChanged;
+                if (handler != null)
+                    handler(realCell, EventArgs.Empty);
+            }
+
+            static T GetRealCell<T>(UIView view) where T : UIView
+            {
+                T realCell = null;
+                while (view.Superview != null && realCell == null)
+                {
+                    view = view.Superview;
+                    realCell = view as T;
+                }
+                return realCell;
+            }
 		}
 	}
 }

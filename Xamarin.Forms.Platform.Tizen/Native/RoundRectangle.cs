@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using ElmSharp;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
 	public class RoundRectangle : Polygon
 	{
-		int[] _radius = new int[4];
+		readonly int[] _radius = new int[4];
 		public RoundRectangle(EvasObject parent) : base(parent)
 		{
 		}
@@ -29,6 +30,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_radius[3] = bottomRight;
 		}
 
+		public IReadOnlyList<int> GetRadius()
+		{
+			return _radius;
+		}
+
 		public void Draw()
 		{
 			DrawPoints();
@@ -41,6 +47,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			Width = bound.Width;
 			Height = bound.Height;
 			Draw();
+			// It is workaround for fix geometry issue
+			// A polygon make a margin of 1 pixel at the outermost point
+			Geometry = bound;
 		}
 
 
@@ -93,7 +102,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 		}
 
-		void AddRelativePoint(int x, int y)
+		protected void AddRelativePoint(int x, int y)
 		{
 			AddPoint(X + x, Y + y);
 		}

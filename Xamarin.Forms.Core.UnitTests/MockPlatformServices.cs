@@ -23,11 +23,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		Action<Action> invokeOnMainThread;
 		Action<Uri> openUriAction;
 		Func<Uri, CancellationToken, Task<Stream>> getStreamAsync;
-		public MockPlatformServices (Action<Action> invokeOnMainThread = null, Action<Uri> openUriAction = null, Func<Uri, CancellationToken, Task<Stream>> getStreamAsync = null)
+		Func<VisualElement, double, double, SizeRequest> getNativeSizeFunc;
+		readonly bool useRealisticLabelMeasure;
+		readonly bool _isInvokeRequired;
+
+		public MockPlatformServices (Action<Action> invokeOnMainThread = null, Action<Uri> openUriAction = null, 
+			Func<Uri, CancellationToken, Task<Stream>> getStreamAsync = null, 
+			Func<VisualElement, double, double, SizeRequest> getNativeSizeFunc = null, 
+			bool useRealisticLabelMeasure = false, bool isInvokeRequired = false)
 		{
 			this.invokeOnMainThread = invokeOnMainThread;
 			this.openUriAction = openUriAction;
 			this.getStreamAsync = getStreamAsync;
+			this.getNativeSizeFunc = getNativeSizeFunc;
+			this.useRealisticLabelMeasure = useRealisticLabelMeasure;
+			_isInvokeRequired = isInvokeRequired;
 		}
 
 		static MD5CryptoServiceProvider checksum = new MD5CryptoServiceProvider ();
@@ -63,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				case NamedSize.Large:
 					return 16;
 				default:
-					throw new ArgumentOutOfRangeException ("size");
+					throw new ArgumentOutOfRangeException (nameof(size));
 			}
 		}
 
@@ -77,7 +87,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		public bool IsInvokeRequired
 		{
-			get { return false; }
+			get { return _isInvokeRequired; }
 		}
 
 		public string RuntimePlatform { get; set; }
@@ -169,6 +179,28 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void QuitApplication()
 		{
 
+		}
+
+		public SizeRequest GetNativeSize (VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			if (getNativeSizeFunc != null)
+				return getNativeSizeFunc (view, widthConstraint, heightConstraint);
+			// EVERYTHING IS 100 x 20
+
+			var label = view as Label;
+			if (label != null && useRealisticLabelMeasure) {
+				var letterSize = new Size (5, 10);
+				var w = label.Text.Length * letterSize.Width;
+				var h = letterSize.Height;
+				if (!double.IsPositiveInfinity (widthConstraint) && w > widthConstraint) {
+					h = ((int) w / (int) widthConstraint) * letterSize.Height;
+					w = widthConstraint - (widthConstraint % letterSize.Width);
+
+				}
+				return new SizeRequest (new Size (w, h), new Size (Math.Min (10, w), h));
+			}
+
+			return new SizeRequest(new Size (100, 20));
 		}
 	}
 

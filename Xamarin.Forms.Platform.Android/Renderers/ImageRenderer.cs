@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 	internal interface IImageRendererController
 	{
 		void SkipInvalidate();
+		bool IsDisposed { get; }
 	}
 
 	public class ImageRenderer : ViewRenderer<Image, AImageView>
@@ -25,6 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ImageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ImageRenderer()
 		{
 			AutoPackage = false;
@@ -110,7 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			await Control.UpdateBitmap(Element, previous);
+			await Control.UpdateBitmap(Element, previous).ConfigureAwait(false);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)

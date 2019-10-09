@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -55,6 +56,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateText();
 				UpdateInputScope();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 				UpdateFont();
 				UpdateTextAlignment();
 				UpdateFlowDirection();
@@ -62,6 +64,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateDetectReadingOrderFromContent();
 				UpdatePlaceholderText();
 				UpdatePlaceholderColor();
+				UpdateIsReadOnly();
 			}
 
 			base.OnElementChanged(e);
@@ -94,6 +97,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateInputScope();
 			}
+			else if (e.PropertyName == Editor.IsTextPredictionEnabledProperty.PropertyName)
+			{
+				UpdateInputScope();
+			}
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
 			{
 				UpdateFont();
@@ -110,6 +117,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateText();
 			}
+			else if (e.PropertyName == Editor.CharacterSpacingProperty.PropertyName)
+			{
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
 				UpdateTextAlignment();
@@ -123,6 +134,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholderText();
 			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
+			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 		}
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
@@ -282,7 +295,10 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				Control.ClearValue(TextBox.IsTextPredictionEnabledProperty);
+				if (editor.IsSet(Editor.IsTextPredictionEnabledProperty))
+					Control.IsTextPredictionEnabled = editor.IsTextPredictionEnabled;
+				else
+					Control.ClearValue(TextBox.IsTextPredictionEnabledProperty);
 				if (editor.IsSet(InputView.IsSpellCheckEnabledProperty))
 					Control.IsSpellCheckEnabled = editor.IsSpellCheckEnabled;
 				else
@@ -292,6 +308,10 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.InputScope = editor.Keyboard.ToInputScope();
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
+		}
 		void UpdateText()
 		{
 			string newText = Element.Text ?? "";
@@ -349,6 +369,11 @@ namespace Xamarin.Forms.Platform.UWP
 					Control.TextReadingOrder = TextReadingOrder.UseFlowDirection;
 				}
 			}
+		}
+
+		void UpdateIsReadOnly()
+		{
+			Control.IsReadOnly = Element.IsReadOnly;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Views;
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		Page _current;
 		bool _disposed;
+		Platform _platform;
 
 		public NavigationRenderer(Context context) : base(context)
 		{
@@ -20,9 +22,26 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use NavigationRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public NavigationRenderer()
 		{
 			AutoPackage = false;
+		}
+
+		Platform Platform
+		{
+			get
+			{
+				if (_platform == null)
+				{
+					if (Context is FormsApplicationActivity activity)
+					{
+						_platform = activity.Platform;
+					}
+				}
+
+				return _platform;
+			}
 		}
 
 		public Task<bool> PopToRootAsync(Page page, bool animated = true)
@@ -40,7 +59,7 @@ namespace Xamarin.Forms.Platform.Android
 			return OnPushAsync(page, animated);
 		}
 
-		IPageController PageController => Element as IPageController;
+		IPageController PageController => Element;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -146,17 +165,21 @@ namespace Xamarin.Forms.Platform.Android
 			return SwitchContentAsync(view, animated);
 		}
 
+		void UpdateActionBar()
+		{
+			Device.StartTimer(TimeSpan.FromMilliseconds(0), () => {
+				Platform?.UpdateActionBar();
+				return false;
+			});
+		}
+
 		void InsertPageBefore(Page page, Page before)
 		{
-
 			int index = PageController.InternalChildren.IndexOf(before);
 			if (index == -1)
 				throw new InvalidOperationException("This should never happen, please file a bug");
 
-			Device.StartTimer(TimeSpan.FromMilliseconds(0), () => {
-				((Platform)Element.Platform).UpdateActionBar();
-				return false;
-			});
+			UpdateActionBar();
 		}
 
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs e)
@@ -199,11 +222,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			containerToRemove?.Dispose();
 
-			Device.StartTimer(TimeSpan.FromMilliseconds(0), () =>
-			{
-				((Platform)Element.Platform).UpdateActionBar();
-				return false;
-			});
+			UpdateActionBar();
 		}
 
 		Task<bool> SwitchContentAsync(Page view, bool animated, bool removed = false)
@@ -224,7 +243,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			_current = view;
 
-			((Platform)Element.Platform).NavAnimationInProgress = true;
+			if (Platform != null)
+			{
+				Platform.NavAnimationInProgress = true;
+			}
 
 			var tcs = new TaskCompletionSource<bool>();
 
@@ -256,7 +278,6 @@ namespace Xamarin.Forms.Platform.Android
 							RemoveView(containerToRemove);
 
 							tcs.TrySetResult(true);
-							((Platform)Element.Platform).NavAnimationInProgress = false;
 
 							VisualElement removedElement = rendererToRemove.Element;
 							rendererToRemove.Dispose();
@@ -297,10 +318,6 @@ namespace Xamarin.Forms.Platform.Android
 						}
 						s_currentAnimation = null;
 						tcs.TrySetResult(true);
-						if (Element?.Platform != null)
-						{
-							((Platform)Element.Platform).NavAnimationInProgress = false;
-						}
 					} });
 				}
 			}
@@ -328,10 +345,17 @@ namespace Xamarin.Forms.Platform.Android
 
 				containerToAdd.Visibility = ViewStates.Visible;
 				tcs.SetResult(true);
-				((Platform)Element.Platform).NavAnimationInProgress = false;
 			}
 
-			return tcs.Task;
+			return tcs.Task.ContinueWith(task =>
+			{
+				if (Platform != null)
+				{
+					Platform.NavAnimationInProgress = false;
+				}
+
+				return task.Result;
+			});
 		}
 	}
 }

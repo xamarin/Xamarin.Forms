@@ -7,8 +7,9 @@ using Xamarin.Forms.Build.Tasks;
 
 using NUnit.Framework;
 using System.Collections.Generic;
+using Xamarin.Forms.Xaml.UnitTests;
 
-namespace Xamarin.Forms.Xaml.XamlcUnitTests
+namespace Xamarin.Forms.XamlcUnitTests
 {
 	[TestFixture]
 	public class MethodDefinitionExtensionsTests
@@ -33,7 +34,11 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 		[SetUp]
 		public void SetUp()
 		{
-			module = ModuleDefinition.CreateModule("foo", ModuleKind.Dll);
+			module = ModuleDefinition.CreateModule("foo", new ModuleParameters()
+			{
+				AssemblyResolver = new MockAssemblyResolver(),
+				Kind = ModuleKind.Dll,
+			});
 		}
 
 		[Test]

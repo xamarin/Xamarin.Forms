@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 60691, "Device.OpenUri(new Uri(\"tel: 123 456\")) crashes the app (space in phone number)", PlatformAffected.iOS)]
+#if UITEST
+	// this doesn't fail on Uwp but it leaves a browser window open and breaks later tests
+	[Category(UITestCategories.UwpIgnore)]
+#endif
 	public class Bugzilla60691 : TestContentPage
 	{
 		protected override void Init()
@@ -18,8 +23,10 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new StackLayout
 			{
 				Children = {
+#pragma warning disable CS0618 // Type or member is obsolete
 					new Button { Text = "Call 123 4567", AutomationId = "tel", Command = new Command(() => Device.OpenUri(new System.Uri("tel:123 4567"))) },
 					new Button { Text = "Mail support@xamarin.com", AutomationId = "mailto", Command = new Command(() => Device.OpenUri(new System.Uri("mailto:support@xamarin.com"))) }
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 			};
 		}

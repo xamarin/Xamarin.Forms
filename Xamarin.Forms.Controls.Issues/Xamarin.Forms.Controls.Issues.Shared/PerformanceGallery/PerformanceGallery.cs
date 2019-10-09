@@ -6,6 +6,7 @@ using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.IO;
+using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest;
@@ -15,9 +16,9 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(Xamarin.Forms.Core.UITests.UITestCategories.Performance)]
+	[Category(Xamarin.Forms.Core.UITests.UITestCategories.Performance)] 
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 #endif
-
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 0, "Performance Testing")]
 	public class PerformanceGallery : TestContentPage
@@ -40,10 +41,10 @@ namespace Xamarin.Forms.Controls.Issues
 		PerformanceTracker _PerformanceTracker = new PerformanceTracker();
 		List<PerformanceScenario> _TestCases = new List<PerformanceScenario>();
 		int _TestNumber = 0;
-
+		Button nextButton;
 		PerformanceViewModel ViewModel => BindingContext as PerformanceViewModel;
 
-		protected override async void Init()
+		protected override void Init()
 		{
 			_BuildInfo = GetBuildNumber();
 
@@ -64,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_TestCases.AddRange(InflatePerformanceScenarios());
 
-			var nextButton = new Button { Text = Pending, IsEnabled = false, AutomationId = NextButtonId };
+			nextButton = new Button { Text = Pending, IsEnabled = false, AutomationId = NextButtonId };
 			nextButton.Clicked += NextButton_Clicked;
 
 			ViewModel.TestRunReferenceId = Guid.NewGuid();
@@ -81,11 +82,30 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			Content = new StackLayout { Children = { testRunRef, nextButton, _PerformanceTracker } };
+			GetBenchmarkResults();
+		}
 
-			ViewModel.BenchmarkResults = await PerformanceDataManager.GetScenarioResults(_DeviceIdentifier);
+		async void GetBenchmarkResults(int tryCount = 0)
+		{
+			bool success = false;
+			try
+			{
+				ViewModel.BenchmarkResults = await PerformanceDataManager.GetScenarioResults(_DeviceIdentifier);
+				success = true;
+			}
+			catch(Exception exc)
+			{
+				if (tryCount < 3)
+					GetBenchmarkResults(++tryCount);
+				else
+					nextButton.Text = exc.ToString();
+			}
 
-			nextButton.IsEnabled = true;
-			nextButton.Text = Next;
+			if (success)
+			{
+				nextButton.IsEnabled = true;
+				nextButton.Text = Next;
+			}
 		}
 
 		private static string GetBuildNumber()
@@ -147,6 +167,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var result = DisplayResults();
 
+#pragma warning disable 4014
 			PerformanceDataManager.PostScenarioResults(ViewModel.Scenario,
 				result,
 				ViewModel.TestRunReferenceId,
@@ -157,6 +178,7 @@ namespace Xamarin.Forms.Controls.Issues
 				_BuildInfo,
 				ViewModel.ActualRenderTime,
 				_PerformanceProvider.Statistics);
+#pragma warning restore 4014
 		}
 
 		void NextButton_Clicked(object sender, EventArgs e)

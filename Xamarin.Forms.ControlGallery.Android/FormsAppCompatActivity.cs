@@ -41,14 +41,15 @@ namespace Xamarin.Forms.ControlGallery.Android
 			base.OnCreate(bundle);
 
 #if TEST_EXPERIMENTAL_RENDERERS
-			Forms.SetFlags("FastRenderers_Experimental");
+			// Fake_Flag is here so we can test for flag initialization issues
+			Forms.SetFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
 #else
-			Forms.SetFlags("Fake_Flag"); // So we can test for flag initialization issues
+			Forms.SetFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental" */);
 #endif
-
 			Forms.Init(this, bundle);
 
 			FormsMaps.Init(this, bundle);
+			FormsMaterial.Init(this, bundle);
 			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
 				//				if (!string.IsNullOrWhiteSpace(e.View.StyleId)) {

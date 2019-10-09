@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -8,6 +9,7 @@ namespace Xamarin.Forms
 	public class Frame : ContentView, IElementConfiguration<Frame>, IPaddingElement, IBorderElement
 	{
 		[Obsolete("OutlineColorProperty is obsolete as of version 3.0.0. Please use BorderColorProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty OutlineColorProperty = BorderElement.BorderColorProperty;
 
 		public static readonly BindableProperty BorderColorProperty = BorderElement.BorderColorProperty;
@@ -36,6 +38,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("OutlineColor is obsolete as of version 3.0.0. Please use BorderColor instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Color OutlineColor
 		{
 			get { return (Color)GetValue(OutlineColorProperty); }
@@ -54,6 +57,17 @@ namespace Xamarin.Forms
 			set { SetValue(CornerRadiusProperty, value); }
 		}
 
+		int IBorderElement.CornerRadius => (int)CornerRadius;
+
+		// not currently used by frame
+		double IBorderElement.BorderWidth => -1d;
+
+		int IBorderElement.CornerRadiusDefaultValue => (int)CornerRadiusProperty.DefaultValue;
+
+		Color IBorderElement.BorderColorDefaultValue => (Color)BorderColorProperty.DefaultValue;
+
+		double IBorderElement.BorderWidthDefaultValue => -1d;
+
 		public IPlatformElementConfiguration<T, Frame> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
@@ -65,5 +79,13 @@ namespace Xamarin.Forms
 			OnPropertyChanged(nameof(OutlineColor));
 #pragma warning restore
 		}
+
+		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
+
+		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+
+		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
+
+		bool IBorderElement.IsBorderWidthSet() => false;
 	}
 }

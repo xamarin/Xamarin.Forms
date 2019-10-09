@@ -56,7 +56,12 @@ namespace Xamarin.Forms.Controls
 							
 							await Navigation.PushAsync (page);
 
-						} else {
+						}
+						else if (page is Shell)
+						{
+							Application.Current.MainPage = page;
+						}
+						else {
 							await Navigation.PushModalAsync (page);
 						}
 					}; 
@@ -192,6 +197,14 @@ namespace Xamarin.Forms.Controls
 				_filter = filter;
 
 				PageToAction.Clear();
+				if(String.IsNullOrWhiteSpace(filter) && !Controls.App.PreloadTestCasesIssuesList)
+				{
+					if (_section != null)
+					{
+						Root.Remove(_section);
+					}
+					return;
+				}
 
 				var issueCells = Enumerable.Empty<TextCell>();
 
@@ -242,19 +255,11 @@ namespace Xamarin.Forms.Controls
 				Root.Add(_section);
 			}
 
+			HashSet<string> _exemptNames = new HashSet<string> { "N0", "G342", "G1305", "G1461", "G1653", "G1700" };
+
 			// Legacy reasons, do not add to this list
 			// Going forward, make sure only one Issue attribute exist for a Tracker + Issue number pair
-			bool IsExempt (string name)
-			{
-				if (name == "G1461" || 
-					name == "G342" || 
-					name == "G1305" || 
-					name == "G1653" || 
-					name == "N0")
-					return true;
-				else
-					return false;
-			}
+			bool IsExempt(string name) => _exemptNames.Contains(name);
 		}
 
 		public static NavigationPage GetTestCases ()

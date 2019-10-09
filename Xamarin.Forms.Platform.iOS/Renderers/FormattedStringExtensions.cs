@@ -8,17 +8,17 @@ namespace Xamarin.Forms.Platform.iOS
 #else
 using AppKit;
 using UIColor = AppKit.NSColor;
-
+using UITextAlignment = AppKit.NSTextAlignment;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
 	public static class FormattedStringExtensions
 	{
 		public static NSAttributedString ToAttributed(this Span span, Font defaultFont, Color defaultForegroundColor)
-		{
+		{ 
 			if (span == null)
 				return null;
-
+	
 #pragma warning disable 0618 //retaining legacy call to obsolete code
 			var font = span.Font != Font.Default ? span.Font : defaultFont;
 #pragma warning restore 0618
@@ -29,10 +29,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				fgcolor = Color.Black; // as defined by apple docs		
 
 #if __MOBILE__
-			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor());
+			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), 
+				span.BackgroundColor.ToUIColor(), kerning: (float)span.CharacterSpacing);
 #else
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToNSFont(), fgcolor.ToNSColor(),
-				span.BackgroundColor.ToNSColor());
+				span.BackgroundColor.ToNSColor(), kerningAdjustment: (float)span.CharacterSpacing);
 #endif
 		}
 
@@ -42,8 +43,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (formattedString == null)
 				return null;
 			var attributed = new NSMutableAttributedString();
-			foreach (var span in formattedString.Spans)
+			for (int i = 0; i < formattedString.Spans.Count; i++)
 			{
+				Span span = formattedString.Spans[i];
 				if (span.Text == null)
 					continue;
 
@@ -52,8 +54,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			return attributed;
 		}
-
-		internal static NSAttributedString ToAttributed(this Span span, Element owner, Color defaultForegroundColor, double lineHeight = -1.0)
+		
+		internal static NSAttributedString ToAttributed(this Span span, BindableObject owner, Color defaultForegroundColor, TextAlignment textAlignment, double lineHeight = -1.0)
 		{
 			if (span == null)
 				return null;
@@ -62,13 +64,29 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (text == null)
 				return null;
 
-			NSMutableParagraphStyle style = null;
+			NSMutableParagraphStyle style = new NSMutableParagraphStyle();
 			lineHeight = span.LineHeight >= 0 ? span.LineHeight : lineHeight;
 			if (lineHeight >= 0)
 			{
-				style = new NSMutableParagraphStyle();
 				style.LineHeightMultiple = new nfloat(lineHeight);
 			}
+
+			switch (textAlignment)
+			{
+				case TextAlignment.Start:
+					style.Alignment = UITextAlignment.Left;
+					break;
+				case TextAlignment.Center:
+					style.Alignment = UITextAlignment.Center;
+					break;
+				case TextAlignment.End:
+					style.Alignment = UITextAlignment.Right;
+					break;
+				default:
+					style.Alignment = UITextAlignment.Left;
+					break;
+			}
+
 
 #if __MOBILE__
 			UIFont targetFont;
@@ -76,20 +94,13 @@ namespace Xamarin.Forms.Platform.MacOS
 				targetFont = ((IFontElement)owner).ToUIFont();
 			else
 				targetFont = span.ToUIFont();
-
-			var fgcolor = span.TextColor;
-			if (fgcolor.IsDefault)
-				fgcolor = defaultForegroundColor;
-			if (fgcolor.IsDefault)
-				fgcolor = Color.Black; // as defined by apple docs
-
-			return new NSAttributedString(text, targetFont, fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor(), null, style);
 #else
 			NSFont targetFont;
 			if (span.IsDefault())
 				targetFont = ((IFontElement)owner).ToNSFont();
 			else
 				targetFont = span.ToNSFont();
+#endif
 
 			var fgcolor = span.TextColor;
 			if (fgcolor.IsDefault)
@@ -97,21 +108,52 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (fgcolor.IsDefault)
 				fgcolor = Color.Black; // as defined by apple docs
 
-			return new NSAttributedString(text, targetFont, fgcolor.ToNSColor(), span.BackgroundColor.ToNSColor(),
-										  null, null, null, NSUnderlineStyle.None, NSUnderlineStyle.None, style);
+#if __MOBILE__
+			UIColor spanFgColor;
+			UIColor spanBgColor;
+			spanFgColor = fgcolor.ToUIColor();
+			spanBgColor = span.BackgroundColor.ToUIColor();
+#else
+			NSColor spanFgColor;
+			NSColor spanBgColor;
+			spanFgColor = fgcolor.ToNSColor();
+			spanBgColor = span.BackgroundColor.ToNSColor();
 #endif
+
+			bool hasUnderline = false;
+			bool hasStrikethrough = false;
+			if (span.IsSet(Span.TextDecorationsProperty))
+			{
+				var textDecorations = span.TextDecorations;
+				hasUnderline = (textDecorations & TextDecorations.Underline) != 0;
+				hasStrikethrough = (textDecorations & TextDecorations.Strikethrough) != 0;
+			}
+#if __MOBILE__
+			var attrString = new NSAttributedString(text, targetFont, spanFgColor, spanBgColor,
+				underlineStyle: hasUnderline ? NSUnderlineStyle.Single : NSUnderlineStyle.None,
+				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerning: (float)span.CharacterSpacing);
+#else
+			var attrString = new NSAttributedString(text, targetFont, spanFgColor, spanBgColor,
+				underlineStyle: hasUnderline ? NSUnderlineStyle.Single : NSUnderlineStyle.None,
+				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerningAdjustment: (float)span.CharacterSpacing);
+#endif
+
+			return attrString;
 		}
 
-		internal static NSAttributedString ToAttributed(this FormattedString formattedString, Element owner,
-			Color defaultForegroundColor, double lineHeight = -1.0)
+		internal static NSAttributedString ToAttributed(this FormattedString formattedString, BindableObject owner,
+			Color defaultForegroundColor, TextAlignment textAlignment = TextAlignment.Start, double lineHeight = -1.0)
 		{
 			if (formattedString == null)
 				return null;
 			var attributed = new NSMutableAttributedString();
 
-			foreach (var span in formattedString.Spans)
+			for (int i = 0; i < formattedString.Spans.Count; i++)
 			{
-				var attributedString = span.ToAttributed(owner, defaultForegroundColor, lineHeight);
+				Span span = formattedString.Spans[i];
+
+				var attributedString = span.ToAttributed(owner, defaultForegroundColor, textAlignment, lineHeight);
+
 				if (attributedString == null)
 					continue;
 

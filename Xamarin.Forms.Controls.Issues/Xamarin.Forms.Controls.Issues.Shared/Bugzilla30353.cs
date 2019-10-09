@@ -6,12 +6,17 @@ using Xamarin.Forms.Internals;
 using Xamarin.UITest.iOS;
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 30353, "MasterDetailPage.IsPresentedChanged is not raised")]
+#if UITEST
+	[Category(UITestCategories.UwpIgnore)]
+	[Category(UITestCategories.MasterDetailPage)]
+#endif
 	public class Bugzilla30353 : TestMasterDetailPage
 	{
 		protected override void Init()
@@ -74,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Bugzilla30353Test ()
+		public void MasterDetailPageIsPresentedChangedRaised()
 		{
 			var dontRun = RunningApp.Query (q => q.Marked ("Don't run"));
 			if (dontRun.Length > 0)
@@ -109,9 +114,11 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[TearDown]
-		public void TearDown() 
+		public override void TearDown() 
 		{
 			RunningApp.SetOrientationPortrait ();
+
+			base.TearDown();
 		}
 
 		void Back()

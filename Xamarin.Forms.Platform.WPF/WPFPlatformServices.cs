@@ -25,12 +25,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		public void OpenUriAction(Uri uri)
 		{
-			//TODO : OpenUriAction
+			System.Diagnostics.Process.Start(uri.AbsoluteUri);
 		}
 		
 		public void BeginInvokeOnMainThread(Action action)
 		{
-			System.Windows.Application.Current.Dispatcher.BeginInvoke(action);
+			System.Windows.Application.Current?.Dispatcher.BeginInvoke(action);
 		}
 
 		public Ticker CreateTicker()
@@ -85,6 +85,16 @@ namespace Xamarin.Forms.Platform.WPF
 					return (double)System.Windows.Application.Current.Resources["FontSizeMedium"];
 				case NamedSize.Large:
 					return (double)System.Windows.Application.Current.Resources["FontSizeLarge"];
+				case NamedSize.Body:
+					return (double)System.Windows.Application.Current.Resources["FontSizeBody"];
+				case NamedSize.Caption:
+					return (double)System.Windows.Application.Current.Resources["FontSizeCaption"];
+				case NamedSize.Header:
+					return (double)System.Windows.Application.Current.Resources["FontSizeHeader"];
+				case NamedSize.Subtitle:
+					return (double)System.Windows.Application.Current.Resources["FontSizeSubtitle"];
+				case NamedSize.Title:
+					return (double)System.Windows.Application.Current.Resources["FontSizeTitle"];
 				default:
 					throw new ArgumentOutOfRangeException("size");
 			}
@@ -144,6 +154,11 @@ namespace Xamarin.Forms.Platform.WPF
 		public void QuitApplication()
 		{
 			System.Windows.Application.Current.Shutdown();
+		}
+
+		public SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 	}
 }

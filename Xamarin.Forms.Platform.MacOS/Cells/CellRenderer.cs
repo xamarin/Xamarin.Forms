@@ -1,6 +1,7 @@
 ﻿using System;
 using AppKit;
 using CoreGraphics;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -23,7 +24,16 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			UpdateBackground(tvc, item);
 
+			SetAccessibility(tvc, item);
+
 			return tvc;
+		}
+
+		public virtual void SetAccessibility(NSView tableViewCell, Cell cell)
+		{
+			tableViewCell.SetIsAccessibilityElement(cell);
+			tableViewCell.SetAccessibilityLabel(cell);
+			tableViewCell.SetAccessibilityHint(cell);
 		}
 
 		protected void UpdateBackground(NSView tableViewCell, Cell cell)
@@ -45,7 +55,15 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			_onForceUpdateSizeRequested = (sender, e) =>
 			{
-				//TODO: Implement ForceUpdateSize
+				var index = tableView?.RowForView(nativeCell);
+				if (index != null)
+				{
+					NSAnimationContext.BeginGrouping();
+					NSAnimationContext.CurrentContext.Duration = 0;
+					var indexSetRow = NSIndexSet.FromIndex(index.Value);
+					tableView.NoteHeightOfRowsWithIndexesChanged(indexSetRow);
+					NSAnimationContext.EndGrouping();
+				}
 			};
 
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;

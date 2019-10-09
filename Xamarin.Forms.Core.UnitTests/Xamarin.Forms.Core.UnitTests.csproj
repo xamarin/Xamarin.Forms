@@ -23,7 +23,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>0114;0672;0108;0067;0168;0169;0219;0612;0618;1998;4014</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -33,14 +32,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>0114;0672;0108;0067;0168;0169;0219;0612;0618;1998;4014</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -51,6 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter">
+      <Version>3.15.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +59,7 @@
     <Compile Include="AnimatableKeyTests.cs" />
     <Compile Include="BaseTestFixture.cs" />
     <Compile Include="AbsoluteLayoutTests.cs" />
+    <Compile Include="BindableLayoutTests.cs" />
     <Compile Include="BindableObjectExtensionTests.cs" />
     <Compile Include="BindableObjectUnitTests.cs" />
     <Compile Include="BindablePropertyUnitTests.cs" />
@@ -69,17 +70,33 @@
     <Compile Include="BindingUnitTests.cs" />
     <Compile Include="ButtonUnitTest.cs" />
     <Compile Include="CarouselPageTests.cs" />
+    <Compile Include="CarouselViewTests.cs" />
     <Compile Include="CellTests.cs" />
     <Compile Include="ColorUnitTests.cs" />
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
+    <Compile Include="MockDispatcherProvider.cs" />
+    <Compile Include="MockDispatcher.cs" />
+    <Compile Include="DeviceUnitTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
+    <Compile Include="ShellTestBase.cs" />
+    <Compile Include="ShellLifeCycleTests.cs" />
+    <Compile Include="ShellUriHandlerTests.cs" />
+    <Compile Include="CheckBoxUnitTests.cs" />
+    <Compile Include="VisualTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
+    <Compile Include="ImageButtonUnitTest.cs" />
+    <Compile Include="ItemsViewTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
+    <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
+    <Compile Include="RelativeSourceBindingTests.cs" />
+    <Compile Include="ShellTests.cs" />
     <Compile Include="SpanTests.cs" />
+    <Compile Include="TabIndexTests.cs" />
+    <Compile Include="TitleViewUnitTests.cs" />
     <Compile Include="TemplatedViewUnitTests.cs" />
     <Compile Include="TemplatedPageUnitTests.cs" />
     <Compile Include="ContentFormUnitTests.cs" />
@@ -115,7 +132,6 @@
     <Compile Include="MockViewModel.cs" />
     <Compile Include="MotionTests.cs" />
     <Compile Include="MultiPageTests.cs" />
-    <Compile Include="NavigationMenuUnitTests.cs" />
     <Compile Include="NavigationModelTests.cs" />
     <Compile Include="NavigationProxyTests.cs" />
     <Compile Include="NavigationUnitTest.cs" />
@@ -129,7 +145,6 @@
     <Compile Include="PointTests.cs" />
     <Compile Include="PositionTests.cs" />
     <Compile Include="ProgressBarTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleUnitTests.cs" />
     <Compile Include="RegistrarUnitTests.cs" />
     <Compile Include="RelativeLayoutTests.cs" />
@@ -149,10 +164,12 @@
     <Compile Include="TapGestureRecognizerTests.cs" />
     <Compile Include="TemplatedItemsListTests.cs" />
     <Compile Include="TextCellTests.cs" />
+    <Compile Include="TextDecorationUnitTests.cs" />
     <Compile Include="ThicknessTests.cs" />
     <Compile Include="TimePickerUnitTest.cs" />
     <Compile Include="ToolbarItemTests.cs" />
     <Compile Include="ToolbarTrackerTests.cs" />
+    <Compile Include="ToStringValueConverterTests.cs" />
     <Compile Include="TypeUnitTests.cs" />
     <Compile Include="ViewCellTests.cs" />
     <Compile Include="ViewUnitTests.cs" />
@@ -165,7 +182,6 @@
     <Compile Include="ContentViewUnitTest.cs" />
     <Compile Include="MockPlatformServices.cs" />
     <Compile Include="GridTests.cs" />
-    <Compile Include="UnitPlatform.cs" />
     <Compile Include="GridLengthTypeConverterTests.cs" />
     <Compile Include="BoxViewUnitTests.cs" />
     <Compile Include="NotifiedPropertiesTests.cs" />
@@ -196,6 +212,7 @@
     <Compile Include="FlexLayoutAlignContentTests.cs" />
     <Compile Include="FlexLayoutAlignSelfTests.cs" />
     <Compile Include="FlexOrderTests.cs" />
+    <Compile Include="FontAttributeConverterUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
@@ -210,6 +227,10 @@
       <Project>{67f9d3a8-f71e-4428-913f-c37ae82cdb24}</Project>
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
+      <Project>{9db2f292-8034-4e06-89ad-98bbda4306b9}</Project>
+      <Name>Xamarin.Forms.Xaml</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
@@ -221,11 +242,15 @@
   </Target>
   -->
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Images\crimson.jpg">
       <LogicalName>Images/crimson.jpg</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <Target Name="_CopyNUnitTestAdapterFiles" AfterTargets="Build">
+    <ItemGroup>
+      <_NUnitTestAdapterFiles Include="$(NuGetPackageRoot)NUnit3TestAdapter\%(Version)\build\net35\**" Condition="@(PackageReference -> '%(Identity)') == 'NUnit3TestAdapter'" InProject="False" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)packages\NUnitTestAdapter.AnyVersion\tools\%(RecursiveDir)" ContinueOnError="true" Retries="0" />
+    <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)packages\NUnitTestAdapter.AnyVersion\build\%(RecursiveDir)" ContinueOnError="true" Retries="0" />
+  </Target>
 </Project>

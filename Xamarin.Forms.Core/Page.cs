@@ -18,11 +18,17 @@ namespace Xamarin.Forms
 
 		public const string AlertSignalName = "Xamarin.SendAlert";
 
+		public const string PromptSignalName = "Xamarin.SendPrompt";
+
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
+		
+		public static readonly BindableProperty BackgroundImageSourceProperty = BindableProperty.Create(nameof(BackgroundImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
-		public static readonly BindableProperty BackgroundImageProperty = BindableProperty.Create("BackgroundImage", typeof(string), typeof(Page), default(string));
+		[Obsolete("BackgroundImageProperty is obsolete as of 4.0.0. Please use BackgroundImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty BackgroundImageProperty = BackgroundImageSourceProperty;
 
 		public static readonly BindableProperty IsBusyProperty = BindableProperty.Create("IsBusy", typeof(bool), typeof(Page), false, propertyChanged: (bo, o, n) => ((Page)bo).OnPageBusyChanged());
 
@@ -30,7 +36,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleProperty = BindableProperty.Create("Title", typeof(string), typeof(Page), null);
 
-		public static readonly BindableProperty IconProperty = BindableProperty.Create("Icon", typeof(FileImageSource), typeof(Page), default(FileImageSource));
+		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
+
+		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty IconProperty = IconImageSourceProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Page>> _platformConfigurationRegistry;
 
@@ -43,25 +53,50 @@ namespace Xamarin.Forms
 
 		ReadOnlyCollection<Element> _logicalChildren;
 
+		View _titleView;
+
+		List<Action> _pendingActions = new List<Action>();
+
 		public Page()
 		{
 			var toolbarItems = new ObservableCollection<ToolbarItem>();
 			toolbarItems.CollectionChanged += OnToolbarItemsCollectionChanged;
 			ToolbarItems = toolbarItems;
+
+			//if things were added in base ctor (through implicit styles), the items added aren't properly parented
+			if (InternalChildren.Count > 0)
+				InternalChildrenOnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, InternalChildren));
+
 			InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Page>>(() => new PlatformConfigurationRegistry<Page>(this));
 		}
 
+		[Obsolete("BackgroundImage is obsolete as of 4.0.0. Please use BackgroundImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string BackgroundImage
 		{
-			get { return (string)GetValue(BackgroundImageProperty); }
+			get { return GetValue(BackgroundImageProperty) as FileImageSource; }
 			set { SetValue(BackgroundImageProperty, value); }
 		}
 
+		public ImageSource BackgroundImageSource
+		{
+			get { return (ImageSource)GetValue(BackgroundImageSourceProperty); }
+			set { SetValue(BackgroundImageSourceProperty, value); }
+		}
+
+		[Obsolete("Icon is obsolete as of 4.0.0. Please use IconImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FileImageSource Icon
 		{
-			get { return (FileImageSource)GetValue(IconProperty); }
+			get { return GetValue(IconProperty) as FileImageSource; }
 			set { SetValue(IconProperty, value); }
+		}
+
+		public ImageSource IconImageSource
+		{
+			get { return (ImageSource)GetValue(IconImageSourceProperty); }
+			set { SetValue(IconImageSourceProperty, value); }
 		}
 
 		public bool IsBusy
@@ -118,6 +153,22 @@ namespace Xamarin.Forms
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
+		{
+			get
+			{
+				var titleviewPart1TheShell = Shell.GetTitleView(this);
+				var titleViewPart2TheNavBar = NavigationPage.GetTitleView(this);
+
+				if (titleviewPart1TheShell != null)
+					yield return titleviewPart1TheShell;
+
+				if (titleViewPart2TheNavBar != null)
+					yield return titleViewPart2TheNavBar;
+
+			}
+		}
+
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => 
 			_logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(InternalChildren));
 
@@ -130,7 +181,12 @@ namespace Xamarin.Forms
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
 			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
-			MessagingCenter.Send(this, ActionSheetSignalName, args);
+
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, ActionSheetSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, ActionSheetSignalName, args));
+			
 			return args.Result.Task;
 		}
 
@@ -145,8 +201,31 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException("cancel");
 
 			var args = new AlertArguments(title, message, accept, cancel);
-			MessagingCenter.Send(this, AlertSignalName, args);
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, AlertSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, AlertSignalName, args));
+
 			return args.Result.Task;
+		}
+
+		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard))
+		{
+			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard);
+			MessagingCenter.Send(this, PromptSignalName, args);
+			return args.Result.Task;
+		}
+
+		internal override void OnIsPlatformEnabledChanged()
+		{
+			base.OnIsPlatformEnabledChanged();
+			if(IsPlatformEnabled && _pendingActions.Count > 0)
+			{
+				var actionsToProcess = _pendingActions.ToList();
+				_pendingActions.Clear();
+				foreach(var pendingAction in actionsToProcess)
+					pendingAction();
+			}
 		}
 
 		public void ForceLayout()
@@ -214,6 +293,9 @@ namespace Xamarin.Forms
 			{
 				SetInheritedBindingContext(toolbarItem, BindingContext);
 			}
+
+			if(_titleView != null)
+				SetInheritedBindingContext(_titleView, BindingContext);
 		}
 
 		protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)
@@ -228,7 +310,7 @@ namespace Xamarin.Forms
 
 		protected override void OnParentSet()
 		{
-			if (!Application.IsApplicationOrNull(RealParent) && !(RealParent is Page))
+			if (!Application.IsApplicationOrNull(RealParent) && !(RealParent is Page) && !(RealParent is BaseShellItem))
 				throw new InvalidOperationException("Parent of a Page must also be a Page");
 			base.OnParentSet();
 		}
@@ -246,9 +328,10 @@ namespace Xamarin.Forms
 				return;
 
 			var startingLayout = new List<Rectangle>(LogicalChildren.Count);
-			foreach (VisualElement c in LogicalChildren)
+			foreach (Element el in LogicalChildren)
 			{
-				startingLayout.Add(c.Bounds);
+				if (el is VisualElement c)
+					startingLayout.Add(c.Bounds);
 			}
 
 			double x = Padding.Left;
@@ -260,12 +343,14 @@ namespace Xamarin.Forms
 
 			for (var i = 0; i < LogicalChildren.Count; i++)
 			{
-				var c = (VisualElement)LogicalChildren[i];
-
-				if (c.Bounds != startingLayout[i])
+				var element = LogicalChildren[i];
+				if (element is VisualElement c)
 				{
-					LayoutChanged?.Invoke(this, EventArgs.Empty);
-					return;
+					if (c.Bounds != startingLayout[i])
+					{
+						LayoutChanged?.Invoke(this, EventArgs.Empty);
+						return;
+					}
 				}
 			}
 		}
@@ -306,7 +391,12 @@ namespace Xamarin.Forms
 			_hasAppeared = true;
 
 			if (IsBusy)
-				MessagingCenter.Send(this, BusySetSignalName, true);
+			{
+				if (IsPlatformEnabled)
+					MessagingCenter.Send(this, BusySetSignalName, true);
+				else
+					_pendingActions.Add(() => MessagingCenter.Send(this, BusySetSignalName, true));
+			}
 
 			OnAppearing();
 			Appearing?.Invoke(this, EventArgs.Empty);
@@ -349,14 +439,24 @@ namespace Xamarin.Forms
 		{
 			if (e.OldItems != null)
 			{
-				foreach (VisualElement item in e.OldItems.OfType<VisualElement>())
-					OnInternalRemoved(item);
+				foreach (Element item in e.OldItems)
+				{
+					if (item is VisualElement visual)
+						OnInternalRemoved(visual);
+					else
+						OnChildRemoved(item);
+				}
 			}
 
 			if (e.NewItems != null)
 			{
-				foreach (VisualElement item in e.NewItems.OfType<VisualElement>())
-					OnInternalAdded(item);
+				foreach (Element item in e.NewItems)
+				{
+					if (item is VisualElement visual)
+						OnInternalAdded(visual);
+					else
+						OnChildAdded(item);
+				}
 			}
 		}
 
@@ -420,6 +520,17 @@ namespace Xamarin.Forms
 		public IPlatformElementConfiguration<T, Page> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		internal void SetTitleView(View oldTitleView, View newTitleView)
+		{
+			if (oldTitleView != null)
+				oldTitleView.Parent = null;
+
+			if (newTitleView != null)
+				newTitleView.Parent = this;
+
+			_titleView = newTitleView;
 		}
 	}
 }

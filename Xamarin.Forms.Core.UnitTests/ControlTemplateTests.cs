@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public ContentControl ()
 			{
 				var label = new Label ();
-				label.SetBinding (Label.TextProperty, new TemplateBinding ("Name"));
+				label.SetBinding (Label.TextProperty, new Binding("Name", source: RelativeBindingSource.TemplatedParent));
 
 				Children.Add (label);
 				Children.Add (new ContentPresenter ());
@@ -64,7 +64,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void ResettingControlTemplateNullsPresenterContent ()
 		{
 			var testView = new TestView {
-				Platform = new UnitPlatform (),
 				ControlTemplate = new ControlTemplate (typeof (PresenterWrapper))
 			};
 
@@ -93,7 +92,6 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var label = (Label)child2;
 
-			testView.Platform = new UnitPlatform ();
 			Assert.IsNull (label.Text);
 
 			testView.Name = "Bar";
@@ -105,7 +103,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var parentView = new TestView ();
 			var childView = new TestView ();
-			parentView.Platform = new UnitPlatform ();
 
 			parentView.Content = childView;
 			childView.Content = new Button ();
@@ -142,7 +139,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public TestContent ()
 			{
 				Content = new Entry ();
-				Content.SetBinding (Entry.TextProperty, new TemplateBinding ("Name", BindingMode.TwoWay));
+				Content.SetBinding (Entry.TextProperty, new Binding("Name", BindingMode.TwoWay, source: RelativeBindingSource.TemplatedParent));
 			}
 		}
 
@@ -174,7 +171,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void DoubleTwoWayBindingWorks ()
 		{
 			var page = new TestPage ();
-			page.Platform = new UnitPlatform ();
 			var viewModel = new ViewModel {
 				Name = "Jason"
 			};

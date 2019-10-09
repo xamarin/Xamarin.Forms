@@ -5,6 +5,7 @@ using Xamarin.Forms.Internals;
 using System;
 using System.Linq;
 using Android.Runtime;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -31,6 +32,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if (ParentView is ListView)
 			{
+				cell.IsContextActionsLegacyModeEnabled = item.On<PlatformConfiguration.Android>().GetIsContextActionsLegacyModeEnabled();
+
 				unevenRows = ListView.HasUnevenRowsProperty;
 				rowHeight = ListView.RowHeightProperty;
 			}
@@ -90,12 +93,12 @@ namespace Xamarin.Forms.Platform.Android
 						return _longPressGestureDetector;
 					}
 
-					_longPressGestureDetector = new GestureDetector(new LongPressGestureListener(TriggerLongClick));
+					_longPressGestureDetector = new GestureDetector(Context, new LongPressGestureListener(TriggerLongClick));
 					return _longPressGestureDetector;
 				}
 			}
 
-			public ViewCellContainer(Context context, IVisualElementRenderer view, ViewCell viewCell, View parent, 
+			public ViewCellContainer(Context context, IVisualElementRenderer view, ViewCell viewCell, View parent,
 				BindableProperty unevenRows, BindableProperty rowHeight) : base(context)
 			{
 				_view = view;
@@ -127,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (!Enabled)
 					return true;
-				
+
 				return base.OnInterceptTouchEvent(ev);
 			}
 
@@ -253,13 +256,13 @@ namespace Xamarin.Forms.Platform.Android
 				// to conflict with one another - the Tap Gesture handling will prevent the ListViewAdapter's
 				// LongClick handling from happening. So we need to watch locally for LongPress and if we see it,
 				// trigger the LongClick manually.
-				_watchForLongPress = _viewCell.ContextActions.Count > 0 
+				_watchForLongPress = _viewCell.ContextActions.Count > 0
 					&& HasTapGestureRecognizers(vw);
 			}
 
 			static bool HasTapGestureRecognizers(View view)
 			{
-				return view.GestureRecognizers.Any(t => t is TapGestureRecognizer) 
+				return view.GestureRecognizers.Any(t => t is TapGestureRecognizer)
 					|| view.LogicalChildren.OfType<View>().Any(HasTapGestureRecognizers);
 			}
 
@@ -303,7 +306,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				public void OnShowPress(MotionEvent e)
 				{
-					
+
 				}
 
 				public bool OnSingleTapUp(MotionEvent e)

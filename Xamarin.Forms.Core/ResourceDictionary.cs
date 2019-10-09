@@ -24,6 +24,7 @@ namespace Xamarin.Forms
 
 		[TypeConverter(typeof(TypeTypeConverter))]
 		[Obsolete("Use Source")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Type MergedWith {
 			get { return _mergedWith; }
 			set {
@@ -72,7 +73,7 @@ namespace Xamarin.Forms
 			OnValuesChanged(_mergedInstance.ToArray());
 		}
 
-		ICollection<ResourceDictionary> _mergedDictionaries;
+		ObservableCollection<ResourceDictionary> _mergedDictionaries;
 		public ICollection<ResourceDictionary> MergedDictionaries {
 			get {
 				if (_mergedDictionaries == null) {
@@ -241,8 +242,15 @@ namespace Xamarin.Forms
 		internal IEnumerable<KeyValuePair<string, object>> MergedResources {
 			get {
 				if (MergedDictionaries != null)
-					foreach (var r in MergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
-						yield return r;
+				{
+					for (int i = _mergedDictionaries.Count - 1; i >= 0; i--)
+					{
+						ResourceDictionary r = _mergedDictionaries[i];
+						foreach (var x in r.MergedResources)
+							yield return x;
+					}
+				}
+
 				if (_mergedInstance != null)
 					foreach (var r in _mergedInstance.MergedResources)
 						yield return r;
@@ -252,19 +260,25 @@ namespace Xamarin.Forms
 		}
 
 		public bool TryGetValue(string key, out object value)
+			=> TryGetValueAndSource(key, out value, out _);
+
+		internal bool TryGetValueAndSource(string key, out object value, out ResourceDictionary source)
 		{
+			source = this;
 			return _innerDictionary.TryGetValue(key, out value)
-				|| (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value))
-				|| (MergedDictionaries != null && TryGetMergedDictionaryValue(key, out value));
+				|| (_mergedInstance != null && _mergedInstance.TryGetValueAndSource(key, out value, out source))
+				|| (MergedDictionaries != null && TryGetMergedDictionaryValue(key, out value, out source));
 		}
 
-		bool TryGetMergedDictionaryValue(string key, out object value)
+		bool TryGetMergedDictionaryValue(string key, out object value, out ResourceDictionary source)
 		{
 			foreach (var dictionary in MergedDictionaries.Reverse())
-				if (dictionary.TryGetValue(key, out value))
+				if (dictionary.TryGetValue(key, out value)) {
+					source = dictionary;
 					return true;
+				}
 
-			value = null;
+			value = null; source = null;
 			return false;
 		}
 
@@ -314,6 +328,9 @@ namespace Xamarin.Forms
 		}
 
 		event EventHandler<ResourcesChangedEventArgs> ValuesChanged;
+
+		//only used for unit testing
+		internal static void ClearCache() => s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 
 		[Xaml.ProvideCompiled("Xamarin.Forms.Core.XamlC.RDSourceTypeConverter")]
 		public class RDSourceTypeConverter : TypeConverter, IExtendedTypeConverter

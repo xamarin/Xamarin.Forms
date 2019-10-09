@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ProgressBarRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ProgressBarRenderer()
 		{
 			AutoPackage = false;
@@ -54,7 +55,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateProgressColor();
 		}
 
-		void UpdateProgressColor()
+		internal virtual protected void UpdateProgressColor()
 		{
 			if (Element == null || Control == null)
 				return;
@@ -68,7 +69,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				if (Build.VERSION.SdkInt < BuildVersionCodes.Lollipop)
+				if (Forms.SdkInt < BuildVersionCodes.Lollipop)
 				{
 					(Control.Indeterminate ? Control.IndeterminateDrawable :
 						Control.ProgressDrawable).SetColorFilter(color.ToAndroid(), PorterDuff.Mode.SrcIn);

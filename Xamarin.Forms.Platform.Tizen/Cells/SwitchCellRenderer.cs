@@ -38,19 +38,27 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				var toggle = new Switch()
 				{
+					BindingContext = cell,
+					Parent = cell.Parent
 				};
 				toggle.SetBinding(Switch.IsToggledProperty, new Binding(SwitchCell.OnProperty.PropertyName));
-				toggle.BindingContext = cell;
-				toggle.Parent = cell.Parent;
+				toggle.SetBinding(Switch.OnColorProperty, new Binding(SwitchCell.OnColorProperty.PropertyName));
 				var nativeView = Platform.GetOrCreateRenderer(toggle).NativeView;
+
+				if (Device.Idiom == TargetIdiom.Watch)
+				{
+					nativeView.MinimumWidth += 8;
+				}
 
 				//It is a temporary way to prevent that the check of the Cell gets focus until the UX about views in the Cell for TV is defined.
 				if (Device.Idiom == TargetIdiom.TV)
 				{
 					((Check)nativeView).AllowFocus(false);
-					((Check)nativeView).PropagateEvents = true;
 				}
-
+				else
+				{
+					nativeView.PropagateEvents = false;
+				}
 				return nativeView;
 			}
 			return null;

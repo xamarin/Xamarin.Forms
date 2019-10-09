@@ -11,20 +11,24 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
 	[RenderWith(typeof(_LabelRenderer))]
-	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, ILineHeightElement, IElementConfiguration<Label>
+	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, ILineHeightElement, IElementConfiguration<Label>, IDecorableTextElement, IPaddingElement
 	{
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
 		[Obsolete("XAlignProperty is obsolete as of version 2.0.0. Please use HorizontalTextAlignmentProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty XAlignProperty = HorizontalTextAlignmentProperty;
 
 		public static readonly BindableProperty VerticalTextAlignmentProperty = BindableProperty.Create("VerticalTextAlignment", typeof(TextAlignment), typeof(Label), TextAlignment.Start,
 			propertyChanged: OnVerticalTextAlignmentPropertyChanged);
 
 		[Obsolete("YAlignProperty is obsolete as of version 2.0.0. Please use VerticalTextAlignmentProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty YAlignProperty = VerticalTextAlignmentProperty;
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
@@ -36,47 +40,58 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
+		public static readonly BindableProperty TextDecorationsProperty = DecorableTextElement.TextDecorationsProperty;
+
 		public static readonly BindableProperty FormattedTextProperty = BindableProperty.Create(nameof(FormattedText), typeof(FormattedString), typeof(Label), default(FormattedString),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
 				if (oldvalue != null)
 				{
 					var formattedString = ((FormattedString)oldvalue);
+					var label = ((Label)bindable);
 
-					// Remove spans here, to ensure all collection watching, removes necessary event hooks.
-					for (int i = formattedString.Spans.Count - 1; i >= 0; i--)
-						formattedString.Spans.RemoveAt(i);
-
-					((ObservableCollection<Span>)formattedString.Spans).CollectionChanged -= ((Label)bindable).Span_CollectionChanged;
-					formattedString.PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
+					formattedString.SpansCollectionChanged -= label.Span_CollectionChanged;
+					formattedString.PropertyChanged -= label.OnFormattedTextChanged;
+					formattedString.PropertyChanging -= label.OnFormattedTextChanging;
 					formattedString.Parent = null;
+					label.RemoveSpans(formattedString.Spans);
 				}
 			}, propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
+				var label = ((Label)bindable);
+
 				if (newvalue != null)
 				{
-					var label = ((Label)bindable);
 					var formattedString = (FormattedString)newvalue;
 					formattedString.Parent = label;
+					formattedString.PropertyChanging += label.OnFormattedTextChanging;
 					formattedString.PropertyChanged += label.OnFormattedTextChanged;
-
-					((ObservableCollection<Span>)formattedString.Spans).CollectionChanged += label.Span_CollectionChanged;
-
-					// Initial Load of FormattedText could come preloaded with spans
-					for (int i = 0; i < formattedString.Spans.Count; i++)
-						for (int j = 0; j < formattedString.Spans[i].GestureRecognizers.Count; j++)
-							((IGestureController)label).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = formattedString.Spans[i].GestureRecognizers[j] });
+					formattedString.SpansCollectionChanged += label.Span_CollectionChanged;
+					label.SetupSpans(formattedString.Spans);
 				}
 
-				((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+				label.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 				if (newvalue != null)
-					((Label)bindable).Text = null;
+					label.Text = null;
 			});
 
 		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(Label), LineBreakMode.WordWrap,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		public static readonly BindableProperty LineHeightProperty = LineHeightElement.LineHeightProperty;
+
+		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create(nameof(MaxLines), typeof(int), typeof(Label), -1, propertyChanged: (bindable, oldvalue, newvalue) =>
+			{
+				if (bindable != null)
+				{
+					((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+				}
+			});
+
+		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
+		
+		public static readonly BindableProperty TextTypeProperty = BindableProperty.Create(nameof(TextType), typeof(TextType), typeof(Label), TextType.Text,
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
@@ -93,6 +108,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font attributes which are on the class itself.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Font Font
 		{
 			get { return (Font)GetValue(FontProperty); }
@@ -110,7 +126,7 @@ namespace Xamarin.Forms
 			get { return (TextAlignment)GetValue(TextAlignmentElement.HorizontalTextAlignmentProperty); }
 			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
 		}
-
+		
 		public LineBreakMode LineBreakMode
 		{
 			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
@@ -128,7 +144,13 @@ namespace Xamarin.Forms
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
-
+		
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+		
 		public TextAlignment VerticalTextAlignment
 		{
 			get { return (TextAlignment)GetValue(VerticalTextAlignmentProperty); }
@@ -136,6 +158,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("XAlign is obsolete as of version 2.0.0. Please use HorizontalTextAlignment instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public TextAlignment XAlign
 		{
 			get { return (TextAlignment)GetValue(XAlignProperty); }
@@ -143,6 +166,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("YAlign is obsolete as of version 2.0.0. Please use VerticalTextAlignment instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public TextAlignment YAlign
 		{
 			get { return (TextAlignment)GetValue(YAlignProperty); }
@@ -153,6 +177,12 @@ namespace Xamarin.Forms
 		{
 			get { return (FontAttributes)GetValue(FontAttributesProperty); }
 			set { SetValue(FontAttributesProperty, value); }
+		}
+
+		public TextDecorations TextDecorations
+		{
+			get { return (TextDecorations)GetValue(TextDecorationsProperty); }
+			set { SetValue(TextDecorationsProperty, value); }
 		}
 
 		public string FontFamily
@@ -174,6 +204,24 @@ namespace Xamarin.Forms
 			set { SetValue(LineHeightProperty, value); }
 		}
 
+		public int MaxLines
+		{
+			get => (int)GetValue(MaxLinesProperty);
+			set => SetValue(MaxLinesProperty, value);
+		}
+
+		public Thickness Padding
+		{
+			get { return (Thickness)GetValue(PaddingProperty); }
+			set { SetValue(PaddingProperty, value); }
+		}
+		
+		public TextType TextType
+		{
+			get => (TextType)GetValue(TextTypeProperty);
+			set => SetValue(TextTypeProperty, value);
+		}
+
 		double IFontElement.FontSizeDefaultValueCreator() =>
 			Device.GetNamedSize(NamedSize.Default, (Label)this);
 
@@ -187,88 +235,89 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue) =>
-			 InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+
 		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
+		void OnFormattedTextChanging(object sender, PropertyChangingEventArgs e)
+		{
+			OnPropertyChanging("FormattedText");
+		}
 		void OnFormattedTextChanged(object sender, PropertyChangedEventArgs e)
 		{
-			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 			OnPropertyChanged("FormattedText");
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
+
+		void SetupSpans(System.Collections.IEnumerable spans)
+		{
+			foreach (Span span in spans)
+			{
+				span.GestureRecognizersCollectionChanged += Span_GestureRecognizer_CollectionChanged;
+				SetupSpanGestureRecognizers(span.GestureRecognizers);
+			}
+		}
+
+		void SetupSpanGestureRecognizers(System.Collections.IEnumerable gestureRecognizers)
+		{
+			foreach (GestureRecognizer gestureRecognizer in gestureRecognizers)
+				GestureController.CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = gestureRecognizer });
+		}
+
+
+		void RemoveSpans(System.Collections.IEnumerable spans)
+		{
+			foreach (Span span in spans)
+			{
+				RemoveSpanGestureRecognizers(span.GestureRecognizers);
+				span.GestureRecognizersCollectionChanged -= Span_GestureRecognizer_CollectionChanged;
+			}
+		}
+
+		void RemoveSpanGestureRecognizers(System.Collections.IEnumerable gestureRecognizers)
+		{
+			foreach (GestureRecognizer gestureRecognizer in gestureRecognizers)
+				foreach (var spanRecognizer in GestureController.CompositeGestureRecognizers.ToList())
+					if (spanRecognizer is ChildGestureRecognizer childGestureRecognizer && childGestureRecognizer.GestureRecognizer == gestureRecognizer)
+						GestureController.CompositeGestureRecognizers.Remove(spanRecognizer);
+		}
+
 
 		void Span_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					AddItems();
+					SetupSpans(e.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemoveItems();
+					RemoveSpans(e.OldItems);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					RemoveItems();
-					AddItems();
+					RemoveSpans(e.OldItems);
+					SetupSpans(e.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					// Is never called, because the clear command is overridden.
 					break;
 			}
-
-			void AddItems()
-			{
-				foreach (GestureElement span in e.NewItems)
-				{
-					((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged += Span_GestureRecognizer_CollectionChanged;
-					// span could be preloaded with GestureRecognizers
-					for (int i = 0; i < span.GestureRecognizers.Count; i++)
-						((IGestureController)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = span.GestureRecognizers[i] });
-				}
-			}
-
-			void RemoveItems()
-			{
-				foreach (GestureElement span in e.OldItems)
-				{
-					for (int i = span.GestureRecognizers.Count - 1; i >= 0; i--)
-						span.GestureRecognizers.RemoveAt(i);
-
-					((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
-				}
-			}
 		}
 
 		void Span_GestureRecognizer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			void AddItems()
-			{
-				for (var i = 0; i < e.NewItems.Count; i++)
-					GestureController.CompositeGestureRecognizers.Add(new ChildGestureRecognizer()
-					{
-						GestureRecognizer = (IGestureRecognizer)e.NewItems[i]
-					});
-			}
-
-			void RemoveItems()
-			{
-				for (int i = 0; i < e.OldItems.Count; i++)
-					foreach (var spanRecognizer in GestureController.CompositeGestureRecognizers.ToList())
-						if (spanRecognizer is ChildGestureRecognizer && spanRecognizer == e.OldItems[i])
-							GestureController.CompositeGestureRecognizers.Remove(spanRecognizer);
-			}
 
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					AddItems();
+					SetupSpanGestureRecognizers(e.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemoveItems();
+					RemoveSpanGestureRecognizers(e.OldItems);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					RemoveItems();
-					AddItems();
+					RemoveSpanGestureRecognizers(e.OldItems);
+					SetupSpanGestureRecognizers(e.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					// is never called, because the clear command is overridden.
@@ -312,22 +361,41 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
+
 		public override IList<GestureElement> GetChildElements(Point point)
 		{
 			if (FormattedText?.Spans == null || FormattedText?.Spans.Count == 0)
 				return null;
 
 			var spans = new List<GestureElement>();
-			foreach (var span in FormattedText.Spans)
+			for (int i = 0; i < FormattedText.Spans.Count; i++)
+			{
+				Span span = FormattedText.Spans[i];
 				if (span.GestureRecognizers.Count > 0 && (((ISpatialElement)span).Region.Contains(point) || point.IsEmpty))
 					spans.Add(span);
+			}
 
-			if (spans.Count > 1) // More than 2 elements overlapping, deflate to see which one is actually hit.
+			if (!point.IsEmpty && spans.Count > 1) // More than 2 elements overlapping, deflate to see which one is actually hit.
 				for (var i = spans.Count - 1; i >= 0; i--)
 					if (!((ISpatialElement)spans[i]).Region.Deflate().Contains(point))
 						spans.RemoveAt(i);
 
 			return spans;
+		}
+
+		Thickness IPaddingElement.PaddingDefaultValueCreator()
+		{
+			return default(Thickness);
+		}
+
+		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
+		{
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 	}
 }

@@ -6,10 +6,9 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_EditorRenderer))]
-	public class Editor : InputView, IEditorController, IFontElement, ITextElement, IElementConfiguration<Editor>
+	public class Editor : InputView, IEditorController, IFontElement, IElementConfiguration<Editor>
 	{
-		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
-			=> OnTextChanged((Editor)bindable, (string)oldValue, (string)newValue));
+		public new static readonly BindableProperty TextProperty = InputView.TextProperty;
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
@@ -17,18 +16,20 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
-		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+		public new static readonly BindableProperty TextColorProperty = InputView.TextColorProperty;
 
-		public static readonly BindableProperty PlaceholderProperty = BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(Editor), default(string));
+		public new static readonly BindableProperty CharacterSpacingProperty = InputView.CharacterSpacingProperty;
 
-		public static readonly BindableProperty PlaceholderColorProperty = BindableProperty.Create(nameof(PlaceholderColor), typeof(Color), typeof(Editor), Color.Default);
+		public new static readonly BindableProperty PlaceholderProperty = InputView.PlaceholderProperty;
+
+		public new static readonly BindableProperty PlaceholderColorProperty = InputView.PlaceholderColorProperty;
+
+		public static readonly BindableProperty IsTextPredictionEnabledProperty = BindableProperty.Create(nameof(IsTextPredictionEnabled), typeof(bool), typeof(Editor), true, BindingMode.Default);
 
 		public static readonly BindableProperty AutoSizeProperty = BindableProperty.Create(nameof(AutoSize), typeof(EditorAutoSizeOption), typeof(Editor), defaultValue: EditorAutoSizeOption.Disabled, propertyChanged: (bindable, oldValue, newValue)
 			=> ((Editor)bindable)?.InvalidateMeasure());
 
-
 		readonly Lazy<PlatformConfigurationRegistry<Editor>> _platformConfigurationRegistry;
-
 
 		public EditorAutoSizeOption AutoSize
 		{
@@ -36,34 +37,16 @@ namespace Xamarin.Forms
 			set { SetValue(AutoSizeProperty, value); }
 		}
 
-		public string Text
-		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
-		}
-
-		public Color TextColor
-		{
-			get { return (Color)GetValue(TextElement.TextColorProperty); }
-			set { SetValue(TextElement.TextColorProperty, value); }
-		}
-
-		public string Placeholder
-		{
-			get { return (string)GetValue(PlaceholderProperty); }
-			set { SetValue(PlaceholderProperty, value); }
-		}
-
-		public Color PlaceholderColor
-		{
-			get { return (Color)GetValue(PlaceholderColorProperty); }
-			set { SetValue(PlaceholderColorProperty, value); }
-		}
-
 		public FontAttributes FontAttributes
 		{
 			get { return (FontAttributes)GetValue(FontAttributesProperty); }
 			set { SetValue(FontAttributesProperty, value); }
+		}
+
+		public bool IsTextPredictionEnabled
+		{
+			get { return (bool)GetValue(IsTextPredictionEnabledProperty); }
+			set { SetValue(IsTextPredictionEnabledProperty, value); }
 		}
 
 		public string FontFamily
@@ -112,8 +95,6 @@ namespace Xamarin.Forms
 
 		public event EventHandler Completed;
 
-		public event EventHandler<TextChangedEventArgs> TextChanged;
-
 		public Editor()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Editor>>(() => new PlatformConfigurationRegistry<Editor>(this));
@@ -128,16 +109,13 @@ namespace Xamarin.Forms
 		public void SendCompleted()
 			=> Completed?.Invoke(this, EventArgs.Empty);
 
-		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		protected override void OnTextChanged(string oldValue, string newValue)
 		{
-		}
+			base.OnTextChanged(oldValue, newValue);
 
-		private static void OnTextChanged(Editor bindable, string oldValue, string newValue)
-		{
-			bindable.TextChanged?.Invoke(bindable, new TextChangedEventArgs(oldValue, newValue));
-			if (bindable.AutoSize == EditorAutoSizeOption.TextChanges)
+			if (AutoSize == EditorAutoSizeOption.TextChanges)
 			{
-				bindable.InvalidateMeasure();
+				InvalidateMeasure();
 			}
 		}
 	}

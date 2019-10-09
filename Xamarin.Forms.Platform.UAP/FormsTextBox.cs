@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
@@ -19,29 +20,30 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		const char ObfuscationCharacter = '●';
 
-		public static readonly DependencyProperty PlaceholderForegroundBrushProperty = 
+		public static readonly DependencyProperty PlaceholderForegroundBrushProperty =
 			DependencyProperty.Register(nameof(PlaceholderForegroundBrush), typeof(Brush), typeof(FormsTextBox),
 				new PropertyMetadata(default(Brush), FocusPropertyChanged));
 
-		public static readonly DependencyProperty PlaceholderForegroundFocusBrushProperty = 
+		public static readonly DependencyProperty PlaceholderForegroundFocusBrushProperty =
 			DependencyProperty.Register(nameof(PlaceholderForegroundFocusBrush), typeof(Brush), typeof(FormsTextBox),
 				new PropertyMetadata(default(Brush), FocusPropertyChanged));
 
-		public static readonly DependencyProperty ForegroundFocusBrushProperty = 
-			DependencyProperty.Register(nameof(ForegroundFocusBrush), typeof(Brush), typeof(FormsTextBox), 
+		public static readonly DependencyProperty ForegroundFocusBrushProperty =
+			DependencyProperty.Register(nameof(ForegroundFocusBrush), typeof(Brush), typeof(FormsTextBox),
 				new PropertyMetadata(default(Brush), FocusPropertyChanged));
 
-		public static readonly DependencyProperty BackgroundFocusBrushProperty = 
-			DependencyProperty.Register(nameof(BackgroundFocusBrush), typeof(Brush), typeof(FormsTextBox), 
+		public static readonly DependencyProperty BackgroundFocusBrushProperty =
+			DependencyProperty.Register(nameof(BackgroundFocusBrush), typeof(Brush), typeof(FormsTextBox),
 				new PropertyMetadata(default(Brush), FocusPropertyChanged));
 
-		public static readonly DependencyProperty IsPasswordProperty = DependencyProperty.Register(nameof(IsPassword), 
+		public static readonly DependencyProperty IsPasswordProperty = DependencyProperty.Register(nameof(IsPassword),
 			typeof(bool), typeof(FormsTextBox), new PropertyMetadata(default(bool), OnIsPasswordChanged));
 
-		public new static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), 
+		public new static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text),
 			typeof(string), typeof(FormsTextBox), new PropertyMetadata("", TextPropertyChanged));
 
 		InputScope _passwordInputScope;
+		InputScope _numericPasswordInputScope;
 		Border _borderElement;
 		InputScope _cachedInputScope;
 		bool _cachedPredictionsSetting;
@@ -117,6 +119,23 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		InputScope NumericPasswordInputScope
+		{
+			get
+			{
+				if (_numericPasswordInputScope != null)
+				{
+					return _numericPasswordInputScope;
+				}
+
+				_numericPasswordInputScope = new InputScope();
+				var name = new InputScopeName { NameValue = InputScopeNameValue.NumericPassword };
+				_numericPasswordInputScope.Names.Add(name);
+
+				return _numericPasswordInputScope;
+			}
+		}
+
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
@@ -133,7 +152,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			int lengthDifference = base.Text.Length - Text.Length;
 
-			string updatedRealText = DetermineTextFromPassword(Text, base.Text);
+			string updatedRealText = DetermineTextFromPassword(Text, SelectionStart, base.Text);
 
 			if (Text == updatedRealText)
 			{
@@ -153,13 +172,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				// Either More than one character got added in this text change (e.g., a paste operation)
 				// Or characters were removed. Either way, we don't need to do the delayed obfuscation dance
-				newText = Obfuscate();
+				newText = Obfuscate(Text);
 			}
 			else
 			{
 				// Only one character was added; we need to leave it visible for a brief time period
 				// Obfuscate all but the last character for now
-				newText = Obfuscate(true);
+				newText = Obfuscate(Text, true);
 
 				// Leave the last character visible until a new character is added
 				// or sufficient time has passed
@@ -174,7 +193,7 @@ namespace Xamarin.Forms.Platform.UWP
 					_cts.Token.ThrowIfCancellationRequested();
 					await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 					{
-						base.Text = Obfuscate();
+						base.Text = Obfuscate(Text);
 						SelectionStart = base.Text.Length;
 					});
 				}, _cts.Token);
@@ -189,41 +208,29 @@ namespace Xamarin.Forms.Platform.UWP
 			SelectionStart = base.Text.Length;
 		}
 
-		static string DetermineTextFromPassword(string realText, string passwordText)
+		static string DetermineTextFromPassword(string realText, int start, string passwordText)
 		{
-			if (realText.Length == passwordText.Length)
-			{
-				return realText;
-			}
+			var lengthDifference = passwordText.Length - realText.Length;
+			if (lengthDifference > 0)
+				realText = realText.Insert(start - lengthDifference, new string(ObfuscationCharacter, lengthDifference));
+			else if (lengthDifference < 0)
+				realText = realText.Remove(start, -lengthDifference);
 
-			if (passwordText.Length == 0)
-			{
-				return "";
-			}
+			var sb = new System.Text.StringBuilder(passwordText.Length);
+			for (int i = 0; i < passwordText.Length; i++)
+				sb.Append(passwordText[i] == ObfuscationCharacter ? realText[i] : passwordText[i]);
 
-			if (passwordText.Length < realText.Length)
-			{
-				return realText.Substring(0, passwordText.Length);
-			}
-
-			int lengthDifference = passwordText.Length - realText.Length;
-
-			return realText + passwordText.Substring(passwordText.Length - lengthDifference, lengthDifference);
+			return sb.ToString();
 		}
 
-		string Obfuscate(bool leaveLastVisible = false)
+		string Obfuscate(string text, bool leaveLastVisible = false)
 		{
-			if (leaveLastVisible && Text.Length == 1)
-			{
-				return Text;
-			}
+			if (!leaveLastVisible)
+				return new string(ObfuscationCharacter, text.Length);
 
-			if (leaveLastVisible && Text.Length > 1)
-			{
-				return new string(ObfuscationCharacter, Text.Length - 1) + Text.Substring(Text.Length - 1, 1);
-			}
-
-			return new string(ObfuscationCharacter, Text.Length);
+			return text.Length == 1
+				? text
+				: new string(ObfuscationCharacter, text.Length - 1) + text.Substring(text.Length - 1, 1);
 		}
 
 		static void OnIsPasswordChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
@@ -296,32 +303,25 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (IsPassword)
 			{
-				// If we're not on a phone, we can just obfuscate any input
-				if (Device.Idiom != TargetIdiom.Phone)
+				// If we are on the phone, we might need to delay obfuscating the last character
+				if (Device.Idiom == TargetIdiom.Phone)
 				{
-					string updatedRealText = DetermineTextFromPassword(Text, base.Text);
-
-					if (Text == updatedRealText)
-					{
-						// Nothing to do
-						return;
-					}
-
-					Text = updatedRealText;
-
-					string updatedText = Obfuscate();
-
-					if (base.Text != updatedText)
-					{
-						base.Text = updatedText;
-						SelectionStart = base.Text.Length;
-					}
-
+					DelayObfuscation();
 					return;
 				}
 
-				// If we are on the phone, we might need to delay obfuscating the last character
-				DelayObfuscation();
+				// If we're not on a phone, we can just obfuscate any input
+				string updatedRealText = DetermineTextFromPassword(Text, SelectionStart, base.Text);
+				string updatedText = Obfuscate(updatedRealText);
+				var savedSelectionStart = SelectionStart;
+
+				if (Text != updatedRealText)
+					Text = updatedRealText;
+
+				if (base.Text != updatedText)
+					base.Text = updatedText;
+
+				SelectionStart = savedSelectionStart;
 			}
 			else if (base.Text != Text)
 			{
@@ -341,7 +341,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			base.Text = IsPassword ? Obfuscate() : Text;
+			base.Text = IsPassword ? Obfuscate(Text) : Text;
 
 			SelectionStart = base.Text.Length;
 		}
@@ -359,7 +359,16 @@ namespace Xamarin.Forms.Platform.UWP
 				_cachedInputScope = InputScope;
 				_cachedSpellCheckSetting = IsSpellCheckEnabled;
 				_cachedPredictionsSetting = IsTextPredictionEnabled;
-				InputScope = PasswordInputScope; // Change to default input scope so we don't have suggestions, etc.
+
+				if (InputScope != null && InputScope.Names.Any(i => i.NameValue == InputScopeNameValue.Number))
+				{
+					InputScope = NumericPasswordInputScope;
+				}
+				else
+				{
+					InputScope = PasswordInputScope; // Change to default input scope so we don't have suggestions, etc.
+				}
+
 				IsTextPredictionEnabled = false; // Force the other text modification options off
 				IsSpellCheckEnabled = false;
 			}

@@ -19,10 +19,8 @@ namespace Xamarin.Forms.Xaml
 		{
 			IXmlLineInfo lineInfo;
 
-			if (!string.IsNullOrEmpty(Style) && Source != null) {
-				lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
-				throw new XamlParseException($"StyleSheet can not have both a Source and a content", lineInfo);
-			}
+			if (!string.IsNullOrEmpty(Style) && Source != null)
+				throw new XamlParseException($"StyleSheet can not have both a Source and a content", serviceProvider);
 
 			if (Source != null) {
 				lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
@@ -34,8 +32,9 @@ namespace Xamarin.Forms.Xaml
 					return null;
 				var rootTargetPath = XamlResourceIdAttribute.GetPathForType(rootObjectType);
 				var resourcePath = ResourceDictionary.RDSourceTypeConverter.GetResourcePath(Source, rootTargetPath);
-				var resString = DependencyService.Get<IResourcesLoader>().GetResource(resourcePath, rootObjectType.GetTypeInfo().Assembly, lineInfo);
-				return StyleSheet.FromString(resString);
+				var assembly = rootObjectType.GetTypeInfo().Assembly;
+
+				return StyleSheet.FromResource(resourcePath, assembly, lineInfo);
 			}
 
 			if (!string.IsNullOrEmpty(Style)) {
@@ -43,8 +42,7 @@ namespace Xamarin.Forms.Xaml
 					return StyleSheet.FromReader(reader);
 			}
 
-			lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
-			throw new XamlParseException($"StyleSheet require either a Source or a content", lineInfo);
+			throw new XamlParseException($"StyleSheet require either a Source or a content", serviceProvider);
 		}
 	}
 }

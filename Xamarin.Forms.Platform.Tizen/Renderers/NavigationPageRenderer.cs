@@ -8,6 +8,8 @@ using ElmSharp;
 using EButton = ElmSharp.Button;
 using EToolbar = ElmSharp.Toolbar;
 using EToolbarItem = ElmSharp.ToolbarItem;
+using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.NavigationPage;
+using SpecificPage = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Page;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -24,10 +26,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		const string PartLeftToolbar = "title_left_btn";
 		const string PartRightToolbar = "title_right_btn";
 		const string PartNavigationBar = "navigationbar";
-		const string StyleLeftToolBarButton = "naviframe/title_left";
-		const string StyleRightToolbarButton = "naviframe/title_right";
 		const string StyleBackButton = "naviframe/back_btn/default";
-		const string StyleDefaultToolbarIcon = "naviframe/drawers";
 		const string StyleNavigationBar = "navigationbar";
 
 		readonly List<Widget> _naviItemContentPartList = new List<Widget>();
@@ -113,7 +112,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			foreach (Page page in pageController.InternalChildren)
 			{
-				_naviItemMap[page] = _naviFrame.Push(Platform.GetRenderer(page).NativeView, SpanTitle(page.Title));
+				_naviItemMap[page] = _naviFrame.Push(CreateNavItem(page), SpanTitle(page.Title));
 				page.PropertyChanged += NavigationBarPropertyChangedHandler;
 
 				UpdateHasNavigationBar(page);
@@ -138,7 +137,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			// Tizen does not support 'Tint', but only 'BarBackgroundColor'
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor(CurrentNaviItem);
-			else if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable && e.PropertyName == "HasBreadCrumbsBar")
+			else if (e.PropertyName == Specific.HasBreadCrumbsBarProperty.PropertyName)
 				UpdateBreadCrumbsBar(CurrentNaviItem);
 
 		}
@@ -168,13 +167,23 @@ namespace Xamarin.Forms.Platform.Tizen
 				UpdateHasBackButton(sender as Page);
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateTitle(sender as Page);
-			else if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable && e.PropertyName == "BreadCrumb")
+			else if (e.PropertyName == SpecificPage.BreadCrumbProperty.PropertyName)
 				UpdateBreadCrumbsBar(GetNaviItemForPage(sender as Page));
 		}
 
 		void UpdateHasNavigationBar(Page page)
 		{
 			NaviItem item = GetNaviItemForPage(page);
+			if (NavigationPage.GetTitleView(page) != null)
+			{
+				item.TitleBarVisible = false;
+				Native.TitleViewPage tvPage = item.Content as Native.TitleViewPage;
+				if (tvPage != null)
+				{
+					tvPage.HasNavigationBar = (bool)page.GetValue(NavigationPage.HasNavigationBarProperty);
+				}
+				return;
+			}
 			//According to TV UX Guideline, item style should be set to "tabbar" in case of TabbedPage only for TV profile.
 			if (Device.Idiom == TargetIdiom.TV)
 			{
@@ -183,8 +192,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			item.TitleBarVisible = (bool)page.GetValue(NavigationPage.HasNavigationBarProperty);
 			UpdateToolbarItem(page, item);
 			UpdateBarBackgroundColor(item);
-			if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable)
-				UpdateBreadCrumbsBar(item);
+			UpdateBreadCrumbsBar(item);
 		}
 
 		void UpdateToolbarItem(Page page, NaviItem item = null)
@@ -306,37 +314,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (item == default(ToolbarItem))
 				return null;
 
-			Native.Button button = new Native.Button(Forms.NativeParent);
-			button.Clicked += (s, e) =>
-			{
-				IMenuItemController control = item;
-				control.Activate();
-			};
-			button.Text = item.Text;
-			button.BackgroundColor = Color.Transparent.ToNative();
-
-			if (string.IsNullOrEmpty(item.Icon))
-			{
-				if (string.IsNullOrEmpty(item.Text))
-				{
-					// We assumed the default toolbar icon is "naviframe/drawer" if there are no icon and text.
-					button.Style = StyleDefaultToolbarIcon;
-				}
-				else
-				{
-					if (position == ToolbarButtonPosition.Right)
-						button.Style = StyleRightToolbarButton;
-					else
-						button.Style = StyleLeftToolBarButton;
-				}
-			}
-			else
-			{
-				Native.Image iconImage = new Native.Image(Forms.NativeParent);
-				var task = iconImage.LoadFromImageSourceAsync(item.Icon);
-				button.Image = iconImage;
-			}
-
+			Native.ToolbarItemButton button = new Native.ToolbarItemButton(item);
 			return button;
 		}
 
@@ -433,7 +411,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (nre.Animated || _naviFrame.NavigationStack.Count == 0)
 			{
-				_naviItemMap[nre.Page] = _naviFrame.Push(Platform.GetOrCreateRenderer(nre.Page).NativeView, SpanTitle(nre.Page.Title));
+				_naviItemMap[nre.Page] = _naviFrame.Push(CreateNavItem(nre.Page), SpanTitle(nre.Page.Title));
 				_currentTaskSource = new TaskCompletionSource<bool>();
 				nre.Task = _currentTaskSource.Task;
 
@@ -443,7 +421,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			else
 			{
-				_naviItemMap[nre.Page] = _naviFrame.InsertAfter(_naviFrame.NavigationStack.Last(), Platform.GetOrCreateRenderer(nre.Page).NativeView, SpanTitle(nre.Page.Title));
+				_naviItemMap[nre.Page] = _naviFrame.InsertAfter(_naviFrame.NavigationStack.Last(), CreateNavItem(nre.Page), SpanTitle(nre.Page.Title));
 			}
 			UpdateHasNavigationBar(nre.Page);
 		}
@@ -458,12 +436,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs nre)
 		{
 			if (nre.BeforePage == null)
-				throw new ArgumentNullException("before");
+				throw new ArgumentException("BeforePage is null");
 			if (nre.Page == null)
-				throw new ArgumentNullException("page");
+				throw new ArgumentException("Page is null");
 
-			EvasObject page = Platform.GetOrCreateRenderer(nre.Page).NativeView;
-			_naviItemMap[nre.Page] = _naviFrame.InsertBefore(GetNaviItemForPage(nre.BeforePage), page, SpanTitle(nre.Page.Title));
+			_naviItemMap[nre.Page] = _naviFrame.InsertBefore(GetNaviItemForPage(nre.BeforePage), CreateNavItem(nre.Page), SpanTitle(nre.Page.Title));
 			UpdateHasNavigationBar(nre.Page);
 		}
 
@@ -480,6 +457,24 @@ namespace Xamarin.Forms.Platform.Tizen
 				_currentTaskSource = null;
 				tmp.SetResult(true);
 			}
+		}
+
+		EvasObject CreateNavItem(Page page)
+		{
+			View titleView = NavigationPage.GetTitleView(page);
+			EvasObject nativeView = null;
+			if (titleView != null)
+			{
+				titleView.Parent = this.Element;
+				nativeView = new Native.TitleViewPage(Forms.NativeParent, page, titleView);
+				nativeView.Show();
+			}
+			else
+			{
+				nativeView = Platform.GetOrCreateRenderer(page).NativeView;
+
+			}
+			return nativeView;
 		}
 	}
 }

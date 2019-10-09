@@ -7,6 +7,7 @@ using Android.Views;
 using Android.Widget;
 using System;
 using System.ComponentModel;
+using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -36,6 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use LabelRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public LabelRenderer()
 		{
 			AutoPackage = false;
@@ -70,7 +72,16 @@ namespace Xamarin.Forms.Platform.Android
 					return _lastSizeRequest.Value;
 			}
 
+			//We need to clear the Hint or else it will interfere with the sizing of the Label
+			var hint = Control.Hint;
+			if (!string.IsNullOrEmpty(hint))
+				Control.Hint = string.Empty;
+
 			SizeRequest result = base.GetDesiredSize(widthConstraint, heightConstraint);
+
+			//Set Hint back after sizing
+			Control.Hint = hint;
+
 			result.Minimum = new Size(Math.Min(Context.ToPixels(10), result.Request.Width), result.Request.Height);
 
 			_lastConstraintWidth = widthConstraint;
@@ -107,7 +118,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateText();
 				UpdateLineBreakMode();
+				UpdateCharacterSpacing();
+				UpdateLineHeight();
 				UpdateGravity();
+				UpdateMaxLines();
 			}
 			else
 			{
@@ -117,8 +131,13 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateLineBreakMode();
 				if (e.OldElement.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment || e.OldElement.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
 					UpdateGravity();
+				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
+					UpdateMaxLines();
+				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
+					UpdateCharacterSpacing();
 			}
-
+			UpdateTextDecorations();
+			UpdatePadding();
 			_motionEventHelper.UpdateElement(e.NewElement);
 		}
 
@@ -132,12 +151,20 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
-			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations();
+			else if (e.IsOneOf(Label.TextProperty, Label.FormattedTextProperty, Label.TextTypeProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
 
 		void UpdateColor()
@@ -174,6 +201,24 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		void UpdateTextDecorations()
+		{
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
+
+			var textDecorations = Element.TextDecorations;
+
+			if ((textDecorations & TextDecorations.Strikethrough) == 0)
+				_view.PaintFlags &= ~PaintFlags.StrikeThruText;
+			else
+				_view.PaintFlags |= PaintFlags.StrikeThruText;
+
+			if ((textDecorations & TextDecorations.Underline) == 0)
+				_view.PaintFlags &= ~PaintFlags.UnderlineText;
+			else
+				_view.PaintFlags |= PaintFlags.UnderlineText;
+		}
+
 		void UpdateGravity()
 		{
 			Label label = Element;
@@ -185,16 +230,29 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLineBreakMode()
 		{
-			_view.SetLineBreakMode(Element.LineBreakMode);
+			_view.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
+		}
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer && Control is TextView textControl)
+			{
+				textControl.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
 		}
 
 		void UpdateLineHeight()
 		{
+			_lastSizeRequest = null;
 			if (Element.LineHeight == -1)
 				_view.SetLineSpacing(_lineSpacingExtraDefault, _lineSpacingMultiplierDefault);
 			else if (Element.LineHeight >= 0)
 				_view.SetLineSpacing(0, (float)Element.LineHeight);
+		}
+
+		void UpdateMaxLines()
+		{
+			Control.SetMaxLines(Element);
 		}
 
 		void UpdateText()
@@ -214,12 +272,41 @@ namespace Xamarin.Forms.Platform.Android
 					_view.SetTextColor(_labelTextColorDefault);
 					_lastUpdateColor = Color.Default;
 				}
-				_view.Text = Element.Text;
+
+				switch (Element.TextType)
+				{
+
+					case TextType.Html:
+						if (Forms.IsNougatOrNewer)
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
+						else
+#pragma warning disable CS0618 // Type or member is obsolete
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty), TextView.BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+						break;
+
+					default:
+						_view.Text = Element.Text;
+
+						break;
+				}
+
 				UpdateColor();
 				UpdateFont();
 
 				_wasFormatted = false;
 			}
+
+			_lastSizeRequest = null;
+		}
+
+		void UpdatePadding()
+		{
+			Control.SetPadding(
+				(int)Context.ToPixels(Element.Padding.Left),
+				(int)Context.ToPixels(Element.Padding.Top),
+				(int)Context.ToPixels(Element.Padding.Right),
+				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
 		}

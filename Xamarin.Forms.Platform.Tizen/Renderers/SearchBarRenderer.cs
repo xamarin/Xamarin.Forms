@@ -5,14 +5,7 @@ namespace Xamarin.Forms.Platform.Tizen
 {
 	public class SearchBarRenderer : ViewRenderer<SearchBar, Native.SearchBar>
 	{
-		//TODO need to add internationalization support
-		const string DefaultPlaceholderText = "Search";
 
-		static readonly EColor s_defaultCancelButtonColor = EColor.Aqua;
-
-		//TODO: read default platform color
-		static readonly EColor s_defaultPlaceholderColor = EColor.Gray;
-		static readonly EColor s_defaultTextColor = EColor.Black;
 		/// <summary>
 		/// Creates a new instance of the <see cref="Xamarin.Forms.Platform.Tizen.SearchBarRenderer"/> class.
 		/// Registers handlers for various properties of the SearchBar widget.
@@ -28,6 +21,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(SearchBar.PlaceholderColorProperty, PlaceholderColorPropertyHandler);
 			RegisterPropertyHandler(SearchBar.TextProperty, TextPropertyHandler);
 			RegisterPropertyHandler(SearchBar.TextColorProperty, TextColorPropertyHandler);
+			RegisterPropertyHandler(InputView.KeyboardProperty, UpdateKeyboard);
+			RegisterPropertyHandler(InputView.MaxLengthProperty, UpdateMaxLength);
+			RegisterPropertyHandler(InputView.IsSpellCheckEnabledProperty, UpdateIsSpellCheckEnabled);
+			RegisterPropertyHandler(InputView.IsReadOnlyProperty, UpdateIsReadOnly);
 		}
 
 
@@ -38,7 +35,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (Control != null)
 				{
 					Control.TextChanged -= OnTextChanged;
-					Control.SearchButtonPressed -= OnButtonPressed;
+					Control.Activated -= OnActivated;
 				}
 			}
 			base.Dispose(disposing);
@@ -52,26 +49,32 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control == null)
 			{
 				SetNativeControl(new Native.SearchBar(Forms.NativeParent));
+				Control.IsSingleLine = true;
+				Control.SetInputPanelReturnKeyType(ElmSharp.InputPanelReturnKeyType.Search);
+
 				Control.TextChanged += OnTextChanged;
-				Control.SearchButtonPressed += OnButtonPressed;
+				Control.Activated += OnActivated;
+				Control.PrependMarkUpFilter(MaxLengthFilter);
+
 			}
-			Control.BatchBegin();
 			base.OnElementChanged(e);
-			Control.BatchCommit();
 		}
 
 		protected override Size MinimumSize()
 		{
-			return new Size(136, 65);
+			return Control.Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
 		}
 
 		/// <summary>
 		/// Called upon changing of Xamarin widget's cancel button color property.
 		/// Converts current Color to ElmSharp.Color instance and sets it in the underlying Xamarin.Forms.Platform.Tizen.Native widget.
 		/// </summary>
-		void CancelButtonColorPropertyHandler()
+		void CancelButtonColorPropertyHandler(bool initialize)
 		{
-			Control.CancelButtonColor = Element.CancelButtonColor.IsDefault ? s_defaultCancelButtonColor : Element.CancelButtonColor.ToNative();
+			if (initialize && Element.CancelButtonColor.IsDefault)
+				return;
+
+			Control.SetClearButtonColor(Element.CancelButtonColor.ToNative());
 		}
 
 		/// <summary>
@@ -117,9 +120,12 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// Converts current PlaceholderColor property value to ElmSharp.Color instance
 		/// and sets it in the underlying Xamarin.Forms.Platform.Tizen.Native.SearchBar widget.
 		/// </summary>
-		void PlaceholderColorPropertyHandler()
+		void PlaceholderColorPropertyHandler(bool initialize)
 		{
-			Control.PlaceholderColor = Element.PlaceholderColor.IsDefault ? s_defaultPlaceholderColor : Element.PlaceholderColor.ToNative();
+			if (initialize && Element.TextColor.IsDefault)
+				return;
+
+			Control.PlaceholderColor = Element.PlaceholderColor.ToNative();
 		}
 
 		/// <summary>
@@ -127,7 +133,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </summary>
 		void PlaceholderPropertyHandler()
 		{
-			Control.Placeholder = Element.Placeholder == null ? DefaultPlaceholderText : Element.Placeholder;
+			Control.Placeholder = Element.Placeholder;
 		}
 
 		/// <summary>
@@ -137,7 +143,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// <param name="sender">Sender.</param>
 		void OnTextChanged(object sender, EventArgs e)
 		{
-			Element.Text = Control.Text;
+			Element.SetValueFromRenderer(SearchBar.TextProperty, Control.Text);
 		}
 
 		/// <summary>
@@ -145,8 +151,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">Event arguments.</param>
-		void OnButtonPressed(object sender, EventArgs e)
+		void OnActivated(object sender, EventArgs e)
 		{
+			Control.HideInputPanel();
 			(Element as ISearchBarController).OnSearchButtonPressed();
 		}
 
@@ -155,9 +162,12 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// Converts current TextColor property value to ElmSharp.Color instance
 		/// and sets it in the underlying Xamarin.Forms.Platform.Tizen.Native.SearchBar widget.
 		/// </summary>
-		void TextColorPropertyHandler()
+		void TextColorPropertyHandler(bool initialize)
 		{
-			Control.TextColor = Element.TextColor.IsDefault ? s_defaultTextColor : Element.TextColor.ToNative();
+			if (initialize && Element.TextColor.IsDefault)
+				return;
+
+			Control.TextColor = Element.TextColor.ToNative();
 		}
 
 		/// <summary>
@@ -166,6 +176,37 @@ namespace Xamarin.Forms.Platform.Tizen
 		void TextPropertyHandler()
 		{
 			Control.Text = Element.Text;
+		}
+
+		void UpdateKeyboard(bool initialize)
+		{
+			if (initialize && Element.Keyboard == Keyboard.Default)
+				return;
+			Control.UpdateKeyboard(Element.Keyboard, Element.IsSpellCheckEnabled, true);
+		}
+
+		void UpdateIsSpellCheckEnabled()
+		{
+			Control.InputHint = Element.Keyboard.ToInputHints(Element.IsSpellCheckEnabled, true);
+		}
+
+		void UpdateMaxLength()
+		{
+			if (Control.Text.Length > Element.MaxLength)
+				Control.Text = Control.Text.Substring(0, Element.MaxLength);
+		}
+
+		string MaxLengthFilter(ElmSharp.Entry entry, string s)
+		{
+			if (entry.Text.Length < Element.MaxLength)
+				return s;
+
+			return null;
+		}
+
+		void UpdateIsReadOnly()
+		{
+			Control.IsEditable = !Element.IsReadOnly;
 		}
 	}
 }

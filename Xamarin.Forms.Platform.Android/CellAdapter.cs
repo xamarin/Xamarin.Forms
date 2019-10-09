@@ -10,6 +10,7 @@ using AView = Android.Views.View;
 using AListView = Android.Widget.ListView;
 using Android.Graphics.Drawables;
 using Android.Support.V7.App;
+using AActionMode = global::Android.Support.V7.View.ActionMode;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool _actionModeNeedsUpdates;
 		AView _contextView;
-		global::Android.Support.V7.View.ActionMode _supportActionMode;
+		AActionMode _supportActionMode;
 
 		protected CellAdapter(Context context)
 		{
@@ -192,14 +193,16 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				MenuItem action = ActionModeContext.ContextActions[i];
 
-				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i,global::Android.Views.Menu.None, action.Text);
-				var icon = action.Icon;
-				if (icon != null)
+				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i, global::Android.Views.Menu.None, action.Text);
+
+				_ = _context.ApplyDrawableAsync(action, MenuItem.IconImageSourceProperty, iconDrawable =>
 				{
-					Drawable iconDrawable = _context.GetFormsDrawable(icon);
-					if (iconDrawable != null)
+					if (iconDrawable != null && !this.IsDisposed() && !_actionModeNeedsUpdates)
+					{
 						item.SetIcon(iconDrawable);
-				}
+						item.SetTitleOrContentDescription(action);
+					}
+				});
 
 				action.PropertyChanged += changed;
 				action.PropertyChanging += changing;
@@ -232,7 +235,10 @@ namespace Xamarin.Forms.Platform.Android
 
 				ActionModeContext = cell;
 
-				_actionMode?.Invalidate();
+				if(ActionModeContext.IsContextActionsLegacyModeEnabled == false)
+					_actionModeNeedsUpdates = true;
+
+                _actionMode?.Invalidate();
 				_supportActionMode?.Invalidate();
 			}
 			else
@@ -244,7 +250,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var appCompatActivity = view.Context as AppCompatActivity;
 				if (appCompatActivity == null)
-					_actionMode = ((Activity)view.Context).StartActionMode(this);
+					_actionMode = view.Context.GetActivity().StartActionMode(this);
 				else
 					_supportActionMode = appCompatActivity.StartSupportActionMode(this);
 			}

@@ -8,6 +8,9 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 198, "TabbedPage shouldn't proxy content of NavigationPage", PlatformAffected.iOS)]
 	public class Issue198 : TestTabbedPage
@@ -24,13 +27,13 @@ namespace Xamarin.Forms.Controls.Issues
 			leavePageBtn.Clicked += (s, e) => Navigation.PopModalAsync ();
 
 			var navigationPageOne = new NavigationPage (new ContentPage {
-				Icon = "calculator.png",
+				IconImageSource = "calculator.png",
 				Content = leavePageBtn
 			}) {
 				Title = "Page One",
 			};
 			var navigationPageTwo = new NavigationPage (new ContentPage {
-				Icon = "calculator.png",
+				IconImageSource = "calculator.png",
 			}) {
 				Title = "Page Two",
 			};
@@ -38,11 +41,11 @@ namespace Xamarin.Forms.Controls.Issues
 				Title = "No Crash",
 			}) {
 				Title = "Page Three",
-				Icon = "calculator.png"
+				IconImageSource = "calculator.png"
 			};
 			var navigationPageFour = new NavigationPage (new ContentPage ()) {
 				Title = "Page Four",
-				Icon = "calculator.png"
+				IconImageSource = "calculator.png"
 			};
 
 			Children.Add (navigationPageOne);

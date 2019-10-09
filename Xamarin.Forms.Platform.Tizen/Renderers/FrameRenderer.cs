@@ -3,13 +3,13 @@ using EColor = ElmSharp.Color;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class FrameRenderer : ViewRenderer<Frame, Native.Canvas>
+	public class FrameRenderer : LayoutRenderer
 	{
 		const int _thickness = 2;
 		const int _shadow_shift = 2;
 		const int _shadow_thickness = _thickness + 2;
 
-		static readonly EColor s_DefaultColor = EColor.Black;
+		static readonly EColor s_DefaultColor = Device.Idiom == TargetIdiom.TV || Device.Idiom == TargetIdiom.Watch ? EColor.Gray : EColor.Black;
 		static readonly EColor s_ShadowColor = EColor.FromRgba(80, 80, 80, 50);
 
 		Polygon _shadow = null;
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Frame.HasShadowProperty, UpdateShadowVisibility);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<Layout> e)
 		{
 			if (Control == null)
 			{
@@ -105,15 +105,15 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateColor()
 		{
-			if (Element.BorderColor.IsDefault)
+			if ((Element as Frame).BorderColor.IsDefault)
 				_frame.Color = s_DefaultColor;
 			else
-				_frame.Color = Element.BorderColor.ToNative();
+				_frame.Color = (Element as Frame).BorderColor.ToNative();
 		}
 
 		void UpdateShadowVisibility()
 		{
-			if (Element.HasShadow)
+			if ((Element as Frame).HasShadow)
 				_shadow.Show();
 			else
 				_shadow.Hide();

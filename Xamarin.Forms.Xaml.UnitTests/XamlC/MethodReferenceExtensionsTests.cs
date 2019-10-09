@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 
 using Mono.Cecil;
@@ -7,18 +6,30 @@ using Xamarin.Forms.Build.Tasks;
 
 using NUnit.Framework;
 using System.Collections.Generic;
+using Xamarin.Forms.Xaml.UnitTests;
 
-namespace Xamarin.Forms.Xaml.XamlcUnitTests
+namespace Xamarin.Forms.XamlcUnitTests
 {
 	[TestFixture]
 	public class MethodReferenceExtensionsTests
 	{
 		ModuleDefinition module;
 
-		[SetUp]
-		public void SetUp ()
+		abstract class TestClass<T>
 		{
-			module = ModuleDefinition.CreateModule ("foo", ModuleKind.Dll);
+			public abstract T UnresolvedGenericReturnType ();
+			public abstract void CustmAttributeParameterMethod ([Parameter("Parameter")] int parameter);
+			public abstract void UnresolvedGenericInstanceTypeMethod (TestClass<T> unresolved);
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			module = ModuleDefinition.CreateModule("foo", new ModuleParameters()
+			{
+				AssemblyResolver = new MockAssemblyResolver(),
+				Kind = ModuleKind.Dll,
+			});
 		}
 
 		[Test]
@@ -87,6 +98,36 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			Assert.AreEqual ("System.Void System.Collections.Generic.ICollection`1::Add(T)", adderRef.FullName);
 			adderRef = adderRef.ResolveGenericParameters (ptype, module);
 			Assert.AreEqual ("System.Void System.Collections.Generic.ICollection`1<Xamarin.Forms.View>::Add(T)", adderRef.FullName);
+		}
+
+		[Test]
+		public void GenericParameterReturnType ()
+		{
+			var type = module.ImportReference (typeof (TestClass<int>));
+			var method = type.Resolve ().Methods.Where (md => md.Name == "UnresolvedGenericReturnType").Single ();
+			var resolved = method.ResolveGenericParameters (type, module);
+
+			Assert.AreEqual ("T", resolved.ReturnType.Name);
+		}
+
+		[Test]
+		public void CustomAttributes ()
+		{
+			var type = module.ImportReference (typeof (TestClass<int>));
+			var method = type.Resolve ().Methods.Where (md => md.Name == "CustmAttributeParameterMethod").Single ();
+			var resolved = method.ResolveGenericParameters (type, module);
+
+			Assert.AreEqual ("Xamarin.Forms.ParameterAttribute", resolved.Parameters[0].CustomAttributes[0].AttributeType.FullName);
+		}
+
+		[Test]
+		public void ImportUnresolvedGenericInstanceType ()
+		{
+			var type = module.ImportReference (typeof (TestClass<int>));
+			var method = type.Resolve ().Methods.Where (md => md.Name == "UnresolvedGenericInstanceTypeMethod").Single ();
+			var resolved = method.ResolveGenericParameters (type, module);
+
+			Assert.AreEqual ("foo", resolved.Parameters[0].ParameterType.Module.Name);
 		}
 	}
 }

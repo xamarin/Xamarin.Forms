@@ -8,6 +8,7 @@ using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
+	//public class OpenGLViewRenderer : ViewRenderer<OpenGLView, GLSurfaceView>
 	internal class OpenGLViewRenderer : ViewRenderer<OpenGLView, GLSurfaceView>
 	{
 		bool _disposed;
@@ -18,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use OpenGLViewRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public OpenGLViewRenderer()
 		{
 			AutoPackage = false;

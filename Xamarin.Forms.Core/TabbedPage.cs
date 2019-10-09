@@ -4,24 +4,37 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_TabbedPageRenderer))]
-	public class TabbedPage : MultiPage<Page>, IElementConfiguration<TabbedPage>
+	public class TabbedPage : MultiPage<Page>, IBarElement, IElementConfiguration<TabbedPage>
 	{
-		public static readonly BindableProperty BarBackgroundColorProperty = BindableProperty.Create(nameof(BarBackgroundColor), typeof(Color), typeof(TabbedPage), Color.Default);
+		public static readonly BindableProperty BarBackgroundColorProperty = BarElement.BarBackgroundColorProperty;
 
-		public static readonly BindableProperty BarTextColorProperty = BindableProperty.Create(nameof(BarTextColor), typeof(Color), typeof(TabbedPage), Color.Default);
+		public static readonly BindableProperty BarTextColorProperty = BarElement.BarTextColorProperty;
+
+		public static readonly BindableProperty UnselectedTabColorProperty = BindableProperty.Create(nameof(UnselectedTabColor), typeof(Color),	typeof(TabbedPage), default(Color));
+
+		public static readonly BindableProperty SelectedTabColorProperty = BindableProperty.Create(nameof(SelectedTabColor), typeof(Color),	typeof(TabbedPage), default(Color));
 
 		readonly Lazy<PlatformConfigurationRegistry<TabbedPage>> _platformConfigurationRegistry;
 
-		public Color BarBackgroundColor
-		{
-			get => (Color)GetValue(BarBackgroundColorProperty);
-			set => SetValue(BarBackgroundColorProperty, value);
+		public Color BarBackgroundColor {
+			get => (Color)GetValue(BarElement.BarBackgroundColorProperty);
+			set => SetValue(BarElement.BarBackgroundColorProperty, value);
 		}
 
-		public Color BarTextColor
+		public Color BarTextColor {
+			get => (Color)GetValue(BarElement.BarTextColorProperty);
+			set => SetValue(BarElement.BarTextColorProperty, value);
+		}
+
+		public Color UnselectedTabColor
 		{
-			get => (Color)GetValue(BarTextColorProperty);
-			set => SetValue(BarTextColorProperty, value);
+			get => (Color)GetValue(UnselectedTabColorProperty);
+			set => SetValue(UnselectedTabColorProperty, value);
+		}
+		public Color SelectedTabColor
+		{
+			get => (Color)GetValue(SelectedTabColorProperty);
+			set => SetValue(SelectedTabColorProperty, value);
 		}
 
 		protected override Page CreateDefault(object item)

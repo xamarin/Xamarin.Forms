@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -9,7 +7,6 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -18,12 +15,14 @@ namespace Xamarin.Forms.Platform.Android
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
 
 		Application _application;
-		Platform _canvas;
 		AndroidApplicationLifecycleState _currentState;
 		LinearLayout _layout;
 
+		PowerSaveModeBroadcastReceiver _powerSaveModeBroadcastReceiver;
 
 		AndroidApplicationLifecycleState _previousState;
+
+		internal Platform Platform { get; private set; }
 
 		protected FormsApplicationActivity()
 		{
@@ -51,8 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnConfigurationChanged(newConfig);
 			EventHandler handler = ConfigurationChanged;
-			if (handler != null)
-				handler(this, new EventArgs());
+			handler?.Invoke(this, new EventArgs());
 		}
 
 		// FIXME: THIS SHOULD NOT BE MANDATORY
@@ -62,17 +60,18 @@ namespace Xamarin.Forms.Platform.Android
 		public override bool OnOptionsItemSelected(IMenuItem item)
 		{
 			if (item.ItemId == global::Android.Resource.Id.Home)
-				_canvas.SendHomeClicked();
+				Platform.SendHomeClicked();
 			return base.OnOptionsItemSelected(item);
 		}
 
 		public override bool OnPrepareOptionsMenu(IMenu menu)
 		{
-			_canvas.PrepareMenu(menu);
+			Platform.PrepareMenu(menu);
 			return base.OnPrepareOptionsMenu(menu);
 		}
 
 		[Obsolete("SetPage is obsolete as of version 1.3.0. Please use protected LoadApplication (Application app) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetPage(Page page)
 		{
 			var application = new DefaultApplication { MainPage = page };
@@ -81,27 +80,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-			if (application == null)
-				throw new ArgumentNullException("application");
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
 
-			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
-
-			_application = application;
+			_application = application ?? throw new ArgumentNullException(nameof(application));
+			((IApplicationController)application).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			SetSoftInputMode();
 
 			application.PropertyChanged += AppOnPropertyChanged;
-
-			if (application?.MainPage != null)
-			{
-				var iver = Platform.GetRenderer(application.MainPage);
-				if (iver != null)
-				{
-					iver.Dispose();
-					application.MainPage.ClearValue(Platform.RendererProperty);
-				}
-			}
 
 			SetMainPage();
 		}
@@ -126,6 +114,12 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnCreate;
 
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Listen for the device going into power save mode so we can handle animations being disabled
+				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
+			}
+
 			OnStateChanged();
 		}
 
@@ -134,10 +128,12 @@ namespace Xamarin.Forms.Platform.Android
 			// may never be called
 			base.OnDestroy();
 
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
+
 			PopupManager.Unsubscribe(this);
 
-			if (_canvas != null)
-				((IDisposable)_canvas).Dispose();
+			((IDisposable) Platform)?.Dispose();
 		}
 
 		protected override void OnPause()
@@ -152,6 +148,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnPause;
+
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Don't listen for power save mode changes while we're paused
+				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+			}
 
 			OnStateChanged();
 		}
@@ -173,6 +175,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
+
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Start listening for power save mode changes
+				RegisterReceiver(_powerSaveModeBroadcastReceiver, new IntentFilter(
+					PowerManager.ActionPowerSaveModeChanged));
+			}
 
 			OnStateChanged();
 		}
@@ -220,19 +229,27 @@ namespace Xamarin.Forms.Platform.Android
 			if (!Forms.IsInitialized)
 				throw new InvalidOperationException("Call Forms.Init (Activity, Bundle) before this");
 
-			if (_canvas != null)
+			if (Platform != null)
 			{
-				_canvas.SetPage(page);
+				Platform.SetPage(page);
 				return;
 			}
 
 			PopupManager.ResetBusyCount(this);
 
-			_canvas = new Platform(this);
+			Platform = new Platform(this);
+
 			if (_application != null)
-				_application.Platform = _canvas;
-			_canvas.SetPage(page);
-			_layout.AddView(_canvas.GetViewGroup());
+			{
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			_application.Platform = Platform;
+#pragma warning restore CS0618 // Type or member is obsolete
+			}
+
+			Platform.SetPage(page);
+			_layout.AddView(Platform.GetViewGroup());
 		}
 
 		void OnStateChanged()

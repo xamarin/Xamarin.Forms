@@ -4,14 +4,50 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Tizen;
 using ElmSharp;
 using Tizen.Applications;
 using TSystemInfo = Tizen.System.Information;
 using ELayout = ElmSharp.Layout;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
+using System.ComponentModel;
 
-namespace Xamarin.Forms.Platform.Tizen
+namespace Xamarin.Forms
 {
+	public struct InitializationOptions
+	{
+		public struct EffectScope
+		{
+			public string Name;
+			public ExportEffectAttribute[] Effects;
+		}
+
+		public InitializationOptions(CoreApplication application, bool useDeviceIndependentPixel, HandlerAttribute[] handlers)
+		{
+			this = default(InitializationOptions);
+			Context = application;
+			UseDeviceIndependentPixel = useDeviceIndependentPixel;
+			Handlers = handlers;
+			Assemblies = null;
+		}
+
+		public InitializationOptions(CoreApplication application, bool useDeviceIndependentPixel, params Assembly[] assemblies)
+		{
+			this = default(InitializationOptions);
+			Context = application;
+			UseDeviceIndependentPixel = useDeviceIndependentPixel;
+			Handlers = null;
+			Assemblies = assemblies;
+		}
+
+		public CoreApplication Context;
+		public bool UseDeviceIndependentPixel;
+		public HandlerAttribute[] Handlers;
+		public Assembly[] Assemblies;
+		public EffectScope[] EffectScopes;
+		public InitializationFlags Flags;
+	}
+
 	public static class Forms
 	{
 		static Lazy<string> s_profile = new Lazy<string>(() =>
@@ -184,14 +220,18 @@ namespace Xamarin.Forms.Platform.Tizen
 			Init(application, false);
 		}
 
-
 		public static void Init(CoreApplication application, bool useDeviceIndependentPixel)
 		{
 			_useDeviceIndependentPixel = useDeviceIndependentPixel;
-			SetupInit(application);
+			SetupInit(application, null);
 		}
 
-		static void SetupInit(CoreApplication application)
+		public static void Init(InitializationOptions options)
+		{
+			SetupInit(options.Context, options);
+		}
+
+		static void SetupInit(CoreApplication application, InitializationOptions? maybeOptions = null)
 		{
 			Context = application;
 
@@ -206,13 +246,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				Elementary.ThemeOverlay();
 			}
 
-			// In .NETCore, AppDomain feature is not supported.
-			// The list of assemblies returned by AppDomain.GetAssemblies() method should be registered manually.
-			// The assembly of the executing application and referenced assemblies of it are added into the list here.
-			// TODO: AppDomain is comming back in NETStandard2.0. This logic should be changed at that time.
-			TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
-
-			Device.PlatformServices = new TizenPlatformServices(); ;
+			Device.PlatformServices = new TizenPlatformServices();
 			if (Device.info != null)
 			{
 				((TizenDeviceInfo)Device.info).Dispose();
@@ -224,16 +258,65 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (!Forms.IsInitialized)
 			{
-				Registrar.RegisterAll(new Type[]
+				if (maybeOptions.HasValue)
 				{
-					typeof(ExportRendererAttribute),
-					typeof(ExportImageSourceHandlerAttribute),
-					typeof(ExportCellAttribute),
-					typeof(ExportHandlerAttribute)
-				});
+					var options = maybeOptions.Value;
+					_useDeviceIndependentPixel = options.UseDeviceIndependentPixel;
+
+					if (options.Assemblies != null)
+					{
+						TizenPlatformServices.AppDomain.CurrentDomain.AddAssemblies(options.Assemblies);
+					}
+
+					// renderers
+					if (options.Handlers != null)
+					{
+						Registrar.RegisterRenderers(options.Handlers);
+					}
+					else
+					{
+						Registrar.RegisterAll(new Type[]
+						{
+							typeof(ExportRendererAttribute),
+							typeof(ExportImageSourceHandlerAttribute),
+							typeof(ExportCellAttribute),
+							typeof(ExportHandlerAttribute)
+						});
+					}
+
+					// effects
+					var effectScopes = options.EffectScopes;
+					if (effectScopes != null)
+					{
+						for (var i = 0; i < effectScopes.Length; i++)
+						{
+							var effectScope = effectScopes[0];
+							Registrar.RegisterEffects(effectScope.Name, effectScope.Effects);
+						}
+					}
+
+					// css
+					var flags = options.Flags;
+					var noCss = (flags & InitializationFlags.DisableCss) != 0;
+					if (!noCss)
+						Registrar.RegisterStylesheets();
+				}
+				else
+				{
+					// In .NETCore, AppDomain feature is not supported.
+					// The list of assemblies returned by AppDomain.GetAssemblies() method should be registered manually.
+					// The assembly of the executing application and referenced assemblies of it are added into the list here.
+					TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
+					Registrar.RegisterAll(new Type[]
+					{
+						typeof(ExportRendererAttribute),
+						typeof(ExportImageSourceHandlerAttribute),
+						typeof(ExportCellAttribute),
+						typeof(ExportHandlerAttribute)
+					});
+				}
 			}
 
-			// TODO: We should consider various tizen profiles such as TV, Wearable and so on.
 			string profile = ((TizenDeviceInfo)Device.Info).Profile;
 			if (profile == "mobile")
 			{
@@ -362,6 +445,19 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static string GetProfile()
 		{
 			return s_profile.Value;
+		}
+
+
+		// for internal use only
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void Preload()
+		{
+			Elementary.Initialize();
+			Elementary.ThemeOverlay();
+			var window = new PreloadedWindow();
+			var platform = new PreloadedPlatform(window.BaseLayout);
+			TSystemInfo.TryGetValue("http://tizen.org/feature/screen.width", out int width);
+			TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out int height);
 		}
 	}
 

@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.InputTransparent)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
 #endif
 
 	[Preserve(AllMembers = true)]
@@ -22,7 +23,6 @@ namespace Xamarin.Forms.Controls.Issues
 	public class InputTransparentTests : TestNavigationPage
 	{
 		const string TargetAutomationId = "inputtransparenttarget";
-		ContentPage _menu;
 
 #if UITEST
 		[Test, TestCaseSource(nameof(TestCases))]
@@ -46,33 +46,36 @@ namespace Xamarin.Forms.Controls.Issues
 
 			// Find the control we're testing
 			var result = RunningApp.WaitForElement(q => q.Marked(TargetAutomationId));
+
+			// In theory we want to tap the center of the control. But Stepper lays out differently than the other controls,
+			// (it doesn't center vertically within its layout), so we need to adjust for it until someone fixes it
+
+#if __ANDROID__
+			if (menuItem == "Stepper")
+			{
+				result = RunningApp.WaitForElement(q => q.Marked("−"));
+			}
+#endif
+
 			var target = result.First().Rect;
 
 			// Tap the control
 			var y = target.CenterY;
+			var x = target.CenterX;
 
-			// In theory we want to tap the center of the control. But Stepper lays out differently than the other controls,
-			// (it doesn't center vertically within its layout), so we need to adjust for it until someone fixes it
-			if (menuItem == "Stepper")
-			{
-				y = target.Y;
-			}
 
-			RunningApp.TapCoordinates(target.CenterX, y);
+			RunningApp.TapCoordinates(x, y);
 
 			if(menuItem == nameof(DatePicker) || menuItem == nameof(TimePicker))
 			{
 				// These controls show a pop-up which we have to cancel/done out of before we can continue
 #if __ANDROID__
-				var cancelButtonText = "Cancel";
 				System.Threading.Tasks.Task.Delay(1000).Wait();
 				RunningApp.Back();
 #elif __IOS__
 				var cancelButtonText = "Done";
 				RunningApp.WaitForElement(q => q.Marked(cancelButtonText));
 				RunningApp.Tap(q => q.Marked(cancelButtonText));
-#else
-				var cancelButtonText = "Cancel";
 #endif
 			}
 
@@ -157,11 +160,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		ContentPage BuildMenu()
 		{
-			if (_menu != null)
-			{
-				return _menu;
-			}
-
 			var layout = new Grid
 			{
 				VerticalOptions = LayoutOptions.Fill, HorizontalOptions = LayoutOptions.Fill,
@@ -186,7 +184,9 @@ namespace Xamarin.Forms.Controls.Issues
 				LineBreakMode = LineBreakMode.WordWrap,
 				Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 			}));
-			col1.Children.Add(MenuButton(nameof(SearchBar), () => new SearchBar()));
+
+			// We don't use 'SearchBar' here because on Android it sometimes finds the wrong control
+			col1.Children.Add(MenuButton("TestSearchBar", () => new SearchBar()));
 
 			col2.Children.Add(MenuButton(nameof(DatePicker), () => new DatePicker()));
 			col2.Children.Add(MenuButton(nameof(TimePicker), () => new TimePicker()));

@@ -1,7 +1,7 @@
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Github, 1025, "StackLayout broken when image missing", PlatformAffected.iOS, NavigationBehavior.PushModalAsync)]
@@ -9,8 +9,11 @@ namespace Xamarin.Forms.Controls
 	{
 		public Issue1025 ()
 		{
-			BackgroundColor = Color.FromHex("#dae1eb");
-			Content = new StackLayout {
+			var instructions = new Label { Text = "The StackLayout below should contain two buttons and some text. " +
+				"If the StackLayout appears empty, this test has failed." };
+			
+			var layout = new StackLayout {
+				BackgroundColor = Color.FromHex("#dae1eb"),
 				Orientation = StackOrientation.Vertical,
 				Children = {
 					new Image {},
@@ -19,6 +22,11 @@ namespace Xamarin.Forms.Controls
 					new Button {BackgroundColor = Color.FromHex ("#fec240"), Text = "Create an account" },
 					new Button {BackgroundColor = Color.FromHex ("#04acdb"), Text = "Login" },
 				}
+			};
+
+			Content = new StackLayout
+			{
+				Children = { instructions, layout }
 			};
 		}
 	}	

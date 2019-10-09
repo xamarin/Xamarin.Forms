@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
 #endif
 
 	[Preserve(AllMembers = true)]
@@ -44,8 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			GCButton.Clicked += (sender, args) =>
 			{
-				GC.Collect();
-				GC.WaitForPendingFinalizers();
+				GarbageCollectionHelper.Collect();
 			};
 
 			MessagingCenter.Subscribe<_45722Label>(this, _45722Label.CountMessage, sender =>

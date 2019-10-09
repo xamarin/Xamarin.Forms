@@ -3,6 +3,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -10,7 +11,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
-using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
@@ -18,12 +18,28 @@ using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
-using System.Threading.Tasks;
 
 #endregion
 
 namespace Xamarin.Forms.Platform.Android
 {
+	[Flags]
+	public enum ActivationFlags : long
+	{
+		DisableSetStatusBarColor = 1 << 0,
+	}
+
+	public struct ActivationOptions
+	{
+		public ActivationOptions(Bundle bundle)
+		{
+			this = default(ActivationOptions);
+			this.Bundle = bundle;
+		}
+		public Bundle Bundle;
+		public ActivationFlags Flags;
+	}
+
 	public class FormsAppCompatActivity : AppCompatActivity, IDeviceInfoProvider
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
@@ -33,11 +49,15 @@ namespace Xamarin.Forms.Platform.Android
 		AndroidApplicationLifecycleState _currentState;
 		ARelativeLayout _layout;
 
-		AppCompat.Platform _platform;
+		internal AppCompat.Platform Platform { get; private set; }
 
 		AndroidApplicationLifecycleState _previousState;
 
 		bool _renderersAdded;
+		bool _activityCreated;
+		PowerSaveModeBroadcastReceiver _powerSaveModeBroadcastReceiver;
+
+		static readonly ManualResetEventSlim PreviousActivityDestroying = new ManualResetEventSlim(true);
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
@@ -47,9 +67,11 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
-		}
 
-		IApplicationController Controller => _application;
+			var anticipator = new Anticipator();
+			anticipator.AnticipateClassConstruction(typeof(Resource.Layout));
+			anticipator.AnticipateClassConstruction(typeof(Resource.Attribute));
+		}
 
 		public event EventHandler ConfigurationChanged;
 
@@ -82,55 +104,89 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		static void RegisterHandler(Type target, Type handler, Type filter)
+		{
+			Profile.FrameBegin();
+
+			Profile.FramePartition(target.Name);
+			Type current = Registrar.Registered.GetHandlerType(target);
+
+			if (current == filter)
+			{
+				Profile.FramePartition("Register");
+				Registrar.Registered.Register(target, handler);
+			}
+
+			Profile.FrameEnd();
+		}
+
+		// This is currently being used by the previewer please do not change or remove this
+		static void RegisterHandlers()
+		{
+			RegisterHandler(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
+			RegisterHandler(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
+			RegisterHandler(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
+			RegisterHandler(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
+			RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
+			RegisterHandler(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
+			RegisterHandler(typeof(CheckBox), typeof(CheckBoxRenderer), typeof(CheckBoxDesignerRenderer));
+
+			if (Forms.Flags.Contains(Flags.UseLegacyRenderers))
+			{
+				RegisterHandler(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
+				RegisterHandler(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
+			}
+			else
+			{
+				RegisterHandler(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
+				RegisterHandler(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
+				RegisterHandler(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
+			}
+		}
+
 		protected void LoadApplication(Application application)
 		{
+			Profile.FrameBegin();
+			if (!_activityCreated)
+			{
+				throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
+			}
+
 			if (!_renderersAdded)
 			{
-				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
-
-				if (Forms.Flags.Contains(Flags.FastRenderersExperimental))
-				{
-					RegisterHandlerForDefaultRenderer(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
-				}
-				else
-				{
-					RegisterHandlerForDefaultRenderer(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
-					RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
-				}
-
+				Profile.FramePartition("RegisterHandlers");
+				RegisterHandlers();
 				_renderersAdded = true;
 			}
 
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
+
+			Profile.FramePartition("SetAppIndexingProvider");
 			_application = application ?? throw new ArgumentNullException(nameof(application));
-			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+			((IApplicationController)application).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+
+			Profile.FramePartition("SetCurrentApplication");
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
+			Profile.FramePartition("SetSoftInputMode");
 			if (Xamarin.Forms.Application.Current.OnThisPlatform().GetWindowSoftInputModeAdjust() != WindowSoftInputModeAdjust.Unspecified)
 				SetSoftInputMode();
 
+			Profile.FramePartition("CheckForAppLink");
 			CheckForAppLink(Intent);
 
 			application.PropertyChanged += AppOnPropertyChanged;
 
-			if (application?.MainPage != null)
-			{
-				var iver = Platform.GetRenderer(application.MainPage);
-				if (iver != null)
-				{
-					iver.Dispose();
-					application.MainPage.ClearValue(Platform.RendererProperty);
-				}
-			}
+			// Wait if old activity destroying is not finished
+			PreviousActivityDestroying.Wait();
+
+			Profile.FramePartition(nameof(SetMainPage));
 
 			SetMainPage();
+
+			Profile.FrameEnd();
 		}
 
 		protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
@@ -139,8 +195,22 @@ namespace Xamarin.Forms.Platform.Android
 			ActivityResultCallbackRegistry.InvokeCallback(requestCode, resultCode, data);
 		}
 
+		protected void OnCreate(ActivationOptions options)
+		{
+			OnCreate(options.Bundle, options.Flags);
+		}
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
+			OnCreate(savedInstanceState, default(ActivationFlags));
+		}
+
+		void OnCreate(
+			Bundle savedInstanceState, 
+			ActivationFlags flags)
+		{
+			Profile.FrameBegin();
+			_activityCreated = true;
 			if (!AllowFragmentRestore)
 			{
 				// Remove the automatically persisted fragment structure; we don't need them
@@ -149,8 +219,10 @@ namespace Xamarin.Forms.Platform.Android
 				savedInstanceState?.Remove("android:support:fragments");
 			}
 
+			Profile.FramePartition("Xamarin.Android.OnCreate");
 			base.OnCreate(savedInstanceState);
 
+			Profile.FramePartition("SetSupportActionBar");
 			AToolbar bar;
 			if (ToolbarResource != 0)
 			{
@@ -158,14 +230,18 @@ namespace Xamarin.Forms.Platform.Android
 				if (bar == null)
 					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
 			}
-			else
+			else 
+			{
 				bar = new AToolbar(this);
+			}
 
 			SetSupportActionBar(bar);
 
+			Profile.FramePartition("SetContentView");
 			_layout = new ARelativeLayout(BaseContext);
 			SetContentView(_layout);
 
+			Profile.FramePartition("OnStateChanged");
 			Xamarin.Forms.Application.ClearCurrent();
 
 			_previousState = _currentState;
@@ -173,17 +249,42 @@ namespace Xamarin.Forms.Platform.Android
 
 			OnStateChanged();
 
+			Profile.FramePartition("Forms.IsLollipopOrNewer");
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Allow for the status bar color to be changed
-				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+				if ((flags & ActivationFlags.DisableSetStatusBarColor) == 0)
+				{
+					Profile.FramePartition("Set DrawsSysBarBkgrnds");
+					Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+				}
 			}
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Listen for the device going into power save mode so we can handle animations being disabled
+				Profile.FramePartition("Allocate PowerSaveModeReceiver");
+				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
+			}
+
+			Profile.FrameEnd();
 		}
 
 		protected override void OnDestroy()
 		{
+			PreviousActivityDestroying.Reset();
+
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
+
 			PopupManager.Unsubscribe(this);
-			_platform?.Dispose();
+
+			if (Platform != null)
+			{
+				_layout.RemoveView(Platform);
+				Platform.Dispose();
+			}
+
+			PreviousActivityDestroying.Set();
 
 			// call at the end to avoid race conditions with Platform dispose
 			base.OnDestroy();
@@ -198,6 +299,12 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnPause()
 		{
 			_layout.HideKeyboard(true);
+
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Don't listen for power save mode changes while we're paused
+				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+			}
 
 			// Stop animations or other ongoing actions that could consume CPU
 			// Commit unsaved changes, build only if users expect such changes to be permanently saved when thy leave such as a draft email
@@ -223,31 +330,46 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnResume()
 		{
+			Profile.FrameBegin();
+
 			// counterpart to OnPause
 			base.OnResume();
 
-			if (_application != null && _application.OnThisPlatform().GetShouldPreserveKeyboardOnResume())
+			if (_application != null && CurrentFocus != null && _application.OnThisPlatform().GetShouldPreserveKeyboardOnResume())
 			{
-				if (CurrentFocus != null && (CurrentFocus is EditText || CurrentFocus is TextView || CurrentFocus is SearchView))
-				{
-					CurrentFocus.ShowKeyboard();
-				}
+				CurrentFocus.ShowKeyboard();
 			}
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
 
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Start listening for power save mode changes
+				RegisterReceiver(_powerSaveModeBroadcastReceiver, new IntentFilter(
+					PowerManager.ActionPowerSaveModeChanged
+				));
+			}
+
 			OnStateChanged();
+
+			Profile.FrameEnd();
 		}
 
 		protected override void OnStart()
 		{
+			Profile.FrameBegin();
+
+			Profile.FramePartition("Android OnStart");
 			base.OnStart();
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnStart;
 
+			Profile.FramePartition("OnStateChanged");
 			OnStateChanged();
+
+			Profile.FrameEnd();
 		}
 
 		// Scenarios that stop and restart your app
@@ -272,8 +394,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void AppOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			if (args.PropertyName == "MainPage")
-				InternalSetPage(_application.MainPage);
+			// Activity in pause must not react to application changes
+			if (_currentState >= AndroidApplicationLifecycleState.OnPause)
+			{
+				return;
+			}
+
+			if (args.PropertyName == nameof(_application.MainPage))
+				SetMainPage();
 			if (args.PropertyName == PlatformConfiguration.AndroidSpecific.Application.WindowSoftInputModeAdjustProperty.PropertyName)
 				SetSoftInputMode();
 		}
@@ -294,19 +422,18 @@ namespace Xamarin.Forms.Platform.Android
 			if (!Forms.IsInitialized)
 				throw new InvalidOperationException("Call Forms.Init (Activity, Bundle) before this");
 
-			if (_platform != null)
+			if (Platform != null)
 			{
-				_platform.SetPage(page);
+				Platform.SetPage(page);
 				return;
 			}
 
 			PopupManager.ResetBusyCount(this);
 
-			_platform = new AppCompat.Platform(this);
-			if (_application != null)
-				_application.Platform = _platform;
-			_platform.SetPage(page);
-			_layout.AddView(_platform);
+			Platform = new AppCompat.Platform(this);
+
+			Platform.SetPage(page);
+			_layout.AddView(Platform);
 			_layout.BringToFront();
 		}
 
@@ -323,13 +450,10 @@ namespace Xamarin.Forms.Platform.Android
 				_application.SendSleep();
 		}
 
+		// This is currently being used by the previewer please do not change or remove this
 		void RegisterHandlerForDefaultRenderer(Type target, Type handler, Type filter)
 		{
-			Type current = Registrar.Registered.GetHandlerType(target);
-			if (current != filter)
-				return;
-
-			Registrar.Registered.Register(target, handler);
+			RegisterHandler(target, handler, filter);
 		}
 
 		void SetMainPage()

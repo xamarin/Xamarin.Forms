@@ -2,16 +2,38 @@
 using System.ComponentModel;
 using AppKit;
 using Foundation;
-using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class ButtonRenderer : ViewRenderer<Button, NSButton>
 	{
+		class FormsNSButton : NSButton
+		{
+			public event Action Pressed;
+
+			public event Action Released;
+
+			public override void MouseDown(NSEvent theEvent)
+			{
+				Pressed?.Invoke();
+
+				base.MouseDown(theEvent);
+
+				Released?.Invoke();
+			}
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (Control != null)
 				Control.Activated -= OnButtonActivated;
+
+			var formsButton = Control as FormsNSButton;
+			if (formsButton != null)
+			{
+				formsButton.Pressed -= HandleButtonPressed;
+				formsButton.Released -= HandleButtonReleased;
+			}
 
 			base.Dispose(disposing);
 		}
@@ -24,8 +46,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					var btn = new NSButton();
+					var btn = new FormsNSButton();
 					btn.SetButtonType(NSButtonType.MomentaryPushIn);
+					btn.Pressed += HandleButtonPressed;
+					btn.Released += HandleButtonReleased;
 					SetNativeControl(btn);
 
 					Control.Activated += OnButtonActivated;
@@ -52,7 +76,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateBorder();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundVisibility();
-			else if (e.PropertyName == Button.ImageProperty.PropertyName)
+			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				UpdateImage();
 		}
 
@@ -88,30 +112,19 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control.Font = Element.Font.ToNSFont();
 		}
 
-		async void UpdateImage()
+		void UpdateImage()
 		{
-			IImageSourceHandler handler;
-			FileImageSource source = Element.Image;
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			this.ApplyNativeImageAsync(Button.ImageSourceProperty, image =>
 			{
-				NSImage uiimage;
-				try
-				{
-					uiimage = await handler.LoadImageAsync(source);
-				}
-				catch (OperationCanceledException)
-				{
-					uiimage = null;
-				}
 				NSButton button = Control;
-				if (button != null && uiimage != null)
+				if (button != null && image != null)
 				{
-					button.Image = uiimage;
+					button.Image = image;
 					if (!string.IsNullOrEmpty(button.Title))
 						button.ImagePosition = Element.ToNSCellImagePosition();
+					((IVisualElementController)Element).NativeSizeChanged();
 				}
-			}
-			((IVisualElementController)Element).NativeSizeChanged();
+			});
 		}
 
 		void UpdateText()
@@ -123,9 +136,20 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			else
 			{
-				var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor( ), paragraphStyle: new NSMutableParagraphStyle( ) { Alignment = NSTextAlignment.Center });
+				var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
 				Control.AttributedTitle = textWithColor;
 			}
 		}
+
+		void HandleButtonPressed()
+		{
+			Element?.SendPressed();
+		}
+
+		void HandleButtonReleased()
+		{
+			Element?.SendReleased();
+		}
+
 	}
 }

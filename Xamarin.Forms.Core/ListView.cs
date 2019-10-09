@@ -46,6 +46,14 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
+		public static readonly BindableProperty RefreshControlColorProperty = BindableProperty.Create(nameof(RefreshControlColor), typeof(Color), typeof(ListView), Color.Default);
+	
+		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(nameof(HorizontalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
+
+		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create(nameof(VerticalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
+
+		static readonly ToStringValueConverter _toStringValueConverter = new ToStringValueConverter();
+
 		readonly Lazy<PlatformConfigurationRegistry<ListView>> _platformConfigurationRegistry;
 
 		BindingBase _groupDisplayBinding;
@@ -75,9 +83,9 @@ namespace Xamarin.Forms
 		public ListView([Parameter("CachingStrategy")] ListViewCachingStrategy cachingStrategy) : this()
 		{
 			// null => UnitTest "platform"
-			if (Device.RuntimePlatform == null || 
-				Device.RuntimePlatform == Device.Android || 
-				Device.RuntimePlatform == Device.iOS || 
+			if (Device.RuntimePlatform == null ||
+				Device.RuntimePlatform == Device.Android ||
+				Device.RuntimePlatform == Device.iOS ||
 				Device.RuntimePlatform == Device.macOS)
 				CachingStrategy = cachingStrategy;
 		}
@@ -217,13 +225,29 @@ namespace Xamarin.Forms
 			set { SetValue(SeparatorColorProperty, value); }
 		}
 
+		public Color RefreshControlColor
+		{
+			get { return (Color)GetValue(RefreshControlColorProperty); }
+			set { SetValue(RefreshControlColorProperty, value); }
+		}
+
 		public SeparatorVisibility SeparatorVisibility
 		{
 			get { return (SeparatorVisibility)GetValue(SeparatorVisibilityProperty); }
 			set { SetValue(SeparatorVisibilityProperty, value); }
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ScrollBarVisibility HorizontalScrollBarVisibility
+		{
+			get { return (ScrollBarVisibility)GetValue(HorizontalScrollBarVisibilityProperty); }
+			set { SetValue(HorizontalScrollBarVisibilityProperty, value); }
+		}
+		public ScrollBarVisibility VerticalScrollBarVisibility
+		{
+			get { return (ScrollBarVisibility)GetValue(VerticalScrollBarVisibilityProperty); }
+			set { SetValue(VerticalScrollBarVisibilityProperty, value); }
+		}
+
 		public ListViewCachingStrategy CachingStrategy { get; private set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -254,11 +278,15 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendCellAppearing(Cell cell)
-			=> ItemAppearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext));
+			=> ItemAppearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendCellDisappearing(Cell cell)
-			=> ItemDisappearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext));
+			=> ItemDisappearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendScrolled(ScrolledEventArgs args)
+			=> Scrolled?.Invoke(this, args);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendRefreshing()
@@ -292,6 +320,8 @@ namespace Xamarin.Forms
 
 		public event EventHandler<ItemTappedEventArgs> ItemTapped;
 
+		public event EventHandler<ScrolledEventArgs> Scrolled;
+
 		public event EventHandler Refreshing;
 
 		public void ScrollTo(object item, ScrollToPosition position, bool animated)
@@ -322,14 +352,13 @@ namespace Xamarin.Forms
 
 		protected override Cell CreateDefault(object item)
 		{
-			string text = null;
-			if (item != null)
-				text = item.ToString();
-
-			return new TextCell { Text = text };
+			TextCell textCell = new TextCell();
+			textCell.SetBinding(TextCell.TextProperty, ".", converter: _toStringValueConverter);
+			return textCell;
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			var minimumSize = new Size(40, 40);
@@ -419,7 +448,7 @@ namespace Xamarin.Forms
 
 			cell?.OnTapped();
 
-			ItemTapped?.Invoke(this, new ItemTappedEventArgs(ItemsSource.Cast<object>().ElementAt(groupIndex), cell?.BindingContext));
+			ItemTapped?.Invoke(this, new ItemTappedEventArgs(ItemsSource.Cast<object>().ElementAt(groupIndex), cell?.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -483,7 +512,7 @@ namespace Xamarin.Forms
 			if (newValue != null && lv.GroupDisplayBinding != null)
 			{
 				lv.GroupDisplayBinding = null;
-				Debug.WriteLine("GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
+				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
 			}
 		}
 
@@ -575,7 +604,7 @@ namespace Xamarin.Forms
 			=> ScrollToRequested?.Invoke(this, e);
 
 		static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
-			=> ((ListView)bindable).ItemSelected?.Invoke(bindable, new SelectedItemChangedEventArgs(newValue));
+			=> ((ListView)bindable).ItemSelected?.Invoke(bindable, new SelectedItemChangedEventArgs(newValue, ((ListView)bindable).TemplatedItems.GetGlobalIndexOfItem(newValue)));
 
 		static bool ValidateHeaderFooterTemplate(BindableObject bindable, object value)
 		{

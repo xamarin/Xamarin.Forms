@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 			while (_page2Tracker.IsAlive && _tabTracker.IsAlive && watch.ElapsedMilliseconds < Timeout) 
 			{
 				await Task.Delay (1000);
-				GC.Collect ();
+				GarbageCollectionHelper.Collect();
 			}
 
 			watch.Stop();
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issu32898Test()
 		{
-			var timeout = Timeout + 1500; // Give this a little slop to set the result text
+			var timeout = Timeout + 5000; // Give this a little slop to set the result text
 			RunningApp.WaitForElement(Success, timeout: TimeSpan.FromMilliseconds(timeout));
 		}
 #endif

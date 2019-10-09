@@ -1,14 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class DatePickerRenderer : ViewRenderer<DatePicker, Windows.UI.Xaml.Controls.DatePicker>
+	public class DatePickerRenderer : ViewRenderer<DatePicker, Windows.UI.Xaml.Controls.DatePicker>, ITabStopOnDescendants
 	{
 		Brush _defaultBrush;
 		bool _fontApplied;
@@ -45,6 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaximumDate();
 				UpdateDate(e.NewElement.Date);
 				UpdateFlowDirection();
+				UpdateCharacterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -88,6 +91,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
 			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName || e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
@@ -103,7 +108,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (Element.Date.CompareTo(e.NewDate.Date) != 0)
 			{
-				Element.Date = e.NewDate.Date;
+				var date = e.NewDate.Date.Clamp(Element.MinimumDate, Element.MaximumDate);
+				Element.Date = date;
+
+				// set the control date-time to clamped value, if it exceeded the limits at the time of installation.
+				if (date != e.NewDate.Date)
+				{
+					UpdateDate(date);
+					Control.UpdateLayout();
+				}
 				((IVisualElementController)Element).InvalidateMeasure(InvalidationTrigger.SizeRequestChanged);
 			}
 		}
@@ -118,7 +131,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Control.UpdateFlowDirection(Element);
 		}
-		
+
+		void UpdateCharacterSpacing()
+		{
+			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
+		}
+
 		void UpdateFont()
 		{
 			if (Control == null)

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using WpfLightToolkit.Controls;
+using Xamarin.Forms.Platform.WPF.Controls;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	public class FormsApplicationPage : LightWindow
+	public class FormsApplicationPage : FormsWindow
 	{
 		protected Application Application { get; private set; }
 		protected Platform Platform { get; private set; }
@@ -26,13 +26,13 @@ namespace Xamarin.Forms.Platform.WPF
 			application.PropertyChanged += ApplicationOnPropertyChanged;
 			Application = application;
 
-			// Hack around the fact that OnLaunching will haev already happened by this point, sad but needed.
+			// Hack around the fact that OnLaunching will have already happened by this point, sad but needed.
 			application.SendStart();
 		}
 
 		void ApplicationOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			if (args.PropertyName == "MainPage")
+			if (args.PropertyName == "MainPage" && IsLoaded)
 				SetMainPage();
 		}
 

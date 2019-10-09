@@ -10,6 +10,8 @@ namespace Xamarin.Forms.Controls
 	{
 		public ButtonGallery ()
 		{
+			//ShellAppearance.SetNavBarVisible(this, false);
+			Shell.SetSearchHandler(this, new SearchHandler() { SearchBoxVisibility = SearchBoxVisibility.Collapsible });
 			BackgroundColor = new Color (0.9);
 
 			var normal = new Button { Text = "Normal Button" };
@@ -67,7 +69,7 @@ namespace Xamarin.Forms.Controls
 			var busy = new Button { Text = "Toggle Busy" };
 			var alert = new Button { Text = "Alert" };
 			var alertSingle = new Button {Text = "Alert Single"};
-			var image = new Button { Text = "Image Button", Image = new FileImageSource {File = "bank.png"}, BackgroundColor = Color.Blue.WithLuminosity (.8) };
+			var image = new Button { Text = "Image Button", ImageSource = new FileImageSource {File = "bank.png"}, BackgroundColor = Color.Blue.WithLuminosity (.8) };
 
 			themedButton.Clicked += (sender, args) => themedButton.Font = Font.Default;
 
@@ -96,6 +98,7 @@ namespace Xamarin.Forms.Controls
 			borderButton.Clicked += (sender, args) => borderButton.BackgroundColor = Color.Default;
 
 			Content = new ScrollView {
+				BackgroundColor = Color.Red,
 				Content = new StackLayout {
 					Padding = new Size (20, 20),
 					Children = {

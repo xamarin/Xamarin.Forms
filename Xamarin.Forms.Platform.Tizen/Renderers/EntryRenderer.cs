@@ -1,9 +1,11 @@
 using System;
+using IEntry = Xamarin.Forms.Platform.Tizen.Native.IEntry;
+using EEntry = ElmSharp.Entry;
 using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Entry;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class EntryRenderer : ViewRenderer<Entry, Native.Entry>
+	public class EntryRenderer : ViewRenderer<Entry, EEntry>
 	{
 		public EntryRenderer()
 		{
@@ -21,30 +23,39 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Entry.ReturnTypeProperty, UpdateReturnType);
 			RegisterPropertyHandler(InputView.IsSpellCheckEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Entry.IsTextPredictionEnabledProperty, UpdateIsSpellCheckEnabled);
-
-			if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable)
-			{
-				RegisterPropertyHandler("FontWeight", UpdateFontWeight);
-			}
+			RegisterPropertyHandler(Specific.FontWeightProperty, UpdateFontWeight);
+			RegisterPropertyHandler(Entry.SelectionLengthProperty, UpdateSelectionLength);
+			RegisterPropertyHandler(InputView.IsReadOnlyProperty, UpdateIsReadOnly);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			if (Control == null)
 			{
-				var entry = new Native.EditfieldEntry(Forms.NativeParent)
-				{
-					IsSingleLine = true,
-					PropagateEvents = false,
-				};
+				var entry = CreateNativeControl();
 				entry.SetVerticalTextAlignment("elm.text", 0.5);
 				entry.SetVerticalTextAlignment("elm.guide", 0.5);
-				entry.TextChanged += OnTextChanged;
 				entry.Activated += OnCompleted;
+				entry.CursorChanged += OnCursorChanged;
+
+				if (entry is IEntry ie)
+				{
+					ie.TextChanged += OnTextChanged;
+				}
 				entry.PrependMarkUpFilter(MaxLengthFilter);
 				SetNativeControl(entry);
+
+				
 			}
 			base.OnElementChanged(e);
+		}
+
+		protected virtual EEntry CreateNativeControl()
+		{
+			return new Native.EditfieldEntry(Forms.NativeParent)
+			{
+				IsSingleLine = true,
+			};
 		}
 
 		protected override void Dispose(bool disposing)
@@ -53,8 +64,13 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				if (null != Control)
 				{
-					Control.TextChanged -= OnTextChanged;
 					Control.Activated -= OnCompleted;
+					Control.CursorChanged -= OnCursorChanged;
+
+					if (Control is IEntry ie)
+					{
+						ie.TextChanged -= OnTextChanged;
+					}
 				}
 			}
 
@@ -63,12 +79,22 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		protected override Size MinimumSize()
 		{
-			return (Control as Native.IMeasurable).Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
+			Size measured;
+			if (Control is Native.IMeasurable im)
+			{
+				measured = im.Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
+			}
+			else
+			{
+				measured = base.MinimumSize();
+			}
+
+			return measured;
 		}
 
 		void OnTextChanged(object sender, EventArgs e)
 		{
-			Element.Text = Control.Text;
+			Element.SetValueFromRenderer(Entry.TextProperty, Control.Text);
 		}
 
 		void OnCompleted(object sender, EventArgs e)
@@ -93,36 +119,52 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		void UpdateTextColor()
+		protected virtual void UpdateTextColor()
 		{
-			Control.TextColor = Element.TextColor.ToNative();
+			if (Control is IEntry ie)
+			{
+				ie.TextColor = Element.TextColor.ToNative();
+			}
 		}
 
 		void UpdateFontSize()
 		{
-			Control.FontSize = Element.FontSize;
+			if (Control is IEntry ie)
+			{
+				ie.FontSize = Element.FontSize;
+			}
 		}
 
 		void UpdateFontFamily()
 		{
-			Control.FontFamily = Element.FontFamily;
+			if (Control is IEntry ie)
+			{
+				ie.FontFamily = Element.FontFamily;
+			}
 		}
 
 		void UpdateFontAttributes()
 		{
-			Control.FontAttributes = Element.FontAttributes;
+			if (Control is IEntry ie)
+			{
+				ie.FontAttributes = Element.FontAttributes;
+			}			
 		}
 
 		void UpdateHorizontalTextAlignment()
 		{
-			Control.HorizontalTextAlignment = Element.HorizontalTextAlignment.ToNative();
+			if (Control is IEntry ie)
+			{
+				ie.HorizontalTextAlignment = Element.HorizontalTextAlignment.ToNative();
+			}			
 		}
 
 		void UpdateKeyboard(bool initialize)
 		{
 			if (initialize && Element.Keyboard == Keyboard.Default)
 				return;
-			Control.UpdateKeyboard(Element.Keyboard, Element.IsSpellCheckEnabled, Element.IsTextPredictionEnabled);
+
+			(Control as IEntry)?.UpdateKeyboard(Element.Keyboard, Element.IsSpellCheckEnabled, Element.IsTextPredictionEnabled);
 		}
 
 		void UpdateIsSpellCheckEnabled()
@@ -132,17 +174,26 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdatePlaceholder()
 		{
-			Control.Placeholder = Element.Placeholder;
+			if (Control is IEntry ie)
+			{
+				ie.Placeholder = Element.Placeholder;
+			}
 		}
 
 		void UpdatePlaceholderColor()
 		{
-			Control.PlaceholderColor = Element.PlaceholderColor.ToNative();
+			if (Control is IEntry ie)
+			{
+				ie.PlaceholderColor = Element.PlaceholderColor.ToNative();
+			}
 		}
 
 		void UpdateFontWeight()
 		{
-			Control.FontWeight = Specific.GetFontWeight(Element);
+			if (Control is IEntry ie)
+			{
+				ie.FontWeight = Specific.GetFontWeight(Element);
+			}
 		}
 
 		void UpdateMaxLength()
@@ -162,6 +213,48 @@ namespace Xamarin.Forms.Platform.Tizen
 		void UpdateReturnType()
 		{
 			Control.SetInputPanelReturnKeyType(Element.ReturnType.ToInputPanelReturnKeyType());
+		}
+
+		void UpdateSelectionLength()
+		{
+			var selectionLength = Control.GetSelection()?.Length ?? 0;
+			if (selectionLength != Element.SelectionLength)
+			{
+				if (Element.SelectionLength == 0)
+				{
+					Control.SelectNone();
+				}
+				else
+				{
+					Control.SetSelectionRegion(Element.CursorPosition, Element.CursorPosition + Element.SelectionLength);
+				}
+			}
+			else if (selectionLength == 0)
+			{
+				Control.SelectNone();
+			}
+		}
+
+		void OnCursorChanged(object sender, EventArgs e)
+		{
+			Element.SetValueFromRenderer(Entry.CursorPositionProperty, GetCursorPosition());
+			Element.SetValueFromRenderer(Entry.SelectionLengthProperty, Control.GetSelection()?.Length ?? 0);
+		}
+
+		int GetCursorPosition()
+		{
+			var selection = Control.GetSelection();
+			if (string.IsNullOrEmpty(selection))
+			{
+				return Control.CursorPosition;
+			}
+
+			return Element.Text.IndexOf(selection, Math.Max(Control.CursorPosition - selection.Length, 0));
+		}
+
+		void UpdateIsReadOnly()
+		{
+			Control.IsEditable = !Element.IsReadOnly;
 		}
 	}
 }

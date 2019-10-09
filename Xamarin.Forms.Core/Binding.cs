@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Diagnostics;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -28,9 +29,9 @@ namespace Xamarin.Forms
 		public Binding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null, object source = null)
 		{
 			if (path == null)
-				throw new ArgumentNullException("path");
+				throw new ArgumentNullException(nameof(path));
 			if (string.IsNullOrWhiteSpace(path))
-				throw new ArgumentException("path can not be an empty string", "path");
+				throw new ArgumentException("path can not be an empty string", nameof(path));
 
 			Path = path;
 			Converter = converter;
@@ -81,6 +82,8 @@ namespace Xamarin.Forms
 			{
 				ThrowIfApplied();
 				_source = value;
+				if ((value as RelativeBindingSource)?.Mode == RelativeBindingSourceMode.TemplatedParent)
+					AllowChaining = true;
 			}
 		}
 
@@ -94,14 +97,14 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Binding Create<TSource>(Expression<Func<TSource, object>> propertyGetter, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null,
 											  string stringFormat = null)
 		{
 			if (propertyGetter == null)
-				throw new ArgumentNullException("propertyGetter");
+				throw new ArgumentNullException(nameof(propertyGetter));
 
-			string path = GetBindingPath(propertyGetter);
-			return new Binding(path, mode, converter, converterParameter, stringFormat);
+			return new Binding(GetBindingPath(propertyGetter), mode, converter, converterParameter, stringFormat);
 		}
 
 		internal override void Apply(bool fromTarget)
@@ -114,26 +117,146 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-		internal override void Apply(object newContext, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
 		{
 			object src = _source;
 			var isApplied = IsApplied;
 
-			base.Apply(src ?? newContext, bindObj, targetProperty, fromBindingContextChanged: fromBindingContextChanged);
+			base.Apply(src ?? context, bindObj, targetProperty, fromBindingContextChanged: fromBindingContextChanged);
 
 			if (src != null && isApplied && fromBindingContextChanged)
 				return;
 
-			object bindingContext = src ?? Context ?? newContext;
-			if (_expression == null && bindingContext != null)
-				_expression = new BindingExpression(this, SelfPath);
+			if (Source is RelativeBindingSource) { 
+				ApplyRelativeSourceBinding(bindObj, targetProperty);
+			} else {
+				object bindingContext = src ?? Context ?? context;
+				if (_expression == null && bindingContext != null)
+					_expression = new BindingExpression(this, SelfPath);
+				_expression.Apply(bindingContext, bindObj, targetProperty);
+			}
+		}
 
-			_expression.Apply(bindingContext, bindObj, targetProperty);
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+		async void ApplyRelativeSourceBinding(
+			BindableObject targetObject, 
+			BindableProperty targetProperty)
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
+		{
+			if (!(targetObject is Element elem))
+				throw new InvalidOperationException();
+			if (!(Source is RelativeBindingSource relativeSource))
+				return;
+
+			object resolvedSource;
+			switch (relativeSource.Mode)
+			{
+				case RelativeBindingSourceMode.Self:
+					resolvedSource = targetObject;
+					break;
+
+				case RelativeBindingSourceMode.TemplatedParent:
+					resolvedSource = await TemplateUtilities.FindTemplatedParentAsync(elem);
+					break;
+
+				case RelativeBindingSourceMode.FindAncestor:
+				case RelativeBindingSourceMode.FindAncestorBindingContext:
+					ApplyAncestorTypeBinding(elem, targetProperty);
+					return;
+
+				default:
+					throw new InvalidOperationException();
+			}
+
+			_expression.Apply(resolvedSource, targetObject, targetProperty);						
+		}		
+
+		void ApplyAncestorTypeBinding(
+			Element target,
+			BindableProperty targetProperty,
+			Element currentElement = null,
+			int currentLevel = 1,
+			List<Element> chain = null)
+		{			
+			currentElement = currentElement ?? target;
+			chain = chain ?? new List<Element> { target };
+
+			if (currentElement.RealParent is Application)
+				return;
+			if (!(Source is RelativeBindingSource relativeSource))
+				return;
+
+			if (currentElement.RealParent != null)
+			{
+				chain.Add(currentElement.RealParent);
+				if (ElementFitsAncestorTypeAndLevel(currentElement.RealParent, currentLevel))
+				{
+					object resolvedSource;
+					if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor)
+						resolvedSource = currentElement.RealParent;
+					else
+						resolvedSource = currentElement.RealParent?.BindingContext;
+					_expression.Apply(resolvedSource, target, targetProperty);
+					_expression.SubscribeToAncestryChanges(chain);
+				}
+				else
+				{
+					ApplyAncestorTypeBinding(
+						target, 
+						targetProperty, 
+						currentElement.RealParent, 
+						++currentLevel,
+						chain);
+				}
+			}
+			else
+			{
+				EventHandler onElementParentSet = null;
+				onElementParentSet = (sender, e) =>
+				{
+					currentElement.ParentSet -= onElementParentSet;
+					ApplyAncestorTypeBinding(
+						target, 
+						targetProperty, 
+						currentElement, 
+						currentLevel,
+						chain);
+				};
+				currentElement.ParentSet += onElementParentSet;
+			}			
+		}
+
+		bool ElementFitsAncestorTypeAndLevel(Element element, int level)
+		{
+			if (!(Source is RelativeBindingSource relativeSource))
+				return false;
+
+			if (level < relativeSource.AncestorLevel)
+				return false;
+
+			if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor &&
+				relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.GetType().GetTypeInfo()))
+				return true;
+
+			if (element.BindingContext != null &&
+				relativeSource.Mode == RelativeBindingSourceMode.FindAncestorBindingContext &&
+				relativeSource.AncestorType.GetTypeInfo().IsAssignableFrom(element.BindingContext.GetType().GetTypeInfo()))
+				return true;
+
+			return false;
 		}
 
 		internal override BindingBase Clone()
 		{
-			return new Binding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, Source = Source, UpdateSourceEventName = UpdateSourceEventName };
+			return new Binding(Path, Mode) {
+				Converter = Converter,
+				ConverterParameter = ConverterParameter,
+				StringFormat = StringFormat,
+				Source = Source,
+				UpdateSourceEventName = UpdateSourceEventName,
+				TargetNullValue = TargetNullValue,
+				FallbackValue = FallbackValue,
+			};
 		}
 
 		internal override object GetSourceValue(object value, Type targetPropertyType)
@@ -164,6 +287,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		static string GetBindingPath<TSource>(Expression<Func<TSource, object>> propertyGetter)
 		{
 			Expression expr = propertyGetter.Body;

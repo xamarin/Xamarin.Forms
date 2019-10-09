@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.Gestures)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
 #endif
 
 	[Preserve(AllMembers = true)]
@@ -28,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		const string Testing = "Testing...";
 		const string Success = "Success";
-		const string AutomationId = "_57114View";
+		const string ViewAutomationId = "_57114View";
 
 		protected override void Init()
 		{
@@ -41,7 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var view = new _57114View
 			{
-				AutomationId = AutomationId,
+				AutomationId = ViewAutomationId,
 				HeightRequest = 200, WidthRequest = 200,
 				BackgroundColor = Color.Aqua,
 				HorizontalOptions = LayoutOptions.Fill,
@@ -102,7 +103,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void _57114BothTypesOfGesturesFire()
 		{
 			RunningApp.WaitForElement(Testing);
-			RunningApp.Tap(AutomationId);
+			RunningApp.Tap(ViewAutomationId);
 			RunningApp.WaitForElement(Success);
 		}
 #endif

@@ -2,22 +2,22 @@ using System;
 using System.ComponentModel;
 using Android.App;
 using Android.Content;
-using Android.Content.Res;
 using Android.Util;
+using Android.Views;
 using Android.Widget;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AView = Android.Views.View;
-using Object = Java.Lang.Object;
+using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class DatePickerRenderer : ViewRenderer<DatePicker, EditText>
+	public abstract class DatePickerRendererBase<TControl> : ViewRenderer<DatePicker, TControl>, IPickerRenderer
+		where TControl : global::Android.Views.View
 	{
+		int _originalHintTextColor;
 		DatePickerDialog _dialog;
 		bool _disposed;
-		TextColorSwitcher _textColorSwitcher;
+		protected abstract EditText EditText { get; }
 
-		public DatePickerRenderer(Context context) : base(context)
+		public DatePickerRendererBase(Context context) : base(context)
 		{
 			AutoPackage = false;
 			if (Forms.IsLollipopOrNewer)
@@ -25,7 +25,8 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use DatePickerRenderer(Context) instead.")]
-		public DatePickerRenderer()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public DatePickerRendererBase()
 		{
 			AutoPackage = false;
 			if (Forms.IsLollipopOrNewer)
@@ -53,11 +54,6 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
-		protected override EditText CreateNativeControl()
-		{
-			return new EditText(Context) { Focusable = false, Clickable = true, Tag = this };
-		}
-
 		protected override void OnElementChanged(ElementChangedEventArgs<DatePicker> e)
 		{
 			base.OnElementChanged(e);
@@ -65,12 +61,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.OldElement == null)
 			{
 				var textField = CreateNativeControl();
-
-				textField.SetOnClickListener(TextFieldClickHandler.Instance);
 				SetNativeControl(textField);
-
-				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-				_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement); 
+				_originalHintTextColor = EditText.CurrentHintTextColor;
 			}
 
 			SetDate(Element.Date);
@@ -79,6 +71,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMinimumDate();
 			UpdateMaximumDate();
 			UpdateTextColor();
+			UpdateCharacterSpacing();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -93,21 +86,27 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName || e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
 		}
 
-		internal override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			base.OnFocusChangeRequested(sender, e);
 
 			if (e.Focus)
-				OnTextFieldClicked();
+			{
+				if (Clickable)
+					CallOnClick();
+				else
+					((IPickerRenderer)this)?.OnClick();
+			}
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
 				((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
-				Control.ClearFocus();
 
 				if (Forms.IsLollipopOrNewer)
 					_dialog.CancelEvent -= OnCancelButtonClicked;
@@ -123,7 +122,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				view.Date = e.Date;
 				((IElementController)view).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
-				Control.ClearFocus();
 			}, year, month, day);
 
 			return dialog;
@@ -137,22 +135,33 @@ namespace Xamarin.Forms.Platform.Android
 				if (currentDialog != null && currentDialog.IsShowing)
 				{
 					currentDialog.Dismiss();
-					_dialog = CreateDatePickerDialog(currentDialog.DatePicker.Year, currentDialog.DatePicker.Month, currentDialog.DatePicker.DayOfMonth);
-					_dialog.Show();
+					if (Forms.IsLollipopOrNewer)
+						currentDialog.CancelEvent -= OnCancelButtonClicked;
+
+					ShowPickerDialog(currentDialog.DatePicker.Year, currentDialog.DatePicker.Month, currentDialog.DatePicker.DayOfMonth);
 				}
 			}
 		}
 
-		void OnTextFieldClicked()
+		void IPickerRenderer.OnClick()
 		{
+			if (_dialog != null && _dialog.IsShowing)
+			{
+				return;
+			}
+
 			DatePicker view = Element;
 			((IElementController)view).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 
-			_dialog = CreateDatePickerDialog(view.Date.Year, view.Date.Month - 1, view.Date.Day);
+			ShowPickerDialog(view.Date.Year, view.Date.Month - 1, view.Date.Day);
+		}
+
+		void ShowPickerDialog(int year, int month, int day)
+		{
+			_dialog = CreateDatePickerDialog(year, month, day);
 
 			UpdateMinimumDate();
 			UpdateMaximumDate();
-
 			if (Forms.IsLollipopOrNewer)
 				_dialog.CancelEvent += OnCancelButtonClicked;
 
@@ -166,13 +175,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetDate(DateTime date)
 		{
-			Control.Text = date.ToString(Element.Format);
+			EditText.Text = date.ToString(Element.Format);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
 		}
 
 		void UpdateFont()
 		{
-			Control.Typeface = Element.ToTypeface();
-			Control.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
+			EditText.Typeface = Element.ToTypeface();
+			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
 		void UpdateMaximumDate()
@@ -191,19 +208,33 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void UpdateTextColor()
+		abstract protected void UpdateTextColor();
+	}
+
+
+	public class DatePickerRenderer : DatePickerRendererBase<EditText>
+	{
+		TextColorSwitcher _textColorSwitcher;
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use DatePickerRenderer(Context) instead.")]
+		public DatePickerRenderer()
 		{
-			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
-		class TextFieldClickHandler : Object, IOnClickListener
+		public DatePickerRenderer(Context context) : base(context)
 		{
-			public static readonly TextFieldClickHandler Instance = new TextFieldClickHandler();
+		}
 
-			public void OnClick(AView v)
-			{
-				((DatePickerRenderer)v.Tag).OnTextFieldClicked();
-			}
+		protected override EditText CreateNativeControl()
+		{
+			return new PickerEditText(Context);
+		}
+
+		protected override EditText EditText => Control;
+
+		protected override void UpdateTextColor()
+		{
+			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
+			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
 	}
 }

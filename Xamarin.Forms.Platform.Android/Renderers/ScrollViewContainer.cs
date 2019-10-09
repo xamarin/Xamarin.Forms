@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.OS;
 using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
@@ -9,6 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly ScrollView _parent;
 		View _childView;
+		bool _isDisposed = false;
 
 		public ScrollViewContainer(ScrollView parent, Context context) : base(context)
 		{
@@ -25,8 +27,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				RemoveAllViews();
 
-				UnsubscribeChildLayoutChanges();
-
 				_childView = value;
 
 				if (_childView == null)
@@ -40,48 +40,27 @@ namespace Xamarin.Forms.Platform.Android
 					renderer.View.RemoveFromParent();
 
 				AddView(renderer.View);
-
-				if (_childView is Layout layout)
-				{ 
-					layout.LayoutChanged += OnChildLayoutChanged;
-				}
-			}
-		}
-
-		void OnChildLayoutChanged(object sender, EventArgs e)
-		{
-			if (IsInLayout)
-			{
-				return;
-			}
-
-			RequestLayout();
-		}
-
-		void UnsubscribeChildLayoutChanges()
-		{
-			if (_childView is Layout layout)
-			{
-				layout.LayoutChanged -= OnChildLayoutChanged;
 			}
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
+			if (_isDisposed)
+				return;
 
 			if (disposing)
 			{
-				UnsubscribeChildLayoutChanges();
-
 				if (ChildCount > 0)
 					GetChildAt(0).Dispose();
 				RemoveAllViews();
 				_childView = null;
 			}
+
+			_isDisposed = true;
+			base.Dispose(disposing);
 		}
 
-		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			if (_childView == null)
 				return;

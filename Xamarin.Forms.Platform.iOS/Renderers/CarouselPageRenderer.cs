@@ -19,12 +19,14 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _ignoreNativeScrolling;
 		UIScrollView _scrollView;
 		VisualElementTracker _tracker;
+		Page _previousPage;
 
 		public CarouselPageRenderer()
 		{
 		}
 
 		IElementController ElementController => Element as IElementController;
+
 
 		protected CarouselPage Carousel
 		{
@@ -63,6 +65,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (element != null)
 				element.SendViewInitialized(NativeView);
+
+			_previousPage = Carousel?.CurrentPage;
 		}
 
 		public void SetElementSize(Size size)
@@ -167,6 +171,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing && !_disposed)
 			{
+				_previousPage = null;
+
 				if (_scrollView != null)
 					_scrollView.DecelerationEnded -= OnDecelerationEnded;
 
@@ -244,8 +250,11 @@ namespace Xamarin.Forms.Platform.iOS
 				Platform.SetRenderer(page, renderer);
 			}
 
-			UIView container = new PageContainer(page);
-			container.AddSubview(renderer.NativeView);
+			UIView container = new CarouselPageContainer(page);
+
+			UIView view = renderer.NativeView;
+
+			container.AddSubview(view);
 			_containerMap[page] = container;
 
 			AddChildViewController(renderer.ViewController);
@@ -259,8 +268,15 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_ignoreNativeScrolling || SelectedIndex >= ElementController.LogicalChildren.Count)
 				return;
-
-			Carousel.CurrentPage = (ContentPage)ElementController.LogicalChildren[SelectedIndex];
+						
+			var currentPage = (ContentPage)ElementController.LogicalChildren[SelectedIndex];
+			if (_previousPage != currentPage)
+			{
+				_previousPage?.SendDisappearing();
+				_previousPage = currentPage;
+			}
+			Carousel.CurrentPage = currentPage;
+			currentPage.SendAppearing();
 		}
 
 		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -288,7 +304,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPage();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
-			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
 		}
 
@@ -345,17 +361,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			string bgImage = ((Page)Element).BackgroundImage;
-			if (!string.IsNullOrEmpty(bgImage))
+			this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
 			{
-				View.BackgroundColor = UIColor.FromPatternImage(UIImage.FromBundle(bgImage));
-				return;
-			}
-			Color bgColor = Element.BackgroundColor;
-			if (bgColor.IsDefault)
-				View.BackgroundColor = UIColor.White;
-			else
-				View.BackgroundColor = bgColor.ToUIColor();
+				if (bgImage != null)
+					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
+				else if (Element.BackgroundColor.IsDefault)
+					View.BackgroundColor = UIColor.White;
+				else
+					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			});
 		}
 
 		void UpdateCurrentPage(bool animated = true)
@@ -365,9 +379,9 @@ namespace Xamarin.Forms.Platform.iOS
 				ScrollToPage(CarouselPage.GetIndex(current), animated);
 		}
 
-		class PageContainer : UIView
+		class CarouselPageContainer : UIView
 		{
-			public PageContainer(VisualElement element)
+			public CarouselPageContainer(VisualElement element)
 			{
 				Element = element;
 			}

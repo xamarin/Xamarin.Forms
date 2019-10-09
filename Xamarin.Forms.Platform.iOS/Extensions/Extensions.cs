@@ -1,3 +1,5 @@
+using Foundation;
+using System;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -7,16 +9,22 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public static void ApplyKeyboard(this IUITextInput textInput, Keyboard keyboard)
 		{
+			if(textInput is IUITextInputTraits traits)
+				ApplyKeyboard(traits, keyboard);
+		}
+
+		public static void ApplyKeyboard(this IUITextInputTraits textInput, Keyboard keyboard)
+		{
 			textInput.AutocapitalizationType = UITextAutocapitalizationType.None;
 			textInput.AutocorrectionType = UITextAutocorrectionType.No;
 			textInput.SpellCheckingType = UITextSpellCheckingType.No;
+			textInput.KeyboardType = UIKeyboardType.Default;
 
 			if (keyboard == Keyboard.Default)
 			{
 				textInput.AutocapitalizationType = UITextAutocapitalizationType.Sentences;
 				textInput.AutocorrectionType = UITextAutocorrectionType.Default;
 				textInput.SpellCheckingType = UITextSpellCheckingType.Default;
-				textInput.KeyboardType = UIKeyboardType.Default;
 			}
 			else if (keyboard == Keyboard.Chat)
 			{
@@ -68,6 +76,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		internal static UIModalPresentationStyle ToNativeModalPresentationStyle(this PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
+		{
+			switch (style)
+			{
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FormSheet:
+					return UIModalPresentationStyle.FormSheet;
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FullScreen:
+					return UIModalPresentationStyle.FullScreen;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(style));
+			}
+		}
+
 		internal static UIReturnKeyType ToUIReturnKeyType(this ReturnType returnType)
 		{
 			switch (returnType)
@@ -105,5 +126,59 @@ namespace Xamarin.Forms.Platform.iOS
 					return DeviceOrientation.Other;
 			}
 		}
+
+		internal static NSMutableAttributedString AddCharacterSpacing(this NSAttributedString attributedString, string text, double characterSpacing)
+		{
+			if (attributedString == null && characterSpacing == 0)
+				return null;
+
+			NSMutableAttributedString mutableAttributedString = attributedString as NSMutableAttributedString;
+			if (attributedString == null || attributedString.Length == 0)
+			{
+				mutableAttributedString = text == null ? new NSMutableAttributedString() : new NSMutableAttributedString(text);
+			}
+			else
+			{
+				mutableAttributedString = new NSMutableAttributedString(attributedString);
+			}
+
+			AddKerningAdjustment(mutableAttributedString, text, characterSpacing);
+
+			return mutableAttributedString;
+		}
+
+		internal static bool HasCharacterAdjustment(this NSMutableAttributedString mutableAttributedString)
+		{
+			if (mutableAttributedString == null)
+				return false;
+
+			NSRange removalRange;
+			var attributes = mutableAttributedString.GetAttributes(0, out removalRange);
+
+			for (uint i = 0; i < attributes.Count; i++)
+				if (attributes.Keys[i] is NSString nSString && nSString == UIStringAttributeKey.KerningAdjustment)
+					return true;
+
+			return false;
+		}
+
+		internal static void AddKerningAdjustment(NSMutableAttributedString mutableAttributedString, string text, double characterSpacing)
+		{
+			if (!string.IsNullOrEmpty(text))
+			{
+				if (characterSpacing == 0 && !mutableAttributedString.HasCharacterAdjustment())
+					return;
+
+				mutableAttributedString.AddAttribute
+				(
+					UIStringAttributeKey.KerningAdjustment,
+					NSObject.FromObject(characterSpacing), new NSRange(0, text.Length - 1)
+				);
+			}
+		}
+
+		internal static bool IsHorizontal(this Button.ButtonContentLayout layout) =>
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Left ||
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Right;
 	}
 }

@@ -41,10 +41,11 @@ namespace Xamarin.Forms.Core.UnitTests
 		[TestCase (ScrollOrientation.Both)]
 		public void GetsCorrectSizeRequestWithWrappingContent (ScrollOrientation orientation)
 		{
+			Device.PlatformServices = new MockPlatformServices(getNativeSizeFunc:null, useRealisticLabelMeasure:true);
+
 			var scrollView = new ScrollView {
 				IsPlatformEnabled = true,
 				Orientation = orientation,
-				Platform = new UnitPlatform (null, true)
 			};
 
 			var hLayout = new StackLayout {
@@ -72,7 +73,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			View view = new View {IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100};
 
 			ScrollView scroll = new ScrollView {Content = view};
-			scroll.Platform = new UnitPlatform ();
 			scroll.Layout (new Rectangle (0, 0, 50, 50));
 
 			Assert.AreEqual (new Size (50, 100), scroll.ContentSize);
@@ -98,7 +98,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			View view = new View { IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100 };
 
 			ScrollView scroll = new ScrollView { Content = view, Orientation = ScrollOrientation.Both };
-			scroll.Platform = new UnitPlatform ();
 			scroll.Layout (new Rectangle (0, 0, 50, 50));
 
 			Assert.AreEqual (new Size (100, 100), scroll.ContentSize);
@@ -127,7 +126,6 @@ namespace Xamarin.Forms.Core.UnitTests
 				Orientation = ScrollOrientation.Horizontal,
 				Content = view
 			};
-			scroll.Platform = new UnitPlatform ();
 			scroll.Layout (new Rectangle (0, 0, 50, 50));
 
 			Assert.AreEqual (new Size (100, 50), scroll.ContentSize);
@@ -156,7 +154,6 @@ namespace Xamarin.Forms.Core.UnitTests
 				Orientation = ScrollOrientation.Both,
 				Content = view
 			};
-			scroll.Platform = new UnitPlatform ();
 			scroll.Layout (new Rectangle (0, 0, 50, 50));
 
 			Assert.AreEqual (new Size (100, 100), scroll.ContentSize);
@@ -177,6 +174,39 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestContentSizeDidNotChangeNeither()
+		{
+			View view = new View { IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100 };
+
+			var scroll = new ScrollView
+			{
+				Orientation = ScrollOrientation.Neither,
+				Content = view
+			};
+
+			var originalBounds = new Rectangle(0, 0, 50, 50);
+
+			scroll.Layout(originalBounds);
+
+			Assert.That(originalBounds.Size, Is.EqualTo(scroll.ContentSize));
+
+			bool changed = false;
+			scroll.PropertyChanged += (sender, e) => {
+				switch (e.PropertyName)
+				{
+					case "ContentSize":
+						changed = true;
+						break;
+				}
+			};
+
+			view.WidthRequest = 200;
+
+			Assert.That(changed, Is.False);
+			Assert.That(originalBounds.Size, Is.EqualTo(scroll.ContentSize));
+		}
+
+		[Test]
 		public void TestContentSizeClamping ()
 		{
 			View view = new View {IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100};
@@ -184,7 +214,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			var scroll = new ScrollView {
 				Orientation = ScrollOrientation.Horizontal,
 				Content = view,
-				Platform = new UnitPlatform ()
 			};
 			scroll.Layout (new Rectangle (0, 0, 50, 50));
 
@@ -271,7 +300,11 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			scrollView.Orientation = ScrollOrientation.Both;
 			Assert.AreEqual (ScrollOrientation.Both, scrollView.Orientation);
-			Assert.True (signaled); 
+			Assert.True (signaled);
+
+			scrollView.Orientation = ScrollOrientation.Neither;
+			Assert.AreEqual(ScrollOrientation.Neither, scrollView.Orientation);
+			Assert.True(signaled);
 		}
 
 		[Test]
@@ -295,7 +328,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void TestScrollTo()
 		{
 			var scrollView = new ScrollView ();
-			scrollView.Platform = new UnitPlatform ();
 
 			var item = new View {   };
 			scrollView.Content = new StackLayout { Children = { item } };
@@ -314,10 +346,29 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestScrollWasNotFiredOnNeither()
+		{
+			var scrollView = new ScrollView
+			{
+				Orientation = ScrollOrientation.Neither
+			};
+
+			var item = new View { };
+			scrollView.Content = new StackLayout { Children = { item } };
+
+			bool requested = false;
+			((IScrollViewController)scrollView).ScrollToRequested += (sender, args) => {
+				requested = true;
+			};
+
+			scrollView.ScrollToAsync(0, 100, true);
+			Assert.That(requested, Is.False);
+		}
+
+		[Test]
 		public void TestScrollToNotAnimated()
 		{
 			var scrollView = new ScrollView ();
-			scrollView.Platform = new UnitPlatform ();
 
 			var item = new View {   };
 			scrollView.Content = new StackLayout { Children = { item } };
@@ -339,7 +390,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void TestScrollToElement ()
 		{
 			var scrollView = new ScrollView ();
-			scrollView.Platform = new UnitPlatform ();
 
 			var item = new Label {  Text = "Test" };
 			scrollView.Content = new StackLayout { Children = { item } };
@@ -361,7 +411,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void TestScrollToElementNotAnimated ()
 		{
 			var scrollView = new ScrollView ();
-			scrollView.Platform = new UnitPlatform ();
 
 			var item = new Label {  Text = "Test" };
 			scrollView.Content = new StackLayout { Children = { item } };
@@ -383,7 +432,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void TestScrollToInvalid ()
 		{
 			var scrollView = new ScrollView ();
-			scrollView.Platform = new UnitPlatform ();
 
 			Assert.That (() => scrollView.ScrollToAsync (new VisualElement(), ScrollToPosition.Center, true), Throws.ArgumentException);
 			Assert.That (() => scrollView.ScrollToAsync (null, (ScrollToPosition) 500, true), Throws.ArgumentException);
@@ -409,7 +457,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				Content = view,
 				Orientation = ScrollOrientation.Horizontal,
-				Platform = new UnitPlatform()
 			};
 			scroll.Layout(new Rectangle(0, 0, 100, 100));
 
@@ -427,7 +474,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				Content = view,
 				Orientation = ScrollOrientation.Vertical,
-				Platform = new UnitPlatform()
 			};
 			scroll.Layout(new Rectangle(0, 0, 100, 100));
 
@@ -445,7 +491,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				Content = view,
 				Orientation = ScrollOrientation.Both,
-				Platform = new UnitPlatform()
 			};
 			scroll.Layout(new Rectangle(0, 0, 100, 100));
 
@@ -460,7 +505,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			var scrollView = new ScrollView
 			{
 				Orientation = ScrollOrientation.Both,
-				Platform = new UnitPlatform(),
 				Content = new Grid
 				{
 					WidthRequest = 1000,

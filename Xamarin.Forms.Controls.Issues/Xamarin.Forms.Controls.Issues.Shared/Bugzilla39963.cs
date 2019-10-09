@@ -10,6 +10,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 39963, "iOS WebView has wrong scrolling size when loading local html content with images")]
 	public class Bugzilla39963 : TestContentPage 
@@ -24,10 +27,12 @@ namespace Xamarin.Forms.Controls.Issues
 						<p>This only happens when a local image is loaded.</p>
 						</body></html>";
 
+#pragma warning disable 0219
 			var workingHtml = @"<html><body>
 						<p></p>
 						<p>Without local image, everything works fine.</p>
 						</body></html>";
+#pragma warning restore 0219
 
 			WebView webView = new WebView {
 				Source = new HtmlWebViewSource() {

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -8,6 +9,9 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class PageExtensions
 	{
+#pragma warning disable 618
+		[Obsolete("ContentPage.CreateFragment() is obsolete as of version 3.2. Please use ContentPage.CreateSupportFragment() instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Fragment CreateFragment(this ContentPage view, Context context)
 		{
 			if (!Forms.IsInitialized)
@@ -25,29 +29,6 @@ namespace Xamarin.Forms.Platform.Android
 			var vg = platform.GetViewGroup();
 
 			return new EmbeddedFragment(vg, platform);
-		}
-
-		public static global::Android.Support.V4.App.Fragment CreateSupportFragment(this ContentPage view, Context context)
-		{
-			if (!Forms.IsInitialized)
-				throw new InvalidOperationException("call Forms.Init() before this");
-
-			if (!(view.RealParent is Application))
-			{
-				Application app = new DefaultApplication();
-				app.MainPage = view;
-			}
-
-			var platform = new Platform(context, true);
-			platform.SetPage(view);
-
-			var vg = platform.GetViewGroup();
-
-			return new EmbeddedSupportFragment(vg, platform);
-		}
-
-		class DefaultApplication : Application
-		{
 		}
 
 		class EmbeddedFragment : Fragment
@@ -88,6 +69,30 @@ namespace Xamarin.Forms.Platform.Android
 
 				base.Dispose(disposing);
 			}
+		}
+#pragma warning restore 618
+
+		public static global::Android.Support.V4.App.Fragment CreateSupportFragment(this ContentPage view, Context context)
+		{
+			if (!Forms.IsInitialized)
+				throw new InvalidOperationException("call Forms.Init() before this");
+
+			if (!(view.RealParent is Application))
+			{
+				Application app = new DefaultApplication();
+				app.MainPage = view;
+			}
+
+			var platform = new Platform(context, true);
+			platform.SetPage(view);
+
+			var vg = platform.GetViewGroup();
+
+			return new EmbeddedSupportFragment(vg, platform);
+		}
+
+		class DefaultApplication : Application
+		{
 		}
 
 		class EmbeddedSupportFragment : global::Android.Support.V4.App.Fragment

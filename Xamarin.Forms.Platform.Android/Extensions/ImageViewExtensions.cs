@@ -1,90 +1,85 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Android.Content;
 using Android.Graphics;
-using Android.Graphics.Drawables;
 using AImageView = Android.Widget.ImageView;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	internal static class ImageViewExtensions
 	{
-		// TODO hartez 2017/04/07 09:33:03 Review this again, not sure it's handling the transition from previousImage to 'null' newImage correctly
-		public static async Task UpdateBitmap(this AImageView imageView, Image newImage, ImageSource source, Image previousImage = null, ImageSource previousImageSource = null)
+		public static Task UpdateBitmap(this AImageView imageView, IImageElement newView, IImageElement previousView) =>
+			imageView.UpdateBitmap(newView, previousView, null, null);
+
+		public static Task UpdateBitmap(this AImageView imageView, ImageSource newImageSource, ImageSource previousImageSourc) =>
+			imageView.UpdateBitmap(null, null, newImageSource, previousImageSourc);
+
+		static async Task UpdateBitmap(
+			this AImageView imageView,
+			IImageElement newView,
+			IImageElement previousView,
+			ImageSource newImageSource,
+			ImageSource previousImageSource)
 		{
-			if (imageView == null || imageView.IsDisposed())
+
+			IImageController imageController = newView as IImageController;
+			newImageSource = newImageSource ?? newView?.Source;
+			previousImageSource = previousImageSource ?? previousView?.Source;
+
+			if (imageView.IsDisposed())
 				return;
 
-			if (Device.IsInvokeRequired)
-				throw new InvalidOperationException("Image Bitmap must not be updated from background thread");
-
-			source = source ?? newImage?.Source;
-			previousImageSource = previousImageSource ?? previousImage?.Source;
-
-			if (Equals(previousImageSource, source))
+			if (newImageSource != null && Equals(previousImageSource, newImageSource))
 				return;
-
-			var imageController = newImage as IImageController;
 
 			imageController?.SetIsLoading(true);
 
 			(imageView as IImageRendererController)?.SkipInvalidate();
-
 			imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 
-			Bitmap bitmap = null;
-			Drawable drawable = null;
-
-			IImageSourceHandler handler;
-
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			try
 			{
-				if (handler is FileImageSourceHandler)
+				if (newImageSource != null)
 				{
-					drawable = imageView.Context.GetDrawable((FileImageSource)source);
-				}
-
-				if (drawable == null)
-				{
-					try
+					var imageViewHandler = Internals.Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
+					if (imageViewHandler != null)
 					{
-						bitmap = await handler.LoadImageAsync(source, imageView.Context);
+						await imageViewHandler.LoadImageAsync(newImageSource, imageView);
 					}
-					catch (TaskCanceledException)
+					else
 					{
-						imageController?.SetIsLoading(false);
+						using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
+						{
+							// only set the image if we are still on the same one
+							if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource))
+								imageView.SetImageDrawable(drawable);
+						}
 					}
-				}
-			}
-
-			// Check if the source on the new image has changed since the image was loaded
-			if (newImage != null && !Equals(newImage.Source, source))
-			{
-				bitmap?.Dispose();
-				return;
-			}
-
-			if (!imageView.IsDisposed())
-			{
-				if (bitmap == null && drawable != null)
-				{
-					imageView.SetImageDrawable(drawable);
 				}
 				else
 				{
-					imageView.SetImageBitmap(bitmap);
+					imageView.SetImageBitmap(null);
+				}
+			}
+			finally
+			{
+				// only mark as finished if we are still working on the same image
+				if (SourceIsNotChanged(newView, newImageSource))
+				{
+					imageController?.SetIsLoading(false);
+					imageController?.NativeSizeChanged();
 				}
 			}
 
-			bitmap?.Dispose();
-			imageController?.SetIsLoading(false);
-			((IVisualElementController)newImage)?.NativeSizeChanged();
 
+			bool SourceIsNotChanged(IImageElement imageElement, ImageSource imageSource)
+			{
+				return (imageElement != null) ? imageElement.Source == imageSource : true;
+			}
 		}
 
-		public static async Task UpdateBitmap(this AImageView imageView, Image newImage, Image previousImage = null)
+		internal static async void SetImage(this AImageView image, ImageSource source, Context context)
 		{
-			await UpdateBitmap(imageView, newImage, newImage?.Source, previousImage, previousImage?.Source);
-
+			image.SetImageDrawable(await context.GetFormsDrawableAsync(source));
 		}
 	}
 }

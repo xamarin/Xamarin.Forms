@@ -37,12 +37,18 @@ namespace Xamarin.Forms.Platform.UWP
 
 			FrameworkElement FrameworkElement { get; }
 
-			internal void CleanUp() => _view?.Cleanup();
+			internal void CleanUp()
+			{
+				_view?.Cleanup();
+
+				if(_view != null)
+					_view.MeasureInvalidated -= OnMeasureInvalidated;
+			}
 
 			public WrapperControl(View view)
 			{
 				_view = view;
-				_view.MeasureInvalidated += (sender, args) => { InvalidateMeasure(); };
+				_view.MeasureInvalidated += OnMeasureInvalidated;
 
 				IVisualElementRenderer renderer = Platform.CreateRenderer(view);
 				Platform.SetRenderer(view, renderer);
@@ -64,13 +70,29 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
+			void OnMeasureInvalidated(object sender, EventArgs e)
+			{
+				InvalidateMeasure();
+			}
+
 			protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 			{
 				_view.IsInNativeLayout = true;
 				Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, finalSize.Width, finalSize.Height));
+
+				if (_view.Width <= 0 || _view.Height <= 0)
+				{
+					// Hide Panel when size _view is empty.
+					// It is necessary that this element does not overlap other elements when it should be hidden.
+					Opacity = 0;
+				}
+				else
+				{
+					Opacity = 1;
+					FrameworkElement?.Arrange(new Rect(_view.X, _view.Y, _view.Width, _view.Height));
+				}
 				_view.IsInNativeLayout = false;
 
-				FrameworkElement?.Arrange(new Rect(_view.X, _view.Y, _view.Width, _view.Height));
 				return finalSize;
 			}
 
@@ -93,7 +115,7 @@ namespace Xamarin.Forms.Platform.UWP
 					result = new Windows.Foundation.Size(request.Width, request.Height);
 				}
 
-				_view.Layout(new Rectangle(0, 0, result.Width, result.Height));
+				Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, result.Width, result.Height));
 
 				FrameworkElement?.Measure(availableSize);
 

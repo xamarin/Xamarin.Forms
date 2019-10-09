@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -34,7 +35,14 @@ namespace Xamarin.Forms
 		public IStyle Style
 		{
 			get { return _style; }
-			set { SetStyle(ImplicitStyle, ClassStyles, value); }
+			set
+			{
+				if (_style == value)
+					return;
+				if (value != null && !value.TargetType.IsAssignableFrom(TargetType))
+					Log.Warning("Styles", $"Style TargetType {value.TargetType.FullName} is not compatible with element target type {TargetType}");
+				SetStyle(ImplicitStyle, ClassStyles, value);
+			}
 		}
 
 		public IList<string> StyleClass
@@ -105,6 +113,7 @@ namespace Xamarin.Forms
 		void OnImplicitStyleChanged()
 		{
 			var first = true;
+			
 			foreach (BindableProperty implicitStyleProperty in _implicitStyles)
 			{
 				var implicitStyle = (Style)Target.GetValue(implicitStyleProperty);
@@ -118,6 +127,8 @@ namespace Xamarin.Forms
 				}
 				first = false;
 			}
+
+			ImplicitStyle = null;
 		}
 
 		void RegisterImplicitStyles()
@@ -132,6 +143,24 @@ namespace Xamarin.Forms
 				if (s_stopAtTypes.Contains(type))
 					return;
 			}
+		}
+
+		internal void ReRegisterImplicitStyles(string fallbackTypeName)
+		{
+			//Clear old implicit Styles
+			for (var i = 0; i < _implicitStyles.Count; i++)
+				Target.RemoveDynamicResource(_implicitStyles[i]);
+			_implicitStyles.Clear();
+
+			//Register the fallback
+			BindableProperty implicitStyleProperty = BindableProperty.Create("ImplicitStyle", typeof(Style), typeof(VisualElement), default(Style),
+						propertyChanged: (bindable, oldvalue, newvalue) => OnImplicitStyleChanged());
+			_implicitStyles.Add(implicitStyleProperty);
+			Target.SetDynamicResource(implicitStyleProperty, fallbackTypeName);
+
+			//and proceed as usual
+			RegisterImplicitStyles();
+			Apply(Target);
 		}
 
 		void SetStyle(IStyle implicitStyle, IList<Style> classStyles, IStyle style)

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 #if UITEST
 using NUnit.Framework;
@@ -29,7 +30,6 @@ namespace Xamarin.Forms.Controls.Issues
 		const string TargetAutomationId = "controlinsideofframe";
 		const string NoTaps = "No taps yet";
 		const string Tapped = "Frame was tapped";
-		ContentPage _menu;
 
 #if UITEST
 		[Test, TestCaseSource(nameof(TestCases))]
@@ -73,14 +73,12 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				// These controls show a pop-up which we have to cancel/done out of before we can continue
 #if __ANDROID__
-				var cancelButtonText = "Cancel";
+				System.Threading.Tasks.Task.Delay(2000).Wait(); // If we hit back before the dialog is fully up, it may not dismiss
 				RunningApp.Back();
 #elif __IOS__
 				var cancelButtonText = "Done";
 				RunningApp.WaitForElement(q => q.Marked(cancelButtonText));
 				RunningApp.Tap(q => q.Marked(cancelButtonText));
-#else
-				var cancelButtonText = "DismissButton";
 #endif
 
 			}
@@ -118,9 +116,9 @@ namespace Xamarin.Forms.Controls.Issues
 			var rec = new TapGestureRecognizer { NumberOfTapsRequired = 1 };
 			rec.Tapped += (s, e) => { label.Text = Tapped; };
 			frame.GestureRecognizers.Add(rec);
-			
+
 			var layout = new StackLayout();
-		
+
 			layout.Children.Add(instructions);
 			layout.Children.Add(label);
 			layout.Children.Add(frame);
@@ -158,6 +156,10 @@ namespace Xamarin.Forms.Controls.Issues
 					from Layout element in layout.InternalChildren
 					from Button button in element.InternalChildren
 					let text = button.Text
+					// UwpIgnore
+#if __WINDOWS__
+					where text != "Stepper" && text != "Entry"
+#endif
 					select new object[]
 					{
 						text,
@@ -170,11 +172,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		ContentPage BuildMenu()
 		{
-			if (_menu != null)
-			{
-				return _menu;
-			}
-
 			var layout = new Grid
 			{
 				VerticalOptions = LayoutOptions.Fill,
@@ -200,19 +197,20 @@ namespace Xamarin.Forms.Controls.Issues
 				LineBreakMode = LineBreakMode.WordWrap,
 				Text = "Lorem ipsum dolor sit amet"
 			}));
-			col1.Children.Add(MenuButton(nameof(SearchBar), () => new SearchBar()));
 
-			col2.Children.Add(MenuButton(nameof(DatePicker), () => new DatePicker()));
-			col2.Children.Add(MenuButton(nameof(TimePicker), () => new TimePicker()));
+			// We don't use 'SearchBar' here because on Android it sometimes finds the wrong control
+			col1.Children.Add(MenuButton("TestSearchBar", () => new SearchBar()));
 
-			if (DateTime.Now > new DateTime(2018, 5, 28))
-			{
-				col2.Children.Add(MenuButton(nameof(Slider), () => new Slider()));
-			}
+			var slider = new Slider();
+			slider.On<iOS>().SetUpdateOnTap(true);
+			col2.Children.Add(MenuButton(nameof(Slider), () => slider));
 
 			col2.Children.Add(MenuButton(nameof(Switch), () => new Switch()));
 			col2.Children.Add(MenuButton(nameof(Stepper), () => new Stepper()));
 			col2.Children.Add(MenuButton(nameof(BoxView), () => new BoxView { BackgroundColor = Color.DarkMagenta, WidthRequest = 100, HeightRequest = 100 }));
+
+			col2.Children.Add(MenuButton(nameof(DatePicker), () => new DatePicker()));
+			col2.Children.Add(MenuButton(nameof(TimePicker), () => new TimePicker()));
 
 			return new ContentPage { Content = layout };
 		}

@@ -1,6 +1,4 @@
-using ElmSharp;
 using Xamarin.Forms.Platform.Tizen.Native;
-using EColor = ElmSharp.Color;
 using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Label;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -20,10 +18,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Label.VerticalTextAlignmentProperty, UpdateVerticalTextAlignment);
 			RegisterPropertyHandler(Label.FormattedTextProperty, UpdateFormattedText);
 			RegisterPropertyHandler(Label.LineHeightProperty, UpdateLineHeight);
-			if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable)
-			{
-				RegisterPropertyHandler("FontWeight", UpdateFontWeight);
-			}
+			RegisterPropertyHandler(Specific.FontWeightProperty, UpdateFontWeight);
+			RegisterPropertyHandler(Label.TextDecorationsProperty, UpdateTextDecorations);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
@@ -51,6 +47,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			foreach (var span in formattedString.Spans)
 			{
+				var textDecorations = span.TextDecorations;
+
 				Native.Span nativeSpan = new Native.Span();
 				nativeSpan.Text = span.Text;
 				nativeSpan.FontAttributes = span.FontAttributes;
@@ -58,11 +56,22 @@ namespace Xamarin.Forms.Platform.Tizen
 				nativeSpan.FontSize = span.FontSize;
 				nativeSpan.ForegroundColor = span.TextColor.ToNative();
 				nativeSpan.BackgroundColor = span.BackgroundColor.ToNative();
+				nativeSpan.Underline = (textDecorations & TextDecorations.Underline) != 0;
+				nativeSpan.Strikethrough = (textDecorations & TextDecorations.Strikethrough) != 0;
 				nativeSpan.LineHeight = span.LineHeight;
 				nativeString.Spans.Add(nativeSpan);
 			}
 
 			return nativeString;
+		}
+
+		void UpdateTextDecorations()
+		{
+			Control.BatchBegin();
+			var textDecorations = Element.TextDecorations;
+			Control.Strikethrough = (textDecorations & TextDecorations.Strikethrough) != 0;
+			Control.Underline = (textDecorations & TextDecorations.Underline) != 0;
+			Control.BatchCommit();
 		}
 
 		void UpdateFormattedText()

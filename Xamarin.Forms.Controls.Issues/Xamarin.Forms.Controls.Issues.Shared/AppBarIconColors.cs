@@ -1,7 +1,7 @@
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 0, "[UWP] Modal NavigationPage ignores BarTextColor settings for icons", PlatformAffected.WinRT)]
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Controls
 			BarBackgroundColor = Color.Purple;
 			BarTextColor = Color.White;
 			Title = root.Title;
-			Icon = root.Icon;
+			IconImageSource = root.IconImageSource;
 		}
 	}
 }

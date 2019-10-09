@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Xml;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.StyleSheets
@@ -84,10 +85,28 @@ namespace Xamarin.Forms.StyleSheets
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		static object Convert(object target, object value, BindableProperty property)
 		{
-			Func<MemberInfo> minforetriever = () =>    property.DeclaringType.GetRuntimeProperty(property.PropertyName) as MemberInfo
-													?? property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) }) as MemberInfo;
 			var serviceProvider = new StyleSheetServiceProvider(target, property);
-			return value.ConvertTo(property.ReturnType, minforetriever, serviceProvider);
+			Func<MemberInfo> minforetriever =
+				() =>
+				{
+					MemberInfo minfo = null;
+					try {
+						minfo = property.DeclaringType.GetRuntimeProperty(property.PropertyName);
+					} catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple properties with name '{property.DeclaringType}.{property.PropertyName}' found.", serviceProvider, innerException: e);
+					}
+					if (minfo != null)
+						return minfo;
+					try {
+						return property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) });
+					} catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple methods with name '{property.DeclaringType}.Get{property.PropertyName}' found.", serviceProvider, innerException: e);
+					}
+				};
+			var ret = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider, out Exception exception);
+			if (exception != null)
+				throw exception;
+			return ret;
 		}
 
 		public void UnApply(IStylable styleable)

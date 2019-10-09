@@ -34,10 +34,10 @@ namespace Xamarin.Forms.Controls.Issues
 			base.OnAppearing();
 			BarTextColor = Color.White;
 			Children.RemoveAt(1);
-			Children.Insert(1, new ContentPage { Title = "Page5", Icon = "Loyalty.png" });
+			Children.Insert(1, new ContentPage { Title = "Page5", IconImageSource = "Loyalty.png" });
 
 			Children.RemoveAt(3);
-			Children.Insert(2, new ContentPage { Title = "Page6", Icon = "Gift.png" });
+			Children.Insert(2, new ContentPage { Title = "Page6", IconImageSource = "Gift.png" });
 			BarTextColor = Color.White;
 		}
 
@@ -45,6 +45,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue1323Test()
 		{
+			RunningApp.WaitForElement(X => X.Marked("Page 1"));
+			RunningApp.WaitForElement(X => X.Marked("Page5"));
 			RunningApp.Screenshot("All tab bar items text should be white");
 		}
 #endif

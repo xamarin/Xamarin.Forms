@@ -5,9 +5,11 @@ using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+
 	public class ScrollViewRenderer : UIScrollView, IVisualElementRenderer, IEffectControlProvider
 	{
 		EventTracker _events;
@@ -18,6 +20,8 @@ namespace Xamarin.Forms.Platform.iOS
 		RectangleF _previousFrame;
 		ScrollToRequestedEventArgs _requestedScroll;
 		VisualElementTracker _tracker;
+		bool _checkedForRtlScroll = false;
+		bool _previousLTR = true;
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
@@ -70,12 +74,17 @@ namespace Xamarin.Forms.Platform.iOS
 					_events = new EventTracker(this);
 					_events.LoadEvents(this);
 
-					_insetTracker = new KeyboardInsetTracker(this, () => Window, insets => ContentInset = ScrollIndicatorInsets = insets, point =>
+
+					_insetTracker = new KeyboardInsetTracker(this, () => Window, insets =>
+					{
+						ContentInset = ScrollIndicatorInsets = insets;
+					}, 
+					point =>
 					{
 						var offset = ContentOffset;
 						offset.Y += point.Y;
 						SetContentOffset(offset, true);
-					});
+					}, this);
 				}
 
 				UpdateDelaysContentTouches();
@@ -107,15 +116,25 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return null; }
 		}
 
+		
+
 		public override void LayoutSubviews()
 		{
+			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
-			if (_requestedScroll != null && Superview != null)
+			if(Superview != null)
 			{
-				var request = _requestedScroll;
-				_requestedScroll = null;
-				OnScrollToRequested(this, request);
+				if (_requestedScroll != null)
+				{
+					var request = _requestedScroll;
+					_requestedScroll = null;
+					OnScrollToRequested(this, request);
+				}
+				else
+				{
+					UpdateFlowDirection();
+				}
 			}
 
 			if (_previousFrame != Frame)
@@ -125,6 +144,25 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void UpdateFlowDirection()
+		{
+			if (Superview == null || _requestedScroll != null || _checkedForRtlScroll)
+				return;
+
+			if (Element is IVisualElementController controller && ScrollView.Orientation != ScrollOrientation.Vertical)
+			{
+				var isLTR = controller.EffectiveFlowDirection.IsLeftToRight();
+				if (_previousLTR != isLTR)
+				{
+					_previousLTR = isLTR;
+					_checkedForRtlScroll = true;
+					SetContentOffset(new PointF((nfloat)(ScrollView.Content.Width - ScrollView.Width - ContentOffset.X), 0), false);
+				}
+			}
+
+			_checkedForRtlScroll = true;
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -132,6 +170,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_packager == null)
 					return;
 
+				Element?.ClearValue(Platform.RendererProperty);
 				SetElement(null);
 
 				_packager.Dispose();
@@ -154,12 +193,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
-		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
-		{
-			var changed = ElementChanged;
-			if (changed != null)
-				changed(this, e);
-		}
+		protected virtual void OnElementChanged(VisualElementChangedEventArgs e) => ElementChanged?.Invoke(this, e); 
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -213,12 +247,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
 		{
-			ContentSize = Bounds.Size;
-			UpdateContentSize();
+			var elementContentSize = RetrieveElementContentSize();
+			ContentSize = elementContentSize.IsEmpty ? Bounds.Size : elementContentSize;
 		}
 
 		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
 		{
+			_checkedForRtlScroll = true;
+
 			if (Superview == null)
 			{
 				_requestedScroll = e;
@@ -262,9 +298,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateContentSize()
 		{
-			var contentSize = ((ScrollView)Element).ContentSize.ToSizeF();
+			var contentSize = RetrieveElementContentSize();
 			if (!contentSize.IsEmpty)
 				ContentSize = contentSize;
+		}
+
+		CoreGraphics.CGSize RetrieveElementContentSize()
+		{
+			return ((ScrollView)Element).ContentSize.ToSizeF();
 		}
 
 		void UpdateScrollPosition()

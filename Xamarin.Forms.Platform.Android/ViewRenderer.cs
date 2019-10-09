@@ -21,20 +21,24 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ViewRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected ViewRenderer()
+
 		{
 		}
 	}
 
-	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, IViewRenderer, AView.IOnFocusChangeListener where TView : View where TNativeView : AView
+	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, IViewRenderer, ITabStop, AView.IOnFocusChangeListener where TView : View where TNativeView : AView
 	{
 		protected ViewRenderer(Context context) : base(context)
 		{
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ViewRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected ViewRenderer() 
 		{
+			
 		}
 
 		protected virtual TNativeView CreateNativeControl()
@@ -45,6 +49,7 @@ namespace Xamarin.Forms.Platform.Android
 		ViewGroup _container;
 		string _defaultContentDescription;
 		bool? _defaultFocusable;
+		ImportantForAccessibility? _defaultImportantForAccessibility;
 		string _defaultHint;
 
 		bool _disposed;
@@ -52,9 +57,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		SoftInput _startingInputMode;
 
-		internal bool HandleKeyboardOnFocus;
-
 		public TNativeView Control { get; private set; }
+		protected virtual AView ControlUsedForAutomation => Control;
+
+		AView ITabStop.TabStop => Control;
 
 		void IViewRenderer.MeasureExactly()
 		{
@@ -104,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (isInViewCell)
 				{
-					Window window = ((Activity)Context).Window;
+					Window window = Context.GetActivity().Window;
 					if (hasFocus)
 					{
 						_startingInputMode = window.Attributes.SoftInputMode;
@@ -114,6 +120,7 @@ namespace Xamarin.Forms.Platform.Android
 						window.SetSoftInputMode(_startingInputMode);
 				}
 			}
+
 			OnNativeFocusChanged(hasFocus);
 
 			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, hasFocus);
@@ -137,28 +144,30 @@ namespace Xamarin.Forms.Platform.Android
 				if (Control != null && ManageNativeControlLifetime)
 				{
 					Control.OnFocusChangeListener = null;
-					RemoveView(Control);
-					Control.Dispose();
-					Control = null;
-				}
-
-				if (_container != null && _container != this)
-				{
-					_container.RemoveFromParent();
-					_container.Dispose();
-					_container = null;
 				}
 
 				if (Element != null && _focusChangeHandler != null)
 				{
 					Element.FocusChangeRequested -= _focusChangeHandler;
-					_focusChangeHandler = null;
 				}
-
-				_disposed = true;
+				_focusChangeHandler = null;
 			}
 
 			base.Dispose(disposing);
+
+			if (disposing && !_disposed)
+			{
+				if (_container != null && _container != this)
+				{
+					if (_container.Handle != IntPtr.Zero)
+					{
+						_container.RemoveFromParent();
+						_container.Dispose();
+					}
+					_container = null;
+				}
+				_disposed = true;
+			}
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TView> e)
@@ -214,7 +223,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			ContentDescription = id + "_Container";
-			AutomationPropertiesProvider.SetAutomationId(Control, Element, id);
+			AutomationPropertiesProvider.SetAutomationId(ControlUsedForAutomation, Element, id);
 		}
 
 		protected override void SetContentDescription()
@@ -226,7 +235,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			AutomationPropertiesProvider.SetContentDescription(
-				Control, Element, ref _defaultContentDescription, ref _defaultHint);
+				ControlUsedForAutomation, Element, ref _defaultContentDescription, ref _defaultHint);
 		}
 
 		protected override void SetFocusable()
@@ -237,7 +246,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			AutomationPropertiesProvider.SetFocusable(Control, Element, ref _defaultFocusable);
+			AutomationPropertiesProvider.SetFocusable(ControlUsedForAutomation, Element, ref _defaultFocusable, ref _defaultImportantForAccessibility);
 		}
 
 		protected void SetNativeControl(TNativeView control)
@@ -245,7 +254,7 @@ namespace Xamarin.Forms.Platform.Android
 			SetNativeControl(control, this);
 		}
 
-		internal virtual void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		protected virtual void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			if (Control == null)
 				return;
@@ -254,26 +263,23 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.Focus)
 			{
-				// use post being BeginInvokeOnMainThread will not delay on android
-				Looper looper = Context.MainLooper;
-				var handler = new Handler(looper);
-				handler.Post(() =>
-				{
+				// Android does the actual focus/unfocus work on the main looper
+				// So in case we're setting the focus in response to another control's un-focusing,
+				// we need to post the handling of it to the main looper so that it happens _after_ all the other focus
+				// work is done; otherwise, a call to ClearFocus on another control will kill the focus we set here
+				Device.BeginInvokeOnMainThread(() => {
+					if (Control == null || Control.IsDisposed())
+						return;
+
+					if (Control is IPopupTrigger popupElement)
+						popupElement.ShowPopupOnFocus = true;
+
 					Control?.RequestFocus();
 				});
 			}
 			else
 			{
 				Control.ClearFocus();
-			}
-
-			//handles keyboard on focus for Editor, Entry and SearchBar
-			if (HandleKeyboardOnFocus)
-			{
-				if (e.Focus)
-					Control.ShowKeyboard();
-				else
-					Control.HideKeyboard();
 			}
 		}
 

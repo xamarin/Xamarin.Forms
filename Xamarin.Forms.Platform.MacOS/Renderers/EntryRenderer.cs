@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -9,15 +10,81 @@ namespace Xamarin.Forms.Platform.MacOS
 		class FormsNSTextField : NSTextField
 		{
 			public EventHandler<BoolEventArgs> FocusChanged;
+
+			public EventHandler Completed;
+
+			bool _windowEventsSet;
+
+			bool _disposed;
+
 			public override bool ResignFirstResponder()
 			{
-				FocusChanged?.Invoke(this, new BoolEventArgs(false));
 				return base.ResignFirstResponder();
 			}
+
 			public override bool BecomeFirstResponder()
 			{
 				FocusChanged?.Invoke(this, new BoolEventArgs(true));
-				return base.BecomeFirstResponder();
+
+				var result = base.BecomeFirstResponder();
+
+				if (!_windowEventsSet)
+				{
+					_windowEventsSet = true;
+					Window.DidResignKey += HandleWindowDidResignKey;
+					Window.DidBecomeKey += HandleWindowDidBecomeKey;
+				}
+
+				return result;
+			}
+
+			public override void DidEndEditing(NSNotification notification)
+			{
+				if (CurrentEditor != Window.FirstResponder)
+					FocusChanged?.Invoke(this, new BoolEventArgs(false));
+
+				base.DidEndEditing(notification);
+			}
+
+			public override void KeyUp(NSEvent theEvent)
+			{
+				base.KeyUp(theEvent);
+
+				if (theEvent.KeyCode == (ushort)NSKey.Return)
+					Completed?.Invoke(this, EventArgs.Empty);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing && !_disposed)
+				{
+					_disposed = true;
+
+					if (Window != null)
+					{
+						Window.DidResignKey -= HandleWindowDidResignKey;
+						Window.DidBecomeKey -= HandleWindowDidBecomeKey;
+					}
+				}
+
+				base.Dispose(disposing);
+			}
+
+			void HandleWindowDidResignKey(object sender, EventArgs args)
+			{
+				if (!_disposed)
+				{
+					FocusChanged?.Invoke(this, new BoolEventArgs(false));
+				}
+			}
+
+			void HandleWindowDidBecomeKey(object sender, EventArgs args)
+			{
+				if (!_disposed)
+				{
+					if (Window != null && CurrentEditor == Window.FirstResponder)
+						FocusChanged?.Invoke(this, new BoolEventArgs(true));
+				}
 			}
 		}
 
@@ -32,34 +99,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementChanged(e);
 
-			if (Control == null)
-			{
-				NSTextField textField;
-				if (e.NewElement.IsPassword)
-					textField = new NSSecureTextField();
-				else
-				{
-					textField = new FormsNSTextField();
-					(textField as FormsNSTextField).FocusChanged += TextFieldFocusChanged;
-				}
-
-				SetNativeControl(textField);
-
-				_defaultTextColor = textField.TextColor;
-
-				textField.Changed += OnChanged;
-				textField.EditingBegan += OnEditingBegan;
-				textField.EditingEnded += OnEditingEnded;
-			}
-
 			if (e.NewElement != null)
 			{
-				UpdatePlaceholder();
-				UpdateText();
-				UpdateColor();
-				UpdateFont();
-				UpdateAlignment();
-				UpdateMaxLength();
+				if (Control == null)
+				{
+					CreateControl();
+				}
+				UpdateControl();
 			}
 		}
 
@@ -91,6 +137,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateAlignment();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
+			else if (e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -109,19 +157,60 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				if (Control != null)
-				{
-					Control.EditingBegan -= OnEditingBegan;
-					Control.Changed -= OnChanged;
-					Control.EditingEnded -= OnEditingEnded;
-					var formsNSTextField = (Control as FormsNSTextField);
-					if (formsNSTextField != null)
-						formsNSTextField.FocusChanged -= TextFieldFocusChanged;
-				}
+				ClearControl();
 			}
 
 			base.Dispose(disposing);
 		}
+
+		void CreateControl()
+		{
+			NSTextField textField;
+			if (Element.IsPassword)
+				textField = new NSSecureTextField();
+			else
+			{
+				textField = new FormsNSTextField();
+				(textField as FormsNSTextField).FocusChanged += TextFieldFocusChanged;
+				(textField as FormsNSTextField).Completed += OnCompleted;
+			}
+
+			SetNativeControl(textField);
+
+			_defaultTextColor = textField.TextColor;
+
+			textField.Changed += OnChanged;
+			textField.EditingBegan += OnEditingBegan;
+			textField.EditingEnded += OnEditingEnded;
+		}
+
+		void ClearControl()
+		{
+			if (Control != null)
+			{
+				Control.EditingBegan -= OnEditingBegan;
+				Control.Changed -= OnChanged;
+				Control.EditingEnded -= OnEditingEnded;
+				var formsNSTextField = (Control as FormsNSTextField);
+				if (formsNSTextField != null)
+				{
+					formsNSTextField.FocusChanged -= TextFieldFocusChanged;
+					formsNSTextField.Completed -= OnCompleted;
+				}
+			}
+		}
+
+		void UpdateControl()
+		{
+			UpdatePlaceholder();
+			UpdateText();
+			UpdateColor();
+			UpdateFont();
+			UpdateAlignment();
+			UpdateMaxLength();
+			UpdateIsReadOnly();
+        }
+
 		void TextFieldFocusChanged(object sender, BoolEventArgs e)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, e.Value);
@@ -135,13 +224,17 @@ namespace Xamarin.Forms.Platform.MacOS
 		void OnChanged(object sender, EventArgs eventArgs)
 		{
 			UpdateMaxLength();
-			
+
 			ElementController.SetValueFromRenderer(Entry.TextProperty, Control.StringValue);
 		}
 
 		void OnEditingEnded(object sender, EventArgs e)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+		}
+
+		void OnCompleted(object sender, EventArgs e)
+		{
 			EntryController?.SendCompleted();
 		}
 
@@ -162,10 +255,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdatePassword()
 		{
-			if (Element.IsPassword && (Control is NSSecureTextField))
-				return;
-			if (!Element.IsPassword && !(Control is NSSecureTextField))
-				return;
+			ClearControl();
+			CreateControl();
+			UpdateControl();
+			Layout();
 		}
 
 		void UpdateFont()
@@ -190,6 +283,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control.PlaceholderAttributedString = formatted.ToAttributed(Element, color);
 		}
 
+		protected override void SetAccessibilityLabel()
+		{
+			Control.AccessibilityLabel = (string)Element?.GetValue(AutomationProperties.NameProperty) ?? Control.PlaceholderAttributedString?.Value;
+		}
+
 		void UpdateText()
 		{
 			// ReSharper disable once RedundantCheckBeforeAssignment
@@ -203,6 +301,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (currentControlText.Length > Element?.MaxLength)
 				Control.StringValue = currentControlText.Substring(0, Element.MaxLength);
+		}
+
+
+		void UpdateIsReadOnly()
+		{
+			Control.Editable = !Element.IsReadOnly;
+			if (Element.IsReadOnly && Control.Window?.FirstResponder == Control.CurrentEditor)
+				Control.Window?.MakeFirstResponder(null);
 		}
 	}
 }

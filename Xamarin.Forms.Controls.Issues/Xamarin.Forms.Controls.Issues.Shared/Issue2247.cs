@@ -2,7 +2,7 @@
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	// This test covers the issue reported in https://github.com/xamarin/Xamarin.Forms/issues/2247
 	// for NavigationBehavior.PushAsync. Coverage for NavigationBehavior.PushModalAsync is provided by Bugzilla33561.
@@ -13,7 +13,6 @@ namespace Xamarin.Forms.Controls
 	public class Issue2247 : TestContentPage
 	{
 		ListView _listView;
-		bool _isRefreshing;
 
 		protected override void Init()
 		{

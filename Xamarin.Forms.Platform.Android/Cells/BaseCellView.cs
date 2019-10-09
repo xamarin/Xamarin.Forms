@@ -12,6 +12,7 @@ using AColorDraw = Android.Graphics.Drawables.ColorDrawable;
 using Xamarin.Forms.Internals;
 using Android.Support.V4.Widget;
 using Android.OS;
+using System;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -82,7 +83,7 @@ namespace Xamarin.Forms.Platform.Android
 			SetMinimumHeight((int)context.ToPixels(DefaultMinHeight));
 			_androidDefaultTextColor = Color.FromUint((uint)_mainText.CurrentTextColor);
 
-			if ((int)Build.VERSION.SdkInt > 16)
+			if ((int)Forms.SdkInt > 16)
 			{
 				_mainText.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
 				_detailText.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
@@ -189,7 +190,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		async void UpdateBitmap(ImageSource source, ImageSource previousSource = null)
 		{
-			await _imageView.UpdateBitmap(null, source, null, previousSource);
+			try
+			{
+				await _imageView.UpdateBitmap(source, previousSource).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Log.Warning(nameof(BaseCellView), "Error loading image: {0}", ex);
+			}
 		}
 	}
 }

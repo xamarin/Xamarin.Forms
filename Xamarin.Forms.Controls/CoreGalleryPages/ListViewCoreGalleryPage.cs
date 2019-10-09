@@ -4,8 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -156,7 +155,7 @@ namespace Xamarin.Forms.Controls
 							new Employee ("Eric", TimeSpan.FromDays (1000), 160),
 						}
 					),
- 					new Grouping<string, Employee> (
+					new Grouping<string, Employee> (
 						"Sales",
 						new [] {
 							new Employee ("Andrew 1", TimeSpan.FromDays (10), 160),
@@ -268,6 +267,33 @@ namespace Xamarin.Forms.Controls
 			fastScrollItemContainer.View.On<Android>().SetIsFastScrollEnabled(true);
 			fastScrollItemContainer.View.ItemsSource = viewModel.CategorizedEmployees;
 
+			var scrolledItemContainer = new ViewContainer<ListView>(Test.ListView.Scrolled, new ListView());
+			InitializeElement(scrolledItemContainer.View);
+			scrolledItemContainer.View.ItemsSource = viewModel.Employees;
+			var scrollTitle = scrolledItemContainer.TitleLabel.Text;
+			scrolledItemContainer.View.Scrolled += (sender, args) =>
+			{
+				scrolledItemContainer.TitleLabel.Text = $"{scrollTitle}; X={args.ScrollX};Y={args.ScrollY}";
+			};
+
+			var refreshControlColorContainer = new ViewContainer<ListView>(Test.ListView.RefreshControlColor, new ListView());
+			InitializeElement(refreshControlColorContainer.View);
+			refreshControlColorContainer.View.RefreshControlColor = Color.Red;
+			refreshControlColorContainer.View.IsPullToRefreshEnabled = true;
+			refreshControlColorContainer.View.Refreshing += async (object sender, EventArgs e) => {
+				await Task.Delay(2000);
+				refreshControlColorContainer.View.IsRefreshing = false;
+			};
+			refreshControlColorContainer.View.ItemsSource = viewModel.Employees;
+
+			var scrollbarVisibilityContainer = new ViewContainer<ListView>(Test.ListView.ScrollBarVisibility, new ListView());
+			InitializeElement(scrollbarVisibilityContainer.View);
+			scrollbarVisibilityContainer.View.HorizontalScrollBarVisibility = ScrollBarVisibility.Never;
+			scrollbarVisibilityContainer.View.VerticalScrollBarVisibility = ScrollBarVisibility.Never;
+			scrollbarVisibilityContainer.View.ItemsSource = viewModel.CategorizedEmployees;
+			scrollbarVisibilityContainer.View.IsGroupingEnabled = true;
+			scrollbarVisibilityContainer.View.GroupDisplayBinding = new Binding("Key");
+
 			Add(groupDisplayBindingContainer);
 			Add(groupHeaderTemplateContainer);
 			Add(groupShortNameContainer);
@@ -280,6 +306,9 @@ namespace Xamarin.Forms.Controls
 			Add(rowHeightContainer);
 			Add(selectedItemContainer);
 			Add(fastScrollItemContainer);
+			Add(scrolledItemContainer);
+			Add(refreshControlColorContainer);
+			Add(scrollbarVisibilityContainer);
 		}
 	}
 }

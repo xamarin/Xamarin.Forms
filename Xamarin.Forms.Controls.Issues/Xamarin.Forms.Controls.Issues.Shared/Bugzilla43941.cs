@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 			PushAsync(new LandingPage43941());
 		}
 
-#if UITEST && __IOS__
+#if UITEST
 		[Test]
 		public void Bugzilla43941Test()
 		{
@@ -35,10 +35,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 			// At this point, the counter can be any value, but it's most likely not zero.
 			// Invoking GC once is enough to clean up all garbage data and set counter to zero
-			RunningApp.WaitForElement(q => q.Marked("GC"));
-			RunningApp.Tap(q => q.Marked("GC"));
+			RunningApp.WaitForElement("GC");
+			RunningApp.QueryUntilPresent(() =>
+			{
+				RunningApp.Tap("GC");
+				return RunningApp.Query("Counter: 0");
+			});
 
-			RunningApp.WaitForElement(q => q.Marked("Counter: 0"));
+			
 		}
 #endif
 	}
@@ -106,9 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 						AutomationId = "GC",
 						Command = new Command(o =>
 						{
-							GC.Collect();
-							GC.WaitForPendingFinalizers();
-							GC.Collect();
+							GarbageCollectionHelper.Collect();
 							Label.Text = "Counter: " + Counter;
 						})
 					},

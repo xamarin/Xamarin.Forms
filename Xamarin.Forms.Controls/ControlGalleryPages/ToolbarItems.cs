@@ -41,12 +41,23 @@ namespace Xamarin.Forms.Controls
 			tb4.Text = "tb4";
 			tb4.Order = ToolbarItemOrder.Secondary;
 			tb4.Command = command;
+			tb4.IconImageSource = "coffee";
 			tb4.AutomationId = "toolbaritem_secondary2";
+
+			var tb5 = new ToolbarItem();
+			tb5.Text = "tb5";
+			tb5.IconImageSource = "bank.png";
+			tb5.Order = ToolbarItemOrder.Secondary;
+			tb5.Command = new Command(async () => {
+				await Navigation.PushAsync(new ToolbarItems());
+			});
+			tb5.AutomationId = "toolbaritem_secondary5";
 
 			ToolbarItems.Add(tb1);
 			ToolbarItems.Add(tb2);
 			ToolbarItems.Add(tb3);
 			ToolbarItems.Add(tb4);
+			ToolbarItems.Add(tb5);
 
 			Content = new StackLayout
 			{

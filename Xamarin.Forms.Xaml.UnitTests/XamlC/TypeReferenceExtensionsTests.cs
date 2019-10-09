@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 	{
 	}
 }
-namespace Xamarin.Forms.Xaml.XamlcUnitTests
+namespace Xamarin.Forms.XamlcUnitTests
 {
 	[TestFixture]
 	public class TypeReferenceExtensionsTests
@@ -32,6 +32,37 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 		}
 
 		class Qux<T> : Baz<int, T>
+		{
+		}
+
+		class Quux<T> : Foo<Foo<T>>
+		{
+		}
+
+		class Corge<T> : Foo<Foo<Foo<T>>>
+		{
+		}
+
+		abstract class Grault
+		{
+			public abstract void Method<T>(T t);
+		}
+
+		abstract class Garply<T> : Grault<T>
+		{
+			public abstract void Method(T t);
+		}
+
+		abstract class Waldo<T>
+		{
+			public abstract void Method(Foo<T> t);
+		}
+
+		interface IGrault<T>
+		{
+		}
+
+		class Grault<T> : IGrault<T>
 		{
 		}
 
@@ -103,6 +134,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 		[TestCase(typeof(StackLayout), typeof(View), ExpectedResult = true)]
 		[TestCase(typeof(Foo<string>), typeof(Foo), ExpectedResult = true)]
 		[TestCase(typeof(Bar<string>), typeof(Foo), ExpectedResult = true)]
+		[TestCase(typeof(Bar<string>), typeof(Foo<bool>), ExpectedResult = false)]
 		[TestCase(typeof(Bar<string>), typeof(Foo<string>), ExpectedResult = true)]
 		[TestCase(typeof(Qux<string>), typeof(double), ExpectedResult = false)] //https://github.com/xamarin/Xamarin.Forms/issues/1497
 		public bool TestInheritsFromOrImplements(Type typeRef, Type baseClass)
@@ -117,6 +149,69 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			var test = typeof(TypeReferenceExtensionsTests).Assembly;
 
 			Assert.False(TestInheritsFromOrImplements(test.GetType("Xamarin.Forms.Effect"), core.GetType("Xamarin.Forms.Effect")));
+		}
+
+		[Test]
+		public void TestResolveSelectedGenericParameter()
+		{
+			var imported = module.ImportReference(typeof(Bar<byte>));
+			var baseType = (GenericInstanceType)imported.Resolve().BaseType;
+			var resolvedType = baseType.GenericArguments[0].ResolveGenericParameters(imported);
+
+			Assert.AreEqual("System", resolvedType.Namespace);
+			Assert.AreEqual("Byte", resolvedType.Name);
+		}
+
+		[TestCase(typeof(Bar<byte>), 1)]
+		[TestCase(typeof(Quux<byte>), 2)]
+		[TestCase(typeof(Corge<byte>), 3)]
+		public void TestResolveGenericParameters(Type typeRef, int depth)
+		{
+			var imported = module.ImportReference(typeRef);
+			var resolvedType = imported.Resolve().BaseType.ResolveGenericParameters(imported);
+
+			for (var count = 0; count < depth; count++)
+			{
+				resolvedType = ((GenericInstanceType)resolvedType).GenericArguments[0];
+			}
+
+			Assert.AreEqual("System", resolvedType.Namespace);
+			Assert.AreEqual("Byte", resolvedType.Name);
+		}
+
+		public void TestResolveGenericParametersOfGenericMethod()
+		{
+			var method = new GenericInstanceMethod(module.ImportReference(typeof(Grault)).Resolve().Methods[0]);
+			method.GenericArguments.Add(module.TypeSystem.Byte);
+			var resolved = method.ReturnType.ResolveGenericParameters(method);
+
+			Assert.That(TypeRefComparer.Default.Equals(module.TypeSystem.Byte, resolved));
+		}
+
+		[TestCase(typeof(Garply<byte>), typeof(byte))]
+		[TestCase(typeof(Waldo<byte>), typeof(Foo<byte>))]
+		public void TestResolveGenericParametersOfMethodOfGeneric(Type typeRef, Type returnType)
+		{
+			var type = module.ImportReference(typeRef);
+			var method = type.Resolve().Methods[0].ResolveGenericParameters(type, module);
+			var resolved = method.Parameters[0].ParameterType.ResolveGenericParameters(method);
+
+			Assert.That(TypeRefComparer.Default.Equals(module.ImportReference(returnType), resolved));
+		}
+		
+		[Test]
+		public void TestImplementsGenericInterface()
+		{
+			GenericInstanceType igrault;
+			IList<TypeReference> arguments;
+			var garply = module.ImportReference(typeof(Garply<System.Byte>));
+
+			Assert.That(garply.ImplementsGenericInterface("Xamarin.Forms.XamlcUnitTests.TypeReferenceExtensionsTests/IGrault`1<T>", out igrault, out arguments));
+
+			Assert.AreEqual("System", igrault.GenericArguments[0].Namespace);
+			Assert.AreEqual("Byte", igrault.GenericArguments[0].Name);
+			Assert.AreEqual("System", arguments[0].Namespace);
+			Assert.AreEqual("Byte", arguments[0].Name);
 		}
 	}
 }

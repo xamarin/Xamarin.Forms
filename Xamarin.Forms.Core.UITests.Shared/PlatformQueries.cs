@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Core.UITests
 			{ Button.FontProperty, Tuple.Create (new[] { "titleLabel", "font" }, false) },
 			{ Button.TextProperty, Tuple.Create (new[] { "titleLabel", "text" }, false) },
 			{ Button.TextColorProperty, Tuple.Create (new[] { "titleLabel", "textColor" }, false) },
+			{ ImageButton.CornerRadiusProperty, Tuple.Create (new[] { "layer", "cornerRadius" }, false) },
+			{ ImageButton.BorderWidthProperty, Tuple.Create (new[] { "layer", "borderWidth" }, false) },
 			{ View.AnchorXProperty, Tuple.Create (new[] { "layer", "transform" }, true) },
 			{ View.AnchorYProperty, Tuple.Create (new[] { "layer", "transform" }, true) },
 			{ View.BackgroundColorProperty, Tuple.Create (new[] { "backgroundColor" }, false) },
@@ -32,13 +34,16 @@ namespace Xamarin.Forms.Core.UITests
 			{
 				{ ActivityIndicator.ColorProperty, Tuple.Create(new[] { "getProgressDrawable", "getColor" }, false) },
 				{ ActivityIndicator.IsRunningProperty, Tuple.Create(new[] { "isIndeterminate" }, false) },
-				{ Button.BorderColorProperty, Tuple.Create(new[] { "getBackground" }, false) },
+				{ BorderElement.BorderColorProperty, Tuple.Create(new[] { "getBackground" }, false) },
 				{ Button.CornerRadiusProperty, Tuple.Create(new[] { "getBackground" }, false) },
 				{ Button.BorderWidthProperty, Tuple.Create(new[] { "getBackground" }, false) },
-				{ Button.ImageProperty, Tuple.Create(new[] { "getBackground" }, false) },
+				{ Button.ImageSourceProperty, Tuple.Create(new[] { "getBackground" }, false) },
 				{ Button.FontProperty, Tuple.Create(new[] { "getTypeface", "isBold" }, false) },
 				{ Button.TextProperty, Tuple.Create(new[] { "getText" }, false) },
 				{ Button.TextColorProperty, Tuple.Create(new[] { "getCurrentTextColor" }, false) },
+				{ ImageButton.CornerRadiusProperty, Tuple.Create(new[] { "getBackground" }, false) },
+				{ ImageButton.BorderWidthProperty, Tuple.Create(new[] { "getBackground" }, false) },
+				{ ImageButton.SourceProperty, Tuple.Create(new[] { "getBackground" }, false) },
 				{ View.AnchorXProperty, Tuple.Create(new[] { "getPivotX" }, true) },
 				{ View.AnchorYProperty, Tuple.Create(new[] { "getPivotY" }, true) },
 				{ View.BackgroundColorProperty, Tuple.Create(new[] { "getBackground", "getColor" }, true) },
@@ -58,11 +63,13 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly string ActivityIndicator = "UIActivityIndicatorView";
 		public static readonly string BoxView = "Xamarin_Forms_Platform_iOS_BoxRenderer";
 		public static readonly string Button = "UIButton";
+		public static readonly string CheckBox = "Xamarin_Forms_Platform_iOS_CheckBoxRenderer";
 		public static readonly string DatePicker = "UITextField";
 		public static readonly string Editor = "UITextView";
 		public static readonly string Entry = "UITextField";
 		public static readonly string Frame = "view:'Xamarin_Forms_Platform_iOS_FrameRenderer'";
 		public static readonly string Image = "UIImageView";
+		public static readonly string ImageButton = "UIButton";
 		public static readonly string Label = "UILabel";
 		public static readonly string ListView = "UITableView";
 		public static readonly string Map = "MKMapView";
@@ -81,11 +88,13 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly string ActivityIndicator = "android.widget.ProgressBar";
 		public static readonly string BoxView = "xamarin.forms.platform.android.BoxRenderer";
 		public static readonly string Button = "android.widget.Button";
+		public static readonly string CheckBox = "android.widget.CheckBox";
 		public static readonly string DatePicker = "android.widget.EditText";
 		public static readonly string Editor = "xamarin.forms.platform.android.EditorEditText";
 		public static readonly string Entry = "xamarin.forms.platform.android.EntryEditText";
 		public static readonly string Frame = "xamarin.forms.platform.android.appcompat.FrameRenderer";
 		public static readonly string Image = "android.widget.ImageView";
+		public static readonly string ImageButton = "android.widget.ImageButton";
 		public static readonly string Label = "android.widget.TextView";
 		public static readonly string ListView = "android.widget.ListView";
 		public static readonly string Map = "android.gms.maps.GoogleMap";

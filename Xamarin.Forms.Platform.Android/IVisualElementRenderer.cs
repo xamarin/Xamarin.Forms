@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Views;
 using AView = Android.Views.View;
+using ALayoutChangeEventArgs = Android.Views.View.LayoutChangeEventArgs;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -12,6 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElementTracker Tracker { get; }
 
 		[Obsolete("ViewGroup is obsolete as of version 2.3.5. Please use View instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		ViewGroup ViewGroup { get; }
 
 		AView View { get; }
