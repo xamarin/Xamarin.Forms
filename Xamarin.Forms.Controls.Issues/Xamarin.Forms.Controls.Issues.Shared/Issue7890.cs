@@ -61,16 +61,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void RefreshingListViewCrashesWhenDisposedTest()
+		public void TestCorrectListItemsRemoved()
 		{
+			RunningApp.WaitForElement(q => q.Button("RemoveBtn"));
+			RunningApp.Tap(q => q.Button("RemoveBtn"));
+			var toRemove = Enumerable.Range(RemoveFrom, RemoveCount).ToList();
 			foreach (var c in Enumerable.Range(0, Count))
 			{
-				RunningApp.WaitForElement(q => q.Marked(c.ToString()));
-			}
-			RunningApp.Tap(q => q.Button("RemoveBtn"));
-			foreach (var c in Enumerable.Range(RemoveFrom, RemoveCount))
-			{
-				RunningApp.WaitForNoElement(q => q.Marked(c.ToString()));
+				if (toRemove.Contains(c))
+					Assert.IsNull(RunningApp.Query(q=>q.Marked(c.ToString())).FirstOrDefault());
+				else
+					Assert.IsNotNull(RunningApp.Query(q => q.Marked(c.ToString())).FirstOrDefault());
 			}
 		}
 #endif
