@@ -22,7 +22,7 @@
         <ScrollView>
             <StackLayout>
 
-                <Label Text="Set ItemsSource then SelectedItems"/>
+                <Label AutomationId="FirstLabel" Text="Set ItemsSource then SelectedItems"/>
                 <Label Text="Should have items 2 and 3 selected"/>
                 <CollectionView Style="{StaticResource CV}" SelectionMode="Multiple"
                                 ItemsSource="{Binding Items}" SelectedItems="{Binding SelectedItems}">
