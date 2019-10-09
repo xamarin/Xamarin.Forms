@@ -22,22 +22,22 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty IsRefreshingProperty =
-			BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(RefreshView), false, BindingMode.TwoWay, coerceValue:OnCoerceIsRefreshing, propertyChanged: OnIsRefreshingPropertyChanged);
+			BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(RefreshView), false, BindingMode.TwoWay, coerceValue: OnIsRefreshingPropertyCoerced, propertyChanged: OnIsRefreshingPropertyChanged);
 
 		static void OnIsRefreshingPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			bool value = (bool)newValue;
 
-			if (value)
-			{
-				var resfrehView = ((RefreshView)bindable);
-				resfrehView.Refreshing?.Invoke(bindable, EventArgs.Empty);
-				if(resfrehView.Command != null)
-					resfrehView.Command.Execute(resfrehView.CommandParameter);
-			}
+			if (!value)
+				return;
+
+			var refreshView = ((RefreshView)bindable);
+			refreshView.Refreshing?.Invoke(bindable, EventArgs.Empty);
+			if (refreshView.Command != null)
+				refreshView.Command.Execute(refreshView.CommandParameter);
 		}
 
-		static object OnCoerceIsRefreshing(BindableObject bindable, object value)
+		static object OnIsRefreshingPropertyCoerced(BindableObject bindable, object value)
 		{
 			RefreshView view = (RefreshView)bindable;
 			bool newValue = (bool)value;
@@ -69,16 +69,14 @@ namespace Xamarin.Forms
 
 		static void OnCommandChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if (bindable is RefreshView refreshView)
-			{
-				if (oldValue is ICommand oldCommand)
-					oldCommand.CanExecuteChanged -= refreshView.RefreshCommandCanExecuteChanged;
+			RefreshView refreshView = (RefreshView)bindable;
+			if (oldValue is ICommand oldCommand)
+				oldCommand.CanExecuteChanged -= refreshView.RefreshCommandCanExecuteChanged;
 
-				if (newValue is ICommand newCommand)
-					newCommand.CanExecuteChanged += refreshView.RefreshCommandCanExecuteChanged;
+			if (newValue is ICommand newCommand)
+				newCommand.CanExecuteChanged += refreshView.RefreshCommandCanExecuteChanged;
 
-				refreshView.RefreshCommandCanExecuteChanged(bindable, EventArgs.Empty);
-			}
+			refreshView.RefreshCommandCanExecuteChanged(bindable, EventArgs.Empty);
 		}
 
 		public ICommand Command
