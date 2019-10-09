@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using Xamarin.Forms.Platform;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
@@ -173,13 +174,22 @@ namespace Xamarin.Forms
 
 		public CarouselView()
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CarouselView));
+			VerifyCarouselViewFlagEnabled(constructorHint: nameof(CarouselView));
 			ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
 			ItemSizingStrategy = ItemSizingStrategy.None;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void VerifyCarouselViewFlagEnabled(
+			string constructorHint = null,
+			[CallerMemberName] string memberName = "")
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CarouselViewExperimental, 
+				constructorHint, memberName);
 		}
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)

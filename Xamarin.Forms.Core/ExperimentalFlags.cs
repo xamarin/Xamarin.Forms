@@ -9,8 +9,8 @@ namespace Xamarin.Forms
 {
 	internal static class ExperimentalFlags
 	{
-		internal const string CollectionViewExperimental = "CollectionView_Experimental";
 		internal const string ShellUWPExperimental = "Shell_UWP_Experimental";
+		internal const string CarouselViewExperimental = "CarouselView_Experimental";
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void VerifyFlagEnabled(

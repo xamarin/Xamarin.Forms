@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.CollectionViewExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.CarouselViewExperimental });
 		}
 	}
 }
