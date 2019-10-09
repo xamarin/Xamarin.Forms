@@ -41,6 +41,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ItemsViewController.UpdateItemsSource();
 			}
+			else if (changedProperty.Is(ItemsView.ItemTemplateProperty))
+			{
+				UpdateLayout();
+			}
 			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
 			{
 				ItemsViewController.UpdateEmptyView();
@@ -97,7 +101,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			SetNativeControl(ItemsViewController.View);
 			ItemsViewController.CollectionView.BackgroundColor = UIColor.Clear;
-			ItemsViewController.UpdateEmptyView();
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
 
