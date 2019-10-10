@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		protected abstract ListViewBase SelectListViewBase();
-		protected abstract void HandleLayoutPropertyChange(PropertyChangedEventArgs property);
+		protected abstract void HandleLayoutPropertyChanged(PropertyChangedEventArgs property);
 		protected abstract IItemsLayout Layout { get; }
 
 		protected virtual void UpdateItemsSource()
@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void LayoutPropertyChanged(object sender, PropertyChangedEventArgs property)
 		{
-			HandleLayoutPropertyChange(property);
+			HandleLayoutPropertyChanged(property);
 		}
 
 		protected virtual void SetUpNewElement(ItemsView newElement)

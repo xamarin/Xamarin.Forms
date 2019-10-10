@@ -152,7 +152,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		protected override void HandleLayoutPropertyChange(PropertyChangedEventArgs property)
+		protected override void HandleLayoutPropertyChanged(PropertyChangedEventArgs property)
 		{
 			if (property.Is(GridItemsLayout.SpanProperty))
 			{
