@@ -1,43 +1,49 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace Xamarin.Forms
 {
 	public class GestureRecognizer : Element, IGestureRecognizer
 	{
-		public static readonly BindableProperty TouchStateProperty =
-			BindableProperty.Create(nameof(TouchState), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default, BindingMode.OneWayToSource);
+		static readonly BindablePropertyKey TouchStatePropertyKey =
+			BindableProperty.CreateReadOnly(nameof(TouchState), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default);
 
-		public static readonly BindableProperty TouchCountProperty =
-			BindableProperty.Create(nameof(TouchCount), typeof(int), typeof(GestureRecognizer), 0, BindingMode.OneWayToSource);
+		static readonly BindablePropertyKey TouchCountPropertyKey =
+			BindableProperty.CreateReadOnly(nameof(TouchCount), typeof(int), typeof(GestureRecognizer), 0);
 
-		public static readonly BindableProperty TouchesProperty =
-			BindableProperty.Create(nameof(Touches), typeof(List<Touch>), typeof(GestureRecognizer), null, BindingMode.OneWayToSource);
+		static readonly BindablePropertyKey TouchesPropertyKey =
+			BindableProperty.CreateReadOnly(nameof(Touches), typeof(IReadOnlyList<Touch>), typeof(GestureRecognizer), new List<Touch>());
 
-		readonly Dictionary<int, Touch> _touches = new Dictionary<int, Touch>();
+		public static readonly BindableProperty TouchStateProperty = TouchStatePropertyKey.BindableProperty;
+
+		public static readonly BindableProperty TouchCountProperty = TouchCountPropertyKey.BindableProperty;
+
+		public static readonly BindableProperty TouchesProperty = TouchesPropertyKey.BindableProperty;
+
+		readonly Dictionary<int, Touch> _touchesDictionary = new Dictionary<int, Touch>();
+
+		int _touchCount;
+		List<Touch> _touches;
+		TouchState _touchState;
 
 		internal GestureRecognizer()
 		{
 		}
 
-		public TouchState TouchState
-		{
-			get => (TouchState)GetValue(TouchStateProperty);
-			private set => SetValue(TouchStateProperty, value);
-		}
-
 		public int TouchCount
 		{
-			get => (int)GetValue(TouchCountProperty);
-			private set => SetValue(TouchCountProperty, value);
+			get => _touchCount;
 		}
 
-		public List<Touch> Touches
+		public IReadOnlyList<Touch> Touches
 		{
-			get => (List<Touch>)GetValue(TouchesProperty);
-			private set => SetValue(TouchesProperty, value);
+			get => _touches;
+		}
+
+		public TouchState TouchState
+		{
+			get => _touchState;
 		}
 
 		protected TouchState PreviousState { get; set; }
@@ -52,27 +58,31 @@ namespace Xamarin.Forms
 			CollectTouch(eventArgs, sender);
 
 			PreviousState = TouchState;
-			TouchState = eventArgs.TouchState;
-			TouchCount = _touches.Count;
+			_touchState = eventArgs.TouchState;
+			_touchCount = _touches.Count;
 
 			OnTouch(sender, eventArgs);
 			TouchUpdated?.Invoke(this, eventArgs);
+
 			OnPropertyChanged(nameof(Touches));
+			OnPropertyChanged(nameof(TouchCount));
+			OnPropertyChanged(nameof(TouchState));
 
 			if (TouchCount == 0)
 			{
-				TouchState = TouchState.Default;
+				_touchState = TouchState.Default;
 			}
 		}
 
 		public event EventHandler<TouchEventArgs> TouchUpdated;
+
 		void CollectTouch(TouchEventArgs ev, View view)
 		{
 			foreach (TouchPoint touchPoint in ev.TouchPoints)
 			{
 				if (touchPoint.TouchState.IsTouching())
 				{
-					if (_touches.TryGetValue(touchPoint.TouchId, out Touch touch))
+					if (_touchesDictionary.TryGetValue(touchPoint.TouchId, out Touch touch))
 					{
 						touch.TouchPoints.Add(touchPoint);
 						var points = new List<Point>();
@@ -88,16 +98,16 @@ namespace Xamarin.Forms
 					}
 					else
 					{
-						_touches[touchPoint.TouchId] = new Touch(touchPoint.TouchId, touchPoint, view);
+						_touchesDictionary[touchPoint.TouchId] = new Touch(touchPoint.TouchId, touchPoint, view);
 					}
 				}
 				else if (touchPoint.TouchState.IsFinishedTouch())
 				{
-					_touches.Remove(touchPoint.TouchId);
+					_touchesDictionary.Remove(touchPoint.TouchId);
 				}
 			}
 
-			Touches = new List<Touch>(_touches.Values);
+			_touches = new List<Touch>(_touchesDictionary.Values);
 		}
 
 		internal static class GestureDetector
