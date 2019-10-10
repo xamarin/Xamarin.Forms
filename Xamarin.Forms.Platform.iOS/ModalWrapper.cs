@@ -2,9 +2,27 @@
 using System.Linq;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using UIKit;
+using Foundation;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	internal class PresentationControllerDelegate : UIAdaptivePresentationControllerDelegate
+	{
+		readonly Func<Task> _dismissModal;
+
+		public PresentationControllerDelegate(Func<Task> disposeViewAsync)
+		{
+			_dismissModal = disposeViewAsync;
+		}
+
+		[Export("presentationControllerDidDismiss:")]
+		public override void DidDismiss(UIPresentationController presentationController)
+		{
+			_dismissModal();
+		}
+	}
+
 	internal class ModalWrapper : UIViewController
 	{
 		IVisualElementRenderer _modal;
@@ -23,6 +41,15 @@ namespace Xamarin.Forms.Platform.iOS
 			AddChildViewController(modal.ViewController);
 
 			modal.ViewController.DidMoveToParentViewController(this);
+
+			if (Forms.IsiOS13OrNewer)
+				PresentationController.Delegate = new PresentationControllerDelegate(DismissModalAsync);
+
+		}
+
+		async Task DismissModalAsync()
+		{
+			await _modal.Element.NavigationProxy.PopModalAsync();
 		}
 
 		public override void DismissViewController(bool animated, Action completionHandler)
