@@ -9,7 +9,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			//BackgroundColor = Color.Yellow;
 			Navigation.PushAsync(new ContentPage
 			{
 				BackgroundColor = Color.Yellow,
@@ -19,30 +18,30 @@ namespace Xamarin.Forms.Controls.Issues
 						new Button
 						{
 							HorizontalOptions = LayoutOptions.Start,
-							Text = "btn1 - push page",
-							Command = new Command(async () => await Navigation.PushAsync(new Page2(),false))
+							Text = "push page",
+							Command = new Command(async () => await Navigation.PushAsync(new PageWithTransparency(),false))
 						},
-						new Button
+						new Label
 						{
 							HorizontalOptions = LayoutOptions.Center,
 							VerticalOptions = LayoutOptions.Center,
-							Text = "btn2 - should be invisible when tabbed page pushed",
-							Command = new Command(async () => await Navigation.PushAsync(new Page2(), false))
+							Text = "This text should be invisible after second page pushed",
 						}
 					}
 				},
 			});
 		}
-		class Page2:TabbedPage
+		class PageWithTransparency : ContentPage
 		{
-			public Page2()
+			public PageWithTransparency()
 			{
-				this.BackgroundColor = Color.Red.MultiplyAlpha(0.5);
-				this.Children.Add(new ContentPage
+				this.BackgroundColor = Color.Red.MultiplyAlpha(0.2);
+				Content = new Label
 				{
-					Title = "Tab1",
-					BackgroundColor = Color.Blue.MultiplyAlpha(0.2),
-				});
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.CenterAndExpand,
+					Text = "Text on second page",
+				};
 			}
 		}
 	}
