@@ -1,7 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
 using WList = System.Windows.Controls.ListView;
 using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
 
@@ -25,6 +31,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (e.OldElement != null) // Clear old element event
 			{
 				e.OldElement.ItemSelected -= OnElementItemSelected;
+				e.OldElement.ScrollToRequested -= OnElementScrollToRequested;
 
 				var templatedItems = ((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems;
 				templatedItems.CollectionChanged -= OnCollectionChanged;
@@ -34,6 +41,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (e.NewElement != null)
 			{
 				e.NewElement.ItemSelected += OnElementItemSelected;
+				e.NewElement.ScrollToRequested += OnElementScrollToRequested;
 
 				if (Control == null) // Construct and SetNativeControl and suscribe control event
 				{
@@ -67,6 +75,11 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 
 			base.OnElementChanged(e);
+		}
+		void OnElementScrollToRequested(object sender, ScrollToRequestedEventArgs e)
+		{
+			var scrollArgs = (ITemplatedItemsListScrollToRequestedEventArgs)e;
+			ScrollTo(scrollArgs.Group, scrollArgs.Item, e.Position, e.ShouldAnimate);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -233,6 +246,94 @@ namespace Xamarin.Forms.Platform.WPF
 		void OnGroupedCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			UpdateItemSource();
+		}
+		static ScrollViewer GetScrollViewer(DependencyObject o)
+		{
+			if (o is ScrollViewer viewer)
+			{
+				//viewer.CanContentScroll = false;
+				return viewer;
+			}
+
+			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(o); i++)
+			{
+				var child = VisualTreeHelper.GetChild(o, i);
+
+				var result = GetScrollViewer(child);
+				if (result == null)
+				{
+					continue;
+				}
+				else
+				{
+					return result;
+				}
+			}
+
+			return null;
+		}
+		void ScrollTo(object group, object item, ScrollToPosition toPosition, bool shouldAnimate, bool includeGroup = false, bool previouslyFailed = false)
+		{
+			//Control.ScrollIntoView();
+			var viewer = GetScrollViewer(Control);
+			if (viewer == null)
+			{
+				RoutedEventHandler loadedHandler = null;
+				loadedHandler = (o, e) =>
+				{
+					Control.Loaded -= loadedHandler;
+
+					// Here we try to avoid an exception, see explanation at bottom
+					Device.BeginInvokeOnMainThread(() => { ScrollTo(group, item, toPosition, shouldAnimate, includeGroup); });
+				};
+				Control.Loaded += loadedHandler;
+				return;
+			}
+			var templatedItems = TemplatedItemsView.TemplatedItems;
+			Tuple<int, int> location = templatedItems.GetGroupAndIndexOfItem(group, item);
+			if (location.Item1 == -1 || location.Item2 == -1)
+				return;
+
+			var t = templatedItems.GetGroup(location.Item1).ToArray();
+			var c = t[location.Item2];
+
+			// scroll to desired item with animation
+			//if (shouldAnimate && ScrollToItemWithAnimation(viewer, c))
+			//    return;
+
+			//double viewportHeight = viewer.ViewportHeight;
+
+			// async scrolling
+
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				switch (toPosition)
+				{
+					case ScrollToPosition.Start:
+						{
+							viewer.ScrollToBottom();
+							Control.ScrollIntoView(c);
+							return;
+						}
+
+					case ScrollToPosition.MakeVisible:
+						{
+							Control.ScrollIntoView(c);
+							return;
+						}
+					case ScrollToPosition.End:
+						{
+							viewer.ScrollToTop();
+							Control.ScrollIntoView(c);
+							return;
+						}
+					case ScrollToPosition.Center:
+						{
+							Control.ScrollIntoView(c);
+							return;
+						}
+				}
+			});
 		}
 	}
 }
