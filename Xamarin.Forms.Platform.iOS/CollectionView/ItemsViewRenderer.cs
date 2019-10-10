@@ -4,8 +4,9 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class ItemsViewRenderer<TItemsView> : ViewRenderer<TItemsView, UIView>
+	public abstract class ItemsViewRenderer<TItemsView, TViewController> : ViewRenderer<TItemsView, UIView>
 		where TItemsView : ItemsView
+		where TViewController : ItemsViewController
 	{
 		ItemsViewLayout _layout;
 		bool _disposed;
@@ -16,12 +17,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public ItemsViewRenderer()
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer<TItemsView>));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer<TItemsView, TViewController>));
 		}
 
 		public override UIViewController ViewController => ItemsViewController;
 
-		protected ItemsViewController ItemsViewController { get; private set; }
+		protected TViewController ItemsViewController { get; private set; }
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -73,7 +74,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected abstract ItemsViewLayout SelectLayout();
 
-		protected virtual void TearDownOldElement(ItemsView oldElement)
+		protected virtual void TearDownOldElement(TItemsView oldElement)
 		{
 			if (oldElement == null)
 			{
@@ -84,7 +85,7 @@ namespace Xamarin.Forms.Platform.iOS
 			oldElement.ScrollToRequested -= ScrollToRequested;
 		}
 
-		protected virtual void SetUpNewElement(ItemsView newElement)
+		protected virtual void SetUpNewElement(TItemsView newElement)
 		{
 			if (newElement == null)
 			{
@@ -137,7 +138,8 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsViewController.UpdateItemsSource();
 		}
 
-		protected abstract ItemsViewController CreateController(ItemsView newElement, ItemsViewLayout layout);
+
+		protected abstract TViewController CreateController(TItemsView newElement, ItemsViewLayout layout);
 
 		NSIndexPath DetermineIndex(ScrollToRequestEventArgs args)
 		{

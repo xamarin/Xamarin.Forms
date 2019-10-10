@@ -2,14 +2,13 @@
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class GroupableItemsViewRenderer<TItemsView> : SelectableItemsViewRenderer<TItemsView>
+	public class GroupableItemsViewRenderer<TItemsView, TViewController> : SelectableItemsViewRenderer<TItemsView, TViewController>
 		where TItemsView : GroupableItemsView
+		where TViewController : GroupableItemsViewController
 	{
-		GroupableItemsViewController GroupableItemsViewController => (GroupableItemsViewController)ItemsViewController;
-
-		protected override ItemsViewController CreateController(ItemsView itemsView, ItemsViewLayout layout)
+		protected override TViewController CreateController(TItemsView itemsView, ItemsViewLayout layout)
 		{
-			return new GroupableItemsViewController(itemsView as GroupableItemsView, layout);
+			return new GroupableItemsViewController(itemsView, layout) as TViewController;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -18,7 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (changedProperty.Is(GroupableItemsView.IsGroupedProperty))
 			{
-				GroupableItemsViewController?.UpdateItemsSource();
+				ItemsViewController?.UpdateItemsSource();
 			}
 		}
 
@@ -45,7 +44,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (args.IsAnimated)
 				{
-					GroupableItemsViewController.SetScrollAnimationEndedCallback(() => base.ScrollToRequested(sender, args));
+					ItemsViewController.SetScrollAnimationEndedCallback(() => base.ScrollToRequested(sender, args));
 				}
 				else
 				{

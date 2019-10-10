@@ -2,20 +2,18 @@
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class CarouselViewRenderer : ItemsViewRenderer<CarouselView>
+	public class CarouselViewRenderer : ItemsViewRenderer<CarouselView, CarouselViewController>
 	{
 		CarouselView CarouselView => Element;
-
-		CarouselViewController CarouselViewController => (CarouselViewController)ItemsViewController;
 
 		public CarouselViewRenderer()
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselViewRenderer));
 		}
 
-		protected override ItemsViewController CreateController(ItemsView newElement, ItemsViewLayout layout)
+		protected override CarouselViewController CreateController(CarouselView newElement, ItemsViewLayout layout)
 		{
-			return new CarouselViewController(newElement as CarouselView, layout);
+			return new CarouselViewController(newElement, layout);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -24,8 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (changedProperty.IsOneOf(CarouselView.PeekAreaInsetsProperty, CarouselView.NumberOfSideItemsProperty))
 			{
-				(CarouselViewController.Layout as CarouselViewLayout).UpdateConstraints(Frame.Size);
-				CarouselViewController.Layout.InvalidateLayout();
+				(ItemsViewController.Layout as CarouselViewLayout).UpdateConstraints(Frame.Size);
+				ItemsViewController.Layout.InvalidateLayout();
 			}
 			else if (changedProperty.Is(CarouselView.IsSwipeEnabledProperty))
 				UpdateIsSwipeEnabled();
@@ -38,16 +36,16 @@ namespace Xamarin.Forms.Platform.iOS
 			return new CarouselViewLayout(CarouselView.ItemsLayout, CarouselView.ItemSizingStrategy, CarouselView);
 		}
 
-		protected override void SetUpNewElement(ItemsView newElement)
+		protected override void SetUpNewElement(CarouselView newElement)
 		{
 			base.SetUpNewElement(newElement);
 			UpdateIsSwipeEnabled();
 			UpdateIsBounceEnabled();
 		}
 
-		protected override void TearDownOldElement(ItemsView oldElement)
+		protected override void TearDownOldElement(CarouselView oldElement)
 		{
-			CarouselViewController?.TearDown();
+			ItemsViewController?.TearDown();
 			base.TearDownOldElement(oldElement);
 		}
 
@@ -56,7 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (CarouselView == null)
 				return;
 
-			CarouselViewController.CollectionView.ScrollEnabled = CarouselView.IsSwipeEnabled;
+			ItemsViewController.CollectionView.ScrollEnabled = CarouselView.IsSwipeEnabled;
 		}
 
 		void UpdateIsBounceEnabled()
@@ -64,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (CarouselView == null)
 				return;
 
-			CarouselViewController.CollectionView.Bounces = CarouselView.IsBounceEnabled;
+			ItemsViewController.CollectionView.Bounces = CarouselView.IsBounceEnabled;
 		}
 	}
 }

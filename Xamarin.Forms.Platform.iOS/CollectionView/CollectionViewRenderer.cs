@@ -1,4 +1,4 @@
 ﻿namespace Xamarin.Forms.Platform.iOS
 {
-	public class CollectionViewRenderer : GroupableItemsViewRenderer<GroupableItemsView> { }
+	public class CollectionViewRenderer : GroupableItemsViewRenderer<GroupableItemsView, GroupableItemsViewController> { }
 }
