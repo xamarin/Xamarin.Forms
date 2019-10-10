@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Bugzilla, 33714, "[WP] Navigating Back Within MasterDetailPage.Detail Causes Crash", NavigationBehavior.PushModalAsync)]
 	public class Bugzilla33714 : TestMasterDetailPage
 	{
-		public const string ListViewAutomationId = nameof(ListViewAutomationId);
+		public const string MenuItemsAutomationId = nameof(MenuItemsAutomationId);
 		public const string DefaultDetailPageAutomationId = nameof(DefaultDetailPageAutomationId);
 		public const string CustomDetailPageAutomationId = nameof(CustomDetailPageAutomationId);
 		public const string NestedDetailPageAutomationId = nameof(NestedDetailPageAutomationId);
@@ -81,9 +81,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		ContentPage CreateMasterPage()
 		{
-			var listView = new ListView()
+			var menuItems = new ListView()
 			{
-				AutomationId = ListViewAutomationId,
+				AutomationId = MenuItemsAutomationId,
 				RowHeight = 100,
 				HasUnevenRows = true,
 				ItemsSource = new List<string>()
@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			listView.ItemSelected += (sender, args) =>
+			menuItems.ItemSelected += (sender, args) =>
 			{
 				Detail = CreateCustomDetailPage();
 			};
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Controls.Issues
 			return new ContentPage()
 			{
 				Title = "Master",
-				Content = listView
+				Content = menuItems
 			};
 		}
 
@@ -144,8 +144,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var firsListViewElementIndex = 0;
 
 			RunningApp.WaitForElement(q => q.Marked(DefaultDetailPageAutomationId));
-			RunningApp.WaitForElement(q => q.Marked(ListViewAutomationId));
-			RunningApp.Tap(q => q.Marked(ListViewAutomationId).Descendant(firsListViewElementIndex));
+			RunningApp.WaitForElement(q => q.Marked(MenuItemsAutomationId));
+			RunningApp.Tap(q => q.Marked(MenuItemsAutomationId).Descendant(firsListViewElementIndex));
 
 			RunningApp.WaitForElement(q => q.Marked(CustomDetailPageAutomationId));
 			RunningApp.WaitForElement(q => q.Marked(GoToMoreDetailsPageButtonText));
