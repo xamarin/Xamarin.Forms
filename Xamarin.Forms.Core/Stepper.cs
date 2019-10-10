@@ -32,17 +32,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
-			//var stepperValue = Math.Round((double)value, 6);
-			if (stepper.Value < (double)value)
-			{
-				stepper.StepperPosition++;
-			}
-			if (stepper.Value > (double)value)
-			{
-				stepper.StepperPosition--;
-			}
-
-			var stepVal = stepper.StepperPosition * stepper.Increment;
+			stepper.StepperPosition = Convert.ToInt32(((double)value - stepper.Minimum) / stepper.Increment);
+			var stepVal = stepper.Minimum + (stepper.StepperPosition * stepper.Increment);
 			return stepVal.Clamp(stepper.Minimum, stepper.Maximum);
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
@@ -78,9 +69,9 @@ namespace Xamarin.Forms
 				Maximum = max;
 			}
 
-			Value = val.Clamp(min, max);
+			StepperPosition = (int)((val - min) / increment);
 			Increment = increment;
-			StepperPosition = (int)(Value / Increment);
+			Value = val.Clamp(min, max);
 		}
 
 		public double Increment

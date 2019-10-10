@@ -38,11 +38,6 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = $"Value - {stepper.Value.ToString()}"
 			};
 
-			Label stepPosLabel = new Label
-			{
-				Text = $"Position - {stepper.StepperPosition.ToString()} * {stepper.Increment.ToString()}"
-			};
-
 			stepper.ValueChanged += (s, e) =>
 			{
 				valueLabel.Text = e.NewValue.ToString();
@@ -55,8 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					header,
 					stepper,
-					valueLabel,
-					stepPosLabel
+					valueLabel
 				}
 			};
 		}
