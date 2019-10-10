@@ -49,11 +49,9 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case LineBreakMode.WordWrap:
 					textView.Ellipsize = null;
-					textView.Text = textView.Text.Replace('\u00A0', ' ');
 					break;
 				case LineBreakMode.CharacterWrap:
 					textView.Ellipsize = null;
-					textView.Text = textView.Text.Replace(' ', '\u00A0');
 					break;
 				case LineBreakMode.HeadTruncation:
 					maxLines = 1;
