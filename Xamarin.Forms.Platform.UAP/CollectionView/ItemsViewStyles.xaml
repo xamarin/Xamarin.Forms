@@ -3,6 +3,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Xamarin.Forms.Platform.UWP">
 
+    <ItemsPanelTemplate x:Key="VerticalListItemsPanel">
+        <ItemsStackPanel Orientation="Vertical"  />
+    </ItemsPanelTemplate>
+    
     <ItemsPanelTemplate x:Key="HorizontalListItemsPanel">
         <ItemsStackPanel Orientation="Horizontal"  />
     </ItemsPanelTemplate>

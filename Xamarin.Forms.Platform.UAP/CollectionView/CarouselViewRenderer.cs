@@ -13,7 +13,10 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class CarouselViewRenderer : ItemsViewRenderer
 	{
+		double _itemWidth;
+		double _itemHeight;
 		ScrollViewer _scrollViewer;
+
 		public CarouselViewRenderer()
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselView));
@@ -22,9 +25,6 @@ namespace Xamarin.Forms.Platform.UWP
 		CarouselView CarouselView => (CarouselView)Element;
 		protected override IItemsLayout Layout => CarouselView?.ItemsLayout;
 		UWPDataTemplate CarouselItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["CarouselItemsViewDefaultTemplate"];
-
-		double _itemWidth;
-		double _itemHeight;
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
@@ -149,17 +149,21 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			_itemHeight = GetItemHeight();
 			_itemWidth = GetItemWidth();
+
 			UpdateItemsSource();
 		}
 
 		void OnScrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
 		{
 			CarouselView.SetIsDragging(true);
+			CarouselView.IsScrolling = true;
 		}
 
 		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
 		{
 			CarouselView.SetIsDragging(e.IsIntermediate);
+			CarouselView.IsScrolling = e.IsIntermediate;
+			UpdatePositionFromScroll();
 		}
 
 		void UpdatePeekAreaInsets()
@@ -238,6 +242,37 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		void UpdatePositionFromScroll()
+		{
+			if (_scrollViewer == null)
+				return;
+
+			int itemCount = CollectionViewSource.View.Count;
+
+			if (itemCount == 0)
+				return;
+
+			int position;
+
+			if (_scrollViewer.HorizontalOffset > _scrollViewer.VerticalOffset)
+				position = _scrollViewer.ScrollableWidth > 0 ? Convert.ToInt32(Math.Ceiling(_scrollViewer.HorizontalOffset * itemCount / _scrollViewer.ScrollableWidth)) : 0;
+			else
+				position = _scrollViewer.ScrollableHeight > 0 ? Convert.ToInt32(Math.Ceiling(_scrollViewer.VerticalOffset * itemCount / _scrollViewer.ScrollableHeight)) : 0;
+
+			UpdatePosition(position);
+		}
+
+		void UpdatePosition(int position)
+		{
+			if (position <= 0)
+				return;
+
+			if (!(ListViewBase.Items[position - 1] is ItemTemplateContext itemTemplateContext))
+				throw new InvalidOperationException("Visible item not found");
+
+			CarouselView.SetCurrentItem(itemTemplateContext.Item);
+		}
+
 		ListViewBase CreateCarouselListLayout(ItemsLayoutOrientation layoutOrientation)
 		{
 			Windows.UI.Xaml.Controls.ListView listView;
@@ -254,7 +289,8 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				listView = new FormsListView()
 				{
-					Style = (Windows.UI.Xaml.Style)UWPApp.Current.Resources["VerticalCarouselListStyle"]
+					Style = (Windows.UI.Xaml.Style)UWPApp.Current.Resources["VerticalCarouselListStyle"],
+					ItemsPanel = (ItemsPanelTemplate)UWPApp.Current.Resources["VerticalListItemsPanel"]
 				};
 			}
 
