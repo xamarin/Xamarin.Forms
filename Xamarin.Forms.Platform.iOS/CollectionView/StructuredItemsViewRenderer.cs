@@ -4,11 +4,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class StructuredItemsViewRenderer<TItemsView, TViewController> : ItemsViewRenderer<TItemsView, TViewController>
 		where TItemsView : StructuredItemsView
-		where TViewController : StructuredItemsViewController
+		where TViewController : StructuredItemsViewController<TItemsView>
 	{
 		protected override TViewController CreateController(TItemsView itemsView, ItemsViewLayout layout)
 		{
-			return new StructuredItemsViewController(itemsView, layout) as TViewController;
+			return new StructuredItemsViewController<TItemsView>(itemsView, layout) as TViewController;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -38,8 +38,8 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			ItemsViewController.UpdateFooterView();
-			ItemsViewController.UpdateHeaderView();
+			Controller.UpdateFooterView();
+			Controller.UpdateHeaderView();
 		}
 
 		protected override ItemsViewLayout SelectLayout()
@@ -63,18 +63,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateHeaderView()
 		{
-			ItemsViewController.UpdateHeaderView();
+			Controller.UpdateHeaderView();
 		}
 
 		protected virtual void UpdateFooterView()
 		{
-			ItemsViewController.UpdateFooterView();
+			Controller.UpdateFooterView();
 		}
 
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
-			ItemsViewController.UpdateLayoutMeasurements();
+			Controller.UpdateLayoutMeasurements();
 		}
 	}
 }

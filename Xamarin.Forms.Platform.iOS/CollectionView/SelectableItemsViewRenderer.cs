@@ -5,11 +5,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SelectableItemsViewRenderer<TItemsView, TViewController> : StructuredItemsViewRenderer<TItemsView, TViewController>
 		where TItemsView : SelectableItemsView
-		where TViewController : SelectableItemsViewController
+		where TViewController : SelectableItemsViewController<TItemsView>
 	{
 		protected override TViewController CreateController(TItemsView itemsView, ItemsViewLayout layout)
 		{
-			return new SelectableItemsViewController(itemsView, layout) as TViewController;
+			return new SelectableItemsViewController<TItemsView>(itemsView, layout) as TViewController;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -41,12 +41,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateNativeSelection()
 		{
-			ItemsViewController.UpdateNativeSelection();
+			Controller.UpdateNativeSelection();
 		}
 
 		protected virtual void UpdateSelectionMode()
 		{
-			ItemsViewController.UpdateSelectionMode();
+			Controller.UpdateSelectionMode();
 		}
 
 		protected override void UpdateItemsSource()

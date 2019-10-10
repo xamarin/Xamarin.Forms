@@ -22,8 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (changedProperty.IsOneOf(CarouselView.PeekAreaInsetsProperty, CarouselView.NumberOfSideItemsProperty))
 			{
-				(ItemsViewController.Layout as CarouselViewLayout).UpdateConstraints(Frame.Size);
-				ItemsViewController.Layout.InvalidateLayout();
+				(Controller.Layout as CarouselViewLayout).UpdateConstraints(Frame.Size);
+				Controller.Layout.InvalidateLayout();
 			}
 			else if (changedProperty.Is(CarouselView.IsSwipeEnabledProperty))
 				UpdateIsSwipeEnabled();
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void TearDownOldElement(CarouselView oldElement)
 		{
-			ItemsViewController?.TearDown();
+			Controller?.TearDown();
 			base.TearDownOldElement(oldElement);
 		}
 
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (CarouselView == null)
 				return;
 
-			ItemsViewController.CollectionView.ScrollEnabled = CarouselView.IsSwipeEnabled;
+			Controller.CollectionView.ScrollEnabled = CarouselView.IsSwipeEnabled;
 		}
 
 		void UpdateIsBounceEnabled()
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (CarouselView == null)
 				return;
 
-			ItemsViewController.CollectionView.Bounces = CarouselView.IsBounceEnabled;
+			Controller.CollectionView.Bounces = CarouselView.IsBounceEnabled;
 		}
 	}
 }
