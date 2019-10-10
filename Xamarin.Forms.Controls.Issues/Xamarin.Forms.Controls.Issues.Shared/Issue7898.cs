@@ -19,21 +19,29 @@ namespace Xamarin.Forms.Controls.Issues
 						new Button
 						{
 							HorizontalOptions = LayoutOptions.Start,
-							Text = "push page",
+							Text = "btn1 - push page",
 							Command = new Command(async () => await Navigation.PushAsync(new Page2(),false))
-						}}
-				}
+						},
+						new Button
+						{
+							HorizontalOptions = LayoutOptions.Center,
+							VerticalOptions = LayoutOptions.Center,
+							Text = "btn2 - should be invisible when tabbed page pushed",
+							Command = new Command(async () => await Navigation.PushAsync(new Page2(), false))
+						}
+					}
+				},
 			});
 		}
 		class Page2:TabbedPage
 		{
 			public Page2()
 			{
-				this.BackgroundColor = Color.Red;
+				this.BackgroundColor = Color.Red.MultiplyAlpha(0.5);
 				this.Children.Add(new ContentPage
 				{
 					Title = "Tab1",
-					BackgroundColor = Color.Blue,
+					BackgroundColor = Color.Blue.MultiplyAlpha(0.2),
 				});
 			}
 		}
