@@ -31,7 +31,7 @@
                                BorderColor="DarkGray"
                                CornerRadius="5"
                                Margin="20"
-                               HeightRequest="300"
+                               HeightRequest="350"
                                HorizontalOptions="Center"
                                VerticalOptions="CenterAndExpand">
                             <StackLayout>
