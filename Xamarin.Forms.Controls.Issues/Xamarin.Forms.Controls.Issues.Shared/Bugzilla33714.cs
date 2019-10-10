@@ -47,7 +47,6 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						new Label
 						{
-							AutomationId = "TestLabel",
 							Text = HomeDetailsDetailPageLabelText
 						}
 					}
