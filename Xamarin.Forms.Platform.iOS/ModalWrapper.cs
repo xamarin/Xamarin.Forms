@@ -44,7 +44,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Forms.IsiOS13OrNewer)
 				PresentationController.Delegate = new PresentationControllerDelegate(DismissModalAsync);
-
 		}
 
 		async Task DismissModalAsync()

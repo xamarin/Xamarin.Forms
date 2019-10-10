@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button = new Button
 			{
-				Text = "Pressing this raises the popped event, swiping down doesn't",
+				Text = "Pressing this raises the popped event, swiping down as well!",
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center
 			};
@@ -40,10 +40,10 @@ namespace Xamarin.Forms.Controls.Issues
 			_modalPage.Content = button;
 		}
 
-		void Button_Clicked(System.Object sender, System.EventArgs e)
+		void Button_Clicked(object sender, EventArgs e)
 		{
 			var navigationPage = new NavigationPage(_modalPage);
-			Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page.SetModalPresentationStyle(navigationPage.On<Xamarin.Forms.PlatformConfiguration.iOS>(), Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FormSheet);
+			PlatformConfiguration.iOSSpecific.Page.SetModalPresentationStyle(navigationPage.On<PlatformConfiguration.iOS>(), PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FormSheet);
 			Navigation.PushModalAsync(navigationPage);
 		}
 	}
