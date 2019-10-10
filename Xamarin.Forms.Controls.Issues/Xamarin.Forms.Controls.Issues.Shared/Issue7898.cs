@@ -4,7 +4,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 7898, "Null Reference Exception thrown when set FontFamily for label in Xamarin Forms macOS", PlatformAffected.macOS)]
+	[Issue(IssueTracker.Github, 7898, "navigation page doesn't hide previous page", PlatformAffected.macOS)]
 	public class Issue7898 : TestNavigationPage
 	{
 		protected override void Init()
