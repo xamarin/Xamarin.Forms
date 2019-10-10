@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// If we're updating from a previous layout, we should keep any settings for the SelectableItemsViewController around
 			var selectableItemsViewController = Delegator?.SelectableItemsViewController;
-			Delegator = new UICollectionViewDelegator(ItemsViewLayout, this);
+			Delegator = CreateDelegator();
 
 			CollectionView.Delegate = Delegator;
 
@@ -112,6 +112,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateEmptyViewVisibility(_isEmpty);
 			}
+
+			if (wasEmpty && !_isEmpty)
+			{
+				// If we're going from empty to having stuff, it's possible that we've never actually measured
+				// a prototype cell and our itemSize or estimatedItemSize are wrong/unset
+				// So trigger a constraint update; if we need a measurement, that will make it happen
+				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			}
 		}
 
 		public override void ViewDidLoad()
@@ -134,6 +142,11 @@ namespace Xamarin.Forms.Platform.iOS
 				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
 				_initialConstraintsSet = true;
 			}
+		}
+
+		protected virtual UICollectionViewDelegator CreateDelegator()
+		{
+			return new UICollectionViewDelegator(ItemsViewLayout, this);
 		}
 
 		protected virtual IItemsViewSource CreateItemsViewSource()

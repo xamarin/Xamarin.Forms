@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isDisposed;
 		bool _isRefreshing;
 		bool _usingLargeTitles;
-		nfloat _origininalY;
+		nfloat _originalY;
 		nfloat _refreshControlHeight;
 		UIView _refreshControlParent;
 		UIRefreshControl _refreshControl;
@@ -22,8 +22,16 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_isRefreshing = value;
 
+				if (Element != null && Element.IsRefreshing != _isRefreshing)
+					Element.IsRefreshing = _isRefreshing;
+
 				if (_isRefreshing)
+				{
 					_refreshControl.BeginRefreshing();
+
+					if (Element is RefreshView refreshView && refreshView.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
+						refreshView.Command.Execute(refreshView?.CommandParameter);
+				}
 				else
 					_refreshControl.EndRefreshing();
 
@@ -104,9 +112,9 @@ namespace Xamarin.Forms.Platform.iOS
 					return true;
 
 				if (refreshing)
-					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY - _refreshControlHeight), true);
+					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _originalY - _refreshControlHeight), true);
 				else
-					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY), true);
+					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _originalY), true);
 
 				return true;
 			}
@@ -142,7 +150,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				scrollView.AlwaysBounceVertical = true;
 
-				_origininalY = scrollView.ContentOffset.Y;
+				_originalY = scrollView.ContentOffset.Y;
 				_refreshControlHeight = _refreshControl.Frame.Size.Height;
 
 				return true;
@@ -201,10 +209,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnRefresh(object sender, EventArgs e)
 		{
-			if (Element?.Command?.CanExecute(Element?.CommandParameter) ?? false)
-			{
-				Element.Command.Execute(Element?.CommandParameter);
-			}
+			IsRefreshing = true;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

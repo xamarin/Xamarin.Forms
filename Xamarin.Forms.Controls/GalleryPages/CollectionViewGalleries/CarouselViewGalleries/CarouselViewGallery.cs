@@ -12,6 +12,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			Title = "CarouselView Galleries";
 
+			var button = new Button
+			{
+				Text = "Enable CollectionView",
+				AutomationId = "EnableCollectionView"
+			};
+			button.Clicked += ButtonClicked;
+
 			Content = new ScrollView
 			{
 				Content = new StackLayout
@@ -19,7 +26,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					Children =
 					{
 						descriptionLabel,
-						new Button { Text ="Enable CollectionView", AutomationId = "EnableCollectionView", Command = new Command(() => Device.SetFlags(new[] { ExperimentalFlags.CollectionViewExperimental })) },
+						button,
 						GalleryBuilder.NavButton("CarouselView (Code, Horizontal)", () =>
 							new CarouselCodeGallery(ItemsLayoutOrientation.Horizontal), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Code, Vertical)", () =>
@@ -29,10 +36,23 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("CarouselView (Items)", () =>
 							new CarouselItemsGallery(), Navigation),
 	  					GalleryBuilder.NavButton("CarouselView Snap", () =>
- 							new CarouselSnapGallery(), Navigation)
+ 							new CarouselSnapGallery(), Navigation),
+						GalleryBuilder.NavButton("ObservableCollection and CarouselView", () =>
+ 							new CollectionCarouselViewGallery(), Navigation)
 					}
 				}
 			};
+		}
+
+		void ButtonClicked(object sender, System.EventArgs e)
+		{
+			var button = sender as Button;
+
+			button.Text = "CollectionView Enabled!";
+			button.TextColor = Color.Black;
+			button.IsEnabled = false;
+
+			Device.SetFlags(new[] { ExperimentalFlags.CollectionViewExperimental });
 		}
 	}
 }
