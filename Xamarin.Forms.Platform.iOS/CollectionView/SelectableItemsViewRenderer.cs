@@ -3,9 +3,9 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class SelectableItemsViewRenderer : StructuredItemsViewRenderer
+	public class SelectableItemsViewRenderer<TItemsView> : StructuredItemsViewRenderer<TItemsView>
+		where TItemsView : SelectableItemsView
 	{
-		SelectableItemsView SelectableItemsView => (SelectableItemsView)Element;
 		SelectableItemsViewController SelectableItemsViewController => (SelectableItemsViewController)ItemsViewController;
 
 		protected override ItemsViewController CreateController(ItemsView itemsView, ItemsViewLayout layout)

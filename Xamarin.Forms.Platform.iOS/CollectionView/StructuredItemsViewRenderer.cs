@@ -2,9 +2,9 @@
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class StructuredItemsViewRenderer : ItemsViewRenderer
+	public class StructuredItemsViewRenderer<TItemsView> : ItemsViewRenderer<TItemsView>
+		where TItemsView : StructuredItemsView
 	{
-		StructuredItemsView StructuredItemsView => (StructuredItemsView)Element;
 		StructuredItemsViewController StructuredItemsViewController => (StructuredItemsViewController)ItemsViewController;
 
 		protected override ItemsViewController CreateController(ItemsView itemsView, ItemsViewLayout layout)
@@ -45,8 +45,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override ItemsViewLayout SelectLayout()
 		{
-			var itemSizingStrategy = StructuredItemsView.ItemSizingStrategy;
-			var itemsLayout = StructuredItemsView.ItemsLayout;
+			var itemSizingStrategy = ItemsView.ItemSizingStrategy;
+			var itemsLayout = ItemsView.ItemsLayout;
 
 			if (itemsLayout is GridItemsLayout gridItemsLayout)
 			{

@@ -2,9 +2,9 @@
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class GroupableItemsViewRenderer : SelectableItemsViewRenderer
+	public class GroupableItemsViewRenderer<TItemsView> : SelectableItemsViewRenderer<TItemsView>
+		where TItemsView : GroupableItemsView
 	{
-		GroupableItemsView GroupableItemsView => (GroupableItemsView)Element;
 		GroupableItemsViewController GroupableItemsViewController => (GroupableItemsViewController)ItemsViewController;
 
 		protected override ItemsViewController CreateController(ItemsView itemsView, ItemsViewLayout layout)
@@ -58,8 +58,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool WillNeedScrollAdjustment(ScrollToRequestEventArgs args)
 		{
-			return GroupableItemsView.ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems
-				&& GroupableItemsView.IsGrouped
+			return ItemsView.ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems
+				&& ItemsView.IsGrouped
 				&& (args.ScrollToPosition == ScrollToPosition.End || args.ScrollToPosition == ScrollToPosition.MakeVisible);
 		}
 	}

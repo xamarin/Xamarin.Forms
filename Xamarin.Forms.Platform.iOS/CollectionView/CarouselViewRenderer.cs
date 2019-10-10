@@ -2,9 +2,9 @@
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class CarouselViewRenderer : ItemsViewRenderer
+	public class CarouselViewRenderer : ItemsViewRenderer<CarouselView>
 	{
-		CarouselView CarouselView => (CarouselView)Element;
+		CarouselView CarouselView => Element;
 
 		CarouselViewController CarouselViewController => (CarouselViewController)ItemsViewController;
 

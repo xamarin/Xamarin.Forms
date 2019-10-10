@@ -4,16 +4,19 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class ItemsViewRenderer : ViewRenderer<ItemsView, UIView>
+	public abstract class ItemsViewRenderer<TItemsView> : ViewRenderer<TItemsView, UIView>
+		where TItemsView : ItemsView
 	{
 		ItemsViewLayout _layout;
 		bool _disposed;
 		bool? _defaultHorizontalScrollVisibility;
 		bool? _defaultVerticalScrollVisibility;
 
+		protected TItemsView ItemsView => Element;
+
 		public ItemsViewRenderer()
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer<TItemsView>));
 		}
 
 		public override UIViewController ViewController => ItemsViewController;
@@ -25,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, 0, 0);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<ItemsView> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<TItemsView> e)
 		{
 			TearDownOldElement(e.OldElement);
 			SetUpNewElement(e.NewElement);
@@ -37,31 +40,32 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
+			if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemsSourceProperty))
 			{
 				UpdateItemsSource();
 			}
-			else if (changedProperty.Is(ItemsView.ItemTemplateProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemTemplateProperty))
 			{
 				UpdateLayout();
 			}
-			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
+			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty,
+				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
 				ItemsViewController.UpdateEmptyView();
 			}
-			else if (changedProperty.Is(ItemsView.ItemSizingStrategyProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemSizingStrategyProperty))
 			{
 				UpdateItemSizingStrategy();
 			}
-			else if (changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.HorizontalScrollBarVisibilityProperty))
 			{
 				UpdateHorizontalScrollBarVisibility();
 			}
-			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.VerticalScrollBarVisibilityProperty))
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
-			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemsUpdatingScrollModeProperty))
 			{
 				UpdateItemsUpdatingScrollMode();
 			}
@@ -125,7 +129,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateItemsUpdatingScrollMode()
 		{
-			_layout.ItemsUpdatingScrollMode = Element.ItemsUpdatingScrollMode;
+			_layout.ItemsUpdatingScrollMode = ItemsView.ItemsUpdatingScrollMode;
 		}
 
 		protected virtual void UpdateItemsSource()
