@@ -127,6 +127,12 @@ namespace Xamarin.Forms.Platform.iOS
 		IEditorController ElementController => Element;
 		protected abstract UITextView TextView { get; }
 
+		IDisposable _selectedTextRangeObserver;
+		bool _nativeSelectionIsUpdating;
+
+		bool _cursorPositionChangePending;
+		bool _selectionLengthChangePending;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -144,6 +150,7 @@ namespace Xamarin.Forms.Platform.iOS
 					TextView.ShouldChangeText -= ShouldChangeText;
 					if(Control is IFormsUITextView formsUITextView)
 						formsUITextView.FrameChanged -= OnFrameChanged;
+					_selectedTextRangeObserver?.Dispose();
 				}
 			}
 
@@ -181,7 +188,13 @@ namespace Xamarin.Forms.Platform.iOS
 				TextView.Started += OnStarted;
 				TextView.Ended += OnEnded;
 				TextView.ShouldChangeText += ShouldChangeText;
+				_selectedTextRangeObserver = TextView.AddObserver("selectedTextRange", NSKeyValueObservingOptions.New, UpdateCursorFromControl);
 			}
+
+			// When we set the control text, it triggers the UpdateCursorFromControl event, which updates CursorPosition and SelectionLength;
+			// These one-time-use variables will let us initialize a CursorPosition and SelectionLength via ctor/xaml/etc.
+			_cursorPositionChangePending = Element.IsSet(Editor.CursorPositionProperty);
+			_selectionLengthChangePending = Element.IsSet(Editor.SelectionLengthProperty);
 
 			UpdateFont();
 			UpdatePlaceholderText();
@@ -196,6 +209,9 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAutoSizeOption();
 			UpdateReadOnly();
 			UpdateUserInteraction();
+
+			if (_cursorPositionChangePending || _selectionLengthChangePending)
+				UpdateCursorSelection();
 		}
 
 		protected internal virtual void UpdateAutoSizeOption()
@@ -248,6 +264,9 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == Editor.AutoSizeProperty.PropertyName)
 				UpdateAutoSizeOption();
+			else if (e.PropertyName == Editor.CursorPositionProperty.PropertyName ||
+			         e.PropertyName == Editor.SelectionLengthProperty.PropertyName)
+				UpdateCursorSelection();
 		}
 
 		void HandleChanged(object sender, EventArgs e)
@@ -374,6 +393,133 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateReadOnly();
 			else
 				UpdateEditable();
+		}
+
+		void UpdateCursorFromControl(NSObservedChange obj)
+		{
+			if (_nativeSelectionIsUpdating || Control == null || Element == null)
+				return;
+
+			var currentSelection = TextView.SelectedTextRange;
+			if (currentSelection != null)
+			{
+				if (!_cursorPositionChangePending)
+				{
+					int newCursorPosition = (int)TextView.GetOffsetFromPosition(TextView.BeginningOfDocument, currentSelection.Start);
+					if (newCursorPosition != Element.CursorPosition)
+						SetCursorPositionFromRenderer(newCursorPosition);
+				}
+
+				if (!_selectionLengthChangePending)
+				{
+					int selectionLength = (int)TextView.GetOffsetFromPosition(currentSelection.Start, currentSelection.End);
+
+					if (selectionLength != Element.SelectionLength)
+						SetSelectionLengthFromRenderer(selectionLength);
+				}
+			}
+		}
+
+		void UpdateCursorSelection()
+		{
+			if (_nativeSelectionIsUpdating || Control == null || Element == null)
+				return;
+
+			_cursorPositionChangePending = _selectionLengthChangePending = true;
+
+			// If this is run from the ctor, the control is likely too early in its lifecycle to be first responder yet. 
+			// Anything done here will have no effect, so we'll skip this work until later.
+			// We'll try again when the control does become first responder later OnEditingBegan
+			if (Control.BecomeFirstResponder())
+			{
+				try
+				{
+					int cursorPosition = Element.CursorPosition;
+
+					UITextPosition start = GetSelectionStart(cursorPosition, out int startOffset);
+					UITextPosition end = GetSelectionEnd(cursorPosition, start, startOffset);
+
+					TextView.SelectedTextRange = TextView.GetTextRange(start, end);
+				}
+				catch (Exception ex)
+				{
+					Internals.Log.Warning("Editor", $"Failed to set Control.SelectedTextRange from CursorPosition/SelectionLength: {ex}");
+				}
+				finally
+				{
+					_cursorPositionChangePending = _selectionLengthChangePending = false;
+				}
+			}
+		}
+
+		UITextPosition GetSelectionEnd(int cursorPosition, UITextPosition start, int startOffset)
+		{
+			UITextPosition end = start;
+			int endOffset = startOffset;
+			int selectionLength = Element.SelectionLength;
+
+			if (Element.IsSet(Editor.SelectionLengthProperty))
+			{
+				end = TextView.GetPosition(start, Math.Max(startOffset, Math.Min(TextView.Text.Length - cursorPosition, selectionLength))) ?? start;
+				endOffset = Math.Max(startOffset, (int)TextView.GetOffsetFromPosition(TextView.BeginningOfDocument, end));
+			}
+
+			int newSelectionLength = Math.Max(0, endOffset - startOffset);
+			if (newSelectionLength != selectionLength)
+				SetSelectionLengthFromRenderer(newSelectionLength);
+
+			return end;
+		}
+
+		UITextPosition GetSelectionStart(int cursorPosition, out int startOffset)
+		{
+			UITextPosition start = TextView.EndOfDocument;
+			startOffset = TextView.Text.Length;
+
+			if (Element.IsSet(Editor.CursorPositionProperty))
+			{
+				start = TextView.GetPosition(TextView.BeginningOfDocument, cursorPosition) ?? TextView.EndOfDocument;
+				startOffset = Math.Max(0, (int)TextView.GetOffsetFromPosition(TextView.BeginningOfDocument, start));
+			}
+
+			if (startOffset != cursorPosition)
+				SetCursorPositionFromRenderer(startOffset);
+
+			return start;
+		}
+
+		void SetCursorPositionFromRenderer(int start)
+		{
+			try
+			{
+				_nativeSelectionIsUpdating = true;
+				ElementController?.SetValueFromRenderer(Editor.CursorPositionProperty, start);
+			}
+			catch (Exception ex)
+			{
+				Internals.Log.Warning("Editor", $"Failed to set CursorPosition from renderer: {ex}");
+			}
+			finally
+			{
+				_nativeSelectionIsUpdating = false;
+			}
+		}
+
+		void SetSelectionLengthFromRenderer(int selectionLength)
+		{
+			try
+			{
+				_nativeSelectionIsUpdating = true;
+				ElementController?.SetValueFromRenderer(Editor.SelectionLengthProperty, selectionLength);
+			}
+			catch (Exception ex)
+			{
+				Internals.Log.Warning("Editor", $"Failed to set SelectionLength from renderer: {ex}");
+			}
+			finally
+			{
+				_nativeSelectionIsUpdating = false;
+			}
 		}
 
 		internal class FormsUITextView : UITextView, IFormsUITextView

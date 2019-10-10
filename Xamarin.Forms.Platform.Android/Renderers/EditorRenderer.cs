@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use EntryRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use EditorRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public EditorRenderer()
 		{
@@ -58,6 +58,10 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _disposed;
 		protected abstract EditText EditText { get; }
+
+		bool _cursorPositionChangePending;
+		bool _selectionLengthChangePending;
+		bool _nativeSelectionIsUpdating;
 
 		public EditorRendererBase(Context context) : base(context)
 		{
@@ -119,8 +123,11 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetNativeControl(edit);
 				EditText.AddTextChangedListener(this);
-				if(EditText is IFormsEditText formsEditText)
+				if (EditText is IFormsEditText formsEditText)
+				{
 					formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
+					formsEditText.SelectionChanged += OnSelectionChanged;
+				}
 			}
 
 			EditText.SetSingleLine(false);
@@ -128,6 +135,11 @@ namespace Xamarin.Forms.Platform.Android
 			if ((int)Forms.SdkInt > 16)
 				EditText.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
 			EditText.SetHorizontallyScrolling(false);
+
+			// When we set the control text, it triggers the SelectionChanged event, which updates CursorPosition and SelectionLength;
+			// These one-time-use variables will let us initialize a CursorPosition and SelectionLength via ctor/xaml/etc.
+			_cursorPositionChangePending = Element.IsSet(Editor.CursorPositionProperty);
+			_selectionLengthChangePending = Element.IsSet(Editor.SelectionLengthProperty);
 
 			UpdateText();
 			UpdateInputType();
@@ -138,6 +150,9 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceholderColor();
 			UpdatePlaceholderText();
 			UpdateIsReadOnly();
+
+			if (_cursorPositionChangePending || _selectionLengthChangePending)
+				UpdateCursorSelection();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -168,6 +183,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if(e.PropertyName == Editor.CursorPositionProperty.PropertyName)
+				UpdateCursorSelection();
+			else if (e.PropertyName == Editor.SelectionLengthProperty.PropertyName)
+				UpdateCursorSelection();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -186,6 +205,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (EditText != null && EditText is IFormsEditText formsEditText)
 				{
 					formsEditText.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					formsEditText.SelectionChanged -= OnSelectionChanged;
 				}
 			}
 
@@ -306,6 +326,120 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.FocusableInTouchMode = isReadOnly;
 			EditText.Focusable = isReadOnly;
 			EditText.SetCursorVisible(isReadOnly);
+		}
+
+		void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (_nativeSelectionIsUpdating || Control == null || Element == null)
+				return;
+
+			int cursorPosition = Element.CursorPosition;
+			int selectionStart = EditText.SelectionStart;
+
+			if (!_cursorPositionChangePending)
+			{
+				var start = cursorPosition;
+
+				if (selectionStart != start)
+					SetCursorPositionFromRenderer(selectionStart);
+			}
+
+			if (!_selectionLengthChangePending)
+			{
+				int elementSelectionLength = System.Math.Min(EditText.Text.Length - cursorPosition, Element.SelectionLength);
+
+				var controlSelectionLength = EditText.SelectionEnd - selectionStart;
+				if (controlSelectionLength != elementSelectionLength)
+					SetSelectionLengthFromRenderer(controlSelectionLength);
+			}
+		}
+
+		void UpdateCursorSelection()
+		{
+			if (_nativeSelectionIsUpdating || Control == null || Element == null || EditText == null)
+				return;
+
+			if (!Element.IsReadOnly && EditText.RequestFocus())
+			{
+				try
+				{
+					int start = GetSelectionStart();
+					int end = GetSelectionEnd(start);
+
+					EditText.SetSelection(start, end);
+				}
+				catch (System.Exception ex)
+				{
+					Internals.Log.Warning("Editor", $"Failed to set Control.Selection from CursorPosition/SelectionLength: {ex}");
+				}
+				finally
+				{
+					_cursorPositionChangePending = _selectionLengthChangePending = false;
+				}
+			}
+		}
+
+		int GetSelectionEnd(int start)
+		{
+			int end = start;
+			int selectionLength = Element.SelectionLength;
+
+			if (Element.IsSet(Editor.SelectionLengthProperty))
+				end = System.Math.Max(start, System.Math.Min(EditText.Length(), start + selectionLength));
+
+			int newSelectionLength = System.Math.Max(0, end - start);
+			if (newSelectionLength != selectionLength)
+				SetSelectionLengthFromRenderer(newSelectionLength);
+
+			return end;
+		}
+
+		int GetSelectionStart()
+		{
+			int start = EditText.Length();
+			int cursorPosition = Element.CursorPosition;
+
+			if (Element.IsSet(Editor.CursorPositionProperty))
+				start = System.Math.Min(EditText.Text.Length, cursorPosition);
+
+			if (start != cursorPosition)
+				SetCursorPositionFromRenderer(start);
+
+			return start;
+		}
+
+		void SetCursorPositionFromRenderer(int start)
+		{
+			try
+			{
+				_nativeSelectionIsUpdating = true;
+				ElementController?.SetValueFromRenderer(Editor.CursorPositionProperty, start);
+			}
+			catch (System.Exception ex)
+			{
+				Internals.Log.Warning("Editor", $"Failed to set CursorPosition from renderer: {ex}");
+			}
+			finally
+			{
+				_nativeSelectionIsUpdating = false;
+			}
+		}
+
+		void SetSelectionLengthFromRenderer(int selectionLength)
+		{
+			try
+			{
+				_nativeSelectionIsUpdating = true;
+				ElementController?.SetValueFromRenderer(Editor.SelectionLengthProperty, selectionLength);
+			}
+			catch (System.Exception ex)
+			{
+				Internals.Log.Warning("Editor", $"Failed to set SelectionLength from renderer: {ex}");
+			}
+			finally
+			{
+				_nativeSelectionIsUpdating = false;
+			}
 		}
 	}
 }
