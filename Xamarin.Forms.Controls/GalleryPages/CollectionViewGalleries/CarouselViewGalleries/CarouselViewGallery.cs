@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			var button = sender as Button;
 
-			button.Text = "CollectionView Enabled!";
+			button.Text = "CarouselView Enabled!";
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 

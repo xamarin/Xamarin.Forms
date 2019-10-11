@@ -188,8 +188,17 @@ namespace Xamarin.Forms
 			string constructorHint = null,
 			[CallerMemberName] string memberName = "")
 		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CarouselViewExperimental, 
-				constructorHint, memberName);
+			try
+			{
+				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CarouselViewExperimental,
+					constructorHint, memberName);
+			}
+			catch (InvalidOperationException)
+			{
+				// We'll still honor the CollectionView_Experimental flag for CarouselView stuff
+				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CollectionViewExperimental,
+					constructorHint, memberName);
+			}
 		}
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)
