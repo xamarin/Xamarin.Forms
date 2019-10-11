@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Platform.Android
 	internal class ObservableGroupedSource : IGroupableItemsViewSource, ICollectionChangedNotifier
 	{
 		readonly ICollectionChangedNotifier _notifier;
+		readonly string _groupItemsPath;
 		readonly IList _groupSource;
 		List<IItemsViewSource> _groups = new List<IItemsViewSource>();
 		bool _disposed;
@@ -35,11 +36,13 @@ namespace Xamarin.Forms.Platform.Android
 		public bool HasHeader { get; set; }
 		public bool HasFooter { get; set; }
 
-		public ObservableGroupedSource(GroupableItemsView groupableItemsView, ICollectionChangedNotifier adapter)
+		public ObservableGroupedSource(GroupableItemsView groupableItemsView, ICollectionChangedNotifier adapter, 
+			string groupItemsPath = null)
 		{
 			var groupSource = groupableItemsView.ItemsSource;
 
 			_notifier = adapter;
+			_groupItemsPath = groupItemsPath;
 			_groupSource = groupSource as IList ?? new ListSource(groupSource);
 
 			if (_groupSource is INotifyCollectionChanged incc)
@@ -212,9 +215,26 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ClearGroupTracking();
 
+			System.Reflection.PropertyInfo itemsPropertyInfo = null;
+			if (!string.IsNullOrEmpty(_groupItemsPath))
+			{
+				// If we've been provided with a group items path, reflect on the
+				// type and find the correct property to use for retrieving a group
+
+				if (_groupSource.Count > 0)
+				{
+					var group = _groupSource[0];
+					itemsPropertyInfo = group.GetType().GetProperty(_groupItemsPath);
+				}
+			}
+
 			for (int n = 0; n < _groupSource.Count; n++)
 			{
-				var source = ItemsSourceFactory.Create(_groupSource[n] as IEnumerable, this);
+				var group = itemsPropertyInfo == null
+					? _groupSource[n]
+					: itemsPropertyInfo.GetValue(_groupSource[n]);
+
+				var source = ItemsSourceFactory.Create(group as IEnumerable, this);
 				source.HasFooter = _hasGroupFooters;
 				source.HasHeader = _hasGroupHeaders;
 				_groups.Add(source);

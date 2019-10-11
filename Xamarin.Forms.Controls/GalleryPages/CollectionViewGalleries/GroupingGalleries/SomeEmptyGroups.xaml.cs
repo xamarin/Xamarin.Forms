@@ -12,23 +12,23 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 
 			var teams = new List<Team>
 			{
-				new Team("Avengers", new List<Member>
+				new Team("Avengers", "New York City", new List<Member>
 				{
 					new Member("Thor"),
 					new Member("Captain America")
 				}),
 
-				new Team("Thundercats", new List<Member>()),
+				new Team("Thundercats", "Cats Lair", new List<Member>()),
 
-				new Team("Avengers", new List<Member>
+				new Team("Avengers", "New York City", new List<Member>
 				{
 					new Member("Thor"),
 					new Member("Captain America")
 				}),
 							   			
-				new Team("Bionic Six", new List<Member>()),
+				new Team("Bionic Six", "Cypress Cove", new List<Member>()),
 
-				new Team("Fantastic Four", new List<Member>
+				new Team("Fantastic Four", "New York City", new List<Member>
 				{
 					new Member("The Thing"),
 					new Member("The Human Torch"),

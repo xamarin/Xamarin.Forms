@@ -28,5 +28,14 @@
 			get => (DataTemplate)GetValue(GroupFooterTemplateProperty);
 			set => SetValue(GroupFooterTemplateProperty, value);
 		}
+
+		public static readonly BindableProperty GroupItemsPropertyNameProperty =
+			BindableProperty.Create(nameof(GroupItemsPropertyName), typeof(string), typeof(GroupableItemsView), null);
+
+		public string GroupItemsPropertyName
+		{
+			get => (string)GetValue(GroupItemsPropertyNameProperty);
+			set => SetValue(GroupItemsPropertyNameProperty, value);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGalleries
@@ -7,12 +8,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 	[Preserve(AllMembers = true)]
 	class Team : List<Member>
 	{
-		public Team(string name, List<Member> members) : base(members)
+		public Team(string name, string city, List<Member> members) : base(members)
 		{
 			Name = name;
+			City = city;
 		}
 
 		public string Name { get; set; }
+		public string City { get; }
 
 		public override string ToString()
 		{
@@ -38,7 +41,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 	{
 		public SuperTeams()
 		{
-			Add(new Team("Avengers", 
+			Add(new Team("Avengers", "New York City",
 				new List<Member>
 				{
 					new Member("Thor"),
@@ -56,7 +59,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 				}
 			));
 
-			Add(new Team("Fantastic Four", 
+			Add(new Team("Fantastic Four", "New York City",
 				new List<Member>
 				{
 					new Member("The Thing"),
@@ -66,7 +69,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 				}
 			));
 
-			Add(new Team("Defenders", 
+			Add(new Team("Defenders", "New York City",
 				new List<Member>
 				{
 					new Member("Doctor Strange"),
@@ -79,7 +82,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 				}
 			));
 			
-			Add(new Team("Heroes for Hire", 
+			Add(new Team("Heroes for Hire", "New York City",
 				new List<Member>
 				{
 					new Member("Luke Cage"),
@@ -90,7 +93,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 				}
 			));
 
-			Add(new Team("West Coast Avengers", 
+			Add(new Team("West Coast Avengers", "Los Angeles",
 				new List<Member>
 				{
 					new Member("Hawkeye"),
@@ -101,7 +104,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 				}
 			));
 
-			Add(new Team("Great Lakes Avengers", 
+			Add(new Team("Great Lakes Avengers", "Milwaukee",
 				new List<Member>
 				{
 					new Member("Squirrel Girl"),
@@ -208,6 +211,43 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.GroupingGa
 					new Member("Doorman"),
 				}
 			));
+		}
+	}
+
+	[Preserve(AllMembers = true)]
+	class City
+	{
+		SuperTeams _teams = new SuperTeams();
+
+		public City(string name)
+		{
+			Name = name;
+		}
+
+		public string Name { get; set; }
+
+		public List<Team> Teams
+		{
+			get { return _teams.Where(t => t.City == Name).ToList(); }
+		}
+
+		public List<Member> Heroes
+		{
+			get { return Teams.SelectMany(t => t).ToList(); }
+		}
+	}
+
+	[Preserve(AllMembers = true)]
+	class Cities : List<City>
+	{
+		public Cities()
+		{
+			var cityNames = new SuperTeams().Select(team => team.City).Distinct().OrderBy(city => city);
+
+			foreach (var superCity in cityNames.Select(name => new City(name)))
+			{
+				Add(superCity);
+			}
 		}
 	}
 }

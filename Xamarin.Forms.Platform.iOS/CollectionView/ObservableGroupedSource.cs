@@ -10,13 +10,16 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class ObservableGroupedSource : IItemsViewSource
 	{
 		readonly UICollectionView _collectionView;
+		readonly string _groupItemsPath;
 		readonly IList _groupSource;
 		bool _disposed;
 		List<ObservableItemsSource> _groups = new List<ObservableItemsSource>();
 
-		public ObservableGroupedSource(IEnumerable groupSource, UICollectionView collectionView)
+		public ObservableGroupedSource(IEnumerable groupSource, UICollectionView collectionView,
+			string groupItemsPath = null)
 		{
 			_collectionView = collectionView;
+			_groupItemsPath = groupItemsPath;
 			_groupSource = groupSource as IList ?? new ListSource(groupSource);
 
 			if (_groupSource is INotifyCollectionChanged incc)
@@ -31,14 +34,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				var group = (IList)_groupSource[indexPath.Section];
+				var groupItems = (IList)GetGroupItems(indexPath.Section);
 
-				if (group.Count == 0)
+				if (groupItems.Count == 0)
 				{
 					return null;
 				}
 
-				return group[(int)indexPath.Item];
+				return groupItems[(int)indexPath.Item];
 			}
 		}
 
@@ -53,8 +56,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				for (int n = 0; n < _groupSource.Count; n++)
 				{
-					var group = (IList)_groupSource[n];
-					total += group.Count;
+					var groupItems = (IList)GetGroupItems(n);
+					total += groupItems.Count;
 				}
 
 				return total;
@@ -65,11 +68,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			for (int i = 0; i < _groupSource.Count; i++)
 			{
-				var group = (IList)_groupSource[i];
+				var groupItems = (IList)GetGroupItems(i);
 
-				for (int j = 0; j < group.Count; j++)
+				for (int j = 0; j < groupItems.Count; j++)
 				{
-					if (group[j] == item)
+					if (groupItems[j] == item)
 					{
 						return NSIndexPath.Create(i, j);
 					}
@@ -86,7 +89,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public int ItemCountInGroup(nint group)
 		{
-			return ((IList)_groupSource[(int)group]).Count;
+			return ((IList)GetGroupItems((int)group)).Count;
 		}
 
 		public void Dispose()
@@ -122,13 +125,50 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		Func<int, object> _getGroup;
+
+		object GetGroupItems(int groupIndex)
+		{
+			if (_getGroup == null)
+			{
+				// If we've been provided with a group items path, reflect on the
+				// type and find the correct property to use for retrieving a group
+
+				// Then cache that accessor so we only have to do the reflection once
+
+				System.Reflection.PropertyInfo itemsPropertyInfo = null;
+				if (!string.IsNullOrEmpty(_groupItemsPath))
+				{
+					if (_groupSource.Count > 0)
+					{
+						var group = _groupSource[0];
+						itemsPropertyInfo = group.GetType().GetProperty(_groupItemsPath);
+					}
+				}
+
+				if (itemsPropertyInfo == null)
+				{
+					_getGroup = (n) => _groupSource[n];
+				}
+				else
+				{
+					_getGroup = (n) => itemsPropertyInfo.GetValue(_groupSource[n]);
+				}
+			}
+
+			var x = _getGroup(groupIndex);
+			return x;
+		}
+
 		void ResetGroupTracking()
 		{
 			ClearGroupTracking();
 
 			for (int n = 0; n < _groupSource.Count; n++)
 			{
-				if (_groupSource[n] is INotifyCollectionChanged incc && _groupSource[n] is IList list)
+				var group = GetGroupItems(n);
+
+				if (group is INotifyCollectionChanged incc && group is IList list)
 				{
 					_groups.Add(new ObservableItemsSource(list, _collectionView, n));
 				}
@@ -244,5 +284,4 @@ namespace Xamarin.Forms.Platform.iOS
 			_collectionView.ReloadSections(CreateIndexSetFrom(start, end));
 		}
 	}
-
 }
