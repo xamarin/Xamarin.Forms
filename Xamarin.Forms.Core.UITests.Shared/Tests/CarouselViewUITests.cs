@@ -14,9 +14,10 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			App.NavigateToGallery(GalleryQueries.CollectionViewGallery);
 
+			App.WaitForElement(_carouselViewGalleries);
+			App.Tap(_carouselViewGalleries);
 			App.WaitForElement(_enableControl);
 			App.Tap(_enableControl);
-			App.Tap(_carouselViewGalleries);
 		}
 
 		[TestCase("CarouselView (Code, Horizontal)")]
