@@ -125,7 +125,7 @@ namespace Xamarin.Forms
 		}
 	}
 
-	public sealed class TableSection : TableSectionBase<Cell>
+	public class TableSection : TableSectionBase<Cell>
 	{
 		public TableSection()
 		{

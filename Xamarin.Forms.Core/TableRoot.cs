@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
-	public sealed class TableRoot : TableSectionBase<TableSection>
+	public class TableRoot : TableSectionBase<TableSection>
 	{
 		public TableRoot()
 		{
