@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -260,11 +261,7 @@ namespace Xamarin.Forms.Platform.WPF
 				var child = VisualTreeHelper.GetChild(o, i);
 
 				var result = GetScrollViewer(child);
-				if (result == null)
-				{
-					continue;
-				}
-				else
+				if (result != null)
 				{
 					return result;
 				}
@@ -274,7 +271,6 @@ namespace Xamarin.Forms.Platform.WPF
 		}
 		void ScrollTo(object group, object item, ScrollToPosition toPosition, bool shouldAnimate, bool includeGroup = false, bool previouslyFailed = false)
 		{
-			//Control.ScrollIntoView();
 			var viewer = GetScrollViewer(Control);
 			if (viewer == null)
 			{
@@ -296,44 +292,108 @@ namespace Xamarin.Forms.Platform.WPF
 
 			var t = templatedItems.GetGroup(location.Item1).ToArray();
 			var c = t[location.Item2];
-
-			// scroll to desired item with animation
-			//if (shouldAnimate && ScrollToItemWithAnimation(viewer, c))
-			//    return;
-
-			//double viewportHeight = viewer.ViewportHeight;
-
-			// async scrolling
-
+			
 			Device.BeginInvokeOnMainThread(() =>
 			{
 				switch (toPosition)
 				{
 					case ScrollToPosition.Start:
-						{
-							viewer.ScrollToBottom();
-							Control.ScrollIntoView(c);
-							return;
-						}
+					{
+						viewer.ScrollToBottom();
+						Control.ScrollIntoView(c);
+						return;
+					}
 
 					case ScrollToPosition.MakeVisible:
-						{
-							Control.ScrollIntoView(c);
-							return;
-						}
+					{
+						Control.ScrollIntoView(c);
+						return;
+					}
 					case ScrollToPosition.End:
-						{
-							viewer.ScrollToTop();
-							Control.ScrollIntoView(c);
-							return;
-						}
+					{
+						viewer.ScrollToTop();
+						Control.ScrollIntoView(c);
+						return;
+					}
 					case ScrollToPosition.Center:
-						{
-							Control.ScrollIntoView(c);
-							return;
-						}
+					{
+						ScrollToCenterOfView(Control, c);
+						return;
+					}
 				}
 			});
+		}
+		static void ScrollToCenterOfView(WList control, object item)
+		{
+			// Scroll immediately if possible
+			if (!TryScrollToCenterOfView(control, item))
+			{
+				control.ScrollIntoView(item);
+				control.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+				{
+					TryScrollToCenterOfView(control, item);
+				}));
+			}
+		}
+
+		static bool TryScrollToCenterOfView(ItemsControl itemsControl, object item)
+		{
+			// Find the container
+			var container = itemsControl.ItemContainerGenerator.ContainerFromItem(item) as UIElement;
+			if (container == null)
+				return false;
+
+			// Find the ScrollContentPresenter
+			ScrollContentPresenter presenter = null;
+			for (Visual vis = container; vis != null && vis != itemsControl; vis = VisualTreeHelper.GetParent(vis) as Visual)
+				if ((presenter = vis as ScrollContentPresenter) != null)
+					break;
+			if (presenter == null)
+				return false;
+
+			// Find the IScrollInfo
+			var scrollInfo =
+				!presenter.CanContentScroll ? presenter :
+				presenter.Content as IScrollInfo ??
+				FirstVisualChild(presenter.Content as ItemsPresenter) as IScrollInfo ??
+				presenter;
+
+			// Compute the center point of the container relative to the scrollInfo
+			var size = container.RenderSize;
+			var center = container.TransformToAncestor((Visual)scrollInfo).Transform(new System.Windows.Point(size.Width / 2, size.Height / 2));
+			center.Y += scrollInfo.VerticalOffset;
+			center.X += scrollInfo.HorizontalOffset;
+
+			// Adjust for logical scrolling
+			if (scrollInfo is StackPanel || scrollInfo is VirtualizingStackPanel)
+			{
+				double logicalCenter = itemsControl.ItemContainerGenerator.IndexFromContainer(container) + 0.5;
+				Orientation orientation = scrollInfo is StackPanel ? ((StackPanel)scrollInfo).Orientation : ((VirtualizingStackPanel)scrollInfo).Orientation;
+				if (orientation == Orientation.Horizontal)
+					center.X = logicalCenter;
+				else
+					center.Y = logicalCenter;
+			}
+
+			// Scroll the center of the container to the center of the viewport
+			if (scrollInfo.CanVerticallyScroll)
+				scrollInfo.SetVerticalOffset(CenteringOffset(center.Y, scrollInfo.ViewportHeight, scrollInfo.ExtentHeight));
+			if (scrollInfo.CanHorizontallyScroll)
+				scrollInfo.SetHorizontalOffset(CenteringOffset(center.X, scrollInfo.ViewportWidth, scrollInfo.ExtentWidth));
+			return true;
+		}
+
+		static double CenteringOffset(double center, double viewport, double extent)
+		{
+			return Math.Min(extent - viewport, Math.Max(0, center - viewport / 2));
+		}
+		static DependencyObject FirstVisualChild(Visual visual)
+		{
+			if (visual == null)
+				return null;
+			if (VisualTreeHelper.GetChildrenCount(visual) == 0)
+				return null;
+			return VisualTreeHelper.GetChild(visual, 0);
 		}
 	}
 }
