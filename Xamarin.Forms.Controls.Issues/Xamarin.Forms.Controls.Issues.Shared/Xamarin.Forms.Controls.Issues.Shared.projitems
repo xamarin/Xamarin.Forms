@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewItemsUpdatingScrollMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3475.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4902.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5354.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1417,7 +1418,7 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue7789.xaml.cs">
       <DependentUpon>Issue7789.xaml</DependentUpon>
     </Compile>
-    <Compile Update="$(MSBuildThisFileDirectory)Issue7519Xaml.xaml.cs">      
+    <Compile Update="$(MSBuildThisFileDirectory)Issue7519Xaml.xaml.cs">
       <DependentUpon>Issue7519Xaml.xaml</DependentUpon>
     </Compile>
     <Compile Update="$(MSBuildThisFileDirectory)Issue7817.xaml.cs">
