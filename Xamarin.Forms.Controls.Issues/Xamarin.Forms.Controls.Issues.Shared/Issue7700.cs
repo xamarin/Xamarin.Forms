@@ -78,8 +78,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void AddingItemToUnviewedCollectionViewShouldNotCrash()
 		{
-			RunningApp.WaitForElement(Go);
-			RunningApp.Tap(Go);	
+			RunningApp.WaitForElement(Add);
+			RunningApp.Tap(Add);	
 			RunningApp.Tap(Tab2);		
 
 			RunningApp.WaitForElement(Success);
