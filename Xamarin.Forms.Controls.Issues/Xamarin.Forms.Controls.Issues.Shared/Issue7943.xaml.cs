@@ -55,10 +55,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if APP
 		void OnChangeTemplate(object sender, EventArgs e)
-		{
+		{	
+			var random = new Random();
+
 			collectionView.ItemTemplate = new DataTemplate(() =>
 			{
 				var grid = new Grid();
+				grid.BackgroundColor = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
 				var lbl1 = new Label();
 				lbl1.SetBinding(Label.TextProperty, "Name");
 				grid.Children.Add(lbl1);
@@ -68,10 +71,14 @@ namespace Xamarin.Forms.Controls.Issues
 		void OnChangeItemsSource(object sender, EventArgs e)
 		{
 			collectionView.ItemsSource = new List<Issue7943Model> { new Issue7943Model("Paul", 35), new Issue7943Model("Lucy", 57) };
+		}		
+
+		void OnClearItemsSource(object sender, EventArgs e)
+		{
+			collectionView.ItemsSource = null;
 		}
-	}
 #endif
-	
+	}
 
 	[Preserve(AllMembers = true)]
 	class Issue7943Model
