@@ -142,6 +142,13 @@ namespace Xamarin.Forms.Platform.iOS
 				// we'll just reload the data so the UICollectionView can get its internal state sorted out.
 				_collectionView.ReloadData();
 			}
+			else if (_collectionView.ContentSize.IsEmpty)
+			{
+				// The UICollectionView has never actually been displayed; possibly it's in a tab that's never been viewed
+				// At this point, trying to just insert the item will throw a layout error (which will crash on iOS 
+				// versions before 13). So instead we do a reload.
+				_collectionView.ReloadData();
+			}
 			else
 			{
 				_collectionView.PerformBatchUpdates(() =>
