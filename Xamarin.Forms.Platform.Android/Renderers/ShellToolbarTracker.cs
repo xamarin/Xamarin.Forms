@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView.Dispose();
 				}
 
-				((IShellController)_shellContext.Shell).RemoveFlyoutBehaviorObserver(this);
+				((IShellController)_shellContext?.Shell)?.RemoveFlyoutBehaviorObserver(this);
 
 				if (_backButtonBehavior != null)
 					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;

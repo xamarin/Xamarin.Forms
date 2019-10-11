@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 				_outerLayout = null;
 			}
 
-			((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
+			((IShellController)ShellContext?.Shell)?.RemoveAppearanceObserver(this);
 
 			base.OnDestroy();
 		}

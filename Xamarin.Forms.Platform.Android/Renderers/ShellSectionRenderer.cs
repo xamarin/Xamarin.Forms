@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Platform.Android
 		void UnhookEvents()
 		{
 			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnItemsCollectionChagned;
-			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
+			((IShellController)_shellContext?.Shell)?.RemoveAppearanceObserver(this);
 			ShellSection.PropertyChanged -= OnShellItemPropertyChanged;
 		}
 	}
