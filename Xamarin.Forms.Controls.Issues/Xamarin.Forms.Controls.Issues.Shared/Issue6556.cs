@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			var sl = new StackLayout { Padding = new Size(20, 20) };
+			sl.Children.Add(new TestButton(0));
 			sl.Children.Add(new TestButton(5));
 			sl.Children.Add(new TestButton(10));
 			sl.Children.Add(new TestButton(20));
