@@ -17,7 +17,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty HasShadowProperty = BindableProperty.Create("HasShadow", typeof(bool), typeof(Frame), true);
 
 		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(nameof(CornerRadius), typeof(float), typeof(Frame), -1.0f,
-									validateValue: (bindable, value) => ((float)value) == -1.0f || ((float)value) >= 0f);
+									validateValue: (bindable, value) => ((float)value) == -1.0f || ((float)value) >= 0f, propertyChanged: OnCornerRadiusChanged);
 
 		readonly Lazy<PlatformConfigurationRegistry<Frame>> _platformConfigurationRegistry;
 
@@ -87,5 +87,11 @@ namespace Xamarin.Forms
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
 
 		bool IBorderElement.IsBorderWidthSet() => false;
+
+		static void OnCornerRadiusChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (bindable is Frame frame)
+				frame.IsClippedToBounds |= (float)newValue > 0f;
+		}
 	}
 }
