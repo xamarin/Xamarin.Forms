@@ -34,7 +34,8 @@ namespace Xamarin.Forms.Controls
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
 
-			SetMainPage(CreateDefaultMainPage());
+			// SetMainPage(CreateDefaultMainPage());
+			MainPage = new MyPage1();
 
 			//TestMainPageSwitches();
 

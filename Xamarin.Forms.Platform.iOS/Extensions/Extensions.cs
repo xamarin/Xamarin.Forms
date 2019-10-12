@@ -1,4 +1,5 @@
 using Foundation;
+using ObjCRuntime;
 using System;
 using UIKit;
 using Xamarin.Forms.Internals;
@@ -9,7 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public static void ApplyKeyboard(this IUITextInput textInput, Keyboard keyboard)
 		{
-			if(textInput is IUITextInputTraits traits)
+			if (textInput is IUITextInputTraits traits)
 				ApplyKeyboard(traits, keyboard);
 		}
 
@@ -180,5 +181,60 @@ namespace Xamarin.Forms.Platform.iOS
 		internal static bool IsHorizontal(this Button.ButtonContentLayout layout) =>
 			layout.Position == Button.ButtonContentLayout.ImagePosition.Left ||
 			layout.Position == Button.ButtonContentLayout.ImagePosition.Right;
+
+		internal static void UpdateLineBreakMode(this INativeObject nativeObject, LineBreakMode lineBreakMode)
+		{
+			if (nativeObject == null)
+				return;
+
+			if (nativeObject is UILabel control)
+			{
+#if __MOBILE__
+				switch (lineBreakMode)
+				{
+					case LineBreakMode.NoWrap:
+						control.LineBreakMode = UILineBreakMode.Clip;
+						break;
+					case LineBreakMode.WordWrap:
+						control.LineBreakMode = UILineBreakMode.WordWrap;
+						break;
+					case LineBreakMode.CharacterWrap:
+						control.LineBreakMode = UILineBreakMode.CharacterWrap;
+						break;
+					case LineBreakMode.HeadTruncation:
+						control.LineBreakMode = UILineBreakMode.HeadTruncation;
+						break;
+					case LineBreakMode.MiddleTruncation:
+						control.LineBreakMode = UILineBreakMode.MiddleTruncation;
+						break;
+					case LineBreakMode.TailTruncation:
+						control.LineBreakMode = UILineBreakMode.TailTruncation;
+						break;
+				}
+#else
+			switch (Element.LineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					Control.LineBreakMode = NSLineBreakMode.Clipping;
+					break;
+				case LineBreakMode.WordWrap:
+					Control.LineBreakMode = NSLineBreakMode.ByWordWrapping;
+					break;
+				case LineBreakMode.CharacterWrap:
+					Control.LineBreakMode = NSLineBreakMode.CharWrapping;
+					break;
+				case LineBreakMode.HeadTruncation:
+					Control.LineBreakMode = NSLineBreakMode.TruncatingHead;
+					break;
+				case LineBreakMode.MiddleTruncation:
+					Control.LineBreakMode = NSLineBreakMode.TruncatingMiddle;
+					break;
+				case LineBreakMode.TailTruncation:
+					Control.LineBreakMode = NSLineBreakMode.TruncatingTail;
+					break;
+			}
+#endif
+			}
+		}
 	}
 }

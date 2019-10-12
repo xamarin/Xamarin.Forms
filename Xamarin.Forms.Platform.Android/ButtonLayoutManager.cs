@@ -173,8 +173,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-
-
 		public void Update()
 		{
 			if (!UpdateTextAndImage())
