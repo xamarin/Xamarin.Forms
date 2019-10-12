@@ -30,6 +30,9 @@ namespace Xamarin.Forms.Controls.Issues
 		const string EntryTest = nameof(EntryTest);
 		const string EntryToClick = "EntryToClick";
 		const string EntryToClick2 = "EntryToClick2";
+		const string CreateTopTabButton = "CreateTopTabButton";
+		const string CreateBottomTabButton = "CreateBottomTabButton";
+		const string ChangeShellColorButton = "ChangeShellBackgroundColorButton";
 		const string EntrySuccess = "EntrySuccess";
 		const string ResetKeyboard = "Hide Keyboard";
 		const string Reset = "Reset";
@@ -147,7 +150,7 @@ namespace Xamarin.Forms.Controls.Issues
 			PropertyChangedEventHandler propertyChangedEventHandler = null;
 			propertyChangedEventHandler = (sender, args) =>
 			{
-				if(args.PropertyName == PlatformConfiguration.iOSSpecific.Page.SafeAreaInsetsProperty.PropertyName)
+				if (args.PropertyName == PlatformConfiguration.iOSSpecific.Page.SafeAreaInsetsProperty.PropertyName)
 				{
 					if (page.On<iOS>().SafeAreaInsets().Top > 0)
 					{
@@ -257,6 +260,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		View CreateEntryInsetView()
 		{
+			var random = new Random();
 			ScrollView view = null;
 			view = new ScrollView()
 			{
@@ -286,8 +290,25 @@ namespace Xamarin.Forms.Controls.Issues
 								Text = ResetKeyboard
 
 							},
-							new Button(){ Text = "Top Tab", Command = new Command(() => AddTopTab("top"))},
-							new Button(){ Text = "Bottom Tab", Command = new Command(() => AddBottomTab("bottom"))},
+							new Button()
+							{
+								Text = "Top Tab",
+								AutomationId = CreateTopTabButton,
+								Command = new Command(() => AddTopTab("top"))
+							},
+							new Button()
+							{
+								Text = "Bottom Tab",
+								AutomationId = CreateBottomTabButton,
+								Command = new Command(() => AddBottomTab("bottom", "coffee.png"))
+							},
+							new Button()
+							{
+								Text = "Random Shell Background Color",
+								AutomationId = ChangeShellColorButton,
+								Command = new Command(() =>
+									Shell.SetBackgroundColor(this, Color.FromRgb(random.Next(0,255), random.Next(0,255), random.Next(0,255))))
+							},
 							new Entry()
 							{
 								AutomationId = EntryToClick2
@@ -391,6 +412,22 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.AreEqual(1, somePadding.Length);
 
 			Assert.Greater(somePadding[0].Rect.Y, zeroPadding[0].Rect.Y);
+		}
+		
+#endif
+
+#if UITEST && __ANDROID__
+
+		[Test]
+		public void BottomTabColorTest()
+		{
+			//7396 Issue | Shell: Setting Shell.BackgroundColor overrides all colors of TabBar
+			RunningApp.Tap(EntryTest);
+			RunningApp.WaitForElement(EntrySuccess);
+			RunningApp.Tap(CreateBottomTabButton);
+			RunningApp.Tap(ChangeShellColorButton);
+			RunningApp.Screenshot("I should see a bottom tabbar icon");
+			Assert.Inconclusive("Check that bottom tabbar icon is visible");
 		}
 #endif
 	}
