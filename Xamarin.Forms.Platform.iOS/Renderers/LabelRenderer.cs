@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class LabelRenderer : ViewRenderer<Label, NativeLabel>
 	{
+		const int DefaultMinimunScaleFactor = 16;
 		SizeRequest _perfectSize;
 
 		bool _perfectSizeValid;
@@ -181,6 +182,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
+				UpdateAutoFitMode();
 			}
 
 			base.OnElementChanged(e);
@@ -227,6 +229,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateText();
 			else if (e.PropertyName == Label.TextTransformProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.AutoFitProperty.PropertyName)
+				UpdateAutoFitMode();
 		}
 
 		protected override NativeLabel CreateNativeControl()
@@ -409,6 +413,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
+
+			_perfectSizeValid = false;
 #else
    			var textAttr = Control.AttributedStringValue.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
@@ -421,10 +427,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-            if (IsElementOrControlEmpty)
-                return;
+			if (IsElementOrControlEmpty)
+				return;
 
-            switch (Element.TextType)
+			switch (Element.TextType)
 			{
 				case TextType.Html:
 					UpdateTextHtml();
@@ -666,7 +672,16 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+		void UpdateAutoFitMode()
+		{
 #if __MOBILE__
+			Control.AdjustsFontSizeToFitWidth = Element.AutoFit;
+			Control.MinimumScaleFactor = Element.AutoFit ? DefaultMinimunScaleFactor : 0;
+#endif
+		}
+
+#if __MOBILE__
+
 		class FormsLabel : NativeLabel
 		{
 			public UIEdgeInsets TextInsets { get; set; }

@@ -3,6 +3,8 @@ using Android.Text;
 using Android.Widget;
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+using Android.Support.V4.Widget;
+using Android.Util;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -149,6 +151,25 @@ namespace Xamarin.Forms.Platform.Android
 					yaxis += totalLineHeights[line];
 
 				((ISpatialElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis).Inflate(10);
+			}
+		}
+
+		public static void SetAutoFitMode(this TextView textView, Label label)
+		{
+			if ((int)Forms.SdkInt >= 14)
+			{
+				TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView,
+					label.AutoFit ? (int)AutoSizeTextType.Uniform : (int)AutoSizeTextType.None);
+			}
+
+			if (!label.AutoFit)
+			{
+#pragma warning disable 618 // We will need to update this when .Font goes away
+				var f = label.Font;
+#pragma warning restore 618
+
+				var newTextSize = f.ToScaledPixel();
+				textView.SetTextSize(ComplexUnitType.Sp, newTextSize);
 			}
 		}
 	}

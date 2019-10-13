@@ -140,6 +140,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
+			UpdateAutoFitMode();
+
 			_motionEventHelper.UpdateElement(e.NewElement);
 		}
 
@@ -174,6 +176,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePadding();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
+			else if (e.PropertyName == Label.AutoFitProperty.PropertyName)
+				UpdateAutoFitMode();
 		}
 
 		void UpdateFlowDirection()
@@ -247,6 +251,7 @@ namespace Xamarin.Forms.Platform.Android
 			_view.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
 		}
+
 		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer && Control is TextView textControl)
@@ -324,6 +329,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			_lastSizeRequest = null;
 		}
+
+		void UpdateAutoFitMode() =>
+			Control.SetAutoFitMode(Element);
 
 		public override bool OnTouchEvent(MotionEvent e)
 		{

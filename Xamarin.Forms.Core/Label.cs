@@ -101,9 +101,11 @@ namespace Xamarin.Forms
 			});
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
-		
+
 		public static readonly BindableProperty TextTypeProperty = BindableProperty.Create(nameof(TextType), typeof(TextType), typeof(Label), TextType.Text,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
+
+		public static readonly BindableProperty AutoFitProperty = BindableProperty.Create(nameof(AutoFit), typeof(bool), typeof(Label), false);
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
@@ -138,7 +140,7 @@ namespace Xamarin.Forms
 			get { return (TextAlignment)GetValue(TextAlignmentElement.HorizontalTextAlignmentProperty); }
 			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
 		}
-		
+
 		public LineBreakMode LineBreakMode
 		{
 			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
@@ -156,13 +158,13 @@ namespace Xamarin.Forms
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
-		
+
 		public double CharacterSpacing
 		{
 			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
 			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
-		
+
 		public TextAlignment VerticalTextAlignment
 		{
 			get { return (TextAlignment)GetValue(VerticalTextAlignmentProperty); }
@@ -227,11 +229,17 @@ namespace Xamarin.Forms
 			get { return (Thickness)GetValue(PaddingProperty); }
 			set { SetValue(PaddingProperty, value); }
 		}
-		
+
 		public TextType TextType
 		{
 			get => (TextType)GetValue(TextTypeProperty);
 			set => SetValue(TextTypeProperty, value);
+		}
+
+		public bool AutoFit
+		{
+			get => (bool)GetValue(AutoFitProperty);
+			set => SetValue(AutoFitProperty, value);
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>

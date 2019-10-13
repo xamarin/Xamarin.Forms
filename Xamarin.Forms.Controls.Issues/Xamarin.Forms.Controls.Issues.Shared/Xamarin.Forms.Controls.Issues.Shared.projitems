@@ -146,6 +146,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7181.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5367.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6878.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7176.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7253.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7581.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7361.cs" />
