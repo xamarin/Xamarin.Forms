@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string PageContentAutomatedId = nameof(PageContentAutomatedId);
 		const string ListViewAutomatedId = nameof(ListViewAutomatedId);
 		const string SelectionClearedText = "Cleared";
-		const string ClearSelectionItem = "CLEARED SELECTION";
+		const string ClearSelectionItem = "CLEAR SELECTION";
 
 		protected override void Init()
 		{
