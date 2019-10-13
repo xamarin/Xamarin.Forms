@@ -99,6 +99,8 @@
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="CacheService.cs" />
     <Compile Include="DrawableExtensions.cs" />
+    <Compile Include="ChangeDensityButtonRenderer.cs" />
+    <Compile Include="DensityLabelRenderer.cs" />
     <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="DisposeLabelRenderer.cs" />
     <Compile Include="DisposePageRenderer.cs" />

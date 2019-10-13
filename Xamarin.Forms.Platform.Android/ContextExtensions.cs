@@ -86,9 +86,6 @@ namespace Xamarin.Forms.Platform.Android
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		static void SetupMetrics(Context context)
 		{
-			if (s_displayDensity != float.MinValue)
-				return;
-
 			using (DisplayMetrics metrics = context.Resources.DisplayMetrics)
 				s_displayDensity = metrics.Density;
 		}

@@ -97,6 +97,9 @@ namespace Xamarin.UITest
 		public static TResult[] InvokeFromElement<TResult>(this IApp app, string element, string methodName) =>
 			app.Query(c => c.Marked(element).Invoke(methodName).Value<TResult>());
 
+		public static float GetScreenDensity(this IApp app, string apiLabelId = "DensityLabel") =>
+			Convert.ToSingle(app.WaitForElement(apiLabelId)[0].ReadText().Replace(",", "."));
+
 #if __IOS__
 		public static void SendAppToBackground(this IApp app, TimeSpan timeSpan)
 		{
