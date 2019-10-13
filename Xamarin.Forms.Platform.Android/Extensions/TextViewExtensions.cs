@@ -156,11 +156,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static void SetAutoFitMode(this TextView textView, Label label)
 		{
-			if ((int)Forms.SdkInt >= 14)
-			{
-				TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView,
-					label.AutoFit ? (int)AutoSizeTextType.Uniform : (int)AutoSizeTextType.None);
-			}
+			if ((int)Forms.SdkInt < 14)
+				return;
+
+			TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView,
+				label.AutoFit ? (int)AutoSizeTextType.Uniform : (int)AutoSizeTextType.None);
 
 			if (!label.AutoFit)
 			{

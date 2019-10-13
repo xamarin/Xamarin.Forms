@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				AutomationId = AutoFitLabel,
 				AutoFit = true,
-				Text = "Wellcome to xamarin forms!!",
+				Text = "Welcome to xamarin forms!!",
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				BackgroundColor = Color.LightBlue
