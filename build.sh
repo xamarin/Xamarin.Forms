@@ -14,13 +14,14 @@ CAKE_EXE=$TOOLS_DIR/Cake/Cake.exe
 PACKAGES_CONFIG=$TOOLS_DIR/packages.config
 PACKAGES_CONFIG_MD5=$TOOLS_DIR/packages.config.md5sum
 
-# Define md5sum or md5 depending on Linux/OSX
+# Define md5sum or md5 depending on Linux/OSX/windows
 MD5_EXE=
 if [[ "$(uname -s)" == "Darwin" ]]; then
     MD5_EXE="md5 -r"
 else
     MD5_EXE="md5sum"
 fi
+
 
 # Define default arguments.
 SCRIPT="build.cake"
