@@ -21,11 +21,27 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.iOS)]
 	public class Issue7700 : TestTabbedPage
 	{
-		ObservableCollection<string> _source = new ObservableCollection<string>(){ "one", "two", "three" };
+		readonly ObservableCollection<string> _source = new ObservableCollection<string>(){ "one", "two", "three" };
+		readonly ObservableCollection<Group> _groupedSource = new ObservableCollection<Group>();
 
-		const string Add = "Add";
+		[Preserve(AllMembers = true)]
+		class Group : List<string>
+		{
+			public string Text { get; set; }
+
+			public Group()
+			{
+				Add("Uno");
+				Add("Dos");
+				Add("Tres");
+			}
+		}
+
+		const string Add1 = "Add1";
+		const string Add2 = "Add2";
 		const string Success = "Success";
 		const string Tab2 = "Tab2";
+		const string Tab3 = "Tab3";
 
 		protected override void Init()
 		{
@@ -34,6 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Children.Add(FirstPage());
 			Children.Add(CollectionViewPage());
+			Children.Add(GroupedCollectionViewPage());
 #endif
 		}
 
@@ -41,33 +58,80 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var page = new ContentPage() { Title = "7700 First Page", Padding = 40 };
 
-			var button = new Button() { Text = Add, AutomationId = Add };
+			var button1 = new Button() { Text = "Add to List", AutomationId = Add1 };
+			button1.Clicked += Button1Clicked;
 
-			button.Clicked += AddButtonClicked;
+			var button2 = new Button() { Text = "Add to Grouped List", AutomationId = Add2 };
+			button2.Clicked += Button2Clicked;
 
-			page.Content = button;
+			var layout = new StackLayout { Children = { button1, button2 } };
+
+			page.Content = layout;
 
 			return page;
 		}
 
-		private void AddButtonClicked(object sender, EventArgs e)
+		void Button1Clicked(object sender, EventArgs e)
 		{
 			_source.Insert(0, Success);
 		}
 
+		void Button2Clicked(object sender, EventArgs e)
+		{
+			_groupedSource.Insert(0, new Group() { Text = Success });
+		}
+
 		ContentPage CollectionViewPage()
 		{
-			var cv = new CollectionView();
+			var cv = new CollectionView
+			{
+				ItemTemplate = new DataTemplate(() =>
+				{
+					var label = new Label();
+					label.SetBinding(Label.TextProperty, new Binding("."));
+					return label;
+				}),
 
-			cv.ItemTemplate = new DataTemplate(() => {
-				var label = new Label();
-				label.SetBinding(Label.TextProperty, new Binding("."));
-				return label;
-			});
-
-			cv.ItemsSource = _source;
+				ItemsSource = _source
+			};
 
 			var page = new ContentPage() { Title = Tab2, Padding = 40 };
+
+			page.Content = cv;
+
+			return page;
+		}
+
+		ContentPage GroupedCollectionViewPage()
+		{
+			var cv = new CollectionView
+			{
+				ItemTemplate = new DataTemplate(() =>
+				{
+					var label = new Label();
+					label.SetBinding(Label.TextProperty, new Binding("."));
+					return label;
+				}),
+
+				GroupHeaderTemplate = new DataTemplate(() =>
+				{
+					var label = new Label();
+					label.SetBinding(Label.TextProperty, new Binding("Text"));
+					return label;
+				}),
+
+				GroupFooterTemplate = new DataTemplate(() =>
+				{
+					var label = new Label();
+					label.SetBinding(Label.TextProperty, new Binding("Text"));
+					return label;
+				}),
+
+				ItemsSource = _groupedSource,
+				IsGrouped = true
+			};
+
+			var page = new ContentPage() { Title = Tab3, Padding = 40 };
 
 			page.Content = cv;
 
@@ -78,9 +142,19 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void AddingItemToUnviewedCollectionViewShouldNotCrash()
 		{
-			RunningApp.WaitForElement(Add);
-			RunningApp.Tap(Add);	
+			RunningApp.WaitForElement(Add1);
+			RunningApp.Tap(Add1);	
 			RunningApp.Tap(Tab2);		
+
+			RunningApp.WaitForElement(Success);
+		}
+
+		[Test]
+		public void AddingGroupToUnviewedGroupedCollectionViewShouldNotCrash()
+		{
+			RunningApp.WaitForElement(Add2);
+			RunningApp.Tap(Add2);
+			RunningApp.Tap(Tab3);
 
 			RunningApp.WaitForElement(Success);
 		}
