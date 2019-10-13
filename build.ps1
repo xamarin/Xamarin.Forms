@@ -4,8 +4,8 @@
 # Feel free to change this file to fit your needs.
 ##########################################################################
 
-<#
 
+<#
 .SYNOPSIS
 This is a Powershell script to bootstrap a Cake build.
 
@@ -232,3 +232,5 @@ $cakeArguments += $ScriptArgs
 Write-Host "Running build script..."
 &$CAKE_EXE $cakeArguments
 exit $LASTEXITCODE
+
+### licence 
