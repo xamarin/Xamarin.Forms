@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			textView.SetSingleLine(singleLine);
-			textView.SetMaxLines(label, maxLines);
+			textView.SetMaxLines(maxLines);
 		}
 
 		public static void RecalculateSpanPositions(this TextView textView, Label element, SpannableString spannableString, SizeRequest finalSize)
