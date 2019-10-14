@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 
-		private void SetCornerRadius(CornerRadius cornerRadius)
+		void SetCornerRadius(CornerRadius cornerRadius)
 		{
 			Control.CornerRadius = new Windows.UI.Xaml.CornerRadius(cornerRadius.TopLeft, cornerRadius.TopRight, cornerRadius.BottomRight, cornerRadius.BottomLeft);
 		}
