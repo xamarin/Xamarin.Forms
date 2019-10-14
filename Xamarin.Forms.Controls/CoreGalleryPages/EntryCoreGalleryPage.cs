@@ -119,9 +119,9 @@ namespace Xamarin.Forms.Controls
 			var label = new Label();
 			entry.Focused += (s, e) => label.Text = "focused";
 			entry.Unfocused += (s, e) => label.Text = "unfocused";
-			entry.SetBinding(Entry.IsFocusedRequestProperty, nameof(EntryViewModel.EntryIsFocusedRequest));
+			entry.SetBinding(Entry.IsFocusedProperty, nameof(EntryViewModel.IsFocused));
 			var focusedBtn = new Button { Text = "Change focus" };
-			focusedBtn.Clicked += (s, e) => model.EntryIsFocusedRequest = !model.EntryIsFocusedRequest;
+			focusedBtn.Clicked += (s, e) => model.IsFocused = !model.IsFocused;
 			var focusedContainer = new ViewContainer<Entry>(Test.VisualElement.FocusedRequest, entry);
 			focusedContainer.ContainerLayout.Children.Add(label);
 			focusedContainer.ContainerLayout.Children.Add(focusedBtn);
@@ -166,15 +166,15 @@ namespace Xamarin.Forms.Controls
 		{
 			public event PropertyChangedEventHandler PropertyChanged;
 
-			bool _entryIsFocusedRequest;
+			bool _isFocused;
 
-			public bool EntryIsFocusedRequest
+			public bool IsFocused
 			{
-				get => _entryIsFocusedRequest;
+				get => _isFocused;
 				set
 				{
-					_entryIsFocusedRequest = value;
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EntryIsFocusedRequest)));
+					_isFocused = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsFocused)));
 				}
 			}
 

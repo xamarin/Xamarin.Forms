@@ -183,11 +183,10 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocused",
-			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedPropertyChanged);
+			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedKeyPropertyChanged);
 
-		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
-
-		public static readonly BindableProperty IsFocusedRequestProperty = BindableProperty.Create("IsFocusedRequest", typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnFocusedRequestChanged);
+		public static readonly BindableProperty IsFocusedProperty = BindableProperty.Create("IsFocused", typeof(bool), typeof(VisualElement), default(bool), /*propertyChanged: OnIsFocusedKeyPropertyChanged, */
+			propertyChanging: OnIsFocusedPropertyChanging, defaultBindingMode: BindingMode.TwoWay);
 
 		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
 
@@ -338,12 +337,7 @@ namespace Xamarin.Forms
 		public bool IsFocused
 		{
 			get { return (bool)GetValue(IsFocusedProperty); }
-		}
-		
-		public bool IsFocusedRequest
-		{
-			get { return (bool)GetValue(IsFocusedRequestProperty); }
-			set { SetValue(IsFocusedRequestProperty, value); }
+			set { SetValue(IsFocusedProperty, value); }
 		}
 
 		[TypeConverter(typeof(VisibilityConverter))]
@@ -731,11 +725,7 @@ namespace Xamarin.Forms
 			if (!IsFocused)
 				return;
 
-			EventHandler<FocusRequestArgs> unfocus = FocusChangeRequested;
-			if (unfocus != null)
-			{
-				unfocus(this, new FocusRequestArgs());
-			}
+			FocusChangeRequested?.Invoke(this, new FocusRequestArgs());
 		}
 
 		public event EventHandler<FocusEventArgs> Unfocused;
@@ -900,9 +890,7 @@ namespace Xamarin.Forms
 
 		void OnFocused()
 		{
-			EventHandler<FocusEventArgs> focus = Focused;
-			if (focus != null)
-				focus(this, new FocusEventArgs(this, true));
+			Focused?.Invoke(this, new FocusEventArgs(this, true));
 		}
 
 		internal void ChangeVisualStateInternal() => ChangeVisualState();
@@ -966,7 +954,7 @@ namespace Xamarin.Forms
 			element.ChangeVisualState();
 		}
 
-		static void OnIsFocusedPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+		static void OnIsFocusedKeyPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			var element = (VisualElement)bindable;
 
@@ -975,7 +963,13 @@ namespace Xamarin.Forms
 				return;
 			}
 
+			var old = (bool)oldvalue;
 			var isFocused = (bool)newvalue;
+			if (old == isFocused)
+			{
+				return;
+			}
+
 			if (isFocused)
 			{
 				element.OnFocused();
@@ -985,10 +979,15 @@ namespace Xamarin.Forms
 				element.OnUnfocus();
 			}
 
+			if (element.IsFocused != isFocused)
+			{
+				element.IsFocused = isFocused;
+			}
+			
 			element.ChangeVisualState();
 		}
 		
-		static void OnFocusedRequestChanged(BindableObject bindable, object oldvalue, object newvalue)
+		static void OnIsFocusedPropertyChanging(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			var element = (VisualElement)bindable;
 
@@ -997,7 +996,13 @@ namespace Xamarin.Forms
 				return;
 			}
 
+			var old = (bool)oldvalue;
 			var isFocused = (bool)newvalue;
+			if(old == isFocused || element.IsFocused == isFocused)
+			{
+				return;
+			}
+
 			if (isFocused)
 			{
 				element.Focus();
@@ -1027,9 +1032,7 @@ namespace Xamarin.Forms
 
 		void OnUnfocus()
 		{
-			EventHandler<FocusEventArgs> unFocus = Unfocused;
-			if (unFocus != null)
-				unFocus(this, new FocusEventArgs(this, false));
+			Unfocused?.Invoke(this, new FocusEventArgs(this, false));
 		}
 
 		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
