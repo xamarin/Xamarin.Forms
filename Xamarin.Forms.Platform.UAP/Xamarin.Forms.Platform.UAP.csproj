@@ -13,6 +13,7 @@
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
+    <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>		
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -40,8 +41,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AccessibilityExtensions.cs" />
+    <Compile Include="CollectionView\CarouselViewRenderer.cs" />
+    <Compile Include="CollectionView\FormsListView.cs" />
+    <Compile Include="CollectionView\IEmptyView.cs" />
     <Compile Include="CollectionView\ItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\ItemTemplateContextList.cs" />
+    <Compile Include="CollectionView\ScrollHelpers.cs" />
     <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\StructuredItemsViewRenderer.cs" />
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="DispatcherProvider.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
@@ -72,12 +79,13 @@
     <Compile Include="ITitleIconProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
     <Compile Include="CollectionView\FormsGridView.cs" />
-    <Compile Include="CollectionView\ItemTemplateEnumerator.cs" />
+    <Compile Include="CollectionView\ItemTemplateContextEnumerable.cs" />
     <Compile Include="CollectionView\ItemTemplateContext.cs" />
     <Compile Include="ITitleProvider.cs" />
     <Compile Include="ITitleViewRendererController.cs" />
     <Compile Include="IToolbarProvider.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
+    <Compile Include="LabelHtmlHelper.cs" />
     <Compile Include="NativeBindingExtensions.cs" />
     <Compile Include="NativeEventWrapper.cs" />
     <Compile Include="NativePropertyListener.cs" />
@@ -87,6 +95,13 @@
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PropertyChangedEventArgsExtensions.cs" />
+    <Compile Include="RefreshViewRenderer.cs" />
+    <Compile Include="Shell\ShellHeaderRenderer.cs" />
+    <Compile Include="Shell\ShellItemRenderer.cs" />
+    <Compile Include="Shell\ShellFlyoutTemplateSelector.cs" />
+    <Compile Include="Shell\ShellRenderer.cs" />
+    <Compile Include="Shell\ShellSectionRenderer.cs" />
+    <Compile Include="Shell\ShellToolbarItemRenderer.cs" />
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
@@ -235,6 +250,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Shell\ShellStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="SliderStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -266,6 +285,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.UI.Xaml">
+      <Version>2.1.190606001</Version>
     </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.1</Version>

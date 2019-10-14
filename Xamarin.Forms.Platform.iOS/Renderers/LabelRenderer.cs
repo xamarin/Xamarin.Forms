@@ -39,7 +39,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			Label.FormattedTextProperty.PropertyName,
 			Label.LineBreakModeProperty.PropertyName,
 			Label.LineHeightProperty.PropertyName,
-			Label.PaddingProperty.PropertyName
+			Label.PaddingProperty.PropertyName,
+			Label.TextTypeProperty.PropertyName
 		};
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -216,8 +217,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
+				UpdateText();
 		}
-
 
 		protected override NativeLabel CreateNativeControl()
 		{
@@ -236,6 +238,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextDecorations()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
+			if (Element?.TextType != TextType.Text)
+				return;
+
 			if (!Element.IsSet(Label.TextDecorationsProperty))
 				return;
 
@@ -275,6 +283,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			Control.AttributedStringValue = newAttributedText;
 #endif
+			_perfectSizeValid = false;
 		}
 
 #if __MOBILE__
@@ -327,15 +336,39 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateCharacterSpacing()
 		{
 #if __MOBILE__
+			if (IsElementOrControlEmpty)
+				return;
+
+			if (Element?.TextType != TextType.Text)
+				return;
 
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
+				
+			_perfectSizeValid = false;
 #endif
 		}
 
 		void UpdateText()
+		{
+            if (IsElementOrControlEmpty)
+                return;
+
+            switch (Element.TextType)
+			{
+				case TextType.Html:
+					UpdateTextHtml();
+					break;
+
+				default:
+					UpdateTextPlainText();
+					break;
+			}
+		}
+
+		void UpdateTextPlainText()
 		{
 			_formatted = Element.FormattedText;
 			if (_formatted == null && Element.LineHeight >= 0)
@@ -363,10 +396,42 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #endif
+			_perfectSizeValid = false;
+		}
+
+		void UpdateTextHtml()
+		{
+			string text = Element.Text ?? string.Empty;
+
+#if __MOBILE__
+			var attr = new NSAttributedStringDocumentAttributes
+			{
+				DocumentType = NSDocumentType.HTML
+			};
+
+			NSError nsError = null;
+
+			Control.AttributedText = new NSAttributedString(text, attr, ref nsError);
+
+#else
+			var attr = new NSAttributedStringDocumentAttributes
+			{
+				DocumentType = NSDocumentType.HTML
+			};
+
+			var htmlData = new NSMutableData();
+			htmlData.SetData(text);
+
+			Control.AttributedStringValue = new NSAttributedString(htmlData, attr, out _);
+#endif
+			_perfectSizeValid = false;
 		}
 
 		void UpdateFont()
 		{
+			if (Element?.TextType != TextType.Text)
+				return;
+
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
@@ -383,6 +448,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
+			if (Element?.TextType != TextType.Text)
+				return;
+
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
