@@ -185,7 +185,7 @@ namespace Xamarin.Forms
 		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocused",
 			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedKeyPropertyChanged);
 
-		public static readonly BindableProperty IsFocusedProperty = BindableProperty.Create("IsFocused", typeof(bool), typeof(VisualElement), default(bool), /*propertyChanged: OnIsFocusedKeyPropertyChanged, */
+		public static readonly BindableProperty IsFocusedProperty = BindableProperty.Create("IsFocused", typeof(bool), typeof(VisualElement), default(bool),
 			propertyChanging: OnIsFocusedPropertyChanging, defaultBindingMode: BindingMode.TwoWay);
 
 		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
