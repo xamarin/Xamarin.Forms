@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = stack;
 		}
 
-		private void Entry_Focused(object sender, FocusEventArgs e)
+		void Entry_Focused(object sender, FocusEventArgs e)
 		{
 			var entry = sender as Entry;
 			entry.Placeholder = "After focus";
