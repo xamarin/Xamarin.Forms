@@ -80,6 +80,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control.ContentMode = imageElement.Aspect.ToUIViewContentMode();
 #else
 			Control.Layer.ContentsGravity = imageElement.Aspect.ToNSViewContentMode();
+
+			switch (imageElement.Aspect)
+			{
+
+				case Aspect.AspectFill:
+					// TODO: There is no AspectFill...
+
+					break;
+				case Aspect.AspectFit:
+					Control.ImageScaling = NSImageScale.ProportionallyDown;
+					break;
+				case Aspect.Fill:
+					Control.ImageScaling = NSImageScale.AxesIndependently;
+					break;
+			}
 #endif
 		}
 
