@@ -70,6 +70,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateItemsUpdatingScrollMode();
 			}
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.AreItemAnimationsEnabledProperty))
+			{
+				UpdateAreItemAnimationsEnabled();
+			}
 		}
 
 		protected abstract ItemsViewLayout SelectLayout();
@@ -100,6 +104,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Controller.CollectionView.BackgroundColor = UIColor.Clear;
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
+			UpdateAreItemAnimationsEnabled();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -128,6 +133,14 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void UpdateItemsSource()
 		{
 			Controller.UpdateItemsSource();
+		}
+
+		protected virtual void UpdateAreItemAnimationsEnabled()
+		{
+			if (Controller.ItemsSource is ObservableItemsSource observableItemsSource)
+				observableItemsSource.ShouldAnimateCollectionChange = ItemsView.AreItemAnimationsEnabled;
+			else if (Controller.ItemsSource is ObservableGroupedSource observableGroupedSource)
+				observableGroupedSource.ShouldAnimateCollectionChange = ItemsView.AreItemAnimationsEnabled;
 		}
 
 		protected abstract TViewController CreateController(TItemsView newElement, ItemsViewLayout layout);

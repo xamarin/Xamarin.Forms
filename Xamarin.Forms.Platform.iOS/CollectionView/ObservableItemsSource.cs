@@ -88,34 +88,45 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public bool ShouldAnimateCollectionChange { get; set; } = true;
+
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			switch (args.Action)
+			var action = new Action(() =>
 			{
-				case NotifyCollectionChangedAction.Add:
-					Add(args);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					Move(args);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					Reload();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
+				switch (args.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						Add(args);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						Remove(args);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						Replace(args);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						Move(args);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						Reload();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			});
 
-		void Reload()
-		{
-			_collectionView.ReloadData();
-			_collectionView.CollectionViewLayout.InvalidateLayout();
+			if (ShouldAnimateCollectionChange)
+			{
+				action();
+			}
+			else
+			{
+				UIView.PerformWithoutAnimation(() =>
+				{
+					action();
+				});
+			}
 		}
 
 		NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
@@ -215,6 +226,12 @@ namespace Xamarin.Forms.Platform.iOS
 			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
 			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
 			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
+		}
+
+		void Reload()
+		{
+			_collectionView.ReloadData();
+			_collectionView.CollectionViewLayout.InvalidateLayout();
 		}
 	}
 }
