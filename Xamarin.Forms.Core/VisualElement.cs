@@ -90,8 +90,8 @@ namespace Xamarin.Forms
 
 		static void OnTransformChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-            if ((string)newValue == "none") {
-                bindable.ClearValue(TranslationXProperty);
+			if ((string)newValue == "none") {
+				bindable.ClearValue(TranslationXProperty);
 				bindable.ClearValue(TranslationYProperty);
 				bindable.ClearValue(RotationProperty);
 				bindable.ClearValue(RotationXProperty);
@@ -186,6 +186,8 @@ namespace Xamarin.Forms
 			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedPropertyChanged);
 
 		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
+
+		public static readonly BindableProperty IsFocusedRequestProperty = BindableProperty.Create("IsFocusedRequest", typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnFocusedRequestChanged);
 
 		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
 
@@ -336,6 +338,12 @@ namespace Xamarin.Forms
 		public bool IsFocused
 		{
 			get { return (bool)GetValue(IsFocusedProperty); }
+		}
+		
+		public bool IsFocusedRequest
+		{
+			get { return (bool)GetValue(IsFocusedRequestProperty); }
+			set { SetValue(IsFocusedRequestProperty, value); }
 		}
 
 		[TypeConverter(typeof(VisibilityConverter))]
@@ -978,6 +986,26 @@ namespace Xamarin.Forms
 			}
 
 			element.ChangeVisualState();
+		}
+		
+		static void OnFocusedRequestChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			var element = (VisualElement)bindable;
+
+			if (element == null)
+			{
+				return;
+			}
+
+			var isFocused = (bool)newvalue;
+			if (isFocused)
+			{
+				element.Focus();
+			}
+			else
+			{
+				element.Unfocus();
+			}
 		}
 
 		static void OnRequestChanged(BindableObject bindable, object oldvalue, object newvalue)

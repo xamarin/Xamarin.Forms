@@ -260,6 +260,7 @@ namespace Xamarin.Forms.CustomAttributes
 			Unfocus,
 			Focused,
 			Unfocused,
+			FocusedRequest,
 			Default
 		}
 

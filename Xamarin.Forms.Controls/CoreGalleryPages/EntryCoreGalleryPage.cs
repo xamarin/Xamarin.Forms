@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls
@@ -112,6 +114,18 @@ namespace Xamarin.Forms.Controls
 				clearBtnModelContainer.View.ClearButtonVisibility = clearBtnModelContainer.View.ClearButtonVisibility == ClearButtonVisibility.Never ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never;
 			clearBtnModelContainer.ContainerLayout.Children.Add(switchClearBtnVisibilityBtn);
 
+			var model = new EntryViewModel();
+			var entry = new Entry { MaxLength = 3, BindingContext = model };
+			var label = new Label();
+			entry.Focused += (s, e) => label.Text = "focused";
+			entry.Unfocused += (s, e) => label.Text = "unfocused";
+			entry.SetBinding(Entry.IsFocusedRequestProperty, nameof(EntryViewModel.EntryIsFocusedRequest));
+			var focusedBtn = new Button { Text = "Change focus" };
+			focusedBtn.Clicked += (s, e) => model.EntryIsFocusedRequest = !model.EntryIsFocusedRequest;
+			var focusedContainer = new ViewContainer<Entry>(Test.VisualElement.FocusedRequest, entry);
+			focusedContainer.ContainerLayout.Children.Add(label);
+			focusedContainer.ContainerLayout.Children.Add(focusedBtn);
+
 			Add (isPasswordContainer);
 			Add (completedContainer);
 			Add (placeholderContainer);
@@ -145,6 +159,26 @@ namespace Xamarin.Forms.Controls
 			Add (readOnlyContainer);
 			Add (isPasswordInputScopeContainer);
 			Add (clearBtnModelContainer);
+			Add (focusedContainer);
+		}
+
+		class EntryViewModel : INotifyPropertyChanged
+		{
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			bool _entryIsFocusedRequest;
+
+			public bool EntryIsFocusedRequest
+			{
+				get => _entryIsFocusedRequest;
+				set
+				{
+					_entryIsFocusedRequest = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EntryIsFocusedRequest)));
+				}
+			}
+
+
 		}
 	}
 }
