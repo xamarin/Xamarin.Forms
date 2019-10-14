@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					// A TabbedPage has no background. See Github6384.
 					bool isInShell = page.Parent is BaseShellItem
-					|| (page.Parent is TabbedPage && page.Parent.Parent is BaseShellItem);
+					|| (page.Parent is TabbedPage && page.Parent?.Parent is BaseShellItem);
 					if (isInShell && isDefaultBkgndColor)
 					{
 						var color = Forms.IsMarshmallowOrNewer ?
