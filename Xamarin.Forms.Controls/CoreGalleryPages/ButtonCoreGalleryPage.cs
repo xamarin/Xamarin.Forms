@@ -107,6 +107,15 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
+			var disabledTextColorContainer = new ViewContainer<Button>(Test.Button.DisabledTextColor,
+				new Button
+				{
+					Text = "Disabled TextColor",
+					DisabledTextColor = Color.DarkGray,
+					IsEnabled = false					
+				}
+			);
+
 			Add (borderButtonContainer);
 			Add (borderRadiusContainer);
 			Add (borderWidthContainer);
@@ -118,6 +127,7 @@ namespace Xamarin.Forms.Controls
 			Add (textContainer);
 			Add (textColorContainer);
 			Add (paddingContainer);
+			Add (disabledTextColorContainer);
 			//stackLayout.Children.Add (textColorContainer);
 		}
 	}
