@@ -4,12 +4,12 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class ItemsViewController : UICollectionViewController
-	{
+	public abstract class ItemsViewController<TItemsView> : UICollectionViewController
+	where TItemsView : ItemsView
+	{ 
 		public IItemsViewSource ItemsSource { get; protected set; }
-		public ItemsView ItemsView { get; }
+		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
-
 		bool _initialConstraintsSet;
 		bool _isEmpty;
 		bool _currentBackgroundIsEmptyView;
@@ -19,9 +19,9 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _emptyUIView;
 		VisualElement _emptyViewFormsElement;
 
-		protected UICollectionViewDelegator Delegator { get; set; }
+		protected UICollectionViewDelegateFlowLayout Delegator { get; set; }
 
-		public ItemsViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
+		public ItemsViewController(TItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
 			ItemsView = itemsView;
 			ItemsViewLayout = layout;
@@ -159,10 +159,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		protected virtual UICollectionViewDelegator CreateDelegator()
-        { 
-            // Keep any settings for the SelectableItemsViewController around
-            return new UICollectionViewDelegator(ItemsViewLayout, Delegator?.SelectableItemsViewController ?? this);
+		protected virtual UICollectionViewDelegateFlowLayout CreateDelegator()
+		{
+			return new ItemsViewDelegator<TItemsView, ItemsViewController<TItemsView>>(ItemsViewLayout, this);
 		}
 
 		protected virtual IItemsViewSource CreateItemsViewSource()

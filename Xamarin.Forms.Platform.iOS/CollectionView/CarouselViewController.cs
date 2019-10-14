@@ -7,19 +7,21 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class CarouselViewController : ItemsViewController
+	public class CarouselViewController : ItemsViewController<CarouselView>
 	{
 		CarouselView _carouselView;
-		ItemsViewLayout _layout;
 		bool _viewInitialized;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
 			_carouselView = itemsView;
-			_layout = layout;
-			
 			CollectionView.AllowsSelection = false;
 			CollectionView.AllowsMultipleSelection = false;
+		}
+
+		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
+		{
+			return new CarouselViewDelegator(ItemsViewLayout, this);
 		}
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
@@ -44,13 +46,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_viewInitialized = true;
 			}
-		}
-
-		public override void ViewDidLoad()
-		{
-			base.ViewDidLoad();
-
-			Delegator.CarouselViewController = this;
 		}
 
 		protected override bool IsHorizontal => (_carouselView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
