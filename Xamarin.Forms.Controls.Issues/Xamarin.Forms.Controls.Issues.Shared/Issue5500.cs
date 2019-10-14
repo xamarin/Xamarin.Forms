@@ -58,38 +58,24 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			Device.BeginInvokeOnMainThread(async () =>
-			{
-				GarbageCollectionHelper.Collect();
-				editor.Text = "First Test";
-				await Task.Delay(1);
-				if(editor.Text != entry.Text)
-				{
-					editor.Text = "Test has failed";
-					entry.Text = "Test has failed";
-					return;
-				}
-
-				entry.Text = "Second Test";
-				await Task.Delay(1);
-				if (editor.Text != entry.Text)
-				{
-					editor.Text = "Test has failed";
-					entry.Text = "Test has failed";
-					return;
-				}
-
-				await Task.Delay(1);
-				editor.Text = "Success";
-				entry.Text = "Success";
-			});
+			Device.BeginInvokeOnMainThread(GarbageCollectionHelper.Collect);
 		}
 
 #if UITEST
 		[Test]
 		public void VerifyEditorTextChangeEventsAreFiring()
 		{
-			RunningApp.WaitForElement("Success");
+			RunningApp.WaitForElement("EditorAutomationId");
+			RunningApp.EnterText("EditorAutomationId", "Test 1");
+
+			Assert.AreEqual("Test 1", RunningApp.WaitForElement("EditorAutomationId")[0].ReadText());
+			Assert.AreEqual("Test 1", RunningApp.WaitForElement("EntryAutomationId")[0].ReadText());
+
+			RunningApp.ClearText("EntryAutomationId");
+			RunningApp.EnterText("EntryAutomationId", "Test 2");
+
+			Assert.AreEqual("Test 2", RunningApp.WaitForElement("EditorAutomationId")[0].ReadText());
+			Assert.AreEqual("Test 2", RunningApp.WaitForElement("EntryAutomationId")[0].ReadText());
 		}
 #endif
 	}
