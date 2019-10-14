@@ -13,6 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterTemplate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewItemsUpdatingScrollMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6640.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7556.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7329.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7290.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7240.cs" />
@@ -1019,12 +1021,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)GitHub6926.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5503.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellTitleView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5159.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7311.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7053.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6894.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6929.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ApiLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Github6384.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6491.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7582.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7563.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6127.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7283.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5395.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
