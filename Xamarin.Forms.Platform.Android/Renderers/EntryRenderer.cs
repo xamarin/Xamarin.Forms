@@ -222,13 +222,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdatePlaceHolderText()
 		{
-			if (EditText.Hint != Element.Placeholder)
+			if (EditText.Hint == Element.Placeholder)
+				return;
+
+			EditText.Hint = Element.Placeholder;
+			if (EditText.IsFocused)
 			{
-				EditText.Hint = Element.Placeholder;
-				if (EditText.IsFocused)
-				{
-					EditText.ShowKeyboard();
-				}
+				EditText.ShowKeyboard();
 			}
 		}
 
