@@ -2,12 +2,14 @@
 {
 	internal static class UITestCategories
 	{
+		public const string ViewBaseTests = "ViewBaseTests";
 		public const string ActionSheet = "ActionSheet";
 		public const string ActivityIndicator = "ActivityIndicator";
 		public const string Animation = "Animation";
 		public const string AutomationId = "AutomationID";
 		public const string BoxView = "BoxView";
 		public const string Button = "Button";
+		public const string CarouselView = "CarouselView";
 		public const string Cells = "Cells";
 		public const string CheckBox = "CheckBox";
 		public const string CollectionView = "CollectionView";
@@ -52,5 +54,7 @@
 		public const string TabbedPage = "TabbedPage";
 		public const string CustomRenderers = "CustomRenderers";
 		public const string Page = "Page";
+		public const string RefreshView = "RefreshView";
+		public const string TitleView = "TitleView";
 	}
 }
