@@ -62,6 +62,7 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Element.IsSet(Button.PaddingProperty))
 					UpdatePadding();
 
+				UpdateMaxLines();
 				UpdateFont();
 			}
 		}
@@ -118,6 +119,10 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 			{
 				UpdatePadding();
+			}
+			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
+			{
+				UpdateMaxLines();
 			}
 		}
 
@@ -214,6 +219,24 @@ namespace Xamarin.Forms.Platform.UWP
 			// Both image and text, so we need to build a container for them
 			Control.Content = CreateContentContainer(Element.ContentLayout, image, text);
 			Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
+		}
+		
+		void UpdateMaxLines()
+		{
+			FrameworkElement element = Control;
+
+			for (var i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
+			{
+				var child = VisualTreeHelper.GetChild(element, i);
+
+				if (!(child is TextBlock tb))
+				{
+					continue;
+				}
+
+				tb.MaxLines = Element.MaxLines;
+				return;
+			}
 		}
 
 		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text)
