@@ -23,6 +23,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			var label = new Label
+			{
+				Text = "Click the button below to animate the BoxView using individual ScaleXTo and ScaleYTo extension methods.",
+				TextColor = Color.Black
+			};
+
 			var button = new Button
 			{
 				AutomationId = AnimateBoxView,
@@ -42,23 +48,14 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalOptions = LayoutOptions.Center
 			};
 
-			var anotherBoxView = new BoxView
-			{
-				BackgroundColor = Color.Red,
-				WidthRequest = 200,
-				HeightRequest = 100,
-				Scale = 1,
-				Opacity = 0.5,
-				HorizontalOptions = LayoutOptions.Center
-			};
-
 			var grid = new Grid();
 
-			Grid.SetRow(anotherBoxView, 1);
+			Grid.SetRow(label, 0);
+			Grid.SetRow(_boxView, 1);
 			Grid.SetRow(button, 2);
-					   
+
+			grid.Children.Add(label);
 			grid.Children.Add(_boxView);
-			grid.Children.Add(anotherBoxView);
 			grid.Children.Add(button);
 
 			Content = grid;
