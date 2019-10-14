@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 				View view = _getView();
 				Point point = touch.LocationInView(touch.View).ToPoint();
 				var isInView = view.Bounds.Contains(point);
-				points.Add(new TouchPoint(touches.IndexOf(touch), point, touchState, isInView));
+				points.Add(new TouchPoint(touches.IndexOf(touch), point, GetTouchState(touch.Phase), isInView));
 			}
 
 			return points.AsReadOnly();
@@ -89,6 +89,25 @@ namespace Xamarin.Forms.Platform.iOS
 					return TouchState.Cancel;
 				case UIGestureRecognizerState.Failed:
 					return TouchState.Fail;
+				default:
+					return TouchState.Default;
+			}
+		}
+
+		TouchState GetTouchState(UITouchPhase phase)
+		{
+			switch (phase)
+			{
+				case UITouchPhase.Began:
+					return TouchState.Press;
+				case UITouchPhase.Moved:
+					return TouchState.Move;
+				case UITouchPhase.Stationary:
+					return TouchState.Move;
+				case UITouchPhase.Ended:
+					return TouchState.Release;
+				case UITouchPhase.Cancelled:
+					return TouchState.Cancel;
 				default:
 					return TouchState.Default;
 			}
