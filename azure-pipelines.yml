@@ -21,6 +21,8 @@ variables:
   value: 5.0.2
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
+- name: winVmImage
+  value: Hosted Windows 2019 with VS2019
 - name: DOTNET_VERSION
   value: 3.0.100
 - name: winVmImage
