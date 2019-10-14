@@ -120,11 +120,14 @@ namespace Xamarin.Forms.Controls
 			entry.Focused += (s, e) => label.Text = "focused";
 			entry.Unfocused += (s, e) => label.Text = "unfocused";
 			entry.SetBinding(Entry.IsFocusedProperty, nameof(EntryViewModel.IsFocused));
-			var focusedBtn = new Button { Text = "Change focus" };
-			focusedBtn.Clicked += (s, e) => model.IsFocused = !model.IsFocused;
+			var focusedBtn = new Button { Text = "Focus" };
+			focusedBtn.Clicked += (s, e) => model.IsFocused = true;
+			var unfocusedBtn = new Button { Text = "Unfocus" };
+			unfocusedBtn.Clicked += (s, e) => model.IsFocused = false;
 			var focusedContainer = new ViewContainer<Entry>(Test.VisualElement.FocusedRequest, entry);
 			focusedContainer.ContainerLayout.Children.Add(label);
 			focusedContainer.ContainerLayout.Children.Add(focusedBtn);
+			focusedContainer.ContainerLayout.Children.Add(unfocusedBtn);
 
 			Add (isPasswordContainer);
 			Add (completedContainer);
