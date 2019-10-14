@@ -963,12 +963,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			var old = (bool)oldvalue;
 			var isFocused = (bool)newvalue;
-			if (old == isFocused)
-			{
-				return;
-			}
 
 			if (isFocused)
 			{
