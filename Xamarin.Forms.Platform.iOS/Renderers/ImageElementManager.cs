@@ -85,8 +85,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 
 				case Aspect.AspectFill:
-					// TODO: There is no AspectFill...
-
+					// No built in aspect fill on the NSImageView directly, it is there on the layer so go through there
+					if (Control.Image != null)
+					{
+						Control.Layer = new CALayer();
+						Control.Layer.ContentsGravity = CALayer.GravityResizeAspectFill;
+						Control.Layer.Contents = Control.Image.CGImage;
+						Control.WantsLayer = true;
+					}
 					break;
 				case Aspect.AspectFit:
 					Control.ImageScaling = NSImageScale.ProportionallyDown;
