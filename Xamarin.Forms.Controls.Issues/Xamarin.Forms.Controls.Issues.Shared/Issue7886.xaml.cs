@@ -1,22 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using NUnit.Framework;
+using Xamarin.UITest;
+using Xamarin.Forms.Core.UITests;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
-#if APP
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7886, "PushModalAsync modal page with Entry crashes on close for MacOS (NRE)", PlatformAffected.macOS)]
-	public partial class Issue7886 : ContentPage
+	public partial class Issue7886 : TestContentPage
 	{
+
+		const string TriggerModalAutomationId = "TriggerModal";
+		const string PopModalAutomationId = "PopModal";
+
+		public string ButtonAutomationId { get => TriggerModalAutomationId; } 
+
+		protected override void Init()
+		{
+		}
+
+#if APP
 		public Issue7886()
 		{
 			InitializeComponent();
+			BindingContext = this;
 		}
 
 		void Handle_Clicked(object sender, EventArgs e)
@@ -29,7 +41,13 @@ namespace Xamarin.Forms.Controls.Issues
 			public ModalPage()
 			{
 				BackgroundColor = Color.Orange;
-				ToolbarItems.Add(new ToolbarItem("Done", null, () => Navigation.PopModalAsync()));
+
+				var tbi = new ToolbarItem("Done", null, () => Navigation.PopModalAsync())
+				{
+					AutomationId = PopModalAutomationId
+				};
+
+				ToolbarItems.Add(tbi);
 
 				Content = new Entry
 				{
@@ -38,6 +56,19 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 			}
 		}
-	}
 #endif
+#if UITEST && __MACOS__
+		[Test]
+		public void NoNREOnPushModalAsyncAndBack()
+		{
+			RunningApp.WaitForElement(TriggerModalAutomationId);
+			RunningApp.Tap(TriggerModalAutomationId);
+			RunningApp.WaitForElement(PopModalAutomationId);
+			RunningApp.Tap(PopModalAutomationId);
+		}
+
+		
+#endif
+	}
+
 }
