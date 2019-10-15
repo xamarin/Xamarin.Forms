@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class LabelRenderer : ViewRenderer<Label, NativeLabel>
 	{
-		const int DefaultMinimunScaleFactor = 16;
+		const int DefaultMinimumScaleFactor = 16;
 		SizeRequest _perfectSize;
 
 		bool _perfectSizeValid;
