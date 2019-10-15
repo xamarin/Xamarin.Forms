@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPagesIndicatorTintColor();
 			else if (e.PropertyName == CountProperty.PropertyName)
 				UpdatePages();
-			else if (e.PropertyName == HidesForSingleIndicatorProperty.PropertyName)
+			else if (e.PropertyName == HideSingleProperty.PropertyName)
 				UpdateHidesForSinglePage();
 			else if (e.PropertyName == PositionProperty.PropertyName)
 				UpdateCurrentPage();
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 			=> Control.Pages = Element.Count;
 
 		void UpdateHidesForSinglePage()
-			=> Control.HidesForSinglePage = Element.HidesForSingleIndicator;
+			=> Control.HidesForSinglePage = Element.HideSingle;
 
 		void UpdatePagesIndicatorTintColor()
 		{

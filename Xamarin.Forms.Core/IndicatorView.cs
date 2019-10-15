@@ -18,13 +18,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty CountProperty = BindableProperty.Create(nameof(Count), typeof(int), typeof(IndicatorView), default(int), propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorCount((int)oldValue));
 
-		public static readonly BindableProperty MaximumVisibleCountProperty = BindableProperty.Create(nameof(MaximumVisibleCount), typeof(int), typeof(IndicatorView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty MaximumVisibleProperty = BindableProperty.Create(nameof(MaximumVisible), typeof(int), typeof(IndicatorView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
-		public static readonly BindableProperty HidesForSingleIndicatorProperty = BindableProperty.Create(nameof(HidesForSingleIndicator), typeof(bool), typeof(IndicatorView), true, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty HideSingleProperty = BindableProperty.Create(nameof(HideSingle), typeof(bool), typeof(IndicatorView), true, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty IndicatorColorProperty = BindableProperty.Create(nameof(IndicatorColor), typeof(Color), typeof(IndicatorView), Color.Default, propertyChanged: (bindable, oldValue, newValue)
@@ -67,10 +67,10 @@ namespace Xamarin.Forms
 			set => SetValue(CountProperty, value);
 		}
 
-		public int MaximumVisibleCount
+		public int MaximumVisible
 		{
-			get => (int)GetValue(MaximumVisibleCountProperty);
-			set => SetValue(MaximumVisibleCountProperty, value);
+			get => (int)GetValue(MaximumVisibleProperty);
+			set => SetValue(MaximumVisibleProperty, value);
 		}
 
 		public DataTemplate IndicatorTemplate
@@ -79,10 +79,10 @@ namespace Xamarin.Forms
 			set => SetValue(IndicatorTemplateProperty, value);
 		}
 
-		public bool HidesForSingleIndicator
+		public bool HideSingle
 		{
-			get => (bool)GetValue(HidesForSingleIndicatorProperty);
-			set => SetValue(HidesForSingleIndicatorProperty, value);
+			get => (bool)GetValue(HideSingleProperty);
+			set => SetValue(HideSingleProperty, value);
 		}
 
 		public Color IndicatorColor
@@ -156,7 +156,7 @@ namespace Xamarin.Forms
 					: GetColorOrDefault(IndicatorColor, Color.Silver);
 			}
 
-			IndicatorLayout.IsVisible = Count > 1 || !HidesForSingleIndicator;
+			IndicatorLayout.IsVisible = Count > 1 || !HideSingle;
 		}
 
 		Color GetColorOrDefault(Color color, Color defaultColor)
@@ -180,7 +180,7 @@ namespace Xamarin.Forms
 		void AddExtraIndicatorItems()
 		{
 			var oldCount = Items.Count;
-			for (var i = 0; i < Count - oldCount && i < MaximumVisibleCount - oldCount; i++)
+			for (var i = 0; i < Count - oldCount && i < MaximumVisible - oldCount; i++)
 			{
 				var size = IndicatorSize > 0 ? IndicatorSize : 10;
 				var indicator = IndicatorTemplate?.CreateContent() as View ?? new Frame
