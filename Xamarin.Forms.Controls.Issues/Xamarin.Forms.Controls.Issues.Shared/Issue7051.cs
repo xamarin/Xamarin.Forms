@@ -21,14 +21,14 @@ namespace Xamarin.Forms.Controls.Issues
 			Detail = new NavigationPage(new MainDetailPage());
 		}
 
-		private async Task About(ContentPage page)
+		async Task About(ContentPage page)
 		{
 			var root = Detail.Navigation.NavigationStack[0];
 			Detail.Navigation.InsertPageBefore(page, root);
 			await Detail.Navigation.PopToRootAsync();
 		}
 
-		private async Task Main(ContentPage page)
+		async Task Main(ContentPage page)
 		{
 			var root = Detail.Navigation.NavigationStack[0];
 			Detail.Navigation.InsertPageBefore(page, root);
