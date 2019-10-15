@@ -21,7 +21,7 @@
             </StackLayout>
         </StackLayout>
 
-        <CollectionView Grid.Row="1" AutomationId="CollectionView7763" ItemsSource="{Binding Items}" ItemsAnimated="False">
+        <CollectionView Grid.Row="1" AutomationId="CollectionView7763" ItemsSource="{Binding Items}" ItemChangeAnimationsEnabled="False">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
             </CollectionView.ItemsLayout>

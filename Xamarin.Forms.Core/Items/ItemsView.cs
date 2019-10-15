@@ -93,12 +93,12 @@ namespace Xamarin.Forms
 			set => SetValue(RemainingItemsThresholdProperty, value);
 		}
 
-		public static readonly BindableProperty ItemsAnimatedProperty = BindableProperty.Create(nameof(ItemsAnimated), typeof(bool), typeof(ItemsView), true);
+		public static readonly BindableProperty ItemChangeAnimationsEnabledProperty = BindableProperty.Create(nameof(ItemChangeAnimationsEnabled), typeof(bool), typeof(ItemsView), true);
 
-		public bool ItemsAnimated
+		public bool ItemChangeAnimationsEnabled
 		{
-			get => (bool)GetValue(ItemsAnimatedProperty);
-			set => SetValue(ItemsAnimatedProperty, value);
+			get => (bool)GetValue(ItemChangeAnimationsEnabledProperty);
+			set => SetValue(ItemChangeAnimationsEnabledProperty, value);
 		}
 
 		public void AddLogicalChild(Element element)

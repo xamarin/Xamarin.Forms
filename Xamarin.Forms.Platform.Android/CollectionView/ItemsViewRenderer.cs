@@ -246,9 +246,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateItemsUpdatingScrollMode();
 			}
-			else if(changedProperty.Is(Xamarin.Forms.ItemsView.ItemsAnimatedProperty))
+			else if(changedProperty.Is(Xamarin.Forms.ItemsView.ItemChangeAnimationsEnabledProperty))
 			{
-				UpdateItemsAnimated();
+				UpdateItemChangeAnimationsEnabled();
 			}
 		}
 
@@ -325,7 +325,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateBackgroundColor();
 			UpdateFlowDirection();
 			UpdateItemSpacing();
-			UpdateItemsAnimated();
+			UpdateItemChangeAnimationsEnabled();
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
 
@@ -536,9 +536,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual void UpdateItemsAnimated()
+		protected virtual void UpdateItemChangeAnimationsEnabled()
 		{
-			SetItemAnimator(ItemsView.ItemsAnimated ? CreateItemAnimator() : null);
+			SetItemAnimator(ItemsView.ItemChangeAnimationsEnabled ? CreateItemAnimator() : null);
 		}
 
 		protected virtual ItemAnimator CreateItemAnimator()
