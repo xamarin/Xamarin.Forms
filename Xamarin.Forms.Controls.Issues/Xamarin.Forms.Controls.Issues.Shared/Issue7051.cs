@@ -13,12 +13,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public ICommand AboutCommand { get; set; }
 		public ICommand MainPageCommand { get; set; }
 
-		public Issue7051()
-		{
-			//AboutCommand = new Command<ContentPage>(async (page) => await About(page));
-			//MainPageCommand = new Command<ContentPage>(async (page) => await Main(page));
-		}
-
 		protected override void Init()
 		{
 			AboutCommand = new Command<ContentPage>(async (page) => await About(page));
