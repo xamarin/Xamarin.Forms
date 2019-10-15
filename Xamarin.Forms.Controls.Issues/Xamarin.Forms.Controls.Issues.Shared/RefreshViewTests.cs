@@ -40,6 +40,11 @@ namespace Xamarin.Forms.Controls.Issues
 			bool canExecute = true;
 			_refreshCommand = new Command(async (parameter) =>
 			{
+				if(!_refreshView.IsRefreshing)
+				{
+					throw new Exception("IsRefreshing should be true when command executes");
+				}
+
 				if (parameter != null && !(bool)parameter)
 				{
 					throw new Exception("Refresh command incorrectly firing with disabled parameter");
