@@ -3,11 +3,10 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class StructuredItemsViewController : ItemsViewController
+	public class StructuredItemsViewController<TItemsView> : ItemsViewController<TItemsView>
+		where TItemsView : StructuredItemsView
 	{
 		bool _disposed;
-
-		StructuredItemsView StructuredItemsView => (StructuredItemsView)ItemsView;
 
 		UIView _headerUIView;
 		VisualElement _headerViewFormsElement;
@@ -15,7 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _footerUIView;
 		VisualElement _footerViewFormsElement;
 
-		public StructuredItemsViewController(StructuredItemsView structuredItemsView, ItemsViewLayout layout)
+		public StructuredItemsViewController(TItemsView structuredItemsView, ItemsViewLayout layout)
 			: base(structuredItemsView, layout)
 		{
 		}
@@ -41,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
-		protected override bool IsHorizontal => (StructuredItemsView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
+		protected override bool IsHorizontal => (ItemsView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
 
 		public override void ViewWillLayoutSubviews()
 		{
@@ -66,16 +65,47 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal void UpdateFooterView()
 		{
-			UpdateSubview(StructuredItemsView?.Footer, StructuredItemsView?.FooterTemplate, 
+			UpdateSubview(ItemsView?.Footer, ItemsView?.FooterTemplate, 
 				ref _footerUIView, ref _footerViewFormsElement);
 			UpdateHeaderFooterPosition();
 		}
 
 		internal void UpdateHeaderView()
 		{
-			UpdateSubview(StructuredItemsView?.Header, StructuredItemsView?.HeaderTemplate, 
+			UpdateSubview(ItemsView?.Header, ItemsView?.HeaderTemplate, 
 				ref _headerUIView, ref _headerViewFormsElement);
 			UpdateHeaderFooterPosition();
+		}
+
+		internal void UpdateSubview(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)
+		{
+			uiView?.RemoveFromSuperview();
+
+			if (formsElement != null)
+			{
+				ItemsView.RemoveLogicalChild(formsElement);
+				formsElement.MeasureInvalidated -= OnFormsElementMeasureInvalidated;
+			}
+
+			UpdateView(view, viewTemplate, ref uiView, ref formsElement);
+
+			if (uiView != null)
+			{
+				CollectionView.AddSubview(uiView);
+			}
+
+			if (formsElement != null)
+				ItemsView.AddLogicalChild(formsElement);
+
+			if (formsElement != null)
+			{
+				RemeasureLayout(formsElement);
+				formsElement.MeasureInvalidated += OnFormsElementMeasureInvalidated;
+			}
+			else if (uiView != null)
+			{
+				uiView.SizeToFit();
+			}
 		}
 
 		void UpdateHeaderFooterPosition()
