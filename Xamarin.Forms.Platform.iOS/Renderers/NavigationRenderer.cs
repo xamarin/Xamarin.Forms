@@ -1052,16 +1052,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var currentChild = this.Child;
 				var firstPage = n.NavPage.Pages.FirstOrDefault();
-
-
+				
 				if (n._parentMasterDetailPage == null)
-					return;
-
-				if (firstPage != pageBeingRemoved && currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild))
-				{
-					NavigationItem.LeftBarButtonItem = null;
-					return;
-				}
+					return;				
 
 				SetMasterLeftBarButton(this, n._parentMasterDetailPage);
 			}
