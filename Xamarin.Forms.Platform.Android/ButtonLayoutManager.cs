@@ -256,7 +256,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null || _element == null)
 				return;
 
-			view.SetLineBreakMode(null, _element);
+			view.SetLineBreakMode(_element);
 			view.SetAllCaps(true);
 		}
 
