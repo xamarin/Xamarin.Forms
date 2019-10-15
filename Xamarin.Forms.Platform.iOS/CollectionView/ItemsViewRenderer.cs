@@ -133,6 +133,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void UpdateItemsSource()
 		{
 			Controller.UpdateItemsSource();
+			UpdateAreItemAnimationsEnabled();
 		}
 
 		protected virtual void UpdateAreItemAnimationsEnabled()

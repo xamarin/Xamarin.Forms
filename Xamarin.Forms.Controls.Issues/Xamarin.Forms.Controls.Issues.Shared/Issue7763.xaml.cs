@@ -63,6 +63,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 			collectionView.ScrollTo(0, groupIndex: -1, animate: false);
 		}
+
+		void NewItemsSourceButtonClicked(object sender, EventArgs e)
+		{
+			BindingContext = new ViewModel7763();
+		}
 #endif
 
 		protected override void Init()
