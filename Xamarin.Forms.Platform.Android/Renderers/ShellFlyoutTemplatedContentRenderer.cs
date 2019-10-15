@@ -323,11 +323,6 @@ namespace Xamarin.Forms.Platform.Android
 				Initialize(View);
 			}
 
-			protected HeaderContainer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
-			{
-				Initialize(View);
-			}
-
 			void Initialize(View view)
 			{
 				if (view != null)
