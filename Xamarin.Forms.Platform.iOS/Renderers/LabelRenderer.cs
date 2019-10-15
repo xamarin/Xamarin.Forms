@@ -676,7 +676,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 #if __MOBILE__
 			Control.AdjustsFontSizeToFitWidth = Element.AutoFit;
-			Control.MinimumScaleFactor = Element.AutoFit ? DefaultMinimunScaleFactor : 0;
+			Control.MinimumScaleFactor = Element.AutoFit ? DefaultMinimumScaleFactor : 0;
 #endif
 		}
 
