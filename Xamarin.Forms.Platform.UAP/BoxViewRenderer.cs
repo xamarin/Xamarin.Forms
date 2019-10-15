@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	[Obsolete("Replaced with BoxViewRenderer2")]
+	[Obsolete("BoxViewRenderer is obsolete as of version 4.X. Please use BoxViewBorderRenderer instead.")]
 	public class BoxViewRenderer : ViewRenderer<BoxView, Windows.UI.Xaml.Shapes.Rectangle>
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<BoxView> e)

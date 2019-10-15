@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform.UWP;
 
 namespace Xamarin.Forms.Platform.UAP
 {
-	class BoxViewRenderer2 : ViewRenderer<BoxView, Border>
+	public class BoxViewBorderRenderer : ViewRenderer<BoxView, Border>
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<BoxView> e)
 		{
