@@ -58,8 +58,10 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (e.PropertyName == Frame.ContentProperty.PropertyName)
 				UpdateContent();
-			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName || e.PropertyName == Frame.HasShadowProperty.PropertyName)
+			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName)
 				UpdateBorder();
+			else if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
+				UpdateShadow();
 			else if (e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
@@ -95,13 +97,11 @@ namespace Xamarin.Forms.Platform.WPF
 				Control.UpdateDependencyColor(Border.BorderBrushProperty, Color.Transparent);
 				Control.BorderThickness = new System.Windows.Thickness(0);
 			}
+		}
 
+		protected virtual UpdateShadow(){ 
 			if (Element.HasShadow)
 			{
-				if (Element.BackgroundColor.IsDefault)
-				{
-					Control.Background = Color.White.ToBrush();
-				}
 				Control.Effect = new DropShadowEffect()
 				{
 					Color = Colors.Gray,
@@ -110,6 +110,26 @@ namespace Xamarin.Forms.Platform.WPF
 					BlurRadius = 6,
 					ShadowDepth = 2
 				};
+			}
+			else if(Control.Effect is DropShadowEffect)
+			{
+				Control.Effect = null;
+			} 
+
+			// Verify that the background is correctly set when the shadow is changed
+			UpdateBackground();
+		}
+
+		protected override UpdateBackground(){ 
+			// Enforce that a background color is set when the shadow is enabled
+			// to ensure, that the shadow is visible
+			if(Element.HasShadow && Element.BackgroundColor == Color.Transparent)
+			{
+				Control.UpdateDependencyColor(WControl.BackgroundProperty, Color.White);
+			}
+			else
+			{
+				base.UpdateBackground();
 			}
 		}
 
