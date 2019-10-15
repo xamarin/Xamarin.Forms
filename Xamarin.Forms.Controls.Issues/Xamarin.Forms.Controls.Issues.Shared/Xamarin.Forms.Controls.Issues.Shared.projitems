@@ -121,7 +121,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7865.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Issue7839.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7963.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefreshViewTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7338.cs" />

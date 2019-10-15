@@ -4,7 +4,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 { 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 7963, "No shadows for UWP Frames (and WPF)?", PlatformAffected.WPF | PlatformAffected.UWP)]
+	[Issue(IssueTracker.Github, 7963, "WPF frame padding, shadow missing?", PlatformAffected.WPF)]
 	public class Issue7963 : TestContentPage  
 	{
 		protected override void Init()
