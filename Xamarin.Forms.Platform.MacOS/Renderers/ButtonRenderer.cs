@@ -44,10 +44,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				Released?.Invoke();
 			}
 
-			private nfloat _leftPadding;
-			private nfloat _topPadding;
-			private nfloat _rightPadding;
-			private nfloat _bottomPadding;
+			nfloat _leftPadding;
+			nfloat _topPadding;
+			nfloat _rightPadding;
+			nfloat _bottomPadding;
 
 			internal void UpdatePadding(Thickness padding)
 			{
