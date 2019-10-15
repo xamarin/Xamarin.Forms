@@ -613,6 +613,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MultipleClipToBounds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6994.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7371.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_TemplateMarkup.xaml.cs">
       <DependentUpon>_TemplateMarkup.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -1422,7 +1423,7 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue7357.xaml.cs">
       <DependentUpon>Issue7357.xaml</DependentUpon>
     </Compile>
-   <Compile Update="$(MSBuildThisFileDirectory)Issue7792.xaml.cs">
+    <Compile Update="$(MSBuildThisFileDirectory)Issue7792.xaml.cs">
       <DependentUpon>Issue7792.xaml</DependentUpon>
     </Compile>
     <Compile Update="$(MSBuildThisFileDirectory)Issue7789.xaml.cs">
