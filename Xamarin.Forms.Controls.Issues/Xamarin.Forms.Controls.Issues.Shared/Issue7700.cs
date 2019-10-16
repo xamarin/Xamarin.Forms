@@ -46,8 +46,6 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 #if APP
-			FlagTestHelpers.SetCollectionViewTestFlag();
-
 			Children.Add(FirstPage());
 			Children.Add(CollectionViewPage());
 			Children.Add(GroupedCollectionViewPage());
