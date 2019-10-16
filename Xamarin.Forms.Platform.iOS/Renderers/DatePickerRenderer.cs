@@ -123,11 +123,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleValueChanged(object sender, EventArgs e)
 		{
-			ElementController?.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
+			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.Immediately)
+			{
+				ElementController?.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
+			}
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
+			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.WhenFinished)
+			{
+				ElementController.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
+			}
+
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 

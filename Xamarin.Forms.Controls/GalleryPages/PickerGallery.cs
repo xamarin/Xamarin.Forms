@@ -3,11 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Controls
 {
 	public class PickerGallery : ContentPage
 	{
+		#region UpdateMode
+
+		public static readonly BindableProperty UpdateModeProperty = BindableProperty.Create(
+			nameof(UpdateMode),
+			typeof(UpdateMode),
+			typeof(PickerGallery),
+			default(UpdateMode));
+
+		public UpdateMode UpdateMode
+		{
+			get => (UpdateMode)GetValue(UpdateModeProperty);
+			set => SetValue(UpdateModeProperty, value); 
+		}
+
+		#endregion 
+
+
 		public PickerGallery ()
 		{
 			var picker = new Picker {Title="Dismiss in one sec", Items =  {"John", "Paul", "George", "Ringo"}};
@@ -18,11 +37,31 @@ namespace Xamarin.Forms.Controls
 
 			Label testLabel = new Label { Text = "", AutomationId="test", ClassId="test" };
 
-			Picker p1 = new Picker { Title = "Pick a number", Items = { "0", "1", "2", "3", "4", "5", "6" }};
+			Picker p1 = new Picker
+			{
+				BindingContext = this,
+				Title = "Pick a number", 
+				Items = { "0", "1", "2", "3", "4", "5", "6" }
+			};
+			p1.SetBinding(PlatformConfiguration.iOSSpecific.Picker.UpdateModeProperty, UpdateModeProperty.PropertyName);
 			p1.SelectedIndexChanged += (sender, e) => {
 				testLabel.Text = "Selected Index Changed";
 			};
 			p1.SetAutomationPropertiesName("Title picker");
+
+			DatePicker datePicker = new DatePicker { BindingContext = this };
+			datePicker.SetBinding(PlatformConfiguration.iOSSpecific.DatePicker.UpdateModeProperty, UpdateModeProperty.PropertyName);
+
+			TimePicker timePicker = new TimePicker { BindingContext = this };
+			timePicker.SetBinding(PlatformConfiguration.iOSSpecific.TimePicker.UpdateModeProperty, UpdateModeProperty.PropertyName);
+
+			Picker updateModePicker = new EnumPicker
+			{
+				BindingContext = this,
+				Title = "Update Mode",
+				EnumType = typeof(UpdateMode)
+			};
+			updateModePicker.SetBinding(Picker.SelectedItemProperty, UpdateModeProperty.PropertyName, mode:BindingMode.TwoWay);
 
 			Content = new ScrollView { 
 				Content = new StackLayout {
@@ -37,7 +76,10 @@ namespace Xamarin.Forms.Controls
 						new Picker {Title = "Pick", Items =  {"Jason Smith", "Rui Marinho", "Eric Maupin", "Chris King"}, HorizontalOptions = LayoutOptions.CenterAndExpand},
 						picker,
 						testLabel,
-						p1
+						updateModePicker,
+						p1,
+						datePicker,
+						timePicker
 					}
 				}
 			};

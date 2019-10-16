@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -128,6 +129,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
+			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.WhenFinished)
+			{
+				ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
+			}
+
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
@@ -138,7 +144,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnValueChanged(object sender, EventArgs e)
 		{
-			ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
+			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.Immediately)
+			{
+				ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
+			}
 		}
 
 		void UpdateFlowDirection()
