@@ -647,42 +647,49 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateBarTextColor()
 		{
 			var barTextColor = NavPage.BarTextColor;
-			var globalAttributes = UINavigationBar.Appearance.GetTitleTextAttributes();
+
+			// Determine new title text attributes via global static data
+			var globalTitleTextAttributes = UINavigationBar.Appearance.TitleTextAttributes;
 			var titleTextAttributes = new UIStringAttributes
 			{
-				ForegroundColor = barTextColor == Color.Default ? globalAttributes.TextColor : barTextColor.ToUIColor(),
-				Font = globalAttributes.Font
+				ForegroundColor = barTextColor == Color.Default ? globalTitleTextAttributes?.ForegroundColor : barTextColor.ToUIColor(),
+				Font = globalTitleTextAttributes?.Font
 			};
+
+			// Determine new large title text attributes via global static data
+			var largeTitleTextAttributes = titleTextAttributes;
+			if (Forms.IsiOS11OrNewer)
+			{
+				var globalLargeTitleTextAttributes = UINavigationBar.Appearance.LargeTitleTextAttributes;
+
+				largeTitleTextAttributes = new UIStringAttributes
+				{
+					ForegroundColor = barTextColor == Color.Default ? globalLargeTitleTextAttributes?.ForegroundColor : barTextColor.ToUIColor(),
+					Font = globalLargeTitleTextAttributes?.Font
+				};
+			}
 
 			if (Forms.IsiOS13OrNewer)
 			{
 				NavigationBar.CompactAppearance.TitleTextAttributes = titleTextAttributes;
-				NavigationBar.CompactAppearance.LargeTitleTextAttributes = titleTextAttributes;
+				NavigationBar.CompactAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
 
 				NavigationBar.StandardAppearance.TitleTextAttributes = titleTextAttributes;
-				NavigationBar.StandardAppearance.LargeTitleTextAttributes = titleTextAttributes;
+				NavigationBar.StandardAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
 
 				NavigationBar.ScrollEdgeAppearance.TitleTextAttributes = titleTextAttributes;
-				NavigationBar.ScrollEdgeAppearance.LargeTitleTextAttributes = titleTextAttributes;
+				NavigationBar.ScrollEdgeAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
 			}
 			else
 			{
-				if (barTextColor == Color.Default)
-				{
-					if (NavigationBar.TitleTextAttributes != null)
-						NavigationBar.TitleTextAttributes = titleTextAttributes;
-				}
-				else
-					NavigationBar.TitleTextAttributes = titleTextAttributes;
+				NavigationBar.TitleTextAttributes = titleTextAttributes;
 
 				if (Forms.IsiOS11OrNewer)
-					NavigationBar.LargeTitleTextAttributes = titleTextAttributes;
+					NavigationBar.LargeTitleTextAttributes = largeTitleTextAttributes;
 			}
 
-			var statusBarColorMode = NavPage.OnThisPlatform().GetStatusBarTextColorMode();
-
 			// set Tint color (i. e. Back Button arrow and Text)
-			NavigationBar.TintColor = barTextColor == Color.Default || statusBarColorMode == StatusBarTextColorMode.DoNotAdjust
+			NavigationBar.TintColor = barTextColor == Color.Default || NavPage.OnThisPlatform().GetStatusBarTextColorMode() == StatusBarTextColorMode.DoNotAdjust
 				? UINavigationBar.Appearance.TintColor
 				: barTextColor.ToUIColor();
 		}
