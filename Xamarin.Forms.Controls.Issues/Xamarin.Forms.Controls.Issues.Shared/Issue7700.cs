@@ -42,6 +42,8 @@ namespace Xamarin.Forms.Controls.Issues
 		const string Success = "Success";
 		const string Tab2 = "Tab2";
 		const string Tab3 = "Tab3";
+		const string Add1Label = "Add to List";
+		const string Add2Label = "Add to Grouped List";
 
 		protected override void Init()
 		{
@@ -56,12 +58,12 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var page = new ContentPage() { Title = "7700 First Page", Padding = 40 };
 
-			var instructions = new Label { Text = $"Tap the button marked {Add1}. Then tap the button marked {Add2}. If the application does not crash, the test has passed." };
+			var instructions = new Label { Text = $"Tap the button marked '{Add1Label}'. Then tap the button marked '{Add2Label}'. If the application does not crash, the test has passed." };
 
-			var button1 = new Button() { Text = "Add to List", AutomationId = Add1 };
+			var button1 = new Button() { Text = Add1Label, AutomationId = Add1 };
 			button1.Clicked += Button1Clicked;
 
-			var button2 = new Button() { Text = "Add to Grouped List", AutomationId = Add2 };
+			var button2 = new Button() { Text = Add2Label, AutomationId = Add2 };
 			button2.Clicked += Button2Clicked;
 
 			var layout = new StackLayout { Children = { instructions, button1, button2 } };
