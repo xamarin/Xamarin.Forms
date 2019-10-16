@@ -4,6 +4,7 @@ using System.Linq;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
@@ -63,6 +64,19 @@ namespace Xamarin.Forms.Platform.UWP
 			_defaultFontFamily = Control.FontFamily;
 			UpdateFont();
 			UpdateTextColor();
+		}
+
+		internal override void OnElementFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
+		{
+			base.OnElementFocusChangeRequested(sender, args);
+
+			if (Control.ContextFlyout == null)
+			{
+				var flyout = new DatePickerFlyout();
+				flyout.Placement = FlyoutPlacementMode.Bottom;
+				Control.ContextFlyout = flyout;
+			}
+			Control.ContextFlyout.ShowAt(Control);
 		}
 
 		void WireUpFormsVsm()
