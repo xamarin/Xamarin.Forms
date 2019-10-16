@@ -26,12 +26,13 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
-			Element.Clicked -= ChangeDensityClicked;
-			Element.Clicked += ChangeDensityClicked;
 			base.OnElementChanged(e);
+
+			if(Element.Command == null)
+				Element.Command = new Command(ChangeDensityClicked);
 		}
 
-		private void ChangeDensityClicked(object sender, EventArgs e)
+		private void ChangeDensityClicked()
 		{
 			using (var metrics = Context.Resources.DisplayMetrics)
 			{
