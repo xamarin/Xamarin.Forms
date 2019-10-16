@@ -73,7 +73,11 @@ namespace Xamarin.Forms.Platform.iOS
 					var width = UIScreen.MainScreen.Bounds.Width;
 					var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
-					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) => entry.ResignFirstResponder());
+					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
+					{
+						UpdateElementTime();
+						entry.ResignFirstResponder();
+					});
 
 					toolbar.SetItems(new[] { spacer, doneButton }, false);
 
@@ -129,11 +133,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
-			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.WhenFinished)
-			{
-				ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
-			}
-
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
@@ -146,7 +145,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.Immediately)
 			{
-				ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
+				UpdateElementTime();
 			}
 		}
 
@@ -186,6 +185,11 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.Date = new DateTime(1, 1, 1).Add(Element.Time).ToNSDate();
 			Control.Text = DateTime.Today.Add(Element.Time).ToString(Element.Format);
 			Element.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.MeasureChanged);
+		}
+
+		void UpdateElementTime()
+		{
+			ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
 		}
 	}
 }

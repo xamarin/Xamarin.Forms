@@ -64,7 +64,11 @@ namespace Xamarin.Forms.Platform.iOS
 				var width = UIScreen.MainScreen.Bounds.Width;
 				var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 				var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
-				var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) => entry.ResignFirstResponder());
+				var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
+				{
+					UpdateElementDate();
+					entry.ResignFirstResponder();
+				});
 
 				toolbar.SetItems(new[] { spacer, doneButton }, false);
 
@@ -125,17 +129,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.Immediately)
 			{
-				ElementController?.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
+				UpdateElementDate();
 			}
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
-			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.WhenFinished)
-			{
-				ElementController.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
-			}
-
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
@@ -150,6 +149,11 @@ namespace Xamarin.Forms.Platform.iOS
 				_picker.SetDate(Element.Date.ToNSDate(), animate);
 
 			Control.Text = Element.Date.ToString(Element.Format);
+		}
+
+		void UpdateElementDate()
+		{
+			ElementController.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
 		}
 
 		void UpdateFlowDirection()
