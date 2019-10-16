@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
 		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
 
-		RecyclerView.ItemDecoration _itemDecoration;
+		ItemDecoration _itemDecoration;
 
 		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
 		{
@@ -246,6 +246,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateItemsUpdatingScrollMode();
 			}
+			else if(changedProperty.Is(Xamarin.Forms.ItemsView.ItemChangeAnimationsEnabledProperty))
+			{
+				UpdateItemChangeAnimationsEnabled();
+			}
 		}
 
 		protected virtual void UpdateItemsSource()
@@ -321,7 +325,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateBackgroundColor();
 			UpdateFlowDirection();
 			UpdateItemSpacing();
-
+			UpdateItemChangeAnimationsEnabled();
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
 
@@ -530,6 +534,16 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_itemsUpdateScrollObserver.Start(ItemsViewAdapter);
 			}
+		}
+
+		protected virtual void UpdateItemChangeAnimationsEnabled()
+		{
+			SetItemAnimator(ItemsView.ItemChangeAnimationsEnabled ? CreateItemAnimator() : null);
+		}
+
+		protected virtual ItemAnimator CreateItemAnimator()
+		{
+			return new DefaultItemAnimator();
 		}
 
 		protected virtual void ReconcileFlowDirectionAndLayout()
