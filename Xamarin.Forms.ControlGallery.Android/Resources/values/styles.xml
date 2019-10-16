@@ -27,7 +27,12 @@
     <item name="windowActionModeOverlay">true</item>
 
     <item name="android:datePickerDialogTheme">@style/AppCompatDialogStyle</item>
+
+    <!-- Styles Android.App.AlertDialog -->
     <item name="android:alertDialogTheme">@style/DayNightDialogStyle</item>
+    <!-- Styles Android.Support.V7.App.AlertDialog -->
+    <item name="alertDialogTheme">@style/DayNightDialogStyle</item>
+
 		<!--Uncomment to test exceptionally red button-->
 		<!--<item name="android:buttonStyle">@style/red_button_style</item>-->
   </style>
@@ -37,7 +42,7 @@
   </style>
 
   <style name="DayNightDialogStyle" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-    <item name="colorAccent">#FF4081</item>
+    <item name="colorAccent">#00FF21</item>
   </style>
 
   <style name="TestStyle" parent="@android:style/Theme.Holo.Light.DarkActionBar">    
