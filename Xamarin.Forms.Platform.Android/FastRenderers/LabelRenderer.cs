@@ -309,7 +309,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
-			else if (e.PropertyName == Label.AutoFitProperty.PropertyName)
+			else if (e.PropertyName == Label.AutoFitTextProperty.PropertyName)
 				UpdateAutoFitMode();
 		}
 

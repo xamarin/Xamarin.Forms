@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class LabelRenderer : ViewRenderer<Label, NativeLabel>
 	{
-		const int DefaultMinimumScaleFactor = 16;
+		const int DefaultMinimumScaleFactor = 12;
 		SizeRequest _perfectSize;
 
 		bool _perfectSizeValid;
@@ -675,8 +675,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateAutoFitMode()
 		{
 #if __MOBILE__
-			Control.AdjustsFontSizeToFitWidth = Element.AutoFit;
-			Control.MinimumScaleFactor = Element.AutoFit ? DefaultMinimumScaleFactor : 0;
+			Control.AdjustsFontSizeToFitWidth = Element.AutoFitText;
+			Control.MinimumScaleFactor = Element.AutoFitText ? DefaultMinimumScaleFactor : 0;
 #endif
 		}
 

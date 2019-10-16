@@ -105,7 +105,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TextTypeProperty = BindableProperty.Create(nameof(TextType), typeof(TextType), typeof(Label), TextType.Text,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
-		public static readonly BindableProperty AutoFitProperty = BindableProperty.Create(nameof(AutoFit), typeof(bool), typeof(Label), false);
+		public static readonly BindableProperty AutoFitTextProperty = BindableProperty.Create(nameof(AutoFitText), typeof(bool), typeof(Label), false);
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
@@ -236,10 +236,10 @@ namespace Xamarin.Forms
 			set => SetValue(TextTypeProperty, value);
 		}
 
-		public bool AutoFit
+		public bool AutoFitText
 		{
-			get => (bool)GetValue(AutoFitProperty);
-			set => SetValue(AutoFitProperty, value);
+			get => (bool)GetValue(AutoFitTextProperty);
+			set => SetValue(AutoFitTextProperty, value);
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>

@@ -160,9 +160,9 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView,
-				label.AutoFit ? (int)AutoSizeTextType.Uniform : (int)AutoSizeTextType.None);
+				label.AutoFitText ? (int)AutoSizeTextType.Uniform : (int)AutoSizeTextType.None);
 
-			if (!label.AutoFit)
+			if (!label.AutoFitText)
 			{
 #pragma warning disable 618 // We will need to update this when .Font goes away
 				var f = label.Font;
