@@ -56,7 +56,6 @@ namespace Xamarin.Forms
 
 		public static string RuntimePlatform => PlatformServices.RuntimePlatform;
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static DeviceInfo Info
 		{
 			get
@@ -78,7 +77,6 @@ namespace Xamarin.Forms
 			get { return PlatformServices.IsInvokeRequired; }
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IPlatformServices PlatformServices
 		{
 			get
