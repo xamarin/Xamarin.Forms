@@ -50,6 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void UpdateItemsSource()
 		{
 			UpdateAdapter();
+			UpdateEmptyView();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -85,6 +86,8 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					Carousel.SetIsDragging(false);
 			}
+
+			Carousel.IsScrolling = state != ScrollStateIdle;
 		}
 
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
