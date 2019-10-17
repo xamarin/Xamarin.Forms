@@ -14,23 +14,7 @@ string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/je
 string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
 
 var channel = Env("CHANNEL") ?? "Stable";
-var windowsChannel = Env("WIN_CHANNEL") ?? "VisualStudio.16.Stable"; 
-
-
-if (channel == "VS16Stable" || channel == "Stable")
-{
-	windowsChannel = "VisualStudio.16.Stable";
-}
-
-if (channel == "VS15Stable")
-{
-	windowsChannel = "VisualStudio.15.Stable";
-}
-
-if (channel == "Preview")
-{
-	windowsChannel = "VisualStudio.16.Preview";
-}
+var windowsChannel = Env("WIN_CHANNEL") ?? "VisualStudio.15.Release"; 
 
 Console.WriteLine($"{channel} , win - {windowsChannel}");
 
