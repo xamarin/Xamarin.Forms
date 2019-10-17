@@ -1,11 +1,7 @@
-using System;
 using Android.Content;
 using Android.Graphics;
 using Android.Runtime;
-using Android.Support.V4.View;
-using Android.Text;
 using Android.Views;
-using Android.Widget;
 using Java.Lang;
 
 namespace Xamarin.Forms.Platform.Android

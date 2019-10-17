@@ -1,14 +1,11 @@
-﻿
-using Android.Support.V4.View;
-using Android.Text;
-using Java.Lang;
-#if __ANDROID_28__
+﻿#if __ANDROID_28__
 using System;
 using Android.Content;
 using Android.Graphics;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
+using Java.Lang;
 using Xamarin.Forms.Platform.Android;
 
 namespace Xamarin.Forms.Material.Android
