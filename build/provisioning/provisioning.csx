@@ -13,19 +13,40 @@ string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVer
 string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
 string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
 
+var channel = Env("CHANNEL") ?? "Stable";
+var windowsChannel = Env("WIN_CHANNEL") ?? "VisualStudio.16.Stable"; 
+
+
+if (channel == "VS16Stable")
+{
+	windowsChannel = "VisualStudio.16.Stable";
+}
+
+if (channel == "VS15Stable")
+{
+	windowsChannel = "VisualStudio.15.Stable";
+}
+
+if (channel == "Preview")
+{
+	windowsChannel = "VisualStudio.16.Preview";
+}
+
+
 if (IsMac)
 {
 	Item (XreItem.Xcode_11_1_0).XcodeSelect ();
+	XamarinChannel(channel); 
 }
 else
 {
-	
+	XamarinChannel(windowsChannel); 
 }
 
-var channel = Env("CHANNEL") ?? "Stable";
+
 
 Console.WriteLine(channel);
-XamarinChannel(channel); 
+
 
 Item(XreItem.Java_OpenJDK_1_8_0_25);
 AndroidSdk ().ApiLevel((AndroidApiLevel)29);
