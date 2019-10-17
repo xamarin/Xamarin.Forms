@@ -15,10 +15,10 @@ string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/je
 
 if (IsMac)
 {
-	Item (XreItem.Xcode_11_1_0_rc).XcodeSelect ();
+	Item (XreItem.Xcode_11_1_0).XcodeSelect ();
 
-  if(!String.IsNullOrEmpty(monoSDK_macos))
-    Item ("Mono", monoVersion)
+  	if(!String.IsNullOrEmpty(monoSDK_macos))
+    	Item ("Mono", monoVersion)
       .Source (_ => monoSDK_macos);
 
 	if(!String.IsNullOrEmpty(androidSDK_macos))
