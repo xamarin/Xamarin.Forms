@@ -35,7 +35,7 @@ jobs:
     steps:
     - script: build.cmd -Target provision
       displayName: 'Cake Provision'
-      condition: eq(variables['provisioning'], 'false')
+      condition: eq(variables['provisioningCake'], 'true')
   
     - task: xamops.azdevex.provisionator-task.provisionator@1
       displayName: 'Provisionator'

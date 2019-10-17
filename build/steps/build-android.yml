@@ -36,7 +36,7 @@ jobs:
       
       - task: Bash@3
         displayName: 'Cake Provision'
-        condition: eq(variables['provisioning'], 'false')
+        condition: eq(variables['provisioningCake'], 'true')
         inputs:
           targetType: 'filePath'
           filePath: 'build.sh'
