@@ -19,7 +19,8 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Issue8004 : TestContentPage
 	{
 		BoxView _boxView;
-		const string AnimateBoxView = "AnimateBoxView";
+		const string AnimateBoxViewButton = "AnimateBoxViewButton";
+		const string BoxToScale = "BoxToScale";
 
 		protected override void Init()
 		{
@@ -31,7 +32,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button = new Button
 			{
-				AutomationId = AnimateBoxView,
+				AutomationId = AnimateBoxViewButton,
 				Text = "Animate BoxView",
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
@@ -42,6 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_boxView = new BoxView
 			{
+				AutomationId = BoxToScale,
 				BackgroundColor = Color.Blue,
 				WidthRequest = 200,
 				HeightRequest = 100,
@@ -71,13 +73,19 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public async Task AnimateScaleOfBoxView()
 		{
-			RunningApp.WaitForElement(AnimateBoxView);
-			RunningApp.Tap(AnimateBoxView);
+			RunningApp.Screenshot("Small blue box");
 
+			// Check the box and button elements.
+			RunningApp.WaitForElement(q => q.Marked(BoxToScale));
+			RunningApp.WaitForElement(q => q.Marked(AnimateBoxViewButton));
+
+			// Tap the button.
+			RunningApp.Tap(q => q.Marked(AnimateBoxViewButton));
+
+			// Wait for animation to finish.
 			await Task.Delay(500);
-
-			Assert.AreEqual(_boxView.ScaleX, 1.5);
-			Assert.AreEqual(_boxView.ScaleY, 2);
+			   
+			RunningApp.Screenshot("Bigger blue box");
 		}
 #endif
 	}
