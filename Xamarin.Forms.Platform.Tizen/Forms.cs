@@ -176,6 +176,12 @@ namespace Xamarin.Forms
 			private set;
 		}
 
+		internal static bool IsPreloaded
+		{
+			get;
+			private set;
+		}
+
 		public static DeviceOrientation NaturalOrientation => s_naturalOrientation.Value;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
@@ -242,8 +248,12 @@ namespace Xamarin.Forms
 				{
 					TizenSynchronizationContext.Initialize();
 				}
-				Elementary.Initialize();
-				Elementary.ThemeOverlay();
+
+				if (!IsPreloaded)
+				{
+					Elementary.Initialize();
+					Elementary.ThemeOverlay();
+				}
 			}
 
 			Device.PlatformServices = new TizenPlatformServices();
@@ -447,17 +457,30 @@ namespace Xamarin.Forms
 			return s_profile.Value;
 		}
 
-
-		// for internal use only
+		// For internal use only.
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void Preload()
 		{
+			// Preload Elementary widgets.
 			Elementary.Initialize();
 			Elementary.ThemeOverlay();
 			var window = new PreloadedWindow();
 			var platform = new PreloadedPlatform(window.BaseLayout);
 			TSystemInfo.TryGetValue("http://tizen.org/feature/screen.width", out int width);
 			TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out int height);
+			IsPreloaded = true;
+
+			// Register self-owned renderers.
+			Assembly[] assemblies = { Assembly.GetAssembly(typeof(Forms)), Assembly.GetAssembly(typeof(View)) };
+			foreach (Assembly assembly in assemblies)
+			{
+				// Get renderers from the assembly.
+				object[] attributes = assembly.GetCustomAttributes(typeof(ExportRendererAttribute), true);
+
+				var handlerAttributes = new HandlerAttribute[attributes.Length];
+				Array.Copy(attributes, handlerAttributes, attributes.Length);
+				Registrar.RegisterRenderers(handlerAttributes);
+			}
 		}
 	}
 
