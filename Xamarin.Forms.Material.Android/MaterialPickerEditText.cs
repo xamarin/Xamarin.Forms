@@ -39,19 +39,7 @@ namespace Xamarin.Forms.Material.Android
 
 		public override void SetText(ICharSequence text, BufferType type)
 		{
-			if (ViewCompat.IsLaidOut(this) && text != null)
-			{
-				int textWidth = Width - CompoundPaddingLeft - CompoundPaddingRight;
-
-				string fullText = text.ToString();
-				string ellipsizedText = TextUtils.Ellipsize(fullText, Paint, textWidth, TextUtils.TruncateAt.End);
-
-				if (!string.IsNullOrEmpty(ellipsizedText))
-				{
-					text = new Java.Lang.String(ellipsizedText);
-				}
-			}
-
+			text = this.EllipsizeText(text);
 			base.SetText(text, type);
 		}
 

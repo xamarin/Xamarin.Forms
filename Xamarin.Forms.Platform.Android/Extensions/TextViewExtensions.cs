@@ -2,6 +2,8 @@
 using Android.Text;
 using Android.Widget;
 using System.Collections.Generic;
+using Android.Support.V4.View;
+using Java.Lang;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
@@ -142,6 +144,17 @@ namespace Xamarin.Forms.Platform.Android
 
 				((ISpatialElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis).Inflate(10);
 			}
+		}
+
+		public static ICharSequence EllipsizeText(this TextView textView, ICharSequence originalText)
+		{
+			if (ViewCompat.IsLaidOut(textView) && originalText != null)
+			{
+				int textWidth = textView.Width - textView.CompoundPaddingLeft - textView.CompoundPaddingRight;
+				return TextUtils.EllipsizeFormatted(originalText, textView.Paint, textWidth, TextUtils.TruncateAt.End);
+			}
+
+			return originalText;
 		}
 	}
 }
