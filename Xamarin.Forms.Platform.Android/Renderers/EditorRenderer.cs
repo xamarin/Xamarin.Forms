@@ -255,6 +255,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			EditText.Text = newText;
+			newText = ProcessTextWithMaxLenght(newText);
 			EditText.SetSelection(newText.Length);
 		}
 
@@ -292,11 +293,15 @@ namespace Xamarin.Forms.Platform.Android
 			currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
 
 			EditText?.SetFilters(currentFilters.ToArray());
+			ProcessTextWithMaxLenght(EditText?.Text);
+		}
 
-			var currentControlText = EditText?.Text;
+		string ProcessTextWithMaxLenght(string currentControlText)
+		{
+			if (!(currentControlText?.Length > Element.MaxLength))
+				return currentControlText;
 
-			if (currentControlText.Length > Element.MaxLength)
-				EditText.Text = currentControlText.Substring(0, Element.MaxLength);
+			return EditText.Text = currentControlText.Substring(0, Element.MaxLength);
 		}
 
 		void UpdateIsReadOnly()
