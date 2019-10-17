@@ -16,55 +16,16 @@ string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/je
 if (IsMac)
 {
 	Item (XreItem.Xcode_11_1_0).XcodeSelect ();
-
-  	if(!String.IsNullOrEmpty(monoSDK_macos))
-    	Item ("Mono", monoVersion)
-      .Source (_ => monoSDK_macos);
-
-	if(!String.IsNullOrEmpty(androidSDK_macos))
-		Item ("Xamarin.Android", "10.0.0.43")
-      .Source (_ => androidSDK_macos);
-
-	if(!String.IsNullOrEmpty(iOSSDK_macos))
-		Item ("Xamarin.iOS", "13.2.0.42")
-      .Source (_ => iOSSDK_macos);
-
-	if(!String.IsNullOrEmpty(macSDK_macos))
-		Item ("Xamarin.Mac", "6.2.0.42")
-      .Source (_ => macSDK_macos);
-    
-	ForceJavaCleanup();
-
-    var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
-    if (!string.IsNullOrEmpty(dotnetVersion))
-	  {
-		// VSTS installs into a non-default location. Let's hardcode it here because why not.
-		var vstsBaseInstallPath = Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".dotnet", "sdk");
-		var vstsInstallPath = Path.Combine (vstsBaseInstallPath, dotnetVersion);
-		var defaultInstallLocation = Path.Combine ("/usr/local/share/dotnet/sdk/", dotnetVersion);
-		if (Directory.Exists (vstsBaseInstallPath) && !Directory.Exists (vstsInstallPath))
-			ln (defaultInstallLocation, vstsInstallPath);
-	  }
 }
 else
 {
-	if(!String.IsNullOrEmpty(androidSDK_windows))
-		Item ("Xamarin.Android", "10.0.0.43")
-      .Source (_ => androidSDK_windows);
-
-	if(!String.IsNullOrEmpty(iOSSDK_windows))
-		Item ("Xamarin.iOS", "13.2.0.42")
-      .Source (_ => iOSSDK_windows);
-
-	if(!String.IsNullOrEmpty(macSDK_windows))
-		Item ("Xamarin.Mac", "6.2.0.42")
-      .Source (_ => macSDK_windows);
-
-	if(!String.IsNullOrEmpty(monoSDK_windows))
-    Item ("Mono", monoVersion)
-      .Source (_ => monoSDK_windows);
-
+	
 }
+
+var channel = Env("CHANNEL") ?? "Stable";
+
+Console.WriteLine(channel);
+XamarinChannel(channel); 
 
 Item(XreItem.Java_OpenJDK_1_8_0_25);
 AndroidSdk ().ApiLevel((AndroidApiLevel)29);
