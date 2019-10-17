@@ -17,7 +17,7 @@ var channel = Env("CHANNEL") ?? "Stable";
 var windowsChannel = Env("WIN_CHANNEL") ?? "VisualStudio.16.Stable"; 
 
 
-if (channel == "VS16Stable")
+if (channel == "VS16Stable" || channel == "Stable")
 {
 	windowsChannel = "VisualStudio.16.Stable";
 }
@@ -32,6 +32,7 @@ if (channel == "Preview")
 	windowsChannel = "VisualStudio.16.Preview";
 }
 
+Console.WriteLine($"{channel} , win - {windowsChannel}");
 
 if (IsMac)
 {
@@ -42,11 +43,6 @@ else
 {
 	XamarinChannel(windowsChannel); 
 }
-
-
-
-Console.WriteLine(channel);
-
 
 Item(XreItem.Java_OpenJDK_1_8_0_25);
 AndroidSdk ().ApiLevel((AndroidApiLevel)29);
