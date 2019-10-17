@@ -21,30 +21,32 @@ namespace Xamarin.Forms.Controls
 		public UpdateMode UpdateMode
 		{
 			get => (UpdateMode)GetValue(UpdateModeProperty);
-			set => SetValue(UpdateModeProperty, value); 
+			set => SetValue(UpdateModeProperty, value);
 		}
 
-		#endregion 
+		#endregion
 
 
-		public PickerGallery ()
+		public PickerGallery()
 		{
-			var picker = new Picker {Title="Dismiss in one sec", Items =  {"John", "Paul", "George", "Ringo"}};
-			picker.Focused += async (object sender, FocusEventArgs e) => {
-				await Task.Delay (1000);
-				picker.Unfocus ();
+			var picker = new Picker { Title = "Dismiss in one sec", Items = { "John", "Paul", "George", "Ringo" } };
+			picker.Focused += async (object sender, FocusEventArgs e) =>
+			{
+				await Task.Delay(1000);
+				picker.Unfocus();
 			};
 
-			Label testLabel = new Label { Text = "", AutomationId="test", ClassId="test" };
+			Label testLabel = new Label { Text = "", AutomationId = "test", ClassId = "test" };
 
 			Picker p1 = new Picker
 			{
 				BindingContext = this,
-				Title = "Pick a number", 
+				Title = "Pick a number",
 				Items = { "0", "1", "2", "3", "4", "5", "6" }
 			};
 			p1.SetBinding(PlatformConfiguration.iOSSpecific.Picker.UpdateModeProperty, UpdateModeProperty.PropertyName);
-			p1.SelectedIndexChanged += (sender, e) => {
+			p1.SelectedIndexChanged += (sender, e) =>
+			{
 				testLabel.Text = "Selected Index Changed";
 			};
 			p1.SetAutomationPropertiesName("Title picker");
@@ -61,11 +63,13 @@ namespace Xamarin.Forms.Controls
 				Title = "Update Mode",
 				EnumType = typeof(UpdateMode)
 			};
-			updateModePicker.SetBinding(Picker.SelectedItemProperty, UpdateModeProperty.PropertyName, mode:BindingMode.TwoWay);
+			updateModePicker.SetBinding(Picker.SelectedItemProperty, UpdateModeProperty.PropertyName, mode: BindingMode.TwoWay);
 
-			Content = new ScrollView { 
-				Content = new StackLayout {
-					Padding = new Thickness (20, 20),
+			Content = new ScrollView
+			{
+				Content = new StackLayout
+				{
+					Padding = new Thickness(20, 20),
 					Children = {
 						new DatePicker (),
 						new TimePicker (),

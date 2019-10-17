@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 {
-    using FormsElement = Xamarin.Forms.DatePicker;
+	using FormsElement = Xamarin.Forms.DatePicker;
 
 	public static class DatePicker
 	{

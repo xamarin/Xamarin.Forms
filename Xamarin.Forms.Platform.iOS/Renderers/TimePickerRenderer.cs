@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 					entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
-					
+
 					entry.InputAssistantItem.LeadingBarButtonGroups = null;
 					entry.InputAssistantItem.TrailingBarButtonGroups = null;
 
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == TimePicker.CharacterSpacingProperty.PropertyName)
 				UpdateCharacterSpacing();
 			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName ||
-			         e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
+					 e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();

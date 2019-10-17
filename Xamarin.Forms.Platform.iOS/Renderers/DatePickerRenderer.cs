@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 				entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
-				
+
 				entry.InputAssistantItem.LeadingBarButtonGroups = null;
 				entry.InputAssistantItem.TrailingBarButtonGroups = null;
 
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
 			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName ||
-			         e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
+					 e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
 			{
 				UpdateFont();
 			}
@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			(Control as UITextField).UpdateTextAlignment(Element);
 		}
-		
+
 		protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
