@@ -60,7 +60,7 @@ jobs:
   parameters:
     name: android_legacy
     displayName: Build Android [Legacy Renderers]
-    vmImage: $(macOSVmImage)
+    vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
@@ -70,7 +70,7 @@ jobs:
   parameters:
     name: android_preappcompact
     displayName: Build Android [Pre-AppCompat]
-    vmImage: $(macOSVmImage)
+    vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
@@ -80,7 +80,7 @@ jobs:
   parameters:
     name: android_fast
     displayName: Build Android [Fast Renderers]
-    vmImage: $(macOSVmImage)
+    vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
