@@ -70,20 +70,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementFocusChangeRequested(sender, args);
 
-			//if (Control.ContextFlyout == null)
-			//{
-			//	var flyout = new DatePickerFlyout();
-			//	flyout.Placement = FlyoutPlacementMode.Bottom;
-			//	flyout.Opened += (o, o1) => flyout.Date = Control.Date;
-			//	flyout.DatePicked += (p, e) => Control.Date = p.Date;
-			//	Control.ContextFlyout = flyout;
-			//}
-			//Control.ContextFlyout.ShowAt(Control);
-
-			var flyout = new DatePickerFlyout();
-			flyout.Placement = FlyoutPlacementMode.Bottom;
-			//flyout.Opened += (o, o1) => flyout.Date = Control.Date;
-			flyout.Date = Control.Date;
+			// Show a picker fly out on focus to match iOS and Android behavior
+			var flyout = new DatePickerFlyout { Placement = FlyoutPlacementMode.Bottom, Date = Control.Date };
 			flyout.DatePicked += (p, e) => Control.Date = p.Date;
 			flyout.ShowAt(Control);
 		}
