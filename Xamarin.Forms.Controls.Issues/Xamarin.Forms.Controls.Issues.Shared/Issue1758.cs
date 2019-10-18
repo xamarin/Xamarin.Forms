@@ -1,34 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System;
+using System.Threading.Tasks;
+
+#if UITEST
+using Xamarin.UITest;
+using Xamarin.UITest.Queries;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(UITestCategories.Layout)]
+#endif
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 1758, "LayoutTo needs to be smarted about using layout specific API calls", PlatformAffected.Android | PlatformAffected.iOS | PlatformAffected.WinPhone)]
-	public class Issue1758 : ContentPage
+	public class Issue1758 : TestContentPage
 	{
 		ListView _list;
 		Button _button;
- 
-		public Issue1758()
+
+		protected override void Init()
 		{
 			_list = new ListView { ItemsSource = new[] { "hello", "world", "from", "xamarin", "forms" } };
- 
-			_button = new Button { Text = "Button" };
- 
+
+			_button = new Button { Text = "Button", AutomationId = "Button" };
+
 			// The same behavior happens for both Absolute and Relative layout.
-            //var layout = true ? Relative() : Absolute();
+			//var layout = true ? Relative() : Absolute();
 			var layout = Relative();
- 
-			Animate();
- 
+
 			Content = layout;
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			Animate();
 		}
 
 		Layout Relative()
@@ -44,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
         
 			layout.Children.Add(_button, 
 				Forms.Constraint.Constant(0),
-				Forms.Constraint.Constant(300));
+				Forms.Constraint.Constant(0));
  
 			return layout;
 		}
@@ -52,19 +64,47 @@ namespace Xamarin.Forms.Controls.Issues
 		Layout Absolute()
 		{
 			var layout = new AbsoluteLayout { Children = { _list, _button } };
- 
+
 			AbsoluteLayout.SetLayoutBounds(_list, new Rectangle(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize));
 			AbsoluteLayout.SetLayoutBounds(_button, new Rectangle(0, 300, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize));
- 
+
 			return layout;
 		}
 
 		async void Animate()
 		{
-			// Comment this delay out to see the bug
-			// await Task.Delay(500);
- 
-			await _button.LayoutTo(new Rectangle(100, 100, 100, 100), 1000);
+			await Task.Delay(2000).ContinueWith(t => 
+			{
+				Device.BeginInvokeOnMainThread(async () =>
+				{
+					await _button.LayoutTo(new Rectangle(100, 100, 100, 100), 1000);
+				});
+			});
 		}
+
+#if UITEST
+		[Test]
+		public void CheckButtonPosition()
+		{
+			RunningApp.WaitForElement("Button");
+
+			var oldRect = RunningApp.Query("Button").Single().Rect;
+
+			try
+			{
+				RunningApp.WaitForNoElement("Button", timeout: TimeSpan.FromSeconds(5));
+			}
+			catch
+			{
+				// swallow exception
+			}
+
+			var button = RunningApp.Query("Button").Single();
+
+			Assert.IsTrue(button.Rect.Width == button.Rect.Height);
+			Assert.IsTrue(button.Rect.X == button.Rect.Width);
+			Assert.IsTrue(button.Rect.Y == oldRect.Y + button.Rect.Height);
+		}
+#endif
 	}
 }
