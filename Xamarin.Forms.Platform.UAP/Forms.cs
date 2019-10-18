@@ -14,7 +14,7 @@ using Xamarin.Forms.Platform.UWP;
 
 namespace Xamarin.Forms
 {
-	public static partial class Forms
+	public static partial class Forms : IFormsInit
 	{
 		const string LogFormat = "[{0}] {1}";
 

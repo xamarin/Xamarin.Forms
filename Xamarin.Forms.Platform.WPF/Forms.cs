@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform.WPF;
 
 namespace Xamarin.Forms
 {
-	public static class Forms
+	public static class Forms : FormsInit
 	{
 		public static bool IsInitialized { get; private set; }
 

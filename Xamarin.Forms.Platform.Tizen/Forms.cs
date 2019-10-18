@@ -48,7 +48,7 @@ namespace Xamarin.Forms
 		public InitializationFlags Flags;
 	}
 
-	public static class Forms
+	public static class Forms : IFormsInit
 	{
 		static Lazy<string> s_profile = new Lazy<string>(() =>
 		{
