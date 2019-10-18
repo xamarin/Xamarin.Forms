@@ -4,7 +4,7 @@
 
 	public static class TabbedPage
 	{
-		private const string TranslucencyModePropertyName = "TranslucencyMode";
+		const string TranslucencyModePropertyName = "TranslucencyMode";
 
 		public static readonly BindableProperty TranslucencyModeProperty =
 			BindableProperty.Create(TranslucencyModePropertyName,
