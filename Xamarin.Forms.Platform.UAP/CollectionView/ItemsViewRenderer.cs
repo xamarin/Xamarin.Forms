@@ -1,16 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform.UAP;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using UWPApp = Windows.UI.Xaml.Application;
 using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
@@ -18,9 +11,10 @@ using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public abstract class ItemsViewRenderer : ViewRenderer<ItemsView, ListViewBase>
+	public abstract class ItemsViewRenderer<TItemsView> : ViewRenderer<TItemsView, ListViewBase>
+		where TItemsView : ItemsView
 	{
-		CollectionViewSource _collectionViewSource;
+		protected CollectionViewSource CollectionViewSource;
 
 		protected ListViewBase ListViewBase { get; private set; }
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
@@ -32,43 +26,45 @@ namespace Xamarin.Forms.Platform.UWP
 		FrameworkElement _emptyView;
 		View _formsEmptyView;
 
+		protected TItemsView ItemsView => Element;
 		protected ItemsControl ItemsControl { get; private set; }
 
-		protected override void OnElementChanged(ElementChangedEventArgs<ItemsView> args)
+		protected override void OnElementChanged(ElementChangedEventArgs<TItemsView> args)
 		{
 			base.OnElementChanged(args);
 			TearDownOldElement(args.OldElement);
-			SetUpNewElement(args.NewElement, true);
+			SetUpNewElement(args.NewElement);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
+			if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemsSourceProperty))
 			{
 				UpdateItemsSource();
 			}
-			else if (changedProperty.Is(ItemsView.ItemTemplateProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemTemplateProperty))
 			{
 				UpdateItemTemplate();
 			}
-			else if (changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.HorizontalScrollBarVisibilityProperty))
 			{
 				UpdateHorizontalScrollBarVisibility();
 			}
-			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.VerticalScrollBarVisibilityProperty))
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
-			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
+			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty, 
+				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
 				UpdateEmptyView();
 			}
 		}
 
 		protected abstract ListViewBase SelectListViewBase();
-		protected abstract void HandleLayoutPropertyChange(PropertyChangedEventArgs property);
+		protected abstract void HandleLayoutPropertyChanged(PropertyChangedEventArgs property);
 		protected abstract IItemsLayout Layout { get; }
 
 		protected virtual void UpdateItemsSource()
@@ -78,62 +74,73 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			// TODO hartez 2018-05-22 12:59 PM Handle grouping
 
-			var itemsSource = Element.ItemsSource;
+			CleanUpCollectionViewSource();
 
-			if (itemsSource == null)
+			if (Element.ItemsSource == null)
 			{
-				if (_collectionViewSource?.Source is INotifyCollectionChanged incc)
-				{
-					incc.CollectionChanged -= ItemsChanged;
-				}
-
-				if (_collectionViewSource != null)
-				{
-					_collectionViewSource.Source = null;
-				}
-
-				_collectionViewSource = null;
-				ListViewBase.ItemsSource = null;
 				return;
 			}
 
-			var itemTemplate = Element.ItemTemplate;
+			CollectionViewSource = CreateCollectionViewSource();
 
-			if (_collectionViewSource != null)
+			if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
 			{
-				if (_collectionViewSource.Source is ObservableItemTemplateCollection observableItemTemplateCollection)
+				incc.CollectionChanged += ItemsChanged;
+			}
+
+			ListViewBase.ItemsSource = CollectionViewSource.View;
+
+			UpdateEmptyViewVisibility();
+		}
+
+		protected virtual void CleanUpCollectionViewSource()
+		{
+			if (CollectionViewSource != null)
+			{
+				if (CollectionViewSource.Source is ObservableItemTemplateCollection observableItemTemplateCollection)
 				{
 					observableItemTemplateCollection.CleanUp();
 				}
 			}
 
+			if (Element?.ItemsSource == null)
+			{
+				if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
+				{
+					incc.CollectionChanged -= ItemsChanged;
+				}
+
+				if (CollectionViewSource != null)
+				{
+					CollectionViewSource.Source = null;
+				}
+
+				CollectionViewSource = null;
+				ListViewBase.ItemsSource = null;
+				return;
+			}
+		}
+
+		protected virtual CollectionViewSource CreateCollectionViewSource()
+		{
+			var itemsSource = Element.ItemsSource;
+			var itemTemplate = Element.ItemTemplate;
+
 			if (itemTemplate != null)
 			{
-				_collectionViewSource = new CollectionViewSource
+				return new CollectionViewSource
 				{
 					Source = TemplatedItemSourceFactory.Create(itemsSource, itemTemplate, Element),
 					IsSourceGrouped = false
 				};
-
-				if (_collectionViewSource?.Source is INotifyCollectionChanged incc)
-				{
-					incc.CollectionChanged += ItemsChanged;
-				}
 			}
-			else
+			
+			return new CollectionViewSource
 			{
-				_collectionViewSource = new CollectionViewSource
-				{
-					Source = itemsSource,
-					IsSourceGrouped = false
-				};
-			}
-
-			ListViewBase.ItemsSource = _collectionViewSource.View;
-
-			UpdateEmptyViewVisibility();
+				Source = itemsSource,
+				IsSourceGrouped = false
+			};
 		}
 
 		void ItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -155,10 +162,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void LayoutPropertyChanged(object sender, PropertyChangedEventArgs property)
 		{
-			HandleLayoutPropertyChange(property);
+			HandleLayoutPropertyChanged(property);
 		}
 
-		protected virtual void SetUpNewElement(ItemsView newElement, bool setUpProperties)
+		protected virtual void SetUpNewElement(ItemsView newElement)
 		{
 			if (newElement == null)
 			{
@@ -175,14 +182,11 @@ namespace Xamarin.Forms.Platform.UWP
 				SetNativeControl(ListViewBase);
 			}
 
-			if (setUpProperties)
-			{
-				UpdateItemTemplate();
-				UpdateItemsSource();
-				UpdateVerticalScrollBarVisibility();
-				UpdateHorizontalScrollBarVisibility();
-				UpdateEmptyView();
-			}
+			UpdateItemTemplate();
+			UpdateItemsSource();
+			UpdateVerticalScrollBarVisibility();
+			UpdateHorizontalScrollBarVisibility();
+			UpdateEmptyView();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -204,16 +208,15 @@ namespace Xamarin.Forms.Platform.UWP
 			// Stop listening for ScrollTo requests
 			oldElement.ScrollToRequested -= ScrollToRequested;
 
+			if (CollectionViewSource != null)
+			{
+				CleanUpCollectionViewSource();
+			}
+
 			if (ListViewBase != null)
 			{
 				ListViewBase.ItemsSource = null;
 			}
-
-			if (_collectionViewSource != null)
-			{
-				_collectionViewSource.Source = null;
-			}
-
 		}
 
 		void UpdateVerticalScrollBarVisibility()
@@ -288,12 +291,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				if (args.Index >= _collectionViewSource.View.Count)
+				if (args.Index >= CollectionViewSource.View.Count)
 				{
 					return null;
 				}
 
-				return _collectionViewSource.View[args.Index];
+				return CollectionViewSource.View[args.Index];
 			}
 
 			if (Element.ItemTemplate == null)
@@ -301,13 +304,13 @@ namespace Xamarin.Forms.Platform.UWP
 				return args.Item;
 			}
 
-			for (int n = 0; n < _collectionViewSource.View.Count; n++)
+			for (int n = 0; n < CollectionViewSource.View.Count; n++)
 			{
-				if (_collectionViewSource.View[n] is ItemTemplateContext pair)
+				if (CollectionViewSource.View[n] is ItemTemplateContext pair)
 				{
 					if (pair.Item == args.Item)
 					{
-						return _collectionViewSource.View[n];
+						return CollectionViewSource.View[n];
 					}
 				}
 			}
@@ -371,7 +374,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_emptyView != null && ListViewBase is IEmptyView emptyView)
 			{
-				emptyView.EmptyViewVisibility = (_collectionViewSource?.View?.Count ?? 0) == 0
+				emptyView.EmptyViewVisibility = (CollectionViewSource?.View?.Count ?? 0) == 0
 					? Visibility.Visible
 					: Visibility.Collapsed;
 

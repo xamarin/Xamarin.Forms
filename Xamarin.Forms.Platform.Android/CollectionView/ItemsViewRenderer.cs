@@ -42,8 +42,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
 		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource>));
-
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
 
@@ -266,6 +264,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateItemsUpdatingScrollMode();
 
 			UpdateEmptyView();
+			AddOrUpdateScrollListener();
 		}
 
 		protected virtual TAdapter CreateAdapter()
@@ -281,7 +280,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (GetAdapter() != _emptyViewAdapter)
 			{
+				_emptyCollectionObserver.Stop(oldItemViewAdapter);
+				_itemsUpdateScrollObserver.Stop(oldItemViewAdapter);
+	
 				SetAdapter(null);
+	
 				SwapAdapter(ItemsViewAdapter, true);
 			}
 
@@ -330,9 +333,12 @@ namespace Xamarin.Forms.Platform.Android
 			// Listen for ScrollTo requests
 			ItemsView.ScrollToRequested += ScrollToRequested;
 
-			_recyclerViewScrollListener = new RecyclerViewScrollListener<TItemsView, TItemsViewSource>(ItemsView, ItemsViewAdapter);
-			AddOnScrollListener(_recyclerViewScrollListener);
-			SetOnTouchListener(GestureManager.CreateTouchGestureListener(() => Element as View, Context.FromPixels));
+			AddOrUpdateScrollListener();
+		}
+
+		protected virtual RecyclerViewScrollListener<TItemsView, TItemsViewSource> CreateScrollListener()
+		{
+			return new RecyclerViewScrollListener<TItemsView, TItemsViewSource>(ItemsView, ItemsViewAdapter);
 		}
 
 		protected abstract IItemsLayout GetItemsLayout();
@@ -383,12 +389,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Stop listening for ScrollTo requests
 			oldElement.ScrollToRequested -= ScrollToRequested;
 
-			if (_recyclerViewScrollListener != null)
-			{
-				_recyclerViewScrollListener.Dispose();
-				ClearOnScrollListeners();
-				_recyclerViewScrollListener = null;
-			}
+			RemoveScrollListener();
 
 			if (ItemsViewAdapter != null)
 			{
@@ -643,6 +644,25 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				ScrollHelper.UndoNextScrollAdjustment();
 			}
+		}
+
+		void AddOrUpdateScrollListener()
+		{
+			RemoveScrollListener();
+
+			_recyclerViewScrollListener = CreateScrollListener();
+			AddOnScrollListener(_recyclerViewScrollListener);
+			SetOnTouchListener(GestureManager.CreateTouchGestureListener(() => Element as View, Context.FromPixels));
+		}
+
+		void RemoveScrollListener()
+		{
+			if (_recyclerViewScrollListener == null)
+				return;
+
+			_recyclerViewScrollListener.Dispose();
+			ClearOnScrollListeners();
+			_recyclerViewScrollListener = null;
 		}
 	}
 }
