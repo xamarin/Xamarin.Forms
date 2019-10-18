@@ -81,6 +81,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var isAndroid = false;
 #endif
 			var grid1 = RunningApp.Query("MainGrid").Single();
+			var oldCenterY = grid1.Rect.CenterY;
+
 			RunningApp.SetOrientationLandscape ();
 			RunningApp.ScrollDown ();
 			RunningApp.SetOrientationPortrait ();
@@ -88,10 +90,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("Did it resize ok? Do you see some white on the bottom?");
 
 			if (!isAndroid) {
-				Assert.AreEqual (grid1.Rect.CenterY, grid2.Rect.CenterY);
+				Assert.AreEqual (oldCenterY, grid2.Rect.CenterY);
 			}
 		}
 #endif
 	}
 }
-
