@@ -73,6 +73,8 @@ namespace Xamarin.Forms.Platform.UWP
 			// Show a picker fly out on focus to match iOS and Android behavior
 			var flyout = new DatePickerFlyout { Placement = FlyoutPlacementMode.Bottom, Date = Control.Date };
 			flyout.DatePicked += (p, e) => Control.Date = p.Date;
+			if (!Element.IsVisible)
+				flyout.Placement = FlyoutPlacementMode.Full;
 			flyout.ShowAt(Control);
 		}
 

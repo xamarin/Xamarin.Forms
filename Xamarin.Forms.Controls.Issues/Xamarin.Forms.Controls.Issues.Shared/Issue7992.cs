@@ -13,17 +13,36 @@ namespace Xamarin.Forms.Controls.Issues
 			var stackLayout = new StackLayout();
 			Content = stackLayout;
 
-			stackLayout.Children.Add(new Label { Text = "Label to keep picker from getting initial focus" });
+			stackLayout.Children.Add(new Label
+			{
+				Text = "Label to keep picker from getting initial focus"
+			});
 
 			var datePicker = new DatePicker();
 			stackLayout.Children.Add(datePicker);
 
-			var button = new Button { Text = "Focus Picker" };
-			button.Clicked += (s, e) =>
+			var buttonFocus = new Button
 			{
+				Text = "Calls Focus() on the date picker, which should open a date picker flyout."
+			};
+			buttonFocus.Clicked += (s, e) =>
+			{
+				datePicker.IsVisible = true;
 				datePicker.Focus();
 			};
-			stackLayout.Children.Add(button);
+			stackLayout.Children.Add(buttonFocus);
+
+			var buttonNotVisible = new Button
+			{
+				Text = "Makes the picker not visible and calls Focus(), which should open a full screen picker flyout."
+			};
+			buttonNotVisible.Clicked += (s, e) =>
+			{
+				datePicker.IsVisible = false;
+				datePicker.Focus();
+			};
+			stackLayout.Children.Add(buttonNotVisible);
+
 		}
 
 	}
