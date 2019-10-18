@@ -79,6 +79,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			get
 			{
+				if (CollectionView is CarouselView)
+				{
+					_baseItemSize = IsHorizontal ? ItemWidthConstraint : ItemHeightConstraint;
+					return _baseItemSize;
+				}
 				if (_baseItemSize == 0)
 				{
 					if (_allocatedSize.Width <= 0 || _allocatedSize.Height <= 0)
