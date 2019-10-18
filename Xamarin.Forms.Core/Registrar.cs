@@ -296,6 +296,26 @@ namespace Xamarin.Forms.Internals
 			return true;
 		}
 
+public static void RegisterStylesheets(Assembly assembly = null)
+		{
+			assembly = assembly ?? typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
+
+#if NETSTANDARD2_0
+			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StylePropertyAttribute), true);
+#else
+			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute)).ToArray();
+#endif
+			var stylePropertiesLength = styleAttributes.Length;
+			for (var i = 0; i < stylePropertiesLength; i++)
+			{
+				var attribute = (StylePropertyAttribute)styleAttributes[i];
+				if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
+					attrList.Add(attribute);
+				else
+					StyleProperties[attribute.CssPropertyName] = new List<StylePropertyAttribute> { attribute };
+			}
+		}
+
 		public static void RegisterStylesheets(InitializationFlags flags)
 		{
 			if ((flags & InitializationFlags.DisableCss) == InitializationFlags.DisableCss)
