@@ -254,7 +254,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (EditText.Text == newText)
 				return;
 
-			EditText.Text = TrimToMaxLength(newText);
+			newText = TrimToMaxLength(newText);
+			EditText.Text = newText;
 			EditText.SetSelection(newText.Length);
 		}
 
@@ -300,7 +301,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		string TrimToMaxLength(string currentText)
 		{
-			if (string.IsNullOrWhiteSpace(currentText) || currentText.Length <= Element.MaxLength)
+			if (currentText == null || currentText.Length <= Element.MaxLength)
 				return currentText;
 
 			return currentText.Substring(0, Element.MaxLength);
