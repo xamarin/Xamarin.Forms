@@ -113,29 +113,31 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (view is ViewGroup viewGroup)
+			// setClipBounds is only available in API 18 +
+			if ((int)Build.VERSION.SdkInt >= 18)
 			{
-				// setClipBounds is only available in API 18 +
-				if ((int)Build.VERSION.SdkInt >= 18)
+				if (!(view is ViewGroup viewGroup))
 				{
-					// Forms layouts should not impose clipping on their children
-					viewGroup.SetClipChildren(false);
-
-					// But if IsClippedToBounds is true, they _should_ enforce clipping at their own edges
-					viewGroup.ClipBounds = shouldClip ? new Rect(0, 0, viewGroup.Width, viewGroup.Height) : null;
+					return;
 				}
-				else
-				{
-					// For everything in 17 and below, use the setClipChildren method
-					if (!(viewGroup.Parent is ViewGroup parent))
-						return;
 
-					if ((int)Build.VERSION.SdkInt >= 18 && parent.ClipChildren == shouldClip)
-						return;
+				// Forms layouts should not impose clipping on their children
+				viewGroup.SetClipChildren(false);
 
-					parent.SetClipChildren(shouldClip);
-					parent.Invalidate();
-				}
+				// But if IsClippedToBounds is true, they _should_ enforce clipping at their own edges
+				viewGroup.ClipBounds = shouldClip ? new Rect(0, 0, viewGroup.Width, viewGroup.Height) : null;
+			}
+			else
+			{
+				// For everything in 17 and below, use the setClipChildren method
+				if (!(view.Parent is ViewGroup parent))
+					return;
+
+				if ((int)Build.VERSION.SdkInt >= 18 && parent.ClipChildren == shouldClip)
+					return;
+
+				parent.SetClipChildren(shouldClip);
+				parent.Invalidate();
 			}
 		}
 
