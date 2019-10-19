@@ -1,10 +1,70 @@
 ﻿using System;
 using AppKit;
 using System.ComponentModel;
-using Xamarin.Forms.Platform.macOS.Controls;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
+	public class XFSliderCell : NSSliderCell
+	{
+		public Color MinimumTrackColor { get; set; }
+
+		public Color MaximumTrackColor { get; set; }
+
+		public Color ThumbColor { get; set; }
+
+		public override void DrawBar(CGRect aRect, bool flipped)
+		{ 
+			// Mimick the dimensions of the original slider
+			var originalHeight = aRect.Height;
+			aRect.Height = 2.7f;
+			var radius = aRect.Height / 2;
+			aRect.Y += (originalHeight - aRect.Height) / 2;
+
+			// Calc the progress percentage to know where one bar starts
+			var progress = (float)((DoubleValue - MinValue) / (MaxValue - MinValue));
+
+			var minTrackRect = aRect;
+			minTrackRect.Width *= progress;
+
+			var maxTrackRect = aRect;
+			maxTrackRect.X += maxTrackRect.Width * progress;
+			maxTrackRect.Width = maxTrackRect.Width * (1 - progress);
+
+			// Draw min track
+			var minTrackPath = NSBezierPath.FromRoundedRect(minTrackRect, radius, radius);
+			var minTrackColor = MinimumTrackColor.IsDefault ? NSColor.ControlAccentColor : MinimumTrackColor.ToNSColor();
+			minTrackColor.SetFill();
+			minTrackPath.Fill();
+
+			// Draw max track
+			var maxTrackPath = NSBezierPath.FromRoundedRect(maxTrackRect, radius, radius);
+			var maxTrackColor = MaximumTrackColor.IsDefault ? NSColor.ControlShadow : MaximumTrackColor.ToNSColor();
+			maxTrackColor.SetFill();
+			maxTrackPath.Fill();
+		}
+
+		public override void DrawKnob(CGRect knobRect)
+		{
+			// Mimick the dimensions of the original slider
+			knobRect.Width -= 6;
+			knobRect.Height -= 6;
+			knobRect.Y += 3;
+			knobRect.X += 3;
+			var radius = 7.5f;
+
+			var path = new NSBezierPath();
+			path.AppendPathWithRoundedRect(knobRect, radius, radius);
+			// Draw inside
+			var knobColor = ThumbColor.IsDefault ? NSColor.ControlLightHighlight : ThumbColor.ToNSColor();
+			knobColor.SetFill();
+			path.Fill();
+			// Draw border
+			NSColor.ControlShadow.SetStroke();
+			path.Stroke();
+		}
+	}
+
 	public class SliderRenderer : ViewRenderer<Slider, NSSlider>
 	{
 		bool _disposed;
@@ -17,13 +77,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new FormsNSSlider());
+					SetNativeControl(new NSSlider());
 					Control.Activated += OnControlActivated;
+					Control.Cell = new XFSliderCell();
 				}
 
 				UpdateMaximum();
 				UpdateMinimum();
 				UpdateValue();
+				UpdateMinimumTrackColor();
+				UpdateMaximumTrackColor();
+				UpdateThumbColor();
 			}
 
 			base.OnElementChanged(e);
@@ -39,6 +103,41 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMinimum();
 			else if (e.PropertyName == Slider.ValueProperty.PropertyName)
 				UpdateValue();
+			else if (e.PropertyName == Slider.MinimumTrackColorProperty.PropertyName)
+				UpdateMinimumTrackColor();
+			else if (e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName)
+				UpdateMaximumTrackColor();
+			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
+			{
+				UpdateThumbColor();
+			}
+		}
+
+		private void UpdateMaximumTrackColor()
+		{
+			// Cell could be overwritten with an other custom cell
+			if (Control.Cell is XFSliderCell sliderCell)
+			{
+				sliderCell.MaximumTrackColor = Element.MaximumTrackColor;
+			}
+		}
+
+		private void UpdateMinimumTrackColor()
+		{
+			// Cell could be overwritten with an other custom cell
+			if (Control.Cell is XFSliderCell sliderCell)
+			{
+				sliderCell.MinimumTrackColor = Element.MinimumTrackColor;
+			}
+		}
+
+		private void UpdateThumbColor()
+		{
+			// Cell could be overwritten with an other custom cell
+			if (Control.Cell is XFSliderCell sliderCell)
+			{
+				sliderCell.ThumbColor = Element.ThumbColor;
+			}
 		}
 
 		protected override void Dispose(bool disposing)
