@@ -7,7 +7,9 @@ using Xamarin.Forms.Platform.UWP;
 // Views
 
 [assembly: ExportRenderer(typeof(Layout), typeof(LayoutRenderer))]
+#pragma warning disable CS0618 // Type or member is obsolete
 [assembly: ExportRenderer(typeof(BoxView), typeof(BoxViewRenderer))]
+#pragma warning restore CS0618 // Type or member is obsolete
 [assembly: ExportRenderer(typeof(Image), typeof(ImageRenderer))]
 [assembly: ExportRenderer(typeof(ImageButton), typeof(ImageButtonRenderer))]
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]

@@ -20,4 +20,9 @@ namespace Xamarin.Forms.Controls.Issues
 			double.Parse(BottomLeft.Text), double.Parse(BottomRight.Text));
 		}
 	}
+
+	public class Issue4459BoxView : BoxView
+	{
+
+	}
 }
