@@ -18,8 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterString.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterTemplate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewHeaderFooterView.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CollectionViewItemsUpdatingScrollMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue5500.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7823.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3475.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6476.cs" />
