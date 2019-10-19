@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Controls.Issues
 			if (RunningApp.IsApiHigherThan(17))
 			{
 				var clipBoundsRec = RunningApp.InvokeFromElement<object>(RootFrame, GetClipBounds)[0];
-				Assert.AreEqual(expected, clipBoundsRec.ToString().Contains("\"empty\": false"));
+				Assert.AreEqual(expected, clipBoundsRec?.ToString()?.Contains("\"empty\": false"));
 				Assert.AreNotEqual(expected, clipChildrenValue);
 			}
 			else

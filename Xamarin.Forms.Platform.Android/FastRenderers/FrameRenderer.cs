@@ -238,10 +238,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateClippedToBounds()
 		{
-			var isClipped = Element.IsSet(Xamarin.Forms.Layout.IsClippedToBoundsProperty)
-				? Element.IsClippedToBounds : Element.CornerRadius > 0f;
-
-			this.SetClipToOutline(isClipped);
+			this.SetClipToOutline(Element.IsClippedToBounds, Element);
 		}
 
 		void UpdateBackgroundColor()
