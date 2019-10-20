@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
+using System.IO;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -60,7 +61,8 @@ namespace Xamarin.Forms.Controls
 #if __ANDROID__
 		static IApp InitializeAndroidApp()
 		{
-			var app = ConfigureApp.Android.ApkFile(AppPaths.ApkPath).Debug().StartApp();
+			var fullApkPath = Path.Combine(TestContext.CurrentContext.TestDirectory, AppPaths.ApkPath);
+			var app = ConfigureApp.Android.ApkFile(fullApkPath).Debug().StartApp(UITest.Configuration.AppDataMode.DoNotClear);
 
 			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
 			{
@@ -87,7 +89,7 @@ namespace Xamarin.Forms.Controls
 			}
 
 			// Running on the simulator
-			//var app = ConfigureApp.iOS
+			// var app = ConfigureApp.iOS
 			//				  .PreferIdeSettings()
 			//		  		  .AppBundle("../../../Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app")
 			//				  .Debug()
@@ -741,10 +743,10 @@ namespace Xamarin.Forms.Controls
 				AppSetup.EndIsolate();
 			}
 		}
-		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true)
+		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true, string timeoutMessage = null)
 		{			
 			if(testForFlyoutIcon)
-				RunningApp.WaitForElement(flyoutIcon);
+				RunningApp.WaitForElement(flyoutIcon, timeoutMessage);
 
 			if (usingSwipe)
 			{
@@ -758,10 +760,11 @@ namespace Xamarin.Forms.Controls
 		}
 
 
-		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false)
+		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
 		{
-			ShowFlyout(flyoutIcon, usingSwipe);
-			RunningApp.WaitForElement(text);
+			timeoutMessage = timeoutMessage ?? text;
+			ShowFlyout(flyoutIcon, usingSwipe, timeoutMessage: timeoutMessage);
+			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
 		}
 
@@ -783,7 +786,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[SetUpFixture]
 	public class IssuesSetup
 	{
-		[SetUp]
+		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
 			AppSetup.RunningApp = AppSetup.Setup(null);

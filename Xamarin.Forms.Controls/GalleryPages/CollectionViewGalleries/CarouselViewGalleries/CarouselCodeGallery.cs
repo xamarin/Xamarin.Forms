@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				}
 			};
 			var itemsLayout =
-			new ListItemsLayout(orientation)
+			new LinearItemsLayout(orientation)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var positionControl = new PositionControl(carouselView, nItems);
 			layout.Children.Add(positionControl);
 
-			var spacingModifier = new SpacingModifier(carouselView, "Update Spacing");
+			var spacingModifier = new SpacingModifier(carouselView.ItemsLayout, "Update Spacing");
 
 			layout.Children.Add(spacingModifier);
 
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var labelDragging = new Label { Text = nameof(carouselView.IsDragging) };
 			var switchDragging = new Switch();
 
-			switchDragging.SetBinding(Switch.IsToggledProperty, nameof(carouselView.IsDragging));
+			switchDragging.SetBinding(Switch.IsToggledProperty, nameof(carouselView.IsDragging), BindingMode.OneWay);
 			stacklayoutInfo.Children.Add(labelDragging);
 			stacklayoutInfo.Children.Add(switchDragging);
 

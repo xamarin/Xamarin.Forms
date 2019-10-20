@@ -52,10 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 				_refreshing = value;
 
 				if (RefreshView != null && RefreshView.IsRefreshing != _refreshing)
-					RefreshView.IsRefreshing = _refreshing;
-
-				if (base.Refreshing == _refreshing)
-					return;
+					RefreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, _refreshing);
 
 				base.Refreshing = _refreshing;
 			}
@@ -186,10 +183,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void OnRefresh()
 		{
-			if (RefreshView?.Command?.CanExecute(RefreshView?.CommandParameter) ?? false)
-			{
-				RefreshView.Command.Execute(RefreshView?.CommandParameter);
-			}
+			Refreshing = true;
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
