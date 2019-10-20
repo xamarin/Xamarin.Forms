@@ -169,20 +169,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				UpdateLineBreakMode();
-<<<<<<< HEAD
-				UpdateAlignment();
-				if (e.OldElement?.Text != e.NewElement?.Text)
-				{
-					UpdateText();
-					UpdateTextDecorations();
-				}
-				if (e.OldElement?.TextDecorations != e.NewElement?.TextDecorations)
-					UpdateTextDecorations();
-=======
 				UpdateHorizontalTextAlignment();
 				UpdateText();
 				UpdateTextDecorations();
->>>>>>> xf/master
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
