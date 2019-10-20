@@ -566,7 +566,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SearchButtonClicked(object sender, EventArgs e)
 		{
-			_searchController.Active = false;
 			((ISearchHandlerController)SearchHandler).QueryConfirmed();
 		}
 
