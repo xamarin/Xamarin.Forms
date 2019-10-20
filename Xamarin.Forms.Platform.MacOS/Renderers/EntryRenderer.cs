@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateAlignment();
 			UpdateMaxLength();
 			UpdateIsReadOnly();
-        }
+		}
 
 		void TextFieldFocusChanged(object sender, BoolEventArgs e)
 		{
@@ -281,6 +281,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			var color = Element.IsEnabled && !targetColor.IsDefault ? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
 
 			Control.PlaceholderAttributedString = formatted.ToAttributed(Element, color);
+		}
+
+		protected override void SetAccessibilityLabel()
+		{
+			if (_disposed || Control == null)
+				return;
+
+			Control.AccessibilityLabel = (string)Element?.GetValue(AutomationProperties.NameProperty) ?? Control.PlaceholderAttributedString?.Value;
 		}
 
 		void UpdateText()

@@ -2,9 +2,8 @@
 using Xamarin.Forms.Platform.Tizen;
 using Xamarin.Forms.Material.Tizen;
 using Tizen.NET.MaterialComponents;
-using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 
-[assembly: ExportRenderer(typeof(Slider), typeof(MaterialSliderRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
+[assembly: ExportRenderer(typeof(Slider), typeof(MaterialSliderRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialSliderRenderer : SliderRenderer
@@ -13,9 +12,16 @@ namespace Xamarin.Forms.Material.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new MSlider(TForms.NativeParent));
+				SetNativeControl(new MSlider(Forms.NativeParent));
 			}
 			base.OnElementChanged(e);
+		}
+
+		protected override void UpdateThumbColor()
+		{
+			var color = Element.ThumbColor.IsDefault ? MColors.Current.PrimaryColor : Element.ThumbColor.ToNative();
+			Control.SetPartColor(Parts.Slider.Handler, color);
+			Control.SetPartColor(Parts.Slider.HandlerPressed, color);
 		}
 	}
 }

@@ -2,20 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
+using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class ItemsView : View
+	public abstract class ItemsView : View
 	{
 		List<Element> _logicalChildren = new List<Element>();
-
-		protected internal ItemsView()
-		{
-			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(ItemsView));
-		}
 
 		public static readonly BindableProperty EmptyViewProperty =
 			BindableProperty.Create(nameof(EmptyView), typeof(object), typeof(ItemsView), null);
@@ -38,10 +32,27 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ItemsSourceProperty =
 			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null);
 
-		public IEnumerable ItemsSource 
+		public IEnumerable ItemsSource
 		{
 			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
+		}
+
+		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty =
+			BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommand), typeof(ICommand), typeof(ItemsView), null);
+
+		public ICommand RemainingItemsThresholdReachedCommand
+		{
+			get => (ICommand)GetValue(RemainingItemsThresholdReachedCommandProperty);
+			set => SetValue(RemainingItemsThresholdReachedCommandProperty, value);
+		}
+
+		public static readonly BindableProperty RemainingItemsThresholdReachedCommandParameterProperty = BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommandParameter), typeof(object), typeof(ItemsView), default(object));
+
+		public object RemainingItemsThresholdReachedCommandParameter
+		{
+			get => GetValue(RemainingItemsThresholdReachedCommandParameterProperty);
+			set => SetValue(RemainingItemsThresholdReachedCommandParameterProperty, value);
 		}
 
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(
@@ -56,7 +67,6 @@ namespace Xamarin.Forms
 			set => SetValue(HorizontalScrollBarVisibilityProperty, value);
 		}
 
-
 		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create(
 			nameof(VerticalScrollBarVisibility),
 			typeof(ScrollBarVisibility),
@@ -69,8 +79,22 @@ namespace Xamarin.Forms
 			set => SetValue(VerticalScrollBarVisibilityProperty, value);
 		}
 
+		public static readonly BindableProperty RemainingItemsThresholdProperty =
+			BindableProperty.Create(nameof(RemainingItemsThreshold), typeof(int), typeof(ItemsView), -1, validateValue: (bindable, value) => (int)value >= -1);
+
+		public int RemainingItemsThreshold
+		{
+			get => (int)GetValue(RemainingItemsThresholdProperty);
+			set => SetValue(RemainingItemsThresholdProperty, value);
+		}
+
 		public void AddLogicalChild(Element element)
 		{
+			if (element == null)
+			{
+				return;
+			}
+
 			_logicalChildren.Add(element);
 
 			PropertyPropagationExtensions.PropagatePropertyChanged(null, element);
@@ -80,6 +104,11 @@ namespace Xamarin.Forms
 
 		public void RemoveLogicalChild(Element element)
 		{
+			if (element == null)
+			{
+				return;
+			}
+
 			element.Parent = null;
 			_logicalChildren.Remove(element);
 		}
@@ -92,23 +121,18 @@ namespace Xamarin.Forms
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildren.AsReadOnly();
 #endif
 
-		public static readonly BindableProperty ItemsLayoutProperty =
-			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView), 
-				ListItemsLayout.Vertical);
+		internal static readonly BindableProperty InternalItemsLayoutProperty =
+			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
+				LinearItemsLayout.Vertical);
 
-		public IItemsLayout ItemsLayout
+
+		//	public abstract IItemsLayout ItemsLayout { get; }
+
+
+		protected IItemsLayout InternalItemsLayout
 		{
-			get => (IItemsLayout)GetValue(ItemsLayoutProperty);
-			set => SetValue(ItemsLayoutProperty, value);
-		}
-
-		public static readonly BindableProperty ItemTemplateProperty =
-			BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(ItemsView));
-
-		public DataTemplate ItemTemplate
-		{
-			get => (DataTemplate)GetValue(ItemTemplateProperty);
-			set => SetValue(ItemTemplateProperty, value);
+			get => (IItemsLayout)GetValue(InternalItemsLayoutProperty);
+			set => SetValue(InternalItemsLayoutProperty, value);
 		}
 
 		public static readonly BindableProperty ItemSizingStrategyProperty =
@@ -118,6 +142,16 @@ namespace Xamarin.Forms
 		{
 			get => (ItemSizingStrategy)GetValue(ItemSizingStrategyProperty);
 			set => SetValue(ItemSizingStrategyProperty, value);
+		}
+
+
+		public static readonly BindableProperty ItemTemplateProperty =
+			BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(ItemsView));
+
+		public DataTemplate ItemTemplate
+		{
+			get => (DataTemplate)GetValue(ItemTemplateProperty);
+			set => SetValue(ItemTemplateProperty, value);
 		}
 
 		public static readonly BindableProperty ItemsUpdatingScrollModeProperty =
@@ -142,7 +176,28 @@ namespace Xamarin.Forms
 			OnScrollToRequested(new ScrollToRequestEventArgs(item, group, position, animate));
 		}
 
+		public void SendRemainingItemsThresholdReached()
+		{
+			RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
+
+			if (RemainingItemsThresholdReachedCommand?.CanExecute(RemainingItemsThresholdReachedCommandParameter) == true)
+				RemainingItemsThresholdReachedCommand?.Execute(RemainingItemsThresholdReachedCommandParameter);
+
+			OnRemainingItemsThresholdReached();
+		}
+
+		public void SendScrolled(ItemsViewScrolledEventArgs e)
+		{
+			Scrolled?.Invoke(this, e);
+
+			OnScrolled(e);
+		}
+
 		public event EventHandler<ScrollToRequestEventArgs> ScrollToRequested;
+
+		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
+
+		public event EventHandler RemainingItemsThresholdReached;
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
@@ -160,6 +215,16 @@ namespace Xamarin.Forms
 		protected virtual void OnScrollToRequested(ScrollToRequestEventArgs e)
 		{
 			ScrollToRequested?.Invoke(this, e);
+		}
+
+		protected virtual void OnRemainingItemsThresholdReached()
+		{
+			
+		}
+
+		protected virtual void OnScrolled(ItemsViewScrolledEventArgs e)
+		{
+			
 		}
 	}
 }

@@ -1,10 +1,9 @@
 using System;
 using Xamarin.Forms.Internals;
-using ASize = Android.Util.Size;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class TemplatedItemViewHolder : SelectableViewHolder
+	public class TemplatedItemViewHolder : SelectableViewHolder
 	{
 		readonly ItemContentView _itemContentView;
 		readonly DataTemplate _template;
@@ -12,7 +11,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public View View { get; private set; }
 
-		public TemplatedItemViewHolder(ItemContentView itemContentView, DataTemplate template) : base(itemContentView)
+		public TemplatedItemViewHolder(ItemContentView itemContentView, DataTemplate template, 
+			bool isSelectionEnabled = true) : base(itemContentView, isSelectionEnabled)
 		{
 			_itemContentView = itemContentView;
 			_template = template;
@@ -34,12 +34,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Recycle(ItemsView itemsView)
 		{
-			View.BindingContext = null;
 			itemsView.RemoveLogicalChild(View);
 		}
 
 		public void Bind(object itemBindingContext, ItemsView itemsView, 
-			Action<ASize> reportMeasure = null, ASize size = null)
+			Action<Size> reportMeasure = null, Size? size = null)
 		{
 			var template = _template.SelectDataTemplate(itemBindingContext, itemsView);
 
@@ -51,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 				_selectedTemplate = template;
 			}
 
-			_itemContentView.HandleItemSizingStrategy(reportMeasure, size); 
+			_itemContentView.HandleItemSizingStrategy(reportMeasure, size);
 
 			// Set the binding context before we add it as a child of the ItemsView; otherwise, it will
 			// inherit the ItemsView's binding context

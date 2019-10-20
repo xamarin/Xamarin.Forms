@@ -86,7 +86,7 @@ namespace Xamarin.Forms
 
 		public ShellContent() => ((INotifyCollectionChanged)MenuItems).CollectionChanged += MenuItemsCollectionChanged;
 
-		internal bool IsVisibleContent => Parent is ShellSection shellSection && shellSection.IsVisibleSection;
+		internal bool IsVisibleContent => Parent is ShellSection shellSection && shellSection.IsVisibleSection && shellSection.CurrentItem == this;
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
 
 		internal override void SendDisappearing()
@@ -172,7 +172,7 @@ namespace Xamarin.Forms
 			}
 
 			if (shellContent.Parent?.Parent is ShellItem shellItem)
-				shellItem?.SendStructureChanged();
+				shellItem.SendStructureChanged();
 		}
 
 		void MenuItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

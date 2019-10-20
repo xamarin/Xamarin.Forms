@@ -338,12 +338,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
 		{
-			Profile.FrameBegin(nameof(CreateRenderer));
 			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
 				?? new DefaultRenderer(context);
-			Profile.FramePartition(element.GetType().Name);
+
 			renderer.SetElement(element);
-			Profile.FrameEnd();
 
 			return renderer;
 		}
@@ -582,7 +580,7 @@ namespace Xamarin.Forms.Platform.Android
 				ClearMasterDetailToggle();
 				return;
 			}
-			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || CurrentMasterDetailPage.Master.IconImageSource.IsEmpty ||
+			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || (CurrentMasterDetailPage.Master.IconImageSource?.IsEmpty ?? true) ||
 				(MasterDetailPageController.ShouldShowSplitMode && CurrentMasterDetailPage.IsPresented))
 			{
 				//clear out existing icon;
@@ -1138,7 +1136,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal static int GenerateViewId()
 		{
 			// getting unique Id's is an art, and I consider myself the Jackson Pollock of the field
-			if ((int)Build.VERSION.SdkInt >= 17)
+			if ((int)Forms.SdkInt >= 17)
 				return global::Android.Views.View.GenerateViewId();
 
 			// Numbers higher than this range reserved for xml

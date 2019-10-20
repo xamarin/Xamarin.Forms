@@ -5,12 +5,16 @@ using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Xamarin.Forms.Controls.Issues;
+#if __IOS__
+using Xamarin.UITest.iOS;
+#endif
 
-namespace Xamarin.Forms.Core.UITests
+namespace Xamarin.UITest
 {
 	internal static class AppExtensions
 	{
-		public static T[] RetryUntilPresent<T>(
+		public static T[] QueryUntilPresent<T>(
 			this IApp app,
 			Func<T[]> func,
 			int retryCount = 10,
@@ -29,6 +33,33 @@ namespace Xamarin.Forms.Core.UITests
 			return results;
 		}
 
+		public static bool IsApiHigherThan(this IApp app, int apiLevel, string apiLabelId = "ApiLevel")
+		{
+			var api = Convert.ToInt32(app.WaitForElement("ApiLabel")[0].ReadText());
+
+			if (api < apiLevel)
+				return false;
+
+			return true;
+		}
+
+#if __IOS__
+		public static void SendAppToBackground(this IApp app, TimeSpan timeSpan)
+		{
+			if(app is Xamarin.Forms.Controls.ScreenshotConditionalApp sca)
+			{
+				sca.SendAppToBackground(timeSpan);
+				Thread.Sleep(timeSpan.Add(TimeSpan.FromSeconds(2)));
+			}
+		}
+#endif
+	}
+}
+
+namespace Xamarin.Forms.Core.UITests
+{
+	internal static class AppExtensions
+	{
 		public static AppRect ScreenBounds(this IApp app)
 		{
 			return app.Query(Queries.Root()).First().Rect;

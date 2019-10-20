@@ -5,7 +5,7 @@
 	x:Class="Xamarin.Forms.Platform.UWP.Resources">
 
 	<ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="FormsCommandBarStyle.xaml" />
+		<ResourceDictionary Source="FormsCommandBarStyle.xaml" />
 		<ResourceDictionary Source="PageControlStyle.xaml" />
 		<ResourceDictionary Source="FormsProgressBarStyle.xaml" />
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
@@ -14,8 +14,9 @@
 		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
 		<ResourceDictionary Source="SliderStyle.xaml" />
-		<ResourceDictionary Source="Items/ItemsViewStyles.xaml" />
-	</ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
+	    <ResourceDictionary Source="Shell/ShellStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 	
 	<uwp:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
 	<uwp:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />

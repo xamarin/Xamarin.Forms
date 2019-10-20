@@ -38,11 +38,11 @@ namespace Xamarin.Forms.Platform.iOS
 					throw new ArgumentOutOfRangeException(nameof(indexPath));
 				}
 
-				return this[indexPath.Row];
+				return this[(int)indexPath.Item];
 			}
 		}
 
-		public int GroupCount => Count == 0 ? 0 : 1;
+		public int GroupCount => 1;
 
 		public int ItemCount => Count;
 

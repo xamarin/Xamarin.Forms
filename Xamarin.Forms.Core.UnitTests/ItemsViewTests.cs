@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[SetUp]
 		public override void Setup()
 		{
-			Device.SetFlags(new List<string> {CollectionView.CollectionViewExperimental}); 
+			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental }); 
 			base.Setup();
 			var mockDeviceInfo = new TestDeviceInfo();
 			Device.Info = mockDeviceInfo;
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void VerticalListMeasurement()
 		{
-			var itemsView = new ItemsView();
+			var itemsView = new StructuredItemsView();
 
 			var sizeRequest = itemsView.Measure(double.PositiveInfinity, double.PositiveInfinity);
 
@@ -37,9 +37,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void HorizontalListMeasurement()
 		{
-			var itemsView = new ItemsView();
+			var itemsView = new StructuredItemsView();
 
-			itemsView.ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal);
+			itemsView.ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Horizontal);
 
 			var sizeRequest = itemsView.Measure(double.PositiveInfinity, double.PositiveInfinity);
 

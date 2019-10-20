@@ -6,24 +6,25 @@
     <authors>Microsoft</authors>
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms xamarinforms xamarin.forms</tags>
-    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
-    <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
+    <license type="expression">MIT</license>
+    <iconUrl>https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Assets/xamarin_128x128.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Build native UIs for iOS, Android, UWP, macOS, Tizen and many more from a single, shared C# codebase</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group targetFramework="MonoAndroid81">
-        <dependency id="Xamarin.Android.Support.v4" version="28.0.0.1"/>
-        <dependency id="Xamarin.Android.Support.Design" version="28.0.0.1"/>
-        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="28.0.0.1"/>
-        <dependency id="Xamarin.Android.Support.v7.CardView" version="28.0.0.1"/>
-        <dependency id="Xamarin.Android.Support.CustomTabs" version="28.0.0.1"/>
+        <dependency id="Xamarin.Android.Support.v4" version="28.0.0.3"/>
+        <dependency id="Xamarin.Android.Support.Design" version="28.0.0.3"/>
+        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="28.0.0.3"/>
+        <dependency id="Xamarin.Android.Support.v7.CardView" version="28.0.0.3"/>
+        <dependency id="Xamarin.Android.Support.CustomTabs" version="28.0.0.3"/>
       </group>
       <group targetFramework="uap10.0">
         <dependency id="NETStandard.Library" version="2.0.1"/>
         <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="6.0.12" />
         <dependency id="Win2D.uwp" version="1.20.0" />
+        <dependency id="Microsoft.UI.Xaml" version="2.1.190606001" />
       </group>
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
@@ -221,8 +222,10 @@
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\TabbedPageStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsEmbeddedPageWrapper.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\StepperControl.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Items\ItemsViewStyles.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Items" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\CollectionView\ItemsViewStyles.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\CollectionView" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsCheckBoxStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Microsoft.UI.Xaml\DensityStyles\Compact.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\DensityStyles\" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Shell\ShellStyles.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Shell" />
 
     <!--Mac-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />

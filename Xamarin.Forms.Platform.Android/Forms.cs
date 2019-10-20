@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
-	public struct ActivationOptions
+	public struct InitializationOptions
 	{
 		public struct EffectScope
 		{
@@ -33,9 +33,9 @@ namespace Xamarin.Forms
 			public ExportEffectAttribute[] Effects;
 		}
 
-		public ActivationOptions(Context activity, Bundle bundle, Assembly resourceAssembly)
+		public InitializationOptions(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
-			this = default(ActivationOptions);
+			this = default(InitializationOptions);
 			this.Activity = activity;
 			this.Bundle = bundle;
 			this.ResourceAssembly = resourceAssembly;
@@ -45,7 +45,7 @@ namespace Xamarin.Forms
 		public Assembly ResourceAssembly;
 		public HandlerAttribute[] Handlers;
 		public EffectScope[] EffectScopes;
-		public ActivationFlags Flags;
+		public InitializationFlags Flags;
 	}
 
 	public static class Forms
@@ -53,8 +53,10 @@ namespace Xamarin.Forms
 
 		const int TabletCrossover = 600;
 
+		static BuildVersionCodes? s_sdkInt;
 		static bool? s_isLollipopOrNewer;
 		static bool? s_isMarshmallowOrNewer;
+		static bool? s_isNougatOrNewer;
 
 		[Obsolete("Context is obsolete as of version 2.5. Please use a local context instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -70,12 +72,19 @@ namespace Xamarin.Forms
 		static Color _ColorButtonNormal = Color.Default;
 		public static Color ColorButtonNormalOverride { get; set; }
 
+		internal static BuildVersionCodes SdkInt {
+			get {
+				if (!s_sdkInt.HasValue)
+					s_sdkInt = Build.VERSION.SdkInt;
+				return (BuildVersionCodes)s_sdkInt;
+			}
+		}
 		internal static bool IsLollipopOrNewer
 		{
 			get
 			{
 				if (!s_isLollipopOrNewer.HasValue)
-					s_isLollipopOrNewer = (int)Build.VERSION.SdkInt >= 21;
+					s_isLollipopOrNewer = (int)SdkInt >= 21;
 				return s_isLollipopOrNewer.Value;
 			}
 		}
@@ -85,8 +94,18 @@ namespace Xamarin.Forms
 			get
 			{
 				if (!s_isMarshmallowOrNewer.HasValue)
-					s_isMarshmallowOrNewer = (int)Build.VERSION.SdkInt >= 23;
+					s_isMarshmallowOrNewer = (int)SdkInt >= 23;
 				return s_isMarshmallowOrNewer.Value;
+			}
+		}
+
+		internal static bool IsNougatOrNewer
+		{
+			get
+			{
+				if (!s_isNougatOrNewer.HasValue)
+					s_isNougatOrNewer = (int)Build.VERSION.SdkInt >= 24;
+				return s_isNougatOrNewer.Value;
 			}
 		}
 
@@ -142,13 +161,13 @@ namespace Xamarin.Forms
 			Profile.FrameEnd();
 		}
 
-		public static void Initialize(ActivationOptions activation)
+		public static void Init(InitializationOptions options)
 		{
 			Profile.FrameBegin();
 			SetupInit(
-				activation.Activity,
-				activation.ResourceAssembly,
-				activation
+				options.Activity,
+				options.ResourceAssembly,
+				options
 			);
 			Profile.FrameEnd();
 		}
@@ -203,10 +222,11 @@ namespace Xamarin.Forms
 		static void SetupInit(
 			Context activity,
 			Assembly resourceAssembly,
-			ActivationOptions? maybeOptions = null
+			InitializationOptions? maybeOptions = null
 		)
 		{
 			Profile.FrameBegin();
+
 			if (!IsInitialized)
 			{
 				// Only need to get this once; it won't change
@@ -251,16 +271,14 @@ namespace Xamarin.Forms
 
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because Device.Info watches for orientation changes and we need a current activity for that
-			Profile.FramePartition("new AndroidDeviceInfo(activity)");
+			Profile.FramePartition("create AndroidDeviceInfo");
 			Device.Info = new AndroidDeviceInfo(activity);
+
+			Profile.FramePartition("setFlags");
 			Device.SetFlags(s_flags);
 
 			Profile.FramePartition("AndroidTicker");
-
-			var ticker = Ticker.Default as AndroidTicker;
-			if (ticker != null)
-				ticker.Dispose();
-			Ticker.SetDefault(new AndroidTicker());
+			Ticker.SetDefault(null);
 
 			Profile.FramePartition("RegisterAll");
 
@@ -287,7 +305,7 @@ namespace Xamarin.Forms
 					}
 
 					// css
-					var noCss = (flags & ActivationFlags.NoCss) != 0;
+					var noCss = (flags & InitializationFlags.DisableCss) != 0;
 					if (!noCss)
 						Registrar.RegisterStylesheets();
 				}
@@ -307,7 +325,7 @@ namespace Xamarin.Forms
 			int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
 			Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
 
-			if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1)
+			if (SdkInt >= BuildVersionCodes.JellyBeanMr1)
 				Device.SetFlowDirection(activity.Resources.Configuration.LayoutDirection.ToFlowDirection());
 
 			if (ExpressionSearch.Default == null)
@@ -355,7 +373,7 @@ namespace Xamarin.Forms
 				{
 					// Detect if legacy device and use appropriate accent color
 					// Hardcoded because could not get color from the theme drawable
-					var sdkVersion = (int)Build.VERSION.SdkInt;
+					var sdkVersion = (int)SdkInt;
 					if (sdkVersion <= 10)
 					{
 						// legacy theme button pressed color
@@ -529,6 +547,12 @@ namespace Xamarin.Forms
 
 			public void BeginInvokeOnMainThread(Action action)
 			{
+				if (_context.IsDesignerContext())
+				{
+					action();
+					return;
+				}
+
 				if (s_handler == null || s_handler.Looper != Looper.MainLooper)
 				{
 					s_handler = new Handler(Looper.MainLooper);
@@ -642,15 +666,18 @@ namespace Xamarin.Forms
 
 			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
-				using (var client = new HttpClient())
-				using (HttpResponseMessage response = await client.GetAsync(uri, cancellationToken))
+				using (var client = new HttpClient())				
 				{
+					HttpResponseMessage response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
 					if (!response.IsSuccessStatusCode)
 					{
 						Internals.Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
 						return null;
 					}
-					return await response.Content.ReadAsStreamAsync();
+
+					// the HttpResponseMessage needs to be disposed of after the calling code is done with the stream 
+					// otherwise the stream may get disposed before the caller can use it
+					return new StreamWrapper(await response.Content.ReadAsStreamAsync().ConfigureAwait(false), response);					
 				}
 			}
 
