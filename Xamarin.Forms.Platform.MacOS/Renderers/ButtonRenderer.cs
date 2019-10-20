@@ -8,8 +8,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class ButtonRenderer : ViewRenderer<Button, NSButton>
 	{
-		class FormsNSButton : NSButton
-		{
+		public class FormsNSButton : NSButton, IImageView
+		{ 
 			class FormsNSButtonCell : NSButtonCell
 			{
 				public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)
@@ -29,19 +29,18 @@ namespace Xamarin.Forms.Platform.MacOS
 			public FormsNSButton()
 			{
 				Cell = new FormsNSButtonCell();
-			}
+			} 
 
-			public event Action Pressed;
-
-			public event Action Released;
+			public event EventHandler Pressed; 
+			public event EventHandler Released;
 
 			public override void MouseDown(NSEvent theEvent)
 			{
-				Pressed?.Invoke();
+				Pressed?.Invoke(this, EventArgs.Empty);
 
 				base.MouseDown(theEvent);
 
-				Released?.Invoke();
+				Released?.Invoke(this, EventArgs.Empty);
 			}
 
 			nfloat _leftPadding;
@@ -189,18 +188,18 @@ namespace Xamarin.Forms.Platform.MacOS
 				Control.AttributedTitle = textWithColor;
 			}
 		}
-
+ 
 		void UpdatePadding()
 		{
 			(Control as FormsNSButton)?.UpdatePadding(Element.Padding);
 		}
-
-		void HandleButtonPressed()
+ 
+		void HandleButtonPressed(object sender, EventArgs args) 
 		{
 			Element?.SendPressed();
 		}
 
-		void HandleButtonReleased()
+		void HandleButtonReleased(object sender, EventArgs args)
 		{
 			Element?.SendReleased();
 		}

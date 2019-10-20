@@ -1,8 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
-using NativeView = UIKit.UIView;
 
+#if __MOBILE__
+using UIKit;
+using NativeView = UIKit.UIView;
 namespace Xamarin.Forms.Platform.iOS
+#else
+using AppKit;
+using CoreAnimation;
+using NativeView = AppKit.NSView;
+namespace Xamarin.Forms.Platform.MacOS
+#endif
+	 
 {
 	internal static class BorderElementManager
 	{

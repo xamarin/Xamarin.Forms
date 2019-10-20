@@ -3,14 +3,26 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Foundation;
+using Foundation; 
+using SizeF = CoreGraphics.CGSize; 
+
+#if __MOBILE__
 using UIKit;
+using NativeButton = UIKit.UIButton;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
-{
-	public class ImageButtonRenderer : ViewRenderer<ImageButton, UIButton>, IImageVisualElementRenderer
+#else
+using AppKit;
+using static Xamarin.Forms.Platform.MacOS.ButtonRenderer;
+using NativeButton = Xamarin.Forms.Platform.MacOS.ButtonRenderer.FormsNSButton;
+using Xamarin.Forms.Platform.MacOS;
+
+namespace Xamarin.Forms.Platform.MacOS
+#endif 
+{ 
+
+	public class ImageButtonRenderer : ViewRenderer<ImageButton, NativeButton>, IImageVisualElementRenderer
 	{
 		bool _isDisposed;
 
@@ -21,14 +33,16 @@ namespace Xamarin.Forms.Platform.iOS
 		// but under iOS that suggestion won't work
 		readonly nfloat _minimumButtonHeight = 44; // Apple docs
 
+		public bool IsDisposed => throw new NotImplementedException();
 
 		public ImageButtonRenderer() : base()
 		{
-			ButtonElementManager.Init(this);
-			BorderElementManager.Init(this);
+			BorderElementManager.Init(this); 
+			ButtonElementManager.Init(this); 
 			ImageElementManager.Init(this);
 		}
 
+#if __MOBILE__
 		public override SizeF SizeThatFits(SizeF size)
 		{
 			var result = base.SizeThatFits(size);
@@ -40,6 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return result;
 		}
+#endif
 
 		protected override void Dispose(bool disposing)
 		{
@@ -47,9 +62,9 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (disposing && Control != null)
-			{
+			{ 
 				ButtonElementManager.Dispose(this);
-				BorderElementManager.Dispose(this);
+				BorderElementManager.Dispose(this); 
 				ImageElementManager.Dispose(this);
 			}
 
@@ -76,7 +91,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					var control = CreateNativeControl();
+					#if __MOBILE__
 					control.ClipsToBounds = true;
+#endif
 					SetNativeControl(control);
 
 					Debug.Assert(Control != null, "Control != null");
@@ -87,19 +104,24 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void UpdatePadding(UIButton button = null)
+		void UpdatePadding(NativeButton button = null)
 		{
 			var uiElement = button ?? Control;
 			if (uiElement == null)
 				return;
 
+#if __MOBILE__
 			uiElement.ContentEdgeInsets = new UIEdgeInsets(
 				(float)(Element.Padding.Top),
 				(float)(Element.Padding.Left),
 				(float)(Element.Padding.Bottom),
 				(float)(Element.Padding.Right)
 			);
+#else
+			(Control as FormsNSButton)?.UpdatePadding(Element.Padding);
+#endif
 		}
+
 		async Task UpdateImage()
 		{
 			try
@@ -112,9 +134,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		protected override UIButton CreateNativeControl()
+		protected override NativeButton CreateNativeControl()
 		{
+#if __MOBILE__
 			return new UIButton(UIButtonType.System);
+#else
+			return new FormsNSButton
+			{
+				BezelStyle = NSBezelStyle.ShadowlessSquare,
+				Bordered = false
+			};
+#endif
 		}
 
 		protected override void SetAccessibilityLabel()
@@ -123,16 +153,24 @@ namespace Xamarin.Forms.Platform.iOS
 			// exit this method so we don't set the AccessibilityLabel value and break the binding.
 			// This may pose a problem for users who want to explicitly set the AccessibilityLabel to null, but this
 			// will prevent us from inadvertently breaking UI Tests that are using Query.Marked to get the dynamic Title 
-			// of the ImageButton.
+			// of the ImageButton. 
 
 			var elemValue = (string)Element?.GetValue(AutomationProperties.NameProperty);
-			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel == Control?.Title(UIControlState.Normal))
+			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel ==
+#if __MOBILE__
+				Control?.Title(UIControlState.Normal))
+#else
+				Control?.Title
+#endif
+				)
 				return;
 
 			base.SetAccessibilityLabel();
 		}
 
 		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
+
+#if __MOBILE__ 
 		void IImageVisualElementRenderer.SetImage(UIImage image)
 		{
 			Control.SetImage(image?.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
@@ -144,5 +182,16 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return Control?.ImageView;
 		}
+#else
+		public void SetImage(NSImage image)
+		{
+			Control.Image = image;
+		}
+
+		public IImageView GetImage()
+		{
+			return Control;
+		}
+#endif
 	}
 }

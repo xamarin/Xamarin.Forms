@@ -5,7 +5,7 @@ using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class ImageRenderer : ViewRenderer<Image, NSImageView>, IImageVisualElementRenderer
+	public class ImageRenderer : ViewRenderer<Image, FormsNSImageView>, IImageVisualElementRenderer
 	{
 		bool _isDisposed;
 
@@ -91,6 +91,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
 
-		NSImageView IImageVisualElementRenderer.GetImage() => Control;
+		IImageView IImageVisualElementRenderer.GetImage() => Control;
 	}
 }

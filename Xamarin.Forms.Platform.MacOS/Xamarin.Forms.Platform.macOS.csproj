@@ -219,6 +219,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\LabelRenderer.cs">
       <Link>Renderers\LabelRenderer.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\ImageButtonRenderer.cs">
+      <Link>Renderers\ImageButtonRenderer.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\ResourcesProvider.cs">
       <Link>ResourcesProvider.cs</Link>
     </Compile>
@@ -244,6 +247,12 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\ImageElementManager.cs">
       <Link>Renderers\ImageElementManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\ButtonElementManager.cs">
+      <Link>Renderers\ButtonElementManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\BorderElementManager.cs">
+      <Link>Renderers\BorderElementManager.cs</Link>
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\IImageVisualElementRenderer.cs">
       <Link>Renderers\IImageVisualElementRenderer.cs</Link>

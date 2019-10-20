@@ -5,7 +5,7 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	internal class FormsNSImageView : NSImageView
+	public class FormsNSImageView : NSImageView, IImageView
 	{
 		bool _isOpaque;
 
