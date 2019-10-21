@@ -9,39 +9,45 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _defaultPagesIndicatorTintColor;
 		UIColor _defaultCurrentPagesIndicatorTintColor;
 		UIPageControl UIPager => Control as UIPageControl;
+		bool _disposed;
+		bool _updatingPosition;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<IndicatorView> e)
 		{
+			base.OnElementChanged(e);
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
 					UpdateControl();
-					if(UIPager != null)
-					{
-						_defaultPagesIndicatorTintColor = UIPager.PageIndicatorTintColor;
-						_defaultCurrentPagesIndicatorTintColor = UIPager.CurrentPageIndicatorTintColor;
-						UIPager.ValueChanged += UIPagerValueChanged;
-					}
-				
-				}
-				if (UIPager != null)
-				{
-					UpdatePagesIndicatorTintColor();
-					UpdateCurrentPagesIndicatorTintColor();
-					UpdatePages();
-					UpdateHidesForSinglePage();
-					UpdateCurrentPage();
-				}
+				}			
 			}
-			base.OnElementChanged(e);
+			if (UIPager != null)
+			{
+				UpdatePagesIndicatorTintColor();
+				UpdateCurrentPagesIndicatorTintColor();
+				UpdatePages();
+				UpdateHidesForSinglePage();
+				UpdateCurrentPage();
+			}
 		}
 
-		void UIPagerValueChanged(object sender, System.EventArgs e)
+		protected override void Dispose(bool disposing)
 		{
-			if (_updatingPosition)
+			if (_disposed)
 				return;
-			Element.Position = (int)UIPager.CurrentPage;
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (UIPager != null)
+				{
+					UIPager.ValueChanged -= UIPagerValueChanged;
+				}
+			}
+			base.Dispose(disposing);
 		}
+
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -61,8 +67,17 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		protected override UIView CreateNativeControl()
-			=> new UIPageControl();
-
+		{
+			if(UIPager != null)
+			{
+				UIPager.ValueChanged -= UIPagerValueChanged;
+			}
+			var uiPager = new UIPageControl();
+			_defaultPagesIndicatorTintColor = uiPager.PageIndicatorTintColor;
+			_defaultCurrentPagesIndicatorTintColor = uiPager.CurrentPageIndicatorTintColor;
+			uiPager.ValueChanged += UIPagerValueChanged;
+			return uiPager;
+		}
 		void UpdateControl()
 		{
 			var control = Element.Visual == VisualMarker.Forms
@@ -71,7 +86,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			SetNativeControl(control);
 		}
-		bool _updatingPosition;
+
+		void UIPagerValueChanged(object sender, System.EventArgs e)
+		{
+			if (_updatingPosition)
+				return;
+			Element.Position = (int)UIPager.CurrentPage;
+		}
 
 		void UpdateCurrentPage()
 		{
