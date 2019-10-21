@@ -144,6 +144,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void HorizontalGridWithSemicolonShouldShouldThrowInvalidOperationException()
+		{
+			var converter = new ItemsLayoutTypeConverter();
+			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("HorizontalGrid; 2"));
+		}
+
+		[Test]
 		public void LinearItemsLayoutShouldThrowInvalidOperationException()
 		{
 			var converter = new ItemsLayoutTypeConverter();
