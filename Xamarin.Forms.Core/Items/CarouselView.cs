@@ -247,9 +247,6 @@ namespace Xamarin.Forms
 			if (!(carouselView?.ItemsSource is IList itemSource))
 				return null;
 
-			if (itemSource.Count == 0)
-				return null;
-
 			return itemSource[index];
 		}
 

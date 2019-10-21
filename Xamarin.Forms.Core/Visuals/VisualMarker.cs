@@ -12,8 +12,6 @@ namespace Xamarin.Forms
 		public static IVisual Default { get; } = new DefaultVisual();
 		public static IVisual Material { get; } = new MaterialVisual();
 
-		public static IVisual Forms { get; } = new FormsVisual();
-
 		internal static void RegisterMaterial() => _isMaterialRegistered = true;
 		internal static void MaterialCheck()
 		{
@@ -27,7 +25,7 @@ namespace Xamarin.Forms
 				Internals.Log.Warning("Visual", $"Material is currently not support on {Device.RuntimePlatform}.");
 		}
 
-		public sealed class FormsVisual : IVisual { public FormsVisual() { } }
+
 		public sealed class MaterialVisual : IVisual { public MaterialVisual() { } }
 		public sealed class DefaultVisual : IVisual { public DefaultVisual() { } }
 		internal sealed class MatchParentVisual : IVisual { public MatchParentVisual() { } }

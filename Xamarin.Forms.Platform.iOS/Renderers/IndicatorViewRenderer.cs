@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		UIColor _defaultPagesIndicatorTintColor;
 		UIColor _defaultCurrentPagesIndicatorTintColor;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<IndicatorView> e)
 		{
 			if (e.NewElement != null)
@@ -71,7 +72,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateCurrentPagesIndicatorTintColor()
 		{
-			var color = Element.SelectedIndicatorColor;
+			var color = Element.IndicatorColor;
 			Control.CurrentPageIndicatorTintColor = color.IsDefault ? _defaultCurrentPagesIndicatorTintColor : color.ToUIColor();
 		}
 	}
