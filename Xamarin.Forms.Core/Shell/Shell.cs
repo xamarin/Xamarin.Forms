@@ -206,7 +206,11 @@ namespace Xamarin.Forms
 		void IShellController.AddFlyoutBehaviorObserver(IFlyoutBehaviorObserver observer)
 		{
 			_flyoutBehaviorObservers.Add(observer);
-			observer.OnFlyoutBehaviorChanged(GetEffectiveFlyoutBehavior());
+
+			// We need to wait until the visible page has been created before we try to calculate
+			// the flyout behavior
+			if(GetVisiblePage() != null)
+				observer.OnFlyoutBehaviorChanged(GetEffectiveFlyoutBehavior());
 		}
 
 		void IShellController.AppearanceChanged(Element source, bool appearanceSet)
@@ -1029,7 +1033,7 @@ namespace Xamarin.Forms
 
 		void NotifyFlyoutBehaviorObservers()
 		{
-			if (CurrentItem == null)
+			if (CurrentItem == null || GetVisiblePage() == null)
 				return;
 
 			var behavior = GetEffectiveFlyoutBehavior();

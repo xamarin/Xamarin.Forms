@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		BackButtonBehavior _behavior;
 		const string title = "Basic Test";
+		const string FlyoutItem = "Flyout Item";
 		const string EnableFlyoutBehavior = "EnableFlyoutBehavior";
 		const string DisableFlyoutBehavior = "DisableFlyoutBehavior";
 		const string LockFlyoutBehavior = "LockFlyoutBehavior";
@@ -41,7 +42,8 @@ namespace Xamarin.Forms.Controls.Issues
 			_behavior = new BackButtonBehavior();
 			var page = GetContentPage(title);
 			Shell.SetBackButtonBehavior(page, _behavior);
-			AddContentPage(page).Title = title;
+			AddContentPage(page).Title = FlyoutItem;
+			Shell.SetFlyoutBehavior(this.CurrentItem, FlyoutBehavior.Disabled);
 		}
 
 		ContentPage GetContentPage(string title)
@@ -53,6 +55,14 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Children =
 					{
+						new Button()
+						{
+							Text = "Push Page",
+							Command = new Command(() =>
+							{
+								Navigation.PushAsync(new ContentPage());
+							}),
+						},
 						new Button()
 						{
 							Text = "Enable Flyout Behavior",
@@ -125,14 +135,22 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			// Flyout is visible
 			RunningApp.WaitForElement(EnableFlyoutBehavior);
-			RunningApp.WaitForElement(FlyoutIconAutomationId);
+
+			// Starting shell out as disabled correctly disables flyout
+			RunningApp.WaitForNoElement(FlyoutIconAutomationId);
+			ShowFlyout(usingSwipe: true, testForFlyoutIcon: false);
+			RunningApp.WaitForNoElement(FlyoutItem);
+
+			// Enable Flyout Test
+			RunningApp.Tap(EnableFlyoutBehavior);
+			ShowFlyout(usingSwipe: true);
+			RunningApp.WaitForElement(FlyoutItem);
 
 			// Flyout Icon is not visible but you can still swipe open
 			RunningApp.Tap(DisableFlyoutBehavior);
 			RunningApp.WaitForNoElement(FlyoutIconAutomationId);
 			ShowFlyout(usingSwipe: true, testForFlyoutIcon: false);
-			RunningApp.WaitForElement(title);
-			RunningApp.Tap(title);
+			RunningApp.WaitForNoElement(FlyoutItem);
 
 
 			// enable flyout and make sure disabling back button behavior doesn't hide icon
@@ -140,29 +158,29 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(FlyoutIconAutomationId);
 			RunningApp.Tap(DisableBackButtonBehavior);
 			ShowFlyout(usingSwipe: true);
-			RunningApp.WaitForElement(title);
-			RunningApp.Tap(title);
+			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.Tap(FlyoutItem);
 
 			// make sure you can still open flyout via code
 			RunningApp.Tap(EnableFlyoutBehavior);
 			RunningApp.Tap(EnableBackButtonBehavior);
 			RunningApp.Tap(OpenFlyout);
-			RunningApp.WaitForElement(title);
-			RunningApp.Tap(title);
+			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.Tap(FlyoutItem);
 
 			// make sure you can still open flyout via code if flyout behavior is disabled
 			RunningApp.Tap(DisableFlyoutBehavior);
 			RunningApp.Tap(EnableBackButtonBehavior);
 			RunningApp.Tap(OpenFlyout);
-			RunningApp.WaitForElement(title);
-			RunningApp.Tap(title);
+			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.Tap(FlyoutItem);
 
 			// make sure you can still open flyout via code if back button behavior is disabled
 			RunningApp.Tap(EnableFlyoutBehavior);
 			RunningApp.Tap(DisableBackButtonBehavior);
 			RunningApp.Tap(OpenFlyout);
-			RunningApp.WaitForElement(title);
-			RunningApp.Tap(title);
+			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.Tap(FlyoutItem);
 
 			// FlyoutLocked ensure that the flyout and buttons are still visible
 			RunningApp.Tap(EnableBackButtonBehavior);
