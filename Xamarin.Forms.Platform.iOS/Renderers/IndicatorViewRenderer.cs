@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						_defaultPagesIndicatorTintColor = UIPager.PageIndicatorTintColor;
 						_defaultCurrentPagesIndicatorTintColor = UIPager.CurrentPageIndicatorTintColor;
+						UIPager.ValueChanged += UIPagerValueChanged;
 					}
 				
 				}
@@ -33,6 +34,13 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 			base.OnElementChanged(e);
+		}
+
+		void UIPagerValueChanged(object sender, System.EventArgs e)
+		{
+			if (_updatingPosition)
+				return;
+			Element.Position = (int)UIPager.CurrentPage;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -63,9 +71,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			SetNativeControl(control);
 		}
+		bool _updatingPosition;
 
 		void UpdateCurrentPage()
-			=> UIPager.CurrentPage = Element.Position;
+		{
+			_updatingPosition = true;
+			UIPager.CurrentPage = Element.Position;
+			_updatingPosition = false;
+		}
 
 		void UpdatePages()
 			=> UIPager.Pages = Element.Count;
