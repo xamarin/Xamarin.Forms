@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Support.V4.Content;
@@ -89,6 +90,8 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+				UpdateStatusBarColor();
 			if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground(true);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
@@ -150,6 +153,12 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 			});
+		}
+
+		void UpdateStatusBarColor()
+		{
+			Page page = Element;
+			(Context.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(page.StatusBarColor.ToAndroid());
 		}
 
 		void IOrderedTraversalController.UpdateTraversalOrder()

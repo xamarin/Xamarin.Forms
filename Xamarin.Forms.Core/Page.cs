@@ -36,6 +36,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleProperty = BindableProperty.Create("Title", typeof(string), typeof(Page), null);
 
+		public static readonly BindableProperty StatusBarColorProperty = BindableProperty.Create("StatusBarColor", typeof(Color), typeof(Page), Color.Default);
+
 		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
 		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
@@ -127,10 +129,16 @@ namespace Xamarin.Forms
 			set { SetValue(TitleProperty, value); }
 		}
 
+		public Color StatusBarColor
+		{
+			get { return (Color)GetValue(StatusBarColorProperty); }
+			set { SetValue(StatusBarColorProperty, value); }
+		}
+
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public Rectangle ContainerArea
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public Rectangle ContainerArea
 		{
 			get { return _containerArea; }
 			set
@@ -143,15 +151,15 @@ namespace Xamarin.Forms
 			}
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IgnoresContainerArea
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IgnoresContainerArea
 		{
 			get { return (bool)GetValue(IgnoresContainerAreaProperty); }
 			set { SetValue(IgnoresContainerAreaProperty, value); }
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
 		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
 		{
@@ -382,8 +390,8 @@ namespace Xamarin.Forms
 			}
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendAppearing()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendAppearing()
 		{
 			if (_hasAppeared)
 				return;
@@ -407,8 +415,8 @@ namespace Xamarin.Forms
 			FindApplication(this)?.OnPageAppearing(this);
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendDisappearing()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendDisappearing()
 		{
 			if (!_hasAppeared)
 				return;

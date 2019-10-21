@@ -317,6 +317,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
+			if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+				UpdateStatusBarColor();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
@@ -540,6 +542,64 @@ namespace Xamarin.Forms.Platform.iOS
 				_tabThickness = tabThickness;
 				UpdateUseSafeArea();
 			}
+		}
+
+		void UpdateStatusBarColor()
+		{
+			var statusBarColor = Page.StatusBarColor.ToUIColor();
+
+			//UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
+			//UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.BlackOpaque;
+
+			//NavigationController.NavigationBar.TintColor = UIColor.White;
+			//NavigationController.NavigationBar.BarStyle = UIBarStyle.BlackOpaque;
+
+			//this.ViewController.NavigationController.NavigationBar.TintColor = UIColor.White;
+
+			if (GetCurrentViewController().PreferredStatusBarStyle() != UIStatusBarStyle.BlackOpaque)
+			{
+				UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.BlackOpaque, false);
+			}
+			else
+			{
+				UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.BlackTranslucent, false);
+			}
+
+			//UINavigationBar.Appearance.set(new UITextAttributes
+			//{
+			//	TextColor = UIColor.White
+			//});
+
+			if (Forms.IsiOS13OrNewer)
+			{
+				foreach (var window in UIApplication.SharedApplication.Windows)
+				{
+					const int statusBarTag = 38482;
+					UIView statusBar = window.ViewWithTag(statusBarTag) ?? new UIView(UIApplication.SharedApplication.StatusBarFrame);
+					statusBar.Tag = statusBarTag;
+					statusBar.BackgroundColor = statusBarColor;
+					statusBar.TintColor = statusBarColor;
+					window.AddSubview(statusBar);
+				}
+			}
+			else
+			{
+				var statusBar = UIApplication.SharedApplication.ValueForKey(new NSString("statusBar")) as UIView;
+				if (statusBar != null && statusBar.RespondsToSelector(new ObjCRuntime.Selector("setBackgroundColor:")))
+				{
+					statusBar.BackgroundColor = statusBarColor;
+				}
+			}
+
+			GetCurrentViewController().SetNeedsStatusBarAppearanceUpdate();
+		}
+		UIViewController GetCurrentViewController()
+		{
+			var window = UIApplication.SharedApplication.KeyWindow;
+			var vc = window.RootViewController;
+			while (vc.PresentedViewController != null)
+				vc = vc.PresentedViewController;
+			return vc;
 		}
 
 		public override bool PrefersHomeIndicatorAutoHidden => Page.OnThisPlatform().PrefersHomeIndicatorAutoHidden();
