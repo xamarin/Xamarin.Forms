@@ -8,10 +8,22 @@ using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
+	public enum IndicatorShape
+	{
+		Circle,
+		Square
+	}
+
 	[ContentProperty(nameof(IndicatorLayout))]
 	[RenderWith(typeof(_IndicatorViewRenderer))]
 	public class IndicatorView : TemplatedView
 	{
+
+		const int DefaultPadding = 4;
+		
+		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorShape), typeof(IndicatorView), IndicatorShape.Circle);
+
+	
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
@@ -33,7 +45,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SelectedIndicatorColorProperty = BindableProperty.Create(nameof(SelectedIndicatorColor), typeof(Color), typeof(IndicatorView), Color.Default, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
-		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorView), -1.0, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorView), 6.0, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorView), null, propertyChanged: (bindable, oldValue, newValue)
@@ -44,10 +56,29 @@ namespace Xamarin.Forms
 		public IndicatorView()
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(IndicatorView), ExperimentalFlags.IndicatorViewExperimental);
-			IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+			if (Visual == VisualMarker.Forms)
+				IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
 		}
 
-		IList<View> Items => IndicatorLayout.Children;
+		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+		{
+			var baseRequest = base.OnMeasure(widthConstraint, heightConstraint);
+			if (Visual == VisualMarker.Forms)
+				return baseRequest;
+
+			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding;
+			var items = Count;
+			var sizeRequest = new SizeRequest(new Size(items * defaultSize, IndicatorSize), new Size(10, 10));
+			return sizeRequest;
+		}
+
+		IList<View> Items => IndicatorLayout?.Children;
+
+		public IndicatorShape IndicatorsShape
+		{
+			get { return (IndicatorShape)GetValue(IndicatorsShapeProperty); }
+			set { SetValue(IndicatorsShapeProperty, value); }
+		}
 
 		public Layout<View> IndicatorLayout
 		{
@@ -111,6 +142,8 @@ namespace Xamarin.Forms
 
 		void ResetIndicatorStyles()
 		{
+			if (Visual != VisualMarker.Forms)
+				return;
 			try
 			{
 				BatchBegin();
@@ -124,6 +157,9 @@ namespace Xamarin.Forms
 
 		void ResetIndicatorCount(int oldCount)
 		{
+			if (Visual != VisualMarker.Forms)
+				return;
+
 			try
 			{
 				BatchBegin();
@@ -203,7 +239,7 @@ namespace Xamarin.Forms
 
 		void RemoveRedundantIndicatorItems()
 		{
-			while(Items.Count > Count)
+			while (Items.Count > Count)
 			{
 				Items.RemoveAt(0);
 			}
