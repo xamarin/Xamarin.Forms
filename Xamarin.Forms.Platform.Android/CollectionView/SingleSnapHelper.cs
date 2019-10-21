@@ -17,11 +17,11 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected static bool IsLayoutReversed(RecyclerView.LayoutManager layoutManager)
-        {
-            if (layoutManager.LayoutDirection == (int)(ALayoutDirection.Rtl))
-                return true;
+		{
+			if (layoutManager.LayoutDirection == (int)(ALayoutDirection.Rtl))
+				return true;
 
-            if (layoutManager is LinearLayoutManager linearLayoutManager)
+			if (layoutManager is LinearLayoutManager linearLayoutManager)
 			{
 				return linearLayoutManager.ReverseLayout;
 			}
