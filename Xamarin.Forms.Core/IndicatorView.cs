@@ -20,10 +20,10 @@ namespace Xamarin.Forms
 	{
 
 		const int DefaultPadding = 4;
-		
+
 		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorShape), typeof(IndicatorView), IndicatorShape.Circle);
 
-	
+
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
@@ -72,7 +72,19 @@ namespace Xamarin.Forms
 			return sizeRequest;
 		}
 
-		IList<View> Items => IndicatorLayout?.Children;
+		IList<View> Items
+		{
+			get
+			{
+				if (Visual != VisualMarker.Forms)
+					return null;
+				if (IndicatorLayout == null)
+				{
+					IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+				}
+				return IndicatorLayout.Children;
+			}
+		}
 
 		public IndicatorShape IndicatorsShape
 		{

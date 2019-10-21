@@ -42,6 +42,8 @@ using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 
+[assembly: ExportRenderer(typeof(IndicatorView), typeof(Platform.DefaultRenderer), new[] { typeof(VisualMarker.FormsVisual) }, Priority = short.MinValue)]
+
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]

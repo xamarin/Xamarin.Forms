@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	[Preserve(AllMembers = true)]
 	public class CarouselItemsGallery : ContentPage
 	{
-		public CarouselItemsGallery()
+		public CarouselItemsGallery(IVisual visual)
 		{
 			var viewModel = new CarouselItemsGalleryViewModel();
 
@@ -50,7 +50,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				Margin = new Thickness(15, 20),
 				IndicatorColor = Color.Gray,
 				SelectedIndicatorColor = Color.Black,
-				IndicatorsShape = IndicatorShape.Circle,
+				IndicatorsShape = IndicatorShape.Square,
+				Visual = visual
 				//BackgroundColor = Color.Pink,
 			};
 			indicators.SetItemsSourceBy(carouselView);
