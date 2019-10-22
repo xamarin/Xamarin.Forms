@@ -30,8 +30,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 				_currentColorState = "Normal";
 			}
 
-			CurrentState.Text = $"{_currentColorState}";
-			VisualStateManager.GoToState(ALabel, _currentColorState);
+			CurrentState.Text = $"Current state: {_currentColorState}";
+			VisualStateManager.GoToState(TheStack, _currentColorState);
 		}
 	}
 }

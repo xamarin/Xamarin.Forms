@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Xml;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
@@ -14,7 +13,7 @@ namespace Xamarin.Forms
 	{
 		readonly ConditionalWeakTable<BindableObject, object> _originalValues = new ConditionalWeakTable<BindableObject, object>();
 
-		public object Target { get; set; }
+		public string TargetName { get; set; }
 
 		public BindableProperty Property { get; set; }
 
@@ -51,7 +50,7 @@ namespace Xamarin.Forms
 
 		internal void Apply(BindableObject scope, bool fromStyle = false)
 		{
-			var targetObject = FindTargetObject(scope, Target);
+			var targetObject = FindTargetObject(scope, TargetName);
 			if (targetObject == null)
 				throw new ArgumentNullException(nameof(targetObject));
 			if (Property == null)
@@ -80,7 +79,7 @@ namespace Xamarin.Forms
 
 		internal void UnApply(BindableObject scope, bool fromStyle = false)
 		{
-			var targetObject = FindTargetObject(scope, Target);
+			var targetObject = FindTargetObject(scope, TargetName);
 			if (targetObject == null)
 				throw new ArgumentNullException(nameof(targetObject));
 			if (Property == null)
@@ -104,15 +103,12 @@ namespace Xamarin.Forms
 				targetObject.ClearValue(Property);
 		}
 
-		BindableObject FindTargetObject(BindableObject scope, object target)
+		BindableObject FindTargetObject(BindableObject scope, string targetName)
 		{
-			if (scope == null || target == null)
+			if (scope == null || string.IsNullOrEmpty(TargetName))
 				return scope;
 
-			if (target is BindableObject bindableObject)
-				return bindableObject;
-
-			if (scope is Element element && target is string targetName)
+			if (scope is Element element)
 			{
 				if (element.FindByName(targetName) is BindableObject targetObject)
 					return targetObject;

@@ -3,21 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.VisualStateSetterTarget"
 			Title="VisualStateManager Setter Targets">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="Green" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ContentPage.Content>
-        <StackLayout>
+        <StackLayout x:Name="TheStack">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="ColorStates">
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Invalid">
                         <VisualState.Setters>
                             <Setter Property="BackgroundColor" Value="Azure"/>
-                            <Setter Target="ALabel.TextColor" Property="BackgroundColor" Value="Red"/>
+                            <Setter TargetName="ALabel" Property="Label.TextColor" Value="Red"/>
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
 
-            <Label x:Name="ALabel" Text="This is a label" HorizontalTextAlignment="Start" HorizontalOptions="Start" />         
+            <Label x:Name="ALabel" Text="This is a (styled) label" HorizontalTextAlignment="Start" HorizontalOptions="Start" />
 
             <Label x:Name="CurrentState"></Label>
 
