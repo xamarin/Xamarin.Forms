@@ -467,12 +467,7 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					commandBar.SecondaryCommands.Add(button);
 				}
-
-				
-				button.UpdateLayout();
 			}
-
-			commandBar.UpdateLayout();
 		}
 
 		internal IToolbarProvider GetToolbarProvider()
