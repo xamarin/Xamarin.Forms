@@ -36,7 +36,7 @@ jobs:
     - script: build.cmd -Target provision
       displayName: 'Cake Provision'
       condition: eq(variables['provisioningCake'], 'true')
-  
+
     - task: xamops.azdevex.provisionator-task.provisionator@1
       displayName: 'Provisionator'
       condition: eq(variables['provisioning'], 'true')
@@ -51,7 +51,7 @@ jobs:
         version: $(DOTNET_VERSION)
 
     - script: |
-        dotnet new globaljson --sdk-version $(DOTNET_VERSION)
+        dotnet new globaljson --sdk-version $(DOTNET_VERSION) --force
       displayName: 'Add globaljson file'
       condition: ne(variables['DOTNET_VERSION'], '')
 
@@ -60,7 +60,7 @@ jobs:
       condition: ne(variables['NUGET_VERSION'], '')
       inputs:
         versionSpec: $(NUGET_VERSION)
-          
+
     - task: NuGetCommand@2
       displayName: 'NuGet restore ${{ parameters.slnPath }}'
       inputs:
