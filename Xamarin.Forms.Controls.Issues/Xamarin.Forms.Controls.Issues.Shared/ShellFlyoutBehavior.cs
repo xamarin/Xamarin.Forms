@@ -57,14 +57,6 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						new Button()
 						{
-							Text = "Push Page",
-							Command = new Command(() =>
-							{
-								Navigation.PushAsync(new ContentPage());
-							}),
-						},
-						new Button()
-						{
 							Text = "Enable Flyout Behavior",
 							Command = new Command(() =>
 							{
@@ -137,21 +129,21 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(EnableFlyoutBehavior);
 
 			// Starting shell out as disabled correctly disables flyout
-			RunningApp.WaitForNoElement(FlyoutIconAutomationId);
+			RunningApp.WaitForNoElement(FlyoutIconAutomationId, "Flyout Icon Visible on Startup");
 			ShowFlyout(usingSwipe: true, testForFlyoutIcon: false);
-			RunningApp.WaitForNoElement(FlyoutItem);
+			RunningApp.WaitForNoElement(FlyoutItem, "Flyout Visible on Startup");
 
 			// Enable Flyout Test
 			RunningApp.Tap(EnableFlyoutBehavior);
 			ShowFlyout(usingSwipe: true);
-			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.WaitForElement(FlyoutItem, "Flyout Not Visible after Enabled");
 			RunningApp.Tap(FlyoutItem);
 
 			// Flyout Icon is not visible but you can still swipe open
 			RunningApp.Tap(DisableFlyoutBehavior);
-			RunningApp.WaitForNoElement(FlyoutIconAutomationId);
+			RunningApp.WaitForNoElement(FlyoutIconAutomationId, "Flyout Icon Visible after being Disabled");
 			ShowFlyout(usingSwipe: true, testForFlyoutIcon: false);
-			RunningApp.WaitForNoElement(FlyoutItem);
+			RunningApp.WaitForNoElement(FlyoutItem, "Flyout Visible after being Disabled");
 
 
 			// enable flyout and make sure disabling back button behavior doesn't hide icon
@@ -159,34 +151,34 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(FlyoutIconAutomationId);
 			RunningApp.Tap(DisableBackButtonBehavior);
 			ShowFlyout(usingSwipe: true);
-			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.WaitForElement(FlyoutItem, "Flyout swipe not working after Disabling Back Button Behavior");
 			RunningApp.Tap(FlyoutItem);
 
 			// make sure you can still open flyout via code
 			RunningApp.Tap(EnableFlyoutBehavior);
 			RunningApp.Tap(EnableBackButtonBehavior);
 			RunningApp.Tap(OpenFlyout);
-			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.WaitForElement(FlyoutItem, "Flyout not opening via code");
 			RunningApp.Tap(FlyoutItem);
 
 			// make sure you can still open flyout via code if flyout behavior is disabled
 			RunningApp.Tap(DisableFlyoutBehavior);
 			RunningApp.Tap(EnableBackButtonBehavior);
 			RunningApp.Tap(OpenFlyout);
-			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.WaitForElement(FlyoutItem, "Flyout not opening via code when flyout behavior disabled");
 			RunningApp.Tap(FlyoutItem);
 
 			// make sure you can still open flyout via code if back button behavior is disabled
 			RunningApp.Tap(EnableFlyoutBehavior);
 			RunningApp.Tap(DisableBackButtonBehavior);
 			RunningApp.Tap(OpenFlyout);
-			RunningApp.WaitForElement(FlyoutItem);
+			RunningApp.WaitForElement(FlyoutItem, "Flyout not opening via code when back button behavior is disabled");
 			RunningApp.Tap(FlyoutItem);
 
 			// FlyoutLocked ensure that the flyout and buttons are still visible
 			RunningApp.Tap(EnableBackButtonBehavior);
 			RunningApp.Tap(LockFlyoutBehavior);
-			RunningApp.WaitForElement(title);
+			RunningApp.WaitForElement(title, "Flyout Locked hiding content");
 			RunningApp.Tap(EnableFlyoutBehavior);
 
 		}
