@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new Label()
 					{
 						AutomationId = StatusLabel,
-						Text = "You must be able to navigate between pages 😎"
+						Text = "You should be able to navigate between pages 😎"
 					}
 				}
 			};
