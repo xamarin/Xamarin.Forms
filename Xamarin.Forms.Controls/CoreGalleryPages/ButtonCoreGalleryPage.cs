@@ -107,6 +107,16 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
+			var lineBreakModeContainer = new ViewContainer<Button>(Test.Button.LineBreakMode,
+				new Button
+				{
+					Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+					TextColor = Color.White,
+					BackgroundColor = Color.OrangeRed,
+					LineBreakMode = LineBreakMode.CharacterWrap
+				}
+			);
+
 			Add (borderButtonContainer);
 			Add (borderRadiusContainer);
 			Add (borderWidthContainer);
@@ -118,6 +128,7 @@ namespace Xamarin.Forms.Controls
 			Add (textContainer);
 			Add (textColorContainer);
 			Add (paddingContainer);
+			Add(lineBreakModeContainer);
 			//stackLayout.Children.Add (textColorContainer);
 		}
 	}
