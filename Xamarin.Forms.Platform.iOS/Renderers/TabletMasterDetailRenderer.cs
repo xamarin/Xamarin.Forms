@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillDisappear(bool animated)
 		{
-			if (_masterVisible)
+			if (_masterVisible && !MasterDetailPage.ShouldShowSplitMode)
 				PerformButtonSelector();
 
 			base.ViewWillDisappear(animated);
