@@ -12,6 +12,15 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty SourceProperty = ImageElement.SourceProperty;
 
+		public static readonly BindableProperty PlaceholderProperty =
+			BindableProperty.Create(nameof(Placeholder), typeof(ImageSource), typeof(Image), default(ImageSource));
+
+		public ImageSource Placeholder
+		{
+			get => (ImageSource)GetValue(PlaceholderProperty);
+			set => SetValue(PlaceholderProperty, value);
+		}
+
 		public static readonly BindableProperty AspectProperty = ImageElement.AspectProperty;
 
 		public static readonly BindableProperty IsOpaqueProperty = ImageElement.IsOpaqueProperty;

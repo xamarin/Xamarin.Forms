@@ -80,7 +80,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return;
 			}
-
 			AImageView.ScaleType type = Element.Aspect.ToScaleType();
 			Control.SetScaleType(type);
 		}
@@ -112,7 +111,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			await Control.UpdateBitmap(Element, previous).ConfigureAwait(false);
+			await Control.UpdateBitmap(Element, previous, placeholder: Element.Placeholder).ConfigureAwait(false);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)

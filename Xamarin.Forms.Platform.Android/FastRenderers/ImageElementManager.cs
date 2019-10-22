@@ -36,16 +36,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (renderer.View is ImageView imageView)
 				imageView.SetImageDrawable(null);
 		}
-
 		async static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
 		{
 			var renderer = (sender as IVisualElementRenderer);
+			var placeholder = (sender is Image) ? (sender as Image).Placeholder : null;
 			var view = renderer.View as ImageView;
 			var newImageElementManager = e.NewElement as IImageElement;
 			var oldImageElementManager = e.OldElement as IImageElement;
 			var rendererController = renderer as IImageRendererController;
 
-			await TryUpdateBitmap(rendererController, view, newImageElementManager, oldImageElementManager);
+			await TryUpdateBitmap(rendererController, view, newImageElementManager, oldImageElementManager,placeholder: placeholder);
 			UpdateAspect(rendererController, view, newImageElementManager, oldImageElementManager);
 
 			if (!rendererController.IsDisposed)
@@ -57,11 +57,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		async static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var renderer = (sender as IVisualElementRenderer);
+			var placeholder = (sender is Image) ? (sender as Image).Placeholder : null;
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName ||
 				e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
-				await TryUpdateBitmap(renderer as IImageRendererController, (ImageView)renderer.View, (IImageElement)renderer.Element).ConfigureAwait(false);
+				await TryUpdateBitmap(renderer as IImageRendererController, (ImageView)renderer.View, (IImageElement)renderer.Element,placeholder:placeholder).ConfigureAwait(false);
 
 			}
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
@@ -71,7 +72,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 
-		async static Task TryUpdateBitmap(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)
+		async static Task TryUpdateBitmap(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null, ImageSource placeholder = null)
 		{
 			if (newImage == null || rendererController.IsDisposed)
 			{
@@ -80,7 +81,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			try
 			{
-				await Control.UpdateBitmap(newImage, previous).ConfigureAwait(false);
+				await Control.UpdateBitmap(newImage, previous, placeholder).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
