@@ -1130,11 +1130,11 @@ namespace Xamarin.Forms
 		{
 			readonly Shell _shell;
 
-			NavigationProxy SectionProxy => _shell.CurrentItem.CurrentItem.NavigationProxy;
+			NavigationProxy SectionProxy => _shell.CurrentItem?.CurrentItem?.NavigationProxy;
 
 			public NavigationImpl(Shell shell) => _shell = shell;
 
-			protected override IReadOnlyList<Page> GetNavigationStack() => SectionProxy.NavigationStack;
+			protected override IReadOnlyList<Page> GetNavigationStack() => SectionProxy?.NavigationStack;
 
 			protected override void OnInsertPageBefore(Page page, Page before) => SectionProxy.InsertPageBefore(page, before);
 
