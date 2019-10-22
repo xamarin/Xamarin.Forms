@@ -22,12 +22,13 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		ListView _list;
 		Button _button;
+		const string ButtonAutomationId = "Button";
 
 		protected override void Init()
 		{
 			_list = new ListView { ItemsSource = new[] { "hello", "world", "from", "xamarin", "forms" } };
 
-			_button = new Button { Text = "Button", AutomationId = "Button" };
+			_button = new Button { Text = "Button", AutomationId = ButtonAutomationId };
 
 			// The same behavior happens for both Absolute and Relative layout.
 			//var layout = true ? Relative() : Absolute();
@@ -86,20 +87,20 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void CheckButtonPosition()
 		{
-			RunningApp.WaitForElement("Button");
+			RunningApp.WaitForElement(ButtonAutomationId);
 
-			var oldRect = RunningApp.Query("Button").Single().Rect;
+			var oldRect = RunningApp.Query(ButtonAutomationId).Single().Rect;
 
 			try
 			{
-				RunningApp.WaitForNoElement("Button", timeout: TimeSpan.FromSeconds(5));
+				RunningApp.WaitForNoElement(ButtonAutomationId, timeout: TimeSpan.FromSeconds(5));
 			}
 			catch
 			{
 				// swallow exception
 			}
 
-			var button = RunningApp.Query("Button").Single();
+			var button = RunningApp.Query(ButtonAutomationId).Single();
 
 			Assert.IsTrue(button.Rect.Width == button.Rect.Height);
 			Assert.IsTrue(button.Rect.X == button.Rect.Width);
