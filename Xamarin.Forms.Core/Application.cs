@@ -26,6 +26,25 @@ namespace Xamarin.Forms
 		[Obsolete("Assign the LogWarningsListener")]
 		public static bool LogWarningsToApplicationOutput { get; set; }
 
+		private static Action<(string Category, string Message)> CurrentLogWarningListener;
+		private static DelegateLogListener CurrentLogListener;
+
+		public static Action<(string Category, string Message)> LogWarningsListener
+		{
+			get => CurrentLogWarningListener;
+
+			set
+			{
+				if (CurrentLogListener != null && Log.Listeners.Contains(CurrentLogListener))
+					Log.Listeners.Remove(CurrentLogListener);
+
+				CurrentLogWarningListener = value;
+				CurrentLogListener = new DelegateLogListener((category, message) => CurrentLogWarningListener.Invoke((category, message)));
+
+				Log.Listeners.Add(CurrentLogListener);
+			}
+		}
+
 		public Application()
 		{
 			var f = false;
