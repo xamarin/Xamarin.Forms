@@ -328,6 +328,9 @@ namespace Xamarin.Forms.Platform.Android
 				(icon as DrawerArrowDrawable).Progress = 1;
 			}
 
+			if (icon == null)
+				return;
+
 			var iconState = icon.GetConstantState();
 			if (iconState != null)
 			{
