@@ -194,9 +194,7 @@ namespace Xamarin.Forms
 			}
 			catch (InvalidOperationException)
 			{
-				// We'll still honor the CollectionView_Experimental flag for CarouselView stuff
-				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CollectionViewExperimental,
-					constructorHint, memberName);
+			
 			}
 		}
 
