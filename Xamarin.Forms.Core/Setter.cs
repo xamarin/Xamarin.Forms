@@ -48,11 +48,15 @@ namespace Xamarin.Forms
 			return this;
 		}
 
-		internal void Apply(BindableObject scope, bool fromStyle = false)
+		internal void Apply(BindableObject target, bool fromStyle = false)
 		{
-			var targetObject = FindTargetObject(scope, TargetName);
-			if (targetObject == null)
-				throw new ArgumentNullException(nameof(targetObject));
+			if (target == null) throw new ArgumentNullException(nameof(target));
+
+			var targetObject = target;
+
+			if (!string.IsNullOrEmpty(TargetName) && target is Element element)
+				targetObject = element.FindByName(TargetName) as BindableObject ?? throw new ArgumentNullException(nameof(targetObject));
+
 			if (Property == null)
 				return;
 
@@ -77,11 +81,15 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal void UnApply(BindableObject scope, bool fromStyle = false)
+		internal void UnApply(BindableObject target, bool fromStyle = false)
 		{
-			var targetObject = FindTargetObject(scope, TargetName);
-			if (targetObject == null)
-				throw new ArgumentNullException(nameof(targetObject));
+			if (target == null) throw new ArgumentNullException(nameof(target));
+
+			var targetObject = target;
+
+			if (!string.IsNullOrEmpty(TargetName) && target is Element element)
+				targetObject = element.FindByName(TargetName) as BindableObject ?? throw new ArgumentNullException(nameof(targetObject));
+
 			if (Property == null)
 				return;
 
@@ -101,20 +109,6 @@ namespace Xamarin.Forms
 			}
 			else
 				targetObject.ClearValue(Property);
-		}
-
-		BindableObject FindTargetObject(BindableObject scope, string targetName)
-		{
-			if (scope == null || string.IsNullOrEmpty(TargetName))
-				return scope;
-
-			if (scope is Element element)
-			{
-				if (element.FindByName(targetName) is BindableObject targetObject)
-					return targetObject;
-			}
-
-			return null;
 		}
 	}
 }
