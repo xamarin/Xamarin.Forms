@@ -159,7 +159,7 @@ namespace Xamarin.Forms
 				OnModelChanged();
 		}
 
-		private IList<Element> GetInternalChildren()
+		IList<Element> GetInternalChildren()
 		{
 			List<Element> elements = new List<Element>();
 			foreach(var item in Root.SelectMany(r => r).Cast<Element>().ToList())
