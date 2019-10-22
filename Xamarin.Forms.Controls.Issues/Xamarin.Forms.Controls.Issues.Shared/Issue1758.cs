@@ -93,6 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			try
 			{
+				// delay UI test by 5 seconds
 				RunningApp.WaitForNoElement(ButtonAutomationId, timeout: TimeSpan.FromSeconds(5));
 			}
 			catch
