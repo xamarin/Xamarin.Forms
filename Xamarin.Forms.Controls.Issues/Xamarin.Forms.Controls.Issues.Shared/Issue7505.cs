@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Xamarin.Forms.Controls.Issues;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 7505, "MasterDetailPage detail width broken when landscape", PlatformAffected.UWP)]
+	[Issue (IssueTracker.Github, 7505, "Icons from Toolbaritem are not displayed on UWP if starts on second monitor", PlatformAffected.UWP)]
 	public class Issue7505 : MasterDetailPage
 	{
 		public Issue7505()
@@ -23,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = new StackLayout {
 					Children = {
 						new Label { 
-							Text = text,
+							Text = "Pre-req: Have a multi-monitor setup with different resolutions. Then, start this app, drag it onto the secondary monitor and keep restarting it until you see the toolbar icons disappear. If they don't disappear, this works! Yes, it's a fun one.",
 							VerticalOptions = LayoutOptions.CenterAndExpand,
 							HorizontalOptions = LayoutOptions.CenterAndExpand,
 						}
