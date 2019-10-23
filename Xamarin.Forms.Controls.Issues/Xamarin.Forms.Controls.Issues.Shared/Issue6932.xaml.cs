@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.CustomAttributes;
@@ -15,31 +13,37 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[NUnit.Framework.Category(UITestCategories.Layout)]
+	[Category(UITestCategories.Layout)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 6932, "EmptyView for BindableLayout", PlatformAffected.All)]
-	public partial class Issue6932 : ContentPage
+	public partial class Issue6932 : TestContentPage
 	{
-		const string LayoutAutomationId = "StackLayoutThing";
+		const string StackLayoutAutomationId = "StackLayoutThing";
+		readonly PageViewModel _viewModel = new PageViewModel();
 
-#if APP
 		public Issue6932()
 		{
+#if APP
+
 			InitializeComponent();
-			BindingContext = new PageViewModel();
+			BindingContext = _viewModel;
+#endif
+		}
+
+		protected override void Init()
+		{
+
 		}
 
 		[Preserve(AllMembers = true)]
 		class PageViewModel
 		{
-			public string LayoutAutomationId { get => LayoutAutomationId; }
+			public string LayoutAutomationId { get => StackLayoutAutomationId; }
 
 			public ObservableCollection<object> ItemsSource { get; set; }
 			public ICommand AddItemCommand { get; }
 			public ICommand RemoveItemCommand { get; }
-			public ICommand ReplaceItemCommand { get; }
-			public ICommand MoveItemCommand { get; }
 			public ICommand ClearCommand { get; }
 
 			public PageViewModel()
@@ -53,29 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 					if (ItemsSource.Count > 0)
 						ItemsSource.RemoveAt(0);
 				});
-				ReplaceItemCommand = new Command(() =>
-				{
-					// Switch between integers and character representation
-					for (int i1 = 0; i1 < ItemsSource.Count; ++i1)
-					{
-						if (ItemsSource[i1] is int a)
-						{
-							ItemsSource[i1] = (char)('A' + a);
-						}
-						else
-						{
-							ItemsSource[i1] = (int)((char)ItemsSource[i1] - 'A');
-						}
-					}
-				});
-				MoveItemCommand = new Command(() =>
-				{
-					// Move first item to the last position
-					if (ItemsSource.Count > 0)
-					{
-						ItemsSource.Move(0, ItemsSource.Count - 1);
-					}
-				});
+
 				ClearCommand = new Command(() =>
 				{
 					ItemsSource.Clear();
@@ -85,25 +67,48 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void EmptyViewBecomesVisibleWhenItemsSourceIsEmpty()
+		public void EmptyViewBecomesVisibleWhenItemsSourceIsCleared()
 		{
-			RunningApp.WaitForElement(LayoutAutomationId);
+			RunningApp.Screenshot("Screen opens, items are shown");
+
+			RunningApp.WaitForElement(StackLayoutAutomationId);
 			RunningApp.Tap("Clear");
 			RunningApp.WaitForElement("No Results");
 
+			RunningApp.Screenshot("Empty view is visible");
 		}
-#endif
-	}
 
-	class BindableLayoutItemTemplateSelector : DataTemplateSelector
-	{
-		public DataTemplate IntTemplate { get; set; }
-		public DataTemplate CharTemplate { get; set; }
-
-		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+		[Test]
+		public void EmptyViewBecomesVisibleWhenItemsSourceIsEmptiedOneByOne()
 		{
-			return item is int ? IntTemplate : CharTemplate;
+			RunningApp.Screenshot("Screen opens, items are shown");
+
+			RunningApp.WaitForElement(StackLayoutAutomationId);
+
+			for (var i = 0; i < _viewModel.ItemsSource.Count; i++)
+				RunningApp.Tap("Remove");
+
+			RunningApp.WaitForElement("No Results");
+
+			RunningApp.Screenshot("Empty view is visible");
 		}
-	}
+
+		[Test]
+		public void EmptyViewHidesWhenItemsSourceIsFilled()
+		{
+			RunningApp.Screenshot("Screen opens, items are shown");
+
+			RunningApp.WaitForElement(StackLayoutAutomationId);
+			RunningApp.Tap("Clear");
+			RunningApp.WaitForElement("No Results");
+
+			RunningApp.Screenshot("Items are cleared, empty view visible");
+
+			RunningApp.Tap("Add");
+			RunningApp.WaitForNoElement("No Results");
+
+			RunningApp.Screenshot("Item is added, empty view is not visible");
+		}
 #endif
 	}
+}

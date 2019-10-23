@@ -1,22 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<controls:TestContentPage xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+             xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:Xamarin.Forms.Controls.GalleryPages" mc:Ignorable="d"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.Issues.Issue6932">
     <ContentPage.Resources>
-        <!-- Template for integer items -->
         <DataTemplate x:Key="MyIntTemplate">
             <Frame Padding="10"
 				   BackgroundColor="Yellow">
-                <Label Text="{Binding }" />
-            </Frame>
-        </DataTemplate>
-        <!-- Template for character items -->
-        <DataTemplate x:Key="MyCharTemplate">
-            <Frame Padding="10"
-				   BackgroundColor="Azure">
                 <Label Text="{Binding }" />
             </Frame>
         </DataTemplate>
@@ -26,9 +18,6 @@
                 <Label Text="No items here" />
             </Frame>
         </DataTemplate>
-        <local:BindableLayoutItemTemplateSelector x:Key="ItemTemplateSelector"
-												  IntTemplate="{StaticResource MyIntTemplate}"
-												  CharTemplate="{StaticResource MyCharTemplate}" />
     </ContentPage.Resources>
     <Grid RowSpacing="0">
         <Grid.RowDefinitions>
@@ -37,9 +26,8 @@
         </Grid.RowDefinitions>
         <ScrollView VerticalScrollBarVisibility="Never"
 					HorizontalScrollBarVisibility="Always">
-            <StackLayout AutomationId="{Binding LayoutAutomationId}" BindableLayout.ItemsSource="{Binding ItemsSource}"
-						 BindableLayout.ItemTemplateSelector="{StaticResource ItemTemplateSelector}"
-                         
+            <StackLayout x:Name="Foo" AutomationId="{Binding LayoutAutomationId}" BindableLayout.ItemsSource="{Binding ItemsSource}"
+                         BindableLayout.ItemTemplate="{StaticResource MyIntTemplate}"
 						 Spacing="7"
 						 Padding="10, 5">
                 <BindableLayout.EmptyView>
@@ -57,12 +45,8 @@
 					Text="Add" />
             <Button Command="{Binding RemoveItemCommand}"
 					Text="Remove" />
-            <Button Command="{Binding ReplaceItemCommand}"
-					Text="Replace" />
-            <Button Command="{Binding MoveItemCommand}"
-					Text="Move" />
             <Button Command="{Binding ClearCommand}"
 					Text="Clear" />
         </StackLayout>
     </Grid>
-</ContentPage>
+</controls:TestContentPage>

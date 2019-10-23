@@ -217,20 +217,17 @@ namespace Xamarin.Forms
 
 		void CreateChildren()
 		{
-			Layout<View> layout;
-			if (!_layoutWeakReference.TryGetTarget(out layout))
+			if (!_layoutWeakReference.TryGetTarget(out Layout<View> layout))
 			{
 				return;
 			}
 
 			layout.Children.Clear();
 
-			if (_itemsSource == null)
-			{
-				return;
-			}
-
 			UpdateEmptyView(layout);
+
+			if (_itemsSource == null)
+				return;
 
 			foreach (object item in _itemsSource)
 			{
@@ -243,7 +240,7 @@ namespace Xamarin.Forms
 			if (_currentEmptyView == null)
 				return;
 
-			if (!_itemsSource.GetEnumerator().MoveNext())
+			if (!_itemsSource?.GetEnumerator().MoveNext() ?? true)
 			{
 				layout.Children.Add(_currentEmptyView);
 				return;
@@ -273,8 +270,7 @@ namespace Xamarin.Forms
 
 		View CreateEmptyView(object emptyView, DataTemplate dataTemplate)
 		{
-			Layout<View> layout;
-			if (!_layoutWeakReference.TryGetTarget(out layout))
+			if (!_layoutWeakReference.TryGetTarget(out Layout<View> layout))
 			{
 				return null;
 			}
@@ -296,8 +292,7 @@ namespace Xamarin.Forms
 
 		void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			Layout<View> layout;
-			if (!_layoutWeakReference.TryGetTarget(out layout))
+			if (!_layoutWeakReference.TryGetTarget(out Layout<View> layout))
 			{
 				return;
 			}
