@@ -7,6 +7,28 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class FormsComboBox : ComboBox
 	{
+		public FormsComboBox()
+		{
+			DropDownOpened += FormsComboBox_DropDownOpened;
+			SelectionChanged += FormsComboBox_SelectionChanged;
+		}
+
+		~FormsComboBox()
+		{
+			DropDownOpened -= FormsComboBox_DropDownOpened;
+			SelectionChanged -= FormsComboBox_SelectionChanged;
+		}
+
+		void FormsComboBox_DropDownOpened(object sender, object e)
+		{
+			MinWidth = ActualWidth;
+		}
+
+		void FormsComboBox_SelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
+		{
+			MinWidth = 0;
+		}
+
 		internal bool IsClosingAnimated { get; private set; }
 
 		internal bool IsFullScreen => Device.Idiom == TargetIdiom.Phone && Items != null && Items.Count > 5;
