@@ -59,12 +59,11 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		#if UITEST
+		#if UITEST && __IOS__
 		[Test]
 		public void Bugzilla34632Test ()
 		{
-			var app = RunningApp as iOSApp;
-			if (app != null && app.Device.IsTablet) {
+			if (RunningApp.IsTablet()) {
 				RunningApp.SetOrientationPortrait ();
 				RunningApp.Tap (q => q.Marked ("btnModal"));
 				RunningApp.SetOrientationLandscape ();

@@ -102,8 +102,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void MasterStillVisibleAfterPushingAndPoppingModalPage()
 		{
-			var appIos = RunningApp as iOSApp;
-			if (appIos == null || appIos.Device.IsTablet)
+			if (!RunningApp.IsTablet())
 				return;
 
 			RunningApp.SetOrientationLandscape();
