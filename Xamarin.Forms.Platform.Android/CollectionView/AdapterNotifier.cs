@@ -27,10 +27,7 @@ namespace Xamarin.Forms.Platform.Android
 		public void NotifyItemInserted(IItemsViewSource source, int startIndex)
 		{
 			if (IsValidAdapter())
-			{
 				_adapter.NotifyItemInserted(startIndex);
-				System.Diagnostics.Debug.WriteLine($"StartIndex: {startIndex}");
-   			}
 		}
 
 		public void NotifyItemMoved(IItemsViewSource source, int fromPosition, int toPosition)
