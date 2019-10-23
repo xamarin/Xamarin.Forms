@@ -112,6 +112,13 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("PopModalPage");
 			RunningApp.WaitForElement("Master Visible");
 		}
+
+		[TearDown]
+		public override void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
+			base.TearDown();
+		}
 #endif
 	}
 }
