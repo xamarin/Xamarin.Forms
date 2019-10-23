@@ -23,6 +23,7 @@
 			var generator = new ItemsSourceGenerator(collectionView);
 
 			layout.Children.Add(generator);
+
 			layout.Children.Add(collectionView);
 			Grid.SetRow(collectionView, 1);
 

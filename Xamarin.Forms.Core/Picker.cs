@@ -199,6 +199,8 @@ namespace Xamarin.Forms
 				((LockableObservableListWrapper)Items).InternalClear();
 				((LockableObservableListWrapper)Items).IsLocked = false;
 			}
+
+			OnPropertyChanged(Picker.ItemsSourceProperty.PropertyName);
 		}
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

@@ -87,18 +87,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 		void GenerateList()
 		{
-			if (int.TryParse(_entry.Text, out int count))
+			_cv.ItemsSource = new string[]
 			{
-				var items = new List<CollectionViewGalleryTestItem>();
+				"Baboon",
+				"Capuchin Monkey",
+				"Blue Monkey",
+				"Squirrel Monkey",
+				"Golden Lion Tamarin",
+				"Howler Monkey",
+				"Japanese Macaque"
+			};
 
-				for (int n = 0; n < count; n++)
-				{
-					items.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
-						$"Item: {n}", _images[n % _images.Length], n));
-				}
+			//if (int.TryParse(_entry.Text, out int count))
+			//{
+			//	var items = new List<CollectionViewGalleryTestItem>();
 
-				_cv.ItemsSource = items;
-			}
+			//	for (int n = 0; n < count; n++)
+			//	{
+			//		items.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
+			//			$"Item: {n}", _images[n % _images.Length], n));
+			//	}
+
+			//	_cv.ItemsSource = items;
+			//}
 		}
 
 		ObservableCollection<CollectionViewGalleryTestItem> _obsCollection;

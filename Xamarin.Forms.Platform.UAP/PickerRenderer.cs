@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.UWP
 					WireUpFormsVsm();
 				}
 
-				Control.ItemsSource = GetItems(Element.Items);
+				UpdateItems();
 				UpdateTitle();
 				UpdateSelectedIndex();
 				UpdateCharacterSpacing();
@@ -82,6 +82,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Picker.ItemsSourceProperty.PropertyName)
+				UpdateItems();
 		}
 
 		void ControlOnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -248,6 +250,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Color color = Element.TextColor;
 			Control.Foreground = color.IsDefault ? (_defaultBrush ?? color.ToBrush()) : color.ToBrush();
+		}
+
+		void UpdateItems()
+		{
+			Control.ItemsSource = GetItems(Element.Items);
 		}
 
 		void UpdateTitle()

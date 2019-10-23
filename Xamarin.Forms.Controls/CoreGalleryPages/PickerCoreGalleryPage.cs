@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls
@@ -13,6 +14,19 @@ namespace Xamarin.Forms.Controls
 			itemsContainer.View.Items.Add("Item 1");
 			itemsContainer.View.Items.Add("Item 2");
 			itemsContainer.View.Items.Add("Item 3");
+
+			var buttonChangeSet = new Button() { Text = "Change items set" };
+			buttonChangeSet.Clicked += (o, a) =>
+			{
+				List<string> items = new List<string>();
+				items.Add("Item 1 changed");
+				items.Add("Item 2 changed");
+				items.Add("Item 3 changed");
+
+				itemsContainer.View.ItemsSource = items;
+			};
+
+			itemsContainer.ContainerLayout.Children.Add(buttonChangeSet);
 
 			var selectedIndexContainer = new ViewContainer<Picker>(Test.Picker.SelectedIndex, new Picker());
 			selectedIndexContainer.View.Items.Add("Item 1");
