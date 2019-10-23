@@ -8,97 +8,82 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 5560, "[Android] Disposed EntryCell throws ObjectDisposed exception after updating an object that the EntryCell was previously bound to",
-		PlatformAffected.Android)]
+	[Issue(IssueTracker.Github, 5560, "[Android] Disposed EntryCell throws ObjectDisposed exception after updating an object that the EntryCell was previously bound to", PlatformAffected.Android)]
 	public class Issue5560 : TestNavigationPage
 	{
 		protected override void Init()
 		{
-			PushAsync(new MainPage());
+			Navigation.PushAsync(new NavigationPage(new Page1()));
 		}
 
-		class MainPage : ContentPage
+		[Preserve(AllMembers = true)]
+		class Page1 : ContentPage
 		{
 			public Entry SharedObject { get; } = new Entry { Text = "test" };
 
-			protected override void OnAppearing()
+			public Page1()
 			{
-				base.OnAppearing();
+				var button1 = new Button { Text = "Open leaking page" };
+				button1.Clicked += Button1_Clicked;
 
-				BindingContext = SharedObject;
-
-				Title = "Issue5560";
-
-				var stackLayout = new StackLayout();
-
-				var leakButton = new Button()
-				{
-					Text = "Open leaking page",
-				};
-				leakButton.Clicked += LeakButton_Clicked;
-				stackLayout.Children.Add(leakButton);
-
-				var gcButton = new Button()
-				{
-					Text = "GC",
-				};
-				gcButton.Clicked += GcButton_Clicked;
-				stackLayout.Children.Add(gcButton);
+				var button2 = new Button { Text = "GC" };
+				button2.Clicked += Button2_Clicked;
 
 				var entry = new Entry();
-				entry.SetBinding(Entry.TextProperty, "Text");
-				stackLayout.Children.Add(entry);
+				entry.SetBinding(Entry.TextProperty, new Binding("Text", source: SharedObject));
 
-				Content = stackLayout;
+				Content = new StackLayout
+				{
+					Children = {
+						button1,
+						button2,
+						entry
+					}
+				};
 			}
 
-			private void GcButton_Clicked(object sender, EventArgs e)
+			void Button2_Clicked(object sender, EventArgs e)
 			{
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 				GC.Collect();
 			}
 
-			private void LeakButton_Clicked(object sender, EventArgs e)
+			void Button1_Clicked(object sender, EventArgs e)
 			{
-				Navigation.PushAsync(new Leaks(SharedObject));
+				Navigation.PushAsync(new Page2(SharedObject));
 			}
 		}
 
-		class Leaks : ContentPage
+		[Preserve(AllMembers = true)]
+		class Page2 : ContentPage
 		{
 			public object SharedObject { get; }
-			
-			public Leaks(object sharedObject)
+
+			public Page2(object sharedObject)
 			{
 				SharedObject = sharedObject;
-			}
 
-			protected override void OnAppearing()
-			{
-				base.OnAppearing();
-				BindingContext = SharedObject;
+				var item = new EntryCell { Label = "i leak" };
+				item.SetBinding(EntryCell.TextProperty, new Binding("Text", source: SharedObject));
 
-				var stackLayout = new StackLayout();
-				Content = stackLayout;
+				var tableView = new TableView
+				{
+					Root = new TableRoot
+					{
+						new TableSection
+						{
+							item
+						}
+					}
+				};
 
-				var tableView = new TableView();
-				stackLayout.Children.Add(tableView);
-
-				var tableRoot = new TableRoot();
-				tableView.Root = tableRoot;
-
-				var tableSection = new TableSection();
-				tableRoot.Add(tableSection);
-
-				var entreyCell = new EntryCell();
-				entreyCell.SetBinding(EntryCell.TextProperty, "Text");
-				tableSection.Add(entreyCell);
-			}
-
-			~Leaks()
-			{
-				Debug.WriteLine("~Leaks() ***************************");
+				Content = new StackLayout
+				{
+					Children = {
+						tableView
+					}
+				};
 			}
 		}
 	}
