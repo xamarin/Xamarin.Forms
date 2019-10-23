@@ -267,8 +267,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				listView = new FormsListView()
 				{
-					Style = (Windows.UI.Xaml.Style)UWPApp.Current.Resources["VerticalCarouselListStyle"],
-					ItemsPanel = (ItemsPanelTemplate)UWPApp.Current.Resources["VerticalListItemsPanel"]
+					Style = (Windows.UI.Xaml.Style)UWPApp.Current.Resources["VerticalCarouselListStyle"]
 				};
 			}
 
