@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Views;
-using FormsCollectionView = Xamarin.Forms.CollectionView;
+using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
-			FormsCollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselViewRenderer));
+			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 		}
 
 		protected override void Dispose(bool disposing)
@@ -50,13 +50,14 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void UpdateItemsSource()
 		{
 			UpdateAdapter();
+			UpdateEmptyView();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
-				UpdateItemsSource();
-			else if (changedProperty.Is(CarouselView.PeekAreaInsetsProperty))
+			base.OnElementPropertyChanged(sender, changedProperty);
+   
+			if (changedProperty.Is(CarouselView.PeekAreaInsetsProperty))
 				UpdatePeekAreaInsets();
 			else if (changedProperty.Is(CarouselView.IsSwipeEnabledProperty))
 				UpdateIsSwipeEnabled();
@@ -85,6 +86,8 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					Carousel.SetIsDragging(false);
 			}
+
+			Carousel.IsScrolling = state != ScrollStateIdle;
 		}
 
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
