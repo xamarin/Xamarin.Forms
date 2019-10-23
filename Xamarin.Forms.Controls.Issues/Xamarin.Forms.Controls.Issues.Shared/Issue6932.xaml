@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Xamarin.Forms.Controls.GalleryPages" mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue6932">
+    <ContentPage.Resources>
+        <!-- Template for integer items -->
+        <DataTemplate x:Key="MyIntTemplate">
+            <Frame Padding="10"
+				   BackgroundColor="Yellow">
+                <Label Text="{Binding }" />
+            </Frame>
+        </DataTemplate>
+        <!-- Template for character items -->
+        <DataTemplate x:Key="MyCharTemplate">
+            <Frame Padding="10"
+				   BackgroundColor="Azure">
+                <Label Text="{Binding }" />
+            </Frame>
+        </DataTemplate>
+        <DataTemplate x:Key="EmptyTemplate">
+            <Frame Padding="10"
+				   BackgroundColor="Fuschia">
+                <Label Text="No items here" />
+            </Frame>
+        </DataTemplate>
+        <local:BindableLayoutItemTemplateSelector x:Key="ItemTemplateSelector"
+												  IntTemplate="{StaticResource MyIntTemplate}"
+												  CharTemplate="{StaticResource MyCharTemplate}" />
+    </ContentPage.Resources>
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollView VerticalScrollBarVisibility="Never"
+					HorizontalScrollBarVisibility="Always">
+            <StackLayout AutomationId="{Binding LayoutAutomationId}" BindableLayout.ItemsSource="{Binding ItemsSource}"
+						 BindableLayout.ItemTemplateSelector="{StaticResource ItemTemplateSelector}"
+                         
+						 Spacing="7"
+						 Padding="10, 5">
+                <BindableLayout.EmptyView>
+                    <Grid BackgroundColor="Blue" >
+                        <Label Text="No Results"/>
+                    </Grid>
+                </BindableLayout.EmptyView>
+            </StackLayout>
+        </ScrollView>
+        <StackLayout BackgroundColor="Green"
+					 Orientation="Horizontal"
+					 Spacing="0"
+					 Grid.Row="1">
+            <Button Command="{Binding AddItemCommand}"
+					Text="Add" />
+            <Button Command="{Binding RemoveItemCommand}"
+					Text="Remove" />
+            <Button Command="{Binding ReplaceItemCommand}"
+					Text="Replace" />
+            <Button Command="{Binding MoveItemCommand}"
+					Text="Move" />
+            <Button Command="{Binding ClearCommand}"
+					Text="Clear" />
+        </StackLayout>
+    </Grid>
+</ContentPage>
