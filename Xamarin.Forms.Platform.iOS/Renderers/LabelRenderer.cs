@@ -277,12 +277,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				newAttributedText.RemoveAttribute(underlineStyleKey, range);
 			else
 				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
-
-#if __MOBILE__
+	
 			UpdateCharacterSpacing();
-#else
-			Control.AttributedStringValue = newAttributedText;
-#endif
 			_perfectSizeValid = false;
 		}
 
@@ -379,20 +375,24 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateCharacterSpacing()
 		{
-#if __MOBILE__
 			if (IsElementOrControlEmpty)
 				return;
 
 			if (Element?.TextType != TextType.Text)
 				return;
-
+#if __MOBILE__
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
-				
-			_perfectSizeValid = false;
+#else
+   			var textAttr = Control.AttributedStringValue.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedStringValue = textAttr;
 #endif
+
+			_perfectSizeValid = false;
 		}
 
 		void UpdateText()
