@@ -16,16 +16,14 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.Layout)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 6932, "EmptyView for BindableLayout", PlatformAffected.All)]
+	[Issue(IssueTracker.Github, 6932, "EmptyView for BindableLayout (view)", PlatformAffected.All)]
 	public partial class Issue6932 : TestContentPage
 	{
-		const string StackLayoutAutomationId = "StackLayoutThing";
-		readonly PageViewModel _viewModel = new PageViewModel();
+		readonly Page6932ViewModel _viewModel = new Page6932ViewModel();
 
 		public Issue6932()
 		{
 #if APP
-
 			InitializeComponent();
 			BindingContext = _viewModel;
 #endif
@@ -36,44 +34,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		[Preserve(AllMembers = true)]
-		class PageViewModel
-		{
-			public string LayoutAutomationId { get => StackLayoutAutomationId; }
-
-			public ObservableCollection<object> ItemsSource { get; set; }
-			public ICommand AddItemCommand { get; }
-			public ICommand RemoveItemCommand { get; }
-			public ICommand ClearCommand { get; }
-
-			public PageViewModel()
-			{
-				ItemsSource = new ObservableCollection<object>(Enumerable.Range(0, 10).Cast<object>().ToList());
-
-				int i = ItemsSource.Count;
-				AddItemCommand = new Command(() => ItemsSource.Add(i++));
-				RemoveItemCommand = new Command(() =>
-				{
-					if (ItemsSource.Count > 0)
-						ItemsSource.RemoveAt(0);
-				});
-
-				ClearCommand = new Command(() =>
-				{
-					ItemsSource.Clear();
-				});
-			}
-		}
-
 #if UITEST
 		[Test]
 		public void EmptyViewBecomesVisibleWhenItemsSourceIsCleared()
 		{
 			RunningApp.Screenshot("Screen opens, items are shown");
 
-			RunningApp.WaitForElement(StackLayoutAutomationId);
-			RunningApp.Tap("Clear");
-			RunningApp.WaitForElement("No Results");
+			RunningApp.WaitForElement(_viewModel.LayoutAutomationId);
+			RunningApp.Tap(_viewModel.ClearAutomationId);
+			RunningApp.WaitForElement(_viewModel.EmptyViewAutomationId);
 
 			RunningApp.Screenshot("Empty view is visible");
 		}
@@ -83,12 +52,12 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.Screenshot("Screen opens, items are shown");
 
-			RunningApp.WaitForElement(StackLayoutAutomationId);
+			RunningApp.WaitForElement(_viewModel.LayoutAutomationId);
 
 			for (var i = 0; i < _viewModel.ItemsSource.Count; i++)
-				RunningApp.Tap("Remove");
+				RunningApp.Tap(_viewModel.RemoveAutomationId);
 
-			RunningApp.WaitForElement("No Results");
+			RunningApp.WaitForElement(_viewModel.EmptyViewAutomationId);
 
 			RunningApp.Screenshot("Empty view is visible");
 		}
@@ -98,17 +67,52 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.Screenshot("Screen opens, items are shown");
 
-			RunningApp.WaitForElement(StackLayoutAutomationId);
-			RunningApp.Tap("Clear");
-			RunningApp.WaitForElement("No Results");
+			RunningApp.WaitForElement(_viewModel.LayoutAutomationId);
+			RunningApp.Tap(_viewModel.ClearAutomationId);
+			RunningApp.WaitForElement(_viewModel.EmptyViewAutomationId);
 
 			RunningApp.Screenshot("Items are cleared, empty view visible");
 
-			RunningApp.Tap("Add");
-			RunningApp.WaitForNoElement("No Results");
+			RunningApp.Tap(_viewModel.AddAutomationId);
+			RunningApp.WaitForNoElement(_viewModel.EmptyViewAutomationId);
 
 			RunningApp.Screenshot("Item is added, empty view is not visible");
 		}
 #endif
+	}
+
+	[Preserve(AllMembers = true)]
+	public class Page6932ViewModel
+	{
+		public string LayoutAutomationId { get => "StackLayoutThing"; }
+		public string AddAutomationId { get => "AddButton"; }
+		public string RemoveAutomationId { get => "RemoveButton"; }
+		public string ClearAutomationId { get => "ClearButton"; }
+		public string EmptyViewAutomationId { get => "EmptyViewId"; }
+		public string EmptyTemplateAutomationId { get => "EmptyTemplateId"; }
+		public string EmptyViewStringDescription { get => "Nothing to see here"; }
+
+		public ObservableCollection<object> ItemsSource { get; set; }
+		public ICommand AddItemCommand { get; }
+		public ICommand RemoveItemCommand { get; }
+		public ICommand ClearCommand { get; }
+
+		public Page6932ViewModel()
+		{
+			ItemsSource = new ObservableCollection<object>(Enumerable.Range(0, 10).Cast<object>().ToList());
+
+			int i = ItemsSource.Count;
+			AddItemCommand = new Command(() => ItemsSource.Add(i++));
+			RemoveItemCommand = new Command(() =>
+			{
+				if (ItemsSource.Count > 0)
+					ItemsSource.RemoveAt(0);
+			});
+
+			ClearCommand = new Command(() =>
+			{
+				ItemsSource.Clear();
+			});
+		}
 	}
 }

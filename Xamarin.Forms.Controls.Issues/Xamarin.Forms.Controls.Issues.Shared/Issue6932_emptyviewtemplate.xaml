@@ -4,12 +4,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-             x:Class="Xamarin.Forms.Controls.Issues.Issue6932">
+             x:Class="Xamarin.Forms.Controls.Issues.Issue6932_emptyviewtemplate" x:Name="ThePage">
     <ContentPage.Resources>
         <DataTemplate x:Key="MyIntTemplate">
             <Frame Padding="10"
 				   BackgroundColor="Yellow">
                 <Label Text="{Binding }" />
+            </Frame>
+        </DataTemplate>
+        <DataTemplate x:Key="EmptyTemplate">
+            <Frame Padding="10" AutomationId="{Binding BindingContext.EmptyTemplateAutomationId, Source={x:Reference ThePage}}"
+				   BackgroundColor="Fuschia">
+                <Label Text="No items here" />
             </Frame>
         </DataTemplate>
     </ContentPage.Resources>
@@ -21,14 +27,9 @@
         <ScrollView VerticalScrollBarVisibility="Never"
 					HorizontalScrollBarVisibility="Always">
             <StackLayout AutomationId="{Binding LayoutAutomationId}" BindableLayout.ItemsSource="{Binding ItemsSource}"
-                         BindableLayout.ItemTemplate="{StaticResource MyIntTemplate}"
+                         BindableLayout.ItemTemplate="{StaticResource MyIntTemplate}" BindableLayout.EmptyViewTemplate="{StaticResource EmptyTemplate}"
 						 Spacing="7"
 						 Padding="10, 5">
-                <BindableLayout.EmptyView>
-                    <Grid BackgroundColor="Blue" AutomationId="{Binding EmptyViewAutomationId}">
-                        <Label Text="No Results"/>
-                    </Grid>
-                </BindableLayout.EmptyView>
             </StackLayout>
         </ScrollView>
         <StackLayout BackgroundColor="Green"
