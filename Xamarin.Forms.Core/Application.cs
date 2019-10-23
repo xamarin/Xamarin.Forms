@@ -38,6 +38,9 @@ namespace Xamarin.Forms
 				if (CurrentLogListener != null && Log.Listeners.Contains(CurrentLogListener))
 					Log.Listeners.Remove(CurrentLogListener);
 
+				if (value == null)
+					return;
+
 				CurrentLogWarningListener = value;
 				CurrentLogListener = new DelegateLogListener((category, message) => CurrentLogWarningListener.Invoke((category, message)));
 
