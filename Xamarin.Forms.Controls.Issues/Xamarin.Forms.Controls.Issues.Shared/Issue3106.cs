@@ -12,21 +12,21 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		int count;
 		const string content = "Welcome to Xamarin.Forms! Welcome to Xamarin.Forms! Welcome to Xamarin.Forms! Welcome to Xamarin.Forms!";
+		const string content2 = "Now users can set a line break mode to texts on Button, the default value doesn't affect any user.";
 
+		Button mainButton;
 		Button materialButton;
-		Label label;
 		Label lineBreakModeType;
 
 		protected override void Init()
 		{
-			var mainButton = new Button
+			mainButton = new Button
 			{
 				Text = content,
 				LineBreakMode = LineBreakMode.WordWrap,
 				HorizontalOptions = LayoutOptions.CenterAndExpand,
 				VerticalOptions = LayoutOptions.CenterAndExpand
 			};
-
 			mainButton.Clicked += MainButton_Clicked;
 
 			materialButton = new Button
@@ -36,14 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalOptions = LayoutOptions.CenterAndExpand,
 				VerticalOptions = LayoutOptions.CenterAndExpand,
 			};
-
-			label = new Label
-			{
-				Text = content,
-				HorizontalOptions = LayoutOptions.CenterAndExpand,
-				VerticalOptions = LayoutOptions.CenterAndExpand
-			};
-			
+			materialButton.Clicked += MaterialButton_Clicked;
 			
 			lineBreakModeType = new Label
 			{
@@ -57,12 +50,11 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					new Label
 					{
-						Text = "Press the first button and see the LineBreak changes",
+						Text = "Press the first button to change the LineBreakMode. Press the second button to change the text",
 						VerticalOptions = LayoutOptions.StartAndExpand
 					},
 					mainButton,
 					materialButton,
-					label,
 					lineBreakModeType
 				}
 			};
@@ -70,11 +62,18 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = layout;
 		}
 
+		void MaterialButton_Clicked(object sender, EventArgs e)
+		{
+			if(materialButton.Text.Equals(content2))
+				materialButton.Text = mainButton.Text = content;
+			else
+				materialButton.Text = mainButton.Text = content2;
+		}
+
 		void MainButton_Clicked(object sender, EventArgs e)
 		{
-			var mainButton = (sender as Button);
-			label.LineBreakMode = materialButton.LineBreakMode = mainButton.LineBreakMode = SelectLineBreakMode();
-			lineBreakModeType.Text = label.LineBreakMode.ToString();
+			materialButton.LineBreakMode = mainButton.LineBreakMode = SelectLineBreakMode();
+			lineBreakModeType.Text = mainButton.LineBreakMode.ToString();
 		}
 
 		LineBreakMode SelectLineBreakMode()

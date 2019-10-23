@@ -97,6 +97,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_ = UpdateImageAsync();
 			UpdateText();
 			UpdateEdgeInsets();
+			UpdateLineBreakMode();
 		}
 
 		public void SetImage(UIImage image)
@@ -217,13 +218,13 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.SetAttributedTitle(disabled, UIControlState.Disabled);
 
 			UpdateEdgeInsets();
-			UpdateLineBreakMode();
 		}
 
 		void UpdateLineBreakMode()
 		{
 			var control = Control;
-			if (control == null)
+
+			if (_disposed || _renderer == null || _element == null || control == null)
 				return;
 
 			switch (_element.LineBreakMode)
