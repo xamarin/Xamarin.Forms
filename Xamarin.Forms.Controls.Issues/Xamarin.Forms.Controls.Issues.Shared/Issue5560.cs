@@ -4,6 +4,10 @@ using System.Diagnostics;
 using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -24,12 +28,15 @@ namespace Xamarin.Forms.Controls.Issues
 			public Page1()
 			{
 				var button1 = new Button { Text = "Open leaking page" };
+				button1.AutomationId = "button1";
 				button1.Clicked += Button1_Clicked;
 
 				var button2 = new Button { Text = "GC" };
+				button2.AutomationId = "button2";
 				button2.Clicked += Button2_Clicked;
 
 				var entry = new Entry();
+				entry.AutomationId = "entry";
 				entry.SetBinding(Entry.TextProperty, new Binding("Text", source: SharedObject));
 
 				Content = new StackLayout
@@ -65,6 +72,7 @@ namespace Xamarin.Forms.Controls.Issues
 				SharedObject = sharedObject;
 
 				var item = new EntryCell { Label = "i leak" };
+				item.AutomationId = "entrycell";
 				item.SetBinding(EntryCell.TextProperty, new Binding("Text", source: SharedObject));
 
 				var tableView = new TableView
@@ -86,5 +94,24 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 			}
 		}
+
+#if UITEST && __ANDROID__
+		[Test]
+		public void Issue5560Test()
+		{
+			RunningApp.WaitForElement(q => q.Marked("NoResourceEntry-112"));
+			RunningApp.Tap(q => q.Marked("NoResourceEntry-112"));
+			RunningApp.Tap(c => c.Class("EntryCellEditText"));
+			RunningApp.EnterText(c => c.Class("EntryCellEditText"), " edit");
+			RunningApp.Back();
+			RunningApp.Back();
+			RunningApp.Tap(q => q.Marked("NoResourceEntry-113"));
+			RunningApp.Tap(q => q.Marked("NoResourceEntry-114"));
+			RunningApp.EnterText(c => c.Marked("NoResourceEntry-114"), " twice");
+
+			RunningApp.Screenshot("EntryCell did not crash app by disposing shared resource");
+		}
+#endif
+
 	}
 }
