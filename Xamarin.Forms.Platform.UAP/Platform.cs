@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Platform.UWP
 		Page _currentPage;
 		readonly NavigationModel _navModel = new NavigationModel();
 		readonly ToolbarTracker _toolbarTracker = new ToolbarTracker();
-		readonly ImageSourceConverter _imageSourceConverter = new ImageSourceConverter();
+		readonly ImageConverter _imageConverter = new ImageConverter();
 		readonly ImageSourceIconElementConverter _imageSourceIconElementConverter = new ImageSourceIconElementConverter();
 		Windows.UI.Xaml.Controls.ProgressBar GetBusyIndicator()
 		{
@@ -445,7 +445,8 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					var img = new WImage();
-					img.SetBinding(WImage.SourceProperty, "IconImageSource", _imageSourceConverter);
+					img.SetBinding(WImage.SourceProperty, "Value");
+					img.SetBinding(WImage.DataContextProperty, "IconImageSource", _imageConverter);
 					button.Content = img;
 				}
 
