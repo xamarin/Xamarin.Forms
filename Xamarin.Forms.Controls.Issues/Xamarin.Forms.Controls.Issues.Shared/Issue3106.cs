@@ -55,6 +55,11 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children =
 				{
+					new Label
+					{
+						Text = "Press the first button and see the LineBreak changes",
+						VerticalOptions = LayoutOptions.StartAndExpand
+					},
 					mainButton,
 					materialButton,
 					label,
