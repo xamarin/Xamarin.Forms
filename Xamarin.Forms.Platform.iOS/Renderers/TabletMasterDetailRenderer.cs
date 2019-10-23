@@ -16,25 +16,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 	internal class EventedViewController : ChildViewController
 	{
-		public override void ViewWillAppear(bool animated)
-		{
-			base.ViewWillAppear(animated);
-
-			var eh = WillAppear;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
-		}
-
 		public override void ViewWillDisappear(bool animated)
 		{
 			base.ViewWillDisappear(animated);
 
-			var eh = WillDisappear;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
+			WillDisappear?.Invoke(this, EventArgs.Empty);
 		}
 
-		public event EventHandler WillAppear;
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+
+			DidAppear?.Invoke(this, EventArgs.Empty);
+		}
+
+		public event EventHandler DidAppear;
 
 		public event EventHandler WillDisappear;
 	}
@@ -98,7 +94,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_masterController != null)
 				{
-					_masterController.WillAppear -= MasterControllerWillAppear;
+					_masterController.DidAppear -= MasterControllerWillAppear;
 					_masterController.WillDisappear -= MasterControllerWillDisappear;
 				}
 
@@ -134,7 +130,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateControllers();
 
-			_masterController.WillAppear += MasterControllerWillAppear;
+			_masterController.DidAppear += MasterControllerWillAppear;
 			_masterController.WillDisappear += MasterControllerWillDisappear;
 
 			PresentsWithGesture = MasterDetailPage.IsGestureEnabled;
@@ -249,11 +245,14 @@ namespace Xamarin.Forms.Platform.iOS
 				MasterDetailPage.CanChangeIsPresented = true;
 
 			MasterDetailPage.UpdateMasterBehavior();
+
+			if(MasterDetailPage.CanChangeIsPresented && !MasterDetailPage.ShouldShowSplitMode)
+				ElementController.SetValueFromRenderer(MasterDetailPage.IsPresentedProperty, false);
 		}
 
 		public override void ViewWillDisappear(bool animated)
 		{
-			if (_masterVisible)
+			if (_masterVisible && !MasterDetailPage.ShouldShowSplitMode)
 				PerformButtonSelector();
 
 			base.ViewWillDisappear(animated);
