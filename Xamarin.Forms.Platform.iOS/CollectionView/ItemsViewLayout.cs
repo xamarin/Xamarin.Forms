@@ -20,8 +20,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected ItemsViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy)
 		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewLayout));
-
 			ItemSizingStrategy = itemSizingStrategy;
 
 			_itemsLayout = itemsLayout;
@@ -88,6 +86,16 @@ namespace Xamarin.Forms.Platform.iOS
 		public virtual UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
 			nint section)
 		{
+			if (_itemsLayout is GridItemsLayout gridItemsLayout)
+			{
+				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					return new UIEdgeInsets(0, 0, 0, (nfloat)gridItemsLayout.HorizontalItemSpacing * collectionView.NumberOfItemsInSection(section));
+				}
+
+				return new UIEdgeInsets(0,0, (nfloat)gridItemsLayout.VerticalItemSpacing * collectionView.NumberOfItemsInSection(section), 0);
+			}
+
 			return UIEdgeInsets.Zero;
 		}
 
@@ -474,7 +482,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
 			{
-				ForceScrollToLastItem(CollectionView);
+				ForceScrollToLastItem(CollectionView, _itemsLayout);
 			}
 		}
 
@@ -541,7 +549,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return false;
 		}
 
-		static void ForceScrollToLastItem(UICollectionView collectionView)
+		static void ForceScrollToLastItem(UICollectionView collectionView, ItemsLayout itemsLayout)
 		{
 			var sections = (int)collectionView.NumberOfSections();
 
@@ -556,7 +564,12 @@ namespace Xamarin.Forms.Platform.iOS
 				if (itemCount > 0)
 				{
 					var lastIndexPath = NSIndexPath.FromItemSection(itemCount - 1, section);
-					collectionView.ScrollToItem(lastIndexPath, UICollectionViewScrollPosition.Bottom, true);
+
+					if (itemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
+						collectionView.ScrollToItem(lastIndexPath, UICollectionViewScrollPosition.Bottom, true);
+					else
+						collectionView.ScrollToItem(lastIndexPath, UICollectionViewScrollPosition.Right, true);
+
 					return;
 				}
 			}

@@ -352,7 +352,6 @@ namespace Xamarin.Forms
 
 			_navStack.Insert(index, page);
 			AddPage(page);
-			SendAppearanceChanged();
 
 			var args = new NavigationRequestedEventArgs(page, before, false)
 			{
@@ -594,7 +593,7 @@ namespace Xamarin.Forms
 		{
 			if (Parent?.Parent is IShellController shell)
 			{
-				shell?.UpdateCurrentState(source);
+				shell.UpdateCurrentState(source);
 			}
 		}
 

@@ -2,7 +2,15 @@
 {
 	internal class ItemTemplateContext
 	{
-		public ItemTemplateContext(DataTemplate formsDataTemplate, object item, BindableObject container, double? height = null, double? width = null, Thickness? itemSpacing = null)
+		public DataTemplate FormsDataTemplate { get; }
+		public object Item { get; }
+		public BindableObject Container { get; }
+		public double ItemHeight { get; }
+		public double ItemWidth { get; }
+		public Thickness ItemSpacing { get; }
+
+		public ItemTemplateContext(DataTemplate formsDataTemplate, object item, BindableObject container, 
+			double? height = null, double? width = null, Thickness? itemSpacing = null)
 		{
 			FormsDataTemplate = formsDataTemplate;
 			Item = item;
@@ -17,12 +25,5 @@
 			if (itemSpacing.HasValue)
 				ItemSpacing = itemSpacing.Value;
 		}
-
-		public DataTemplate FormsDataTemplate { get; }
-		public object Item { get; }
-		public BindableObject Container { get; }
-		public double ItemHeight { get; }
-		public double ItemWidth { get; }
-		public Thickness ItemSpacing { get; }
 	}
 }
