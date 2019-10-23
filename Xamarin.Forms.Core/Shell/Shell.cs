@@ -567,6 +567,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FlyoutIconProperty =
 			BindableProperty.Create(nameof(FlyoutIcon), typeof(ImageSource), typeof(Shell), null);
 
+		public static readonly BindableProperty FlyoutVerticalScrollModeProperty =
+			BindableProperty.Create(nameof(FlyoutVerticalScrollMode), typeof(ScrollMode), typeof(Shell), ScrollMode.Auto);
+
 		ShellNavigatedEventArgs _accumulatedEvent;
 		bool _accumulateNavigatedEvents;
 		View _flyoutHeaderView;
@@ -576,6 +579,12 @@ namespace Xamarin.Forms
 			Navigation = new NavigationImpl(this);
 			((INotifyCollectionChanged)Items).CollectionChanged += (s, e) => SendStructureChanged();
 			Route = Routing.GenerateImplicitRoute("shell");
+		}
+
+		public ScrollMode FlyoutVerticalScrollMode
+		{
+			get => (ScrollMode)GetValue(FlyoutVerticalScrollModeProperty);
+			set => SetValue(FlyoutVerticalScrollModeProperty, value);
 		}
 
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
@@ -785,7 +794,7 @@ namespace Xamarin.Forms
 		{
 			base.OnChildAdded(child);
 
-			if (child is ShellItem shellItem && CurrentItem == null && !(child is MenuShellItem))
+			if (child is ShellItem shellItem && CurrentItem == null && ValidDefaultShellItem(child))
 			{
 				((IShellController)this).OnFlyoutItemSelected(shellItem);
 			}
@@ -795,11 +804,21 @@ namespace Xamarin.Forms
 		{
 			base.OnChildRemoved(child);
 
-			if (child == CurrentItem && Items.Count > 0)
+			if (child == CurrentItem)
 			{
-				((IShellController)this).OnFlyoutItemSelected(Items[0]);
+				for (var i = 0; i < Items.Count; i++)
+				{
+					var item = Items[i];
+					if (ValidDefaultShellItem(item))
+					{
+						((IShellController)this).OnFlyoutItemSelected(item);
+						break;
+					}
+				}
 			}
 		}
+
+		bool ValidDefaultShellItem(Element child) => !(child is MenuShellItem);
 
 		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
 		{
