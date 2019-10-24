@@ -27,7 +27,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var instructions = new Label
 			{
 				Margin = new Thickness(6),
-				Text = "Slide slider to max and min, check if Stepper +/- buttons becomes wrongly disabled permanently, after reaching ends."
+				Text = "Slide slider to the extreme Right and Left, check that the Stepper to the right's +/- buttons work as expected, " + 
+					   "becoming disabled at the Max and Min positions of the Slider, and then enabled again as the Slider moves towards the center."
 			};
 
 			StackLayout controlsLayout = new StackLayout();
