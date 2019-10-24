@@ -246,9 +246,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Element?.TextType != TextType.Text)
 				return;
 
-			if (!Element.IsSet(Label.TextDecorationsProperty))
-				return;
-
 #if __MOBILE__
 			if (!(Control.AttributedText?.Length > 0))
 				return;
@@ -297,6 +294,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 #if __MOBILE__
+			Control.AttributedText = newAttributedText;
 			UpdateCharacterSpacing();
 #else
 			Control.AttributedStringValue = newAttributedText;
