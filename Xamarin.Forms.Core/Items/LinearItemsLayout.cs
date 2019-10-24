@@ -4,6 +4,10 @@ namespace Xamarin.Forms
 {
 	public class LinearItemsLayout : ItemsLayout
 	{
+		public LinearItemsLayout() : this(ItemsLayoutOrientation.Vertical)
+		{
+		}
+
 		public LinearItemsLayout([Parameter("Orientation")] ItemsLayoutOrientation orientation) : base(orientation)
 		{
 		}
