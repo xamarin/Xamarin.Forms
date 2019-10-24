@@ -21,6 +21,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue (IssueTracker.None, 0,"TabbedPage nav tests", PlatformAffected.All)]
 	public class TabbedPageTests : TestTabbedPage
 	{
+		const string _page1AutomationId = "Page 1";
+		const string _page2AutomationId = "Page 2";
+
 		protected override void Init ()
 		{
 			var popButton1 = new Button () { Text = "Pop", BackgroundColor = Color.Blue };
@@ -29,8 +32,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var popButton2 = new Button () { Text = "Pop 2", BackgroundColor = Color.Blue };
 			popButton2.Clicked += (s, a) => Navigation.PopModalAsync ();
 
-			Children.Add (new ContentPage () { Title = "Page 1", Content = popButton1 });
-			Children.Add (new ContentPage () { Title = "Page 2", Content = popButton2 });
+			Children.Add(new ContentPage() { Title = "Page 1", AutomationId = _page1AutomationId, Content = popButton1 });
+			Children.Add(new ContentPage() { Title = "Page 2", AutomationId = _page2AutomationId, Content = popButton2 });
 		}
 
 #if UITEST
@@ -63,6 +66,17 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap (q => q.Button ("Pop 2"));
 			RunningApp.WaitForElement (q => q.Marked ("Bug Repro's"));
 			RunningApp.Screenshot ("Popped from second tab");
+		}
+
+		[Test]
+		public void TabbedPageAccessibilityTest ()
+		{
+			RunningApp.WaitForElement(_page1AutomationId);	
+			RunningApp.WaitForElement(_page2AutomationId);
+			RunningApp.Tap (_page2AutomationId);
+			RunningApp.Screenshot ("On second tab");
+			RunningApp.Tap (_page1AutomationId);
+			RunningApp.Screenshot ("On first tab");
 		}
 #endif
 	}

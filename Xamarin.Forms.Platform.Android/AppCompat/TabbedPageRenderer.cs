@@ -679,6 +679,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Page child = Element.Children[i];
 				TabLayout.Tab tab = tabs.GetTabAt(i);
 				SetTabIconImageSource(child, tab);
+				if (!string.IsNullOrEmpty(child.AutomationId))
+					tab.SetContentDescription(child.AutomationId);
 			}
 		}
 
