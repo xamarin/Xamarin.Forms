@@ -53,6 +53,8 @@ namespace Xamarin.Forms.Controls.Issues
 				Title = title,
 				Content = new StackLayout()
 				{
+					VerticalOptions = LayoutOptions.FillAndExpand,
+					BackgroundColor = Color.Red,
 					Children =
 					{
 						new Button()
@@ -84,6 +86,10 @@ namespace Xamarin.Forms.Controls.Issues
 							}),
 							AutomationId = LockFlyoutBehavior
 						},
+						new StackLayout()
+						{
+							VerticalOptions = LayoutOptions.CenterAndExpand
+						},
 						new Button()
 						{
 							Text = "Open Flyout",
@@ -91,7 +97,8 @@ namespace Xamarin.Forms.Controls.Issues
 							{
 								this.FlyoutIsPresented = true;
 							}),
-							AutomationId = OpenFlyout
+							AutomationId = OpenFlyout,
+							VerticalOptions = LayoutOptions.End
 						},
 						new Button()
 						{
@@ -100,7 +107,8 @@ namespace Xamarin.Forms.Controls.Issues
 							{
 								_behavior.IsEnabled = true;
 							}),
-							AutomationId = EnableBackButtonBehavior
+							AutomationId = EnableBackButtonBehavior,	
+							VerticalOptions = LayoutOptions.End
 
 						},
 						new Button()
@@ -110,7 +118,8 @@ namespace Xamarin.Forms.Controls.Issues
 							{
 								_behavior.IsEnabled = false;
 							}),
-							AutomationId = DisableBackButtonBehavior
+							AutomationId = DisableBackButtonBehavior,
+							VerticalOptions = LayoutOptions.End
 						}
 					}
 				}
