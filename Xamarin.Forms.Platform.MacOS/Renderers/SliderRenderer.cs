@@ -2,10 +2,11 @@
 using AppKit;
 using System.ComponentModel;
 using CoreGraphics;
+using Xamarin.Forms.Platform.macOS.Controls;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class XFSliderCell : NSSliderCell
+	internal class FormsSliderCell : NSSliderCell
 	{
 		public Color MinimumTrackColor { get; set; }
 
@@ -77,9 +78,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NSSlider());
+					SetNativeControl(new FormsNSSlider());
 					Control.Activated += OnControlActivated;
-					Control.Cell = new XFSliderCell();
+					Control.Cell = new FormsSliderCell();
 				}
 
 				UpdateMaximum();
@@ -116,7 +117,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		private void UpdateMaximumTrackColor()
 		{
 			// Cell could be overwritten with an other custom cell
-			if (Control.Cell is XFSliderCell sliderCell)
+			if (Control.Cell is FormsSliderCell sliderCell)
 			{
 				sliderCell.MaximumTrackColor = Element.MaximumTrackColor;
 			}
@@ -125,7 +126,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		private void UpdateMinimumTrackColor()
 		{
 			// Cell could be overwritten with an other custom cell
-			if (Control.Cell is XFSliderCell sliderCell)
+			if (Control.Cell is FormsSliderCell sliderCell)
 			{
 				sliderCell.MinimumTrackColor = Element.MinimumTrackColor;
 			}
@@ -134,7 +135,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		private void UpdateThumbColor()
 		{
 			// Cell could be overwritten with an other custom cell
-			if (Control.Cell is XFSliderCell sliderCell)
+			if (Control.Cell is FormsSliderCell sliderCell)
 			{
 				sliderCell.ThumbColor = Element.ThumbColor;
 			}
