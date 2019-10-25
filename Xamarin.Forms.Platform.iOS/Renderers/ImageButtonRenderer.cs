@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var elemValue = (string)Element?.GetValue(AutomationProperties.NameProperty);
 			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel ==
 #if __MOBILE__
-				Control?.Title(UIControlState.Normal))
+				Control?.Title(UIControlState.Normal)
 #else
 				Control?.Title
 #endif
