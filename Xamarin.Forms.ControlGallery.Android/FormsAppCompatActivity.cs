@@ -39,23 +39,25 @@ namespace Xamarin.Forms.ControlGallery.Android
 			//Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
 
 			base.OnCreate(bundle);
-
-#if TEST_EXPERIMENTAL_RENDERERS
-			// Fake_Flag is here so we can test for flag initialization issues
-			Forms.SetFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
-#else
-			Forms.SetFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental" */);
-#endif
-			Forms.Init(this, bundle);
-
-			FormsMaps.Init(this, bundle);
-			FormsMaterial.Init(this, bundle);
-			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
 				//				if (!string.IsNullOrWhiteSpace(e.View.StyleId)) {
 				//					e.NativeView.ContentDescription = e.View.StyleId;
 				//				}
 			};
+
+			Forms.Create(this, bundle)
+
+#if TEST_EXPERIMENTAL_RENDERERS
+				// Fake_Flag is here so we can test for flag initialization issues
+				.WithFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/)
+#else
+				.WithFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental" */)
+#endif
+				.WithMaps(this, bundle)
+				.WithMaterial()
+				.WithAppLinks(this)
+				.Init();
+
 
 			// uncomment to verify turning off title bar works. This is not intended to be dynamic really.
 			//Forms.SetTitleBarVisibility (AndroidTitleBarVisibility.Never);

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormsInitExtensions.cs" />
     <Compile Include="FormsMaterial.cs" />
     <Compile Include="MaterialActivityIndicatorRenderer.cs" />
     <Compile Include="MaterialButtonRenderer.cs" />

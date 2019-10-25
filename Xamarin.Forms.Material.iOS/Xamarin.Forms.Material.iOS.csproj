@@ -58,6 +58,7 @@
     <Compile Include="..\Xamarin.Forms.Material.Android\MaterialColors.cs">
       <Link>MaterialColors.cs</Link>
     </Compile>
+    <Compile Include="FormsInitExtensions.cs" />
     <Compile Include="IMaterialEntryRenderer.cs" />
     <Compile Include="IMaterialTextField.cs" />
     <Compile Include="MaterialEditorRenderer.cs" />

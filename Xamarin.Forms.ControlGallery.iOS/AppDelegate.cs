@@ -150,10 +150,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			App.IOSVersion = int.Parse(versionPart[0]);
 
 			Xamarin.Calabash.Start();
-			// Forms.SetFlags("CollectionView_Experimental", "Shell_Experimental");
-			Forms.Init();
-			FormsMaps.Init();
-			FormsMaterial.Init();
 
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
 			{
@@ -163,6 +159,12 @@ namespace Xamarin.Forms.ControlGallery.iOS
 					//	e.NativeView.AccessibilityIdentifier = e.View.StyleId;
 				}
 			};
+
+			Forms.Create()
+				 //.WithFlags("CollectionView_Experimental", "Shell_Experimental")
+				.WithMaps()
+				.WithMaterial()
+				.Init();
 
 			if (App.IOSVersion == 11)
 			{

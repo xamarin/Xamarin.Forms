@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 			 * you don’t have to add the following update line. See
 			 * https://firebase.google.com/docs/app-indexing/android/personal-content#update-the-index for
 			 * adding content to the index 
-            */
+			*/
 			FirebaseAppIndex.Instance.Update(indexable);
 			GMSTask gmsTask = FirebaseUserActions.Instance
 												 .Start(indexAction)
