@@ -46,7 +46,23 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				var child = ElementController.LogicalChildren[i] as VisualElement;
 				if (child != null)
+				{
 					OnChildAdded(child);
+
+					if (!CompressedLayout.GetIsHeadless(child))
+					{
+						var childRenderer = Platform.GetRenderer(child);
+
+						if (childRenderer == null)
+							continue;
+
+						var nativeControl = childRenderer.NativeView;
+#if __MOBILE__
+						Renderer.NativeView.BringSubviewToFront(nativeControl);
+#endif
+						nativeControl.Layer.ZPosition = i * 1000;
+					}
+				}
 			}
 		}
 		
@@ -120,8 +136,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				if (Renderer.ViewController != null && viewRenderer.ViewController != null)
 					Renderer.ViewController.AddChildViewController(viewRenderer.ViewController);
-
-				EnsureChildrenOrder();
 			}
 
 			Performance.Stop(reference);
