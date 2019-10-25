@@ -15,9 +15,15 @@ namespace Xamarin.Forms.Controls
 		public ListPage ()
 		{
 			_listScreen = new ListScreen ();
+			var clearItemsButton = new Button { Text = "Clear items" };
+			clearItemsButton.Clicked += delegate
+			{
+				_listScreen.View.ItemsSource = new List<int>();
+			};
 			Content = new StackLayout {
 				Children = {
 					new Label {Text = "Foo"},
+					clearItemsButton,
 					_listScreen.View
 				}
 			};
