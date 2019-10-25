@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.Android)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
+	[NUnit.Framework.Category(UITestCategories.ManualReview)]
 #endif
 	public class Issue7396 : TestShell
 	{
