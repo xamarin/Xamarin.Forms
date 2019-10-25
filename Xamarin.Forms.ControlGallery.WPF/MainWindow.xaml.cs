@@ -13,7 +13,6 @@ namespace Xamarin.Forms.ControlGallery.WPF
 			Xamarin.Forms.Forms.Create()
 				.WithMaps("")
 				.Init();
-			FormsMaps.Init("");
 			LoadApplication(new Controls.App());
 		}
 	}
