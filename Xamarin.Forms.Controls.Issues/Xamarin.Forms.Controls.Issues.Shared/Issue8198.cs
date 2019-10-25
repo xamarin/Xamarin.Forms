@@ -20,16 +20,19 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		RefreshView _refreshView;
 		Command _refreshCommand;
-
-		public Issue8198()
-		{
-		}
-
+  
 		protected override void Init()
 		{
 			Title = "Issue 8198";
 
-			var layout = new Grid();
+			var layout = new StackLayout();
+
+			var instructions = new Label
+			{
+				BackgroundColor = Color.Black,
+				TextColor = Color.White,
+				Text = " Scroll the CollectionView to end and try to scroll up again. If the Refresh Indicator does not appear until it reaches the top, the test has passed."
+			};
 
 			_refreshCommand = new Command(async (parameter) =>
 			{
@@ -81,6 +84,8 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_refreshView.Content = collectionView;
+
+			layout.Children.Add(instructions);
 			layout.Children.Add(_refreshView);
 
 			Content = layout;
@@ -102,7 +107,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 				scroll.Content = grid;
 				return scroll;
-				//return grid;
    			});
 			return template;
 		}
