@@ -53,7 +53,6 @@ namespace Xamarin.Forms
 
 		const int TabletCrossover = 600;
 
-		static BuildVersionCodes? s_sdkInt;
 		static bool? s_isLollipopOrNewer;
 		static bool? s_isMarshmallowOrNewer;
 		static bool? s_isNougatOrNewer;
