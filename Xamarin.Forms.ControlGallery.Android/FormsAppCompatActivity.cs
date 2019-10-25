@@ -39,11 +39,6 @@ namespace Xamarin.Forms.ControlGallery.Android
 			//Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
 
 			base.OnCreate(bundle);
-			Forms.ViewInitialized += (sender, e) => {
-				//				if (!string.IsNullOrWhiteSpace(e.View.StyleId)) {
-				//					e.NativeView.ContentDescription = e.View.StyleId;
-				//				}
-			};
 
 			Forms.Create(this, bundle)
 
@@ -58,6 +53,11 @@ namespace Xamarin.Forms.ControlGallery.Android
 				.WithAppLinks(this)
 				.Init();
 
+			Forms.ViewInitialized += (sender, e) => {
+				//				if (!string.IsNullOrWhiteSpace(e.View.StyleId)) {
+				//					e.NativeView.ContentDescription = e.View.StyleId;
+				//				}
+			};
 
 			// uncomment to verify turning off title bar works. This is not intended to be dynamic really.
 			//Forms.SetTitleBarVisibility (AndroidTitleBarVisibility.Never);

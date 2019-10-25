@@ -151,6 +151,12 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			Xamarin.Calabash.Start();
 
+			Forms.Create()
+				 //.WithFlags("CollectionView_Experimental", "Shell_Experimental")
+				.WithMaps()
+				.WithMaterial()
+				.Init();
+
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
 			{
 				// http://developer.xamarin.com/recipes/testcloud/set-accessibilityidentifier-ios/
@@ -159,12 +165,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 					//	e.NativeView.AccessibilityIdentifier = e.View.StyleId;
 				}
 			};
-
-			Forms.Create()
-				 //.WithFlags("CollectionView_Experimental", "Shell_Experimental")
-				.WithMaps()
-				.WithMaterial()
-				.Init();
 
 			if (App.IOSVersion == 11)
 			{
