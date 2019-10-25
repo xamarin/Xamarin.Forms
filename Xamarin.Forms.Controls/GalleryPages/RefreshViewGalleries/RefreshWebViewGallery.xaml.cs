@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries
 
 		void LoadUrl()
 		{
-			var urls = new List<string> { "https://microsoft.com", "https://dotnet.microsoft.com/apps/xamarin", "https://devblogs.microsoft.com/xamarin/" };
+			var urls = new List<string> { "https://dotnet.microsoft.com/apps/xamarin", "https://devblogs.microsoft.com/xamarin/" };
 			int index = _random.Next(urls.Count);
 			Url = urls[index];
 		}

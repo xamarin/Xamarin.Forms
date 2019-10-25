@@ -30,10 +30,10 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <BoxView
-                                    Grid.Column="0"
+                                    Grid.Row="0"
                                     Color="{Binding Color}"/>
                                 <Label
-                                    Grid.Column="1"
+                                    Grid.Row="1"
                                     Text="{Binding Name}"
                                     VerticalOptions="Center"
                                     HeightRequest="48"/>
