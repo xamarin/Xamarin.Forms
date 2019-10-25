@@ -131,6 +131,24 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
+		void IShellSectionController.SendPopping(Page page)
+		{
+			if (_navStack.Count <= 1)
+				throw new Exception("Nav Stack consistency error");
+
+			_navStack.Remove(page);
+			SendAppearanceChanged();
+		}
+
+		void IShellSectionController.SendPopped(Page page)
+		{
+			if(_navStack.Contains(page))
+				_navStack.Remove(page);
+
+			RemovePage(page);
+			SendUpdateCurrentState(ShellNavigationSource.Pop);
+		}
+
 		#endregion IShellSectionController
 
 		#region IPropertyPropagationController
