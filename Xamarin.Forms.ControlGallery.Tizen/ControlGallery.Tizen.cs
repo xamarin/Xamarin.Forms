@@ -21,10 +21,13 @@ namespace Xamarin.Forms.ControlGallery.Tizen
 		static void Main(string[] args)
 		{
 			var app = new MainApplication();
-			FormsMaps.Init("HERE", "write-your-API-key-here");
-			Forms.SetFlags("CollectionView_Experimental", "Shell_Experimental");
-			Forms.Init(app);
-			FormsMaterial.Init();
+
+			Forms.Create(app)
+				.WithFlags("CollectionView_Experimental", "Shell_Experimental")
+				.WithMaps("HERE", "write-your-API-key-here")
+				.WithMaterial()
+				.Init();
+
 			app.Run(args);
 		}
 	}

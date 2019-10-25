@@ -7,13 +7,13 @@ namespace Xamarin
 	{
 		public static IFormsInit WithMaps(this IFormsInit init)
 		{
-			init.PostInit(FormsMaps.Init);
+			init.PreInit(FormsMaps.Init);
 			return init;
 		}
 
 		public static IFormsInit WithMaps(this IFormsInit init, string authenticationToken)
 		{
-			init.PostInit(() => FormsMaps.Init(authenticationToken));
+			init.PreInit(() => FormsMaps.Init(authenticationToken));
 			return init;
 		}
 	}

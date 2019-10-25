@@ -9,5 +9,11 @@ namespace Xamarin
 			init.PostInit(FormsMaps.Init);
 			return init;
 		}
+
+		public static IFormsInit WithMaps(this IFormsInit init, string authenticationToken)
+		{
+			init.PostInit(()=>FormsMaps.Init(authenticationToken));
+			return init;
+		}
 	}
 }

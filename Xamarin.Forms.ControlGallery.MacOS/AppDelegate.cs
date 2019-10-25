@@ -39,8 +39,9 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 
 		public override void DidFinishLaunching(NSNotification notification)
 		{
-			Forms.Init();
-			FormsMaps.Init();
+			Forms.Create()
+				.WithMaps()
+				.Init();
 
 			var app = new App();
 			SetupMenu(app);
