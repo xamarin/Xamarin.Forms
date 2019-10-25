@@ -156,7 +156,7 @@ namespace Xamarin.Forms
 
 		// Provide backwards compat for Forms.Init and AndroidActivity
 		// Why is bundle a param if never used?
-		static void Init(Context activity, Bundle bundle)
+		public static void Init(Context activity, Bundle bundle)
 		{
 			Assembly resourceAssembly;
 
@@ -169,14 +169,14 @@ namespace Xamarin.Forms
 			Profile.FrameEnd();
 		}
 
-		static void Init(Context activity, Bundle bundle, Assembly resourceAssembly)
+		public static void Init(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
 			Profile.FrameBegin();
 			SetupInit(activity, resourceAssembly, null);
 			Profile.FrameEnd();
 		}
 
-		static void Init(InitializationOptions options)
+		public static void Init(InitializationOptions options)
 		{
 			Profile.FrameBegin();
 			SetupInit(
