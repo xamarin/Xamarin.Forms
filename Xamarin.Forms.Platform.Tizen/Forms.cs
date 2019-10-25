@@ -48,7 +48,7 @@ namespace Xamarin.Forms
 		public InitializationFlags Flags;
 	}
 
-	public static class Forms : IFormsInit
+	public static class Forms
 	{
 		static Lazy<string> s_profile = new Lazy<string>(() =>
 		{
@@ -215,18 +215,33 @@ namespace Xamarin.Forms
 			TitleBarVisibility = visibility;
 		}
 
-		public static void Init(CoreApplication application)
+		public static IFormsInit Create(CoreApplication application)
+		{
+			return new FormsInit(() => Init(application));
+		}
+
+		public static IFormsInit Create(CoreApplication application, bool useDeviceIndependentPixel)
+		{
+			return new FormsInit(() => Init(application, useDeviceIndependentPixel));
+		}
+
+		public static IFormsInit Create(InitializationOptions options)
+		{
+			return new FormsInit(() => Init(options));
+		}
+
+		static void Init(CoreApplication application)
 		{
 			Init(application, false);
 		}
 
-		public static void Init(CoreApplication application, bool useDeviceIndependentPixel)
+		static void Init(CoreApplication application, bool useDeviceIndependentPixel)
 		{
 			_useDeviceIndependentPixel = useDeviceIndependentPixel;
 			SetupInit(application, null);
 		}
 
-		public static void Init(InitializationOptions options)
+		static void Init(InitializationOptions options)
 		{
 			SetupInit(options.Context, options);
 		}

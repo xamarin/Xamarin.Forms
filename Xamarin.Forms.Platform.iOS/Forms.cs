@@ -28,7 +28,7 @@ using TNativeView = AppKit.NSView;
 
 namespace Xamarin.Forms
 {
-	public static class Forms : IFormsInit
+	public static class Forms
 	{
 		public static bool IsInitialized { get; private set; }
 
@@ -104,6 +104,11 @@ namespace Xamarin.Forms
 			}
 
 			s_flags = flags.ToList().AsReadOnly();
+		}
+
+		public static IFormsInit Create()
+		{
+			return new FormsInit(Init);
 		}
 
 		public static void Init()

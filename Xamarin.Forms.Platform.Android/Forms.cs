@@ -48,7 +48,7 @@ namespace Xamarin.Forms
 		public InitializationFlags Flags;
 	}
 
-	public static class Forms : IFormsInit
+	public static class Forms
 	{
 
 		const int TabletCrossover = 600;
@@ -139,9 +139,24 @@ namespace Xamarin.Forms
 			return _ColorButtonNormal;
 		}
 
+		public static IFormsInit Create(Context activity, Bundle bundle)
+		{
+			return new FormsInit(() => Init(activity, bundle));
+		}
+
+		public static IFormsInit Create(Context activity, Bundle bundle, Assembly resourceAssembly)
+		{
+			return new FormsInit(() => Init(activity, bundle, resourceAssembly));
+		}
+
+		public static IFormsInit Create(InitializationOptions options)
+		{
+			return new FormsInit(() => Init(options));
+		}
+
 		// Provide backwards compat for Forms.Init and AndroidActivity
 		// Why is bundle a param if never used?
-		public static void Init(Context activity, Bundle bundle)
+		static void Init(Context activity, Bundle bundle)
 		{
 			Assembly resourceAssembly;
 
@@ -154,14 +169,14 @@ namespace Xamarin.Forms
 			Profile.FrameEnd();
 		}
 
-		public static void Init(Context activity, Bundle bundle, Assembly resourceAssembly)
+		static void Init(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
 			Profile.FrameBegin();
 			SetupInit(activity, resourceAssembly, null);
 			Profile.FrameEnd();
 		}
 
-		public static void Init(InitializationOptions options)
+		static void Init(InitializationOptions options)
 		{
 			Profile.FrameBegin();
 			SetupInit(

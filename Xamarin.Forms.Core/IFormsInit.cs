@@ -15,10 +15,9 @@ namespace Xamarin.Forms.Internals
 	{
 		readonly List<Action> _pre = new List<Action>();
 		readonly List<Action> _post = new List<Action>();
+		Action _init;
 
-		readonly Action _init;
-
-		internal FormsInit(Action init)
+		public FormsInit(Action init)
 		{
 			_init = init;
 		}
@@ -46,8 +45,12 @@ namespace Xamarin.Forms.Internals
 			{
 				initAction();
 			}
-		}
 
+			_init = null;
+			_pre.Clear();
+			_post.Clear();
+
+		}
 	}
 
 	public static class FormsInitExtensions

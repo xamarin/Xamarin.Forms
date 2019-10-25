@@ -8,9 +8,14 @@ using Xamarin.Forms.Platform.WPF;
 
 namespace Xamarin.Forms
 {
-	public static class Forms : FormsInit
+	public static class Forms
 	{
 		public static bool IsInitialized { get; private set; }
+
+		public static IFormsInit Create(IEnumerable<Assembly> rendererAssemblies = null)
+		{
+			return new FormsInit(() => Init(rendererAssemblies));
+		}
 
 		public static void Init(IEnumerable<Assembly> rendererAssemblies = null)
 		{

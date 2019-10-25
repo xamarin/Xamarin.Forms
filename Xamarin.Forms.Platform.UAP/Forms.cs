@@ -14,14 +14,19 @@ using Xamarin.Forms.Platform.UWP;
 
 namespace Xamarin.Forms
 {
-	public static partial class Forms : IFormsInit
+	public static partial class Forms
 	{
 		const string LogFormat = "[{0}] {1}";
 
 		static ApplicationExecutionState s_state;
 
 		public static bool IsInitialized { get; private set; }
-		
+
+		public static IFormsInit Create(IActivatedEventArgs launchActivatedEventArgs, IEnumerable<Assembly> rendererAssemblies = null)
+		{
+			return new FormsInit(() => Init(launchActivatedEventArgs, rendererAssemblies));
+		}
+
 		public static void Init(IActivatedEventArgs launchActivatedEventArgs, IEnumerable<Assembly> rendererAssemblies = null)
 		{
 			if (IsInitialized)

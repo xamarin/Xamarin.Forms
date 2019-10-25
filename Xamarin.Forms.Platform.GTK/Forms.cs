@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform.GTK;
 
 namespace Xamarin.Forms
 {
-	public static class Forms : IFormsInit
+	public static class Forms
 	{
 		internal static string BarTextColor = "Xamarin.BarTextColor";
 		internal static string BarBackgroundColor = "Xamarin.BarBackgroundColor";
@@ -16,7 +16,12 @@ namespace Xamarin.Forms
 
 		public static bool IsInitialized { get; private set; }
 
-		public static void Init(IEnumerable<Assembly> rendererAssemblies = null)
+		public static IFormsInit Create(IEnumerable<Assembly> rendererAssemblies = null)
+		{
+			return new FormsInit(()=> Init(rendererAssemblies));
+		}
+
+		static void Init(IEnumerable<Assembly> rendererAssemblies = null)
 		{
 			if (IsInitialized)
 				return;
