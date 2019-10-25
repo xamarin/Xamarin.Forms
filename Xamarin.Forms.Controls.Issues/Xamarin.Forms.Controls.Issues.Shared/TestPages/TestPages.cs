@@ -767,7 +767,7 @@ namespace Xamarin.Forms.Controls
 		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
 		{
 			timeoutMessage = timeoutMessage ?? text;
-			ShowFlyout(flyoutIcon, usingSwipe, timeoutMessage: timeoutMessage);
+			ShowFlyout(flyoutIcon, usingSwipe);
 			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
 		}
