@@ -281,6 +281,7 @@ namespace Xamarin.Forms
 		internal void UpdateDisplayedPage()
 		{
 			var stack = Stack;
+			var previousPage = DisplayedPage;
 			if (stack.Count > 1)
 			{
 				DisplayedPage = stack[stack.Count - 1];
@@ -292,8 +293,11 @@ namespace Xamarin.Forms
 					DisplayedPage = currentItem.Page;
 			}
 
-			PresentedPageAppearing();
-			SendAppearanceChanged();
+			if (previousPage != DisplayedPage)
+			{
+				PresentedPageAppearing();
+				SendAppearanceChanged();
+			}
 		}
 
 		protected override void OnChildAdded(Element child)
