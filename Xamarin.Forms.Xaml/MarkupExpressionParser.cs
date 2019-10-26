@@ -32,6 +32,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 
 namespace Xamarin.Forms.Xaml
@@ -137,7 +138,13 @@ namespace Xamarin.Forms.Xaml
 				str_value = value as string;
 			}
 			else
+			{
 				str_value = GetNextPiece(ref remaining, out next);
+				var nextProp = remaining.Split(',').FirstOrDefault() ?? string.Empty;
+
+				if (next == ',' && !nextProp.Contains("="))
+					throw new FormatException("Expression can not contains multiple values without quotes");
+			}
 
 			SetPropertyValue(prop, str_value, value, serviceProvider);
 		}
