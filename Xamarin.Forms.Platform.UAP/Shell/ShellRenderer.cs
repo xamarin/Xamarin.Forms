@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -169,7 +170,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (group.Count > 0 && group != groups[0])
 				{
-					yield return null; // Creates a separator
+					yield return new MenuFlyoutSeparator(); // Creates a separator
 				}
 				foreach (var item in group)
 				{
