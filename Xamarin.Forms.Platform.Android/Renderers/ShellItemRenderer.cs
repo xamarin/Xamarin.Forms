@@ -70,6 +70,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (ShellItem == null)
 				throw new ArgumentException("Active Shell Item not set. Have you added any Shell Items to your Shell?", nameof(ShellItem));
 
+			if (ShellItem.CurrentItem == null)
+				throw new ArgumentException("Active Shell Content not set. Have you added any Shell Content to your Shell?", nameof(ShellSection));
+
 			HookEvents(ShellItem);
 			SetupMenu();
 
