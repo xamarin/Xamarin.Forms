@@ -3,6 +3,7 @@ rem This is used as a quick and dirty way create nuget packages used to test use
 rem This is updated as XF developers use it to test reproductions. As such, it may not always work.
 rem This is not ideal, but it's better than nothing, and it usually works fine.
 
+
 @echo off
 rem stub uncommon targets
 set NUGET_EXE=%NUGET_DIR%NuGet.exe
