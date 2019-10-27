@@ -333,19 +333,30 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (command != null || CanNavigateBack)
 			{
-				_drawerToggle.DrawerIndicatorEnabled = false;
-				toolbar.NavigationIcon = icon;
-			}
-			else if(_flyoutBehavior == FlyoutBehavior.Flyout)
-			{
-				_drawerToggle.DrawerIndicatorEnabled = isEnabled;
-				if(isEnabled)
+				if (isEnabled)
 				{
-					_drawerToggle.DrawerArrowDrawable = icon;
-					toolbar.NavigationIcon = null;
+					_drawerToggle.DrawerIndicatorEnabled = false;
+					toolbar.NavigationIcon = icon;
 				}
 				else
-					toolbar.NavigationIcon = icon;
+				{
+					if (_flyoutBehavior != FlyoutBehavior.Flyout) //if Disabled or Locked
+						_drawerToggle.DrawerIndicatorEnabled = false;
+					else
+						_drawerToggle.DrawerIndicatorEnabled = true;
+
+					if (_flyoutBehavior != FlyoutBehavior.Disabled)
+					{
+						_drawerToggle.DrawerArrowDrawable = icon;
+						toolbar.NavigationIcon = icon;
+					}
+				}
+			}
+			else if (_flyoutBehavior == FlyoutBehavior.Flyout)
+			{
+				_drawerToggle.DrawerIndicatorEnabled = true;
+				_drawerToggle.DrawerArrowDrawable = icon;
+				toolbar.NavigationIcon = null;
 			}
 			else
 			{

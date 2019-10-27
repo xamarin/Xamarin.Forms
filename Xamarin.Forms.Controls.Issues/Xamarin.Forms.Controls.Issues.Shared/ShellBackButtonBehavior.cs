@@ -112,7 +112,11 @@ namespace Xamarin.Forms.Controls.Issues
 					Command = new Command(ToggleIsEnabled),
 					AutomationId = ToggleIsEnabledId
 				});
-
+				layout.Children.Add(new Button()
+				{
+					Text = "Toggle Flyout Behavior",
+					Command = new Command(ToggleFlyoutBehavior),
+				});
 				layout.Children.Add(new Button()
 				{
 					Text = "Push Page",
@@ -177,6 +181,10 @@ namespace Xamarin.Forms.Controls.Issues
 			public void ToggleIsEnabled()
 			{
 				behavior.IsEnabled = !behavior.IsEnabled;
+			}
+			public void ToggleFlyoutBehavior()
+			{
+				Shell.Current.FlyoutBehavior = Shell.Current.FlyoutBehavior == FlyoutBehavior.Flyout ? FlyoutBehavior.Disabled : FlyoutBehavior.Flyout;
 			}
 		}
 
