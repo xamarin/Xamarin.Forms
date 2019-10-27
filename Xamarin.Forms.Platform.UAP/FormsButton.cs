@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Linq;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 using WContentPresenter = Windows.UI.Xaml.Controls.ContentPresenter;
@@ -14,6 +16,7 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(Brush), OnBackgroundColorChanged));
 
 		WContentPresenter _contentPresenter;
+		Windows.UI.Xaml.Controls.Grid _rootGrid;
 
 		public Brush BackgroundColor
 		{
@@ -44,6 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnApplyTemplate();
 
 			_contentPresenter = GetTemplateChild("ContentPresenter") as WContentPresenter;
+			_rootGrid = GetTemplateChild("RootGrid") as Windows.UI.Xaml.Controls.Grid;
 
 			UpdateBackgroundColor();
 			UpdateBorderRadius();
@@ -71,9 +75,38 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateBorderRadius()
 		{
+			var radius = BorderRadius == -1 ? 0 : BorderRadius;
+			var cornerRadius = new Windows.UI.Xaml.CornerRadius(radius);
+			if (_contentPresenter != null)						
+				_contentPresenter.CornerRadius = cornerRadius;				
+			
+			if(_rootGrid != null)
+				_rootGrid.CornerRadius = cornerRadius;
+		}
+
+		public void UpdateCharacterSpacing(int characterSpacing)
+		{
+			CharacterSpacing = characterSpacing;
 
 			if (_contentPresenter != null)
-				_contentPresenter.CornerRadius = new Windows.UI.Xaml.CornerRadius(BorderRadius);
+				_contentPresenter.CharacterSpacing = CharacterSpacing;
+
+			if(Content is TextBlock tb)
+			{
+				tb.CharacterSpacing = CharacterSpacing;
+			}
+
+			if (Content is StackPanel sp)
+			{
+				foreach (var item in sp.Children)
+				{
+					if (item is TextBlock textBlock)
+					{
+						textBlock.CharacterSpacing = CharacterSpacing;
+					}
+				}
+			}
+
 		}
 	}
 }

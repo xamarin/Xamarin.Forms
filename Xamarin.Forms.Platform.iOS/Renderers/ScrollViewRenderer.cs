@@ -23,8 +23,6 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _checkedForRtlScroll = false;
 		bool _previousLTR = true;
 
-		ShellScrollViewTracker _shellScrollTracker;
-
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
 			ScrollAnimationEnded += HandleScrollAnimationEnded;
@@ -76,12 +74,17 @@ namespace Xamarin.Forms.Platform.iOS
 					_events = new EventTracker(this);
 					_events.LoadEvents(this);
 
-					_insetTracker = new KeyboardInsetTracker(this, () => Window, insets => ContentInset = ScrollIndicatorInsets = insets, point =>
+
+					_insetTracker = new KeyboardInsetTracker(this, () => Window, insets =>
+					{
+						ContentInset = ScrollIndicatorInsets = insets;
+					}, 
+					point =>
 					{
 						var offset = ContentOffset;
 						offset.Y += point.Y;
 						SetContentOffset(offset, true);
-					});
+					}, this);
 				}
 
 				UpdateDelaysContentTouches();
@@ -90,8 +93,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsEnabled();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
-
-				_shellScrollTracker = new ShellScrollViewTracker(this);
 
 				OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
@@ -119,8 +120,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void LayoutSubviews()
 		{
-			_shellScrollTracker?.OnLayoutSubviews();
-
+			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
 			if(Superview != null)
@@ -172,9 +172,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 				Element?.ClearValue(Platform.RendererProperty);
 				SetElement(null);
-
-				_shellScrollTracker.Dispose();
-				_shellScrollTracker = null;
 
 				_packager.Dispose();
 				_packager = null;
@@ -263,8 +260,10 @@ namespace Xamarin.Forms.Platform.iOS
 				_requestedScroll = e;
 				return;
 			}
+
+			PointF newOffset = PointF.Empty;
 			if (e.Mode == ScrollToMode.Position)
-				SetContentOffset(new PointF((nfloat)e.ScrollX, (nfloat)e.ScrollY), e.ShouldAnimate);
+				newOffset = new PointF((nfloat)e.ScrollX, (nfloat)e.ScrollY);
 			else
 			{
 				var positionOnScroll = ScrollView.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
@@ -275,17 +274,20 @@ namespace Xamarin.Forms.Platform.iOS
 				switch (ScrollView.Orientation)
 				{
 					case ScrollOrientation.Horizontal:
-						SetContentOffset(new PointF((nfloat)positionOnScroll.X, ContentOffset.Y), e.ShouldAnimate);
+						newOffset = new PointF((nfloat)positionOnScroll.X, ContentOffset.Y);
 						break;
 					case ScrollOrientation.Vertical:
-						SetContentOffset(new PointF(ContentOffset.X, (nfloat)positionOnScroll.Y), e.ShouldAnimate);
+						newOffset = new PointF(ContentOffset.X, (nfloat)positionOnScroll.Y);
 						break;
 					case ScrollOrientation.Both:
-						SetContentOffset(new PointF((nfloat)positionOnScroll.X, (nfloat)positionOnScroll.Y), e.ShouldAnimate);
+						newOffset = new PointF((nfloat)positionOnScroll.X, (nfloat)positionOnScroll.Y);
 						break;
 				}
 			}
-			if (!e.ShouldAnimate)
+			var sameOffset = newOffset == ContentOffset;
+			SetContentOffset(newOffset, e.ShouldAnimate);
+
+			if (!e.ShouldAnimate || sameOffset)
 				ScrollView.SendScrollFinished();
 		}
 

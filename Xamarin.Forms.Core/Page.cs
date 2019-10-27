@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 
 		public const string AlertSignalName = "Xamarin.SendAlert";
 
+		public const string PromptSignalName = "Xamarin.SendPrompt";
+
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
@@ -53,11 +55,18 @@ namespace Xamarin.Forms
 
 		View _titleView;
 
+		List<Action> _pendingActions = new List<Action>();
+
 		public Page()
 		{
 			var toolbarItems = new ObservableCollection<ToolbarItem>();
 			toolbarItems.CollectionChanged += OnToolbarItemsCollectionChanged;
 			ToolbarItems = toolbarItems;
+
+			//if things were added in base ctor (through implicit styles), the items added aren't properly parented
+			if (InternalChildren.Count > 0)
+				InternalChildrenOnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, InternalChildren));
+
 			InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Page>>(() => new PlatformConfigurationRegistry<Page>(this));
 		}
@@ -172,7 +181,12 @@ namespace Xamarin.Forms
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
 			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
-			MessagingCenter.Send(this, ActionSheetSignalName, args);
+
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, ActionSheetSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, ActionSheetSignalName, args));
+			
 			return args.Result.Task;
 		}
 
@@ -187,8 +201,31 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException("cancel");
 
 			var args = new AlertArguments(title, message, accept, cancel);
-			MessagingCenter.Send(this, AlertSignalName, args);
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, AlertSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, AlertSignalName, args));
+
 			return args.Result.Task;
+		}
+
+		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard))
+		{
+			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard);
+			MessagingCenter.Send(this, PromptSignalName, args);
+			return args.Result.Task;
+		}
+
+		internal override void OnIsPlatformEnabledChanged()
+		{
+			base.OnIsPlatformEnabledChanged();
+			if(IsPlatformEnabled && _pendingActions.Count > 0)
+			{
+				var actionsToProcess = _pendingActions.ToList();
+				_pendingActions.Clear();
+				foreach(var pendingAction in actionsToProcess)
+					pendingAction();
+			}
 		}
 
 		public void ForceLayout()
@@ -354,7 +391,12 @@ namespace Xamarin.Forms
 			_hasAppeared = true;
 
 			if (IsBusy)
-				MessagingCenter.Send(this, BusySetSignalName, true);
+			{
+				if (IsPlatformEnabled)
+					MessagingCenter.Send(this, BusySetSignalName, true);
+				else
+					_pendingActions.Add(() => MessagingCenter.Send(this, BusySetSignalName, true));
+			}
 
 			OnAppearing();
 			Appearing?.Invoke(this, EventArgs.Empty);

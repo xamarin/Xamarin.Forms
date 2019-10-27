@@ -81,6 +81,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void Close()
 		{
+			if (_scroller == null)
+				return;
+
 			_scroller.ContentOffset = new PointF(0, 0);
 		}
 
@@ -146,7 +149,6 @@ namespace Xamarin.Forms.Platform.iOS
 			var handler = new PropertyChangedEventHandler(OnMenuItemPropertyChanged);
 
 			_tableView = tableView;
-			SetupSelection(tableView);
 
 			if (_cell != null)
 			{
@@ -641,7 +643,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		static void SetupSelection(UITableView table)
+		internal static void SetupSelection(UITableView table)
 		{
 			if (table.GestureRecognizers == null)
 				return;

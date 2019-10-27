@@ -46,6 +46,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void SetContentDescription()
 			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
 
+		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			return _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
+		}
+
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>
 			_buttonLayoutManager?.OnViewAttachedToWindow(attachedView);
 
@@ -121,6 +126,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -139,6 +146,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
+			UpdateCharacterSpacing();
 		}
 
 		void UpdateEnabled()
@@ -175,6 +183,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				NativeButton.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+			
 		}
 
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);

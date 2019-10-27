@@ -71,9 +71,9 @@ namespace Xamarin.Forms.Platform.Android
 				seekBar.Max = 1000;
 				seekBar.SetOnSeekBarChangeListener(this);
 
-				if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
+				if (Forms.SdkInt > BuildVersionCodes.Kitkat)
 				{
-					defaultthumbcolorfilter = seekBar.Thumb.ColorFilter;
+					defaultthumbcolorfilter = seekBar.Thumb.GetColorFilter();
 					defaultprogresstintmode = seekBar.ProgressTintMode;
 					defaultprogressbackgroundtintmode = seekBar.ProgressBackgroundTintMode;
 					defaultprogresstintlist = seekBar.ProgressTintList;
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 			_min = slider.Minimum;
 			_max = slider.Maximum;
 			Value = slider.Value;
-			if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
+			if (Forms.SdkInt > BuildVersionCodes.Kitkat)
 			{
 				UpdateSliderColors();
 			}
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 			}
 
-			if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
+			if (Forms.SdkInt > BuildVersionCodes.Kitkat)
 			{
 				if (e.PropertyName == Slider.MinimumTrackColorProperty.PropertyName)
 					UpdateMinimumTrackColor();
@@ -178,23 +178,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void UpdateThumbColor()
+		void UpdateThumbColor()
 		{
-			if (Element != null)
-			{
-				if (Element.ThumbColor == Color.Default)
-				{
-					Control.Thumb.SetColorFilter(defaultthumbcolorfilter);
-				}
-				else
-				{
-					Control.Thumb.SetColorFilter(Element.ThumbColor.ToAndroid(), PorterDuff.Mode.SrcIn);
-				}
-
-			}
+			Control.Thumb.SetColorFilter(Element.ThumbColor, defaultthumbcolorfilter, PorterDuff.Mode.SrcIn);
 		}
 
-		private void UpdateThumbImage()
+		void UpdateThumbImage()
 		{
 			this.ApplyDrawableAsync(Slider.ThumbImageSourceProperty, Context, drawable =>
 			{
@@ -206,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 
-			BuildVersionCodes androidVersion = Build.VERSION.SdkInt;
+			BuildVersionCodes androidVersion = Forms.SdkInt;
 			if (androidVersion < BuildVersionCodes.JellyBean)
 				return;
 

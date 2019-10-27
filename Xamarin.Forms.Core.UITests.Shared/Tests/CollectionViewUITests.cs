@@ -6,7 +6,6 @@ namespace Xamarin.Forms.Core.UITests
 	internal class CollectionViewUITests : BaseTestFixture
 	{
 		string _collectionViewId = "collectionview";
-		string _enableCollectionView = "Enable CollectionView";
 		string _btnUpdate = "Update";
 		string _entryUpdate = "entryUpdate";
 		string _entryInsert = "entryInsert";
@@ -49,21 +48,24 @@ namespace Xamarin.Forms.Core.UITests
 		//	"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
 		//  }, 19, 3)]
 		//[TestCase("Snap Points", new string[] { "SnapPointsCode,HorizontalList", "SnapPointsCode,VerticalList", "SnapPointsCode,HorizontalGrid", "SnapPointsCode,VerticalGrid" }, 19, 2)]
-		[TestCase("Observable Collection", new string[] { "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
-		[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 101, 11)]
-		[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
-		public void VisitAndUpdateItemsSource(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
+		[TestCase("Observable Collection", "Add/RemoveItemsList", 19, 6)]
+		[TestCase("Observable Collection", "Add/RemoveItemsGrid", 19, 6)]
+
+		[TestCase("Default Text", "VerticalListCode", 101, 11)]
+		[TestCase("Default Text", "HorizontalListCode", 101, 11)]
+		[TestCase("Default Text", "VerticalGridCode", 101, 11)]
+		[TestCase("Default Text", "HorizontalGridCode", 101, 11)]
+
+		[TestCase("DataTemplate", "VerticalListCode", 19, 6)]
+		[TestCase("DataTemplate", "HorizontalListCode", 19, 6)]
+		[TestCase("DataTemplate", "VerticalGridCode", 19, 6)]
+		[TestCase("DataTemplate", "HorizontalGridCode", 19, 6)]
+		public void VisitAndUpdateItemsSource(string collectionTestName, string subGallery, int firstItem, int lastItem)
 		{
 			VisitInitialGallery(collectionTestName);
 
-			foreach (var gallery in subGalleries)
-			{
-				if (gallery == "FilterItems")
-					continue;
-
-				VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, true, false);
-				App.NavigateBack();
-			}
+			VisitSubGallery(subGallery, !subGallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, true, false);
+			App.NavigateBack();
 		}
 
 		//[TestCase("ScrollTo", new string[] {
@@ -167,8 +169,6 @@ namespace Xamarin.Forms.Core.UITests
 		void VisitInitialGallery(string collectionTestName)
 		{
 			var galeryName = $"{collectionTestName} Galleries";
-			App.WaitForElement(t => t.Marked(_enableCollectionView));
-			App.Tap(t => t.Marked(_enableCollectionView));
 
 			App.WaitForElement(t => t.Marked(galeryName));
 			App.Tap(t => t.Marked(galeryName));

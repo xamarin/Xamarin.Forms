@@ -19,16 +19,12 @@ namespace Xamarin.Forms
 		BindableProperty _targetProperty;
 		WeakReference<object> _weakSource;
 		WeakReference<BindableObject> _weakTarget;
+		List<WeakReference<Element>> _ancestryChain;
 
 		internal BindingExpression(BindingBase binding, string path)
 		{
-			if (binding == null)
-				throw new ArgumentNullException(nameof(binding));
-			if (path == null)
-				throw new ArgumentNullException(nameof(path));
-
-			Binding = binding;
-			Path = path;
+			Binding = binding ?? throw new ArgumentNullException(nameof(binding));
+			Path = path ?? throw new ArgumentNullException(nameof(path));
 
 			ParsePath();
 		}
@@ -45,15 +41,13 @@ namespace Xamarin.Forms
 			if (_weakSource == null || _weakTarget == null)
 				return;
 
-			BindableObject target;
-			if (!_weakTarget.TryGetTarget(out target))
+			if (!_weakTarget.TryGetTarget(out BindableObject target))
 			{
 				Unapply();
 				return;
 			}
 
-			object source;
-			if (_weakSource.TryGetTarget(out source) && _targetProperty != null)
+			if (_weakSource.TryGetTarget(out var source) && _targetProperty != null)
 				ApplyCore(source, target, _targetProperty, fromTarget);
 		}
 
@@ -64,12 +58,10 @@ namespace Xamarin.Forms
 		{
 			_targetProperty = property;
 
-			BindableObject prevTarget;
-			if (_weakTarget != null && _weakTarget.TryGetTarget(out prevTarget) && !ReferenceEquals(prevTarget, target))
+			if (_weakTarget != null && _weakTarget.TryGetTarget(out BindableObject prevTarget) && !ReferenceEquals(prevTarget, target))
 				throw new InvalidOperationException("Binding instances can not be reused");
 
-			object previousSource;
-			if (_weakSource != null && _weakSource.TryGetTarget(out previousSource) && !ReferenceEquals(previousSource, sourceObject))
+			if (_weakSource != null && _weakSource.TryGetTarget(out var previousSource) && !ReferenceEquals(previousSource, sourceObject))
 				throw new InvalidOperationException("Binding instances can not be reused");
 
 			_weakSource = new WeakReference<object>(sourceObject);
@@ -80,17 +72,14 @@ namespace Xamarin.Forms
 
 		internal void Unapply()
 		{
-			object sourceObject;
-			if (_weakSource != null && _weakSource.TryGetTarget(out sourceObject))
+			if (_weakSource != null && _weakSource.TryGetTarget(out var sourceObject))
 			{
 				for (var i = 0; i < _parts.Count - 1; i++)
 				{
 					BindingExpressionPart part = _parts[i];
 
 					if (!part.IsSelf)
-					{
 						part.TryGetValue(sourceObject, out sourceObject);
-					}
 
 					part.Unsubscribe();
 				}
@@ -98,6 +87,8 @@ namespace Xamarin.Forms
 
 			_weakSource = null;
 			_weakTarget = null;
+
+			ClearAncestryChangeSubscriptions();
 		}
 
 		/// <summary>
@@ -113,7 +104,6 @@ namespace Xamarin.Forms
 			bool needsSetter = !needsGetter && ((mode == BindingMode.TwoWay && fromTarget) || mode == BindingMode.OneWayToSource);
 
 			object current = sourceObject;
-			object previous = null;
 			BindingExpressionPart part = null;
 
 			for (var i = 0; i < _parts.Count; i++)
@@ -143,8 +133,6 @@ namespace Xamarin.Forms
 				if (part.NextPart != null &&   (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
 				    && current is INotifyPropertyChanged inpc)
 						part.Subscribe(inpc);
-
-				previous = current;
 			}
 
 			Debug.Assert(part != null, "There should always be at least the self part in the expression.");
@@ -255,6 +243,54 @@ namespace Xamarin.Forms
 			}
 		}
 
+		PropertyInfo GetIndexer(TypeInfo sourceType, string indexerName, string content)
+		{
+			if (int.TryParse(content, out _)) { //try to find an indexer taking an int
+				foreach (var pi in sourceType.DeclaredProperties) {
+					if (pi.Name != indexerName)
+						continue;
+					if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(int))
+						return pi;
+					if (pi.CanWrite && pi.SetMethod.ReturnType == typeof(int))
+						return pi;
+				}
+			}
+
+		
+			//property isn't an int, or there wasn't any int indexer
+			foreach (var pi in sourceType.DeclaredProperties) {
+				if (pi.Name != indexerName)
+					continue;
+				if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(string))
+					return pi;
+				if (pi.CanWrite && pi.SetMethod.ReturnType == typeof(string))
+					return pi;
+			}
+
+			//try to fallback to an object indexer
+			foreach (var pi in sourceType.DeclaredProperties)
+			{
+				if (pi.Name != indexerName)
+					continue;
+				if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(object))
+					return pi;
+				if (pi.CanWrite && pi.SetMethod.ReturnType == typeof(object))
+					return pi;
+			}
+
+			//defined on an interface ?
+			foreach (var face in sourceType.ImplementedInterfaces) {
+				if (GetIndexer(face.GetTypeInfo(), indexerName, content) is PropertyInfo pi)
+					return pi;
+			}
+
+			//defined on a base class ?
+			if (sourceType.BaseType is Type baseT && GetIndexer(baseT.GetTypeInfo(), indexerName, content) is PropertyInfo p)
+				return p;
+			return null;
+		}
+
+
 		void SetupPart(TypeInfo sourceType, BindingExpressionPart part)
 		{
 			part.Arguments = null;
@@ -266,8 +302,7 @@ namespace Xamarin.Forms
 			{
 				if (sourceType.IsArray)
 				{
-					int index;
-					if (!int.TryParse(part.Content, out index))
+					if (!int.TryParse(part.Content, out var index))
 						Log.Warning("Binding", "{0} could not be parsed as an index for a {1}", part.Content, sourceType);
 					else
 						part.Arguments = new object[] { index };
@@ -277,46 +312,16 @@ namespace Xamarin.Forms
 					part.SetterType = sourceType.GetElementType();
 				}
 
-				DefaultMemberAttribute defaultMember = null;
-				foreach (var attrib in sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true))
+				string indexerName = "Item";
+				foreach (DefaultMemberAttribute attrib in sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true))
 				{
-					if (attrib is DefaultMemberAttribute d)
-					{
-						defaultMember = d;
-						break;
-					}
+					indexerName = attrib.MemberName;
+					break;
 				}
-
-				string indexerName = defaultMember != null ? defaultMember.MemberName : "Item";
 
 				part.IndexerName = indexerName;
 
-#if NETSTANDARD2_0
-				try {
-					property = sourceType.GetDeclaredProperty(indexerName);
-				}
-				catch (AmbiguousMatchException) {
-					// Get most derived instance of property
-					foreach (var p in sourceType.GetProperties()) {
-						if (p.Name == indexerName && (property == null || property.DeclaringType.IsAssignableFrom(property.DeclaringType)))
-							property = p;
-					}
-				}
-#else
-				property = sourceType.GetDeclaredProperty(indexerName);
-#endif
-
-				if (property == null) //is the indexer defined on the base class?
-					property = sourceType.BaseType.GetProperty(indexerName);
-				if (property == null) //is the indexer defined on implemented interface ?
-				{
-					foreach (var implementedInterface in sourceType.ImplementedInterfaces)
-					{
-						property = implementedInterface.GetProperty(indexerName);
-						if (property != null)
-							break;
-					}
-				}
+				property = GetIndexer(sourceType, indexerName, part.Content);
 
 				if (property != null)
 				{
@@ -324,9 +329,7 @@ namespace Xamarin.Forms
 					ParameterInfo[] array = property.GetIndexParameters();
 
 					if (array.Length > 0)
-					{
 						parameter = array[0];
-					}
 
 					if (parameter != null)
 					{
@@ -396,7 +399,6 @@ namespace Xamarin.Forms
 					}
 				}
 #if !NETSTANDARD1_0
-				TupleElementNamesAttribute tupleEltNames;
 				if (   property != null
 					&& part.NextPart != null
 					&& property.PropertyType.IsGenericType
@@ -408,7 +410,7 @@ namespace Xamarin.Forms
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,,,,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,,,,,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,,,,,,>))
-					&& (tupleEltNames = property.GetCustomAttribute(typeof(TupleElementNamesAttribute)) as TupleElementNamesAttribute) != null)
+					&& property.GetCustomAttribute(typeof(TupleElementNamesAttribute)) is TupleElementNamesAttribute tupleEltNames)
 				{
 					//modify the nextPart to access the tuple item via the ITuple indexer
 					var nextPart = part.NextPart;
@@ -424,7 +426,7 @@ namespace Xamarin.Forms
 			}
 
 		}
-		static Type[] DecimalTypes = new[] { typeof(float), typeof(decimal), typeof(double) };
+		static readonly Type[] DecimalTypes = { typeof(float), typeof(decimal), typeof(double) };
 
 		internal static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
 		{
@@ -449,12 +451,97 @@ namespace Xamarin.Forms
 					return false;
 				}
 
+				convertTo = Nullable.GetUnderlyingType(convertTo) ?? convertTo;
+
 				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
 			}
 			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is OverflowException) {
 				value = original;
 				return false;
+			}
+		}
+
+		// SubscribeToAncestryChanges, ClearAncestryChangeSubscriptions, FindAncestryIndex, and
+		// OnElementParentSet are used with RelativeSource ancestor-type bindings, to detect when
+		// there has been an ancestry change requiring re-applying the binding, and to minimize
+		// re-applications especially during visual tree building.
+		internal void SubscribeToAncestryChanges(List<Element> chain)
+		{
+			ClearAncestryChangeSubscriptions();
+			if (chain == null)
+				return;
+			_ancestryChain = new List<WeakReference<Element>>();
+			foreach (var elem in chain)
+			{
+				elem.ParentSet += OnElementParentSet;
+				_ancestryChain.Add(new WeakReference<Element>(elem));
+			}
+		}
+
+		void ClearAncestryChangeSubscriptions(int beginningWith = 0)
+		{
+			if (_ancestryChain == null || _ancestryChain.Count == 0)
+				return;
+			int count = _ancestryChain.Count;
+			for (int i = beginningWith; i < count; i++)
+			{
+				Element elem;
+				var weakElement = _ancestryChain.Last();
+				if (weakElement.TryGetTarget(out elem))
+					elem.ParentSet -= OnElementParentSet;
+				_ancestryChain.RemoveAt(_ancestryChain.Count - 1);
+			}
+		}
+
+		// Returns -1 if the member is not in the chain or the
+		// chain is no longer valid.
+		int FindAncestryIndex(Element elem)
+		{
+			for (int i = 0; i < _ancestryChain.Count; i++)
+			{
+				WeakReference<Element> weak = _ancestryChain[i];
+				Element chainMember = null;
+				if (!weak.TryGetTarget(out chainMember))
+					return -1;
+				else if (object.Equals(elem, chainMember))
+					return i;
+			}
+			return -1;
+		}
+
+		void OnElementParentSet(object sender, EventArgs e)
+		{
+			if (!(sender is Element elem) ||
+				!(this.Binding is Binding binding))
+				return;
+
+			BindableObject target = null;
+			if (_weakTarget?.TryGetTarget(out target) != true)
+				return;
+
+			if (elem.Parent == null)
+			{
+				// Remove anything further up in the chain
+				// than the element with the null parent
+				int index = FindAncestryIndex(elem);
+				if (index == -1)
+				{
+					binding.Unapply();
+					return;
+				}
+				if (index + 1 < _ancestryChain.Count)
+					ClearAncestryChangeSubscriptions(index + 1);
+
+				// Force the binding expression to resolve to null
+				// for now, until someone in the chain gets a new
+				// non-null parent.
+				this.ApplyCore(null, target, _targetProperty);
+			}
+			else
+			{
+				binding.Unapply();
+				binding.Apply(null, target, _targetProperty);
 			}
 		}
 
@@ -615,7 +702,20 @@ namespace Xamarin.Forms
 					}
 				}
 
-				Device.BeginInvokeOnMainThread(() => _expression.Apply());
+				Action action = () => _expression.Apply();
+				if (_expression._weakTarget.TryGetTarget(out BindableObject obj) && obj.Dispatcher != null && obj.Dispatcher.IsInvokeRequired)
+				{
+					obj.Dispatcher.BeginInvokeOnMainThread(action);
+				}
+				else if(Device.IsInvokeRequired)
+				{
+					Device.BeginInvokeOnMainThread(action);
+				}
+				else
+				{
+					action();
+				}
+
 			}
 
 			public bool TryGetValue(object source, out object value)

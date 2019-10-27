@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.WPF
 		
 		public void BeginInvokeOnMainThread(Action action)
 		{
-			System.Windows.Application.Current.Dispatcher.BeginInvoke(action);
+			System.Windows.Application.Current?.Dispatcher.BeginInvoke(action);
 		}
 
 		public Ticker CreateTicker()
@@ -85,6 +85,16 @@ namespace Xamarin.Forms.Platform.WPF
 					return (double)System.Windows.Application.Current.Resources["FontSizeMedium"];
 				case NamedSize.Large:
 					return (double)System.Windows.Application.Current.Resources["FontSizeLarge"];
+				case NamedSize.Body:
+					return (double)System.Windows.Application.Current.Resources["FontSizeBody"];
+				case NamedSize.Caption:
+					return (double)System.Windows.Application.Current.Resources["FontSizeCaption"];
+				case NamedSize.Header:
+					return (double)System.Windows.Application.Current.Resources["FontSizeHeader"];
+				case NamedSize.Subtitle:
+					return (double)System.Windows.Application.Current.Resources["FontSizeSubtitle"];
+				case NamedSize.Title:
+					return (double)System.Windows.Application.Current.Resources["FontSizeTitle"];
 				default:
 					throw new ArgumentOutOfRangeException("size");
 			}
@@ -131,7 +141,7 @@ namespace Xamarin.Forms.Platform.WPF
 		
 		public void StartTimer(TimeSpan interval, Func<bool> callback)
 		{
-			var timer = new DispatcherTimer { Interval = interval };
+			var timer = new DispatcherTimer(DispatcherPriority.Background, System.Windows.Application.Current.Dispatcher) { Interval = interval };
 			timer.Start();
 			timer.Tick += (sender, args) =>
 			{

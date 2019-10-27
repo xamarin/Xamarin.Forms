@@ -8,15 +8,23 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class ObservableItemsSource : IItemsViewSource
 	{
+		readonly UICollectionViewController _collectionViewController;
 		readonly UICollectionView _collectionView;
+		readonly bool _grouped;
+		readonly int _section;
 		readonly IList _itemsSource;
 		bool _disposed;
 
-		public ObservableItemsSource(IList itemSource, UICollectionView collectionView)
+		public ObservableItemsSource(IList itemSource, UICollectionViewController collectionViewController, int group = -1)
 		{
-			_collectionView = collectionView;
-			_itemsSource = itemSource;
+			_collectionViewController = collectionViewController;
+			_collectionView = _collectionViewController.CollectionView;
+		
+			_section = group < 0 ? 0 : group;
+			_grouped = group >= 0;
 
+			_itemsSource = itemSource;
+			
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
@@ -42,6 +50,46 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public int ItemCountInGroup(nint group)
+		{
+			return _itemsSource.Count;
+		}
+
+		public object Group(NSIndexPath indexPath)
+		{
+			return null;
+		}
+
+		public NSIndexPath GetIndexForItem(object item)
+		{
+			for (int n = 0; n < _itemsSource.Count; n++)
+			{
+				if (this[n] == item)
+				{
+					return NSIndexPath.Create(_section, n);
+				}
+			}
+
+			return NSIndexPath.Create(-1, -1);
+		}
+
+		public int GroupCount => 1;
+
+		public int ItemCount => _itemsSource.Count;
+
+		public object this[NSIndexPath indexPath]
+		{
+			get
+			{
+				if (indexPath.Section != _section)
+				{
+					throw new ArgumentOutOfRangeException(nameof(indexPath));
+				}
+
+				return this[(int)indexPath.Item];
+			}
+		}
+
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
@@ -59,34 +107,92 @@ namespace Xamarin.Forms.Platform.iOS
 					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					_collectionView.ReloadData();
-					_collectionView.CollectionViewLayout.InvalidateLayout();
+					Reload();
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 		}
 
-		void Move(NotifyCollectionChangedEventArgs args)
+		void Reload()
 		{
+			_collectionView.ReloadData();
+			_collectionView.CollectionViewLayout.InvalidateLayout();
+		}
+
+		NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
+		{
+			var result = new NSIndexPath[count];
+
+			for (int n = 0; n < count; n++)
+			{
+				result[n] = NSIndexPath.Create(_section, startIndex + n);
+			}
+
+			return result;
+		}
+
+		bool NotLoadedYet()
+		{
+			// If the UICollectionView hasn't actually been loaded, then calling InsertItems or DeleteItems is 
+			// going to crash or get in an unusable state; instead, ReloadData should be used
+			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
+		}
+
+		void Add(NotifyCollectionChangedEventArgs args)
+		{
+			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
 
-			if (count == 1)
+			if (NotLoadedYet())
 			{
-				// For a single item, we can use MoveItem and get the animation
-				var oldPath = NSIndexPath.Create(0, args.OldStartingIndex);
-				var newPath = NSIndexPath.Create(0, args.NewStartingIndex);
-
-				_collectionView.MoveItem(oldPath, newPath);
+				_collectionView.ReloadData();
 				return;
 			}
 
-			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
-			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
-			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
+			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
+			{
+				// Okay, we're going from completely empty to more than 0 items; there's an iOS bug which apparently
+				// will just crash if we call InsertItems here, so we have to do ReloadData.
+				_collectionView.ReloadData();
+				return;
+			}
+
+			_collectionView.PerformBatchUpdates(() =>
+				{
+					var indexes = CreateIndexesFrom(startIndex, count);
+					_collectionView.InsertItems(indexes);
+				}, null);
 		}
-		
-		private void Replace(NotifyCollectionChangedEventArgs args)
+
+		void Remove(NotifyCollectionChangedEventArgs args)
+		{
+			var startIndex = args.OldStartingIndex;
+
+			if (NotLoadedYet())
+			{
+				_collectionView.ReloadData();
+				return;
+			}
+
+			if (startIndex < 0)
+			{
+				// INCC implementation isn't giving us enough information to know where the removed items were in the
+				// collection. So the best we can do is a ReloadData()
+				Reload();
+				return;
+			}
+
+			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
+			var count = args.OldItems.Count;
+
+			_collectionView.PerformBatchUpdates(() =>
+			{
+				_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
+			}, null);
+		}
+
+		void Replace(NotifyCollectionChangedEventArgs args)
 		{
 			var newCount = args.NewItems.Count;
 
@@ -98,47 +204,29 @@ namespace Xamarin.Forms.Platform.iOS
 				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
 				return;
 			}
-			
+
 			// The original and replacement sets are of unequal size; this means that everything currently in view will 
 			// have to be updated. So we just have to use ReloadData and let the UICollectionView update everything
-			_collectionView.ReloadData();
+			Reload();
 		}
 
-		static NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
+		void Move(NotifyCollectionChangedEventArgs args)
 		{
-			var result = new NSIndexPath[count];
-
-			for (int n = 0; n < count; n++)
-			{
-				result[n] = NSIndexPath.Create(0, startIndex + n);
-			}
-
-			return result;
-		}
-
-		void Add(NotifyCollectionChangedEventArgs args)
-		{
-			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
 
-			_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));
-		}
-
-		void Remove(NotifyCollectionChangedEventArgs args)
-		{
-			var startIndex = args.OldStartingIndex;
-
-			if (startIndex < 0)
+			if (count == 1)
 			{
-				// INCC implementation isn't giving us enough information to know where the removed items were in the
-				// collection. So the best we can do is a ReloadData()
-				_collectionView.ReloadData();
+				// For a single item, we can use MoveItem and get the animation
+				var oldPath = NSIndexPath.Create(_section, args.OldStartingIndex);
+				var newPath = NSIndexPath.Create(_section, args.NewStartingIndex);
+
+				_collectionView.MoveItem(oldPath, newPath);
 				return;
 			}
 
-			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
-			var count = args.OldItems.Count;
-			_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
+			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
+			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
+			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
 		}
 	}
 }

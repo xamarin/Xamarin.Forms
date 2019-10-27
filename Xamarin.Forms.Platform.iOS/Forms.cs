@@ -13,6 +13,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Foundation;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+
 #if __MOBILE__
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
@@ -21,7 +24,6 @@ using TNativeView = UIKit.UIView;
 using AppKit;
 using Xamarin.Forms.Platform.MacOS;
 using TNativeView = AppKit.NSView;
-
 #endif
 
 namespace Xamarin.Forms
@@ -34,6 +36,8 @@ namespace Xamarin.Forms
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
 		static bool? s_isiOS11OrNewer;
+		static bool? s_isiOS13OrNewer;
+		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 #endif
 
 #if __MOBILE__
@@ -65,6 +69,26 @@ namespace Xamarin.Forms
 				if (!s_isiOS11OrNewer.HasValue)
 					s_isiOS11OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(11, 0);
 				return s_isiOS11OrNewer.Value;
+			}
+		}
+
+		internal static bool IsiOS13OrNewer
+		{
+			get
+			{
+				if (!s_isiOS13OrNewer.HasValue)
+					s_isiOS13OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(13, 0);
+				return s_isiOS13OrNewer.Value;
+			}
+		}
+
+		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (!s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.HasValue)
+					s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden = new UIViewController().RespondsToSelector(new ObjCRuntime.Selector("setNeedsUpdateOfHomeIndicatorAutoHidden"));
+				return s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.Value;
 			}
 		}
 #endif
@@ -155,7 +179,6 @@ namespace Xamarin.Forms
 
 		class IOSPlatformServices : IPlatformServices
 		{
-
 			readonly double _fontScalingFactor = 1;
 			public IOSPlatformServices()
 			{
@@ -199,19 +222,26 @@ namespace Xamarin.Forms
 			{
 				// We make these up anyway, so new sizes didn't really change
 				// iOS docs say default button font size is 15, default label font size is 17 so we use those as the defaults.
+				var scalingFactor = _fontScalingFactor;
+
+				if (Application.Current?.On<iOS>().GetEnableAccessibilityScalingForNamedFontSizes() == false)
+				{
+					scalingFactor = 1;
+				}
+
 				switch (size)
 				{
 					//We multiply the fonts by the scale factor, and cast to an int, to make them whole numbers.
 					case NamedSize.Default:
-						return (int)((typeof(Button).IsAssignableFrom(targetElementType) ? 15 : 17) * _fontScalingFactor);
+						return (int)((typeof(Button).IsAssignableFrom(targetElementType) ? 15 : 17) * scalingFactor);
 					case NamedSize.Micro:
-						return (int)(12 * _fontScalingFactor);
+						return (int)(12 * scalingFactor);
 					case NamedSize.Small:
-						return (int)(14 * _fontScalingFactor);
+						return (int)(14 * scalingFactor);
 					case NamedSize.Medium:
-						return (int)(17 * _fontScalingFactor);
+						return (int)(17 * scalingFactor);
 					case NamedSize.Large:
-						return (int)(22 * _fontScalingFactor);
+						return (int)(22 * scalingFactor);
 #if __IOS__
 					case NamedSize.Body:
 						return (double)UIFont.PreferredBody.PointSize;

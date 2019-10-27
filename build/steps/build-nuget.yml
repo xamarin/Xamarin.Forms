@@ -22,9 +22,9 @@ steps:
       failOnStandardError: false
 
   - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet'
+    displayName: 'Use NuGet: $(NUGET_VERSION)'
     inputs:
-      versionSpec: $(nugetVersion)
+      versionSpec: $(NUGET_VERSION)
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
@@ -36,16 +36,6 @@ steps:
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
       configuration: $(buildConfiguration)
-
-
-  - task: NuGetCommand@2
-    displayName: 'NuGet push'
-    inputs:
-      command: push
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/debug/*.nupkg'
-      publishVstsFeed: '$(VstsFeed)'
-      allowPackageConflicts: true
-    continueOnError: true
 
 
   - powershell: |

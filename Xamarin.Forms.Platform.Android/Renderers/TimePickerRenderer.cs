@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		int _originalHintTextColor;
 		AlertDialog _dialog;
+		bool _isDisposed;
 
 		bool Is24HourView
 		{
@@ -63,9 +64,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetTime(e.NewElement.Time);
 			UpdateTextColor();
+			UpdateCharacterSpacing();
 			UpdateFont();
 
-			if ((int)Build.VERSION.SdkInt > 16)
+			if ((int)Forms.SdkInt > 16)
 				Control.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
 		}
 
@@ -77,6 +79,8 @@ namespace Xamarin.Forms.Platform.Android
 				SetTime(Element.Time);
 			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == TimePicker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName || e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
 		}
@@ -86,7 +90,12 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnFocusChangeRequested(sender, e);
 
 			if (e.Focus)
-				CallOnClick();
+			{
+				if (Clickable)
+					CallOnClick();
+				else
+					((IPickerRenderer)this)?.OnClick();
+			}
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
@@ -95,6 +104,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Forms.IsLollipopOrNewer)
 					_dialog.CancelEvent -= OnCancelButtonClicked;
 
+				_dialog?.Dispose();
 				_dialog = null;
 			}
 		}
@@ -107,6 +117,25 @@ namespace Xamarin.Forms.Platform.Android
 				dialog.CancelEvent += OnCancelButtonClicked;
 
 			return dialog;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
+			if (disposing)
+			{
+				if (Forms.IsLollipopOrNewer && _dialog.IsAlive())
+					_dialog.CancelEvent -= OnCancelButtonClicked;
+
+				_dialog?.Dispose();
+				_dialog = null;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		void IPickerRenderer.OnClick()
@@ -141,7 +170,15 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.Typeface = Element.ToTypeface();
 			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
-		
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+		}
+
 		abstract protected void UpdateTextColor();
 	}
 
@@ -168,6 +205,7 @@ namespace Xamarin.Forms.Platform.Android
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
-	}
+
+    }
 
 }

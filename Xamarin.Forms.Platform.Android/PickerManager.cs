@@ -10,8 +10,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal static class PickerManager
 	{
-		readonly static HashSet<Keycode> availableKeys = new HashSet<Keycode>(new[] {
-			Keycode.Tab, Keycode.Forward, Keycode.Back, Keycode.DpadDown, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp
+		readonly static HashSet<Keycode> AvailableKeys = new HashSet<Keycode>(new[] {
+			Keycode.Tab, Keycode.Forward, Keycode.DpadDown, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp
 		});
 
 		public static void Init(EditText editText)
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static void OnKeyPress(object sender, AView.KeyEventArgs e)
 		{
-			if (availableKeys.Contains(e.KeyCode))
+			if (!AvailableKeys.Contains(e.KeyCode))
 			{
 				e.Handled = false;
 				return;
@@ -75,6 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (v is AView picker)
 				{
+					picker.HideKeyboard();
 					if (picker?.Parent is IPickerRenderer renderer1)
 						renderer1.OnClick();
 					else if (picker?.Parent?.Parent?.Parent is IPickerRenderer renderer2)

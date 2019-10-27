@@ -56,14 +56,7 @@ namespace Xamarin.Forms
 				AbortKinetic(key);
 			};
 
-			if (Device.IsInvokeRequired)
-			{
-				Device.BeginInvokeOnMainThread(abort);
-			}
-			else
-			{
-				abort();
-			}
+			DoAction(self, abort);
 
 			return true;
 		}
@@ -109,30 +102,14 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException(nameof(self));
 
 			Action animate = () => AnimateInternal(self, name, transform, callback, rate, length, easing, finished, repeat);
-
-			if (Device.IsInvokeRequired)
-			{
-				Device.BeginInvokeOnMainThread(animate);
-			}
-			else
-			{
-				animate();
-			}
+			DoAction(self, animate);
 		}
 
 
 		public static void AnimateKinetic(this IAnimatable self, string name, Func<double, double, bool> callback, double velocity, double drag, Action finished = null)
 		{
 			Action animate = () => AnimateKineticInternal(self, name, callback, velocity, drag, finished);
-
-			if (Device.IsInvokeRequired)
-			{
-				Device.BeginInvokeOnMainThread(animate);
-			}
-			else
-			{
-				animate();
-			}
+			DoAction(self, animate);
 		}
 
 		public static bool AnimationIsRunning(this IAnimatable self, string handle)
@@ -146,6 +123,8 @@ namespace Xamarin.Forms
 			double target = reverse ? reverseVal : end;
 			return x => start + (target - start) * x;
 		}
+
+		public static IDisposable Batch(this IAnimatable self) => new BatchObject(self);
 
 		static void AbortAnimation(AnimatableKey key)
 		{
@@ -296,6 +275,32 @@ namespace Xamarin.Forms
 			}
 		}
 
+		static void DoAction(IAnimatable self, Action action)
+		{
+			if (self is BindableObject element)
+			{
+				if (element.Dispatcher.IsInvokeRequired)
+				{
+					element.Dispatcher.BeginInvokeOnMainThread(action);
+				}
+				else
+				{
+					action();
+				}
+
+				return;
+			}
+
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(action);
+			}
+			else
+			{
+				action();
+			}
+		}
+
 		class Info
 		{
 			public Action<double> Callback;
@@ -310,6 +315,23 @@ namespace Xamarin.Forms
 			public WeakReference<IAnimatable> Owner { get; set; }
 
 			public uint Rate { get; set; }
+		}
+
+		sealed class BatchObject : IDisposable
+		{
+			IAnimatable _animatable;
+
+			public BatchObject(IAnimatable animatable)
+			{
+				_animatable = animatable;
+				_animatable?.BatchBegin();
+			}
+
+			public void Dispose()
+			{
+				_animatable?.BatchCommit();
+				_animatable = null;
+			}
 		}
 	}
 }

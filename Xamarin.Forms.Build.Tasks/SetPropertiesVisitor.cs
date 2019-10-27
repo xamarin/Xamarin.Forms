@@ -283,8 +283,9 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				var acceptEmptyServiceProvider = vardefref.VariableDefinition.VariableType.GetCustomAttribute(module, ("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "AcceptEmptyServiceProviderAttribute")) != null;
 				if (   vardefref.VariableDefinition.VariableType.FullName == "Xamarin.Forms.Xaml.BindingExtension"
-				    && (   node.Properties == null
-				        || !node.Properties.ContainsKey(new XmlName("", "Source"))))
+				    && (node.Properties == null || !node.Properties.ContainsKey(new XmlName("", "Source"))) //do not compile bindings if Source is set
+				    && bpRef != null //do not compile bindings if we're not gonna SetBinding
+					)
 					foreach (var instruction in CompileBindingPath(node, context, vardefref.VariableDefinition))
 						yield return instruction;
 
@@ -382,8 +383,25 @@ namespace Xamarin.Forms.Build.Tasks
 			if (dataTypeNode is null)
 				yield break;
 
-			if (!((dataTypeNode as ValueNode)?.Value is string dataType))
-				throw new XamlParseException("x:DataType expects a string literal", dataTypeNode as IXmlLineInfo);
+			if (   dataTypeNode is ElementNode enode
+				&& enode.XmlType.NamespaceUri == XamlParser.X2009Uri
+				&& enode.XmlType.Name == nameof(Xamarin.Forms.Xaml.NullExtension))
+				yield break;
+
+			string dataType = null;
+
+			if (   dataTypeNode is ElementNode elementNode
+				&& elementNode.XmlType.NamespaceUri == XamlParser.X2009Uri
+				&& elementNode.XmlType.Name == nameof(Xamarin.Forms.Xaml.TypeExtension)
+				&& elementNode.Properties.ContainsKey(new XmlName("", nameof(Xamarin.Forms.Xaml.TypeExtension.TypeName)))
+				&& (elementNode.Properties[new XmlName("", nameof(Xamarin.Forms.Xaml.TypeExtension.TypeName))] as ValueNode)?.Value is string stringtype)
+				dataType = stringtype;
+
+			if ((dataTypeNode as ValueNode)?.Value is string sType)
+				dataType = sType;
+
+			if (dataType is null)
+				throw new XamlParseException("x:DataType expects a string literal, an {x:Type} markup or {x:Null}", dataTypeNode as IXmlLineInfo);
 
 			var prefix = dataType.Contains(":") ? dataType.Substring(0, dataType.IndexOf(":", StringComparison.Ordinal)) : "";
 			var namespaceuri = node.NamespaceResolver.LookupNamespace(prefix) ?? "";
@@ -477,7 +495,22 @@ namespace Xamarin.Forms.Build.Tasks
 				if (indexArg != null) {
 					var defaultMemberAttribute = previousPartTypeRef.GetCustomAttribute(module, ("mscorlib", "System.Reflection", "DefaultMemberAttribute"));
 					var indexerName = defaultMemberAttribute?.ConstructorArguments?.FirstOrDefault().Value as string ?? "Item";
-					var indexer = previousPartTypeRef.GetProperty(pd => pd.Name == indexerName && pd.GetMethod != null && pd.GetMethod.IsPublic, out var indexerDeclTypeRef);
+					PropertyDefinition indexer = null;
+					TypeReference indexerDeclTypeRef = null;
+					if (int.TryParse(indexArg, out _))
+						indexer = previousPartTypeRef.GetProperty(pd => pd.Name == indexerName
+																	 && pd.GetMethod != null
+																	 && TypeRefComparer.Default.Equals(pd.GetMethod.Parameters[0].ParameterType, module.ImportReference(("mscorlib", "System", "Int32")))
+																	 && pd.GetMethod.IsPublic, out indexerDeclTypeRef);
+					indexer = indexer ?? previousPartTypeRef.GetProperty(pd => pd.Name == indexerName
+																			&& pd.GetMethod != null
+																			&& TypeRefComparer.Default.Equals(pd.GetMethod.Parameters[0].ParameterType, module.ImportReference(("mscorlib", "System", "String")))
+																			&& pd.GetMethod.IsPublic, out indexerDeclTypeRef);
+					indexer = indexer ?? previousPartTypeRef.GetProperty(pd => pd.Name == indexerName
+																			&& pd.GetMethod != null
+																			&& TypeRefComparer.Default.Equals(pd.GetMethod.Parameters[0].ParameterType, module.ImportReference(("mscorlib", "System", "String")))
+																			&& pd.GetMethod.IsPublic, out indexerDeclTypeRef);
+
 					properties.Add((indexer, indexerDeclTypeRef, indexArg));
 					var indexType = indexer.GetMethod.Parameters[0].ParameterType.ResolveGenericParameters(indexerDeclTypeRef);
 					if (!TypeRefComparer.Default.Equals(indexType, module.TypeSystem.String) && !TypeRefComparer.Default.Equals(indexType, module.TypeSystem.Int32))
@@ -665,7 +698,13 @@ namespace Xamarin.Forms.Build.Tasks
 			else
 				il.Emit(Ldarg_0);
 			var locs = new Dictionary<TypeReference, VariableDefinition>();
-			il.Append(DigProperties(properties.Take(properties.Count - 1), locs, null, node as IXmlLineInfo, module));
+			Instruction pop = null;
+			il.Append(DigProperties(properties.Take(properties.Count - 1), locs, () => {
+				if (pop == null)
+					pop = Instruction.Create(Pop);
+
+				return pop;
+			}, node as IXmlLineInfo, module));
 
 			foreach (var loc in locs.Values)
 				setter.Body.Variables.Add(loc);
@@ -681,6 +720,12 @@ namespace Xamarin.Forms.Build.Tasks
 
 				il.Emit(Stloc, loc);
 				il.Emit(Ldloca, loc);
+			} else {
+				if (pop == null)
+					pop = Instruction.Create(Pop);
+
+				il.Emit(Dup);
+				il.Emit(Brfalse, pop);
 			}
 
 			if (lastIndexArg != null) {
@@ -702,6 +747,11 @@ namespace Xamarin.Forms.Build.Tasks
 				il.Emit(Call, setterRef);
 
 			il.Emit(Ret);
+
+			if (pop != null) {
+				il.Append(pop);
+				il.Emit(Ret);
+			}
 
 			context.Body.Method.DeclaringType.Methods.Add(setter);
 
@@ -924,31 +974,34 @@ namespace Xamarin.Forms.Build.Tasks
 			while (declaringType.IsNested)
 				declaringType = declaringType.DeclaringType;
 			var handler = declaringType.AllMethods().FirstOrDefault(md => {
-				if (md.Name != value as string)
+				if (md.methodDef.Name != value as string)
 					return false;
 
 				//check if the handler signature matches the Invoke signature;
 				var invoke = module.ImportReference(eventinfo.EventType.ResolveCached().GetMethods().First(eventmd => eventmd.Name == "Invoke"));
 				invoke = invoke.ResolveGenericParameters(eventinfo.EventType, module);
-				if (!md.ReturnType.InheritsFromOrImplements(invoke.ReturnType) || invoke.Parameters.Count != md.Parameters.Count)
+				if (!md.methodDef.ReturnType.InheritsFromOrImplements(invoke.ReturnType) || invoke.Parameters.Count != md.methodDef.Parameters.Count)
 					return false;
 
 				if (!invoke.ContainsGenericParameter)
 					for (var i = 0; i < invoke.Parameters.Count;i++)
-						if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(md.Parameters[i].ParameterType))
+						if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(md.methodDef.Parameters[i].ParameterType))
 							return false;
 				//TODO check generic parameters if any
 
 				return true;
 			});
-			if (handler == null) 
+			MethodReference handlerRef = null;
+			if (handler.methodDef != null)
+				handlerRef = handler.methodDef.ResolveGenericParameters(handler.declTypeRef, module);
+			if (handler.methodDef == null) 
 				throw new XamlParseException($"EventHandler \"{value}\" with correct signature not found in type \"{declaringType}\"", iXmlLineInfo);
 
 			//FIXME: eventually get the right ctor instead fo the First() one, just in case another one could exists (not even sure it's possible).
 			var ctor = module.ImportReference(eventinfo.EventType.ResolveCached().GetConstructors().First());
 			ctor = ctor.ResolveGenericParameters(eventinfo.EventType, module);
 
-			if (handler.IsStatic) {
+			if (handler.methodDef.IsStatic) {
 				yield return Create(Ldnull);
 			} else {
 				if (context.Root is VariableDefinition)
@@ -961,11 +1014,11 @@ namespace Xamarin.Forms.Build.Tasks
 					throw new InvalidProgramException();
 			}
 
-			if (handler.IsVirtual) {
+			if (handler.methodDef.IsVirtual) {
 				yield return Create(Ldarg_0);
-				yield return Create(Ldvirtftn, handler);
+				yield return Create(Ldvirtftn, handlerRef);
 			} else
-				yield return Create(Ldftn, handler);
+				yield return Create(Ldftn, handlerRef);
 
 			yield return Create(Newobj, module.ImportReference(ctor));
 			//Check if the handler has the same signature as the ctor (it should)
@@ -1308,9 +1361,9 @@ namespace Xamarin.Forms.Build.Tasks
 			//is there a RD.Add() overrides that accepts this ?
 			var nodeTypeRef = context.Variables[node].VariableType;
 			var module = context.Body.Method.Module;
-			if (module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary"),
+			if (module.ImportMethodReference(module.GetTypeDefinition(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary")),
 											 methodName: "Add",
-											 parameterTypes: new[] { (nodeTypeRef.Scope.Name, nodeTypeRef.Namespace, nodeTypeRef.Name) }) != null)
+											 parameterTypes: new[] { (nodeTypeRef) }) != null)
 				return true;
 
 			throw new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo);

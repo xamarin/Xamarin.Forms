@@ -4,6 +4,57 @@ using System.Linq;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using System.Text.RegularExpressions;
+using System.Threading;
+using Xamarin.Forms.Controls.Issues;
+#if __IOS__
+using Xamarin.UITest.iOS;
+#endif
+
+namespace Xamarin.UITest
+{
+	internal static class AppExtensions
+	{
+		public static T[] QueryUntilPresent<T>(
+			this IApp app,
+			Func<T[]> func,
+			int retryCount = 10,
+			int delayInMs = 2000)
+		{
+			var results = func();
+
+			int counter = 0;
+			while ((results == null || results.Length == 0) && counter < retryCount)
+			{
+				Thread.Sleep(delayInMs);
+				results = func();
+				counter++;
+			}
+
+			return results;
+		}
+
+		public static bool IsApiHigherThan(this IApp app, int apiLevel, string apiLabelId = "ApiLevel")
+		{
+			var api = Convert.ToInt32(app.WaitForElement("ApiLabel")[0].ReadText());
+
+			if (api < apiLevel)
+				return false;
+
+			return true;
+		}
+
+#if __IOS__
+		public static void SendAppToBackground(this IApp app, TimeSpan timeSpan)
+		{
+			if(app is Xamarin.Forms.Controls.ScreenshotConditionalApp sca)
+			{
+				sca.SendAppToBackground(timeSpan);
+				Thread.Sleep(timeSpan.Add(TimeSpan.FromSeconds(2)));
+			}
+		}
+#endif
+	}
+}
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -28,16 +79,16 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			const string goToTestButtonQuery = "* marked:'GoToTestButton'";
 
-			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to disappear", TimeSpan.FromSeconds(10));
+			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to appear", TimeSpan.FromMinutes(2));
 
 			var text = Regex.Match(page, "'(?<text>[^']*)'").Groups["text"].Value;
 
 			app.WaitForElement("SearchBar");
 			app.EnterText(q => q.Raw("* marked:'SearchBar'"), text);
+			app.DismissKeyboard();
 
-			if(!String.IsNullOrWhiteSpace(visual))
+			if (!String.IsNullOrWhiteSpace(visual))
 			{
-				app.DismissKeyboard();
 				app.ActivateContextMenu($"{text}AutomationId");
 				app.Tap("Select Visual");
 				app.Tap("Material");

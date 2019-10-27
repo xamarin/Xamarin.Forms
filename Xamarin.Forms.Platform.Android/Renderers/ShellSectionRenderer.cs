@@ -1,4 +1,4 @@
-﻿using Android.OS;
+using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
@@ -46,18 +46,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (result)
 			{
-				var page = ((IShellContentController)shellContent).Page;
-				if (page == null)
-					throw new ArgumentNullException(nameof(page), "Shell Content Page is Null");
-
-				ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
-
-				_toolbarTracker.Page = page;
+				UpdateCurrentItem(shellContent);
 			}
 			else
 			{
 				_selecting = true;
-				var index = ShellSection.Items.IndexOf(ShellSection.CurrentItem);
 
 				// Android doesn't really appreciate you calling SetCurrentItem inside a OnPageSelected callback.
 				// It wont crash but the way its programmed doesn't really anticipate re-entrancy around that method
@@ -65,10 +58,28 @@ namespace Xamarin.Forms.Platform.Android
 
 				Device.BeginInvokeOnMainThread(() =>
 				{
-					_viewPager.SetCurrentItem(index, false);
+					if (position < _viewPager.ChildCount && _toolbarTracker != null)
+					{
+						_viewPager.SetCurrentItem(position, false);
+						UpdateCurrentItem(shellContent);
+					}
+
 					_selecting = false;
 				});
 			}
+		}
+
+		void UpdateCurrentItem(ShellContent content)
+		{
+			if (_toolbarTracker == null)
+				return;
+
+			var page = ((IShellContentController)content).Page;
+			if (page == null)
+				throw new ArgumentNullException(nameof(page), "Shell Content Page is Null");
+
+			ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, content);
+			_toolbarTracker.Page = page;
 		}
 
 		#endregion IOnPageChangeListener
@@ -101,15 +112,12 @@ namespace Xamarin.Forms.Platform.Android
 		Toolbar _toolbar;
 		IShellToolbarAppearanceTracker _toolbarAppearanceTracker;
 		IShellToolbarTracker _toolbarTracker;
-		ViewPager _viewPager;
+		FormsViewPager _viewPager;
+		bool _disposed;
 
 		public ShellSectionRenderer(IShellContext shellContext)
 		{
 			_shellContext = shellContext;
-		}
-
-		protected ShellSectionRenderer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
-		{
 		}
 
 		public event EventHandler AnimationFinished;
@@ -126,13 +134,10 @@ namespace Xamarin.Forms.Platform.Android
 			var root = inflater.Inflate(Resource.Layout.RootLayout, null).JavaCast<CoordinatorLayout>();
 
 			_toolbar = root.FindViewById<Toolbar>(Resource.Id.main_toolbar);
-			var scrollview = root.FindViewById<NestedScrollView>(Resource.Id.main_scrollview);
+			_viewPager = root.FindViewById<FormsViewPager>(Resource.Id.main_viewpager);
 			_tablayout = root.FindViewById<TabLayout>(Resource.Id.main_tablayout);
 
-			_viewPager = new FormsViewPager(Context)
-			{
-				LayoutParameters = new LP(LP.MatchParent, LP.MatchParent),
-			};
+			_viewPager.EnableGesture = false;
 
 			_viewPager.AddOnPageChangeListener(this);
 			_viewPager.Id = Platform.GenerateViewId();
@@ -149,7 +154,6 @@ namespace Xamarin.Forms.Platform.Android
 			_toolbarTracker.Page = currentPage;
 
 			_viewPager.CurrentItem = currentIndex;
-			scrollview.AddView(_viewPager);
 
 			if (shellSection.Items.Count == 1)
 			{
@@ -161,31 +165,24 @@ namespace Xamarin.Forms.Platform.Android
 
 			HookEvents();
 
-			scrollview.Dispose();
-
 			return _rootView = root;
 		}
 
-		// Use OnDestroy instead of OnDestroyView because OnDestroyView will be
-		// called before the animation completes. This causes tons of tiny issues.
-		public override void OnDestroy()
+		void Destroy()
 		{
-			base.OnDestroy();
-
 			if (_rootView != null)
 			{
 				UnhookEvents();
 
+				_viewPager.RemoveOnPageChangeListener(this);
 				var adapter = _viewPager.Adapter;
 				_viewPager.Adapter = null;
 				adapter.Dispose();
 
+
 				_toolbarAppearanceTracker.Dispose();
 				_tabLayoutAppearanceTracker.Dispose();
-				_viewPager.RemoveOnPageChangeListener(this);
-				_rootView.Dispose();
 				_toolbarTracker.Dispose();
-
 				_tablayout.Dispose();
 				_toolbar.Dispose();
 				_viewPager.Dispose();
@@ -195,10 +192,31 @@ namespace Xamarin.Forms.Platform.Android
 			_toolbarAppearanceTracker = null;
 			_tabLayoutAppearanceTracker = null;
 			_toolbarTracker = null;
-			_toolbar = null;
 			_tablayout = null;
-			_rootView = null;
+			_toolbar = null;
 			_viewPager = null;
+			_rootView = null;
+
+		}
+
+		// Use OnDestroy instead of OnDestroyView because OnDestroyView will be
+		// called before the animation completes. This causes tons of tiny issues.
+		public override void OnDestroy()
+		{
+			Destroy();
+			base.OnDestroy();
+		}
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				Destroy();
+			}
 		}
 
 		protected virtual void OnAnimationFinished(EventArgs e)

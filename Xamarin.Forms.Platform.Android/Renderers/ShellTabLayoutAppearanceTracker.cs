@@ -3,7 +3,7 @@ using Android.Support.Design.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ShellTabLayoutAppearanceTracker : IShellTabLayoutAppearanceTracker
+	public class ShellTabLayoutAppearanceTracker : IShellTabLayoutAppearanceTracker
 	{
 		bool _disposed;
 		IShellContext _shellContext;
@@ -37,8 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 			var unselectedArgb = unselected.ToAndroid(ShellRenderer.DefaultUnselectedColor).ToArgb();
 
 			tabLayout.SetTabTextColors(unselectedArgb, titleArgb);
-			using (var colorDrawable = new ColorDrawable(background.ToAndroid(ShellRenderer.DefaultBackgroundColor)))
-				tabLayout.SetBackground(colorDrawable);
+			tabLayout.SetBackground(new ColorDrawable(background.ToAndroid(ShellRenderer.DefaultBackgroundColor)));
 			tabLayout.SetSelectedTabIndicatorColor(foreground.ToAndroid(ShellRenderer.DefaultForegroundColor));
 		}
 
@@ -51,15 +50,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-				}
+			if (_disposed)
+				return;
 
-				_shellContext = null;
-				_disposed = true;
-			}
+			_disposed = true;
+			_shellContext = null;
 		}
 
 		#endregion IDisposable
