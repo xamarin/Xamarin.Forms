@@ -453,7 +453,8 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 			var attr = new NSAttributedStringDocumentAttributes
 			{
-				DocumentType = NSDocumentType.HTML
+				DocumentType = NSDocumentType.HTML,
+				StringEncoding = NSStringEncoding.UTF8
 			};
 
 			NSError nsError = null;
@@ -463,7 +464,8 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			var attr = new NSAttributedStringDocumentAttributes
 			{
-				DocumentType = NSDocumentType.HTML
+				DocumentType = NSDocumentType.HTML,
+				StringEncoding = NSStringEncoding.UTF8
 			};
 
 			var htmlData = new NSMutableData();
