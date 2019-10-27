@@ -35,6 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 				LineBreakMode = LineBreakMode.WordWrap,
 				HorizontalOptions = LayoutOptions.CenterAndExpand,
 				VerticalOptions = LayoutOptions.CenterAndExpand,
+				Visual = VisualMarker.Material
 			};
 			materialButton.Clicked += MaterialButton_Clicked;
 			
