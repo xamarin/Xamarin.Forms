@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
-				Text = " Scroll the CollectionView to end and try to scroll up again. If the Refresh Indicator does not appear until it reaches the top, the test has passed."
+				Text = "Scroll the CollectionView to end, lift finger off screen, and then try to scroll up again. If the Refresh Indicator does not appear until it reaches the top, the test has passed."
 			};
 
 			_refreshCommand = new Command(async (parameter) =>
