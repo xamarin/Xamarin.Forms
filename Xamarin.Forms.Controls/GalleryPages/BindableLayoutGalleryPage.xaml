@@ -18,9 +18,20 @@
 				<Label Text="{Binding }" />
 			</Frame>
 		</DataTemplate>
+		<!-- Template for ViewCell items -->
+		<DataTemplate x:Key="MyViewCellCharTemplate">
+			<ViewCell>
+				<Frame Padding="10"
+					   BackgroundColor="DodgerBlue">
+					<Label Text="{Binding }" />
+				</Frame>
+			</ViewCell>
+		   
+		</DataTemplate>
 		<local:BindableLayoutItemTemplateSelector x:Key="ItemTemplateSelector"
 												  IntTemplate="{StaticResource MyIntTemplate}"
-												  CharTemplate="{StaticResource MyCharTemplate}" />
+												  CharTemplate="{StaticResource MyCharTemplate}"
+												  ViewCellTemplate="{StaticResource MyViewCellCharTemplate}"/>
 	</ContentPage.Resources>
 	<Grid RowSpacing="0">
 		<Grid.RowDefinitions>

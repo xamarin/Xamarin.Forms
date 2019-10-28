@@ -70,10 +70,21 @@ namespace Xamarin.Forms.Controls.GalleryPages
 	{
 		public DataTemplate IntTemplate { get; set; }
 		public DataTemplate CharTemplate { get; set; }
+		public DataTemplate ViewCellTemplate { get; set; }
+
+		bool _viewCell;
 
 		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 		{
-			return item is int ? IntTemplate : CharTemplate;
+			if(item is int)
+				return IntTemplate;
+
+			_viewCell = !_viewCell;
+
+			if (!_viewCell)
+				return CharTemplate;
+
+			return ViewCellTemplate;
 		}
 	}
 }

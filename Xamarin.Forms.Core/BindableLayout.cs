@@ -188,14 +188,26 @@ namespace Xamarin.Forms
 		{
 			if (dataTemplate != null)
 			{
-				var view = (View)dataTemplate.CreateContent();
+				var content = dataTemplate.CreateContent();
+				View view;
+				switch(content)
+				{
+					case View v:
+						view = v;
+						break;
+					case ViewCell viewCell:
+						view = viewCell.View;
+						break;
+					default:
+						view = new Label { Text = item?.ToString() };
+						break;
+				}
+
 				view.BindingContext = item;
 				return view;
 			}
-			else
-			{
-				return new Label() { Text = item?.ToString() };
-			}
+
+			return new Label { Text = item?.ToString() };
 		}
 
 		void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
