@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml.Controls;
 using UWPApp = Windows.UI.Xaml.Application;
+using Xamarin.Forms.Platform.UAP;
+using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -183,7 +185,7 @@ namespace Xamarin.Forms.Platform.UWP
 					(ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalListItemsPanel"]
 			};
 
-			ScrollViewer.SetHorizontalScrollMode(horizontalListView, ScrollMode.Auto);
+			ScrollViewer.SetHorizontalScrollMode(horizontalListView, WScrollMode.Auto);
 			ScrollViewer.SetHorizontalScrollBarVisibility(horizontalListView,
 				Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto);
 
