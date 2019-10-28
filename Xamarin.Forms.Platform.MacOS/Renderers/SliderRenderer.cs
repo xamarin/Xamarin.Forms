@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
-		private void UpdateMaximumTrackColor()
+		void UpdateMaximumTrackColor()
 		{
 			// Cell could be overwritten with an other custom cell
 			if (Control.Cell is FormsSliderCell sliderCell)
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
-		private void UpdateMinimumTrackColor()
+		void UpdateMinimumTrackColor()
 		{
 			// Cell could be overwritten with an other custom cell
 			if (Control.Cell is FormsSliderCell sliderCell)
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
-		private void UpdateThumbColor()
+		void UpdateThumbColor()
 		{
 			// Cell could be overwritten with an other custom cell
 			if (Control.Cell is FormsSliderCell sliderCell)
