@@ -24,10 +24,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7396.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7825.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5354.xaml.cs">
+      <DependentUpon>Issue5354.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue5868.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6963.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7048.xaml.cs">
+      <DependentUpon>Issue7048.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue7253.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7581.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7621.xaml.cs">
@@ -1107,6 +1112,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue6738.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GitHub6926.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5503.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5831.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LabelTextType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellTitleView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5159.cs" />
@@ -1602,6 +1608,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8263.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7048.xaml">
+      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
