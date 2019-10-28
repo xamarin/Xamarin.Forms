@@ -287,7 +287,10 @@ namespace Xamarin.Forms.Platform.iOS
 			SetContentOffset(newOffset, e.ShouldAnimate);
 
 			if (!e.ShouldAnimate || sameOffset)
+			{
 				ScrollView.SendScrollFinished();
+				MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
+			}
 		}
 
 		void UpdateDelaysContentTouches()

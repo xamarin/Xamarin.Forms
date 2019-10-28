@@ -685,6 +685,7 @@ namespace Xamarin.Forms.Platform.Android
 						{
 							t.Reset();
 							t.SyncState(view);
+							MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
 						}
 					}
 					else

@@ -55,6 +55,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			};
 
 			_itemsView.SendScrolled(itemsViewScrolledEventArgs);
+			MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
 
 			// Don't send RemainingItemsThresholdReached event for non-linear layout managers
 			// This can also happen if a layout pass has not happened yet
