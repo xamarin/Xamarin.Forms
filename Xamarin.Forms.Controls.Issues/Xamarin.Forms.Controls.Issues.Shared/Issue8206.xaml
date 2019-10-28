@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Shell
+    x:Class="Xamarin.Forms.Controls.Issues.Issue8206"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Xamarin.Forms.Controls.Issues.Views"
+    FlyoutBackgroundImage="img_bgflyout.png"
+    FlyoutBackgroundImageAspect="AspectFill"
+    FlyoutBehavior="Flyout"
+    mc:Ignorable="d">
+
+    <!--#region SHELL RESOURCES-->
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Color x:Key="NavigationPrimary">#0B7DD8</Color>
+            <Style
+                x:Key="BaseStyle"
+                TargetType="Element">
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource NavigationPrimary}" />
+                <Setter Property="Shell.ForegroundColor" Value="White" />
+                <Setter Property="Shell.TitleColor" Value="White" />
+                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
+                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource NavigationPrimary}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="White" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarTitleColor" Value="White" />
+            </Style>
+            <Style
+                TargetType="ShellItem"
+                BasedOn="{StaticResource BaseStyle}" />
+            <Style
+                TargetType="Tab"
+                BasedOn="{StaticResource BaseStyle}" />
+        </ResourceDictionary>
+    </Shell.Resources>
+    <!--#endregion-->
+
+
+    <!--#region TABS SECTOR-->
+    <!--  Home in Flyout GROUP  -->
+    <ShellItem
+        Title="Home"
+        Icon="coffee.png"
+        FlyoutDisplayOptions="AsSingleItem">
+
+        <!--#region Explore Tab-->
+        <Tab
+            Title="Explore"
+            Icon="coffee.png">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+        </Tab>
+        <!--#endregion-->
+
+        <!--#region My order Tab-->
+        <Tab
+            Title="My order"
+            Icon="coffee.png">
+            <ShellContent
+                Title="Current orders"
+                ContentTemplate="{DataTemplate local:MainPage}" />
+            <ShellContent
+                Title="Past orders"
+                ContentTemplate="{DataTemplate local:MainPage}" />
+        </Tab>
+        <!--#endregion-->
+    </ShellItem>
+    <!--#endregion-->
+
+
+    <!--#region FLYOUT SECTOR-->
+    <FlyoutItem
+        Title="Main1"
+        FlyoutDisplayOptions="AsMultipleItems"
+        Icon="coffee.png">
+
+        <!--#region Search-->
+        <Tab
+            Title="Search"
+            Icon="coffee.png">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+        </Tab>
+        <!--#endregion-->
+
+        <!--#region Shopping List-->
+        <Tab
+            Title="Shopping List"
+            Icon="coffee.png">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+        </Tab>
+        <!--#endregion-->
+
+        <!--#region Weekly Planning-->
+        <Tab
+            Title="Weekly Planning"
+            Icon="coffee.png">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+        </Tab>
+        <!--#endregion-->
+    </FlyoutItem>
+    <!--#endregion-->
+
+</Shell>

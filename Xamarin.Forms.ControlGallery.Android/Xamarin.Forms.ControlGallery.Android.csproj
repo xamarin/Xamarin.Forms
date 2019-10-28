@@ -384,6 +384,9 @@
       <Link>proguard.cfg</Link>
     </ProguardConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\img_bgflyout.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

@@ -233,6 +233,9 @@
     <BundleResource Include="Resources\bell.png" />
     <BundleResource Include="Resources\mic.png" />
     <BundleResource Include="Resources\photo.jpg" />
+    <BundleResource Include="Resources\img_bgflyout.png" />
+    <BundleResource Include="Resources\img_bgflyout%402x.png" />
+    <BundleResource Include="Resources\img_bgflyout%403x.png" />
     <Content Include="settings%402x.png" />
     <Content Include="menuIcon%402x.png" />
     <Content Include="crimsonsmall.jpg" />
@@ -402,10 +405,6 @@
       <Visible>false</Visible>
     </ImageAsset>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\Fonts\" />
-    <Folder Include="CustomEffects\" />
-    <Folder Include="CustomRenderers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
