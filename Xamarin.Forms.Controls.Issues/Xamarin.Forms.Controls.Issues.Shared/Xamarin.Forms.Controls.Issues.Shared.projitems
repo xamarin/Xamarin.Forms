@@ -639,8 +639,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue6994.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7371.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Views\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)_TemplateMarkup.xaml.cs">
