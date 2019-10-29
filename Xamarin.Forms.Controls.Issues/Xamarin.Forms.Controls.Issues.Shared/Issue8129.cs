@@ -19,157 +19,69 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 8129, "[Bug] Adding children to iOS VisualElementPackager has O(N^2) performance and thrashes the native layer", PlatformAffected.iOS)]
 	public class Issue8129 : TestContentPage
 	{
-		RefreshView _refreshView;
-		Command _refreshCommand;
-
 		public Issue8129()
 		{
 		}
 
 		protected override void Init()
 		{
-			Title = "Refresh View with too many elements (2000) Tests";
-			var scrollViewContent = new StackLayout();
+			Title = "Page with too many elements (2000) Tests";
 
-			Enumerable
+			var grid = new Grid();
+			var stackLayout = new StackLayout();
+
+			var addChildrenCommand = new Command((parameter) =>
+			{
+				Enumerable
 				.Range(0, 2000)
-				.Select(_ => new Label() { HeightRequest = 200, Text = $"Pull me down to refresh me - {_}" })
-				.ForEach(x => scrollViewContent.Children.Add(x));
-
-
-			bool canExecute = true;
-			_refreshCommand = new Command(async (parameter) =>
-			{
-				if (!_refreshView.IsRefreshing)
-				{
-					throw new Exception("IsRefreshing should be true when command executes");
-				}
-
-				if (parameter != null && !(bool)parameter)
-				{
-					throw new Exception("Refresh command incorrectly firing with disabled parameter");
-				}
-
-				await Task.Delay(2000);
-				_refreshView.IsRefreshing = false;
-			}, (object parameter) =>
-			{
-				return parameter != null && canExecute && (bool)parameter;
+				.Select(_ => new Label() { HeightRequest = 200, Text = $"I am Label #{_}" })
+				.ForEach(x => stackLayout.Children.Add(x));
 			});
 
-			_refreshView = new RefreshView()
+			var addChildrenButton = new Button
 			{
-				Content = new ScrollView()
-				{
-					HeightRequest = 2000,
-					BackgroundColor = Color.Green,
-					Content = scrollViewContent,
-					AutomationId = "LayoutContainer"
-				},
-				Command = _refreshCommand,
-				CommandParameter = true
+				Text = "Add 2000 Labels",
+				Command = addChildrenCommand
 			};
 
-			var isRefreshingLabel = new Label();
-
-			var label = new Label { BindingContext = _refreshView };
-			isRefreshingLabel.SetBinding(Label.TextProperty, new Binding("IsRefreshing", stringFormat: "IsRefreshing: {0}", source: _refreshView));
-
-			var commandEnabledLabel = new Label { BindingContext = _refreshView };
-			commandEnabledLabel.SetBinding(Label.TextProperty, new Binding("IsEnabled", stringFormat: "IsEnabled: {0}", source: _refreshView));
-
-			Content = new StackLayout()
+			var addZChildrenButton = new Button
 			{
-				Children =
+				Text = "Add BoxView on Top",
+				Command = new Command((parameter) =>
 				{
-					isRefreshingLabel,
-					commandEnabledLabel,
-					new Button()
+					grid.AddChild(new BoxView
 					{
-						Text = "Toggle Refresh",
-						Command = new Command(() =>
-						{
-							_refreshView.IsRefreshing = !_refreshView.IsRefreshing;
-						})
-					},
-					new Button()
-					{
-						Text = "Toggle Can Execute",
-						Command = new Command(() =>
-						{
-							canExecute = !canExecute;
-							_refreshCommand.ChangeCanExecute();
-						}),
-						AutomationId = "ToggleCanExecute"
-					},
-					new Button()
-					{
-						Text = "Toggle Can Execute Parameter",
-						Command = new Command(() =>
-						{
-							_refreshView.CommandParameter = !((bool)_refreshView.CommandParameter);
-							_refreshCommand.ChangeCanExecute();
-						}),
-						AutomationId = "ToggleCanExecuteParameter"
-					},
-					new Button()
-					{
-						Text = "Toggle Command Being Set",
-						Command = new Command(() =>
-						{
-							if(_refreshView.Command != null)
-								_refreshView.Command = null;
-							else
-								_refreshView.Command = _refreshCommand;
-						}),
-						AutomationId = "ToggleCommandBeingSet"
-					},
-					_refreshView
-				}
+						HeightRequest = 300,
+						WidthRequest = 300,
+						BackgroundColor = Color.Green
+					}, 0, 0, 1, 3);
+				})
 			};
+			grid.AddChild(addChildrenButton, 0, 0);
+			grid.AddChild(addZChildrenButton, 0, 1);
+			grid.AddChild(stackLayout, 0, 2);
+
+			Content = grid;
 		}
 #if UITEST
 		[Test]
-		public void IsRefreshingAndCommandTest()
+		public void AddTooManyContentsTest()
 		{
-			RunningApp.Tap(q => q.Button("Toggle Refresh"));
-			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: True"));
-			RunningApp.Screenshot("Refreshing");
-			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: False"));
-			RunningApp.Screenshot("Refreshed");
+			RunningApp.WaitForElement(q => q.Button("Add 2000 Labels"));
+			RunningApp.Screenshot("Before adding 2000 Labels");
+			RunningApp.Tap(q => q.Button("Add 2000 Labels"));
+			RunningApp.WaitForElement(q => q.Marked("I am Label #1"));
+			RunningApp.Screenshot("After adding 2000 Labels");
 		}
 
 		[Test]
-		public void IsRefreshingAndCommandTest_SwipeDown()
+		public void ZIndexAfterAddingContentsTest()
 		{
-			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: False"));
-
-			TriggerRefresh();
-			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: True"));
-			RunningApp.Screenshot("Refreshing");
-			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: False"));
-			RunningApp.Screenshot("Refreshed");
-		}
-
-		[Test]
-		public void RefreshDisablesWithCommand()
-		{
-			RunningApp.WaitForElement("IsRefreshing: False");
-			RunningApp.Tap("ToggleCanExecute");
-			RunningApp.WaitForElement("IsEnabled: False");
-			TriggerRefresh();
-
-			var results = RunningApp.Query("IsRefreshing: True");
-			Assert.AreEqual(0, results.Length);
-			results = RunningApp.Query("IsRefreshing: True");
-			Assert.AreEqual(0, results.Length);
-		}
-
-		void TriggerRefresh()
-		{
-			var container = RunningApp.WaitForElement("LayoutContainer")[0];
-			RunningApp.Pan(new Drag(container.Rect, Drag.Direction.TopToBottom, Drag.DragLength.Medium));
-
+			RunningApp.WaitForElement(q => q.Button("Add BoxView on Top"));
+			RunningApp.Screenshot("Before adding BoxView on Top");
+			RunningApp.Tap(q => q.Button("Add BoxView on Top"));
+			RunningApp.WaitForNoElement(q => q.Button("Add BoxView on Top"));
+			RunningApp.Screenshot("After adding BoxView on Top");
 		}
 #endif
 	}
