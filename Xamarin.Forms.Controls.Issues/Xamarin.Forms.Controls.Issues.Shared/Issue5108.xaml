@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <controls:TestContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -20,12 +20,12 @@
                 </StackLayout>
             </Frame>
             <Label Text="Toggle the HasShadow property of the frame:" Style="{DynamicResource CaptionStyle}" />
-            <Button Text="Toggle HasShadow" Clicked="HasShadowButton_Clicked" />
+            <Button Text="Toggle HasShadow" x:Name="HasShadowButton" />
             <Label Text="Check if the Shadow layer updates its properties following the 'shadowee' layer:" Style="{DynamicResource CaptionStyle}" />
-            <Button Text="Update Margin" Clicked="MarginButton_Clicked" />
-            <Button Text="Update Corner Radius" Clicked="RadiusButton_Clicked" />
+            <Button Text="Update Margin" x:Name="MarginButton" />
+            <Button Text="Update Corner Radius" x:Name="RadiusButton" />
             <Label Text="Toggle the Frame's Background to see how the shadow layer reacts. A background with alpha == 1, the shadow should be darker." Style="{DynamicResource CaptionStyle}" />
-            <Button Text="Update Background" Clicked="BackgroundButton_Clicked" />
+            <Button Text="Update Background" x:Name="BackgroundButton" />
         </StackLayout>
     </ScrollView>
 </controls:TestContentPage>
