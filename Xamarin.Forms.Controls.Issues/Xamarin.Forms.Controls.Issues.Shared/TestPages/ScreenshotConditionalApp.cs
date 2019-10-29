@@ -460,7 +460,7 @@ namespace Xamarin.Forms.Controls
 					return app.Device.IsTablet;
 				}
 
-				throw new Exception($"Invaliid app type: {_app}");
+				throw new Exception($"Invalid app type: {_app}");
 			}
 		}
 
@@ -473,7 +473,7 @@ namespace Xamarin.Forms.Controls
 					return app.Device.IsPhone;
 				}
 
-				throw new Exception($"Invaliid app type: {_app}");
+				throw new Exception($"Invalid app type: {_app}");
 			}
 		}
 
