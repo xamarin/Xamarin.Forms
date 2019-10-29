@@ -141,6 +141,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_backButtonBehavior != null)
 					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+
+				if(Page?.ToolbarItems?.Count > 0)
+				{
+					foreach (var item in Page.ToolbarItems)
+						item.PropertyChanged -= OnToolbarItemPropertyChanged;
+				}
+
 				((IShellController)_shellContext?.Shell)?.RemoveFlyoutBehaviorObserver(this);
 
 				UpdateTitleView(_shellContext.AndroidContext, _toolbar, null);
