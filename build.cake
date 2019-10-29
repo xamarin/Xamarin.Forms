@@ -24,6 +24,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
 #addin "nuget:?package=Cake.Boots&version=1.0.0.291"
 
+#addin "nuget:?package=Cake.FileHelpers&version=3.2.0"
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
@@ -46,23 +47,27 @@ var nugetversion = Argument<string>("packageVersion", gitVersion.NuGetVersion);
 var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ?? 
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
-string monoMajorVersion = "5.14.0";
-string monoPatchVersion = "177";
+string monoMajorVersion = "5.18.1";
+string monoPatchVersion = "28";
 string monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
 
-string monoSDK_windows = $"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
-string androidSDK_windows = "https://aka.ms/xamarin-android-commercial-d15-9-windows";
-string iOSSDK_windows = "https://download.visualstudio.microsoft.com/download/pr/71f33151-5db4-49cc-ac70-ba835a9f81e2/d256c6c50cd80ec0207783c5c7a4bc2f/xamarin.visualstudio.apple.sdk.4.12.3.83.vsix";
+string monoSDK_windows = "";//$"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
+string androidSDK_windows = "";//"https://aka.ms/xamarin-android-commercial-d15-9-windows";
+string iOSSDK_windows = "";//"https://download.visualstudio.microsoft.com/download/pr/71f33151-5db4-49cc-ac70-ba835a9f81e2/d256c6c50cd80ec0207783c5c7a4bc2f/xamarin.visualstudio.apple.sdk.4.12.3.83.vsix";
 string macSDK_windows = "";
 
-string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d15-9-macos";
+monoMajorVersion = "6.4.0";
+monoPatchVersion = "198";
+monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
+
+string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d16-3-macos";
 string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
-string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.ios-12.4.0.64.pkg";
-string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.mac-5.4.0.64.pkg";
+string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
+string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
 
 string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
 string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
-string iosSDK = IsRunningOnWindows() ? "" : iOSSDK_macos;
+string iosSDK = IsRunningOnWindows() ? iOSSDK_windows : iOSSDK_macos;
 string macSDK  = IsRunningOnWindows() ? "" : macSDK_macos;
 
 string[] androidSdkManagerInstalls = new string[0]; //new [] { "platforms;android-29"};
@@ -72,6 +77,7 @@ string[] androidSdkManagerInstalls = new string[0]; //new [] { "platforms;androi
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
+    .Description("Deletes all the obj/bin directories")
     .Does(() =>
 {
     CleanDirectories("./**/obj", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
@@ -79,6 +85,7 @@ Task("Clean")
 });
 
 Task("provision-macsdk")
+    .Description("Install Xamarin.Mac SDK")
     .Does(async () =>
     {
         if(!IsRunningOnWindows() && !String.IsNullOrWhiteSpace(macSDK))
@@ -88,16 +95,15 @@ Task("provision-macsdk")
     });
 
 Task("provision-iossdk")
+    .Description("Install Xamarin.iOS SDK")
     .Does(async () =>
     {
-        if(!IsRunningOnWindows())
-        {   
-            if(!String.IsNullOrWhiteSpace(iosSDK))
-                await Boots(iosSDK);
-        }
+        if(!String.IsNullOrWhiteSpace(iosSDK))
+            await Boots(iosSDK);
     });
 
 Task("provision-androidsdk")
+    .Description("Install Xamarin.Android SDK")
     .Does(async () =>
     {
         Information ("ANDROID_HOME: {0}", ANDROID_HOME);
@@ -118,13 +124,20 @@ Task("provision-androidsdk")
     });
 
 Task("provision-monosdk")
+    .Description("Install Mono SDK")
     .Does(async () =>
     {
         if(IsRunningOnWindows())
         {
             if(!String.IsNullOrWhiteSpace(monoSDK))
             {
-                string monoPath = $"{System.IO.Path.GetTempPath()}/mono.msi";
+                string monoPath = $"{System.IO.Path.GetTempPath()}mono.msi";
+
+                if(!String.IsNullOrWhiteSpace(EnvironmentVariable("Build.Repository.LocalPath")))
+                    monoPath = EnvironmentVariable("Build.Repository.LocalPath") + "\\" + "mono.msi";
+
+                Information("Mono Path: {0}", monoPath);
+                Information("Mono Version: {0}", monoSDK);
                 DownloadFile(monoSDK, monoPath);
 
                 StartProcess("msiexec", new ProcessSettings {
@@ -144,19 +157,26 @@ Task("provision-monosdk")
     });
 
 Task("provision")
+    .Description("Install SDKs required to build project")
     .IsDependentOn("provision-macsdk")
     .IsDependentOn("provision-iossdk")
     .IsDependentOn("provision-monosdk")
     .IsDependentOn("provision-androidsdk");
 
 Task("NuGetPack")
+    .Description("Build and Create Nugets")
     .IsDependentOn("Build")
     .IsDependentOn("_NuGetPack");
 
 
 Task("_NuGetPack")
+    .Description("Create Nugets without building anything")
     .Does(() =>
     {
+        var nugetVersionFile = 
+            GetFiles(".XamarinFormsVersionFile.txt");
+        var nugetversion = FileReadText(nugetVersionFile.First());
+
         Information("Nuget Version: {0}", nugetversion);
         
         var nugetPackageDir = Directory("./artifacts");
@@ -177,6 +197,7 @@ Task("_NuGetPack")
 
 
 Task("Restore")
+    .Description("Restore target on Xamarin.Forms.sln")
     .Does(() =>
     {
         try{
@@ -189,20 +210,9 @@ Task("Restore")
         }
     });
 
-
-Task("BuildHack")
-    .IsDependentOn("Restore")
-    .Does(() =>
-    {
-        if(!IsRunningOnWindows())
-        {
-            MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
-        }  
-    });
-
 Task("Build")
+    .Description("Builds all necessary projects to create Nuget Packages")
     .IsDependentOn("Restore")
-    .IsDependentOn("BuildHack")
     .IsDependentOn("Android81")
     .Does(() =>
 { 
@@ -217,7 +227,7 @@ Task("Build")
 });
 
 Task("Android81")
-    .IsDependentOn("BuildHack")
+    .Description("Builds Monodroid81 targets")
     .Does(() =>
     {
         string[] androidProjects = 
@@ -237,7 +247,7 @@ Task("Android81")
     });
 
 Task("VSMAC")
-    .IsDependentOn("BuildHack")
+    .Description("Builds projects necessary so solution compiles on VSMAC")
     .Does(() =>
     {
         StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });        
@@ -259,7 +269,7 @@ Task("DeployiOS")
     });
 */
 Task("DeployAndroid")
-    .IsDependentOn("BuildHack")
+    .Description("Builds and deploy Android Control Gallery")
     .Does(() =>
     { 
         MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
@@ -287,11 +297,9 @@ RunTarget(target);
 
 MSBuildSettings GetMSBuildSettings()
 {
-    var msbuildSettings =  new MSBuildSettings();
-
-    msbuildSettings.PlatformTarget = PlatformTarget.MSIL;
-    msbuildSettings.MSBuildPlatform = (Cake.Common.Tools.MSBuild.MSBuildPlatform)1;
-    msbuildSettings.Configuration = configuration;
-    return msbuildSettings;
-
+    return new MSBuildSettings {
+        PlatformTarget = PlatformTarget.MSIL,
+        MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
+        Configuration = configuration,
+    };
 }

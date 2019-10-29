@@ -17,7 +17,9 @@ variables:
   value: true
 - name: winVmImage
   value: Hosted VS2017
-  
+- name: DOTNET_VERSION
+  value: 3.0.100
+
 resources:
   repositories:
     - repository: xamarin-templates
@@ -46,6 +48,13 @@ pr:
     - 4.*
     - 3.*
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+
 jobs:
 - template: build/steps/build-windows.yml
   parameters:
@@ -53,11 +62,11 @@ jobs:
     displayName: Build Windows Phase
     vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+    msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-    
+
 - template: build/steps/build-android.yml
   parameters:
     name: android_legacy
@@ -104,6 +113,7 @@ jobs:
     slnPath: $(SolutionFile)
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
+    monoVersion : $(MONO_VERSION)
   steps:
      - template: build/steps/build-osx.yml
 

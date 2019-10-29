@@ -66,6 +66,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -79,6 +80,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -156,6 +159,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
+		protected void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+		}
+
 		void UpdatePicker()
 		{
 			UpdatePlaceHolderText();
@@ -206,6 +217,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
-		protected override void UpdatePlaceHolderText() => EditText.Hint = Element.Title;
+		protected override void UpdatePlaceHolderText()
+		{
+			EditText.Hint = Element.Title;
+		}
 	}
 }

@@ -71,6 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 							UpdatePickerSelectedIndex(0);
 						UpdatePickerFromModel(s);
 						entry.ResignFirstResponder();
+						UpdateCharacterSpacing();
 					});
 
 					toolbar.SetItems(new[] { spacer, doneButton }, false);
@@ -80,9 +81,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 					entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 					entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
-					
-					entry.InputAssistantItem.LeadingBarButtonGroups = null;
-					entry.InputAssistantItem.TrailingBarButtonGroups = null;
+
+					if (Forms.IsiOS9OrNewer)
+					{
+						entry.InputAssistantItem.LeadingBarButtonGroups = null;
+						entry.InputAssistantItem.TrailingBarButtonGroups = null;
+					}
 
 					_defaultTextColor = entry.TextColor;
 
@@ -98,6 +102,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 
 				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -109,13 +114,24 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
+			{
 				UpdatePicker();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
+			{
 				UpdatePicker();
+				UpdateCharacterSpacing();
+			}
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
+			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName ||
+			         e.PropertyName == Picker.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+			}
 		}
 
 		void OnEditing(object sender, EventArgs eventArgs)
@@ -146,9 +162,23 @@ namespace Xamarin.Forms.Platform.iOS
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
+			UpdateCharacterSpacing();
 		}
 
-		protected internal virtual void UpdateFont()
+        protected void UpdateCharacterSpacing()
+        {
+			var textAttr = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedText = textAttr;
+
+			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
+
+			if (placeHolder != null)
+				UpdateAttributedPlaceholder(placeHolder);
+		}
+
+        protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
 		}
@@ -166,16 +196,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
+
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing));
 		}
 
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) => 
+			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdatePicker()
 		{
@@ -192,6 +226,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			UpdatePickerSelectedIndex(selectedIndex);
+			UpdateCharacterSpacing();
 		}
 
 		void UpdatePickerFromModel(PickerSource s)

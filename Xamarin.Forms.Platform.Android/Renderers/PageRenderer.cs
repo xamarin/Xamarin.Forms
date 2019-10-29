@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Platform.Android
 		void IOrderedTraversalController.UpdateTraversalOrder()
 		{
 			// traversal order wasn't added until API 22
-			if ((int)Build.VERSION.SdkInt < 22)
+			if ((int)Forms.SdkInt < 22)
 				return;
 
 			// since getting and updating the traversal order is expensive, let's only do it when a screen reader is active
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Platform.Android
 						!(
 							child is VisualElement ve && ve.IsTabStop
 							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
-							&& ve.GetRenderer().View is ITabStop tabStop)
+							&& ve.GetRenderer()?.View is ITabStop tabStop)
 						 )
 						continue;
 

@@ -51,11 +51,7 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (ButtonRenderer))]
 	internal class _ButtonRenderer { }
 
-#if __ANDROID__
 	[RenderWith(typeof(ImageButtonRenderer))]
-#elif !TIZEN4_0
-	[RenderWith(typeof(ImageButtonRenderer))]
-#endif
 	internal class _ImageButtonRenderer { }
 
 	[RenderWith (typeof (TableViewRenderer))]
@@ -63,17 +59,28 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith (typeof (ListViewRenderer))]
 	internal class _ListViewRenderer { }
-#if !TIZEN4_0	
+#if !TIZEN4_0
 	[RenderWith (typeof (CollectionViewRenderer))]
-	internal class _CollectionViewRenderer { }
-	[RenderWith (typeof (CarouselViewRenderer))]
-	internal class _CarouselViewRenderer { }
+#else
+	[RenderWith (typeof (ItemsViewRenderer))]
 #endif
+	internal class _CollectionViewRenderer { }
+
+#if !TIZEN4_0
+	[RenderWith (typeof (CarouselViewRenderer))]
+#endif
+	internal class _CarouselViewRenderer { }
+
 	[RenderWith (typeof (SliderRenderer))]
 	internal class _SliderRenderer { }
 
-	[RenderWith (typeof (WebViewRenderer))]
+#if __IOS__
+	[RenderWith (typeof (WkWebViewRenderer))]
 	internal class _WebViewRenderer { }
+#else
+	[RenderWith(typeof(WebViewRenderer))]
+	internal class _WebViewRenderer { }
+#endif
 
 	[RenderWith (typeof (SearchBarRenderer))]
 	internal class _SearchBarRenderer { }
@@ -154,6 +161,10 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
 	internal class _MasterDetailPageRenderer { }
+#if !TIZEN4_0
+	[RenderWith(typeof(RefreshViewRenderer))]
+#endif
+	internal class _RefreshViewRenderer { }
 }
 
 

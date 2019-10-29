@@ -13,6 +13,8 @@ parameters:
   androidProjectPath : 'Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj'
   androidProjectArguments : ''
   buildConfiguration : 'Debug'
+  nugetVersion: $(NUGET_VERSION)
+  monoVersion: $(MONO_VERSION)
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
   provisionatorPath: 'build/provisioning/provisioning.csx'
   provisionatorExtraArguments: ''
@@ -26,14 +28,14 @@ jobs:
     dependsOn: ${{ parameters.dependsOn }}
     steps:
       - checkout: self
-      
+
       - task: xamops.azdevex.provisionator-task.provisionator@1
         displayName: 'Provisionator'
         condition: eq(variables['provisioning'], 'true')
         inputs:
           provisioning_script: ${{ parameters.provisionatorPath }}
           provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
-      
+
       - task: Bash@3
         displayName: 'Cake Provision'
         condition: eq(variables['provisioning'], 'false')
@@ -41,10 +43,10 @@ jobs:
           targetType: 'filePath'
           filePath: 'build.sh'
           arguments: --target provision
-          
+
       - task: DotNetCoreInstaller@0
         displayName: 'Install .net core $(DOTNET_VERSION)'
-        condition: ne(variables['DOTNET_VERSION'], '')  
+        condition: ne(variables['DOTNET_VERSION'], '')
         inputs:
           version: $(DOTNET_VERSION)
 
@@ -54,6 +56,9 @@ jobs:
           dotnet new globaljson --sdk-version $(DOTNET_VERSION)
         displayName: 'Add globaljson file'
         condition: ne(variables['DOTNET_VERSION'], '')
+
+      - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
+        displayName: 'Select MONO ${{ parameters.monoVersion }}'
 
       - task: NuGetToolInstaller@0
         displayName: 'Use NuGet'
