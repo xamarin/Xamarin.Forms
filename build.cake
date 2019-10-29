@@ -24,6 +24,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
 #addin "nuget:?package=Cake.Boots&version=1.0.0.291"
 
+#addin "nuget:?package=Cake.FileHelpers&version=3.2.0"
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
@@ -172,6 +173,10 @@ Task("_NuGetPack")
     .Description("Create Nugets without building anything")
     .Does(() =>
     {
+        var nugetVersionFile = 
+            GetFiles("XamarinFormsVersionFile.txt");
+        var nugetversion = FileReadText(nugetVersionFile.First());
+
         Information("Nuget Version: {0}", nugetversion);
         
         var nugetPackageDir = Directory("./artifacts");
@@ -292,11 +297,9 @@ RunTarget(target);
 
 MSBuildSettings GetMSBuildSettings()
 {
-    var msbuildSettings =  new MSBuildSettings();
-
-    msbuildSettings.PlatformTarget = PlatformTarget.MSIL;
-    msbuildSettings.MSBuildPlatform = (Cake.Common.Tools.MSBuild.MSBuildPlatform)1;
-    msbuildSettings.Configuration = configuration;
-    return msbuildSettings;
-
+    return new MSBuildSettings {
+        PlatformTarget = PlatformTarget.MSIL,
+        MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
+        Configuration = configuration,
+    };
 }
