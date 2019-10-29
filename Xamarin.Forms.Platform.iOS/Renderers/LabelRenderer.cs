@@ -155,9 +155,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (e.NewElement != null)
 			{
+				e.NewElement.PropertyChanging += ElementPropertyChanging;
 				if (Control == null)
 				{
-					e.NewElement.PropertyChanging += ElementPropertyChanging;
 					SetNativeControl(CreateNativeControl());
 #if !__MOBILE__
 					Control.Editable = false;
@@ -445,6 +445,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextHtml()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			string text = Element.Text ?? string.Empty;
 
 #if __MOBILE__
@@ -574,6 +577,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdatePadding()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			if (Element.Padding.IsEmpty)
 				return;
 
