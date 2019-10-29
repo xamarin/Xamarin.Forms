@@ -52,17 +52,17 @@ namespace Xamarin.Forms.Controls.Issues
 				scrollToStart.Clicked += ScrollToStart_Clicked;
 			}
 
-			private async void ScrollToStart_Clicked(object sender, EventArgs e)
+			async void ScrollToStart_Clicked(object sender, EventArgs e)
 			{
 				await scrollView.ScrollToAsync(layout.Children.First(), ScrollToPosition.Start, false);
 			}
 
-			private async void ScrollToEnd_Clicked(object sender, EventArgs e)
+			async void ScrollToEnd_Clicked(object sender, EventArgs e)
 			{
 				await scrollView.ScrollToAsync(layout.Children.Last(), ScrollToPosition.End, false);
 			}
 
-			private async void AddItem_Clicked(object sender, EventArgs e)
+			async void AddItem_Clicked(object sender, EventArgs e)
 			{
 				Label lastButton = null;
 				for (int i = 0; i < 10; ++i)
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Controls.Issues
 				await scrollView.ScrollToAsync(lastButton, ScrollToPosition.End, false);
 			}
 
-			private async void AddItemAtBegging_Clicked(object sender, EventArgs e)
+			async void AddItemAtBegging_Clicked(object sender, EventArgs e)
 			{
 				Label lastButton = null;
 				for (int i = 0; i < 10; ++i)
