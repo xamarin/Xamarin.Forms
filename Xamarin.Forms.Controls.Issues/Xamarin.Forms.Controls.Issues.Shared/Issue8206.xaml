@@ -50,7 +50,7 @@
         <Tab
             Title="Explore"
             Icon="coffee.png">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:Issue1455}" />
         </Tab>
         <!--#endregion-->
 
@@ -60,10 +60,10 @@
             Icon="coffee.png">
             <ShellContent
                 Title="Current orders"
-                ContentTemplate="{DataTemplate local:MainPage}" />
+                ContentTemplate="{DataTemplate local:Issue1455}" />
             <ShellContent
                 Title="Past orders"
-                ContentTemplate="{DataTemplate local:MainPage}" />
+                ContentTemplate="{DataTemplate local:Issue1455}" />
         </Tab>
         <!--#endregion-->
     </ShellItem>
@@ -80,7 +80,7 @@
         <Tab
             Title="Search"
             Icon="coffee.png">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:Issue1455}" />
         </Tab>
         <!--#endregion-->
 
@@ -88,7 +88,7 @@
         <Tab
             Title="Shopping List"
             Icon="coffee.png">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:Issue1455}" />
         </Tab>
         <!--#endregion-->
 
@@ -96,7 +96,7 @@
         <Tab
             Title="Weekly Planning"
             Icon="coffee.png">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:Issue1455}" />
         </Tab>
         <!--#endregion-->
     </FlyoutItem>
