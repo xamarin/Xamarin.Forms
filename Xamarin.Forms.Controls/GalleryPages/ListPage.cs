@@ -20,10 +20,16 @@ namespace Xamarin.Forms.Controls
 			{
 				_listScreen.View.ItemsSource = new List<int>();
 			};
+            var resetItemsSourceButton = new Button { Text = "Set ItemsSource = null" };
+			resetItemsSourceButton.Clicked += delegate
+			{
+				_listScreen.View.ItemsSource = null;
+			};
 			Content = new StackLayout {
 				Children = {
 					new Label {Text = "Foo"},
 					clearItemsButton,
+					resetItemsSourceButton,
 					_listScreen.View
 				}
 			};

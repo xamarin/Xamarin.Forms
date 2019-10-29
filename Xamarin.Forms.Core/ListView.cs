@@ -448,9 +448,9 @@ namespace Xamarin.Forms
 
 			cell?.OnTapped();
 
-			var itemSource = ItemsSource.Cast<object>().ToList();
+			var itemSource = ItemsSource?.Cast<object>().ToList();
 			object tappedGroup = null;
-			if (itemSource.Count > groupIndex)
+			if (itemSource?.Count > groupIndex)
 			{
 				tappedGroup = itemSource.ElementAt(groupIndex);
 			}
