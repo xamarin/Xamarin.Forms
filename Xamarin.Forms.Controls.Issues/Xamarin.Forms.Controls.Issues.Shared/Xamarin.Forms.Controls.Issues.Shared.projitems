@@ -33,6 +33,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue6945.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7313.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7621.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CollectionViewItemsUpdatingScrollMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5500.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7823.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3475.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6476.cs" />
