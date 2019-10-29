@@ -243,6 +243,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void HandleScrolled(object sender, EventArgs e)
 		{
 			UpdateScrollPosition();
+			MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
 		}
 
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
@@ -287,10 +288,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetContentOffset(newOffset, e.ShouldAnimate);
 
 			if (!e.ShouldAnimate || sameOffset)
-			{
 				ScrollView.SendScrollFinished();
-				MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
-			}
 		}
 
 		void UpdateDelaysContentTouches()
