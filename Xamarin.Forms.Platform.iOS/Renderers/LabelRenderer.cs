@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		FormattedString _formatted;
 
-		NSDictionary _textDecorationsDefault;
+		NSMutableDictionary _textDecorationsDefault;
 
 		bool IsTextFormatted => _formatted != null;
 
@@ -171,11 +171,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateLineBreakMode();
 				UpdateHorizontalTextAlignment();
 				UpdateText();
+				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
-				UpdateTextDecorations();
 				UpdatePadding();
 			}
 
@@ -270,11 +270,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_textDecorationsDefault == null)
 			{
 				NSRange outRange;
-#if __MOBILE__
-				_textDecorationsDefault = Control.AttributedText.GetAttributes(0, out outRange);
-#else
-				_textDecorationsDefault = Control.AttributedStringValue.GetAttributes(0, out outRange);
-#endif
+				var attributeKeys = Control.AttributedText.GetAttributes(0, out outRange);
+				_textDecorationsDefault = new NSMutableDictionary();
+				if (attributeKeys.ObjectForKey(strikeThroughStyleKey) != null)
+					_textDecorationsDefault.Add(attributeKeys.ObjectForKey(strikeThroughStyleKey), strikeThroughStyleKey);
+				if (attributeKeys.ObjectForKey(underlineStyleKey) != null)
+					_textDecorationsDefault.Add(attributeKeys.ObjectForKey(underlineStyleKey), underlineStyleKey);
 			}
 
 			if (textDecorations == TextDecorations.None)
