@@ -144,9 +144,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_isInitiallyDefault = Element.IsDefault();
 
 				UpdateText(Control);
-
-				if (e.OldElement?.TextDecorations != e.NewElement?.TextDecorations)
-					UpdateTextDecorations(Control);
+				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
 				UpdateCharacterSpacing(Control);
