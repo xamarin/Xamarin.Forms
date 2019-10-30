@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Xamarin.Forms;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Collections;
-using System.Linq;
+
 #if UITEST
+using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using NUnit.Framework;
 #endif
@@ -32,6 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
+		[Category(UITestCategories.ManualReview)]
 		public void SwitchOnOffVisualStatesTest()
 		{
 			RunningApp.WaitForElement("Switch");
