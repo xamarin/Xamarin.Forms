@@ -270,7 +270,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_textDecorationsDefault == null)
 			{
 				NSRange outRange;
+# if __MOBILE__
 				var attributeKeys = Control.AttributedText.GetAttributes(0, out outRange);
+#else
+				var attributeKeys = Control.AttributedStringValue.GetAttributes(0, out outRange);
+#endif
 				_textDecorationsDefault = new NSMutableDictionary();
 				if (attributeKeys.ObjectForKey(strikeThroughStyleKey) != null)
 					_textDecorationsDefault.Add(attributeKeys.ObjectForKey(strikeThroughStyleKey), strikeThroughStyleKey);
