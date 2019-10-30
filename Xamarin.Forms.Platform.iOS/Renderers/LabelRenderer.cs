@@ -171,11 +171,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateLineBreakMode();
 				UpdateHorizontalTextAlignment();
 				UpdateText();
-				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
+				UpdateTextDecorations();
 				UpdatePadding();
 			}
 
