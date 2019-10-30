@@ -35,14 +35,12 @@ namespace Xamarin.Forms.Maps.UWP
 
 				if (Control == null)
 				{
-					SetNativeControl(new MapControl());
+					SetNativeControl(new MapControl()); 
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
-					Control.ActualCameraChanging += async (s, a) => await UpdateCamera(a.Camera.Location.Position);
-					Control.ActualCameraChanged += async (s, a) => await UpdateCamera(a.Camera.Location.Position);
-					Control.SizeChanged += async (s, a) => await OnSizeChanged(s, a);
 					Control.MapTapped += OnMapTapped;
+					Control.LayoutUpdated += OnLayoutUpdated; 
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
@@ -64,6 +62,17 @@ namespace Xamarin.Forms.Maps.UWP
 
 				await Control.Dispatcher.RunIdleAsync(async (i) => await MoveToRegion(mapModel.LastMoveToRegion, MapAnimationKind.None));
 				await UpdateIsShowingUser();
+			}
+		}
+
+		bool _isRegionUpdatePending;
+
+		async void OnLayoutUpdated(object sender, object e)
+		{
+			if (_isRegionUpdatePending)
+			{
+				// _isRegionUpdatePending is set to false when the update is successfull
+				await MoveToRegion(Element.LastMoveToRegion, MapAnimationKind.None);
 			}
 		}
 
@@ -96,6 +105,12 @@ namespace Xamarin.Forms.Maps.UWP
 				{
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
 					((ObservableCollection<MapElement>)Element.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
+				}
+
+				if (Control != null)
+				{
+					Control.LayoutUpdated -= OnLayoutUpdated;
+					Control.MapTapped -= OnMapTapped;
 				}
 			}
 
@@ -245,7 +260,7 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				return new Geopath(new[]
 				{
-					new BasicGeoposition(), 
+					new BasicGeoposition(),
 				});
 			}
 		}
@@ -378,7 +393,7 @@ namespace Xamarin.Forms.Maps.UWP
 				Longitude = span.Center.Longitude + span.LongitudeDegrees / 2
 			};
 			var boundingBox = new GeoboundingBox(nw, se);
-			await Control.TrySetViewBoundsAsync(boundingBox, null, animation);
+			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation); 
 		}
 
 		async Task UpdateVisibleRegion()
@@ -407,54 +422,6 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				return;
 			}
-		}
-
-		Task UpdateCamera(BasicGeoposition position, bool raiseCameraChanged = true)
-		{
-			if (Control.ActualWidth == 0 || Control.ActualHeight == 0)
-			{
-				return Task.CompletedTask;
-			}
-
-			return Task.Run(async () =>
-			{
-				try
-				{
-					await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
-					{
-						double zoomLevel = GetCurrentZoom(Control);
-						if (!DidCameraPositionAndZoomChange(position, zoomLevel))
-						{
-							return;
-						}
-
-						Element.SetCamera(
-							new Camera(new Position(position.Latitude, position.Longitude), zoomLevel),
-							raiseCameraChanged);
-					});
-				}
-				catch (Exception exc)
-				{
-					System.Diagnostics.Trace.TraceWarning($"UpdateCamera exception: {exc}");
-				}
-			});
-		}
-
-		bool DidCameraPositionAndZoomChange(BasicGeoposition position, double zoomLevel)
-		{
-			if (Element.Camera != null)
-			{
-				var currentPosition = Element.Camera.Position;
-				var currentZoom = Element.Camera.Zoom;
-
-				if (currentPosition.Latitude == position.Latitude && currentPosition.Longitude == position.Longitude 
-					&& currentZoom == zoomLevel)
-				{
-					return false;
-				}
-			}
-
-			return true;
 		}
 
 		void LoadUserPosition(Geocoordinate userCoordinate, bool center)
@@ -526,49 +493,9 @@ namespace Xamarin.Forms.Maps.UWP
 			Control.PanInteractionMode = Element.HasScrollEnabled ? MapPanInteractionMode.Auto : MapPanInteractionMode.Disabled;
 		}
 
-		async Task OnSizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			bool isLayoutInit = e.PreviousSize.Width == 0 && e.NewSize.Width > 0;
-
-			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-				await UpdateCamera(Control.ActualCamera.Location.Position, raiseCameraChanged: !isLayoutInit));
-
-			if (!isLayoutInit)
-			{
-				return;
-			}
-
-			// If move to region is called before the layout pass has been made, it won't work as expected.
-			try
-			{
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-					await MoveToRegion(Element.LastMoveToRegion, MapAnimationKind.None));
-			}
-			catch (Exception exc)
-			{
-				System.Diagnostics.Trace.TraceWarning($"MoveToRegion exception: {exc}");
-			}
-		}
-
 		void OnMapTapped(MapControl sender, MapInputEventArgs args)
 		{
 			Element?.SendMapClicked(new Position(args.Location.Position.Latitude, args.Location.Position.Longitude));
-		}
-
-		static double GetCurrentZoom(MapControl mapView)
-		{
-			// The bing maps zoom level is not computed the same way as the google maps one:
-			// we normalize it to have consistent values
-			const int tileSize = 256;
-
-			mapView.GetLocationFromOffset(new Windows.Foundation.Point(0, 0), out Geopoint nw);
-			mapView.GetLocationFromOffset(new Windows.Foundation.Point(mapView.ActualWidth, mapView.ActualHeight), out Geopoint se);
-
-			double longitudeDelta = Math.Abs(nw.Position.Longitude - se.Position.Longitude);
-			double width = mapView.ActualWidth;
-
-			var zoom = Math.Log(360 * width / (longitudeDelta * tileSize), 2);
-			return zoom;
 		}
 	}
 }
