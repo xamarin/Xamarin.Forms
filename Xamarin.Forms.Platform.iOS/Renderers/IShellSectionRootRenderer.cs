@@ -8,5 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool ShowNavBar { get; }
 
 		UIViewController ViewController { get; }
+
+		ShellSectionRootHeader CreateShellSectionRootHeader();
 	}
 }

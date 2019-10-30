@@ -15,6 +15,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		UIViewController IShellSectionRootRenderer.ViewController => this;
 
+		ShellSectionRootHeader IShellSectionRootRenderer.CreateShellSectionRootHeader()
+		{
+			return CreateShellSectionRootHeader();
+		}
+
 		#endregion IShellSectionRootRenderer
 
 		const int HeaderHeight = 35;
@@ -36,6 +41,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ShellSection = shellSection ?? throw new ArgumentNullException(nameof(shellSection));
 			_shellContext = shellContext;
+		}
+
+		protected virtual ShellSectionRootHeader CreateShellSectionRootHeader()
+		{
+			return new ShellSectionRootHeader(_shellContext);
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -205,7 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_header == null)
 				{
-					_header = new ShellSectionRootHeader(_shellContext);
+					_header = CreateShellSectionRootHeader();
 					_header.ShellSection = ShellSection;
 
 					AddChildViewController(_header);

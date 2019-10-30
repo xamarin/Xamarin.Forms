@@ -691,5 +691,35 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		}
 	}
 
+	public class Issue7808ShellRenderer : ShellRenderer
+	{
+		protected override IShellSectionRenderer CreateShellSectionRenderer(ShellSection shellSection)
+		{
+			return new Issue7808ShellSectionRenderer(this);
+		}
+	}
+
+	public class Issue7808ShellSectionRenderer : ShellSectionRenderer
+	{
+		public Issue7808ShellSectionRenderer(IShellContext context) : base(context)
+		{
+		}
+
+		//This is what is needed
+		protected override IShellSectionRootRenderer CreateShellSectionRootRenderer(ShellSection shellSection)
+		{
+			var renderer = base.CreateShellSectionRootRenderer(shellSection);
+			if (renderer != null)
+			{
+				//customize your stuff here, for example:
+				(renderer as ShellSectionRootRenderer).View.BackgroundColor = UIColor.Blue;
+				var header = renderer.CreateShellSectionRootHeader();
+				if (header != null)
+					header.View.BackgroundColor = UIColor.Red;
+			}
+			return renderer;
+		}
+	}
+
 }
 

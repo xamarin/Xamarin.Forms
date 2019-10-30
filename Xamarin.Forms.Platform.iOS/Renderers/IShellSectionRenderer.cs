@@ -8,5 +8,6 @@ namespace Xamarin.Forms.Platform.iOS
 		bool IsInMoreTab { get; set; }
 		ShellSection ShellSection { get; set; }
 		UIViewController ViewController { get; }
+		IShellSectionRootRenderer CreateShellSectionRootRenderer(ShellSection shellSection);
 	}
 }

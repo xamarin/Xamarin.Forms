@@ -33,6 +33,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UIViewController ViewController => this;
 
+		IShellSectionRootRenderer IShellSectionRenderer.CreateShellSectionRootRenderer(ShellSection shellSection)
+		{
+			return CreateShellSectionRootRenderer(shellSection);
+		}
+
 		#endregion IShellContentRenderer
 
 		#region IAppearanceObserver
@@ -69,6 +74,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Delegate = new NavDelegate(this);
 			_context = context;
+		}
+
+		protected virtual IShellSectionRootRenderer CreateShellSectionRootRenderer(ShellSection shellSection)
+		{
+			return new ShellSectionRootRenderer(ShellSection, _context);
 		}
 
 		public override UIViewController PopViewController(bool animated)
@@ -176,8 +186,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void LoadPages()
 		{
-			_renderer = new ShellSectionRootRenderer(ShellSection, _context);
-
+			_renderer = CreateShellSectionRootRenderer(ShellSection);
 			PushViewController(_renderer.ViewController, false);
 
 			var stack = ShellSection.Stack;
