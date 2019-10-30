@@ -109,7 +109,7 @@
 	<Target Name="XamlC" AfterTargets="AfterCompile" Inputs="$(IntermediateOutputPath)$(TargetFileName)" Outputs="$(IntermediateOutputPath)XamlC.stamp" Condition=" '$(DesignTimeBuild)' != 'True'">
     <PropertyGroup>
       <ValidateOnlyValue>$(XFXamlCValidateOnly)</ValidateOnlyValue>
-      <ValidateOnlyValue Condition="'$(BuildingForLiveUnitTesting)' != 'True' ">True</ValidateOnlyValue>
+      <ValidateOnlyValue Condition="'$(BuildingForLiveUnitTesting)' == 'True' ">True</ValidateOnlyValue>
     </PropertyGroup>
 		<XamlCTask
 			Assembly = "$(IntermediateOutputPath)$(TargetFileName)"
