@@ -9,6 +9,7 @@ using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
@@ -19,6 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 #if UITEST
 		[Test]
+		[NUnit.Framework.Category(UITestCategories.ManualReview)]
 		public void Issue3798Test()
 		{
 			RunningApp.WaitForElement("listViewSeparatorColor");
