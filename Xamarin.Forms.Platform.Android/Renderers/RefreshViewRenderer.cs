@@ -9,6 +9,7 @@ using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
+using AWebView = Android.Webkit.WebView;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -52,10 +53,7 @@ namespace Xamarin.Forms.Platform.Android
 				_refreshing = value;
 
 				if (RefreshView != null && RefreshView.IsRefreshing != _refreshing)
-					RefreshView.IsRefreshing = _refreshing;
-
-				if (base.Refreshing == _refreshing)
-					return;
+					RefreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, _refreshing);
 
 				base.Refreshing = _refreshing;
 			}
@@ -173,23 +171,20 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if(view is RecyclerView recyclerView)
-				return recyclerView.ScrollY < 0;
-
-			if (view is global::Android.Widget.ScrollView scrollview)
-				return scrollview.ScrollY < 0;
+				return recyclerView.ComputeVerticalScrollOffset() > 0;
 
 			if (view is NestedScrollView nestedScrollView)
-				return nestedScrollView.ScrollY < 0;
+				return nestedScrollView.ComputeVerticalScrollOffset() > 0;
+
+			if (view is AWebView webView)
+				return webView.ScrollY > 0;
 
 			return true;
 		}
 
 		public void OnRefresh()
 		{
-			if (RefreshView?.Command?.CanExecute(RefreshView?.CommandParameter) ?? false)
-			{
-				RefreshView.Command.Execute(RefreshView?.CommandParameter);
-			}
+			Refreshing = true;
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)

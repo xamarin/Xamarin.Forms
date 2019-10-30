@@ -2,14 +2,13 @@
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class StructuredItemsViewRenderer : ItemsViewRenderer
+	public class StructuredItemsViewRenderer<TItemsView, TViewController> : ItemsViewRenderer<TItemsView, TViewController>
+		where TItemsView : StructuredItemsView
+		where TViewController : StructuredItemsViewController<TItemsView>
 	{
-		StructuredItemsView StructuredItemsView => (StructuredItemsView)Element;
-		StructuredItemsViewController StructuredItemsViewController => (StructuredItemsViewController)ItemsViewController;
-
-		protected override ItemsViewController CreateController(ItemsView itemsView, ItemsViewLayout layout)
+		protected override TViewController CreateController(TItemsView itemsView, ItemsViewLayout layout)
 		{
-			return new StructuredItemsViewController(itemsView as StructuredItemsView, layout);
+			return new StructuredItemsViewController<TItemsView>(itemsView, layout) as TViewController;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -18,15 +17,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (changedProperty.IsOneOf(StructuredItemsView.HeaderProperty, StructuredItemsView.HeaderTemplateProperty))
 			{
-				StructuredItemsViewController.UpdateHeaderView();
+				UpdateHeaderView();
 			}
 			else if (changedProperty.IsOneOf(StructuredItemsView.FooterProperty, StructuredItemsView.FooterTemplateProperty))
 			{
-				StructuredItemsViewController.UpdateFooterView();
+				UpdateFooterView();
+			}
+			else if (changedProperty.Is(StructuredItemsView.ItemsLayoutProperty))
+			{
+				UpdateLayout();
 			}
 		}
 
-		protected override void SetUpNewElement(ItemsView newElement)
+		protected override void SetUpNewElement(TItemsView newElement)
 		{
 			base.SetUpNewElement(newElement);
 
@@ -35,27 +38,43 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			StructuredItemsViewController.UpdateFooterView();
-			StructuredItemsViewController.UpdateHeaderView();
+			Controller.UpdateFooterView();
+			Controller.UpdateHeaderView();
 		}
 
 		protected override ItemsViewLayout SelectLayout()
 		{
-			var itemSizingStrategy = StructuredItemsView.ItemSizingStrategy;
-			var layoutSpecification = StructuredItemsView.ItemsLayout;
+			var itemSizingStrategy = ItemsView.ItemSizingStrategy;
+			var itemsLayout = ItemsView.ItemsLayout;
 
-			if (layoutSpecification is GridItemsLayout gridItemsLayout)
+			if (itemsLayout is GridItemsLayout gridItemsLayout)
 			{
 				return new GridViewLayout(gridItemsLayout, itemSizingStrategy);
 			}
 
-			if (layoutSpecification is LinearItemsLayout listItemsLayout)
+			if (itemsLayout is LinearItemsLayout listItemsLayout)
 			{
 				return new ListViewLayout(listItemsLayout, itemSizingStrategy);
 			}
 
 			// Fall back to vertical list
 			return new ListViewLayout(new LinearItemsLayout(ItemsLayoutOrientation.Vertical), itemSizingStrategy);
+		}
+
+		protected virtual void UpdateHeaderView()
+		{
+			Controller.UpdateHeaderView();
+		}
+
+		protected virtual void UpdateFooterView()
+		{
+			Controller.UpdateFooterView();
+		}
+
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+			Controller.UpdateLayoutMeasurements();
 		}
 	}
 }

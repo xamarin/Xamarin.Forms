@@ -17,6 +17,7 @@ using LP = Android.Views.ViewGroup.LayoutParams;
 using R = Android.Resource;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
+using ATextView = global::Android.Widget.TextView;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -127,8 +128,6 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					_shellContext.Shell.FlyoutIsPresented = !_shellContext.Shell.FlyoutIsPresented;
 			}
-
-			v.Dispose();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -136,11 +135,16 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed)
 				return;
 
+			_disposed = true;
+
 			if (disposing)
 			{
+				if (_backButtonBehavior != null)
+					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+				((IShellController)_shellContext?.Shell)?.RemoveFlyoutBehaviorObserver(this);
+
 				UpdateTitleView(_shellContext.AndroidContext, _toolbar, null);
 
-				_drawerToggle?.Dispose();
 				if (_searchView != null)
 				{
 					_searchView.View.RemoveFromParent();
@@ -148,11 +152,8 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView.SearchConfirmed -= OnSearchConfirmed;
 					_searchView.Dispose();
 				}
-
-				((IShellController)_shellContext.Shell).RemoveFlyoutBehaviorObserver(this);
-
-				if (_backButtonBehavior != null)
-					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+        
+				_drawerToggle?.Dispose();
 			}
 
 			_backButtonBehavior = null;
@@ -163,7 +164,6 @@ namespace Xamarin.Forms.Platform.Android
 			Page = null;
 			_toolbar = null;
 			_drawerLayout = null;
-			_disposed = true;
 			base.Dispose(disposing);
 		}
 
@@ -326,9 +326,7 @@ namespace Xamarin.Forms.Platform.Android
 			if(icon == null)
 			{
 				icon = new DrawerArrowDrawable(context.GetThemedContext());
-
-				ADrawableCompat.SetTint(icon, tintColor.ToAndroid());
-				ADrawableCompat.SetTintMode(icon, PorterDuff.Mode.SrcAtop);
+				icon.SetColorFilter(tintColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
 			}
 
 			icon.Progress = (CanNavigateBack) ? 1 : 0;
@@ -460,11 +458,24 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var menuitem = menu.Add(title);
 					UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
+
 					menuitem.SetTitleOrContentDescription(item);
 					menuitem.SetEnabled(item.IsEnabled);
-					menuitem.SetShowAsAction(ShowAsAction.Always);
+
+					if (item.Order != ToolbarItemOrder.Secondary)
+						menuitem.SetShowAsAction(ShowAsAction.Always);
+
 					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
+					
+					if(TintColor != Color.Default)
+					{
+						var view = toolbar.FindViewById(menuitem.ItemId);
+						if (view is ATextView  textView)
+							textView.SetTextColor(TintColor.ToAndroid());
+					}
+
 					menuitem.Dispose();
+
 				}
 			}
 

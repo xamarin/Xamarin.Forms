@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
@@ -204,7 +206,11 @@ namespace Xamarin.Forms
 		void IShellController.AddFlyoutBehaviorObserver(IFlyoutBehaviorObserver observer)
 		{
 			_flyoutBehaviorObservers.Add(observer);
-			observer.OnFlyoutBehaviorChanged(GetEffectiveFlyoutBehavior());
+
+			// We need to wait until the visible page has been created before we try to calculate
+			// the flyout behavior
+			if(GetVisiblePage() != null)
+				observer.OnFlyoutBehaviorChanged(GetEffectiveFlyoutBehavior());
 		}
 
 		void IShellController.AppearanceChanged(Element source, bool appearanceSet)
@@ -551,11 +557,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FlyoutHeaderProperty =
 			BindableProperty.Create(nameof(FlyoutHeader), typeof(object), typeof(Shell), null, BindingMode.OneTime,
-				propertyChanged: OnFlyoutHeaderChanged);
+				propertyChanging: OnFlyoutHeaderChanging);
 
 		public static readonly BindableProperty FlyoutHeaderTemplateProperty =
 			BindableProperty.Create(nameof(FlyoutHeaderTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime,
-				propertyChanged: OnFlyoutHeaderTemplateChanged);
+				propertyChanging: OnFlyoutHeaderTemplateChanging);
 
 		public static readonly BindableProperty FlyoutIsPresentedProperty =
 			BindableProperty.Create(nameof(FlyoutIsPresented), typeof(bool), typeof(Shell), false, BindingMode.TwoWay);
@@ -564,6 +570,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FlyoutIconProperty =
 			BindableProperty.Create(nameof(FlyoutIcon), typeof(ImageSource), typeof(Shell), null);
+
+		public static readonly BindableProperty FlyoutVerticalScrollModeProperty =
+			BindableProperty.Create(nameof(FlyoutVerticalScrollMode), typeof(ScrollMode), typeof(Shell), ScrollMode.Auto);
 
 		ShellNavigatedEventArgs _accumulatedEvent;
 		bool _accumulateNavigatedEvents;
@@ -574,6 +583,12 @@ namespace Xamarin.Forms
 			Navigation = new NavigationImpl(this);
 			((INotifyCollectionChanged)Items).CollectionChanged += (s, e) => SendStructureChanged();
 			Route = Routing.GenerateImplicitRoute("shell");
+		}
+
+		public ScrollMode FlyoutVerticalScrollMode
+		{
+			get => (ScrollMode)GetValue(FlyoutVerticalScrollModeProperty);
+			set => SetValue(FlyoutVerticalScrollModeProperty, value);
 		}
 
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
@@ -783,7 +798,7 @@ namespace Xamarin.Forms
 		{
 			base.OnChildAdded(child);
 
-			if (child is ShellItem shellItem && CurrentItem == null && !(child is MenuShellItem))
+			if (child is ShellItem shellItem && CurrentItem == null && ValidDefaultShellItem(child))
 			{
 				((IShellController)this).OnFlyoutItemSelected(shellItem);
 			}
@@ -793,11 +808,21 @@ namespace Xamarin.Forms
 		{
 			base.OnChildRemoved(child);
 
-			if (child == CurrentItem && Items.Count > 0)
+			if (child == CurrentItem)
 			{
-				((IShellController)this).OnFlyoutItemSelected(Items[0]);
+				for (var i = 0; i < Items.Count; i++)
+				{
+					var item = Items[i];
+					if (ValidDefaultShellItem(item))
+					{
+						((IShellController)this).OnFlyoutItemSelected(item);
+						break;
+					}
+				}
 			}
 		}
+
+		bool ValidDefaultShellItem(Element child) => !(child is MenuShellItem);
 
 		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
 		{
@@ -909,13 +934,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		static void OnFlyoutHeaderChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnFlyoutHeaderChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shell = (Shell)bindable;
 			shell.OnFlyoutHeaderChanged(oldValue, newValue);
 		}
 
-		static void OnFlyoutHeaderTemplateChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnFlyoutHeaderTemplateChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shell = (Shell)bindable;
 			shell.OnFlyoutHeaderTemplateChanged((DataTemplate)oldValue, (DataTemplate)newValue);
@@ -1017,7 +1042,7 @@ namespace Xamarin.Forms
 
 		void NotifyFlyoutBehaviorObservers()
 		{
-			if (CurrentItem == null)
+			if (CurrentItem == null || GetVisiblePage() == null)
 				return;
 
 			var behavior = GetEffectiveFlyoutBehavior();
@@ -1100,15 +1125,25 @@ namespace Xamarin.Forms
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
 		}
 
+
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void VerifyShellUWPFlagEnabled(
+			string constructorHint = null,
+			[CallerMemberName] string memberName = "")
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(Shell), ExperimentalFlags.ShellUWPExperimental);
+		}
+
 		class NavigationImpl : NavigationProxy
 		{
 			readonly Shell _shell;
 
-			NavigationProxy SectionProxy => _shell.CurrentItem.CurrentItem.NavigationProxy;
+			NavigationProxy SectionProxy => _shell.CurrentItem?.CurrentItem?.NavigationProxy;
 
 			public NavigationImpl(Shell shell) => _shell = shell;
 
-			protected override IReadOnlyList<Page> GetNavigationStack() => SectionProxy.NavigationStack;
+			protected override IReadOnlyList<Page> GetNavigationStack() => SectionProxy?.NavigationStack;
 
 			protected override void OnInsertPageBefore(Page page, Page before) => SectionProxy.InsertPageBefore(page, before);
 

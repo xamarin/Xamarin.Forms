@@ -7,16 +7,17 @@ namespace Xamarin.Forms.Core.UITests
 	[Category(UITestCategories.CarouselView)]
 	internal class CarouselViewUITests : BaseTestFixture
 	{
-		string _enableCollectionView = "Enable CollectionView";
+		string _enableControl = "Enable CarouselView";
 		string _carouselViewGalleries = "CarouselView Galleries";
 
 		protected override void NavigateToGallery()
 		{
 			App.NavigateToGallery(GalleryQueries.CollectionViewGallery);
 
-			App.WaitForElement(_enableCollectionView);
-			App.Tap(_enableCollectionView);
+			App.WaitForElement(_carouselViewGalleries);
 			App.Tap(_carouselViewGalleries);
+			App.WaitForElement(_enableControl);
+			App.Tap(_enableControl);
 		}
 
 		[TestCase("CarouselView (Code, Horizontal)")]
@@ -37,11 +38,8 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Tap("Item: 1");
 
-#if __ANDROID__
-			Assert.AreEqual(App.Query(c => c.Class("AlertDialogLayout")).Count(), 1, "Alert not shown");
-#elif __iOS__
-			App.Query(c => c.ClassFull("_UIAlertControllerView"));
-#endif
+			App.WaitForElement("Button works");
+
 			App.Tap(c => c.Marked("Ok"));
 
 			App.Tap("SwipeSwitch");
@@ -55,26 +53,30 @@ namespace Xamarin.Forms.Core.UITests
 			App.Back();
 		}
 
+#if __IOS__
 		[TestCase("CarouselView (Code, Vertical)")]
+#endif
 		public void CarouselViewVertical(string subgallery)
 		{
 			VisitSubGallery(subgallery);
 			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
-			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterY, rect.Y + rect.Height - 1);
+
+			var centerX = rect.CenterX;
+			var centerY = rect.CenterY;
+			var bottomY = rect.Y + rect.Height - 1;
+
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterX, bottomY);
 
 			App.WaitForElement("pos:0", "Did not scroll to first position");
 
-			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterY, rect.Y - 1);
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterX, rect.Y - 1);
 
 			App.WaitForElement("pos:1", "Did not scroll to second position");
 
 			App.Tap("Item: 1");
 
-#if __ANDROID__
-			Assert.AreEqual(App.Query(c => c.Class("AlertDialogLayout")).Count(), 1, "Alert not shown");
-#elif __iOS__
-			App.Query(c => c.ClassFull("_UIAlertControllerView"));
-#endif
+			App.WaitForElement("Button works");
+
 			App.Tap(c => c.Marked("Ok"));
 
 			App.Tap("SwipeSwitch");
