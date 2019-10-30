@@ -1,4 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.GalleryPages
@@ -9,11 +15,6 @@ namespace Xamarin.Forms.Controls.GalleryPages
 		public CharacterSpacingGallery()
 		{
 			InitializeComponent();
-		}
-
-		void ResetButtonClicked(object sender, EventArgs e)
-		{
-			slider.Value = 0;
 		}
 
 		void Slider_OnValueChanged(object sender, ValueChangedEventArgs e)
@@ -31,6 +32,11 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			PlaceholderSearchBar.CharacterSpacing = e.NewValue;
 			TimePicker.CharacterSpacing = e.NewValue;
 			Span.CharacterSpacing = e.NewValue;
+		}
+
+		void ResetButtonClicked(object sender, EventArgs e)
+		{
+			slider.Value = 0;
 		}
 	}
 }
