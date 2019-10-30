@@ -157,8 +157,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarColor()
 		{
-			Page page = Element;
-			(Context.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(page.StatusBarColor.ToAndroid());
+			(Context.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(Element.StatusBarColor.ToAndroid());
+
+
 		}
 
 		void IOrderedTraversalController.UpdateTraversalOrder()
