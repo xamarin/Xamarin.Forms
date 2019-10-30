@@ -15,24 +15,20 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7027, "[Bug] Tabbing through entries crashes when inside tableview",
 		PlatformAffected.iOS)]
-	public class Issue7027 : TestTabbedPage
+	public class Issue7027 : TestContentPage
 	{
 		const string Entry1 = "Entry1";
 		const string Entry2 = "Entry2";
 		const string Entry3 = "Entry3";
 		const string Entry4 = "Entry4";
 
-		protected override void Init()
+		public Issue7027()
 		{
-#if APP
-			Children.Add(TableViewPage());
-#endif
+			Title = "Issue 7027";
 		}
 
-		ContentPage TableViewPage()
+		protected override void Init()
 		{
-			var page = new ContentPage() { Title = "7027 TableViewPage", Padding = 40 };
-
 			TableView tableView = new TableView();
 
 			var section1 = new TableSection("Section One")
@@ -62,9 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var layout = new StackLayout { Children = { tableView } };
 
-			page.Content = layout;
-
-			return page;
+			Content = layout;
 		}
 
 //#if UITEST
@@ -75,6 +69,7 @@ namespace Xamarin.Forms.Controls.Issues
 //			RunningApp.Tap(Entry1);
 //			RunningApp.EnterText("First entry");
 //			RunningApp.DismissKeyboard();
+//			RunningApp.PressEnter();
 //		}
 //#endif
 	}
