@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.GalleryPages
@@ -12,10 +6,14 @@ namespace Xamarin.Forms.Controls.GalleryPages
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class CharacterSpacingGallery : ContentPage
 	{
-		Random rnd = new Random();
 		public CharacterSpacingGallery()
 		{
 			InitializeComponent();
+		}
+
+		void ResetButtonClicked(object sender, EventArgs e)
+		{
+			slider.Value = 0;
 		}
 
 		void Slider_OnValueChanged(object sender, ValueChangedEventArgs e)
@@ -33,16 +31,6 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			PlaceholderSearchBar.CharacterSpacing = e.NewValue;
 			TimePicker.CharacterSpacing = e.NewValue;
 			Span.CharacterSpacing = e.NewValue;
-
-			
-			Color randomColor = Color.FromRgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-			StatusBarColor = randomColor;
-			
-		}
-
-		void ResetButtonClicked(object sender, EventArgs e)
-		{
-			slider.Value = 0;
 		}
 	}
 }

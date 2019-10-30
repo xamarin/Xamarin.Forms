@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.StatusBarGallery">
+    <StackLayout>
+        <Label Text="Slide to change color"/>
+
+        <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Red" ThumbColor="Red"
+                MinimumTrackColor="Red"  Margin="20,0" x:Name="RedSlider"/>
+
+        <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Green" ThumbColor="Green"
+                MinimumTrackColor="Green"  Margin="20,0" x:Name="GreenSlider"/>
+
+        <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Blue" ThumbColor="Blue"
+                MinimumTrackColor="Blue"  Margin="20,0" x:Name="BlueSlider"/>
+
+
+    </StackLayout>
+</ContentPage>

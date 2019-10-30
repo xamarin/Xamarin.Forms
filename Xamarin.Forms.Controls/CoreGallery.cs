@@ -350,6 +350,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new SliderCoreGalleryPage(), "Slider Gallery"),
 				new GalleryPageFactory(() => new StepperCoreGalleryPage(), "Stepper Gallery"),
 				new GalleryPageFactory(() => new SwitchCoreGalleryPage(), "Switch Gallery"),
+				new GalleryPageFactory(() => new StatusBarGallery(), "Page StatusBar Gallery"),
 				new GalleryPageFactory(() => new TableViewCoreGalleryPage(), "TableView Gallery"),
 				new GalleryPageFactory(() => new TimePickerCoreGalleryPage(), "TimePicker Gallery"),
 				new GalleryPageFactory(() => new VisualGallery(), "Visual Gallery"),
@@ -357,7 +358,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new WkWebViewCoreGalleryPage(), "WkWebView Gallery"),
 				new GalleryPageFactory(() => new DynamicViewGallery(), "Dynamic ViewGallery"),
 				//pages
- 				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
+				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
 				new GalleryPageFactory(() => new MasterDetailPageTabletPage(), "MasterDetailPage Tablet Page"),
 				// legacy galleries
 				new GalleryPageFactory(() => new AbsoluteLayoutGallery(), "AbsoluteLayout Gallery - Legacy"),
