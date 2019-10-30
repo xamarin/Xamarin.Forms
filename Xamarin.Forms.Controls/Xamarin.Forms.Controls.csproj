@@ -86,7 +86,10 @@
     <EmbeddedResource Update="GalleryPages\MapWithItemsSourceGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="GalleryPages\StatusBarGallery.xaml">
+    <EmbeddedResource Update="GalleryPages\RefreshViewGalleries\RefreshCarouselViewGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\RefreshViewGalleries\RefreshWebViewGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\TitleView.xaml">

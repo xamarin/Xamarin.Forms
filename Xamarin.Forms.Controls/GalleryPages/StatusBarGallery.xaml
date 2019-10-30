@@ -9,13 +9,13 @@
         <Label Text="Slide to change color"/>
 
         <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Red" ThumbColor="Red"
-                MinimumTrackColor="Red"  Margin="20,0" x:Name="RedSlider"/>
+                MinimumTrackColor="Red"  Margin="20,10" x:Name="RedSlider"/>
 
         <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Green" ThumbColor="Green"
-                MinimumTrackColor="Green"  Margin="20,0" x:Name="GreenSlider"/>
+                MinimumTrackColor="Green"  Margin="20,10" x:Name="GreenSlider"/>
 
         <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Blue" ThumbColor="Blue"
-                MinimumTrackColor="Blue"  Margin="20,0" x:Name="BlueSlider"/>
+                MinimumTrackColor="Blue"  Margin="20,10" x:Name="BlueSlider"/>
 
 
     </StackLayout>
