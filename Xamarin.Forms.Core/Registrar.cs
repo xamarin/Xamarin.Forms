@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Internals
 			return (TRegistrable)handler;
 		}
 
-		internal TRegistrable GetHandler(Type type, object source, IVisual visual, params object[] args)
+		internal TRegistrable GetHandler(Type type, object source, IVisual visual, params TypedParameter[] args)
 		{
 			if (args.Length == 0)
 			{
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Internals
 			return GetHandler(type) as TOut;
 		}
 
-		public TOut GetHandler<TOut>(Type type, params object[] args) where TOut : class, TRegistrable
+		public TOut GetHandler<TOut>(Type type, params TypedParameter[] args) where TOut : class, TRegistrable
 		{
 			return GetHandler(type, null, null, args) as TOut;
 		}
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Internals
 			return GetHandler(type, (obj as IVisualController)?.EffectiveVisual?.GetType()) as TOut;
 		}
 
-		public TOut GetHandlerForObject<TOut>(object obj, params object[] args) where TOut : class, TRegistrable
+		public TOut GetHandlerForObject<TOut>(object obj, params TypedParameter[] args) where TOut : class, TRegistrable
 		{
 			if (obj == null)
 				throw new ArgumentNullException(nameof(obj));

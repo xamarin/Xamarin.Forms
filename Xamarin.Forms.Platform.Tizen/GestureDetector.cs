@@ -476,7 +476,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		GestureHandler CreateHandler(IGestureRecognizer recognizer)
 		{
-			return Registrar.Registered.GetHandlerForObject<GestureHandler>(recognizer, recognizer);
+			return Registrar.Registered.GetHandlerForObject<GestureHandler>(recognizer, new TypedParameter(typeof(IGestureRecognizer), recognizer));
 		}
 
 		GestureHandler LookupHandler(IGestureRecognizer recognizer)
