@@ -154,7 +154,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			Forms.Create()
 				 //.WithFlags("CollectionView_Experimental", "Shell_Experimental")
 				.WithMaps()
-				.WithMaterial()
+				.WithVisualMaterial()
 				.Init();
 
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>

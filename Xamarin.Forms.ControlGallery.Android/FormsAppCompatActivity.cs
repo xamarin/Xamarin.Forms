@@ -52,7 +52,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 				.WithFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental" */)
 #endif
 				.WithMaps(this, bundle)
-				.WithMaterial()
+				.WithVisualMaterial()
 				.WithAppLinks(this)
 				.Init();
 
