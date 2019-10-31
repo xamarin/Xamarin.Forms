@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static ViewExtensions()
 		{
-			s_apiLevel = (int)Build.VERSION.SdkInt;
+			s_apiLevel = (int)Forms.SdkInt;
 		}
 
 		public static void RemoveFromParent(this AView view)
@@ -116,8 +116,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal static T GetParentOfType<T>(this IViewParent view)
 			where T : class
 		{
-			T t = view as T;
-			if (view != null)
+			if (view is T t)
 				return t;
 
 			while (view != null)

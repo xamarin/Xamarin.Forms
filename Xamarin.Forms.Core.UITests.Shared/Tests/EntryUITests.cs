@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests
@@ -36,7 +37,11 @@ namespace Xamarin.Forms.Core.UITests
 
 		bool IsFocused()
 		{
-			var focusedText = App.Query(q => q.Marked("FocusStateLabel").All())[0].ReadText();
+			var focusedText = App.QueryUntilPresent(() =>
+			{
+				return App.Query(q => q.Marked("FocusStateLabel").All());
+			})[0].ReadText();
+
 			return System.Convert.ToBoolean(focusedText);
 		}
 
@@ -72,6 +77,18 @@ namespace Xamarin.Forms.Core.UITests
 
 			var eventLabelText = remote.GetEventLabel().Text;
 			Assert.AreEqual(eventLabelText, "Event: Completed (fired 1)");
+		}
+
+		[Test]
+		[UiTest(typeof(Entry), "ClearButtonVisibility")]
+		[Category(UITestCategories.ManualReview)]
+		public void ClearButtonVisibility()
+		{
+			var remote = new StateViewContainerRemote(App, Test.Entry.ClearButtonVisibility, PlatformViewType);
+			remote.GoTo();
+
+			App.WaitForElement(q => q.Marked("Toggle ClearButtonVisibility"));
+			App.Tap(q => q.Marked("Toggle ClearButtonVisibility"));
 		}
 
 		protected override void FixtureTeardown()

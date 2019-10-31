@@ -43,7 +43,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public EmptyViewAdapter(ItemsView itemsView)
 		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(EmptyViewAdapter));
 			ItemsView = itemsView;
 		}
 
@@ -101,7 +100,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var itemContentView = new SizedItemContentView(parent.Context, () => parent.Width, () => parent.Height);
-			return new TemplatedItemViewHolder(itemContentView, template);
+			return new TemplatedItemViewHolder(itemContentView, template, isSelectionEnabled: false);
 		}
 
 		public override int GetItemViewType(int position)

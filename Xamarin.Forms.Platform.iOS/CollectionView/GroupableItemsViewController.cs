@@ -5,26 +5,32 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class GroupableItemsViewController : SelectableItemsViewController
+	public class GroupableItemsViewController<TItemsView> : SelectableItemsViewController<TItemsView>
+		where TItemsView : GroupableItemsView
 	{
-		GroupableItemsView GroupableItemsView => (GroupableItemsView)ItemsView;
-
 		// Keep a cached value for the current state of grouping around so we can avoid hitting the 
 		// BindableProperty all the time 
 		bool _isGrouped;
 
-		public GroupableItemsViewController(GroupableItemsView groupableItemsView, ItemsViewLayout layout) 
+		Action _scrollAnimationEndedCallback;
+
+		public GroupableItemsViewController(TItemsView groupableItemsView, ItemsViewLayout layout) 
 			: base(groupableItemsView, layout)
 		{
-			_isGrouped = GroupableItemsView.IsGrouped;
+			_isGrouped = ItemsView.IsGrouped;
+		}
+
+		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
+		{
+			return new GroupableItemsViewDelegator<TItemsView, GroupableItemsViewController<TItemsView>>(ItemsViewLayout, this);
 		}
 
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
 			// Use the BindableProperty here (instead of _isGroupingEnabled) because the cached value might not be set yet
-			if (GroupableItemsView.IsGrouped) 
+			if (ItemsView.IsGrouped) 
 			{
-				return ItemsSourceFactory.CreateGrouped(GroupableItemsView.ItemsSource, CollectionView);
+				return ItemsSourceFactory.CreateGrouped(ItemsView.ItemsSource, this);
 			}
 
 			return base.CreateItemsViewSource();
@@ -32,7 +38,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void UpdateItemsSource()
 		{
-			_isGrouped = GroupableItemsView.IsGrouped;
+			_isGrouped = ItemsView.IsGrouped;
 			base.UpdateItemsSource();
 		}
 
@@ -44,12 +50,12 @@ namespace Xamarin.Forms.Platform.iOS
 			RegisterSupplementaryViews(UICollectionElementKindSection.Footer);
 		}
 
-		private void RegisterSupplementaryViews(UICollectionElementKindSection kind)
+		void RegisterSupplementaryViews(UICollectionElementKindSection kind)
 		{
-			CollectionView.RegisterClassForSupplementaryView(typeof(HorizontalTemplatedSupplementalView),
-				kind, HorizontalTemplatedSupplementalView.ReuseId);
-			CollectionView.RegisterClassForSupplementaryView(typeof(VerticalTemplatedSupplementalView),
-				kind, VerticalTemplatedSupplementalView.ReuseId);
+			CollectionView.RegisterClassForSupplementaryView(typeof(HorizontalSupplementaryView),
+				kind, HorizontalSupplementaryView.ReuseId);
+			CollectionView.RegisterClassForSupplementaryView(typeof(VerticalSupplementaryView),
+				kind, VerticalSupplementaryView.ReuseId);
 			CollectionView.RegisterClassForSupplementaryView(typeof(HorizontalDefaultSupplementalView),
 				kind, HorizontalDefaultSupplementalView.ReuseId);
 			CollectionView.RegisterClassForSupplementaryView(typeof(VerticalDefaultSupplementalView),
@@ -80,7 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			cell.Label.Text = ItemsSource.Group(indexPath).ToString();
 
-			if (cell is ItemsViewCell constrainedCell)
+			if (cell is ItemsViewCell)
 			{
 				cell.ConstrainTo(ItemsViewLayout.ConstrainedDimension);
 			}
@@ -88,42 +94,28 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateTemplatedSupplementaryView(TemplatedCell cell, NSString elementKind, NSIndexPath indexPath)
 		{
-			ApplyTemplateAndDataContext(cell, elementKind, indexPath);
+			DataTemplate template = elementKind == UICollectionElementKindSectionKey.Header
+				? ItemsView.GroupHeaderTemplate
+				: ItemsView.GroupFooterTemplate;
 
-			if (cell is ItemsViewCell constrainedCell)
+			var bindingContext = ItemsSource.Group(indexPath);
+
+			cell.Bind(template, bindingContext, ItemsView);
+
+			if (cell is ItemsViewCell)
 			{
 				cell.ConstrainTo(ItemsViewLayout.ConstrainedDimension);
 			}
-		}
-
-		void ApplyTemplateAndDataContext(TemplatedCell cell, NSString elementKind, NSIndexPath indexPath)
-		{
-			DataTemplate template;
-
-			if (elementKind == UICollectionElementKindSectionKey.Header)
-			{
-				template = GroupableItemsView.GroupHeaderTemplate;
-			}
-			else
-			{
-				template = GroupableItemsView.GroupFooterTemplate;
-			}
-
-			var templateElement = template.CreateContent() as View;
-			var renderer = CreateRenderer(templateElement);
-
-			BindableObject.SetInheritedBindingContext(renderer.Element, ItemsSource.Group(indexPath));
-			cell.SetRenderer(renderer);
 		}
 
 		string DetermineViewReuseId(NSString elementKind)
 		{
 			if (elementKind == UICollectionElementKindSectionKey.Header)
 			{
-				return DetermineViewReuseId(GroupableItemsView.GroupHeaderTemplate);
+				return DetermineViewReuseId(ItemsView.GroupHeaderTemplate);
 			}
 
-			return DetermineViewReuseId(GroupableItemsView.GroupFooterTemplate);
+			return DetermineViewReuseId(ItemsView.GroupFooterTemplate);
 		}
 
 		string DetermineViewReuseId(DataTemplate template)
@@ -137,8 +129,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
-				? HorizontalTemplatedSupplementalView.ReuseId
-				: VerticalTemplatedSupplementalView.ReuseId;
+				? HorizontalSupplementaryView.ReuseId
+				: VerticalSupplementaryView.ReuseId;
 		}
 
 		internal CGSize GetReferenceSizeForHeader(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
@@ -169,6 +161,17 @@ namespace Xamarin.Forms.Platform.iOS
 				NSIndexPath.FromItemSection(0, section)) as ItemsViewCell;
 
 			return cell.Measure();
+		}
+
+		internal void SetScrollAnimationEndedCallback(Action callback)
+		{
+			_scrollAnimationEndedCallback = callback;
+		}
+
+		internal void HandleScrollAnimationEnded()
+		{
+			_scrollAnimationEndedCallback?.Invoke();
+			_scrollAnimationEndedCallback = null;
 		}
 	}
 }
