@@ -121,6 +121,7 @@ namespace Xamarin.Forms.Platform.Android
 				var lineStart = layout.GetLineStart(thisLine);
 				var lineEnd = layout.GetLineEnd(thisLine);
 
+
 				//If true, means the line is not in the range specified by textView.LineCount or MaxLines in Xamarin.
 				if (endSpanOffset > (lineEnd - lineStart))
 					continue;
