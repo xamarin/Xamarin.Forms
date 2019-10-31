@@ -112,14 +112,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void HorizontalGridWithoutSpanShouldShouldThrowFormatException()
 		{
 			var converter = new ItemsLayoutTypeConverter();
-			Assert.Throws<FormatException>(() => converter.ConvertFromInvariantString("HorizontalGrid,"));
+			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("HorizontalGrid,"));
 		}
 
 		[Test]
 		public void VerticalGridWithoutSpanShouldShouldThrowFormatException()
 		{
 			var converter = new ItemsLayoutTypeConverter();
-			Assert.Throws<FormatException>(() => converter.ConvertFromInvariantString("VerticalGrid,"));
+			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("VerticalGrid,"));
 		}
 
 		[Test]
