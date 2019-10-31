@@ -51,7 +51,8 @@ namespace Xamarin.Forms.Markup
 		{
 			BindableProperty defaultProperty;
 			var elementType = element.GetType();
-			string elementTypeName;
+            string forElementTypeName = elementType.FullName;
+            string elementTypeName;
 
 			do
 			{
@@ -60,7 +61,7 @@ namespace Xamarin.Forms.Markup
 					break;
 				if (elementTypeName.StartsWith("Xamarin.Forms.", StringComparison.Ordinal))
 					throw new NotImplementedException(
-						"No default bindable property is defined for element type." + elementTypeName +
+						"No default bindable property is defined for element type " + forElementTypeName +
 						"\r\nEither specify a property when calling Bind() or register a default bindable property for this element type");
 
 				elementType = elementType.GetTypeInfo().BaseType;

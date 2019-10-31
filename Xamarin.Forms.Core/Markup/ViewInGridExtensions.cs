@@ -37,20 +37,6 @@ namespace Xamarin.Forms.Markup
 			return view;
 		}
 
-		public static TView RowCol<TView>(this TView view, int row, int col, int rowSpan = 1, int colSpan = 1)
-			where TView : View
-		{
-			if (row != 0)
-				view.SetValue(Grid.RowProperty, row);
-			if (col != 0)
-				view.SetValue(Grid.ColumnProperty, col);
-			if (rowSpan != 1)
-				view.SetValue(Grid.RowSpanProperty, rowSpan);
-			if (colSpan != 1)
-				view.SetValue(Grid.ColumnSpanProperty, colSpan);
-			return view;
-		}
-
 		public static TView Row<TView, TRow>(this TView view, TRow row) where TView : View where TRow : Enum
 		{
 			int rowIndex = row.ToInt();
@@ -87,41 +73,6 @@ namespace Xamarin.Forms.Markup
 			int span = last.ToInt() + 1 - colIndex;
 			if (span != 1)
 				view.SetValue(Grid.ColumnSpanProperty, span);
-
-			return view;
-		}
-
-		public static TView RowCol<TView, TRow, TCol>(
-			this TView view,
-			TRow? firstRow = null,
-			TCol? firstCol = null,
-			TRow? lastRow = null,
-			TCol? lastCol = null
-		) where TView : View where TRow : struct, Enum where TCol : struct, Enum
-		{
-			int firstRowIndex = firstRow.ToInt();
-			if (firstRowIndex != 0)
-				view.SetValue(Grid.RowProperty, firstRowIndex);
-
-			int firstColIndex = firstCol.ToInt();
-			if (firstColIndex != 0)
-				view.SetValue(Grid.ColumnProperty, firstColIndex);
-
-			if (lastRow != null)
-			{
-				int lastRowIndex = lastRow.ToInt();
-				int rowSpan = lastRowIndex + 1 - firstRowIndex;
-				if (rowSpan != 1)
-					view.SetValue(Grid.RowSpanProperty, rowSpan);
-			}
-
-			if (lastCol != null)
-			{
-				int lastColIndex = lastCol.ToInt();
-				int colSpan = lastColIndex + 1 - firstColIndex;
-				if (colSpan != 1)
-					view.SetValue(Grid.ColumnSpanProperty, colSpan);
-			}
 
 			return view;
 		}
