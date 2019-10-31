@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-
-namespace Xamarin.Forms.Markup
+﻿namespace Xamarin.Forms.Markup
 {
 	public static class PlatformSpecificsExtensions
 	{

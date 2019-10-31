@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
 
 namespace Xamarin.Forms.Markup
 {
 	public static class EnumsForGridRowsAndColumns
 	{
 		public static GridLength Auto => GridLength.Auto;
+
 		public static GridLength Star => GridLength.Star;
-		static int ToInt(this Enum enumValue) => Convert.ToInt32(enumValue, CultureInfo.InvariantCulture);
 
 		public static class Columns
 		{
@@ -61,5 +58,7 @@ namespace Xamarin.Forms.Markup
 			int last = (int)values.GetValue(values.Length - 1);
 			return last;
 		}
+
+		static int ToInt(this Enum enumValue) => Convert.ToInt32(enumValue, CultureInfo.InvariantCulture);
 	}
 }

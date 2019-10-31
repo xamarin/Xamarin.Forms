@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
 
 namespace Xamarin.Forms.Markup
 {
@@ -53,8 +50,6 @@ namespace Xamarin.Forms.Markup
 				view.SetValue(Grid.ColumnSpanProperty, colSpan);
 			return view;
 		}
-
-		#region Use enum for Row / Col for better readability + avoid manual renumbering
 
 		public static TView Row<TView, TRow>(this TView view, TRow row) where TView : View where TRow : Enum
 		{
@@ -132,7 +127,5 @@ namespace Xamarin.Forms.Markup
 		}
 
 		static int ToInt(this Enum enumValue) => Convert.ToInt32(enumValue, CultureInfo.InvariantCulture);
-
-		#endregion Use enum for Row / Col for better readability + avoid manual renumbering
 	}
 }

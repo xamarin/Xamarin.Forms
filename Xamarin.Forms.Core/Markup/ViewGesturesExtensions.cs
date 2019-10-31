@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Xamarin.Forms.Markup
 {
@@ -72,37 +69,6 @@ namespace Xamarin.Forms.Markup
 			return gestureElement;
 		}
 
-		static void Bind<TGestureRecognizer>(
-			IList<IGestureRecognizer> gestureRecognizers,
-			BindableProperty targetProperty,
-			string sourcePropertyName,
-			BindingMode mode,
-			IValueConverter converter,
-			object converterParameter,
-			string stringFormat,
-			object source
-		) where TGestureRecognizer : GestureRecognizer, new()
-		{
-			var gestureRecognizer = (TGestureRecognizer)gestureRecognizers.FirstOrDefault(r => r is TGestureRecognizer);
-			if (gestureRecognizer == null)
-				gestureRecognizers.Add(gestureRecognizer = new TGestureRecognizer());
-
-			if (targetProperty == null)
-				targetProperty = DefaultBindableProperties.GetFor(gestureRecognizer);
-
-			if (source != null || converterParameter != null)
-				gestureRecognizer.SetBinding(targetProperty, new Binding(
-					path: sourcePropertyName,
-					mode: mode,
-					converter: converter,
-					converterParameter: converterParameter,
-					stringFormat: stringFormat,
-					source: source
-				));
-			else
-				gestureRecognizer.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
-		}
-
 		public static TView BindTapGesture<TView>(
 			this TView view,
 			string sourcePropertyName = bindingContextPropertyName,
@@ -137,6 +103,37 @@ namespace Xamarin.Forms.Markup
 			BindTap(gestureElement.GestureRecognizers, sourcePropertyName, commandParameterPropertyName,
 				commandParameter, mode, converter, converterParameter, stringFormat, source, commandParameterSource);
 			return gestureElement;
+		}
+
+		static void Bind<TGestureRecognizer>(
+			IList<IGestureRecognizer> gestureRecognizers,
+			BindableProperty targetProperty,
+			string sourcePropertyName,
+			BindingMode mode,
+			IValueConverter converter,
+			object converterParameter,
+			string stringFormat,
+			object source
+		) where TGestureRecognizer : GestureRecognizer, new()
+		{
+			var gestureRecognizer = (TGestureRecognizer)gestureRecognizers.FirstOrDefault(r => r is TGestureRecognizer);
+			if (gestureRecognizer == null)
+				gestureRecognizers.Add(gestureRecognizer = new TGestureRecognizer());
+
+			if (targetProperty == null)
+				targetProperty = DefaultBindableProperties.GetFor(gestureRecognizer);
+
+			if (source != null || converterParameter != null)
+				gestureRecognizer.SetBinding(targetProperty, new Binding(
+					path: sourcePropertyName,
+					mode: mode,
+					converter: converter,
+					converterParameter: converterParameter,
+					stringFormat: stringFormat,
+					source: source
+				));
+			else
+				gestureRecognizer.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
 		}
 
 		static void BindTap(

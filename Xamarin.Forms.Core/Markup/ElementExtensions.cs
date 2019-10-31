@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
 
 namespace Xamarin.Forms.Markup
 {
@@ -10,8 +6,8 @@ namespace Xamarin.Forms.Markup
 	{
 		const string bindingContextPropertyName = ".";
 
-		public static TView Bind<TView>(
-			this TView view,
+		public static TElement Bind<TElement>(
+			this TElement element,
 			BindableProperty targetProperty,
 			string sourcePropertyName = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
@@ -19,10 +15,10 @@ namespace Xamarin.Forms.Markup
 			object converterParameter = null,
 			string stringFormat = null,
 			object source = null
-		) where TView : Element
+		) where TElement : Element
 		{
 			if (source != null || converterParameter != null)
-				view.SetBinding(targetProperty, new Binding(
+				element.SetBinding(targetProperty, new Binding(
 					path: sourcePropertyName,
 					mode: mode,
 					converter: converter,
@@ -31,12 +27,12 @@ namespace Xamarin.Forms.Markup
 					source: source
 				));
 			else
-				view.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
-			return view;
+				element.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
+			return element;
 		}
 
-		public static TView Bind<TView, TSource, TDest>(
-			this TView view,
+		public static TElement Bind<TElement, TSource, TDest>(
+			this TElement element,
 			BindableProperty targetProperty,
 			string sourcePropertyName = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
@@ -45,11 +41,11 @@ namespace Xamarin.Forms.Markup
 			object converterParameter = null,
 			string stringFormat = null,
 			object source = null
-		) where TView : Element
+		) where TElement : Element
 		{
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
 			if (source != null || converterParameter != null)
-				view.SetBinding(targetProperty, new Binding(
+				element.SetBinding(targetProperty, new Binding(
 					path: sourcePropertyName,
 					mode: mode,
 					converter: converter,
@@ -58,22 +54,22 @@ namespace Xamarin.Forms.Markup
 					source: source
 				));
 			else
-				view.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
-			return view;
+				element.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
+			return element;
 		}
 
-		public static TView Bind<TView>(
-			this TView view,
+		public static TElement Bind<TElement>(
+			this TElement element,
 			string sourcePropertyName = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
 			string stringFormat = null,
 			object source = null
-		) where TView : Element
+		) where TElement : Element
 		{
-			view.Bind(
-				targetProperty: DefaultBindableProperties.GetFor(view),
+			element.Bind(
+				targetProperty: DefaultBindableProperties.GetFor(element),
 				sourcePropertyName: sourcePropertyName,
 				mode: mode,
 				converter: converter,
@@ -81,11 +77,11 @@ namespace Xamarin.Forms.Markup
 				stringFormat: stringFormat,
 				source: source
 			);
-			return view;
+			return element;
 		}
 
-		public static TView Bind<TView, TSource, TDest>(
-			this TView view,
+		public static TElement Bind<TElement, TSource, TDest>(
+			this TElement element,
 			string sourcePropertyName = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			Func<TSource, TDest> convert = null,
@@ -93,11 +89,11 @@ namespace Xamarin.Forms.Markup
 			object converterParameter = null,
 			string stringFormat = null,
 			object source = null
-		) where TView : Element
+		) where TElement : Element
 		{
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
-			view.Bind(
-				targetProperty: DefaultBindableProperties.GetFor(view),
+			element.Bind(
+				targetProperty: DefaultBindableProperties.GetFor(element),
 				sourcePropertyName: sourcePropertyName,
 				mode: mode,
 				converter: converter,
@@ -105,20 +101,20 @@ namespace Xamarin.Forms.Markup
 				stringFormat: stringFormat,
 				source: source
 			);
-			return view;
+			return element;
 		}
 
-		public static TView Assign<TView, TAssignView>(this TView view, out TAssignView variable)
-			where TView : Element, TAssignView
+		public static TElement Assign<TElement, TVariable>(this TElement element, out TVariable variable)
+			where TElement : Element, TVariable
 		{
-			variable = view;
-			return view;
+			variable = element;
+			return element;
 		}
 
-		public static TView Invoke<TView>(this TView view, Action<TView> action) where TView : Element
+		public static TElement Invoke<TElement>(this TElement element, Action<TElement> action) where TElement : Element
 		{
-			action?.Invoke(view);
-			return view;
+			action?.Invoke(element);
+			return element;
 		}
 
 		public static TElement Effects<TElement>(this TElement element, params Effect[] effects) where TElement : Element
@@ -127,6 +123,5 @@ namespace Xamarin.Forms.Markup
 				element.Effects.Add(effects[i]);
 			return element;
 		}
-
 	}
 }

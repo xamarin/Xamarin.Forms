@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Reflection;
 
 namespace Xamarin.Forms.Markup
 {
 	public static class DefaultBindableProperties
 	{
-		static Dictionary<string, BindableProperty> viewTypeDefaultProperty = new Dictionary<string, BindableProperty>
-		{ // Key: full type name of view, Value: the default BindableProperty
+		static Dictionary<string, BindableProperty> elementTypeDefaultProperty = new Dictionary<string, BindableProperty>
+		{ // Key: full type name of element, Value: the default BindableProperty
 			{ "Xamarin.Forms.ActivityIndicator", ActivityIndicator.IsRunningProperty },
 			{ "Xamarin.Forms.BoxView", BoxView.ColorProperty },
 			{ "Xamarin.Forms.Button", Button.CommandProperty },
@@ -42,37 +40,36 @@ namespace Xamarin.Forms.Markup
 			{ "Xamarin.Forms.Span", Span.TextProperty }
 		};
 
-		// Note that we use Element type for the view variable in bind functions because we want to bind to 
-		// Cell types as well as View types
-		internal static BindableProperty GetFor(Element view)
+		public static void Register(params BindableProperty[] properties)
+		{
+			foreach (var property in properties)
+				elementTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
+		}
+
+		// We use Element because we want to bind to Cell types as well as View types
+		internal static BindableProperty GetFor(Element element)
 		{
 			BindableProperty defaultProperty;
-			var viewType = view.GetType();
-			string viewTypeName;
+			var elementType = element.GetType();
+			string elementTypeName;
 
 			do
 			{
-				viewTypeName = viewType.FullName;
-				if (viewTypeDefaultProperty.TryGetValue(viewTypeName, out defaultProperty))
+				elementTypeName = elementType.FullName;
+				if (elementTypeDefaultProperty.TryGetValue(elementTypeName, out defaultProperty))
 					break;
-				if (viewTypeName.StartsWith("Xamarin.Forms.", StringComparison.Ordinal))
+				if (elementTypeName.StartsWith("Xamarin.Forms.", StringComparison.Ordinal))
 					throw new NotImplementedException(
-						"No default bindable property is defined for view type." + viewTypeName +
-						"\r\nEither specify a property when calling Bind() or register a default bindable property for this view type");
+						"No default bindable property is defined for element type." + elementTypeName +
+						"\r\nEither specify a property when calling Bind() or register a default bindable property for this element type");
 
-				viewType = viewType.GetTypeInfo().BaseType;
+				elementType = elementType.GetTypeInfo().BaseType;
 
-				if (viewType == null)
+				if (elementType == null)
 					return null;
 			} while (true);
 
 			return defaultProperty;
-		}
-
-		public static void Register(params BindableProperty[] properties)
-		{
-			foreach (var property in properties)
-				viewTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
 		}
 	}
 }
