@@ -2,8 +2,6 @@
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Support.Design.Widget;
-using Android.Support.V4.Graphics.Drawable;
-using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using System;
