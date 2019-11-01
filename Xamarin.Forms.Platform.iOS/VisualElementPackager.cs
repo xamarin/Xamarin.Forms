@@ -143,12 +143,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			viewRenderer.Dispose();
 		}
 
-		void EnsureChildrenOrder()
+		void EnsureChildrenOrder(VisualElement element = null)
 		{
 			if (ElementController.LogicalChildren.Count == 0)
 				return;
 
-			for (var z = 0; z < ElementController.LogicalChildren.Count; z++)
+			var effectedChildIndex = 0;
+			if (element != null)
+				effectedChildIndex = ElementController.LogicalChildren.IndexOf(element);
+
+			for (var z = effectedChildIndex; z < ElementController.LogicalChildren.Count; z++)
 			{
 				var child = ElementController.LogicalChildren[z] as VisualElement;
 				if (child == null)
@@ -182,7 +186,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (view != null)
 			{
 				OnChildAdded(view);
-				OrderElement(view, ElementController.LogicalChildren.IndexOf(view));
+				EnsureChildrenOrder(view);
 			}
 		}
 

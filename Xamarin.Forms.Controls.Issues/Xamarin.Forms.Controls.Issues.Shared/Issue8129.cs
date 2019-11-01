@@ -12,17 +12,10 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[Category(UITestCategories.RefreshView)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 8129, "[Bug] Adding children to iOS VisualElementPackager has O(N^2) performance and thrashes the native layer", PlatformAffected.iOS)]
 	public class Issue8129 : TestContentPage
 	{
-		public Issue8129()
-		{
-		}
-
 		protected override void Init()
 		{
 			Title = "Page with too many elements (2000) Tests";
