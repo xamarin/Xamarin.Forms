@@ -484,7 +484,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					tabs.SetupWithViewPager(pager);
-					UpdateTabIcons();
+					UpdateTabIconsAndContentDescription();
 					tabs.AddOnTabSelectedListener(this);
 				}
 
@@ -664,7 +664,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Element.CurrentPage = Element.Children[0];
 		}
 
-		void UpdateTabIcons()
+		void UpdateTabIconsAndContentDescription()
 		{
 			if (IsDisposed)
 				return;
