@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 		private void OnToolbarClicked() =>
 			_toolbarItem.Text = $"{AfterClickToolbarItemText} {_clicks++}";
 
-#if UITEST
+#if UITEST && __ANDROID__
 		[Test]
 		public void ShellToolbarItemTests()
 		{
