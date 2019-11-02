@@ -27,6 +27,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var layout = new StackLayout();
 
+			var instructions = new Label { Text = "Open the Picker below. It should contain 3 items ('one', 'two', 'three'). Tap the button marked 'Change Picker Contents'. The Picker should now contain four items ('uno', 'dos', 'tres', 'quatro'). If it does not, the test has failed."};
+
 			var button = new Button { Text = "Change Picker Contents " };
 			
 			var originalList = new List<string> { "one", "two", "three" };
@@ -35,6 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var newList = new List<string> { "uno", "dos", "tres", "quatro" };
 			button.Clicked += (sender, args) => { picker.ItemsSource = newList; };
 
+			layout.Children.Add(instructions);
 			layout.Children.Add(button);
 			layout.Children.Add(picker);
 
