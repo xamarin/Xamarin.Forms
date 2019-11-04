@@ -511,7 +511,11 @@ namespace Xamarin.Forms.CustomAttributes
 			FontFamily,
 			FontSize,
 			MaxLength,
-			IsReadOnly
+			IsReadOnly,
+			CursorPositionSelectionLength,
+			CursorPositionSelectionLengthInit,
+			CursorPositionInvalid,
+			SelectionLengthInvalid
 		}
 
 		public enum Entry
