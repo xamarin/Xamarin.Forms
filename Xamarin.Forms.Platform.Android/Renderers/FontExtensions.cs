@@ -91,12 +91,20 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if (IsAssetFontFamily(fontFamily))
 			{
+				var style = ToTypefaceStyle(fontAttribute);
 				result = Typeface.CreateFromAsset(AApplication.Context.Assets, FontNameToFontFile(fontFamily));
+				result = Typeface.Create(result, style);
 			}
 			else
 			{
 				var style = ToTypefaceStyle(fontAttribute);
-				result = Typeface.Create(fontFamily, style);
+
+
+				var fontResource =
+					AApplication.Context.Resources.GetIdentifier(fontFamily, "font",
+						AApplication.Context.PackageName);
+				result = AApplication.Context.Resources.GetFont(fontResource);
+				result = Typeface.Create(result, style);
 			}
 
 			return result;
