@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 				MaxLines = 3 
 				//max line is less than the text reproduce and textViewExtensions couldn't identify when
 			};
-
+			//If you opened this page, the app didn't crash and you can read three lines in the label below, this test has passed.
 			var layout = new Xamarin.Forms.StackLayout();
 			layout.Children.Add(label);
 
