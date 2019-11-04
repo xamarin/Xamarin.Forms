@@ -264,7 +264,7 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				return new Label { Text = item?.ToString() };
+				return new Label { Text = item?.ToString(), HorizontalTextAlignment = TextAlignment.Center };
 			}
 		}
 
@@ -287,7 +287,7 @@ namespace Xamarin.Forms
 				return emptyLayout;
 			}
 			
-			return new Label { Text = emptyView?.ToString() };
+			return new Label { Text = emptyView?.ToString(), HorizontalTextAlignment = TextAlignment.Center };
 		}
 
 		void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
