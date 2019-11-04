@@ -97,26 +97,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		bool IsObservableCollection(object source)
 		{
-			/* #fix=7167
-			 * We do not require an "ObservableCollection" but anything that is an IList and implements INotifyCollectionChanged.
-			 * This is to ensure, that classes derived from ObservableCollection will work as well as classes that implement these interfaces themselves,
-			 * like ReactiveUIs ReactiveList
-			 */
 			return source is INotifyCollectionChanged && source is IList;
 		}
 
 		void ReloadData()
 		{
-			/* #fix=7167
-			 * Whenever the underlying ItemsSource is edited, it fires a "NotifyCollectionChanged" event
-			 * In case a RESET event is fired, this "ReloadData" method is called to re-create the CollectionViewSource.
-			 * However, if we only add multiple items to the source collection and fire a "Reset" event afterwards for performance reasons,
-			 * the CollectionViewSource will also be recreated.
-			 * This is not necessary, as the CollectionViewSource internally subscribes to the CollectionChanged event of the wrapped collection and forwards it to the UWP listview.
-			 * If we - in this case - just recreate the CollectionViewSource, the UWP ListView will loose its scrolling position and scroll to the top.
-			 * Especially in "Load more items" scenarios, this is absolutely unwanted.
-			 * So to avoid this (basically, we try to avoid setting the List.ItemsSource to keep the scroll position), we track whether the underlying collection was changed to a different instance.
-			 */
 			var isStillTheSameUnderlyingItemsSource = _collection != null && object.ReferenceEquals(_collection, Element?.ItemsSource);
 
 			if (Element?.ItemsSource == null)
@@ -126,10 +111,7 @@ namespace Xamarin.Forms.Platform.UWP
 			else
 			{
 				_collectionIsWrapped = !IsObservableCollection(Element.ItemsSource);
-				/* #fix=7167
-				 * In case the underlying collection is NOT an IList and does NOT support INotifyCollectionChanged, we need to create our own ObservableCollection<object> and keep it in sync.
-				 * Note: This only happens in the rare cases, when a developer binds things like "IEnumerable<T>" or an array to the ItemsSource in which case modifications on the ItemsSource are not tracked anyways.
-				 */
+
 				if (_collectionIsWrapped)
 				{
 					_collection = new ObservableCollection<object>();
@@ -142,7 +124,6 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			// If the underlying itemssource has not changed, we can just keep the current CollectionViewSource as it synchronizes itself
 			if (isStillTheSameUnderlyingItemsSource && _collectionViewSource != null)
 				return;
 
@@ -160,10 +141,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			/* #fix=7167
-			 * Note: _collectionIsWrapped is only true, if the underlying ItemsSource did not implement IList and INotifyPropertyChanged.
-			 * In that case, a separate _collection is created (ObservableCollection<object>) which is kept in-sync using this method.
-			 */
 			if (_collectionIsWrapped && _collection != null)
 			{
 				switch (e.Action)

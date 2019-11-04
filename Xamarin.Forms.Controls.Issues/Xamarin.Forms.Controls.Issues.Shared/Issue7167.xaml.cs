@@ -79,8 +79,6 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve (AllMembers = true)]
 	internal class Issue7167ViewModel
 	{
-		//private static readonly IEnumerable<string> _items = Enumerable.Range(0, 50).Select(num => num.ToString());
-
 		IEnumerable<string> CreateItems()
 		{
 			var itemCount = Items.Count();
