@@ -209,9 +209,9 @@ namespace Xamarin.Forms
 			return args.Result.Task;
 		}
 
-		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard))
+		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard), string initialValue = "")
 		{
-			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard);
+			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard, initialValue);
 			MessagingCenter.Send(this, PromptSignalName, args);
 			return args.Result.Task;
 		}
