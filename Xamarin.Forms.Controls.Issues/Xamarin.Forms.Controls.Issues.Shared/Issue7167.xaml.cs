@@ -6,7 +6,7 @@ using System.Windows.Input;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
-#if UITEST
+#if UITEST && __WINDOWS__
 using Xamarin.UITest;
 using Xamarin.Forms.Core.UITests;
 using NUnit.Framework;
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-#if UITEST
+#if UITEST && __WINDOWS__
 		const string ListViewId = "ListViewId";
 		const string AddCommandID = "AddCommandID";
 		const string ClearListCommandId = "ClearListCommandId";
