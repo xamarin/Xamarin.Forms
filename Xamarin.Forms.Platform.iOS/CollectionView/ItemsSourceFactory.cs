@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal static class ItemsSourceFactory
 	{
-		public static IItemsViewSource Create(IEnumerable itemsSource, UICollectionView collectionView)
+		public static IItemsViewSource Create(IEnumerable itemsSource, UICollectionViewController collectionViewController)
 		{
 			if (itemsSource == null)
 			{
@@ -16,23 +16,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 			switch (itemsSource)
 			{
-				case IList _ when itemsSource is INotifyCollectionChanged:
-					return new ObservableItemsSource(itemsSource as IList, collectionView);
-				case IEnumerable<object> generic:
-					return new ListSource(generic);
+				case INotifyCollectionChanged _:
+					return new ObservableItemsSource(itemsSource as IList, collectionViewController);
+				case IEnumerable _:
+				default:
+					return new ListSource(itemsSource);
 			}
-
-			return new ListSource(itemsSource);
 		}
 
-		public static IItemsViewSource CreateGrouped(IEnumerable itemsSource, UICollectionView collectionView)
+		public static IItemsViewSource CreateGrouped(IEnumerable itemsSource, UICollectionViewController collectionViewController)
 		{
 			if (itemsSource == null)
 			{
 				return new EmptySource();
 			}
 
-			return new ObservableGroupedSource(itemsSource, collectionView);
+			return new ObservableGroupedSource(itemsSource, collectionViewController);
 		}
 	}
 }

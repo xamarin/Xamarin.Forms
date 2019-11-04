@@ -124,6 +124,8 @@ namespace Xamarin.Forms.Platform.iOS
 		where TControl : UIView
 	{
 		bool _disposed;
+		IUITextViewDelegate _pleaseDontCollectMeGarbageCollector;
+
 		IEditorController ElementController => Element;
 		protected abstract UITextView TextView { get; }
 
@@ -154,6 +156,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
+			_pleaseDontCollectMeGarbageCollector = null;
 			base.Dispose(disposing);
 		}
 
@@ -189,6 +192,7 @@ namespace Xamarin.Forms.Platform.iOS
 				TextView.Ended += OnEnded;
 				TextView.ShouldChangeText += ShouldChangeText;
 				_selectedTextRangeObserver = TextView.AddObserver("selectedTextRange", NSKeyValueObservingOptions.New, UpdateCursorFromControl);
+				_pleaseDontCollectMeGarbageCollector = TextView.Delegate;
 			}
 
 			// When we set the control text, it triggers the UpdateCursorFromControl event, which updates CursorPosition and SelectionLength;
