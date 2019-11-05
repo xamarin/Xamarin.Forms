@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine("Unable to create circle image: " + ex);
+				Internals.Log.Warning(nameof(BorderDrawable), $"Unable to create circle image: {ex}");
 			}
 
 			finishDraw(canvas);

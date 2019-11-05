@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Material.Android
 			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine("Unable to create circle image: " + ex);
+				Internals.Log.Warning(nameof(MaterialButtonRenderer), $"Unable to create circle image: {ex}");
 			}
 
 			base.Draw(canvas);
