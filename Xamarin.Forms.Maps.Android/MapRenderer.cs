@@ -298,7 +298,22 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected Marker GetMarkerForPin(Pin pin)
 		{
-			return _markers?.Find(m => m.Id == (string)pin.MarkerId);
+			Marker targetMarker = null;
+
+			if (_markers != null)
+			{
+				for (int i = 0; i < _markers.Count; i++)
+				{
+					var marker = _markers[i];
+					if (marker.Id == (string)pin.MarkerId)
+					{
+						targetMarker = marker;
+						break;
+					}
+				}
+			}
+
+			return targetMarker;
 		}
 
 		protected Pin GetPinForMarker(Marker marker)
@@ -408,8 +423,14 @@ namespace Xamarin.Forms.Maps.Android
 					AddPins(notifyCollectionChangedEventArgs.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					_markers?.ForEach(m => m.Remove());
-					_markers = null;
+					if (_markers != null)
+					{
+						for (int i = 0; i < _markers.Count; i++)
+							_markers[i].Remove();
+
+						_markers = null;
+					}
+
 					AddPins((IList)Element.Pins);
 					break;
 				case NotifyCollectionChangedAction.Move:
@@ -529,14 +550,29 @@ namespace Xamarin.Forms.Maps.Android
 					AddMapElements(e.NewItems.Cast<MapElement>());
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					_polylines?.ForEach(p => p.Remove());
-					_polylines = null;
+					if (_polylines != null)
+					{
+						for(int i = 0; i < _polylines.Count; i++)
+							_polylines[i].Remove();
 
-					_polygons?.ForEach(p => p.Remove());
-					_polygons = null;
+						_polylines = null;
+					}
 
-					_circles?.ForEach(c => c.Remove());
-					_circles = null;
+					if (_polygons != null)
+					{
+						for (int i = 0; i < _polygons.Count; i++)
+							_polygons[i].Remove();
+
+						_polygons = null;
+					}
+
+					if (_circles != null)
+					{
+						for (int i = 0; i < _circles.Count; i++)
+							_circles[i].Remove();
+
+						_circles = null;
+					}
 
 					AddMapElements(Element.MapElements);
 					break;
@@ -604,7 +640,22 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected APolyline GetNativePolyline(Polyline polyline)
 		{
-			return _polylines?.Find(p => p.Id == (string)polyline.MapElementId);
+			APolyline targetPolyline = null;
+
+			if (_polylines != null)
+			{
+				for (int i = 0; i < _polylines.Count; i++)
+				{
+					var native = _polylines[i];
+					if (native.Id == (string)polyline.MapElementId)
+					{
+						targetPolyline = native;
+						break;
+					}
+				}
+			}
+
+			return targetPolyline;
 		}
 
 		protected Polyline GetFormsPolyline(APolyline polyline)
@@ -711,7 +762,22 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected APolygon GetNativePolygon(Polygon polygon)
 		{
-			return _polygons?.Find(p => p.Id == (string)polygon.MapElementId);
+			APolygon targetPolygon = null;
+
+			if (_polygons != null)
+			{
+				for (int i = 0; i < _polygons.Count; i++)
+				{
+					var native = _polygons[i];
+					if (native.Id == (string)polygon.MapElementId)
+					{
+						targetPolygon = native;
+						break;
+					}
+				}
+			}
+
+			return targetPolygon;
 		}
 
 		protected Polygon GetFormsPolygon(APolygon polygon)
@@ -810,7 +876,22 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected ACircle GetNativeCircle(Circle circle)
 		{
-			return _circles?.Find(c => c.Id == (string)circle.MapElementId);
+			ACircle targetCircle = null;
+
+			if (_circles != null)
+			{
+				for (int i = 0; i < _circles.Count; i++)
+				{
+					var native = _circles[i];
+					if (native.Id == (string)circle.MapElementId)
+					{
+						targetCircle = native;
+						break;
+					}
+				}
+			}
+
+			return targetCircle;
 		}
 
 		protected Circle GetFormsCircle(ACircle circle)
