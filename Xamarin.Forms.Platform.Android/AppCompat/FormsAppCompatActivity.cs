@@ -18,6 +18,7 @@ using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
+using System.Runtime.CompilerServices;
 
 #endregion
 
@@ -67,6 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
+			RuntimeHelpers.RunClassConstructor(typeof(Anticipator).TypeHandle);
 		}
 
 		public event EventHandler ConfigurationChanged;

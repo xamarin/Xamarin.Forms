@@ -155,9 +155,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (e.NewElement != null)
 			{
+				e.NewElement.PropertyChanging += ElementPropertyChanging;
 				if (Control == null)
 				{
-					e.NewElement.PropertyChanging += ElementPropertyChanging;
 					SetNativeControl(CreateNativeControl());
 #if !__MOBILE__
 					Control.Editable = false;
@@ -445,30 +445,33 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextHtml()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			string text = Element.Text ?? string.Empty;
 
+			var attr = GetNSAttributedStringDocumentAttributes();
 #if __MOBILE__
-			var attr = new NSAttributedStringDocumentAttributes
-			{
-				DocumentType = NSDocumentType.HTML
-			};
 
 			NSError nsError = null;
 
 			Control.AttributedText = new NSAttributedString(text, attr, ref nsError);
-
 #else
-			var attr = new NSAttributedStringDocumentAttributes
-			{
-				DocumentType = NSDocumentType.HTML
-			};
-
 			var htmlData = new NSMutableData();
 			htmlData.SetData(text);
 
 			Control.AttributedStringValue = new NSAttributedString(htmlData, attr, out _);
 #endif
 			_perfectSizeValid = false;
+		}
+
+		protected virtual NSAttributedStringDocumentAttributes GetNSAttributedStringDocumentAttributes()
+		{
+			return new NSAttributedStringDocumentAttributes
+			{
+				DocumentType = NSDocumentType.HTML,
+				StringEncoding = NSStringEncoding.UTF8
+			};
 		}
 
 		void UpdateFont()
@@ -574,6 +577,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdatePadding()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			if (Element.Padding.IsEmpty)
 				return;
 

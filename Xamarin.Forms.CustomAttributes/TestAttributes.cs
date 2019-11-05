@@ -149,6 +149,7 @@ namespace Xamarin.Forms.CustomAttributes
 		UWP = 1 << 4,
 		WPF = 1 << 5,
 		macOS = 1 << 6,
+		Gtk = 1 << 7,
 		All = ~0,
 		Default = 0
 	}
@@ -549,7 +550,9 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Frame
 		{
 			OutlineColor,
-			HasShadow
+			HasShadow,
+			Content,
+			CornerRadius
 		}
 
 		public enum Image
@@ -637,7 +640,10 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
 			MaxLines,
-			TextType
+			HtmlTextType,
+			HtmlTextTypeMultipleLines,
+			HtmlTextLabelProperties,
+			TextTypeToggle,
 		}
 
 		public enum MasterDetailPage
