@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "If you opened this page, the app didn't crash and you can read three lines in the label above, this test has passed",
 				VerticalOptions = LayoutOptions.StartAndExpand
 			};
-			//If you opened this page, the app didn't crash and you can read three lines in the label below, this test has passed.
+
 			var layout = new Xamarin.Forms.StackLayout();
 			layout.Children.Add(label);
 			layout.Children.Add(labelDescription);
