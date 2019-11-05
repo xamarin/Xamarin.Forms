@@ -514,8 +514,8 @@ namespace Xamarin.Forms.CustomAttributes
 			IsReadOnly,
 			CursorPositionSelectionLength,
 			CursorPositionSelectionLengthInit,
-			CursorPositionInvalid,
-			SelectionLengthInvalid
+			CursorPositionInvalidInit,
+			SelectionLengthInvalidInit
 		}
 
 		public enum Entry

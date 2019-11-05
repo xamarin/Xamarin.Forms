@@ -80,10 +80,10 @@ namespace Xamarin.Forms.Controls
 			var cursorPositionInitContainer = BuildCursorContainer(Test.Editor.CursorPositionSelectionLengthInit,
 				new Editor() { Text = "Initialized with CursorPosition 17 and SelectionLength 14", CursorPosition = 17, SelectionLength = 14});
 
-			var cursorPositionInvalidContainer = BuildCursorContainer(Test.Editor.CursorPositionInvalid,
+			var cursorPositionInvalidContainer = BuildCursorContainer(Test.Editor.CursorPositionInvalidInit,
 				new Editor() { Text = "Initialized with CursorPosition 100", CursorPosition = 100 });
 
-			var selectionLengthInvalidContainer = BuildCursorContainer(Test.Editor.SelectionLengthInvalid,
+			var selectionLengthInvalidContainer = BuildCursorContainer(Test.Editor.SelectionLengthInvalidInit,
 				new Editor() { Text = "Initialized with SelectionLength 100", SelectionLength = 100 });
 
 			Add(completedContainer);
@@ -109,17 +109,31 @@ namespace Xamarin.Forms.Controls
 
 		ViewContainer<Editor> BuildCursorContainer(Test.Editor formsMember, Editor editor)
 		{
-			var cursorPositionLabel = new Label { BindingContext = editor };
-			cursorPositionLabel.SetBinding(Label.TextProperty, Editor.CursorPositionProperty.PropertyName,
-				stringFormat: "CursorPosition: {0}");
+			var cursorPositionLabel = new Label { BindingContext = editor, AutomationId = "CursorPositionLabel" };
+			cursorPositionLabel.SetBinding(Label.TextProperty, Editor.CursorPositionProperty.PropertyName);
 
-			var selectionLengthLabel = new Label() { BindingContext = editor };
-			selectionLengthLabel.SetBinding(Label.TextProperty, Editor.SelectionLengthProperty.PropertyName,
-				stringFormat: "SelectionLength: {0}");
+			var selectionLengthLabel = new Label() { BindingContext = editor, AutomationId = "SelectionLengthLabel"};
+			selectionLengthLabel.SetBinding(Label.TextProperty, Editor.SelectionLengthProperty.PropertyName);
 
 			var container = new ViewContainer<Editor>(formsMember, editor);
-			container.ContainerLayout.Children.Add(cursorPositionLabel);
-			container.ContainerLayout.Children.Add(selectionLengthLabel);
+			container.ContainerLayout.Children.Add(new StackLayout
+			{
+				Orientation = StackOrientation.Horizontal,
+				Children =
+				{
+					new Label { Text = "Cursor Position: "},
+					cursorPositionLabel
+				}
+			});
+			container.ContainerLayout.Children.Add(new StackLayout
+			{
+				Orientation = StackOrientation.Horizontal,
+				Children =
+				{
+					new Label { Text = "SelectionLength: "},
+					selectionLengthLabel
+				}
+			});
 			return container;
 		}
 	}
