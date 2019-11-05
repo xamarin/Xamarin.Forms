@@ -142,7 +142,9 @@ namespace Xamarin.Forms.Platform.Android
 				using (var innerLayout = new LinearLayout(context))
 				{
 					if(Forms.IsLollipopOrNewer)
+					{
 						innerLayout.ClipToOutline = true;
+					}
 					innerLayout.SetBackground(CreateItemBackgroundDrawable());
 					innerLayout.SetPadding(0, (int)context.ToPixels(6), 0, (int)context.ToPixels(6));
 					innerLayout.Orientation = Orientation.Horizontal;
