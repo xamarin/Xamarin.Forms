@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public class SwipeItem : ContextItem, ISwipeItem
+	public class SwipeItem : MenuItem, ISwipeItem
 	{
 		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(SwipeItem), Color.Default);
 
