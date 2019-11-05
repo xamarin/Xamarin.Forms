@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 		ICommand Command { get; set; }
 		object CommandParameter { get; set; }
 
-		event EventHandler<SwipeItemInvokedEventArgs> Invoked;
+		event EventHandler<EventArgs> Invoked;
 	}
 
 	public class SwipeItem : ContextItem, ISwipeItem
@@ -22,10 +22,10 @@ namespace Xamarin.Forms
 			set { SetValue(BackgroundColorProperty, value); }
 		}
 
-		public event EventHandler<SwipeItemInvokedEventArgs> Invoked;
+		public event EventHandler<EventArgs> Invoked;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void OnInvoked() => Invoked?.Invoke(this, new SwipeItemInvokedEventArgs(this));
+		public void OnInvoked() => Invoked?.Invoke(this, new EventArgs());
 	}
 
 	public class CustomSwipeItem : ContentView, ISwipeItem
@@ -46,19 +46,9 @@ namespace Xamarin.Forms
 			set => SetValue(CommandParameterProperty, value);
 		}
 
-		public event EventHandler<SwipeItemInvokedEventArgs> Invoked;
+		public event EventHandler<EventArgs> Invoked;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void OnInvoked() => Invoked?.Invoke(this, new SwipeItemInvokedEventArgs(this));
-	}
-
-	public class SwipeItemInvokedEventArgs : EventArgs
-	{
-		public SwipeItemInvokedEventArgs(ISwipeItem swipeItem)
-		{
-			SwipeItem = swipeItem;
-		}
-
-		public ISwipeItem SwipeItem { get; set; }
+		public void OnInvoked() => Invoked?.Invoke(this, new EventArgs());
 	}
 }

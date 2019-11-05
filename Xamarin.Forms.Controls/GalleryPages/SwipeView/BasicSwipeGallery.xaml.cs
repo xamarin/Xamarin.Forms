@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.Internals;
+﻿using System;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 {
@@ -10,7 +11,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			InitializeComponent();
 		}
 
-		private void OnInvoked(object sender, SwipeItemInvokedEventArgs e)
+		private void OnInvoked(object sender, EventArgs e)
 		{
 			DisplayAlert("SwipeView", "Delete Invoked", "OK");
 		}
