@@ -57,9 +57,9 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendSwipeEnded(SwipeEndedEventArgs args) => SwipeEnded?.Invoke(this, args);
 
-		public class BaseSwipeEventArgs : EventArgs
+		public abstract class BaseSwipeEventArgs : EventArgs
 		{
-			public BaseSwipeEventArgs(SwipeDirection swipeDirection)
+			protected BaseSwipeEventArgs(SwipeDirection swipeDirection)
 			{
 				SwipeDirection = swipeDirection;
 			}
