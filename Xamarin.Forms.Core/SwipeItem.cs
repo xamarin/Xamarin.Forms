@@ -4,14 +4,6 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public interface ISwipeItem
-	{
-		ICommand Command { get; set; }
-		object CommandParameter { get; set; }
-
-		event EventHandler<EventArgs> Invoked;
-	}
-
 	public class SwipeItem : ContextItem, ISwipeItem
 	{
 		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(SwipeItem), Color.Default);
