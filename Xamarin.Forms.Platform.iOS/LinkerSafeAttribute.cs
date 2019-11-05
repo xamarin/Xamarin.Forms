@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Internals
 {
 	[AttributeUsage(AttributeTargets.All)]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public sealed class LinkerSafeAttribute : Attribute
+	class LinkerSafeAttribute : Attribute
 	{
 		public LinkerSafeAttribute()
 		{
