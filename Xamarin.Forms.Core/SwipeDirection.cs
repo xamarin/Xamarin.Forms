@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+
 namespace Xamarin.Forms
 {
 	[Flags]
@@ -9,7 +11,8 @@ namespace Xamarin.Forms
 		Up = 4,
 		Down = 8
 	}
-	
+
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class SwipeDirectionHelper
 	{
 		public static SwipeDirection GetSwipeDirection(Point initialPoint, Point endPoint)
