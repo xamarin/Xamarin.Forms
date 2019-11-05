@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms
 {
-	public class SwipeItems : BindableObject, IList<ISwipeItem>
+	public class SwipeItems : Element, IList<ISwipeItem>
 	{
 		readonly List<ISwipeItem> _internal;
 
