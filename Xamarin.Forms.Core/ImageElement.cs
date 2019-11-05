@@ -16,9 +16,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsOpaqueProperty = BindableProperty.Create(nameof(IImageElement.IsOpaque), typeof(bool), typeof(IImageElement), false);
 
-		public static readonly BindableProperty IsAnimationAutoPlayProperty = BindableProperty.Create(nameof(IImageElement.IsAnimationAutoPlay), typeof(bool), typeof(IImageElement), false);
-
-		internal static readonly BindableProperty IsAnimationPlayingProperty = BindableProperty.Create(nameof(IImageElement.IsAnimationPlaying), typeof(bool), typeof(IImageElement), false, propertyChanged: OnIsAnimationPlayingChanged);
+		internal static readonly BindableProperty IsAnimationPlayingProperty = BindableProperty.Create(nameof(IImageElement.IsAnimationPlaying), typeof(bool), typeof(IImageElement), false);
 
 		static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -154,13 +152,7 @@ namespace Xamarin.Forms
 
 		internal static bool GetLoadAsAnimation(BindableObject bindable)
 		{
-			return bindable.IsSet(IsAnimationAutoPlayProperty) || bindable.IsSet(IsAnimationPlayingProperty);
-		}
-
-		static void OnIsAnimationPlayingChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			if (!bindable.IsSet(IsAnimationAutoPlayProperty))
-				bindable.SetValue(IsAnimationAutoPlayProperty, false);
+			return bindable.IsSet(IsAnimationPlayingProperty);
 		}
 	}
 }

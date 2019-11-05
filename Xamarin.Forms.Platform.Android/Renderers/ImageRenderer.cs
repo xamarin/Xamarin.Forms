@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 				await TryUpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
-			else if (e.IsOneOf(Image.IsAnimationAutoPlayProperty, Image.IsAnimationPlayingProperty))
+			else if (e.IsOneOf(Image.IsAnimationPlayingProperty))
 				UpdateAnimations();
 		}
 

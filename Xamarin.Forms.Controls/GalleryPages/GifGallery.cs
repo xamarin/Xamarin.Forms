@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages
 {
+	[Preserve(AllMembers = true)]
 	public class GifGallery : ContentPage
 	{
 		public GifGallery()
@@ -33,18 +35,6 @@ namespace Xamarin.Forms.Controls.GalleryPages
 				SelectedItem = itemsSource[0]
 			};
 
-			var isAnimationAutoPlayLabel = new Label
-			{
-				FontSize = 10,
-				Text = "IsAnimationAutoPlay:"
-			};
-
-			var isAnimationAutoPlaySwitch = new Switch
-			{
-				HorizontalOptions = LayoutOptions.Start,
-				VerticalOptions = LayoutOptions.Center
-			};
-
 			var IsAnimationPlayingLabel = new Label
 			{
 				FontSize = 10,
@@ -60,12 +50,12 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 			var gifImage = new Image
 			{
-				IsAnimationAutoPlay = false,
 				BackgroundColor = Color.LightGray,
 				Source = itemsSource[0]
 			};
 
-			isAnimationPlayingSwitch.SetBinding(Switch.IsToggledProperty, nameof(gifImage.IsAnimationPlaying));
+			isAnimationPlayingSwitch.SetBinding(Switch.IsToggledProperty, nameof(gifImage.IsAnimationPlaying), BindingMode.TwoWay);
+			isAnimationPlayingSwitch.BindingContext = gifImage;
 
 			var buttonStack = new StackLayout
 			{
@@ -97,8 +87,6 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 			layout.Children.Add(sourceLabel);
 			layout.Children.Add(sourcePicker);
-			layout.Children.Add(isAnimationAutoPlayLabel);
-			layout.Children.Add(isAnimationAutoPlaySwitch);
 			layout.Children.Add(IsAnimationPlayingLabel);
 			layout.Children.Add(isAnimationPlayingSwitch);
 			layout.Children.Add(gifImage);
@@ -107,11 +95,6 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			sourcePicker.SelectedIndexChanged += (sender, e) =>
 			{
 				gifImage.Source = itemsSource[sourcePicker.SelectedIndex];
-			};
-
-			isAnimationAutoPlaySwitch.Toggled += (sender, e) =>
-			{
-				gifImage.IsAnimationAutoPlay = isAnimationAutoPlaySwitch.IsToggled;
 			};
 
 			scroll.Content = layout;

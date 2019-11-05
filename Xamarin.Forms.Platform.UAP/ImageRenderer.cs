@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_measured)
 			{
-				ImageElementManager.RefreshImage(Element);
+				ImageElementManager.RefreshImage(this);
 			}
 
 			Element?.SetIsLoading(false);

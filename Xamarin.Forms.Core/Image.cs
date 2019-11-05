@@ -20,8 +20,6 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsLoadingProperty = IsLoadingPropertyKey.BindableProperty;
 
-		public static readonly BindableProperty IsAnimationAutoPlayProperty = ImageElement.IsAnimationAutoPlayProperty;
-
 		public static readonly BindableProperty IsAnimationPlayingProperty = ImageElement.IsAnimationPlayingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Image>> _platformConfigurationRegistry;
@@ -59,12 +57,6 @@ namespace Xamarin.Forms
 		{
 			get { return (ImageSource)GetValue(SourceProperty); }
 			set { SetValue(SourceProperty, value); }
-		}
-
-		public bool IsAnimationAutoPlay
-		{
-			get { return (bool)GetValue(IsAnimationAutoPlayProperty); }
-			set { SetValue(IsAnimationAutoPlayProperty, value); }
 		}
 
 		bool IImageController.GetLoadAsAnimation() => ImageElement.GetLoadAsAnimation(this);

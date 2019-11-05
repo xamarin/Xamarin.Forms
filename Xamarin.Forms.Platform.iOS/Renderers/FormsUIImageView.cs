@@ -8,7 +8,6 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		const string AnimationLayerName = "FormsUIImageViewAnimation";
 		FormsCAKeyFrameAnimation _animation;
-		bool _autoPlay;
 
 		public FormsUIImageView() : base(RectangleF.Empty)
 		{
@@ -36,19 +35,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return base.SizeThatFits(size);
 		}
 
-		public bool AutoPlay
-		{
-			get { return _autoPlay; }
-			set
-			{
-				_autoPlay = value;
-				if (_animation != null)
-				{
-					Layer.Speed = _autoPlay ? 1.0f : 0.0f;
-				}
-			}
-		}
-
 		public FormsCAKeyFrameAnimation Animation
 		{
 			get { return _animation; }
@@ -64,7 +50,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_animation != null)
 				{
 					Layer.AddAnimation(_animation, AnimationLayerName);
-					Layer.Speed = AutoPlay ? 1.0f : 0.0f;
 				}
 
 				Layer.SetNeedsDisplay();

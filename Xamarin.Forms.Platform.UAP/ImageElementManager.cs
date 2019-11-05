@@ -60,6 +60,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (controller.IsLoading)
 				return;
 			
+
 			if (renderer.GetImage()?.Source is BitmapImage bitmapImage)
 			{
 				if (_nativeAnimationSupport)
@@ -156,27 +157,13 @@ namespace Xamarin.Forms.Platform.UWP
 					return;
 
 
-				if (imagesource is BitmapImage bitmapImage)
-				{
-					if (_nativeAnimationSupport)
-					{
-						bitmapImage.AutoPlay = false;
-						if (imageController.GetLoadAsAnimation())
-							bitmapImage.AutoPlay = imageElement.IsAnimationPlaying;
-
-						if (bitmapImage.IsPlaying && !bitmapImage.AutoPlay && !imageElement.IsAnimationPlaying)
-							bitmapImage.Stop();						
-						else if(!bitmapImage.IsPlaying && imageElement.IsAnimationPlaying)
-						{
-							bitmapImage.Play();
-						}
-					}
-				}
+				if (imagesource is BitmapImage bitmapImage && _nativeAnimationSupport)
+					bitmapImage.AutoPlay = false;
 
 				if (Control != null)
 					renderer.SetImage(imagesource);
 
-				RefreshImage(imageElement as IViewController);
+				RefreshImage(renderer);
 			}
 			finally
 			{
@@ -185,11 +172,13 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 
-		static internal void RefreshImage(IViewController element)
+		static internal void RefreshImage(IImageVisualElementRenderer renderer)
 		{
-			element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
+			if(renderer.Element is IViewController element)
+				element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
+
+			if(renderer.Element is IImageElement controller)
+				StartStopAnimation(renderer, controller);
 		}
-
-
 	}
 }

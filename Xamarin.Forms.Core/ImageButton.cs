@@ -197,11 +197,6 @@ namespace Xamarin.Forms
 		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
 
-		bool IImageElement.IsAnimationAutoPlay
-		{
-			get => false;
-		}
-
 		bool IImageElement.IsAnimationPlaying
 		{
 			get => false;

@@ -208,7 +208,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 					if (animation != null && Control is FormsUIImageView imageView && imageElement.Source == source)
 					{
-						imageView.AutoPlay = (bool)Element.GetValue(Image.IsAnimationAutoPlayProperty);
 						if(imageView.Animation != null)
 							imageView.Animation.AnimationStopped -= OnAnimationStopped;
 

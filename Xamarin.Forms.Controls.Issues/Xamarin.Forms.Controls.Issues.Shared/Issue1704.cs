@@ -89,7 +89,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_animatedImage = new Image {
 				Source = "GifTwo.gif",
-				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -102,6 +101,12 @@ namespace Xamarin.Forms.Controls.Issues
 					_animatedImage
 				}
 			};
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+			_animatedImage.IsAnimationPlaying = true;
 		}
 	}
 
@@ -137,7 +142,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_animatedImage = new Image {
 				Source = "GifOne.gif",
-				IsAnimationAutoPlay = false,
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -230,7 +234,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_animatedImage = new Image {
 				HorizontalOptions = LayoutOptions.Start,
-				IsAnimationAutoPlay = true,
 			};
 
 			_imageSource = new Entry { Placeholder = "Image Source" };
@@ -292,6 +295,13 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 				}
 			};
+		}
+
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+			_animatedImage.IsAnimationPlaying = true;
 		}
 
 		static void OnLoadImageComplete(Object state)
@@ -359,6 +369,13 @@ namespace Xamarin.Forms.Controls.Issues
 		AutoResetEvent _nextStressTest = new AutoResetEvent(false);
 		bool _abortStressTest = false;
 
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+			_noAnimationFallbackImage.IsAnimationPlaying = true;
+			_stressTestImage.IsAnimationPlaying = true;
+		}
+
 		public MiscPage()
 		{
 			_noAnimationFallbackLabel = new Label {
@@ -370,7 +387,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_noAnimationFallbackImage = new Image {
 				Source = "coffee.png",
-				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -426,7 +442,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_stressTestImage = new Image {
 				Source = "GifTwo.gif",
-				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start,
 				IsVisible = false
 			};

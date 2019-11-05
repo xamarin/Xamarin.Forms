@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
 			{
-				if (newImage.IsAnimationAutoPlay || newImage.IsAnimationPlaying)
+				if (newImage.IsAnimationPlaying)
 					updatedAnimation.Start();
 			}
 		}

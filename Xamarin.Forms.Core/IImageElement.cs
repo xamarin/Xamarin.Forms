@@ -19,6 +19,5 @@ namespace Xamarin.Forms
 		void OnImageSourcesSourceChanged(object sender, EventArgs e);
 		bool IsLoading { get; }
 		bool IsAnimationPlaying { get; }
-		bool IsAnimationAutoPlay { get; }
 	}
 }
