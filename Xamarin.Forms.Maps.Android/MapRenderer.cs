@@ -793,10 +793,10 @@ namespace Xamarin.Forms.Maps.Android
 
 			if (Map.IsShowingUser)
 			{
-				var courseLocationPermission = ContextCompat.CheckSelfPermission(Context, Manifest.Permission.AccessCoarseLocation);
+				var coarseLocationPermission = ContextCompat.CheckSelfPermission(Context, Manifest.Permission.AccessCoarseLocation);
 				var fineLocationPermission = ContextCompat.CheckSelfPermission(Context, Manifest.Permission.AccessFineLocation);
 
-				if (courseLocationPermission == Permission.Granted || fineLocationPermission == Permission.Granted)
+				if (coarseLocationPermission == Permission.Granted || fineLocationPermission == Permission.Granted)
 				{
 					map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = true;
 				}
