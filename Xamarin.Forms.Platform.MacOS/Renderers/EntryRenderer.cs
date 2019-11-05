@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateAlignment();
 			UpdateMaxLength();
 			UpdateIsReadOnly();
-        }
+		}
 
 		void TextFieldFocusChanged(object sender, BoolEventArgs e)
 		{
@@ -240,11 +240,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateAlignment()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			Control.Alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 		}
 
 		void UpdateColor()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			var textColor = Element.TextColor;
 
 			if (textColor.IsDefault || !Element.IsEnabled)
@@ -263,11 +269,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateFont()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			Control.Font = Element.ToNSFont();
 		}
 
 		void UpdatePlaceholder()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			var formatted = (FormattedString)Element.Placeholder;
 
 			if (formatted == null)
@@ -280,11 +292,21 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var color = Element.IsEnabled && !targetColor.IsDefault ? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
 
-			Control.PlaceholderAttributedString = formatted.ToAttributed(Element, color);
+			Control.PlaceholderAttributedString = formatted.ToAttributed(Element, color, Element.HorizontalTextAlignment);
+		}
+
+		protected override void SetAccessibilityLabel()
+		{
+			if (_disposed || IsElementOrControlEmpty)
+				return;
+			Control.AccessibilityLabel = (string)Element?.GetValue(AutomationProperties.NameProperty) ?? Control.PlaceholderAttributedString?.Value;
 		}
 
 		void UpdateText()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.StringValue != Element.Text)
 				Control.StringValue = Element.Text ?? string.Empty;
@@ -292,6 +314,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateMaxLength()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			var currentControlText = Control?.StringValue;
 
 			if (currentControlText.Length > Element?.MaxLength)
@@ -301,6 +326,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateIsReadOnly()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+
 			Control.Editable = !Element.IsReadOnly;
 			if (Element.IsReadOnly && Control.Window?.FirstResponder == Control.CurrentEditor)
 				Control.Window?.MakeFirstResponder(null);

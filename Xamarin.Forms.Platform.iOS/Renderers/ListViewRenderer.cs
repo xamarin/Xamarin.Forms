@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateRowHeight();
 
 				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController) : new ListViewDataSource(e.NewElement, _tableViewController);
-
+			
 				UpdateHeader();
 				UpdateFooter();
 				UpdatePullToRefreshEnabled();
@@ -1220,6 +1220,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void Scrolled(UIScrollView scrollView)
 			{
+				var args = new ScrolledEventArgs(scrollView.ContentOffset.X, scrollView.ContentOffset.Y);
+				List?.SendScrolled(args);
 				if (_isDragging && scrollView.ContentOffset.Y < 0)
 				{
 					// If the refresh spinner is currently displayed and pull-to-refresh is not enabled,

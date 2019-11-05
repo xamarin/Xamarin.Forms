@@ -4,13 +4,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
 	[Flags]
-	public enum ActivationFlags
+	public enum InitializationFlags : long
 	{
-		NoCss = 1 << 0,
+		DisableCss = 1 << 0
 	}
 
 
@@ -275,21 +276,21 @@ namespace Xamarin.Forms.Internals
 
 		public static void RegisterStylesheets()
 		{
-			var assembly = typeof(StyleSheets.StylePropertyAttribute).GetTypeInfo().Assembly;
+			var assembly = typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
 
 #if NETSTANDARD2_0
-			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute), true);
+			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StylePropertyAttribute), true);
 #else
 			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute)).ToArray();
 #endif
 			var stylePropertiesLength = styleAttributes.Length;
 			for (var i = 0; i < stylePropertiesLength; i++)
 			{
-				var attribute = (StyleSheets.StylePropertyAttribute)styleAttributes[i];
+				var attribute = (StylePropertyAttribute)styleAttributes[i];
 				if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
 					attrList.Add(attribute);
 				else
-					StyleProperties[attribute.CssPropertyName] = new List<StyleSheets.StylePropertyAttribute> { attribute };
+					StyleProperties[attribute.CssPropertyName] = new List<StylePropertyAttribute> { attribute };
 			}
 		}
 
@@ -305,9 +306,9 @@ namespace Xamarin.Forms.Internals
 
 		public static void RegisterAll(Type[] attrTypes)
 		{
-			RegisterAll(attrTypes, default(ActivationFlags));
+			RegisterAll(attrTypes, default(InitializationFlags));
 		}
-		public static void RegisterAll(Type[] attrTypes, ActivationFlags flags)
+		public static void RegisterAll(Type[] attrTypes, InitializationFlags flags)
 		{
 			Profile.FrameBegin();
 
@@ -330,7 +331,8 @@ namespace Xamarin.Forms.Internals
 			Profile.FramePartition("Reflect");
 			foreach (Assembly assembly in assemblies)
 			{
-				Profile.FrameBegin(assembly.GetName().Name);
+				var assemblyName = assembly.GetName().Name;
+				Profile.FrameBegin(assemblyName);
 
 				foreach (Type attrType in attrTypes)
 				{
@@ -350,13 +352,9 @@ namespace Xamarin.Forms.Internals
 						continue;
 					}
 
-					var length = attributes.Length;
-					for (var i = 0; i < length; i++)
-					{
-						var attribute = (HandlerAttribute)attributes[i];
-						if (attribute.ShouldRegister())
-							Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals, attribute.Priority);
-					}
+					var handlerAttributes = new HandlerAttribute[attributes.Length];
+					Array.Copy(attributes, handlerAttributes, attributes.Length);
+					RegisterRenderers(handlerAttributes);
 				}
 
 				string resolutionName = assembly.FullName;
@@ -369,28 +367,15 @@ namespace Xamarin.Forms.Internals
 #else
 				object[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute)).ToArray();
 #endif
-				var exportEffectsLength = effectAttributes.Length;
-				for (var i = 0; i < exportEffectsLength; i++)
-				{
-					var effect = (ExportEffectAttribute)effectAttributes[i];
-					Effects[resolutionName + "." + effect.Id] = effect.Type;
-				}
-				Profile.FrameEnd();
-#if NETSTANDARD2_0
-				object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute), true);
-#else
-				object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute)).ToArray();
-#endif
-				var stylePropertiesLength = styleAttributes.Length;
-				for (var i = 0; i < stylePropertiesLength; i++)
-				{
-					var attribute = (StyleSheets.StylePropertyAttribute)styleAttributes[i];
-					if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
-						attrList.Add(attribute);
-					else
-						StyleProperties[attribute.CssPropertyName] = new List<StyleSheets.StylePropertyAttribute> { attribute };
-				}
+				var typedEffectAttributes = new ExportEffectAttribute[effectAttributes.Length];
+				Array.Copy(effectAttributes, typedEffectAttributes, effectAttributes.Length);
+				RegisterEffects(resolutionName, typedEffectAttributes);
+
+				Profile.FrameEnd(assemblyName);
 			}
+
+			if ((flags & InitializationFlags.DisableCss) == 0)
+				RegisterStylesheets();
 
 			Profile.FramePartition("DependencyService.Initialize");
 			DependencyService.Initialize(assemblies);

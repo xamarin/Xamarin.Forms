@@ -7,6 +7,7 @@ using Android.Support.V4.View;
 using Android.Text;
 using Android.Util;
 using Android.Views;
+using Android.Widget;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
@@ -242,6 +243,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
+				UpdateCharacterSpacing();
 				UpdateTextDecorations();
 				if (e.OldElement?.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
@@ -249,6 +251,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateGravity();
 				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+
+				UpdatePadding();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -260,12 +264,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateGravity();
-			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
+			else if (e.PropertyName == Label.TextColorProperty.PropertyName ||
+				e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -274,6 +281,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateLineHeight();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
 
 		void UpdateColor()
@@ -337,6 +346,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_lastSizeRequest = null;
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+		}
+
 		void UpdateLineBreakMode()
 		{
 			this.SetLineBreakMode(Element);
@@ -365,7 +382,23 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					SetTextColor(_labelTextColorDefault);
 					_lastUpdateColor = Color.Default;
 				}
-				Text = Element.Text;
+
+				switch (Element.TextType)
+				{
+					case TextType.Html:
+						if (Forms.IsNougatOrNewer)
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty, FromHtmlOptions.ModeCompact), BufferType.Spannable);
+						else
+#pragma warning disable CS0618 // Type or member is obsolete
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty), BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+						break;
+
+					default:
+						Text = Element.Text;
+						break;
+				}
+				
 				UpdateColor();
 				UpdateFont();
 
@@ -375,7 +408,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_lastSizeRequest = null;
 		}
 
-		void UpdateLineHeight() {
+		void UpdateLineHeight()
+		{
 			if (_lineSpacingExtraDefault < 0)
 				_lineSpacingExtraDefault = LineSpacingExtra;
 			if (_lineSpacingMultiplierDefault < 0)
@@ -384,7 +418,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (Element.LineHeight == -1)
 				SetLineSpacing(_lineSpacingExtraDefault, _lineSpacingMultiplierDefault);
 			else if (Element.LineHeight >= 0)
-				SetLineSpacing(0, (float) Element.LineHeight);
+				SetLineSpacing(0, (float)Element.LineHeight);
+
+			_lastSizeRequest = null;
+		}
+
+		void UpdatePadding()
+		{
+			SetPadding(
+				(int)Context.ToPixels(Element.Padding.Left),
+				(int)Context.ToPixels(Element.Padding.Top),
+				(int)Context.ToPixels(Element.Padding.Right),
+				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
 		}

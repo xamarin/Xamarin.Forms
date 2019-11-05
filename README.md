@@ -26,7 +26,7 @@ Platform.GTK  | `Xamarin.Forms.Platform.GTK`  | [![NuGet](https://img.shields.io
 Platform.WPF  | `Xamarin.Forms.Platform.WPF`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Platform.WPF.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Platform.WPF/) |[![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Platform.WPF.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Platform.WPF/) |
 Visual.Material  | `Xamarin.Forms.Visual.Material`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Visual.Material.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Visual.Material/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Visual.Material.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Visual.Material/) |
 
-If you want to use the latest dev build then you should read [this blog post](https://blog.xamarin.com/try-the-latest-in-xamarin-forms-with-nightly-builds):
+If you want to use the latest dev build then you should read [this blog post](https://devblogs.microsoft.com/xamarin/try-the-latest-in-xamarin-forms-with-nightly-builds):
 
 - Add the nightly feed to your NuGet sources or add a NuGet.Config to your app (placing it in the same directory where your solution file is) with the following content:
 
@@ -109,6 +109,16 @@ Make sure you have nuget.exe 4.0 or above and the latest dotnet core sdk (2.0.3)
     msbuild /restore Xamarin.Forms.sln
 
 ### UI Tests ###
+
+##### Run Android UI Tests #####
+
+Depending on your environment setup, you might need to configure a few things before being able to debug / run UI tests, especially on Windows.
+
+- If you receive an error about ANDROID_HOME, please make sure to set your environment variable to the Android SDK directory (e.g. C:\Program Files (x86)\Android\android-sdk).
+- If you receive an error about JAVA_HOME, please install the latest Java JDK and set your environment variable to the JDK directory (e.g. C:\Program Files\Java\jdk-13).
+- If you receive an error about a missing ApkFile, please generate an APK file for Xamarin.Forms.ControlGallery.Android. The easiest way to do this is to right click the project and select "Deploy". Note that if you rebuild the solution, you might lose the APK and will need to generate it again.
+
+After these steps are taken care of, you should be good to go. You can see all UI tests in Test Explorer, search them for your own convenience, and quickly run individual tests.
 
 ##### Run UWP UI Tests #####
 
