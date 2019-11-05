@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var autofitLabel = new Label
 			{
 				AutomationId = AutoFitLabel,
-				AutoFit = true,
+				AutoFitText = true,
 				Text = "Welcome to xamarin forms!!",
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = "Change autofit mode",
 						AutomationId = AutoFitModeButton,
-						Command = new Command(() => autofitLabel.AutoFit = !autofitLabel.AutoFit)
+						Command = new Command(() => autofitLabel.AutoFitText = !autofitLabel.AutoFitText)
 					}
 				}
 			};
