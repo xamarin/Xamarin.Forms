@@ -14,10 +14,12 @@ namespace Xamarin.Forms.Markup
 			IValueConverter converter = null,
 			object converterParameter = null,
 			string stringFormat = null,
-			object source = null
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
 		) where TElement : Element
 		{
-			if (source != null || converterParameter != null)
+			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
 				element.SetBinding(targetProperty, new Binding(
 					path: sourcePropertyName,
 					mode: mode,
@@ -25,7 +27,11 @@ namespace Xamarin.Forms.Markup
 					converterParameter: converterParameter,
 					stringFormat: stringFormat,
 					source: source
-				));
+				)
+				{
+					TargetNullValue = targetNullValue,
+					FallbackValue = fallbackValue
+				});
 			else
 				element.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
 			return element;
@@ -40,11 +46,13 @@ namespace Xamarin.Forms.Markup
 			Func<TDest, TSource> convertBack = null,
 			object converterParameter = null,
 			string stringFormat = null,
-			object source = null
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
 		) where TElement : Element
 		{
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
-			if (source != null || converterParameter != null)
+			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
 				element.SetBinding(targetProperty, new Binding(
 					path: sourcePropertyName,
 					mode: mode,
@@ -52,7 +60,11 @@ namespace Xamarin.Forms.Markup
 					converterParameter: converterParameter,
 					stringFormat: stringFormat,
 					source: source
-				));
+				)
+				{
+					TargetNullValue = targetNullValue,
+					FallbackValue = fallbackValue
+				});
 			else
 				element.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
 			return element;
@@ -65,7 +77,9 @@ namespace Xamarin.Forms.Markup
 			IValueConverter converter = null,
 			object converterParameter = null,
 			string stringFormat = null,
-			object source = null
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
 		) where TElement : Element
 		{
 			element.Bind(
@@ -75,7 +89,9 @@ namespace Xamarin.Forms.Markup
 				converter: converter,
 				converterParameter: converterParameter,
 				stringFormat: stringFormat,
-				source: source
+				source: source,
+				targetNullValue: targetNullValue,
+				fallbackValue: fallbackValue
 			);
 			return element;
 		}
@@ -88,7 +104,9 @@ namespace Xamarin.Forms.Markup
 			Func<TDest, TSource> convertBack = null,
 			object converterParameter = null,
 			string stringFormat = null,
-			object source = null
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
 		) where TElement : Element
 		{
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
@@ -99,7 +117,9 @@ namespace Xamarin.Forms.Markup
 				converter: converter,
 				converterParameter: converterParameter,
 				stringFormat: stringFormat,
-				source: source
+				source: source,
+				targetNullValue: targetNullValue,
+				fallbackValue: fallbackValue
 			);
 			return element;
 		}
