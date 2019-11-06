@@ -6,6 +6,11 @@ using System.Linq;
 
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+#if UITEST
+using Xamarin.Forms.Core.UITests;
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -15,9 +20,16 @@ namespace Xamarin.Forms.Controls.Issues
     {
         public static ListView List { get; set; }
         public static List<MyGroup> Data { get; set;  }
-        public Issue8279()
+		const string ScrollWithNoItemButGroup = "ScrollWithNoItemButGroup";
+		const string ScrollWithItemButNoGroup = "ScrollWithItemButNoGroup";
+		const string ScrollWithItemWithGroup = "ScrollWithItemWithGroup";
+		const string ScrollWithNoItemNoGroup = "ScrollWithNoItemNoGroup";
+		const string ScrollWithNoItemEmptyGroup = "ScrollWithNoItemEmptyGroup";
+
+		public Issue8279()
         {
-            Data = new List<MyGroup>();
+#if APP
+			Data = new List<MyGroup>();
             Data.Add(new MyGroup(){Headertitle = "Header 1"});
             Data.First().Add(new MyData(){Title = "title 1"});
             Data.First().Add(new MyData() { Title = "title 2" });
@@ -52,30 +64,35 @@ namespace Xamarin.Forms.Controls.Issues
 			var button1 = new Button()
 			{
 				Text = "Scroll with no item but group",
+				AutomationId = ScrollWithNoItemButGroup,
 				Command = new Command(()=> List.ScrollTo(null, lastGroup, ScrollToPosition.MakeVisible, true))
 			};
 
 			var button2 = new Button()
 			{
 				Text = "Scroll with item but no group",
+				AutomationId = ScrollWithItemButNoGroup,
 				Command = new Command(() => List.ScrollTo(firstItem, ScrollToPosition.MakeVisible, true))
 			};
 
 			var button3 = new Button()
 			{
 				Text = "Scroll with item with group",
+				AutomationId = ScrollWithItemWithGroup,
 				Command = new Command(() => List.ScrollTo(firstItem, lastGroup, ScrollToPosition.MakeVisible, true))
 			};
 
 			var button4 = new Button()
 			{
 				Text = "Scroll with no item no group",
+				AutomationId = ScrollWithNoItemNoGroup,
 				Command = new Command(() => List.ScrollTo(null, null, ScrollToPosition.MakeVisible, true))
 			};
 
 			var button5 = new Button()
 			{
 				Text = "Scroll with no item but empty group",
+				AutomationId = ScrollWithNoItemEmptyGroup,
 				Command = new Command(() => List.ScrollTo(null, emptyGroup, ScrollToPosition.MakeVisible, true))
 			};
 
@@ -84,7 +101,55 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				Children = { button1, button2, button3, button4, button5, List },
 			};
-        }
+#endif
+		}
+
+#if UITEST
+		[Test]
+		public void ScrollWithNoItemButGroup()
+		{
+			RunningApp.WaitForElement(ScrollWithNoItemButGroup);
+			RunningApp.Tap(ScrollWithNoItemButGroup);
+			// This will fail if the list didn't scroll. If it did scroll, it will succeed
+			RunningApp.WaitForElement(q => q.Marked("Header 3"), timeout: TimeSpan.FromSeconds(2));
+		}
+
+		[Test]
+		public void ScrollWithItemButNoGroup()
+		{
+			RunningApp.WaitForElement(ScrollWithItemButNoGroup);
+			RunningApp.Tap(ScrollWithItemButNoGroup);
+			// This will fail if the list didn't scroll. If it did scroll, it will succeed
+			RunningApp.WaitForElement(q => q.Marked("title 1"), timeout: TimeSpan.FromSeconds(2));
+		}
+
+		[Test]
+		public void ScrollWithItemWithGroup()
+		{
+			RunningApp.WaitForElement(ScrollWithItemWithGroup);
+			RunningApp.Tap(ScrollWithItemWithGroup);
+			// This will fail if the list didn't scroll. If it did scroll, it will succeed
+			RunningApp.WaitForElement(q => q.Marked("Header 3"), timeout: TimeSpan.FromSeconds(2));
+		}
+
+		[Test]
+		public void ScrollWithNoItemNoGroup()
+		{
+			RunningApp.WaitForElement(ScrollWithNoItemNoGroup);
+			RunningApp.Tap(ScrollWithNoItemNoGroup);
+			// This will pass if the list didn't scroll and remain on the same state
+			RunningApp.WaitForElement(q => q.Marked("Header 3"), timeout: TimeSpan.FromSeconds(2));
+		}
+
+		[Test]
+		public void ScrollWithNoItemEmptyGroup()
+		{
+			RunningApp.WaitForElement(ScrollWithNoItemEmptyGroup);
+			RunningApp.Tap(ScrollWithNoItemEmptyGroup);
+			// This will fail if the list didn't scroll. If it did scroll, it will succeed
+			RunningApp.WaitForElement(q => q.Marked("Header 2"), timeout: TimeSpan.FromSeconds(2));
+		}
+#endif
 
 		[Preserve(AllMembers = true)]
 		public class MyData : INotifyPropertyChanged
