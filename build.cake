@@ -46,9 +46,9 @@ var nugetversion = Argument<string>("packageVersion", gitVersion.NuGetVersion);
 var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ?? 
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
-string monoMajorVersion = "5.14.0";
-string monoPatchVersion = "177";
-string monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
+string monoMajorVersion = "";
+string monoPatchVersion = "";
+string monoVersion = ""; //$"{monoMajorVersion}.{monoPatchVersion}";
 
 string monoSDK_windows = $"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
 string androidSDK_windows = "";//"https://aka.ms/xamarin-android-commercial-d15-9-windows";
