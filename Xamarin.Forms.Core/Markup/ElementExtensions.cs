@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Markup
 		public static TElement Bind<TElement>(
 			this TElement element,
 			BindableProperty targetProperty,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Markup
 		{
 			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
 				element.SetBinding(targetProperty, new Binding(
-					path: sourcePropertyName,
+					path: path,
 					mode: mode,
 					converter: converter,
 					converterParameter: converterParameter,
@@ -33,14 +33,14 @@ namespace Xamarin.Forms.Markup
 					FallbackValue = fallbackValue
 				});
 			else
-				element.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
+				element.SetBinding(targetProperty, path, mode, converter, stringFormat);
 			return element;
 		}
 
 		public static TElement Bind<TElement, TSource, TDest>(
 			this TElement element,
 			BindableProperty targetProperty,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			Func<TSource, TDest> convert = null,
 			Func<TDest, TSource> convertBack = null,
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Markup
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
 			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
 				element.SetBinding(targetProperty, new Binding(
-					path: sourcePropertyName,
+					path: path,
 					mode: mode,
 					converter: converter,
 					converterParameter: converterParameter,
@@ -66,13 +66,13 @@ namespace Xamarin.Forms.Markup
 					FallbackValue = fallbackValue
 				});
 			else
-				element.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
+				element.SetBinding(targetProperty, path, mode, converter, stringFormat);
 			return element;
 		}
 
 		public static TElement Bind<TElement>(
 			this TElement element,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Markup
 		{
 			element.Bind(
 				targetProperty: DefaultBindableProperties.GetFor(element),
-				sourcePropertyName: sourcePropertyName,
+				path: path,
 				mode: mode,
 				converter: converter,
 				converterParameter: converterParameter,
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Markup
 
 		public static TElement Bind<TElement, TSource, TDest>(
 			this TElement element,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			Func<TSource, TDest> convert = null,
 			Func<TDest, TSource> convertBack = null,
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Markup
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
 			element.Bind(
 				targetProperty: DefaultBindableProperties.GetFor(element),
-				sourcePropertyName: sourcePropertyName,
+				path: path,
 				mode: mode,
 				converter: converter,
 				converterParameter: converterParameter,

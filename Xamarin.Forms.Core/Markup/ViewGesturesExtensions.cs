@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Markup
 		public static TView Bind<TView, TGestureRecognizer>(
 			this TView view,
 			BindableProperty targetProperty,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -20,14 +20,14 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TView : View where TGestureRecognizer : GestureRecognizer, new()
 		{
-			Bind<TGestureRecognizer>(view.GestureRecognizers, targetProperty, sourcePropertyName, mode, converter,
+			Bind<TGestureRecognizer>(view.GestureRecognizers, targetProperty, path, mode, converter,
 				converterParameter, stringFormat, source, targetNullValue, fallbackValue);
 			return view;
 		}
 
 		public static TView Bind<TView, TGestureRecognizer>(
 			this TView view,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TView : View where TGestureRecognizer : GestureRecognizer, new()
 		{
-			Bind<TGestureRecognizer>(view.GestureRecognizers, null, sourcePropertyName, mode, converter,
+			Bind<TGestureRecognizer>(view.GestureRecognizers, null, path, mode, converter,
 				converterParameter, stringFormat, source, targetNullValue, fallbackValue);
 			return view;
 		}
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Markup
 		public static TGestureElement BindGesture<TGestureElement, TGestureRecognizer>(
 			this TGestureElement gestureElement,
 			BindableProperty targetProperty,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -55,14 +55,14 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TGestureElement : GestureElement where TGestureRecognizer : GestureRecognizer, new()
 		{
-			Bind<TGestureRecognizer>(gestureElement.GestureRecognizers, targetProperty, sourcePropertyName, mode,
+			Bind<TGestureRecognizer>(gestureElement.GestureRecognizers, targetProperty, path, mode,
 				converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue);
 			return gestureElement;
 		}
 
 		public static TGestureElement BindGesture<TGestureElement, TGestureRecognizer>(
 			this TGestureElement gestureElement,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -72,14 +72,14 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TGestureElement : GestureElement where TGestureRecognizer : GestureRecognizer, new()
 		{
-			Bind<TGestureRecognizer>(gestureElement.GestureRecognizers, null, sourcePropertyName, mode, converter,
+			Bind<TGestureRecognizer>(gestureElement.GestureRecognizers, null, path, mode, converter,
 				converterParameter, stringFormat, source, targetNullValue, fallbackValue);
 			return gestureElement;
 		}
 
 		public static TView BindTapGesture<TView>(
 			this TView view,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			string commandParameterPropertyName = null,
 			object commandParameter = null,
 			BindingMode mode = BindingMode.Default,
@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TView : View
 		{
-			BindTap(view.GestureRecognizers, sourcePropertyName, commandParameterPropertyName, commandParameter, mode,
+			BindTap(view.GestureRecognizers, path, commandParameterPropertyName, commandParameter, mode,
 				converter, converterParameter, stringFormat, source, commandParameterSource,
 				targetNullValue, fallbackValue);
 			return view;
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Markup
 
 		public static TGestureElement BindTap<TGestureElement>(
 			this TGestureElement gestureElement,
-			string sourcePropertyName = bindingContextPropertyName,
+			string path = bindingContextPropertyName,
 			string commandParameterPropertyName = null,
 			object commandParameter = null,
 			BindingMode mode = BindingMode.Default,
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TGestureElement : GestureElement
 		{
-			BindTap(gestureElement.GestureRecognizers, sourcePropertyName, commandParameterPropertyName,
+			BindTap(gestureElement.GestureRecognizers, path, commandParameterPropertyName,
 				commandParameter, mode, converter, converterParameter, stringFormat, source, commandParameterSource,
 				targetNullValue, fallbackValue);
 			return gestureElement;
@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Markup
 		static void Bind<TGestureRecognizer>(
 			IList<IGestureRecognizer> gestureRecognizers,
 			BindableProperty targetProperty,
-			string sourcePropertyName,
+			string path,
 			BindingMode mode,
 			IValueConverter converter,
 			object converterParameter,
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Markup
 
 			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
 				gestureRecognizer.SetBinding(targetProperty, new Binding(
-					path: sourcePropertyName,
+					path: path,
 					mode: mode,
 					converter: converter,
 					converterParameter: converterParameter,
@@ -153,12 +153,12 @@ namespace Xamarin.Forms.Markup
 					FallbackValue = fallbackValue
 				});
 			else
-				gestureRecognizer.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
+				gestureRecognizer.SetBinding(targetProperty, path, mode, converter, stringFormat);
 		}
 
 		static void BindTap(
 			IList<IGestureRecognizer> gestureRecognizers,
-			string sourcePropertyName,
+			string path,
 			string commandParameterPropertyName,
 			object commandParameter,
 			BindingMode mode,
@@ -186,7 +186,7 @@ namespace Xamarin.Forms.Markup
 
 			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
 				gestureRecognizer.SetBinding(targetProperty, new Binding(
-					path: sourcePropertyName,
+					path: path,
 					mode: mode,
 					converter: converter,
 					converterParameter: converterParameter,
@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Markup
 					FallbackValue = fallbackValue
 				});
 			else
-				gestureRecognizer.SetBinding(targetProperty, sourcePropertyName, mode, converter, stringFormat);
+				gestureRecognizer.SetBinding(targetProperty, path, mode, converter, stringFormat);
 		}
 	}
 }
