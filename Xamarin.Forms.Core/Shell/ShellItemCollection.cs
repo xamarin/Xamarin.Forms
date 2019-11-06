@@ -73,7 +73,19 @@ namespace Xamarin.Forms
 		void OnShellItemControllerItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			foreach (ShellSection section in (e.NewItems ?? e.OldItems ?? (IList)_inner))
-				CheckVisibility(section.Parent as ShellItem);
+			{
+				if (section.Parent == null)
+					section.ParentSet += OnParentSet;
+				else
+					CheckVisibility(section.Parent as ShellItem);
+			}
+
+			void OnParentSet(object s, System.EventArgs __)
+			{
+				var shellSection = (ShellSection)s;
+				shellSection.ParentSet -= OnParentSet;
+				CheckVisibility(shellSection.Parent as ShellItem);
+			}
 		}
 
 		void CheckVisibility(ShellItem shellItem)
