@@ -372,8 +372,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void SetupMenu(IMenu menu, int maxBottomItems, ShellItem shellItem)
 		{
-            var currentIndex = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
-            var items = CreateTabList(shellItem);
+			var currentIndex = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
+			var items = CreateTabList(shellItem);
 
 			BottomNavigationViewUtils.SetupMenu(
 				menu,
