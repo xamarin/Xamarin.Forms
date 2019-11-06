@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.PropertyName == SwipeView.ContentProperty.PropertyName)
+			if (changedProperty.PropertyName == ContentView.ContentProperty.PropertyName)
 				UpdateContent();
 			else if (changedProperty.IsOneOf(SwipeView.LeftItemsProperty, SwipeView.RightItemsProperty, SwipeView.TopItemsProperty, SwipeView.BottomItemsProperty))
 				UpdateSwipeItems();
@@ -176,16 +176,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateSwipeItems()
 		{
-			if (Element.LeftItems != null)
+			if (IsValidSwipeItems(Element.LeftItems))
 				Control.LeftItems = CreateSwipeItems(SwipeDirection.Left);
 
-			if (Element.RightItems != null)
+			if (IsValidSwipeItems(Element.RightItems))
 				Control.RightItems = CreateSwipeItems(SwipeDirection.Right);
 
-			if (Element.TopItems != null)
+			if (IsValidSwipeItems(Element.TopItems))
 				Control.TopItems = CreateSwipeItems(SwipeDirection.Up);
 
-			if (Element.BottomItems != null)
+			if (IsValidSwipeItems(Element.BottomItems))
 				Control.BottomItems = CreateSwipeItems(SwipeDirection.Down);
 		}
 
@@ -225,6 +225,11 @@ namespace Xamarin.Forms.Platform.UWP
 				windowsSwipeItem.Command = formsSwipeItem.Command;
 				windowsSwipeItem.CommandParameter = formsSwipeItem.CommandParameter;
 			}
+		}
+
+		bool IsValidSwipeItems(SwipeItems swipeItems)
+		{
+			return swipeItems != null && swipeItems.Count > 0;
 		}
 
 		void DisposeSwipeItems(Dictionary<WSwipeItem, SwipeItem> list)
