@@ -220,7 +220,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool HasSwipeItems()
 		{
-			return Element != null && (Element.LeftItems != null || Element.RightItems != null || Element.TopItems != null || Element.BottomItems != null);
+			return Element != null && (IsValidSwipeItems(Element.LeftItems) || IsValidSwipeItems(Element.RightItems) || IsValidSwipeItems(Element.TopItems) || IsValidSwipeItems(Element.BottomItems));
+		}
+
+		bool IsValidSwipeItems(SwipeItems swipeItems)
+		{
+			return swipeItems != null && swipeItems.Count > 0;
 		}
 
 		void UpdateSwipeItems()
@@ -791,7 +796,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool ValidateSwipeDirection()
 		{
 			var swipeItems = GetSwipeItemsByDirection();
-			return swipeItems != null;
+			return IsValidSwipeItems(swipeItems);
 		}
 
 		double GetSwipeOffset(CGPoint initialPoint, CGPoint endPoint)
