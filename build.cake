@@ -56,7 +56,7 @@ string iOSSDK_windows = "https://download.visualstudio.microsoft.com/download/pr
 string macSDK_windows = "";
 
 monoMajorVersion = "6.4.0";
-monoPatchVersion = "208";
+monoPatchVersion = "199";
 monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
 
 string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d16-3-macos";
