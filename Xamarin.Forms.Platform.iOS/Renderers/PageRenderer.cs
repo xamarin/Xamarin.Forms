@@ -547,29 +547,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateStatusBarColor()
 		{
 			var statusBarColor = Page.StatusBarColor.ToUIColor();
-
-			//UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
-			//UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.BlackOpaque;
-
-			//NavigationController.NavigationBar.TintColor = UIColor.White;
-			//NavigationController.NavigationBar.BarStyle = UIBarStyle.BlackOpaque;
-
-			//this.ViewController.NavigationController.NavigationBar.TintColor = UIColor.White;
-
-			if (GetCurrentViewController().PreferredStatusBarStyle() != UIStatusBarStyle.BlackOpaque)
-			{
-				UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.BlackOpaque, false);
-			}
-			else
-			{
-				UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.BlackTranslucent, false);
-			}
-
-			//UINavigationBar.Appearance.set(new UITextAttributes
-			//{
-			//	TextColor = UIColor.White
-			//});
-
 			if (Forms.IsiOS13OrNewer)
 			{
 				foreach (var window in UIApplication.SharedApplication.Windows)

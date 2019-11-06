@@ -1,4 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using Windows.Foundation.Metadata;
+using Windows.System.Profile;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 
@@ -61,6 +66,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+				UpdateStatusBarColor();
+		}
+
 		void OnLoaded(object sender, RoutedEventArgs args)
 		{
 			var carouselPage = Element?.Parent as CarouselPage;
@@ -78,6 +90,26 @@ namespace Xamarin.Forms.Platform.UWP
 			Unloaded -= OnUnloaded;
 			_loaded = false;
 			Element?.SendDisappearing();
+		}
+
+		void UpdateStatusBarColor()
+		{
+			if(ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+			{
+				var statusBar = StatusBar.GetForCurrentView();
+				if (statusBar != null)
+				{
+					statusBar.BackgroundColor = Element.StatusBarColor.ToWindowsColor();
+				}
+			}
+			else
+			{
+				var titleBar = ApplicationView.GetForCurrentView()?.TitleBar;
+				if (titleBar != null)
+				{
+					titleBar.BackgroundColor = Element.StatusBarColor.ToWindowsColor();
+				}
+			}
 		}
 	}
 }

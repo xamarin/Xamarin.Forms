@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
 				UpdateStatusBarColor();
-			if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
+			else if(e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground(true);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground(false);
@@ -158,8 +158,6 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateStatusBarColor()
 		{
 			(Context.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(Element.StatusBarColor.ToAndroid());
-
-
 		}
 
 		void IOrderedTraversalController.UpdateTraversalOrder()
