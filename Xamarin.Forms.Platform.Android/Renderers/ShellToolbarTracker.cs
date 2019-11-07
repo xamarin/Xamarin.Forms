@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 		Color _tintColor = Color.Default;
 		Toolbar _toolbar;
 		AppBarLayout _appBar;
-		float _toolbarElevation;
+		float _appBarElevation;
 
 		public ShellToolbarTracker(IShellContext shellContext, Toolbar toolbar, DrawerLayout drawerLayout)
 		{
@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLeftBarButtonItem();
 				UpdateToolbarItems();
 				UpdateNavBarVisible(_toolbar, newPage);
-				UpdateNavBarHasShadow(_toolbar, newPage);
+				UpdateNavBarHasShadow(newPage);
 				UpdateTitleView();
 			}
 		}
@@ -225,7 +225,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
 				UpdateNavBarVisible(_toolbar, Page);
 			else if (e.PropertyName == Shell.NavBarHasShadowProperty.PropertyName)
-				UpdateNavBarHasShadow(_toolbar, Page);
+				UpdateNavBarHasShadow(Page);
 			else if (e.PropertyName == Shell.BackButtonBehaviorProperty.PropertyName)
 			{
 				var backButtonHandler = Shell.GetBackButtonBehavior(Page);
@@ -422,22 +422,18 @@ namespace Xamarin.Forms.Platform.Android
 			toolbar.Visibility = navBarVisible ? ViewStates.Visible : ViewStates.Gone;
 		}
 
-		void UpdateNavBarHasShadow(Toolbar toolbar, Page page)
+		void UpdateNavBarHasShadow(Page page)
 		{
-			var parent = (AppBarLayout)toolbar.Parent;
-
-			var appBarLayout = toolbar.Parent.GetParentOfType<AppBarLayout>();
-
 			if (Shell.GetNavBarHasShadow(page))
 			{
-				if (_toolbarElevation > 0)
-					appBarLayout.SetElevation(_toolbarElevation);
+				if (_appBarElevation > 0)
+					_appBar.SetElevation(_appBarElevation);
 			}
 			else
 			{
 				// 4 is the default
-				_toolbarElevation = toolbar.Context.ToPixels(4);
-				appBarLayout.SetElevation(0f);
+				_appBarElevation = _appBar.Context.ToPixels(4);
+				_appBar.SetElevation(0f);
 			}
 		}
 
@@ -573,7 +569,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_appBar == null || _toolbar == null || Page == null)
 				return;
 
-			UpdateNavBarHasShadow(_toolbar, Page);
+			UpdateNavBarHasShadow(Page);
 		}
 
 		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
