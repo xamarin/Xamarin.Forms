@@ -11,9 +11,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsToggledProperty = BindableProperty.Create(nameof(IsToggled), typeof(bool), typeof(Switch), false, propertyChanged: (bindable, oldValue, newValue) =>
 		{
-			EventHandler<ToggledEventArgs> eh = ((Switch)bindable).Toggled;
-			if (eh != null)
-				eh(bindable, new ToggledEventArgs((bool)newValue));
+			((Switch)bindable).Toggled?.Invoke(bindable, new ToggledEventArgs((bool)newValue));
 			((Switch)bindable).ChangeVisualState();
 		}, defaultBindingMode: BindingMode.TwoWay);
 
@@ -43,16 +41,15 @@ namespace Xamarin.Forms
 		public bool IsToggled
 		{
 			get { return (bool)GetValue(IsToggledProperty); }
-			set { SetValue(IsToggledProperty, value); ChangeVisualState(); }
+			set { SetValue(IsToggledProperty, value); }
 		}
 		protected internal override void ChangeVisualState()
 		{
+			base.ChangeVisualState();
 			if (IsEnabled && IsToggled)
 				VisualStateManager.GoToState(this, SwitchOnVisualState);
 			else if (IsEnabled && !IsToggled)
 				VisualStateManager.GoToState(this, SwitchOffVisualState);
-			else
-				base.ChangeVisualState();
 		}
 
 		public event EventHandler<ToggledEventArgs> Toggled;

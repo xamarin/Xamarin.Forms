@@ -15,6 +15,11 @@
                             <Setter Property="ThumbColor" Value="Red" />
                         </VisualState.Setters>
                     </VisualState>
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="ThumbColor" Value="Black" />
+                        </VisualState.Setters>
+                    </VisualState>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
         </Switch>
