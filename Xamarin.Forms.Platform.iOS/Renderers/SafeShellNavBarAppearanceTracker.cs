@@ -9,6 +9,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _defaultBarTint;
 		UIColor _defaultTint;
 		UIStringAttributes _defaultTitleAttributes;
+		float _shadowOpacity = float.MinValue;
+		CGColor _shadowColor;
 
 		public void UpdateLayout(UINavigationController controller)
 		{
@@ -62,40 +64,28 @@ namespace Xamarin.Forms.Platform.iOS
 			Dispose(true);
 		}
 
-		nfloat shadowRadius = float.MinValue;
-		float shadowOpacity = float.MinValue;
-		CGColor shadowColor;
-
-		public virtual void SetNavigationBarHasShadow(UINavigationController controller, bool hasShadow)
+		public virtual void SetHasShadow(UINavigationController controller, bool hasShadow)
 		{
 			var navigationBar = controller.NavigationBar;
-
-			if (shadowRadius == float.MinValue)
+			if (_shadowOpacity == float.MinValue)
 			{
-				shadowRadius = navigationBar.Layer.ShadowRadius;
-				shadowOpacity = navigationBar.Layer.ShadowOpacity;
-				shadowColor = navigationBar.Layer.ShadowColor;
+				// Don't do anything if user hasn't changed the shadow to true
+				if (!hasShadow)
+					return;
+
+				_shadowOpacity = navigationBar.Layer.ShadowOpacity;
+				_shadowColor = navigationBar.Layer.ShadowColor;
 			}
 
 			if(hasShadow)
 			{
 				navigationBar.Layer.ShadowColor = UIColor.Black.CGColor;
-				//navigationBar.Layer.ShadowOffset = new CGSize(0, 2);
-				//navigationBar.Layer.ShadowRadius = 4.0f;
-				//navigationBar.Layer.ShadowOpacity = 1.0f;
-				//navigationBar.Layer.MasksToBounds = false;
-
-				navigationBar.Layer.ShadowRadius = 3f;
 				navigationBar.Layer.ShadowOpacity = 1.0f;
 			}
 			else
 			{
-				navigationBar.Layer.ShadowColor = shadowColor;
-				//navigationBar.Layer.ShadowOffset = new CGSize(0, 0);
-				navigationBar.Layer.ShadowRadius = shadowRadius;
-				navigationBar.Layer.ShadowOpacity = shadowOpacity;
-				navigationBar.Layer.MasksToBounds = false;
-
+				navigationBar.Layer.ShadowColor = _shadowColor;
+				navigationBar.Layer.ShadowOpacity = _shadowOpacity;
 			}
 		}
 		#endregion
