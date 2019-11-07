@@ -210,8 +210,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLeftBarButtonItem();
 				UpdateToolbarItems();
 				UpdateNavBarVisible(_toolbar, newPage);
-
-
+				UpdateNavBarHasShadow(_toolbar, newPage);
 				UpdateTitleView();
 			}
 		}
@@ -571,7 +570,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ViewTreeObserver.IOnGlobalLayoutListener.OnGlobalLayout()
 		{
-			if (_appBar == null)
+			if (_appBar == null || _toolbar == null || Page == null)
 				return;
 
 			UpdateNavBarHasShadow(_toolbar, Page);
