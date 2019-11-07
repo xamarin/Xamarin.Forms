@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 		//assume the default
 		Color _tintColor = Color.Default;
 		Toolbar _toolbar;
-		float toolbarElevation;
+		float _toolbarElevation;
 
 		public ShellToolbarTracker(IShellContext shellContext, Toolbar toolbar, DrawerLayout drawerLayout)
 		{
@@ -432,13 +432,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Shell.GetNavBarHasShadow(page))
 			{
-				if (toolbarElevation > 0)
-					appBarLayout.SetElevation(toolbarElevation);
+				if (_toolbarElevation > 0)
+					appBarLayout.SetElevation(_toolbarElevation);
 			}
 			else
 			{
 				// 4 is the default
-				toolbarElevation = toolbar.Context.ToPixels(4);
+				_toolbarElevation = toolbar.Context.ToPixels(4);
 				appBarLayout.SetElevation(0f);
 			}
 		}
