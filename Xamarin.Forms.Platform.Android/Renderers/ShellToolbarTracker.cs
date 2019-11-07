@@ -18,6 +18,7 @@ using R = Android.Resource;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
 using ATextView = global::Android.Widget.TextView;
+using Android.Support.Design.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -50,6 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 		//assume the default
 		Color _tintColor = Color.Default;
 		Toolbar _toolbar;
+		float toolbarElevation;
 
 		public ShellToolbarTracker(IShellContext shellContext, Toolbar toolbar, DrawerLayout drawerLayout)
 		{
@@ -202,6 +204,15 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLeftBarButtonItem();
 				UpdateToolbarItems();
 				UpdateNavBarVisible(_toolbar, newPage);
+
+				_toolbar.ViewTreeObserver.GlobalLayout += OnGlobalLayout;
+
+				void OnGlobalLayout(object sender, EventArgs e)
+				{
+					_toolbar.ViewTreeObserver.GlobalLayout -= OnGlobalLayout;
+					UpdateNavBarHasShadow(_toolbar, Page);
+				}
+
 				UpdateTitleView();
 			}
 		}
@@ -215,6 +226,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateToolbarItems();
 			else if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
 				UpdateNavBarVisible(_toolbar, Page);
+			else if (e.PropertyName == Shell.NavBarHasShadowProperty.PropertyName)
+				UpdateNavBarHasShadow(_toolbar, Page);
 			else if (e.PropertyName == Shell.BackButtonBehaviorProperty.PropertyName)
 			{
 				var backButtonHandler = Shell.GetBackButtonBehavior(Page);
@@ -409,6 +422,25 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var navBarVisible = Shell.GetNavBarIsVisible(page);
 			toolbar.Visibility = navBarVisible ? ViewStates.Visible : ViewStates.Gone;
+		}
+
+		void UpdateNavBarHasShadow(Toolbar toolbar, Page page)
+		{
+			var parent = (AppBarLayout)toolbar.Parent;
+
+			var appBarLayout = toolbar.Parent.GetParentOfType<AppBarLayout>();
+
+			if (Shell.GetNavBarHasShadow(page))
+			{
+				if (toolbarElevation > 0)
+					appBarLayout.SetElevation(toolbarElevation);
+			}
+			else
+			{
+				// 4 is the default
+				toolbarElevation = toolbar.Context.ToPixels(4);
+				appBarLayout.SetElevation(0f);
+			}
 		}
 
 		protected virtual void UpdatePageTitle(Toolbar toolbar, Page page)

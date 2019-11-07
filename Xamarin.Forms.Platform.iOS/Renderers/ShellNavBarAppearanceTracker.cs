@@ -10,8 +10,9 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _defaultTint;
 		UIStringAttributes _defaultTitleAttributes;
 		bool _disposed = false;
+		bool _navigationBarHasShadow;
 
-		public void UpdateLayout (UINavigationController controller)
+		public void UpdateLayout(UINavigationController controller)
 		{
 			if (_blurView?.Superview == null)
 				return;
@@ -42,6 +43,26 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public void NavigationBarHasShadow(bool hasShadow)
+		{
+			_navigationBarHasShadow = hasShadow;
+
+			if (Forms.IsiOS11OrNewer)
+			{
+				if (_navigationBarHasShadow)
+				{
+					_blurView.Layer.ShadowColor = UIColor.Black.CGColor;
+					_blurView.Layer.ShadowOpacity = 1f;
+					_blurView.Layer.ShadowRadius = 3;
+				}
+				else
+				{
+					_blurView.Layer.ShadowOpacity = 0f;
+					_blurView.Layer.ShadowRadius = 0;
+				}
+			}
+		}
+
 		public void SetAppearance(UINavigationController controller, ShellAppearance appearance)
 		{
 			var background = appearance.BackgroundColor;
@@ -68,12 +89,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_colorView = new UIView(frame);
 				_colorView.UserInteractionEnabled = false;
 
-				if (Forms.IsiOS11OrNewer)
-				{
-					_blurView.Layer.ShadowColor = UIColor.Black.CGColor;
-					_blurView.Layer.ShadowOpacity = 1f;
-					_blurView.Layer.ShadowRadius = 3;
-				}
+				NavigationBarHasShadow(_navigationBarHasShadow);
 			}
 
 			navBar.SetBackgroundImage(new UIImage(), UIBarMetrics.Default);
@@ -98,7 +114,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		#region IDisposable Support
-		
+
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!_disposed)
@@ -129,6 +145,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Dispose(true);
 		}
+
 		#endregion
 	}
 }
