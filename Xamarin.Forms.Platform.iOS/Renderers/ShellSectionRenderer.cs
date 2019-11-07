@@ -207,11 +207,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_displayedPage != null)
 			{
 				_displayedPage.PropertyChanged += OnDisplayedPagePropertyChanged;
-				if (!ShellSection.Stack.Contains(_displayedPage))
-				{
-					UpdateNavigationBarHidden();
-					UpdateNavigationBarHasShadow();
-				}
+				UpdateNavigationBarHidden();
+				UpdateNavigationBarHasShadow();
 			}
 		}
 
