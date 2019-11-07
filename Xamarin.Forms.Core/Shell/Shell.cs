@@ -33,7 +33,8 @@ namespace Xamarin.Forms
 			BindableProperty.CreateAttached("NavBarIsVisible", typeof(bool), typeof(Shell), true);
 
 		public static readonly BindableProperty NavBarHasShadowProperty =
-			BindableProperty.CreateAttached("NavBarHasShadow", typeof(bool), typeof(Shell), true);
+			BindableProperty.CreateAttached("NavBarHasShadow", typeof(bool), typeof(Shell), default(bool),
+				defaultValueCreator: (b) => Device.RuntimePlatform == Device.Android);
 
 		public static readonly BindableProperty SearchHandlerProperty =
 			BindableProperty.CreateAttached("SearchHandler", typeof(SearchHandler), typeof(Shell), null, BindingMode.OneTime,

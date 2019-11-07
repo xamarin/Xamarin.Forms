@@ -9,6 +9,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void ResetAppearance(UINavigationController controller);
 		void SetAppearance(UINavigationController controller, ShellAppearance appearance);
 		void UpdateLayout(UINavigationController controller);
-		void NavigationBarHasShadow(bool v);
+		void SetNavigationBarHasShadow(UINavigationController controller, bool hasShadow);
 	}
 }

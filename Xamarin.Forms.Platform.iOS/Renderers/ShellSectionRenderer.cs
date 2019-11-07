@@ -438,7 +438,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateNavigationBarHasShadow()
 		{
-			_appearanceTracker.NavigationBarHasShadow(Shell.GetNavBarHasShadow(_displayedPage));
+			_appearanceTracker.SetNavigationBarHasShadow(this, Shell.GetNavBarHasShadow(_displayedPage));
 		}
 
 		void UpdateShadowImages()

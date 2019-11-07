@@ -1,4 +1,6 @@
-﻿using UIKit;
+﻿using System;
+using CoreGraphics;
+using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -58,6 +60,43 @@ namespace Xamarin.Forms.Platform.iOS
 		public void Dispose()
 		{
 			Dispose(true);
+		}
+
+		nfloat shadowRadius = float.MinValue;
+		float shadowOpacity = float.MinValue;
+		CGColor shadowColor;
+
+		public virtual void SetNavigationBarHasShadow(UINavigationController controller, bool hasShadow)
+		{
+			var navigationBar = controller.NavigationBar;
+
+			if (shadowRadius == float.MinValue)
+			{
+				shadowRadius = navigationBar.Layer.ShadowRadius;
+				shadowOpacity = navigationBar.Layer.ShadowOpacity;
+				shadowColor = navigationBar.Layer.ShadowColor;
+			}
+
+			if(hasShadow)
+			{
+				navigationBar.Layer.ShadowColor = UIColor.Black.CGColor;
+				//navigationBar.Layer.ShadowOffset = new CGSize(0, 2);
+				//navigationBar.Layer.ShadowRadius = 4.0f;
+				//navigationBar.Layer.ShadowOpacity = 1.0f;
+				//navigationBar.Layer.MasksToBounds = false;
+
+				navigationBar.Layer.ShadowRadius = 3f;
+				navigationBar.Layer.ShadowOpacity = 1.0f;
+			}
+			else
+			{
+				navigationBar.Layer.ShadowColor = shadowColor;
+				//navigationBar.Layer.ShadowOffset = new CGSize(0, 0);
+				navigationBar.Layer.ShadowRadius = shadowRadius;
+				navigationBar.Layer.ShadowOpacity = shadowOpacity;
+				navigationBar.Layer.MasksToBounds = false;
+
+			}
 		}
 		#endregion
 	}
