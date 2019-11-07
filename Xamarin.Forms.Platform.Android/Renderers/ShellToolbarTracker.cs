@@ -22,7 +22,7 @@ using Android.Support.Design.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ShellToolbarTracker : Java.Lang.Object, AView.IOnClickListener, IShellToolbarTracker, IFlyoutBehaviorObserver
+	public class ShellToolbarTracker : Java.Lang.Object, AView.IOnClickListener, IShellToolbarTracker, IFlyoutBehaviorObserver, ViewTreeObserver.IOnGlobalLayoutListener
 	{
 		#region IFlyoutBehaviorObserver
 
@@ -51,6 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 		//assume the default
 		Color _tintColor = Color.Default;
 		Toolbar _toolbar;
+		AppBarLayout _appBar;
 		float _toolbarElevation;
 
 		public ShellToolbarTracker(IShellContext shellContext, Toolbar toolbar, DrawerLayout drawerLayout)
@@ -58,7 +59,8 @@ namespace Xamarin.Forms.Platform.Android
 			_shellContext = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
 			_toolbar = toolbar ?? throw new ArgumentNullException(nameof(toolbar));
 			_drawerLayout = drawerLayout ?? throw new ArgumentNullException(nameof(drawerLayout));
-
+			_appBar = _toolbar.Parent.GetParentOfType<AppBarLayout>();
+			_appBar.ViewTreeObserver.AddOnGlobalLayoutListener(this);
 			_toolbar.SetNavigationOnClickListener(this);
 			((IShellController)_shellContext.Shell).AddFlyoutBehaviorObserver(this);
 		}
@@ -141,6 +143,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
+				if(_appBar.IsAlive() && _appBar.ViewTreeObserver.IsAlive())
+					_appBar.ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
+
 				if (_backButtonBehavior != null)
 					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
 				((IShellController)_shellContext?.Shell)?.RemoveFlyoutBehaviorObserver(this);
@@ -165,6 +170,7 @@ namespace Xamarin.Forms.Platform.Android
 			_searchView = null;
 			Page = null;
 			_toolbar = null;
+			_appBar = null;
 			_drawerLayout = null;
 			base.Dispose(disposing);
 		}
@@ -205,13 +211,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateToolbarItems();
 				UpdateNavBarVisible(_toolbar, newPage);
 
-				_toolbar.ViewTreeObserver.GlobalLayout += OnGlobalLayout;
-
-				void OnGlobalLayout(object sender, EventArgs e)
-				{
-					_toolbar.ViewTreeObserver.GlobalLayout -= OnGlobalLayout;
-					UpdateNavBarHasShadow(_toolbar, Page);
-				}
 
 				UpdateTitleView();
 			}
@@ -568,6 +567,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			menu.Dispose();
+		}
+
+		void ViewTreeObserver.IOnGlobalLayoutListener.OnGlobalLayout()
+		{
+			if (_appBar == null)
+				return;
+
+			UpdateNavBarHasShadow(_toolbar, Page);
 		}
 
 		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
