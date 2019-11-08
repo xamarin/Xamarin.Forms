@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.Core;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -27,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var autofitLabel = new Label
 			{
 				AutomationId = AutoFitLabel,
-				AutoFitText = true,
+				AutoFitText = AutoFitTextMode.FitToWidth,
 				Text = "Welcome to xamarin forms!!",
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -44,10 +45,16 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = "Change autofit mode",
 						AutomationId = AutoFitModeButton,
-						Command = new Command(() => autofitLabel.AutoFitText = !autofitLabel.AutoFitText)
+						Command = new Command(() => autofitLabel.AutoFitText = InvertCurrentAutoFitValue(autofitLabel) )
 					}
 				}
 			};
+		}
+
+		private static AutoFitTextMode InvertCurrentAutoFitValue(Label autofitLabel)
+		{
+			return autofitLabel.AutoFitText == AutoFitTextMode.FitToWidth
+				? AutoFitTextMode.None : AutoFitTextMode.FitToWidth;
 		}
 
 #if UITEST && __ANDROID__

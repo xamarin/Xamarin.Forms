@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Xamarin.Forms.Internals;
 using Android.Support.V4.Widget;
 using Android.Util;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -159,17 +160,28 @@ namespace Xamarin.Forms.Platform.Android
 			if ((int)Forms.SdkInt < 14)
 				return;
 
-			TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView,
-				label.AutoFitText ? (int)AutoSizeTextType.Uniform : (int)AutoSizeTextType.None);
 
-			if (!label.AutoFitText)
+			switch (label.AutoFitText)
 			{
+				case AutoFitTextMode.FitToWidth:
+					textView.SetMaxLines(1);
+
+					TextViewCompat.SetAutoSizeTextTypeUniformWithConfiguration(
+						textView, label.MinFontSize, label.MaxFontSize, 1, (int)ComplexUnitType.Sp);
+
+					break;
+				case AutoFitTextMode.None:
+				default:
+					TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView, (int)AutoSizeTextType.None);
+					textView.SetLineBreakMode(label);
+
 #pragma warning disable 618 // We will need to update this when .Font goes away
-				var f = label.Font;
+					var f = label.Font;
 #pragma warning restore 618
 
-				var newTextSize = f.ToScaledPixel();
-				textView.SetTextSize(ComplexUnitType.Sp, newTextSize);
+					var newTextSize = f.ToScaledPixel();
+					textView.SetTextSize(ComplexUnitType.Sp, newTextSize);
+					break;
 			}
 		}
 	}
