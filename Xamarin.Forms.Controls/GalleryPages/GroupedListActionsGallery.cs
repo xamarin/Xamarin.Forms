@@ -249,7 +249,7 @@ namespace Xamarin.Forms.Controls
 			NavigationPage.SetHasNavigationBar (this, false);
 			_groups = CreateItemSource();
 
-			_list.ItemTapped += (sender, arg) => ((GroupAction)arg.Item).DoStuff();
+			_list.ItemTapped += (sender, arg) => ((GroupAction)arg.Item)?.DoStuff();
 
 			_list.ItemsSource = _groups;
 			Title = "Actions";

@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.WPF
 					_listview.Loaded += ControlOnLoaded;
 				}
 
-				// Suscribe element events
+				// Subscribe element events
 				var templatedItems = TemplatedItemsView.TemplatedItems;
 				templatedItems.CollectionChanged += OnCollectionChanged;
 				templatedItems.GroupedCollectionChanged += OnGroupedCollectionChanged;
