@@ -1,5 +1,6 @@
 using ElmSharp;
 using EScroller = ElmSharp.Scroller;
+using ESize = ElmSharp.Size;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
@@ -15,5 +16,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		}
 
 		public EScroller Scroll => base.Scroller;
+
+		ESize ICollectionViewController.GetItemSize(int widthConstraint, int heightConstraint)
+		{
+			return AllocatedSize;
+		}
 	}
 }
