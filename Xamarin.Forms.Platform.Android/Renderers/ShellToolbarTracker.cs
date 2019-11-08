@@ -128,8 +128,6 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					_shellContext.Shell.FlyoutIsPresented = !_shellContext.Shell.FlyoutIsPresented;
 			}
-
-			v.Dispose();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -137,11 +135,23 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed)
 				return;
 
+			_disposed = true;
+
 			if (disposing)
 			{
+				if (_backButtonBehavior != null)
+					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+
+				if(Page?.ToolbarItems?.Count > 0)
+				{
+					foreach (var item in Page.ToolbarItems)
+						item.PropertyChanged -= OnToolbarItemPropertyChanged;
+				}
+
+				((IShellController)_shellContext?.Shell)?.RemoveFlyoutBehaviorObserver(this);
+
 				UpdateTitleView(_shellContext.AndroidContext, _toolbar, null);
 
-				_drawerToggle?.Dispose();
 				if (_searchView != null)
 				{
 					_searchView.View.RemoveFromParent();
@@ -150,10 +160,7 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView.Dispose();
 				}
 
-				((IShellController)_shellContext.Shell).RemoveFlyoutBehaviorObserver(this);
-
-				if (_backButtonBehavior != null)
-					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+				_drawerToggle?.Dispose();
 			}
 
 			_backButtonBehavior = null;
@@ -164,7 +171,6 @@ namespace Xamarin.Forms.Platform.Android
 			Page = null;
 			_toolbar = null;
 			_drawerLayout = null;
-			_disposed = true;
 			base.Dispose(disposing);
 		}
 
@@ -317,14 +323,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var customIcon = await context.GetFormsDrawableAsync(image);
 
-				if(customIcon != null)
+				if (customIcon != null)
 					icon = new FlyoutIconDrawerDrawable(context, tintColor, customIcon, text);
 			}
 
 			if (!String.IsNullOrWhiteSpace(text) && icon == null)
 				icon = new FlyoutIconDrawerDrawable(context, tintColor, icon, text);
 
-			if(icon == null)
+			if (icon == null)
 			{
 				icon = new DrawerArrowDrawable(context.GetThemedContext());
 				icon.SetColorFilter(tintColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
@@ -337,10 +343,10 @@ namespace Xamarin.Forms.Platform.Android
 				_drawerToggle.DrawerIndicatorEnabled = false;
 				toolbar.NavigationIcon = icon;
 			}
-			else if(_flyoutBehavior == FlyoutBehavior.Flyout)
+			else if (_flyoutBehavior == FlyoutBehavior.Flyout)
 			{
 				_drawerToggle.DrawerIndicatorEnabled = isEnabled;
-				if(isEnabled)
+				if (isEnabled)
 				{
 					_drawerToggle.DrawerArrowDrawable = icon;
 					toolbar.NavigationIcon = null;
@@ -373,7 +379,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				toolbar.NavigationContentDescription = shell.FlyoutIcon.AutomationId;
 			}
-			else if(toolbar.SetNavigationContentDescription(_shellContext.Shell.FlyoutIcon) == null)
+			else if (toolbar.SetNavigationContentDescription(_shellContext.Shell.FlyoutIcon) == null)
 			{
 				toolbar.SetNavigationContentDescription(R.String.Ok);
 			}
@@ -428,7 +434,7 @@ namespace Xamarin.Forms.Platform.Android
 					_titleViewContainer = null;
 				}
 			}
-			else if(_titleViewContainer == null)
+			else if (_titleViewContainer == null)
 			{
 				_titleViewContainer = new ContainerView(context, titleView);
 				_titleViewContainer.MatchHeight = _titleViewContainer.MatchWidth = true;
@@ -455,6 +461,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			foreach (var item in page.ToolbarItems)
 			{
+				item.PropertyChanged -= OnToolbarItemPropertyChanged;
+				item.PropertyChanged += OnToolbarItemPropertyChanged;
+
 				using (var title = new Java.Lang.String(item.Text))
 				{
 					var menuitem = menu.Add(title);
@@ -467,11 +476,11 @@ namespace Xamarin.Forms.Platform.Android
 						menuitem.SetShowAsAction(ShowAsAction.Always);
 
 					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
-					
-					if(TintColor != Color.Default)
+
+					if (TintColor != Color.Default)
 					{
 						var view = toolbar.FindViewById(menuitem.ItemId);
-						if (view is ATextView  textView)
+						if (view is ATextView textView)
 							textView.SetTextColor(TintColor.ToAndroid());
 					}
 
@@ -537,6 +546,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			menu.Dispose();
+		}
+
+		void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == MenuItem.TextProperty.PropertyName)
+				UpdateToolbarItems();
+			if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
+				UpdateToolbarItems();
 		}
 
 		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)

@@ -49,6 +49,8 @@ namespace Xamarin.Forms.Platform.Android
 		AView _outerLayout;
 		IShellBottomNavViewAppearanceTracker _appearanceTracker;
 		BottomNavigationViewTracker _bottomNavigationTracker;
+		BottomSheetDialog _bottomSheetDialog;
+		bool _disposed;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -78,29 +80,55 @@ namespace Xamarin.Forms.Platform.Android
 			return _outerLayout;
 		}
 
-		// Use OnDestory become OnDestroyView may fire before events are completed.
-		public override void OnDestroy()
+
+		void Destroy()
 		{
-			UnhookEvents(ShellItem);
+			if (ShellItem != null)
+				UnhookEvents(ShellItem);
+
+			((IShellController)ShellContext?.Shell)?.RemoveAppearanceObserver(this);
+
+			if (_bottomSheetDialog != null)
+			{
+				_bottomSheetDialog.DismissEvent -= OnMoreSheetDismissed;
+				_bottomSheetDialog?.Dispose();
+				_bottomSheetDialog = null;
+			}
+
+			_navigationArea?.Dispose();
+			_appearanceTracker?.Dispose();
+			_outerLayout?.Dispose();
+
 			if (_bottomView != null)
 			{
 				_bottomView?.SetOnNavigationItemSelectedListener(null);
 				_bottomView?.Background?.Dispose();
 				_bottomView?.Dispose();
-				_bottomView = null;
-
-				_navigationArea?.Dispose();
-				_navigationArea = null;
-
-				_appearanceTracker?.Dispose();
-				_appearanceTracker = null;
-
-				_outerLayout?.Dispose();
-				_outerLayout = null;
 			}
 
-			((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
+			_bottomView = null;
+			_navigationArea = null;
+			_appearanceTracker = null;
+			_outerLayout = null;
 
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if (disposing)
+				Destroy();
+
+			base.Dispose(disposing);
+		}
+
+		// Use OnDestory become OnDestroyView may fire before events are completed.
+		public override void OnDestroy()
+		{
+			Destroy();
 			base.OnDestroy();
 		}
 
@@ -171,11 +199,14 @@ namespace Xamarin.Forms.Platform.Android
 					image.LayoutParameters = lp;
 					lp.Dispose();
 
-					image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());
 					ShellContext.ApplyDrawableAsync(shellContent, ShellSection.IconProperty, icon =>
 					{
 						if (!image.IsDisposed())
+						{
+							var color = Color.Black.MultiplyAlpha(0.6).ToAndroid();
+							icon.SetTint(color);
 							image.SetImageDrawable(icon);
+						}
 					});
 
 					innerLayout.AddView(image);
@@ -242,9 +273,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (id == MoreTabId)
 			{
 				var items = CreateTabList(ShellItem);
-				var bottomSheetDialog = BottomNavigationViewUtils.CreateMoreBottomSheet(OnMoreItemSelected, Context, items, _bottomView.MaxItemCount);
-				bottomSheetDialog.Show();
-				bottomSheetDialog.DismissEvent += OnMoreSheetDismissed;
+				_bottomSheetDialog = BottomNavigationViewUtils.CreateMoreBottomSheet(OnMoreItemSelected, Context, items, _bottomView.MaxItemCount);
+				_bottomSheetDialog.Show();
+				_bottomSheetDialog.DismissEvent += OnMoreSheetDismissed;
 			}
 			else
 			{
@@ -271,8 +302,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ChangeSection(shellSection);
 
-			dialog.Dismiss();
-			dialog.Dispose();
+			dialog.Dismiss(); //should trigger OnMoreSheetDismissed, which will clean up the dialog
+			if (dialog != _bottomSheetDialog) //should never be true, but just in case, prevent a leak
+				dialog.Dispose();
 		}
 
 		List<(string title, ImageSource icon, bool tabEnabled)> CreateTabList(ShellItem shellItem)
@@ -287,7 +319,17 @@ namespace Xamarin.Forms.Platform.Android
 			return items;
 		}
 
-		protected virtual void OnMoreSheetDismissed(object sender, EventArgs e) => OnShellSectionChanged();
+		protected virtual void OnMoreSheetDismissed(object sender, EventArgs e)
+		{
+			OnShellSectionChanged();
+
+			if (_bottomSheetDialog != null)
+			{
+				_bottomSheetDialog.DismissEvent -= OnMoreSheetDismissed;
+				_bottomSheetDialog.Dispose();
+				_bottomSheetDialog = null;
+			}
+		}
 
 		protected override void OnShellItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
