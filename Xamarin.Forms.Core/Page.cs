@@ -37,6 +37,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TitleProperty = BindableProperty.Create("Title", typeof(string), typeof(Page), null);
 
 		public static readonly BindableProperty StatusBarColorProperty = BindableProperty.Create(nameof(StatusBarColor), typeof(Color), typeof(Page), Color.Default);
+		public static readonly BindableProperty StatusBarStyleProperty = BindableProperty.Create(nameof(StatusBarStyle), typeof(StatusBarStyle), typeof(Page), StatusBarStyle.Default);
 
 		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
@@ -133,6 +134,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(StatusBarColorProperty); }
 			set { SetValue(StatusBarColorProperty, value); }
+		}
+
+		public StatusBarStyle StatusBarStyle
+		{
+			get { return (StatusBarStyle)GetValue(StatusBarStyleProperty); }
+			set { SetValue(StatusBarStyleProperty, value); }
 		}
 
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }

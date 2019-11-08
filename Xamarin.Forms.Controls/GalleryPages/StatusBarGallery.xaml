@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.GalleryPages.StatusBarGallery">
     <StackLayout>
-        <Label Text="Slide to change color"/>
+        <Label Text="Slide to change StatusBarColor color"/>
 
         <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Red" ThumbColor="Red"
                 MinimumTrackColor="Red"  Margin="20,10" x:Name="RedSlider"/>
@@ -16,6 +16,10 @@
 
         <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Blue" ThumbColor="Blue"
                 MinimumTrackColor="Blue"  Margin="20,10" x:Name="BlueSlider"/>
+
+        <Label Text="Change StatusBarColor text color"/>
+
+        <Switch Toggled="Switch_OnToggled"/>
 
 
     </StackLayout>

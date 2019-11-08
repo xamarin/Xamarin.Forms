@@ -15,5 +15,17 @@ namespace Xamarin.Forms.Controls.GalleryPages
 		{
 			StatusBarColor = Color.FromRgb(Convert.ToInt32(RedSlider.Value), Convert.ToInt32(GreenSlider.Value), Convert.ToInt32(BlueSlider.Value));
 		}
+
+		void Switch_OnToggled(object sender, ToggledEventArgs e)
+		{
+			if (e.Value)
+			{
+				StatusBarStyle = StatusBarStyle.DarkContent;
+			}
+			else
+			{
+				StatusBarStyle = StatusBarStyle.LightContent;
+			}
+		}
 	}
 }

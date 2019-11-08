@@ -317,8 +317,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
-			if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+			else if(e.PropertyName == Page.StatusBarColorProperty.PropertyName)
 				UpdateStatusBarColor();
+			else if (e.PropertyName == Page.StatusBarStyleProperty.PropertyName)
+				UpdateStatusBarStyle();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
@@ -570,6 +572,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 			GetCurrentViewController().SetNeedsStatusBarAppearanceUpdate();
 		}
+
+		void UpdateStatusBarStyle()
+		{
+			switch (Page.StatusBarStyle)
+			{
+				case StatusBarStyle.Default:
+					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.Default, false);
+					break;
+				case StatusBarStyle.LightContent:
+					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
+					break;
+				case StatusBarStyle.DarkContent:
+					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.DarkContent, false);
+					break;
+			}
+
+			GetCurrentViewController().SetNeedsStatusBarAppearanceUpdate();
+		}
+
 		UIViewController GetCurrentViewController()
 		{
 			var window = UIApplication.SharedApplication.KeyWindow;

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Windows.Foundation.Metadata;
 using Windows.System.Profile;
@@ -71,6 +72,8 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
 				UpdateStatusBarColor();
+			else if (e.PropertyName == Page.StatusBarStyleProperty.PropertyName)
+				UpdateStatusBarStyle();
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
@@ -94,7 +97,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateStatusBarColor()
 		{
-			if(ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+			if(ApiInformation.IsTypePresent(typeof(StatusBar).FullName ?? string.Empty))
 			{
 				var statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)
@@ -111,5 +114,25 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 		}
+
+		void UpdateStatusBarStyle()
+		{
+			switch (Element.StatusBarStyle)
+			{
+				case StatusBarStyle.Default:
+					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.Default, false);
+					break;
+				case StatusBarStyle.LightContent:
+					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
+					break;
+				case StatusBarStyle.DarkContent:
+					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.DarkContent, false);
+					break;
+			}
+		}
+
+		var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+		titleBar.ForegroundColor = Windows.UI.Colors.White;
+		titleBar.BackgroundColor = Windows.UI.Colors.Green;
 	}
 }
