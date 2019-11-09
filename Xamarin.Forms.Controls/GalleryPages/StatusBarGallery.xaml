@@ -17,7 +17,7 @@
         <Slider Minimum="0" Maximum="255" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Blue" ThumbColor="Blue"
                 MinimumTrackColor="Blue"  Margin="20,10" x:Name="BlueSlider"/>
 
-        <Label Text="Change StatusBarColor text color"/>
+        <Label Text="Swith to change StatusBarStyle"/>
 
         <Switch Toggled="Switch_OnToggled" HorizontalOptions="Start"/>
 

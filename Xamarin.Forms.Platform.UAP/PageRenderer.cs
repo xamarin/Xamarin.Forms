@@ -120,9 +120,6 @@ namespace Xamarin.Forms.Platform.UWP
 			Color foregroundColor = Color.Default;
 			switch (Element.StatusBarStyle)
 			{
-				case StatusBarStyle.Default:
-					foregroundColor = Color.Black;
-					break;
 				case StatusBarStyle.LightContent:
 					foregroundColor = Color.Black;
 					break;
