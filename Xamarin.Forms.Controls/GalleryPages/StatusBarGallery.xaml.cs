@@ -18,14 +18,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void Switch_OnToggled(object sender, ToggledEventArgs e)
 		{
-			if (e.Value)
-			{
-				StatusBarStyle = StatusBarStyle.DarkContent;
-			}
-			else
-			{
-				StatusBarStyle = StatusBarStyle.LightContent;
-			}
+			StatusBarStyle = e.Value ? StatusBarStyle.DarkContent : StatusBarStyle.LightContent;
 		}
 	}
 }

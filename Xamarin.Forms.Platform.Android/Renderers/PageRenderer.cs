@@ -175,10 +175,10 @@ namespace Xamarin.Forms.Platform.Android
 				switch (Element.StatusBarStyle)
 				{
 					case StatusBarStyle.Default:
-						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.LightStatusBar;
+						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.Visible;
 						break;
 					case StatusBarStyle.LightContent:
-						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.LightStatusBar;
+						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.Visible;
 						break;
 					case StatusBarStyle.DarkContent:
 						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.LightStatusBar;

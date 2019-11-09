@@ -117,22 +117,36 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateStatusBarStyle()
 		{
+			Color foregroundColor = Color.Default;
 			switch (Element.StatusBarStyle)
 			{
 				case StatusBarStyle.Default:
-					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.Default, false);
+					foregroundColor = Color.Black;
 					break;
 				case StatusBarStyle.LightContent:
-					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
+					foregroundColor = Color.Black;
 					break;
 				case StatusBarStyle.DarkContent:
-					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.DarkContent, false);
+					foregroundColor = Color.White;
 					break;
 			}
-		}
 
-		var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-		titleBar.ForegroundColor = Windows.UI.Colors.White;
-		titleBar.BackgroundColor = Windows.UI.Colors.Green;
+			if (ApiInformation.IsTypePresent(typeof(StatusBar).FullName ?? string.Empty))
+			{
+				var statusBar = StatusBar.GetForCurrentView();
+				if (statusBar != null)
+				{
+					statusBar.ForegroundColor = foregroundColor.ToWindowsColor();
+				}
+			}
+			else
+			{
+				var titleBar = ApplicationView.GetForCurrentView()?.TitleBar;
+				if (titleBar != null)
+				{
+					titleBar.ForegroundColor = foregroundColor.ToWindowsColor();
+				}
+			}
+		}
 	}
 }

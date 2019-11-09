@@ -19,7 +19,7 @@
 
         <Label Text="Change StatusBarColor text color"/>
 
-        <Switch Toggled="Switch_OnToggled"/>
+        <Switch Toggled="Switch_OnToggled" HorizontalOptions="Start"/>
 
 
     </StackLayout>
