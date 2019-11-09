@@ -6,6 +6,7 @@ using Foundation;
 using System.Collections.Generic;
 using CoreGraphics;
 using System.Diagnostics;
+using Xamarin.Forms.Core;
 
 #if __MOBILE__
 using UIKit;
@@ -109,11 +110,15 @@ namespace Xamarin.Forms.Platform.MacOS
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
 					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
 					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, labelHeight);
+#if __MOBILE__
+					Control.BaselineAdjustment = UIBaselineAdjustment.None;
+#endif
 					break;
 				case TextAlignment.Center:
 
 #if __MOBILE__
 					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
+					Control.BaselineAdjustment = UIBaselineAdjustment.AlignCenters;
 #else
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
 					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
@@ -128,6 +133,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					nfloat yOffset = 0;
 					yOffset = (nfloat)(Element.Height - labelHeight);
 					Control.Frame = new RectangleF(0, yOffset, (nfloat)Element.Width, labelHeight);
+					Control.BaselineAdjustment = UIBaselineAdjustment.AlignBaselines;
 #else
 					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, labelHeight);
 #endif
@@ -675,13 +681,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 #if __MOBILE__
 
-			switch (label.AutoFitText)
+			switch (Element.AutoFitText)
 			{
 				case AutoFitTextMode.FitToWidth:
 					Control.AdjustsFontSizeToFitWidth = true;
 
 					var uiFont = Element.ToUIFont();
-					float minScaleFactor = Element.MinFontSize / Element.MaxFontSize;
+					var minScaleFactor = (float)Element.MinFontSize / Element.MaxFontSize;
 
 					Control.Font = uiFont.WithSize((float)Element.MaxFontSize);
 					Control.MinimumScaleFactor = minScaleFactor;
