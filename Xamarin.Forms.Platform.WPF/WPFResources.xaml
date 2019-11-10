@@ -145,21 +145,21 @@
                                                     <MultiTrigger.Conditions>
                                                         <Condition Property="IsMouseOver" Value="True" />
                                                     </MultiTrigger.Conditions>
-                                                    <Setter TargetName="ListViewItemContainer" Property="Background" Value="{StaticResource ListViewItem.MouseOver.Background}" />
+                                                    <Setter TargetName="ListViewItemContainer" Property="Background" Value="{DynamicResource ListViewItem.MouseOver.Background}" />
                                                 </MultiTrigger>
                                                 <MultiTrigger>
                                                     <MultiTrigger.Conditions>
                                                         <Condition Property="Selector.IsSelectionActive" Value="False" />
                                                         <Condition Property="IsSelected" Value="True" />
                                                     </MultiTrigger.Conditions>
-                                                    <Setter TargetName="ListViewItemContainer" Property="Background" Value="{StaticResource ListViewItem.SelectedInactive.Background}" />
+                                                    <Setter TargetName="ListViewItemContainer" Property="Background" Value="{DynamicResource ListViewItem.SelectedInactive.Background}" />
                                                 </MultiTrigger>
                                                 <MultiTrigger>
                                                     <MultiTrigger.Conditions>
                                                         <Condition Property="Selector.IsSelectionActive" Value="True" />
                                                         <Condition Property="IsSelected" Value="True" />
                                                     </MultiTrigger.Conditions>
-                                                    <Setter TargetName="ListViewItemContainer" Property="Background" Value="{StaticResource ListViewItem.SelectedActive.Background}" />
+                                                    <Setter TargetName="ListViewItemContainer" Property="Background" Value="{DynamicResource ListViewItem.SelectedActive.Background}" />
                                                 </MultiTrigger>
                                                 <Trigger Property="IsEnabled" Value="False">
                                                     <Setter TargetName="ListViewItemContainer" Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
