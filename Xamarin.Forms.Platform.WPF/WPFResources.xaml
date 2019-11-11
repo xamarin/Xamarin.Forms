@@ -22,11 +22,6 @@
 	<SolidColorBrush x:Key="DefaultTabbedBarBackgroundColor" Color="#3498db" />
 	<SolidColorBrush x:Key="DefaultTabbedBarTextColor" Color="White" />
 
-	<!--  Default ListViewItem Color  -->
-	<SolidColorBrush x:Key="ListViewItem.MouseOver.Background" Color="#3498db" /> 
-	<SolidColorBrush x:Key="ListViewItem.SelectedInactive.Background" Color="Transparent" /> 
-	<SolidColorBrush x:Key="ListViewItem.SelectedActive.Background" Color="#2C7EB6" />
-
 	<system:Double x:Key="FontSizeSmall">18</system:Double>
 	<system:Double x:Key="FontSizeNormal">20</system:Double>
 	<system:Double x:Key="FontSizeMedium">22</system:Double>
@@ -128,46 +123,6 @@
 					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 					<Setter Property="Background" Value="Transparent" />
 					<Setter Property="Height" Value="Auto" />
-					<Setter Property="Template">
-						<Setter.Value>
-							<ControlTemplate TargetType="ListViewItem">
-								<Grid x:Name="ListViewItemContainer">
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-									</Grid.ColumnDefinitions>
-									<ContentPresenter ContentTemplate="{DynamicResource CellTemplate}" />
-								</Grid>
-								<ControlTemplate.Triggers>
-									<MultiTrigger>
-										<MultiTrigger.Conditions>
-											<Condition Property="IsMouseOver" Value="True" />
-										</MultiTrigger.Conditions>
-										<Setter TargetName="ListViewItemContainer" Property="Background" Value="{DynamicResource ListViewItem.MouseOver.Background}" />
-									</MultiTrigger>
-									<MultiTrigger>
-										<MultiTrigger.Conditions>
-											<Condition Property="Selector.IsSelectionActive" Value="False" />
-											<Condition Property="IsSelected" Value="True" />
-										</MultiTrigger.Conditions>
-										<Setter TargetName="ListViewItemContainer" Property="Background" Value="{DynamicResource ListViewItem.SelectedInactive.Background}" />
-									</MultiTrigger>
-									<MultiTrigger>
-										<MultiTrigger.Conditions>
-											<Condition Property="Selector.IsSelectionActive" Value="True" />
-											<Condition Property="IsSelected" Value="True" />
-										</MultiTrigger.Conditions>
-										<Setter TargetName="ListViewItemContainer" Property="Background" Value="{DynamicResource ListViewItem.SelectedActive.Background}" />
-									</MultiTrigger>
-									<Trigger Property="IsEnabled" Value="False">
-										<Setter TargetName="ListViewItemContainer" Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-									</Trigger>
-								</ControlTemplate.Triggers>
-							</ControlTemplate>
-						</Setter.Value>
-					</Setter>
 				</Style>
 			</Setter.Value>
 		</Setter>
