@@ -69,6 +69,7 @@ jobs:
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -78,7 +79,7 @@ jobs:
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)\android-legacy.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
-    monoVersion : $(MONO_VERSION)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -88,7 +89,7 @@ jobs:
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)\android-preappcompact.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
-    monoVersion : $(MONO_VERSION)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -98,7 +99,7 @@ jobs:
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)\android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
-    monoVersion : $(MONO_VERSION)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - job: osx
   displayName: OSX Phase
@@ -110,15 +111,12 @@ jobs:
       - msbuild
       - Xamarin.iOS
   variables:
-    provisioningOSX : $(provisioning)
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
     provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
     buildConfiguration: $(DefaultBuildConfiguration)
     slnPath: $(SolutionFile)
-    nugetVersion: $(NUGET_VERSION)
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
-    monoVersion : $(MONO_VERSION)
   steps:
      - template: build/steps/build-osx.yml
 
@@ -132,7 +130,6 @@ jobs:
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
-    nugetVersion: $(NUGET_VERSION)
     nugetPackageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
   steps:
      - template: build/steps/build-nuget.yml
