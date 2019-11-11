@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 		}
 
-		private static AutoFitTextMode InvertCurrentAutoFitValue(Label autofitLabel)
+		static AutoFitTextMode InvertCurrentAutoFitValue(Label autofitLabel)
 		{
 			return autofitLabel.AutoFitText == AutoFitTextMode.FitToWidth
 				? AutoFitTextMode.None : AutoFitTextMode.FitToWidth;
