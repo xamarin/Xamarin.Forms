@@ -19,6 +19,11 @@
 		<PackageReference Include="System.ComponentModel" Version="4.3.0" />
 		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
 		<PackageReference Include="System.ValueTuple" Version="4.5.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+	  <PackageReference Include="Microsoft.Extensions.Hosting">
+	    <Version>3.0.0</Version>
+	  </PackageReference>
 	</ItemGroup>	
 	<PropertyGroup>
     <GitInfoReportImportance>high</GitInfoReportImportance>
