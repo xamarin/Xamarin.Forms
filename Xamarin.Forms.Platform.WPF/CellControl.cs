@@ -93,11 +93,11 @@ namespace Xamarin.Forms.Platform.WPF
 				{
 					foreach (var child in vc.LogicalChildren)
 					{
-						if (child is VisualElement visualElement)
+						if (child is View view)
 						{
-							if (Parent is null || (visualElement is Layout layout) && layout.HorizontalOptions.Expands)
+							if (view.HorizontalOptions.Expands)
 							{
-								visualElement.Layout(new Rectangle(visualElement.X, visualElement.Y, sizeInfo.NewSize.Width, sizeInfo.NewSize.Height));
+								view.Layout(new Rectangle(view.X, view.Y, sizeInfo.NewSize.Width, sizeInfo.NewSize.Height));
 							}
 						}
 					}
