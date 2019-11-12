@@ -406,7 +406,7 @@ namespace Xamarin.Forms
 			var r = _r * 255;
 			var g = _g * 255;
 			var b = _b * 255;
-			return Convert.ToInt32(Math.Round((299 * r + 587 * g + 114 * b) / 1000f));
+			return Convert.ToInt32(((r * 299) + (g * 587) + (b * 114)) / 1000f);
 		}
 
 		public bool IsDark
