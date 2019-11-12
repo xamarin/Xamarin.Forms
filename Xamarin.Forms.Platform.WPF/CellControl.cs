@@ -95,10 +95,7 @@ namespace Xamarin.Forms.Platform.WPF
 					{
 						if (child is Layout layout)
 						{
-							if (layout.HorizontalOptions.Expands)
-							{
-								layout.Layout(new Rectangle(layout.X, layout.Y, sizeInfo.NewSize.Width, sizeInfo.NewSize.Height));
-							}
+							layout.Layout(new Rectangle(layout.X, layout.Y, sizeInfo.NewSize.Width, sizeInfo.NewSize.Height));
 						}
 					}
 				}
