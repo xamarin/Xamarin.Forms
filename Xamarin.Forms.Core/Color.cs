@@ -400,7 +400,27 @@ namespace Xamarin.Forms
 		{
 			return new Color(h, s, l, a, Mode.Hsl);
 		}
+
+		int CalculateYiqLuma()
+		{
+			var r = _r * 255;
+			var g = _g * 255;
+			var b = _b * 255;
+			return Convert.ToInt32(Math.Round((299 * r + 587 * g + 114 * b) / 1000f));
+		}
+
+		public bool IsDark
+		{
+			get => CalculateYiqLuma() < 128;
+		}
+
+		public bool IsWhite
+		{
+			get => CalculateYiqLuma() > 128;
+		}
+
 #if !NETSTANDARD1_0
+
 		public static implicit operator System.Drawing.Color(Color color)
 		{
 			if (color.IsDefault)

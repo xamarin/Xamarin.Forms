@@ -329,5 +329,29 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			Assert.AreEqual(Color.Default, (Color)System.Drawing.Color.Empty);
 		}
+
+		[Test]
+		public void TestIsDark()
+		{
+			Assert.IsTrue(Color.Black.IsDark);
+			Assert.IsTrue(Color.Red.IsDark);
+			Assert.IsTrue(Color.DarkBlue.IsDark);
+
+			Assert.IsFalse(Color.Cornsilk.IsDark);
+			Assert.IsFalse(Color.LightGreen.IsDark);
+			Assert.IsFalse(Color.LightCyan.IsDark);
+		}
+
+		[Test]
+		public void TestIsWhite()
+		{
+			Assert.IsTrue(Color.White.IsWhite);
+			Assert.IsTrue(Color.LemonChiffon.IsWhite);
+			Assert.IsTrue(Color.Pink.IsWhite);
+
+			Assert.IsFalse(Color.Chocolate.IsWhite);
+			Assert.IsFalse(Color.DarkGreen.IsWhite);
+			Assert.IsFalse(Color.DarkOrchid.IsWhite);
+		}
 	}
 }
