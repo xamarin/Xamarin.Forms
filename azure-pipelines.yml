@@ -18,13 +18,6 @@ variables:
 - name: DOTNET_VERSION
   value: 3.0.100
 
-resources:
-  repositories:
-    - repository: xamarin-templates
-      type: github
-      name: xamarin/yaml-templates
-      endpoint: xamarin
-
 trigger:
   branches:
     include:
