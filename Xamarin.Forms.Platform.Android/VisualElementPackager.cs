@@ -166,6 +166,10 @@ namespace Xamarin.Forms.Platform.Android
 		void EnsureChildOrder(bool onlyUpdateElevations)
 		{
 			float elevationToSet = 0;
+
+			// index of button in the LogicalChildren
+			int xfButtonIndex = -1;
+
 			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
 				Element child = ElementController.LogicalChildren[i];
@@ -184,9 +188,17 @@ namespace Xamarin.Forms.Platform.Android
 							{
 								if (elevation > elevationToSet)
 									elevationToSet = elevation;
-																
-								r.View.Elevation = elevationToSet;
+
+								// If there is a button underneath this element, raise the elevation by an additoinal
+								// 100 so that the element stays above the Button when the Button animates when clicked
+								r.View.Elevation = xfButtonIndex > -1 ? elevationToSet + 100 : elevationToSet;
 							}
+						}
+
+						// If element is Button, set the index for later comparison
+						if (element is Button)
+						{
+							xfButtonIndex = i;
 						}
 
 						if(!onlyUpdateElevations)
@@ -195,6 +207,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 		}
+
 
 		void OnChildAdded(object sender, ElementEventArgs e)
 		{
