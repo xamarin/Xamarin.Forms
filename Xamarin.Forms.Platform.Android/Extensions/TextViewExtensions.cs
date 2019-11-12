@@ -117,6 +117,14 @@ namespace Xamarin.Forms.Platform.Android
 				var startSpanOffset = spannableString.GetSpanStart(startSpan);
 				var endSpanOffset = spannableString.GetSpanEnd(endSpan);
 
+				var thisLine = layout.GetLineForOffset(endSpanOffset);
+				var lineStart = layout.GetLineStart(thisLine);
+				var lineEnd = layout.GetLineEnd(thisLine);
+
+				//If true, means the line is not in the range specified by textView.LineCount or MaxLines in Xamarin.
+				if (endSpanOffset > (lineEnd - lineStart))
+					continue;
+
 				var startX = layout.GetPrimaryHorizontal(startSpanOffset);
 				var endX = layout.GetPrimaryHorizontal(endSpanOffset);
 
