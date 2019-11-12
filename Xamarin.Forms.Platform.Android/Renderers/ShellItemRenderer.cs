@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 			_bottomView.SetBackgroundColor(Color.White.ToAndroid());
 			_bottomView.SetOnNavigationItemSelectedListener(this);
 
-			if(ShellItem == null)
+			if (ShellItem == null)
 				throw new ArgumentException("Active Shell Item not set. Have you added any Shell Items to your Shell?", nameof(ShellItem));
 
 			HookEvents(ShellItem);
@@ -81,10 +81,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Destroy()
 		{
-			if(ShellItem != null)
+			if (ShellItem != null)
 				UnhookEvents(ShellItem);
 
-			((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
+			((IShellController)ShellContext?.Shell)?.RemoveAppearanceObserver(this);
 
 			if (_bottomSheetDialog != null)
 			{
@@ -140,7 +140,12 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual Drawable CreateItemBackgroundDrawable()
 		{
 			var stateList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.2).ToAndroid());
-			return new RippleDrawable(stateList, new ColorDrawable(AColor.White), null);
+			var colorDrawable = new ColorDrawable(AColor.White);
+
+			if (Forms.IsLollipopOrNewer)
+				return new RippleDrawable(stateList, colorDrawable, null);
+
+			return colorDrawable;
 		}
 
 		protected virtual BottomSheetDialog CreateMoreBottomSheet(Action<ShellSection, BottomSheetDialog> selectCallback)
@@ -186,11 +191,14 @@ namespace Xamarin.Forms.Platform.Android
 					image.LayoutParameters = lp;
 					lp.Dispose();
 
-					image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());
 					ShellContext.ApplyDrawableAsync(shellContent, ShellSection.IconProperty, icon =>
 					{
 						if (!image.IsDisposed())
+						{
+							var color = Color.Black.MultiplyAlpha(0.6).ToAndroid();
+							icon.SetTint(color);
 							image.SetImageDrawable(icon);
+						}
 					});
 
 					innerLayout.AddView(image);
@@ -280,8 +288,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ChangeSection(shellSection);
 
-			dialog.Dismiss();
-			dialog.Dispose();
+			dialog.Dismiss(); //should trigger OnMoreSheetDismissed, which will clean up the dialog
+			if (dialog != _bottomSheetDialog) //should never be true, but just in case, prevent a leak
+				dialog.Dispose();
 		}
 
 		protected virtual void OnMoreSheetDismissed(object sender, EventArgs e)
