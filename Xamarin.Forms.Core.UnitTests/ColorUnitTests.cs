@@ -334,24 +334,35 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void TestIsDark()
 		{
 			Assert.IsTrue(Color.Black.IsDark);
-			Assert.IsTrue(Color.Red.IsDark);
-			Assert.IsTrue(Color.DarkBlue.IsDark);
 
-			Assert.IsFalse(Color.Cornsilk.IsDark);
-			Assert.IsFalse(Color.LightGreen.IsDark);
-			Assert.IsFalse(Color.LightCyan.IsDark);
+			Assert.IsTrue(Color.FromHex("#666666").IsDark);
+			Assert.IsTrue(Color.FromHex("#333333").IsDark);
+			Assert.IsTrue(Color.FromHex("#FF0000 ").IsDark);
+			Assert.IsTrue(Color.FromHex("#0000FF").IsDark);
+			Assert.IsTrue(Color.FromHex("#FF00FF").IsDark);
+
+			Assert.IsFalse(Color.FromHex("#CCCCCC").IsDark);
+			Assert.IsFalse(Color.FromHex("#999999").IsDark);
+			Assert.IsFalse(Color.FromHex("#00FF00").IsDark);
+			Assert.IsFalse(Color.FromHex("#FFFF00").IsDark);
+			Assert.IsFalse(Color.FromHex("#00FFFF").IsDark);
 		}
 
 		[Test]
-		public void TestIsWhite()
+		public void TestIsLight()
 		{
-			Assert.IsTrue(Color.White.IsWhite);
-			Assert.IsTrue(Color.LemonChiffon.IsWhite);
-			Assert.IsTrue(Color.Pink.IsWhite);
+			Assert.IsTrue(Color.White.IsLight);
 
-			Assert.IsFalse(Color.Chocolate.IsWhite);
-			Assert.IsFalse(Color.DarkGreen.IsWhite);
-			Assert.IsFalse(Color.DarkOrchid.IsWhite);
+			Assert.IsTrue(Color.FromHex("#FFCC00").IsLight);
+			Assert.IsTrue(Color.FromHex("#CCFF00").IsLight);
+			Assert.IsTrue(Color.FromHex("#00CCFF").IsLight);
+			Assert.IsTrue(Color.FromHex("#CC6666").IsLight);
+
+			Assert.IsFalse(Color.FromHex("#FF0066").IsLight);
+			Assert.IsFalse(Color.FromHex("#006666").IsLight);
+			Assert.IsFalse(Color.FromHex("#0099CC").IsLight);
+			Assert.IsFalse(Color.FromHex("#666600").IsLight);
+			Assert.IsFalse(Color.FromHex("#CC00CC").IsLight);
 		}
 	}
 }

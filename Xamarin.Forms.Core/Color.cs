@@ -411,10 +411,10 @@ namespace Xamarin.Forms
 
 		public bool IsDark
 		{
-			get => CalculateYiqLuma() < 128;
+			get => CalculateYiqLuma() <= 128;
 		}
 
-		public bool IsWhite
+		public bool IsLight
 		{
 			get => CalculateYiqLuma() > 128;
 		}
