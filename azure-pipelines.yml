@@ -14,13 +14,9 @@ variables:
 - name: BuildVersion42
   value: $[counter('4.2.0', 910311)]
 - name: BuildVersion43
-  value: $[counter('4.3.0', 947037)]
+  value: $[counter('4.3.0', 991211)]
 - name: BuildVersion44
-  value: $[counter('4.4.0', 936622)]
-- name: MONO_VERSION
-  value: 5_18_1
-- name: XCODE_VERSION
-  value: 10.2
+  value: $[counter('4.4.0', 991210)]
 - name: NUGET_VERSION
   value: 5.0.2
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
