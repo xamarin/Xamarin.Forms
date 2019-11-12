@@ -23,6 +23,8 @@ variables:
   value: 10.2
 - name: NUGET_VERSION
   value: 5.0.2
+- name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+  value: true
 
 resources:
   repositories:
