@@ -6,7 +6,7 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 6132, "Test the placeholder implementation for Image control ")]
+	[Issue(IssueTracker.Github, 7015, "Test the placeholder implementation for Image control ")]
 	public class Issue7015 : TestContentPage
 	{
 		const string batata = "batata.png";
