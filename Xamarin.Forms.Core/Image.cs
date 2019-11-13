@@ -12,13 +12,22 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty SourceProperty = ImageElement.SourceProperty;
 
-		public static readonly BindableProperty PlaceholderProperty =
-			BindableProperty.Create(nameof(Placeholder), typeof(ImageSource), typeof(Image), default(ImageSource));
+		public static readonly BindableProperty ErrorPlaceholderProperty =
+			BindableProperty.Create(nameof(ErrorPlaceholder), typeof(ImageSource), typeof(Image), default(ImageSource));
 
-		public ImageSource Placeholder
+		public ImageSource ErrorPlaceholder
 		{
-			get => (ImageSource)GetValue(PlaceholderProperty);
-			set => SetValue(PlaceholderProperty, value);
+			get => (ImageSource)GetValue(ErrorPlaceholderProperty);
+			set => SetValue(ErrorPlaceholderProperty, value);
+		}
+
+		public static readonly BindableProperty LoadingPlaceholderProperty =
+			BindableProperty.Create(nameof(LoadingPlaceholder), typeof(ImageSource), typeof(Image), default(ImageSource));
+
+		public ImageSource LoadingPlaceholder
+		{
+			get => (ImageSource)GetValue(LoadingPlaceholderProperty);
+			set => SetValue(LoadingPlaceholderProperty, value);
 		}
 
 		public static readonly BindableProperty AspectProperty = ImageElement.AspectProperty;
