@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			await Control.UpdateBitmap(Element, previous, placeholder: Element.Placeholder).ConfigureAwait(false);
+			await Control.UpdateBitmap(Element, previous).ConfigureAwait(false);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)

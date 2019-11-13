@@ -7,30 +7,30 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal static class ImageViewExtensions
 	{
-		public static Task UpdateBitmap(this AImageView imageView, IImageElement newView, IImageElement previousView, ImageSource placeholder) =>
-			imageView.UpdateBitmap(newView, previousView, null, null, placeholder);
+		public static Task UpdateBitmap(this AImageView imageView, IImageElement newView, IImageElement previousView) =>
+			imageView.UpdateBitmap(newView, previousView, null, null);
 
 		public static Task UpdateBitmap(this AImageView imageView, ImageSource newImageSource, ImageSource previousImageSourc) =>
-			imageView.UpdateBitmap(null, null, newImageSource, previousImageSourc, null);
-
-		public static Task UpdateBitmap(this AImageView imageView, ImageSource newImageSource, ImageSource previousImageSourc, ImageSource placeholder) =>
-			imageView.UpdateBitmap(null, null, newImageSource, previousImageSourc, placeholder);
+			imageView.UpdateBitmap(null, null, newImageSource, previousImageSourc);
 
 		static async Task UpdateBitmap(
 			this AImageView imageView,
 			IImageElement newView,
 			IImageElement previousView,
 			ImageSource newImageSource,
-			ImageSource previousImageSource,
-			ImageSource placeholder)
+			ImageSource previousImageSource)
 		{
 
 			IImageController imageController = newView as IImageController;
 			newImageSource = newImageSource ?? newView?.Source;
 			previousImageSource = previousImageSource ?? previousView?.Source;
-			if(placeholder == null)
+			ImageSource errorPlaceholder = null;
+			ImageSource loadingPlaceholder = null;
+
+			if (imageController is Image img)
 			{
-				placeholder = (newView is Image image) ? image.Placeholder : null;
+				errorPlaceholder = img.ErrorPlaceholder;
+				loadingPlaceholder = img.LoadingPlaceholder;
 			}
 
 			if (imageView.IsDisposed())
@@ -51,23 +51,24 @@ namespace Xamarin.Forms.Platform.Android
 					var imageViewHandler = Internals.Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
 					if (imageViewHandler != null)
 					{
-						await imageViewHandler.LoadImageAsync(newImageSource, placeholder, imageView);
+						await imageViewHandler.LoadImageAsync(newImageSource, errorPlaceholder, imageView);
 					}
 					else
 					{
+						await SetImagePlaceholder(imageView, loadingPlaceholder);
 						using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
 						{
 							// only set the image if we are still on the same one
 							if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource) && drawable != null)
 								imageView.SetImageDrawable(drawable);
-							else if(placeholder != null)
-								await SetImagePlaceholder(imageView, placeholder);
+							else if (errorPlaceholder != null)
+								await SetImagePlaceholder(imageView, errorPlaceholder);
 						}
 					}
 				}
-				else if (placeholder != null)
+				else if (errorPlaceholder != null)
 				{
-					await SetImagePlaceholder(imageView, placeholder);
+					await SetImagePlaceholder(imageView, errorPlaceholder);
 				}
 				else
 				{
