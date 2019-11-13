@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
@@ -14,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string bell = "bell.png";
 		const string fromSource = "ImageSource";
 		const string fromPlaceholder = "Placeholder";
-		const string correctUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTZDQ1nLIpshq9ubfuv20tS28rc3i-rxyJMod0A_V-_5caaB34N";
+		const string correctUrl = "https://media.licdn.com/dms/image/C4E03AQEWNdL1Usduag/profile-displayphoto-shrink_200_200/0?e=1579132800&v=beta&t=4f9CONMr5lqdT7KFq_wp5SSq__mxxaQpW_HxLq3JKYM";
 		const string wrongUrl = "http://avatars.githubusercontent.co/u/20712372?s=400&u=ecb5fe0584cba02ab4c7e159768e9366a95e3&v=4";
 
 		protected override void Init()
@@ -24,16 +25,20 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Press the image button and change the Source, from Image above. See the label at the end of the page to see if it's the PlaceholderImage or the ImageSource",
 				VerticalOptions = LayoutOptions.Start
 			};
+
 			var image = new Image
 			{
 				ErrorPlaceholder = bank,
 				Source = batata
 			};
 
+			var correctUriSource = new UriImageSource { CachingEnabled = false, Uri = new Uri(correctUrl) };
+			var wrongUriSource = new UriImageSource { CachingEnabled = false, Uri = new Uri(wrongUrl) };
+
 			var urlImage = new Image
 			{
 				ErrorPlaceholder = bank,
-				Source = wrongUrl,
+				Source = wrongUriSource,
 				LoadingPlaceholder = bell
 			};
 
@@ -49,9 +54,8 @@ namespace Xamarin.Forms.Controls.Issues
 				Source = bank,
 				Command = new Command(() =>
 				{
-					var source = image.Source.ToString();
-					image.Source = (source.Contains(wrongUrl)) ? correctUrl : wrongUrl;
-					sourceIs.Text = (source.Contains(wrongUrl)) ? fromPlaceholder : fromSource;
+					var source = urlImage.Source.ToString();
+					urlImage.Source = (source.Contains(wrongUrl)) ? correctUriSource : wrongUriSource;
 
 					source = image.Source.ToString();
 					image.Source = (source.Contains(batata)) ? bell : batata;
@@ -67,6 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 			stack.Children.Add(label);
 			stack.Children.Add(image);
 			stack.Children.Add(imageB);
+			stack.Children.Add(urlImage);
 			stack.Children.Add(sourceIs);
 
 			Content = stack;
