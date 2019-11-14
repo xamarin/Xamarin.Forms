@@ -147,6 +147,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			ViewRenderer.MeasureExactly(this, Element, Context);
 		}
 
+
+		public override void Draw(Canvas canvas)
+		{
+			if (_backgroundTracker?.BackgroundDrawable != null)
+				_backgroundTracker.BackgroundDrawable.DrawCircle(canvas, canvas.Width, canvas.Height, base.Draw);
+			else
+				base.Draw(canvas);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
@@ -207,6 +216,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateTextColor();
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
+				UpdateCharacterSpacing();
 				_buttonLayoutManager?.Update();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -224,6 +234,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 			{
 				UpdateFont();
+			}
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+			{
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 			{
@@ -323,6 +337,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			_textColorSwitcher.Value.UpdateTextColor(this, Button.TextColor);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				LetterSpacing = Button.CharacterSpacing.ToEm();
+			}
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => ShadowRadius;

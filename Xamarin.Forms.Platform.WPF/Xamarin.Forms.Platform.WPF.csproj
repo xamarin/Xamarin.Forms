@@ -16,7 +16,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
@@ -26,7 +25,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -67,6 +65,7 @@
     <Compile Include="Controls\FormsAppBar.cs" />
     <Compile Include="Controls\FormsAppBarButton.cs" />
     <Compile Include="Controls\FormsBitmapIcon.cs" />
+    <Compile Include="Controls\FormsButton.cs" />
     <Compile Include="Controls\FormsCarouselPage.cs" />
     <Compile Include="Controls\FormsContentControl.cs" />
     <Compile Include="Controls\FormsContentDialog.cs" />

@@ -103,6 +103,40 @@ namespace Xamarin.Forms.Material.Android
 			}
 		}
 
+		public override void Draw(Canvas canvas)
+		{
+			if(Element == null || Element.CornerRadius <= 0)
+			{
+				base.Draw(canvas);
+				return;
+			}
+
+			try
+			{
+				var radiusToPixels = (float)Context.ToPixels(Element.CornerRadius);
+
+				using (var path = new Path())
+				{
+					RectF rect = new RectF(0, 0, canvas.Width, canvas.Height);
+					path.AddRoundRect(rect, radiusToPixels, radiusToPixels, Path.Direction.Ccw);
+					canvas.Save();
+					canvas.ClipPath(path);
+					base.Draw(canvas);
+				}
+
+				canvas.Restore();
+				return;
+			}
+			catch (Exception ex)
+			{
+				Internals.Log.Warning(nameof(MaterialButtonRenderer), $"Unable to create circle image: {ex}");
+			}
+
+			base.Draw(canvas);
+
+
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -170,6 +204,8 @@ namespace Xamarin.Forms.Material.Android
 				UpdatePrimaryColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -285,6 +321,11 @@ namespace Xamarin.Forms.Material.Android
 			// apply
 			SetTextColor(MaterialColors.CreateButtonTextColors(background, text));
 			ViewCompat.SetBackgroundTintList(this, MaterialColors.CreateButtonBackgroundColors(background));
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			LetterSpacing = Element.CharacterSpacing.ToEm();
 		}
 
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> OnThisPlatform() =>

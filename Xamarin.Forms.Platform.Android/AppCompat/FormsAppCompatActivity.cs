@@ -3,6 +3,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -10,7 +11,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
-using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
@@ -18,11 +18,29 @@ using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
+using System.Runtime.CompilerServices;
 
 #endregion
 
 namespace Xamarin.Forms.Platform.Android
 {
+	[Flags]
+	public enum ActivationFlags : long
+	{
+		DisableSetStatusBarColor = 1 << 0,
+	}
+
+	public struct ActivationOptions
+	{
+		public ActivationOptions(Bundle bundle)
+		{
+			this = default(ActivationOptions);
+			this.Bundle = bundle;
+		}
+		public Bundle Bundle;
+		public ActivationFlags Flags;
+	}
+
 	public class FormsAppCompatActivity : AppCompatActivity, IDeviceInfoProvider
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
@@ -38,7 +56,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool _renderersAdded;
 		bool _activityCreated;
+		bool _powerSaveReceiverRegistered;
 		PowerSaveModeBroadcastReceiver _powerSaveModeBroadcastReceiver;
+
+		static readonly ManualResetEventSlim PreviousActivityDestroying = new ManualResetEventSlim(true);
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
@@ -48,6 +69,7 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
+			RuntimeHelpers.RunClassConstructor(typeof(Anticipator).TypeHandle);
 		}
 
 		public event EventHandler ConfigurationChanged;
@@ -83,11 +105,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		static void RegisterHandler(Type target, Type handler, Type filter)
 		{
-			Type current = Registrar.Registered.GetHandlerType(target);
-			if (current != filter)
-				return;
+			Profile.FrameBegin();
 
-			Registrar.Registered.Register(target, handler);
+			Profile.FramePartition(target.Name);
+			Type current = Registrar.Registered.GetHandlerType(target);
+
+			if (current == filter)
+			{
+				Profile.FramePartition("Register");
+				Registrar.Registered.Register(target, handler);
+			}
+
+			Profile.FrameEnd();
 		}
 
 		// This is currently being used by the previewer please do not change or remove this
@@ -125,6 +154,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!_renderersAdded)
 			{
+				Profile.FramePartition("RegisterHandlers");
 				RegisterHandlers();
 				_renderersAdded = true;
 			}
@@ -132,16 +162,24 @@ namespace Xamarin.Forms.Platform.Android
 			if (_application != null)
 				_application.PropertyChanged -= AppOnPropertyChanged;
 
+			Profile.FramePartition("SetAppIndexingProvider");
 			_application = application ?? throw new ArgumentNullException(nameof(application));
 			((IApplicationController)application).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+
+			Profile.FramePartition("SetCurrentApplication");
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
+			Profile.FramePartition("SetSoftInputMode");
 			if (Xamarin.Forms.Application.Current.OnThisPlatform().GetWindowSoftInputModeAdjust() != WindowSoftInputModeAdjust.Unspecified)
 				SetSoftInputMode();
 
+			Profile.FramePartition("CheckForAppLink");
 			CheckForAppLink(Intent);
 
 			application.PropertyChanged += AppOnPropertyChanged;
+
+			// Wait if old activity destroying is not finished
+			PreviousActivityDestroying.Wait();
 
 			Profile.FramePartition(nameof(SetMainPage));
 
@@ -156,8 +194,21 @@ namespace Xamarin.Forms.Platform.Android
 			ActivityResultCallbackRegistry.InvokeCallback(requestCode, resultCode, data);
 		}
 
+		protected void OnCreate(ActivationOptions options)
+		{
+			OnCreate(options.Bundle, options.Flags);
+		}
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
+			OnCreate(savedInstanceState, default(ActivationFlags));
+		}
+
+		void OnCreate(
+			Bundle savedInstanceState, 
+			ActivationFlags flags)
+		{
+			Profile.FrameBegin();
 			_activityCreated = true;
 			if (!AllowFragmentRestore)
 			{
@@ -167,8 +218,10 @@ namespace Xamarin.Forms.Platform.Android
 				savedInstanceState?.Remove("android:support:fragments");
 			}
 
+			Profile.FramePartition("Xamarin.Android.OnCreate");
 			base.OnCreate(savedInstanceState);
 
+			Profile.FramePartition("SetSupportActionBar");
 			AToolbar bar;
 			if (ToolbarResource != 0)
 			{
@@ -176,14 +229,18 @@ namespace Xamarin.Forms.Platform.Android
 				if (bar == null)
 					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
 			}
-			else
+			else 
+			{
 				bar = new AToolbar(this);
+			}
 
 			SetSupportActionBar(bar);
 
+			Profile.FramePartition("SetContentView");
 			_layout = new ARelativeLayout(BaseContext);
 			SetContentView(_layout);
 
+			Profile.FramePartition("OnStateChanged");
 			Xamarin.Forms.Application.ClearCurrent();
 
 			_previousState = _currentState;
@@ -191,29 +248,42 @@ namespace Xamarin.Forms.Platform.Android
 
 			OnStateChanged();
 
+			Profile.FramePartition("Forms.IsLollipopOrNewer");
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Allow for the status bar color to be changed
-				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+				if ((flags & ActivationFlags.DisableSetStatusBarColor) == 0)
+				{
+					Profile.FramePartition("Set DrawsSysBarBkgrnds");
+					Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+				}
 			}
-
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Listen for the device going into power save mode so we can handle animations being disabled
+				Profile.FramePartition("Allocate PowerSaveModeReceiver");
 				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
 			}
+
+			Profile.FrameEnd();
 		}
 
 		protected override void OnDestroy()
 		{
+			PreviousActivityDestroying.Reset();
+
 			if (_application != null)
 				_application.PropertyChanged -= AppOnPropertyChanged;
 
 			PopupManager.Unsubscribe(this);
 
-			_layout.RemoveView(Platform);
+			if (Platform != null)
+			{
+				_layout.RemoveView(Platform);
+				Platform.Dispose();
+			}
 
-			Platform?.Dispose();
+			PreviousActivityDestroying.Set();
 
 			// call at the end to avoid race conditions with Platform dispose
 			base.OnDestroy();
@@ -229,10 +299,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_layout.HideKeyboard(true);
 
-			if (Forms.IsLollipopOrNewer)
+			if (_powerSaveReceiverRegistered && Forms.IsLollipopOrNewer)
 			{
-				// Don't listen for power save mode changes while we're paused
-				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+					// Don't listen for power save mode changes while we're paused
+					UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+					_powerSaveReceiverRegistered = false;
 			}
 
 			// Stop animations or other ongoing actions that could consume CPU
@@ -259,6 +330,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnResume()
 		{
+			Profile.FrameBegin();
+
 			// counterpart to OnPause
 			base.OnResume();
 
@@ -270,25 +343,35 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
 
-			if (Forms.IsLollipopOrNewer)
+			if (!_powerSaveReceiverRegistered && Forms.IsLollipopOrNewer)
 			{
 				// Start listening for power save mode changes
 				RegisterReceiver(_powerSaveModeBroadcastReceiver, new IntentFilter(
 					PowerManager.ActionPowerSaveModeChanged
 				));
+
+				_powerSaveReceiverRegistered = true;
 			}
 
 			OnStateChanged();
+
+			Profile.FrameEnd();
 		}
 
 		protected override void OnStart()
 		{
+			Profile.FrameBegin();
+
+			Profile.FramePartition("Android OnStart");
 			base.OnStart();
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnStart;
 
+			Profile.FramePartition("OnStateChanged");
 			OnStateChanged();
+
+			Profile.FrameEnd();
 		}
 
 		// Scenarios that stop and restart your app

@@ -283,8 +283,9 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				var acceptEmptyServiceProvider = vardefref.VariableDefinition.VariableType.GetCustomAttribute(module, ("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "AcceptEmptyServiceProviderAttribute")) != null;
 				if (   vardefref.VariableDefinition.VariableType.FullName == "Xamarin.Forms.Xaml.BindingExtension"
-				    && (   node.Properties == null
-				        || !node.Properties.ContainsKey(new XmlName("", "Source"))))
+				    && (node.Properties == null || !node.Properties.ContainsKey(new XmlName("", "Source"))) //do not compile bindings if Source is set
+				    && bpRef != null //do not compile bindings if we're not gonna SetBinding
+					)
 					foreach (var instruction in CompileBindingPath(node, context, vardefref.VariableDefinition))
 						yield return instruction;
 
@@ -494,7 +495,22 @@ namespace Xamarin.Forms.Build.Tasks
 				if (indexArg != null) {
 					var defaultMemberAttribute = previousPartTypeRef.GetCustomAttribute(module, ("mscorlib", "System.Reflection", "DefaultMemberAttribute"));
 					var indexerName = defaultMemberAttribute?.ConstructorArguments?.FirstOrDefault().Value as string ?? "Item";
-					var indexer = previousPartTypeRef.GetProperty(pd => pd.Name == indexerName && pd.GetMethod != null && pd.GetMethod.IsPublic, out var indexerDeclTypeRef);
+					PropertyDefinition indexer = null;
+					TypeReference indexerDeclTypeRef = null;
+					if (int.TryParse(indexArg, out _))
+						indexer = previousPartTypeRef.GetProperty(pd => pd.Name == indexerName
+																	 && pd.GetMethod != null
+																	 && TypeRefComparer.Default.Equals(pd.GetMethod.Parameters[0].ParameterType.ResolveGenericParameters(previousPartTypeRef), module.ImportReference(("mscorlib", "System", "Int32")))
+																	 && pd.GetMethod.IsPublic, out indexerDeclTypeRef);
+					indexer = indexer ?? previousPartTypeRef.GetProperty(pd => pd.Name == indexerName
+																			&& pd.GetMethod != null
+																			&& TypeRefComparer.Default.Equals(pd.GetMethod.Parameters[0].ParameterType.ResolveGenericParameters(previousPartTypeRef), module.ImportReference(("mscorlib", "System", "String")))
+																			&& pd.GetMethod.IsPublic, out indexerDeclTypeRef);
+					indexer = indexer ?? previousPartTypeRef.GetProperty(pd => pd.Name == indexerName
+																			&& pd.GetMethod != null
+																			&& TypeRefComparer.Default.Equals(pd.GetMethod.Parameters[0].ParameterType.ResolveGenericParameters(previousPartTypeRef), module.ImportReference(("mscorlib", "System", "Object")))
+																			&& pd.GetMethod.IsPublic, out indexerDeclTypeRef);
+
 					properties.Add((indexer, indexerDeclTypeRef, indexArg));
 					var indexType = indexer.GetMethod.Parameters[0].ParameterType.ResolveGenericParameters(indexerDeclTypeRef);
 					if (!TypeRefComparer.Default.Equals(indexType, module.TypeSystem.String) && !TypeRefComparer.Default.Equals(indexType, module.TypeSystem.Int32))
@@ -1345,9 +1361,9 @@ namespace Xamarin.Forms.Build.Tasks
 			//is there a RD.Add() overrides that accepts this ?
 			var nodeTypeRef = context.Variables[node].VariableType;
 			var module = context.Body.Method.Module;
-			if (module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary"),
+			if (module.ImportMethodReference(module.GetTypeDefinition(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary")),
 											 methodName: "Add",
-											 parameterTypes: new[] { (nodeTypeRef.Scope.Name, nodeTypeRef.Namespace, nodeTypeRef.Name) }) != null)
+											 parameterTypes: new[] { (nodeTypeRef) }) != null)
 				return true;
 
 			throw new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo);

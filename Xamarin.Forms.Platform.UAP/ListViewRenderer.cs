@@ -59,6 +59,10 @@ namespace Xamarin.Forms.Platform.UWP
 				e.OldElement.ItemSelected -= OnElementItemSelected;
 				e.OldElement.ScrollToRequested -= OnElementScrollToRequested;
 				((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems.CollectionChanged -= OnCollectionChanged;
+				if (Control != null)
+				{
+					Control.Loaded -= ControlOnLoaded;
+				}
 			}
 
 			if (e.NewElement != null)
@@ -84,9 +88,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 				ReloadData();
 
-				if (Element.SelectedItem != null)
-					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem, TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(Element.SelectedItem)));
-
 				UpdateGrouping();
 				UpdateHeader();
 				UpdateFooter();
@@ -95,7 +96,22 @@ namespace Xamarin.Forms.Platform.UWP
 				ClearSizeEstimate();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
+
+				if (Control != null)
+				{
+					Control.Loaded += ControlOnLoaded;
+				}
 			}
+		}
+
+		void ControlOnLoaded(object sender, RoutedEventArgs e)
+		{
+			var scrollViewer = GetScrollViewer();
+			scrollViewer?.RegisterPropertyChangedCallback(ScrollViewer.VerticalOffsetProperty, (o, dp) =>
+			{
+				var args = new ScrolledEventArgs(0, _scrollViewer.VerticalOffset);
+				Element?.SendScrolled(args);
+			});
 		}
 
 		bool IsObservableCollection(object source)
@@ -210,7 +226,10 @@ namespace Xamarin.Forms.Platform.UWP
 				ReloadData();
 			}
 
-			Device.BeginInvokeOnMainThread(() => List?.UpdateLayout());
+			if (Element.Dispatcher == null)
+				Device.BeginInvokeOnMainThread(() => List?.UpdateLayout());
+			else
+				Element.Dispatcher.BeginInvokeOnMainThread(() => List?.UpdateLayout());
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -418,6 +437,10 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (Element.SelectionMode == ListViewSelectionMode.Single)
 			{
 				List.SelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode.Single;
+
+				// UWP seems to reset the selected item when SelectionMode is set, make sure our items stays selected by doing this call
+				if (Element.SelectedItem != null)
+					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem, TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(Element.SelectedItem)));
 			}
 		}
 
@@ -751,7 +774,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
-			if (Element.SelectedItem != List.SelectedItem)
+			bool areEqual = false;
+
+			if (Element.SelectedItem != null && Element.SelectedItem.GetType().IsValueType)
+				areEqual = Element.SelectedItem.Equals(List.SelectedItem);
+			else
+				areEqual = Element.SelectedItem == List.SelectedItem;
+
+			if (!areEqual)
 			{
 				if (_itemWasClicked)
 					List.SelectedItem = Element.SelectedItem;

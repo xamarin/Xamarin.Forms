@@ -23,14 +23,12 @@ namespace Xamarin.Forms.Internals
 			_names[name] = scopedElement;
 		}
 
-		public static INameScope GetNameScope(BindableObject bindable)
-		{
-			return (INameScope)bindable.GetValue(NameScopeProperty);
-		}
+		public static INameScope GetNameScope(BindableObject bindable) => (INameScope)bindable.GetValue(NameScopeProperty);
 
 		public static void SetNameScope(BindableObject bindable, INameScope value)
 		{
-			bindable.SetValue(NameScopeProperty, value);
+			if (bindable.GetValue(NameScopeProperty) == null)
+				bindable.SetValue(NameScopeProperty, value);
 		}
 	}
 }

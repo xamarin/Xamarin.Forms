@@ -46,10 +46,14 @@ namespace Xamarin.Forms.Material.Android
 			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
 		}
 
-		protected override void UpdatePlaceHolderText() => _textInputLayout.SetHint(string.Empty, Element);
+		protected override void UpdatePlaceHolderText()
+		{
+			_textInputLayout.SetHint(Element.Title, Element);
+		}
+
 		protected override void UpdateTitleColor() => ApplyTheme();
 		protected override void UpdateTextColor() => ApplyTheme();
-		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
+		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Element.TitleColor);
 
 		AView ITabStop.TabStop => EditText;
 	}

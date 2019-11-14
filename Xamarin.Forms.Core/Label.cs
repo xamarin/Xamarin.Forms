@@ -28,6 +28,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
+
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
 		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Label), default(string), propertyChanged: OnTextPropertyChanged);
@@ -87,6 +89,9 @@ namespace Xamarin.Forms
 			});
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
+		
+		public static readonly BindableProperty TextTypeProperty = BindableProperty.Create(nameof(TextType), typeof(TextType), typeof(Label), TextType.Text,
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
@@ -121,7 +126,7 @@ namespace Xamarin.Forms
 			get { return (TextAlignment)GetValue(TextAlignmentElement.HorizontalTextAlignmentProperty); }
 			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
 		}
-
+		
 		public LineBreakMode LineBreakMode
 		{
 			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
@@ -139,7 +144,13 @@ namespace Xamarin.Forms
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
-
+		
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+		
 		public TextAlignment VerticalTextAlignment
 		{
 			get { return (TextAlignment)GetValue(VerticalTextAlignmentProperty); }
@@ -203,6 +214,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Thickness)GetValue(PaddingProperty); }
 			set { SetValue(PaddingProperty, value); }
+		}
+		
+		public TextType TextType
+		{
+			get => (TextType)GetValue(TextTypeProperty);
+			set => SetValue(TextTypeProperty, value);
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>
@@ -343,6 +360,12 @@ namespace Xamarin.Forms
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
 		}
+
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
 
 		public override IList<GestureElement> GetChildElements(Point point)
 		{

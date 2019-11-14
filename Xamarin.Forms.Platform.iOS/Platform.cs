@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 #if DEBUG
 				if (oldvalue != null && newvalue != null)
 				{
-					Log.Warning("Renderer", $"{bindable} already has a renderer attached to it: {oldvalue}. Please figure out why and then fix it.", nameof(oldvalue));
+					Log.Warning("Renderer", $"{bindable} already has a renderer attached to it: {oldvalue}. Please figure out why and then fix it.");
 				}
 #endif
 				var view = bindable as VisualElement;
@@ -366,6 +366,7 @@ namespace Xamarin.Forms.Platform.iOS
 			alert.AddTextField(uiTextField =>
 			{
 				uiTextField.Placeholder = arguments.Placeholder;
+				uiTextField.Text = arguments.InitialValue;
 				uiTextField.ShouldChangeCharacters = (field, range, replacementString) => arguments.MaxLength <= -1 || field.Text.Length + replacementString.Length - range.Length <= arguments.MaxLength;
 				uiTextField.ApplyKeyboard(arguments.Keyboard);
 			});

@@ -13,6 +13,7 @@
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
+    <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -20,7 +21,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -31,7 +31,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -43,18 +42,32 @@
   <ItemGroup>
     <Compile Include="AccessibilityExtensions.cs" />
     <Compile Include="EmbeddedFontLoader.cs" />
+    <Compile Include="CollectionView\CarouselViewRenderer.cs" />
+    <Compile Include="CollectionView\FormsListView.cs" />
+    <Compile Include="CollectionView\IEmptyView.cs" />
     <Compile Include="CollectionView\ItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\ItemTemplateContextList.cs" />
+    <Compile Include="CollectionView\ScrollHelpers.cs" />
+    <Compile Include="CollectionView\GroupedItemTemplateCollection.cs" />
+    <Compile Include="CollectionView\GroupFooterItemTemplateContext.cs" />
+    <Compile Include="CollectionView\GroupHeaderStyleSelector.cs" />
+    <Compile Include="CollectionView\GroupTemplateContext.cs" />
+    <Compile Include="CollectionView\GroupableItemsViewRenderer.cs" />
     <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\StructuredItemsViewRenderer.cs" />
+    <Compile Include="ColorExtensions.cs" />
+    <Compile Include="DispatcherProvider.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="FormsCheckBox.cs" />
     <Compile Include="IImageVisualElementRenderer.cs" />
     <Compile Include="ImageButtonRenderer.cs" />
     <Compile Include="CollectionView\CollectionViewRenderer.cs" />
+    <Compile Include="Dispatcher.cs" />
     <Compile Include="FormsCancelButton.cs" />
     <Compile Include="AlertDialog.cs" />
     <Compile Include="IDontGetFocus.cs" />
     <Compile Include="FontImageSourceHandler.cs" />
-    <Compile Include="Items\ItemContentControl.cs" />
+    <Compile Include="CollectionView\ItemContentControl.cs" />
     <Compile Include="FormsPivot.cs" />
     <Compile Include="AlignmentExtensions.cs" />
     <Compile Include="BrushHelpers.cs" />
@@ -67,17 +80,18 @@
     <Compile Include="ImageElementManager.cs" />
     <Compile Include="InterceptVisualStateManager.cs" />
     <Compile Include="HorizontalTextAlignmentConverter.cs" />
-    <Compile Include="Items\ObservableItemTemplateCollection.cs" />
-    <Compile Include="Items\TemplatedItemSourceFactory.cs" />
+    <Compile Include="CollectionView\ObservableItemTemplateCollection.cs" />
+    <Compile Include="CollectionView\TemplatedItemSourceFactory.cs" />
     <Compile Include="ITitleIconProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
-    <Compile Include="Items\FormsGridView.cs" />
-    <Compile Include="Items\ItemTemplateEnumerator.cs" />
-    <Compile Include="Items\ItemTemplatePair.cs" />
+    <Compile Include="CollectionView\FormsGridView.cs" />
+    <Compile Include="CollectionView\ItemTemplateContextEnumerable.cs" />
+    <Compile Include="CollectionView\ItemTemplateContext.cs" />
     <Compile Include="ITitleProvider.cs" />
     <Compile Include="ITitleViewRendererController.cs" />
     <Compile Include="IToolbarProvider.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
+    <Compile Include="LabelHtmlHelper.cs" />
     <Compile Include="NativeBindingExtensions.cs" />
     <Compile Include="NativeEventWrapper.cs" />
     <Compile Include="NativePropertyListener.cs" />
@@ -87,6 +101,13 @@
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PropertyChangedEventArgsExtensions.cs" />
+    <Compile Include="RefreshViewRenderer.cs" />
+    <Compile Include="Shell\ShellHeaderRenderer.cs" />
+    <Compile Include="Shell\ShellItemRenderer.cs" />
+    <Compile Include="Shell\ShellFlyoutTemplateSelector.cs" />
+    <Compile Include="Shell\ShellRenderer.cs" />
+    <Compile Include="Shell\ShellSectionRenderer.cs" />
+    <Compile Include="Shell\ShellToolbarItemRenderer.cs" />
     <Compile Include="StepperControl.xaml.cs">
       <DependentUpon>StepperControl.xaml</DependentUpon>
     </Compile>
@@ -127,7 +148,6 @@
     <Compile Include="CellControl.cs" />
     <Compile Include="CollapseWhenEmptyConverter.cs" />
     <Compile Include="ColorConverter.cs" />
-    <Compile Include="ColorExtensions.cs" />
     <Compile Include="DatePickerRenderer.cs" />
     <Compile Include="DefaultRenderer.cs" />
     <Compile Include="EditorRenderer.cs" />
@@ -199,6 +219,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="CollectionView\ItemsViewStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FormsCheckBoxStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -220,10 +244,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Items\ItemsViewStyles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MasterDetailControlStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -232,7 +252,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PickerStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Shell\ShellStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -259,10 +287,17 @@
       <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
+      <Project>{9DB2F292-8034-4E06-89AD-98BBDA4306B9}</Project>
+      <Name>Xamarin.Forms.Xaml</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.UI.Xaml">
+      <Version>2.1.190606001</Version>
     </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.1</Version>
