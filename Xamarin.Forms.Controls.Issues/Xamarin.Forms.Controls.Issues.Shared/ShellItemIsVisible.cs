@@ -100,6 +100,15 @@ namespace Xamarin.Forms.Controls.Issues
 			item1.SetBinding(ShellItem.IsVisibleProperty, "Item1");
 			item2.SetBinding(ShellItem.IsVisibleProperty, "Item2");
 
+			this.Items.Add(new MenuShellItem(new MenuItem()
+			{
+				Text = "Hide Flyout",
+				Command = new Command(() =>
+				{
+					this.FlyoutIsPresented = false;
+				})
+			}));
+
 		}
 
 		[Preserve(AllMembers = true)]
@@ -142,6 +151,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("ToggleItem1");
 			ShowFlyout();
 			RunningApp.WaitForElement("Item1 Flyout");
+			RunningApp.Tap("Hide Flyout");
 			RunningApp.Tap("AllVisible");
 			RunningApp.Tap("ToggleItem1");
 			ShowFlyout();

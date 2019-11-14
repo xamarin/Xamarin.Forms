@@ -177,7 +177,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.RegisterClassForCell(GetCellType(), CellId);
 
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, ShellSection);
-			((INotifyCollectionChanged)ShellSectionController.GetItems()).CollectionChanged += OnShellSectionItemsChanged;
+			ShellSectionController.ItemsCollectionChanged += OnShellSectionItemsChanged;
 
 			UpdateSelectedIndex();
 			ShellSection.PropertyChanged += OnShellSectionPropertyChanged;
