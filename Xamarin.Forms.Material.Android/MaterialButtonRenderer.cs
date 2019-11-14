@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Material.Android
 		bool _disposed;
 		bool _inputTransparent;
 		Button _button;
+		bool _buttonIsCovered;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> _platformElementConfiguration;
 		VisualElementTracker _tracker;
 		VisualElementRenderer _visualElementRenderer;
@@ -180,6 +181,65 @@ namespace Xamarin.Forms.Material.Android
 		{
 			_buttonLayoutManager?.OnLayout(changed, left, top, right, bottom);
 			base.OnLayout(changed, left, top, right, bottom);
+
+			var parent = _button.Parent;
+			int buttonIndex = parent.LogicalChildren.IndexOf(_button);
+
+			if (buttonIndex + 1 < parent.LogicalChildren.Count)
+			{
+				for (int i = buttonIndex + 1; i < parent.LogicalChildren.Count; i++)
+				{
+					var higherIndexElement = parent.LogicalChildren[i] as VisualElement;
+
+					if (parent is Grid)
+					{
+						//check to see if there is another child in the same Row/Column, 
+						// and if it has a higher index than _button and they overlap
+						// If so, set _isCovered=true
+						var buttonRow = Grid.GetRow(_button);
+						var buttonColumn = Grid.GetColumn(_button);
+						var higherIndexElementRow = Grid.GetRow(higherIndexElement);
+						var higherIndexElementColumn = Grid.GetColumn(higherIndexElement);
+						if (buttonRow == higherIndexElementRow && buttonColumn == higherIndexElementColumn && DoElementsOverlap(_button, higherIndexElement))
+						{
+							_buttonIsCovered = true;
+						}
+
+					}
+					else if (parent is AbsoluteLayout || parent is RelativeLayout)
+					{
+						// Check to see if any siblings that have a higher index
+						// occupy the same space as the button
+						// If so, set _isCovered=true
+						_buttonIsCovered = DoElementsOverlap(_button, higherIndexElement);
+					}
+
+				}
+			}				
+		}
+
+		bool DoElementsOverlap(VisualElement a, VisualElement b)
+		{
+			Point buttonTopLeft = new Point(a.X, a.Y);
+			Point buttonBottomRight = new Point(a.X + a.Width, a.Y + a.Height);
+			Point higherIndexElementTopLeft = new Point(b.X, b.Y);
+			Point higherIndexElementBottomRight = new Point(b.X + b.Width, b.Y + b.Height);
+
+			if (buttonTopLeft.X > higherIndexElementBottomRight.X || higherIndexElementTopLeft.X > buttonBottomRight.X)
+				return false;
+			if (buttonTopLeft.Y > higherIndexElementBottomRight.Y || higherIndexElementTopLeft.Y > buttonBottomRight.Y)
+				return false;
+			return true;
+		}
+
+		public override float TranslationZ 
+        { 
+			get => base.TranslationZ;
+			set 
+			{
+				base.TranslationZ = _buttonIsCovered ? 0 : value;
+				System.Diagnostics.Debug.WriteLine($"MaterialButtonRenderer TranslationZ: {base.TranslationZ}, IsCovered: {_buttonIsCovered}");
+			}
 		}
 
 		void UpdateFont()

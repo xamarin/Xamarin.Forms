@@ -25,41 +25,58 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			// To test FastRenderer.ButtonRenderer, change the folowing to VisualMarker.Default
+			// and comment out setting the LegacyRenderers flag in FormsAppCompatActivity in Xamarin.Forms.ControlGallery.Android
 			Visual = VisualMarker.Material;
-			// Test with Grid
-			Grid theGrid = null;
-			theGrid = new Grid();
-			SetupLayout(theGrid);
+			// Test with Grid with overlap
+			Grid theGrid = new Grid();
+			SetupLayout(theGrid, true);
 
-			// Test with AbsoluteLayout
+			// Test with AbsoluteLayout with overlap
 			AbsoluteLayout absLayout = new AbsoluteLayout();
-			SetupLayout(absLayout);
+			SetupLayout(absLayout, true);
 
-			// Test with RelativeLayout
+			// Test with RelativeLayout with overlap
 			RelativeLayout relLayout = new RelativeLayout() { HeightRequest = 50 };
-			SetupLayout(relLayout);
+			SetupLayout(relLayout, true);
 
-			StackLayout stackLayout = new StackLayout();
-			stackLayout.Children.Add(new Label { Text = "Grid" });
+			// Test with Grid without overlap
+			Grid theGrid2 = new Grid();
+			SetupLayout(theGrid2, false);
+
+			// Test with AbsoluteLayout without overlap
+			AbsoluteLayout absLayout2 = new AbsoluteLayout();
+			SetupLayout(absLayout2, false);
+
+			// Test with RelativeLayout without overlap
+			RelativeLayout relLayout2 = new RelativeLayout() { HeightRequest = 50 };
+			SetupLayout(relLayout2, false);
+
+			StackLayout stackLayout = new StackLayout() { BackgroundColor = Color.Red };
+			stackLayout.Children.Add(new Label { Text = "Grid: Image covers button. Should never see button text" });
 			stackLayout.Children.Add(theGrid);
-			stackLayout.Children.Add(new Label { Text = "AbsoluteLayout" });
+			stackLayout.Children.Add(new Label { Text = "AbsoluteLayout: Image covers button. Should never see button text" });
 			stackLayout.Children.Add(absLayout);
-			stackLayout.Children.Add(new Label { Text = "RelativeLayout" });
+			stackLayout.Children.Add(new Label { Text = "RelativeLayout: Image covers button. Should never see button text" });
 			stackLayout.Children.Add(relLayout);
+			stackLayout.Children.Add(new Label { Text = "Grid: Image does not cover button. " });
+			stackLayout.Children.Add(theGrid2);
+			stackLayout.Children.Add(new Label { Text = "AbsoluteLayout: Image does not cover button. " });
+			stackLayout.Children.Add(absLayout2);
+			stackLayout.Children.Add(new Label { Text = "RelativeLayout: Image does not cover button. " });
+			stackLayout.Children.Add(relLayout2);
 
 			Content = stackLayout;
 		}
 
-		void SetupLayout(Layout layout)
+		void SetupLayout(Layout layout, bool overlap)
 		{
 
 			Button button = new Button()
 			{
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill,
-				Text = "If you can see this, even briefly, the test has failed",
-				AutomationId = "ClickMe",
-
+				Text = overlap ? "If you can see this, even briefly, the test has failed" : "Button",
 			};
 			button.Clicked += Button_Clicked;
 
@@ -68,7 +85,6 @@ namespace Xamarin.Forms.Controls.Issues
 				Source = "coffee.png",
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill,
-				AutomationId = "ClickMe",
 				BackgroundColor = Color.Green,
 				InputTransparent = true
 			};
@@ -78,38 +94,73 @@ namespace Xamarin.Forms.Controls.Issues
 				var grid = layout as Grid;
 				grid.Children.Add(button);
 				grid.Children.Add(image);
+				if (!overlap)
+				{
+					grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+					grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+					Grid.SetColumn(button, 0);
+					Grid.SetColumn(image, 1);
+				}
 			}
 			else if (layout is AbsoluteLayout)
 			{
 				var absLayout = layout as AbsoluteLayout;
 
-				AbsoluteLayout.SetLayoutFlags(button, AbsoluteLayoutFlags.All);
-				AbsoluteLayout.SetLayoutBounds(button, new Rectangle(0, 0, 1, 1));
+				if(overlap)
+				{
+					AbsoluteLayout.SetLayoutFlags(button, AbsoluteLayoutFlags.All);
+					AbsoluteLayout.SetLayoutBounds(button, new Rectangle(0, 0, 1, 1));
+
+					AbsoluteLayout.SetLayoutFlags(image, AbsoluteLayoutFlags.All);
+					AbsoluteLayout.SetLayoutBounds(image, new Rectangle(0, 0, 1, 1));
+				}
+				else
+				{
+					AbsoluteLayout.SetLayoutFlags(button, AbsoluteLayoutFlags.None);
+					AbsoluteLayout.SetLayoutBounds(button, new Rectangle(0, 0, 195, 50));
+
+					AbsoluteLayout.SetLayoutFlags(image, AbsoluteLayoutFlags.None);
+					AbsoluteLayout.SetLayoutBounds(image, new Rectangle(205, 0, 195, 50));
+				}
+
 				absLayout.Children.Add(button);
-
-				AbsoluteLayout.SetLayoutFlags(image, AbsoluteLayoutFlags.All);
-				AbsoluteLayout.SetLayoutBounds(image, new Rectangle(0, 0, 1, 1));
 				absLayout.Children.Add(image);
-
 			}
 			else if (layout is RelativeLayout)
 			{
 				var relLayout = layout as RelativeLayout;
 
-				relLayout.Children.Add(button,
-					Forms.Constraint.Constant(0),
-					Forms.Constraint.Constant(0),
-					Forms.Constraint.Constant(320),
-					Forms.Constraint.Constant(50)
-					);
-				relLayout.Children.Add(image,
-					Forms.Constraint.Constant(0),
-					Forms.Constraint.Constant(0),
-					Forms.Constraint.Constant(320),
-					Forms.Constraint.Constant(50)
-					);
+				if (overlap)
+				{
+					relLayout.Children.Add(button,
+						Forms.Constraint.Constant(0),
+						Forms.Constraint.Constant(0),
+						Forms.Constraint.Constant(320),
+						Forms.Constraint.Constant(50)
+						);
+					relLayout.Children.Add(image,
+						Forms.Constraint.Constant(0),
+						Forms.Constraint.Constant(0),
+						Forms.Constraint.Constant(320),
+						Forms.Constraint.Constant(50)
+						);
+				}
+				else
+				{
+					relLayout.Children.Add(button,
+						Forms.Constraint.Constant(0),
+						Forms.Constraint.Constant(0),
+						Forms.Constraint.Constant(195),
+						Forms.Constraint.Constant(50)
+						);
+					relLayout.Children.Add(image,
+						Forms.Constraint.Constant(205),
+						Forms.Constraint.Constant(0),
+						Forms.Constraint.Constant(195),
+						Forms.Constraint.Constant(50)
+						);
+				}
 			}
-
 		}
 
 		private void Button_Clicked(object sender, EventArgs e)
