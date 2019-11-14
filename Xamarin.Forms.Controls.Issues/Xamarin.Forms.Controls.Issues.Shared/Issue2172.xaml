@@ -5,11 +5,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:issues="clr-namespace:Xamarin.Forms.Controls.Issues"
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.Issues.Issue2172">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Using new measure code, no text should be clipped"></Label>
+            <Label FontSize="25" Text="Using new measure code, no text should be clipped"></Label>
             <ScrollView>
                 <Grid BackgroundColor="Green" Padding="5">
                     <StackLayout>
@@ -25,17 +26,19 @@
                 </Grid>
             </ScrollView>
 
-            <Label Text="Using old measure code, some text should be clipped"></Label>
+            <BoxView HeightRequest="10" Color="Black"></BoxView>
+
+            <Label FontSize="25" Text="Using old measure code, some text should be clipped"></Label>
             <ScrollView>
                 <Grid BackgroundColor="Red" Padding="5">
                     <StackLayout>
                         <StackLayout>
-                            <Entry FontSize="30" Text="{Binding Number}" />
-                            <Entry FontSize="25" Text="Nested" />
-                            <Entry FontSize="25" />
+                            <issues:Issue2172OldEntry FontSize="30" Text="{Binding Number}" />
+                            <issues:Issue2172OldEntry FontSize="25" Text="Nested" />
+                            <issues:Issue2172OldEntry FontSize="25" />
                             <Label FontSize="25" Text="Label"/>
-                            <Editor FontSize="25" Text="Editor"></Editor>
-                            <Editor FontSize="25" Text="Auto Size Editor, add more lines to test." AutoSize="TextChanges"></Editor>
+                            <issues:Issue2172OldEditor FontSize="25" Text="Editor"></issues:Issue2172OldEditor>
+                            <issues:Issue2172OldEditor FontSize="25" Text="Auto Size Editor, add more lines to test." AutoSize="TextChanges"></issues:Issue2172OldEditor>
                         </StackLayout>
                     </StackLayout>
                 </Grid>

@@ -20,4 +20,14 @@ namespace Xamarin.Forms.Controls.Issues
 			public string Number => "Bound Text";
 		}
 	}
+
+	public class Issue2172OldEntry : Entry
+	{
+
+	}
+
+	public class Issue2172OldEditor : Editor
+	{
+
+	}
 }
