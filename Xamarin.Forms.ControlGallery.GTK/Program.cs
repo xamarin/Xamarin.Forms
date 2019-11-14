@@ -23,7 +23,6 @@ namespace Xamarin.Forms.ControlGallery.GTK
 			Gtk.Application.Init();
 			var app = Forms.Create()
 				.WithMaps(string.Empty)
-				.Init()
 				.UseStartup<Startup>()
 				.Build<App>();
 

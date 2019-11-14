@@ -50,7 +50,7 @@
     <PackageReference Include="Microsoft.Maps.MapControl.WPF" Version="1.0.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormsInitExtensions.cs" />
+    <Compile Include="FormsBuilderExtensions.cs" />
     <Compile Include="FormsMaps.cs" />
     <Compile Include="GeocoderBackend.cs" />
     <Compile Include="MapRenderer.cs" />

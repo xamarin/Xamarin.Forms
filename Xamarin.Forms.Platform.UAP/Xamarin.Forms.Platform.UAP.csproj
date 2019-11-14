@@ -56,7 +56,7 @@
     <Compile Include="CollectionView\StructuredItemsViewRenderer.cs" />
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="DispatcherProvider.cs" />
-    <Compile Include="Extensions\FormsInitExtensions.cs" />
+    <Compile Include="Extensions\FormsBuilderExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="FormsCheckBox.cs" />
     <Compile Include="IImageVisualElementRenderer.cs" />

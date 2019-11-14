@@ -44,7 +44,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FormsInitExtensions.cs" />
+    <Compile Include="FormsBuilderExtensions.cs" />
     <Compile Include="FormsMaps.cs" />
     <Compile Include="GeocoderBackend.cs" />
     <Compile Include="MapRenderer.cs" />

@@ -54,7 +54,6 @@ namespace Xamarin.Forms.ControlGallery.Android
 				.WithMaps()
 				.WithVisualMaterial()
 				.WithAppLinks()
-				.Init()
 				.UseStartup<Startup>()
 				.Build(() =>
 				{

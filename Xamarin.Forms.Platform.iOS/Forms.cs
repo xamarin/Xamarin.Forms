@@ -108,9 +108,9 @@ namespace Xamarin.Forms
 			s_flags = tmpflags.Distinct().ToList().AsReadOnly();
 		}
 
-		public static IFormsInit Create()
+		public static IFormsBuilder Create()
 		{
-			return new FormsInit(Init);
+			return new FormsBuilder(Init);
 		}
 
 		static void Init()

@@ -41,7 +41,6 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 		{
 			var app = Forms.Create()
 				.WithMaps()
-				.Init()
 				.UseStartup<Startup>()
 				.Build<App>();
 

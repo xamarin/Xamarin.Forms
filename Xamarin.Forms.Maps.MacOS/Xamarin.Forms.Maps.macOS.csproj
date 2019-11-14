@@ -61,8 +61,8 @@
     <Reference Include="netstandard" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Xamarin.Forms.Maps.iOS\FormsInitExtensions.cs">
-      <Link>FormsInitExtensions.cs</Link>
+    <Compile Include="..\Xamarin.Forms.Maps.iOS\FormsBuilderExtensions.cs">
+      <Link>FormsBuilderExtensions.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Xamarin.Forms.Maps.iOS\FormsMaps.cs">

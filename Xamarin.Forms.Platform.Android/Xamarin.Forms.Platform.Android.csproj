@@ -56,7 +56,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AndroidFormsInit.cs" />
+    <Compile Include="AndroidFormsBuilder.cs" />
     <Compile Include="Anticipator.cs" />
     <Compile Include="ActivityResultCallbackRegistry.cs" />
     <Compile Include="AndroidApplicationLifecycleState.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\DrawableExtensions.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
-    <Compile Include="Extensions\FormsInitExtensions.cs" />
+    <Compile Include="Extensions\FormsBuilderExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
     <Compile Include="Extensions\ScrollViewExtensions.cs" />
     <Compile Include="Extensions\TextAlignmentExtensions.cs" />

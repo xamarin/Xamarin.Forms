@@ -2,9 +2,9 @@
 
 namespace Xamarin
 {
-	public static class FormsInitExtensions
+	public static class FormsBuilderExtensions
 	{
-		public static IFormsInit WithMaps(this IFormsInit init)
+		public static IFormsBuilder WithMaps(this IFormsBuilder init)
 		{
 			init.PostInit(FormsMaps.Init);
 			return init;

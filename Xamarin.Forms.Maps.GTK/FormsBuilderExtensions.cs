@@ -3,15 +3,15 @@ using Xamarin.Forms.Maps.GTK;
 
 namespace Xamarin
 {
-	public static class FormsInitExtensions
+	public static class FormsBuilderExtensions
 	{
-		public static IFormsInit WithMaps(this IFormsInit init)
+		public static IFormsBuilder WithMaps(this IFormsBuilder init)
 		{
 			init.PreInit(FormsMaps.Init);
 			return init;
 		}
 
-		public static IFormsInit WithMaps(this IFormsInit init, string authenticationToken)
+		public static IFormsBuilder WithMaps(this IFormsBuilder init, string authenticationToken)
 		{
 			init.PreInit(() => FormsMaps.Init(authenticationToken));
 			return init;

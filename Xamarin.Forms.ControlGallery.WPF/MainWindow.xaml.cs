@@ -14,7 +14,6 @@ namespace Xamarin.Forms.ControlGallery.WPF
 			
 			LoadApplication(Xamarin.Forms.Forms.Create()
 				.WithMaps("")
-				.Init()
 				.UseStartup<Startup>()
 				.Build<Controls.App>()
 			);

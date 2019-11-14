@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContextExtensions.cs" />
-    <Compile Include="FormsInitExtensions.cs" />
+    <Compile Include="FormsBuilderExtensions.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="AndroidAppLinks.cs" />
   </ItemGroup>

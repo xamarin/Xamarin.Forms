@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xamarin.Forms.Internals;
 #if NETSTANDARD2_0
 using Microsoft.Extensions.Configuration;
@@ -9,8 +10,48 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Xamarin.Forms
 {
-	class FormsBuilder : IFormsBuilder
+	public class FormsBuilder : IFormsBuilder
 	{
+		readonly List<Action> _post = new List<Action>();
+		readonly List<Action> _pre = new List<Action>();
+		Action _init;
+
+		public FormsBuilder(Action init)
+		{
+			_init = init;
+		}
+
+		public IFormsBuilder Init()
+		{
+			foreach (Action initAction in _pre)
+			{
+				initAction();
+			}
+
+			_init();
+
+			foreach (Action initAction in _post)
+			{
+				initAction();
+			}
+
+			_init = null;
+			_pre.Clear();
+			_post.Clear();
+
+			return this;
+		}
+
+		public void PostInit(Action action)
+		{
+			_post.Add(action);
+		}
+
+		public void PreInit(Action action)
+		{
+			_pre.Add(action);
+		}
+
 #if NETSTANDARD2_0
 		Action<HostBuilderContext, IServiceCollection> _nativeConfigureServices;
 		Action<IConfigurationBuilder> _nativeConfigureHostConfiguration;
@@ -78,6 +119,8 @@ namespace Xamarin.Forms
 
 		void BuildHost(Type app)
 		{
+			Init();
+
 #if NETSTANDARD2_0
 			EmbeddedResourceLoader.SetExecutingAssembly(app.Assembly);
 			IHost host = new HostBuilder()

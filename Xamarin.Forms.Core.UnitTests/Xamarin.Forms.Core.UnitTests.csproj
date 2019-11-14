@@ -76,7 +76,7 @@
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
-    <Compile Include="FormsInitTests.cs" />
+    <Compile Include="FormsBuilderTests.cs" />
     <Compile Include="RefreshViewTests.cs" />
     <Compile Include="MockDispatcherProvider.cs" />
     <Compile Include="MockDispatcher.cs" />

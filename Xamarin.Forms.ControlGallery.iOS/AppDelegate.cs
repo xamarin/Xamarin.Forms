@@ -157,7 +157,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				//.WithFlags("CollectionView_Experimental", "Shell_Experimental")
 				.WithMaps()
 				.WithVisualMaterial()
-				.Init()
 				.UseStartup<Startup>()
 				.Build<App>();
 

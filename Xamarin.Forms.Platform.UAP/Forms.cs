@@ -22,9 +22,9 @@ namespace Xamarin.Forms
 
 		public static bool IsInitialized { get; private set; }
 
-		public static IFormsInit Create(IActivatedEventArgs launchActivatedEventArgs, IEnumerable<Assembly> rendererAssemblies = null)
+		public static IFormsBuilder Create(IActivatedEventArgs launchActivatedEventArgs, IEnumerable<Assembly> rendererAssemblies = null)
 		{
-			return new FormsInit(() => Init(launchActivatedEventArgs, rendererAssemblies));
+			return new FormsBuilder(() => Init(launchActivatedEventArgs, rendererAssemblies));
 		}
 
 		static void Init(IActivatedEventArgs launchActivatedEventArgs, IEnumerable<Assembly> rendererAssemblies = null)

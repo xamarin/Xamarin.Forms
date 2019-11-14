@@ -215,19 +215,19 @@ namespace Xamarin.Forms
 			TitleBarVisibility = visibility;
 		}
 
-		public static IFormsInit Create(CoreApplication application)
+		public static IFormsBuilder Create(CoreApplication application)
 		{
-			return new FormsInit(() => Init(application));
+			return new FormsBuilder(() => Init(application));
 		}
 
-		public static IFormsInit Create(CoreApplication application, bool useDeviceIndependentPixel)
+		public static IFormsBuilder Create(CoreApplication application, bool useDeviceIndependentPixel)
 		{
-			return new FormsInit(() => Init(application, useDeviceIndependentPixel));
+			return new FormsBuilder(() => Init(application, useDeviceIndependentPixel));
 		}
 
-		public static IFormsInit Create(InitializationOptions options)
+		public static IFormsBuilder Create(InitializationOptions options)
 		{
-			return new FormsInit(() => Init(options));
+			return new FormsBuilder(() => Init(options));
 		}
 
 		static void Init(CoreApplication application)

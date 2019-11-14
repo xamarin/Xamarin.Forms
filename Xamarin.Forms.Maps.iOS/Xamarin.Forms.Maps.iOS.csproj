@@ -36,7 +36,7 @@
     </NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FormsInitExtensions.cs" />
+    <Compile Include="FormsBuilderExtensions.cs" />
     <Compile Include="MapPool.cs" />
     <Compile Include="MapRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

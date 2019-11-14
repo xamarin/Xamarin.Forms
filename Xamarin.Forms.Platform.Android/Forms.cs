@@ -132,27 +132,27 @@ namespace Xamarin.Forms
 			return _ColorButtonNormal;
 		}
 
-		public static IFormsInit Create(Context activity, Bundle bundle)
+		public static IFormsBuilder Create(Context activity, Bundle bundle)
 		{
-			return new AndroidFormsInit(() => Init(activity, bundle))
+			return new AndroidFormsBuilder(() => Init(activity, bundle))
 			{
 				Activity = activity,
 				Bundle = bundle
 			};
 		}
 
-		public static IFormsInit Create(Context activity, Bundle bundle, Assembly resourceAssembly)
+		public static IFormsBuilder Create(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
-			return new AndroidFormsInit(() => Init(activity, bundle, resourceAssembly))
+			return new AndroidFormsBuilder(() => Init(activity, bundle, resourceAssembly))
 			{
 				Activity = activity,
 				Bundle = bundle
 			};
 		}
 
-		public static IFormsInit Create(InitializationOptions options)
+		public static IFormsBuilder Create(InitializationOptions options)
 		{
-			return new AndroidFormsInit(() => Init(options))
+			return new AndroidFormsBuilder(() => Init(options))
 			{
 				Activity = options.Activity,
 				Bundle = options.Bundle

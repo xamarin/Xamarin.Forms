@@ -74,7 +74,6 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 				Forms.Create(e)
 					.WithFlags("Shell_UWP_Experimental")
 					//.WithMaps(Controls.App.Config["UWPMapsAuthKey"])
-					.Init()
 					.UseStartup<Startup>()
 					.Build<Controls.App>();
 

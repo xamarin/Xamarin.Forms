@@ -4,9 +4,9 @@ using Android.OS;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class AndroidFormsInit : FormsInit
+	public class AndroidFormsBuilder : FormsBuilder
 	{
-		public AndroidFormsInit(Action init) : base(init)
+		public AndroidFormsBuilder(Action init) : base(init)
 		{
 		}
 
