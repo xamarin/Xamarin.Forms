@@ -462,11 +462,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			FormsTextBox child = Control;
 
-			if (Children.Count == 0 || Control == null)
+			if (Children.Count == 0 || child == null)
 				return new SizeRequest();
 
 			var constraint = new Windows.Foundation.Size(widthConstraint, heightConstraint);
-			Control.Measure(constraint);
+            child.Measure(constraint);
 			var result = FormsTextBox.GetCopyOfSize(child, constraint);
 			return new SizeRequest(result);
 		}

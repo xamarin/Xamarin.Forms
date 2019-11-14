@@ -11,7 +11,7 @@
     <ContentPage.Content>
         <StackLayout>
             <Label FontSize="25" Text="Using new measure code, no text should be clipped"></Label>
-            <ScrollView>
+            <ScrollView VerticalScrollBarVisibility="Always">
                 <Grid BackgroundColor="Green" Padding="5">
                     <StackLayout>
                         <StackLayout>
@@ -28,8 +28,8 @@
 
             <BoxView HeightRequest="10" Color="Black"></BoxView>
 
-            <Label FontSize="25" Text="Using old measure code, some text should be clipped"></Label>
-            <ScrollView>
+            <Label FontSize="25" Text="Using old measure code, some text should be clipped.  Don't resize the window."></Label>
+            <ScrollView VerticalScrollBarVisibility="Always">
                 <Grid BackgroundColor="Red" Padding="5">
                     <StackLayout>
                         <StackLayout>
