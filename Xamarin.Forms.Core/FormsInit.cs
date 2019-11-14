@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 			_init = init;
 		}
 
-		public void Init()
+		public IFormsBuilder Init()
 		{
 			foreach (Action initAction in _pre)
 			{
@@ -31,6 +31,8 @@ namespace Xamarin.Forms
 			_init = null;
 			_pre.Clear();
 			_post.Clear();
+
+			return new FormsBuilder();
 		}
 
 		public void PostInit(Action action)

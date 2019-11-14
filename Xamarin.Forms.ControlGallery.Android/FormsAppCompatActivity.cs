@@ -42,19 +42,33 @@ namespace Xamarin.Forms.ControlGallery.Android
 			//Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
 
 			base.OnCreate(bundle);
-
-			Forms.Create(this, bundle)
+			var app = Forms.Create(this, bundle)
 
 #if TEST_EXPERIMENTAL_RENDERERS
 				// Fake_Flag is here so we can test for flag initialization issues
 				.WithFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/)
 #else
-				.WithFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental" */)
+				.WithFlags("UseLegacyRenderers")
+				.WithFlags(/* "CollectionView_Experimental", "Shell_Experimental" */)
 #endif
 				.WithMaps(this, bundle)
 				.WithVisualMaterial()
 				.WithAppLinks(this)
-				.Init();
+				.Init()
+				.UseStartup<Startup>()
+				.Build(() =>
+				{
+					if (RestartAppTest.App != null)
+					{
+						RestartAppTest.Reinit = true;
+						return (App)RestartAppTest.App;
+					}
+
+					return new App();
+					
+				});
+
+			_app = app;
 
 			Forms.ViewInitialized += (sender, e) => {
 				//				if (!string.IsNullOrWhiteSpace(e.View.StyleId)) {
@@ -65,15 +79,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// uncomment to verify turning off title bar works. This is not intended to be dynamic really.
 			//Forms.SetTitleBarVisibility (AndroidTitleBarVisibility.Never);
 
-			if (RestartAppTest.App != null)
-			{
-				_app = (App)RestartAppTest.App;
-				RestartAppTest.Reinit = true;
-			}
-			else
-			{
-				_app = new App();
-			}
+			
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);

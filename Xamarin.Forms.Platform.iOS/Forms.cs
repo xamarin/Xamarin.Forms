@@ -103,7 +103,9 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+			var tmpflags = flags.ToList();
+			tmpflags.AddRange(Flags);
+			s_flags = tmpflags.Distinct().ToList().AsReadOnly();
 		}
 
 		public static IFormsInit Create()
@@ -111,7 +113,7 @@ namespace Xamarin.Forms
 			return new FormsInit(Init);
 		}
 
-		public static void Init()
+		static void Init()
 		{
 			if (IsInitialized)
 				return;

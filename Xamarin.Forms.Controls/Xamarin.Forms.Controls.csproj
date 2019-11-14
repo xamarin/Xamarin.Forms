@@ -16,6 +16,7 @@
     <NoWarn>0114;0108;0109;4014;0649;0169;0472;0414;0168;0219;0429</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="appsettings.json" />
     <None Remove="BuildNumber.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +28,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <EmbeddedResource Include="appsettings.json" />
     <EmbeddedResource Include="BuildNumber.txt" />
     <EmbeddedResource Include="GalleryPages\crimson.jpg" />
     <EmbeddedResource Include="coffee.png" />

@@ -4,7 +4,7 @@ namespace Xamarin.Forms
 {
 	public interface IFormsInit
 	{
-		void Init();
+		IFormsBuilder Init();
 		void PostInit(Action action);
 		void PreInit(Action action);
 	}

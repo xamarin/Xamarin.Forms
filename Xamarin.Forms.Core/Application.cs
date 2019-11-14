@@ -26,6 +26,8 @@ namespace Xamarin.Forms
 		[Obsolete("Assign the LogWarningsListener")]
 		public static bool LogWarningsToApplicationOutput { get; set; }
 
+		public static IServiceProvider ServiceProvider { get; set; }
+
 		public Application()
 		{
 			var f = false;

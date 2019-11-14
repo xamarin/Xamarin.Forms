@@ -149,7 +149,7 @@ namespace Xamarin.Forms
 
 		// Provide backwards compat for Forms.Init and AndroidActivity
 		// Why is bundle a param if never used?
-		public static void Init(Context activity, Bundle bundle)
+		static void Init(Context activity, Bundle bundle)
 		{
 			Assembly resourceAssembly;
 
@@ -162,14 +162,14 @@ namespace Xamarin.Forms
 			Profile.FrameEnd();
 		}
 
-		public static void Init(Context activity, Bundle bundle, Assembly resourceAssembly)
+		static void Init(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
 			Profile.FrameBegin();
 			SetupInit(activity, resourceAssembly, null);
 			Profile.FrameEnd();
 		}
 
-		public static void Init(InitializationOptions options)
+		static void Init(InitializationOptions options)
 		{
 			Profile.FrameBegin();
 			SetupInit(
@@ -348,19 +348,15 @@ namespace Xamarin.Forms
 
 		public static void SetFlags(params string[] flags)
 		{
-			if (FlagsSet)
-			{
-				// Don't try to set the flags again if they've already been set
-				// (e.g., during a configuration change where OnCreate runs again)
-				return;
-			}
-
 			if (IsInitialized)
 			{
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+
+			var tmpflags = flags.ToList();
+			tmpflags.AddRange(Flags);
+			s_flags = tmpflags.Distinct().ToList().AsReadOnly();
 			FlagsSet = true;
 		}
 

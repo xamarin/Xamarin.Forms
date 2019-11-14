@@ -17,7 +17,7 @@ namespace Xamarin.Forms
 			return new FormsInit(() => Init(rendererAssemblies));
 		}
 
-		public static void Init(IEnumerable<Assembly> rendererAssemblies = null)
+		static void Init(IEnumerable<Assembly> rendererAssemblies = null)
 		{
 			if (IsInitialized)
 				return;

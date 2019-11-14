@@ -230,18 +230,18 @@ namespace Xamarin.Forms
 			return new FormsInit(() => Init(options));
 		}
 
-		public static void Init(CoreApplication application)
+		static void Init(CoreApplication application)
 		{
 			Init(application, false);
 		}
 
-		public static void Init(CoreApplication application, bool useDeviceIndependentPixel)
+		static void Init(CoreApplication application, bool useDeviceIndependentPixel)
 		{
 			_useDeviceIndependentPixel = useDeviceIndependentPixel;
 			SetupInit(application, null);
 		}
 
-		public static void Init(InitializationOptions options)
+		static void Init(InitializationOptions options)
 		{
 			SetupInit(options.Context, options);
 		}
