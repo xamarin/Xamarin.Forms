@@ -111,6 +111,18 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				return;
 			}
+			
+			ImageSource errorPlaceholderSource = null;
+			if (imageElement is Image img)
+			{
+				var loadingPlaceholderSource = img.LoadingPlaceholder;
+				if(loadingPlaceholderSource != null)
+				{
+					var uiImage = await loadingPlaceholderSource.GetNativeImageAsync();
+					renderer.SetImage(uiImage);
+				}
+				errorPlaceholderSource = img.ErrorPlaceholder;
+			}
 
 			var imageController = imageElement as IImageController;
 
@@ -119,7 +131,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Control.Image?.Images != null && Control.Image.Images.Length > 1)
 			{
 				renderer.SetImage(null);
-			} 
+			}
 #else
 			if (Control.Image != null && Control.Image.Representations().Length > 1)
 			{
@@ -146,6 +158,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (renderer.IsDisposed)
 					return;
 
+				if (uiimage == null)
+					uiimage = await errorPlaceholderSource.GetNativeImageAsync();
+
 				// only set if we are still on the same image
 				if (Control != null && imageElement.Source == source)
 					renderer.SetImage(uiimage);
@@ -161,6 +176,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			(imageElement as IViewController)?.NativeSizeChanged();
 		}
+
 
 		internal static async Task<NativeImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{

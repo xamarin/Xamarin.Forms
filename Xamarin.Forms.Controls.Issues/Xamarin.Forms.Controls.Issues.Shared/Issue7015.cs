@@ -59,6 +59,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 					source = image.Source.ToString();
 					image.Source = (source.Contains(batata)) ? bell : batata;
+					source = image.Source.ToString();
 					sourceIs.Text = (source.Contains(batata)) ? fromPlaceholder : fromSource;
 				})
 			};
