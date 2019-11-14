@@ -1,16 +1,20 @@
-﻿#if NETSTANDARD2_0
-using System;
+﻿using System;
+using Xamarin.Forms.Internals;
+#if NETSTANDARD2_0
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Xamarin.Forms.Internals;
+using Microsoft.Extensions.DependencyInjection;
 #endif
 
 namespace Xamarin.Forms
 {
 	class FormsBuilder : IFormsBuilder
 	{
+#if NETSTANDARD2_0
+		Action<HostBuilderContext, IServiceCollection> _nativeConfigureServices;
+		Action<IConfigurationBuilder> _nativeConfigureHostConfiguration;
+#endif
 		IStartup _startup;
 
 		public Application Build(Type app)
@@ -39,6 +43,21 @@ namespace Xamarin.Forms
 			return createApp();
 		}
 
+#if NETSTANDARD2_0
+
+		public IFormsBuilder NativeConfigureServices(Action<HostBuilderContext, IServiceCollection> configureDelegate)
+		{
+			_nativeConfigureServices = configureDelegate;
+			return this;
+		}
+
+		public IFormsBuilder NativeConfigureHostConfiguration(Action<IConfigurationBuilder> configureDelegate)
+		{
+			_nativeConfigureHostConfiguration = configureDelegate;
+			return this;
+		}
+
+#endif
 		public IFormsBuilder UseStartup(Type startupType)
 		{
 			_startup = Activator.CreateInstance(startupType) as IStartup;
@@ -61,20 +80,25 @@ namespace Xamarin.Forms
 		{
 #if NETSTANDARD2_0
 			EmbeddedResourceLoader.SetExecutingAssembly(app.Assembly);
-			IHost host = new HostBuilder().ConfigureHostConfiguration(c =>
-			{
-				c.AddCommandLine(new[] { $"ContentRoot={Environment.CurrentDirectory}" });
-				c.AddJsonStream(EmbeddedResourceLoader.GetEmbeddedResourceStream("appsettings.json"));
-				_startup?.ConfigureHostConfiguration(c);
-			}).ConfigureServices((h, s) =>
-			{
-				//nativeConfigureServices(c, x);
-				//ConfigureServices(c, x);
-				_startup?.ConfigureServices(h, s);
-			}).ConfigureLogging(l => l.AddConsole(o =>
-			{
-				o.DisableColors = true;
-			})).Build();
+			IHost host = new HostBuilder()
+				.ConfigureHostConfiguration(c =>
+				{
+					c.AddCommandLine(new[] { $"ContentRoot={Environment.CurrentDirectory}" });
+					c.AddJsonStream(EmbeddedResourceLoader.GetEmbeddedResourceStream("appsettings.json"));
+
+					_nativeConfigureHostConfiguration?.Invoke(c);
+					_startup?.ConfigureHostConfiguration(c);
+				})
+				.ConfigureServices((h, s) =>
+				{
+					_nativeConfigureServices?.Invoke(h, s);
+					_startup?.ConfigureServices(h, s);
+				})
+				.ConfigureLogging(l => l.AddConsole(o =>
+				{
+					o.DisableColors = true;
+				}))
+				.Build();
 
 			Application.ServiceProvider = host.Services;
 #endif

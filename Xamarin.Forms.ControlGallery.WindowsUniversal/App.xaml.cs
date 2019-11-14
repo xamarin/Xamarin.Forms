@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Xamarin.Forms.Controls;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -73,7 +74,9 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 				Forms.Create(e)
 					.WithFlags("Shell_UWP_Experimental")
 					//.WithMaps(Controls.App.Config["UWPMapsAuthKey"])
-					.Init();
+					.Init()
+					.UseStartup<Startup>()
+					.Build<Controls.App>();
 
 				// Place the frame in the current Window
 				Window.Current.Content = rootFrame;

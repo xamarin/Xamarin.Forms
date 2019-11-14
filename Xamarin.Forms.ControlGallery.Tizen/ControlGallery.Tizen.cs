@@ -26,7 +26,9 @@ namespace Xamarin.Forms.ControlGallery.Tizen
 				.WithFlags("CollectionView_Experimental", "Shell_Experimental")
 				.WithMaps("HERE", "write-your-API-key-here")
 				.WithVisualMaterial()
-				.Init();
+				.Init()
+				.UseStartup<Startup>()
+				.Build<App>();
 
 			app.Run(args);
 		}

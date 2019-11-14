@@ -21,10 +21,12 @@ namespace Xamarin.Forms.ControlGallery.GTK
 			GtkOpenGL.Init();
 			GtkThemes.Init();
 			Gtk.Application.Init();
-			Forms.Create()
+			var app = Forms.Create()
 				.WithMaps(string.Empty)
-				.Init();
-			var app = new App();
+				.Init()
+				.UseStartup<Startup>()
+				.Build<App>();
+
 			var window = new FormsWindow();
 			window.LoadApplication(app);
 			window.SetApplicationTitle("Xamarin.Forms GTK# Backend");

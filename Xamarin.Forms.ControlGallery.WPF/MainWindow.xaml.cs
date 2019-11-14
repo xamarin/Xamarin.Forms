@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.Platform.WPF;
+﻿using Xamarin.Forms.Controls;
+using Xamarin.Forms.Platform.WPF;
 
 namespace Xamarin.Forms.ControlGallery.WPF
 {
@@ -10,10 +11,13 @@ namespace Xamarin.Forms.ControlGallery.WPF
 		public MainWindow()
 		{
 			InitializeComponent();
-			Xamarin.Forms.Forms.Create()
+			
+			LoadApplication(Xamarin.Forms.Forms.Create()
 				.WithMaps("")
-				.Init();
-			LoadApplication(new Controls.App());
+				.Init()
+				.UseStartup<Startup>()
+				.Build<Controls.App>()
+			);
 		}
 	}
 }

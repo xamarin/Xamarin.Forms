@@ -114,8 +114,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			});
 
 			Xamarin.Calabash.Start ();
-			Forms.Init ();
-			FormsMaps.Init ();
+			Forms.Create()
+				.WithMaps()
+				.Init();
+
 			window.RootViewController = FormsApp.GetFormsApp ().CreateViewController ();
 		
 			MessagingCenter.Subscribe<RootPagesGallery, Type> (this, Messages.ChangeRoot, (sender, pagetype) => {
@@ -151,11 +153,13 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			Xamarin.Calabash.Start();
 
-			Forms.Create()
-				 //.WithFlags("CollectionView_Experimental", "Shell_Experimental")
+			var app = Forms.Create()
+				//.WithFlags("CollectionView_Experimental", "Shell_Experimental")
 				.WithMaps()
 				.WithVisualMaterial()
-				.Init();
+				.Init()
+				.UseStartup<Startup>()
+				.Build<App>();
 
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
 			{
@@ -176,7 +180,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				};
 			}
 
-			var app = new App();
 			_app = app;
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls

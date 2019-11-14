@@ -39,11 +39,12 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 
 		public override void DidFinishLaunching(NSNotification notification)
 		{
-			Forms.Create()
+			var app = Forms.Create()
 				.WithMaps()
-				.Init();
+				.Init()
+				.UseStartup<Startup>()
+				.Build<App>();
 
-			var app = new App();
 			SetupMenu(app);
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
