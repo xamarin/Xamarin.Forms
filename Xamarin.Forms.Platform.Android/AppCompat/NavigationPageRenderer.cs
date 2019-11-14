@@ -1031,8 +1031,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (_toolbar.NavigationIcon != null && !textColor.IsDefault)
 			{
-				var drawable = (_toolbar.NavigationIcon as DrawerArrowDrawable);
-				drawable.Color = textColor.ToAndroid().ToArgb();
+				var icon = _toolbar.NavigationIcon as DrawerArrowDrawable;
+				if (icon != null)
+					icon.Color = textColor.ToAndroid().ToArgb();
 			}
 
 			UpdateTitleIcon();
