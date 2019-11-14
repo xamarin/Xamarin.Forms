@@ -37,7 +37,7 @@ jobs:
       clean: true
     - script: build.cmd -Target provision --verbosity=diagnostic
       displayName: 'Cake Provision'
-      condition: eq(variables['provisioning'], 'false')
+      condition: eq(variables['provisioning'], 'true')
 
     - task: NuGetToolInstaller@0
       displayName: 'Use NuGet $(NUGET_VERSION)'

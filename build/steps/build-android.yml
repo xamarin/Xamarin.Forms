@@ -16,8 +16,6 @@ parameters:
   nugetVersion: $(NUGET_VERSION)
   monoVersion: $(MONO_VERSION)
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
-  provisionatorPath: 'build/provisioning/provisioning.csx'
-  provisionatorExtraArguments: ''
 
 jobs:
   - job: ${{ parameters.name }}
@@ -32,7 +30,7 @@ jobs:
 
       - task: Bash@3
         displayName: 'Cake Provision'
-        condition: eq(variables['provisioning'], 'false')
+        condition: eq(variables['provisioning'], 'true')
         inputs:
           targetType: 'filePath'
           filePath: 'build.sh'
