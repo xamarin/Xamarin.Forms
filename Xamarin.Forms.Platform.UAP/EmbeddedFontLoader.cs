@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Windows.Storage;
 
-namespace Xamarin.Forms.Platform.UAP
+namespace Xamarin.Forms.Platform.UWP
 {
 	public class EmbeddedFontLoader : IEmbeddedFontLoader
 	{

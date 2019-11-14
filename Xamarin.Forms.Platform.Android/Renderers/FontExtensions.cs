@@ -1,12 +1,10 @@
 using Android.Graphics;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using Xamarin.Forms.Core;
 using Xamarin.Forms.Internals;
 using AApplication = Android.App.Application;
-using Android.Graphics;
-using System.Collections.Concurrent;
 
 namespace Xamarin.Forms.Platform.Android
 {

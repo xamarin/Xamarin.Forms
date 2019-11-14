@@ -4,26 +4,10 @@
     <XFDisableTargetsValidation>True</XFDisableTargetsValidation>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="App.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\CuteFont-Regular.ttf" />
     <EmbeddedResource Include="Resources\Dokdo-Regular.ttf" />
     <EmbeddedResource Include="Resources\PTM55FT.ttf" />
     <EmbeddedResource Include="Resources\fa-regular-400.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="EventsPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="SpeakersPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj" />

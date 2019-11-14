@@ -61,6 +61,3 @@ using Xamarin.Forms.Platform.UWP;
 
 //Fonts
 [assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]
-
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]

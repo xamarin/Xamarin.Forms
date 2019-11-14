@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreEqual(font1.FileName, "PTM55FT");
 			Assert.AreEqual(font1.PostScriptName, "PTMono-Regular");
-			Assert.IsNullOrEmpty(font1.Extension);
+			Assert.IsNull(font1.Extension);
 
 
 			Assert.AreEqual(font2.FileName, "PTM55FT");
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreEqual(font3.FileName, "CuteFont-Regular");
 			Assert.AreEqual(font3.PostScriptName, "CuteFont-Regular");
-			Assert.IsNullOrEmpty(font3.Extension);
+			Assert.IsNull(font3.Extension);
 
 		}
 
