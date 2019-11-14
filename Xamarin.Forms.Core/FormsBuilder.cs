@@ -64,9 +64,9 @@ namespace Xamarin.Forms
 			return this;
 		}
 
-		public IFormsBuilder UseStartup<TStartup>() where TStartup : IStartup
+		public IFormsBuilder UseStartup<TStartup>() where TStartup : IStartup, new()
 		{
-			_startup = Activator.CreateInstance<TStartup>();
+			_startup = new TStartup();
 			return this;
 		}
 

@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 		TApp Build<TApp>(Func<TApp> createApp) where TApp : Application;
 
 		IFormsBuilder UseStartup(Type startupType);
-		IFormsBuilder UseStartup<TStartup>() where TStartup : IStartup;
+		IFormsBuilder UseStartup<TStartup>() where TStartup : IStartup, new();
 		IFormsBuilder UseStartup<TStartup>(Func<TStartup> createStartup) where TStartup : IStartup;
 
 #if NETSTANDARD2_0

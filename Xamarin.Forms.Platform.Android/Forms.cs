@@ -134,17 +134,29 @@ namespace Xamarin.Forms
 
 		public static IFormsInit Create(Context activity, Bundle bundle)
 		{
-			return new FormsInit(() => Init(activity, bundle));
+			return new AndroidFormsInit(() => Init(activity, bundle))
+			{
+				Activity = activity,
+				Bundle = bundle
+			};
 		}
 
 		public static IFormsInit Create(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
-			return new FormsInit(() => Init(activity, bundle, resourceAssembly));
+			return new AndroidFormsInit(() => Init(activity, bundle, resourceAssembly))
+			{
+				Activity = activity,
+				Bundle = bundle
+			};
 		}
 
 		public static IFormsInit Create(InitializationOptions options)
 		{
-			return new FormsInit(() => Init(options));
+			return new AndroidFormsInit(() => Init(options))
+			{
+				Activity = options.Activity,
+				Bundle = options.Bundle
+			};
 		}
 
 		// Provide backwards compat for Forms.Init and AndroidActivity
