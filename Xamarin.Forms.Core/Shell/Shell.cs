@@ -621,28 +621,27 @@ namespace Xamarin.Forms
 
 		void Initialize()
 		{
-			SetCurrentItem();
+			if (CurrentItem != null)
+				SetCurrentItem();
 
 			ShellController.ItemsCollectionChanged += (s, e) =>
 			{
-				if (CurrentItem == null)
-					SetCurrentItem();
-				else
-					SendStructureChanged();
+				SetCurrentItem();
+				SendStructureChanged();
 			};
 
 			void SetCurrentItem()
 			{
-				if (CurrentItem != null)
+				var shellItems = ShellController.GetItems();
+
+				if (CurrentItem != null && shellItems.Contains(CurrentItem))
 					return;
 
-
-				var shellItems = ShellController.GetItems();
 				ShellItem shellItem = null;
 
 				foreach (var item in shellItems)
 				{
-					if (item is ShellItem)
+					if (item is ShellItem && ValidDefaultShellItem(item))
 					{
 						shellItem = item;
 						break;
@@ -870,35 +869,6 @@ namespace Xamarin.Forms
 				return true;
 			}
 			return false;
-		}
-
-		protected override void OnChildAdded(Element child)
-		{
-			base.OnChildAdded(child);
-
-			if (child is ShellItem shellItem && CurrentItem == null && ValidDefaultShellItem(child))
-			{
-				((IShellController)this).OnFlyoutItemSelected(shellItem);
-			}
-		}
-
-		protected override void OnChildRemoved(Element child)
-		{
-			base.OnChildRemoved(child);
-
-			if (child == CurrentItem)
-			{
-				var visibleItems = ShellController.GetItems();
-				for (var i = 0; i < visibleItems.Count; i++)
-				{
-					var item = visibleItems[i];
-					if (ValidDefaultShellItem(item))
-					{
-						((IShellController)this).OnFlyoutItemSelected(item);
-						break;
-					}
-				}
-			}
 		}
 
 		bool ValidDefaultShellItem(Element child) => !(child is MenuShellItem);

@@ -90,7 +90,12 @@ namespace Xamarin.Forms
 
 		void CheckVisibility(ShellItem shellItem)
 		{
-			if (shellItem.IsVisible && shellItem is IShellItemController controller && controller.GetItems().Count > 0)
+			if (shellItem.IsVisible &&
+				(
+					(shellItem is IShellItemController controller && controller.GetItems().Count > 0) ||
+					shellItem is IMenuItemController
+				)
+			)
 			{
 				int visibleIndex = 0;
 				for (var i = 0; i < _inner.Count; i++)
