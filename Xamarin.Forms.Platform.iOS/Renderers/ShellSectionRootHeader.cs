@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
-				((INotifyCollectionChanged)ShellSectionController.GetItems()).CollectionChanged -= OnShellSectionItemsChanged;
+				ShellSectionController.ItemsCollectionChanged -= OnShellSectionItemsChanged;
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
 
 				ShellSection = null;
