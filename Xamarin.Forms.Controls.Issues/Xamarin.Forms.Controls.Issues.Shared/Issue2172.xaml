@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue2172">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Using new measure code, no text should be clipped"></Label>
+            <ScrollView>
+                <Grid BackgroundColor="Green" Padding="5">
+                    <StackLayout>
+                        <StackLayout>
+                            <Entry FontSize="30" Text="{Binding Number}" />
+                            <Entry FontSize="25" Text="Nested" />
+                            <Entry FontSize="25" />
+                            <Label FontSize="25" Text="Label"/>
+                            <Editor FontSize="25" Text="Editor"></Editor>
+                            <Editor FontSize="25" Text="Auto Size Editor, add more lines to test." AutoSize="TextChanges"></Editor>
+                        </StackLayout>
+                    </StackLayout>
+                </Grid>
+            </ScrollView>
+
+            <Label Text="Using old measure code, some text should be clipped"></Label>
+            <ScrollView>
+                <Grid BackgroundColor="Red" Padding="5">
+                    <StackLayout>
+                        <StackLayout>
+                            <Entry FontSize="30" Text="{Binding Number}" />
+                            <Entry FontSize="25" Text="Nested" />
+                            <Entry FontSize="25" />
+                            <Label FontSize="25" Text="Label"/>
+                            <Editor FontSize="25" Text="Editor"></Editor>
+                            <Editor FontSize="25" Text="Auto Size Editor, add more lines to test." AutoSize="TextChanges"></Editor>
+                        </StackLayout>
+                    </StackLayout>
+                </Grid>
+            </ScrollView>
+        </StackLayout>
+    
+    </ContentPage.Content>
+</ContentPage>
