@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Xamarin.Forms.Internals;
 #if NETSTANDARD2_0
 using Microsoft.Extensions.Configuration;
@@ -129,7 +130,6 @@ namespace Xamarin.Forms
 		void BuildHost(Type app)
 		{
 			Init();
-
 #if NETSTANDARD2_0
 			EmbeddedResourceLoader.SetExecutingAssembly(app.Assembly);
 			IHost host = new HostBuilder()
@@ -139,7 +139,11 @@ namespace Xamarin.Forms
 				})
 				.ConfigureHostConfiguration(context =>
 				{
-					context.AddJsonStream(EmbeddedResourceLoader.GetEmbeddedResourceStream("appsettings.json"));
+					var json = EmbeddedResourceLoader.GetEmbeddedResourceStream("appsettings.json");
+					if (json != null)
+					{
+						context.AddJsonStream(json);
+					}
 					_nativeConfigureHostConfiguration?.Invoke(context);
 					_startup?.ConfigureHostConfiguration(context);
 				})
