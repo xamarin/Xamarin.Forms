@@ -11,12 +11,12 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var list = new List<string>();
 
-			var FormsBuilder = new FormsBuilder(() => list.Add("init"));
-			FormsBuilder.PostInit(() => list.Add("post1"));
-			FormsBuilder.PreInit(() => list.Add("pre1"));
-			FormsBuilder.PreInit(() => list.Add("pre2"));
-			FormsBuilder.PostInit(() => list.Add("post2"));
-			FormsBuilder.Init();
+			var formsBuilder = new FormsBuilder(() => list.Add("init"));
+			formsBuilder.PostInit(() => list.Add("post1"));
+			formsBuilder.PreInit(() => list.Add("pre1"));
+			formsBuilder.PreInit(() => list.Add("pre2"));
+			formsBuilder.PostInit(() => list.Add("post2"));
+			formsBuilder.Init();
 
 			Assert.IsTrue(list[0] == "pre1");
 			Assert.IsTrue(list[1] == "pre2");
