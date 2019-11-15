@@ -17,7 +17,7 @@ variables:
   value: true
 - name: DOTNET_VERSION
   value: 3.0.100
-- name: provisioning:
+- name: provisioning
   value: true
 
 trigger:
