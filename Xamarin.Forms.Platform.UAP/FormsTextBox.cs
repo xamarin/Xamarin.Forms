@@ -405,7 +405,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		/*
-		 * This not was originally in the EditorRenderer, moved here to be shared with the entry renderer.
+		 * This was originally in the EditorRenderer, moved here to be shared with the entry renderer.
 		 * It also needs to always be applied to the size calculation, not just when the box size could change.
 		 *
 		 * Purely invalidating the layout as text is added to the TextBox will not cause it to expand.
