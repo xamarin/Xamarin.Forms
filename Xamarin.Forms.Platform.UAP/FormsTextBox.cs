@@ -433,6 +433,10 @@ namespace Xamarin.Forms.Platform.UWP
 				_copyOfTextBox.Measure(_zeroSize);
 			}
 
+			_copyOfTextBox.MinHeight = control.MinHeight;
+			_copyOfTextBox.MaxHeight = control.MaxHeight;
+			_copyOfTextBox.MinWidth = control.MinWidth;
+			_copyOfTextBox.MaxWidth = control.MaxWidth;
 			_copyOfTextBox.TextWrapping = control.TextWrapping;
 			_copyOfTextBox.AcceptsReturn = control.AcceptsReturn;
 			_copyOfTextBox.Text = control.Text;
