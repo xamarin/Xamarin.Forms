@@ -42,7 +42,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("ObservableCollection and CarouselView", () =>
  							new CollectionCarouselViewGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView EmptyView", () =>
-  							new EmptyCarouselGallery(), Navigation)
+  							new EmptyCarouselGallery(), Navigation),    
+	  					GalleryBuilder.NavButton("IndicatorView", () =>
+  							new IndicatorCodeGallery(), Navigation)
 					}
 				}
 			};

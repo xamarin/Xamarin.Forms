@@ -150,6 +150,33 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate IndicatorTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var grid = new Grid();
+
+				var image = new Image
+				{
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center,
+					Aspect = Aspect.AspectFill
+				};
+
+				image.SetBinding(Image.SourceProperty, new Binding("Image"));
+
+				grid.Children.Add(image);
+
+				var frame = new Frame
+				{
+					Padding = new Thickness(5),
+					Content = grid
+				};
+
+				return frame;
+			});
+		}
+
 		public static DataTemplate ScrollToIndexTemplate()
 		{
 			return new DataTemplate(() =>
