@@ -16,14 +16,20 @@ namespace Xamarin.Forms
 		readonly List<Action> _post = new List<Action>();
 		readonly List<Action> _pre = new List<Action>();
 		Action _init;
+		bool _initialized;
 
 		public FormsBuilder(Action init)
 		{
 			_init = init;
 		}
 
-		public IFormsBuilder Init()
+		public void Init()
 		{
+			if(_initialized)
+				return;
+
+			_initialized = true;
+
 			foreach (Action initAction in _pre)
 			{
 				initAction();
@@ -39,8 +45,6 @@ namespace Xamarin.Forms
 			_init = null;
 			_pre.Clear();
 			_post.Clear();
-
-			return this;
 		}
 
 		public IFormsBuilder PostInit(Action action)

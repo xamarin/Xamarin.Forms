@@ -48,7 +48,7 @@ namespace PagesGallery.UWP
 
 				rootFrame.NavigationFailed += OnNavigationFailed;
 
-				Forms.Init(e);
+				Forms.Create(e).Init();
 
 				if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
 				{

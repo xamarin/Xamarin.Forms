@@ -61,7 +61,7 @@ namespace Embedding.UWP
                 rootFrame.NavigationFailed += OnNavigationFailed;
 	            rootFrame.Navigated += OnNavigated;
 
-	            Forms.Init(e);
+	            Forms.Create(e).Init();
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {

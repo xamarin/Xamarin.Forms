@@ -14,7 +14,7 @@ namespace PagesGallery.Tizen
 		static void Main(string[] args)
 		{
 			var app = new Program();
-			Forms.Init(app);
+			Forms.Create(app).Init();
 			app.Run(args);
 		}
 	}

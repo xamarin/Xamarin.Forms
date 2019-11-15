@@ -12,6 +12,8 @@ namespace Xamarin.Forms
 		IFormsBuilder PostInit(Action action);
 		IFormsBuilder PreInit(Action action);
 
+		void Init();
+
 		Application Build(Type app);
 		TApp Build<TApp>() where TApp : Application;
 		TApp Build<TApp>(Func<TApp> createApp) where TApp : Application;

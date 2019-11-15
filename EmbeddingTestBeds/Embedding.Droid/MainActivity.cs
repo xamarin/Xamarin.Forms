@@ -25,7 +25,8 @@ namespace Embedding.Droid
 		{
 			base.OnCreate(bundle);
 
-			Forms.Init(this, null);
+			Forms.Create(this, null)
+				.Init();
 
 			SetContentView (Resource.Layout.Main);
 			

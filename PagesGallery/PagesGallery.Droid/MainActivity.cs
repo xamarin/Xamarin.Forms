@@ -19,8 +19,8 @@ namespace PagesGallery.Droid
 
 			base.OnCreate(bundle);
 			
-			Forms.Init(this, bundle);
-			LoadApplication(new App());
+			LoadApplication(Forms.Create(this, bundle)
+				.Build<App>());
 		}
 	}
 }

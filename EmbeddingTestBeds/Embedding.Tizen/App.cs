@@ -24,7 +24,7 @@ namespace Embedding.Tizen
 				AvailableRotations = DisplayRotation.Degree_0 | DisplayRotation.Degree_180 | DisplayRotation.Degree_270 | DisplayRotation.Degree_90
 			};
 			_mainWindow.Show();
-			Forms.Init(this);
+			Forms.Create(this).Init();
 			Initialize();
 		}
 
