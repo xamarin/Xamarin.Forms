@@ -6,8 +6,7 @@ namespace Xamarin
 	{
 		public static IFormsBuilder WithMaps(this IFormsBuilder init)
 		{
-			init.PostInit(FormsMaps.Init);
-			return init;
+			return init.PostInit(FormsMaps.Init);
 		}
 	}
 }

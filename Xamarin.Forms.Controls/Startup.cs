@@ -16,9 +16,14 @@ namespace Xamarin.Forms.Controls
 			services.AddSingleton<App>();
 		}
 
-		public void ConfigureHostConfiguration(IConfigurationBuilder configureDelegate)
+		public void ConfigureHostConfiguration(IConfigurationBuilder configurationBuilder)
 		{
-			return;
+		
+		}
+
+		public void ConfigureAppConfiguration(HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder)
+		{
+			
 		}
 	}
 }

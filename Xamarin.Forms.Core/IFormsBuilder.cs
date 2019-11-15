@@ -9,8 +9,8 @@ namespace Xamarin.Forms
 {
 	public interface IFormsBuilder
 	{
-		void PostInit(Action action);
-		void PreInit(Action action);
+		IFormsBuilder PostInit(Action action);
+		IFormsBuilder PreInit(Action action);
 
 		Application Build(Type app);
 		TApp Build<TApp>() where TApp : Application;
@@ -23,6 +23,7 @@ namespace Xamarin.Forms
 #if NETSTANDARD2_0
 		IFormsBuilder NativeConfigureServices(Action<HostBuilderContext, IServiceCollection> configureDelegate);
 		IFormsBuilder NativeConfigureHostConfiguration(Action<IConfigurationBuilder> configureDelegate);
+		IFormsBuilder NativeConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate);
 #endif
 	}
 }

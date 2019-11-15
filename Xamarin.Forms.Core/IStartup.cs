@@ -11,7 +11,8 @@ namespace Xamarin.Forms
 	{
 #if NETSTANDARD2_0
 		void ConfigureServices(HostBuilderContext hostBuilderContext, IServiceCollection services);
-		void ConfigureHostConfiguration(IConfigurationBuilder configureDelegate);
+		void ConfigureHostConfiguration(IConfigurationBuilder configurationBuilder);
+		void ConfigureAppConfiguration(HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder);
 #endif
 	}
 }

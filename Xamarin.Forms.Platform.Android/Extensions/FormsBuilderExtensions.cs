@@ -4,8 +4,7 @@
 	{
 		public static IFormsBuilder WithFlags(this IFormsBuilder init, params string[] flags)
 		{
-			init.PreInit(() => Forms.SetFlags(flags));
-			return init;
+			return init.PreInit(() => Forms.SetFlags(flags));
 		}
 	}
 }

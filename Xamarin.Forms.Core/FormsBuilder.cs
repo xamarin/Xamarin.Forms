@@ -42,19 +42,22 @@ namespace Xamarin.Forms
 			return this;
 		}
 
-		public void PostInit(Action action)
+		public IFormsBuilder PostInit(Action action)
 		{
 			_post.Add(action);
+			return this;
 		}
 
-		public void PreInit(Action action)
+		public IFormsBuilder PreInit(Action action)
 		{
 			_pre.Add(action);
+			return this;
 		}
 
 #if NETSTANDARD2_0
 		Action<HostBuilderContext, IServiceCollection> _nativeConfigureServices;
 		Action<IConfigurationBuilder> _nativeConfigureHostConfiguration;
+		Action<HostBuilderContext, IConfigurationBuilder> _nativeConfigureAppConfiguration;
 #endif
 		IStartup _startup;
 
@@ -98,6 +101,12 @@ namespace Xamarin.Forms
 			return this;
 		}
 
+		public IFormsBuilder NativeConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
+		{
+			_nativeConfigureAppConfiguration = configureDelegate;
+			return this;
+		}
+
 #endif
 		public IFormsBuilder UseStartup(Type startupType)
 		{
@@ -124,23 +133,21 @@ namespace Xamarin.Forms
 #if NETSTANDARD2_0
 			EmbeddedResourceLoader.SetExecutingAssembly(app.Assembly);
 			IHost host = new HostBuilder()
-				.ConfigureHostConfiguration(c =>
+				.ConfigureAppConfiguration((context, builder) =>
 				{
-					c.AddCommandLine(new[] { $"ContentRoot={Environment.CurrentDirectory}" });
-					c.AddJsonStream(EmbeddedResourceLoader.GetEmbeddedResourceStream("appsettings.json"));
-
-					_nativeConfigureHostConfiguration?.Invoke(c);
-					_startup?.ConfigureHostConfiguration(c);
+					_nativeConfigureAppConfiguration?.Invoke(context, builder);
+				})
+				.ConfigureHostConfiguration(context =>
+				{
+					context.AddJsonStream(EmbeddedResourceLoader.GetEmbeddedResourceStream("appsettings.json"));
+					_nativeConfigureHostConfiguration?.Invoke(context);
+					_startup?.ConfigureHostConfiguration(context);
 				})
 				.ConfigureServices((h, s) =>
 				{
 					_nativeConfigureServices?.Invoke(h, s);
 					_startup?.ConfigureServices(h, s);
 				})
-				.ConfigureLogging(l => l.AddConsole(o =>
-				{
-					o.DisableColors = true;
-				}))
 				.Build();
 
 			Application.ServiceProvider = host.Services;

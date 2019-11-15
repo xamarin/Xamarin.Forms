@@ -7,14 +7,12 @@ namespace Xamarin
 	{
 		public static IFormsBuilder WithMaps(this IFormsBuilder init)
 		{
-			init.PreInit(FormsMaps.Init);
-			return init;
+			return init.PreInit(FormsMaps.Init);
 		}
 
 		public static IFormsBuilder WithMaps(this IFormsBuilder init, string authenticationToken)
 		{
-			init.PreInit(() => FormsMaps.Init(authenticationToken));
-			return init;
+			return init.PreInit(() => FormsMaps.Init(authenticationToken));
 		}
 	}
 }

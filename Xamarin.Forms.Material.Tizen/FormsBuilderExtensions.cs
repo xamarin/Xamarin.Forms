@@ -2,11 +2,9 @@
 {
 	public static class FormsBuilderExtensions
 	{
-
 		public static IFormsBuilder WithVisualMaterial(this IFormsBuilder init)
 		{
-			init.PostInit(FormsMaterial.Init);
-			return init;
+			return init.PostInit(FormsMaterial.Init);
 		}
 	}
 }

@@ -7,14 +7,12 @@ namespace Xamarin.Forms
 	{
 		public static IFormsBuilder WithVisualMaterial(this IFormsBuilder init, Context context, Bundle bundle)
 		{
-			init.PostInit(() => FormsMaterial.Init(context, bundle));
-			return init;
+			return init.PostInit(() => FormsMaterial.Init(context, bundle));
 		}
 
 		public static IFormsBuilder WithVisualMaterial(this IFormsBuilder init)
 		{
-			init.PostInit(FormsMaterial.Init);
-			return init;
+			return init.PostInit(FormsMaterial.Init);
 		}
 	}
 }

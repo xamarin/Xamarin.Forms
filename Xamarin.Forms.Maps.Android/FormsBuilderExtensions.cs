@@ -10,14 +10,12 @@ namespace Xamarin
 		public static IFormsBuilder WithMaps(this IFormsBuilder init)
 		{
 			var androidFormsBuilder = (AndroidFormsBuilder)init;
-			init.PostInit(() => FormsMaps.Init(androidFormsBuilder.Activity.GetActivity(), androidFormsBuilder.Bundle));
-			return init;
+			return init.PostInit(() => FormsMaps.Init(androidFormsBuilder.Activity.GetActivity(), androidFormsBuilder.Bundle));
 		}
 
 		public static IFormsBuilder WithMaps(this IFormsBuilder init, Activity activity, Bundle bundle)
 		{
-			init.PostInit(() => FormsMaps.Init(activity, bundle));
-			return init;
+			return init.PostInit(() => FormsMaps.Init(activity, bundle));
 		}
 	}
 }
