@@ -9,11 +9,11 @@ namespace Xamarin.Forms.Internals
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class EmbeddedResourceLoader
 	{
-		static Assembly ExecutingAssembly;
+		static Assembly s_executingAssembly;
 
 		static void EnsureAssemblyIsDefined()
 		{
-			if(ExecutingAssembly == null)
+			if(s_executingAssembly == null)
 			{
 				throw new Exception($"Before using {nameof(EmbeddedResourceLoader)} you need to call {nameof(SetExecutingAssembly)}");
 			}
@@ -21,13 +21,13 @@ namespace Xamarin.Forms.Internals
 
 		public static void SetExecutingAssembly(Assembly assembly)
 		{
-			ExecutingAssembly = assembly;
+			s_executingAssembly = assembly;
 		}
 
 		public static byte[] GetEmbeddedResourceBytes(string resourceFileName)
 		{
 			EnsureAssemblyIsDefined();
-			return GetEmbeddedResourceBytes(resourceFileName, ExecutingAssembly);
+			return GetEmbeddedResourceBytes(resourceFileName, s_executingAssembly);
 		}
 
 		public static byte[] GetEmbeddedResourceBytes(string resourceFileName, Assembly assembly)
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Internals
 		public static string GetEmbeddedResourcePath(string resourceFileName)
 		{
 			EnsureAssemblyIsDefined();
-			return GetEmbeddedResourcePath(resourceFileName, ExecutingAssembly);
+			return GetEmbeddedResourcePath(resourceFileName, s_executingAssembly);
 		}
 
 		public static string GetEmbeddedResourcePath(string resourceFileName, Assembly assembly)
@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Internals
 		public static Stream GetEmbeddedResourceStream(string resourceFileName)
 		{
 			EnsureAssemblyIsDefined();
-			return GetEmbeddedResourceStream(resourceFileName, ExecutingAssembly);
+			return GetEmbeddedResourceStream(resourceFileName, s_executingAssembly);
 		}
 
 		public static Stream GetEmbeddedResourceStream(string resourceFileName, Assembly assembly)
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Internals
 		public static string GetEmbeddedResourceString(string resourceFileName)
 		{
 			EnsureAssemblyIsDefined();
-			return GetEmbeddedResourceString(resourceFileName, ExecutingAssembly);
+			return GetEmbeddedResourceString(resourceFileName, s_executingAssembly);
 		}
 
 		public static string GetEmbeddedResourceString(string resourceFileName, Assembly assembly)
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Internals
 		public static ImageSource GetImageSource(string name)
 		{
 			EnsureAssemblyIsDefined();
-			return ImageSource.FromResource(GetEmbeddedResourcePath(name, ExecutingAssembly), ExecutingAssembly);
+			return ImageSource.FromResource(GetEmbeddedResourcePath(name, s_executingAssembly), s_executingAssembly);
 		}
 
 		public static ImageSource GetImageSource(string name, Assembly assembly)
