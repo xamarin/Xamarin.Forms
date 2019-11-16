@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Platform.Android
 					? frame.IsClippedToBounds : frame.CornerRadius > 0f;
 			}
 
-			if (view is FastRenderers.FrameRenderer)
+			if (view is FastRenderers.FrameRenderer && Forms.IsLollipopOrNewer)
 			{
 				view.SetClipToOutline(shouldClip);
 				return;

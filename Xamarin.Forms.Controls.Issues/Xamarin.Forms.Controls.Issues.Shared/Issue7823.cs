@@ -82,10 +82,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void AssertIsClipped(bool expected)
 		{
-			if (RunningApp.IsApiHigherThan(17))
+			if (RunningApp.IsApiHigherThan(21))
 			{
 				var cliptoOutlineValue = RunningApp.InvokeFromElement<bool>(SecondaryFrame, GetClipToOutline)[0];
 				Assert.AreEqual(expected, cliptoOutlineValue);
+			}
+			else if (RunningApp.IsApiHigherThan(19))
+			{
+				var clipBounds = RunningApp.InvokeFromElement<object>(SecondaryFrame, GetClipBounds)[0];
+				if (expected)
+					Assert.IsNotNull(clipBounds);
+				else
+					Assert.IsNull(clipBounds);
 			}
 			else
 			{
