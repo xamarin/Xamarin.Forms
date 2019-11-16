@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.iOS
 		DataTemplate _defaultItemTemplate;
 		DataTemplate _defaultMenuItemTemplate;
 		List<List<Element>> _groups;
+		Dictionary<Element, View> _views;
 
 		public ShellTableViewSource(IShellContext context, Action<Element> onElementSelected)
 		{
@@ -29,6 +30,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_groups == null)
 				{
 					_groups = ((IShellController)_context.Shell).GenerateFlyoutGrouping();
+					_views = new Dictionary<Element, View>();
 				}
 				return _groups;
 			}
@@ -43,6 +45,37 @@ namespace Xamarin.Forms.Platform.iOS
 		public void ClearCache()
 		{
 			_groups = null;
+			_views = null;
+		}
+
+		public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			int section = indexPath.Section;
+			int row = indexPath.Row;
+			var context = Groups[section][row];
+			View view;
+
+			if (!_views.TryGetValue(context, out view))
+				return UITableView.AutomaticDimension;
+
+			var height = tableView.EstimatedRowHeight;
+
+			if (view.HeightRequest >= 0)
+				height = (float)view.HeightRequest;
+			else
+			{
+				var request = view.Measure(tableView.Bounds.Width, double.PositiveInfinity, MeasureFlags.None);
+
+				if(request.Request.Height > 44)
+					height = (float)request.Request.Height;
+				else
+					height = 44;
+			}
+
+			if (height == -1)
+				height = 44;
+
+			return height;
 		}
 
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
@@ -77,6 +110,7 @@ namespace Xamarin.Forms.Platform.iOS
 				cell.BindingContext = context;
 			}
 
+			_views[context] = cell.View;
 			return cell;
 		}
 
