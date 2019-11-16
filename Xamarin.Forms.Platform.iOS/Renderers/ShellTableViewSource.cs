@@ -58,7 +58,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_views.TryGetValue(context, out view))
 				return UITableView.AutomaticDimension;
 
-			var height = tableView.EstimatedRowHeight;
+			nfloat defaultHeight = tableView.EstimatedRowHeight == -1 ? 44 : tableView.EstimatedRowHeight;
+			nfloat height = -1;
 
 			if (view.HeightRequest >= 0)
 				height = (float)view.HeightRequest;
@@ -66,14 +67,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var request = view.Measure(tableView.Bounds.Width, double.PositiveInfinity, MeasureFlags.None);
 
-				if(request.Request.Height > 44)
+				if(request.Request.Height > defaultHeight)
 					height = (float)request.Request.Height;
 				else
-					height = 44;
+					height = defaultHeight;
 			}
 
 			if (height == -1)
-				height = 44;
+				height = defaultHeight;
 
 			return height;
 		}
