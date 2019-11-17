@@ -26,6 +26,27 @@ namespace Xamarin.Forms.Controls.Issues
 			StackLayout layout = new StackLayout { Margin = new Thickness(20, 0) };
 			layout.BindingContext = this;
 
+			Label isolatedHeader = new Label { Text = "Isolated Bug", Margin = new Thickness(0, 20), FontSize = 18 };
+			Label isolatedInstructions = new Label
+			{
+				Text = "This is the bug isolated. To test:\n" +
+					   "Click on the button below, to show Entry for Isolated Bug.\n" +
+					   "An Entry appears.\n" +
+					   "Check that the entry contains text 'This text should be visible, even before acquiring focus'.\n" +
+					   "If it does, the issue is fixed.\n" +
+					   "If it does not, check if the text appears if the entry receives focus.\n" +
+					   "If it does, the bug is not fixed."
+			};
+			isolatedEntry = new Entry { Text = "This text should be visible, even before acquiring focus", IsVisible = false };
+
+			Button isolatedShowEntryButton = new Button { Text = "Click to show Entry for Isolated Bug" };
+			isolatedShowEntryButton.Clicked += IsolatedShowEntryButton_Clicked;
+
+			layout.Children.Add(isolatedHeader);
+			layout.Children.Add(isolatedInstructions);
+			layout.Children.Add(isolatedEntry);
+			layout.Children.Add(isolatedShowEntryButton);
+
 			Label issueHeader = new Label { Text = "Reported Bug", Margin = new Thickness(0, 20), FontSize = 18 };
 			Label issueInstructions = new Label
 			{
