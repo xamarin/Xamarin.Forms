@@ -18,7 +18,7 @@ variables:
 - name: DOTNET_VERSION
   value: 3.0.100
 - name: winVmImage
-  value: Hosted Windows 2019 with VS2019
+  value: XamarinForms
 
 resources:
   repositories:
