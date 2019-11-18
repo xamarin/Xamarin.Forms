@@ -42,8 +42,6 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty IconProperty = IconImageSourceProperty;
 
-		public static readonly BindableProperty ModalBackgroundColorProperty = BindableProperty.Create(nameof(ModalBackgroundColor), typeof(Color), typeof(Page), Color.Default);
-
 		readonly Lazy<PlatformConfigurationRegistry<Page>> _platformConfigurationRegistry;
 
 		bool _allocatedFlag;
@@ -154,12 +152,6 @@ namespace Xamarin.Forms
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
-
-		public Color ModalBackgroundColor
-		{
-			get { return (Color)GetValue(ModalBackgroundColorProperty); }
-			set { SetValue(ModalBackgroundColorProperty, value); }
-		}
 
 		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
 		{

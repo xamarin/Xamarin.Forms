@@ -145,14 +145,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnModalPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Page.ModalBackgroundColorProperty.PropertyName)
+			if (e.PropertyName == Page.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
 		}
 
 		void UpdateBackgroundColor()
 		{
-			Color modalBkgndColor = ((Page)_modal.Element).ModalBackgroundColor;
-			View.BackgroundColor = modalBkgndColor.IsDefault ? UIColor.White : modalBkgndColor.ToUIColor();
+			if (ModalPresentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
+			{
+				Color modalBkgndColor = ((Page)_modal.Element).BackgroundColor;
+				View.BackgroundColor = modalBkgndColor.IsDefault ? UIColor.White : modalBkgndColor.ToUIColor();
+			}
+			else
+			{
+				View.BackgroundColor = UIColor.Clear;
+			}
 		}
 	}
 }

@@ -681,17 +681,5 @@ namespace Xamarin.Forms.Platform.iOS
 
 			(Page.Parent as IDisposable)?.Dispose();
 		}
-
-		Page GetCurentPage(Page currentPage)
-		{
-			if (_modals.LastOrDefault() is Page modal)
-				return modal;
-			else if (currentPage is MasterDetailPage mdp)
-				return GetCurentPage(mdp.Detail);
-			else if (currentPage is IPageContainer<Page> pc)
-				return GetCurentPage(pc.CurrentPage);
-			else
-				return currentPage;
-		}
 	}
 }
