@@ -18,157 +18,168 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 			BindingContext = new Issue8529ViewModel();
 		}
-	}
 
-	[Preserve(AllMembers = true)]
-	public class Issue8529ViewModel
-	{
-		public ICommand BackCommand { get; set; }
-
-		public Issue8529ViewModel()
+		[Preserve(AllMembers = true)]
+		public class Issue8529ViewModel
 		{
-			BackCommand = new Issue8529AsyncCommand(() =>
+			public ICommand BackCommand { get; set; }
+
+			public Issue8529ViewModel()
+			{
+				BackCommand = new Issue8529AsyncCommand(() =>
 				{
 					return Shell.Current.Navigation.PopAsync();
 				});
-		}
-	}
-
-	#region AsyncCommand
-
-	public interface Issue8529IAsyncCommand : ICommand
-	{
-		Task ExecuteAsync();
-		bool CanExecute();
-	}
-
-	public interface Issue8529IAsyncCommand<in T> : ICommand
-	{
-		Task ExecuteAsync(T parameter);
-		bool CanExecute(T parameter);
-	}
-
-	public static class Issue8529TaskUtilities
-	{
-		public static async void Issue8529FireAndForgetSafeAsync(this Task task)
-		{
-			try
-			{
-				await task;
-			}
-			catch (Exception)
-			{
-
 			}
 		}
-	}
 
-	/// <summary>
-	/// Custom command class to demonstrate the crash. 
-	/// </summary>
-	public class Issue8529AsyncCommand : Issue8529IAsyncCommand
-	{
-		private bool _isExecuting;
-		private readonly Func<Task> _execute;
-		private readonly Func<bool> _canExecute;
-		public event EventHandler CanExecuteChanged;
+		#region AsyncCommand
 
-		public Issue8529AsyncCommand(Func<Task> execute, Func<bool> canExecute = null)
+		public interface Issue8529IAsyncCommand : ICommand
 		{
-			_execute = execute;
-			_canExecute = canExecute;
+			Task ExecuteAsync();
+			bool CanExecute();
 		}
 
-		public bool CanExecute()
+		public interface Issue8529IAsyncCommand<in T> : ICommand
 		{
-			return !_isExecuting && (_canExecute?.Invoke() ?? true);
+			Task ExecuteAsync(T parameter);
+			bool CanExecute(T parameter);
 		}
 
-		public async Task ExecuteAsync()
+		/// <summary>
+		/// Custom command class to demonstrate the crash. 
+		/// </summary>
+		public class Issue8529AsyncCommand : Issue8529IAsyncCommand
 		{
-			if (CanExecute())
+			private bool _isExecuting;
+			private readonly Func<Task> _execute;
+			private readonly Func<bool> _canExecute;
+			public event EventHandler CanExecuteChanged;
+
+			public Issue8529AsyncCommand(Func<Task> execute, Func<bool> canExecute = null)
 			{
-				try
+				_execute = execute;
+				_canExecute = canExecute;
+			}
+
+			public bool CanExecute()
+			{
+				return !_isExecuting && (_canExecute?.Invoke() ?? true);
+			}
+
+			public async Task ExecuteAsync()
+			{
+				if (CanExecute())
 				{
-					_isExecuting = true;
-					await _execute();
+					try
+					{
+						_isExecuting = true;
+						await _execute();
+					}
+					finally
+					{
+						_isExecuting = false;
+					}
 				}
-				finally
-				{
-					_isExecuting = false;
-				}
+
+				RaiseCanExecuteChanged();
 			}
 
-			RaiseCanExecuteChanged();
-		}
+			public void RaiseCanExecuteChanged()
+			{
+				CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+			}
 
-		public void RaiseCanExecuteChanged()
-		{
-			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-		}
+			bool ICommand.CanExecute(object parameter)
+			{
+				return CanExecute();
+			}
 
-		bool ICommand.CanExecute(object parameter)
-		{
-			return CanExecute();
-		}
+			void ICommand.Execute(object parameter)
+			{
+				var task = ExecuteAsync();
+				FireAndForgetSafeAsync(task);
+			}
 
-		void ICommand.Execute(object parameter)
-		{
-			ExecuteAsync().Issue8529FireAndForgetSafeAsync();
-		}
-	}
-
-	public class Issue8529AsyncCommand<T> : Issue8529IAsyncCommand<T>
-	{
-		private bool _isExecuting;
-		private readonly Func<T, Task> _execute;
-		private readonly Func<T, bool> _canExecute;
-		public event EventHandler CanExecuteChanged;
-
-		public Issue8529AsyncCommand(Func<T, Task> execute, Func<T, bool> canExecute = null)
-		{
-			_execute = execute;
-			_canExecute = canExecute;
-		}
-
-		public bool CanExecute(T parameter)
-		{
-			return !_isExecuting && (_canExecute?.Invoke(parameter) ?? true);
-		}
-
-		public async Task ExecuteAsync(T parameter)
-		{
-			if (CanExecute(parameter))
+			public async void FireAndForgetSafeAsync(Task task)
 			{
 				try
 				{
-					_isExecuting = true;
-					await _execute(parameter);
+					await task;
 				}
-				finally
+				catch (Exception)
 				{
-					_isExecuting = false;
+
 				}
 			}
-
-			RaiseCanExecuteChanged();
 		}
 
-		public void RaiseCanExecuteChanged()
+		public class Issue8529AsyncCommand<T> : Issue8529IAsyncCommand<T>
 		{
-			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+			private bool _isExecuting;
+			private readonly Func<T, Task> _execute;
+			private readonly Func<T, bool> _canExecute;
+			public event EventHandler CanExecuteChanged;
+
+			public Issue8529AsyncCommand(Func<T, Task> execute, Func<T, bool> canExecute = null)
+			{
+				_execute = execute;
+				_canExecute = canExecute;
+			}
+
+			public bool CanExecute(T parameter)
+			{
+				return !_isExecuting && (_canExecute?.Invoke(parameter) ?? true);
+			}
+
+			public async Task ExecuteAsync(T parameter)
+			{
+				if (CanExecute(parameter))
+				{
+					try
+					{
+						_isExecuting = true;
+						await _execute(parameter);
+					}
+					finally
+					{
+						_isExecuting = false;
+					}
+				}
+
+				RaiseCanExecuteChanged();
+			}
+
+			public void RaiseCanExecuteChanged()
+			{
+				CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+			}
+
+			bool ICommand.CanExecute(object parameter)
+			{
+				return parameter == null || CanExecute((T)parameter);
+			}
+
+			void ICommand.Execute(object parameter)
+			{
+				var task = ExecuteAsync((T)parameter);
+				FireAndForgetSafeAsync(task);
+			}
+
+			public async void FireAndForgetSafeAsync(Task task)
+			{
+				try
+				{
+					await task;
+				}
+				catch (Exception)
+				{
+
+				}
+			}
 		}
 
-		bool ICommand.CanExecute(object parameter)
-		{
-			return parameter == null || CanExecute((T)parameter);
-		}
-
-		void ICommand.Execute(object parameter)
-		{
-			ExecuteAsync((T)parameter).Issue8529FireAndForgetSafeAsync();
-		}
+		#endregion
 	}
-
-	#endregion
 }
