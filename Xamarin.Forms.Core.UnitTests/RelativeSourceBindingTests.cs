@@ -275,7 +275,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull(label2.Text);
 		}
 
-		private class PersonViewModel
+		class PersonViewModel
 		{
 			public string Name { get; set; }
 		}
