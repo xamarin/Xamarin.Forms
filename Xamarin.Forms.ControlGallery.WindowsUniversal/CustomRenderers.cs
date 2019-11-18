@@ -187,7 +187,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 
 	public class Issue2172OldEditorRenderer : EditorRenderer
 	{
-		private static FormsTextBox _copyOfTextBox;
+		static FormsTextBox _copyOfTextBox;
 		static Windows.Foundation.Size _zeroSize = new Windows.Foundation.Size(0, 0);
 
 		FormsTextBox CreateTextBox()
