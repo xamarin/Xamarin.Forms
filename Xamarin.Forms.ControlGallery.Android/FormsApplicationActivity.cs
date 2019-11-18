@@ -1,5 +1,4 @@
 ﻿#if FORMS_APPLICATION_ACTIVITY
-
 using System.Diagnostics;
 using Android.App;
 using Android.Content.PM;
@@ -21,10 +20,11 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 			base.OnCreate(bundle);
 
-			Forms.SetFlags("Fake_Flag"); // So we can test for flag initialization issues
+			_app = Forms.Create(this, bundle)
+				.WithFlags("Fake_Flag")
+				.WithMaps()
+				.Build<App>();
 
-			Forms.Init(this, bundle);
-			FormsMaps.Init(this, bundle);
 			Forms.ViewInitialized += (sender, e) => {
 				if (!string.IsNullOrWhiteSpace(e.View.StyleId))
 				{
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// uncomment to verify turning off title bar works. This is not intended to be dynamic really.
 			//Forms.SetTitleBarVisibility (AndroidTitleBarVisibility.Never);
 
-			var app = _app = new App();
+			var app = _app;
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);

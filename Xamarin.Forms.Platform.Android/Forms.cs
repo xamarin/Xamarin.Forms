@@ -365,10 +365,7 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-
-			var tmpflags = flags.ToList();
-			tmpflags.AddRange(Flags);
-			s_flags = tmpflags.Distinct().ToList().AsReadOnly();
+			s_flags = flags.ToList().AsReadOnly();
 			FlagsSet = true;
 		}
 
