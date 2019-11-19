@@ -6,20 +6,20 @@
 	<ContentPage.Resources>
 		<!-- Template for integer items -->
 		<DataTemplate x:Key="MyIntTemplate">
-			<Frame Padding="10"
+			<Frame Padding="10" HasShadow="False" 
 				   BackgroundColor="Yellow">
 				<Label Text="{Binding }" />
 			</Frame>
 		</DataTemplate>
 		<!-- Template for character items -->
 		<DataTemplate x:Key="MyCharTemplate">
-			<Frame Padding="10"
+			<Frame Padding="10" HasShadow="False" 
 				   BackgroundColor="Azure">
 				<Label Text="{Binding }" />
 			</Frame>
 		</DataTemplate>
         <DataTemplate x:Key="EmptyTemplate">
-			<Frame Padding="10"
+			<Frame Padding="10" HasShadow="False" 
 				   BackgroundColor="Fuschia">
 				<Label Text="No items here" />
 			</Frame>
