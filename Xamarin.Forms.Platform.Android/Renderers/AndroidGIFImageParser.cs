@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public FormsAnimationDrawable()
 		{
-			RepeatCount = int.MaxValue;
+			RepeatCount = 1;
 
 			if (!Forms.IsLollipopOrNewer)
 				base.SetVisible(false, true);
@@ -99,6 +99,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_isRunning)
 				return base.SelectDrawable(0);
 
+			// Hitting last frame?
+			if (index != 0 && index == _frameCount - 1)
+				_repeatCounter++;
+
 			// Restarted animation, reached max number of repeats?
 			if (_repeatCounter >= RepeatCount)
 			{
@@ -115,9 +119,6 @@ namespace Xamarin.Forms.Platform.Android
 				return base.SelectDrawable(0);
 			}
 
-			// Hitting last frame?
-			if (index != 0 && index == _frameCount - 1)
-				_repeatCounter++;
 
 			return base.SelectDrawable(index);
 		}

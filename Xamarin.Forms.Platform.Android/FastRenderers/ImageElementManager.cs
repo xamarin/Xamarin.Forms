@@ -138,6 +138,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
 			{
+				rendererController.SetFormsAnimationDrawable(updatedAnimation);
+
 				if (newImage.IsAnimationPlaying)
 					updatedAnimation.Start();
 			}

@@ -352,7 +352,7 @@ namespace Xamarin.Forms.Internals
 		GIFBitmap(GIFHeader header)
 		{
 			_header = header;
-			LoopCount = int.MaxValue;
+			LoopCount = 0;
 			Delay = 10;
 		}
 
@@ -413,7 +413,10 @@ namespace Xamarin.Forms.Internals
 				if (stream.CurrentBlockBuffer[0] == 1 && blockSize == 3)
 				{
 					int count = (stream.CurrentBlockBuffer[2] << 8) | stream.CurrentBlockBuffer[1];
-					if (count != 0)
+
+					if (count == 0)
+						LoopCount = int.MaxValue;
+					else if (count != 0)
 						LoopCount = count;
 				}
 				blockSize = await stream.ReadBlockAsync().ConfigureAwait(false);
