@@ -14,8 +14,6 @@ parameters:
   androidProjectArguments : ''
   buildConfiguration : 'Debug'
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
-  provisionatorPath: 'build/provisioning/provisioning.csx'
-  provisionatorExtraArguments: ''
 
 jobs:
   - job: ${{ parameters.name }}
@@ -28,16 +26,9 @@ jobs:
       - checkout: self
         clean: true
       
-      - task: xamops.azdevex.provisionator-task.provisionator@1
-        displayName: 'Provisionator'
-        condition: eq(variables['provisioning'], 'true')
-        inputs:
-          provisioning_script: ${{ parameters.provisionatorPath }}
-          provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
-      
       - task: Bash@3
         displayName: 'Cake Provision'
-        condition: eq(variables['provisioning'], 'false')
+        condition: eq(variables['provisioningCake'], 'true')
         inputs:
           targetType: 'filePath'
           filePath: 'build.sh'
@@ -49,13 +40,6 @@ jobs:
         inputs:
           packageType: 'sdk'
           version: $(DOTNET_VERSION)
-
-      - script: |
-          export PATH="$PATH:/Users/vsts/.dotnet/tools"
-          export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-          dotnet new globaljson --sdk-version $(DOTNET_VERSION)
-        displayName: 'Add globaljson file'
-        condition: ne(variables['DOTNET_VERSION'], '')
 
       - task: NuGetToolInstaller@1
         displayName: 'Use NuGet'

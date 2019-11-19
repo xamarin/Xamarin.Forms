@@ -26,13 +26,6 @@ variables:
 - name: winVmImage
   value: XamarinForms
 
-resources:
-  repositories:
-    - repository: xamarin-templates
-      type: github
-      name: xamarin/yaml-templates
-      endpoint: xamarin
-
 trigger:
   branches:
     include:
@@ -60,7 +53,14 @@ schedules:
   branches:
     include:
     - master 
-   
+
+resources:
+  repositories:
+    - repository: xamarin-templates
+      type: github
+      name: xamarin/yaml-templates
+      endpoint: xamarin
+
 jobs:
 - template: build/steps/build-windows.yml
   parameters:
@@ -71,7 +71,6 @@ jobs:
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
-    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -81,7 +80,6 @@ jobs:
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
-    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -91,7 +89,6 @@ jobs:
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
-    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -101,51 +98,34 @@ jobs:
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
-    provisionatorPath : 'build/provisioning/provisioning.csx'
 
-- job: osx
-  displayName: OSX Phase
-  pool:
-    name: $(macOSVmImage)
-    demands:
-      - Agent.OS -equals darwin
-      - sh
-      - msbuild
-      - Xamarin.iOS
-  variables:
-    provisionator.osxPath : 'build/provisioning/provisioning.csx'
-    provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
+- template: build/steps/build-osx.yml
+  parameters:
+    name: osx
+    displayName: OSX Phase
+    vmImage: $(macOSVmImage)
     buildConfiguration: $(DefaultBuildConfiguration)
     slnPath: $(SolutionFile)
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
-  steps:
-     - template: build/steps/build-osx.yml
 
-- job: nuget_pack
-  displayName: Nuget Phase
-  dependsOn:
-   - win
-  condition: succeeded()
-  pool:
-    name: $(winVmImage)
-  variables:
-    FormsIdAppend: ''
+- template: build/steps/build-nuget.yml
+  parameters:
+    name: nuget_pack
+    displayName: Nuget Phase
+    vmImage: $(winVmImage)
+    dependsOn:
+      - win
     buildConfiguration: $(DefaultBuildConfiguration)
-    nugetPackageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
-  steps:
-     - template: build/steps/build-nuget.yml
+    packageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
 
   # only sign using the private server
 - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
-  - job: nuget_sign
-    displayName: Sign Phase
-    dependsOn: nuget_pack
-    pool:
-      name: $(signVmImage)
-    steps:
-      - template: build/steps/build-sign.yml
-    condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
-
+  - template: build/steps/build-sign.yml
+    parameters:
+      name: nuget_sign
+      displayName: Sign Phase
+      vmImage: $(signVmImage)
+      dependsOn: nuget_pack
 
 

@@ -35,16 +35,10 @@ jobs:
     steps:
     - checkout: self
       clean: true
+      
     - script: build.cmd -Target provision --verbosity=diagnostic
       displayName: 'Cake Provision'
-      condition: eq(variables['provisioning'], 'false')
-
-    - task: xamops.azdevex.provisionator-task.provisionator@1
-      displayName: 'Provisionator'
-      condition: eq(variables['provisioning'], 'true')
-      inputs:
-        provisioning_script: ${{ parameters.provisionatorPath }}
-        provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+      condition: eq(variables['provisioningCake'], 'true')
 
     - task: UseDotNet@2
       displayName: 'Install .net core $(DOTNET_VERSION)'
@@ -52,11 +46,6 @@ jobs:
       inputs:
         packageType: 'sdk'
         version: $(DOTNET_VERSION)
-
-    - script: |
-        dotnet new globaljson --sdk-version $(DOTNET_VERSION)
-      displayName: 'Add globaljson file'
-      condition: ne(variables['DOTNET_VERSION'], '')
 
     - task: NuGetToolInstaller@1
       displayName: 'Use NuGet $(NUGET_VERSION)'
