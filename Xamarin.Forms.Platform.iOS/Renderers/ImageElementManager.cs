@@ -199,7 +199,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 				bool useAnimation = imageController.GetLoadAsAnimation();
 				IAnimationSourceHandler handler = null;
-				if(useAnimation)
+				if(useAnimation && source != null)
 					handler = Internals.Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(source);
 
 				if (handler != null)

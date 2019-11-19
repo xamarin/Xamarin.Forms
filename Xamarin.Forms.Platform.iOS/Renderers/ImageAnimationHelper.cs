@@ -150,6 +150,9 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						if (repeatCountValue != null)
 							float.TryParse(repeatCountValue.ToString(), out repeatCount);
+						else
+							repeatCount = 1;
+
 						if (repeatCount == 0)
 							repeatCount = float.MaxValue;
 					}
