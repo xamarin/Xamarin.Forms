@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (cell is ItemsViewCell)
 			{
-				cell.ConstrainTo(ItemsViewLayout.ConstrainedDimension);
+				cell.ConstrainTo(GetLayoutSpanCount() * ItemsViewLayout.ConstrainedDimension);
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (cell is ItemsViewCell)
 			{
-				cell.ConstrainTo(ItemsViewLayout.ConstrainedDimension);
+				cell.ConstrainTo(GetLayoutSpanCount() * ItemsViewLayout.ConstrainedDimension);
 			}
 		}
 
@@ -166,6 +166,18 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_scrollAnimationEndedCallback?.Invoke();
 			_scrollAnimationEndedCallback = null;
+		}
+
+		int GetLayoutSpanCount()
+		{
+			var span = 1;
+
+			if (ItemsView?.ItemsLayout is GridItemsLayout gridItemsLayout)
+			{
+				span = gridItemsLayout.Span;
+			}
+
+			return span;
 		}
 	}
 }
