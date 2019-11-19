@@ -15,5 +15,7 @@
     <CI>false</CI>
     <CI Condition="'$(TF_BUILD)' == 'true'">true</CI>
   </PropertyGroup>
-
+  <PropertyGroup>
+	  <NoWarn>MSB3073;CS0109;MSB3277;XA4216;XA0113</NoWarn>
+  </PropertyGroup>
  </Project>
