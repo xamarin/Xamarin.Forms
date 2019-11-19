@@ -2,17 +2,15 @@
 using Xamarin.Forms.Internals;
 using Android.OS;
 using Android.Content;
-using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.Util;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	// all this animation code will go away if/once we pull in GlideX
+	// All this animation code will go away if/once we pull in GlideX
 	public class FormsAnimationDrawableStateEventArgs : EventArgs
 	{
 		public FormsAnimationDrawableStateEventArgs(bool finished)
@@ -74,7 +72,7 @@ namespace Xamarin.Forms.Platform.Android
 			_frameCount = NumberOfFrames;
 			_finished = false;
 
-			base.OneShot = RepeatCount == 1 ? true : false;
+			base.OneShot = RepeatCount == 1;
 
 			base.Start();
 
@@ -107,7 +105,8 @@ namespace Xamarin.Forms.Platform.Android
 				_finished = true;
 
 				// Stop can't be done from within this method.
-				new Handler(Looper.MainLooper).Post(() => {
+				new Handler(Looper.MainLooper).Post(() =>
+				{
 					if (this.IsRunning)
 						this.Stop();
 				});
@@ -123,7 +122,6 @@ namespace Xamarin.Forms.Platform.Android
 			return base.SelectDrawable(index);
 		}
 
-
 		public static Task<IFormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			switch (imagesource)
@@ -132,12 +130,12 @@ namespace Xamarin.Forms.Platform.Android
 					return LoadImageAnimationAsync(fis, context, cancelationToken);
 				case StreamImageSource sis:
 					return LoadImageAnimationAsync(sis, context, cancelationToken);
+				case UriImageSource uis:
+					return LoadImageAnimationAsync(uis, context, cancelationToken);
 			}
 
 			return Task.FromResult<IFormsAnimationDrawable>(null);
 		}
-
-
 
 		public async Task<IFormsAnimationDrawable> LoadImageAnimationAsync(StreamImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
@@ -224,14 +222,54 @@ namespace Xamarin.Forms.Platform.Android
 			return animation;
 		}
 
+		public static async Task<IFormsAnimationDrawable> LoadImageAnimationAsync(UriImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
+		{
+			Uri uri = imagesource?.Uri;
+			FormsAnimationDrawable animation = null;
+
+			if (uri != null)
+			{	 
+				var options = new BitmapFactory.Options
+				{
+					InJustDecodeBounds = true
+				};
+
+				using (Stream stream = await imagesource.GetStreamAsync(cancelationToken).ConfigureAwait(false))
+				{
+					using (var decoder = new AndroidGIFImageParser(context, options.InDensity, options.InTargetDensity))
+					{
+						try
+						{
+							if (!FileImageSourceHandler.DecodeSynchronously)
+								await decoder.ParseAsync(stream).ConfigureAwait(false);
+							else
+								decoder.ParseAsync(stream).Wait();
+
+							animation = decoder.Animation;
+						}
+						catch (GIFDecoderFormatException ex)
+						{
+							System.Diagnostics.Debug.WriteLine(ex.Message);
+							animation = null;
+						}
+					}
+				}
+
+				if (animation == null)
+				{
+					Log.Warning(nameof(FileImageSourceHandler), "Could not retrieve image or image data was invalid: {0}", imagesource);
+				}
+			}
+   
+			return animation;
+		}
 	}
 
 	class AndroidGIFImageParser : GIFImageParser, IDisposable
 	{
-		readonly DisplayMetrics _metrics = Resources.System.DisplayMetrics;
-		Context _context;
-		int _sourceDensity;
-		int _targetDensity;
+		readonly Context _context;
+		readonly int _sourceDensity;
+		readonly int _targetDensity;
 		Bitmap _currentBitmap;
 		bool _disposed;
 
