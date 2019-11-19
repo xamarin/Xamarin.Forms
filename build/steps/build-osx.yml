@@ -1,6 +1,3 @@
-parameters:
-  buildControlsPath : 'Xamarin.Forms.Controls/Xamarin.Forms.Controls.csproj'
-
 steps:
   - checkout: self
     clean: true
@@ -48,16 +45,6 @@ steps:
     displayName: 'Build solution Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj'
     inputs:
       solution: Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj
-
-  - task: NuGetCommand@2
-    displayName: 'Nuget restore ${{ parameters.buildControlsPath  }}'
-    inputs:
-      solution: ${{ parameters.buildControlsPath }}
-
-  - task: MSBuild@1
-    displayName: 'Build ${{ parameters.buildControlsPath  }}'
-    inputs:
-      solution: ${{ parameters.buildControlsPath }}
 
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
