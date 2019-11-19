@@ -46,10 +46,11 @@ jobs:
         provisioning_script: ${{ parameters.provisionatorPath }}
         provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
-    - task: DotNetCoreInstaller@0
-      displayName: "Install .net core $(DOTNET_VERSION)"
-      condition: ne(variables['DOTNET_VERSION'], '')
+    - task: UseDotNet@2
+      displayName: 'Install .net core $(DOTNET_VERSION)'
+      condition: ne(variables['DOTNET_VERSION'], '')  
       inputs:
+        packageType: 'sdk'
         version: $(DOTNET_VERSION)
 
     - script: |
@@ -57,7 +58,7 @@ jobs:
       displayName: 'Add globaljson file'
       condition: ne(variables['DOTNET_VERSION'], '')
 
-    - task: NuGetToolInstaller@0
+    - task: NuGetToolInstaller@1
       displayName: 'Use NuGet $(NUGET_VERSION)'
       condition: ne(variables['NUGET_VERSION'], '')
       inputs:

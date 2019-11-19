@@ -43,10 +43,11 @@ jobs:
           filePath: 'build.sh'
           arguments: --target provision
           
-      - task: DotNetCoreInstaller@0
+      - task: UseDotNet@2
         displayName: 'Install .net core $(DOTNET_VERSION)'
         condition: ne(variables['DOTNET_VERSION'], '')  
         inputs:
+          packageType: 'sdk'
           version: $(DOTNET_VERSION)
 
       - script: |
@@ -56,7 +57,7 @@ jobs:
         displayName: 'Add globaljson file'
         condition: ne(variables['DOTNET_VERSION'], '')
 
-      - task: NuGetToolInstaller@0
+      - task: NuGetToolInstaller@1
         displayName: 'Use NuGet'
         condition: ne(variables['NUGET_VERSION'], '')
         inputs:
