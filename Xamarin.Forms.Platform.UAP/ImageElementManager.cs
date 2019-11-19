@@ -69,8 +69,14 @@ namespace Xamarin.Forms.Platform.UWP
 						bitmapImage.Play();
 					else if (!controller.IsAnimationPlaying && bitmapImage.IsPlaying)
 						bitmapImage.Stop();
+
+					bitmapImage.RegisterPropertyChangedCallback(BitmapImage.IsPlayingProperty, OnIsPlaying);
 				}
 			}
+		}
+
+		static void OnIsPlaying(DependencyObject sender, DependencyProperty dp)
+		{
 		}
 
 		static void OnElementChanged(object sender, VisualElementChangedEventArgs e)

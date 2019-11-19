@@ -1,4 +1,5 @@
-﻿using CoreGraphics;
+﻿using System;
+using CoreGraphics;
 using UIKit;
 using RectangleF = CoreGraphics.CGRect;
 
@@ -6,9 +7,10 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class FormsUIImageView : UIImageView
 	{
+		bool _isDisposed;
 		const string AnimationLayerName = "FormsUIImageViewAnimation";
 		FormsCAKeyFrameAnimation _animation;
-
+		public event EventHandler<CoreAnimation.CAAnimationStateEventArgs> AnimationStopped;
 		public FormsUIImageView() : base(RectangleF.Empty)
 		{
 		}
@@ -42,6 +44,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_animation != null)
 				{
+					_animation.AnimationStopped -= OnAnimationStopped;
 					Layer.RemoveAnimation(AnimationLayerName);
 					_animation.Dispose();
 				}
@@ -49,11 +52,17 @@ namespace Xamarin.Forms.Platform.iOS
 				_animation = value;
 				if (_animation != null)
 				{
+					_animation.AnimationStopped += OnAnimationStopped;
 					Layer.AddAnimation(_animation, AnimationLayerName);
 				}
 
 				Layer.SetNeedsDisplay();
 			}
+		}
+
+		void OnAnimationStopped(object sender, CoreAnimation.CAAnimationStateEventArgs e)
+		{
+			AnimationStopped?.Invoke(this, e);
 		}
 
 		public override bool IsAnimating
@@ -97,8 +106,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
 			if (disposing && _animation != null)
 			{
+				_animation.AnimationStopped -= OnAnimationStopped;
 				Layer.RemoveAnimation(AnimationLayerName);
 				_animation.Dispose();
 				_animation = null;

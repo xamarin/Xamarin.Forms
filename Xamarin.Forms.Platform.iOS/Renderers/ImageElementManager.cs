@@ -181,7 +181,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					if (imageView.Animation != null)
 					{
 						Control.StopAnimating();
-						imageView.Animation.AnimationStopped -= OnAnimationStopped;
+						imageView.AnimationStopped -= OnAnimationStopped;
 						imageView.Animation.Dispose();
 					}
 
@@ -209,10 +209,10 @@ namespace Xamarin.Forms.Platform.MacOS
 					if (animation != null && Control is FormsUIImageView imageView && imageElement.Source == source)
 					{
 						if(imageView.Animation != null)
-							imageView.Animation.AnimationStopped -= OnAnimationStopped;
+							imageView.AnimationStopped -= OnAnimationStopped;
 
 						imageView.Animation = animation;
-						animation.AnimationStopped += OnAnimationStopped;
+						imageView.AnimationStopped += OnAnimationStopped;
 
 						if ((bool)Element.GetValue(Image.IsAnimationPlayingProperty))
 							imageView.StartAnimating();
