@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Internals
 		public static ImageSource GetImageSource(string name)
 		{
 			EnsureAssemblyIsDefined();
-			return ImageSource.FromResource(GetEmbeddedResourcePath(name, s_executingAssembly), s_executingAssembly);
+			return GetImageSource(name, s_executingAssembly);
 		}
 
 		public static ImageSource GetImageSource(string name, Assembly assembly)
