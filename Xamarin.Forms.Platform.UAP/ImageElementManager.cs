@@ -108,10 +108,18 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
+			ImageSource placeholderError = null;
+
+			if (imageElement is Image img)
+			{
+				placeholderError = img.ErrorPlaceholder;
+				var source = await img.LoadingPlaceholder.ToWindowsImageSourceAsync();
+				renderer.SetImage(source);
+			}
+
 			var imageController = Element as IImageController;
 
 			imageController?.SetIsLoading(true);
-
 			try
 			{
 				var imagesource = await imageElement.Source.ToWindowsImageSourceAsync();
@@ -123,6 +131,14 @@ namespace Xamarin.Forms.Platform.UWP
 					renderer.SetImage(imagesource);
 
 				RefreshImage(imageElement as IViewController);
+
+				// The ImageFailed event don't trigger when the local ImageSource is invalid, so we need to check the size.
+				var size = renderer.GetDesiredSize(double.PositiveInfinity, double.PositiveInfinity);
+				if(size.Request.IsZero && imageElement is Image)
+				{
+					imagesource = await placeholderError.ToWindowsImageSourceAsync();
+					renderer.SetImage(imagesource);
+				}
 			}
 			finally
 			{
@@ -130,12 +146,9 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-
 		static internal void RefreshImage(IViewController element)
 		{
 			element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
 		}
-
-
 	}
 }
