@@ -214,6 +214,7 @@ namespace Xamarin.Forms.Platform.Android
 					formsEditContext.SelectionChanged -= SelectionChanged;
 					ListenForCloseBtnTouch(false);
 				}
+				_clearBtn = null;
 			}
 
 			base.Dispose(disposing);
