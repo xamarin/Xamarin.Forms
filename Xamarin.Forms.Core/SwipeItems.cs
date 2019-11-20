@@ -1,15 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
-	public class SwipeItems : Element, IList<ISwipeItem>
+	public class SwipeItems : Element, IList<ISwipeItem>, INotifyCollectionChanged 
 	{
-		readonly List<ISwipeItem> _internal;
+		readonly ObservableCollection<ISwipeItem> _internal;
 
 		public SwipeItems()
 		{
-			_internal = new List<ISwipeItem>();
+			_internal = new ObservableCollection<ISwipeItem>();
+			_internal.CollectionChanged += OnSwipeItemsChanged;
 		}
 
 		public static readonly BindableProperty ModeProperty = BindableProperty.Create(nameof(Mode), typeof(SwipeMode), typeof(SwipeItems), SwipeMode.Reveal);
@@ -25,6 +28,12 @@ namespace Xamarin.Forms
 		{
 			get { return (SwipeBehaviorOnInvoked)GetValue(SwipeBehaviorOnInvokedProperty); }
 			set { SetValue(SwipeBehaviorOnInvokedProperty, value); }
+		}
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged
+		{
+			add { _internal.CollectionChanged += value; }
+			remove { _internal.CollectionChanged -= value; }
 		}
 
 		public ISwipeItem this[int index] { get => _internal[index]; set => _internal[index] = value; }
@@ -76,6 +85,27 @@ namespace Xamarin.Forms
 		public void RemoveAt(int index)
 		{
 			_internal.RemoveAt(index);
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			object bc = BindingContext;
+
+			foreach (BindableObject item in _internal)
+				SetInheritedBindingContext(item, bc);
+		}
+
+		void OnSwipeItemsChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+		{
+			if (notifyCollectionChangedEventArgs.NewItems == null)
+				return;
+
+			object bc = BindingContext;
+
+			foreach (BindableObject item in notifyCollectionChangedEventArgs.NewItems)
+				SetInheritedBindingContext(item, bc);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

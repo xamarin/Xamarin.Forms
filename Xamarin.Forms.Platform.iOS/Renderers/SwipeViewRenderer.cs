@@ -50,6 +50,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.NewElement != null)
 			{
+				e.NewElement.CloseRequested += OnCloseRequested;
+
 				if (Control == null)
 				{
 					MessagingCenter.Subscribe<string>(SwipeView, CloseSwipeView, OnClose);
@@ -113,6 +115,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				MessagingCenter.Unsubscribe<string>(SwipeView, CloseSwipeView);
+
+				if (Element != null)
+				{
+					Element.CloseRequested -= OnCloseRequested;
+				}
 
 				if (_tapGestureRecognizer != null)
 				{
@@ -275,12 +282,12 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateSwipeItemInsets(((UIButton)swipeItem));
 				}
 
-				if (item is CustomSwipeItem formsCustomSwipeItem)
+				if (item is SwipeItemView formsSwipeItemView)
 				{
-					var formsElement = formsCustomSwipeItem;
-					var renderer = Platform.CreateRenderer(formsCustomSwipeItem);
-					Platform.SetRenderer(formsCustomSwipeItem, renderer);
-					formsCustomSwipeItem.Layout(new Rectangle(0, 0, swipeItemWidth, _contentView.Frame.Height));
+					var formsElement = formsSwipeItemView;
+					var renderer = Platform.CreateRenderer(formsSwipeItemView);
+					Platform.SetRenderer(formsSwipeItemView, renderer);
+					formsSwipeItemView.Layout(new Rectangle(0, 0, swipeItemWidth, _contentView.Frame.Height));
 					swipeItem = renderer?.NativeView;
 				}
 
@@ -901,8 +908,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (iSwipeItem is SwipeItem swipeItem)
 				swipeItem.OnInvoked();
 
-			if (iSwipeItem is CustomSwipeItem customSwipeItem)
-				customSwipeItem.OnInvoked();
+			if (iSwipeItem is SwipeItemView swipeItemView)
+				swipeItemView.OnInvoked();
 		}
 
 		void OnClose(object sender)
@@ -911,6 +918,11 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			ResetSwipe();
+		}
+
+		void OnCloseRequested(object sender, EventArgs e)
+		{
+			OnClose(sender);
 		}
 
 		void RaiseSwipeStarted()

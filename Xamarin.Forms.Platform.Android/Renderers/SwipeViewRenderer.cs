@@ -54,6 +54,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.NewElement != null)
 			{
+				e.NewElement.CloseRequested += OnCloseRequested;
+
 				if (Control == null)
 				{
 					MessagingCenter.Subscribe<string>(SwipeView, CloseSwipeView, OnClose);
@@ -134,6 +136,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (disposing)
 			{
 				MessagingCenter.Unsubscribe<string>(SwipeView, CloseSwipeView);
+
+				if (Element != null)
+				{
+					Element.CloseRequested -= OnCloseRequested;
+				}
 
 				if (_detector != null)
 				{
@@ -461,13 +468,13 @@ namespace Xamarin.Forms.Platform.Android
 					_actionView.AddView(swipeItem);
 				}
 
-				if (item is CustomSwipeItem formsCustomSwipeItem)
+				if (item is SwipeItemView formsSwipeItemView)
 				{
-					var customSwipeItem = CreateCustomSwipeItem(formsCustomSwipeItem);
-					_actionView.AddView(customSwipeItem);
+					var swipeItemView = CreateSwipeItemView(formsSwipeItemView);
+					_actionView.AddView(swipeItemView);
 
-					formsCustomSwipeItem.Layout(new Rectangle(0, 0, SwipeItemWidth, _context.FromPixels(_contentView.Height)));
-					formsCustomSwipeItem.Content?.Layout(new Rectangle(0, 0, SwipeItemWidth, _context.FromPixels(_contentView.Height)));
+					formsSwipeItemView.Layout(new Rectangle(0, 0, SwipeItemWidth, _context.FromPixels(_contentView.Height)));
+					formsSwipeItemView.Content?.Layout(new Rectangle(0, 0, SwipeItemWidth, _context.FromPixels(_contentView.Height)));
 				}
 
 				i++;
@@ -507,10 +514,10 @@ namespace Xamarin.Forms.Platform.Android
 			return swipeButton;
 		}
 
-		AView CreateCustomSwipeItem(CustomSwipeItem customSwipeItem)
+		AView CreateSwipeItemView(SwipeItemView swipeItemView)
 		{
-			var renderer = Platform.CreateRenderer(customSwipeItem, _context);
-			Platform.SetRenderer(customSwipeItem, renderer);
+			var renderer = Platform.CreateRenderer(swipeItemView, _context);
+			Platform.SetRenderer(swipeItemView, renderer);
 			var swipeItem = renderer?.View;
 
 			return swipeItem;
@@ -566,7 +573,7 @@ namespace Xamarin.Forms.Platform.Android
 		void DisposeSwipeItems()
 		{
 			if (_actionView != null)
-			{
+			{ 
 				RemoveView(_actionView);
 				_actionView.Dispose();
 				_actionView = null;
@@ -622,11 +629,14 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void ResetSwipe()
-		{
+		{   
 			switch (_swipeDirection)
 			{
 				case SwipeDirection.Left:
 				case SwipeDirection.Right:
+					if (!IsValidSwipeItems(Element.LeftItems) && !IsValidSwipeItems(Element.RightItems))
+						return;
+
 					_contentView.Animate().TranslationX(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
 					{
 						DisposeSwipeItems();
@@ -636,6 +646,9 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case SwipeDirection.Up:
 				case SwipeDirection.Down:
+					if (!IsValidSwipeItems(Element.TopItems) && !IsValidSwipeItems(Element.BottomItems))
+						return;
+
 					_contentView.Animate().TranslationY(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
 					{
 						DisposeSwipeItems();
@@ -859,8 +872,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (iSwipeItem is SwipeItem swipeItem)
 				swipeItem.OnInvoked();
 
-			if (iSwipeItem is CustomSwipeItem customSwipeItem)
-				customSwipeItem.OnInvoked();
+			if (iSwipeItem is SwipeItemView swipeItemView)
+				swipeItemView.OnInvoked();
 		}
 
 		void OnClose(object sender)
@@ -871,6 +884,11 @@ namespace Xamarin.Forms.Platform.Android
 			ResetSwipe();
 		}
 
+		void OnCloseRequested(object sender, EventArgs e)
+		{
+			OnClose(sender);
+		}
+  
 		void RaiseSwipeStarted()
 		{
 			if (!ValidateSwipeDirection())

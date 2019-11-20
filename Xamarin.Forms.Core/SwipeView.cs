@@ -47,6 +47,12 @@ namespace Xamarin.Forms
 		public event EventHandler<SwipeStartedEventArgs> SwipeStarted;
 		public event EventHandler<SwipeChangingEventArgs> SwipeChanging;
 		public event EventHandler<SwipeEndedEventArgs> SwipeEnded;
+		public event EventHandler CloseRequested;
+
+		public void Close()
+		{
+			CloseRequested?.Invoke(this, EventArgs.Empty);
+		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendSwipeStarted(SwipeStartedEventArgs args) => SwipeStarted?.Invoke(this, args);
@@ -56,6 +62,25 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendSwipeEnded(SwipeEndedEventArgs args) => SwipeEnded?.Invoke(this, args);
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			object bc = BindingContext;
+
+			if (LeftItems != null)
+				SetInheritedBindingContext(LeftItems, bc);
+
+			if (RightItems != null)
+				SetInheritedBindingContext(RightItems, bc);
+
+			if (TopItems != null)
+				SetInheritedBindingContext(TopItems, bc);
+
+			if (BottomItems != null)
+				SetInheritedBindingContext(BottomItems, bc);
+		}
 
 		public abstract class BaseSwipeEventArgs : EventArgs
 		{

@@ -20,11 +20,11 @@ namespace Xamarin.Forms
 		public void OnInvoked() => Invoked?.Invoke(this, new EventArgs());
 	}
 
-	public class CustomSwipeItem : ContentView, ISwipeItem
+	public class SwipeItemView : ContentView, ISwipeItem
 	{
-		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(CustomSwipeItem));
+		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(SwipeItemView));
 
-		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(CustomSwipeItem));
+		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(SwipeItemView));
 
 		public ICommand Command
 		{
