@@ -62,6 +62,9 @@ namespace Xamarin.Forms.Platform.UWP
 					SetAutomationId(Element.AutomationId);
 				}
 
+				UpdateStatusBarColor();
+				UpdateStatusBarStyle();
+
 				if (_loaded)
 					e.NewElement.SendAppearing();
 			}
@@ -86,6 +89,8 @@ namespace Xamarin.Forms.Platform.UWP
 			_loaded = true;
 			Unloaded += OnUnloaded;
 			Element?.SendAppearing();
+			UpdateStatusBarColor();
+			UpdateStatusBarStyle();
 		}
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
@@ -97,7 +102,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateStatusBarColor()
 		{
-			if(ApiInformation.IsTypePresent(typeof(StatusBar).FullName ?? string.Empty))
+			if (Element.StatusBarColor == Color.Default)
+				return;
+
+			if (ApiInformation.IsTypePresent(typeof(StatusBar).FullName ?? string.Empty))
 			{
 				var statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)

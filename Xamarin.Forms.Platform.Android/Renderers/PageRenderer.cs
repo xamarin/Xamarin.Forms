@@ -60,7 +60,10 @@ namespace Xamarin.Forms.Platform.Android
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
 				return;
+
 			PageController.SendAppearing();
+			UpdateStatusBarColor();
+			UpdateStatusBarStyle();
 		}
 
 		protected override void OnDetachedFromWindow()
@@ -83,8 +86,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateBackground(false);
-
 			Clickable = true;
+			UpdateStatusBarColor();
+			UpdateStatusBarStyle();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -159,6 +163,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarColor()
 		{
+			if (Element.StatusBarColor == Color.Default)
+				return;
+
 			(Context.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(Element.StatusBarColor.ToAndroid());
 		}
 

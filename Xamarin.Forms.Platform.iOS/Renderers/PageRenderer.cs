@@ -136,6 +136,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 					parent = parent.Parent;
 				}
+
+				UpdateStatusBarColor();
+				UpdateStatusBarStyle();
 			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
@@ -200,6 +203,8 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			Page.SendAppearing();
+			UpdateStatusBarColor();
+			UpdateStatusBarStyle();
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -548,6 +553,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarColor()
 		{
+			if (Page.StatusBarColor == Color.Default)
+				return;
+
 			var statusBarColor = Page.StatusBarColor.ToUIColor();
 			if (Forms.IsiOS13OrNewer)
 			{
