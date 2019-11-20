@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Controls.Issues
 					OnAnimationFinishedPlaying(sender, args);
 			};
 
-			_startStopButton = new Button { Text = "Start Animation" };
+			_startStopButton = new Button { Text = "Start Animation", Margin = new Thickness(0, 20, 0, 0 ) };
 			_startStopButton.Clicked += (object sender, EventArgs e) => {
 				if (!_animatedImage.IsAnimationPlaying)
 				{
