@@ -38,7 +38,7 @@
                     <SwipeView.RightItems>
                         <SwipeItems
                             Mode="Reveal">
-                            <CustomSwipeItem
+                            <SwipeItemView
                                 Command="{Binding Source={x:Reference CustomSwipeItemCollectionView}, Path=BindingContext.FavouriteCommand}">
                                 <Grid>
                                     <BoxView
@@ -48,7 +48,7 @@
                                             Text="Favourite"
                                             Style="{StaticResource SwipeItemTextStyle}"/>
                                 </Grid>
-                            </CustomSwipeItem>
+                            </SwipeItemView>
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <SwipeView.Content>
