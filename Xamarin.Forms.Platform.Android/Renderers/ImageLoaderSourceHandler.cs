@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public sealed class ImageLoaderSourceHandler : IAnimationSourceHandler
+	public sealed class ImageLoaderSourceHandler : IAnimationSourceHandler, IImageSourceHandler
 	{
 		public async Task<Bitmap> LoadImageAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
