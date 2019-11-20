@@ -17,7 +17,13 @@ namespace Xamarin.Forms
 		public event EventHandler<EventArgs> Invoked;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void OnInvoked() => Invoked?.Invoke(this, new EventArgs());
+		public void OnInvoked()
+		{
+			if (Command != null && Command.CanExecute(CommandParameter))
+				Command.Execute(CommandParameter);
+
+			Invoked?.Invoke(this, EventArgs.Empty);
+		}
 	}
 
 	public class SwipeItemView : ContentView, ISwipeItem
@@ -41,6 +47,12 @@ namespace Xamarin.Forms
 		public event EventHandler<EventArgs> Invoked;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void OnInvoked() => Invoked?.Invoke(this, new EventArgs());
+		public void OnInvoked()
+		{
+			if (Command != null && Command.CanExecute(CommandParameter))
+				Command.Execute(CommandParameter);
+
+   			Invoked?.Invoke(this, EventArgs.Empty);
+		}
 	}
 }

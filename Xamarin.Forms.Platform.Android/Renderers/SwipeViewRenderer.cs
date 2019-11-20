@@ -858,22 +858,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void ExecuteSwipeItem(ISwipeItem iSwipeItem)
+		void ExecuteSwipeItem(ISwipeItem swipeItem)
 		{
-			if (iSwipeItem == null)
+			if (swipeItem == null)
 				return;
 
-			ICommand cmd = iSwipeItem.Command;
-			object parameter = iSwipeItem.CommandParameter;
-
-			if (cmd != null && cmd.CanExecute(parameter))
-				cmd.Execute(parameter);
-
-			if (iSwipeItem is SwipeItem swipeItem)
-				swipeItem.OnInvoked();
-
-			if (iSwipeItem is SwipeItemView swipeItemView)
-				swipeItemView.OnInvoked();
+			swipeItem.OnInvoked();
 		}
 
 		void OnClose(object sender)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Input;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -894,22 +893,12 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		void ExecuteSwipeItem(ISwipeItem iSwipeItem)
+		void ExecuteSwipeItem(ISwipeItem swipeItem)
 		{
-			if (iSwipeItem == null)
+			if (swipeItem == null)
 				return;
 
-			ICommand cmd = iSwipeItem.Command;
-			object parameter = iSwipeItem.CommandParameter;
-
-			if (cmd != null && cmd.CanExecute(parameter))
-				cmd.Execute(parameter);
-
-			if (iSwipeItem is SwipeItem swipeItem)
-				swipeItem.OnInvoked();
-
-			if (iSwipeItem is SwipeItemView swipeItemView)
-				swipeItemView.OnInvoked();
+			swipeItem.OnInvoked();
 		}
 
 		void OnClose(object sender)

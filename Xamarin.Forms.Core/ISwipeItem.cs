@@ -9,5 +9,6 @@ namespace Xamarin.Forms
 		object CommandParameter { get; set; }
 
 		event EventHandler<EventArgs> Invoked;
+		void OnInvoked();
 	}
 }
