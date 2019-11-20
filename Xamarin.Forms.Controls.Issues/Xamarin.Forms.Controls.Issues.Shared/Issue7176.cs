@@ -68,24 +68,27 @@ namespace Xamarin.Forms.Controls.Issues
 #if __ANDROID__
 			if (!RunningApp.IsApiHigherThan(13)) return;
 
-			var autoSizeMode = RunningApp.Query(
+			if (RunningApp.IsApiHigherThan(26))
+			{
+				var autoSizeMode = RunningApp.Query(
 					c => c.Marked(AutoFitLabel).Invoke(GetAutoSizeMode).Value<int>())[0];
 
-			Assert.AreEqual(autoSizeMode, 1);//check autosize mode are "Uniform (1)"
+				Assert.AreEqual(autoSizeMode, 1, "AutoSizeMode should be 'Uniform(1)'");
+			}
+			
 			var withAutofit = GetLabelFontSize();
 			RunningApp.Tap(AutoFitModeButton);
 			var withoutAutofit = GetLabelFontSize();
 
-			Assert.IsTrue(withoutAutofit < withAutofit);
+			Assert.Greater(withAutofit, withoutAutofit);
 #endif
 
 #if __IOS__
 			var fitToWidth = RunningApp.Query(
 					c => c.Marked(AutoFitLabel).Invoke(AdjustsFontToWidth).Value<bool>())[0];
 
-			Assert.IsTrue(fitToWidth);//check adjustsFontToWidth mode are "true"
+			Assert.IsTrue(fitToWidth, "'AdjustsFontToWidth' should be true");
 #endif
-		
 		}
 
 		float GetLabelFontSize() => RunningApp.Query(
