@@ -7,6 +7,7 @@ using WSwipeControl = Microsoft.UI.Xaml.Controls.SwipeControl;
 using WSwipeItems = Microsoft.UI.Xaml.Controls.SwipeItems;
 using WSwipeItem = Microsoft.UI.Xaml.Controls.SwipeItem;
 using WSwipeMode = Microsoft.UI.Xaml.Controls.SwipeMode;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -29,9 +30,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.NewElement != null)
 			{
+				e.NewElement.CloseRequested += OnCloseRequested;
+
 				if (Control == null)
 				{
 					SetNativeControl(new WSwipeControl());
+
+					Element.LeftItems.CollectionChanged += OnSwipeItemsChanged;
+					Element.RightItems.CollectionChanged += OnSwipeItemsChanged;
+					Element.TopItems.CollectionChanged += OnSwipeItemsChanged;
+					Element.BottomItems.CollectionChanged += OnSwipeItemsChanged;
 				}
 
 				UpdateContent();
@@ -61,17 +69,34 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (disposing)
 			{
-				if (Element.LeftItems != null)
-					Element.LeftItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+				if (Element != null)
+				{
+					Element.CloseRequested -= OnCloseRequested;
 
-				if (Element.RightItems != null)
-					Element.RightItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+					if (Element.LeftItems != null)
+					{
+						Element.LeftItems.CollectionChanged -= OnSwipeItemsChanged;
+						Element.LeftItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+					}
 
-				if (Element.TopItems != null)
-					Element.TopItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+					if (Element.RightItems != null)
+					{
+						Element.RightItems.CollectionChanged -= OnSwipeItemsChanged;
+						Element.RightItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+					}
 
-				if (Element.BottomItems != null)
-					Element.BottomItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+					if (Element.TopItems != null)
+					{
+						Element.TopItems.CollectionChanged -= OnSwipeItemsChanged;
+						Element.TopItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+					}
+
+					if (Element.BottomItems != null)
+					{
+						Element.BottomItems.CollectionChanged -= OnSwipeItemsChanged;
+						Element.BottomItems.PropertyChanged -= OnSwipeItemsPropertyChanged;
+					}
+				}
 
 				if (_leftItems != null)
 					DisposeSwipeItems(_leftItems);
@@ -140,6 +165,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 				return result;
 			}
+		}
+
+		void OnSwipeItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			UpdateSwipeItems();
 		}
 
 		void OnSwipeItemsPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -441,6 +471,14 @@ namespace Xamarin.Forms.Platform.UWP
 			var luminosity = 0.2126 * backgroundColor.R + 0.7152 * backgroundColor.G + 0.0722 * backgroundColor.B;
 
 			return luminosity < 0.75 ? Color.White : Color.Black;
+		}
+
+		void OnCloseRequested(object sender, EventArgs e)
+		{
+			if (Control == null)
+				return;
+
+			Control.Close();
 		}
 	}
 }
