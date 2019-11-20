@@ -36,8 +36,6 @@
 	<key>NSMainStoryboardFile</key>
 	<string>Main</string>
 	<key>ATSApplicationFontsPath</key>
-	<array>
-		<string>Fonts/iocicon.ttf</string>
-	</array>
+	<string>Fonts</string>
 </dict>
 </plist>
