@@ -5,7 +5,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class SpacingItemDecoration : RecyclerView.ItemDecoration
+	public class SpacingItemDecoration : RecyclerView.ItemDecoration
 	{
 		readonly ItemsLayoutOrientation _orientation;
 		readonly double _verticalSpacing;
