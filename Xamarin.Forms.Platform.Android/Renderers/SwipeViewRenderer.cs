@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Windows.Input;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
@@ -37,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isTouchDown;
 		bool _isSwiping;
 		APointF _initialPoint;
-		SwipeDirection _swipeDirection;
+		SwipeDirection? _swipeDirection;
 		float _swipeOffset;
 		float _swipeThreshold;
 		bool _isDisposed;
@@ -637,24 +636,22 @@ namespace Xamarin.Forms.Platform.Android
 					if (!IsValidSwipeItems(Element.LeftItems) && !IsValidSwipeItems(Element.RightItems))
 						return;
 
-					_contentView.Animate().TranslationX(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
-					{
-						DisposeSwipeItems();
-						_isSwiping = false;
-						_swipeThreshold = 0;
-					}));
+					_swipeDirection = null;
+					_isSwiping = false;
+					_swipeThreshold = 0;
+
+					_contentView.Animate().TranslationX(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(DisposeSwipeItems));
 					break;
 				case SwipeDirection.Up:
 				case SwipeDirection.Down:
 					if (!IsValidSwipeItems(Element.TopItems) && !IsValidSwipeItems(Element.BottomItems))
 						return;
 
-					_contentView.Animate().TranslationY(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
-					{
-						DisposeSwipeItems();
-						_isSwiping = false;
-						_swipeThreshold = 0;
-					}));
+					_swipeDirection = null;
+					_isSwiping = false;
+					_swipeThreshold = 0;
+
+					_contentView.Animate().TranslationY(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(DisposeSwipeItems));
 					break;
 			}
 		}
@@ -755,6 +752,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ValidateSwipeThreshold()
 		{
+			if (_swipeDirection == null)
+				return;
+
 			var swipeThresholdPercent = 0.6 * GetSwipeThreshold();
 
 			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
@@ -881,25 +881,28 @@ namespace Xamarin.Forms.Platform.Android
   
 		void RaiseSwipeStarted()
 		{
-			if (!ValidateSwipeDirection())
+			if (_swipeDirection == null || !ValidateSwipeDirection())
 				return;
 
-			var swipeStartedEventArgs = new SwipeStartedEventArgs(_swipeDirection);
+			var swipeStartedEventArgs = new SwipeStartedEventArgs(_swipeDirection.Value);
 			Element.SendSwipeStarted(swipeStartedEventArgs);
 		}
 
 		void RaiseSwipeChanging()
 		{
-			var swipeChangingEventArgs = new SwipeChangingEventArgs(_swipeDirection, _swipeOffset);
+			if (_swipeDirection == null)
+				return;
+
+			var swipeChangingEventArgs = new SwipeChangingEventArgs(_swipeDirection.Value, _swipeOffset);
 			Element.SendSwipeChanging(swipeChangingEventArgs);
 		}
 
 		void RaiseSwipeEnded()
 		{
-			if (!ValidateSwipeDirection())
+			if (_swipeDirection == null || !ValidateSwipeDirection())
 				return;
 
-			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection);
+			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value);
 			Element.SendSwipeEnded(swipeEndedEventArgs);
 		}
 	}
