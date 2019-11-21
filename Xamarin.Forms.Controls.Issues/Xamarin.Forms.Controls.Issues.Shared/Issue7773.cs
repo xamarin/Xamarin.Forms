@@ -21,7 +21,6 @@ namespace Xamarin.Forms.Controls.Issues
 					},
 					new Entry
 					{
-                        //Margin = new Thickness(50),
 						HorizontalOptions = LayoutOptions.FillAndExpand,
 						ClearButtonVisibility = ClearButtonVisibility.WhileEditing,
 						Text = "ClearButtonVisibility2"
