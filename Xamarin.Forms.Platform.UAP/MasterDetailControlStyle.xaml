@@ -35,7 +35,10 @@
 
 								<Border x:Name="TopCommandBarArea" HorizontalAlignment="Stretch" Background="{TemplateBinding ToolbarBackground}">
 									<uwp:FormsCommandBar x:Name="CommandBar" Background="{TemplateBinding ToolbarBackground}" MinHeight="{ThemeResource TitleBarHeight}" HorizontalAlignment="Stretch">
-										<uwp:FormsCommandBar.Content>
+                                        <uwp:FormsCommandBar.Resources>
+                                            <x:Double x:Key="AppBarThemeCompactHeight">48</x:Double>
+                                        </uwp:FormsCommandBar.Resources>
+                                        <uwp:FormsCommandBar.Content>
 											<Border x:Name="TitleArea" Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding DetailTitleVisibility}" HorizontalAlignment="Stretch">
 												<Grid x:Name="TitleViewPresenter" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" HorizontalAlignment="Stretch">
 
