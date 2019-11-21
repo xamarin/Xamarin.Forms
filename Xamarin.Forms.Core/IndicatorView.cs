@@ -18,11 +18,9 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_IndicatorViewRenderer))]
 	public class IndicatorView : TemplatedView
 	{
-
 		const int DefaultPadding = 4;
 
 		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorShape), typeof(IndicatorView), IndicatorShape.Circle);
-
 
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
@@ -56,34 +54,28 @@ namespace Xamarin.Forms
 		public IndicatorView()
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(IndicatorView), ExperimentalFlags.IndicatorViewExperimental);
-			if (Visual == VisualMarker.Forms)
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			if (propertyName == VisualProperty.PropertyName && IsFormsVisual())
+			{
 				IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+			}
+			base.OnPropertyChanged(propertyName);
 		}
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
 			var baseRequest = base.OnMeasure(widthConstraint, heightConstraint);
-			if (Visual == VisualMarker.Forms)
+
+			if (IsFormsVisual())
 				return baseRequest;
 
 			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding;
 			var items = Count;
 			var sizeRequest = new SizeRequest(new Size(items * defaultSize, IndicatorSize), new Size(10, 10));
 			return sizeRequest;
-		}
-
-		IList<View> Items
-		{
-			get
-			{
-				if (Visual != VisualMarker.Forms)
-					return null;
-				if (IndicatorLayout == null)
-				{
-					IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
-				}
-				return IndicatorLayout.Children;
-			}
 		}
 
 		public IndicatorShape IndicatorsShape
@@ -152,10 +144,27 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
+		bool IsFormsVisual() => (Visual is VisualMarker.FormsVisual);
+
+		IList<View> Items
+		{
+			get
+			{
+				if (!IsFormsVisual())
+					return null;
+
+				if (IndicatorLayout == null)
+					IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+
+				return IndicatorLayout.Children;
+			}
+		}
+
 		void ResetIndicatorStyles()
 		{
-			if (Visual != VisualMarker.Forms)
+			if (IndicatorLayout == null)
 				return;
+
 			try
 			{
 				BatchBegin();
@@ -169,7 +178,7 @@ namespace Xamarin.Forms
 
 		void ResetIndicatorCount(int oldCount)
 		{
-			if (Visual != VisualMarker.Forms)
+			if (IndicatorLayout == null)
 				return;
 
 			try
@@ -213,14 +222,10 @@ namespace Xamarin.Forms
 		void ResetItemsSource(IEnumerable oldItemsSource)
 		{
 			if (oldItemsSource is INotifyCollectionChanged oldCollection)
-			{
 				oldCollection.CollectionChanged -= OnCollectionChanged;
-			}
 
 			if (ItemsSource is INotifyCollectionChanged collection)
-			{
 				collection.CollectionChanged += OnCollectionChanged;
-			}
 
 			OnCollectionChanged(ItemsSource, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
