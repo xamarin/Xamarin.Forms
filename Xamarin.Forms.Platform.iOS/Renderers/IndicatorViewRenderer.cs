@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void OnElementChanged(ElementChangedEventArgs<IndicatorView> e)
 		{
 			base.OnElementChanged(e);
+
 			if (e.NewElement != null)
 			{
 				if (Control == null)
@@ -80,7 +81,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 		void UpdateControl()
 		{
-			var control = Element.Visual == VisualMarker.Forms
+			var control = (Element.Visual is VisualMarker.FormsVisual)
 				? (UIView)Element.IndicatorLayout.GetRenderer()
 				: CreateNativeControl();
 
