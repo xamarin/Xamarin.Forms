@@ -42,12 +42,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			var label = new Label { Text = "Items:", VerticalTextAlignment = TextAlignment.Center };
 			var labelSideItems = new Label { Text = "Side items:", VerticalTextAlignment = TextAlignment.Center };
 			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = initialItems.ToString(), WidthRequest = 100, AutomationId = "entryUpdate" };
-			_entrySideItems = new Entry { Keyboard = Keyboard.Numeric, Text = carousel?.NumberOfSideItems.ToString(), WidthRequest = 100, AutomationId = "entrySideItemsUpdate" };
-
+		
 			layout.Children.Add(label);
 			layout.Children.Add(_entry);
 			layout.Children.Add(labelSideItems);
-			layout.Children.Add(_entrySideItems);
 			layout.Children.Add(button);
 
 			button.Clicked += GenerateItems;
@@ -165,12 +163,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		void GenerateItems(object sender, EventArgs e)
 		{
 			GenerateItems();
-
-			if (carousel == null)
-				return;
-
-			if (int.TryParse(_entrySideItems.Text, out int count))
-				carousel.NumberOfSideItems = count;
 		}
 	}
 }
