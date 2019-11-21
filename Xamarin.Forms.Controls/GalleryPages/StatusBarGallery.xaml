@@ -23,6 +23,7 @@
 
         <Button Text="NavigationPage" Clicked="NavigationPage_Navigate"/>
         <Button Text="TabbedPage" Clicked="TabbedPage_Navigate"/>
+        <Button Text="TabbedPage Pages" Clicked="TabbedPage_Pages_Navigate"/>
         <Button Text="CarouselPage" Clicked="CarouselPage_Navigate"/>
         <Button Text="ContentPage" Clicked="ContentPage_Navigate"/>
         <Button Text="Shell" Clicked="Shell_Navigate"/>

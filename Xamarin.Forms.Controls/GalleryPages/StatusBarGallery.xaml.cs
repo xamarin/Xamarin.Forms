@@ -27,8 +27,6 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			var page = new NavigationPage(new StatusBarGallery());
 			page.StatusBarColor = Color.DarkBlue;
 			page.StatusBarStyle = StatusBarStyle.DarkContent;
-
-
 			Application.Current.MainPage = page;
 		}
 
@@ -49,6 +47,22 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			page.Children.Add(new StatusBarGallery());
 			page.StatusBarColor = Color.DarkCyan;
 			page.StatusBarStyle = StatusBarStyle.DarkContent;
+			Application.Current.MainPage = page;
+		}
+
+		void TabbedPage_Pages_Navigate(object sender, EventArgs e)
+		{
+			var page = new TabbedPage();
+			page.Children.Add(new StatusBarGallery()
+			{
+				StatusBarColor = Color.Red,
+				StatusBarStyle = StatusBarStyle.LightContent
+			});
+			page.Children.Add(new StatusBarGallery()
+			{
+				StatusBarColor = Color.Cyan,
+				StatusBarStyle = StatusBarStyle.DarkContent
+			});
 			Application.Current.MainPage = page;
 		}
 

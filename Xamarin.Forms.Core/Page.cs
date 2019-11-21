@@ -567,5 +567,15 @@ namespace Xamarin.Forms
 		{
 
 		}
+
+		internal void RefreshStatusBarColor()
+		{
+			OnPropertyChanged(nameof(StatusBarColor));
+		}
+
+		internal void RefreshStatusBarStyle()
+		{
+			OnPropertyChanged(nameof(StatusBarStyle));
+		}
 	}
 }
