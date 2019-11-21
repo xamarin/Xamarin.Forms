@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Xamarin.Flex;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -54,28 +52,6 @@ namespace Xamarin.Forms
 		public IndicatorView()
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(IndicatorView), ExperimentalFlags.IndicatorViewExperimental);
-		}
-
-		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			if (propertyName == VisualProperty.PropertyName && IsFormsVisual())
-			{
-				IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
-			}
-			base.OnPropertyChanged(propertyName);
-		}
-
-		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
-		{
-			var baseRequest = base.OnMeasure(widthConstraint, heightConstraint);
-
-			if (IsFormsVisual())
-				return baseRequest;
-
-			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding;
-			var items = Count;
-			var sizeRequest = new SizeRequest(new Size(items * defaultSize, IndicatorSize), new Size(10, 10));
-			return sizeRequest;
 		}
 
 		public IndicatorShape IndicatorsShape
@@ -143,6 +119,29 @@ namespace Xamarin.Forms
 			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
 		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			if (propertyName == VisualProperty.PropertyName && IsFormsVisual())
+			{
+				IndicatorLayout = new StackLayout { Orientation = StackOrientation.Horizontal };
+			}
+			base.OnPropertyChanged(propertyName);
+		}
+
+		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+		{
+			var baseRequest = base.OnMeasure(widthConstraint, heightConstraint);
+
+			if (IsFormsVisual())
+				return baseRequest;
+
+			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding;
+			var items = Count;
+			var sizeRequest = new SizeRequest(new Size(items * defaultSize, IndicatorSize), new Size(10, 10));
+			return sizeRequest;
+		}
+
 
 		bool IsFormsVisual() => (Visual is VisualMarker.FormsVisual);
 
