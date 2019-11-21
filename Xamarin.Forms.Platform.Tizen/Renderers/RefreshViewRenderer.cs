@@ -1,4 +1,5 @@
 ﻿using ElmSharp;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -235,7 +236,28 @@ namespace Xamarin.Forms.Platform.Tizen
 				}
 			}
 
+			if (Platform.GetRenderer(RefreshView.Content) is ListViewRenderer listViewRenderer)
+			{
+				if (GetScrollYOnGenList(listViewRenderer.Control.RealHandle) == 0)
+				{
+					return true;
+				}
+			}
 			return false;
+		}
+
+		int GetScrollYOnGenList(IntPtr handle)
+		{
+			var interop = typeof(EvasObject).Assembly.GetType("Interop");
+			var elementary = interop?.GetNestedType("Elementary", BindingFlags.NonPublic | BindingFlags.Static) ?? null;
+
+			if (elementary != null)
+			{
+				object[] parameters = new object[] { handle, -1, -1, -1, -1 };
+				elementary.GetMethod("elm_scroller_region_get", BindingFlags.NonPublic | BindingFlags.Static)?.Invoke(null, parameters);
+				return (int)parameters[2];
+			}
+			return -1;
 		}
 
 		void OnMoved(GestureLayer.MomentumData moment)
