@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Windows.Foundation.Metadata;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -149,6 +150,14 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				IsPaneOpen = Shell.FlyoutIsPresented;
 			}
+			else if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+			{
+				UpdateStatusBarColor();
+			}
+			else if (e.PropertyName == Page.StatusBarStyleProperty.PropertyName)
+			{
+				UpdateStatusBarStyle();
+			}
 		}
 
 		protected virtual void OnElementSet(Shell shell)
@@ -160,6 +169,8 @@ namespace Xamarin.Forms.Platform.UWP
 			IsPaneOpen = Shell.FlyoutIsPresented;
 			((IShellController)Element).AddFlyoutBehaviorObserver(this);
 			((IShellController)shell).AddAppearanceObserver(this, shell);
+			UpdateStatusBarColor();
+			UpdateStatusBarStyle();
 		}
 
 		IEnumerable<object> IterateItems()
@@ -244,6 +255,60 @@ namespace Xamarin.Forms.Platform.UWP
 					IsPaneToggleButtonVisible = false;
 					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Left;
 					break;
+			}
+		}
+
+		void UpdateStatusBarColor()
+		{
+			if (Element.StatusBarColor == Color.Default)
+				return;
+
+			if (ApiInformation.IsTypePresent(typeof(StatusBar).FullName ?? string.Empty))
+			{
+				var statusBar = StatusBar.GetForCurrentView();
+				if (statusBar != null)
+				{
+					statusBar.BackgroundColor = Element.StatusBarColor.ToWindowsColor();
+				}
+			}
+			else
+			{
+				var titleBar = ApplicationView.GetForCurrentView()?.TitleBar;
+				if (titleBar != null)
+				{
+					titleBar.BackgroundColor = Element.StatusBarColor.ToWindowsColor();
+				}
+			}
+		}
+
+		void UpdateStatusBarStyle()
+		{
+			Color foregroundColor = Color.Default;
+			switch (Element.StatusBarStyle)
+			{
+				case StatusBarStyle.LightContent:
+					foregroundColor = Color.Black;
+					break;
+				case StatusBarStyle.DarkContent:
+					foregroundColor = Color.White;
+					break;
+			}
+
+			if (ApiInformation.IsTypePresent(typeof(StatusBar).FullName ?? string.Empty))
+			{
+				var statusBar = StatusBar.GetForCurrentView();
+				if (statusBar != null)
+				{
+					statusBar.ForegroundColor = foregroundColor.ToWindowsColor();
+				}
+			}
+			else
+			{
+				var titleBar = ApplicationView.GetForCurrentView()?.TitleBar;
+				if (titleBar != null)
+				{
+					titleBar.ForegroundColor = foregroundColor.ToWindowsColor();
+				}
 			}
 		}
 

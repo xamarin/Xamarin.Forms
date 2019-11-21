@@ -80,6 +80,8 @@ namespace Xamarin.Forms
 				_current = value;
 				OnPropertyChanged();
 				OnCurrentPageChanged();
+				StatusBarColorUpdated();
+				StatusBarStyleUpdated();
 			}
 		}
 
@@ -356,6 +358,22 @@ namespace Xamarin.Forms
 			}
 			else if (SelectedItem is T)
 				CurrentPage = (T)SelectedItem;
+		}
+
+		protected override void StatusBarColorUpdated()
+		{
+			if (CurrentPage != null && StatusBarColor != (Color)StatusBarColorProperty.DefaultValue)
+			{
+				CurrentPage.StatusBarColor = StatusBarColor;
+			}
+		}
+
+		protected override void StatusBarStyleUpdated()
+		{
+			if (CurrentPage != null && StatusBarStyle != (StatusBarStyle)StatusBarStyleProperty.DefaultValue)
+			{
+				CurrentPage.StatusBarStyle = StatusBarStyle;
+			}
 		}
 	}
 }

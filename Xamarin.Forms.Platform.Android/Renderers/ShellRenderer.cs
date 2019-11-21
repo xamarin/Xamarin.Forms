@@ -8,6 +8,7 @@ using Android.Widget;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Android.OS;
 using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -210,7 +211,17 @@ namespace Xamarin.Forms.Platform.Android
 			Profile.FrameBegin();
 
 			if (e.PropertyName == Shell.CurrentItemProperty.PropertyName)
+			{
 				SwitchFragment(FragmentManager, _frameLayout, Element.CurrentItem);
+			}
+			else if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+			{
+				UpdateStatusBarColor();
+			}
+			else if (e.PropertyName == Page.StatusBarStyleProperty.PropertyName)
+			{
+				UpdateStatusBarStyle();
+			}
 
 			_elementPropertyChanged?.Invoke(sender, e);
 
@@ -244,6 +255,9 @@ namespace Xamarin.Forms.Platform.Android
 			Profile.FramePartition("Previewer Hack");
 			if (AndroidContext.GetActivity() != null)
 				SwitchFragment(FragmentManager, _frameLayout, shell.CurrentItem, false);
+
+			UpdateStatusBarColor();
+			UpdateStatusBarStyle();
 
 			Profile.FrameEnd();
 		}
@@ -354,6 +368,39 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			Profile.FrameEnd("UpdtStatBarClr");
+		}
+
+		void UpdateStatusBarColor()
+		{
+			if (Element.StatusBarColor == Color.Default)
+				return;
+
+			(AndroidContext.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(Element.StatusBarColor.ToAndroid());
+		}
+
+		void UpdateStatusBarStyle()
+		{
+			if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
+			{
+				var window = (AndroidContext.GetActivity() as FormsAppCompatActivity)?.Window;
+				if (window == null)
+				{
+					return;
+				}
+
+				switch (Element.StatusBarStyle)
+				{
+					case StatusBarStyle.Default:
+						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.Visible;
+						break;
+					case StatusBarStyle.LightContent:
+						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.Visible;
+						break;
+					case StatusBarStyle.DarkContent:
+						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.LightStatusBar;
+						break;
+				}
+			}
 		}
 
 		class SplitDrawable : Drawable

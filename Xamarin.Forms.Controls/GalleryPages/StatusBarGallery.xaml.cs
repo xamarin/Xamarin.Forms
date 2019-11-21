@@ -24,55 +24,41 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		void NavigationPage_Navigate(object sender, EventArgs e)
 		{
-			var page = new NavigationPage(new StatusBarGallery()
-			{
-				StatusBarColor = Color.DarkBlue,
-				StatusBarStyle = StatusBarStyle.DarkContent
-			});
-			
+			var page = new NavigationPage(new StatusBarGallery());
+			page.StatusBarColor = Color.DarkBlue;
+			page.StatusBarStyle = StatusBarStyle.DarkContent;
+
+
 			Application.Current.MainPage = page;
 		}
 
 		void ContentPage_Navigate(object sender, EventArgs e)
 		{
-			var page = new NavigationPage(new StatusBarGallery()
+			var page = new StatusBarGallery()
 			{
 				StatusBarColor = Color.DarkTurquoise,
 				StatusBarStyle = StatusBarStyle.DarkContent
-			});
+			};
 			Application.Current.MainPage = page;
 		}
 
 		void TabbedPage_Navigate(object sender, EventArgs e)
 		{
 			var page = new TabbedPage();
-			page.Children.Add(new StatusBarGallery()
-			{
-				StatusBarColor = Color.DarkCyan,
-				StatusBarStyle = StatusBarStyle.DarkContent
-			});
-			page.Children.Add(new StatusBarGallery()
-			{
-				StatusBarColor = Color.MediumOrchid,
-				StatusBarStyle = StatusBarStyle.DarkContent
-			});
-
+			page.Children.Add(new StatusBarGallery());
+			page.Children.Add(new StatusBarGallery());
+			page.StatusBarColor = Color.DarkCyan;
+			page.StatusBarStyle = StatusBarStyle.DarkContent;
 			Application.Current.MainPage = page;
 		}
 
 		void CarouselPage_Navigate(object sender, EventArgs e)
 		{
 			var page = new CarouselPage();
-			page.Children.Add(new StatusBarGallery()
-			{
-				StatusBarColor = Color.DarkMagenta,
-				StatusBarStyle = StatusBarStyle.DarkContent
-			});
-			page.Children.Add(new StatusBarGallery()
-			{
-				StatusBarColor = Color.DarkOliveGreen,
-				StatusBarStyle = StatusBarStyle.DarkContent
-			});
+			page.Children.Add(new StatusBarGallery());
+			page.Children.Add(new StatusBarGallery());
+			page.StatusBarColor = Color.DarkMagenta;
+			page.StatusBarStyle = StatusBarStyle.DarkContent;
 			Application.Current.MainPage = page;
 		}
 
@@ -86,13 +72,11 @@ namespace Xamarin.Forms.Controls.GalleryPages
 					Items = { new ShellContent()
 					{
 						Content = new StatusBarGallery()
-						{
-							StatusBarColor = Color.DarkOliveGreen,
-							StatusBarStyle = StatusBarStyle.DarkContent
-						}
 					}}
 				}}
 			});
+			shell.StatusBarColor = Color.DarkGoldenrod;
+			shell.StatusBarStyle = StatusBarStyle.DarkContent;
 
 			Application.Current.MainPage = shell;
 		}

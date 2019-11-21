@@ -12,7 +12,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PageRenderer))]
-	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>, IPaddingElement, IStatusBarElement
+	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>, IPaddingElement
 	{
 		public const string BusySetSignalName = "Xamarin.BusySet";
 
@@ -36,9 +36,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleProperty = BindableProperty.Create("Title", typeof(string), typeof(Page), null);
 
-		public static readonly BindableProperty StatusBarColorProperty = StatusBarElement.StatusBarColorProperty;
-		
-		public static readonly BindableProperty StatusBarStyleProperty = StatusBarElement.StatusBarStyleProperty;
+		public static readonly BindableProperty StatusBarColorProperty = BindableProperty.Create(nameof(StatusBarColor), typeof(Color), typeof(Page), Color.Default, 
+			propertyChanged: (bo, o, n) => ((Page)bo).StatusBarColorUpdated());
+
+		public static readonly BindableProperty StatusBarStyleProperty = BindableProperty.Create(nameof(StatusBarStyle), typeof(StatusBarStyle), typeof(Page), StatusBarStyle.Default,
+			propertyChanged: (bo, o, n) => ((Page)bo).StatusBarStyleUpdated());
 
 		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
@@ -554,6 +556,16 @@ namespace Xamarin.Forms
 				newTitleView.Parent = this;
 
 			_titleView = newTitleView;
+		}
+
+		protected virtual void StatusBarColorUpdated()
+		{
+
+		}
+
+		protected virtual void StatusBarStyleUpdated()
+		{
+
 		}
 	}
 }

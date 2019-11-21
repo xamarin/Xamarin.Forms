@@ -34,7 +34,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanging: TitleViewPropertyChanging);
 
-		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
+		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null, propertyChanged: CurrentPageChanged);
+
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
 
 		static readonly BindablePropertyKey RootPagePropertyKey = BindableProperty.CreateReadOnly(nameof(RootPage), typeof(Page), typeof(NavigationPage), null);
@@ -122,6 +123,15 @@ namespace Xamarin.Forms
 			{
 				var oldElem = (View)oldValue;
 				oldElem.Parent = null;
+			}
+		}
+
+		static void CurrentPageChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			if (newvalue != null && bindable is NavigationPage navigationPage)
+			{
+				navigationPage.StatusBarColorUpdated();
+				navigationPage.StatusBarStyleUpdated();
 			}
 		}
 
@@ -519,6 +529,22 @@ namespace Xamarin.Forms
 		public new IPlatformElementConfiguration<T, NavigationPage> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		protected override void StatusBarColorUpdated()
+		{
+			if (CurrentPage != null && StatusBarColor != (Color)StatusBarColorProperty.DefaultValue)
+			{
+				CurrentPage.StatusBarColor = StatusBarColor;
+			}
+		}
+
+		protected override void StatusBarStyleUpdated()
+		{
+			if (CurrentPage != null && StatusBarStyle != (StatusBarStyle)StatusBarStyleProperty.DefaultValue)
+			{
+				CurrentPage.StatusBarStyle = StatusBarStyle;
+			}
 		}
 	}
 }
