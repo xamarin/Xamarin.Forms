@@ -941,7 +941,7 @@ namespace Xamarin.Forms.Platform.Android
 				return itemsHeight.Max();
 			}
 
-			return (SwipeThreshold > contentHeight) ? contentHeight : SwipeThreshold;
+			return contentHeight;
 		}
 
 		void ProcessTouchSwipeItems(APointF point)

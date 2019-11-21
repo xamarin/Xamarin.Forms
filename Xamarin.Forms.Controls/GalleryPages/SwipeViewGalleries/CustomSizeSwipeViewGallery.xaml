@@ -15,7 +15,8 @@
                             <Label
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
-                                Text="This is the LefItems Content"/>
+                                Text="This is the LefItems Content"
+                                Margin="12"/>
                         </Grid>
                     </SwipeItemView>
                 </SwipeView.LeftItems>
@@ -31,15 +32,12 @@
                             <Label
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
-                                Text="This is the RightItems Content"/>
+                                Text="This is the RightItems Content"
+                                Margin="12"/>
                         </Grid>
                     </SwipeItemView>
                 </SwipeView.RightItems>
                 <SwipeView.TopItems>
-                    <SwipeItem
-                        IconImageSource="calculator.png"
-                        Text="Test"
-                        BackgroundColor="Red" />
                     <SwipeItemView>
                         <Grid
                             BackgroundColor="LightSkyBlue"
@@ -47,7 +45,8 @@
                             <Label
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
-                                Text="This is the TopItems Content"/>
+                                Text="This is the TopItems Content"
+                                Margin="12"/>
                         </Grid>
                     </SwipeItemView>
                 </SwipeView.TopItems>
@@ -56,7 +55,8 @@
                     <Label
                         HorizontalOptions="Center"
                         VerticalOptions="Center"
-                        Text="This is the Content"/>
+                        Text="This is the Content"
+                        Margin="12"/>
                 </Grid>
             </SwipeView>
         </Grid>

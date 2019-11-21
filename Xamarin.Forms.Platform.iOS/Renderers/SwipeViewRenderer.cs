@@ -881,7 +881,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return itemsHeight.Max();
 			}
 
-			return (SwipeThreshold > contentHeight) ? contentHeight : SwipeThreshold;
+			return contentHeight;
 		}
 
 		bool ValidateSwipeDirection()
