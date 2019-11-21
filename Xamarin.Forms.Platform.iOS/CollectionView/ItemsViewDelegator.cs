@@ -53,7 +53,6 @@ namespace Xamarin.Forms.Platform.iOS
 			var itemsView = ViewController.ItemsView;
 			var source = ViewController.ItemsSource;
 			itemsView.SendScrolled(itemsViewScrolledEventArgs);
-			MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
 
 			PreviousHorizontalOffset = (float)contentOffsetX;
 			PreviousVerticalOffset = (float)contentOffsetY;

@@ -243,7 +243,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void HandleScrolled(object sender, EventArgs e)
 		{
 			UpdateScrollPosition();
-			MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
 		}
 
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)

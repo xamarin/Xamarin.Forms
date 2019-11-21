@@ -3,8 +3,10 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
 using Android.Views;
+using Android.Widget;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using static Xamarin.Forms.SwipeView;
 using AButton = Android.Support.V7.Widget.AppCompatButton;
@@ -17,9 +19,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>, GestureDetector.IOnGestureListener
 	{
-		internal const string SwipeView = "Xamarin.SwipeView";
-		internal const string CloseSwipeView = "Xamarin.CloseSwipeView";
-
 		const int SwipeThreshold = 250;
 		const int SwipeThresholdMargin = 6;
 		const int SwipeItemWidth = 100;
@@ -27,6 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		readonly Context _context;
 		GestureDetector _detector;
+		AView _scrollParent;
 		AView _contentView;
 		LinearLayoutCompat _actionView;
 		SwipeTransitionMode _swipeTransitionMode;
@@ -57,8 +57,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Control == null)
 				{
-					MessagingCenter.Subscribe<string>(SwipeView, CloseSwipeView, OnClose);
-
 					_density = Resources.DisplayMetrics.Density;
 					_detector = new GestureDetector(Context, this);
 
@@ -127,6 +125,37 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		protected override void OnAttachedToWindow()
+		{
+			base.OnAttachedToWindow();
+
+			if (Forms.IsLollipopOrNewer && Control != null)
+			{
+				_scrollParent = Parent.GetParentOfType<NestedScrollView>();
+
+				if (_scrollParent != null)
+				{
+					_scrollParent.ScrollChange += OnParentScrollChange;
+					return;
+				}
+
+				_scrollParent = Parent.GetParentOfType<AbsListView>();
+
+				if (_scrollParent is AbsListView listView)
+				{
+					listView.ScrollStateChanged += OnParentScrollStateChanged;
+					return;
+				}
+
+				_scrollParent = Parent.GetParentOfType<RecyclerView>();
+
+				if (_scrollParent != null)
+				{
+					_scrollParent.ScrollChange += OnParentScrollChange;
+				}
+			}
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
@@ -134,8 +163,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				MessagingCenter.Unsubscribe<string>(SwipeView, CloseSwipeView);
-
 				if (Element != null)
 				{
 					Element.CloseRequested -= OnCloseRequested;
@@ -145,6 +172,16 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					_detector.Dispose();
 					_detector = null;
+				}
+
+				if (_scrollParent != null)
+				{
+					if (_scrollParent is AbsListView listView)
+						listView.ScrollStateChanged += OnParentScrollStateChanged;
+					else
+						_scrollParent.ScrollChange -= OnParentScrollChange;
+
+					_scrollParent = null;
 				}
 
 				if (_contentView != null)
@@ -572,7 +609,7 @@ namespace Xamarin.Forms.Platform.Android
 		void DisposeSwipeItems()
 		{
 			if (_actionView != null)
-			{ 
+			{
 				RemoveView(_actionView);
 				_actionView.Dispose();
 				_actionView = null;
@@ -628,7 +665,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void ResetSwipe()
-		{   
+		{
 			switch (_swipeDirection)
 			{
 				case SwipeDirection.Left:
@@ -866,19 +903,36 @@ namespace Xamarin.Forms.Platform.Android
 			swipeItem.OnInvoked();
 		}
 
-		void OnClose(object sender)
+		void OnCloseRequested(object sender, EventArgs e)
 		{
-			if (sender == null)
-				return;
-
 			ResetSwipe();
 		}
 
-		void OnCloseRequested(object sender, EventArgs e)
+		void OnParentScrollChange(object sender, ScrollChangeEventArgs e)
 		{
-			OnClose(sender);
+			if (sender is RecyclerView recyclerView)
+			{
+				var scrollState = (ScrollState)recyclerView.ScrollState;
+
+				if (scrollState == ScrollState.Fling || scrollState == ScrollState.TouchScroll)
+					ResetSwipe();
+			}
+			else
+			{
+				var x = Math.Abs(e.ScrollX - e.OldScrollX);
+				var y = Math.Abs(e.ScrollY - e.OldScrollY);
+
+				if (x > 10 || y > 10)
+					ResetSwipe();
+			}
 		}
-  
+
+		void OnParentScrollStateChanged(object sender, AbsListView.ScrollStateChangedEventArgs e)
+		{
+			if (e.ScrollState == ScrollState.Fling || e.ScrollState == ScrollState.TouchScroll)
+				ResetSwipe();
+		}
+
 		void RaiseSwipeStarted()
 		{
 			if (_swipeDirection == null || !ValidateSwipeDirection())

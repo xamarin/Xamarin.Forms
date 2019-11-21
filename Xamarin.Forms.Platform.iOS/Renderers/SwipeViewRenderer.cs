@@ -14,14 +14,12 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
-		internal const string SwipeView = "Xamarin.SwipeView";
-		internal const string CloseSwipeView = "Xamarin.CloseSwipeView";
-
 		const double SwipeThreshold = 250;
 		const int SwipeThresholdMargin = 6;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
 
+		View _scrollParent;
 		UIView _contentView;
 		UIStackView _actionView;
 		UITapGestureRecognizer _tapGestureRecognizer;
@@ -53,7 +51,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (Control == null)
 				{
-					MessagingCenter.Subscribe<string>(SwipeView, CloseSwipeView, OnClose);
 					SetNativeControl(CreateNativeControl());
 				}
 
@@ -70,6 +67,37 @@ namespace Xamarin.Forms.Platform.iOS
 			return new UIView();
 		}
 
+		public override void WillMoveToWindow(UIWindow window)
+		{
+			base.WillMoveToWindow(window);
+
+			if (window != null && _scrollParent == null)
+			{
+				_scrollParent = Element.FindParentOfType<ScrollView>();
+
+				if (_scrollParent is ScrollView scrollView)
+				{
+					scrollView.Scrolled += OnParentScrolled;
+					return;
+				}
+
+				_scrollParent = Element.FindParentOfType<ListView>();
+
+				if (_scrollParent is ListView listView)
+				{
+					listView.Scrolled += OnParentScrolled;
+					return;
+				}
+
+				_scrollParent = Element.FindParentOfType<CollectionView>();
+
+				if (_scrollParent is CollectionView collectionView)
+				{
+					collectionView.Scrolled += OnParentScrolled;
+				}
+			}
+		}
+  
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
@@ -113,11 +141,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				MessagingCenter.Unsubscribe<string>(SwipeView, CloseSwipeView);
-
 				if (Element != null)
 				{
 					Element.CloseRequested -= OnCloseRequested;
+				}
+
+				if (_scrollParent != null)
+				{
+					if(_scrollParent is ScrollView scrollView)
+						scrollView.Scrolled -= OnParentScrolled;
+
+					if (_scrollParent is ListView listView)
+						listView.Scrolled -= OnParentScrolled;
+
+					if (_scrollParent is CollectionView collectionView)
+						collectionView.Scrolled -= OnParentScrolled;
 				}
 
 				if (_tapGestureRecognizer != null)
@@ -901,17 +939,20 @@ namespace Xamarin.Forms.Platform.iOS
 			swipeItem.OnInvoked();
 		}
 
-		void OnClose(object sender)
+		void OnParentScrolled(object sender, ScrolledEventArgs e)
 		{
-			if (sender == null)
-				return;
-
 			ResetSwipe();
+		}
+
+		void OnParentScrolled(object sender, ItemsViewScrolledEventArgs e)
+		{
+			if (e.HorizontalDelta > 10 || e.VerticalDelta > 10)
+				ResetSwipe();
 		}
 
 		void OnCloseRequested(object sender, EventArgs e)
 		{
-			OnClose(sender);
+			ResetSwipe();
 		}
 
 		void RaiseSwipeStarted()

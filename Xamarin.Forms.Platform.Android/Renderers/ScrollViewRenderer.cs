@@ -290,7 +290,6 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnScrollChanged(l, t, oldl, oldt);
 			var context = Context;
 			UpdateScrollPosition(context.FromPixels(l), context.FromPixels(t));
-			MessagingCenter.Send(SwipeViewRenderer.SwipeView, SwipeViewRenderer.CloseSwipeView);
 		}
 
 		internal void UpdateScrollPosition(double x, double y)
