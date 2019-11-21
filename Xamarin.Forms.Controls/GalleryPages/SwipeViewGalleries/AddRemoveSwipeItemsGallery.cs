@@ -86,6 +86,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 
 			addButton.Clicked += (sender, e) =>
 			{
+				swipeView.Close();
+
 				var swipeItemsCount = swipeView.LeftItems.Count;
 				var random = new Random();
 
@@ -101,6 +103,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 
 			removeButton.Clicked += (sender, e) =>
 			{
+				swipeView.Close();
+
 				var swipeItemsCount = swipeView.LeftItems.Count;
 
 				if(swipeItemsCount > 0)

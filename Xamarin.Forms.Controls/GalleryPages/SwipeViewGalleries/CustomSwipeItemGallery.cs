@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 	{
 		public CustomSwipeItemGallery()
 		{
-			Title = "CollectionView Galleries";
+			Title = "CustomSwipeItem Galleries";
 			var layout = new StackLayout
 			{
 				Children =
@@ -17,10 +17,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			};
 
 			if (Device.RuntimePlatform != Device.UWP)
-				layout.Children.Add(GalleryBuilder.NavButton("CustomSwipeItem Gallery", () => new CustomSwipeItemViewGallery(), Navigation));
+			{
+				layout.Children.Add(GalleryBuilder.NavButton("SwipeItemView Gallery", () => new CustomSwipeItemViewGallery(), Navigation));
+				layout.Children.Add(GalleryBuilder.NavButton("CustomSwipeItem Size Gallery", () => new CustomSizeSwipeViewGallery(), Navigation));
+			}
 
 			Content = layout;
-
 		}
 	}
 }
