@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Controls
 			InitializeComponent();
 			BindingContext = new GalleryPages.CollectionViewGalleries.CarouselViewGalleries.CarouselItemsGalleryViewModel();
 			indicators.SetItemsSourceBy(carousel);
-			//indicatorsForms.Visual = VisualMarker.Forms;
 			indicatorsForms.SetItemsSourceBy(carousel);
 		}
 	}
