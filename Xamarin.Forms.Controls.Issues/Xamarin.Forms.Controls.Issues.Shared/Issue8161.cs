@@ -15,10 +15,10 @@ namespace Xamarin.Forms.Controls.Issues
 				Title = "8161"
 			};
 			var page = new ContentPage();
-			page.ToolbarItems.Add(new ToolbarItem() { Text = "enabled 1", IsEnabled = true, Order = ToolbarItemOrder.Primary });
-			page.ToolbarItems.Add(new ToolbarItem() { Text = "disabled 1", IsEnabled = false, Order = ToolbarItemOrder.Primary });
-			page.ToolbarItems.Add(new ToolbarItem() { Text = "enabled 2", IsEnabled = true, Order = ToolbarItemOrder.Secondary });
-			page.ToolbarItems.Add(new ToolbarItem() { Text = "disabled 2", IsEnabled = false, Order = ToolbarItemOrder.Secondary });
+			page.ToolbarItems.Add(new ToolbarItem() { Text = "enabled 1", IsEnabled = true, Order = ToolbarItemOrder.Primary, IconImageSource = "bank.png" });
+			page.ToolbarItems.Add(new ToolbarItem() { Text = "disabled 1", IsEnabled = false, Order = ToolbarItemOrder.Primary, IconImageSource = "bank.png" });
+			page.ToolbarItems.Add(new ToolbarItem() { Text = "enabled 2", IsEnabled = true, Order = ToolbarItemOrder.Secondary, IconImageSource = "coffee.png" });
+			page.ToolbarItems.Add(new ToolbarItem() { Text = "disabled 2", IsEnabled = false, Order = ToolbarItemOrder.Secondary, IconImageSource = "coffee.png" });
 			Detail = new NavigationPage(page);
 		}
 		protected override void OnAppearing()
