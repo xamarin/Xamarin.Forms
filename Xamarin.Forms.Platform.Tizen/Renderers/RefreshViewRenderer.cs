@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using TWebView = Tizen.WebView.WebView;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -243,6 +244,15 @@ namespace Xamarin.Forms.Platform.Tizen
 					return true;
 				}
 			}
+
+			if (Platform.GetRenderer(RefreshView.Content) is WebViewRenderer webviewRenderer)
+			{
+				if (GetScrollYOnWebView(webviewRenderer.Control.WebView) == 0)
+				{
+					return true;
+				}
+			}
+
 			return false;
 		}
 
@@ -256,6 +266,17 @@ namespace Xamarin.Forms.Platform.Tizen
 				object[] parameters = new object[] { handle, -1, -1, -1, -1 };
 				elementary.GetMethod("elm_scroller_region_get", BindingFlags.NonPublic | BindingFlags.Static)?.Invoke(null, parameters);
 				return (int)parameters[2];
+			}
+			return -1;
+		}
+
+		int GetScrollYOnWebView(TWebView webview)
+		{
+			var property = webview.GetType().GetProperty("ScrollPosition");
+			if (property != null)
+			{
+				var point = (ElmSharp.Point)property.GetValue(webview);
+				return point.Y;
 			}
 			return -1;
 		}
