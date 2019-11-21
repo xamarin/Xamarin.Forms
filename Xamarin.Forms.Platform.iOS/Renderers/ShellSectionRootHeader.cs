@@ -81,10 +81,13 @@ namespace Xamarin.Forms.Platform.iOS
 			headerCell.Label.Text = shellContent.Title;
 			headerCell.Label.SetNeedsDisplay();
 
+			headerCell.SelectedColor = _selectedColor.ToUIColor();
+			headerCell.UnSelectedColor = _unselectedColor.ToUIColor();
+
 			if (selectedItems.Length > 0 && selectedItems[0].Row == indexPath.Row)
-				headerCell.Label.TextColor = headerCell.SelectedColor = _selectedColor.ToUIColor();
+				headerCell.Selected = true;
 			else
-				headerCell.Label.TextColor = headerCell.UnSelectedColor = _unselectedColor.ToUIColor();
+				headerCell.Selected = false;
 
 			return headerCell;
 		}
