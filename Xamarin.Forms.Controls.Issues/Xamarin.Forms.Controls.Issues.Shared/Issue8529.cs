@@ -46,10 +46,14 @@ namespace Xamarin.Forms.Controls.Issues
 			_ = Shell.Current.Navigation.PushAsync(new Issue8529_1());
 		}
 
-#if UITEST && __IOS__
+#if UITEST && __SHELL__
 		public void NavigateBack()
 		{
+#if __IOS__
 			RunningApp.Tap(c => c.Marked("BackButtonImage"));
+#else
+			RunningApp.Tap(FlyoutIconAutomationId);
+#endif
 		}
 
 		[Test]
