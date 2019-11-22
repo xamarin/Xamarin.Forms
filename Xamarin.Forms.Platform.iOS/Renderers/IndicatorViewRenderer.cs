@@ -50,7 +50,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
-
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
@@ -70,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override UIView CreateNativeControl()
 		{
-			if(UIPager != null)
+			if (UIPager != null)
 			{
 				UIPager.ValueChanged -= UIPagerValueChanged;
 			}
@@ -80,6 +79,7 @@ namespace Xamarin.Forms.Platform.iOS
 			uiPager.ValueChanged += UIPagerValueChanged;
 			return uiPager;
 		}
+
 		void UpdateControl()
 		{
 			var control = (Element.IndicatorTemplate != null)
@@ -103,11 +103,9 @@ namespace Xamarin.Forms.Platform.iOS
 			_updatingPosition = false;
 		}
 
-		void UpdatePages()
-			=> UIPager.Pages = Element.Count;
+		void UpdatePages() => UIPager.Pages = Element.Count;
 
-		void UpdateHidesForSinglePage()
-			=> UIPager.HidesForSinglePage = Element.HideSingle;
+		void UpdateHidesForSinglePage() => UIPager.HidesForSinglePage = Element.HideSingle;
 
 		void UpdatePagesIndicatorTintColor()
 		{

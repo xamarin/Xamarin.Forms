@@ -8,7 +8,6 @@ using Android.Graphics.Drawables;
 using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
 using AShapes = Android.Graphics.Drawables.Shapes;
-using Xamarin.Forms.Internals;
 using AShapeType = Android.Graphics.Drawables.ShapeType;
 
 namespace Xamarin.Forms.Platform.Android
@@ -209,6 +208,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (IndicatorsView.IndicatorTemplate != null)
 			{
 				var control = IndicatorsView.IndicatorLayout.GetRenderer() ?? Platform.CreateRendererWithContext(IndicatorsView.IndicatorLayout, Context);
+				Platform.SetRenderer(IndicatorsView.IndicatorLayout, control);
 				AddView(control as AView);
 			}
 			else

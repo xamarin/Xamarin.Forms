@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
-	internal class IndicatorStackLayout : StackLayout
+	internal class IndicatorStackLayout : StackLayout, IDisposable
 	{
 		IndicatorView _indicatorView;
 		public IndicatorStackLayout(IndicatorView indicatorView)
@@ -99,19 +100,7 @@ namespace Xamarin.Forms
 			IsVisible = indicatorCount > 1 || !_indicatorView.HideSingle;
 		}
 
-		Color GetColorOrDefault(Color color, Color defaultColor)
-			=> color.IsDefault ? defaultColor : color;
-
-		internal void ResetItemsSource(IEnumerable oldItemsSource)
-		{
-			if (oldItemsSource is INotifyCollectionChanged oldCollection)
-				oldCollection.CollectionChanged -= OnCollectionChanged;
-
-			if (_indicatorView.ItemsSource is INotifyCollectionChanged collection)
-				collection.CollectionChanged += OnCollectionChanged;
-
-			OnCollectionChanged(_indicatorView.ItemsSource, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-		}
+		Color GetColorOrDefault(Color color, Color defaultColor) => color.IsDefault ? defaultColor : color;
 
 		void AddExtraIndicatorItems()
 		{
@@ -151,20 +140,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		public void Dispose()
 		{
-			if (sender is ICollection collection)
-			{
-				_indicatorView.Count = collection.Count;
-				return;
-			}
-			var count = 0;
-			var enumerator = (sender as IEnumerable)?.GetEnumerator();
-			while (enumerator?.MoveNext() ?? false)
-			{
-				count++;
-			}
-			_indicatorView.Count = count;
+			_indicatorView.PropertyChanged -= _indicatorViewPropertyChanged;
 		}
 	}
 }

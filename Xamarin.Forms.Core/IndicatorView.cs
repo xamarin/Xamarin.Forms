@@ -21,7 +21,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty MaximumVisibleProperty = BindableProperty.Create(nameof(MaximumVisible), typeof(int), typeof(IndicatorView), int.MaxValue);
 
-		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate));
+		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanged: (bindable, oldValue, newValue)
+			=> UpdateIndicatorLayout(((IndicatorView)bindable), newValue));
 
 		public static readonly BindableProperty HideSingleProperty = BindableProperty.Create(nameof(HideSingle), typeof(bool), typeof(IndicatorView), true);
 
@@ -32,14 +33,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IndicatorSizeProperty = BindableProperty.Create(nameof(IndicatorSize), typeof(double), typeof(IndicatorView), 6.0);
 
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(IndicatorView), null, propertyChanged: (bindable, oldValue, newValue)
-			=> (((IndicatorView)bindable).IndicatorLayout as IndicatorStackLayout)?.ResetItemsSource((IEnumerable)oldValue));
+			=> ((IndicatorView)bindable).ResetItemsSource((IEnumerable)oldValue));
 
 		static readonly BindableProperty IndicatorLayoutProperty = BindableProperty.Create(nameof(IndicatorLayout), typeof(Layout<View>), typeof(IndicatorView), null, propertyChanged: TemplateUtilities.OnContentChanged);
 
 		public IndicatorView()
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(IndicatorView), ExperimentalFlags.IndicatorViewExperimental);
-			IndicatorLayout = new IndicatorStackLayout(this);
 		}
 
 		public IndicatorShape IndicatorsShape
@@ -135,6 +135,19 @@ namespace Xamarin.Forms
 			return sizeRequest;
 		}
 
+		static void UpdateIndicatorLayout(IndicatorView indicatorView, object newValue)
+		{
+			if (newValue != null)
+			{
+				indicatorView.IndicatorLayout = new IndicatorStackLayout(indicatorView);
+			}
+			else if (indicatorView.IndicatorLayout == null)
+			{
+				(indicatorView.IndicatorLayout as IndicatorStackLayout).Dispose();
+				indicatorView.IndicatorLayout = null;
+			}
+		}
+
 		static void LinkToCarouselView(IndicatorView indicatorView, CarouselView carouselView)
 		{
 			if (carouselView == null || indicatorView == null)
@@ -152,5 +165,33 @@ namespace Xamarin.Forms
 				Source = carouselView
 			});
 		}
+
+		void ResetItemsSource(IEnumerable oldItemsSource)
+		{
+			if (oldItemsSource is INotifyCollectionChanged oldCollection)
+				oldCollection.CollectionChanged -= OnCollectionChanged;
+
+			if (ItemsSource is INotifyCollectionChanged collection)
+				collection.CollectionChanged += OnCollectionChanged;
+
+			OnCollectionChanged(ItemsSource, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+		}
+
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (sender is ICollection collection)
+			{
+				Count = collection.Count;
+				return;
+			}
+			var count = 0;
+			var enumerator = (sender as IEnumerable)?.GetEnumerator();
+			while (enumerator?.MoveNext() ?? false)
+			{
+				count++;
+			}
+			Count = count;
+		}
+
 	}
 }
