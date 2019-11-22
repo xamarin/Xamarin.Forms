@@ -2,12 +2,12 @@
 using System.Linq;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using WSwipeBehaviorOnInvoked = Microsoft.UI.Xaml.Controls.SwipeBehaviorOnInvoked;
 using WSwipeControl = Microsoft.UI.Xaml.Controls.SwipeControl;
 using WSwipeItems = Microsoft.UI.Xaml.Controls.SwipeItems;
 using WSwipeItem = Microsoft.UI.Xaml.Controls.SwipeItem;
 using WSwipeMode = Microsoft.UI.Xaml.Controls.SwipeMode;
-using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -31,20 +31,28 @@ namespace Xamarin.Forms.Platform.UWP
 			if (e.NewElement != null)
 			{
 				e.NewElement.CloseRequested += OnCloseRequested;
+				e.NewElement.LeftItems.CollectionChanged += OnSwipeItemsChanged;
+				e.NewElement.RightItems.CollectionChanged += OnSwipeItemsChanged;
+				e.NewElement.TopItems.CollectionChanged += OnSwipeItemsChanged;
+				e.NewElement.BottomItems.CollectionChanged += OnSwipeItemsChanged;
 
 				if (Control == null)
 				{
 					SetNativeControl(new WSwipeControl());
-
-					Element.LeftItems.CollectionChanged += OnSwipeItemsChanged;
-					Element.RightItems.CollectionChanged += OnSwipeItemsChanged;
-					Element.TopItems.CollectionChanged += OnSwipeItemsChanged;
-					Element.BottomItems.CollectionChanged += OnSwipeItemsChanged;
 				}
 
 				UpdateContent();
 				UpdateSwipeItems();
 				UpdateBackgroundColor();
+			}
+
+			if (e.OldElement != null)
+			{
+				e.OldElement.CloseRequested -= OnCloseRequested;
+				e.OldElement.LeftItems.CollectionChanged -= OnSwipeItemsChanged;
+				e.OldElement.RightItems.CollectionChanged -= OnSwipeItemsChanged;
+				e.OldElement.TopItems.CollectionChanged -= OnSwipeItemsChanged;
+				e.OldElement.BottomItems.CollectionChanged -= OnSwipeItemsChanged;
 			}
 		}
 
