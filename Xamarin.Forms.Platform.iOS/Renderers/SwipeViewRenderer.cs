@@ -267,6 +267,11 @@ namespace Xamarin.Forms.Platform.iOS
 			return Element != null && (IsValidSwipeItems(Element.LeftItems) || IsValidSwipeItems(Element.RightItems) || IsValidSwipeItems(Element.TopItems) || IsValidSwipeItems(Element.BottomItems));
 		}
 
+  		bool IsHorizontalSwipe()
+		{
+			return _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
+		}
+
 		bool IsValidSwipeItems(SwipeItems swipeItems)
 		{
 			return swipeItems != null && swipeItems.Count > 0;
@@ -788,6 +793,10 @@ namespace Xamarin.Forms.Platform.iOS
 				return _swipeThreshold;
 
 			var swipeItems = GetSwipeItemsByDirection();
+
+			if (swipeItems == null)
+				return 0;
+
 			_swipeThreshold = GetSwipeThreshold(swipeItems);
 
 			return _swipeThreshold;
@@ -796,11 +805,8 @@ namespace Xamarin.Forms.Platform.iOS
 		double GetSwipeThreshold(SwipeItems swipeItems)
 		{
 			double swipeThreshold = 0;
-
-			if (swipeItems == null)
-				return 0;
-
-			bool isHorizontal = _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
+   
+			bool isHorizontal = IsHorizontalSwipe();
 
 			if (swipeItems.Mode == SwipeMode.Reveal)
 			{
@@ -820,42 +826,55 @@ namespace Xamarin.Forms.Platform.iOS
 				if (isHorizontal)
 					swipeThreshold = SwipeThreshold;
 				else
-					swipeThreshold = (SwipeThreshold > _contentView.Frame.Height) ? _contentView.Frame.Height : SwipeThreshold;
+				{
+					var contentHeight = _contentView.Frame.Height;
+					swipeThreshold = (SwipeThreshold > contentHeight) ? contentHeight : SwipeThreshold;
+				}
 			}
 
-			if (isHorizontal)
+			return ValidateSwipeThreshold(swipeThreshold);
+		}
+
+		double ValidateSwipeThreshold(double swipeThreshold)
+		{
+			if (IsHorizontalSwipe())
+			{
+				if (swipeThreshold > _contentView.Frame.Width)
+					swipeThreshold = _contentView.Frame.Width;
+
 				return swipeThreshold - SwipeThresholdMargin;
+			}
+
+			if (swipeThreshold > _contentView.Frame.Height)
+				swipeThreshold = _contentView.Frame.Height;
 
 			return swipeThreshold - SwipeThresholdMargin / 2;
 		}
 
 		Size GetSwipeItemSize(ISwipeItem swipeItem)
 		{
-			bool isHorizontal = _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
 			var items = GetSwipeItemsByDirection();
-			var contentHeight = _contentView.Frame.Height;
-			var contentWidth = _contentView.Frame.Width;
 
-			if (isHorizontal)
+			if (IsHorizontalSwipe())
 			{
 				if (swipeItem is SwipeItem)
-					return new Size(items.Mode == SwipeMode.Execute ? contentWidth / items.Count : SwipeItemWidth, contentHeight);
+					return new Size(items.Mode == SwipeMode.Execute ? _contentView.Frame.Width / items.Count : SwipeItemWidth, _contentView.Frame.Height);
 
 				if (swipeItem is SwipeItemView horizontalSwipeItemView)
 				{
 					var swipeItemViewSizeRequest = horizontalSwipeItemView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-					return new Size(swipeItemViewSizeRequest.Request.Width > 0 ? (float)swipeItemViewSizeRequest.Request.Width : SwipeItemWidth, contentHeight);
+					return new Size(swipeItemViewSizeRequest.Request.Width > 0 ? (float)swipeItemViewSizeRequest.Request.Width : SwipeItemWidth, _contentView.Frame.Height);
 				}
 			}
 			else
 			{
 				if (swipeItem is SwipeItem)
-					return new Size(contentWidth / items.Count, GetSwipeItemHeight()); 
+					return new Size(_contentView.Frame.Width / items.Count, GetSwipeItemHeight()); 
 
 				if (swipeItem is SwipeItemView horizontalSwipeItemView)
 				{
 					var swipeItemViewSizeRequest = horizontalSwipeItemView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-					return new Size(contentWidth / items.Count, swipeItemViewSizeRequest.Request.Height > 0 ? (float)swipeItemViewSizeRequest.Request.Height : contentHeight);
+					return new Size(_contentView.Frame.Width / items.Count, swipeItemViewSizeRequest.Request.Height > 0 ? (float)swipeItemViewSizeRequest.Request.Height : _contentView.Frame.Height);
 				}
 			}
 
@@ -864,7 +883,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		double GetSwipeItemHeight()
 		{
-			var contentHeight = _contentView.Frame.Height;
 			var items = GetSwipeItemsByDirection();
 			
 			if (items.Any(s => s is SwipeItemView))
@@ -883,7 +901,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return itemsHeight.Max();
 			}
 
-			return contentHeight;
+			return _contentView.Frame.Height;
 		}
 
 		bool ValidateSwipeDirection()

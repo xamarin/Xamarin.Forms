@@ -590,7 +590,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			int contentHeight = _contentView.Height;
 			int contentWidth = (int)_context.ToPixels(SwipeItemWidth);
-			int iconSize = Math.Min(contentHeight, contentWidth) / 3;
+			int iconSize = Math.Min(contentHeight, contentWidth) / 2;
 	
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
@@ -599,8 +599,9 @@ namespace Xamarin.Forms.Platform.Android
 				swipeButton.SetCompoundDrawables(null, drawable, null, null);
 			});
 
-			var center = (contentHeight - (iconSize * 2)) / 2;
-			swipeButton.SetPadding(0, center, 0, 0);
+			var textSize = (int)swipeButton.TextSize;
+			var buttonPadding = (contentHeight - (iconSize + textSize + 6)) / 2;
+			swipeButton.SetPadding(0, buttonPadding, 0, buttonPadding);
 			swipeButton.SetOnTouchListener(null);
 
 			return swipeButton;
@@ -860,6 +861,10 @@ namespace Xamarin.Forms.Platform.Android
 				return _swipeThreshold;
 
 			var swipeItems = GetSwipeItemsByDirection();
+
+			if (swipeItems == null)
+				return 0;
+
 			_swipeThreshold = GetSwipeThreshold(swipeItems);
 
 			return _swipeThreshold;
@@ -868,9 +873,6 @@ namespace Xamarin.Forms.Platform.Android
 		float GetSwipeThreshold(SwipeItems swipeItems)
 		{
 			float swipeThreshold = 0;
-
-			if (swipeItems == null)
-				return 0;
 
 			bool isHorizontal = IsHorizontalSwipe();
 
@@ -898,8 +900,25 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
+			return ValidateSwipeThreshold(swipeThreshold);
+		}
+
+		float ValidateSwipeThreshold(float swipeThreshold)
+		{
+			var contentHeight = (float)_context.FromPixels(_contentView.Height);
+			var contentWidth = (float)_context.FromPixels(_contentView.Width);
+			bool isHorizontal = IsHorizontalSwipe();
+
 			if (isHorizontal)
+			{
+				if (swipeThreshold > contentWidth)
+					swipeThreshold = contentWidth;
+
 				return swipeThreshold - SwipeThresholdMargin;
+			}
+
+			if (swipeThreshold > contentHeight)
+				swipeThreshold = contentHeight;
 
 			return swipeThreshold - SwipeThresholdMargin / 2;
 		}
