@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
-					 new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star },
 					new RowDefinition { Height = GridLength.Auto }
 				}
@@ -60,7 +60,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				IndicatorColor = Color.Gray,
 				SelectedIndicatorColor = Color.Black,
 				IndicatorsShape = IndicatorShape.Square,
-				AutomationId = "TheIndicatorView"
+				AutomationId = "TheIndicatorView",
+				Visual = VisualMarker.Forms
 			};
 
 			indicatorView.SetItemsSourceBy(carouselView);
@@ -139,9 +140,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			var templatePicker = new Picker
 			{
 				ItemsSource = templates,
-				WidthRequest = 150
+				WidthRequest = 150,
+				TextColor = Color.Black
 			};
-			templatePicker.SelectedIndex = 0;
 
 			templatePicker.SelectedIndexChanged += (s, e) =>
 			{
@@ -150,9 +151,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				switch (selectedIndex)
 				{
 					case 0:
+						indicatorView.IndicatorTemplate = null;
 						indicatorView.IndicatorsShape = IndicatorShape.Circle;
 						break;
 					case 1:
+						indicatorView.IndicatorTemplate = null;
 						indicatorView.IndicatorsShape = IndicatorShape.Square;
 						break;
 					case 2:
@@ -160,6 +163,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						break;
 				}
 			};
+
+			templatePicker.SelectedIndex = 0;
 
 			stckTemplate.Children.Add(templatePicker);
 
@@ -174,7 +179,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			Content = layout;
 
-			generator.CollectionChanged += (sender, e) => {
+			generator.CollectionChanged += (sender, e) =>
+			{
 				maxVisibleSlider.Maximum = generator.Count;
 			};
 		}
