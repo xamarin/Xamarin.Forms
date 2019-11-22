@@ -3,7 +3,9 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Platform.GTK.Extensions;
@@ -11,10 +13,6 @@ using DrawingFont = System.Drawing.Font;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
-	using System.Collections.Generic;
-	using System.Drawing.Text;
-	using System.Linq;
-	using Color = System.Drawing.Color;
 
 	public class ImageRenderer : ViewRenderer<Image, Controls.ImageControl>
 	{
