@@ -34,9 +34,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal)", () =>
 							new CarouselXamlGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Forms)", () =>
-							new CarouselItemsGallery(VisualMarker.Forms), Navigation),
+							new CarouselItemsGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Default (Native))", () =>
-							new CarouselItemsGallery(VisualMarker.Default), Navigation),
+							new CarouselItemsGallery(), Navigation),
 	  					GalleryBuilder.NavButton("CarouselView Snap", () =>
  							new CarouselSnapGallery(), Navigation),
 						GalleryBuilder.NavButton("ObservableCollection and CarouselView", () =>
