@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				Visual = VisualMarker.Forms
 			};
 
-			indicatorView.SetItemsSourceBy(carouselView);
+			IndicatorView.SetItemsSourceBy(indicatorView, carouselView);
 
 			layout.Children.Add(indicatorView);
 

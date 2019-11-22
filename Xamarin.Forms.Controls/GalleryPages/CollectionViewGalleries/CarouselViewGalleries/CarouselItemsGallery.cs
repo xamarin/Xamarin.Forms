@@ -54,7 +54,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				Visual = visual
 				//BackgroundColor = Color.Pink,
 			};
-			indicators.SetItemsSourceBy(carouselView);
+
+			IndicatorView.SetItemsSourceBy(indicators, carouselView);
+
 			absolute.Children.Add(indicators, new Rectangle(.5, 1, -1, -1), AbsoluteLayoutFlags.PositionProportional);
 
 			grid.Children.Add(absolute, 0, 0);
