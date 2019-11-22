@@ -18,7 +18,8 @@ namespace Xamarin.Forms
 	{
 		const int DefaultPadding = 4;
 
-		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorShape), typeof(IndicatorView), IndicatorShape.Circle);
+		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorShape), typeof(IndicatorView), IndicatorShape.Circle, propertyChanged: (bindable, oldValue, newValue)
+			=> ((IndicatorView)bindable).ResetIndicators());
 
 		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorView), default(int), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
@@ -30,7 +31,7 @@ namespace Xamarin.Forms
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
 
 		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanged: (bindable, oldValue, newValue)
-			=> ((IndicatorView)bindable).ResetIndicatorStyles());
+			=> ((IndicatorView)bindable).ResetIndicators());
 
 		public static readonly BindableProperty HideSingleProperty = BindableProperty.Create(nameof(HideSingle), typeof(bool), typeof(IndicatorView), true, propertyChanged: (bindable, oldValue, newValue)
 			=> ((IndicatorView)bindable).ResetIndicatorStyles());
@@ -175,6 +176,25 @@ namespace Xamarin.Forms
 			}
 		}
 
+
+		void ResetIndicators()
+		{
+			if (IndicatorLayout == null)
+				return;
+
+			try
+			{
+				BatchBegin();
+				Items.Clear();
+				AddExtraIndicatorItems();
+			}
+			finally
+			{
+				ResetIndicatorStylesNonBatch();
+				BatchCommit();
+			}
+		}
+
 		void ResetIndicatorCount(int oldCount)
 		{
 			if (IndicatorLayout == null)
@@ -244,7 +264,7 @@ namespace Xamarin.Forms
 					HorizontalOptions = LayoutOptions.Center,
 					WidthRequest = size,
 					HeightRequest = size,
-					CornerRadius = (float)size / 2
+					CornerRadius = IndicatorsShape == IndicatorShape.Circle ? (float)size / 2 : 0
 				};
 				var tapGestureRecognizer = new TapGestureRecognizer();
 				tapGestureRecognizer.Tapped += (sender, args) => Position = Items.IndexOf(sender as View);
