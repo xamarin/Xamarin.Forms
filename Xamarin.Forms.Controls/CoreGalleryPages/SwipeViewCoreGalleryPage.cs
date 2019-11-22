@@ -44,9 +44,9 @@ namespace Xamarin.Forms.Controls
 				DisplayAlert("SwipeView", "Add Invoked", "OK");
 			};
 
-			var modifySwipteItem = new SwipeItem { BackgroundColor = Color.Orange, Text = "Modify", IconImageSource = "calculator.png" };
+			var modifySwipeItem = new SwipeItem { BackgroundColor = Color.Orange, Text = "Modify", IconImageSource = "calculator.png" };
 
-			modifySwipteItem.Invoked += (sender, e) =>
+			modifySwipeItem.Invoked += (sender, e) =>
 			{
 				DisplayAlert("SwipeView", "Modify Invoked", "OK");
 			};
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls
 			var swipeItems = new SwipeItems
 			{
 				addSwipeItem,
-				modifySwipteItem
+				modifySwipeItem
 			};
 
 			swipeItems.Mode = SwipeMode.Reveal;
