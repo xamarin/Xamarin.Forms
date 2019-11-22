@@ -459,7 +459,7 @@ namespace Xamarin.Forms.Controls.Issues
 				_abortStressTest = false;
 
 				int.TryParse(_stressTestItertionEntry.Text, out _stressTestIterationCount);
-				ThreadPool.QueueUserWorkItem(delegate { runStressTest(); });
+				// ThreadPool.QueueUserWorkItem(delegate { runStressTest(); });
 			};
 
 			_stressTestProgressBar = new ProgressBar();

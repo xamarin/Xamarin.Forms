@@ -338,6 +338,10 @@ namespace Xamarin.Forms.Platform.Android
 					_downY = e.RawY;
 
 					handled = HandleTouchInteractions(GestureStatus.Started, point);
+
+					if (handled == true)
+						Parent.RequestDisallowInterceptTouchEvent(true);
+
 					break;
 				case MotionEventActions.Up:
 					handled = HandleTouchInteractions(GestureStatus.Completed, point);
