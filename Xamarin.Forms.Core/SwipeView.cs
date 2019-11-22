@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Content")]
 	[RenderWith(typeof(_SwipeViewRenderer))]
-	public class SwipeView : ContentView, IElementConfiguration<SwipeView>
+	public class SwipeView : ContentView, IElementConfiguration<SwipeView>, ISwipeViewController
 	{
 		readonly Lazy<PlatformConfigurationRegistry<SwipeView>> _platformConfigurationRegistry;
 
@@ -81,45 +81,7 @@ namespace Xamarin.Forms
 			if (BottomItems != null)
 				SetInheritedBindingContext(BottomItems, bc);
 		}
-
-		public abstract class BaseSwipeEventArgs : EventArgs
-		{
-			protected BaseSwipeEventArgs(SwipeDirection swipeDirection)
-			{
-				SwipeDirection = swipeDirection;
-			}
-
-			public SwipeDirection SwipeDirection { get; set; }
-		}
-
-		public class SwipeStartedEventArgs : BaseSwipeEventArgs
-		{
-			public SwipeStartedEventArgs(SwipeDirection swipeDirection) : base(swipeDirection)
-			{
-
-			}
-		}
-
-		public class SwipeChangingEventArgs : EventArgs
-		{
-			public SwipeChangingEventArgs(SwipeDirection swipeDirection, double offset)
-			{
-				SwipeDirection = swipeDirection;
-				Offset = offset;
-			}
-
-			public SwipeDirection SwipeDirection { get; set; }
-			public double Offset { get; set; }
-		}
-
-		public class SwipeEndedEventArgs : BaseSwipeEventArgs
-		{
-			public SwipeEndedEventArgs(SwipeDirection swipeDirection) : base(swipeDirection)
-			{
-
-			}
-		}
-
+  
 		SwipeItems SwipeItemsDefaultValueCreator() => new SwipeItems();
 
 		static object SwipeItemsDefaultValueCreator(BindableObject bindable)

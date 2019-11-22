@@ -9,8 +9,8 @@ using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using static Xamarin.Forms.SwipeView;
 using AButton = Android.Support.V7.Widget.AppCompatButton;
 using APointF = Android.Graphics.PointF;
 using ATextAlignment = Android.Views.TextAlignment;
@@ -69,6 +69,9 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateSwipeTransitionMode();
 				UpdateBackgroundColor();
 			}
+
+			if (e.OldElement != null)
+				e.OldElement.CloseRequested -= OnCloseRequested;
 
 			base.OnElementChanged(e);
 		}
@@ -313,6 +316,11 @@ namespace Xamarin.Forms.Platform.Android
 			return Element != null && (IsValidSwipeItems(Element.LeftItems) || IsValidSwipeItems(Element.RightItems) || IsValidSwipeItems(Element.TopItems) || IsValidSwipeItems(Element.BottomItems));
 		}
 
+		bool IsHorizontalSwipe()
+		{
+			return _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
+		}
+
 		bool IsValidSwipeItems(SwipeItems swipeItems)
 		{
 			return swipeItems != null && swipeItems.Count > 0;
@@ -372,7 +380,7 @@ namespace Xamarin.Forms.Platform.Android
 				case GestureStatus.Running:
 					return !ProcessTouchMove(point);
 				case GestureStatus.Completed:
-					ProcessTouchUp();
+					ProcessTouchUp(point);
 					break;
 			}
 
@@ -386,12 +394,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (_isSwiping || _isTouchDown || _contentView == null)
 				return false;
 
-			bool touchContent = TouchInsideContent(_contentView.Left + _contentView.TranslationX, _contentView.Top + _contentView.TranslationY, _contentView.Width, _contentView.Height, _context.ToPixels(point.X), _context.ToPixels(point.Y));
-
-			if (touchContent)
+			if (TouchInsideContent(point))
 				ResetSwipe();
-			else
-				ProcessTouchSwipeItems(point);
 
 			_initialPoint = point;
 			_isTouchDown = true;
@@ -427,9 +431,12 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
-		bool ProcessTouchUp()
+		bool ProcessTouchUp(APointF point)
 		{
 			_isTouchDown = false;
+
+			if(!TouchInsideContent(point))
+				ProcessTouchSwipeItems(point);
 
 			if (!_isSwiping)
 				return false;
@@ -437,13 +444,23 @@ namespace Xamarin.Forms.Platform.Android
 			_isSwiping = false;
 
 			RaiseSwipeEnded();
-
+   
 			if (!ValidateSwipeDirection())
 				return false;
 
 			ValidateSwipeThreshold();
 
 			return false;
+		}
+
+		bool TouchInsideContent(APointF point)
+		{
+			if (_contentView == null)
+				return false;
+
+			bool touchContent = TouchInsideContent(_contentView.Left + _contentView.TranslationX, _contentView.Top + _contentView.TranslationY, _contentView.Width, _contentView.Height, _context.ToPixels(point.X), _context.ToPixels(point.Y));
+
+			return touchContent;
 		}
 
 		bool TouchInsideContent(double x1, double y1, double x2, double y2, double x, double y)
@@ -855,7 +872,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (swipeItems == null)
 				return 0;
 
-			bool isHorizontal = _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
+			bool isHorizontal = IsHorizontalSwipe();
 
 			if (swipeItems.Mode == SwipeMode.Reveal)
 			{
@@ -889,7 +906,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		Size GetSwipeItemSize(ISwipeItem swipeItem)
 		{
-			bool isHorizontal = _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
+			bool isHorizontal = IsHorizontalSwipe();
 			var items = GetSwipeItemsByDirection();
 			var contentHeight = _context.FromPixels(_contentView.Height);
 			var contentWidth = _context.FromPixels(_contentView.Width);

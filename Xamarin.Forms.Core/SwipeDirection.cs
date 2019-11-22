@@ -11,7 +11,10 @@ namespace Xamarin.Forms
 		Up = 4,
 		Down = 8
 	}
+}
 
+namespace Xamarin.Forms.Internals
+{
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class SwipeDirectionHelper
 	{

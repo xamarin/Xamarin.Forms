@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
-	public class SwipeItems : Element, IList<ISwipeItem>, INotifyCollectionChanged 
+	public class SwipeItems : Element, IList<ISwipeItem>, INotifyCollectionChanged
 	{
 		readonly ObservableCollection<ISwipeItem> _internal;
 
@@ -36,7 +36,11 @@ namespace Xamarin.Forms
 			remove { _internal.CollectionChanged -= value; }
 		}
 
-		public ISwipeItem this[int index] { get => _internal[index]; set => _internal[index] = value; }
+		public ISwipeItem this[int index]
+		{
+			get => _internal.Count > index ? _internal[index] : null;
+			set => _internal[index] = value;
+		}
 
 		public int Count => _internal.Count;
 

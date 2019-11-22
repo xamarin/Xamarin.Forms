@@ -7,7 +7,6 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using static Xamarin.Forms.SwipeView;
 using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific.SwipeView;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -58,6 +57,9 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSwipeTransitionMode();
 				SetBackgroundColor(Element.BackgroundColor);
 			}
+
+			if (e.OldElement != null)
+				e.OldElement.CloseRequested -= OnCloseRequested;
 
 			base.OnElementChanged(e);
 		}
