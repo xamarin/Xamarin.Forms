@@ -156,9 +156,9 @@ namespace Xamarin.Forms.Platform.Android
 					_childViews.Add(renderer);
 				}
 				Performance.Stop(reference, "Add view");
-
-				Performance.Stop(reference);
 			}
+
+			Performance.Stop(reference);
 		}
 
 		void EnsureChildOrder() => EnsureChildOrder(false);
