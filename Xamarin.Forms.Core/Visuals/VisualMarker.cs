@@ -12,8 +12,6 @@ namespace Xamarin.Forms
 		public static IVisual Default { get; } = new DefaultVisual();
 		public static IVisual Material { get; } = new MaterialVisual();
 
-		public static IVisual Forms { get; } = new FormsVisual();
-
 		internal static void RegisterMaterial() => _isMaterialRegistered = true;
 		internal static void MaterialCheck()
 		{
