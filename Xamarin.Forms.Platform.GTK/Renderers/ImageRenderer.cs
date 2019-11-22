@@ -232,7 +232,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			using (var g = Graphics.FromImage(bmp))
 			{
-				var font = new DrawingFont(fontFamily, (int)fontImageSource.Size);
+				var font = new DrawingFont(fontFamily, (int)fontImageSource.Size * .5f);
 				var fontColor = fontImageSource.Color != Xamarin.Forms.Color.Default ? fontImageSource.Color : Xamarin.Forms.Color.White;
 				g.DrawString(fontImageSource.Glyph, font, new SolidBrush(fontColor), 0, 0);
 			}
