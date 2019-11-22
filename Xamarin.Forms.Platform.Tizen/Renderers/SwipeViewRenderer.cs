@@ -12,8 +12,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 	public class SwipeViewRenderer : LayoutRenderer
 	{
-		static readonly double SwipeItemWidth = 100;
-		static readonly double SwipeItemHeight = 40;
+		static readonly double SwipeItemWidth = Forms.ConvertToScaledDP(100);
+		static readonly double SwipeItemHeight = Forms.ConvertToScaledDP(40);
 		static readonly int MovementThreshold = 1000;
 		static readonly uint SwipeAnimationDuration = 120;
 
@@ -63,7 +63,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			_gestureLayer = new GestureLayer(NativeView);
 			_gestureLayer.Attach(NativeView);
 
-			_gestureLayer.SetMomentumCallback(GestureLayer.GestureState.Start, OnStarted);
 			_gestureLayer.SetMomentumCallback(GestureLayer.GestureState.Move, OnMoved);
 			_gestureLayer.SetMomentumCallback(GestureLayer.GestureState.End, OnEnd);
 			_gestureLayer.SetMomentumCallback(GestureLayer.GestureState.Abort, OnEnd);
@@ -74,10 +73,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_ = SwipeClose();
 			};
-		}
-
-		void OnStarted(GestureLayer.MomentumData moment)
-		{
 		}
 
 		void OnMoved(GestureLayer.MomentumData moment)
