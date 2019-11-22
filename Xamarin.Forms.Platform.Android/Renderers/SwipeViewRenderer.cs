@@ -1055,7 +1055,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var swipeStartedEventArgs = new SwipeStartedEventArgs(_swipeDirection.Value);
-			Element.SendSwipeStarted(swipeStartedEventArgs);
+			((ISwipeViewController)Element).SendSwipeStarted(swipeStartedEventArgs);
 		}
 
 		void RaiseSwipeChanging()
@@ -1064,7 +1064,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var swipeChangingEventArgs = new SwipeChangingEventArgs(_swipeDirection.Value, _swipeOffset);
-			Element.SendSwipeChanging(swipeChangingEventArgs);
+			((ISwipeViewController)Element).SendSwipeChanging(swipeChangingEventArgs);
 		}
 
 		void RaiseSwipeEnded()
@@ -1073,7 +1073,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value);
-			Element.SendSwipeEnded(swipeEndedEventArgs);
+			((ISwipeViewController)Element).SendSwipeEnded(swipeEndedEventArgs);
 		}
 	}
 }

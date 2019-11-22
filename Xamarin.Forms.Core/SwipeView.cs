@@ -55,13 +55,13 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendSwipeStarted(SwipeStartedEventArgs args) => SwipeStarted?.Invoke(this, args);
+		void ISwipeViewController.SendSwipeStarted(SwipeStartedEventArgs args) => SwipeStarted?.Invoke(this, args);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendSwipeChanging(SwipeChangingEventArgs args) => SwipeChanging?.Invoke(this, args);
+		void ISwipeViewController.SendSwipeChanging(SwipeChangingEventArgs args) => SwipeChanging?.Invoke(this, args);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendSwipeEnded(SwipeEndedEventArgs args) => SwipeEnded?.Invoke(this, args);
+		void ISwipeViewController.SendSwipeEnded(SwipeEndedEventArgs args) => SwipeEnded?.Invoke(this, args);
 
 		protected override void OnBindingContextChanged()
 		{
