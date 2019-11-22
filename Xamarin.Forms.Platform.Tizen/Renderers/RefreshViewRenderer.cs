@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static readonly int IconSize = 48;
 		static readonly Color DefaultColor = Color.FromHex("#6200EE");
 		static readonly string IconPath = "Xamarin.Forms.Platform.Tizen.Resource.refresh_48dp.png";
+
+		bool _isPlaying;
 		Image _icon;
 
 		public RefreshIcon()
@@ -40,8 +42,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			IconColor = DefaultColor;
 		}
 
-		bool IsPlaying { get; set; }
-
 		public Color IconColor
 		{
 			get
@@ -69,20 +69,20 @@ namespace Xamarin.Forms.Platform.Tizen
 		public void Start()
 		{
 			Stop();
-			IsPlaying = true;
+			_isPlaying = true;
 			TurnInternal();
 		}
 
 		public void Stop()
 		{
-			IsPlaying = false;
+			_isPlaying = false;
 			_icon.AbortAnimation("RotateTo");
 		}
 
 		async void TurnInternal()
 		{
 			await _icon.RelRotateTo(360, 1000);
-			if (IsPlaying)
+			if (_isPlaying)
 				TurnInternal();
 		}
 	}
@@ -106,6 +106,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			Children.Add(RefreshIcon);
 		}
 
+		RefreshIcon RefreshIcon { get; set; }
+
+		public Color RefreshIconColor
+		{
+			get => RefreshIcon.IconColor;
+			set => RefreshIcon.IconColor = value;
+		}
+
 		public void SetDistance(double distance)
 		{
 			var calculated = -RefreshIcon.IconSize + distance;
@@ -127,7 +135,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			return RefreshIcon.TranslationY > (MaximumDistance - 30);
 		}
 
-		async public Task Stop()
+		public async Task Stop()
 		{
 			_ = RefreshIcon.FadeTo(0);
 			await RefreshIcon.ScaleTo(0.2);
@@ -136,7 +144,6 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public async Task ResetRefreshIcon()
 		{
-
 			new Animation((r) =>
 			{
 				RefreshIcon.IconRotation = 180 * (RefreshIcon.TranslationY / (float)MaximumDistance);
@@ -144,11 +151,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			_ = RefreshIcon.FadeTo(0.5, length: 250);
 			await RefreshIcon.TranslateTo(0, -RefreshIcon.IconSize, length: 250);
 		}
-
-		public RefreshIcon RefreshIcon { get; set;}
 	}
 
-	public enum RefreshState
+	enum RefreshState
 	{
 		Idle,
 		Drag,
@@ -160,14 +165,13 @@ namespace Xamarin.Forms.Platform.Tizen
 		GestureLayer _gestureLayer;
 
 		RefreshLayout _refreshLayout;
-		IVisualElementRenderer _refreshIconRenderer;
+		IVisualElementRenderer _refreshLayoutRenderer;
 
 		public RefreshViewRenderer()
 		{
 			RegisterPropertyHandler(RefreshView.RefreshColorProperty, UpdateRefreshColor);
 			RegisterPropertyHandler(RefreshView.IsRefreshingProperty, UpdateIsRefreshing);
 		}
-
 
 		RefreshView RefreshView => Element as RefreshView;
 		RefreshState RefreshState { get; set; }
@@ -193,11 +197,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		void UpdateRefreshLayout()
 		{
 			_refreshLayout = new RefreshLayout();
-			_refreshLayout.RefreshIcon.IconColor = RefreshView.RefreshColor;
-			_refreshIconRenderer = Platform.GetOrCreateRenderer(_refreshLayout);
-			(_refreshIconRenderer as LayoutRenderer).RegisterOnLayoutUpdated();
+			_refreshLayout.RefreshIconColor = RefreshView.RefreshColor;
+			_refreshLayoutRenderer = Platform.GetOrCreateRenderer(_refreshLayout);
+			(_refreshLayoutRenderer as LayoutRenderer).RegisterOnLayoutUpdated();
 
-			Control.Children.Add(_refreshIconRenderer.NativeView);
+			Control.Children.Add(_refreshLayoutRenderer.NativeView);
 			var measured = _refreshLayout.Measure(Element.Width, Element.Height);
 			var parentBound = NativeView.Geometry;
 			var bound = new Rect
@@ -208,7 +212,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				Height = Forms.ConvertToScaledPixel(measured.Request.Height)
 			};
 
-			_refreshIconRenderer.NativeView.Geometry = bound;
+			_refreshLayoutRenderer.NativeView.Geometry = bound;
 			RefreshState = RefreshState.Drag;
 		}
 
@@ -221,8 +225,7 @@ namespace Xamarin.Forms.Platform.Tizen
 					return true;
 				}
 			}
-
-			if (Platform.GetRenderer(RefreshView.Content) is ItemsViewRenderer itemsViewRenderer)
+			else if (Platform.GetRenderer(RefreshView.Content) is ItemsViewRenderer itemsViewRenderer)
 			{
 				var collectionView = itemsViewRenderer.NativeView;
 
@@ -236,16 +239,14 @@ namespace Xamarin.Forms.Platform.Tizen
 					}
 				}
 			}
-
-			if (Platform.GetRenderer(RefreshView.Content) is ListViewRenderer listViewRenderer)
+			else if (Platform.GetRenderer(RefreshView.Content) is ListViewRenderer listViewRenderer)
 			{
 				if (GetScrollYOnGenList(listViewRenderer.Control.RealHandle) == 0)
 				{
 					return true;
 				}
 			}
-
-			if (Platform.GetRenderer(RefreshView.Content) is WebViewRenderer webviewRenderer)
+			else if (Platform.GetRenderer(RefreshView.Content) is WebViewRenderer webviewRenderer)
 			{
 				if (GetScrollYOnWebView(webviewRenderer.Control.WebView) == 0)
 				{
@@ -300,7 +301,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnEnd(GestureLayer.MomentumData moment)
 		{
-			if (RefreshState == RefreshState.Drag && _refreshLayout != null && _refreshIconRenderer != null)
+			if (RefreshState == RefreshState.Drag && _refreshLayout != null && _refreshLayoutRenderer != null)
 			{
 				if (_refreshLayout.ShouldRefresh())
 				{
@@ -312,16 +313,15 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					ResetRefresh();
 				}
-
 			}
 		}
 
 		async void ResetRefresh()
 		{
 			var refreshLayout = _refreshLayout;
-			var refreshIconRenderer = _refreshIconRenderer;
+			var refreshIconRenderer = _refreshLayoutRenderer;
 			_refreshLayout = null;
-			_refreshIconRenderer = null;
+			_refreshLayoutRenderer = null;
 			await refreshLayout.ResetRefreshIcon();
 			refreshIconRenderer?.Dispose();
 			RefreshState = RefreshState.Idle;
@@ -331,7 +331,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (_refreshLayout != null)
 			{
-				_refreshLayout.RefreshIcon.IconColor = RefreshView.RefreshColor;
+				_refreshLayout.RefreshIconColor = RefreshView.RefreshColor;
 			}
 		}
 
@@ -343,9 +343,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (!RefreshView.IsRefreshing && RefreshState == RefreshState.Loading)
 			{
 				var refreshLayout = _refreshLayout;
-				var refreshIconRenderer = _refreshIconRenderer;
+				var refreshIconRenderer = _refreshLayoutRenderer;
 				_refreshLayout = null;
-				_refreshIconRenderer = null;
+				_refreshLayoutRenderer = null;
 				await refreshLayout?.Stop();
 				refreshIconRenderer?.Dispose();
 
