@@ -25,10 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		AView ITabStop.TabStop => this;
 
-		//IItemsViewSource ItemsSource;
-
 		protected IndicatorView IndicatorsView;
-		//protected SelectableItemsView SelectableItemsView => IndicatorsView.GetItemsSourceBy(IndicatorsView);
 
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -58,7 +55,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			//ExperimentalFlags.VerifyFlagEnabled(nameof(IndicatorViewRenderer), ExperimentalFlags.IndicatorViewExperimental);
 			_visualElementRenderer = new VisualElementRenderer(this);
-			
+
 		}
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -104,7 +101,6 @@ namespace Xamarin.Forms.Platform.Android
 			LabelFor = (int)(id ?? _defaultLabelFor);
 		}
 
-	
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -138,6 +134,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementChanged(ElementChangedEventArgs<IndicatorView> elementChangedEvent)
 		{
+			
+		}
+
+		void UpdateControl()
+		{
+			if (IndicatorsView.IndicatorTemplate != null)
+			{
+				var control = IndicatorsView.IndicatorLayout.GetRenderer() ?? Platform.CreateRendererWithContext(IndicatorsView.IndicatorLayout, Context);
+				AddView(control as AView);
+			}
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -188,7 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 			IndicatorsView = newElement;
 
 			IndicatorsView.PropertyChanged += OnElementPropertyChanged;
-			
+
 			if (Tracker == null)
 			{
 				_visualElementTracker = new VisualElementTracker(this);
@@ -199,7 +205,16 @@ namespace Xamarin.Forms.Platform.Android
 			this.EnsureId();
 
 			UpdateBackgroundColor();
-			UpdateItemsSource();
+
+			if (IndicatorsView.IndicatorTemplate != null)
+			{
+				var control = IndicatorsView.IndicatorLayout.GetRenderer() ?? Platform.CreateRendererWithContext(IndicatorsView.IndicatorLayout, Context);
+				AddView(control as AView);
+			}
+			else
+			{
+				UpdateItemsSource();
+			}
 
 			ElevationHelper.SetElevation(this, newElement);
 		}

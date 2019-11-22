@@ -21,8 +21,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					UpdateControl();
-				}			
+				}
 			}
+
 			if (UIPager != null)
 			{
 				UpdatePagesIndicatorTintColor();
@@ -81,7 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 		void UpdateControl()
 		{
-			var control = (Element.Visual is VisualMarker.FormsVisual)
+			var control = (Element.IndicatorTemplate != null)
 				? (UIView)Element.IndicatorLayout.GetRenderer()
 				: CreateNativeControl();
 
