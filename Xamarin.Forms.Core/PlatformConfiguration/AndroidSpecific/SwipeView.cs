@@ -4,8 +4,8 @@
 
 	public enum SwipeTransitionMode
 	{
-		Drag = -1,
-		Reveal = 0
+		Reveal = 0,
+		Drag = 1
 	}
 
 	public static class SwipeView
