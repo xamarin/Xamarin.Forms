@@ -367,7 +367,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public IEnumerable<Element> Descendants()
 		{
-			var queue = new Queue<Element>(16);
+			var queue = new FormsQueue<Element>(16);
 			queue.Enqueue(this);
 
 			while (queue.Count > 0)
@@ -453,8 +453,7 @@ namespace Xamarin.Forms
 		{
 			base.OnSetDynamicResource(property, key);
 			DynamicResources[property] = key;
-			object value;
-			if (this.TryGetResource(key, out value))
+			if (this.TryGetResource(key, out var value))
 				OnResourceChanged(property, value);
 		}
 
@@ -504,7 +503,7 @@ namespace Xamarin.Forms
 
 		internal IEnumerable<Element> VisibleDescendants()
 		{
-			var queue = new Queue<Element>(16);
+			var queue = new FormsQueue<Element>(16);
 			queue.Enqueue(this);
 
 			while (queue.Count > 0)
