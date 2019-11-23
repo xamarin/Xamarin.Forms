@@ -143,7 +143,7 @@ namespace Xamarin.Forms
 			}
 			else if (indicatorView.IndicatorLayout == null)
 			{
-				(indicatorView.IndicatorLayout as IndicatorStackLayout).Dispose();
+				(indicatorView.IndicatorLayout as IndicatorStackLayout).Remove();
 				indicatorView.IndicatorLayout = null;
 			}
 		}

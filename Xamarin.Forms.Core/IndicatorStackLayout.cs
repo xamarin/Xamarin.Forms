@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
-	internal class IndicatorStackLayout : StackLayout, IDisposable
+	internal class IndicatorStackLayout : StackLayout
 	{
 		IndicatorView _indicatorView;
 		public IndicatorStackLayout(IndicatorView indicatorView)
@@ -140,7 +140,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public void Dispose()
+		public void Remove()
 		{
 			_indicatorView.PropertyChanged -= _indicatorViewPropertyChanged;
 		}
