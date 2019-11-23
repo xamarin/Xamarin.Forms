@@ -392,7 +392,7 @@ namespace Microsoft.Windows.Shell
                 // and the window getting updated.  It's not too expensive, just always do the check.
                 return NativeMethods.DwmIsCompositionEnabled();
             }
-            set
+            private set
             {
                 if (value != _isGlassEnabled)
                 {
@@ -405,7 +405,7 @@ namespace Microsoft.Windows.Shell
         public Color WindowGlassColor
         {
             get { return _glassColor; }
-            set
+            private set
             {
                 if (value != _glassColor)
                 {
@@ -418,7 +418,7 @@ namespace Microsoft.Windows.Shell
         public SolidColorBrush WindowGlassBrush
         {
             get { return _glassColorBrush; }
-            set
+            private set
             {
                 Assert.IsNotNull(value);
                 Assert.IsTrue(value.IsFrozen);
@@ -433,7 +433,7 @@ namespace Microsoft.Windows.Shell
         public Thickness WindowResizeBorderThickness
         {
             get { return _windowResizeBorderThickness; }
-            set
+            private set
             {
                 if (value != _windowResizeBorderThickness)
                 {
@@ -446,7 +446,7 @@ namespace Microsoft.Windows.Shell
         public Thickness WindowNonClientFrameThickness
         {
             get { return _windowNonClientFrameThickness; }
-            set
+            private set
             {
                 if (value != _windowNonClientFrameThickness)
                 {
@@ -459,7 +459,7 @@ namespace Microsoft.Windows.Shell
         public double WindowCaptionHeight
         {
             get { return _captionHeight; }
-            set
+            private set
             {
                 if (value != _captionHeight)
                 {
@@ -472,7 +472,7 @@ namespace Microsoft.Windows.Shell
         public Size SmallIconSize
         {
             get { return new Size(_smallIconSize.Width, _smallIconSize.Height); }
-            set
+            private set
             {
                 if (value != _smallIconSize)
                 {
@@ -487,7 +487,7 @@ namespace Microsoft.Windows.Shell
         public string UxThemeName
         {
             get { return _uxThemeName; }
-            set
+            private set
             {
                 if (value != _uxThemeName)
                 {
@@ -502,7 +502,7 @@ namespace Microsoft.Windows.Shell
         public string UxThemeColor
         {
             get { return _uxThemeColor; }
-            set
+            private set
             {
                 if (value != _uxThemeColor)
                 {
@@ -515,7 +515,7 @@ namespace Microsoft.Windows.Shell
         public bool HighContrast
         {
             get { return _isHighContrast; }
-            set
+            private set
             {
                 if (value != _isHighContrast)
                 {
@@ -528,7 +528,7 @@ namespace Microsoft.Windows.Shell
         public CornerRadius WindowCornerRadius
         {
             get { return _windowCornerRadius; }
-            set
+            private set
             {
                 if (value != _windowCornerRadius)
                 {
@@ -541,7 +541,7 @@ namespace Microsoft.Windows.Shell
         public Rect WindowCaptionButtonsLocation
         {
             get { return _captionButtonLocation; }
-            set
+            private set
             {
                 if (value != _captionButtonLocation)
                 {
