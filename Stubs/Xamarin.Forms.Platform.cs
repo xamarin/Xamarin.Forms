@@ -170,6 +170,10 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(RefreshViewRenderer))]
 #endif
 	internal class _RefreshViewRenderer { }
+#if !TIZEN4_0
+	[RenderWith(typeof(SwipeViewRenderer))]
+#endif
+	internal class _SwipeViewRenderer { }
 }
 
 

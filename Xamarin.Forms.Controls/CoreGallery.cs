@@ -13,6 +13,7 @@ using Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries;
+using Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries;
 
 namespace Xamarin.Forms.Controls
 {
@@ -351,6 +352,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new SliderCoreGalleryPage(), "Slider Gallery"),
 				new GalleryPageFactory(() => new StepperCoreGalleryPage(), "Stepper Gallery"),
 				new GalleryPageFactory(() => new SwitchCoreGalleryPage(), "Switch Gallery"),
+				new GalleryPageFactory(() => new SwipeViewCoreGalleryPage(), "SwipeView Core Gallery"),
+				new GalleryPageFactory(() => new SwipeViewGallery(), "SwipeView Gallery"),
 				new GalleryPageFactory(() => new TableViewCoreGalleryPage(), "TableView Gallery"),
 				new GalleryPageFactory(() => new TimePickerCoreGalleryPage(), "TimePicker Gallery"),
 				new GalleryPageFactory(() => new VisualGallery(), "Visual Gallery"),
@@ -518,7 +521,7 @@ namespace Xamarin.Forms.Controls
 			if (string.IsNullOrWhiteSpace(filter))
 				ItemsSource = _pages;
 			else
-				ItemsSource = _pages.Where(p => p.Title.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1);
+				ItemsSource = _pages.Where(p => p.Title.IndexOf(filter, StringComparison.OrdinalIgnoreCase) != -1);
 		}
 	}
 	[Preserve(AllMembers = true)]
