@@ -226,20 +226,23 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			var privateFontCollection = new PrivateFontCollection();
 			privateFontCollection.AddFontFile(fontPathAndFamily[0]);
 			var fontFamily = privateFontCollection.Families.FirstOrDefault(f => f.Name.Equals(fontPathAndFamily[1], StringComparison.InvariantCultureIgnoreCase));
-			var bmp = new Bitmap((int)fontImageSource.Size, (int)fontImageSource.Size);
-
-			using (var g = Graphics.FromImage(bmp))
-			{
-				var font = new DrawingFont(fontFamily, (int)fontImageSource.Size * .5f);
-				var fontColor = fontImageSource.Color != Xamarin.Forms.Color.Default ? fontImageSource.Color : Xamarin.Forms.Color.White;
-				g.DrawString(fontImageSource.Glyph, font, new SolidBrush(fontColor), 0, 0);
-			}
-
 			Pixbuf pixbuf;
-			using (var stream = new MemoryStream())
+			using (var bmp = new Bitmap((int)fontImageSource.Size, (int)fontImageSource.Size))
 			{
-				bmp.Save(stream, ImageFormat.Jpeg);
-				pixbuf = new Pixbuf(stream.GetBuffer());
+				using (var g = Graphics.FromImage(bmp))
+				{
+					var font = new DrawingFont(fontFamily, (int)fontImageSource.Size * .5f);
+					var fontColor = fontImageSource.Color != Color.Default
+						? fontImageSource.Color
+						: Color.White;
+					g.DrawString(fontImageSource.Glyph, font, new SolidBrush(fontColor), 0, 0);
+				}
+
+				using (var stream = new MemoryStream())
+				{
+					bmp.Save(stream, ImageFormat.Jpeg);
+					pixbuf = new Pixbuf(stream.ToArray());
+				}
 			}
 
 			return Task.FromResult(pixbuf);
