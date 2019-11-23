@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_context.Shell.PropertyChanged += OnShellPropertyChanged;
 		}
 
-		protected virtual ShellTableViewSource CreateShellTableViewSource()
+		protected ShellTableViewSource CreateShellTableViewSource()
 		{
 			return new ShellTableViewSource(_context, _onElementSelected);
 		}

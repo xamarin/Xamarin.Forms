@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
-		protected virtual ShellTableViewController CreateShellTableViewController()
+		protected ShellTableViewController CreateShellTableViewController()
 		{
 			return new ShellTableViewController(_shellContext, _headerView, OnElementSelected);
 		}
