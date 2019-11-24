@@ -221,7 +221,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void PaddingAnimation(IEnumerable<ImageButton> buttons)
 		{
-			Task.Run(() =>
+			Task.Run(async () =>
 			{
 				int increment = 1;
 				int current = 0;
@@ -231,7 +231,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				while (true)
 				{
-					Thread.Sleep(sleep);
+					await Task.Delay(sleep);
 
 					if (!animation)
 						continue;

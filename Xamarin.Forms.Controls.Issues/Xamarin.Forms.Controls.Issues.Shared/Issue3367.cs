@@ -23,11 +23,11 @@ namespace Xamarin.Forms.Controls.Issues
 			var lstMessages = new ListView();
 			lstMessages.SetBinding(ListView.ItemsSourceProperty, ".");
 
-			Task.Run(() =>
+			Task.Run(async () =>
 			{
 				while (simulatedThreadEnabled)
 				{
-					Thread.Sleep(500);
+					await Task.Delay(500);
 					if (!simulateMessages)
 						continue;
 
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 					collection.Add(newItem);
 					Device.BeginInvokeOnMainThread(() => lstMessages.ScrollTo(newItem, ScrollToPosition.Start, false));
 				}
-			}).Start();
+			});
 			
 			this.Disappearing += (_, __) => simulatedThreadEnabled = false;
 
