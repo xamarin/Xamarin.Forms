@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ElmSharp;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -71,7 +72,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			Control.AllowFocus(true);
 			Control.Unfocused += (s, e) =>
 			{
-				_ = SwipeClose();
+				_ = SwipeCloseAsync();
 			};
 		}
 
@@ -103,7 +104,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				}
 
 				UpdateItems();
-				SwipeView.SendSwipeStarted(new SwipeView.SwipeStartedEventArgs(SwipeDirection));
+				((ISwipeViewController)Element).SendSwipeStarted(new SwipeStartedEventArgs(SwipeDirection));
 			}
 
 			var offset = GetSwipeOffset(moment);
@@ -134,7 +135,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				toDragBound.Y += offset;
 			}
 			Platform.GetRenderer(SwipeView.Content).NativeView.Geometry = toDragBound;
-			SwipeView.SendSwipeChanging(new SwipeView.SwipeChangingEventArgs(SwipeDirection, Forms.ConvertToScaledDP(offset)));
+			((ISwipeViewController)Element).SendSwipeChanging(new SwipeChangingEventArgs(SwipeDirection, Forms.ConvertToScaledDP(offset)));
 		}
 		async void OnEnd(GestureLayer.MomentumData moment)
 		{
@@ -143,20 +144,20 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (ShouldBeOpen(moment))
 			{
-				await SwipeOpen();
+				await SwipeOpenAsync();
 				if (CurrentItems.Mode == SwipeMode.Execute)
 				{
 					ExecuteItems(CurrentItems);
-					_ = SwipeClose();
+					_ = SwipeCloseAsync();
 				}
 			}
 			else
 			{
-				await SwipeClose();
+				await SwipeCloseAsync();
 			}
 		}
 
-		async Task SwipeOpen()
+		async Task SwipeOpenAsync()
 		{
 			var opendBound = NativeView.Geometry;
 			if (IsHorizontalSwipe)
@@ -172,7 +173,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			DrawerState = SwipeDrawerState.Opend;
 		}
 
-		async Task SwipeClose()
+		async Task SwipeCloseAsync()
 		{
 			if (SwipeDirection == 0)
 				return;
@@ -186,7 +187,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				_itemsRenderer = null;
 			}
 
-			SwipeView.SendSwipeEnded(new SwipeView.SwipeEndedEventArgs(SwipeDirection));
+			((ISwipeViewController)Element).SendSwipeEnded(new SwipeEndedEventArgs(SwipeDirection));
 			DrawerState = SwipeDrawerState.Closed;
 			SwipeDirection = 0;
 		}
@@ -254,7 +255,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					itemView = CreateItemView(switem, !IsHorizontalSwipe);
 				}
-				else if (item is CustomSwipeItem customItem)
+				else if (item is SwipeItemView customItem)
 				{
 					itemView = CreateItemView(customItem);
 				}
@@ -271,14 +272,14 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (item is SwipeItem swipeItem)
 						swipeItem.OnInvoked();
 
-					if (item is CustomSwipeItem customSwipeItem)
+					if (item is SwipeItemView customSwipeItem)
 						customSwipeItem.OnInvoked();
 
 					if (CurrentItems.SwipeBehaviorOnInvoked != SwipeBehaviorOnInvoked.RemainOpen)
 					{
 						Device.BeginInvokeOnMainThread(() =>
 						{
-							_ = SwipeClose();
+							_ = SwipeCloseAsync();
 						});
 					}
 				};
@@ -339,7 +340,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			return tcs.Task;
 		}
 
-		static View CreateItemView(CustomSwipeItem item)
+		static View CreateItemView(SwipeItemView item)
 		{
 			return new StackLayout
 			{
@@ -421,7 +422,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (item is SwipeItem swipeItem)
 					swipeItem.OnInvoked();
 
-				if (item is CustomSwipeItem customSwipeItem)
+				if (item is SwipeItemView customSwipeItem)
 					customSwipeItem.OnInvoked();
 			}
 		}
