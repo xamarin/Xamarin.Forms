@@ -2,6 +2,7 @@
 using Xamarin.Forms.Internals;
 using System.Collections.ObjectModel;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -22,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var lstMessages = new ListView();
 			lstMessages.SetBinding(ListView.ItemsSourceProperty, ".");
 
-			new Thread(() =>
+			Task.Run(() =>
 			{
 				while (simulatedThreadEnabled)
 				{
