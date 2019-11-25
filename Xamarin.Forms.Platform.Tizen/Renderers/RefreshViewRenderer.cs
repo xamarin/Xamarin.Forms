@@ -135,14 +135,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			return RefreshIcon.TranslationY > (MaximumDistance - 30);
 		}
 
-		public async Task Stop()
+		public async Task StopAsync()
 		{
 			_ = RefreshIcon.FadeTo(0);
 			await RefreshIcon.ScaleTo(0.2);
 			RefreshIcon.Stop();
 		}
 
-		public async Task ResetRefreshIcon()
+		public async Task ResetRefreshIconAsync()
 		{
 			new Animation((r) =>
 			{
@@ -311,18 +311,18 @@ namespace Xamarin.Forms.Platform.Tizen
 				}
 				else
 				{
-					ResetRefresh();
+					_ = ResetRefreshAsync();
 				}
 			}
 		}
 
-		async void ResetRefresh()
+		async Task ResetRefreshAsync()
 		{
 			var refreshLayout = _refreshLayout;
 			var refreshIconRenderer = _refreshLayoutRenderer;
 			_refreshLayout = null;
 			_refreshLayoutRenderer = null;
-			await refreshLayout.ResetRefreshIcon();
+			await refreshLayout.ResetRefreshIconAsync();
 			refreshIconRenderer?.Dispose();
 			RefreshState = RefreshState.Idle;
 		}
@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				var refreshIconRenderer = _refreshLayoutRenderer;
 				_refreshLayout = null;
 				_refreshLayoutRenderer = null;
-				await refreshLayout?.Stop();
+				await refreshLayout?.StopAsync();
 				refreshIconRenderer?.Dispose();
 
 				RefreshState = RefreshState.Idle;
