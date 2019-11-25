@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Controls.Issues
 							}
 						});
 					}
-				}).Start();
+				});
 			}
 		}
 
