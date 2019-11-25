@@ -246,6 +246,8 @@
     <Compile Include="CollectionView\CarouselTemplatedCell.cs" />
     <Compile Include="Renderers\RefreshViewRenderer.cs" />
     <Compile Include="Renderers\ShellNavBarAppearanceTracker.cs" />
+    <Compile Include="Renderers\IndicatorViewRenderer.cs" />
+    <Compile Include="Renderers\SwipeViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
