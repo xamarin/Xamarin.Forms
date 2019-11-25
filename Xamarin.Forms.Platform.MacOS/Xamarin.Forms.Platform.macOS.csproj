@@ -70,6 +70,12 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core\corefx\FormsQueue.cs">
+      <Link>corefx\FormsQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Core\corefx\FormsStack.cs">
+      <Link>corefx\FormsStack.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\LabelExtensions.cs">
       <Link>Extensions\LabelExtensions.cs</Link>
     </Compile>

@@ -180,7 +180,6 @@ namespace Xamarin.Forms
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
-			ItemSizingStrategy = ItemSizingStrategy.None;
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -195,9 +194,7 @@ namespace Xamarin.Forms
 			}
 			catch (InvalidOperationException)
 			{
-				// We'll still honor the CollectionView_Experimental flag for CarouselView stuff
-				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CollectionViewExperimental,
-					constructorHint, memberName);
+			
 			}
 		}
 
@@ -236,7 +233,7 @@ namespace Xamarin.Forms
 
 			carousel.PositionChanged?.Invoke(carousel, args);
 
-			// If the user is interacting with the Carousel or the Carousel is doing ScrollTo, we don't need to scroll to item.
+			// User is interacting with the carousel we don't need to scroll to item 
 			if (!carousel.IsDragging && !carousel.IsScrolling)
 				carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
 
@@ -248,10 +245,8 @@ namespace Xamarin.Forms
 			if (!(carouselView?.ItemsSource is IList itemSource))
 				return null;
 
-			if (index < 0 || index >= itemSource.Count)
-			{
+			if (itemSource.Count == 0)
 				return null;
-			}
 
 			return itemSource[index];
 		}
