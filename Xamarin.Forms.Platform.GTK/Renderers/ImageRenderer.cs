@@ -13,7 +13,6 @@ using DrawingFont = System.Drawing.Font;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
-
 	public class ImageRenderer : ViewRenderer<Image, Controls.ImageControl>
 	{
 		bool _isDisposed;
@@ -173,10 +172,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			Pixbuf image = null;
 
 			var streamsource = imagesource as StreamImageSource;
-			if (streamsource?.Stream == null)
-				return null;
-			using (
-				var streamImage = await ((IStreamImageSource)streamsource)
+			if (streamsource?.Stream == null) return null;
+			using (var streamImage = await ((IStreamImageSource)streamsource)
 				.GetStreamAsync(cancelationToken).ConfigureAwait(false))
 			{
 				if (streamImage != null)
@@ -221,16 +218,15 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		public Task<Pixbuf> LoadImageAsync(ImageSource imageSource,
 			CancellationToken cancellationToken = new CancellationToken(), float scale = 1)
 		{
-			var fontImageSource = imageSource as FontImageSource;
-			var fontPathAndFamily = fontImageSource.FontFamily.Split('#');
-			var privateFontCollection = new PrivateFontCollection();
-			privateFontCollection.AddFontFile(fontPathAndFamily[0]);
-			var fontFamily = privateFontCollection.Families.FirstOrDefault(f => f.Name.Equals(fontPathAndFamily[1], StringComparison.InvariantCultureIgnoreCase));
+			if (!(imageSource is FontImageSource fontImageSource))
+				return null;
+
 			Pixbuf pixbuf;
 			using (var bmp = new Bitmap((int)fontImageSource.Size, (int)fontImageSource.Size))
 			{
 				using (var g = Graphics.FromImage(bmp))
 				{
+					var fontFamily = GetFontFamily(fontImageSource);
 					var font = new DrawingFont(fontFamily, (int)fontImageSource.Size * .5f);
 					var fontColor = fontImageSource.Color != Color.Default
 						? fontImageSource.Color
@@ -246,6 +242,27 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 
 			return Task.FromResult(pixbuf);
+		}
+
+		static FontFamily GetFontFamily(FontImageSource fontImageSource)
+		{
+			var privateFontCollection = new PrivateFontCollection();
+			FontFamily fontFamily;
+			if (fontImageSource.FontFamily.Contains("#"))
+			{
+				var fontPathAndFamily = fontImageSource.FontFamily.Split('#');
+				privateFontCollection.AddFontFile(fontPathAndFamily[0]);
+				fontFamily = fontPathAndFamily.Length > 1 ?
+					privateFontCollection.Families.FirstOrDefault(f => f.Name.Equals(fontPathAndFamily[1], StringComparison.InvariantCultureIgnoreCase)) ?? privateFontCollection.Families[0] : 
+					privateFontCollection.Families[0];
+			}
+			else
+			{
+				privateFontCollection.AddFontFile(fontImageSource.FontFamily);
+				fontFamily = privateFontCollection.Families[0];
+			}
+
+			return fontFamily;
 		}
 	}
 }
