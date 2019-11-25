@@ -249,6 +249,7 @@ namespace Xamarin.Forms.Platform.WPF
 				string updatedText = Obfuscate(updatedRealText);
 				var savedSelectionStart = SelectionStart;
 
+				_internalChangeFlag = true;
 				if (Text != updatedRealText)
 					Text = updatedRealText;
 
@@ -256,6 +257,7 @@ namespace Xamarin.Forms.Platform.WPF
 					base.Text = updatedText;
 
 				SelectionStart = savedSelectionStart;
+				_internalChangeFlag = false;
 			}
 			else if (base.Text != Text)
 			{
