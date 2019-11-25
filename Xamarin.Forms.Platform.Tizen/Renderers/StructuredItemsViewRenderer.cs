@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(StructuredItemsView.ItemsLayoutProperty, UpdateItemsLayout);
 			RegisterPropertyHandler(SelectableItemsView.SelectedItemProperty, UpdateSelectedItem);
 			RegisterPropertyHandler(SelectableItemsView.SelectionModeProperty, UpdateSelectionMode);
+			RegisterPropertyHandler(StructuredItemsView.ItemSizingStrategyProperty, UpdateSizingStrategy);
 		}
 
 		protected override Native.CollectionView CreateNativeControl(ElmSharp.EvasObject parent)
@@ -32,6 +33,15 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				selectableItemsView.SelectedItem = e.SelectedItem;
 			}
+		}
+
+		protected void UpdateSizingStrategy(bool initialize)
+		{
+			if (initialize)
+			{
+				return;
+			}
+			UpdateItemsLayout();
 		}
 
 		void UpdateSelectedItem(bool initialize)

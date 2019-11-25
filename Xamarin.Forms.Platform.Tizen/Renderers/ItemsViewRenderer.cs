@@ -17,7 +17,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			RegisterPropertyHandler(ItemsView.ItemsSourceProperty, UpdateItemsSource);
 			RegisterPropertyHandler(ItemsView.ItemTemplateProperty, UpdateAdaptor);
-			RegisterPropertyHandler(ItemsView.ItemSizingStrategyProperty, UpdateSizingStrategy);
 		}
 
 		protected abstract TNative CreateNativeControl(ElmSharp.EvasObject parent);
@@ -63,19 +62,17 @@ namespace Xamarin.Forms.Platform.Tizen
 			ItemsLayout = GetItemsLayout();
 			if (ItemsLayout != null)
 			{
-				Control.LayoutManager = ItemsLayout.ToLayoutManager(Element.ItemSizingStrategy);
+				if (Element is CollectionView)
+				{
+					Control.LayoutManager = ItemsLayout.ToLayoutManager((Element as CollectionView).ItemSizingStrategy);
+				}
+				else
+				{
+					Control.LayoutManager = ItemsLayout.ToLayoutManager(ItemSizingStrategy.MeasureFirstItem);
+				}
 				Control.SnapPointsType = ((ItemsLayout)ItemsLayout)?.SnapPointsType ?? SnapPointsType.None;
 				ItemsLayout.PropertyChanged += OnLayoutPropertyChanged;
 			}
-		}
-
-		protected void UpdateSizingStrategy(bool initialize)
-		{
-			if (initialize)
-			{
-				return;
-			}
-			UpdateItemsLayout();
 		}
 
 		protected virtual void OnLayoutPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
