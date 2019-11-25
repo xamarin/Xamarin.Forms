@@ -78,7 +78,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var oldElement = VisualElementRenderer?.Element;
 
-			if (template != _currentTemplate)
+			var itemTemplate = template;
+
+			// Run this through the extension method in case it's really a DataTemplateSelector
+			itemTemplate = itemTemplate.SelectDataTemplate(bindingContext, itemsView);
+
+			if (itemTemplate != _currentTemplate)
 			{
 				// Remove the old view, if it exists
 				if (oldElement != null)
@@ -90,7 +95,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				// Create the content and renderer for the view 
-				var view = template.CreateContent() as View;
+				var view = itemTemplate.CreateContent() as View;
 				var renderer = TemplateHelpers.CreateRenderer(view);
 				SetRenderer(renderer);
 			}
@@ -101,7 +106,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (currentElement != null)
 				currentElement.BindingContext = bindingContext;
 
-			if (template != _currentTemplate)
+			if (itemTemplate != _currentTemplate)
 			{
 				// And make the Element a "child" of the ItemsView
 				// We deliberately do this _after_ setting the binding context for the new element;
@@ -110,7 +115,7 @@ namespace Xamarin.Forms.Platform.iOS
 				itemsView.AddLogicalChild(currentElement);
 			}
 
-			_currentTemplate = template;
+			_currentTemplate = itemTemplate;
 		}
 
 		void SetRenderer(IVisualElementRenderer renderer)
