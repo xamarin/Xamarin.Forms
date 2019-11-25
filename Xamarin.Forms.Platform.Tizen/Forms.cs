@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -10,10 +11,16 @@ using Tizen.Applications;
 using TSystemInfo = Tizen.System.Information;
 using ELayout = ElmSharp.Layout;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
-using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
+	public enum StaticRegistrarStrategy
+	{
+		None,
+		StaticRegistrarOnly,
+		All,
+	}
+
 	public struct InitializationOptions
 	{
 		public struct EffectScope
@@ -40,12 +47,22 @@ namespace Xamarin.Forms
 			Assemblies = assemblies;
 		}
 
+		public void UseStaticRegistrar(StaticRegistrarStrategy strategy, Dictionary<Type, Type> customHandlers=null, bool disableCss=false)
+		{
+			StaticRegistarStrategy = strategy;
+			CustomHandlers = customHandlers;
+			if (disableCss) // about 10ms
+				Flags = InitializationFlags.DisableCss;
+		}
+
 		public CoreApplication Context;
 		public bool UseDeviceIndependentPixel;
 		public HandlerAttribute[] Handlers;
+		public Dictionary<Type, Type> CustomHandlers; // for static registers
 		public Assembly[] Assemblies;
 		public EffectScope[] EffectScopes;
 		public InitializationFlags Flags;
+		public StaticRegistrarStrategy StaticRegistarStrategy;
 	}
 
 	public static class Forms
@@ -155,6 +172,8 @@ namespace Xamarin.Forms
 
 		static bool _useDeviceIndependentPixel = false;
 
+		static StaticRegistrarStrategy s_staticRegistrarStrategy = StaticRegistrarStrategy.None;
+
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
 		public static CoreApplication Context
@@ -177,6 +196,8 @@ namespace Xamarin.Forms
 		}
 
 		public static DeviceOrientation NaturalOrientation => s_naturalOrientation.Value;
+
+		public static StaticRegistrarStrategy StaticRegistrarStrategy => s_staticRegistrarStrategy;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{
@@ -215,6 +236,114 @@ namespace Xamarin.Forms
 			TitleBarVisibility = visibility;
 		}
 
+		public static TOut GetHandler<TOut>(Type type, params object[] args) where TOut : class, IRegisterable
+		{
+			if (s_staticRegistrarStrategy == StaticRegistrarStrategy.None)
+			{
+				// Find hander in internal registrar, that is using reflection (default).
+				return Registrar.Registered.GetHandler<TOut>(type, args);
+			}
+			else
+			{
+				if (s_staticRegistrarStrategy == StaticRegistrarStrategy.StaticRegistrarOnly)
+				{
+					TOut ret = StaticRegistrar.Registered.GetHandler<TOut>(type, args);
+					if (ret == null)
+					{
+						// In case of using static registrar only, the page or layout defined in the app cannot be specified,
+						// so you should allow to use fallback handler.
+						ret = StaticRegistrar.Registered.GetFallbackHandler<TOut>(type, args);
+					}
+					return ret;
+				}
+				else
+				{
+					// 1. Find hander in static registrar first without fallback handler.
+					TOut ret = StaticRegistrar.Registered.GetHandler<TOut>(type, args);
+					if (ret == null)
+					{
+						// 2. Find hander in internal registrar, that is using reflection.
+						ret = Registrar.Registered.GetHandler<TOut>(type, args);
+						if (ret == null)
+						{
+							// 3. Find fallback hander in static registrar.
+							ret = StaticRegistrar.Registered.GetFallbackHandler<TOut>(type, args);
+						}
+					}
+					return ret;
+				}
+			}
+		}
+
+		public static TOut GetHandlerForObject<TOut>(object obj) where TOut : class, IRegisterable
+		{
+			if (s_staticRegistrarStrategy == StaticRegistrarStrategy.None)
+			{
+				// Find hander in internal registrar, that is using reflection (default).
+				return Registrar.Registered.GetHandlerForObject<TOut>(obj);
+			}
+			else
+			{
+				if (s_staticRegistrarStrategy == StaticRegistrarStrategy.StaticRegistrarOnly)
+				{
+					// In case of using static registrar only, the page or layout defined in the app cannot be specified,
+					// so you should allow to use fallback handler.
+					return StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, true);
+				}
+				else
+				{
+					// 1. Find hander in static registrar first without fallback handler.
+					TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, false);
+
+					if (ret == null)
+					{
+						// 2. Find hander in internal registrar, that is using reflection.
+						ret = Registrar.Registered.GetHandlerForObject<TOut>(obj);
+						if (ret == null)
+						{
+							// 3. Find fallback hander in static registrar.
+							ret = StaticRegistrar.Registered.GetFallbackHandlerForObject<TOut>(obj);
+						}
+					}
+					return ret;
+				}
+			}
+		}
+
+		public static TOut GetHandlerForObject<TOut>(object obj, params object[] args) where TOut : class, IRegisterable
+		{
+			if (s_staticRegistrarStrategy == StaticRegistrarStrategy.None)
+			{
+				// Find hander in internal registrar, that is using reflection (default).
+				return Registrar.Registered.GetHandlerForObject<TOut>(obj, args);
+			}
+			else
+			{
+				if (s_staticRegistrarStrategy == StaticRegistrarStrategy.StaticRegistrarOnly)
+				{
+					// In case of using static registrar only, the page or layout defined in the app cannot be specified,
+					// so you should allow to use fallback handler.
+					return StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, true, args);
+				}
+				else
+				{
+					// 1. Find hander in static registrar first without fallback handler.
+					TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, false, args);
+					if (ret == null)
+					{
+						// 2. Find hander in internal registrar, that is using reflection.
+						ret = Registrar.Registered.GetHandlerForObject<TOut>(obj, args);
+						if (ret == null)
+						{
+							// 3. Find fallback hander in static registrar.
+							ret = StaticRegistrar.Registered.GetFallbackHandlerForObject<TOut>(obj, args);
+						}
+					}
+					return ret;
+				}
+			}
+		}
+
 		public static void Init(CoreApplication application)
 		{
 			Init(application, false);
@@ -242,6 +371,7 @@ namespace Xamarin.Forms
 				{
 					TizenSynchronizationContext.Initialize();
 				}
+
 				Elementary.Initialize();
 				Elementary.ThemeOverlay();
 			}
@@ -263,7 +393,7 @@ namespace Xamarin.Forms
 					var options = maybeOptions.Value;
 					_useDeviceIndependentPixel = options.UseDeviceIndependentPixel;
 
-					if (options.Assemblies != null)
+					if (options.Assemblies != null && options.Assemblies.Length > 0)
 					{
 						TizenPlatformServices.AppDomain.CurrentDomain.AddAssemblies(options.Assemblies);
 					}
@@ -275,13 +405,38 @@ namespace Xamarin.Forms
 					}
 					else
 					{
-						Registrar.RegisterAll(new Type[]
+						// Add Xamarin.Forms.Core assembly by default to apply the styles.
+						TizenPlatformServices.AppDomain.CurrentDomain.AddAssembly(Assembly.GetAssembly(typeof(Xamarin.Forms.View)));
+
+						// static registrar
+						if (options.StaticRegistarStrategy != StaticRegistrarStrategy.None)
 						{
-							typeof(ExportRendererAttribute),
-							typeof(ExportImageSourceHandlerAttribute),
-							typeof(ExportCellAttribute),
-							typeof(ExportHandlerAttribute)
-						});
+								s_staticRegistrarStrategy = options.StaticRegistarStrategy;
+								StaticRegistrar.RegisterHandlers(options.CustomHandlers);
+
+								if (options.StaticRegistarStrategy == StaticRegistrarStrategy.All)
+								{
+									Registrar.RegisterAll(new Type[]
+									{
+										typeof(ExportRendererAttribute),
+										typeof(ExportImageSourceHandlerAttribute),
+										typeof(ExportCellAttribute),
+										typeof(ExportHandlerAttribute)
+									});
+									return;
+								}
+						}
+						else
+						{
+							Registrar.RegisterAll(new Type[]
+							{
+								typeof(ExportRendererAttribute),
+								typeof(ExportImageSourceHandlerAttribute),
+								typeof(ExportCellAttribute),
+								typeof(ExportHandlerAttribute)
+							});
+							return;
+						}
 					}
 
 					// effects
@@ -307,6 +462,7 @@ namespace Xamarin.Forms
 					// The list of assemblies returned by AppDomain.GetAssemblies() method should be registered manually.
 					// The assembly of the executing application and referenced assemblies of it are added into the list here.
 					TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
+
 					Registrar.RegisterAll(new Type[]
 					{
 						typeof(ExportRendererAttribute),
@@ -446,7 +602,6 @@ namespace Xamarin.Forms
 		{
 			return s_profile.Value;
 		}
-
 
 		// for internal use only
 		[EditorBrowsable(EditorBrowsableState.Never)]
