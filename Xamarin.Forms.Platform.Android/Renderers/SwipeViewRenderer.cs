@@ -202,6 +202,12 @@ namespace Xamarin.Forms.Platform.Android
 					_actionView.Dispose();
 					_actionView = null;
 				}
+
+				if(_initialPoint != null)
+				{
+					_initialPoint.Dispose();
+					_initialPoint = null;
+				}
 			}
 
 			_isDisposed = true;
@@ -212,24 +218,43 @@ namespace Xamarin.Forms.Platform.Android
 		public override bool OnTouchEvent(MotionEvent e)
 		{
 			base.OnTouchEvent(e);
-
-			var density = Resources.DisplayMetrics.Density;
-			float x = Math.Abs((_downX - e.GetX()) / density);
-			float y = Math.Abs((_downY - e.GetY()) / density);
+   
+			float x = Math.Abs((_downX - e.GetX()) / _density);
+			float y = Math.Abs((_downY - e.GetY()) / _density);
 
 			if (e.Action != MotionEventActions.Move | (x > 10f || y > 10f))
 			{
 				_detector.OnTouchEvent(e);
 			}
-
+   
 			ProcessSwipingInteractions(e);
 
 			return true;
 		}
 
-		public override bool OnInterceptTouchEvent(MotionEvent ev)
+		public override bool OnInterceptTouchEvent(MotionEvent e)
 		{
-			return true;
+			switch (e.Action)
+			{
+				case MotionEventActions.Down:
+					_downX = e.RawX;
+					_downY = e.RawY;
+					_initialPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
+					break;
+				case MotionEventActions.Move:
+					float x = Math.Abs((_downX - e.GetX()) / _density);
+					float y = Math.Abs((_downY - e.GetY()) / _density);
+	 
+					if (x > 10f || y > 10f)
+						ProcessSwipingInteractions(e);
+					break;
+				case MotionEventActions.Cancel:
+				case MotionEventActions.Up:
+					ProcessSwipingInteractions(e);
+					break;
+			}
+
+			return false;
 		}
 
 		public bool OnDown(MotionEvent e)
