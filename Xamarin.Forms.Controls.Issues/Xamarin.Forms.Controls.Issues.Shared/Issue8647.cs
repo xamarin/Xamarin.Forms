@@ -70,23 +70,5 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public static implicit operator Item(string value) => new Item { Value = value };
 		}
-
-#if UITEST && __IOS__
-
-		[Test]
-		public void Issue8647CollectionViewGrouping()
-		{
-			RunningApp.WaitForElement(ButtonId, "Timed out waiting for first page.");
-			try
-			{
-				RunningApp.Tap(ButtonId);
-			}
-			catch (Exception e)
-			{
-				throw;
-			}
-//			RunningApp.WaitForElement(ButtonId, "Timed out waiting to navigate back to the first page.");
-		}
-#endif
 	}
 }
