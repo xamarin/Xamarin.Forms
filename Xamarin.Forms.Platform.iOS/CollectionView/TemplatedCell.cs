@@ -68,10 +68,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var oldElement = VisualElementRenderer?.Element;
 
-			var itemTemplate = template;
-
 			// Run this through the extension method in case it's really a DataTemplateSelector
-			itemTemplate = itemTemplate.SelectDataTemplate(bindingContext, itemsView);
+			var itemTemplate = template.SelectDataTemplate(bindingContext, itemsView);
 
 			if (itemTemplate != _currentTemplate)
 			{
