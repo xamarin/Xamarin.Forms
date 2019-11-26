@@ -13,7 +13,6 @@ using Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries;
-using Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery;
 
 namespace Xamarin.Forms.Controls
