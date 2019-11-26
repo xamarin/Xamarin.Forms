@@ -245,33 +245,15 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				if (s_staticRegistrarStrategy == StaticRegistrarStrategy.StaticRegistrarOnly)
+				// 1. Find hander in static registrar first
+				TOut ret = StaticRegistrar.Registered.GetHandler<TOut>(type, args);
+
+				// 2. If there is no handler, try to find hander in internal registrar, that is using reflection.
+				if (ret == null && s_staticRegistrarStrategy == StaticRegistrarStrategy.All)
 				{
-					TOut ret = StaticRegistrar.Registered.GetHandler<TOut>(type, args);
-					if (ret == null)
-					{
-						// In case of using static registrar only, the page or layout defined in the app cannot be specified,
-						// so you should allow to use fallback handler.
-						ret = StaticRegistrar.Registered.GetFallbackHandler<TOut>(type, args);
-					}
-					return ret;
+					ret = Registrar.Registered.GetHandler<TOut>(type, args);
 				}
-				else
-				{
-					// 1. Find hander in static registrar first without fallback handler.
-					TOut ret = StaticRegistrar.Registered.GetHandler<TOut>(type, args);
-					if (ret == null)
-					{
-						// 2. Find hander in internal registrar, that is using reflection.
-						ret = Registrar.Registered.GetHandler<TOut>(type, args);
-						if (ret == null)
-						{
-							// 3. Find fallback hander in static registrar.
-							ret = StaticRegistrar.Registered.GetFallbackHandler<TOut>(type, args);
-						}
-					}
-					return ret;
-				}
+				return ret;
 			}
 		}
 
@@ -284,29 +266,15 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				if (s_staticRegistrarStrategy == StaticRegistrarStrategy.StaticRegistrarOnly)
-				{
-					// In case of using static registrar only, the page or layout defined in the app cannot be specified,
-					// so you should allow to use fallback handler.
-					return StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, true);
-				}
-				else
-				{
-					// 1. Find hander in static registrar first without fallback handler.
-					TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, false);
+				// 1. Find hander in static registrar first
+				TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj);
 
-					if (ret == null)
-					{
-						// 2. Find hander in internal registrar, that is using reflection.
-						ret = Registrar.Registered.GetHandlerForObject<TOut>(obj);
-						if (ret == null)
-						{
-							// 3. Find fallback hander in static registrar.
-							ret = StaticRegistrar.Registered.GetFallbackHandlerForObject<TOut>(obj);
-						}
-					}
-					return ret;
+				// 2. If there is no handler, try to find hander in internal registrar, that is using reflection.
+				if (ret == null && s_staticRegistrarStrategy == StaticRegistrarStrategy.All)
+				{
+					ret = Registrar.Registered.GetHandlerForObject<TOut>(obj);
 				}
+				return ret;
 			}
 		}
 
@@ -319,28 +287,15 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				if (s_staticRegistrarStrategy == StaticRegistrarStrategy.StaticRegistrarOnly)
+				// 1. Find hander in static registrar first without fallback handler.
+				TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, args);
+
+				// 2. If there is no handler, try to find hander in internal registrar, that is using reflection.
+				if (ret == null && s_staticRegistrarStrategy == StaticRegistrarStrategy.All)
 				{
-					// In case of using static registrar only, the page or layout defined in the app cannot be specified,
-					// so you should allow to use fallback handler.
-					return StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, true, args);
+					ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, args);
 				}
-				else
-				{
-					// 1. Find hander in static registrar first without fallback handler.
-					TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, false, args);
-					if (ret == null)
-					{
-						// 2. Find hander in internal registrar, that is using reflection.
-						ret = Registrar.Registered.GetHandlerForObject<TOut>(obj, args);
-						if (ret == null)
-						{
-							// 3. Find fallback hander in static registrar.
-							ret = StaticRegistrar.Registered.GetFallbackHandlerForObject<TOut>(obj, args);
-						}
-					}
-					return ret;
-				}
+				return ret;
 			}
 		}
 

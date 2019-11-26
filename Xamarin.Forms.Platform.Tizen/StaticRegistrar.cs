@@ -20,62 +20,39 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public TOut GetHandler<TOut>(Type type, params object[] args) where TOut : class, TRegistrable
 		{
-			if (_handlers.TryGetValue(type, out Type handlerType))
+			if (LookupHandlerType(type, out Type handlerType))
 			{
 				object handler = Activator.CreateInstance(handlerType, args);
 				return (TRegistrable)handler as TOut;
 			}
 			Log.Error("No handler could be found for that type :" + type);
 			return null;
+
 		}
 
-		public TOut GetFallbackHandler<TOut>(Type type, params object[] args) where TOut : class, TRegistrable
+		public bool LookupHandlerType(Type viewType, out Type handlerType)
 		{
-			if (type.IsSubclassOf(typeof(Page)))
+			while (viewType != null && viewType != typeof(Element))
 			{
-				return GetHandler<TOut>(typeof(Page), args);
+				if (_handlers.TryGetValue(viewType, out handlerType))
+					return true;
+
+				viewType = viewType.GetTypeInfo().BaseType;
 			}
-			else if (type.IsSubclassOf(typeof(Layout)))
-			{
-				return GetHandler<TOut>(typeof(Layout), args);
-			}
-			Log.Error("No fallback handler could be found for that type :" + type);
-			return null;
+			handlerType = null;
+			return false;
 		}
 
-		public TOut GetHandlerForObject<TOut>(object obj, bool allowFallback = true) where TOut : class, TRegistrable
+		public TOut GetHandlerForObject<TOut>(object obj) where TOut : class, TRegistrable
 		{
-			return GetHandlerForObject<TOut>(obj, allowFallback, null);
+			return GetHandlerForObject<TOut>(obj, null);
 		}
 
-		public TOut GetHandlerForObject<TOut>(object obj, bool allowFallback ,params object[] args) where TOut : class, TRegistrable
+		public TOut GetHandlerForObject<TOut>(object obj, params object[] args) where TOut : class, TRegistrable
 		{
 			var reflectableType = obj as IReflectableType;
 			var type = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : obj.GetType();
-
-			if (_handlers.ContainsKey(type))
-			{
-				return GetHandler<TOut>(type, args);
-			}
-			else if (allowFallback)
-			{
-				return GetFallbackHandlerForObject<TOut>(obj, args);
-			}
-			return null;
-		}
-
-		public TOut GetFallbackHandlerForObject<TOut>(object obj, params object[] args) where TOut : class, TRegistrable
-		{
-			if (obj is Page)
-			{
-				return GetHandler<TOut>(typeof(Page), args);
-			}
-			else if (obj is Layout)
-			{
-				return GetHandler<TOut>(typeof(Layout), args);
-			}
-			Log.Error("No fallback handler could be found for that type :" + obj.GetType());
-			return null;
+			return GetHandler<TOut>(type, args);
 		}
 	}
 
