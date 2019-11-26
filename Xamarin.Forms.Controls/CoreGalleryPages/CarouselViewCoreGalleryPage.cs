@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Controls
 				items.Add(new CarouselData
 				{
 					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
-					Name = DateTime.Now.AddDays(n).ToLongDateString()
+					Name = DateTime.Now.AddDays(n).ToString("D")
 				});
 			}
 

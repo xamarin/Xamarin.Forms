@@ -185,9 +185,7 @@ namespace Xamarin.Forms
 			}
 			catch (InvalidOperationException)
 			{
-				// We'll still honor the CollectionView_Experimental flag for CarouselView stuff
-				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CollectionViewExperimental,
-					constructorHint, memberName);
+			
 			}
 		}
 
@@ -238,10 +236,8 @@ namespace Xamarin.Forms
 			if (!(carouselView?.ItemsSource is IList itemSource))
 				return null;
 
-			if (index < 0 || index >= itemSource.Count)
-			{
+			if (itemSource.Count == 0)
 				return null;
-			}
 
 			return itemSource[index];
 		}
