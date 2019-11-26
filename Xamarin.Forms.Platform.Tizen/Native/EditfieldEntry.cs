@@ -11,7 +11,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		ELayout _editfieldLayout;
 		bool _enableClearButton;
 		int _heightPadding = 0;
-		EColor _defaultClearButtonColor = EColor.FromRgb(33, 33, 33); // from material color guide(OnSurface)
 
 		public EditfieldEntry(EvasObject parent) : base(parent)
 		{
@@ -55,12 +54,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public EColor ClearButtonColor
 		{
-			get => _clearButton?.Color ?? EColor.Default;
+			get => _clearButton?.GetPartColor("icon") ?? EColor.Default;
 			set
 			{
 				if (_clearButton != null)
 				{
-					_clearButton.Color = value;
+					_clearButton.SetPartColor("icon", value);
+					_clearButton.SetPartColor("icon_pressed", value);
 				}
 			}
 		}
@@ -184,7 +184,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 				_editfieldLayout.SetPartContent("elm.swallow.button", _clearButton);
 				_editfieldLayout.SignalEmit("elm,action,show,button", "");
-				_clearButton.Color = _defaultClearButtonColor;
 			}
 			else
 			{
