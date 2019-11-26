@@ -64,16 +64,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return preferredAttributes;
 		}
 
-		public void Bind(ItemsView itemsView, object bindingContext)
-		{
-			var template = itemsView.ItemTemplate;
-
-			// Run this through the extension method in case it's really a DataTemplateSelector
-			template = template.SelectDataTemplate(bindingContext, itemsView);
-
-			Bind(template, bindingContext, itemsView);
-		}
-
 		public void Bind(DataTemplate template, object bindingContext, ItemsView itemsView)
 		{
 			var oldElement = VisualElementRenderer?.Element;
