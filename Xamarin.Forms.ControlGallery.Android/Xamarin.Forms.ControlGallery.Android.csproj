@@ -320,7 +320,7 @@
       <Version>3.0.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Build.Download">
-      <Version>0.4.9</Version>
+      <Version>0.4.11</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Firebase.AppIndexing">
       <Version>71.1602.0</Version>
