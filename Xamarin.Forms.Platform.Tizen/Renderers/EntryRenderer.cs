@@ -277,7 +277,6 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (Control is Native.EditfieldEntry editfieldEntry)
 				{
 					editfieldEntry.EnableClearButton = false;
-					;
 				}
 			}
 		}
