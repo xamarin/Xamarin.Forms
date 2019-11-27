@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		public event EventHandler LayoutFocused;
 		public event EventHandler LayoutUnfocused;
 
-		public bool IsTextBlockFocused { get; private set; } = false;
+		public bool IsTextBlockFocused { get; private set; }
 
 		public override EColor BackgroundColor
 		{
