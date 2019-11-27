@@ -107,6 +107,10 @@
 	{
 	}
 
+	internal class _IndicatorViewRenderer
+	{
+	}
+
 	internal class _OpenGLViewRenderer
 	{
 	}
@@ -132,6 +136,10 @@
 	}
 
 	internal class _MediaElementRenderer
+  {
+	}
+   
+  internal class _SwipeViewRenderer
 	{
 	}
 }

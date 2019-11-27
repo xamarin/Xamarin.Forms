@@ -1,10 +1,9 @@
-using System;
 using System.ComponentModel;
 using Android.Content;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class SelectableItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> : ItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> 
+	public class SelectableItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> : StructuredItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> 
 		where TItemsView : SelectableItemsView
 		where TAdapter : SelectableItemsViewAdapter<TItemsView, TItemsViewSource>
 		where TItemsViewSource : IItemsViewSource

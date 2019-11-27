@@ -13,14 +13,14 @@ namespace Xamarin.Forms.Controls
 
 			for (int n = 0; n < 1000; n++)
 			{
-				items.Add(DateTime.Now.AddDays(n).ToLongDateString());
+				items.Add(DateTime.Now.AddDays(n).ToString("D"));
 			}
 
 			element.ItemsSource = items;
 
 			element.HeightRequest = 250;
 
-			element.ItemsLayout = ListItemsLayout.Vertical;
+			element.ItemsLayout = LinearItemsLayout.Vertical;
 		}
 	}
 }

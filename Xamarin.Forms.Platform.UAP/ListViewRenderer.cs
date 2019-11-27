@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -117,8 +118,8 @@ namespace Xamarin.Forms.Platform.UWP
 		bool IsObservableCollection(object source)
 		{
 			var type = source.GetType();
-			return type.IsGenericType &&
-				   type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
+			return type.GetTypeInfo().IsGenericType &&
+				type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
 		}
 
 		void ReloadData()
@@ -774,7 +775,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
-			if (Element.SelectedItem != List.SelectedItem)
+			bool areEqual = false;
+
+			if (Element.SelectedItem != null && Element.SelectedItem.GetType().GetTypeInfo().IsValueType)
+				areEqual = Element.SelectedItem.Equals(List.SelectedItem);
+			else
+				areEqual = Element.SelectedItem == List.SelectedItem;
+
+			if (!areEqual)
 			{
 				if (_itemWasClicked)
 					List.SelectedItem = Element.SelectedItem;

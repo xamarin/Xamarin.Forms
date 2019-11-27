@@ -174,12 +174,17 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTabBarItem();
 		}
 
+		protected virtual IShellSectionRootRenderer CreateShellSectionRootRenderer(ShellSection shellSection, IShellContext shellContext)
+		{
+			return new ShellSectionRootRenderer(shellSection, shellContext);
+		}
+
 		protected virtual void LoadPages()
 		{
-			_renderer = new ShellSectionRootRenderer(ShellSection, _context);
+			_renderer = CreateShellSectionRootRenderer(ShellSection, _context);
 
 			PushViewController(_renderer.ViewController, false);
-
+			
 			var stack = ShellSection.Stack;
 			for (int i = 1; i < stack.Count; i++)
 			{
@@ -202,8 +207,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_displayedPage != null)
 			{
 				_displayedPage.PropertyChanged += OnDisplayedPagePropertyChanged;
-				if (!ShellSection.Stack.Contains(_displayedPage))
-					UpdateNavigationBarHidden();
+				UpdateNavigationBarHidden();
+				UpdateNavigationBarHasShadow();
 			}
 		}
 
@@ -372,6 +377,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
 				UpdateNavigationBarHidden();
+			else if (e.PropertyName == Shell.NavBarHasShadowProperty.PropertyName)
+				UpdateNavigationBarHasShadow();
 		}
 
 		void PushPage(Page page, bool animated, TaskCompletionSource<bool> completionSource = null)
@@ -398,10 +405,14 @@ namespace Xamarin.Forms.Platform.iOS
 				throw new ArgumentNullException(nameof(popTask));
 			}
 
+			var poppedPage = _shellSection.Stack[_shellSection.Stack.Count - 1];
+
+			// this is used to setup appearance changes based on the incoming page
+			((IShellSectionController)_shellSection).SendPopping(poppedPage);
+
 			await popTask;
 
-			var poppedPage = _shellSection.Stack[_shellSection.Stack.Count - 1];
-			((IShellSectionController)_shellSection).SendPopped();
+			((IShellSectionController)_shellSection).SendPopped(poppedPage);
 			DisposePage(poppedPage);
 		}
 
@@ -412,7 +423,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var shellContent = shellSection?.CurrentItem;
 			var stack = shellSection?.Stack.ToList();
 
-			stack.RemoveAt(stack.Count - 1);
+			stack?.RemoveAt(stack.Count - 1);
 
 			return ((IShellController)_context.Shell).ProposeNavigation(ShellNavigationSource.Pop, shellItem, shellSection, shellContent, stack, true);
 		}
@@ -420,6 +431,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateNavigationBarHidden()
 		{
 			SetNavigationBarHidden(!Shell.GetNavBarIsVisible(_displayedPage), true);
+		}
+
+		void UpdateNavigationBarHasShadow()
+		{
+			_appearanceTracker.SetHasShadow(this, Shell.GetNavBarHasShadow(_displayedPage));
 		}
 
 		void UpdateShadowImages()

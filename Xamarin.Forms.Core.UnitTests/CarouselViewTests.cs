@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[SetUp]
 		public override void Setup()
 		{
-			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
+			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
 			base.Setup();
 			var mockDeviceInfo = new TestDeviceInfo();
 			Device.Info = mockDeviceInfo;
@@ -33,7 +33,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull(carouselView.ItemTemplate);
 			Assert.IsNotNull(carouselView.ItemsLayout);
 			Assert.IsTrue(carouselView.Position == 0);
-			Assert.IsTrue(carouselView.ItemSizingStrategy == ItemSizingStrategy.None);
 		}
 
 		[Test]

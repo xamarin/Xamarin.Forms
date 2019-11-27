@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
 using Xamarin.Forms.Platform;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
@@ -153,18 +156,46 @@ namespace Xamarin.Forms
 			set => SetValue(PositionChangedCommandParameterProperty, value);
 		}
 
+		public static readonly BindableProperty ItemsLayoutProperty =
+			BindableProperty.Create(nameof(ItemsLayout), typeof(LinearItemsLayout), typeof(ItemsView),
+				LinearItemsLayout.CarouselDefault);
+
+		public LinearItemsLayout ItemsLayout
+		{
+			get => (LinearItemsLayout)GetValue(ItemsLayoutProperty);
+			set => SetValue(ItemsLayoutProperty, value);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IsScrolling { get; set; }
+
 		public event EventHandler<CurrentItemChangedEventArgs> CurrentItemChanged;
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
 
 		public CarouselView()
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CarouselView));
-			ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
+			VerifyCarouselViewFlagEnabled(constructorHint: nameof(CarouselView));
+			ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
-			ItemSizingStrategy = ItemSizingStrategy.None;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void VerifyCarouselViewFlagEnabled(
+			string constructorHint = null,
+			[CallerMemberName] string memberName = "")
+		{
+			try
+			{
+				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CarouselViewExperimental,
+					constructorHint, memberName);
+			}
+			catch (InvalidOperationException)
+			{
+			
+			}
 		}
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)
@@ -173,6 +204,13 @@ namespace Xamarin.Forms
 
 		protected virtual void OnCurrentItemChanged(EventArgs args)
 		{
+		}
+
+		protected override void OnScrolled(ItemsViewScrolledEventArgs e)
+		{
+			CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
+
+			base.OnScrolled(e);
 		}
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -195,11 +233,22 @@ namespace Xamarin.Forms
 
 			carousel.PositionChanged?.Invoke(carousel, args);
 
-			//user is interacting with the carousel we don't need to scroll to item 
-			if (!carousel.IsDragging)
+			// User is interacting with the carousel we don't need to scroll to item 
+			if (!carousel.IsDragging && !carousel.IsScrolling)
 				carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
 
 			carousel.OnPositionChanged(args);
+		}
+
+		static object GetItemForPosition(CarouselView carouselView, int index)
+		{
+			if (!(carouselView?.ItemsSource is IList itemSource))
+				return null;
+
+			if (itemSource.Count == 0)
+				return null;
+
+			return itemSource[index];
 		}
 
 		static int GetPositionForItem(CarouselView carouselView, object item)
@@ -216,11 +265,13 @@ namespace Xamarin.Forms
 			return 0;
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetCurrentItem(object item)
 		{
 			SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);

@@ -36,8 +36,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Github5623()
 		{
-			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
-
 			InitializeComponent();
 
 			BindingContext = new ViewModel5623();
@@ -172,7 +170,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class Model5623
 	{
-		RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+		Random random = new Random();
 
 		public string Text { get; set; }
 
@@ -185,7 +183,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public Model5623(bool isUneven)
 		{
 			var byteArray = new byte[4];
-			provider.GetBytes(byteArray);
+			random.NextBytes(byteArray);
 
 			if (isUneven)
 				Height = 100 + (BitConverter.ToInt32(byteArray, 0) % 300 + 300) % 300;

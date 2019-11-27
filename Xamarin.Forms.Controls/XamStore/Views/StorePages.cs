@@ -19,6 +19,9 @@ namespace Xamarin.Forms.Controls.XamStore
 
 		public BasePage(string title, Color tint)
 		{
+			ToolbarItems.Add(new ToolbarItem() { Text = "text" });
+			ToolbarItems.Add(new ToolbarItem() { IconImageSource = "coffee.png" });
+
 			Title = title;
 			Shell.SetForegroundColor(this, tint);
 			var grid = new Grid()
@@ -299,11 +302,15 @@ namespace Xamarin.Forms.Controls.XamStore
 
 			Content = new ScrollView { Content = grid };
 
-			//var listView = new ListView();
-			//listView.ItemsSource = Enumerable.Range(0, 1000).ToList();
 
-			//Content = listView;
-		}
+            grid.Children.Add(MakeButton("Hide Nav Shadow",
+                    () => Shell.SetNavBarHasShadow(this, false)),
+                1, 21);
+
+            grid.Children.Add(MakeButton("Show Nav Shadow",
+                    () => Shell.SetNavBarHasShadow(this, true)),
+                2, 21);
+        }
 
 		Switch _navBarVisibleSwitch;
 		Switch _tabBarVisibleSwitch;
@@ -475,7 +482,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	[Preserve (AllMembers = true)]
 	public class HomePage : BasePage
 	{
-		public HomePage() : base("Store Home", Color.Default)
+		public HomePage() : base("Store Home", Color.Black)
 		{
 			AddSearchHandler("Search Apps", SearchBoxVisibility.Expanded);
 		}
@@ -484,7 +491,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	[Preserve (AllMembers = true)]
 	public class GamesPage : BasePage
 	{
-		public GamesPage() : base("Games", Color.Default)
+		public GamesPage() : base("Games", Color.Black)
 		{
 			AddSearchHandler("Search Games", SearchBoxVisibility.Expanded);
 		}

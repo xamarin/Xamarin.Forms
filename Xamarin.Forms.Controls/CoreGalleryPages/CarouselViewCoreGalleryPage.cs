@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Controls
 				items.Add(new CarouselData
 				{
 					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
-					Name = DateTime.Now.AddDays(n).ToLongDateString()
+					Name = DateTime.Now.AddDays(n).ToString("D")
 				});
 			}
 
@@ -62,9 +62,9 @@ namespace Xamarin.Forms.Controls
 			return items;
 		}
 
-		internal ListItemsLayout GetCarouselLayout(ItemsLayoutOrientation orientation)
+		internal LinearItemsLayout GetCarouselLayout(ItemsLayoutOrientation orientation)
 		{
-			return new ListItemsLayout(orientation)
+			return new LinearItemsLayout(orientation)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center

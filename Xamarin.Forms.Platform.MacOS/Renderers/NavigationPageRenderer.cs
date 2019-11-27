@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		bool _appeared;
 		EventTracker _events;
 		VisualElementTracker _tracker;
-		Stack<NavigationChildPageWrapper> _currentStack = new Stack<NavigationChildPageWrapper>();
+		FormsStack<NavigationChildPageWrapper> _currentStack = new FormsStack<NavigationChildPageWrapper>();
 
 		NavigationPage NavigationPage => Element as NavigationPage;
 
@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var beforePageIndex = currentList.IndexOf(p => p.Page == before);
 			var pageWrapper = new NavigationChildPageWrapper(page);
 			currentList.Insert(beforePageIndex, pageWrapper);
-			_currentStack = new Stack<NavigationChildPageWrapper>(currentList);
+			_currentStack = new FormsStack<NavigationChildPageWrapper>(currentList);
 
 			var vc = CreateViewControllerForPage(page);
 			vc.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (removeFromStack)
 			{
 				var newSource = _currentStack.Reverse().Where(w => w.Page != page);
-				_currentStack = new Stack<NavigationChildPageWrapper>(newSource);
+				_currentStack = new FormsStack<NavigationChildPageWrapper>(newSource);
 			}
 		}
 
@@ -349,9 +349,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			var target = Platform.GetRenderer(page);
 			var previousPage = _currentStack.Peek().Page;
 
+			var previousPageRenderer = CreateViewControllerForPage(previousPage);
+			ShowView(previousPageRenderer.ViewController);
 			if (animated)
 			{
-				var previousPageRenderer = CreateViewControllerForPage(previousPage);
 				var transitionStyle = NavigationPage.OnThisPlatform().GetNavigationTransitionPopStyle();
 
 				return await this.HandleAsyncAnimation(target.ViewController, previousPageRenderer.ViewController,
@@ -382,6 +383,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				vc.NativeView.WantsLayer = true;
 				AddChildViewController(vc.ViewController);
 				View.AddSubview(vc.NativeView);
+				if (oldPage != null)
+				{
+					HideView(Platform.GetRenderer(oldPage)?.ViewController);
+				}
 				return true;
 			}
 			var vco = Platform.GetRenderer(oldPage);
@@ -389,7 +394,23 @@ namespace Xamarin.Forms.Platform.MacOS
 
             var transitionStyle = NavigationPage.OnThisPlatform().GetNavigationTransitionPushStyle();
 			return await this.HandleAsyncAnimation(vco.ViewController, vc.ViewController,
-				ToViewControllerTransitionOptions(transitionStyle), () => page?.SendAppearing(), true);
+				ToViewControllerTransitionOptions(transitionStyle), () =>
+				{
+					HideView(vco.ViewController);
+					page?.SendAppearing();
+				}, true);
+		}
+
+		void HideView(NSViewController vc)
+		{
+			if (vc?.View != null)
+				vc.View.Hidden = true;
+		}
+
+		void ShowView(NSViewController vc)
+		{
+			if (vc?.View != null)
+				vc.View.Hidden = false;
 		}
 
 		void UpdateBackgroundColor()

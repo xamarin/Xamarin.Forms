@@ -1,14 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using UWPListViewSelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class SelectableItemsViewRenderer : ItemsViewRenderer
+	public class SelectableItemsViewRenderer<TItemsView> : StructuredItemsViewRenderer<TItemsView>
+		where TItemsView : SelectableItemsView
 	{
-		SelectableItemsView _selectableItemsView;
 		bool _ignoreNativeSelectionChange;
 
 		protected override void TearDownOldElement(ItemsView oldElement)
@@ -20,9 +19,9 @@ namespace Xamarin.Forms.Platform.UWP
 				oldListViewBase.SelectionChanged -= OnNativeSelectionChanged;
 			}
 
-			if (_selectableItemsView != null)
+			if (ItemsView != null)
 			{
-				_selectableItemsView.SelectionChanged -= OnSelectionChanged;
+				ItemsView.SelectionChanged -= OnSelectionChanged;
 			}
 
 			base.TearDownOldElement(oldElement);
@@ -37,11 +36,9 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			_selectableItemsView = newElement as SelectableItemsView;
-
-			if (_selectableItemsView != null)
+			if (ItemsView != null)
 			{
-				_selectableItemsView.SelectionChanged += OnSelectionChanged;
+				ItemsView.SelectionChanged += OnSelectionChanged;
 			}
 
 			var newListViewBase = ListViewBase;
@@ -51,7 +48,7 @@ namespace Xamarin.Forms.Platform.UWP
 				newListViewBase.SetBinding(ListViewBase.SelectionModeProperty,
 						new Windows.UI.Xaml.Data.Binding
 						{
-							Source = _selectableItemsView,
+							Source = ItemsView,
 							Path = new Windows.UI.Xaml.PropertyPath("SelectionMode"),
 							Converter = new SelectionModeConvert(),
 							Mode = Windows.UI.Xaml.Data.BindingMode.TwoWay
@@ -68,6 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_ignoreNativeSelectionChange = true;
 
 			base.UpdateItemsSource();
+			UpdateNativeSelection();
 
 			_ignoreNativeSelectionChange = false;
 		}
@@ -81,24 +79,24 @@ namespace Xamarin.Forms.Platform.UWP
 				case UWPListViewSelectionMode.None:
 					break;
 				case UWPListViewSelectionMode.Single:
-					if (_selectableItemsView != null)
+					if (ItemsView != null)
 					{
-						if (_selectableItemsView.SelectedItem == null)
+						if (ItemsView.SelectedItem == null)
 						{
 							ListViewBase.SelectedItem = null;
 						}
 						else
 						{
 							ListViewBase.SelectedItem =
-								ListViewBase.Items.First(item =>
+								ListViewBase.Items.FirstOrDefault(item =>
 								{
 									if (item is ItemTemplateContext itemPair)
 									{
-										return itemPair.Item == _selectableItemsView.SelectedItem;
+										return itemPair.Item == ItemsView.SelectedItem;
 									}
 									else
 									{
-										return item == _selectableItemsView.SelectedItem;
+										return item == ItemsView.SelectedItem;
 									}
 								});
 						}
@@ -109,11 +107,11 @@ namespace Xamarin.Forms.Platform.UWP
 					ListViewBase.SelectedItems.Clear();
 					foreach (var nativeItem in ListViewBase.Items)
 					{
-						if (nativeItem is ItemTemplateContext itemPair && _selectableItemsView.SelectedItems.Contains(itemPair.Item))
+						if (nativeItem is ItemTemplateContext itemPair && ItemsView.SelectedItems.Contains(itemPair.Item))
 						{
 							ListViewBase.SelectedItems.Add(nativeItem);
 						}
-						else if (_selectableItemsView.SelectedItems.Contains(nativeItem))
+						else if (ItemsView.SelectedItems.Contains(nativeItem))
 						{
 							ListViewBase.SelectedItems.Add(nativeItem);
 						}
@@ -156,7 +154,7 @@ namespace Xamarin.Forms.Platform.UWP
 					case UWPListViewSelectionMode.Multiple:
 						selectableItemsView.SelectionChanged -= OnSelectionChanged;
 
-						_selectableItemsView.SelectedItems.Clear();
+						ItemsView.SelectedItems.Clear();
 						var selectedItems =
 							ListViewBase.SelectedItems
 								.Select(a =>
@@ -168,7 +166,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 						foreach (var item in selectedItems)
 						{
-							_selectableItemsView.SelectedItems.Add(item);
+							ItemsView.SelectedItems.Add(item);
 						}
 
 						selectableItemsView.SelectionChanged += OnSelectionChanged;
@@ -219,6 +217,5 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 		}
-
 	}
 }

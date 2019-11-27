@@ -12,15 +12,8 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty MenuProperty = BindableProperty.CreateAttached(nameof(Menu), typeof(Menu), typeof(Element), null);
 
-		public static Menu GetMenu(BindableObject bindable)
-		{
-			return (Menu)bindable.GetValue(MenuProperty);
-		}
-
-		public static void SetMenu(BindableObject bindable, Menu menu)
-		{
-			bindable.SetValue(MenuProperty, menu);
-		}
+		public static Menu GetMenu(BindableObject bindable) => (Menu)bindable.GetValue(MenuProperty);
+		public static void SetMenu(BindableObject bindable, Menu menu) => bindable.SetValue(MenuProperty, menu);
 
 		internal static readonly ReadOnlyCollection<Element> EmptyChildren = new ReadOnlyCollection<Element>(new Element[0]);
 
@@ -59,8 +52,8 @@ namespace Xamarin.Forms
 
 		public string ClassId
 		{
-			get { return (string)GetValue(ClassIdProperty); }
-			set { SetValue(ClassIdProperty, value); }
+			get => (string)GetValue(ClassIdProperty);
+			set => SetValue(ClassIdProperty, value);
 		}
 
 		public IList<Effect> Effects
@@ -164,10 +157,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Element RealParent { get; private set; }
 
-		Dictionary<BindableProperty, string> DynamicResources
-		{
-			get { return _dynamicResources ?? (_dynamicResources = new Dictionary<BindableProperty, string>()); }
-		}
+		Dictionary<BindableProperty, string> DynamicResources => _dynamicResources ?? (_dynamicResources = new Dictionary<BindableProperty, string>());
 
 		void IElement.AddResourcesChangedListener(Action<object, ResourcesChangedEventArgs> onchanged)
 		{
@@ -213,38 +203,6 @@ namespace Xamarin.Forms
 				OnParentSet();
 
 				OnPropertyChanged();
-
-				RefreshTemplatedParent();
-			}
-		}
-
-		internal event EventHandler TemplatedParentChanged;
-
-		BindableObject _templatedParent;
-		public BindableObject TemplatedParent
-		{
-			get => _templatedParent;
-			private set
-			{
-				_templatedParent = value;
-				TemplatedParentChanged?.Invoke(this, null);
-				OnPropertyChanged();
-			}
-		}
-
-		void RefreshTemplatedParent()
-		{
-			var templatedParent = this.IsTemplateRoot
-				? this.Parent
-				: this.Parent?.TemplatedParent;
-			if (ReferenceEquals(templatedParent, this.TemplatedParent))
-				return;
-
-			this.TemplatedParent = templatedParent;			
-			foreach (var element in this.LogicalChildren)
-			{
-				if (!element.IsTemplateRoot)
-					element.RefreshTemplatedParent();
 			}
 		}
 
@@ -409,7 +367,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public IEnumerable<Element> Descendants()
 		{
-			var queue = new Queue<Element>(16);
+			var queue = new FormsQueue<Element>(16);
 			queue.Enqueue(this);
 
 			while (queue.Count > 0)
@@ -495,8 +453,7 @@ namespace Xamarin.Forms
 		{
 			base.OnSetDynamicResource(property, key);
 			DynamicResources[property] = key;
-			object value;
-			if (this.TryGetResource(key, out value))
+			if (this.TryGetResource(key, out var value))
 				OnResourceChanged(property, value);
 		}
 
@@ -546,7 +503,7 @@ namespace Xamarin.Forms
 
 		internal IEnumerable<Element> VisibleDescendants()
 		{
-			var queue = new Queue<Element>(16);
+			var queue = new FormsQueue<Element>(16);
 			queue.Enqueue(this);
 
 			while (queue.Count > 0)
