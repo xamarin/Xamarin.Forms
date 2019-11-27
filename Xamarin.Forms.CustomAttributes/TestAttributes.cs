@@ -201,7 +201,8 @@ namespace Xamarin.Forms.CustomAttributes
 			EntryCell,
 			Editor,
 			DatePicker,
-			CheckBox
+			CheckBox,
+			SwipeView
 		}
 
 		public enum Layouts
@@ -505,6 +506,7 @@ namespace Xamarin.Forms.CustomAttributes
 			Completed,
 			TextChanged,
 			Placeholder,
+			PlaceholderColor,
 			Text,
 			TextColor,
 			FontAttributes,
@@ -745,6 +747,13 @@ namespace Xamarin.Forms.CustomAttributes
 			IsToggled,
 			OnColor,
 			ThumbColor
+		}
+
+		public enum SwipeView
+		{
+			RightItems,
+			TopItems,
+			BottomItems
 		}
 
 		public enum CheckBox
