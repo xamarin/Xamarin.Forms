@@ -14,9 +14,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		protected UILabel GetNativeControl(Label label)
 		{
 			var renderer = GetRenderer(label);
-
 			var viewRenderer = renderer.NativeView as ViewRenderer<Label, UILabel>;
-
 			return viewRenderer.Control;
 		}
 	}
