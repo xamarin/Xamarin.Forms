@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			var tests = new PlatformTestRunner();
 			if (tests != null)
 			{
-				await tests.Run();
+				await tests.Run().ConfigureAwait(false);
 			}
 
 			DisplayOverallResult();
@@ -146,6 +146,24 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			if (!string.IsNullOrEmpty(result.Output))
 			{
 				toAdd.Add(new Label { Text = result.Output, Margin = margin });
+			}
+
+			if (result.Test.RunState == RunState.NotRunnable)
+			{
+				var reasonBag = result.Test.Properties[PropertyNames.SkipReason];
+
+				var reasonText = "";
+				foreach (var reason in reasonBag)
+				{
+					reasonText += reason;
+				}
+
+				if (string.IsNullOrEmpty(reasonText))
+				{
+					reasonText = @"¯\_(ツ)_/¯";
+				}
+
+				toAdd.Add(new Label { Text = $"Test was not runnable. Reason: {reasonText}", FontAttributes = FontAttributes.Bold, Margin = margin });
 			}
 
 			Device.BeginInvokeOnMainThread(() =>
