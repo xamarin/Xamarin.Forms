@@ -225,7 +225,21 @@ namespace Xamarin.Forms.Platform.Tizen
 					return true;
 				}
 			}
-			else if (Platform.GetRenderer(RefreshView.Content) is ItemsViewRenderer itemsViewRenderer)
+			else if (Platform.GetRenderer(RefreshView.Content) is CarouselViewRenderer carouselViewRenderer)
+			{
+				var collectionView = carouselViewRenderer.NativeView;
+
+				var scroller = collectionView.GetType().GetProperty("Scroller", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(collectionView);
+
+				if (scroller != null)
+				{
+					if ((scroller as Scroller)?.CurrentRegion.Y == 0)
+					{
+						return true;
+					}
+				}
+			}
+			else if (Platform.GetRenderer(RefreshView.Content) is StructuredItemsViewRenderer itemsViewRenderer)
 			{
 				var collectionView = itemsViewRenderer.NativeView;
 
