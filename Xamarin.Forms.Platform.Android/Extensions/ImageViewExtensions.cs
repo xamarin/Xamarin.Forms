@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Android.Graphics.Drawables;
+using Xamarin.Forms.Internals;
 using Android.Content;
 using Android.Graphics;
 using AImageView = Android.Widget.ImageView;
@@ -42,27 +44,50 @@ namespace Xamarin.Forms.Platform.Android
 			imageController?.SetIsLoading(true);
 
 			(imageView as IImageRendererController)?.SkipInvalidate();
+			imageView.Reset();
 			imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 
 			try
 			{
 				if (newImageSource != null)
 				{
-					var imageViewHandler = Internals.Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
-					if (imageViewHandler != null)
+					// all this animation code will go away if/once we pull in GlideX
+					IFormsAnimationDrawable animation = null;
+
+					if (imageController.GetLoadAsAnimation())
 					{
-						await imageViewHandler.LoadImageAsync(newImageSource, errorPlaceholder, imageView);
+						var animationHandler = Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(newImageSource);
+						if (animationHandler != null)
+							animation = await animationHandler.LoadImageAnimationAsync(newImageSource, imageView.Context);
+					}
+
+					if(animation == null)
+					{
+						var imageViewHandler = Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
+						if (imageViewHandler != null)
+						{
+							await imageViewHandler.LoadImageAsync(newImageSource, errorPlaceholder, imageView);
+						}
+						else
+						{
+							using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
+							{
+								// only set the image if we are still on the same one
+								if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource))
+									imageView.SetImageDrawable(drawable);
+								else if (errorPlaceholder != null)
+									await SetImagePlaceholder(imageView, errorPlaceholder);
+							}
+						}
 					}
 					else
 					{
-						await SetImagePlaceholder(imageView, loadingPlaceholder);
-						using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
+						if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource))
+							imageView.SetImageDrawable(animation.ImageDrawable);
+						else
 						{
-							// only set the image if we are still on the same one
-							if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource) && drawable != null)
-								imageView.SetImageDrawable(drawable);
-							else if (errorPlaceholder != null)
-								await SetImagePlaceholder(imageView, errorPlaceholder);
+							animation?.Reset();
+							animation?.Dispose();
 						}
 					}
 				}
@@ -92,13 +117,50 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		static async Task SetImagePlaceholder(AImageView imageView, ImageSource placeholder)
+internal static void Reset(this IFormsAnimationDrawable formsAnimation)
 		{
-			using (var drawable = await imageView.Context.GetFormsDrawableAsync(placeholder))
+			if (formsAnimation is FormsAnimationDrawable animation)
 			{
-				// only set the image if we are still on the same one
-				if (!imageView.IsDisposed())
-					imageView.SetImageDrawable(drawable);
+				if (!animation.IsDisposed())
+				{
+					animation.Stop();
+					int frameCount = animation.NumberOfFrames;
+					for (int i = 0; i < frameCount; i++)
+					{
+						var currentFrame = animation.GetFrame(i);
+						if (currentFrame is BitmapDrawable bitmapDrawable)
+						{
+							var bitmap = bitmapDrawable.Bitmap;
+							if (bitmap != null)
+							{
+								if (!bitmap.IsRecycled)
+								{
+									bitmap.Recycle();
+								}
+								bitmap.Dispose();
+								bitmap = null;
+							}
+							bitmapDrawable.Dispose();
+							bitmapDrawable = null;
+						}
+						currentFrame = null;
+					}
+					animation = null;
+				}
+			}
+		}
+
+		public static void Reset(this AImageView imageView)
+		{
+			if (!imageView.IsDisposed())
+			{
+				if (imageView.Drawable is FormsAnimationDrawable animation)
+				{
+					imageView.SetImageDrawable(null);
+					animation.Reset();
+				}
+
+				imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 			}
 		}
 
