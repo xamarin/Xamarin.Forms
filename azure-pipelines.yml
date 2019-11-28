@@ -68,7 +68,7 @@ jobs:
     displayName: Build Windows Phase
     vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    msbuildExtraArguments: '/p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+    msbuildExtraArguments: '/nowarn:VSX1000;CS0109;MSB3073;MSB3277;VSX1000;XA0113;XA4216 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
 

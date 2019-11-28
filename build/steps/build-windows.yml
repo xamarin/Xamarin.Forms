@@ -23,6 +23,7 @@ jobs:
     timeoutInMinutes: 120
     pool:
       name: ${{ parameters.vmImage }}
+      demands:
         - Agent.OS -equals Windows_NT
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
