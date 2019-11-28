@@ -128,6 +128,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateFont();
 			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 				UpdateCharacterSpacing();
+			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -147,6 +151,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdateCharacterSpacing();
+			UpdateMaxLines();
+			UpdateLineBreakMode();
 		}
 
 		void UpdateEnabled()
@@ -192,6 +198,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				NativeButton.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
 			
+		}
+
+		void UpdateMaxLines()
+		{
+			Control.SetMaxLines(Element.MaxLines);
+		}
+
+		void UpdateLineBreakMode()
+		{
+			Control.SetLineBreakMode(Element.LineBreakMode);
 		}
 
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);

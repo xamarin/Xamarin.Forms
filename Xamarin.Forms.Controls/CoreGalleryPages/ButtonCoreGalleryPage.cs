@@ -107,6 +107,16 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
+			var maxLinesContainer = new ViewContainer<Button>(Test.Button.MaxLines,
+				new Button
+				{
+					Text = "This is a very long text to test the Max lines property. Use the MaxLines property to set the amount of lines of text you want to show in your button, and use it in combination with LineBreakMode to set the text wrap mode.",
+					MaxLines = 4,
+					LineBreakMode = LineBreakMode.WordWrap,
+					WidthRequest = 100
+				}
+			);
+
 			Add (borderButtonContainer);
 			Add (borderRadiusContainer);
 			Add (borderWidthContainer);
@@ -118,6 +128,7 @@ namespace Xamarin.Forms.Controls
 			Add (textContainer);
 			Add (textColorContainer);
 			Add (paddingContainer);
+			Add (maxLinesContainer); 
 			//stackLayout.Children.Add (textColorContainer);
 		}
 	}

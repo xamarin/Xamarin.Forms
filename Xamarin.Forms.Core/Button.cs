@@ -57,6 +57,17 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
+		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(Button), LineBreakMode.WordWrap,
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
+
+		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create(nameof(MaxLines), typeof(int), typeof(Button), -1, propertyChanged: (bindable, oldvalue, newvalue) =>
+		{
+			if (bindable is Button button)
+			{
+				button.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+			}
+		});
+
 		public Thickness Padding
 		{
 			get { return (Thickness)GetValue(PaddingElement.PaddingProperty); }
@@ -76,7 +87,6 @@ namespace Xamarin.Forms
 
 		internal static readonly BindablePropertyKey IsPressedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsPressed), typeof(bool), typeof(Button), default(bool));
 		public static readonly BindableProperty IsPressedProperty = IsPressedPropertyKey.BindableProperty;
-
 
 		readonly Lazy<PlatformConfigurationRegistry<Button>> _platformConfigurationRegistry;
 
@@ -160,6 +170,18 @@ namespace Xamarin.Forms
 		{
 			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
 			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+
+		public int MaxLines
+		{
+			get { return (int)GetValue(MaxLinesProperty); }
+			set { SetValue(MaxLinesProperty, value); }
+		}
+
+		public LineBreakMode LineBreakMode
+		{
+			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
+			set { SetValue(LineBreakModeProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore

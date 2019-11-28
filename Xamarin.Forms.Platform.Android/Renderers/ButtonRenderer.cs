@@ -146,6 +146,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -168,6 +172,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
+			UpdateMaxLines();
+			UpdateLineBreakMode();
 		}
 
 		void UpdateBitmap()
@@ -281,6 +287,16 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Control.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
+		}
+
+		void UpdateMaxLines()
+		{
+			Control.SetMaxLines(Element.MaxLines);
+		}
+
+		void UpdateLineBreakMode()
+		{
+			Control.SetLineBreakMode(Element.LineBreakMode);			
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => Control.ShadowRadius;

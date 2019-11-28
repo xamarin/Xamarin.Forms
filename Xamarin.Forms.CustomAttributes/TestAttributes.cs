@@ -232,7 +232,8 @@ namespace Xamarin.Forms.CustomAttributes
 			BorderRadius,
 			Image,
 			Padding,
-			Pressed
+			Pressed,
+			MaxLines			
 		}
 
 		public enum VisualElement

@@ -8,6 +8,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using SizeF = CoreGraphics.CGSize;
+using AVFoundation;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -92,6 +93,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateFont();
 				UpdateTextColor();
+				UpdateMaxLines();
+				UpdateLineBreakMode();
+
 				_buttonLayoutManager?.Update();
 			}
 		}
@@ -109,6 +113,10 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 		}
 
 		protected override void SetAccessibilityLabel()
@@ -149,6 +157,16 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateFont()
 		{
 			Control.TitleLabel.Font = Element.ToUIFont();
+		}
+
+		void UpdateMaxLines()
+		{
+			Control.TitleLabel.Lines = Element.MaxLines;
+		}
+
+		void UpdateLineBreakMode()
+		{
+			Control.LineBreakMode = Element.LineBreakMode.GetNativeLineBreakMode();
 		}
 
 		public void SetImage(UIImage image) => _buttonLayoutManager.SetImage(image);
