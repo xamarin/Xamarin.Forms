@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 							animation = await animationHandler.LoadImageAnimationAsync(newImageSource, imageView.Context);
 					}
 
-					if(animation == null)
+					if (animation == null)
 					{
 						var imageViewHandler = Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
 						if (imageViewHandler != null)
@@ -70,10 +70,11 @@ namespace Xamarin.Forms.Platform.Android
 						}
 						else
 						{
+							await SetImagePlaceholder(imageView, loadingPlaceholder);
 							using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
 							{
 								// only set the image if we are still on the same one
-								if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource))
+								if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource) && drawable != null)
 									imageView.SetImageDrawable(drawable);
 								else if (errorPlaceholder != null)
 									await SetImagePlaceholder(imageView, errorPlaceholder);
@@ -117,7 +118,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-internal static void Reset(this IFormsAnimationDrawable formsAnimation)
+		static async Task SetImagePlaceholder(AImageView imageView, ImageSource placeholder)
+		{
+			using (var drawable = await imageView.Context.GetFormsDrawableAsync(placeholder))
+			{
+				// only set the image if we are still on the same one
+				if (!imageView.IsDisposed())
+					imageView.SetImageDrawable(drawable);
+			}
+		}
+
+		internal static void Reset(this IFormsAnimationDrawable formsAnimation)
 		{
 			if (formsAnimation is FormsAnimationDrawable animation)
 			{

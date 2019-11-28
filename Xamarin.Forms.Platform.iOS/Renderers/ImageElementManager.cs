@@ -211,16 +211,16 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 				bool useAnimation = imageController.GetLoadAsAnimation();
 				IAnimationSourceHandler handler = null;
-				if(useAnimation && source != null)
+				if (useAnimation && source != null)
 					handler = Internals.Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(source);
 
 				if (handler != null)
-				{					
+				{
 					FormsCAKeyFrameAnimation animation = await handler.LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale).ConfigureAwait(false);
 
 					if (animation != null && Control is FormsUIImageView imageView && imageElement.Source == source)
 					{
-						if(imageView.Animation != null)
+						if (imageView.Animation != null)
 							imageView.AnimationStopped -= OnAnimationStopped;
 
 						imageView.Animation = animation;
@@ -242,14 +242,15 @@ namespace Xamarin.Forms.Platform.MacOS
 					if (renderer.IsDisposed)
 						return;
 
-				if (uiimage == null)
-					uiimage = await errorPlaceholderSource.GetNativeImageAsync();
+					if (uiimage == null)
+						uiimage = await errorPlaceholderSource.GetNativeImageAsync();
 
-				// only set if we are still on the same image
-				if (Control != null && imageElement.Source == source)
-					renderer.SetImage(uiimage);
-				else
-					uiimage?.Dispose();
+					// only set if we are still on the same image
+					if (Control != null && imageElement.Source == source)
+						renderer.SetImage(uiimage);
+					else
+						uiimage?.Dispose();
+				}
 			}
 			finally
 			{
