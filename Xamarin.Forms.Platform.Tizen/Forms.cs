@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,6 +14,13 @@ using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
 
 namespace Xamarin.Forms
 {
+	public enum StaticRegistrarStrategy
+	{
+		None,
+		StaticRegistrarOnly,
+		All,
+	}
+
 	public struct InitializationOptions
 	{
 		public struct EffectScope
@@ -27,13 +35,34 @@ namespace Xamarin.Forms
 			Context = application;
 			UseDeviceIndependentPixel = useDeviceIndependentPixel;
 			Handlers = handlers;
+			Assemblies = null;
+		}
+
+		public InitializationOptions(CoreApplication application, bool useDeviceIndependentPixel, params Assembly[] assemblies)
+		{
+			this = default(InitializationOptions);
+			Context = application;
+			UseDeviceIndependentPixel = useDeviceIndependentPixel;
+			Handlers = null;
+			Assemblies = assemblies;
+		}
+
+		public void UseStaticRegistrar(StaticRegistrarStrategy strategy, Dictionary<Type, Type> customHandlers=null, bool disableCss=false)
+		{
+			StaticRegistarStrategy = strategy;
+			CustomHandlers = customHandlers;
+			if (disableCss) // about 10ms
+				Flags = InitializationFlags.DisableCss;
 		}
 
 		public CoreApplication Context;
 		public bool UseDeviceIndependentPixel;
 		public HandlerAttribute[] Handlers;
+		public Dictionary<Type, Type> CustomHandlers; // for static registers
+		public Assembly[] Assemblies;
 		public EffectScope[] EffectScopes;
 		public InitializationFlags Flags;
+		public StaticRegistrarStrategy StaticRegistarStrategy;
 	}
 
 	public static class Forms
@@ -143,6 +172,8 @@ namespace Xamarin.Forms
 
 		static bool _useDeviceIndependentPixel = false;
 
+		static StaticRegistrarStrategy s_staticRegistrarStrategy = StaticRegistrarStrategy.None;
+
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
 		public static CoreApplication Context
@@ -165,6 +196,8 @@ namespace Xamarin.Forms
 		}
 
 		public static DeviceOrientation NaturalOrientation => s_naturalOrientation.Value;
+
+		public static StaticRegistrarStrategy StaticRegistrarStrategy => s_staticRegistrarStrategy;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{
@@ -203,6 +236,69 @@ namespace Xamarin.Forms
 			TitleBarVisibility = visibility;
 		}
 
+		public static TOut GetHandler<TOut>(Type type, params object[] args) where TOut : class, IRegisterable
+		{
+			if (s_staticRegistrarStrategy == StaticRegistrarStrategy.None)
+			{
+				// Find hander in internal registrar, that is using reflection (default).
+				return Registrar.Registered.GetHandler<TOut>(type, args);
+			}
+			else
+			{
+				// 1. Find hander in static registrar first
+				TOut ret = StaticRegistrar.Registered.GetHandler<TOut>(type, args);
+
+				// 2. If there is no handler, try to find hander in internal registrar, that is using reflection.
+				if (ret == null && s_staticRegistrarStrategy == StaticRegistrarStrategy.All)
+				{
+					ret = Registrar.Registered.GetHandler<TOut>(type, args);
+				}
+				return ret;
+			}
+		}
+
+		public static TOut GetHandlerForObject<TOut>(object obj) where TOut : class, IRegisterable
+		{
+			if (s_staticRegistrarStrategy == StaticRegistrarStrategy.None)
+			{
+				// Find hander in internal registrar, that is using reflection (default).
+				return Registrar.Registered.GetHandlerForObject<TOut>(obj);
+			}
+			else
+			{
+				// 1. Find hander in static registrar first
+				TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj);
+
+				// 2. If there is no handler, try to find hander in internal registrar, that is using reflection.
+				if (ret == null && s_staticRegistrarStrategy == StaticRegistrarStrategy.All)
+				{
+					ret = Registrar.Registered.GetHandlerForObject<TOut>(obj);
+				}
+				return ret;
+			}
+		}
+
+		public static TOut GetHandlerForObject<TOut>(object obj, params object[] args) where TOut : class, IRegisterable
+		{
+			if (s_staticRegistrarStrategy == StaticRegistrarStrategy.None)
+			{
+				// Find hander in internal registrar, that is using reflection (default).
+				return Registrar.Registered.GetHandlerForObject<TOut>(obj, args);
+			}
+			else
+			{
+				// 1. Find hander in static registrar first without fallback handler.
+				TOut ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, args);
+
+				// 2. If there is no handler, try to find hander in internal registrar, that is using reflection.
+				if (ret == null && s_staticRegistrarStrategy == StaticRegistrarStrategy.All)
+				{
+					ret = StaticRegistrar.Registered.GetHandlerForObject<TOut>(obj, args);
+				}
+				return ret;
+			}
+		}
+
 		public static void Init(CoreApplication application)
 		{
 			Init(application, false);
@@ -230,6 +326,7 @@ namespace Xamarin.Forms
 				{
 					TizenSynchronizationContext.Initialize();
 				}
+
 				Elementary.Initialize();
 				Elementary.ThemeOverlay();
 			}
@@ -249,18 +346,56 @@ namespace Xamarin.Forms
 				if (maybeOptions.HasValue)
 				{
 					var options = maybeOptions.Value;
-					var handlers = options.Handlers;
-					var flags = options.Flags;
-					var effectScopes = options.EffectScopes;
 					_useDeviceIndependentPixel = options.UseDeviceIndependentPixel;
 
-					// renderers
-					if (handlers != null)
+					if (options.Assemblies != null && options.Assemblies.Length > 0)
 					{
-						Registrar.RegisterRenderers(handlers);
+						TizenPlatformServices.AppDomain.CurrentDomain.AddAssemblies(options.Assemblies);
+					}
+
+					// renderers
+					if (options.Handlers != null)
+					{
+						Registrar.RegisterRenderers(options.Handlers);
+					}
+					else
+					{
+						// Add Xamarin.Forms.Core assembly by default to apply the styles.
+						TizenPlatformServices.AppDomain.CurrentDomain.AddAssembly(Assembly.GetAssembly(typeof(Xamarin.Forms.View)));
+
+						// static registrar
+						if (options.StaticRegistarStrategy != StaticRegistrarStrategy.None)
+						{
+								s_staticRegistrarStrategy = options.StaticRegistarStrategy;
+								StaticRegistrar.RegisterHandlers(options.CustomHandlers);
+
+								if (options.StaticRegistarStrategy == StaticRegistrarStrategy.All)
+								{
+									Registrar.RegisterAll(new Type[]
+									{
+										typeof(ExportRendererAttribute),
+										typeof(ExportImageSourceHandlerAttribute),
+										typeof(ExportCellAttribute),
+										typeof(ExportHandlerAttribute)
+									});
+									return;
+								}
+						}
+						else
+						{
+							Registrar.RegisterAll(new Type[]
+							{
+								typeof(ExportRendererAttribute),
+								typeof(ExportImageSourceHandlerAttribute),
+								typeof(ExportCellAttribute),
+								typeof(ExportHandlerAttribute)
+							});
+							return;
+						}
 					}
 
 					// effects
+					var effectScopes = options.EffectScopes;
 					if (effectScopes != null)
 					{
 						for (var i = 0; i < effectScopes.Length; i++)
@@ -271,6 +406,7 @@ namespace Xamarin.Forms
 					}
 
 					// css
+					var flags = options.Flags;
 					var noCss = (flags & InitializationFlags.DisableCss) != 0;
 					if (!noCss)
 						Registrar.RegisterStylesheets();
@@ -281,6 +417,7 @@ namespace Xamarin.Forms
 					// The list of assemblies returned by AppDomain.GetAssemblies() method should be registered manually.
 					// The assembly of the executing application and referenced assemblies of it are added into the list here.
 					TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
+
 					Registrar.RegisterAll(new Type[]
 					{
 						typeof(ExportRendererAttribute),
@@ -419,6 +556,18 @@ namespace Xamarin.Forms
 		public static string GetProfile()
 		{
 			return s_profile.Value;
+		}
+
+		// for internal use only
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void Preload()
+		{
+			Elementary.Initialize();
+			Elementary.ThemeOverlay();
+			var window = new PreloadedWindow();
+			var platform = new PreloadedPlatform(window.BaseLayout);
+			TSystemInfo.TryGetValue("http://tizen.org/feature/screen.width", out int width);
+			TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out int height);
 		}
 	}
 

@@ -149,6 +149,7 @@ namespace Xamarin.Forms.CustomAttributes
 		UWP = 1 << 4,
 		WPF = 1 << 5,
 		macOS = 1 << 6,
+		Gtk = 1 << 7,
 		All = ~0,
 		Default = 0
 	}
@@ -200,7 +201,8 @@ namespace Xamarin.Forms.CustomAttributes
 			EntryCell,
 			Editor,
 			DatePicker,
-			CheckBox
+			CheckBox,
+			SwipeView
 		}
 
 		public enum Layouts
@@ -431,6 +433,7 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupDisplayBinding,
 			GroupShortNameBinding,
 			ScrollTo,
+			Scrolled,
 			FastScroll,
 			RefreshControlColor,
 			ScrollBarVisibility
@@ -548,7 +551,9 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Frame
 		{
 			OutlineColor,
-			HasShadow
+			HasShadow,
+			Content,
+			CornerRadius
 		}
 
 		public enum Image
@@ -635,7 +640,8 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentStart,
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
-			MaxLines
+			MaxLines,
+			TextType
 		}
 
 		public enum MasterDetailPage
@@ -658,6 +664,11 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			Progress,
 			ProgressColor
+		}
+
+		public enum RefreshView
+		{
+			RefreshColor
 		}
 
 		public enum RelativeLayout
@@ -732,6 +743,13 @@ namespace Xamarin.Forms.CustomAttributes
 			IsToggled,
 			OnColor,
 			ThumbColor
+		}
+
+		public enum SwipeView
+		{
+			RightItems,
+			TopItems,
+			BottomItems
 		}
 
 		public enum CheckBox
@@ -853,6 +871,15 @@ namespace Xamarin.Forms.CustomAttributes
 			CornerRadius
 		}
 
+		public enum CarouselView
+		{
+			CurrentItem,
+			IsSwipeEnabled,
+			IsScrollAnimated,
+			NumberOfSideItems, 
+			PeekAreaInsets,
+			Position
+		}
 	}
 }
 

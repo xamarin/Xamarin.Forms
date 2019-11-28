@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
+using System.IO;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -60,7 +61,8 @@ namespace Xamarin.Forms.Controls
 #if __ANDROID__
 		static IApp InitializeAndroidApp()
 		{
-			var app = ConfigureApp.Android.ApkFile(AppPaths.ApkPath).Debug().StartApp();
+			var fullApkPath = Path.Combine(TestContext.CurrentContext.TestDirectory, AppPaths.ApkPath);
+			var app = ConfigureApp.Android.ApkFile(fullApkPath).Debug().StartApp(UITest.Configuration.AppDataMode.DoNotClear);
 
 			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
 			{
@@ -87,7 +89,7 @@ namespace Xamarin.Forms.Controls
 			}
 
 			// Running on the simulator
-			//var app = ConfigureApp.iOS
+			// var app = ConfigureApp.iOS
 			//				  .PreferIdeSettings()
 			//		  		  .AppBundle("../../../Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app")
 			//				  .Debug()
@@ -131,7 +133,8 @@ namespace Xamarin.Forms.Controls
 			{
 				cellName = typeIssueAttribute.DisplayName;
 			}
-			else {
+			else
+			{
 				cellName = typeIssueAttribute.Description;
 			}
 
@@ -248,7 +251,7 @@ namespace Xamarin.Forms.Controls
 					RunningApp.TestServer.Get("version");
 					return;
 				}
-				catch 
+				catch
 				{
 				}
 
@@ -581,12 +584,14 @@ namespace Xamarin.Forms.Controls
 
 
 
-
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.Shell)]
+#endif
 	public abstract class TestShell : Shell
 	{
+		protected const string FlyoutIconAutomationId = "OK";
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;
-
 		protected virtual bool Isolate => true;
 #endif
 
@@ -599,13 +604,31 @@ namespace Xamarin.Forms.Controls
 
 		public ContentPage AddTopTab(string title)
 		{
-			ContentPage page = new ContentPage();
-			Items[0].Items[0].Items.Add(new ShellContent()
-			{
-				Title = title,
-				Content = page
-			});
+			var page = new ContentPage();
+			AddTopTab(page, title);
 			return page;
+		}
+
+
+		public void AddTopTab(ContentPage page, string title = null)
+		{
+			if(Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				return;
+			}
+
+			var content = new ShellContent()
+			{
+				Title = title ?? page.Title,
+				Content = page
+			};
+
+			Items[0].Items[0].Items.Add(content);
+
+			if (!String.IsNullOrWhiteSpace(content.Title))
+				content.Route = content.Title;
 		}
 
 		public ContentPage AddBottomTab(string title)
@@ -618,7 +641,7 @@ namespace Xamarin.Forms.Controls
 				{
 					new ShellContent()
 					{
-						Content = page,
+						ContentTemplate = new DataTemplate(() => page),
 						Title = title
 					}
 				}
@@ -626,11 +649,11 @@ namespace Xamarin.Forms.Controls
 			return page;
 		}
 
-		public ContentPage CreateContentPage(string shellItemTitle = null)
+		public TabBar CreateTabBar(string shellItemTitle)
 		{
 			shellItemTitle = shellItemTitle ?? $"Item: {Items.Count}";
 			ContentPage page = new ContentPage();
-			ShellItem item = new ShellItem()
+			TabBar item = new TabBar()
 			{
 				Title = shellItemTitle,
 				Items =
@@ -641,39 +664,62 @@ namespace Xamarin.Forms.Controls
 						{
 							new ShellContent()
 							{
-								Content = page
+								ContentTemplate = new DataTemplate(() => page),
 							}
 						}
 					}
 				}
 			};
+
+			Items.Add(item);
+			return item;
+		}
+
+		public ContentPage CreateContentPage(string shellItemTitle = null) 
+			=> CreateContentPage<ShellItem, ShellSection>(shellItemTitle);
+
+		public ContentPage CreateContentPage<TShellItem, TShellSection>(string shellItemTitle = null)
+			where TShellItem : ShellItem
+			where TShellSection : ShellSection
+		{
+			shellItemTitle = shellItemTitle ?? $"Item: {Items.Count}";
+			ContentPage page = new ContentPage();
+
+			TShellItem item = Activator.CreateInstance<TShellItem>();
+			item.Title = shellItemTitle;
+
+			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
+
+			shellSection.Items.Add(new ShellContent()
+			{
+				ContentTemplate = new DataTemplate(() => page)
+			});
+
+			item.Items.Add(shellSection);
 
 			Items.Add(item);
 			return page;
 		}
 
+		public ShellItem AddContentPage(ContentPage contentPage = null)
+			=> AddContentPage<ShellItem, ShellSection>(contentPage);
 
-		public ShellItem AddContentPage(ContentPage contentPage)
+		public TShellItem AddContentPage<TShellItem, TShellSection>(ContentPage contentPage = null)
+			where TShellItem : ShellItem
+			where TShellSection : ShellSection
 		{
-			ContentPage page = new ContentPage();
-			ShellItem item = new ShellItem()
-			{
-				Items =
-				{
-					new ShellSection()
-					{
-						Items =
-						{
-							new ShellContent()
-							{
-								Content = contentPage
-							}
-						}
-					}
-				}
-			};
-
+			contentPage = contentPage ?? new ContentPage();
+			TShellItem item = Activator.CreateInstance<TShellItem>();
+			item.Title = contentPage.Title;
+			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
 			Items.Add(item);
+			item.Items.Add(shellSection);
+
+			shellSection.Items.Add(new ShellContent()
+			{
+				ContentTemplate = new DataTemplate(() => contentPage)
+			});
+
 			return item;
 		}
 
@@ -702,12 +748,12 @@ namespace Xamarin.Forms.Controls
 				AppSetup.EndIsolate();
 			}
 		}
+		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true, string timeoutMessage = null)
+		{			
+			if(testForFlyoutIcon)
+				RunningApp.WaitForElement(flyoutIcon, timeoutMessage);
 
-		public void ShowFlyout(string flyoutIcon = "OK", bool usingSwipe = false)
-		{
-			RunningApp.WaitForElement(flyoutIcon);
-
-			if(usingSwipe)
+			if (usingSwipe)
 			{
 				var rect = RunningApp.ScreenBounds();
 				RunningApp.DragCoordinates(10, rect.CenterY, rect.CenterX, rect.CenterY);
@@ -719,13 +765,13 @@ namespace Xamarin.Forms.Controls
 		}
 
 
-		public void TapInFlyout(string text, string flyoutIcon = "OK", bool usingSwipe = false)
+		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
 		{
-			ShowFlyout(flyoutIcon, usingSwipe);
-			RunningApp.WaitForElement(text);
+			timeoutMessage = timeoutMessage ?? text;
+			ShowFlyout(flyoutIcon, usingSwipe, timeoutMessage: timeoutMessage);
+			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
 		}
-
 
 #endif
 
@@ -745,7 +791,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[SetUpFixture]
 	public class IssuesSetup
 	{
-		[SetUp]
+		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
 			AppSetup.RunningApp = AppSetup.Setup(null);

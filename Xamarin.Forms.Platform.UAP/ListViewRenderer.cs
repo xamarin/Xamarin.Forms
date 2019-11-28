@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -59,6 +60,10 @@ namespace Xamarin.Forms.Platform.UWP
 				e.OldElement.ItemSelected -= OnElementItemSelected;
 				e.OldElement.ScrollToRequested -= OnElementScrollToRequested;
 				((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems.CollectionChanged -= OnCollectionChanged;
+				if (Control != null)
+				{
+					Control.Loaded -= ControlOnLoaded;
+				}
 			}
 
 			if (e.NewElement != null)
@@ -92,7 +97,22 @@ namespace Xamarin.Forms.Platform.UWP
 				ClearSizeEstimate();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
+
+				if (Control != null)
+				{
+					Control.Loaded += ControlOnLoaded;
+				}
 			}
+		}
+
+		void ControlOnLoaded(object sender, RoutedEventArgs e)
+		{
+			var scrollViewer = GetScrollViewer();
+			scrollViewer?.RegisterPropertyChangedCallback(ScrollViewer.VerticalOffsetProperty, (o, dp) =>
+			{
+				var args = new ScrolledEventArgs(0, _scrollViewer.VerticalOffset);
+				Element?.SendScrolled(args);
+			});
 		}
 
 		bool IsObservableCollection(object source)
