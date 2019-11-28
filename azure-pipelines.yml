@@ -67,8 +67,7 @@ jobs:
     name: win
     displayName: Build Windows Phase
     vmImage: $(winVmImage)
-    targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    msbuildExtraArguments: '/nowarn:VSX1000;CS0109;MSB3073;MSB3277;VSX1000;XA0113;XA4216 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+    msbuildExtraArguments: '/nowarn:"VSX1000;CS0109;MSB3073;MSB3277;VSX1000;XA0113;XA4216" /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
 
@@ -78,7 +77,7 @@ jobs:
     displayName: Build Android [Legacy Renderers]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
+    androidProjectArguments: '/nowarn:"VSX1000;CS0109;MSB3073;MSB3277;VSX1000;XA0113;XA4216" /t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
 
 - template: build/steps/build-android.yml
@@ -87,7 +86,7 @@ jobs:
     displayName: Build Android [Pre-AppCompat]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
+    androidProjectArguments: '/nowarn:"VSX1000;CS0109;MSB3073;MSB3277;VSX1000;XA0113;XA4216" /t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
 
 - template: build/steps/build-android.yml
@@ -96,7 +95,7 @@ jobs:
     displayName: Build Android [Fast Renderers]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
+    androidProjectArguments: '/nowarn:"VSX1000;CS0109;MSB3073;MSB3277;VSX1000;XA0113;XA4216" /t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
 
 - template: build/steps/build-osx.yml
