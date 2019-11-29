@@ -66,7 +66,6 @@ resources:
 stages:
   - stage: Windows
     displayName: Build Binaries
-    dependsOn: prepare
     jobs:
       - template: build/steps/build-windows.yml
         parameters:
