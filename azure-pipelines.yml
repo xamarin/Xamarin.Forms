@@ -72,7 +72,7 @@ stages:
         parameters:
           name: win
           displayName: Build Windows Phase
-          mImage: $(winVmImage)
+          vmImage: $(winVmImage)
           msbuildExtraArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
           buildConfiguration: $(DefaultBuildConfiguration)
           buildPlatform: $(DefaultBuildPlatform)
