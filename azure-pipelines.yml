@@ -63,7 +63,7 @@ resources:
       name: xamarin/yaml-templates
       endpoint: xamarin
 
-jobs:
+stages:
 - template: build/steps/build-windows.yml
   parameters:
     name: win
