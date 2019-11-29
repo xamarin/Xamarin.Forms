@@ -64,69 +64,15 @@ resources:
       endpoint: xamarin
 
 stages:
-- template: build/steps/build-windows.yml
-  parameters:
-    name: win
-    displayName: Build Windows Phase
-    vmImage: $(winVmImage)
-    msbuildExtraArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
-    buildConfiguration: $(DefaultBuildConfiguration)
-    buildPlatform: $(DefaultBuildPlatform)
-
-- template: build/steps/build-android.yml
-  parameters:
-    name: android_legacy
-    displayName: Build Android [Legacy Renderers]
-    vmImage: $(macOSVmImage)
-    targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    androidProjectArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
-    buildConfiguration: $(DefaultBuildConfiguration)
-
-- template: build/steps/build-android.yml
-  parameters:
-    name: android_preappcompact
-    displayName: Build Android [Pre-AppCompat]
-    vmImage: $(macOSVmImage)
-    targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
-    androidProjectArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
-    buildConfiguration: $(DefaultBuildConfiguration)
-
-- template: build/steps/build-android.yml
-  parameters:
-    name: android_fast
-    displayName: Build Android [Fast Renderers]
-    vmImage: $(macOSVmImage)
-    targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
-    androidProjectArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
-    buildConfiguration: $(DefaultBuildConfiguration)
-
-- template: build/steps/build-osx.yml
-  parameters:
-    name: osx
-    displayName: OSX Phase
-    vmImage: $(macOSVmImage)
-    buildConfiguration: $(DefaultBuildConfiguration)
-    slnPath: $(SolutionFile)
-    iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
-    iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
-
-- template: build/steps/build-nuget.yml
-  parameters:
-    name: nuget_pack
-    displayName: Nuget Phase
-    vmImage: $(winVmImage)
-    dependsOn:
-      - win
-    buildConfiguration: $(DefaultBuildConfiguration)
-    packageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
-
-  # only sign using the private server
-- ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
-  - template: build/steps/build-sign.yml
-    parameters:
-      name: nuget_sign
-      displayName: Sign Phase
-      vmImage: $(signVmImage)
-      dependsOn: nuget_pack
-
-
+ - stage: Windows
+    displayName: Build Binaries
+    dependsOn: prepare
+    jobs:
+      - template: build/steps/build-windows.yml
+        parameters:
+          name: win
+          displayName: Build Windows Phase
+        vmImage: $(winVmImage)
+        msbuildExtraArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+        buildConfiguration: $(DefaultBuildConfiguration)
+        buildPlatform: $(DefaultBuildPlatform)
