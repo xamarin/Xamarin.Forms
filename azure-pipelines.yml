@@ -119,7 +119,7 @@ stages:
           iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
           iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
 
- - stage: nuget
+  - stage: nuget
     displayName: Build Nuget
     dependsOn: 
       - win
