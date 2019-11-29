@@ -66,6 +66,7 @@ resources:
 stages:
   - stage: windows
     displayName: Build Windows
+    dependsOn: []
     jobs:
       - template: build/steps/build-windows.yml
         parameters:
@@ -78,6 +79,7 @@ stages:
 
   - stage: android
     displayName: Build Android
+    dependsOn: []
     jobs:
       - template: build/steps/build-android.yml
         parameters:
