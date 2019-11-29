@@ -124,7 +124,7 @@ stages:
 
   - stage: nuget
     displayName: Build Nuget
-    dependsOn: 
+    dependsOn:
       - windows
     jobs:
       - template: build/steps/build-nuget.yml
@@ -133,7 +133,7 @@ stages:
           displayName: Nuget Phase
           vmImage: $(winVmImage)
           buildConfiguration: $(DefaultBuildConfiguration)
-          packageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
+          # packageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
 
   # only sign using the private server
 # - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
