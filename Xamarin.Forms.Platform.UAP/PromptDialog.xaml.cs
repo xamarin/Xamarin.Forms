@@ -24,12 +24,18 @@ namespace Xamarin.Forms.Platform.UAP
 			this.InitializeComponent();
 		}
 
-		private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+		public string Message
 		{
+			get => TextBlockMessage.Text;
+			set => TextBlockMessage.Text = value;
 		}
 
-		private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-		{
-		}
+		//private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+		//{
+		//}
+
+		//private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+		//{
+		//}
 	}
 }

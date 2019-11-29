@@ -8,10 +8,12 @@
     mc:Ignorable="d"
     Title="TITLE"
     PrimaryButtonText="Button1"
-    SecondaryButtonText="Button2"
-    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+    SecondaryButtonText="Button2">
 
-    <Grid>
-    </Grid>
+    <StackPanel>
+        <ScrollViewer>
+            <TextBlock x:Name="TextBlockMessage" Text="Message" TextWrapping="Wrap"></TextBlock>
+        </ScrollViewer>
+        <TextBox Text="Input Here"></TextBox>
+    </StackPanel>
 </ContentDialog>

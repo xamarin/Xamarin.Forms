@@ -535,13 +535,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static async void OnPagePrompt(Page sender, PromptArguments options)
 		{
-			string content = options.Message ?? string.Empty;
+			string message = options.Message ?? string.Empty;
 			string title = options.Title ?? string.Empty;
 
 			var promptDialog = new PromptDialog
 			{
-				Content = content,
-				Title = title
+				Title = title,
+				Message = message
 			};
 
 			if (options.Cancel != null)
