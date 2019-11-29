@@ -57,12 +57,12 @@ jobs:
           packagesToPack: '.nuspec/*.nuspec'
           packDestination: '$(Build.ArtifactStagingDirectory)/nuget/debug'
           versioningScheme: byEnvVar
-          versionEnvVar: nugetPackageVersion
+          versionEnvVar: packageVersion
           configuration: ${{ parameters.buildConfiguration }}
 
       - powershell: |
           $buildConfiguration = "Release"
-          $formsNugetVersion = "" + $env:nugetPackageVersion
+          $formsNugetVersion = "" + $env:packageVersion
 
           Write-Host("Update nuspecs")
           Get-ChildItem './.nuspec/*.nuspec' -Recurse | Foreach-Object {
