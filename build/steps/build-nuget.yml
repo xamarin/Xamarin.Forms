@@ -21,7 +21,7 @@ jobs:
     dependsOn: ${{ parameters.dependsOn }}
     condition: succeeded()
     variables:
-      nugetPackageVersion:  ${{ parameters.packageVersion }}
+      nugetPackageVersion: '9.9.9'
       FormsIdAppend: ''
     steps:
       - task: DownloadBuildArtifacts@0
