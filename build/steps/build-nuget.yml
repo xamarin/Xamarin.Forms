@@ -10,7 +10,7 @@ parameters:
   githubToken: '$(GitHub.Token)'
   sourceBranch : '$(Build.SourceBranch)'
   buildConfiguration: ''
-  packageVersion : ''
+  packageVersion : '9.9.9'
 
 jobs:
   - job: ${{ parameters.name }}
