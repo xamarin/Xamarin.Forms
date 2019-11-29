@@ -4,7 +4,6 @@ parameters:
   vmImage: ''         # the VM image
   vmPool: ''         # the VM pool
   targetFolder: ''    # the bootstrapper target
-  dependsOn: []       # the dependiencies
   preBuildSteps: []   # any steps to run before the build
   postBuildSteps: []  # any additional steps to run after the build
   buildConfiguration: ''
@@ -24,7 +23,6 @@ jobs:
         - sh
         - msbuild
         - Xamarin.iOS
-    dependsOn: ${{ parameters.dependsOn }}
     steps:
       - checkout: self
         clean: true

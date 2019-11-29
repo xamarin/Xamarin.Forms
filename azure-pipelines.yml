@@ -108,6 +108,7 @@ stages:
 
   - stage: osx
     displayName: Build OSX
+    dependsOn: []
     jobs:
       - template: build/steps/build-osx.yml
         parameters:
