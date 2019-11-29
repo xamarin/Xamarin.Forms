@@ -18,7 +18,7 @@ variables:
 - name: BuildVersion44
   value: $[counter('xf-nuget-counter', 991212)]
 - name: patch
-  patch: $[counter(variables['build.reason'], 992000)]
+  value: $[counter(variables['build.reason'], 992000)]
 - name: NUGET_VERSION
   value: 5.0.2
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
