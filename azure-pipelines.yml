@@ -64,7 +64,7 @@ resources:
       endpoint: xamarin
 
 stages:
- - stage: Windows
+  - stage: Windows
     displayName: Build Binaries
     dependsOn: prepare
     jobs:
