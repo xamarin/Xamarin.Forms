@@ -54,7 +54,7 @@ schedules:
   displayName: Daily midnight build
   branches:
     include:
-    - master 
+    - master
 
 resources:
   repositories:
@@ -73,7 +73,7 @@ stages:
           name: win
           displayName: Build Windows Phase
           vmImage: $(winVmImage)
-          msbuildExtraArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+          msbuildExtraArguments: '/nowarn:"APPX0107;APPX0102;APPX0104;APPX4001;CS0109;MSB3245;MSB3073;MSB3021;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
           buildConfiguration: $(DefaultBuildConfiguration)
           buildPlatform: $(DefaultBuildPlatform)
 
@@ -87,7 +87,7 @@ stages:
           displayName: Build Android [Legacy Renderers]
           vmImage: $(macOSVmImage)
           targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-          androidProjectArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
+          androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
           buildConfiguration: $(DefaultBuildConfiguration)
 
       - template: build/steps/build-android.yml
@@ -96,7 +96,7 @@ stages:
           displayName: Build Android [Pre-AppCompat]
           vmImage: $(macOSVmImage)
           targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
-          androidProjectArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
+          androidProjectArguments: '/p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
           buildConfiguration: $(DefaultBuildConfiguration)
 
       - template: build/steps/build-android.yml
@@ -105,7 +105,7 @@ stages:
           displayName: Build Android [Fast Renderers]
           vmImage: $(macOSVmImage)
           targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
-          androidProjectArguments: '/nowarn:"APPX0107;APPX0102;APPX4001;CS0109;MSB3245;MSB3073;MSB3276;MSB3277;VSX1000;XA0113;XA4216;XA4216APPX0107;VSX1000" /t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
+          androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
           buildConfiguration: $(DefaultBuildConfiguration)
 
   - stage: osx
