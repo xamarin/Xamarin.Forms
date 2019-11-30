@@ -30,6 +30,30 @@ namespace Xamarin.Forms.Platform.UAP
 			set => TextBlockMessage.Text = value;
 		}
 
+		public string Input
+		{
+			get => TextBoxInput.Text;
+			set => TextBoxInput.Text = value;
+		}
+
+		public string Placeholder
+		{
+			get => TextBoxInput.PlaceholderText;
+			set => TextBoxInput.PlaceholderText = value;
+		}
+
+		public int MaxLength
+		{
+			get => TextBoxInput.MaxLength;
+			set => TextBoxInput.MaxLength = value;
+		}
+
+		public InputScope InputScope
+		{
+			get => TextBoxInput.InputScope;
+			set => TextBoxInput.InputScope = value;
+		}
+
 		//private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
 		//{
 		//}

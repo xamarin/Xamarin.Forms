@@ -535,13 +535,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static async void OnPagePrompt(Page sender, PromptArguments options)
 		{
-			string message = options.Message ?? string.Empty;
-			string title = options.Title ?? string.Empty;
-
 			var promptDialog = new PromptDialog
 			{
-				Title = title,
-				Message = message
+				Title = options.Title ?? string.Empty,
+				Message = options.Message ?? string.Empty,
+				Input = options.InitialValue ?? string.Empty,
+				Placeholder = options.Placeholder ?? string.Empty,
+				MaxLength = options.MaxLength >= 0 ? options.MaxLength : 0,
+				InputScope = options.Keyboard.ToInputScope()
 			};
 
 			if (options.Cancel != null)
@@ -562,12 +563,12 @@ namespace Xamarin.Forms.Platform.UWP
 			s_currentPrompt = null;
 		}
 
-		static async Task<string> ShowPrompt(ContentDialog alert)
+		static async Task<string> ShowPrompt(PromptDialog prompt)
 		{
-			ContentDialogResult result = await alert.ShowAsync();
+			ContentDialogResult result = await prompt.ShowAsync();
 
 			if (result == ContentDialogResult.Primary)
-				return "OK";
+				return prompt.Input;
 			return null;
 		}
 
