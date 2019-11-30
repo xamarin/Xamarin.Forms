@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.Android
 					textView.SetMaxLines(1);
 
 					TextViewCompat.SetAutoSizeTextTypeUniformWithConfiguration(
-						textView, label.MinFontSize, label.MaxFontSize, 1, (int)ComplexUnitType.Sp);
+						textView, label.MinAutoFitSize, label.MaxAutoFitSize, 1, (int)ComplexUnitType.Sp);
 
 					break;
 				case AutoFitTextMode.None:

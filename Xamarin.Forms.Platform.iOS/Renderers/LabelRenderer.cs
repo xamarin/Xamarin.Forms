@@ -687,9 +687,9 @@ namespace Xamarin.Forms.Platform.MacOS
 					Control.AdjustsFontSizeToFitWidth = true;
 
 					var uiFont = Element.ToUIFont();
-					var minScaleFactor = (float)Element.MinFontSize / Element.MaxFontSize;
+					var minScaleFactor = (float)Element.MinAutoFitSize / Element.MaxAutoFitSize;
 
-					Control.Font = uiFont.WithSize((float)Element.MaxFontSize);
+					Control.Font = uiFont.WithSize((float)Element.MaxAutoFitSize);
 					Control.MinimumScaleFactor = minScaleFactor;
 					Control.AdjustsFontSizeToFitWidth = true;
 					Control.Lines = 1;
