@@ -11,9 +11,7 @@
     SecondaryButtonText="Button2">
 
     <StackPanel>
-        <!--<ScrollViewer>-->
-            <TextBlock x:Name="TextBlockMessage" Text="Message" TextWrapping="Wrap"></TextBlock>
-        <!--</ScrollViewer>-->
+        <TextBlock x:Name="TextBlockMessage" Text="Message" TextWrapping="Wrap"></TextBlock>
         <TextBox x:Name="TextBoxInput"></TextBox>
     </StackPanel>
 </ContentDialog>
