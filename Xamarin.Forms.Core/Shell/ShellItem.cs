@@ -226,10 +226,6 @@ namespace Xamarin.Forms
 
 		void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if ((e.Action == NotifyCollectionChangedAction.Reset ||
-				e.Action == NotifyCollectionChangedAction.Remove) && Items.Count == 0)
-				throw new NotSupportedException("the ShellItem.Items must have at least one item.");
-
 			if (e.NewItems != null)
 			{
 				foreach (Element element in e.NewItems)

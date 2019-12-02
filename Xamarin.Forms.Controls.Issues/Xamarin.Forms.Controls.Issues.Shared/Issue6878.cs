@@ -28,9 +28,11 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue6878 : TestShell
 	{
-		const string ExceptionMessage = "😢 oh no! An exception as throw...";
 		const string ClearShellItems = "ClearShellItems";
 		const string StatusLabel = "StatusLabel";
+		const string StatusLabelText = "Everything is fine 😎";
+		const string TopTab = "Top Tab";
+		const string PostClearTopTab = "Post clear Top Tab";
 
 		StackLayout _stackContent;
 
@@ -43,18 +45,18 @@ namespace Xamarin.Forms.Controls.Issues
 					new Label()
 					{
 						AutomationId = StatusLabel,
-						Text = "Everything is fine 😎"
+						Text = StatusLabelText
 					}
 				}
 			};
 
 			_stackContent.Children.Add(BuildClearButton());
-			CreateContentPage().Content = _stackContent;
+			AddTopTab(TopTab).Content = _stackContent;
 
 			CurrentItem = Items.Last();
 
-			AddBottomTab("bottom 1");
-			AddBottomTab("bottom 2");
+			AddTopTab(TopTab);
+			AddBottomTab("Bottom tab");
 			Shell.SetBackgroundColor(this, Color.BlueViolet);
 		}
 
@@ -65,17 +67,12 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Click to clear ShellItem.Items",
 				Command = new Command(() =>
 				{
-					try
-					{
-						Items.Last().Items.Clear();
-					}
-					catch (NotSupportedException)
-					{
-						Items.Clear();
-						CreateContentPage().Content = _stackContent;
-						((Label)_stackContent.Children[0]).Text = ExceptionMessage;
-						CurrentItem = Items.Last();
-					}
+					Items[0].Items.Clear();
+					Items.Clear();
+					AddTopTab(TopTab).Content = _stackContent;
+					CurrentItem = Items.Last();
+
+					AddTopTab(PostClearTopTab);
 				}),
 				AutomationId = ClearShellItems
 			};
@@ -89,7 +86,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(ClearShellItems);
 
 			var label = RunningApp.WaitForElement(StatusLabel)[0];
-			Assert.AreEqual(label.Text, ExceptionMessage);
+			Assert.AreEqual(label.Text, StatusLabelText);
+			RunningApp.Tap(PostClearTopTab);
 		}
 #endif
 	}
