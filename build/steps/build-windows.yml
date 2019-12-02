@@ -175,6 +175,7 @@ jobs:
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.mdb
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.pdb
           **/*.binlog
+          .XamarinFormsVersionFile.txt
 
         TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
@@ -182,3 +183,8 @@ jobs:
       displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
       inputs:
         ArtifactName: ${{ parameters.artifactsName }}
+    
+    - task: PublishPipelineArtifact@1
+      inputs:
+        path: $(System.DefaultWorkingDirectory)/.XamarinFormsVersionFile.txt
+        artifact: variables
