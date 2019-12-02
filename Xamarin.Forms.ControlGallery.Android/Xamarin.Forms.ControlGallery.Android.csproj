@@ -320,7 +320,7 @@
     <Version>3.0.2</Version>
   </PackageReference>
   <PackageReference Include="Xamarin.Build.Download">
-    <Version>0.4.11</Version>
+    <Version>0.6</Version>
   </PackageReference>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
