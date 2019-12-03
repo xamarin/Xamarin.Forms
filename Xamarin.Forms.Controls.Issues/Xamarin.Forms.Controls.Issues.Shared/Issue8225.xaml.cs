@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -42,9 +41,9 @@ namespace Xamarin.Forms.Controls.Issues
 		void OnSliderValueChanged(object sender, ValueChangedEventArgs e)
 		{
 			var peekAreaInsets = e.NewValue;
-			CarouselView.PeekAreaInsets = new Thickness(peekAreaInsets);
+			CarouselView.PeekAreaInsets = new Thickness(peekAreaInsets, 0);
 		}
-	}
+   	}
 
 	[Preserve(AllMembers = true)]
 	public class Issue8525Model

@@ -12,27 +12,40 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid
-                Grid.Row="0">
+            <Label
+                Grid.Row="0"
+                BackgroundColor="Black"
+                TextColor="White"
+                Text="Verify that the intersection of the red lines is always the center of an element of the CarouselView."/>
+            <StackLayout
+                Grid.Row="1">
+                <Label
+                    FontSize="10"
+                    Text="PeekAreaInsets:"/>
                 <Slider
+                    x:Name="PeekAreaInsetsSlider"
                     Minimum="0"
                     Maximum="100"
                     Value="50"
                     ValueChanged="OnSliderValueChanged"/>
-            </Grid>
+                <Label
+                    HorizontalOptions="Center"
+                    Text="{Binding Value, Source={x:Reference PeekAreaInsetsSlider}}"/>
+            </StackLayout>
             <CarouselView
-                Grid.Row="1"
+                Grid.Row="2"
                 x:Name="CarouselView"
                 ItemsSource="{Binding Items}"
-                PeekAreaInsets="50"
+                PeekAreaInsets="50, 0"
                 HeightRequest="180">
                 <CarouselView.ItemsLayout>
                     <LinearItemsLayout
                         Orientation="Horizontal"
                         ItemSpacing="20"
                         SnapPointsType="Mandatory"
-                        SnapPointsAlignment="Center"  />
+                        SnapPointsAlignment="Center" />
                 </CarouselView.ItemsLayout>
                 <CarouselView.ItemTemplate>
                     <DataTemplate>
@@ -54,7 +67,19 @@
                         </Grid>
                     </DataTemplate>
                 </CarouselView.ItemTemplate>
-            </CarouselView>            
+            </CarouselView>
+            <Grid
+                Grid.Row="2"
+                InputTransparent="True">
+                <Grid
+                    BackgroundColor="Red"
+                    HeightRequest="1"
+                    VerticalOptions="Center" />
+                <Grid
+                    BackgroundColor="Red"
+                    WidthRequest="1"
+                    HorizontalOptions="Center" />
+            </Grid>
         </Grid>
     </ContentPage.Content>
 </controls:TestContentPage>
