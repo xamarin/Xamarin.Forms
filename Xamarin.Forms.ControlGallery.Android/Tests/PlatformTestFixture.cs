@@ -1,12 +1,10 @@
 ﻿using Android.Content;
 using Android.Content.PM;
 using Android.Widget;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 
-namespace Xamarin.Forms.ControlGallery.Android
+namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
-	[Preserve(AllMembers = true)]
 	public class PlatformTestFixture
 	{
 		Context _context;

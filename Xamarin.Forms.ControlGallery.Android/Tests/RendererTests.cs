@@ -2,12 +2,10 @@
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.ControlGallery.Android
+namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
 	[TestFixture]
-	[Preserve(AllMembers = true)]
 	public class RendererTests : PlatformTestFixture
 	{
 		[Test(Description = "Basic sanity check that Label text matches renderer text")]
@@ -22,7 +20,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		[Test(Description = "Validate renderer vertical alignment for Entry with VerticalTextAlignment Center")]
 		public void EntryVerticalAlignmentCenterInRenderer()
-		{
+		{ 
 			var entry1 = new Entry { Text = "foo", VerticalTextAlignment = TextAlignment.Center };
 			using (var editText = GetNativeControl(entry1))
 			{

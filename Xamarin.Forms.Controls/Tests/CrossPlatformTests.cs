@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
+﻿using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Tests
 {
 	[TestFixture]
-	[Internals.Preserve(AllMembers = true)]
 	public class CrossPlatformTests
 	{
 		[Test(Description = "Always Passes")]

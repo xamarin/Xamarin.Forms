@@ -1,8 +1,11 @@
 ﻿using System.Diagnostics;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Tests
 {
+	[Preserve(AllMembers = true)]
 	public class ControlGalleryTestListener : ITestListener
 	{
 		public void SendMessage(TestMessage message)
@@ -12,8 +15,17 @@ namespace Xamarin.Forms.Controls.Tests
 
 		public void TestFinished(ITestResult result)
 		{
-			Debug.WriteLine($"{result.Name} finished");
-			MessagingCenter.Send(result, "TestFinished");
+			var test = result.Test;
+			if (test is TestAssembly testAssembly)
+			{
+				Debug.WriteLine($"Assembly finished {testAssembly.Assembly.FullName}");
+				MessagingCenter.Send(result, "AssemblyFinished");
+			}
+			else
+			{
+				Debug.WriteLine($"{result.Name} finished");
+				MessagingCenter.Send(result, "TestFinished");
+			}
 		}
 
 		public void TestOutput(TestOutput output)

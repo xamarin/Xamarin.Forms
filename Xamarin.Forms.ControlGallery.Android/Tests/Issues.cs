@@ -2,13 +2,11 @@
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 
-namespace Xamarin.Forms.ControlGallery.Android
+namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
 	[TestFixture]
-	[Preserve(AllMembers = true)]
 	public class Issues : PlatformTestFixture
 	{
 		[Test(Description = "The HorizontalAlignment of an Entry's renderer should match the Entry")]

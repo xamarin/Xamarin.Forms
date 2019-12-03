@@ -1,8 +1,10 @@
 ﻿using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 {
+	[Preserve(AllMembers = true)]
 	public class TestNameContainsFilter : TestFilter
 	{
 		string _substring;

@@ -3,9 +3,14 @@ using NUnit.Framework.Interfaces;
 using Xamarin.Forms.Controls.Tests;
 using Xamarin.Forms.Xaml;
 using NUnit.Framework.Internal;
+using Xamarin.Forms.Internals;
+using System;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 {
+	[Preserve(AllMembers = true)]
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class PlatformTestsConsole : ContentPage
 	{
@@ -18,11 +23,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		readonly Color _failColor = Color.Red;
 		readonly Color _inconclusiveColor = Color.Goldenrod;
 
+		int _finishedAssemblyCount = 0;
+
 		public PlatformTestsConsole()
 		{
 			InitializeComponent();
+			MessagingCenter.Subscribe<ITestResult>(this, "AssemblyFinished", AssemblyFinished);
+
 			MessagingCenter.Subscribe<ITest>(this, "TestStarted", TestStarted);
 			MessagingCenter.Subscribe<ITestResult>(this, "TestFinished", TestFinished);
+
+			MessagingCenter.Subscribe<Exception>(this, "TestRunnerError", OutputTestRunnerError);
 		}
 
 		protected override async void OnAppearing()
@@ -33,12 +44,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			//var filter = new TestNameContainsFilter("Bugzilla");
 			
 			var tests = new PlatformTestRunner();
-			if (tests != null)
-			{
-				await tests.Run().ConfigureAwait(false);
-			}
-
-			DisplayOverallResult();
+			await Task.Run(() => tests.Run()).ConfigureAwait(false);
 		}
 
 		void DisplayOverallResult()
@@ -47,8 +53,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			{
 				if (_runFailed)
 				{
-					Status.Text = FailedText;
-					Status.TextColor = _failColor;
+					DisplayFailResult();
 				}
 				else if (_runInconclusive)
 				{
@@ -61,6 +66,23 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 					Status.TextColor = _successColor;
 				}
 			});
+		}
+
+		void DisplayFailResult(string failText = null) 
+		{
+			failText = failText ?? FailedText;
+
+			Status.Text = failText;
+			Status.TextColor = _failColor;
+		}
+
+		void AssemblyFinished(ITestResult assembly)
+		{
+			_finishedAssemblyCount += 1;
+			if (_finishedAssemblyCount == 2)
+			{
+				DisplayOverallResult();
+			}
 		}
 
 		void TestStarted(ITest test)
@@ -87,14 +109,102 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				return;
 			}
 
-			if (result.Test.IsSuite)
+			Debug.WriteLine($">>>>> {result.FullName}: result.Test.TestType is {result.Test.TestType}");
+
+			if (result.Test is TestFixture testFixture)
 			{
-				OutputSuiteResult(result);
+				OutputFixtureResult(result);
 			}
+
+			//if (result.Test.IsSuite)
+			//{
+			//	OutputSuiteResult(result);
+			//}
 			else
 			{
 				OutputTestResult(result);
 			}
+		}
+
+		void OutputFixtureResult(ITestResult result) 
+		{
+			var fixture = result.Test as TestFixture;
+
+			var name = fixture.Name;
+
+			var outcome = "Fail";
+
+			if (result.PassCount > 0)
+			{
+				outcome = "Pass";
+			}
+			else if (result.InconclusiveCount > 0)
+			{
+				outcome = "Inconclusive";
+			}
+
+			var label = new Label { Text = $"{name}: {outcome}.", LineBreakMode = LineBreakMode.HeadTruncation };
+
+			if (result.FailCount > 0)
+			{
+				label.TextColor = _failColor;
+				_runFailed = true;
+			}
+			else if (result.InconclusiveCount > 0)
+			{
+				label.TextColor = _inconclusiveColor;
+				_runInconclusive = true;
+			}
+			else
+			{
+				label.TextColor = _successColor;
+			}
+
+			var margin = new Thickness(15, 0, 0, 0);
+			label.Margin = margin;
+
+			var toAdd = new List<View> { label };
+
+			foreach (var assertionResult in result.AssertionResults)
+			{
+				if (assertionResult.Status != AssertionStatus.Passed)
+				{
+					toAdd.Add(new Label { Text = assertionResult.Message });
+					toAdd.Add(new Editor { Text = assertionResult.StackTrace, IsReadOnly = true });
+				}
+			}
+
+			if (!string.IsNullOrEmpty(result.Output))
+			{
+				toAdd.Add(new Label { Text = result.Output, Margin = margin });
+			}
+
+			if (result.Test.RunState == RunState.NotRunnable)
+			{
+				var reasonBag = result.Test.Properties[PropertyNames.SkipReason];
+
+				var reasonText = "";
+				foreach (var reason in reasonBag)
+				{
+					reasonText += reason;
+				}
+
+				if (string.IsNullOrEmpty(reasonText))
+				{
+					reasonText = @"¯\_(ツ)_/¯";
+				}
+
+				toAdd.Add(new Label { Text = $"Test was not runnable. Reason: {reasonText}", FontAttributes = FontAttributes.Bold, Margin = margin });
+			}
+
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				foreach (var outputView in toAdd)
+				{
+					Results.Children.Add(outputView);
+				}
+
+			});
 		}
 
 		void OutputTestResult(ITestResult result)
@@ -207,9 +317,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			});
 		}
 
+		void OutputTestRunnerError(Exception ex)
+		{
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				DisplayFailResult(ex.Message);
+			});
+		}
+
 		static readonly List<string> Trimmable = new List<string>
 		{
-				"Xamarin.Forms.ControlGallery.Android.",
+				"Xamarin.Forms.ControlGallery.Android.Tests.",
+				"Xamarin.Forms.ControlGallery.Android.Tests.RendererTests.",
+				"Xamarin.Forms.ControlGallery.Android.Tests.Issues.",
 				"Xamarin.Forms.ControlGallery.",
 				"Xamarin.Forms.Controls.Tests.",
 				"Xamarin.Forms.Controls.",
@@ -220,6 +340,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				"Xamarin", "Xamarin.Forms",
 				"Xamarin.Forms.ControlGallery",
 				"Xamarin.Forms.ControlGallery.Android",
+				"Xamarin.Forms.ControlGallery.Android.Tests",
 				"Xamarin.Forms.ControlGallery.iOS",
 				"Xamarin.Forms.Controls", "Xamarin.Forms.Controls.Tests"
 		};
@@ -239,11 +360,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		static bool IgnoreLevelForOutput(ITest test)
 		{
-			if (test.FullName.EndsWith(".exe") || test.FullName.EndsWith(".dll"))
-			{
-				return true;
-			}
-
 			return Ignorable.Contains(test.FullName);
 		}
 	}

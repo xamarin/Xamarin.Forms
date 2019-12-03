@@ -1,18 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using NUnit;
 using NUnit.Framework.Api;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Tests
 {
+	[Preserve(AllMembers = true)]
 	public class PlatformTestRunner
 	{
 		readonly ITestListener _testListener = new ControlGalleryTestListener();
 
-		public async Task Run(ITestFilter testFilter = null)
+		public void Run(ITestFilter testFilter = null)
 		{
 			testFilter = testFilter ?? TestFilter.Empty;
 
@@ -37,37 +40,46 @@ namespace Xamarin.Forms.Controls.Tests
 				runOnMainThread = (bool)runOnMainSetting;
 			}
 
-			if (runOnMainThread)
+			try
 			{
-				// FrameworkPackageSettings.RunOnMainThread will force all the tests to run sequentially on the thread
-				// they are started on; we have to do this for iOS to avoid cross-thread exceptions when updating
-				// renderer properties. It's a less nice runner experience, because we don't get progress updates
-				// while it runs, but that's life. Anyway, we push the test runs onto the main thread and wait.
+				if (runOnMainThread)
+				{
+					// FrameworkPackageSettings.RunOnMainThread will force all the tests to run sequentially on the thread
+					// they are started on; we have to do this for iOS to avoid cross-thread exceptions when updating
+					// renderer properties. It's a less nice runner experience, because we don't get progress updates
+					// while it runs, but that's life. Anyway, we push the test runs onto the main thread and wait.
 
-				await Device.InvokeOnMainThreadAsync(() => {
+					Device.BeginInvokeOnMainThread(() =>
+					{
+						runner.Load(controls, testRunSettings);
+						runner.Run(_testListener, testFilter);
+
+						runner.Load(platform, testRunSettings);
+						runner.Run(_testListener, testFilter);
+					});
+				}
+				else
+				{
+					// So far, Android lets us get away with running tests asynchronously, so we get
+					// progress updates as they run. This should be our default until we run into cross-thread
+					// or "not on the UI thread" issues with a platform, at which point we need to set RunOnMainThread
+					// like we do for iOS
+
 					runner.Load(controls, testRunSettings);
-					runner.Run(_testListener, testFilter);
+					runner.RunAsync(_testListener, testFilter);
 
 					runner.Load(platform, testRunSettings);
 					runner.Run(_testListener, testFilter);
-				});
+				}
 			}
-			else
+			catch (Exception ex) 
 			{
-				// So far, Android lets us get away with running tests asynchronously, so we get
-				// progress updates as they run. This should be our default until we run into cross-thread
-				// or "not on the UI thread" issues with a platform, at which point we need to set RunOnMainThread
-				// like we do for iOS
-
-				await Task.Run(() => runner.Load(controls, testRunSettings)).ConfigureAwait(false);
-				await Task.Run(() => runner.RunAsync(_testListener, testFilter)).ConfigureAwait(false);
-				
-				await Task.Run(() => runner.Load(platform, testRunSettings)).ConfigureAwait(false);
-				await Task.Run(() => runner.RunAsync(_testListener, testFilter)).ConfigureAwait(false);
+				MessagingCenter.Send(ex, "TestRunnerError");
 			}
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public interface IPlatformTestSettings
 	{
 		Assembly Assembly { get; }
