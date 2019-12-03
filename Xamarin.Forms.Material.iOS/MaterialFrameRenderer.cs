@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Material.iOS
 			if (element != null)
 				element.SendViewInitialized(this);
 
-			if (!string.IsNullOrEmpty(element.AutomationId))
+			if (!string.IsNullOrEmpty(element?.AutomationId))
 				AccessibilityIdentifier = element.AutomationId;
 		}
 
