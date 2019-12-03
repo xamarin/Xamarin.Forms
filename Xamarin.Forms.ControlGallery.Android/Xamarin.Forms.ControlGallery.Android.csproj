@@ -42,6 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <AndroidSupportedAbis>armeabi-v7a;x86</AndroidSupportedAbis>
     <Debugger>Xamarin</Debugger>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
@@ -63,6 +64,12 @@
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(CI)' == 'True' ">   
+    <AndroidLinkMode>Full</AndroidLinkMode>    
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>   
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>    
+    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>   
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
