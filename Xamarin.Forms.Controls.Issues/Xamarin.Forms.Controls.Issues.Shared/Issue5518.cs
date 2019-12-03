@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = new Label() { Text = "I'm label" },
 				AutomationId = "ContentedFrame"
 			};
+
 			var outputLabel2 = new Label() { Text = "", AutomationId = "Output2", HorizontalOptions = LayoutOptions.Center };
 
 			tapGestureRecognizer = new TapGestureRecognizer();
@@ -57,6 +58,8 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			frameWithContent.GestureRecognizers.Add(tapGestureRecognizer);
+
+			stack.Children.Add(new Label() { Text = "Clicking each frame should cause `Success` text to appear." });
 			stack.Children.Add(frameWithContent);
 			stack.Children.Add(outputLabel2);
 
@@ -74,11 +77,11 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("NoContentFrame");
 			RunningApp.Tap("NoContentFrame");
-			RunningApp.WaitForElement(q => q.Id("Output1").Text("Success"));
+			Assert.AreEqual("Success", RunningApp.WaitForElement("Output1")[0].ReadText());
 
 			RunningApp.WaitForElement("ContentedFrame");
-			RunningApp.Tap("ContentedFrame");
-			RunningApp.WaitForElement(q => q.Id("Output2").Text("Success"));
+			RunningApp.Tap("I'm label");
+			Assert.AreEqual("Success", RunningApp.WaitForElement("Output2")[0].ReadText());
 		}
 #endif
 	}

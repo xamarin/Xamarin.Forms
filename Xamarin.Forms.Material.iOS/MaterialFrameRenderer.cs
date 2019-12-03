@@ -96,6 +96,12 @@ namespace Xamarin.Forms.Material.iOS
 			}
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
+
+			if (element != null)
+				element.SendViewInitialized(this);
+
+			if (!string.IsNullOrEmpty(element.AutomationId))
+				AccessibilityIdentifier = element.AutomationId;
 		}
 
 		protected override void Dispose(bool disposing)
