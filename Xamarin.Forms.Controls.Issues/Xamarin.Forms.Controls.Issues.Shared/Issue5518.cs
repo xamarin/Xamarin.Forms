@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 5518, "Frame Tap Gesture not working when using Visual=\"Material\" in iOS", PlatformAffected.iOS)]
-	class Issue5518 : TestContentPage
+	public class Issue5518 : TestContentPage
 	{
 
 		protected override void Init()
@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = stack;
 		}
 
-		private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+		void TapGestureRecognizer_Tapped(object sender, EventArgs e)
 		{
 			DisplayAlert("Frame Tap Gesture", "Work", "Ok");
 		}
