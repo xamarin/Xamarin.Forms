@@ -1307,7 +1307,7 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8417.xaml" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8225.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8525.xaml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla27417Xaml.xaml">
