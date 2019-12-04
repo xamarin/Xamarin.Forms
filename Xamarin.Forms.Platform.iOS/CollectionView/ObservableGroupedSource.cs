@@ -2,17 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading;
 using Foundation;
 using UIKit;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	internal class ObservableGroupedSource : IItemsViewSource
 	{
 		readonly UICollectionView _collectionView;
-		UICollectionViewController _collectionViewController;
+		readonly UICollectionViewController _collectionViewController;
 		readonly IList _groupSource;
+		readonly SynchronizationContext _synchronizationContext;
 		bool _disposed;
 		List<ObservableItemsSource> _groups = new List<ObservableItemsSource>();
 
@@ -21,6 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_collectionViewController = collectionViewController;
 			_collectionView = _collectionViewController.CollectionView;
 			_groupSource = groupSource as IList ?? new ListSource(groupSource);
+			_synchronizationContext = SynchronizationContext.Current;
 
 			if (_groupSource is INotifyCollectionChanged incc)
 			{
@@ -130,26 +132,39 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			switch (args.Action)
+			if (SynchronizationContext.Current != _synchronizationContext)
 			{
-				case NotifyCollectionChangedAction.Add:
-					Add(args);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					Move(args);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					Reload();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+				// Raises the CollectionChanged event on the creator thread
+				_synchronizationContext.Send(RaiseCollectionChanged, args);
 			}
+			else
+			{
+				switch (args.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						Add(args);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						Remove(args);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						Replace(args);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						Move(args);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						Reload();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+		}
+
+		void RaiseCollectionChanged(object param)
+		{
+			CollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
 		}
 
 		void Reload()

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly double _itemHeight;
 		readonly double _itemWidth;
 		readonly Thickness _itemSpacing;
+		readonly SynchronizationContext _synchronizationContext;
 		readonly INotifyCollectionChanged _notifyCollectionChanged;
 
 		public ObservableItemTemplateCollection(IList itemsSource, DataTemplate itemTemplate, BindableObject container, 
@@ -46,6 +48,8 @@ namespace Xamarin.Forms.Platform.UWP
 				Add(new ItemTemplateContext(itemTemplate, itemsSource[n], container, _itemHeight, _itemWidth, _itemSpacing));
 			}
 
+			_synchronizationContext = SynchronizationContext.Current;
+
 			_notifyCollectionChanged.CollectionChanged += InnerCollectionChanged;
 		}
 
@@ -56,26 +60,36 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			switch (args.Action)
+			if (SynchronizationContext.Current != _synchronizationContext)
+				_synchronizationContext.Send(RaiseCollectionChanged, args);
+			else
 			{
-				case NotifyCollectionChangedAction.Add:
-					Add(args);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					Move(args);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					Reset();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+				switch (args.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						Add(args);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						Move(args);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						Remove(args);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						Replace(args);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						Reset();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
+		}
+
+		void RaiseCollectionChanged(object param)
+		{
+			CollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)

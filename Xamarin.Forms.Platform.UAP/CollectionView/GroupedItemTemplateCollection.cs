@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -11,6 +12,7 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly DataTemplate _groupHeaderTemplate;
 		readonly DataTemplate _groupFooterTemplate;
 		readonly BindableObject _container;
+		readonly SynchronizationContext _synchronizationContext;
 		readonly IList _groupList;
 
 		public GroupedItemTemplateCollection(IEnumerable itemsSource, DataTemplate itemTemplate, 
@@ -21,6 +23,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_groupHeaderTemplate = groupHeaderTemplate;
 			_groupFooterTemplate = groupFooterTemplate;
 			_container = container;
+			_synchronizationContext = SynchronizationContext.Current;
 
 			foreach (var group in _itemsSource)
 			{
@@ -51,24 +54,34 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void GroupsChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			switch (args.Action)
+			if (SynchronizationContext.Current != _synchronizationContext)
+				_synchronizationContext.Post(RaiseCollectionChanged, args);
+			else
 			{
-				case NotifyCollectionChangedAction.Add:
-					Add(args);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					Move(args);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					Reset();
-					break;
+				switch (args.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						Add(args);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						Move(args);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						Remove(args);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						Replace(args);
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						Reset();
+						break;
+				}
 			}
+		}
+
+		void RaiseCollectionChanged(object param)
+		{
+			GroupsChanged(this, (NotifyCollectionChangedEventArgs)param);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
