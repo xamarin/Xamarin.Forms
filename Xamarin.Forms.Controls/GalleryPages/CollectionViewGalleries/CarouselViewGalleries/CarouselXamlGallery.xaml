@@ -12,7 +12,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Slider Margin="5" Value="{Binding Position, Mode=TwoWay}" Maximum="{Binding Count}" />
-        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="1" HeightRequest="400">
+        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="1" HeightRequest="400"
+                      PeekAreaInsets="80,0">
             <CarouselView.ItemTemplate>
                 <DataTemplate>
                     <gallery:ExampleTemplateCarousel />

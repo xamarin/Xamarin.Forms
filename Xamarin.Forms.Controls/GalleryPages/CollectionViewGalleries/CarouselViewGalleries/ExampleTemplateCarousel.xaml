@@ -6,26 +6,25 @@
             <VisualState x:Name="CurrentItem">
                 <VisualState.Setters>
                     <Setter Property="Opacity" Value="1" />
+                    <Setter Property="Scale" Value="1" />
                 </VisualState.Setters>
             </VisualState>
             <VisualState x:Name="PreviousItem">
                 <VisualState.Setters>
                     <Setter Property="Opacity" Value="0.7" />
+                    <Setter Property="Scale" Value="0.7" />
                 </VisualState.Setters>
             </VisualState>
             <VisualState x:Name="NextItem">
                 <VisualState.Setters>
                     <Setter Property="Opacity" Value="0.7" />
-                </VisualState.Setters>
-            </VisualState>
-			  <VisualState x:Name="VisibleItem">
-                <VisualState.Setters>
-                    <Setter Property="Opacity" Value="0.6" />
+                    <Setter Property="Scale" Value="0.7" />
                 </VisualState.Setters>
             </VisualState>
             <VisualState x:Name="DefaultItem">
                 <VisualState.Setters>
-                    <Setter Property="Opacity" Value="0.5" />
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="Scale" Value="1" />
                 </VisualState.Setters>
             </VisualState>
         </VisualStateGroup>
