@@ -43,10 +43,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_viewInitialized)
 			{
 				UpdateInitialPosition();
+				UpdateVisualStates();
 
 				_viewInitialized = true;
 			}
-			UpdateCellStates();
+			
 		}
 
 		protected override bool IsHorizontal => (_carouselView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
@@ -115,10 +116,10 @@ namespace Xamarin.Forms.Platform.iOS
 		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.Is(CarouselView.PositionProperty))
-				UpdateCellStates();
+				UpdateVisualStates();
 		}
 
-		void UpdateCellStates()
+		void UpdateVisualStates()
 		{
 			var cells = CollectionView.VisibleCells;
 
