@@ -1283,7 +1283,7 @@ namespace Xamarin.Forms.Platform.Android
 			protected override void Dispose(bool disposing)
 			{
 				if (disposing)
-					_touchListener = null;
+					SetOnTouchListener(null); 
 
 				base.Dispose(disposing);
 			}
