@@ -21,15 +21,15 @@ namespace Xamarin.Forms.Controls.Issues
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 8525, "[Bug] CarouselView not working in ios application", PlatformAffected.iOS)]
-	public partial class Issue8525 : TestContentPage
+	[Issue(IssueTracker.Github, 8638, "[Bug] CarouselView inconsistent layout positioning", PlatformAffected.Android)]
+	public partial class Issue8638 : TestContentPage
 	{
-		public Issue8525()
+		public Issue8638()
 		{
 #if APP
-			Title = "Issue 8525";
+			Title = "Issue 8638";
 			InitializeComponent();
-			BindingContext = new Issue8525ViewModel();
+			BindingContext = new Issue8638ViewModel();
 #endif
 		}
 
@@ -48,23 +48,23 @@ namespace Xamarin.Forms.Controls.Issues
    	}
 
 	[Preserve(AllMembers = true)]
-	public class Issue8525Model
+	public class Issue8638Model
 	{
 		public Color Color { get; set; }
 		public string Name { get; set; }
 	}
 
 	[Preserve(AllMembers = true)]
-	public class Issue8525ViewModel : BindableObject
+	public class Issue8638ViewModel : BindableObject
 	{
-		ObservableCollection<Issue8525Model> _items;
+		ObservableCollection<Issue8638Model> _items;
 
-		public Issue8525ViewModel()
+		public Issue8638ViewModel()
 		{
 			LoadItems();
 		}
 
-		public ObservableCollection<Issue8525Model> Items
+		public ObservableCollection<Issue8638Model> Items
 		{
 			get { return _items; }
 			set
@@ -76,21 +76,21 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public void LoadItems()
 		{
-			Items = new ObservableCollection<Issue8525Model>();
+			Items = new ObservableCollection<Issue8638Model>();
 
 			var random = new Random();
-			var items = new List<Issue8525Model>();
+			var items = new List<Issue8638Model>();
 
 			for (int n = 0; n < 5; n++)
 			{
-				items.Add(new Issue8525Model
+				items.Add(new Issue8638Model
 				{
 					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
 					Name = $"{n + 1}"
 				});
 			}
 
-			_items = new ObservableCollection<Issue8525Model>(items);
+			_items = new ObservableCollection<Issue8638Model>(items);
 			OnPropertyChanged(nameof(Items));
 		}
 	}
