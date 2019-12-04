@@ -33,7 +33,15 @@ namespace Xamarin.Forms.Controls.Issues
 			var endtry = new Entry { Placeholder = "Entry", HorizontalOptions = LayoutOptions.FillAndExpand };
 			var entryButton = new Button { Text = "OK", HorizontalOptions = LayoutOptions.End };
 			var entryLayout = new StackLayout { Orientation = StackOrientation.Horizontal, Children = { endtry, entryButton }, VerticalOptions = LayoutOptions.Start };
-			Content = new StackLayout { Children = { editorLayout, entryLayout } };
+			Content = new StackLayout
+			{
+				Children = {
+					new Label() { Text = "Click editor to make keyboard appear. Click ok and keyboard shouldn't disappear"},
+					editorLayout,
+					new Label() { Text = "Click entry to make keyboard appear. Click ok and keyboard should disappear"},
+					entryLayout
+				}
+			};
 		}
 	}
 }

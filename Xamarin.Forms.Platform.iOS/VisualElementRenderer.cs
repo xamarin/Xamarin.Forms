@@ -110,7 +110,16 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 #if __MOBILE__
-		public override bool CanBecomeFirstResponder => (bool)Element.GetValue(PlatformConfiguration.iOSSpecific.VisualElement.CanBecomeFirstResponderProperty);
+		public override bool CanBecomeFirstResponder
+		{
+			get
+			{
+				if (Element.IsSet(PlatformConfiguration.iOSSpecific.VisualElement.CanBecomeFirstResponderProperty))
+					return PlatformConfiguration.iOSSpecific.VisualElement.GetCanBecomeFirstResponder(Element);
+
+				return base.CanBecomeFirstResponder;
+			}
+		}
 #endif
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
