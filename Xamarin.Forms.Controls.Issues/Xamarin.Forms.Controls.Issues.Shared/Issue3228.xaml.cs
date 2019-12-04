@@ -1,7 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using static Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Application;
+using WindowsOS = Xamarin.Forms.PlatformConfiguration.Windows;
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -13,13 +13,12 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			InitializeComponent();
-			Application.Current.On<Windows>().SetImageSearchDirectory("Assets");
 #endif
 		}
 
 		protected override void Init()
 		{
-
+			Application.Current.On<WindowsOS>().SetImageSearchDirectory("Assets");
 		}
 	}
 }
