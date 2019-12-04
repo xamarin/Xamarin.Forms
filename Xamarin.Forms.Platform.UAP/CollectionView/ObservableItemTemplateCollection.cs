@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			if (SynchronizationContext.Current != _synchronizationContext)
-				_synchronizationContext.Send(RaiseCollectionChanged, args);
+				_synchronizationContext.Post(RaiseCollectionChanged, args);
 			else
 			{
 				switch (args.Action)
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void RaiseCollectionChanged(object param)
 		{
-			CollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
+			InnerCollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
