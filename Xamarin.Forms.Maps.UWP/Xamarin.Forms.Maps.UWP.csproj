@@ -1,4 +1,4 @@
-﻿<Project Sdk="Msbuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>uap10.0.14393;uap10.0.16299</TargetFrameworks>
     <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.14393'">10.0.16299.0</TargetPlatformVersion>
