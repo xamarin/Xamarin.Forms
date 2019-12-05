@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.CollectionView)]
+	[NUnit.Framework.Category(UITestCategories.SwipeView)]
 #endif
 
 	[Preserve(AllMembers = true)]
