@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 8743, "[Bug][UWP] SearchBar does not respect FontSize on 4.3.0",
 		PlatformAffected.UWP)]
 #if UITEST
-	[NUnit.Framework.Category(UITestCategories.Picker)]
+	[NUnit.Framework.Category(UITestCategories.SearchBar)]
 #endif
 	public class Issue8843 : TestContentPage
 	{
