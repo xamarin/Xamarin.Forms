@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -12,6 +13,18 @@ namespace Xamarin.Forms
 		public SwipeItems()
 		{
 			_internal = new ObservableCollection<ISwipeItem>();
+			_internal.CollectionChanged += OnSwipeItemsChanged;
+		}
+
+		public SwipeItems(IList<ISwipeItem> swipeItems)
+		{
+			_internal = new ObservableCollection<ISwipeItem>(swipeItems) ?? throw new ArgumentNullException(nameof(swipeItems));
+			_internal.CollectionChanged += OnSwipeItemsChanged;
+		}
+
+		public SwipeItems(ISwipeItem swipeItem)
+		{
+			_internal = new ObservableCollection<ISwipeItem>() { swipeItem } ?? throw new ArgumentNullException(nameof(swipeItem));
 			_internal.CollectionChanged += OnSwipeItemsChanged;
 		}
 
