@@ -23,13 +23,16 @@
             </VisualState>
             <VisualState x:Name="DefaultItem">
                 <VisualState.Setters>
-                    <Setter Property="Opacity" Value="1" />
-                    <Setter Property="Scale" Value="1" />
+                    <Setter Property="Opacity" Value="0.7" />
+                    <Setter Property="Scale" Value="0.7" />
                 </VisualState.Setters>
             </VisualState>
         </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
     <Frame x:Name="frame" HasShadow="True" Padding="0" HorizontalOptions="Center" VerticalOptions="Center" BackgroundColor="Yellow">
-        <Image Source="{Binding FeaturedImage}" InputTransparent="true" Aspect="AspectFit" />
+        <Grid>
+            <Image Source="{Binding FeaturedImage}" InputTransparent="true" Aspect="AspectFit" />
+            <Label Text="{Binding Index}" HorizontalOptions="Center" VerticalOptions="End" ></Label>
+        </Grid>
     </Frame>
 </Grid>
