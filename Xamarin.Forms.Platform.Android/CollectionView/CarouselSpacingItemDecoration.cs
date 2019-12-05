@@ -53,33 +53,29 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			int position = parent.GetChildAdapterPosition(view);
-			int itemCount = state.ItemCount;
+			int itemCount = parent.GetAdapter().ItemCount;
 
 			if (position == RecyclerView.NoPosition || itemCount == 0)
 				return;
 
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
-				var bottomPeekAreaInsets = parent.Context.ToPixels(_carouselView.PeekAreaInsets.Bottom);
-				var topPeekAreaInsets = parent.Context.ToPixels(_carouselView.PeekAreaInsets.Top);
-
+				var verticalInsets = parent.Context.ToPixels(_carouselView.PeekAreaInsets.Bottom + _carouselView.PeekAreaInsets.Top) / 2;
 				var finalVerticalSpacing = (int)(_adjustedVerticalSpacing - (_verticalSpacing * 2));
 
 				outRect.Left = position == 0 ? 0 : (int)_adjustedHorizontalSpacing;
-				outRect.Bottom = (position == (itemCount - 1) && bottomPeekAreaInsets > 0) ? ((int)Math.Ceiling(bottomPeekAreaInsets / 2) + finalVerticalSpacing) : finalVerticalSpacing;
-				outRect.Top = (position == 0 && topPeekAreaInsets > 0) ? ((int)Math.Ceiling(topPeekAreaInsets / 2) + finalVerticalSpacing) : finalVerticalSpacing;
+				outRect.Bottom = (position == (itemCount - 1) && verticalInsets > 0) ? ((int)Math.Ceiling(verticalInsets / 2) + finalVerticalSpacing) : finalVerticalSpacing;
+				outRect.Top = (position == 0 && verticalInsets > 0) ? ((int)Math.Ceiling(verticalInsets / 2) + finalVerticalSpacing) : finalVerticalSpacing;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				var leftPeekAreaInsets = parent.Context.ToPixels(_carouselView.PeekAreaInsets.Left);
-				var rightPeekAreaInsets = parent.Context.ToPixels(_carouselView.PeekAreaInsets.Right);
-
+				var horizontalInsets = parent.Context.ToPixels(_carouselView.PeekAreaInsets.Left + _carouselView.PeekAreaInsets.Right) / 2;
 				var finalHorizontalSpacing = (int)(_adjustedHorizontalSpacing - (_horizontalSpacing * 2));
 
 				outRect.Top = position == 0 ? 0 : (int)_adjustedVerticalSpacing;
-				outRect.Right = (position == (itemCount - 1) && rightPeekAreaInsets > 0) ? ((int)Math.Ceiling(rightPeekAreaInsets / 2) + finalHorizontalSpacing) : finalHorizontalSpacing;
-				outRect.Left = (position == 0 && leftPeekAreaInsets > 0) ? ((int)Math.Ceiling(leftPeekAreaInsets / 2) + finalHorizontalSpacing) : finalHorizontalSpacing;
+				outRect.Right = (position == (itemCount - 1) && horizontalInsets > 0) ? ((int)Math.Ceiling(horizontalInsets / 2) + finalHorizontalSpacing) : finalHorizontalSpacing;
+				outRect.Left = (position == 0 && horizontalInsets > 0) ? ((int)Math.Ceiling(horizontalInsets / 2) + finalHorizontalSpacing) : finalHorizontalSpacing;
 			}
 		}
 	}
