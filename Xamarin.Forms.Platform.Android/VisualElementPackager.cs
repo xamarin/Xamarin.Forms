@@ -306,10 +306,12 @@ namespace Xamarin.Forms.Platform.Android
 					else
 						sameChildrenTypes = false;
 				}
-
-				for (var i = 0; i < oldChildren.Count; i++)
+				else
 				{
-					RemoveChild((VisualElement)oldChildren[i]);
+					for (var i = 0; i < oldChildren.Count; i++)
+					{
+						RemoveChild((VisualElement)oldChildren[i]);
+					}
 				}
 
 				if (!sameChildrenTypes)

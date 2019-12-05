@@ -70,9 +70,9 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_renderer != null)
 					{
-						if (_renderer.Element != null)
+						if (_element != null)
 						{
-							_renderer.Element.PropertyChanged -= OnElementPropertyChanged;
+							_element.PropertyChanged -= OnElementPropertyChanged;
 						}
 
 						_renderer.ElementChanged -= OnElementChanged;
