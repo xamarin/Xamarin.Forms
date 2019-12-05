@@ -4,7 +4,7 @@
 	xmlns:uwp="using:Xamarin.Forms.Platform.UWP">
 
 	<!-- Default Style for AutoSuggestBox -->
-	<Style TargetType="AutoSuggestBox">
+	<Style TargetType="AutoSuggestBox" x:Key="FormsAutoSuggestBoxStyle">
 		<Setter Property="VerticalAlignment" Value="Top" />
 		<Setter Property="IsTabStop" Value="False" />
 		<Setter Property="TextBoxStyle" Value="{StaticResource AutoSuggestBoxFormsTextBoxStyle}" />
