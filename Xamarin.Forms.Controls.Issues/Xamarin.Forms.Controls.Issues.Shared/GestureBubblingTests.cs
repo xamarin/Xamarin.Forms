@@ -31,10 +31,14 @@ namespace Xamarin.Forms.Controls.Issues
 		const string NoTaps = "No taps yet";
 		const string Tapped = "Frame was tapped";
 
+		static NavigationPage NavigationPage;
+
 #if UITEST
 		[Test, TestCaseSource(nameof(TestCases))]
 		public void VerifyTapBubbling(string menuItem, bool frameShouldRegisterTap)
 		{
+			NavigationPage = this;
+
 			var results = RunningApp.WaitForElement(q => q.Marked(menuItem));
 
 			if (results.Length > 1)
@@ -91,10 +95,12 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				RunningApp.WaitForElement(q => q.Marked(NoTaps));
 			}
+
+			NavigationPage = null;
 		}
 #endif
 
-		ContentPage CreateTestPage(View view)
+		static ContentPage CreateTestPage(View view)
 		{
 			var instructions = new Label();
 
@@ -126,20 +132,20 @@ namespace Xamarin.Forms.Controls.Issues
 			return new ContentPage { Content = layout };
 		}
 
-		Button MenuButton(string label, Func<View> view)
+		static Button MenuButton(string label, Func<View> view)
 		{
 			var button = new Button { Text = label };
 
 			var testView = view();
 			testView.AutomationId = TargetAutomationId;
 
-			button.Clicked += (sender, args) => PushAsync(CreateTestPage(testView));
+			button.Clicked += (sender, args) => NavigationPage.PushAsync(CreateTestPage(testView));
 
 			return button;
 		}
 
 		// These controls should allow the tap gesture to bubble up to their container; everything else should absorb the gesture
-		readonly List<string> _controlsWhichShouldAllowTheTapToBubbleUp = new List<string>
+		static readonly List<string> _controlsWhichShouldAllowTheTapToBubbleUp = new List<string>
 		{
 			nameof(Image),
 			nameof(Label),
@@ -147,7 +153,7 @@ namespace Xamarin.Forms.Controls.Issues
 			nameof(Frame)
 		};
 
-		IEnumerable<object[]> TestCases
+		static IEnumerable<object[]> TestCases
 		{
 			get
 			{
@@ -170,7 +176,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		ContentPage BuildMenu()
+		static ContentPage BuildMenu()
 		{
 			var layout = new Grid
 			{

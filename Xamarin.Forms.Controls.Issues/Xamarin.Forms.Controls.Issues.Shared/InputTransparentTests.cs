@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -24,10 +24,14 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		const string TargetAutomationId = "inputtransparenttarget";
 
+		static NavigationPage NavigationPage;
+
 #if UITEST
 		[Test, TestCaseSource(nameof(TestCases))]
 		public void VerifyInputTransparent(string menuItem)
 		{
+			NavigationPage = this;
+
 			var results = RunningApp.WaitForElement(q => q.Marked(menuItem));
 
 			if(results.Length > 1)
@@ -90,10 +94,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 			// Since InputTransparent is set to true, the start label should now show a single tap
 			RunningApp.WaitForElement(q => q.Marked("Taps registered: 1"));
+
+			NavigationPage = null;
 		}
 #endif
 
-		ContentPage CreateTestPage(View view)
+		static ContentPage CreateTestPage(View view)
 		{
 			var layout = new Grid();
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -137,19 +143,19 @@ namespace Xamarin.Forms.Controls.Issues
 			return new ContentPage {Content = layout};
 		}
 
-		Button MenuButton(string label, Func<View> view)
+		static Button MenuButton(string label, Func<View> view)
 		{
 			var button = new Button { Text = label };
 
 			var testView = view();
 			testView.AutomationId = TargetAutomationId;
 
-			button.Clicked += (sender, args) => PushAsync(CreateTestPage(testView));
+			button.Clicked += (sender, args) => NavigationPage.PushAsync(CreateTestPage(testView));
 
 			return button;
 		}
 
-		IEnumerable<string> TestCases
+		static IEnumerable<string> TestCases
 		{
 			get
 			{
@@ -158,7 +164,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		ContentPage BuildMenu()
+		static ContentPage BuildMenu()
 		{
 			var layout = new Grid
 			{
