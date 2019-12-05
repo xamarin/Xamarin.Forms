@@ -20,7 +20,14 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			var layout = new Grid();
+			var layout = new StackLayout();
+
+			var indications = new Label
+			{
+				BackgroundColor = Color.Black,
+				TextColor = Color.White,
+				Text = "If the CollectionView below loads items, the test has passed."
+			};
 
 			var collectionView = new CollectionView
 			{
@@ -29,6 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			collectionView.SetBinding(ItemsView.ItemsSourceProperty, "Collection");
 
+			layout.Children.Add(indications);
 			layout.Children.Add(collectionView);
 
 			Content = layout;
