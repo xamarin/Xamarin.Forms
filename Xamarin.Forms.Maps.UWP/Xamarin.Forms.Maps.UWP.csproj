@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Msbuild.Sdk.Extras/2.0.54">
   <PropertyGroup>
-    <TargetFrameworks>uap10.0.14393;uap10.0.15063</TargetFrameworks>
+    <TargetFrameworks>uap10.0.14393;uap10.0.16299</TargetFrameworks>
     <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.14393'">10.0.16299.0</TargetPlatformVersion>
-    <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.15063'">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.16299'">10.0.18362.0</TargetPlatformVersion>
     <RootNamespace>Xamarin.Forms.Maps.UWP</RootNamespace>
     <AssemblyName>Xamarin.Forms.Maps.UWP</AssemblyName>
     <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
@@ -20,7 +20,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework) == 'uap10.0.15063'">
+  <ItemGroup Condition="$(TargetFramework) == 'uap10.0.16299'">
     <SDKReference Include="WindowsMobile, Version=10.0.18362.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
