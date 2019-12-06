@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.UWP
 		internal static readonly Windows.UI.Color DefaultUnselectedColor = Windows.UI.Color.FromArgb(180, 255, 255, 255);
 		const string TogglePaneButton = "TogglePaneButton";
 		const string NavigationViewBackButton = "NavigationViewBackButton";
+		Shell _shell;
 
 		ShellItemRenderer ItemRenderer { get; }
 
@@ -153,6 +154,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void OnElementSet(Shell shell)
 		{
+			if(_shell != null)
+			{
+				(_shell as IShellController).ItemsCollectionChanged -= OnItemsCollectionChanged;
+			}
+
+			if (shell == null)
+				return;
+
 			var shr = CreateShellHeaderRenderer(shell);
 			PaneCustomContent = shr;
 			MenuItemsSource = IterateItems();
