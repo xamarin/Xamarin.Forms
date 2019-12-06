@@ -23,8 +23,8 @@
             </VisualState>
             <VisualState x:Name="DefaultItem">
                 <VisualState.Setters>
-                    <Setter Property="Opacity" Value="0.7" />
-                    <Setter Property="Scale" Value="0.7" />
+                    <Setter Property="Opacity" Value="0.5" />
+                    <Setter Property="Scale" Value="0.5" />
                 </VisualState.Setters>
             </VisualState>
         </VisualStateGroup>
