@@ -75,8 +75,12 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
-			else if (changedProperty.Is(FormsCarouselView.PositionProperty))
-				UpdateVisualStates();
+		}
+
+		public override void OnScrolled(int dx, int dy)
+		{
+			base.OnScrolled(dx, dy);
+			UpdateVisualStates();
 		}
 
 		void UpdateVisualStates()
