@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>uap10.0.14393;uap10.0.16299</TargetFrameworks>
     <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.14393'">10.0.16299.0</TargetPlatformVersion>
-    <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.16299'">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition="$(TargetFramework) == 'uap10.0.16299'">10.0.16299.0</TargetPlatformVersion>
     <AssemblyName>Xamarin.Forms.Platform.UAP</AssemblyName>
     <RootNamespace>Xamarin.Forms.Platform.UAP</RootNamespace>
     <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup Condition="$(TargetFramework) == 'uap10.0.14393'">
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
-    <SDKReference Include="WindowsMobile, Version=10.0.18362.0">
+    <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
