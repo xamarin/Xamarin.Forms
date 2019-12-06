@@ -248,11 +248,7 @@ namespace Xamarin.Forms.Platform.Android
 			var oldItemViewAdapter = ItemsViewAdapter;
 
 			ItemsViewAdapter = new ItemsViewAdapter<ItemsView, IItemsViewSource>(ItemsView,
-				(view, context) =>
-				{
-					VisualStateManager.GoToState(view, FormsCarouselView.DefaultItemVisualState);
-					return new SizedItemContentView(Context, GetItemWidth, GetItemHeight);
-				});
+				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
 
 			SwapAdapter(ItemsViewAdapter, false);
 
