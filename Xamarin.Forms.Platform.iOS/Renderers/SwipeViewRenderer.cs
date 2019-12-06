@@ -31,13 +31,14 @@ namespace Xamarin.Forms.Platform.iOS
 		double _swipeThreshold;
 		CGRect _originalBounds;
 		List<CGRect> _swipeItemsRect;
+		bool _propagateTouch;
 		bool _isDisposed;
 
 		public SwipeViewRenderer()
 		{
 			_tapGestureRecognizer = new UITapGestureRecognizer(OnTap)
 			{
-				CancelsTouchesInView = true
+				CancelsTouchesInView = false
 			};
 			AddGestureRecognizer(_tapGestureRecognizer);
 		}
@@ -214,8 +215,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (navigationController != null)
 				navigationController.InteractivePopGestureRecognizer.Enabled = true;
 
-			HandleTouchInteractions(touches, GestureStatus.Completed);
+			if (!_propagateTouch)
+			{ 
+				TouchesCancelled(touches, evt);
+				return;
+			}
 
+			HandleTouchInteractions(touches, GestureStatus.Completed);
 			base.TouchesEnded(touches, evt);
 		}
 
@@ -443,7 +449,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!touchContent)
 					ProcessTouchSwipeItems(point);
 				else
+				{
+					_propagateTouch = _swipeOffset == 0;
 					ResetSwipe();
+				}
 			}
 		}
 
@@ -520,6 +529,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_isTouchDown = false;
 			_isSwiping = false;
+			_propagateTouch = false;
+
 			RaiseSwipeEnded();
 
 			if (!ValidateSwipeDirection())
@@ -672,6 +683,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_isSwiping = false;
 				_swipeThreshold = 0;
+				_swipeOffset = 0;
 				_swipeDirection = null;
 
 				Animate(SwipeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
