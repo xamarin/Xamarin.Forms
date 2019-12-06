@@ -159,6 +159,8 @@ namespace Xamarin.Forms.Platform.UWP
 				(_shell as IShellController).ItemsCollectionChanged -= OnItemsCollectionChanged;
 			}
 
+			_shell = shell;
+
 			if (shell == null)
 				return;
 
