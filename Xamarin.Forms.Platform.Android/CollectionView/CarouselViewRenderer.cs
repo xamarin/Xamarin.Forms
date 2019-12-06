@@ -75,6 +75,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
+			else if (changedProperty.Is(FormsCarouselView.PositionProperty))
+				UpdateVisualStates();
 		}
 
 		public override void OnScrolled(int dx, int dy)
@@ -82,64 +84,6 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnScrolled(dx, dy);
 			UpdateVisualStates();
 		}
-
-		void UpdateVisualStates()
-		{
-			var layoutManager = GetLayoutManager() as LinearLayoutManager;
-
-			if (layoutManager == null)
-				return;
-
-			var first = layoutManager.FindFirstVisibleItemPosition();
-			var last = layoutManager.FindLastVisibleItemPosition();
-
-			if (first == -1)
-				return;
-
-			var newViews = new List<View>();
-			var carouselPosition = Carousel.Position;
-			var carouselCount = layoutManager.ItemCount;
-
-			for (int i = first; i <= last; i++)
-			{
-				var cell = layoutManager.FindViewByPosition(i);
-				var itemView = (cell as ItemContentView)?.VisualElementRenderer?.Element as View;
-
-				if (i == carouselPosition)
-				{
-					VisualStateManager.GoToState(itemView, FormsCarouselView.CurrentItemVisualState);
-
-					if (i > 0)
-					{
-						var previousPos = i - 1;
-						var prevCell = layoutManager.FindViewByPosition(previousPos);
-						var prevItemView = (prevCell as ItemContentView)?.VisualElementRenderer?.Element as View;
-						if (prevItemView != null)
-							VisualStateManager.GoToState(prevItemView, FormsCarouselView.PreviousItemVisualState);
-					}
-					if (i < carouselCount)
-					{
-						var nextPos = i + 1;
-						var nextCell = layoutManager.FindViewByPosition(nextPos);
-						var nextItemView = (nextCell as ItemContentView)?.VisualElementRenderer?.Element as View;
-						if (nextItemView != null)
-							VisualStateManager.GoToState(nextItemView, FormsCarouselView.NextItemVisualState);
-					}
-				}
-				newViews.Add(itemView);
-			}
-
-			foreach (var item in _oldViews)
-			{
-				if (!newViews.Contains(item))
-				{
-					VisualStateManager.GoToState(item, FormsCarouselView.DefaultItemVisualState);
-				}
-			}
-
-			_oldViews = newViews;
-		}
-
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
@@ -283,5 +227,63 @@ namespace Xamarin.Forms.Platform.Android
 			_oldPosition = _initialPosition;
 			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
+
+		void UpdateVisualStates()
+		{
+			var layoutManager = GetLayoutManager() as LinearLayoutManager;
+
+			if (layoutManager == null)
+				return;
+
+			var first = layoutManager.FindFirstVisibleItemPosition();
+			var last = layoutManager.FindLastVisibleItemPosition();
+
+			if (first == -1)
+				return;
+
+			var newViews = new List<View>();
+			var carouselPosition = Carousel.Position;
+			var carouselCount = layoutManager.ItemCount;
+
+			for (int i = first; i <= last; i++)
+			{
+				var cell = layoutManager.FindViewByPosition(i);
+				var itemView = (cell as ItemContentView)?.VisualElementRenderer?.Element as View;
+
+				if (i == carouselPosition)
+				{
+					VisualStateManager.GoToState(itemView, FormsCarouselView.CurrentItemVisualState);
+
+					if (i > 0)
+					{
+						var previousPos = i - 1;
+						var prevCell = layoutManager.FindViewByPosition(previousPos);
+						var prevItemView = (prevCell as ItemContentView)?.VisualElementRenderer?.Element as View;
+						if (prevItemView != null)
+							VisualStateManager.GoToState(prevItemView, FormsCarouselView.PreviousItemVisualState);
+					}
+					if (i < carouselCount)
+					{
+						var nextPos = i + 1;
+						var nextCell = layoutManager.FindViewByPosition(nextPos);
+						var nextItemView = (nextCell as ItemContentView)?.VisualElementRenderer?.Element as View;
+						if (nextItemView != null)
+							VisualStateManager.GoToState(nextItemView, FormsCarouselView.NextItemVisualState);
+					}
+				}
+				newViews.Add(itemView);
+			}
+
+			foreach (var item in _oldViews)
+			{
+				if (!newViews.Contains(item))
+				{
+					VisualStateManager.GoToState(item, FormsCarouselView.DefaultItemVisualState);
+				}
+			}
+
+			_oldViews = newViews;
+		}
+
 	}
 }
