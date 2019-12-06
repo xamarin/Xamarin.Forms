@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Support.V7.Widget;
 using Android.Views;
 using FormsCarouselView = Xamarin.Forms.CarouselView;
 
@@ -13,10 +16,12 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isSwipeEnabled;
 		int _oldPosition;
 		int _initialPosition;
+		List<View> _oldViews;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
 			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
+			_oldViews = new List<View>();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -41,7 +46,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (newElement == null)
 				return;
-			
+
 			UpdateIsSwipeEnabled();
 			UpdateInitialPosition();
 			UpdateItemSpacing();
@@ -51,6 +56,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateAdapter();
 			UpdateEmptyView();
+		}
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
+		{
+			base.OnLayout(changed, l, t, r, b);
+			UpdateVisualStates();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -65,7 +75,88 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
+			else if (changedProperty.Is(CarouselView.PositionProperty))
+				UpdateVisualStates();
 		}
+
+		void UpdateVisualStates()
+		{
+			var layoutManager = GetLayoutManager() as LinearLayoutManager;
+
+			if (layoutManager == null)
+				return;
+
+			var first = layoutManager.FindFirstVisibleItemPosition();
+			var last = layoutManager.FindLastVisibleItemPosition();
+
+			if (first == -1)
+				return;
+			
+			var newViews = new List<View>();
+			var carouselPosition = Carousel.Position;
+			var carouselCount = layoutManager.ItemCount;
+
+			System.Diagnostics.Debug.WriteLine($"First {first} of {last}");
+
+			for (int i = first; i <= last; i++)
+			{
+				System.Diagnostics.Debug.WriteLine($"Going to look item {i} - Position {carouselPosition} of {carouselCount}");
+				var cell = layoutManager.FindViewByPosition(i);
+				var itemView = (cell as ItemContentView)?.VisualElementRenderer?.Element as View;
+				var item = itemView.BindingContext;
+
+				var pos = CarouselView.GetPositionForItem(Carousel, item);
+
+				if (pos == carouselPosition)
+				{
+					VisualStateManager.GoToState(itemView, CarouselView.CurrentItemVisualState);
+
+					if (pos > 0)
+					{
+						var previousPos = pos - 1;
+						var prevCell = layoutManager.FindViewByPosition(previousPos);
+						var prevItemView = (prevCell as ItemContentView)?.VisualElementRenderer?.Element as View;
+						if (prevItemView != null)
+							VisualStateManager.GoToState(prevItemView, CarouselView.PreviousItemVisualState);
+					}
+					if (pos < carouselCount)
+					{
+						var nextPos = pos + 1;
+						var nextCell = layoutManager.FindViewByPosition(nextPos);
+						var nextItemView = (nextCell as ItemContentView)?.VisualElementRenderer?.Element as View;
+						if(nextItemView != null)
+							VisualStateManager.GoToState(nextItemView, CarouselView.NextItemVisualState);
+					}
+				}
+				else
+				{
+					if (pos == Carousel.Position - 1)
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.PreviousItemVisualState);
+					}
+					else if (pos == Carousel.Position + 1)
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.NextItemVisualState);
+					}
+					else
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.DefaultItemVisualState);
+					}
+				}
+				newViews.Add(itemView);
+			}
+
+			foreach (var item in _oldViews)
+			{
+				if (!newViews.Contains(item))
+				{
+					VisualStateManager.GoToState(item, CarouselView.DefaultItemVisualState);
+				}
+			}
+
+			_oldViews = newViews;
+		}
+
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
