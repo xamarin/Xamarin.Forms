@@ -6,7 +6,6 @@ using NUnit.Framework.Internal;
 using Xamarin.Forms.Internals;
 using System;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 {
@@ -87,12 +86,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		void TestStarted(ITest test)
 		{
-			if (!test.IsSuite || IgnoreLevelForOutput(test))
+			switch (test)
 			{
-				return;
+				case TestFixture fixture:
+					OutputFixtureStarted(fixture);
+					break;
+				default:
+					break;
 			}
+		}
 
-			var name = ShortenTestName(test.FullName);
+		void OutputFixtureStarted(TestFixture testFixture) 
+		{
+			var name = testFixture.Name;
 
 			var label = new Label { Text = $"{name} Started", LineBreakMode = LineBreakMode.HeadTruncation };
 
@@ -104,112 +110,22 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		void TestFinished(ITestResult result)
 		{
-			if (IgnoreLevelForOutput(result.Test))
+			switch (result)
 			{
-				return;
-			}
-
-			Debug.WriteLine($">>>>> {result.FullName}: result.Test.TestType is {result.Test.TestType}");
-
-			if (result.Test is TestFixture testFixture)
-			{
-				OutputFixtureResult(result);
-			}
-
-			//if (result.Test.IsSuite)
-			//{
-			//	OutputSuiteResult(result);
-			//}
-			else
-			{
-				OutputTestResult(result);
+				case TestCaseResult testCaseResult:
+					OutputTestCaseResult(testCaseResult);
+					break;
+				case TestSuiteResult testSuiteResult:
+					OutputSuiteResult(testSuiteResult);
+					break;
+				default:
+					break;
 			}
 		}
 
-		void OutputFixtureResult(ITestResult result) 
+		void OutputTestCaseResult(TestCaseResult result)
 		{
-			var fixture = result.Test as TestFixture;
-
-			var name = fixture.Name;
-
-			var outcome = "Fail";
-
-			if (result.PassCount > 0)
-			{
-				outcome = "Pass";
-			}
-			else if (result.InconclusiveCount > 0)
-			{
-				outcome = "Inconclusive";
-			}
-
-			var label = new Label { Text = $"{name}: {outcome}.", LineBreakMode = LineBreakMode.HeadTruncation };
-
-			if (result.FailCount > 0)
-			{
-				label.TextColor = _failColor;
-				_runFailed = true;
-			}
-			else if (result.InconclusiveCount > 0)
-			{
-				label.TextColor = _inconclusiveColor;
-				_runInconclusive = true;
-			}
-			else
-			{
-				label.TextColor = _successColor;
-			}
-
-			var margin = new Thickness(15, 0, 0, 0);
-			label.Margin = margin;
-
-			var toAdd = new List<View> { label };
-
-			foreach (var assertionResult in result.AssertionResults)
-			{
-				if (assertionResult.Status != AssertionStatus.Passed)
-				{
-					toAdd.Add(new Label { Text = assertionResult.Message });
-					toAdd.Add(new Editor { Text = assertionResult.StackTrace, IsReadOnly = true });
-				}
-			}
-
-			if (!string.IsNullOrEmpty(result.Output))
-			{
-				toAdd.Add(new Label { Text = result.Output, Margin = margin });
-			}
-
-			if (result.Test.RunState == RunState.NotRunnable)
-			{
-				var reasonBag = result.Test.Properties[PropertyNames.SkipReason];
-
-				var reasonText = "";
-				foreach (var reason in reasonBag)
-				{
-					reasonText += reason;
-				}
-
-				if (string.IsNullOrEmpty(reasonText))
-				{
-					reasonText = @"¯\_(ツ)_/¯";
-				}
-
-				toAdd.Add(new Label { Text = $"Test was not runnable. Reason: {reasonText}", FontAttributes = FontAttributes.Bold, Margin = margin });
-			}
-
-			Device.BeginInvokeOnMainThread(() =>
-			{
-				foreach (var outputView in toAdd)
-				{
-					Results.Children.Add(outputView);
-				}
-
-			});
-		}
-
-		void OutputTestResult(ITestResult result)
-		{
-			var name = ShortenTestName(result.FullName);
+			var name = result.Test.Name; // ShortenTestName(result.FullName);
 
 			var outcome = "Fail";
 
@@ -286,11 +202,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			});
 		}
 
-		void OutputSuiteResult(ITestResult result)
+		void OutputSuiteResult(TestSuiteResult result)
 		{
-			var name = ShortenTestName(result.FullName);
+			if (!(result.Test is TestFixture))
+			{
+				return;
+			}
 
-			var label = new Label { Text = $"{name} Finished.", LineBreakMode = LineBreakMode.HeadTruncation };
+			var label = new Label { Text = $"{result.Name} Finished.", LineBreakMode = LineBreakMode.HeadTruncation };
 			var counts = new Label { Text = $"Passed: {result.PassCount}; Failed: {result.FailCount}; Inconclusive: {result.InconclusiveCount}" };
 
 			if (result.FailCount > 0)
@@ -323,44 +242,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			{
 				DisplayFailResult(ex.Message);
 			});
-		}
-
-		static readonly List<string> Trimmable = new List<string>
-		{
-				"Xamarin.Forms.ControlGallery.Android.Tests.",
-				"Xamarin.Forms.ControlGallery.Android.Tests.RendererTests.",
-				"Xamarin.Forms.ControlGallery.Android.Tests.Issues.",
-				"Xamarin.Forms.ControlGallery.",
-				"Xamarin.Forms.Controls.Tests.",
-				"Xamarin.Forms.Controls.",
-		};
-
-		static readonly List<string> Ignorable = new List<string>
-		{
-				"Xamarin", "Xamarin.Forms",
-				"Xamarin.Forms.ControlGallery",
-				"Xamarin.Forms.ControlGallery.Android",
-				"Xamarin.Forms.ControlGallery.Android.Tests",
-				"Xamarin.Forms.ControlGallery.iOS",
-				"Xamarin.Forms.Controls", "Xamarin.Forms.Controls.Tests"
-		};
-
-		static string ShortenTestName(string name)
-		{
-			foreach (var str in Trimmable)
-			{
-				if (name.StartsWith(str))
-				{
-					return name.Substring(str.Length);
-				}
-			}
-
-			return name;
-		}
-
-		static bool IgnoreLevelForOutput(ITest test)
-		{
-			return Ignorable.Contains(test.FullName);
 		}
 	}
 }

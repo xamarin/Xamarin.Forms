@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Tests
 {
-	[Preserve(AllMembers = true)]
 	public class ControlGalleryTestListener : ITestListener
 	{
 		public void SendMessage(TestMessage message)

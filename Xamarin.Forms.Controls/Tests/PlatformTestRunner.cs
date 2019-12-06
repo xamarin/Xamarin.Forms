@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using NUnit;
 using NUnit.Framework.Api;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Tests
 {
-	[Preserve(AllMembers = true)]
 	public class PlatformTestRunner
 	{
 		readonly ITestListener _testListener = new ControlGalleryTestListener();
@@ -66,7 +62,7 @@ namespace Xamarin.Forms.Controls.Tests
 					// like we do for iOS
 
 					runner.Load(controls, testRunSettings);
-					runner.RunAsync(_testListener, testFilter);
+					runner.Run(_testListener, testFilter);
 
 					runner.Load(platform, testRunSettings);
 					runner.Run(_testListener, testFilter);
@@ -77,12 +73,5 @@ namespace Xamarin.Forms.Controls.Tests
 				MessagingCenter.Send(ex, "TestRunnerError");
 			}
 		}
-	}
-
-	[Preserve(AllMembers = true)]
-	public interface IPlatformTestSettings
-	{
-		Assembly Assembly { get; }
-		Dictionary<string, object> TestRunSettings { get; }
 	}
 }
