@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
-			else if (changedProperty.Is(CarouselView.PositionProperty))
+			else if (changedProperty.Is(FormsCarouselView.PositionProperty))
 				UpdateVisualStates();
 		}
 
@@ -96,51 +96,30 @@ namespace Xamarin.Forms.Platform.Android
 			var carouselPosition = Carousel.Position;
 			var carouselCount = layoutManager.ItemCount;
 
-			System.Diagnostics.Debug.WriteLine($"First {first} of {last}");
-
 			for (int i = first; i <= last; i++)
 			{
-				System.Diagnostics.Debug.WriteLine($"Going to look item {i} - Position {carouselPosition} of {carouselCount}");
 				var cell = layoutManager.FindViewByPosition(i);
 				var itemView = (cell as ItemContentView)?.VisualElementRenderer?.Element as View;
-				var item = itemView.BindingContext;
 
-				var pos = CarouselView.GetPositionForItem(Carousel, item);
-
-				if (pos == carouselPosition)
+				if (i == carouselPosition)
 				{
-					VisualStateManager.GoToState(itemView, CarouselView.CurrentItemVisualState);
+					VisualStateManager.GoToState(itemView, FormsCarouselView.CurrentItemVisualState);
 
-					if (pos > 0)
+					if (i > 0)
 					{
-						var previousPos = pos - 1;
+						var previousPos = i - 1;
 						var prevCell = layoutManager.FindViewByPosition(previousPos);
 						var prevItemView = (prevCell as ItemContentView)?.VisualElementRenderer?.Element as View;
 						if (prevItemView != null)
-							VisualStateManager.GoToState(prevItemView, CarouselView.PreviousItemVisualState);
+							VisualStateManager.GoToState(prevItemView, FormsCarouselView.PreviousItemVisualState);
 					}
-					if (pos < carouselCount)
+					if (i < carouselCount)
 					{
-						var nextPos = pos + 1;
+						var nextPos = i + 1;
 						var nextCell = layoutManager.FindViewByPosition(nextPos);
 						var nextItemView = (nextCell as ItemContentView)?.VisualElementRenderer?.Element as View;
 						if(nextItemView != null)
-							VisualStateManager.GoToState(nextItemView, CarouselView.NextItemVisualState);
-					}
-				}
-				else
-				{
-					if (pos == Carousel.Position - 1)
-					{
-						VisualStateManager.GoToState(itemView, CarouselView.PreviousItemVisualState);
-					}
-					else if (pos == Carousel.Position + 1)
-					{
-						VisualStateManager.GoToState(itemView, CarouselView.NextItemVisualState);
-					}
-					else
-					{
-						VisualStateManager.GoToState(itemView, CarouselView.DefaultItemVisualState);
+							VisualStateManager.GoToState(nextItemView, FormsCarouselView.NextItemVisualState);
 					}
 				}
 				newViews.Add(itemView);
@@ -150,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (!newViews.Contains(item))
 				{
-					VisualStateManager.GoToState(item, CarouselView.DefaultItemVisualState);
+					VisualStateManager.GoToState(item, FormsCarouselView.DefaultItemVisualState);
 				}
 			}
 
