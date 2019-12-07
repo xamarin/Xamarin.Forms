@@ -679,7 +679,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (statusBarColorMode == StatusBarTextColorMode.DoNotAdjust || barTextColor.Luminosity <= 0.5)
 			{
 				// Use dark text color for status bar
-				UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
+				if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
+				{
+					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.DarkContent;
+				}
+				else
+				{
+					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
+				}
 			}
 			else
 			{
