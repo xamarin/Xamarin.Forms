@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (controller.IsLoading)
 				return;
-			
+
 
 			if (renderer.GetImage()?.Source is BitmapImage bitmapImage)
 			{
@@ -177,11 +177,11 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Control != null)
 					renderer.SetImage(imagesource);
 
-        RefreshImage(renderer);
+				RefreshImage(renderer);
 
 				// The ImageFailed event don't trigger when the local ImageSource is invalid, so we need to check the size.
 				var size = renderer.GetDesiredSize(double.PositiveInfinity, double.PositiveInfinity);
-				if(size.Request.IsZero && imageElement is Image)
+				if (size.Request.IsZero && imageElement is Image)
 				{
 					imagesource = await placeholderError.ToWindowsImageSourceAsync();
 					renderer.SetImage(imagesource);
@@ -195,10 +195,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static internal void RefreshImage(IImageVisualElementRenderer renderer)
 		{
-			if(renderer.Element is IViewController element)
+			if (renderer.Element is IViewController element)
 				element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
 
-			if(renderer.Element is IImageElement controller)
+			if (renderer.Element is IImageElement controller)
 				StartStopAnimation(renderer, controller);
 		}
 	}

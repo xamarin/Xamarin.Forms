@@ -242,7 +242,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					if (renderer.IsDisposed)
 						return;
 
-					if (uiimage == null)
+					if (uiimage == null && errorPlaceholderSource != null)
 						uiimage = await errorPlaceholderSource.GetNativeImageAsync();
 
 					// only set if we are still on the same image
