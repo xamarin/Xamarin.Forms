@@ -163,6 +163,39 @@ namespace Xamarin.Forms.Platform.UWP
 					formsGridView.Span = ((GridItemsLayout)Layout).Span;
 				}
 			}
+			else if (property.Is(GridItemsLayout.HorizontalItemSpacingProperty) || property.Is(GridItemsLayout.VerticalItemSpacingProperty))
+			{
+				UpdateGridItemsLayoutSpacing();
+			}
+			else if (property.Is(LinearItemsLayout.ItemSpacingProperty))
+			{
+				UpdateLinearItemsLayoutSpacing();
+			}
+		}
+
+		private void UpdateGridItemsLayoutSpacing()
+		{
+			if (ListViewBase is FormsGridView formsGridView)
+			{
+				// TODO: Update the style on the XAML control.
+				var horizontalSpacing = ((GridItemsLayout)Layout).HorizontalItemSpacing;
+				var verticalSpacing = ((GridItemsLayout)Layout).VerticalItemSpacing;
+			}
+		}
+
+		private void UpdateLinearItemsLayoutSpacing()
+		{
+			if (ListViewBase is FormsListView formsListView)
+			{
+				// TODO: Update the style on the XAML control.
+				var itemSpacing = ((LinearItemsLayout)Layout).ItemSpacing;
+
+			}
+			else if (ListViewBase is Windows.UI.Xaml.Controls.ListView listView)
+			{
+				// TODO: Update the style on the XAML control.
+				var itemSpacing = ((LinearItemsLayout)Layout).ItemSpacing;
+			}
 		}
 
 		static ListViewBase CreateGridView(GridItemsLayout gridItemsLayout)
