@@ -76,9 +76,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 		async Task AddItems() 
 		{
-			await Task.Delay(1000);
-
 			var groupIndex = _source.Count + 1;
+
+			if (groupIndex > 2)
+			{
+				return;
+			}
+
+			await Task.Delay(1000);
 
 			var group = new _7393Group { Header = $"{groupIndex} Header (added)", Footer = $"{groupIndex} Footer (added)" };
 
@@ -89,6 +94,8 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 
 			_source.Add(group);
+
+			await AddItems();
 		}
 
 		class _7393Item 
@@ -106,7 +113,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void AddingItemsToGroupedCollectionViewShouldNotCrash()
 		{
-			RunningApp.WaitForElement(Success, timeout: TimeSpan.FromSeconds(2));
+			RunningApp.WaitForElement(Success, timeout: TimeSpan.FromSeconds(30));
 		}
 #endif
 	}
