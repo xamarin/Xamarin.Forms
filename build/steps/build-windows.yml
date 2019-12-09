@@ -75,7 +75,7 @@ jobs:
         solution: ${{ parameters.slnPath }}
         platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
-        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /p:JavaSdkDirectory="$(JAVA_HOME_8_X64)"  /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
+        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
 
     - task: VSTest@2
       displayName: 'Unit Tests'
@@ -85,10 +85,11 @@ jobs:
           **/bin/$(BuildConfiguration)/Xamarin.Forms.Pages.UnitTests.dll
           **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
         searchFolder: ${{ parameters.nunitTestFolder }}
-        pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
         codeCoverageEnabled: true
         testRunTitle: '$(BuildConfiguration)_UnitTests'
         configuration: '$(BuildConfiguration)'
+        vsTestVersion: '15.0'
+        diagnosticsEnabled: true
 
     - task: CopyFiles@2
       displayName: 'Copy Files dlls'
