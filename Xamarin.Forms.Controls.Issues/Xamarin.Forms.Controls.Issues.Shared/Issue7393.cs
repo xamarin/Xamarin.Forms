@@ -20,28 +20,15 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Issue7393 : TestContentPage
 	{
 		ObservableCollection<_7393Group> _source;
+		Label _result;
+
+		const string Success = "Success";
 
 		protected override void Init()
 		{
 			var cv = new CollectionView();
 
 			_source = new ObservableCollection<_7393Group>();
-
-			var groupCount = 3;
-			var itemCount = 3;
-
-			//for (int groupIndex = 0; groupIndex < groupCount; groupIndex++)
-			//{
-			//	var group = new _7393Group { Header = $"{groupIndex} Header", Footer = $"{groupIndex} Footer" };
-
-			//	for (int itemIndex = 0; itemIndex < itemCount; itemIndex++)
-			//	{
-			//		var item = new _7393Item { Name = $"{groupIndex}.{itemIndex} Item" };
-			//		group.Add(item);
-			//	}
-
-			//	_source.Add(group);
-			//}
 
 			cv.GroupHeaderTemplate = new DataTemplate(() => {
 				var label = new Label();
@@ -70,7 +57,10 @@ namespace Xamarin.Forms.Controls.Issues
 			cv.ItemsSource = _source;
 			cv.IsGrouped = true;
 
+			_result = new Label { Text = "Waiting..." };
+
 			var layout = new StackLayout();
+			layout.Children.Add(_result);
 			layout.Children.Add(cv);
 
 			Content = layout;
@@ -80,7 +70,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		async void Issue7393Appearing(object sender, EventArgs e)
 		{
-			await AddItems();	
+			await AddItems();
+			_result.Text = Success;
 		}
 
 		async Task AddItems() 
@@ -115,7 +106,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void AddingItemsToGroupedCollectionViewShouldNotCrash()
 		{
-			
+			RunningApp.WaitForElement(Success, timeout: TimeSpan.FromSeconds(2));
 		}
 #endif
 	}
