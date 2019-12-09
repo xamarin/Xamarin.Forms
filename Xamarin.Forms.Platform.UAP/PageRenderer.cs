@@ -88,9 +88,10 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			_loaded = true;
 			Unloaded += OnUnloaded;
-			Element?.SendAppearing();
+
 			UpdateStatusBarColor();
-			UpdateStatusBarStyle();
+			UpdateStatusBarStyle();			
+			Element?.SendAppearing();
 		}
 
 		void OnUnloaded(object sender, RoutedEventArgs args)

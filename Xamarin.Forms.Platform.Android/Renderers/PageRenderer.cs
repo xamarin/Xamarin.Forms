@@ -39,6 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		double _previousHeight;
 		bool _isDisposed = false;
+		bool _appeared;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -60,10 +61,10 @@ namespace Xamarin.Forms.Platform.Android
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
 				return;
-
-			PageController.SendAppearing();
+			_appeared = true;
 			UpdateStatusBarColor();
 			UpdateStatusBarStyle();
+			PageController.SendAppearing();
 		}
 
 		protected override void OnDetachedFromWindow()
@@ -72,6 +73,8 @@ namespace Xamarin.Forms.Platform.Android
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && pageContainer.IsInFragment)
 				return;
+
+			_appeared = false;
 			PageController.SendDisappearing();
 		}
 
@@ -104,6 +107,11 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
+			else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
+			{
+				UpdateStatusBarStyle();
+				UpdateStatusBarColor();
+			}
 		}
 
 		void UpdateHeight()
