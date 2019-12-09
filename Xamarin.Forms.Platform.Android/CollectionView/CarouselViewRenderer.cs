@@ -55,8 +55,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void TearDownOldElement(ItemsView oldElement)
 		{
+			if (Carousel != null)
+				Carousel.Scrolled -= CarouselScrolled;
 			base.TearDownOldElement(oldElement);
-			Carousel.Scrolled -= CarouselScrolled;
 		}
 
 		protected override void UpdateItemsSource()
