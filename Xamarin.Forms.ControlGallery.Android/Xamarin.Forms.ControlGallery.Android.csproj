@@ -65,12 +65,6 @@
     <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(CI)' == 'True' ">
-    <AndroidLinkMode>Full</AndroidLinkMode>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Android" />
@@ -113,6 +107,7 @@
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="_50787CustomRenderer.cs" />
     <Compile Include="_57114CustomRenderer.cs" />
+    <Compile Include="_5749CustomRenderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
     <Compile Include="_59457CustomRenderer.cs" />
     <Compile Include="_60122ImageRenderer.cs" />
@@ -217,9 +212,7 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <TransformFile Include="Properties\AndroidManifest.xml">
-      <SubType>Designer</SubType>
-    </TransformFile>
+    <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\error.xml" />
