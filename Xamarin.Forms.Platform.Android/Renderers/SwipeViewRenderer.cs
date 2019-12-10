@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public SwipeViewRenderer(Context context) : base(context)
 		{
-			Xamarin.Forms.SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
+			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
 			_context = context;
 
 			AutoPackage = false;
@@ -203,6 +203,12 @@ namespace Xamarin.Forms.Platform.Android
 					_actionView.Dispose();
 					_actionView = null;
 				}
+
+				if (_initialPoint != null)
+				{
+					_initialPoint.Dispose();
+					_initialPoint = null;
+				}
 			}
 
 			_isDisposed = true;
@@ -214,9 +220,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnTouchEvent(e);
 
-			var density = Resources.DisplayMetrics.Density;
-			float x = Math.Abs((_downX - e.GetX()) / density);
-			float y = Math.Abs((_downY - e.GetY()) / density);
+			float x = Math.Abs((_downX - e.GetX()) / _density);
+			float y = Math.Abs((_downY - e.GetY()) / _density);
 
 			if (e.Action != MotionEventActions.Move | (x > 10f || y > 10f))
 			{
@@ -228,9 +233,29 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
-		public override bool OnInterceptTouchEvent(MotionEvent ev)
+		public override bool OnInterceptTouchEvent(MotionEvent e)
 		{
-			return true;
+			switch (e.Action)
+			{
+				case MotionEventActions.Down:
+					_downX = e.RawX;
+					_downY = e.RawY;
+					_initialPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
+					break;
+				case MotionEventActions.Move:
+					float x = Math.Abs((_downX - e.GetX()) / _density);
+					float y = Math.Abs((_downY - e.GetY()) / _density);
+
+					if (x > 10f || y > 10f)
+						ProcessSwipingInteractions(e);
+					break;
+				case MotionEventActions.Cancel:
+				case MotionEventActions.Up:
+					ProcessSwipingInteractions(e);
+					break;
+			}
+
+			return false;
 		}
 
 		public bool OnDown(MotionEvent e)
@@ -440,7 +465,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_isTouchDown = false;
 
-			if(!TouchInsideContent(point))
+			if (!TouchInsideContent(point))
 				ProcessTouchSwipeItems(point);
 
 			if (!_isSwiping)
@@ -449,7 +474,7 @@ namespace Xamarin.Forms.Platform.Android
 			_isSwiping = false;
 
 			RaiseSwipeEnded();
-   
+
 			if (!ValidateSwipeDirection())
 				return false;
 
@@ -517,7 +542,7 @@ namespace Xamarin.Forms.Platform.Android
 				_actionView.LayoutParameters = layoutParams;
 
 			_actionView.Orientation = LinearLayoutCompat.Horizontal;
-   
+
 			var swipeItems = new List<AView>();
 
 			foreach (var item in items)
@@ -575,7 +600,7 @@ namespace Xamarin.Forms.Platform.Android
 						child.Layout(previousWidth, 0, (i + 1) * swipeItemWidth, swipeItemHeight);
 						break;
 				}
-	
+
 				i++;
 				previousWidth += swipeItemWidth;
 			}
@@ -596,7 +621,7 @@ namespace Xamarin.Forms.Platform.Android
 			int contentHeight = _contentView.Height;
 			int contentWidth = (int)_context.ToPixels(SwipeItemWidth);
 			int iconSize = Math.Min(contentHeight, contentWidth) / 2;
-	
+
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
 				drawable.SetBounds(0, 0, iconSize, iconSize);
@@ -645,7 +670,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			return luminosity < 0.75 ? Color.White : Color.Black;
 		}
-  
+
 		void DisposeSwipeItems()
 		{
 			if (_actionView != null)
