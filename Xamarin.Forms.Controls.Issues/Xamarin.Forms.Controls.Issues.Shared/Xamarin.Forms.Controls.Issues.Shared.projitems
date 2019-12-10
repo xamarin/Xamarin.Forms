@@ -1176,6 +1176,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7813.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8638.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8672.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8781.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1314,6 +1315,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8417.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7813.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8638.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8781.xaml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla27417Xaml.xaml">
