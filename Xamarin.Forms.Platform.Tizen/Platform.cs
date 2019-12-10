@@ -646,6 +646,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			prompt.BackButtonPressed += (s, evt) =>
 			{
+				args.SetResult(null);
 				prompt.Dismiss();
 			};
 
