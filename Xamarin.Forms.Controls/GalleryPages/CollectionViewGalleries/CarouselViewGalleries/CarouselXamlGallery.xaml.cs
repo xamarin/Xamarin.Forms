@@ -52,6 +52,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			Items = new ObservableCollection<CarouselItem>(items);
 			Items.CollectionChanged += ItemsCollectionChanged;
 			Count = Items.Count - 1;
+			Position = 4;
 		}
 
 		void ItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

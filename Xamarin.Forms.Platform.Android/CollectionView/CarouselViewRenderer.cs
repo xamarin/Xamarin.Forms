@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 			_oldViews = new List<View>();
 		}
 
+	
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)

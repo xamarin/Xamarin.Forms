@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 		public const string VisibleItemVisualState = "VisibleItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
+		bool _isUpdating;
+
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
 		public Thickness PeekAreaInsets
@@ -174,6 +176,12 @@ namespace Xamarin.Forms
 			};
 		}
 
+		public void IsUpdating(bool isUpdating)
+		{
+			_isUpdating = isUpdating;
+		}
+
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void VerifyCarouselViewFlagEnabled(
 			string constructorHint = null,
@@ -200,13 +208,15 @@ namespace Xamarin.Forms
 
 		protected override void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
-			CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
+			//if(!_isUpdating)
+			//	CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
 
 			base.OnScrolled(e);
 		}
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
+			System.Diagnostics.Debug.WriteLine($"old-{oldValue} and new-{newValue}");
 			var carousel = (CarouselView)bindable;
 
 			var args = new PositionChangedEventArgs((int)oldValue, (int)newValue);
