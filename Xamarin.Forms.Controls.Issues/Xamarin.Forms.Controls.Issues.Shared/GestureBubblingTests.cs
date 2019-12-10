@@ -37,8 +37,6 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test, TestCaseSource(nameof(TestCases))]
 		public void VerifyTapBubbling(string menuItem, bool frameShouldRegisterTap)
 		{
-			NavigationPage = this;
-
 			var results = RunningApp.WaitForElement(q => q.Marked(menuItem));
 
 			if (results.Length > 1)
@@ -223,6 +221,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			NavigationPage = this;
+			
 			PushAsync(BuildMenu());
 		}
 	}
