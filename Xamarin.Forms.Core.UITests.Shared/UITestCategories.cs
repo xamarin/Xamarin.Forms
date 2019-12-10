@@ -57,5 +57,6 @@
 		public const string RefreshView = "RefreshView";
 		public const string TitleView = "TitleView";
 		public const string DisplayPrompt = "DisplayPrompt";
+		public const string IndicatorView = "IndicatorView";
 	}
 }
