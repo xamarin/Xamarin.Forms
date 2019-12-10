@@ -7,6 +7,10 @@
     <StackLayout
         Margin="20">
         <Label
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Open the SwipeView and verify that the SwipeItemView is rendered correctly."/>
+        <Label
             Text="Questions"
             FontAttributes="Bold"
             HorizontalOptions="Center" />
