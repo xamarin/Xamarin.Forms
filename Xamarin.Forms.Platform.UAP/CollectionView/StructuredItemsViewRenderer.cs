@@ -226,8 +226,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static WStyle GetItemContainerStyle(GridItemsLayout layout)
 		{
-			var h = layout.HorizontalItemSpacing;
-			var v = layout.VerticalItemSpacing;
+			var h = layout?.HorizontalItemSpacing ?? 0;
+			var v = layout?.VerticalItemSpacing ?? 0;
 			var margin = new WThickness(h, v, h, v);
 
 			var style = new WStyle(typeof(GridViewItem));
@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static WStyle GetVerticalItemContainerStyle(LinearItemsLayout layout)
 		{
-			var v = layout.ItemSpacing;
+			var v = layout?.ItemSpacing ?? 0;
 			var margin = new WThickness(0, v, 0, v);	
 			
 			var style = new WStyle(typeof(ListViewItem));
@@ -247,7 +247,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static WStyle GetHorizontalItemContainerStyle(LinearItemsLayout layout)
 		{
-			var h = layout.ItemSpacing;
+			var h = layout?.ItemSpacing ?? 0;
 			var padding = new WThickness(h, 0, h, 0);
 
 			var style = new WStyle(typeof(ListViewItem));
