@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Windows.UI.Xaml.Controls;
 using UWPApp = Windows.UI.Xaml.Application;
-using Xamarin.Forms.Platform.UAP;
+using WListView = Windows.UI.Xaml.Controls.ListView;
 using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -47,13 +48,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				case GridItemsLayout gridItemsLayout:
 					return CreateGridView(gridItemsLayout);
-				case LinearItemsLayout listItemsLayout
-					when listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal:
-					return CreateHorizontalListView();
+				case LinearItemsLayout listItemsLayout when listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical:
+					return CreateVerticalListView(listItemsLayout);
+				case LinearItemsLayout listItemsLayout when listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal:
+					return CreateHorizontalListView(listItemsLayout);
 			}
 
-			// Default to a plain old vertical ListView
-			return new FormsListView();
+			throw new NotImplementedException("The layout is not implemented");			
 		}
 
 		protected virtual void UpdateHeader()
@@ -165,36 +166,22 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else if (property.Is(GridItemsLayout.HorizontalItemSpacingProperty) || property.Is(GridItemsLayout.VerticalItemSpacingProperty))
 			{
-				UpdateGridItemsLayoutSpacing();
+				if (ListViewBase is FormsGridView formsGridView)
+				{
+					formsGridView.ItemContainerStyle = GetItemContainerStyle((GridItemsLayout)Layout);
+				}
 			}
 			else if (property.Is(LinearItemsLayout.ItemSpacingProperty))
 			{
-				UpdateLinearItemsLayoutSpacing();
-			}
-		}
-
-		private void UpdateGridItemsLayoutSpacing()
-		{
-			if (ListViewBase is FormsGridView formsGridView)
-			{
-				// TODO: Update the style on the XAML control.
-				var horizontalSpacing = ((GridItemsLayout)Layout).HorizontalItemSpacing;
-				var verticalSpacing = ((GridItemsLayout)Layout).VerticalItemSpacing;
-			}
-		}
-
-		private void UpdateLinearItemsLayoutSpacing()
-		{
-			if (ListViewBase is FormsListView formsListView)
-			{
-				// TODO: Update the style on the XAML control.
-				var itemSpacing = ((LinearItemsLayout)Layout).ItemSpacing;
-
-			}
-			else if (ListViewBase is Windows.UI.Xaml.Controls.ListView listView)
-			{
-				// TODO: Update the style on the XAML control.
-				var itemSpacing = ((LinearItemsLayout)Layout).ItemSpacing;
+				switch (ListViewBase)
+				{
+					case FormsListView formsListView:
+						formsListView.ItemContainerStyle = GetItemContainerStyle((LinearItemsLayout)Layout);
+						break;
+					case WListView listView:
+						listView.ItemContainerStyle = GetItemContainerStyle((LinearItemsLayout)Layout);
+						break;
+				}
 			}
 		}
 
@@ -203,19 +190,28 @@ namespace Xamarin.Forms.Platform.UWP
 			return new FormsGridView
 			{
 				Orientation = gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
-				? Orientation.Horizontal
-				: Orientation.Vertical,
+					? Orientation.Horizontal
+					: Orientation.Vertical,
 
-				Span = gridItemsLayout.Span
+				Span = gridItemsLayout.Span,
+				ItemContainerStyle = GetItemContainerStyle(gridItemsLayout)
 			};
 		}
 
-		static ListViewBase CreateHorizontalListView()
+		static ListViewBase CreateVerticalListView(LinearItemsLayout listItemsLayout)
 		{
-			var horizontalListView = new Windows.UI.Xaml.Controls.ListView()
+			return new FormsListView()
 			{
-				ItemsPanel =
-					(ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalListItemsPanel"]
+				ItemContainerStyle = GetItemContainerStyle(listItemsLayout)
+			};
+		}
+
+		static ListViewBase CreateHorizontalListView(LinearItemsLayout listItemsLayout)
+		{
+			var horizontalListView = new WListView()
+			{
+				ItemsPanel = (ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalListItemsPanel"],
+				ItemContainerStyle = GetItemContainerStyle(listItemsLayout)
 			};
 
 			ScrollViewer.SetHorizontalScrollMode(horizontalListView, WScrollMode.Auto);
@@ -223,6 +219,25 @@ namespace Xamarin.Forms.Platform.UWP
 				Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto);
 
 			return horizontalListView;
+		}
+
+		static Windows.UI.Xaml.Style GetItemContainerStyle(GridItemsLayout layout)
+		{
+			var h = layout.HorizontalItemSpacing;
+			var v = layout.VerticalItemSpacing;
+			var margin = new Windows.UI.Xaml.Thickness(h, v, h, v);
+
+			var style = new Windows.UI.Xaml.Style(typeof(GridViewItem));
+			style.Setters.Add(new Windows.UI.Xaml.Setter(GridViewItem.MarginProperty, margin));
+			return style;
+		}
+
+		static Windows.UI.Xaml.Style GetItemContainerStyle(LinearItemsLayout layout)
+		{
+			var margin = new Windows.UI.Xaml.Thickness(layout.ItemSpacing);			
+			var style = new Windows.UI.Xaml.Style(typeof(ListViewItem));
+			style.Setters.Add(new Windows.UI.Xaml.Setter(ListViewItem.MarginProperty, margin));
+			return style;
 		}
 	}
 }
