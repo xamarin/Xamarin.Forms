@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <Description>Android Backend for Xamarin.Forms</Description>
     <AssemblyName>Xamarin.Forms.Platform.Android</AssemblyName>
