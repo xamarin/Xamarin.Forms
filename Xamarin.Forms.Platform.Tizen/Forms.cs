@@ -47,7 +47,7 @@ namespace Xamarin.Forms
 			Assemblies = assemblies;
 		}
 
-		public void UseStaticRegistrar(StaticRegistrarStrategy strategy, Dictionary<Type, Type> customHandlers=null, bool disableCss=false)
+		public void UseStaticRegistrar(StaticRegistrarStrategy strategy, Dictionary<Type, Func<IRegisterable>> customHandlers=null, bool disableCss=false)
 		{
 			StaticRegistarStrategy = strategy;
 			CustomHandlers = customHandlers;
@@ -58,7 +58,7 @@ namespace Xamarin.Forms
 		public CoreApplication Context;
 		public bool UseDeviceIndependentPixel;
 		public HandlerAttribute[] Handlers;
-		public Dictionary<Type, Type> CustomHandlers; // for static registers
+		public Dictionary<Type, Func<IRegisterable>> CustomHandlers; // for static registers
 		public Assembly[] Assemblies;
 		public EffectScope[] EffectScopes;
 		public InitializationFlags Flags;
@@ -89,23 +89,6 @@ namespace Xamarin.Forms
 		{
 			// 72.0 is from EFL which is using fixed DPI value (72.0) to determine font size internally. Thus, we are restoring the size by deviding the DPI by 72.0 here.
 			return s_dpi.Value / 72.0 / Elementary.GetScale();
-		});
-
-		static Lazy<DeviceOrientation> s_naturalOrientation = new Lazy<DeviceOrientation>(() =>
-		{
-			int width = 0;
-			int height = 0;
-			TSystemInfo.TryGetValue<int>("http://tizen.org/feature/screen.width", out width);
-			TSystemInfo.TryGetValue<int>("http://tizen.org/feature/screen.height", out height);
-
-			if (height >= width)
-			{
-				return DeviceOrientation.Portrait;
-			}
-			else
-			{
-				return DeviceOrientation.Landscape;
-			}
 		});
 
 		class TizenDeviceInfo : DeviceInfo
@@ -195,7 +178,7 @@ namespace Xamarin.Forms
 			private set;
 		}
 
-		public static DeviceOrientation NaturalOrientation => s_naturalOrientation.Value;
+		public static DeviceOrientation NaturalOrientation { get; } = GetDeviceOrientation();
 
 		public static StaticRegistrarStrategy StaticRegistrarStrategy => s_staticRegistrarStrategy;
 
@@ -203,6 +186,23 @@ namespace Xamarin.Forms
 		{
 			get;
 			private set;
+		}
+
+		static DeviceOrientation GetDeviceOrientation()
+		{
+			int width = 0;
+			int height = 0;
+			TSystemInfo.TryGetValue<int>("http://tizen.org/feature/screen.width", out width);
+			TSystemInfo.TryGetValue<int>("http://tizen.org/feature/screen.height", out height);
+
+			if (height >= width)
+			{
+				return DeviceOrientation.Portrait;
+			}
+			else
+			{
+				return DeviceOrientation.Landscape;
+			}
 		}
 
 		internal static void SendViewInitialized(this VisualElement self, EvasObject nativeView)
