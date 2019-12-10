@@ -4,6 +4,9 @@ using Windows.UI.Xaml.Controls;
 using UWPApp = Windows.UI.Xaml.Application;
 using WListView = Windows.UI.Xaml.Controls.ListView;
 using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
+using WSetter = Windows.UI.Xaml.Setter;
+using WStyle = Windows.UI.Xaml.Style;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -176,10 +179,10 @@ namespace Xamarin.Forms.Platform.UWP
 				switch (ListViewBase)
 				{
 					case FormsListView formsListView:
-						formsListView.ItemContainerStyle = GetItemContainerStyle((LinearItemsLayout)Layout);
+						formsListView.ItemContainerStyle = GetVerticalItemContainerStyle((LinearItemsLayout)Layout);
 						break;
 					case WListView listView:
-						listView.ItemContainerStyle = GetItemContainerStyle((LinearItemsLayout)Layout);
+						listView.ItemContainerStyle = GetHorizontalItemContainerStyle((LinearItemsLayout)Layout);
 						break;
 				}
 			}
@@ -202,7 +205,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			return new FormsListView()
 			{
-				ItemContainerStyle = GetItemContainerStyle(listItemsLayout)
+				ItemContainerStyle = GetVerticalItemContainerStyle(listItemsLayout)
 			};
 		}
 
@@ -211,7 +214,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var horizontalListView = new WListView()
 			{
 				ItemsPanel = (ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalListItemsPanel"],
-				ItemContainerStyle = GetItemContainerStyle(listItemsLayout)
+				ItemContainerStyle = GetHorizontalItemContainerStyle(listItemsLayout)
 			};
 
 			ScrollViewer.SetHorizontalScrollMode(horizontalListView, WScrollMode.Auto);
@@ -221,22 +224,34 @@ namespace Xamarin.Forms.Platform.UWP
 			return horizontalListView;
 		}
 
-		static Windows.UI.Xaml.Style GetItemContainerStyle(GridItemsLayout layout)
+		static WStyle GetItemContainerStyle(GridItemsLayout layout)
 		{
 			var h = layout.HorizontalItemSpacing;
 			var v = layout.VerticalItemSpacing;
-			var margin = new Windows.UI.Xaml.Thickness(h, v, h, v);
+			var margin = new WThickness(h, v, h, v);
 
-			var style = new Windows.UI.Xaml.Style(typeof(GridViewItem));
-			style.Setters.Add(new Windows.UI.Xaml.Setter(GridViewItem.MarginProperty, margin));
+			var style = new WStyle(typeof(GridViewItem));
+			style.Setters.Add(new WSetter(GridViewItem.MarginProperty, margin));
 			return style;
 		}
 
-		static Windows.UI.Xaml.Style GetItemContainerStyle(LinearItemsLayout layout)
+		static WStyle GetVerticalItemContainerStyle(LinearItemsLayout layout)
 		{
-			var margin = new Windows.UI.Xaml.Thickness(layout.ItemSpacing);			
-			var style = new Windows.UI.Xaml.Style(typeof(ListViewItem));
-			style.Setters.Add(new Windows.UI.Xaml.Setter(ListViewItem.MarginProperty, margin));
+			var v = layout.ItemSpacing;
+			var margin = new WThickness(0, v, 0, v);	
+			
+			var style = new WStyle(typeof(ListViewItem));
+			style.Setters.Add(new WSetter(ListViewItem.MarginProperty, margin));
+			return style;
+		}
+
+		static WStyle GetHorizontalItemContainerStyle(LinearItemsLayout layout)
+		{
+			var h = layout.ItemSpacing;
+			var padding = new WThickness(h, 0, h, 0);
+
+			var style = new WStyle(typeof(ListViewItem));
+			style.Setters.Add(new WSetter(ListViewItem.PaddingProperty, padding));
 			return style;
 		}
 	}
