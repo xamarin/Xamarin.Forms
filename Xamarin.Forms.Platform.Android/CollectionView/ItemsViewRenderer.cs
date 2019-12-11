@@ -605,7 +605,16 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var showEmptyView = ItemsView?.EmptyView != null && ItemsViewAdapter.ItemCount == 0;
+			int itemCount = 0;
+			if(ItemsView is StructuredItemsView itemsView)
+			{
+				if (itemsView.Header != null || itemsView.HeaderTemplate != null)
+					itemCount++;
+				if (itemsView.Footer != null || itemsView.FooterTemplate != null)
+					itemCount++;
+			}
+   
+			var showEmptyView = ItemsView?.EmptyView != null && ItemsViewAdapter.ItemCount == itemCount;
 
 			var currentAdapter = GetAdapter();
 			if (showEmptyView && currentAdapter != _emptyViewAdapter)
