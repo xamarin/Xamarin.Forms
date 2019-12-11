@@ -1144,7 +1144,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7898.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7510.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8672.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue8198.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8326.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8449.xaml.cs" />
   </ItemGroup>
