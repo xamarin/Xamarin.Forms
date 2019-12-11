@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new Frame()
 					{
 						HasShadow = false,
-                        Margin = 10,
+						Margin = 10,
 						HeightRequest = 100,
 						Content = new Label { Text = "Frame without shadow" }
 					},
