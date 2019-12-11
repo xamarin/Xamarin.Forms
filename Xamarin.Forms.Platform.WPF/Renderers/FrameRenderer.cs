@@ -99,7 +99,8 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		protected virtual UpdateShadow(){ 
+		protected virtual UpdateShadow()
+		{ 
 			if (Element.HasShadow)
 			{
 				Control.Effect = new DropShadowEffect()
