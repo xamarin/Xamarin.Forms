@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 	                        Content = new Label { Text = "Frame with shadow above green background" }
                         },
                         BackgroundColor = Color.Green
-					}
+					},
 					new Frame()
 					{
 						HasShadow = true,
