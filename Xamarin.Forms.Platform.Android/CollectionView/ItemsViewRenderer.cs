@@ -492,6 +492,15 @@ namespace Xamarin.Forms.Platform.Android
 					_emptyViewAdapter = new EmptyViewAdapter(ItemsView);
 				}
 
+				if (ItemsView is StructuredItemsView structuredItemsView)
+				{
+					_emptyViewAdapter.Header = structuredItemsView.Header;
+					_emptyViewAdapter.HeaderTemplate = structuredItemsView.HeaderTemplate;
+
+					_emptyViewAdapter.Footer = structuredItemsView.Footer;
+					_emptyViewAdapter.FooterTemplate = structuredItemsView.FooterTemplate;
+				}
+
 				_emptyViewAdapter.EmptyView = emptyView;
 				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
 
