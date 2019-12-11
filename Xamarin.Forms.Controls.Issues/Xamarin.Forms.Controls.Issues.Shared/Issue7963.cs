@@ -38,7 +38,6 @@ namespace Xamarin.Forms.Controls.Issues
                         },
                         BackgroundColor = Color.Green
 					}
-					,
 					new Frame()
 					{
 						HasShadow = true,
