@@ -7,6 +7,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
 	</PropertyGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\Xamarin.Forms.Exceptions\Xamarin.Forms.Exceptions.csproj" />
 		<ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj" />
 	</ItemGroup>
 	<ItemGroup>
@@ -19,6 +20,9 @@
 		<PackageReference Include="System.ComponentModel" Version="4.3.0" />
 		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
 		<PackageReference Include="System.ValueTuple" Version="4.5.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="System.Composition" Version="1.2.0" />
 	</ItemGroup>	
 	<ItemGroup>
 	  <Folder Include="Xaml\Diagnostics\" />

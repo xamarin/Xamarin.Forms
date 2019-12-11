@@ -5,6 +5,7 @@ using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Build.Tasks;
+using Xamarin.Forms.Exceptions;
 using System.Xml;
 
 namespace Xamarin.Forms.Core.XamlC
@@ -26,7 +27,7 @@ namespace Xamarin.Forms.Core.XamlC
 				yield break;
 
 			if (valueNode == null)
-				throw new XamlParseException("Missing Value for Setter", (IXmlLineInfo)node);
+				throw new XFException(XFException.Ecode.PropertyNotSet, node);
 
 			//if it's an elementNode, there's probably no need to convert it
 			if (valueNode is IElementNode)

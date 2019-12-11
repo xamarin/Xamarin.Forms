@@ -9,6 +9,7 @@ using static Mono.Cecil.Cil.OpCodes;
 
 using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Core.XamlC
 {
@@ -33,7 +34,7 @@ namespace Xamarin.Forms.Core.XamlC
 			//fail early
 			var resourceId = XamlCTask.GetResourceIdForPath(module, resourcePath);
 			if (resourceId == null)
-				throw new XamlParseException($"Resource '{value}' not found.", node);
+				throw new XFException(XFException.Ecode.ResourceNotFound, node, resourcePath);
 
 			var resourceDictionaryType = ("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary");
 

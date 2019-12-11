@@ -6,6 +6,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 using static System.String;
 
@@ -21,7 +22,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var member = ((ValueNode)ntype).Value as string;
 
 			if (IsNullOrEmpty(member) || !member.Contains("."))
-				throw new XamlParseException("Syntax for x:Static is [Member=][prefix:]typeName.staticMemberName", node as IXmlLineInfo);
+				throw new XFException(XFException.Ecode.Syntax, node as IXmlLineInfo, "x:Static", "[Member=][prefix:]typeName.staticMemberName");
 
 			var dotIdx = member.LastIndexOf('.');
 			var typename = member.Substring(0, dotIdx);
@@ -32,7 +33,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var propertyDef = GetPropertyDefinition(typeRef, membername, module);
 
 			if (fieldRef == null && propertyDef == null)
-				throw new XamlParseException($"x:Static: unable to find a public -- or accessible internal -- static field, static property, const or enum value named {membername} in {typename}", node as IXmlLineInfo);
+				throw new XFException(XFException.Ecode.Xstatic, node as IXmlLineInfo, membername, typename);
 
 			var fieldDef = fieldRef?.Resolve();
 			if (fieldRef != null) {

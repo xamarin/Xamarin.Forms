@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -32,7 +33,7 @@ namespace Xamarin.Forms.Xaml
 			catch (ArgumentException ae) {
 				if (ae.ParamName != "name")
 					throw ae;
-				var xpe = new XamlParseException($"An element with the name \"{(string)node.Value}\" already exists in this NameScope", node);
+				var xpe = new XFException(XFException.Ecode.Duplicate, node, (string)node.Value);
 				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(xpe);
 					return;

@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 using static System.String;
 
@@ -31,42 +32,51 @@ namespace Xamarin.Forms.Core.XamlC
 			string typeName = null, propertyName = null;
 
 			var parts = value.Split('.');
-			if (parts.Length == 1) {
+			if (parts.Length == 1)
+			{
 				var parent = node.Parent?.Parent as IElementNode ?? (node.Parent?.Parent as IListNode)?.Parent as IElementNode;
-				if (   (node.Parent as ElementNode)?.XmlType.NamespaceUri == XamlParser.XFUri
-				    && (   (node.Parent as ElementNode)?.XmlType.Name == nameof(Setter)
-				        || (node.Parent as ElementNode)?.XmlType.Name == nameof(PropertyCondition))) {
+				if ((node.Parent as ElementNode)?.XmlType.NamespaceUri == XamlParser.XFUri
+					&& ((node.Parent as ElementNode)?.XmlType.Name == nameof(Setter)
+						|| (node.Parent as ElementNode)?.XmlType.Name == nameof(PropertyCondition)))
+				{
 					if (parent.XmlType.NamespaceUri == XamlParser.XFUri &&
-					    (   parent.XmlType.Name == nameof(Trigger)
-					     || parent.XmlType.Name == nameof(DataTrigger)
-					     || parent.XmlType.Name == nameof(MultiTrigger)
-					     || parent.XmlType.Name == nameof(Style))) {
-						var ttnode = (parent as ElementNode).Properties [new XmlName("", "TargetType")];
+						(parent.XmlType.Name == nameof(Trigger)
+						 || parent.XmlType.Name == nameof(DataTrigger)
+						 || parent.XmlType.Name == nameof(MultiTrigger)
+						 || parent.XmlType.Name == nameof(Style)))
+					{
+						var ttnode = (parent as ElementNode).Properties[new XmlName("", "TargetType")];
 						if (ttnode is ValueNode)
 							typeName = (ttnode as ValueNode).Value as string;
 						else if (ttnode is IElementNode)
-							typeName = ((ttnode as IElementNode).CollectionItems.FirstOrDefault() as ValueNode)?.Value as string ?? ((ttnode as IElementNode).Properties [new XmlName("", "TypeName")] as ValueNode)?.Value as string;
-					} else if (parent.XmlType.NamespaceUri == XamlParser.XFUri && parent.XmlType.Name == nameof(VisualState)) {
+							typeName = ((ttnode as IElementNode).CollectionItems.FirstOrDefault() as ValueNode)?.Value as string ?? ((ttnode as IElementNode).Properties[new XmlName("", "TypeName")] as ValueNode)?.Value as string;
+					}
+					else if (parent.XmlType.NamespaceUri == XamlParser.XFUri && parent.XmlType.Name == nameof(VisualState))
+					{
 						typeName = FindTypeNameForVisualState(parent, node);
 					}
-				} else if ((node.Parent as ElementNode)?.XmlType.NamespaceUri == XamlParser.XFUri && (node.Parent as ElementNode)?.XmlType.Name == nameof(Trigger))
-					typeName = ((node.Parent as ElementNode).Properties [new XmlName("", "TargetType")] as ValueNode).Value as string;
-				propertyName = parts [0];
-			} else if (parts.Length == 2) {
-				typeName = parts [0];
-				propertyName = parts [1];
-			} else
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node);
+				}
+				else if ((node.Parent as ElementNode)?.XmlType.NamespaceUri == XamlParser.XFUri && (node.Parent as ElementNode)?.XmlType.Name == nameof(Trigger))
+					typeName = ((node.Parent as ElementNode).Properties[new XmlName("", "TargetType")] as ValueNode).Value as string;
+				propertyName = parts[0];
+			}
+			else if (parts.Length == 2)
+			{
+				typeName = parts[0];
+				propertyName = parts[1];
+			}
+			else
+				throw new CSException(CSException.Ecode.Convert, node, value, typeof(BindableProperty).ToString());
 
 			if (typeName == null || propertyName == null)
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node);
+				throw new CSException(CSException.Ecode.Convert, node, value, typeof(BindableProperty).ToString());
 
 			var typeRef = XmlTypeExtensions.GetTypeReference(typeName, module, node);
 			if (typeRef == null)
-				throw new XamlParseException($"Can't resolve {typeName}", node);
+				throw new XFException(XFException.Ecode.ResolveType, node, typeName);
 			bpRef = GetBindablePropertyFieldReference(typeRef, propertyName, module);
 			if (bpRef == null)
-				throw new XamlParseException($"Can't resolve {propertyName} on {typeRef.Name}", node);
+				throw new XFException(XFException.Ecode.ResolveProperty, node, propertyName, typeRef.Name);
 			return bpRef;
 		}
 
@@ -76,7 +86,7 @@ namespace Xamarin.Forms.Core.XamlC
 
 			//2. check that the VS is in a VSG
 			if (!(parent.Parent is IElementNode target) || target.XmlType.NamespaceUri != XamlParser.XFUri || target.XmlType.Name != nameof(VisualStateGroup))
-				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parent.Parent}", lineInfo);
+				throw new XFException(XFException.Ecode.Unexpected, lineInfo, nameof(VisualStateGroup), parent.Parent.ToString());
 
 			//3. if the VSG is in a VSGL, skip that as it could be implicit
 			if (   target.Parent is ListNode

@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
@@ -27,17 +28,11 @@ namespace Xamarin.Forms.Core.XamlC
 				((IElementNode)node).CollectionItems.Count == 1)
 				styleNode = ((IElementNode)node).CollectionItems[0];
 
-			if (sourceNode != null && styleNode != null)
-				throw new XamlParseException("StyleSheet can not have both a Source and a content", node);
+			if ((sourceNode != null && styleNode != null) || (sourceNode == null && styleNode == null))
+				throw new XFException(XFException.Ecode.StyleSheet, node);
 
-			if (sourceNode == null && styleNode == null)
-				throw new XamlParseException("StyleSheet require either a Source or a content", node);
-
-			if (styleNode != null && !(styleNode is ValueNode))
-				throw new XamlParseException("Style property or Content is not a string literal", node);
-
-			if (sourceNode != null && !(sourceNode is ValueNode))
-				throw new XamlParseException("Source property is not a string literal", node);
+			if ((styleNode != null && !(styleNode is ValueNode)) || (sourceNode != null && !(sourceNode is ValueNode)))
+				throw new XFException(XFException.Ecode.StyleOrContent, node);
 
 			if (styleNode != null) {
 				var style = (styleNode as ValueNode).Value as string;
@@ -59,7 +54,7 @@ namespace Xamarin.Forms.Core.XamlC
 				var resourcePath = ResourceDictionary.RDSourceTypeConverter.GetResourcePath(uri, rootTargetPath);
 				//fail early
 				if (XamlCTask.GetResourceIdForPath(module, resourcePath) == null)
-					throw new XamlParseException($"Resource '{source}' not found.", node);
+					throw new XFException(XFException.Ecode.NoResourceFoundFor, node, source);
 
 				yield return Create(Ldstr, resourcePath); //resourcePath
 

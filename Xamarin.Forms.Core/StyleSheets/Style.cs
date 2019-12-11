@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.StyleSheets
 {
@@ -93,14 +94,14 @@ namespace Xamarin.Forms.StyleSheets
 					try {
 						minfo = property.DeclaringType.GetRuntimeProperty(property.PropertyName);
 					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple properties with name '{property.DeclaringType}.{property.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, property.DeclaringType.ToString(), property.PropertyName);
 					}
 					if (minfo != null)
 						return minfo;
 					try {
 						return property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) });
 					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple methods with name '{property.DeclaringType}.Get{property.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, property.DeclaringType.ToString(), "Get" + property.PropertyName);
 					}
 				};
 			var ret = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider, out Exception exception);

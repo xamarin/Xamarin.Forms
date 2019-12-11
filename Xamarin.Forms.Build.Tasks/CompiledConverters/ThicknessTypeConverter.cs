@@ -7,6 +7,7 @@ using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Build.Tasks;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Core.XamlC
 {
@@ -38,7 +39,7 @@ namespace Xamarin.Forms.Core.XamlC
 					break;
 				}
 			}
-			throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Thickness)}", node);
+			throw new CSException(CSException.Ecode.Convert, node, value, typeof(Thickness).ToString());
 		}
 
 		IEnumerable<Instruction> GenerateIL(ModuleDefinition module, params double[] args)

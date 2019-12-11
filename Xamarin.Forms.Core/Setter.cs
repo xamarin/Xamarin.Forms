@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms
 {
@@ -22,7 +23,7 @@ namespace Xamarin.Forms
 		object IValueProvider.ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (Property == null)
-				throw new XamlParseException("Property not set", serviceProvider);
+				throw new XFException(XFException.Ecode.PropertyNotSet, serviceProvider.GetLineInfo());
 			var valueconverter = serviceProvider.GetService(typeof(IValueConverterProvider)) as IValueConverterProvider;
 
 			Func<MemberInfo> minforetriever =
@@ -32,14 +33,14 @@ namespace Xamarin.Forms
 					try {
 						minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, Property.DeclaringType.ToString(), Property.PropertyName);
 					}
 					if (minfo != null)
 						return minfo;
 					try {
 						return Property.DeclaringType.GetRuntimeMethod("Get" + Property.PropertyName, new[] { typeof(BindableObject) });
 					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple methods with name '{Property.DeclaringType}.Get{Property.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, Property.DeclaringType.ToString(), "Get" + Property.PropertyName);
 					}
 				};
 

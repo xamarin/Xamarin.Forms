@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -32,12 +33,12 @@ namespace Xamarin.Forms.Xaml
 
 				//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
 				if (!typeResolver.TryResolve(match + "Extension", out type) && !typeResolver.TryResolve(match, out type))
-					throw new XamlParseException($"MarkupExtension not found for {match}", serviceProvider);
+					throw new XFException(XFException.Ecode.SomethingNotFound, serviceProvider.GetLineInfo(), "MarkupExtension", match);
 				markupExtension = Activator.CreateInstance(type) as IMarkupExtension;
 			}
 
 			if (markupExtension == null)
-				throw new XamlParseException($"Missing public default constructor for MarkupExtension {match}", serviceProvider);
+				throw new XFException(XFException.Ecode.MissingConstructor, serviceProvider.GetLineInfo(), $"MarkupExtension {match}");
 
 			if (remaining == "}")
 				return markupExtension.ProvideValue(serviceProvider);
@@ -65,7 +66,7 @@ namespace Xamarin.Forms.Xaml
 					setter = t.GetRuntimeProperty(prop).SetMethod;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new XamlParseException($"Multiple properties with name  '{t}.{prop}' found.", serviceProvider, innerException: e);
+					throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, t.ToString(), prop);
 				}
 			}
 			else {
@@ -73,7 +74,7 @@ namespace Xamarin.Forms.Xaml
 					setter = markupExtension.GetType().GetRuntimeProperty(prop).SetMethod;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new XamlParseException($"Multiple properties with name  '{markupExtension.GetType()}.{prop}' found.", serviceProvider, innerException: e);
+					throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, markupExtension.GetType().ToString(), prop);
 				}
 
 			}
@@ -85,7 +86,7 @@ namespace Xamarin.Forms.Xaml
 						throw converterException;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new XamlParseException($"Multiple properties with name  '{markupExtension.GetType()}.{prop}' found.", serviceProvider, innerException: e);
+					throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, markupExtension.ToString(), prop);
 				}
 			}
 

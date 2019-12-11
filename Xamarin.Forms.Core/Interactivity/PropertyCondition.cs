@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms
 {
@@ -38,7 +39,7 @@ namespace Xamarin.Forms
 						try {
 							return Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 						} catch (AmbiguousMatchException e) {
-							throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", new XmlLineInfo(), innerException: e);
+							throw new CSException(CSException.Ecode.TypeAlreadyContais, new XmlLineInfo(), innerException: e, Property.DeclaringType.ToString(), Property.PropertyName);
 						}
 					};
 					Value = s_valueConverter.Convert(Value, Property.ReturnType, minforetriever, null);
@@ -64,7 +65,7 @@ namespace Xamarin.Forms
 						try {
 							return Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 						} catch (AmbiguousMatchException e) {
-							throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", new XmlLineInfo(), innerException: e);
+							throw new CSException(CSException.Ecode.TypeAlreadyContais, new XmlLineInfo(), innerException: e, Property.DeclaringType.ToString(), Property.PropertyName);
 						}
 					};
 					value = s_valueConverter.Convert(value, Property.ReturnType, minforetriever, null);

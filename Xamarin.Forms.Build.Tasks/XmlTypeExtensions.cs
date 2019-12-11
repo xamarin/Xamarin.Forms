@@ -5,6 +5,7 @@ using Mono.Cecil;
 using Mono.Cecil.Rocks;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -52,7 +53,7 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			var split = xmlType.Split(':');
 			if (split.Length > 2)
-				throw new XamlParseException($"Type \"{xmlType}\" is invalid", node as IXmlLineInfo);
+				throw new XFException(XFException.Ecode.Invalid, node as IXmlLineInfo, xmlType);
 
 			string prefix, name;
 			if (split.Length == 2) {
@@ -100,7 +101,7 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			if (type == null)
-				throw new XamlParseException($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}", xmlInfo);
+				throw new XFException(XFException.Ecode.TypeNotFound, xmlInfo, xmlType.Name, xmlType.NamespaceUri);
 
 			return module.ImportReference(type);
 		}

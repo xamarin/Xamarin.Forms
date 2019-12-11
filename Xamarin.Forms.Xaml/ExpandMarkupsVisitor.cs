@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using Xamarin.Forms.Xaml.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -76,7 +77,7 @@ namespace Xamarin.Forms.Xaml
 				return new ValueNode(expression.Substring(2), null);
 
 			if (expression[expression.Length - 1] != '}') {
-				var ex = new XamlParseException("Expression must end with '}'", xmlLineInfo);
+				var ex = new XFException(XFException.Ecode.Unexpected, xmlLineInfo, "}", expression[expression.Length - 1].ToString());
 				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(ex);
 					return null;
@@ -89,7 +90,7 @@ namespace Xamarin.Forms.Xaml
 
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0) {
-				var ex = new XamlParseException("Expression did not end in '}'", xmlLineInfo);
+				var ex = new XFException(XFException.Ecode.Unexpected, xmlLineInfo, "}", string.Empty);
 				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(ex);
 					return null;
@@ -161,7 +162,7 @@ namespace Xamarin.Forms.Xaml
 					}
 					while (!parsed.last);
 				}
-
+				
 
 				if (!(serviceProvider.GetService(typeof (IXamlTypeResolver)) is XamlTypeResolver typeResolver))
 					throw new NotSupportedException();
@@ -172,7 +173,7 @@ namespace Xamarin.Forms.Xaml
 				if (!typeResolver.TryResolve(xmltype, out _)) {
 					xmltype = new XmlType(namespaceuri, name, typeArguments);
 					if (!typeResolver.TryResolve(xmltype, out _)) {
-						var ex = new XamlParseException($"MarkupExtension not found for {match}", serviceProvider);
+						var ex = new XFException(XFException.Ecode.SomethingNotFound, serviceProvider.GetLineInfo(), "MarkupExtension", match);
 						if (ExceptionHandler != null) {
 							ExceptionHandler(ex);
 							return null;

@@ -5,7 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
-using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.StyleSheets
 {
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.StyleSheets
 		{
 			using (var stream = assembly.GetManifestResourceStream(resourceId)) {
 				if (stream == null)
-					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo);
+					throw new XFException(XFException.Ecode.NoResourceFoundFor, lineInfo, resourceId);
 				using (var reader = new StreamReader(stream)) {
 					return FromReader(reader);
 				}

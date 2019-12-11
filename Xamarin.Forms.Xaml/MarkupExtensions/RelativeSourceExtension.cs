@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -56,10 +57,10 @@ namespace Xamarin.Forms.Xaml
 			else if (Mode == RelativeBindingSourceMode.FindAncestor || 
 					Mode == RelativeBindingSourceMode.FindAncestorBindingContext)
 			{
-				throw new XamlParseException(
-					$"{nameof(RelativeBindingSourceMode.FindAncestor)} and " +
-					$"{nameof(RelativeBindingSourceMode.FindAncestorBindingContext)} " +
-					$"require {nameof(AncestorType)}.");
+				throw new XFException(XFException.Ecode.Requires, 
+					$"{nameof(RelativeBindingSourceMode.FindAncestor)} & " +
+					$"{nameof(RelativeBindingSourceMode.FindAncestorBindingContext)} ",
+					nameof(AncestorType));
 			}
 			else if (Mode == RelativeBindingSourceMode.Self)
 			{
@@ -71,7 +72,7 @@ namespace Xamarin.Forms.Xaml
 			}
 			else
 			{
-				throw new XamlParseException($"Invalid {nameof(Mode)}");
+				throw new XFException(XFException.Ecode.Invalid, nameof(Mode));
 			}
 		}
 

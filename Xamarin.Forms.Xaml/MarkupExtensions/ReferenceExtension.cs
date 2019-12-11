@@ -1,6 +1,7 @@
 using System;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -28,7 +29,7 @@ namespace Xamarin.Forms.Xaml
 
 			//fallback
 			var valueProvider = serviceProvider.GetService<IProvideValueTarget>() as IProvideParentValues
-								   ?? throw new ArgumentException("serviceProvider does not provide an IProvideValueTarget");
+								   ?? throw new ArgumentException($"{nameof(serviceProvider)} does not provide an {nameof(IProvideValueTarget)}");
 			foreach (var target in valueProvider.ParentObjects) {
 				if (!(target is BindableObject bo))
 					continue;
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Xaml
 					return value;
 			}
 
-			throw new XamlParseException($"Can not find the object referenced by `{Name}`", serviceProvider);
+			throw new XFException(XFException.Ecode.ObjectNotFound, serviceProvider.GetLineInfo(), Name);
 		}
 	}
 }

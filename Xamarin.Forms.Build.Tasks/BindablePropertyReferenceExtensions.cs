@@ -6,6 +6,7 @@ using System.Xml;
 using Mono.Cecil;
 
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -14,7 +15,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public static TypeReference GetBindablePropertyType(this FieldReference bpRef, IXmlLineInfo iXmlLineInfo, ModuleDefinition module)
 		{
 			if (!bpRef.Name.EndsWith("Property", StringComparison.InvariantCulture))
-				throw new XamlParseException($"The name of the bindable property {bpRef.Name} does not ends with \"Property\". This is the kind of convention the world is build upon, a bit like Planck's constant.", iXmlLineInfo);
+				throw new XFException(XFException.Ecode.BindingEndsProperty, iXmlLineInfo, bpRef.Name);
 			var bpName = bpRef.Name.Substring(0, bpRef.Name.Length - 8);
 			var owner = bpRef.DeclaringType;
 			TypeReference declaringTypeRef = null;
@@ -28,7 +29,7 @@ namespace Xamarin.Forms.Build.Tasks
 												md.Parameters.Count == 1 &&
 												md.Parameters[0].ParameterType.InheritsFromOrImplements(module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms", "BindableObject"))), module).SingleOrDefault()?.Item1;
 			if (getter == null)
-				throw new XamlParseException($"Missing a public static Get{bpName} or a public instance property getter for the attached property \"{bpRef.DeclaringType}.{bpRef.Name}\"", iXmlLineInfo);
+				throw new XFException(XFException.Ecode.PublicStaticProperty, iXmlLineInfo, $"Get{bpName}", $"{bpRef.DeclaringType }.{bpRef.Name}");
 			return getter.ResolveGenericReturnType(declaringTypeRef, module);
 		}
 

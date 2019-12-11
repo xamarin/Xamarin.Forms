@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Xml;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.Internals
 {
@@ -228,7 +229,7 @@ namespace Xamarin.Forms.Xaml.Internals
 
 			var namespaceuri = namespaceResolver.LookupNamespace(prefix);
 			if (namespaceuri == null) {
-				exception = new XamlParseException($"No xmlns declaration for prefix \"{prefix}\"", xmlLineInfo);
+				exception = new XFException(XFException.Ecode.UndeclaredPrefix, xmlLineInfo, prefix);
 				return null;
 			}
 

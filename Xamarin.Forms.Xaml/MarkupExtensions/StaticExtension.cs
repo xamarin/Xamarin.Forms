@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -18,7 +19,7 @@ namespace Xamarin.Forms.Xaml
 			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
 			if (string.IsNullOrEmpty(Member) || !Member.Contains("."))
-				throw new XamlParseException("Syntax for x:Static is [Member=][prefix:]typeName.staticMemberName", serviceProvider);
+				throw new XFException(XFException.Ecode.Syntax, serviceProvider.GetLineInfo(), "x:Static", "[Member=][prefix:]typeName.staticMemberName");
 
 			var dotIdx = Member.LastIndexOf('.');
 			var typename = Member.Substring(0, dotIdx);
@@ -34,7 +35,7 @@ namespace Xamarin.Forms.Xaml
 			if (finfo != null)
 				return finfo.GetValue(null);
 
-			throw new XamlParseException($"No static member found for {Member}", serviceProvider);
+			throw new XFException(XFException.Ecode.Xstatic, serviceProvider.GetLineInfo(), membername, typename);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -14,10 +15,8 @@ namespace Xamarin.Forms.Xaml
 				throw new ArgumentNullException(nameof(serviceProvider));
 			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
-			if (string.IsNullOrEmpty(TypeName)) {
-				var li = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider lip) ? lip.XmlLineInfo : new XmlLineInfo();
-				throw new XamlParseException("TypeName isn't set.", li);
-			}
+			if (string.IsNullOrEmpty(TypeName))
+				throw new XFException(XFException.Ecode.TypeName, serviceProvider.GetLineInfo());
 
 			return typeResolver.Resolve(TypeName, serviceProvider);
 		}

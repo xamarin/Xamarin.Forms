@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Xamarin.Forms;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {

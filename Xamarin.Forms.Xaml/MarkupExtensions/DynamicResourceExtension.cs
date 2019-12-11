@@ -1,5 +1,6 @@
 using System;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -13,7 +14,7 @@ namespace Xamarin.Forms.Xaml
 		DynamicResource IMarkupExtension<DynamicResource>.ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (Key == null)
-				throw new XamlParseException("DynamicResource markup require a Key", serviceProvider);
+				throw new XFException(XFException.Ecode.SomethingNotFound, serviceProvider.GetLineInfo(), nameof(Key), nameof(DynamicResource));
 			return new DynamicResource(Key);
 		}
 	}

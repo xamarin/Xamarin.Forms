@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Xml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -29,7 +30,7 @@ namespace Xamarin.Forms.Xaml
 				&& Desktop == null
 				&& TV == null
 				&& Watch == null)
-				throw new XamlParseException("OnIdiomExtension requires a non-null value to be specified for at least one idiom or Default.", serviceProvider);
+				throw new XFException(XFException.Ecode.NonNullValue, serviceProvider.GetLineInfo(), nameof(OnIdiomExtension));
 
 			var valueProvider = serviceProvider?.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
 
@@ -68,7 +69,7 @@ namespace Xamarin.Forms.Xaml
 						minfo = bp.DeclaringType.GetRuntimeProperty(bp.PropertyName);
 					}
 					catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple properties with name '{bp.DeclaringType}.{bp.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), e,  bp.DeclaringType.ToString(), bp.PropertyName);
 					}
 					if (minfo != null)
 						return minfo;
@@ -76,7 +77,7 @@ namespace Xamarin.Forms.Xaml
 						return bp.DeclaringType.GetRuntimeMethod("Get" + bp.PropertyName, new[] { typeof(BindableObject) });
 					}
 					catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple methods with name '{bp.DeclaringType}.Get{bp.PropertyName}' found.", serviceProvider, innerException: e);
+						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), e, bp.DeclaringType.ToString(), "Get" + bp.PropertyName);
 					}
 				}
 

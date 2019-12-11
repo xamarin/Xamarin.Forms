@@ -1,4 +1,5 @@
 ﻿using System;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -15,15 +16,13 @@ namespace Xamarin.Forms.Xaml
 			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
 			if (string.IsNullOrEmpty(TypeName)) {
-				var li = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider lip) ? lip.XmlLineInfo : new XmlLineInfo();
-				throw new XamlParseException("TypeName isn't set.", li);
+				throw new XFException(XFException.Ecode.TypeName, serviceProvider.GetLineInfo());
 			}
 
 			if (typeResolver.TryResolve(TypeName, out var type))
 				return new DataTemplate(type);
 
-			var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider lineInfoProvider) ? lineInfoProvider.XmlLineInfo : new XmlLineInfo();
-			throw new XamlParseException($"DataTemplateExtension: Could not locate type for {TypeName}.", lineInfo);
+			throw new XFException(XFException.Ecode.ResolveType, serviceProvider.GetLineInfo(), TypeName);
 		}
 
 		object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)

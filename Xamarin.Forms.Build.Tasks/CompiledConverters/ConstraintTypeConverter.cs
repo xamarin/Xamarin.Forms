@@ -8,6 +8,7 @@ using Xamarin.Forms.Build.Tasks;
 
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Core.XamlC
 {
@@ -20,7 +21,7 @@ namespace Xamarin.Forms.Core.XamlC
 			double size;
 
 			if (string.IsNullOrEmpty(value) || !double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out size))
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Constraint)}", node);
+				throw new CSException(CSException.Ecode.Convert, node, value, typeof(Constraint).ToString());
 
 			yield return Create(Ldc_R8, size);
 			yield return Create(Call, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms", "Constraint"),

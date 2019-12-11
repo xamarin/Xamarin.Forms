@@ -5,6 +5,7 @@ using System.Xml;
 using Mono.Cecil.Cil;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -136,7 +137,7 @@ namespace Xamarin.Forms.Build.Tasks
 		void RegisterName(string str, VariableDefinition namescopeVarDef, IList<string> namesInNamescope, VariableDefinition element, INode node)
 		{
 			if (namesInNamescope.Contains(str))
-				throw new XamlParseException($"An element with the name \"{str}\" already exists in this NameScope", node as IXmlLineInfo);
+				throw new XFException(XFException.Ecode.Duplicate, node as IXmlLineInfo, str);
 			namesInNamescope.Add(str);
 
 			var module = Context.Body.Method.Module;

@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
@@ -44,7 +45,7 @@ namespace Xamarin.Forms.Core.XamlC
 			yield break;
 
 		error:
-			throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Type)}", node);
+			throw new CSException(CSException.Ecode.Convert, node, value, typeof(Type).ToString());
 		}
 	}
 }

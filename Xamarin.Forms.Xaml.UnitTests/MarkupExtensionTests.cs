@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Xml;
 
 using Xamarin.Forms.Core.UnitTests;
+using Xamarin.Forms.Exceptions;
 using System.Reflection;
 
 namespace Xamarin.Forms.Xaml.UnitTests

@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ThrowsOnDuplicateXKey(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh3512)));
+					Assert.Throws<Exceptions.XamlParseException>(() => MockCompiler.Compile(typeof(Gh3512)));
 				else
 					Assert.Throws<ArgumentException>(() => new Gh3512(useCompiledXaml));
 			}

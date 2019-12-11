@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using Xamarin.Forms.Exceptions;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml.Internals;
 
@@ -132,7 +133,7 @@ namespace Xamarin.Forms.Xaml
 				}
 				catch (Exception e)
 				{
-					exception = e as XamlParseException ?? new XamlParseException($"Type converter failed: {e.Message}", serviceProvider, e);
+					exception = new CSException(CSException.Ecode.Convert, serviceProvider.GetLineInfo(), e, value.GetType().ToString(), $"{toType}. {e.Message}");
 					return null;
 				}
 				var converterType = converter?.GetType();
@@ -145,7 +146,7 @@ namespace Xamarin.Forms.Xaml
 							return convertFromStringInvariant.Invoke(converter, new object[] { str });
 						}
 						catch (Exception e) {
-							exception = new XamlParseException("Type conversion failed", serviceProvider, e);
+							exception = new CSException(CSException.Ecode.Convert, serviceProvider.GetLineInfo(), e, value.GetType().ToString(), toType.ToString());
 							return null;
 						}
 				}

@@ -4,6 +4,7 @@ using System.Xml;
 using System.Linq;
 using Xamarin.Forms.Internals;
 using System.Collections.Generic;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -16,15 +17,13 @@ namespace Xamarin.Forms.Xaml
 			if (serviceProvider == null)
 				throw new ArgumentNullException(nameof(serviceProvider));
 			if (Key == null)
-				throw new XamlParseException("you must specify a key in {StaticResource}", serviceProvider);
+				throw new XFException(XFException.Ecode.Requires, serviceProvider.GetLineInfo(), "StaticResource", Key);
 			if (!(serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideParentValues valueProvider))
 				throw new ArgumentException();
 
-			var xmlLineInfo = serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider xmlLineInfoProvider ? xmlLineInfoProvider.XmlLineInfo : null;
-
 			if (   !TryGetResource(Key, valueProvider.ParentObjects, out var resource, out var resourceDictionary)
 				&& !TryGetApplicationLevelResource(Key, out resource, out resourceDictionary))
-				throw new XamlParseException($"StaticResource not found for key {Key}", xmlLineInfo);
+				throw new XFException(XFException.Ecode.SomethingNotFound, serviceProvider.GetLineInfo(), "StaticResource", Key);
 
 			Diagnostics.ResourceDictionaryDiagnostics.OnStaticResourceResolved(resourceDictionary, Key, valueProvider.TargetObject, valueProvider.TargetProperty);
 

@@ -8,6 +8,7 @@ using Mono.Cecil.Cil;
 
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Build.Tasks;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Core.XamlC
 {
@@ -18,14 +19,14 @@ namespace Xamarin.Forms.Core.XamlC
 			var module = context.Body.Method.Module;
 
 			if (string.IsNullOrEmpty(value))
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Rectangle)}", node);
+				throw new CSException(CSException.Ecode.Convert, node, value, typeof(Rectangle).ToString());
 
 			double x = -1, y = -1, w = -1, h = -1;
 			bool hasX, hasY, hasW, hasH;
 			var xywh = value.Split(',');
 
 			if (xywh.Length != 2 && xywh.Length != 4)
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Rectangle)}", node);
+				throw new CSException(CSException.Ecode.Convert, node, value, typeof(Rectangle).ToString());
 
 			hasX = (xywh.Length == 2 || xywh.Length == 4) && double.TryParse(xywh [0], NumberStyles.Number, CultureInfo.InvariantCulture, out x);
 			hasY = (xywh.Length == 2 || xywh.Length == 4) && double.TryParse(xywh [1], NumberStyles.Number, CultureInfo.InvariantCulture, out y);
@@ -50,7 +51,7 @@ namespace Xamarin.Forms.Core.XamlC
 			}
 
 			if (!hasX || !hasY || !hasW || !hasH)
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Rectangle)}", node);
+				throw new CSException(CSException.Ecode.Convert, node, value, typeof(Rectangle).ToString());
 
 			return GenerateIL(x, y, w, h, module);
 		}

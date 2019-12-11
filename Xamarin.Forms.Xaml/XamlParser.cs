@@ -32,6 +32,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -80,7 +81,7 @@ namespace Xamarin.Forms.Xaml
 								name = new XmlName(reader.NamespaceURI, reader.LocalName);
 
 							if (node.Properties.ContainsKey(name))
-								throw new XamlParseException($"'{reader.Name}' is a duplicate property name.", (IXmlLineInfo)reader);
+								throw new XFException(XFException.Ecode.Duplicate, (IXmlLineInfo)reader, reader.Name);
 
 							INode prop = null;
 							if (reader.IsEmptyElement)
@@ -94,7 +95,7 @@ namespace Xamarin.Forms.Xaml
 						// 2. Xaml2009 primitives, x:Arguments, ...
 						else if (reader.NamespaceURI == X2009Uri && reader.LocalName == "Arguments") {
 							if (node.Properties.ContainsKey(XmlName.xArguments))
-								throw new XamlParseException($"'x:Arguments' is a duplicate directive name.", (IXmlLineInfo)reader);
+								throw new XFException(XFException.Ecode.Duplicate, (IXmlLineInfo)reader, "x:Arguments");
 
 							var prop = ReadNode(reader);
 							if (prop != null)
@@ -104,7 +105,7 @@ namespace Xamarin.Forms.Xaml
 						else if (node.XmlType.NamespaceUri == XFUri &&
 								 (node.XmlType.Name == "DataTemplate" || node.XmlType.Name == "ControlTemplate")) {
 							if (node.Properties.ContainsKey(XmlName._CreateContent))
-								throw new XamlParseException($"Multiple child elements in {node.XmlType.Name}", (IXmlLineInfo)reader);
+								throw new XFException(XFException.Ecode.MultipleChild, (IXmlLineInfo)reader, node.XmlType.Name);
 
 							var prop = ReadNode(reader, true);
 							if (prop != null)
@@ -189,7 +190,7 @@ namespace Xamarin.Forms.Xaml
 						break;
 				}
 			}
-			throw new XamlParseException("Closing PropertyElement expected", (IXmlLineInfo)reader);
+			throw new XFException(XFException.Ecode.Unexpected, (IXmlLineInfo)reader, "\"", reader.Value);
 		}
 
 		internal static IList<XmlType> GetTypeArguments(XmlReader reader) => GetTypeArguments(ParseXamlAttributes(reader, out _));
@@ -410,12 +411,12 @@ namespace Xamarin.Forms.Xaml
 				try {
 					type = type.MakeGenericType(args);
 				} catch (InvalidOperationException) {
-					exception = new XamlParseException($"Type {type} is not a GenericTypeDefinition", xmlInfo);
+					exception = new XFException(XFException.Ecode.BadType, xmlInfo, type.ToString(), "GenericTypeDefinition");
 				}
 			}
 
 			if (type == null)
-				exception = new XamlParseException($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}", xmlInfo);
+				exception = new XFException(XFException.Ecode.TypeNotFound, xmlInfo, type.ToString(), xmlType.NamespaceUri);
 
 			return type;
 		}

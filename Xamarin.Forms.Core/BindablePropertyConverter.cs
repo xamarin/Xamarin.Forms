@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Xml;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms
 {
@@ -39,8 +40,7 @@ namespace Xamarin.Forms
 			{
 				if (parentValuesProvider == null)
 				{
-					string msg = string.Format("Can't resolve {0}", parts[0]);
-					throw new XamlParseException(msg, lineinfo);
+					throw new XFException(XFException.Ecode.ResolveType, lineinfo, parts[0]);
 				}
 				object parent = parentValuesProvider.ParentObjects.Skip(1).FirstOrDefault();
 				if (parentValuesProvider.TargetObject is Setter)
@@ -61,7 +61,7 @@ namespace Xamarin.Forms
 					type = (parent as TriggerBase).TargetType;
 
 				if (type == null)
-					throw new XamlParseException($"Can't resolve {parts [0]}", lineinfo);
+					throw new XFException(XFException.Ecode.ResolveType, lineinfo, parts[0]);
 
 				return ConvertFrom(type, parts[0], lineinfo);
 			}
@@ -69,12 +69,11 @@ namespace Xamarin.Forms
 			{
 				if (!typeResolver.TryResolve(parts[0], out type))
 				{
-					string msg = string.Format("Can't resolve {0}", parts[0]);
-					throw new XamlParseException(msg, lineinfo);
+					throw new XFException(XFException.Ecode.ResolveType, lineinfo, parts[0]);
 				}
 				return ConvertFrom(type, parts[1], lineinfo);
 			}
-			throw new XamlParseException($"Can't resolve {value}. Syntax is [[prefix:]Type.]PropertyName.", lineinfo);
+			throw new XFException(XFException.Ecode.ResolveType, lineinfo, $"{value}. Syntax is [[prefix:]Type.]PropertyName.");
 		}
 
 		public override object ConvertFromInvariantString(string value)
@@ -101,11 +100,13 @@ namespace Xamarin.Forms
 			string name = propertyName + "Property";
 			FieldInfo bpinfo = type.GetField(fi => fi.Name == name && fi.IsStatic && fi.IsPublic && fi.FieldType == typeof(BindableProperty));
 			if (bpinfo == null)
-				throw new XamlParseException($"Can't resolve {name} on {type.Name}", lineinfo);
+				throw new XFException(XFException.Ecode.ResolveProperty, lineinfo, name, type.Name);
 			var bp = bpinfo.GetValue(null) as BindableProperty;
 			var isObsolete = bpinfo.GetCustomAttribute<ObsoleteAttribute>() != null;
-			if (bp.PropertyName != propertyName && !isObsolete)
-				throw new XamlParseException($"The PropertyName of {type.Name}.{name} is not {propertyName}", lineinfo);
+			if (isObsolete)
+				throw new CSException(CSException.Ecode.Obsolete, lineinfo, propertyName, $"{type.Name}.{name}");
+			if (bp.PropertyName != propertyName)
+				throw new XFException(XFException.Ecode.BindingPropertyNotFound, lineinfo, $"{type.Name}.{name}", propertyName);
 			return bp;
 		}
 
@@ -117,8 +118,9 @@ namespace Xamarin.Forms
 			// Skip 1; we would not be making this check if the immediate parent were not a VisualState
 
 			// VisualStates must be in a VisualStateGroup
-			if(!(parents[2] is VisualStateGroup)) {
-				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parents[2]}.", lineInfo);
+			if(!(parents[2] is VisualStateGroup))
+			{
+				throw new XFException(XFException.Ecode.Unexpected, lineInfo, nameof(VisualStateGroup), parents[2].ToString());
 			}
 
 			var vsTarget = parents[3];
@@ -131,18 +133,18 @@ namespace Xamarin.Forms
 
 			if (!(parents[3] is VisualStateGroupList))
 			{
-				throw new XamlParseException($"Expected {nameof(VisualStateGroupList)} but found {parents[3]}.", lineInfo);
+				throw new XFException(XFException.Ecode.Unexpected, lineInfo, nameof(VisualStateGroupList), parents[3].ToString());
 			}
 
 			if (!(parents[4] is Setter))
 			{
-				throw new XamlParseException($"Expected {nameof(Setter)} but found {parents[4]}.", lineInfo);
+				throw new XFException(XFException.Ecode.Unexpected, lineInfo, nameof(Setter), parents[4].ToString());
 			}
 
 			// These must be part of a Style; verify that 
 			if (!(parents[5] is Style style))
 			{
-				throw new XamlParseException($"Expected {nameof(Style)} but found {parents[5]}.", lineInfo);
+				throw new XFException(XFException.Ecode.Unexpected, lineInfo, nameof(Style), parents[5].ToString());
 			}
 
 			return style.TargetType;

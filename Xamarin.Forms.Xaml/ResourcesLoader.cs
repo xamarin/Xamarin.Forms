@@ -2,6 +2,7 @@
 using System.Reflection;
 using Xamarin.Forms;
 using System.Xml;
+using Xamarin.Forms.Exceptions;
 
 [assembly:Dependency(typeof(Xamarin.Forms.Xaml.ResourcesLoader))]
 namespace Xamarin.Forms.Xaml
@@ -26,11 +27,11 @@ namespace Xamarin.Forms.Xaml
 
 			var resourceId = XamlResourceIdAttribute.GetResourceIdForPath(assembly, resourcePath);
 			if (resourceId == null)
-				throw new XamlParseException($"Resource '{resourcePath}' not found.", lineInfo);
+				throw new XFException(XFException.Ecode.ResourceNotFound, lineInfo, resourcePath);
 
 			using (var stream = assembly.GetManifestResourceStream(resourceId)) {
 				if (stream == null)
-					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo);
+					throw new XFException(XFException.Ecode.NoResourceFoundFor, lineInfo, resourceId);
 				using (var reader = new StreamReader(stream)) {
 					rd.LoadFromXaml(reader.ReadToEnd(), assembly);
 					return rd;
@@ -52,11 +53,11 @@ namespace Xamarin.Forms.Xaml
 
 			var resourceId = XamlResourceIdAttribute.GetResourceIdForPath(assembly, resourcePath);
 			if (resourceId == null)
-				throw new XamlParseException($"Resource '{resourcePath}' not found.", lineInfo);
+				throw new XFException(XFException.Ecode.ResourceNotFound, lineInfo, resourcePath);
 
 			using (var stream = assembly.GetManifestResourceStream(resourceId)) {
 				if (stream == null)
-					throw new XamlParseException($"No resource found for '{resourceId}'.", lineInfo);
+					throw new XFException(XFException.Ecode.NoResourceFoundFor, lineInfo, resourceId);
 				using (var reader = new StreamReader(stream))
 					return reader.ReadToEnd();
 			}

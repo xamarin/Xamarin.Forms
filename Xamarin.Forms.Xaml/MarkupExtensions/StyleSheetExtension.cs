@@ -3,6 +3,7 @@ using System.Xml;
 using Xamarin.Forms.StyleSheets;
 using System.Reflection;
 using System.IO;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -17,15 +18,12 @@ namespace Xamarin.Forms.Xaml
 
 		object IValueProvider.ProvideValue(IServiceProvider serviceProvider)
 		{
-			IXmlLineInfo lineInfo;
-
 			if (!string.IsNullOrEmpty(Style) && Source != null)
-				throw new XamlParseException($"StyleSheet can not have both a Source and a content", serviceProvider);
+				throw new XFException(XFException.Ecode.StyleSheet, serviceProvider.GetLineInfo());
 
 			if (Source != null) {
-				lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
 				if (Source.IsAbsoluteUri)
-					throw new XamlParseException($"Source only accepts Relative URIs", lineInfo);
+					throw new XFException(XFException.Ecode.RelativeUriOnly, serviceProvider.GetLineInfo(), nameof(Source));
 
 				var rootObjectType = (serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider)?.RootObject.GetType();
 				if (rootObjectType == null)
@@ -34,7 +32,7 @@ namespace Xamarin.Forms.Xaml
 				var resourcePath = ResourceDictionary.RDSourceTypeConverter.GetResourcePath(Source, rootTargetPath);
 				var assembly = rootObjectType.GetTypeInfo().Assembly;
 
-				return StyleSheet.FromResource(resourcePath, assembly, lineInfo);
+				return StyleSheet.FromResource(resourcePath, assembly, serviceProvider.GetLineInfo());
 			}
 
 			if (!string.IsNullOrEmpty(Style)) {
@@ -42,7 +40,7 @@ namespace Xamarin.Forms.Xaml
 					return StyleSheet.FromReader(reader);
 			}
 
-			throw new XamlParseException($"StyleSheet require either a Source or a content", serviceProvider);
+			throw new XFException(XFException.Ecode.StyleSheet, serviceProvider.GetLineInfo());
 		}
 	}
 }

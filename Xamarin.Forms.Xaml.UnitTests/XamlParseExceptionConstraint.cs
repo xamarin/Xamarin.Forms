@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework.Constraints;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
@@ -38,7 +39,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			if (xmlInfo == null || !xmlInfo.HasLineInfo ())
 				return false;
 			if (messagePredicate != null)
-				if (!messagePredicate (((XamlParseException)actual).UnformattedMessage))
+				if (!messagePredicate (((XamlParseException)actual).Message))
 					return false;
 			return xmlInfo.LineNumber == linenumber && xmlInfo.LinePosition == lineposition;
 		}

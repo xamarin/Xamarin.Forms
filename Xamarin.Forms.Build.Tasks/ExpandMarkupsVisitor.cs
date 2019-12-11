@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Xaml.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -85,13 +86,13 @@ namespace Xamarin.Forms.Build.Tasks
 				return new ValueNode(expression.Substring(2), null);
 
 			if (expression[expression.Length - 1] != '}')
-				throw new XamlParseException("Markup expression missing its closing tag", xmlLineInfo);
+				throw new XFException(XFException.Ecode.Unexpected, xmlLineInfo, "}", expression[expression.Length - 1].ToString());
 
 			if (!MarkupExpressionParser.MatchMarkup(out var match, expression, out var len))
-				throw new XamlParseException("Error while parsing markup expression", xmlLineInfo);
+				throw new XFException(XFException.Ecode.ExtensionFailed, xmlLineInfo, "Markup");
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0)
-				throw new XamlParseException("Markup expression not closed", xmlLineInfo);
+				throw new XFException(XFException.Ecode.ExtensionNotClosed, xmlLineInfo, "Markup");
 
 			var provider = new XamlServiceProvider(null, null);
 			provider.Add(typeof (ILContextProvider), new ILContextProvider(context));
@@ -131,7 +132,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 				var namespaceuri = nsResolver.LookupNamespace(prefix) ?? "";
 				if (!string.IsNullOrEmpty(prefix) && string.IsNullOrEmpty(namespaceuri))
-					throw new XamlParseException($"Undeclared xmlns prefix '{prefix}'", xmlLineInfo);
+					throw new XFException(XFException.Ecode.UndeclaredPrefix, xmlLineInfo, prefix);
 
 				IList<XmlType> typeArguments = null;
 				var childnodes = new List<(XmlName, INode)>();

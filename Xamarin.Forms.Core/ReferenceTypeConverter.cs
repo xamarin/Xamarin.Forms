@@ -4,6 +4,7 @@ using System.Globalization;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Xaml.Internals;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms
 {
@@ -21,7 +22,7 @@ namespace Xamarin.Forms
 
 			var referenceProvider = serviceProvider.GetService<IReferenceProvider>();
 			if (referenceProvider != null)
-				return referenceProvider.FindByName(value) ?? throw new XamlParseException($"Can't resolve name '{value}' on Element", serviceProvider);
+				return referenceProvider.FindByName(value) ?? throw new XFException(XFException.Ecode.ResolveName, serviceProvider.GetLineInfo(), value, nameof(Element));
 
 #pragma warning disable CS0612 // Type or member is obsolete
 			//legacy path

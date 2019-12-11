@@ -36,6 +36,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml.Diagnostics;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.Internals
 {
@@ -67,7 +68,7 @@ namespace Xamarin.Forms.Xaml
 		{
 			var xaml = GetXamlForType(callingType, view, out var useDesignProperties);
 			if (string.IsNullOrEmpty(xaml))
-				throw new XamlParseException(string.Format("No embeddedresource found for {0}", callingType), new XmlLineInfo());
+				throw new XFException(XFException.Ecode.NoResourceFoundFor, new XmlLineInfo(), callingType.ToString());
 			Load(view, xaml, useDesignProperties);
 		}
 
