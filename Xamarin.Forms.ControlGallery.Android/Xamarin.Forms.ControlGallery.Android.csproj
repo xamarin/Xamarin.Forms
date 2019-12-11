@@ -314,11 +314,11 @@
     <PackageReference Include="Xam.Plugin.DeviceInfo">
       <Version>3.0.2</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Build.Download">
-      <Version>0.6</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
+    <PackageReference Include="Xamarin.Build.Download">
+      <Version>0.4.9</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Firebase.AppIndexing">
       <Version>60.1142.1</Version>
     </PackageReference>
@@ -339,6 +339,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
+    <PackageReference Include="Xamarin.Build.Download">
+      <Version>0.7.1</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Firebase.AppIndexing">
       <Version>71.1602.0</Version>
     </PackageReference>
