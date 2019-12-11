@@ -18,8 +18,13 @@
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
+    <PackageReference Include="Xamarin.Firebase.AppIndexing" Version="60.1142.1" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
+    <PackageReference Include="Xamarin.Firebase.AppIndexing" Version="71.1602.0" />
+  </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.GooglePlayServices.AppIndexing" Version="60.1142.1" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.3" />
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
       <Name>Xamarin.Forms.Core</Name>
