@@ -503,7 +503,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateSwipeItems()
 		{
-			if (_contentView == null || _actionView != null)
+			if (_contentView == null)
 				return;
 
 			var items = GetSwipeItemsByDirection();
@@ -717,7 +717,11 @@ namespace Xamarin.Forms.Platform.Android
 					_isSwiping = false;
 					_swipeThreshold = 0;
 
-					_contentView.Animate().TranslationX(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(DisposeSwipeItems));
+					_contentView.Animate().TranslationX(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
+					{
+						if (_swipeDirection == null)
+							DisposeSwipeItems();
+					}));
 					break;
 				case SwipeDirection.Up:
 				case SwipeDirection.Down:
@@ -728,7 +732,11 @@ namespace Xamarin.Forms.Platform.Android
 					_isSwiping = false;
 					_swipeThreshold = 0;
 
-					_contentView.Animate().TranslationY(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(DisposeSwipeItems));
+					_contentView.Animate().TranslationY(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
+					{
+						if (_swipeDirection == null)
+							DisposeSwipeItems();
+					}));
 					break;
 			}
 		}
