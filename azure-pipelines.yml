@@ -25,8 +25,6 @@ variables:
   value: 3.0.100
 - name: winVmImage
   value: Hosted VS2017
-- name: MSBUILDDISABLENODEREUSE
-  value: 1
 
 resources:
   repositories:
