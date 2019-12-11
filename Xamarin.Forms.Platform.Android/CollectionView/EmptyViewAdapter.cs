@@ -268,21 +268,12 @@ namespace Xamarin.Forms.Platform.Android
 		int GetHeight(ViewGroup parent)
 		{
 			var headerFooterHeight = parent.Context.ToPixels(_headerHeight + _footerHeight);
-			return Math.Abs((int)(parent.Height - headerFooterHeight));
+			return Math.Abs((int)(parent.MeasuredHeight - headerFooterHeight));
 		}
 
 		int GetWidth(ViewGroup parent)
-		{
-			var orientation = parent.Context.Resources.Configuration.Orientation;
-   			var request = ItemsView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-
-			if (orientation == Orientation.Portrait)
-				return (int)parent.Context.ToPixels(request.Request.Width);
-
-			if (orientation == Orientation.Landscape)
-				return (int) parent.Context.ToPixels(request.Request.Height);
-	
-			return parent.Width;
+		{	
+			return parent.MeasuredWidth;
 		}
 
 		void UpdateHeaderFooterHeight(object item, bool isHeader)
