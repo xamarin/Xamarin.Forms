@@ -23,4 +23,7 @@
     <CI>false</CI>
     <CI Condition="'$(TF_BUILD)' == 'true'">true</CI>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(AndroidTargetFrameworks)' == ''">
+      <AndroidTargetFrameworks>MonoAndroid81;MonoAndroid90;</AndroidTargetFrameworks>
+  </PropertyGroup>
  </Project>

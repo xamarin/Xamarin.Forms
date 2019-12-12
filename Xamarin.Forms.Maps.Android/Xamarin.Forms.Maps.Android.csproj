@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Xamarin.Forms.Maps.Android</RootNamespace>
     <AssemblyName>Xamarin.Forms.Maps.Android</AssemblyName>
-    <TargetFrameworks>MonoAndroid81;MonoAndroid90;</TargetFrameworks>
+    <TargetFrameworks>$(AndroidTargetFrameworks)</TargetFrameworks>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
   </PropertyGroup>

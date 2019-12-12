@@ -3,7 +3,7 @@
     <RootNamespace>Xamarin.Forms.Material.Android</RootNamespace>
     <AssemblyName>Xamarin.Forms.Material</AssemblyName>
     <PackageId>Xamarin.Forms.Material.Android</PackageId>
-    <TargetFrameworks>MonoAndroid90;</TargetFrameworks>
+    <TargetFrameworks>$(AndroidTargetFrameworks.Replace("MonoAndroid81;", ""))</TargetFrameworks>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>

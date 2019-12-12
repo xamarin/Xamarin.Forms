@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Xamarin.Forms.Platform</RootNamespace>
     <AssemblyName>Xamarin.Forms.Platform</AssemblyName>
-    <TargetFrameworks>MonoAndroid81;MonoAndroid90;</TargetFrameworks>
+    <TargetFrameworks>$(AndroidTargetFrameworks)</TargetFrameworks>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <PackageId>Xamarin.Forms.Platform.AndroidForwarders</PackageId>

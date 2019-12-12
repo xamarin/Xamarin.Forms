@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Android Backend for Xamarin.Forms</Description>
     <AssemblyName>Xamarin.Forms.Platform.Android</AssemblyName>
-    <TargetFrameworks>MonoAndroid81;MonoAndroid90;</TargetFrameworks>
+    <TargetFrameworks>$(AndroidTargetFrameworks)</TargetFrameworks>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <RootNamespace>Xamarin.Forms.Platform.Android</RootNamespace>
