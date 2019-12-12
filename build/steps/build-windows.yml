@@ -46,12 +46,12 @@ jobs:
         provisioning_script: ${{ parameters.provisionatorPath }}
         provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
-    - task: UseDotNet@2
-      displayName: "Install .net core $(DOTNET_VERSION)"
-      condition: ne(variables['DOTNET_VERSION'], '')
-      inputs:
-        version: $(DOTNET_VERSION)
-        packageType: 'sdk'
+    # - task: UseDotNet@2
+    #   displayName: "Install .net core $(DOTNET_VERSION)"
+    #   condition: ne(variables['DOTNET_VERSION'], '')
+    #   inputs:
+    #     version: $(DOTNET_VERSION)
+    #     packageType: 'sdk'
 
     - task: NuGetToolInstaller@1
       displayName: 'Use NuGet $(NUGET_VERSION)'
