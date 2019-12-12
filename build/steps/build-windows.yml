@@ -37,7 +37,7 @@ jobs:
       clean: true
     - script: build.cmd -Target provision --verbosity=diagnostic
       displayName: 'Cake Provision'
-      condition: eq(variables['provisioning'], 'false')
+      condition: eq(variables['provisioningCake'], 'true')
 
     - task: xamops.azdevex.provisionator-task.provisionator@1
       displayName: 'Provisionator'
