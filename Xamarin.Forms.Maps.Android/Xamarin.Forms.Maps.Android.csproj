@@ -21,6 +21,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.GooglePlayServices.Maps" Version="60.1142.1" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Maps" Version="71.1610.0" />
   </ItemGroup>
 </Project>
