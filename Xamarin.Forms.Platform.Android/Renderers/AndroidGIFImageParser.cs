@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					BitmapFactory.DecodeResource(context.Resources, drawableIdentifier, options);
 
-				animation = await GetFormsAnimationDrawableFromResource(file, context, options);
+				animation = await GetFormsAnimationDrawableFromResource(drawableIdentifier, context, options);
 			}
 			else
 				animation = await GetFormsAnimationDrawableFromFile(file, context, options);
@@ -258,27 +258,12 @@ namespace Xamarin.Forms.Platform.Android
 			return animation;
 		}
 
-		internal static async Task<FormsAnimationDrawable> GetFormsAnimationDrawableFromResource(string resource, Context context, BitmapFactory.Options options)
+		internal static async Task<FormsAnimationDrawable> GetFormsAnimationDrawableFromResource(int resourceId, Context context, BitmapFactory.Options options)
 		{
 			FormsAnimationDrawable animation = null;
 
-			using (var stream = context.Resources.OpenRawResource(ResourceManager.GetDrawableByName(resource)))
-			using (var decoder = new AndroidGIFImageParser(context, options.InDensity, options.InTargetDensity))
-			{
-				try
-				{
-					if (!FileImageSourceHandler.DecodeSynchronously)
-						await decoder.ParseAsync(stream).ConfigureAwait(false);
-					else
-						decoder.ParseAsync(stream).Wait();
-
-					animation = decoder.Animation;
-				}
-				catch (GIFDecoderFormatException)
-				{
-					animation = null;
-				}
-			}
+			using (var stream = context.Resources.OpenRawResource(resourceId))
+				animation = await GetFormsAnimationDrawableFromStream(stream, context, options);
 
 			return animation;
 		}
@@ -288,6 +273,15 @@ namespace Xamarin.Forms.Platform.Android
 			FormsAnimationDrawable animation = null;
 
 			using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, true))
+				animation = await GetFormsAnimationDrawableFromStream(stream, context, options);
+
+			return animation;
+		}
+
+		internal static async Task<FormsAnimationDrawable> GetFormsAnimationDrawableFromStream(Stream stream, Context context, BitmapFactory.Options options)
+		{
+			FormsAnimationDrawable animation = null;
+
 			using (var decoder = new AndroidGIFImageParser(context, options.InDensity, options.InTargetDensity))
 			{
 				try
