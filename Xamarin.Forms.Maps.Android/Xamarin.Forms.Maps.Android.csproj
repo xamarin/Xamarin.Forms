@@ -19,6 +19,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android.csproj">
     </ProjectReference>
+    <PackageReference Include="Xamarin.Build.Download">
+      <Version>0.7.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
     <PackageReference Include="Xamarin.GooglePlayServices.Maps" Version="60.1142.1" />
