@@ -341,7 +341,7 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
     <PackageReference Include="Xamarin.Build.Download">
-      <Version>0.4.11</Version>
+      <Version>0.4.9</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Firebase.AppIndexing">
       <Version>60.1142.1</Version>
