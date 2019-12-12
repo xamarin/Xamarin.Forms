@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 		const int SwipeThresholdMargin = 6;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
+		const float SwipeMinimumDelta = 10f;
 
 		readonly Context _context;
 		GestureDetector _detector;
@@ -223,7 +224,7 @@ namespace Xamarin.Forms.Platform.Android
 			float x = Math.Abs((_downX - e.GetX()) / _density);
 			float y = Math.Abs((_downY - e.GetY()) / _density);
 
-			if (e.Action != MotionEventActions.Move | (x > 10f || y > 10f))
+			if (e.Action != MotionEventActions.Move | (x > SwipeMinimumDelta || y > SwipeMinimumDelta))
 			{
 				_detector.OnTouchEvent(e);
 			}
@@ -246,7 +247,7 @@ namespace Xamarin.Forms.Platform.Android
 					float x = Math.Abs((_downX - e.GetX()) / _density);
 					float y = Math.Abs((_downY - e.GetY()) / _density);
 
-					if (x > 10f || y > 10f)
+					if (x > SwipeMinimumDelta || y > SwipeMinimumDelta)
 						ProcessSwipingInteractions(e);
 					break;
 				case MotionEventActions.Cancel:
