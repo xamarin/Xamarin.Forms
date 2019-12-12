@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly double _itemHeight;
 		readonly double _itemWidth;
 		readonly Thickness _itemSpacing;
-		readonly SynchronizationContext _synchronizationContext;
 		readonly INotifyCollectionChanged _notifyCollectionChanged;
 
 		public ObservableItemTemplateCollection(IList itemsSource, DataTemplate itemTemplate, BindableObject container, 
@@ -48,8 +47,6 @@ namespace Xamarin.Forms.Platform.UWP
 				Add(new ItemTemplateContext(itemTemplate, itemsSource[n], container, _itemHeight, _itemWidth, _itemSpacing));
 			}
 
-			_synchronizationContext = SynchronizationContext.Current;
-
 			_notifyCollectionChanged.CollectionChanged += InnerCollectionChanged;
 		}
 
@@ -60,9 +57,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			if (SynchronizationContext.Current != _synchronizationContext)
-				_synchronizationContext.Post(RaiseCollectionChanged, args);
-			else
+			Device.BeginInvokeOnMainThread(() =>
 			{
 				switch (args.Action)
 				{
@@ -84,12 +79,7 @@ namespace Xamarin.Forms.Platform.UWP
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-			}
-		}
-
-		void RaiseCollectionChanged(object param)
-		{
-			InnerCollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
+			});
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)

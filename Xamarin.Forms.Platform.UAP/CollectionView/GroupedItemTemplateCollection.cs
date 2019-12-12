@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly DataTemplate _groupHeaderTemplate;
 		readonly DataTemplate _groupFooterTemplate;
 		readonly BindableObject _container;
-		readonly SynchronizationContext _synchronizationContext;
 		readonly IList _groupList;
 
 		public GroupedItemTemplateCollection(IEnumerable itemsSource, DataTemplate itemTemplate, 
@@ -23,7 +22,6 @@ namespace Xamarin.Forms.Platform.UWP
 			_groupHeaderTemplate = groupHeaderTemplate;
 			_groupFooterTemplate = groupFooterTemplate;
 			_container = container;
-			_synchronizationContext = SynchronizationContext.Current;
 
 			foreach (var group in _itemsSource)
 			{
@@ -54,9 +52,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void GroupsChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			if (SynchronizationContext.Current != _synchronizationContext)
-				_synchronizationContext.Post(RaiseCollectionChanged, args);
-			else
+			Device.BeginInvokeOnMainThread(() =>
 			{
 				switch (args.Action)
 				{
@@ -76,12 +72,7 @@ namespace Xamarin.Forms.Platform.UWP
 						Reset();
 						break;
 				}
-			}
-		}
-
-		void RaiseCollectionChanged(object param)
-		{
-			GroupsChanged(this, (NotifyCollectionChangedEventArgs)param);
+			});
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)

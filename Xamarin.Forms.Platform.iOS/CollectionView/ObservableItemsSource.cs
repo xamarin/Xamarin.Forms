@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly bool _grouped;
 		readonly int _section;
 		readonly IList _itemsSource;
-		readonly SynchronizationContext _synchronizationContext;
 		bool _disposed;
 
 		public ObservableItemsSource(IList itemSource, UICollectionViewController collectionViewController, int group = -1)
@@ -28,8 +27,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_itemsSource = itemSource;
 
 			Count = ItemsCount();
-
-			_synchronizationContext = SynchronizationContext.Current;
 
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
@@ -98,12 +95,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			if (SynchronizationContext.Current != _synchronizationContext)
-			{
-				// Raises the CollectionChanged event on the creator thread
-				_synchronizationContext.Send(RaiseCollectionChanged, args);
-			}
-			else
+			Device.BeginInvokeOnMainThread(() =>
 			{
 				switch (args.Action)
 				{
@@ -125,12 +117,7 @@ namespace Xamarin.Forms.Platform.iOS
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-			}
-		}
-
-		void RaiseCollectionChanged(object param)
-		{
-			CollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
+			});
 		}
 
 		void Reload()

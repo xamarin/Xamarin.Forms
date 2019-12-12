@@ -10,7 +10,6 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly ICollectionChangedNotifier _notifier;
 		readonly IList _groupSource;
-		readonly SynchronizationContext _synchronizationContext;
 		List<IItemsViewSource> _groups = new List<IItemsViewSource>();
 		readonly bool _hasGroupHeaders;
 		readonly bool _hasGroupFooters;
@@ -43,7 +42,6 @@ namespace Xamarin.Forms.Platform.Android
 			_notifier = notifier;
 			_groupSource = groupSource as IList ?? new ListSource(groupSource);
 
-			_synchronizationContext = SynchronizationContext.Current;
 			_hasGroupFooters = groupableItemsView.GroupFooterTemplate != null;
 			_hasGroupHeaders = groupableItemsView.GroupHeaderTemplate != null;
 
@@ -234,12 +232,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			if (SynchronizationContext.Current != _synchronizationContext)
-			{
-				// Raises the CollectionChanged event on the creator thread
-				_synchronizationContext.Send(RaiseCollectionChanged, args);
-			}
-			else
+			Device.BeginInvokeOnMainThread(() =>
 			{
 				switch (args.Action)
 				{
@@ -261,12 +254,7 @@ namespace Xamarin.Forms.Platform.Android
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-			}
-		}
-
-		void RaiseCollectionChanged(object param)
-		{
-			CollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
+			});
 		}
 
 		void Reload()

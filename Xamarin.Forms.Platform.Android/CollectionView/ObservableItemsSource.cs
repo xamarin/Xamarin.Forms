@@ -9,14 +9,13 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly IList _itemsSource;
 		readonly ICollectionChangedNotifier _notifier;
-		readonly SynchronizationContext _synchronizationContext;
 		bool _disposed;
 
 		public ObservableItemsSource(IList itemSource, ICollectionChangedNotifier notifier)
 		{
 			_itemsSource = itemSource;
 			_notifier = notifier;
-			_synchronizationContext = SynchronizationContext.Current;
+
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
@@ -85,12 +84,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			if (SynchronizationContext.Current != _synchronizationContext)
-			{
-				// Raises the CollectionChanged event on the creator thread
-				_synchronizationContext.Send(RaiseCollectionChanged, args);
-			}
-			else
+			Device.BeginInvokeOnMainThread(() =>
 			{
 				switch (args.Action)
 				{
@@ -112,12 +106,7 @@ namespace Xamarin.Forms.Platform.Android
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-			}
-		}
-
-		void RaiseCollectionChanged(object param)
-		{
-			CollectionChanged(this, (NotifyCollectionChangedEventArgs)param);
+			});
 		}
 
 		void Move(NotifyCollectionChangedEventArgs args)
