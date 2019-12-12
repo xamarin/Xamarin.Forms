@@ -16,7 +16,7 @@ namespace Xamarin.Forms
 			_internal.CollectionChanged += OnSwipeItemsChanged;
 		}
 
-		public SwipeItems(IList<ISwipeItem> swipeItems)
+		public SwipeItems(IEnumerable<ISwipeItem> swipeItems)
 		{
 			_internal = new ObservableCollection<ISwipeItem>(swipeItems) ?? throw new ArgumentNullException(nameof(swipeItems));
 			_internal.CollectionChanged += OnSwipeItemsChanged;
