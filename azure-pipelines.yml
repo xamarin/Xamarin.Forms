@@ -23,6 +23,8 @@ variables:
   value: true
 - name: DOTNET_VERSION
   value: 3.0.100
+- name: MSBUILDDISABLENODEREUSE
+  value: 1
 - name: winVmImage
   value: Hosted Windows 2019 with VS2019
 
