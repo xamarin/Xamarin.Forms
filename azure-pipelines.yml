@@ -24,7 +24,7 @@ variables:
 - name: DOTNET_VERSION
   value: 3.0.100
 - name: winVmImage
-  value: Hosted Windows 2019 with VS2019
+  value: Hosted VS2017
 
 resources:
   repositories:
@@ -68,7 +68,7 @@ jobs:
     displayName: Build Windows Phase
     vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
+    msbuildExtraArguments: '/nowarn:VSX1000'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
