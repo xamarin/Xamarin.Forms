@@ -3,6 +3,8 @@
     "path": "Xamarin.Forms.sln",
     "projects": [
       "EmbeddingTestBeds\\Embedding.Droid\\Embedding.Droid.csproj",
+      "HelloForms\\HelloForms\\HelloForms.csproj",
+      "HelloForms\\HelloForms.Android\\HelloForms.Android.csproj",
       "PagesGallery\\PagesGallery.Droid\\PagesGallery.Droid.csproj",
       "PagesGallery\\PagesGallery\\PagesGallery.csproj",
       "Stubs\\Xamarin.Forms.Platform.Android\\Xamarin.Forms.Platform.Android (Forwarders).csproj",

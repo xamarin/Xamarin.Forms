@@ -4,6 +4,8 @@
     "projects": [
       "EmbeddingTestBeds\\Embedding.UWP\\Embedding.UWP.csproj",
       "EmbeddingTestBeds\\Embedding.XF\\Embedding.XF.csproj",
+      "HelloForms\\HelloForms\\HelloForms.csproj",
+      "HelloForms\\HelloForms.UWP\\HelloForms.UWP.csproj",
       "PagesGallery\\PagesGallery.UWP\\PagesGallery.UWP.csproj",
       "PagesGallery\\PagesGallery\\PagesGallery.csproj",
       "XFCorePostProcessor.Tasks\\XFCorePostProcessor.Tasks.csproj",
