@@ -237,5 +237,31 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That(view.RotationY, Is.EqualTo(200));
 		}
+
+		[Test]
+		public async Task AnimationExtensionsReturnTrueIfAnimationsDisabled() 
+		{
+			DisableTicker();
+
+			var label = new Label { Text = "Foo" };
+			var result = await label.ScaleTo(2, 500);
+
+			Assert.That(result, Is.True);
+		}
+
+		[Test, Timeout(2000)]
+		public async Task CanExitAnimationLoopIfAnimationsDisabled() 
+		{
+			DisableTicker();
+
+			var run = true;
+			var label = new Label { Text = "Foo" };
+
+			while (run)
+			{
+				await label.ScaleTo(2, 500);
+				run = !(await label.ScaleTo(0.5, 500));
+			}
+		} 
 	}
 }
