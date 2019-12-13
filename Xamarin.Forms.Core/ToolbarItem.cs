@@ -13,6 +13,8 @@ namespace Xamarin.Forms
 
 		static readonly BindableProperty PriorityProperty = BindableProperty.Create("Priority", typeof(int), typeof(ToolbarItem), 0);
 
+		public static readonly BindableProperty IsVisibleProperty = BindableProperty.Create("IsVisible", typeof(bool), typeof(ToolbarItem), true);
+
 		public ToolbarItem()
 		{
 		}
@@ -47,6 +49,12 @@ namespace Xamarin.Forms
 		{
 			get { return (int)GetValue(PriorityProperty); }
 			set { SetValue(PriorityProperty, value); }
+		}
+
+		public bool IsVisible
+		{
+			get { return (bool)GetValue(IsVisibleProperty); }
+			set { SetValue(IsVisibleProperty, value); }
 		}
 
 		[Obsolete("Activated is obsolete as of version 1.3.0. Please use Clicked instead.")]

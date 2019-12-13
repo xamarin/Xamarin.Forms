@@ -1008,6 +1008,9 @@ namespace Xamarin.Forms.Platform.iOS
 						Child = null;
 					}
 
+					foreach (var item in _tracker.ToolbarItems)
+						item.PropertyChanged -= OnToolberItemPropertyChanged;
+
 					_tracker.Target = null;
 					_tracker.CollectionChanged -= TrackerOnCollectionChanged;
 					_tracker = null;
@@ -1213,6 +1216,12 @@ namespace Xamarin.Forms.Platform.iOS
 				List<UIBarButtonItem> secondaries = null;
 				foreach (var item in _tracker.ToolbarItems)
 				{
+					item.PropertyChanged -= OnToolberItemPropertyChanged;
+					item.PropertyChanged += OnToolberItemPropertyChanged;
+
+					if (!item.IsVisible)
+						continue;
+
 					if (item.Order == ToolbarItemOrder.Secondary)
 						(secondaries = secondaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(true));
 					else
@@ -1228,6 +1237,15 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_navigation.TryGetTarget(out n))
 					n.UpdateToolBarVisible();
 			}
+
+			void OnToolberItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+			{
+				if(e.PropertyName == ToolbarItem.IsVisibleProperty.PropertyName)
+				{
+					UpdateToolbarItems();
+				}
+			}
+
 
 			void UpdateLargeTitles()
 			{
