@@ -44,6 +44,10 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
+		static readonly BindablePropertyKey IsOnScreenPropertyKey = BindableProperty.CreateReadOnly(nameof(IsOnScreen), typeof(bool), typeof(Page), false);
+
+		public static readonly BindableProperty IsOnScreenProperty = IsOnScreenPropertyKey.BindableProperty;
+
 		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty IconProperty = IconImageSourceProperty;
@@ -54,8 +58,6 @@ namespace Xamarin.Forms
 		Rectangle _containerArea;
 
 		bool _containerAreaSet;
-
-		bool _hasAppeared;
 
 		ReadOnlyCollection<Element> _logicalChildren;
 
@@ -145,6 +147,12 @@ namespace Xamarin.Forms
 			set { SetValue(StatusBarStyleProperty, value); }
 		}
 
+		public bool IsOnScreen
+		{
+			get { return (bool)GetValue(IsOnScreenProperty); }
+			private set { SetValue(IsOnScreenPropertyKey, value); }
+		}
+
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -195,14 +203,6 @@ namespace Xamarin.Forms
 		public event EventHandler Appearing;
 
 		public event EventHandler Disappearing;
-
-		public bool IsOnScreen
-		{
-			get
-			{
-				return _hasAppeared;
-			}
-		}
 
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
@@ -423,10 +423,10 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendAppearing()
 		{
-			if (_hasAppeared)
+			if (IsOnScreen)
 				return;
 
-			_hasAppeared = true;
+			IsOnScreen = true;
 
 			if (IsBusy)
 			{
@@ -450,10 +450,10 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDisappearing()
 		{
-			if (!_hasAppeared)
+			if (!IsOnScreen)
 				return;
 
-			_hasAppeared = false;
+			IsOnScreen = false;
 
 			if (IsBusy)
 				MessagingCenter.Send(this, BusySetSignalName, false);
@@ -517,7 +517,7 @@ namespace Xamarin.Forms
 
 		void OnPageBusyChanged()
 		{
-			if (!_hasAppeared)
+			if (!IsOnScreen)
 				return;
 
 			MessagingCenter.Send(this, BusySetSignalName, IsBusy);
