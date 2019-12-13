@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Controls
 		protected override void Build(StackLayout stackLayout)
 		{
 			base.Build(stackLayout);
-			var itemsContainer = new ViewContainer<Picker>(Test.Picker.Items, new Picker());
+			var itemsContainer = new ViewContainer<Picker>(Test.Picker.Items, new Picker() { Title = "Title of picker" });
 			itemsContainer.View.Items.Add("Item 1");
 			itemsContainer.View.Items.Add("Item 2");
 			itemsContainer.View.Items.Add("Item 3");
