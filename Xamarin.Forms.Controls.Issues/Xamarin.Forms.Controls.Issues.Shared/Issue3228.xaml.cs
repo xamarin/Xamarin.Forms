@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			Application.Current.On<WindowsOS>().SetImageSearchDirectory("Assets");
+			Application.Current.On<WindowsOS>().SetImageDirectory("Assets");
 		}
 	}
 }

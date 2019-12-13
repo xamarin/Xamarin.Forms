@@ -4,28 +4,28 @@
 
 	public static class Application
 	{
-		public static readonly BindableProperty ImageSearchDirectoryProperty =
-			BindableProperty.Create("ImageSearchDirectory", typeof(string), typeof(FormsElement), string.Empty);
+		public static readonly BindableProperty ImageDirectoryProperty =
+			BindableProperty.Create("ImageDirectory", typeof(string), typeof(FormsElement), string.Empty);
 
-		public static void SetImageSearchDirectory(BindableObject element, string value)
+		public static void SetImageDirectory(BindableObject element, string value)
 		{
-			element.SetValue(ImageSearchDirectoryProperty, value);
+			element.SetValue(ImageDirectoryProperty, value);
 		}
 
-		public static string GetImageSearchDirectory(this IPlatformElementConfiguration<Windows, FormsElement> config)
+		public static string GetImageDirectory(this IPlatformElementConfiguration<Windows, FormsElement> config)
 		{
-			return (string)config.Element.GetValue(ImageSearchDirectoryProperty);
+			return (string)config.Element.GetValue(ImageDirectoryProperty);
 		}
 
-		public static string GetImageSearchDirectory(BindableObject element)
+		public static string GetImageDirectory(BindableObject element)
 		{
-			return (string)element.GetValue(ImageSearchDirectoryProperty);
+			return (string)element.GetValue(ImageDirectoryProperty);
 		}
 
-		public static IPlatformElementConfiguration<Windows, FormsElement> SetImageSearchDirectory(
+		public static IPlatformElementConfiguration<Windows, FormsElement> SetImageDirectory(
 			this IPlatformElementConfiguration<Windows, FormsElement> config, string value)
 		{
-			config.Element.SetValue(ImageSearchDirectoryProperty, value);
+			config.Element.SetValue(ImageDirectoryProperty, value);
 			return config;
 		}
 	}

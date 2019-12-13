@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Windows.UI.Xaml.Media.ImageSource image = null;
 			if (imagesource is FileImageSource filesource)
 			{
-				UpdateImageSearchDirectory(filesource);
+				UpdateImageDirectory(filesource);
 				string file = filesource.File;
 				image = new BitmapImage(new Uri("ms-appx:///" + file));
 			}
@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (imagesource is FileImageSource filesource)
 			{
-				UpdateImageSearchDirectory(filesource);
+				UpdateImageDirectory(filesource);
 				string file = filesource.File;
 				image = new Microsoft.UI.Xaml.Controls.BitmapIconSource { UriSource = new Uri("ms-appx:///" + file) };
 			}
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (imagesource is FileImageSource filesource)
 			{
-				UpdateImageSearchDirectory(filesource);
+				UpdateImageDirectory(filesource);
 				string file = filesource.File;
 				image = new BitmapIcon { UriSource = new Uri("ms-appx:///" + file) };
 			}
@@ -51,19 +51,19 @@ namespace Xamarin.Forms.Platform.UWP
 			return Task.FromResult(image);
 		}
 
-		void UpdateImageSearchDirectory(FileImageSource fileSource)
+		void UpdateImageDirectory(FileImageSource fileSource)
 		{
-			var imageSearchDirectory = Application.Current.OnThisPlatform().GetImageSearchDirectory();
+			var imageDirectory = Application.Current.OnThisPlatform().GetImageDirectory();
 
-			if (!string.IsNullOrEmpty(imageSearchDirectory))
+			if (!string.IsNullOrEmpty(imageDirectory))
 			{
 				var filePath = fileSource.File;
 
 				var directory = Path.GetDirectoryName(filePath);
 
-				if (string.IsNullOrEmpty(directory) || !Path.GetFullPath(directory).Equals(Path.GetFullPath(imageSearchDirectory)))
+				if (string.IsNullOrEmpty(directory) || !Path.GetFullPath(directory).Equals(Path.GetFullPath(imageDirectory)))
 				{
-					filePath = Path.Combine(imageSearchDirectory, filePath);
+					filePath = Path.Combine(imageDirectory, filePath);
 					fileSource.File = filePath;
 				}
 			}
