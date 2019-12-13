@@ -15,8 +15,8 @@
                 <Label.FormattedText>
                     <FormattedString>
                         <Span Text="Big" FontSize="40" />
-                        <Span Text="Small" FontSize="15" />
-                        <Span Text="Medium" FontSize="30" />
+                        <Span Text="Small" FontSize="15" VerticalTextAlignment="Center" />
+                        <Span Text="Medium" FontSize="30" VerticalTextAlignment="Start" />
                     </FormattedString>
                 </Label.FormattedText>
             </Label>

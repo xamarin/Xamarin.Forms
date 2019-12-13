@@ -19,6 +19,22 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextDecorationsProperty = DecorableTextElement.TextDecorationsProperty;
 
+		// Allen added
+		public static readonly BindableProperty VerticalTextAlignmentProperty = BindableProperty.Create("VerticalTextAlignment", typeof(TextAlignment), typeof(Span), TextAlignment.End,
+			propertyChanged: OnVerticalTextAlignmentPropertyChanged);
+
+		public TextAlignment VerticalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(VerticalTextAlignmentProperty); }
+			set { SetValue(VerticalTextAlignmentProperty, value); }
+		}
+
+		static void OnVerticalTextAlignmentPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			var span = (Span)bindable;
+			span.OnPropertyChanged("VerticalTextAlignment");
+		}
+
 		public Style Style
 		{
 			get { return (Style)GetValue(StyleProperty); }

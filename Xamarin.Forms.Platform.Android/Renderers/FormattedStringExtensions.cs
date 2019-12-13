@@ -81,15 +81,23 @@ namespace Xamarin.Forms.Platform.Android
 					spannable.SetSpan(new TextDecorationSpan(span), start, end, SpanTypes.InclusiveInclusive);
 
 				// Allen
-				// Set span to be top alignment
-				if (span.FontSize < biggestFontSize)
+				// Set span text alignment according to the specific setting.
+				if (span.VerticalTextAlignment == TextAlignment.Start)
 				{
-					float shiftPercentage = (float)span.FontSize / (float)biggestFontSize;
-					spannable.SetSpan(new TopAlignSuperscriptSpan((float)shiftPercentage), start, end, SpanTypes.InclusiveInclusive);
+					if (span.FontSize < biggestFontSize)
+					{
+						float shiftPercentage = (float)span.FontSize / (float)biggestFontSize;
+						spannable.SetSpan(new TopAlignSuperscriptSpan(shiftPercentage), start, end, SpanTypes.InclusiveInclusive);
+					}
 				}
-
-
-				// spannable.SetSpan(new TopAlignSuperscriptSpan(0.9f), 3, 8, SpanTypes.InclusiveInclusive);
+				else if (span.VerticalTextAlignment == TextAlignment.Center)
+				{
+					if (span.FontSize < biggestFontSize)
+					{
+						float shiftPercentage = (float)span.FontSize / (float)biggestFontSize;
+						spannable.SetSpan(new TopAlignSuperscriptSpan((shiftPercentage) * 2), start, end, SpanTypes.InclusiveInclusive);
+					}
+				}
 			}
 			
 			return spannable;
