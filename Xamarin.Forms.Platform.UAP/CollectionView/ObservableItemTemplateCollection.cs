@@ -57,29 +57,38 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			Device.BeginInvokeOnMainThread(() =>
+			if (Device.IsInvokeRequired)
 			{
-				switch (args.Action)
-				{
-					case NotifyCollectionChangedAction.Add:
-						Add(args);
-						break;
-					case NotifyCollectionChangedAction.Move:
-						Move(args);
-						break;
-					case NotifyCollectionChangedAction.Remove:
-						Remove(args);
-						break;
-					case NotifyCollectionChangedAction.Replace:
-						Replace(args);
-						break;
-					case NotifyCollectionChangedAction.Reset:
-						Reset();
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-			});
+				Device.BeginInvokeOnMainThread(() => InnerCollectionChanged(args));
+			}
+			else
+			{
+				InnerCollectionChanged(args);
+			}
+		}
+
+		void InnerCollectionChanged(NotifyCollectionChangedEventArgs args)
+		{
+			switch (args.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					Add(args);
+					break;
+				case NotifyCollectionChangedAction.Move:
+					Move(args);
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					Remove(args);
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					Replace(args);
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					Reset();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)

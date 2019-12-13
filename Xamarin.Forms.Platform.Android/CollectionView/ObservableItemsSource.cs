@@ -83,29 +83,38 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			Device.BeginInvokeOnMainThread(() =>
+			if (Device.IsInvokeRequired)
 			{
-				switch (args.Action)
-				{
-					case NotifyCollectionChangedAction.Add:
-						Add(args);
-						break;
-					case NotifyCollectionChangedAction.Remove:
-						Remove(args);
-						break;
-					case NotifyCollectionChangedAction.Replace:
-						Replace(args);
-						break;
-					case NotifyCollectionChangedAction.Move:
-						Move(args);
-						break;
-					case NotifyCollectionChangedAction.Reset:
-						_notifier.NotifyDataSetChanged();
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-			});
+				Device.BeginInvokeOnMainThread(() => CollectionChanged(args));
+			}
+			else
+			{
+				CollectionChanged(args);
+			}
+		}
+
+		void CollectionChanged(NotifyCollectionChangedEventArgs args)
+		{
+			switch (args.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					Add(args);
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					Remove(args);
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					Replace(args);
+					break;
+				case NotifyCollectionChangedAction.Move:
+					Move(args);
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					_notifier.NotifyDataSetChanged();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		void Move(NotifyCollectionChangedEventArgs args)
