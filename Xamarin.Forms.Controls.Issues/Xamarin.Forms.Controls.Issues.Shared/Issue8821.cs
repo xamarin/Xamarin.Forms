@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -15,100 +17,92 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[Category(UITestCategories.Image)]
 #endif
-    [Preserve(AllMembers = true)]
-    [Issue(IssueTracker.Github, 8821, "Animations of downloaded gifs are not playing on Android", PlatformAffected.Android)]
-    public class Issue8821 : TestContentPage
-    {
-        private WebClient _webClientBlobDownload = null;
-        private readonly Button _downloadButton;
-        private readonly Image _image;
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 8821, "Animations of downloaded gifs are not playing on Android", PlatformAffected.Android)]
+	public class Issue8821 : TestContentPage
+	{
+		Image _image;
 
-        public Issue8821()
-        {
+		public Issue8821()
+		{
 			var instructions = new Label
 			{
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
 				Text = "Press the DownloadFile button and then the Animate button. Verify that the gif is downloaded and animate without problems."
-            };
+			};
 
-			_downloadButton = new Button { Text = "DownloadFile" };
-            _downloadButton.Clicked += DownloadFile;
+			var downloadButton = new Button { Text = "DownloadFile" };
+			downloadButton.Clicked += async (sender, args) =>
+			{
+				string nextURL = "https://upload.wikimedia.org/wikipedia/commons/c/c0/An_example_animation_made_with_Pivot.gif";
+
+				await CreateImage(nextURL);
+			};
+
+			_image = new Image { Source = string.Empty };
+
 			var animateButton = new Button { Text = "Animate" };
-            animateButton.Clicked += Animate;
-            _image = new Image { Source = string.Empty };
+			animateButton.Clicked += (sender, args) =>
+			{
+				_image.IsAnimationPlaying = true;
+			};
 
-            Content = new StackLayout
-            {
-                Padding = new Thickness(20, 35, 20, 20),
-                Children =
-                {
-                    instructions,
-                    _downloadButton,
-                    _image,
-                    animateButton
-                }
-            };
-        }
+			Content = new StackLayout
+			{
+				Padding = new Thickness(20, 35, 20, 20),
+				Children =
+				{
+					instructions,
+					downloadButton,
+					_image,
+					animateButton
+				}
+			};
+		}
 
-        public string SecondImageSource { get; set; }
+		public string SecondImageSource { get; set; }
 
-        protected override void Init()
-        {
-            Title = "Issue 8821";
-        }
+		protected override void Init()
+		{
+			Title = "Issue 8821";
+		}
 
-        void Animate(object sender, EventArgs e)
-        {
-            _image.IsAnimationPlaying = true;
-        }
+		async Task CreateImage(string imageUrl)
+		{
+			var bytes = await DownloadImageAsync(imageUrl);
 
-        void DownloadFile(object sender, EventArgs e)
-        {
-            if (_webClientBlobDownload == null)
-            {
-                _webClientBlobDownload = new WebClient();
-                _webClientBlobDownload.DownloadDataCompleted += new DownloadDataCompletedEventHandler(OnImageDownloadDataCompleted);
-            }
+			string path;
 
-            string nextURL = "https://upload.wikimedia.org/wikipedia/commons/c/c0/An_example_animation_made_with_Pivot.gif";
+#if WINDOWS_UWP
+			path = Windows.Storage.ApplicationData.Current.LocalFolder.Path;
+#else
+			path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+#endif
+			SecondImageSource = Path.Combine(path, "Issue8821.gif");
+			File.WriteAllBytes(SecondImageSource, bytes);
 
-            _webClientBlobDownload.DownloadDataAsync(new Uri(nextURL), SecondImageSource);
-        }
+			_image.Source = SecondImageSource;
+			OnPropertyChanged(nameof(SecondImageSource));
+		}
 
-        void OnImageDownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
-        {
-            try
-            {
-                if (e.Cancelled == true)
-                    return;
-
-                if (e.Error != null)
-                    return;
-                
-                byte[] bytes = new byte[e.Result.Length]; 
-                bytes = e.Result;
-                SecondImageSource = Path.Combine(GetCurrentImagePath(), "Dmg.gif");
-                File.WriteAllBytes(SecondImageSource, bytes);
-            }
-            catch 
-            {
-                return;
-            }
-
-            _image.Source = SecondImageSource;
-            OnPropertyChanged(nameof(SecondImageSource));
-        }
-
-        string GetCurrentImagePath()
-        {
-			var imagePath = "imagePath";
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/" + imagePath;
-
-            if (!Directory.Exists(path))
-				Directory.CreateDirectory(path);
-
-			return path;
-        }
+		async Task<byte[]> DownloadImageAsync(string imageUrl)
+		{
+			try
+			{
+				using (var httpClient = new HttpClient())
+				using (var httpResponse = await httpClient.GetAsync(imageUrl))
+				{
+					if (httpResponse.StatusCode == HttpStatusCode.OK)
+						return await httpResponse.Content.ReadAsByteArrayAsync();
+					else
+						return null;
+				}
+			}
+			catch
+			{
+				return null;
+			}
+		}
 	}
 }
