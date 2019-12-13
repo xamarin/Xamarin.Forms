@@ -30,6 +30,21 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			Application.Current.MainPage = page;
 		}
 
+		void NavigationPage_Pages_Navigate(object sender, EventArgs e)
+		{
+			var page = new NavigationPage(new StatusBarGallery()
+			{
+				StatusBarColor = Color.Red,
+				StatusBarStyle = StatusBarStyle.LightContent
+			});
+			Application.Current.MainPage = page;
+			page.PushAsync(new StatusBarGallery()
+			{
+				StatusBarColor = Color.Cyan, 
+				StatusBarStyle = StatusBarStyle.DarkContent
+			});
+		}
+
 		void ContentPage_Navigate(object sender, EventArgs e)
 		{
 			var page = new StatusBarGallery()
@@ -73,6 +88,22 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			page.Children.Add(new StatusBarGallery());
 			page.StatusBarColor = Color.DarkMagenta;
 			page.StatusBarStyle = StatusBarStyle.DarkContent;
+			Application.Current.MainPage = page;
+		}
+
+		void CarouselPage_Pages_Navigate(object sender, EventArgs e)
+		{
+			var page = new CarouselPage();
+			page.Children.Add(new StatusBarGallery()
+			{
+				StatusBarColor = Color.Red,
+				StatusBarStyle = StatusBarStyle.LightContent
+			});
+			page.Children.Add(new StatusBarGallery()
+			{
+				StatusBarColor = Color.Cyan,
+				StatusBarStyle = StatusBarStyle.DarkContent
+			});
 			Application.Current.MainPage = page;
 		}
 

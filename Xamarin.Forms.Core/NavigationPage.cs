@@ -34,7 +34,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanging: TitleViewPropertyChanging);
 
-		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null, propertyChanged: CurrentPageChanged);
+		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
 
@@ -123,15 +123,6 @@ namespace Xamarin.Forms
 			{
 				var oldElem = (View)oldValue;
 				oldElem.Parent = null;
-			}
-		}
-
-		static void CurrentPageChanged(BindableObject bindable, object oldvalue, object newvalue)
-		{
-			if (newvalue != null && bindable is NavigationPage navigationPage)
-			{
-				navigationPage.StatusBarColorUpdated();
-				navigationPage.StatusBarStyleUpdated();
 			}
 		}
 
