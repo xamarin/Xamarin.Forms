@@ -58,8 +58,8 @@ namespace Xamarin.Forms.Controls.GalleryPages
 		void TabbedPage_Navigate(object sender, EventArgs e)
 		{
 			var page = new TabbedPage();
-			page.Children.Add(new StatusBarGallery());
-			page.Children.Add(new StatusBarGallery());
+			page.Children.Add(new StatusBarGallery { Title = "Page1" });
+			page.Children.Add(new StatusBarGallery { Title = "Page2" });
 			page.StatusBarColor = Color.DarkCyan;
 			page.StatusBarStyle = StatusBarStyle.DarkContent;
 			Application.Current.MainPage = page;
@@ -71,12 +71,14 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			page.Children.Add(new StatusBarGallery()
 			{
 				StatusBarColor = Color.Red,
-				StatusBarStyle = StatusBarStyle.LightContent
+				StatusBarStyle = StatusBarStyle.LightContent,
+				Title = "Page1"
 			});
 			page.Children.Add(new StatusBarGallery()
 			{
 				StatusBarColor = Color.Cyan,
-				StatusBarStyle = StatusBarStyle.DarkContent
+				StatusBarStyle = StatusBarStyle.DarkContent,
+				Title = "Page1"
 			});
 			Application.Current.MainPage = page;
 		}
