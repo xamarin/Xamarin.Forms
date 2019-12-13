@@ -14,7 +14,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					GalleryBuilder.NavButton("OnPlatform Example", () => new OnPlatformExample(), Navigation),
 					GalleryBuilder.NavButton("OnIdiom Example", () => new OnIdiomExample(), Navigation),
 					GalleryBuilder.NavButton("Validation Example", () => new ValidationExample(), Navigation),
-					GalleryBuilder.NavButton("Code (No XAML) Example", () => new CodeOnlyExample(), Navigation), 
+					GalleryBuilder.NavButton("Code (No XAML) Example", () => new CodeOnlyExample(), Navigation),
+					GalleryBuilder.NavButton("VisualStateManager Setter Target", () => new VisualStateSetterTarget(), Navigation),
 					GalleryBuilder.NavButton("VisualStates directly on Elements", () => new VisualStatesDirectlyOnElements(), Navigation),
 					GalleryBuilder.NavButton("TouchStates from TouchGestureRecognizer", () => new VisualStatesTouchStates(), Navigation)
 				}

@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using ElmSharp;
-using Xamarin.Forms.Internals;
 using EGestureType = ElmSharp.GestureLayer.GestureType;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -476,7 +475,23 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		GestureHandler CreateHandler(IGestureRecognizer recognizer)
 		{
-			return Registrar.Registered.GetHandlerForObject<GestureHandler>(recognizer, recognizer);
+			if (recognizer is TapGestureRecognizer)
+			{
+				return new TapGestureHandler(recognizer);
+			}
+			else if (recognizer is PinchGestureRecognizer)
+			{
+				return new PinchGestureHandler(recognizer);
+			}
+			else if (recognizer is PanGestureRecognizer)
+			{
+				return new PanGestureHandler(recognizer);
+			}
+			else if (recognizer is SwipeGestureRecognizer)
+			{
+				return new SwipeGestureHandler(recognizer);
+			}
+			return Forms.GetHandlerForObject<GestureHandler>(recognizer, recognizer);
 		}
 
 		GestureHandler LookupHandler(IGestureRecognizer recognizer)

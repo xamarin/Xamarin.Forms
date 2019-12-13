@@ -65,12 +65,6 @@
     <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(CI)' == 'True' ">
-    <AndroidLinkMode>Full</AndroidLinkMode>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Android" />
@@ -97,6 +91,8 @@
     <Compile Include="MainApplication.cs" />
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
+    <Compile Include="Tests\Issues.cs" />
+    <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="PreApplicationClassActivity.cs" />
     <Compile Include="Properties\MapsKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,12 +103,15 @@
     <Compile Include="SampleNativeControl.cs" />
     <Compile Include="StaggeredCollectionViewRenderer.cs" />
     <Compile Include="TestCloudService.cs" />
+    <Compile Include="Tests\PlatformTestFixture.cs" />
+    <Compile Include="Tests\RendererTests.cs" />
     <Compile Include="_1909CustomRenderer.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_38989CustomRenderer.cs" />
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="_50787CustomRenderer.cs" />
     <Compile Include="_57114CustomRenderer.cs" />
+    <Compile Include="_5749CustomRenderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
     <Compile Include="_59457CustomRenderer.cs" />
     <Compile Include="_60122ImageRenderer.cs" />
@@ -217,9 +216,7 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <TransformFile Include="Properties\AndroidManifest.xml">
-      <SubType>Designer</SubType>
-    </TransformFile>
+    <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\error.xml" />
@@ -318,6 +315,9 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>10.0.3</Version>
     </PackageReference>
+    <PackageReference Include="NUnit">
+      <Version>3.12.0</Version>
+    </PackageReference>
     <PackageReference Include="Xam.Plugin.DeviceInfo">
       <Version>3.0.2</Version>
     </PackageReference>
@@ -378,12 +378,19 @@
     </TransformFile>
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="Resources\drawable\GifOne.gif" />
     <AndroidEnvironment Include="Environment.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProguardConfiguration Include="..\.nuspec\proguard.cfg">
       <Link>proguard.cfg</Link>
     </ProguardConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\GifTwo.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <LinkDescription Include="LinkDescription.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
