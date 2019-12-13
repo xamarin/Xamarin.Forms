@@ -196,6 +196,14 @@ namespace Xamarin.Forms
 
 		public event EventHandler Disappearing;
 
+		public bool IsOnScreen
+		{
+			get
+			{
+				return _hasAppeared;
+			}
+		}
+
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
 			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
