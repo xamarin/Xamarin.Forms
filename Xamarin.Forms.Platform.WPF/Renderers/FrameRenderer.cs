@@ -47,6 +47,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateBorder();
 				UpdateCornerRadius();
 				UpdatePadding();
+				UpdateShadow();
 			}
 
 			base.OnElementChanged(e);
@@ -67,12 +68,7 @@ namespace Xamarin.Forms.Platform.WPF
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
 		}
-
-		protected override void UpdateBackground()
-		{
-			Control.UpdateDependencyColor(Border.BackgroundProperty, Element.BackgroundColor);
-		}
-
+		 
 		void UpdateContent()
 		{
 			if (_currentView != null)
@@ -99,7 +95,7 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		protected virtual UpdateShadow()
+		protected virtual void UpdateShadow()
 		{ 
 			if (Element.HasShadow)
 			{
@@ -121,17 +117,17 @@ namespace Xamarin.Forms.Platform.WPF
 			UpdateBackground();
 		}
 
-		protected override UpdateBackground()
+		protected override void UpdateBackground()
 		{ 
 			// Enforce that a background color is set when the shadow is enabled
 			// to ensure, that the shadow is visible
-			if(Element.HasShadow && Element.BackgroundColor == Color.Transparent)
+			if(Element.HasShadow && Element.BackgroundColor == Color.Default)
 			{
-				Control.UpdateDependencyColor(WControl.BackgroundProperty, Color.White);
+				Control.UpdateDependencyColor(Border.BackgroundProperty, Color.White);
 			}
 			else
 			{
-				base.UpdateBackground();
+				Control.UpdateDependencyColor(Border.BackgroundProperty, Element.BackgroundColor);
 			}
 		}
 
