@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Android.OS;
 using Xamarin.Forms.Internals;
 using Android.Views;
 using AView = Android.Views.View;
@@ -263,8 +264,11 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				_childViews.Remove(renderer);
+
 				renderer.View.RemoveFromParent();
-				renderer.Dispose();
+
+				// Delay the dispose to let the animation finish
+				new Handler(Looper.MainLooper).Post(() => renderer.Dispose());
 			}
 		}
 
