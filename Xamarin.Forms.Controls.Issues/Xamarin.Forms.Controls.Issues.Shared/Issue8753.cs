@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -42,9 +43,13 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				HeightRequest = 60,
 				BackgroundColor = Color.LightGray,
-				LeftItems = new SwipeItems(deleteSwipeItem)
+				LeftItems = new SwipeItems(new List<SwipeItem> { deleteSwipeItem })
 				{
 					Mode = SwipeMode.Reveal
+				},
+				RightItems = new SwipeItems
+				{
+					deleteSwipeItem
 				}
 			};
 
