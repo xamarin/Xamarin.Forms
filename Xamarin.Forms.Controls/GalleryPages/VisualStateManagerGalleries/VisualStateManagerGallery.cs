@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					GalleryBuilder.NavButton("Validation Example", () => new ValidationExample(), Navigation),
 					GalleryBuilder.NavButton("Code (No XAML) Example", () => new CodeOnlyExample(), Navigation),
 					GalleryBuilder.NavButton("VisualStates directly on Elements", () => new VisualStatesDirectlyOnElements(), Navigation),
+					GalleryBuilder.NavButton("VisualStateManager Setter Target", () => new VisualStateSetterTarget(), Navigation),
 					GalleryBuilder.NavButton("VisualStates Bindable CurrentState", () => new BindableCurrentState(), Navigation)
 				}
 			};
