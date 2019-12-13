@@ -29,7 +29,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			var spannable = new SpannableString(builder.ToString());
 
+			// Modify to if condition to check on the parameter of text vertical alignment for Span
+			// Now we get the biggest font size.
+			double biggestFontSize = 0;
+			for (int i = 0; i < formattedString.Spans.Count; i++)
+			{
+				Span span = formattedString.Spans[i];
+				if (span.FontSize > biggestFontSize)
+				{
+					biggestFontSize = span.FontSize;
+				}
+			}
+
 			var c = 0;
+			Debug.WriteLine("Span count: " + formattedString.Spans.Count);
 			for (int i = 0; i < formattedString.Spans.Count; i++)
 			{
 				Span span = formattedString.Spans[i];
@@ -67,7 +80,18 @@ namespace Xamarin.Forms.Platform.Android
 				if (span.IsSet(Span.TextDecorationsProperty))
 					spannable.SetSpan(new TextDecorationSpan(span), start, end, SpanTypes.InclusiveInclusive);
 
+				// Allen
+				// Set span to be top alignment
+				if (span.FontSize < biggestFontSize)
+				{
+					float shiftPercentage = (float)span.FontSize / (float)biggestFontSize;
+					spannable.SetSpan(new TopAlignSuperscriptSpan((float)shiftPercentage), start, end, SpanTypes.InclusiveInclusive);
+				}
+
+
+				// spannable.SetSpan(new TopAlignSuperscriptSpan(0.9f), 3, 8, SpanTypes.InclusiveInclusive);
 			}
+			
 			return spannable;
 		}
 
@@ -156,6 +180,35 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				fm.Ascent = (int) (_ascent * _lineHeight);
 				fm.Descent = (int) (_descent * _lineHeight);
+			}
+		}
+
+		class TopAlignSuperscriptSpan : SuperscriptSpan
+		{
+			// protected int fontScale = 1;
+			protected float shiftPercentage = 0;
+			public TopAlignSuperscriptSpan() { }
+
+			public TopAlignSuperscriptSpan(float shiftPercentage)
+			{
+				if (shiftPercentage > 0.0 && shiftPercentage < 1.0)
+					this.shiftPercentage = shiftPercentage;
+			}
+
+			public override void UpdateDrawState(TextPaint textPaint)
+			{
+				// Use Ascent to do.
+				float ascent = textPaint.Ascent();
+				float totalAscent = ascent / shiftPercentage;
+				int intTotalAscent = (int)totalAscent;
+				int deltaAscent = (int)(intTotalAscent * (1.0f - shiftPercentage));
+
+				textPaint.BaselineShift += deltaAscent;
+			}
+
+			public override void UpdateMeasureState(TextPaint textPaint)
+			{
+				UpdateDrawState(textPaint);
 			}
 		}
 	}

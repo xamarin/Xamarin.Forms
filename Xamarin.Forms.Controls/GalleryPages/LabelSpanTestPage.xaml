@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.LabelSpanTestPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <!-- Place new controls here -->
+            <Label
+               HorizontalOptions="Center"
+               VerticalOptions="CenterAndExpand"
+               VerticalTextAlignment="Center" HeightRequest="100">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Big" FontSize="40" />
+                        <Span Text="Small" FontSize="15" />
+                        <Span Text="Medium" FontSize="30" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
