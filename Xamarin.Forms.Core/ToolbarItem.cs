@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 
 		static readonly BindableProperty PriorityProperty = BindableProperty.Create("Priority", typeof(int), typeof(ToolbarItem), 0);
 
-		public static readonly BindableProperty IsVisibleProperty = BindableProperty.Create("IsVisible", typeof(bool), typeof(ToolbarItem), true);
+		public static readonly BindableProperty IsVisibleProperty = BindableProperty.Create(nameof(IsVisible), typeof(bool), typeof(ToolbarItem), true);
 
 		public ToolbarItem()
 		{
