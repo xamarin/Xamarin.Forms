@@ -203,10 +203,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is CarouselPage)
 				return;
 
-			UpdateStatusBarColor();
-			UpdateStatusBarStyle();
 			Page.SendAppearing();
-
 		}
 
 		public override void ViewDidDisappear(bool animated)

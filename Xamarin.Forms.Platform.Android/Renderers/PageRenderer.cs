@@ -39,7 +39,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		double _previousHeight;
 		bool _isDisposed = false;
-		bool _appeared;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -61,9 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
 				return;
-			_appeared = true;
-			UpdateStatusBarColor();
-			UpdateStatusBarStyle();
+
 			PageController.SendAppearing();
 		}
 
@@ -74,7 +71,6 @@ namespace Xamarin.Forms.Platform.Android
 			if (pageContainer != null && pageContainer.IsInFragment)
 				return;
 
-			_appeared = false;
 			PageController.SendDisappearing();
 		}
 

@@ -429,6 +429,8 @@ namespace Xamarin.Forms
 			var pageContainer = this as IPageContainer<Page>;
 			pageContainer?.CurrentPage?.SendAppearing();
 
+			RefreshStatusBarColor();
+			RefreshStatusBarStyle();
 			FindApplication(this)?.OnPageAppearing(this);
 		}
 
