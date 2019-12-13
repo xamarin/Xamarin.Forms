@@ -61,6 +61,7 @@ namespace Xamarin.Forms.Controls
 			var tb6 = new ToolbarItem("tb6", "", () =>
 			{
 				tb1.IsVisible = !tb1.IsVisible;
+				tb5.IsVisible = !tb5.IsVisible;
 			}, ToolbarItemOrder.Secondary);
 			tb6.AutomationId = "toolbaritem_secondary6";
 

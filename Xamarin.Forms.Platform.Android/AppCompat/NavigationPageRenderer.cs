@@ -927,6 +927,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));					
 					menuItem.SetTitleOrContentDescription(item);
+					menuItem.SetVisible(item.IsVisible);
 				}
 				else
 				{
