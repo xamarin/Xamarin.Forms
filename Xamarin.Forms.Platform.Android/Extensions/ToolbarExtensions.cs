@@ -11,22 +11,25 @@ namespace Xamarin.Forms.Platform.Android
 	internal static class ToolbarExtensions
 	{
 		const int DefaultDisabledToolbarAlpha = 127;
-		public static void DisposeMenuItems(this AToolbar toolbar, Page page, PropertyChangedEventHandler toolbarItemChanged)
+		public static void DisposeMenuItems(this AToolbar toolbar, IEnumerable<ToolbarItem> toolbarItems, PropertyChangedEventHandler toolbarItemChanged)
 		{
-			if (page?.ToolbarItems?.Count > 0)
-			{
-				foreach (var item in page.ToolbarItems)
-					item.PropertyChanged -= toolbarItemChanged;
-			}
+			if (toolbarItems == null)
+				return;
+
+			foreach (var item in toolbarItems)
+				item.PropertyChanged -= toolbarItemChanged;
 		}
 
 		public static void UpdateMenuItems(this AToolbar toolbar,
 			IEnumerable<ToolbarItem> toolbarItems, 
 			Context context, 
-			Color tintColor,
+			Color? tintColor,
 			PropertyChangedEventHandler toolbarItemChanged
 			)
 		{
+			if (toolbarItems == null)
+				return;
+
 			var menu = toolbar.Menu;
 			menu.Clear();
 
@@ -47,25 +50,24 @@ namespace Xamarin.Forms.Platform.Android
 
 					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
 
-					if (tintColor != Color.Default)
+					if (tintColor != null && tintColor != Color.Default)
 					{
 						var view = toolbar.FindViewById(menuitem.ItemId);
 						if (view is ATextView textView)
 						{
 							if (item.IsEnabled)
-								textView.SetTextColor(tintColor.ToAndroid());
+								textView.SetTextColor(tintColor.Value.ToAndroid());
 							else
-								textView.SetTextColor(tintColor.MultiplyAlpha(0.302).ToAndroid());
+								textView.SetTextColor(tintColor.Value.MultiplyAlpha(0.302).ToAndroid());
 						}
 					}
 
 					menuitem.Dispose();
 				}
 			}
-
 		}
 
-		static void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem, Color tintColor)
+		static void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem, Color? tintColor)
 		{
 			_ = context.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconImageSourceProperty, baseDrawable =>
 			{
@@ -75,7 +77,9 @@ namespace Xamarin.Forms.Platform.Android
 					using (var newDrawable = constant.NewDrawable())
 					using (var iconDrawable = newDrawable.Mutate())
 					{
-						iconDrawable.SetColorFilter(tintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+						if(tintColor != null)
+							iconDrawable.SetColorFilter(tintColor.Value.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+
 						if (!menuItem.IsEnabled)
 						{
 							iconDrawable.Mutate().SetAlpha(DefaultDisabledToolbarAlpha);
@@ -92,15 +96,16 @@ namespace Xamarin.Forms.Platform.Android
 			PropertyChangedEventArgs e,
 			IEnumerable<ToolbarItem> toolbarItems,
 			Context context,
-			Color tintColor,
+			Color? tintColor,
 			PropertyChangedEventHandler toolbarItemChanged)
 		{
+			if (toolbarItems == null)
+				return;
+
 			if (e.IsOneOf(MenuItem.TextProperty, MenuItem.IconImageSourceProperty, MenuItem.IsEnabledProperty))
 			{
 				toolbar.UpdateMenuItems(toolbarItems, context, tintColor, toolbarItemChanged);
 			}
 		}
-
-		
 	}
 }

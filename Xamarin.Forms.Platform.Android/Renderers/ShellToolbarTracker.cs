@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Platform.Android
 					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
 
 
-				_toolbar.DisposeMenuItems(Page, OnToolbarItemPropertyChanged);
+				_toolbar.DisposeMenuItems(Page?.ToolbarItems, OnToolbarItemPropertyChanged);
 
 				((IShellController)_shellContext?.Shell)?.RemoveFlyoutBehaviorObserver(this);
 
