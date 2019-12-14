@@ -2,6 +2,7 @@
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -40,7 +41,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var label = new Label();
 			label.SetBinding(Label.TextProperty, "EnabledText");
 
-
 			var clickCount = new Label();
 			clickCount.AutomationId = "ClickCount";
 			clickCount.SetBinding(Label.TextProperty, "ClickCount");
@@ -65,16 +65,35 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("Add");
 			RunningApp.Tap("Add");
-			
+			var toolbarItemColorValue = GetToolbarItemColorValue();
+			int disabledAlpha = GetAlphaValue(toolbarItemColorValue);
+
 			Assert.AreEqual("0", RunningApp.WaitForElement("ClickCount")[0].ReadText());
-			
+
 			RunningApp.Tap("ToggleEnabled");
 			RunningApp.Tap("Add");
+			toolbarItemColorValue = GetToolbarItemColorValue();
+			int enabledAlpha = GetAlphaValue(toolbarItemColorValue);
+
 			Assert.AreEqual("1", RunningApp.WaitForElement("ClickCount")[0].ReadText());
-			
+			Assert.Less(disabledAlpha, enabledAlpha);
+
 			RunningApp.Tap("ToggleEnabled");
 			RunningApp.Tap("Add");
+
 			Assert.AreEqual("1", RunningApp.WaitForElement("ClickCount")[0].ReadText());
+		}
+
+		private object GetToolbarItemColorValue()
+		{
+			return RunningApp.Query(x => x.Text("Add").Invoke("getCurrentTextColor"))[0];
+		}
+
+		private int GetAlphaValue(object toolbarItemColorValue)
+		{
+			int color = Convert.ToInt32(toolbarItemColorValue);
+			int a = (color >> 24) & 0xff;
+			return a;
 		}
 #endif
 
