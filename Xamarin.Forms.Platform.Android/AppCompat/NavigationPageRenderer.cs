@@ -218,8 +218,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					_toolbarTracker.CollectionChanged -= ToolbarTrackerOnCollectionChanged;
 
-					foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
-						item.PropertyChanged -= OnToolbarItemPropertyChanged;
+					_toolbar.DisposeMenuItems(_toolbarTracker?.ToolbarItems, OnToolbarItemPropertyChanged);
 
 					_toolbarTracker.Target = null;
 					_toolbarTracker = null;
@@ -559,7 +558,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			_toolbar.OnToolbarItemPropertyChanged(e, _toolbarTracker.ToolbarItems, Context, Color.Default, OnToolbarItemPropertyChanged);
+			_toolbar.OnToolbarItemPropertyChanged(e, _toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged);
 		}
 
 		void InsertPageBefore(Page page, Page before)
@@ -900,7 +899,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_disposed)
 				return;
 
-			_toolbar.UpdateMenuItems(_toolbarTracker.ToolbarItems, Context, Color.Default, OnToolbarItemPropertyChanged);
+			_toolbar.UpdateMenuItems(_toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged);
 		}
 
 		void UpdateToolbar()
