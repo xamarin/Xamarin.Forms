@@ -82,17 +82,14 @@ namespace Xamarin.Forms.Platform.Android
 
 				// Allen
 				// Set span text alignment according to the specific setting.
-				if (span.VerticalTextAlignment == TextAlignment.Start)
+				if (span.FontSize < biggestFontSize)
 				{
-					if (span.FontSize < biggestFontSize)
+					if (span.VerticalTextAlignment == TextAlignment.Start)
 					{
 						float shiftPercentage = (float)span.FontSize / (float)biggestFontSize;
 						spannable.SetSpan(new TopAlignSuperscriptSpan(shiftPercentage), start, end, SpanTypes.InclusiveInclusive);
 					}
-				}
-				else if (span.VerticalTextAlignment == TextAlignment.Center)
-				{
-					if (span.FontSize < biggestFontSize)
+					else if (span.VerticalTextAlignment == TextAlignment.Center)
 					{
 						float shiftPercentage = (float)span.FontSize / (float)biggestFontSize;
 						spannable.SetSpan(new TopAlignSuperscriptSpan((shiftPercentage) * 2), start, end, SpanTypes.InclusiveInclusive);
