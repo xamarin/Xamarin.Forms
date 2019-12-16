@@ -3,19 +3,36 @@ using System.Collections.Generic;
 using ElmSharp;
 using Tizen.NET.MaterialComponents;
 using Xamarin.Forms.Platform.Tizen;
+using NImage = Xamarin.Forms.Platform.Tizen.Native.Image;
 
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialNavigationView : MNavigationView, INavigationView
 	{
 		IDictionary<MItem, Element> _flyoutMenu = new Dictionary<MItem, Element>();
+		NImage _bg;
 
 		public MaterialNavigationView(EvasObject parent) : base(parent)
 		{
 			MenuItemSelected += OnSelectedItemChanged;
 		}
 
+		public NImage BackgroundImage
+		{
+			get
+			{
+				return _bg;
+			}
+			set
+			{
+				_bg = value;
+
+				// TODO: MNavigationView doesn't support the background image
+			}
+		}
+
 		public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
+
 
 		public void BuildMenu(List<List<Element>> flyoutGroups)
 		{

@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			RegisterPropertyHandler(Shell.CurrentItemProperty, UpdateCurrentItem);
 			RegisterPropertyHandler(Shell.FlyoutBackgroundColorProperty, UpdateFlyoutBackgroundColor);
+			RegisterPropertyHandler(Shell.FlyoutBackgroundImageProperty, UpdateFlyoutBackgroundImage);
+			RegisterPropertyHandler(Shell.FlyoutBackgroundImageAspectProperty, UpdateFlyoutBackgroundImageAspect);
 			RegisterPropertyHandler(Shell.FlyoutIsPresentedProperty, UpdateFlyoutIsPresented);
 		}
 
@@ -117,6 +119,28 @@ namespace Xamarin.Forms.Platform.Tizen
 		void UpdateFlyoutBackgroundColor()
 		{
 			_navigationView.BackgroundColor = Element.FlyoutBackgroundColor.ToNative();
+		}
+
+		void UpdateFlyoutBackgroundImageAspect()
+		{
+			if(_navigationView.BackgroundImage != null)
+			{
+				_navigationView.BackgroundImage.Aspect = Element.FlyoutBackgroundImageAspect;
+			}
+		}
+
+		void UpdateFlyoutBackgroundImage()
+		{
+			if (Element.FlyoutBackgroundImage != null)
+			{
+				_navigationView.BackgroundImage = new Native.Image(Forms.NativeParent);
+				_navigationView.BackgroundImage.Aspect = Element.FlyoutBackgroundImageAspect;
+				_ = _navigationView.BackgroundImage.LoadFromImageSourceAsync(Element.FlyoutBackgroundImage);
+			}
+			else
+			{
+				_navigationView.BackgroundImage = null;
+			}
 		}
 
 		void UpdateFlyoutIsPresented()
