@@ -136,13 +136,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
                     imageController.SetIsLoading(false);
             }
 
-			if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
-			{
-				rendererController.SetFormsAnimationDrawable(updatedAnimation);
+			try 
+			{			
+				if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
+				{
+					rendererController.SetFormsAnimationDrawable(updatedAnimation);
 
-				if (newImage.IsAnimationPlaying)
-					updatedAnimation.Start();
+					if (newImage.IsAnimationPlaying)
+						updatedAnimation.Start();
+				}
 			}
+			catch(ObjectDisposedException ex)
+			{
+				Log.Warning(nameof(Control), "Control already disposed: {0}", ex);
+			}	
 		}
 
 		internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
