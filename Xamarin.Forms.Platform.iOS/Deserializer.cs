@@ -56,16 +56,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				using (var store = IsolatedStorageFile.GetUserStoreForApplication())
 				{
+					// No need to write 0 properties if no file exists
+					if (properties.Count == 0 && !store.FileExists(PropertyStoreFile))
+					{
+						return;
+					}
 					using (var stream = store.OpenFile(PropertyStoreFile + ".tmp", System.IO.FileMode.OpenOrCreate))
 					using (var writer = XmlDictionaryWriter.CreateBinaryWriter(stream))
 					{
 						try
 						{
-							// No need to write 0 properties if no file exists
-							if (properties.Count == 0 && !store.FileExists(PropertyStoreFile))
-							{
-								return;
-							}
 							var dcs = new DataContractSerializer(typeof(Dictionary<string, object>));
 							dcs.WriteObject(writer, properties);
 							writer.Flush();
