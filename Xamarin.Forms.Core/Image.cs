@@ -13,7 +13,12 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SourceProperty = ImageElement.SourceProperty;
 
 		public static readonly BindableProperty ErrorPlaceholderProperty =
-			BindableProperty.Create(nameof(ErrorPlaceholder), typeof(ImageSource), typeof(Image), default(ImageSource));
+			BindableProperty.Create(nameof(ErrorPlaceholder), typeof(ImageSource), typeof(Image), default(ImageSource), propertyChanged: (b, o, n) =>
+			{
+				if (!(n is FileImageSource) && n != null)
+					throw new InvalidOperationException($"{nameof(ErrorPlaceholder)} needs to be a local resource.");
+
+			});
 
 		public ImageSource ErrorPlaceholder
 		{
@@ -22,7 +27,12 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty LoadingPlaceholderProperty =
-			BindableProperty.Create(nameof(LoadingPlaceholder), typeof(ImageSource), typeof(Image), default(ImageSource));
+			BindableProperty.Create(nameof(LoadingPlaceholder), typeof(ImageSource), typeof(Image), default(ImageSource), propertyChanged: (b, o, n) =>
+			{
+				if (!(n is FileImageSource) && n != null)
+					throw new InvalidOperationException($"{nameof(LoadingPlaceholder)} needs to be a local resource.");
+
+			});
 
 		public ImageSource LoadingPlaceholder
 		{
