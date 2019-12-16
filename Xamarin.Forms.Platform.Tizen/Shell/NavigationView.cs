@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		NBox _box;
 		NImage _bg;
+		Aspect _bgImageAspect;
+		ImageSource _bgImageSource;
 		EvasObject _header;
 		GenList _menu;
 		GenItemClass _defaultClass;
@@ -51,19 +53,41 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		public NImage BackgroundImage
+		public Aspect BackgroundImageAspect
 		{
 			get
 			{
-				return _bg;
+				return _bgImageAspect;
 			}
 			set
 			{
-				_bg = value;
-				if(_bg != null)
+				_bgImageAspect = value;
+				if (_bg != null)
 				{
+					_bg.Aspect = _bgImageAspect;
+				}
+			}
+		}
+
+		public ImageSource BackgroundImageSource
+		{
+			get
+			{
+				return _bgImageSource;
+			}
+			set
+			{
+				_bgImageSource = value;
+				if (_bgImageSource != null)
+				{
+					if (_bg == null)
+					{
+						_bg = new NImage(_menu);
+					}
 					_menu.BackgroundColor = EColor.Transparent;
 					SetPartContent("elm.swallow.background", _bg);
+					_bg.Aspect = _bgImageAspect;
+					_ = _bg.LoadFromImageSourceAsync(_bgImageSource);
 				}
 				else
 				{

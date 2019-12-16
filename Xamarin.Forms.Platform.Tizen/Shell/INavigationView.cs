@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ElmSharp;
 using EColor = ElmSharp.Color;
-using NImage = Xamarin.Forms.Platform.Tizen.Native.Image;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -12,7 +11,9 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		EColor BackgroundColor { get; set; }
 
-		NImage BackgroundImage { get; set; }
+		ImageSource BackgroundImageSource { get; set; }
+
+		Aspect BackgroundImageAspect { get; set; }
 
 		void BuildMenu(List<List<Element>> flyout);
 

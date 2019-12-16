@@ -17,19 +17,10 @@ namespace Xamarin.Forms.Material.Tizen
 			MenuItemSelected += OnSelectedItemChanged;
 		}
 
-		public NImage BackgroundImage
-		{
-			get
-			{
-				return _bg;
-			}
-			set
-			{
-				_bg = value;
+		// TODO: MNavigationView doesn't support the background image
+		public ImageSource BackgroundImageSource { get; set; }
 
-				// TODO: MNavigationView doesn't support the background image
-			}
-		}
+		public Aspect BackgroundImageAspect { get; set; }
 
 		public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
 
