@@ -13,7 +13,7 @@ using Xamarin.Forms.Platform.iOS;
 
 namespace Xamarin.Forms.Material.iOS
 {
-	public static class MaterialTextManager
+	internal static class MaterialTextManager
 	{
 		public static void Init(IMaterialEntryRenderer element, IMaterialTextField textField, IFontElement fontElement)
 		{

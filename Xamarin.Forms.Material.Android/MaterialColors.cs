@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Material.Tizen
 {
 	// Colors from material-components-android
 	// https://github.com/material-components/material-components-android/blob/3637c23078afc909e42833fd1c5fd47bb3271b5f/lib/java/com/google/android/material/color/res/values/colors.xml
-	public static class MaterialColors
+	internal static class MaterialColors
 	{
 		// https://github.com/material-components/material-components-ios/blob/v76.0.0/components/Slider/src/ColorThemer/MDCSliderColorThemer.m#L21
 		const float kSliderBaselineDisabledFillAlpha = 0.32f;
