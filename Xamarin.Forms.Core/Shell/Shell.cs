@@ -32,6 +32,10 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty NavBarIsVisibleProperty =
 			BindableProperty.CreateAttached("NavBarIsVisible", typeof(bool), typeof(Shell), true);
 
+		public static readonly BindableProperty NavBarHasShadowProperty =
+			BindableProperty.CreateAttached("NavBarHasShadow", typeof(bool), typeof(Shell), default(bool),
+				defaultValueCreator: (b) => Device.RuntimePlatform == Device.Android);
+
 		public static readonly BindableProperty SearchHandlerProperty =
 			BindableProperty.CreateAttached("SearchHandler", typeof(SearchHandler), typeof(Shell), null, BindingMode.OneTime,
 				propertyChanged: OnSearchHandlerPropertyChanged);
@@ -70,6 +74,9 @@ namespace Xamarin.Forms
 
 		public static bool GetNavBarIsVisible(BindableObject obj) => (bool)obj.GetValue(NavBarIsVisibleProperty);
 		public static void SetNavBarIsVisible(BindableObject obj, bool value) => obj.SetValue(NavBarIsVisibleProperty, value);
+
+		public static bool GetNavBarHasShadow(BindableObject obj) => (bool)obj.GetValue(NavBarHasShadowProperty);
+		public static void SetNavBarHasShadow(BindableObject obj, bool value) => obj.SetValue(NavBarHasShadowProperty, value);
 
 		public static SearchHandler GetSearchHandler(BindableObject obj) => (SearchHandler)obj.GetValue(SearchHandlerProperty);
 		public static void SetSearchHandler(BindableObject obj, SearchHandler handler) => obj.SetValue(SearchHandlerProperty, handler);
@@ -407,9 +414,13 @@ namespace Xamarin.Forms
 			{
 				ApplyQueryAttributes(shellItem, queryData, navigationRequest.Request.Section == null);
 
-				if (CurrentItem != shellItem)
+				if (shellSection != null && shellContent != null)
 				{
-					SetValueFromRenderer(CurrentItemProperty, shellItem);
+					Shell.ApplyQueryAttributes(shellContent, queryData, navigationRequest.Request.GlobalRoutes.Count == 0);
+					if (shellSection.CurrentItem != shellContent)
+					{
+						shellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
+					}
 				}
 
 				if (shellSection != null)
@@ -419,15 +430,11 @@ namespace Xamarin.Forms
 					{
 						shellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, shellSection);
 					}
+				}
 
-					if (shellContent != null)
-					{
-						Shell.ApplyQueryAttributes(shellContent, queryData, navigationRequest.Request.GlobalRoutes.Count == 0);
-						if (shellSection.CurrentItem != shellContent)
-						{
-							shellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);							
-						}
-					}
+				if (CurrentItem != shellItem)
+				{
+					SetValueFromRenderer(CurrentItemProperty, shellItem);
 				}
 
 				if (navigationRequest.Request.GlobalRoutes.Count > 0)
