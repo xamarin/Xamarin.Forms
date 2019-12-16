@@ -174,6 +174,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			((AsyncTicker)Ticker.Default).SetEnabled(false);
 		}
 
+		static async Task EnableTicker()
+		{
+			await Task.Delay(32);
+			((AsyncTicker)Ticker.Default).SetEnabled(true);
+		}
+
 		async Task SwapFadeViews(View view1, View view2)
 		{
 			await view1.FadeTo(0, 1000);
@@ -262,6 +268,16 @@ namespace Xamarin.Forms.Core.UnitTests
 				await label.ScaleTo(2, 500);
 				run = !(await label.ScaleTo(0.5, 500));
 			}
-		} 
+		}
+
+		[Test]
+		public async Task CanCheckThatAnimationsAreEnabled() 
+		{
+			await EnableTicker();
+			Assert.That(Animation.IsEnabled, Is.True);
+
+			await DisableTicker();
+			Assert.That(Animation.IsEnabled, Is.False);
+		}
 	}
 }
