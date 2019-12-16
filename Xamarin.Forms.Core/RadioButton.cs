@@ -6,8 +6,10 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_RadioButtonRenderer))]
-	public partial class RadioButton : Button
+	public partial class RadioButton : Button, IElementConfiguration<RadioButton>
 	{
+		readonly Lazy<PlatformConfigurationRegistry<RadioButton>> _platformConfigurationRegistry;
+
 		static Dictionary<string, List<WeakReference<RadioButton>>> _groupNameToElements;
 
 		public const string IsCheckedVisualState = "IsChecked";
@@ -39,6 +41,16 @@ namespace Xamarin.Forms
 		{
 			get { return (ImageSource)GetValue(ButtonSourceProperty); }
 			set { SetValue(ButtonSourceProperty, value); }
+		}
+
+		public RadioButton()
+		{
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<RadioButton>>(() => new PlatformConfigurationRegistry<RadioButton>(this));
+		}
+
+		public new IPlatformElementConfiguration<T, RadioButton> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		protected internal override void ChangeVisualState()
