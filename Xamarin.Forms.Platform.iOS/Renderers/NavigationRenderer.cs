@@ -1009,7 +1009,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 
 					foreach (var item in _tracker.ToolbarItems)
-						item.PropertyChanged -= OnToolberItemPropertyChanged;
+						item.PropertyChanged -= OnToolbarItemPropertyChanged;
 
 					_tracker.Target = null;
 					_tracker.CollectionChanged -= TrackerOnCollectionChanged;
@@ -1216,8 +1216,8 @@ namespace Xamarin.Forms.Platform.iOS
 				List<UIBarButtonItem> secondaries = null;
 				foreach (var item in _tracker.ToolbarItems)
 				{
-					item.PropertyChanged -= OnToolberItemPropertyChanged;
-					item.PropertyChanged += OnToolberItemPropertyChanged;
+					item.PropertyChanged -= OnToolbarItemPropertyChanged;
+					item.PropertyChanged += OnToolbarItemPropertyChanged;
 
 					if (!item.IsVisible)
 						continue;
@@ -1238,7 +1238,7 @@ namespace Xamarin.Forms.Platform.iOS
 					n.UpdateToolBarVisible();
 			}
 
-			void OnToolberItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+			void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
 				if(e.PropertyName == ToolbarItem.IsVisibleProperty.PropertyName)
 				{
