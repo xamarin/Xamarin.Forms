@@ -388,7 +388,7 @@ namespace Xamarin.Forms.Platform.Android
 			return _platformElementConfiguration;
 		}
 
-		AButton IButtonLayoutRenderer.View => this;
+		AppCompatButton IButtonLayoutRenderer.View => null;
 
 		Button IButtonLayoutRenderer.Element => this.Element;
 

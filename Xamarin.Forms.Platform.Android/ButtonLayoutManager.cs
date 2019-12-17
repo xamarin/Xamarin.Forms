@@ -53,8 +53,8 @@ namespace Xamarin.Forms.Platform.Android
 			_borderAdjustsPadding = borderAdjustsPadding;
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
 		}
-
-		AButton View => _renderer?.View;
+		
+		AButton View => _renderer?.View ?? _renderer as AButton;
 
 		Context Context => _renderer?.View?.Context;
 

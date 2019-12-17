@@ -10,7 +10,6 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
-using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -377,7 +376,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return _platformElementConfiguration;
 		}
 
-		AButton IButtonLayoutRenderer.View => this;
+		AppCompatButton IButtonLayoutRenderer.View => this;
 
 		Button IButtonLayoutRenderer.Element => this.Element;
 	}
