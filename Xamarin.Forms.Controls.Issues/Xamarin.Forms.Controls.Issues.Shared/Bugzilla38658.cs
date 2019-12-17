@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue (IssueTracker.Bugzilla, 38658, "Rotation causes app containing CarouselPage to freeze", PlatformAffected.iOS)]
 	public class Bugzilla38658 : TestTabbedPage // or TestMasterDetailPage, etc ...
 	{
-		[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+		[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 		public class TestCarouselPage : CarouselPage
 		{
 			public TestCarouselPage ()

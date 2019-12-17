@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls
 		public const string ChangeRoot = "com.xamarin.ChangeRoot";
 	}
 	[Preserve(AllMembers = true)]
-	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	class CoreCarouselPage : CarouselPage
 	{
 		public CoreCarouselPage()

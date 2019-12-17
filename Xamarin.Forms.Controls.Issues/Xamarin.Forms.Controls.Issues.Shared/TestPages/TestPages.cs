@@ -390,7 +390,7 @@ namespace Xamarin.Forms.Controls
 		protected abstract void Init();
 	}
 
-	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	public abstract class TestCarouselPage : CarouselPage
 	{
 #if UITEST

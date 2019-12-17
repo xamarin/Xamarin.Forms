@@ -8,7 +8,7 @@ using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	public class CarouselPageRenderer : VisualElementRenderer<CarouselPage>, ViewPager.IOnPageChangeListener, IManageFragments
 	{
 		bool _disposed;

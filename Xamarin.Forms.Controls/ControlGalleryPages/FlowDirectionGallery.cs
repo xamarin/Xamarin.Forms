@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
-	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	public class FlowDirectionGalleryCarP : CarouselPage
 	{
 		public FlowDirectionGalleryCarP(FlowDirection direction)

@@ -8,7 +8,7 @@ using WSelectionChangedEventArgs = Windows.UI.Xaml.Controls.SelectionChangedEven
 
 namespace Xamarin.Forms.Platform.UWP
 {
-    	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+    	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	public class CarouselPageRenderer : FlipView, IVisualElementRenderer
 	{
 		bool _fromUpdate;

@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.None, 0, "Carousel Async Add Page Issue", PlatformAffected.All, NavigationBehavior.PushModalAsync)]
-	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	public class CarouselAsync : TestCarouselPage
 	{
 		protected override void Init ()

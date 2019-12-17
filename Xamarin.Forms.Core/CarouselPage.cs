@@ -4,7 +4,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_CarouselPageRenderer))]
-	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	public class CarouselPage : MultiPage<ContentPage>, IElementConfiguration<CarouselPage>
 	{
 		readonly Lazy<PlatformConfigurationRegistry<CarouselPage>> _platformConfigurationRegistry;

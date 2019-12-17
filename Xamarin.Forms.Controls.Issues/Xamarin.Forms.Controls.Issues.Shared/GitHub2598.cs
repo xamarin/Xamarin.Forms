@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2598, "Replacing page in CarouselPage does not work the first time", PlatformAffected.All)]
-	[Obsolete("CarouselPage is obsolete since 4.4. Use CarouselView")]
+	[Obsolete("CarouselPage is obsolete as of 4.5.0. Please use CarouselView instead.")]
 	public class GitHub2598 : TestCarouselPage
 	{
 		private ContentPage CreatePage(string labelText, Color bg)
