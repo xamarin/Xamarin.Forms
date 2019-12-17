@@ -50,8 +50,8 @@ namespace Xamarin.Forms.Controls.Issues
 				ImageSource = "calculator.png",
 				Text = "Text"
 			};
-			accesibilityButton.SetAutomationPropertiesName("AccesibilityButton");
-			accesibilityButton.SetAutomationPropertiesHelpText("Help Large Text");
+			accesibilityButton.SetValue(AutomationProperties.NameProperty, "AccesibilityButton");
+			accesibilityButton.SetValue(AutomationProperties.HelpTextProperty, "Help Large Text");
 			layout.Children.Add(accesibilityButton, 0, 2);
 
 			Content = layout;
