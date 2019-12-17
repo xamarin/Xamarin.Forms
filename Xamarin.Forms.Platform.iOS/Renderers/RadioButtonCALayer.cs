@@ -4,7 +4,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class RadioButonCALayer : CALayer
+	public class RadioButtonCALayer : CALayer
 	{
 		const float _checkLineWidth = 2f;
 		const float _containerLineWidth = 2f;
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly CAShapeLayer _checkLayer = new CAShapeLayer();
 		readonly CAShapeLayer _containerLayer = new CAShapeLayer();
 
-		public RadioButonCALayer(RadioButton radioButton, UIButton nativeControl)
+		public RadioButtonCALayer(RadioButton radioButton, UIButton nativeControl)
 		{
 			NeedsDisplayOnBoundsChange = true;
 			_radioButton = radioButton;

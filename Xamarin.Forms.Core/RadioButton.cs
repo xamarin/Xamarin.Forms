@@ -6,7 +6,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_RadioButtonRenderer))]
-	public partial class RadioButton : Button, IElementConfiguration<RadioButton>
+	public class RadioButton : Button, IElementConfiguration<RadioButton>
 	{
 		readonly Lazy<PlatformConfigurationRegistry<RadioButton>> _platformConfigurationRegistry;
 
@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 		public const string IsCheckedVisualState = "IsChecked";
 
 		public static readonly BindableProperty IsCheckedProperty = BindableProperty.Create(
-			nameof(IsChecked), typeof(bool), typeof(RadioButton), false, propertyChanged: (b, o, n) => ((RadioButton)b).OnIsCheckedPropertyChanged((bool)n));
+			nameof(IsChecked), typeof(bool), typeof(RadioButton), false, propertyChanged: (b, o, n) => ((RadioButton)b).OnIsCheckedPropertyChanged((bool)n), defaultBindingMode: BindingMode.TwoWay);
 
 		public static readonly BindableProperty GroupNameProperty = BindableProperty.Create(
 			nameof(GroupName), typeof(string), typeof(RadioButton), null, propertyChanged: (b, o, n) => ((RadioButton)b).OnGroupNamePropertyChanged((string)o, (string)n));

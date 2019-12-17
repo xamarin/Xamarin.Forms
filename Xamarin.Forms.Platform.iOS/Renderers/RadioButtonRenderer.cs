@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual CALayer CreateRadioBoxLayer()
 		{
-			return new RadioButonCALayer(Element, Control);
+			return new RadioButtonCALayer(Element, Control);
 		}
 
 		void SetRadioBoxLayer(CALayer layer)

@@ -12,7 +12,7 @@ using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using AButton = Android.Widget.Button;
 
-	namespace Xamarin.Forms.Platform.Android.FastRenderers
+namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
 	public class ButtonRenderer : AppCompatButton,
 		IBorderVisualElementRenderer, IButtonLayoutRenderer, IVisualElementRenderer, IViewRenderer, ITabStop,
