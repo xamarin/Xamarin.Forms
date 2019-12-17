@@ -181,6 +181,9 @@ namespace Xamarin.Forms
 			binding.Apply(BindingContext, this, targetProperty);
 		}
 
+		internal BindingBase GetBinding(BindableProperty targetProperty)
+			=> GetContext(targetProperty ?? throw new ArgumentNullException(nameof(targetProperty)))?.Binding;
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void SetInheritedBindingContext(BindableObject bindable, object value)
 		{
