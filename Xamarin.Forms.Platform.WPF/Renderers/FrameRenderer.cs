@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Frame.ContentProperty.PropertyName)
+			if (e.PropertyName == ContentView.ContentProperty.PropertyName)
 				UpdateContent();
 			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName)
 				UpdateBorder();
@@ -111,24 +111,12 @@ namespace Xamarin.Forms.Platform.WPF
 			else if(Control.Effect is DropShadowEffect)
 			{
 				Control.Effect = null;
-			} 
-
-			// Verify that the background is correctly set when the shadow is changed
-			UpdateBackground();
+			}
 		}
 
 		protected override void UpdateBackground()
-		{ 
-			// Enforce that a background color is set when the shadow is enabled
-			// to ensure, that the shadow is visible
-			if(Element.HasShadow && Element.BackgroundColor == Color.Default)
-			{
-				Control.UpdateDependencyColor(Border.BackgroundProperty, Color.White);
-			}
-			else
-			{
-				Control.UpdateDependencyColor(Border.BackgroundProperty, Element.BackgroundColor);
-			}
+		{
+			Control.UpdateDependencyColor(Border.BackgroundProperty, Element.BackgroundColor);
 		}
 
 		void UpdateCornerRadius()
