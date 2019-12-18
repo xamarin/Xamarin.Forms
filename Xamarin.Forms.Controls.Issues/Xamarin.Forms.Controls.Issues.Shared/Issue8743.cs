@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.SearchBar)]
 #endif
-	public class Issue8843 : TestContentPage
+	public class Issue8743 : TestContentPage
 	{
 		protected override void Init()
 		{
