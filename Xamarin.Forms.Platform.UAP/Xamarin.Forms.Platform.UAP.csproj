@@ -32,6 +32,10 @@
   <PropertyGroup Condition="$(TargetFramework) == 'uap10.0.14393'">
     <DefineConstants>$(DefineConstants);UWP_14393</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin\$(Configuration)\$(TargetFramework)</OutputPath>
+  </PropertyGroup>
   <ItemGroup Condition="$(TargetFramework) == 'uap10.0.14393'">
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
@@ -126,4 +130,15 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.15" />
   </ItemGroup>
+  <Target Name="UpdateLayoutFiles"
+    AfterTargets="PrepareLibraryLayout"
+    Condition="'$(CI)' == 'true'">
+    <ItemGroup>
+        <MySourceFiles Include="obj\$(Configuration)\embed\**\*.xbf"/>
+    </ItemGroup>
+    <Copy
+        SourceFiles="@(MySourceFiles)"
+        DestinationFiles="@(MySourceFiles->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+    />
+  </Target>
 </Project>
