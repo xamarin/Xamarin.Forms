@@ -129,12 +129,35 @@
   <Target Name="UpdateLayoutFiles"
     AfterTargets="PrepareLibraryLayout"
     Condition="'$(CI)' == 'true'">
+
     <ItemGroup>
-        <MySourceFiles Include="obj\$(Configuration)\embed\**\*.xbf"/>
+        <XbfFiles Include="obj\$(Configuration)\**\*.xbf"/>
+    </ItemGroup>
+    <Copy
+        SourceFiles="@(XbfFiles)"
+        DestinationFiles="@(XbfFiles->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+    />
+    <ItemGroup>
+        <MySourceFiles Include="obj\$(Configuration)\**\*.xaml"/>
     </ItemGroup>
     <Copy
         SourceFiles="@(MySourceFiles)"
         DestinationFiles="@(MySourceFiles->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+    />
+
+    <ItemGroup>
+        <XbfFilesEmbed Include="obj\$(Configuration)\embed\**\*.xbf"/>
+    </ItemGroup>
+    <Copy
+        SourceFiles="@(XbfFilesEmbed)"
+        DestinationFiles="@(XbfFilesEmbed->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+    />
+    <ItemGroup>
+        <MySourceFilesEmbed Include="obj\$(Configuration)\embed\**\*.xaml"/>
+    </ItemGroup>
+    <Copy
+        SourceFiles="@(MySourceFilesEmbed)"
+        DestinationFiles="@(MySourceFilesEmbed->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
   </Target>
 </Project>
