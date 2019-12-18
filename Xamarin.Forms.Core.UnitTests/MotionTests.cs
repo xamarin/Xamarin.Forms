@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Xamarin.Forms.Internals;
@@ -247,7 +248,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task AnimationExtensionsReturnTrueIfAnimationsDisabled() 
 		{
-			DisableTicker();
+			await DisableTicker();
 
 			var label = new Label { Text = "Foo" };
 			var result = await label.ScaleTo(2, 500);
@@ -258,7 +259,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test, Timeout(2000)]
 		public async Task CanExitAnimationLoopIfAnimationsDisabled() 
 		{
-			DisableTicker();
+			await DisableTicker();
 
 			var run = true;
 			var label = new Label { Text = "Foo" };
