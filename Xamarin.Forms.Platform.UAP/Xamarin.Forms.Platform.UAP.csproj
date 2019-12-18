@@ -126,30 +126,4 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.15" />
   </ItemGroup>
- <!-- <Target Name="AfterBuild" AfterTargets="PrepareForRun">
-
-     <ItemGroup>
-        <XbfFiles Include="obj\$(Configuration)\**\*.xbf"/>
-    </ItemGroup>
-    <Copy
-        SourceFiles="@(XbfFiles)"
-        DestinationFiles="@(XbfFiles->'bin\$(Configuration)\%(RecursiveDir)%(Filename)%(Extension)')"
-    />
-
-    <ItemGroup>
-        <MySourceFiles Include="obj\$(Configuration)\$(TargetFramework)\**\*.xaml"/>
-    </ItemGroup>
-    <Copy
-        SourceFiles="@(MySourceFiles)"
-        DestinationFiles="@(MySourceFiles->'bin\$(Configuration)\$(TargetFramework)\Xamarin.Forms.Platform.UAP\%(RecursiveDir)%(Filename)%(Extension)')"
-    />
-
-    <ItemGroup>
-        <XbfFilesEmbed Include="obj\$(Configuration)\$(TargetFramework)\embed\**\*.xbf"/>
-    </ItemGroup>
-    <Copy
-        SourceFiles="@(XbfFilesEmbed)"
-        DestinationFiles="@(XbfFilesEmbed->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
-    />
-  </Target> -->
 </Project>

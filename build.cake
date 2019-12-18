@@ -36,7 +36,7 @@ PowerShell:
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Release");
+var configuration = Argument("configuration", "Debug");
 
 var gitVersion = GitVersion();
 var majorMinorPatch = gitVersion.MajorMinorPatch;
