@@ -80,7 +80,7 @@ jobs:
       inputs:
         solution: ${{ parameters.csprojPath }}
         configuration: '$(BuildConfiguration)'
-        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /p:DisableEmbeddedXbf=false /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration)-csproj.binlog
+        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /t:rebuild /p:DisableEmbeddedXbf=false /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration)-csproj.binlog
   
     - task: VSTest@2
       displayName: 'Unit Tests'
