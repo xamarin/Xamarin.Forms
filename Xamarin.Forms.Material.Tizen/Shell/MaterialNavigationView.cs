@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using ElmSharp;
 using Tizen.NET.MaterialComponents;
 using Xamarin.Forms.Platform.Tizen;
-using NImage = Xamarin.Forms.Platform.Tizen.Native.Image;
 
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialNavigationView : MNavigationView, INavigationView
 	{
 		IDictionary<MItem, Element> _flyoutMenu = new Dictionary<MItem, Element>();
-		NImage _bg;
 
 		public MaterialNavigationView(EvasObject parent) : base(parent)
 		{
