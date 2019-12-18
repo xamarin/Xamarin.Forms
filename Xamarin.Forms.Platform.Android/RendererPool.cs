@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public sealed class RendererPool
 	{
-		readonly Dictionary<Type, FormsStack<IVisualElementRenderer>> _freeRenderers = new Dictionary<Type, FormsStack<IVisualElementRenderer>>();
+		readonly Dictionary<Type, Stack<IVisualElementRenderer>> _freeRenderers = new Dictionary<Type, Stack<IVisualElementRenderer>>();
 
 		readonly VisualElement _oldElement;
 
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			Type rendererType = Internals.Registrar.Registered.GetHandlerTypeForObject(view) ?? typeof(ViewRenderer);
 
-			FormsStack<IVisualElementRenderer> renderers;
+			Stack<IVisualElementRenderer> renderers;
 			if (!_freeRenderers.TryGetValue(rendererType, out renderers) || renderers.Count == 0)
 				return null;
 
@@ -55,10 +55,15 @@ namespace Xamarin.Forms.Platform.Android
 			foreach (Element logicalChild in ((IElementController)view).LogicalChildren)
 			{
 				var child = logicalChild as VisualElement;
+				
 				if (child != null)
 				{
 					IVisualElementRenderer renderer = Platform.GetRenderer(child);
+			
 					if (renderer == null)
+						continue;
+
+					if (renderer.View.IsDisposed())
 						continue;
 
 					if (renderer.View.Parent != _parent.View)
@@ -67,6 +72,7 @@ namespace Xamarin.Forms.Platform.Android
 					renderer.View.RemoveFromParent();
 
 					Platform.SetRenderer(child, null);
+					
 					PushRenderer(renderer);
 				}
 			}
@@ -82,9 +88,9 @@ namespace Xamarin.Forms.Platform.Android
 			var reflectableType = renderer as System.Reflection.IReflectableType;
 			var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : renderer.GetType();
 
-			FormsStack<IVisualElementRenderer> renderers;
+			Stack<IVisualElementRenderer> renderers;
 			if (!_freeRenderers.TryGetValue(rendererType, out renderers))
-				_freeRenderers[rendererType] = renderers = new FormsStack<IVisualElementRenderer>();
+				_freeRenderers[rendererType] = renderers = new Stack<IVisualElementRenderer>();
 
 			renderers.Push(renderer);
 		}

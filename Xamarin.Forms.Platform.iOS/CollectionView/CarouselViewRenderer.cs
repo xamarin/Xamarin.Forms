@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -6,6 +7,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		CarouselView CarouselView => Element;
 
+		[Preserve(Conditional = true)]
 		public CarouselViewRenderer()
 		{
 			CarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
@@ -20,7 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.IsOneOf(CarouselView.PeekAreaInsetsProperty, CarouselView.NumberOfSideItemsProperty))
+			if (changedProperty.Is(CarouselView.PeekAreaInsetsProperty))
 			{
 				(Controller.Layout as CarouselViewLayout).UpdateConstraints(Frame.Size);
 				Controller.Layout.InvalidateLayout();
