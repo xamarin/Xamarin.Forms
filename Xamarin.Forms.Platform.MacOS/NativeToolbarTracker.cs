@@ -393,6 +393,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					var item = new NSToolbarItem(element.Text ?? "");
 					item.Activated += (sender, e) => ((IMenuItemController)element).Activate();
 					var button = new NSButton();
+					// Padding for toolbar items with icon only is 9=44-25 (ToolbarItemWidth-ToolbarItemHeight)
+					// 10 added here to match this padding for long items
 					button.Activated += (sender, e) => ((IMenuItemController)element).Activate();
 					button.BezelStyle = NSBezelStyle.TexturedRounded;
 
