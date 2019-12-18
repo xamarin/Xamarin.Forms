@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 				else
 				{
-					Control.TrackDrawable?.SetColorFilter(Element.OnColor.ToAndroid(), PorterDuff.Mode.Multiply);
+					Control.TrackDrawable?.SetColorFilter(Element.OnColor, FilterMode.Multiply);
 				}
 			}
 			else
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (Element.ThumbColor != Color.Default)
 			{
-				Control.ThumbDrawable?.SetColorFilter(Element.ThumbColor.ToAndroid(), PorterDuff.Mode.Multiply);
+				Control.ThumbDrawable?.SetColorFilter(Element.ThumbColor, FilterMode.Multiply);
 				_changedThumbColor = true;
 			}
 			else

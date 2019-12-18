@@ -350,7 +350,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (icon == null)
 			{
 				icon = new DrawerArrowDrawable(context.GetThemedContext());
-				icon.SetColorFilter(tintColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
+				icon.SetColorFilter(tintColor, FilterMode.SrcAtop);
 			}
 
 			icon.Progress = (CanNavigateBack) ? 1 : 0;
@@ -422,7 +422,7 @@ namespace Xamarin.Forms.Platform.Android
 					using (var newDrawable = constant.NewDrawable())
 					using (var iconDrawable = newDrawable.Mutate())
 					{
-						iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+						iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), FilterMode.SrcAtop);
 						menuItem.SetIcon(iconDrawable);
 					}
 				}
@@ -551,7 +551,7 @@ namespace Xamarin.Forms.Platform.Android
 					item.SetEnabled(SearchHandler.IsSearchEnabled);
 					item.SetIcon(Resource.Drawable.abc_ic_search_api_material);
 					using (var icon = item.Icon)
-						icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+						icon.SetColorFilter(TintColor.ToAndroid(Color.White), FilterMode.SrcAtop);
 					item.SetShowAsAction(ShowAsAction.IfRoom | ShowAsAction.CollapseActionView);
 
 					if (_searchView.View.Parent != null)

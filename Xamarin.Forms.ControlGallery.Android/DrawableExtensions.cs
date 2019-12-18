@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Platform.Android
 		public static void SetColorFilter(this ADrawable drawable, AColor color, FilterMode mode)
 		{
 #if __ANDROID_29__
-			if(Forms.Is29OrNewer)
+			if((int)global::Android.OS.Build.VERSION.SdkInt >= 29)
 				drawable.SetColorFilter(new BlendModeColorFilter(color, GetFilterMode(mode)));
 			else
 #pragma warning disable CS0612 // Type or member is obsolete

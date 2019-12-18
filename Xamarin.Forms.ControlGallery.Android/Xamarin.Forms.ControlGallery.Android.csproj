@@ -15,9 +15,11 @@
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidTargetFrameworkVersion Condition="$(AndroidTargetFrameworkVersion) == ''">v9.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="$(AndroidTargetFrameworkVersion) == '' AND '$(MSBuildAssemblyVersion)' != '16.0'">v9.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="$(AndroidTargetFrameworkVersion) == ''">v10.0</AndroidTargetFrameworkVersion>
     <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
-    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) != 'v9.0'">Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v9.0'">Properties\AndroidManifest28.xml</AndroidManifest>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
@@ -84,6 +86,7 @@
     <Compile Include="BorderEffect.cs" />
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="CacheService.cs" />
+    <Compile Include="DrawableExtensions.cs" />
     <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="DisposeLabelRenderer.cs" />
     <Compile Include="DisposePageRenderer.cs" />
@@ -220,7 +223,8 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\AndroidManifest.xml" />
+    <None Condition="$(AndroidTargetFrameworkVersion) != 'v9.0'" Include="Properties\AndroidManifest.xml" />
+    <None Condition="$(AndroidTargetFrameworkVersion) == 'v9.0'" Include="Properties\AndroidManifest28.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\error.xml" />

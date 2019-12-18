@@ -260,7 +260,7 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' != 'v8.1' ">
     <ProjectReference Include="..\..\Xamarin.Forms.Material.Android\Xamarin.Forms.Material.Android.csproj">
       <Project>{e1586ce6-8eac-4388-a15a-1aabf108b5f8}</Project>
       <Name>Xamarin.Forms.Material.Android</Name>

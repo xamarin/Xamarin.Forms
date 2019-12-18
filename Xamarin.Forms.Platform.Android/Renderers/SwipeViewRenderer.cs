@@ -600,7 +600,7 @@ namespace Xamarin.Forms.Platform.Android
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
 				drawable.SetBounds(0, 0, iconSize, iconSize);
-				drawable.SetColorFilter(textColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
+				drawable.SetColorFilter(textColor.ToAndroid(), FilterMode.SrcAtop);
 				swipeButton.SetCompoundDrawables(null, drawable, null, null);
 			});
 

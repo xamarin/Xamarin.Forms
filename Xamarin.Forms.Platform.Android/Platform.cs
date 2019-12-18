@@ -633,7 +633,8 @@ namespace Xamarin.Forms.Platform.Android
 			TabbedPage currentTabs = CurrentTabbedPage;
 
 			var atab = actionBar.NewTab();
-			atab.SetText(page.Title);
+			
+			atab.SetText(new Java.Lang.String(page.Title));
 			atab.TabSelected += (sender, e) =>
 			{
 				if (!_ignoreAndroidSelection)
@@ -860,7 +861,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var page = sender as Page;
 				var atab = actionBar.GetTabAt(currentTabs.Children.IndexOf(page));
-				atab.SetText(page.Title);
+				atab.SetText(new Java.Lang.String(page.Title));
 			}
 		}
 
