@@ -65,18 +65,20 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("Add");
 			RunningApp.Tap("Add");
+#if __ANDROID__
 			var toolbarItemColorValue = GetToolbarItemColorValue();
 			int disabledAlpha = GetAlphaValue(toolbarItemColorValue);
-
+#endif
 			Assert.AreEqual("0", RunningApp.WaitForElement("ClickCount")[0].ReadText());
 
 			RunningApp.Tap("ToggleEnabled");
 			RunningApp.Tap("Add");
+#if __ANDROID__
 			toolbarItemColorValue = GetToolbarItemColorValue();
 			int enabledAlpha = GetAlphaValue(toolbarItemColorValue);
-
-			Assert.AreEqual("1", RunningApp.WaitForElement("ClickCount")[0].ReadText());
 			Assert.Less(disabledAlpha, enabledAlpha);
+#endif
+			Assert.AreEqual("1", RunningApp.WaitForElement("ClickCount")[0].ReadText());			
 
 			RunningApp.Tap("ToggleEnabled");
 			RunningApp.Tap("Add");
@@ -84,6 +86,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.AreEqual("1", RunningApp.WaitForElement("ClickCount")[0].ReadText());
 		}
 
+#if __ANDROID__
 		private object GetToolbarItemColorValue()
 		{
 			return RunningApp.Query(x => x.Text("Add").Invoke("getCurrentTextColor"))[0];
@@ -95,6 +98,8 @@ namespace Xamarin.Forms.Controls.Issues
 			int a = (color >> 24) & 0xff;
 			return a;
 		}
+#endif
+
 #endif
 
 		[Preserve(AllMembers = true)]
