@@ -331,7 +331,8 @@ namespace Xamarin.Forms.Internals
 			Profile.FramePartition("Reflect");
 			foreach (Assembly assembly in assemblies)
 			{
-				Profile.FrameBegin(assembly.GetName().Name);
+				var assemblyName = assembly.GetName().Name;
+				Profile.FrameBegin(assemblyName);
 
 				foreach (Type attrType in attrTypes)
 				{
@@ -350,10 +351,22 @@ namespace Xamarin.Forms.Internals
 						Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, attrType.FullName);
 						continue;
 					}
-
-					var handlerAttributes = new HandlerAttribute[attributes.Length];
-					Array.Copy(attributes, handlerAttributes, attributes.Length);
-					RegisterRenderers(handlerAttributes);
+					
+					var length = attributes.Length;
+					for (var i = 0; i < length; i++)
+					{
+						var a = attributes[i];
+						var attribute = a as HandlerAttribute;
+						if(attribute == null && (a is ExportFontAttribute fa))
+						{
+							FontRegistrar.Register(fa, assembly);
+						}
+						else
+						{
+							if (attribute.ShouldRegister())
+								Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals, attribute.Priority);
+						}
+					}
 				}
 
 				string resolutionName = assembly.FullName;
@@ -370,7 +383,7 @@ namespace Xamarin.Forms.Internals
 				Array.Copy(effectAttributes, typedEffectAttributes, effectAttributes.Length);
 				RegisterEffects(resolutionName, typedEffectAttributes);
 
-				Profile.FrameEnd();
+				Profile.FrameEnd(assemblyName);
 			}
 
 			if ((flags & InitializationFlags.DisableCss) == 0)

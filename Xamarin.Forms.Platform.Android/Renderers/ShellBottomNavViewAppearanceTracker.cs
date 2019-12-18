@@ -45,9 +45,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultList == null)
 			{
 #if __ANDROID_28__
-				_defaultList = bottomView.ItemTextColor ?? MakeColorStateList(titleColor.ToAndroid().ToArgb(), disabledColor.ToAndroid().ToArgb(), unselectedColor.ToAndroid().ToArgb());
+				_defaultList = bottomView.ItemTextColor ?? bottomView.ItemIconTintList
+					?? MakeColorStateList(titleColor.ToAndroid().ToArgb(), disabledColor.ToAndroid().ToArgb(), unselectedColor.ToAndroid().ToArgb());
 #else
-				_defaultList = bottomView.ItemTextColor;
+				_defaultList = bottomView.ItemTextColor ?? bottomView.ItemIconTintList;
 #endif
 			}
 
@@ -87,6 +88,9 @@ namespace Xamarin.Forms.Platform.Android
 				index = Math.Min(index, menu.Size() - 1);
 
 				var child = menuView.GetChildAt(index);
+				if (child == null)
+					return;
+
 				var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
 
 				bottomView.SetBackground(new ColorChangeRevealDrawable(lastColor, newColor, touchPoint));
@@ -95,12 +99,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		ColorStateList MakeColorStateList(Color titleColor, Color disabledColor, Color unselectedColor)
 		{
-			var states = new int[][] {
-				new int[] { -R.Attribute.StateEnabled },
-				new int[] {R.Attribute.StateChecked },
-				new int[] { }
-			};
-
 			var disabledInt = disabledColor.IsDefault ?
 				_defaultList.GetColorForState(new[] { -R.Attribute.StateEnabled }, AColor.Gray) :
 				disabledColor.ToAndroid().ToArgb();
