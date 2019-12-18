@@ -234,7 +234,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var image = behavior.GetPropertyIfSet<ImageSource>(BackButtonBehavior.IconOverrideProperty, null);
 			var enabled = behavior.GetPropertyIfSet(BackButtonBehavior.IsEnabledProperty, true);
-			var text = behavior.GetPropertyIfSet(BackButtonBehavior.TextOverrideProperty, String.Empty);
+			var text = behavior.GetPropertyIfSet<string>(BackButtonBehavior.TextOverrideProperty, null);
+			var command = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandProperty, null);
 			
 			UIImage icon = null;
 
@@ -260,29 +261,50 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (image != null)
 					icon = await image.GetNativeImageAsync();
-				else if (String.IsNullOrWhiteSpace(text))
+				else if (text == null)
 					icon = DrawHamburger();
 
-				if (icon == null)
+				if (text != null || image != null)
 				{
-					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
-				}
-				else
-				{
-					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+
+					var backButton = new UIBarButtonItem { Style = UIBarButtonItemStyle.Plain };
+
+					if (text != null)
+					{
+						backButton.Title = text;
+					}
+
+					if (image != null)
+					{
+						backButton.Image = icon;
+					}
+
+					NavigationItem.BackBarButtonItem = backButton;
 				}
 
-				if (String.IsNullOrWhiteSpace(image?.AutomationId))
-					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
-				else
-					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
-
-				if (image != null)
+				if (IsRootPage)
 				{
-					NavigationItem.LeftBarButtonItem.SetAccessibilityHint(image);
-					NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(image);
+					if (icon == null)
+					{
+						NavigationItem.LeftBarButtonItem =
+							new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+					}
+					else
+					{
+						NavigationItem.LeftBarButtonItem =
+							new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+					}
+
+					if (String.IsNullOrWhiteSpace(image?.AutomationId))
+						NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
+					else
+						NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
+
+					if (image != null)
+					{
+						NavigationItem.LeftBarButtonItem.SetAccessibilityHint(image);
+						NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(image);
+					}
 				}
 			}
 		}
