@@ -36,7 +36,7 @@ PowerShell:
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Debug");
+var configuration = Argument("configuration", "Release");
 
 var gitVersion = GitVersion();
 var majorMinorPatch = gitVersion.MajorMinorPatch;
@@ -223,6 +223,11 @@ Task("Build")
 {
     try{
         MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithRestore());
+
+        MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
+                    GetMSBuildSettings()
+                        .WithRestore()
+                        .WithProperty("DisableEmbeddedXbf", "true"));
     }
     catch(Exception)
     {

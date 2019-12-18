@@ -8,6 +8,7 @@ parameters:
   preBuildSteps: []   # any steps to run before the build
   postBuildSteps: []  # any additional steps to run after the build
   slnPath : 'Xamarin.Forms.sln'
+  csprojPath : 'Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj'
   buildConfiguration : 'Debug'
   releaseBuildConfiguration : 'Release'
   buildPlatform : 'any cpu'
@@ -73,6 +74,14 @@ jobs:
         configuration: '$(BuildConfiguration)'
         msbuildArguments: ${{ parameters.msbuildExtraArguments }} /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
 
+    - task: MSBuild@1
+      displayName: 'Embed XBF into PRI'
+      name: winbuild_pri_embed
+      inputs:
+        solution: ${{ parameters.csprojPath }}
+        configuration: '$(BuildConfiguration)'
+        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /p:DisableEmbeddedXbf=false /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration)-csproj.binlog
+  
     - task: VSTest@2
       displayName: 'Unit Tests'
       inputs:
