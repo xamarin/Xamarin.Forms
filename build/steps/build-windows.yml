@@ -100,7 +100,6 @@ jobs:
       inputs:
         Contents: |
           Stubs/**/bin/**/*.dll
-          Xamarin.Forms.Platform.UAP/obj/**/*.*
           Microsoft.XamlStandard/bin/**/*.dll
           Microsoft.XamlStandard.Design/bin/**/*.dll
           Xamarin.Forms.Core/bin/**/*.dll
@@ -137,8 +136,6 @@ jobs:
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pri
           Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xr.xml
-          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xbf
-          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xaml
           Xamarin.Forms.Platform.UAP/Properties/Xamarin.Forms.Platform.UAP.rd.xml
           Xamarin.Forms.Platform.MacOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.MacOS/bin/$(BuildConfiguration)/**/*.mdb
