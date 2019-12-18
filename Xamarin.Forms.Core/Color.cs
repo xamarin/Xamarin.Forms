@@ -114,7 +114,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		Color(byte r, byte g, byte b)
+		Color(int r, int g, int b)
 		{
 			_mode = Mode.Rgb;
 			_r = r / 255f;
@@ -124,7 +124,7 @@ namespace Xamarin.Forms
 			ConvertToHsl(_r, _g, _b, _mode, out _hue, out _saturation, out _luminosity);
 		}
 
-		Color(byte r, byte g, byte b, byte a)
+		Color(int r, int g, int b, int a)
 		{
 			_mode = Mode.Rgb;
 			_r = r / 255f;
