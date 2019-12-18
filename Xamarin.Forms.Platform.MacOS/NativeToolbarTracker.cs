@@ -421,6 +421,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				group.Group.View = new NSView();
 			}
 		}
+
 		void UpdateButtonContent(NSButton button, ToolbarItem element, NativeToolbarGroup group)
 		{
 			var text = element.Text ?? "";
@@ -449,6 +450,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				button.Image = null;
 			}
 		}
+
 		void UpdateGroupWidth(NativeToolbarGroup group)
 		{
 			nfloat totalWidth = 0;
@@ -468,15 +470,18 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			view.Frame = new CGRect(0, 0, totalWidth + (group.ItemSpacing * (view.Subviews.Length - 1)), ToolbarItemHeight);
 		}
+
 		void SetButtonTitle(NSButton button, string text)
 		{
 			button.Title = text;
 			button.ImagePosition = GetImagePosition(text);
 		}
+
 		NSCellImagePosition GetImagePosition(string text)
 		{
 			return string.IsNullOrEmpty(text) ? NSCellImagePosition.ImageOnly : NSCellImagePosition.ImageLeading;
 		}
+
 		void SetAccessibility(NSButton button, ToolbarItem element)
 		{
 			button.AccessibilityValue = element.IsSet(AutomationProperties.NameProperty)
