@@ -11,8 +11,6 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
-using AWidget = Android.Widget;
-using AButton = Android.Widget.Button;
 using Android.Graphics.Drawables;
 using Android.Widget;
 

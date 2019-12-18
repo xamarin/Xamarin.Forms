@@ -17,7 +17,6 @@ using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using MButton = Android.Support.Design.Button.MaterialButton;
 using Xamarin.Forms.Platform.Android;
-using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Material.Android
 {
