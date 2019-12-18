@@ -135,14 +135,14 @@
     </ItemGroup>
     <Copy
         SourceFiles="@(XbfFiles)"
-        DestinationFiles="@(XbfFiles->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+        DestinationFiles="@(XbfFiles->'bin\$(Configuration)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
     <ItemGroup>
         <MySourceFiles Include="obj\$(Configuration)\**\*.xaml"/>
     </ItemGroup>
     <Copy
         SourceFiles="@(MySourceFiles)"
-        DestinationFiles="@(MySourceFiles->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+        DestinationFiles="@(MySourceFiles->'bin\$(Configuration)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
 
     <ItemGroup>
@@ -150,14 +150,14 @@
     </ItemGroup>
     <Copy
         SourceFiles="@(XbfFilesEmbed)"
-        DestinationFiles="@(XbfFilesEmbed->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+        DestinationFiles="@(XbfFilesEmbed->'bin\$(Configuration)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
     <ItemGroup>
         <MySourceFilesEmbed Include="obj\$(Configuration)\embed\**\*.xaml"/>
     </ItemGroup>
     <Copy
         SourceFiles="@(MySourceFilesEmbed)"
-        DestinationFiles="@(MySourceFilesEmbed->'bin\$(Configuration)\$(TargetFramework)\%(RecursiveDir)%(Filename)%(Extension)')"
+        DestinationFiles="@(MySourceFilesEmbed->'bin\$(Configuration)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
   </Target>
 </Project>
