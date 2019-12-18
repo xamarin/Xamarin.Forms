@@ -372,6 +372,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarColor()
 		{
+			if (!Element.IsLoaded)
+				return;
+
 			if (Element.StatusBarColor == Color.Default)
 				return;
 
@@ -380,6 +383,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarStyle()
 		{
+			if (!Element.IsLoaded)
+				return;
+
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
 			{
 				var window = (AndroidContext.GetActivity() as FormsAppCompatActivity)?.Window;

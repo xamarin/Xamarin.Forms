@@ -436,7 +436,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			((IPageController)page).SendAppearing ();
 
 			Assert.True (sent);
-			Assert.True(page.IsOnScreen);
+			Assert.True(page.IsLoaded);
 		}
 
 		[Test]
@@ -446,14 +446,14 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			((IPageController)page).SendAppearing ();
 
-			Assert.True(page.IsOnScreen);
+			Assert.True(page.IsLoaded);
 			bool sent = false;
 			page.Disappearing += (sender, args) => sent = true;
 
 			((IPageController)page).SendDisappearing ();
 
 			Assert.True (sent);
-			Assert.False(page.IsOnScreen);
+			Assert.False(page.IsLoaded);
 		}
 
 		[Test]

@@ -276,6 +276,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarColor()
 		{
+			if (!Shell.IsLoaded)
+				return;
+
 			if (Shell.StatusBarColor == Color.Default)
 				return;
 
@@ -306,6 +309,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarStyle()
 		{
+			if (!Shell.IsLoaded)
+				return;
+
 			switch (Shell.StatusBarStyle)
 			{
 				case StatusBarStyle.Default:
@@ -318,7 +324,7 @@ namespace Xamarin.Forms.Platform.iOS
 					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.DarkContent, false);
 					break;
 			}
-
+			
 			GetCurrentViewController().SetNeedsStatusBarAppearanceUpdate();
 		}
 
