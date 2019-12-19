@@ -17,6 +17,8 @@ parameters:
   artifactsName: 'win_build'
   nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
   nunitTestFolder: '$(build.sourcesdirectory)'
+  includeUwp: 'true'
+  includeNonUwp: 'true'
 
 jobs:
   - job: ${{ parameters.name }}
@@ -97,6 +99,7 @@ jobs:
 
     - task: CopyFiles@2
       displayName: 'Copy Files dlls'
+      condition: eq(${{ parameters.includeNonUwp }}, 'true')
       inputs:
         Contents: |
           Stubs/**/bin/**/*.dll
@@ -131,12 +134,6 @@ jobs:
           Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.mdb
-          Xamarin.Forms.Platform.WP8/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pdb
-          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pri
-          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xr.xml
-          Xamarin.Forms.Platform.UAP/Properties/Xamarin.Forms.Platform.UAP.rd.xml
           Xamarin.Forms.Platform.MacOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.MacOS/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.dll
@@ -145,11 +142,6 @@ jobs:
           Xamarin.Forms.Maps.Android/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.MacOS/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Maps.WP8/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pdb
-          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pri
-          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.xbf
           Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.mdb
@@ -189,6 +181,23 @@ jobs:
           **/*.binlog
 
         TargetFolder: ${{ parameters.artifactsTargetFolder }}
+
+      - task: CopyFiles@2
+        displayName: 'Copy UWP'
+        condition: eq(${{ parameters.includeUwp }}, 'true')
+        inputs:
+          Contents: |
+            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pdb
+            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.dll
+            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pri
+            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xr.xml
+            Xamarin.Forms.Platform.UAP/Properties/Xamarin.Forms.Platform.UAP.rd.xml
+            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.dll
+            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pdb
+            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pri
+            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.xbf
+
+          TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
