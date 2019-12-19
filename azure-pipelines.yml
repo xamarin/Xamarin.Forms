@@ -70,7 +70,8 @@ jobs:
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-    
+    includeUwp: 'false'
+
 - template: build/steps/build-windows.yml
   parameters:
     name: win_2019
@@ -82,6 +83,8 @@ jobs:
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
     slnPath: '.Xamarin.Forms.UAP.nuget.sln'
+    includeNonUwp: 'false'
+
 
 - template: build/steps/build-android.yml
   parameters:
