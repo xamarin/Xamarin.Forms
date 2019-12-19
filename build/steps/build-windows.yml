@@ -78,6 +78,7 @@ jobs:
 
     - task: MSBuild@1
       displayName: 'Embed XBF into PRI'
+      condition: eq(${{ parameters.includeUwp }}, 'true')
       name: winbuild_pri_embed
       inputs:
         solution: ${{ parameters.csprojPath }}
