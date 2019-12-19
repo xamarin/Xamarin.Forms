@@ -70,8 +70,7 @@ jobs:
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
-
-jobs:
+    
 - template: build/steps/build-windows.yml
   parameters:
     name: win_2019
