@@ -182,22 +182,22 @@ jobs:
 
         TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
-      - task: CopyFiles@2
-        displayName: 'Copy UWP'
-        condition: eq(${{ parameters.includeUwp }}, 'true')
-        inputs:
-          Contents: |
-            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pdb
-            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.dll
-            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pri
-            Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xr.xml
-            Xamarin.Forms.Platform.UAP/Properties/Xamarin.Forms.Platform.UAP.rd.xml
-            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.dll
-            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pdb
-            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pri
-            Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.xbf
+    - task: CopyFiles@2
+      displayName: 'Copy UWP'
+      condition: eq(${{ parameters.includeUwp }}, 'true')
+      inputs:
+        Contents: |
+          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.pri
+          Xamarin.Forms.Platform.UAP/bin/$(BuildConfiguration)/**/*.xr.xml
+          Xamarin.Forms.Platform.UAP/Properties/Xamarin.Forms.Platform.UAP.rd.xml
+          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pri
+          Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.xbf
 
-          TargetFolder: ${{ parameters.artifactsTargetFolder }}
+        TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
