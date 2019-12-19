@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using System.Reflection;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
 [assembly: Dependency(typeof(WindowsSerializer))]
@@ -59,3 +60,6 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: Dependency(typeof(WindowsResourcesProvider))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer))]
+
+//Fonts
+[assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]

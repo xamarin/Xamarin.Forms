@@ -105,12 +105,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\WebViewRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CellExtensions.cs" />
-    <Compile Include="..\Xamarin.Forms.Core\corefx\FormsQueue.cs">
-      <Link>corefx\FormsQueue.cs</Link>
-    </Compile>
-    <Compile Include="..\Xamarin.Forms.Core\corefx\FormsStack.cs">
-      <Link>corefx\FormsStack.cs</Link>
-    </Compile>
     <Compile Include="CADisplayLinkTicker.cs" />
     <Compile Include="CollectionView\CarouselViewDelegator.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
@@ -166,6 +160,7 @@
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="IOSDeviceInfo.cs" />
+    <Compile Include="LinkerSafeAttribute.cs" />
     <Compile Include="ModalWrapper.cs" />
     <Compile Include="Renderers\FormsCAKeyFrameAnimation.cs" />
     <Compile Include="Renderers\FormsCheckBox.cs" />
@@ -240,6 +235,7 @@
     <Compile Include="Extensions\FontExtensions.Shared.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
+    <Compile Include="EmbeddedFontLoader.cs" />
     <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
     <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="CollectionView\CarouselViewLayout.cs" />

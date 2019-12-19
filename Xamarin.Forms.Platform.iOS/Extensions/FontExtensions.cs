@@ -2,12 +2,14 @@ using System.Diagnostics;
 using System.Linq;
 using Xamarin.Forms.Internals;
 using UIKit;
+using System;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public static partial class FontExtensions
 	{
-		static readonly string DefaultFontName = UIFont.SystemFontOfSize(12).Name;
+		static readonly string _defaultFontName = UIFont.SystemFontOfSize(12).Name;
 
 		public static UIFont ToUIFont(this Font self) => ToNativeFont(self);
 
@@ -18,7 +20,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var bold = (attributes & FontAttributes.Bold) != 0;
 			var italic = (attributes & FontAttributes.Italic) != 0;
 
-			if (family != null && family != DefaultFontName)
+			if (family != null && family != _defaultFontName)
 			{
 				try
 				{
@@ -42,6 +44,22 @@ namespace Xamarin.Forms.Platform.iOS
 						}
 					}
 
+					var cleansedFont = CleanseFontName(family);
+					result = UIFont.FromName(cleansedFont, size);
+					if (family.StartsWith(".SFUI", System.StringComparison.InvariantCultureIgnoreCase))
+					{
+						var fontWeight = family.Split('-').LastOrDefault();
+
+						if (!string.IsNullOrWhiteSpace(fontWeight) && System.Enum.TryParse<UIFontWeight>(fontWeight, true, out var uIFontWeight))
+						{
+							result = UIFont.SystemFontOfSize(size, uIFontWeight);
+							return result;
+						}
+
+						result = UIFont.SystemFontOfSize(size, UIFontWeight.Regular);
+						return result;
+					}
+					
 					result = UIFont.FromName(family, size);
 					if (result != null)
 						return result;
@@ -67,6 +85,31 @@ namespace Xamarin.Forms.Platform.iOS
 				return UIFont.BoldSystemFontOfSize(size);
 
 			return UIFont.SystemFontOfSize(size);
+		}
+
+		static string CleanseFontName(string fontName)
+		{
+
+			var fontFile = FontFile.FromString(fontName);
+
+			if (!string.IsNullOrWhiteSpace(fontFile.Extension))
+			{
+				var (hasFont, _) = FontRegistrar.HasFont(fontFile.FileNameWithExtension());
+				if (hasFont)
+					return fontFile.PostScriptName;
+			}
+			else
+			{
+				foreach (var ext in FontFile.Extensions)
+				{
+
+					var formated = fontFile.FileNameWithExtension(ext);
+					var (hasFont, filePath) = FontRegistrar.HasFont(formated);
+					if (hasFont)
+						return fontFile.PostScriptName;
+				}
+			}
+			return fontFile.PostScriptName;
 		}
 	}
 }
