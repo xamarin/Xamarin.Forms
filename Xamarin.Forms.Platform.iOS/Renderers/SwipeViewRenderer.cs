@@ -36,6 +36,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public SwipeViewRenderer()
 		{
+			Xamarin.Forms.SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
+
 			_tapGestureRecognizer = new UITapGestureRecognizer(OnTap)
 			{
 				CancelsTouchesInView = false
