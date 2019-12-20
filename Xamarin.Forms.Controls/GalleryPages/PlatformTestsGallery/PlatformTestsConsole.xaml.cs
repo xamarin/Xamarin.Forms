@@ -100,7 +100,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		{
 			var name = testFixture.Name;
 
-			var label = new Label { Text = $"{name} Started", LineBreakMode = LineBreakMode.HeadTruncation };
+			var label = new Label { Text = $"{name} Started", LineBreakMode = LineBreakMode.HeadTruncation,
+				FontAttributes = FontAttributes.Bold };
 
 			Device.BeginInvokeOnMainThread(() =>
 			{
