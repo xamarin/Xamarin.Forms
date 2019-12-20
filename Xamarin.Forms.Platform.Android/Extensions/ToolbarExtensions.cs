@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				using (var title = new Java.Lang.String(item.Text))
 				{
-					var menuitem = menu.Add(title);
+					var menuitem = menu.Add(global::Android.Views.Menu.None, 0, item.Priority, title);
 					menuitem.SetEnabled(item.IsEnabled);
 					menuitem.SetTitleOrContentDescription(item);
 					UpdateMenuItemIcon(context, menuitem, item, tintColor);

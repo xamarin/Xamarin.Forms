@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Platform.iOS
 			List<UIBarButtonItem> items = new List<UIBarButtonItem>();
 			if (Page != null)
 			{
-				foreach (var item in Page.ToolbarItems)
+				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x=> x.Priority))
 				{
 					items.Add(item.ToUIBarButtonItem(false, true));
 				}
