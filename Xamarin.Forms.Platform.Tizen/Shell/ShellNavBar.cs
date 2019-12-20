@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Reflection;
 using ElmSharp;
-using EColor = ElmSharp.Color;
 using Xamarin.Forms.Platform.Tizen.Native;
+using EColor = ElmSharp.Color;
+using EButton = ElmSharp.Button;
+using EImage = ElmSharp.Image;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
 	public class ShellNavBar : Native.Box
 	{
-		Native.Image _menu = null;
+		EImage _menu = null;
+		EButton _menuButton = null;
 		Native.Label _title = null;
 		Native.SearchBar _nativeSearchHandler = null;
 		EvasObject _nativeTitleView = null;
@@ -32,10 +35,14 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			_flyoutController = flyoutController;
 
-			_menu = new Native.Image(Forms.NativeParent);
-			_menu.Clicked += OnMenuClicked;
+			_menuButton = new EButton(Forms.NativeParent);
+			_menuButton.Clicked += OnMenuClicked;
+			_menu = new EImage(Forms.NativeParent);
 			UpdateMenuIcon();
 			_menu.Show();
+			_menuButton.Show();
+
+			_menuButton.SetPartContent("icon", _menu);
 
 			_title = new Native.Label(Forms.NativeParent)
 			{
@@ -47,7 +54,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			_title.Show();
 
 			BackgroundColor = _backgroudColor;
-			PackEnd(_menu);
+			_menuButton.BackgroundColor = _backgroudColor;
+			PackEnd(_menuButton);
 			PackEnd(_title);
 			LayoutUpdated += OnLayoutUpdated;
 		}
@@ -121,6 +129,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			set
 			{
 				_backgroudColor = value;
+				_menuButton.BackgroundColor = _backgroudColor;
 				base.BackgroundColor = _backgroudColor;
 			}
 		}
@@ -134,7 +143,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			set
 			{
 				_foregroudColor = value;
-				_menu.Color = value;
+				_menuButton.Color = value;
 			}
 		}
 
@@ -162,11 +171,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		async void UpdateMenuIcon()
+		void UpdateMenuIcon()
 		{
 			string file = _hasBackButton ? _backIcon : _menuIcon;
-			ImageSource source = ImageSource.FromResource(file, typeof(ShellNavBar).GetTypeInfo().Assembly);
-			bool ret = await _menu.LoadFromImageSourceAsync(source);
+			var path = Assembly.GetExecutingAssembly().GetManifestResourceStream(file);
+			_menu.Load(path);
 		}
 
 		void OnMenuClicked(object sender, EventArgs e)
@@ -256,8 +265,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			int titleLeftMargin = 40;
 			int titleViewTopMargin = 40;
 
-			_menu.Move(e.Geometry.X + menuMargin, e.Geometry.Y + (e.Geometry.Height - menuSize) / 2);
-			_menu.Resize(menuSize, menuSize);
+			_menuButton.Move(e.Geometry.X + menuMargin, e.Geometry.Y + (e.Geometry.Height - menuSize) / 2);
+			_menuButton.Resize(menuSize, menuSize);
 
 			if (_searchHandler != null)
 			{
