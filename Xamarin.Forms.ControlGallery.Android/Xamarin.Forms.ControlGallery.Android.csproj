@@ -108,6 +108,7 @@
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="Tests\CollectionViewTests.cs" />
     <Compile Include="Tests\Issues.cs" />
+    <Compile Include="Tests\TestingPlatformService.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="PreApplicationClassActivity.cs" />
     <Compile Include="Properties\MapsKey.cs" />

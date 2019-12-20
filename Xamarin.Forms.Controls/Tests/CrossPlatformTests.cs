@@ -5,6 +5,16 @@ namespace Xamarin.Forms.Controls.Tests
 	[TestFixture]
 	public class CrossPlatformTests
 	{
+		ITestingPlatformService _testingPlatformService;
+		ITestingPlatformService TestingPlatform
+		{
+			get 
+			{
+				return _testingPlatformService = _testingPlatformService 
+					?? DependencyService.Resolve<ITestingPlatformService>();
+			}
+		}
+
 		[Test(Description = "Always Passes")]
 		public void PassingCrossPlatformTest()
 		{
@@ -42,6 +52,13 @@ namespace Xamarin.Forms.Controls.Tests
 			mdp.IsPresented = false;
 			mdp.IsPresented = true;
 			Assert.That(count, Is.EqualTo(3));
+		}
+
+		[Test(Description = "ButtonRenderer UpdateTextColor function crash")]
+		public void Bugzilla35738() 
+		{
+			var customButton = new Issues.CustomButton() { Text = "This is a custom button", TextColor = Color.Fuchsia };
+			TestingPlatform.CreateRenderer(customButton);
 		}
 	}
 }
