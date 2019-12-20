@@ -1,3 +1,4 @@
 <Project>
-  <Import Project="../UWP.Build.props" />
+    <Import Project="../Directory.Build.props" />
+    <Import Project="../UWP.Build.props" />
 </Project>
