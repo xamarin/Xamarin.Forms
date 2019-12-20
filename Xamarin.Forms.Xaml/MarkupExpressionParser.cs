@@ -38,6 +38,13 @@ namespace Xamarin.Forms.Xaml
 {
 	abstract class MarkupExpressionParser
 	{
+		protected struct Property
+		{
+			public string name;
+			public string strValue;
+			public object value;
+		}
+
 		public object ParseExpression(ref string expression, IServiceProvider serviceProvider)
 		{
 			if (serviceProvider == null)
@@ -46,7 +53,7 @@ namespace Xamarin.Forms.Xaml
 				return expression.Substring(2);
 
 			if (expression[expression.Length - 1] != '}')
-				throw new Exception("Expression must end with '}'");
+				throw new XamlParseException("Expression must end with '}'", serviceProvider);
 
 			int len;
 			string match;
@@ -54,7 +61,7 @@ namespace Xamarin.Forms.Xaml
 				return false;
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0)
-				throw new Exception("Expression did not end in '}'");
+				throw new XamlParseException("Expression did not end in '}'", serviceProvider);
 
 			var parser = Activator.CreateInstance(GetType()) as IExpressionParser;
 			return parser.Parse(match, ref expression, serviceProvider);
@@ -112,7 +119,7 @@ namespace Xamarin.Forms.Xaml
 			return true;
 		}
 
-		protected void HandleProperty(string prop, IServiceProvider serviceProvider, ref string remaining, bool isImplicit)
+		protected Property ParseProperty(string prop, IServiceProvider serviceProvider, ref string remaining, bool isImplicit)
 		{
 			char next;
 			object value = null;
@@ -120,8 +127,7 @@ namespace Xamarin.Forms.Xaml
 
 			if (isImplicit)
 			{
-				SetPropertyValue(null, prop, null, serviceProvider);
-				return;
+				return new Property { name = null, strValue = prop, value = null };
 			}
 			remaining = remaining.TrimStart();
 			if (remaining.StartsWith("{", StringComparison.Ordinal))
@@ -136,15 +142,17 @@ namespace Xamarin.Forms.Xaml
 
 				str_value = value as string;
 			}
-			else
-				str_value = GetNextPiece(ref remaining, out next);
+			else {
+				str_value = GetNextPiece(serviceProvider, ref remaining, out next);
+				if (str_value == null) {
+					throw new XamlParseException($"No value found for property '{prop}' in markup expression", serviceProvider);
+				}
+			}
 
-			SetPropertyValue(prop, str_value, value, serviceProvider);
+			return new Property { name = prop, strValue = str_value, value = value };
 		}
 
-		protected abstract void SetPropertyValue(string prop, string strValue, object value, IServiceProvider serviceProvider);
-
-		protected string GetNextPiece(ref string remaining, out char next)
+		protected string GetNextPiece(IServiceProvider serviceProvider, ref string remaining, out char next)
 		{
 			bool inString = false;
 			int end = 0;
@@ -193,10 +201,10 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			if (inString && end == remaining.Length)
-				throw new Exception("Unterminated quoted string");
+				throw new XamlParseException("Unterminated quoted string", serviceProvider);
 
 			if (end == remaining.Length && !remaining.EndsWith("}", StringComparison.Ordinal))
-				throw new Exception("Expression did not end with '}'");
+				throw new XamlParseException("Expression did not end with '}'", serviceProvider);
 
 			if (end == 0)
 			{
@@ -224,6 +232,16 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			return piece.ToString();
+		}
+
+		protected static (string, string) ParseName(string name)
+		{
+			var split = name.Split(':');
+
+			if (split.Length > 2)
+				throw new ArgumentException();
+
+			return split.Length == 2 ? (split[0], split[1]) : ("", split[0]);
 		}
 	}
 }
