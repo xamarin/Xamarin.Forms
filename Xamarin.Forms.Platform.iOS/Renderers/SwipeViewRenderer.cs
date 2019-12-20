@@ -131,9 +131,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				BackgroundColor = Element.BackgroundColor.ToUIColor();
 
-				if (_contentView != null && Element.Content == null && HasSwipeItems())
+				if (_contentView != null && Element.Content == null)
 					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			}
+			else
+				BackgroundColor = UIColor.SystemBackgroundColor;
+
+			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
+				_contentView.BackgroundColor = UIColor.SystemBackgroundColor;
 		}
 
 		protected override void Dispose(bool disposing)
