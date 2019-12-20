@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		Native.Label _title = null;
 		Native.SearchBar _nativeSearchHandler = null;
 		EvasObject _nativeTitleView = null;
-		ShellSectionNavigation _shellSectionNavigation = null;
 
 		SearchHandler _searchHandler = null;
 		View _titleView = null;
@@ -29,10 +28,9 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		bool _hasBackButton = false;
 
-		public ShellNavBar(IFlyoutController flyoutController, ShellSectionNavigation shellSectionNavigation) : base(Forms.NativeParent)
+		public ShellNavBar(IFlyoutController flyoutController) : base(Forms.NativeParent)
 		{
 			_flyoutController = flyoutController;
-			_shellSectionNavigation = shellSectionNavigation;
 
 			_menu = new Native.Image(Forms.NativeParent);
 			_menu.Clicked += OnMenuClicked;
@@ -180,7 +178,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			else if (_hasBackButton)
 			{
-				_shellSectionNavigation.PopRequest(this, new Internals.NavigationRequestedEventArgs(_page, false));
+				Shell.Current.CurrentItem.Navigation.PopAsync();
 			}
 			else
 			{
