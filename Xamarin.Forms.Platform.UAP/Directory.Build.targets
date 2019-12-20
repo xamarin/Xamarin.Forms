@@ -1,1 +1,3 @@
-<Import Project="../UWP.build.targets" />
+<Project>
+  <Import Project="../UWP.Build.targets" />
+</Project>
