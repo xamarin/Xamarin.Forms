@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Controls.Tests
 		[Test(Description = "ButtonRenderer UpdateTextColor function crash")]
 		public void Bugzilla35738() 
 		{
-			var customButton = new Issues.CustomButton() { Text = "This is a custom button", TextColor = Color.Fuchsia };
+			var customButton = new TestClasses.CustomButton() { Text = "This is a custom button", TextColor = Color.Fuchsia };
 			TestingPlatform.CreateRenderer(customButton);
 		}
 	}
