@@ -24,6 +24,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		int _finishedAssemblyCount = 0;
 
+		readonly PlatformTestRunner _runner = new PlatformTestRunner();
+
 		public PlatformTestsConsole()
 		{
 			InitializeComponent();
@@ -33,17 +35,37 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			MessagingCenter.Subscribe<ITestResult>(this, "TestFinished", TestFinished);
 
 			MessagingCenter.Subscribe<Exception>(this, "TestRunnerError", OutputTestRunnerError);
+
+			Rerun.Clicked += RerunClicked;
+		}
+
+		async void RerunClicked(object sender, EventArgs e)
+		{
+			await Device.InvokeOnMainThreadAsync(() => {
+				Status.Text = "Running...";
+				Results.Children.Clear();
+				Rerun.IsEnabled = false;
+			});
+
+			await Task.Delay(50);
+
+			await Run().ConfigureAwait(false);
 		}
 
 		protected override async void OnAppearing()
 		{
 			base.OnAppearing();
+			await Run().ConfigureAwait(false);
+		}
 
-			// Only want to run a subset of tests? Create a filter and pass it into tests.Run()
+		async Task Run() 
+		{
+			_finishedAssemblyCount = 0;
+
+			// Only want to run a subset of tests? Create a filter and pass it into _runner.Run()
 			//var filter = new TestNameContainsFilter("Bugzilla");
-			
-			var tests = new PlatformTestRunner();
-			await Task.Run(() => tests.Run()).ConfigureAwait(false);
+
+			await Task.Run(() => _runner.Run()).ConfigureAwait(false);
 		}
 
 		void DisplayOverallResult()
@@ -64,6 +86,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 					Status.Text = SuccessText;
 					Status.TextColor = _successColor;
 				}
+
+				Rerun.IsEnabled = true;
 			});
 		}
 

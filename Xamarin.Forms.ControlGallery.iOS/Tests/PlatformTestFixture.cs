@@ -14,8 +14,28 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		protected UILabel GetNativeControl(Label label)
 		{
 			var renderer = GetRenderer(label);
-			var viewRenderer = renderer.NativeView as ViewRenderer<Label, UILabel>;
+			var viewRenderer = renderer.NativeView as LabelRenderer;
 			return viewRenderer.Control;
+		}
+
+		protected UITextField GetNativeControl(Entry entry)
+		{
+			var renderer = GetRenderer(entry);
+			var viewRenderer = renderer.NativeView as EntryRenderer;
+			return viewRenderer.Control;
+		}
+
+		protected UITextView GetNativeControl(Editor editor)
+		{
+			var renderer = GetRenderer(editor);
+			var viewRenderer = renderer.NativeView as EditorRenderer;
+			return viewRenderer.Control;
+		}
+
+		protected UIView GetNativeControl(BoxView boxView)
+		{
+			var renderer = GetRenderer(boxView);
+			return renderer.NativeView as BoxRenderer;
 		}
 	}
 }
