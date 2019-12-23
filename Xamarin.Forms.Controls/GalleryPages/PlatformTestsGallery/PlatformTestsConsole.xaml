@@ -7,7 +7,15 @@
              x:Class="Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery.PlatformTestsConsole">
     <ContentPage.Content>
         <StackLayout>
-            <Label x:Name="Status" Text="Running Tests..."/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="Status" Text="Running Tests..." VerticalTextAlignment="Center"/>
+                <Button Grid.Column="1" Text="Run Again" x:Name="Rerun" IsEnabled="False"/>
+            </Grid>
+            
             <ScrollView>
                 <StackLayout x:Name="Results">
                     
