@@ -22,7 +22,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 	public class BackgroundColorTests : PlatformTestFixture 
 	{
 		[Test(Description = "Label background color should match renderer background")]
-		public void LabelBackgroundMatchesRendererBackground() 
+		public void LabelBackgroundColorConsistent() 
 		{
 			var label = new Label { Text = "foo", BackgroundColor = Color.AliceBlue };
 			using (var renderer = GetRenderer(label))
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		}
 
 		[Test(Description = "Entry background color should match renderer background")]
-		public void EntryBackgroundMatchesRendererBackground()
+		public void EntryBackgroundColorConsistent()
 		{
 			var entry = new Entry { Text = "foo", BackgroundColor = Color.AliceBlue };
 			using (var uiTextField = GetNativeControl(entry))
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		}
 
 		[Test(Description = "Editor background color should match renderer background")]
-		public void EditorBackgroundMatchesRendererBackground()
+		public void EditorBackgroundColorConsistent()
 		{
 			var editor = new Editor { Text = "foo", BackgroundColor = Color.AliceBlue };
 			using (var uiTextField = GetNativeControl(editor))
@@ -54,18 +54,15 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			}
 		}
 
-		//[Test(Description = "BoxView background color should match renderer background")]
-		//public void BoxViewBackgroundMatchesRendererBackground()
-		//{
-		//	var boxView = new BoxView { BackgroundColor = Color.AliceBlue };
-		//	using (var uiview = GetNativeControl(boxView))
-		//	{
-		//		var expectedColor = boxView.BackgroundColor.ToUIColor();
-
-		//		// TODO BackgroundColor isn't a thing for BoxView, need to get a pixel at a location
-
-		//		Assert.That(uiview.BackgroundColor, Is.EqualTo(expectedColor));
-		//	}
-		//}
+		[Test(Description = "Button background color should match renderer background")]
+		public void ButtonBackgroundColorConsistent()
+		{
+			var button = new Button { Text = "foo", BackgroundColor = Color.AliceBlue };
+			using (var uiButton = GetNativeControl(button))
+			{
+				var expectedColor = button.BackgroundColor.ToUIColor();
+				Assert.That(uiButton.BackgroundColor, Is.EqualTo(expectedColor));
+			}
+		}
 	}
 }
