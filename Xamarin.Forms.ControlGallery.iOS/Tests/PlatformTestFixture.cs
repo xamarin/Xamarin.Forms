@@ -32,10 +32,11 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			return viewRenderer.Control;
 		}
 
-		protected UIView GetNativeControl(BoxView boxView)
+		protected UIButton GetNativeControl(Button button)
 		{
-			var renderer = GetRenderer(boxView);
-			return renderer.NativeView as BoxRenderer;
+			var renderer = GetRenderer(button);
+			var viewRenderer = renderer.NativeView as ButtonRenderer;
+			return viewRenderer.Control;
 		}
 	}
 }

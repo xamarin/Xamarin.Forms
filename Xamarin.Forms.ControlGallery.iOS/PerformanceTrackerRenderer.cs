@@ -327,7 +327,11 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			_watcher.Dispose();
+			if (disposing)
+			{
+				_watcher.Dispose();
+			}
+
 			base.Dispose(disposing);
 		}
 	}
