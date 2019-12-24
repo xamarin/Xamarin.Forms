@@ -58,12 +58,12 @@ namespace Xamarin.Forms.Controls
 			});
 			tb5.AutomationId = "toolbaritem_secondary5";
 
-			var tb6 = new ToolbarItem("tb6", "", () =>
+			var tb7 = new ToolbarItem("tb7", "", () =>
 			{
 				tb1.IsVisible = !tb1.IsVisible;
 				tb5.IsVisible = !tb5.IsVisible;
 			}, ToolbarItemOrder.Secondary);
-			tb6.AutomationId = "toolbaritem_secondary6";
+			tb7.AutomationId = "toolbaritem_secondary7";
 
 			ToolbarItems.Add(tb1);
 			ToolbarItems.Add(tb2);
@@ -71,6 +71,7 @@ namespace Xamarin.Forms.Controls
 			ToolbarItems.Add(tb4);
 			ToolbarItems.Add(tb5);
 			ToolbarItems.Add(tb6);
+			ToolbarItems.Add(tb7);
 
 			Content = new StackLayout
 			{
