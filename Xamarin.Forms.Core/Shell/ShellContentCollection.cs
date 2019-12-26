@@ -30,8 +30,6 @@ namespace Xamarin.Forms
 			{
 				foreach (ShellContent element in e.NewItems)
 				{
-					element.PropertyChanged += OnElementPropertyChanged;
-
 					if (element is IShellContentController controller)
 						controller.IsPageVisibleChanged += OnIsPageVisibleChanged;
 					CheckVisibility(element);
@@ -42,10 +40,6 @@ namespace Xamarin.Forms
 			{
 				foreach (ShellContent element in e.OldItems)
 				{
-					element.PropertyChanged -= OnElementPropertyChanged;
-					if (element.IsVisible)
-						_visibleContents.Remove(element);
-
 					if (element is IShellContentController controller)
 						controller.IsPageVisibleChanged -= OnIsPageVisibleChanged;
 				}
@@ -57,15 +51,9 @@ namespace Xamarin.Forms
 			CheckVisibility((ShellContent)sender);
 		}
 
-		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if(e.PropertyName == BaseShellItem.IsVisibleProperty.PropertyName)
-				CheckVisibility((ShellContent)sender);
-		}
-
 		void CheckVisibility(ShellContent shellContent)
 		{
-			if (shellContent.IsVisible && shellContent is IShellContentController controller)
+			if (shellContent is IShellContentController controller)
 			{
 				// Assume incoming page will be visible
 				if (controller.Page == null)

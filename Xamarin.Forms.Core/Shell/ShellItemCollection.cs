@@ -49,7 +49,6 @@ namespace Xamarin.Forms
 			{
 				foreach (ShellItem element in e.NewItems)
 				{
-					element.PropertyChanged += OnElementPropertyChanged;
 					if (element is IShellItemController controller)
 						controller.ItemsCollectionChanged += OnShellItemControllerItemsCollectionChanged;
 
@@ -61,7 +60,6 @@ namespace Xamarin.Forms
 			{
 				foreach (ShellItem element in e.OldItems)
 				{
-					element.PropertyChanged -= OnElementPropertyChanged;
 					if (_visibleContents.Contains(element))
 						_visibleContents.Remove(element);
 
@@ -90,8 +88,7 @@ namespace Xamarin.Forms
 
 		void CheckVisibility(ShellItem shellItem)
 		{
-			if (shellItem.IsVisible &&
-				(
+			if ((
 					(shellItem is IShellItemController controller && controller.GetItems().Count > 0) ||
 					shellItem is IMenuItemController
 				)
@@ -101,8 +98,6 @@ namespace Xamarin.Forms
 				for (var i = 0; i < _inner.Count; i++)
 				{
 					var item = _inner[i];
-					if (!item.IsVisible)
-						continue;
 
 					if (item == shellItem)
 					{
@@ -116,15 +111,6 @@ namespace Xamarin.Forms
 			else if (_visibleContents.Contains(shellItem))
 			{
 				_visibleContents.Remove(shellItem);
-			}
-		}
-
-
-		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == BaseShellItem.IsVisibleProperty.PropertyName)
-			{
-				CheckVisibility((ShellItem)sender);
 			}
 		}
 

@@ -799,27 +799,18 @@ namespace Xamarin.Forms
 
 			foreach (var shellItem in ShellController.GetItems())
 			{
-				if (!shellItem.IsVisible)
-					continue;
-
 				if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 				{
 					IncrementGroup();
 
 					foreach (var shellSection in (shellItem as IShellItemController).GetItems())
 					{
-						if (!shellSection.IsVisible)
-							continue;
-
 						if (shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 						{
 							IncrementGroup();
 
 							foreach (var shellContent in shellSection.Items)
 							{
-								if (!shellContent.IsVisible)
-									continue;
-
 								currentGroup.Add(shellContent);
 								if (shellContent == shellSection.CurrentItem)
 								{

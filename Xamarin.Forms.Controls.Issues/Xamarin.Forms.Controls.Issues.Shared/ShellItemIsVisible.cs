@@ -89,16 +89,18 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			var item1 = AddContentPage(createPage("Item 1"));
-			var item2 = AddContentPage(createPage("Item 2"));
+			var pageItem1 = createPage("Item 1");
+			var item1 = AddContentPage(pageItem1);
+			var pageItem2 = createPage("Item 2");
+			var item2 = AddContentPage(pageItem2);
 
 			item1.Title = "Item1 Flyout";
 			item1.Route = "Item1";
 			item2.Title = "Item2 Flyout";
 			item2.Route = "Item2";
 
-			item1.SetBinding(ShellItem.IsVisibleProperty, "Item1");
-			item2.SetBinding(ShellItem.IsVisibleProperty, "Item2");
+			pageItem1.SetBinding(Page.IsVisibleProperty, "Item1");
+			pageItem2.SetBinding(Page.IsVisibleProperty, "Item2");
 
 			this.Items.Add(new MenuShellItem(new MenuItem()
 			{
