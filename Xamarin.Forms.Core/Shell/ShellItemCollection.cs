@@ -88,16 +88,15 @@ namespace Xamarin.Forms
 
 		void CheckVisibility(ShellItem shellItem)
 		{
-			if ((
-					(shellItem is IShellItemController controller && controller.GetItems().Count > 0) ||
-					shellItem is IMenuItemController
-				)
-			)
+			if (IsShellItemVisible(shellItem))
 			{
 				int visibleIndex = 0;
 				for (var i = 0; i < _inner.Count; i++)
 				{
 					var item = _inner[i];
+
+					if (!IsShellItemVisible(item))
+						continue;
 
 					if (item == shellItem)
 					{
@@ -112,7 +111,15 @@ namespace Xamarin.Forms
 			{
 				_visibleContents.Remove(shellItem);
 			}
+
+			bool IsShellItemVisible(ShellItem item)
+			{
+				return (item is IShellItemController itemController && itemController.GetItems().Count > 0) ||
+					item is IMenuItemController;
+			}
 		}
+
+		
 
 		public ShellItem this[int index]
 		{

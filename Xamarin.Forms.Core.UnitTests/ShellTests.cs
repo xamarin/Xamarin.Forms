@@ -804,27 +804,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		public async Task ShellItemNotVisible()
 		{
 			var shell = new Shell();
-			var item1 = CreateShellItem();
+			var item1 = CreateShellItem(new ContentPage() { IsVisible = false });
 			var item2 = CreateShellItem();
 
-			item1.IsVisible = false;
 			shell.Items.Add(item1);
 			shell.Items.Add(item2);
 
 			Assert.IsFalse(GetItems(shell).Contains(item1));
 			Assert.IsTrue(GetItems(shell).Contains(item2));
-		}
-
-		[Test]
-		public async Task ShellItemNotVisibleIfShellContentNotVisible()
-		{
-			var shell = new Shell();
-			var item1 = CreateShellItem();
-			//var item2 = CreateShellItem();
-
-			item1.Items[0].Items[0].IsVisible = false;
-
-
 		}
 	}
 }
