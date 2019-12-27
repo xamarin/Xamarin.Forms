@@ -264,7 +264,25 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual bool ManageNativeControlLifetime => true;
 
 		bool CheckFlagsForDisposed() => (_flags & VisualElementRendererFlags.Disposed) != 0;
-		bool IDisposedState.IsDisposed => CheckFlagsForDisposed();
+		bool IDisposedState.IsDisposed
+		{
+			get
+			{
+				if (CheckFlagsForDisposed())
+					return true;
+
+				if (ChildCount == 0)
+					return false;
+
+				for(int i = 0; i < ChildCount; i++)
+				{
+					if (GetChildAt(i).IsAlive())
+						return false;
+				}
+
+				return true;
+			}
+		}
 
 		protected override void Dispose(bool disposing)
 		{
