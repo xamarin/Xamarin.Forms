@@ -50,9 +50,9 @@ namespace Xamarin.Forms.Controls.Issues
 					yield return new AbsoluteLayout
 					{
 						Children = {
-							
+
 							WithBounds(new Image { Source = ImageSource.FromResource("coffee.png", System.Reflection.Assembly.GetCallingAssembly()) }, 23.6, 14.5, 14.9, 20.7),
-							
+
 							WithBounds(new Label { Text = item.ToString(), TextColor = Color.FromUint(0xff5a5a5a), FontSize = 10 }, 58, 18.2, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize)
 						},
 						HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -79,7 +79,8 @@ namespace Xamarin.Forms.Controls.Issues
 							return template;
 						}),
 						ItemsLayout = LinearItemsLayout.Vertical,
-						ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem
+						ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem,
+						AutomationId = "ScrollMe"
 					}
 				}
 			};
@@ -89,6 +90,13 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ScrollingQuicklyOnCollectionViewDoesntCrashOnDestroyedImage()
 		{
+			RunningApp.WaitForElement("ScrollMe");
+			RunningApp.ScrollDown("ScrollMe", ScrollStrategy.Gesture, swipeSpeed: 20000);
+			RunningApp.ScrollUp("ScrollMe", ScrollStrategy.Gesture, swipeSpeed: 20000);
+			RunningApp.ScrollDown("ScrollMe", ScrollStrategy.Gesture, swipeSpeed: 20000);
+			RunningApp.ScrollUp("ScrollMe", ScrollStrategy.Gesture, swipeSpeed: 20000);
+			RunningApp.ScrollDown("ScrollMe", ScrollStrategy.Gesture, swipeSpeed: 20000);
+			RunningApp.WaitForElement("ScrollMe");
 		}
 #endif
 	}
