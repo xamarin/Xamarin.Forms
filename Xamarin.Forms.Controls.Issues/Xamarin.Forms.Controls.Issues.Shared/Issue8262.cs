@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Children = {
 
-							WithBounds(new Image { Source = ImageSource.FromResource("coffee.png", System.Reflection.Assembly.GetCallingAssembly()) }, 23.6, 14.5, 14.9, 20.7),
+							WithBounds(new Image { Source = ImageSource.FromResource("Xamarin.Forms.Controls.GalleryPages.crimson.jpg", System.Reflection.Assembly.GetCallingAssembly()) }, 23.6, 14.5, 14.9, 20.7),
 
 							WithBounds(new Label { Text = item.ToString(), TextColor = Color.FromUint(0xff5a5a5a), FontSize = 10 }, 58, 18.2, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize)
 						},
@@ -61,6 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 					};
 				}
 			}
+
 			Content = new AbsoluteLayout
 			{
 				Children = {
