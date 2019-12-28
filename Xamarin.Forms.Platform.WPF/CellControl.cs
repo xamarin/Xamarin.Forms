@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Xamarin.Forms.Internals;
+using WSize = System.Windows.Size;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -66,6 +67,10 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				oldCell.PropertyChanged -= _propertyChangedHandler;
 				((ICellController)oldCell).SendDisappearing();
+				if (oldCell.Parent is ListView listView)
+				{
+					listView.ItemAppearing -= CellControl_ItemAppearing;
+				}
 			}
 
 			if (newCell != null)
@@ -80,13 +85,36 @@ namespace Xamarin.Forms.Platform.WPF
 				SetupContextMenu();
 
 				newCell.PropertyChanged += _propertyChangedHandler;
+				if (newCell.Parent is ListView listView)
+				{
+					listView.ItemAppearing += CellControl_ItemAppearing;
+				}
 			}
 			else
 				Content = null;
 		}
 
-		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+		void CellControl_ItemAppearing(object sender, ItemVisibilityEventArgs e)
 		{
+			var width = (Cell.Parent as ListView)?.Width ?? 0;
+			var height = Cell.RenderHeight;
+			if (width > 0 && height > 0)
+			{
+				CellLayoutContent(new WSize(width, height));
+			}
+		}
+
+		protected override WSize ArrangeOverride(WSize arrangeBounds)
+		{
+			CellLayoutContent(arrangeBounds);
+			return base.ArrangeOverride(arrangeBounds);
+		}
+
+		void CellLayoutContent(WSize size)
+		{
+			if (double.IsInfinity(size.Width) || double.IsInfinity(size.Height) || size.Width <= 0 || size.Height <= 0)
+				return;
+
 			if (Content is ViewCell vc)
 			{
 				if (vc.LogicalChildren != null && vc.LogicalChildren.Any())
@@ -95,12 +123,11 @@ namespace Xamarin.Forms.Platform.WPF
 					{
 						if (child is Layout layout)
 						{
-							layout.Layout(new Rectangle(layout.X, layout.Y, sizeInfo.NewSize.Width, sizeInfo.NewSize.Height));
+							layout.Layout(new Rectangle(layout.X, layout.Y, size.Width, size.Height));
 						}
 					}
 				}
 			}
-			base.OnRenderSizeChanged(sizeInfo);
 		}
 
 		void SetupContextMenu()
