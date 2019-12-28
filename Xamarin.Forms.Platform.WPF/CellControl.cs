@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Xamarin.Forms.Internals;
 using WSize = System.Windows.Size;
 
@@ -25,8 +21,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			Unloaded += (sender, args) =>
 			{
-				ICellController cell = DataContext as ICellController;
-				if (cell != null)
+				if (DataContext is ICellController cell)
 					cell.SendDisappearing();
 			};
 
@@ -59,24 +54,18 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void SetSource(object oldCellObj, object newCellObj)
 		{
-
 			var oldCell = oldCellObj as Cell;
 			var newCell = newCellObj as Cell;
 
 			if (oldCell != null)
 			{
 				oldCell.PropertyChanged -= _propertyChangedHandler;
+				oldCell.Appearing -= Cell_Appearing;
 				((ICellController)oldCell).SendDisappearing();
-				if (oldCell.Parent is ListView listView)
-				{
-					listView.ItemAppearing -= CellControl_ItemAppearing;
-				}
 			}
 
 			if (newCell != null)
 			{
-				((ICellController)newCell).SendAppearing();
-
 				if (oldCell == null || oldCell.GetType() != newCell.GetType())
 					ContentTemplate = GetTemplate(newCell);
 
@@ -85,23 +74,21 @@ namespace Xamarin.Forms.Platform.WPF
 				SetupContextMenu();
 
 				newCell.PropertyChanged += _propertyChangedHandler;
-				if (newCell.Parent is ListView listView)
-				{
-					listView.ItemAppearing += CellControl_ItemAppearing;
-				}
+				newCell.Appearing += Cell_Appearing;
+				((ICellController)newCell).SendAppearing();
 			}
 			else
 				Content = null;
 		}
 
-		void CellControl_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+		void Cell_Appearing(object sender, EventArgs e)
 		{
 			var width = (Cell.Parent as ListView)?.Width ?? 0;
-			var height = Cell.RenderHeight;
-			if (width > 0 && height > 0)
-			{
-				CellLayoutContent(new WSize(width, height));
-			}
+            var height = Cell.RenderHeight;
+            if (width > 0 && height > 0)
+            {
+                CellLayoutContent(new WSize(width, height));
+            }
 		}
 
 		protected override WSize ArrangeOverride(WSize arrangeBounds)
