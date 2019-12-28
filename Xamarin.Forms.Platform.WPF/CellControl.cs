@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (e.PropertyName == "HasContextActions")
 				SetupContextMenu();
 		}
-
+		
 		void SetSource(object oldCellObj, object newCellObj)
 		{
 			var oldCell = oldCellObj as Cell;
@@ -83,18 +83,13 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void Cell_Appearing(object sender, EventArgs e)
 		{
-			var width = (Cell.Parent as ListView)?.Width ?? 0;
-            var height = Cell.RenderHeight;
-            if (width > 0 && height > 0)
-            {
-                CellLayoutContent(new WSize(width, height));
-            }
+			CellLayoutContent(new WSize(ActualWidth, ActualHeight));
 		}
 
-		protected override WSize ArrangeOverride(WSize arrangeBounds)
+		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
 		{
-			CellLayoutContent(arrangeBounds);
-			return base.ArrangeOverride(arrangeBounds);
+			CellLayoutContent(sizeInfo.NewSize);
+			base.OnRenderSizeChanged(sizeInfo);
 		}
 
 		void CellLayoutContent(WSize size)
