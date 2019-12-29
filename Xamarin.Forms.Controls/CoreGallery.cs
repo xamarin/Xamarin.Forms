@@ -297,6 +297,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new RadioButtonGroupGalleryPage(), "RadioButton group Gallery - Legacy"),
 				new GalleryPageFactory(() => new RadioButtonCoreGalleryPage(), "RadioButton Gallery"),
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
+				new GalleryPageFactory(() => new ExpanderGallery(), "Expander Gallery"),
 				new GalleryPageFactory(() => new IndicatorsSample(), "Indicator Gallery"),
 				new GalleryPageFactory(() => new CarouselViewGallery(), "CarouselView Gallery"),
 				new GalleryPageFactory(() => new CarouselViewCoreGalleryPage(), "CarouselView Core Gallery"),

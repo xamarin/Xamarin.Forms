@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 		static readonly BindableProperty ExpanderLayoutProperty = BindableProperty.Create(nameof(ExpanderLayout), typeof(ExpanderStackLayout), typeof(Expander), default(ExpanderStackLayout), propertyChanged: TemplateUtilities.OnContentChanged);
 
 		public static readonly BindableProperty SpacingProperty = BindableProperty.Create(nameof(Spacing), typeof(double), typeof(Expander), 0d, propertyChanged: (bindable, oldvalue, newvalue)
-			=> ((Expander)bindable).OnSpacingChanged();
+			=> ((Expander)bindable).OnSpacingChanged());
 
 		public static readonly BindableProperty HeaderProperty = BindableProperty.Create(nameof(Header), typeof(View), typeof(Expander), default(View), propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetHeader((View)oldValue));
