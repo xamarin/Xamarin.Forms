@@ -12,7 +12,7 @@ namespace Xamarin.Forms
 
 		public event EventHandler Tapped;
 
-		static readonly BindableProperty ExpanderLayoutProperty = BindableProperty.Create(nameof(ExpanderLayout), typeof(ExpanderStackLayout), typeof(Expander), default(ExpanderStackLayout), propertyChanged: TemplateUtilities.OnContentChanged);
+		static readonly BindableProperty ExpanderLayoutProperty = BindableProperty.Create(nameof(ExpanderLayout), typeof(StackLayout), typeof(Expander), default(StackLayout), propertyChanged: TemplateUtilities.OnContentChanged);
 
 		public static readonly BindableProperty SpacingProperty = BindableProperty.Create(nameof(Spacing), typeof(double), typeof(Expander), 0d, propertyChanged: (bindable, oldvalue, newvalue)
 			=> ((Expander)bindable).OnSpacingChanged());
@@ -56,13 +56,13 @@ namespace Xamarin.Forms
 
 		public Expander()
 		{
-			ExpanderLayout = new ExpanderStackLayout { Spacing = Spacing };
+			ExpanderLayout = new StackLayout { Spacing = Spacing };
 			ForceUpdateSizeCommand = new Command(ForceUpdateSize);
 		}
 
-		internal ExpanderStackLayout ExpanderLayout
+		internal StackLayout ExpanderLayout
 		{
-			get => (ExpanderStackLayout)GetValue(ExpanderLayoutProperty);
+			get => (StackLayout)GetValue(ExpanderLayoutProperty);
 			set => SetValue(ExpanderLayoutProperty, value);
 		}
 
