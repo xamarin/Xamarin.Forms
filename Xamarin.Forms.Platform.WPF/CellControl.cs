@@ -8,6 +8,8 @@ using WSize = System.Windows.Size;
 
 namespace Xamarin.Forms.Platform.WPF
 {
+	using System.Windows.Media;
+
 	public class CellControl : ContentControl
 	{
 		public static readonly DependencyProperty CellProperty = DependencyProperty.Register("Cell", typeof(object), typeof(CellControl),
@@ -51,7 +53,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (e.PropertyName == "HasContextActions")
 				SetupContextMenu();
 		}
-		
+
 		void SetSource(object oldCellObj, object newCellObj)
 		{
 			var oldCell = oldCellObj as Cell;
@@ -90,6 +92,30 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			CellLayoutContent(sizeInfo.NewSize);
 			base.OnRenderSizeChanged(sizeInfo);
+			if (sizeInfo.WidthChanged)
+				InvalidateMeasure();
+		}
+		
+		protected override WSize MeasureOverride(WSize constraint)
+		{
+			constraint.Width = ActualWidth;
+			var size = new WSize();
+			UIElement child = GetFirstVisualChild();
+			if (child != null)
+			{
+				child.Measure(constraint);
+				size.Height = child.DesiredSize.Height;
+			}
+
+			return size;
+		}
+
+		UIElement GetFirstVisualChild()
+		{
+			if (VisualChildrenCount <= 0)
+				return null;
+
+			return GetVisualChild(0) as UIElement;
 		}
 
 		void CellLayoutContent(WSize size)
