@@ -5,7 +5,7 @@ using static System.Math;
 namespace Xamarin.Forms
 {
 	[ContentProperty(nameof(ExpanderLayout))]
-	public class Expander: TemplatedView
+	public class Expander : TemplatedView
 	{
 		const string ExpandAnimationName = nameof(ExpandAnimationName);
 		const uint DefaultAnimationLength = 250;
