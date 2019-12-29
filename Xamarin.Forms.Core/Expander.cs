@@ -4,7 +4,7 @@ using static System.Math;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty(nameof(ExpanderLayout))]
+	[ContentProperty(nameof(Content))]
 	public class Expander : TemplatedView
 	{
 		const string ExpandAnimationName = nameof(ExpandAnimationName);
@@ -12,10 +12,8 @@ namespace Xamarin.Forms
 
 		public event EventHandler Tapped;
 
-		static readonly BindableProperty ExpanderLayoutProperty = BindableProperty.Create(nameof(ExpanderLayout), typeof(StackLayout), typeof(Expander), default(StackLayout), propertyChanged: TemplateUtilities.OnContentChanged);
-
 		public static readonly BindableProperty SpacingProperty = BindableProperty.Create(nameof(Spacing), typeof(double), typeof(Expander), 0d, propertyChanged: (bindable, oldvalue, newvalue)
-			=> ((Expander)bindable).OnSpacingChanged());
+			=> ((Expander)bindable).ExpanderLayout.Spacing = (double)newvalue);
 
 		public static readonly BindableProperty HeaderProperty = BindableProperty.Create(nameof(Header), typeof(View), typeof(Expander), default(View), propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetHeader((View)oldValue));
@@ -58,13 +56,10 @@ namespace Xamarin.Forms
 		{
 			ExpanderLayout = new StackLayout { Spacing = Spacing };
 			ForceUpdateSizeCommand = new Command(ForceUpdateSize);
+			InternalChildren.Add(ExpanderLayout);
 		}
 
-		internal StackLayout ExpanderLayout
-		{
-			get => (StackLayout)GetValue(ExpanderLayoutProperty);
-			set => SetValue(ExpanderLayoutProperty, value);
-		}
+		private StackLayout ExpanderLayout { get; }
 
 		public double Spacing
 		{
@@ -165,14 +160,6 @@ namespace Xamarin.Forms
 				ForceUpdateSize();
 			}
 			_previousWidth = width;
-		}
-
-		void OnSpacingChanged()
-		{
-			if(ExpanderLayout != null)
-			{
-				ExpanderLayout.Spacing = Spacing;
-			}
 		}
 
 		void OnIsExpandedChanged()

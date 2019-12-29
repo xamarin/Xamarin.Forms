@@ -1,24 +1,37 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.ExpanderGallery">
-    <StackLayout Padding="30, 50">
-        <Expander>
-            <Expander.Header>
-                <Label Text="Expander Level 1" FontSize="30" FontAttributes="Bold"/>
-            </Expander.Header>
-            <Expander.Content>
-                <Expander>
-                    <Expander.Header>
-                        <Label Text="Expander Level 2" FontSize="25" FontAttributes="Bold"/>
-                    </Expander.Header>
-                    <Expander.Content>
-                        <StackLayout BackgroundColor="Red">
-                            <Label Text="Hi, I am Red" FontSize="40" />
-                            <BoxView HeightRequest="50" Color="Yellow" />
-                            <Label Text="There is an yellow box above" FontSize="40"/>
-                        </StackLayout>
-                    </Expander.Content>
-                </Expander>
-            </Expander.Content>
-        </Expander>
-    </StackLayout>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.ExpanderGallery"
+             x:Name="page">
+    <ScrollView Padding="30, 20">
+        <StackLayout BindableLayout.ItemsSource="{Binding Path=Items, Source={x:Reference page}}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Label Text="{Binding .}" FontSize="20" /> 
+                        <Expander ExpandAnimationEasing="{x:Static Easing.CubicIn}"
+                                  CollapseAnimationEasing="{x:Static Easing.CubicOut}">
+                            <Expander.Header>
+                                <Label Text="Expander Level 1" FontSize="35" FontAttributes="Bold"/>
+                            </Expander.Header>
+                            <Expander>
+                                <Expander.Header>
+                                    <Label Text="Expander Level 2" FontSize="30" FontAttributes="Bold"/>
+                                </Expander.Header>
+                                <Expander.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackLayout BackgroundColor="Red">
+                                            <Label Text="Hi, I am Red" FontSize="40" />
+                                            <BoxView HeightRequest="50" Color="Yellow" />
+                                            <Label Text="There is an yellow box above" FontSize="40"/>
+                                        </StackLayout>
+                                    </DataTemplate>
+                                </Expander.ContentTemplate>
+                            </Expander>
+                        </Expander>
+                    </StackLayout>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </StackLayout>
+    </ScrollView>
 </ContentPage>

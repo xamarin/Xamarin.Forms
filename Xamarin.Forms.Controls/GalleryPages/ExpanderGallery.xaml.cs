@@ -11,5 +11,14 @@ namespace Xamarin.Forms.Controls
 		{
 			InitializeComponent();
 		}
+
+		public string[] Items { get; } = new string[]
+		{
+			"The First",
+			"The Second",
+			"The Third",
+			"The Fourth",
+			"The Fifth"
+		};
 	}
 }
