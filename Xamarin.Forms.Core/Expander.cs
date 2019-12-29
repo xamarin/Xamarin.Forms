@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 			InternalChildren.Add(ExpanderLayout);
 		}
 
-		private StackLayout ExpanderLayout { get; }
+		StackLayout ExpanderLayout { get; }
 
 		public double Spacing
 		{
