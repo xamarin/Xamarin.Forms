@@ -176,9 +176,7 @@ namespace Xamarin.Forms
 
 
 			_startHeight = Content.IsVisible
-				? Max(Content.Height - (Content is Layout l
-									? l.Padding.Top + l.Padding.Bottom
-									: 0), 0)
+				? Max(Content.Height - (Content is Layout l ? l.Padding.Top + l.Padding.Bottom : 0), 0)
 				: 0;
 
 			if (IsExpanded)
@@ -252,9 +250,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void SetContent(bool forceUpdate)
+		void SetContent(bool isForceUpdate)
 		{
-			if (IsExpanded && (Content == null || forceUpdate))
+			if (IsExpanded && (Content == null || isForceUpdate))
 			{
 				_shouldIgnoreContentSetting = true;
 				Content = CreateContent() ?? Content;
@@ -341,9 +339,9 @@ namespace Xamarin.Forms
 			}
 
 			new Animation(v => Content.HeightRequest = v, _startHeight, _endHeight)
-				.Commit(Content, ExpandAnimationName, 16, length, easing, (value, interrupted) =>
+				.Commit(Content, ExpandAnimationName, 16, length, easing, (value, isInterrupted) =>
 				{
-					if (interrupted)
+					if (isInterrupted)
 					{
 						return;
 					}
