@@ -8,30 +8,31 @@ namespace Xamarin.Forms
 	public class Expander: TemplatedView
 	{
 		const string ExpandAnimationName = nameof(ExpandAnimationName);
+		const uint DefaultAnimationLength = 250;
 
 		public event EventHandler Tapped;
 
-		static readonly BindableProperty ExpanderLayoutProperty = BindableProperty.Create(nameof(ExpanderLayout), typeof(Layout<View>), typeof(Expander), null, propertyChanged: TemplateUtilities.OnContentChanged);
+		static readonly BindableProperty ExpanderLayoutProperty = BindableProperty.Create(nameof(ExpanderLayout), typeof(Layout<View>), typeof(Expander), default(Layout<View>), propertyChanged: TemplateUtilities.OnContentChanged);
 
-		public static readonly BindableProperty HeaderProperty = BindableProperty.Create(nameof(Header), typeof(View), typeof(Expander), null, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty HeaderProperty = BindableProperty.Create(nameof(Header), typeof(View), typeof(Expander), default(View), propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetHeader((View)oldValue));
 
-		public static readonly BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(View), typeof(Expander), null, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(View), typeof(Expander), default(View), propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetContent((View)oldValue, (View)newValue));
 
-		public static readonly BindableProperty ContentTemplateProperty = BindableProperty.Create(nameof(ContentTemplate), typeof(DataTemplate), typeof(Expander), null, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty ContentTemplateProperty = BindableProperty.Create(nameof(ContentTemplate), typeof(DataTemplate), typeof(Expander), default(DataTemplate), propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetContent(true));
 
 		public static readonly BindableProperty IsExpandedProperty = BindableProperty.Create(nameof(IsExpanded), typeof(bool), typeof(Expander), default(bool), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetContent(false));
 
-		public static readonly BindableProperty ExpandAnimationLengthProperty = BindableProperty.Create(nameof(ExpandAnimationLength), typeof(uint), typeof(Expander), 250u);
+		public static readonly BindableProperty ExpandAnimationLengthProperty = BindableProperty.Create(nameof(ExpandAnimationLength), typeof(uint), typeof(Expander), DefaultAnimationLength);
 
-		public static readonly BindableProperty CollapseAnimationLengthProperty = BindableProperty.Create(nameof(CollapseAnimationLength), typeof(uint), typeof(Expander), 250u);
+		public static readonly BindableProperty CollapseAnimationLengthProperty = BindableProperty.Create(nameof(CollapseAnimationLength), typeof(uint), typeof(Expander), DefaultAnimationLength);
 
-		public static readonly BindableProperty ExpandAnimationEasingProperty = BindableProperty.Create(nameof(ExpandAnimationEasing), typeof(Easing), typeof(Expander), Easing.SinOut);
+		public static readonly BindableProperty ExpandAnimationEasingProperty = BindableProperty.Create(nameof(ExpandAnimationEasing), typeof(Easing), typeof(Expander), default(Easing));
 
-		public static readonly BindableProperty CollapseAnimationEasingProperty = BindableProperty.Create(nameof(CollapseAnimationEasing), typeof(Easing), typeof(Expander), Easing.SinIn);
+		public static readonly BindableProperty CollapseAnimationEasingProperty = BindableProperty.Create(nameof(CollapseAnimationEasing), typeof(Easing), typeof(Expander), default(Easing));
 
 		public static readonly BindableProperty StateProperty = BindableProperty.Create(nameof(State), typeof(ExpanderState), typeof(Expander), default(ExpanderState), BindingMode.OneWayToSource);
 
@@ -42,11 +43,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ForceUpdateSizeCommandProperty = BindableProperty.Create(nameof(ForceUpdateSizeCommand), typeof(ICommand), typeof(Expander), default(ICommand), BindingMode.OneWayToSource);
 
 		DataTemplate _previousTemplate;
-		bool _shouldIgnoreAnimation;
+		double _contentHeightRequest = -1;
 		double _lastVisibleHeight = -1;
 		double _previousWidth = -1;
 		double _startHeight;
 		double _endHeight;
+		bool _shouldIgnoreContentSetting;
+		bool _shouldIgnoreAnimation;
 
 		public Expander()
 		{
@@ -62,19 +65,19 @@ namespace Xamarin.Forms
 
 		public View Header
 		{
-			get => GetValue(HeaderProperty) as View;
+			get => (View)GetValue(HeaderProperty);
 			set => SetValue(HeaderProperty, value);
 		}
 
 		public View Content
 		{
-			get => GetValue(ContentProperty) as View;
+			get => (View)GetValue(ContentProperty);
 			set => SetValue(ContentProperty, value);
 		}
 
 		public DataTemplate ContentTemplate
 		{
-			get => GetValue(ContentTemplateProperty) as DataTemplate;
+			get => (DataTemplate)GetValue(ContentTemplateProperty);
 			set => SetValue(ContentTemplateProperty, value);
 		}
 
@@ -122,13 +125,13 @@ namespace Xamarin.Forms
 
 		public ICommand Command
 		{
-			get => GetValue(CommandProperty) as ICommand;
+			get => (ICommand)GetValue(CommandProperty);
 			set => SetValue(CommandProperty, value);
 		}
 
 		public ICommand ForceUpdateSizeCommand
 		{
-			get => GetValue(ForceUpdateSizeCommandProperty) as ICommand;
+			get => (ICommand)GetValue(ForceUpdateSizeCommandProperty);
 			set => SetValue(ForceUpdateSizeCommandProperty, value);
 		}
 
@@ -155,8 +158,6 @@ namespace Xamarin.Forms
 			_previousWidth = width;
 		}
 
-		private double hreq = -1;
-
 		void OnIsExpandedChanged()
 		{
 			if (Content == null || (!IsExpanded && !Content.IsVisible))
@@ -166,7 +167,7 @@ namespace Xamarin.Forms
 
 			Content.SizeChanged -= OnContentSizeChanged;
 
-			var isExpanding = Content.AnimationIsRunning(ExpandAnimationName);
+			var isAnimationRunning = Content.AnimationIsRunning(ExpandAnimationName);
 			Content.AbortAnimation(ExpandAnimationName);
 
 
@@ -181,8 +182,8 @@ namespace Xamarin.Forms
 				Content.IsVisible = true;
 			}
 
-			_endHeight = hreq >= 0
-				? hreq
+			_endHeight = _contentHeightRequest >= 0
+				? _contentHeightRequest
 				: _lastVisibleHeight;
 
 			var shouldInvokeAnimation = true;
@@ -192,19 +193,19 @@ namespace Xamarin.Forms
 				if (_endHeight <= 0)
 				{
 					shouldInvokeAnimation = false;
-					Content.HeightRequest = -1;
 					Content.SizeChanged += OnContentSizeChanged;
+					Content.HeightRequest = -1;
 				}
 			}
 			else
 			{
-				_lastVisibleHeight = _startHeight = hreq >= 0
-						? hreq
-							: !isExpanding
-								 ? Content.Height - (Content is Layout lay
-									? lay.Padding.Top + lay.Padding.Bottom
-									: 0)
-								  : _lastVisibleHeight;
+				_lastVisibleHeight = _startHeight = _contentHeightRequest >= 0
+						? _contentHeightRequest
+						: !isAnimationRunning
+							? Content.Height - (Content is Layout layout
+								? layout.Padding.Top + layout.Padding.Bottom
+								: 0)
+							: _lastVisibleHeight;
 				_endHeight = 0;
 			}
 
@@ -230,14 +231,14 @@ namespace Xamarin.Forms
 					CommandParameter = this,
 					Command = new Command(parameter =>
 					{
-						var view = (parameter as View).Parent;
-						while (view != null && !(view is Page))
+						var parent = (parameter as View).Parent;
+						while (parent != null && !(parent is Page))
 						{
-							if (view is Expander ancestorExpandable)
+							if (parent is Expander ancestorExpander)
 							{
-								ancestorExpandable.Content.HeightRequest = -1;
+								ancestorExpander.Content.HeightRequest = -1;
 							}
-							view = view.Parent;
+							parent = parent.Parent;
 						}
 						Command?.Execute(CommandParameter);
 						Tapped?.Invoke(this, EventArgs.Empty);
@@ -251,7 +252,9 @@ namespace Xamarin.Forms
 		{
 			if (IsExpanded && (Content == null || forceUpdate))
 			{
+				_shouldIgnoreContentSetting = true;
 				Content = CreateContent() ?? Content;
+				_shouldIgnoreContentSetting = false;
 			}
 			OnIsExpandedChanged();
 		}
@@ -269,11 +272,16 @@ namespace Xamarin.Forms
 				{
 					layout.IsClippedToBounds = true;
 				}
+				_contentHeightRequest = newContent.HeightRequest;
 				newContent.HeightRequest = 0;
 				newContent.IsVisible = false;
 				ExpanderLayout.Children.Add(newContent);
 			}
-			SetContent(true);
+
+			if (!_shouldIgnoreContentSetting)
+			{
+				SetContent(true);
+			}
 		}
 
 		View CreateContent()
@@ -288,7 +296,7 @@ namespace Xamarin.Forms
 				return null;
 			}
 			_previousTemplate = template;
-			return template?.CreateContent() as View;
+			return (View)template?.CreateContent();
 		}
 
 		void OnContentSizeChanged(object sender, EventArgs e)
