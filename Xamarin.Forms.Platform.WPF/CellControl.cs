@@ -8,8 +8,6 @@ using WSize = System.Windows.Size;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	using System.Windows.Media;
-
 	public class CellControl : ContentControl
 	{
 		public static readonly DependencyProperty CellProperty = DependencyProperty.Register("Cell", typeof(object), typeof(CellControl),
@@ -68,6 +66,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (newCell != null)
 			{
+				newCell.Appearing += Cell_Appearing;
+				((ICellController)newCell).SendAppearing();
 				if (oldCell == null || oldCell.GetType() != newCell.GetType())
 					ContentTemplate = GetTemplate(newCell);
 
@@ -76,8 +76,6 @@ namespace Xamarin.Forms.Platform.WPF
 				SetupContextMenu();
 
 				newCell.PropertyChanged += _propertyChangedHandler;
-				newCell.Appearing += Cell_Appearing;
-				((ICellController)newCell).SendAppearing();
 			}
 			else
 				Content = null;
