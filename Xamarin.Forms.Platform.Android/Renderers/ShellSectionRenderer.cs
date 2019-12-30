@@ -131,8 +131,9 @@ namespace Xamarin.Forms.Platform.Android
 			var shellSection = ShellSection;
 			if (shellSection == null)
 				return null;
+
 			if (shellSection.CurrentItem == null)
-				throw new ArgumentException("Active Shell Content not set. Have you added any Shell Content to your Shell?", nameof(ShellSection));
+				throw new InvalidOperationException($"No content found for active {shellSection}. Title: {shellSection.Title}. Route: {shellSection.Route}.");
 
 			var root = inflater.Inflate(Resource.Layout.RootLayout, null).JavaCast<CoordinatorLayout>();
 
