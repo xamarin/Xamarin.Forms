@@ -205,14 +205,13 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ElementPropertyChanged?.Invoke(this, changedProperty);
 
-			// TODO hartez 2018/10/24 10:41:55 If the ItemTemplate changes from set to null, we need to make sure to clear the recyclerview pool	
-
 			if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemsSourceProperty))
 			{
 				UpdateItemsSource();
 			}
 			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemTemplateProperty))
 			{
+				GetRecycledViewPool().Clear();
 				UpdateAdapter();
 			}
 			else if (changedProperty.Is(VisualElement.BackgroundColorProperty))
@@ -488,6 +487,15 @@ namespace Xamarin.Forms.Platform.Android
 					_emptyViewAdapter = new EmptyViewAdapter(ItemsView);
 				}
 
+				if (ItemsView is StructuredItemsView structuredItemsView)
+				{
+					_emptyViewAdapter.Header = structuredItemsView.Header;
+					_emptyViewAdapter.HeaderTemplate = structuredItemsView.HeaderTemplate;
+
+					_emptyViewAdapter.Footer = structuredItemsView.Footer;
+					_emptyViewAdapter.FooterTemplate = structuredItemsView.FooterTemplate;
+				}
+
 				_emptyViewAdapter.EmptyView = emptyView;
 				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
 
@@ -601,7 +609,16 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var showEmptyView = ItemsView?.EmptyView != null && ItemsViewAdapter.ItemCount == 0;
+			int itemCount = 0;
+			if(ItemsView is StructuredItemsView itemsView)
+			{
+				if (itemsView.Header != null || itemsView.HeaderTemplate != null)
+					itemCount++;
+				if (itemsView.Footer != null || itemsView.FooterTemplate != null)
+					itemCount++;
+			}
+   
+			var showEmptyView = ItemsView?.EmptyView != null && ItemsViewAdapter.ItemCount == itemCount;
 
 			var currentAdapter = GetAdapter();
 			if (showEmptyView && currentAdapter != _emptyViewAdapter)

@@ -47,15 +47,6 @@ namespace Xamarin.Forms
 			set { SetValue(IsBounceEnabledProperty, value); }
 		}
 
-		public static readonly BindableProperty NumberOfSideItemsProperty =
-			BindableProperty.Create(nameof(NumberOfSideItems), typeof(int), typeof(CarouselView), 0);
-
-		public int NumberOfSideItems
-		{
-			get { return (int)GetValue(NumberOfSideItemsProperty); }
-			set { SetValue(NumberOfSideItemsProperty, value); }
-		}
-
 		public static readonly BindableProperty IsSwipeEnabledProperty =
 			BindableProperty.Create(nameof(IsSwipeEnabled), typeof(bool), typeof(CarouselView), true);
 
@@ -160,6 +151,7 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(ItemsLayout), typeof(LinearItemsLayout), typeof(ItemsView),
 				LinearItemsLayout.CarouselDefault);
 
+		[TypeConverter(typeof(CarouselLayoutTypeConverter))]
 		public LinearItemsLayout ItemsLayout
 		{
 			get => (LinearItemsLayout)GetValue(ItemsLayoutProperty);
