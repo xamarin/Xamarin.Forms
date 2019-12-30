@@ -42,9 +42,8 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			page2.Content = new StackLayout()
+			var instructions = new StackLayout()
 			{
-				AutomationId = LayoutId,
 				Children =
 				{
 					new Label()
@@ -55,6 +54,33 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = "2. Swipe left to dismiss this page again, crashes immediately"
 					}
+				}
+			};
+
+			Grid.SetColumn(instructions, 1);
+
+			page2.Content = new Grid()
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions = LayoutOptions.FillAndExpand,
+				
+				ColumnDefinitions = new ColumnDefinitionCollection()
+				{
+					new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) },
+					new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) },
+				},
+
+				Children =
+				{
+					// Use this BoxView to achor our swipe to left of the screen
+					new BoxView()
+					{
+						AutomationId = LayoutId,
+						HorizontalOptions = LayoutOptions.FillAndExpand,
+						VerticalOptions = LayoutOptions.FillAndExpand,
+						BackgroundColor = Color.Red
+					},
+					instructions
 				}
 			};
 		}
@@ -70,12 +96,10 @@ namespace Xamarin.Forms.Controls.Issues
 		
 			var page2Layout = RunningApp.WaitForElement(LayoutId);
 			Assert.AreEqual(1, page2Layout.Length);
-			// Swiping from the layout without inertia causes the
-			// dismiss gesture to fail, this is intended
-			RunningApp.SwipeLeftToRight(LayoutId, 0.99, 750, false);
-			// Second swipe gesture is successful and should remove
-			// the page from the stack
-			RunningApp.SwipeLeftToRight(0.99, 750);
+			// Swipe in from left across 1/2 of screen width
+			RunningApp.SwipeLeftToRight(LayoutId, 0.99, 500, false);
+			// Swipe in from left across full screen width
+			RunningApp.SwipeLeftToRight(0.99, 500);
 
 			pushButton = RunningApp.WaitForElement(ButtonId);
 			Assert.AreEqual(1, pushButton.Length);
