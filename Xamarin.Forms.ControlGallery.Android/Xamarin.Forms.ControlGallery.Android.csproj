@@ -56,14 +56,16 @@
     <DefineConstants>TRACE;HAVE_OPENTK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidLinkMode>Full</AndroidLinkMode>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
+    <AndroidLinkMode>Full</AndroidLinkMode>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
-    <AndroidDexTool Condition="'$(Use2017)' == 'false'">d8</AndroidDexTool>
-    <AndroidLinkTool Condition="'$(Use2017)' == 'false'">r8</AndroidLinkTool>
-    <AndroidEnableMultiDex>$(Use2017)</AndroidEnableMultiDex>
+    <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
