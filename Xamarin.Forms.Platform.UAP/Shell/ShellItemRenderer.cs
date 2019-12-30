@@ -302,10 +302,10 @@ namespace Xamarin.Forms.Platform.UWP
 		void SwitchSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
 			if (section == null)
-				throw new InvalidOperationException($"No content not found for active {ShellItem} - {ShellItem.Title}.");
+				throw new InvalidOperationException($"Content not found for active {ShellItem} - {ShellItem.Title}.");
 
 			if (section.CurrentItem == null)
-				throw new InvalidOperationException($"No content found for active {section} - {section.Title}.");
+				throw new InvalidOperationException($"Content not found for active {section} - {section.Title}.");
 
 			SectionRenderer.NavigateToShellSection(source, section, animate);
 		}
