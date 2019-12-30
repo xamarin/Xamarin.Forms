@@ -99,12 +99,12 @@ namespace Xamarin.Forms.Platform.UWP
 			ShellItem = newItem;
 
 			if (newItem.CurrentItem == null)
-				throw new InvalidOperationException($"No content not found for active {newItem}. Title: {newItem.Title}. Route: {newItem.Route}.");
+				throw new InvalidOperationException($"Content not found for active {newItem}. Title: {newItem.Title}. Route: {newItem.Route}.");
 
 			ShellSection = newItem.CurrentItem;
 
 			if (ShellSection.CurrentItem == null)
-				throw new InvalidOperationException($"No content found for active {ShellSection}. Title: {ShellSection.Title}. Route: {ShellSection.Route}.");
+				throw new InvalidOperationException($"Content not found for active {ShellSection}. Title: {ShellSection.Title}. Route: {ShellSection.Route}.");
 
 			HookEvents(newItem);
 		}

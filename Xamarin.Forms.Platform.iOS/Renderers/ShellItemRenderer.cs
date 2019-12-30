@@ -229,7 +229,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void CreateTabRenderers()
 		{
 			if(ShellItem.CurrentItem == null)
-				throw new InvalidOperationException($"No content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
+				throw new InvalidOperationException($"Content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
 
 			var items = ShellItemController.GetItems();
 			var count = items.Count;

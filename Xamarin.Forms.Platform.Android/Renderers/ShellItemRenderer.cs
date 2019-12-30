@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.Android
 				throw new InvalidOperationException("Active Shell Item not set. Have you added any Shell Items to your Shell?");
 
 			if (ShellItem.CurrentItem == null)
-				throw new InvalidOperationException($"No content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
+				throw new InvalidOperationException($"Content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
 
 			HookEvents(ShellItem);
 			SetupMenu();
