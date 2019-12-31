@@ -7,8 +7,11 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class TapGestureHandler
 	{
-		public TapGestureHandler(Func<View> getView, Func<IList<GestureElement>> getChildElements)
+		readonly Func<double, double> _pixelTranslation;
+
+		public TapGestureHandler(Func<View> getView, Func<IList<GestureElement>> getChildElements, Func<double, double> pixelTranslation)
 		{
+			_pixelTranslation = pixelTranslation;
 			GetView = getView;
 			GetChildElements = getChildElements;
 		}
@@ -35,11 +38,12 @@ namespace Xamarin.Forms.Platform.Android
 			var captured = false;
 
 			var children = view.GetChildElements(point);
+			var translatedPoint = new Point(_pixelTranslation(point.X), _pixelTranslation(point.Y));
 
 			if (children != null)
 				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count))
 				{
-					recognizer.SendTapped(view);
+					recognizer.SendTapped(view, translatedPoint);
 					captured = true;
 				}
 
@@ -49,7 +53,7 @@ namespace Xamarin.Forms.Platform.Android
 			IEnumerable<TapGestureRecognizer> gestureRecognizers = TapGestureRecognizers(count);
 			foreach (var gestureRecognizer in gestureRecognizers)
 			{
-				gestureRecognizer.SendTapped(view);
+				gestureRecognizer.SendTapped(view, translatedPoint);
 				captured = true;
 			}
 

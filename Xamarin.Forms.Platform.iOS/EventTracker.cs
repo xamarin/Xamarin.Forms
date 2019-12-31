@@ -187,8 +187,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (childGestures?.GetChildGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
 					return;
 
+				var position = sender.LocationInView(null);
 				if (weakRecognizer.Target is TapGestureRecognizer tapGestureRecognizer && view != null)
-					tapGestureRecognizer.SendTapped(view);
+					tapGestureRecognizer.SendTapped(view, new Point(position.X, position.Y));
 			});
 		}
 
@@ -206,10 +207,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				if(recognizers == null)
 					return;
 
+				var position = sender.LocationInView(null);
 				var tapGestureRecognizer = ((ChildGestureRecognizer)weakRecognizer.Target).GestureRecognizer as TapGestureRecognizer;
 				foreach (var item in recognizers)
 					if (item == tapGestureRecognizer && view != null)
-						tapGestureRecognizer.SendTapped(view);
+						tapGestureRecognizer.SendTapped(view, new Point(position.X, position.Y));
 			});
 		}
 #endif

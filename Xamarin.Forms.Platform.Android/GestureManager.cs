@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Platform.Android
 					return view.GetChildElements(Point.Zero) ?? new List<GestureElement>();
 
 				return new List<GestureElement>();
-			}),
+			}, context.FromPixels),
 				new PanGestureHandler(() => View, context.FromPixels),
 			    	new SwipeGestureHandler(() => View, context.FromPixels));
 
