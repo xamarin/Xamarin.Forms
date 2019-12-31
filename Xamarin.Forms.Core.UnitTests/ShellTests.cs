@@ -822,7 +822,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var tab = new Tab();
 			tabBar.Items.Add(tab);
 			shell.Items.Add(tabBar);
-			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute(string.Empty, typeof(ContentPage)));
+			Assert.Catch(typeof(InvalidOperationException), () => Routing.RegisterRoute(string.Empty, typeof(ContentPage)));
 		}
 
 		[Test]
@@ -831,7 +831,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var shell = new Shell();
 			var tabBar = new TabBar();
 			shell.Items.Add(tabBar);
-			Assert.Catch(typeof(ArgumentException), () => Routing.RegisterRoute(string.Empty, typeof(ContentPage)));
+			Assert.Catch(typeof(InvalidOperationException), () => Routing.RegisterRoute(string.Empty, typeof(ContentPage)));
 		}
 	}
 }
