@@ -43,7 +43,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (children != null)
 				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count))
 				{
-					recognizer.SendTapped(view, translatedPoint);
+					recognizer.SendTapped(view);
+					recognizer.SendTap(view, translatedPoint);
 					captured = true;
 				}
 
@@ -53,7 +54,8 @@ namespace Xamarin.Forms.Platform.Android
 			IEnumerable<TapGestureRecognizer> gestureRecognizers = TapGestureRecognizers(count);
 			foreach (var gestureRecognizer in gestureRecognizers)
 			{
-				gestureRecognizer.SendTapped(view, translatedPoint);
+				gestureRecognizer.SendTapped(view);
+				gestureRecognizer.SendTap(view, translatedPoint);
 				captured = true;
 			}
 

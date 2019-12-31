@@ -34,16 +34,19 @@ namespace Xamarin.Forms
 			set { SetValue(NumberOfTapsRequiredProperty, value); }
 		}
 
-		public event TappedEventHandler Tapped;
+		public event EventHandler Tapped;
+		public event TapEventHandler Tap;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendTapped(View sender, Point position)
+		public void SendTapped(View sender)
 		{
 			ICommand cmd = Command;
 			if (cmd != null && cmd.CanExecute(CommandParameter))
 				cmd.Execute(CommandParameter);
 
-			Tapped?.Invoke(sender, new TappedEventArgs(CommandParameter, position));
+			EventHandler handler = Tapped;
+			if (handler != null)
+				handler(sender, new TappedEventArgs(CommandParameter));
 
 #pragma warning disable 0618 // retain until TappedCallback removed
 			Action<View, object> callback = TappedCallback;
@@ -51,6 +54,9 @@ namespace Xamarin.Forms
 				callback(sender, TappedCallbackParameter);
 #pragma warning restore
 		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendTap(View sender, Point position) =>
+			Tap?.Invoke(sender, new TapEventArgs(CommandParameter, position));
 
 		#region obsolete cruft
 

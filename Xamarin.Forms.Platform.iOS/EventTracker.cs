@@ -131,7 +131,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				var view = eventTracker?._renderer?.Element as View;
 
 				if (tapGestureRecognizer != null && view != null)
+				{
+					var position = gesturerecognizer.LocationInView(null);
+					tapGestureRecognizer.SendTap(view, new Point(position.X, position.Y));
 					tapGestureRecognizer.SendTapped(view);
+				}
 
 				return false;
 			});
@@ -165,10 +169,14 @@ namespace Xamarin.Forms.Platform.MacOS
 				var tapGestureRecognizer = ((ChildGestureRecognizer)weakRecognizer.Target).GestureRecognizer as TapGestureRecognizer;
 				var nativeRecognizer = gesturerecognizer as NSClickGestureRecognizer;
 				var recognizers = childGestures?.GetChildGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)nativeRecognizer.NumberOfClicksRequired);
-
-					foreach (var item in recognizers)
-						if (item == tapGestureRecognizer && view != null)
-							tapGestureRecognizer.SendTapped(view);
+		
+				var position = gesturerecognizer.LocationInView(null);
+				foreach (var item in recognizers)
+					if (item == tapGestureRecognizer && view != null)
+					{
+						tapGestureRecognizer.SendTap(view, new Point(position.X, position.Y));
+						tapGestureRecognizer.SendTapped(view);
+					}
 						
 				return false;
 			});
@@ -189,7 +197,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				var position = sender.LocationInView(null);
 				if (weakRecognizer.Target is TapGestureRecognizer tapGestureRecognizer && view != null)
-					tapGestureRecognizer.SendTapped(view, new Point(position.X, position.Y));
+				{
+					tapGestureRecognizer.SendTap(view, new Point(position.X, position.Y));
+					tapGestureRecognizer.SendTapped(view);
+				}
 			});
 		}
 
@@ -211,7 +222,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				var tapGestureRecognizer = ((ChildGestureRecognizer)weakRecognizer.Target).GestureRecognizer as TapGestureRecognizer;
 				foreach (var item in recognizers)
 					if (item == tapGestureRecognizer && view != null)
-						tapGestureRecognizer.SendTapped(view, new Point(position.X, position.Y));
+					{
+						tapGestureRecognizer.SendTap(view, new Point(position.X, position.Y));
+						tapGestureRecognizer.SendTapped(view);
+					}
 			});
 		}
 #endif

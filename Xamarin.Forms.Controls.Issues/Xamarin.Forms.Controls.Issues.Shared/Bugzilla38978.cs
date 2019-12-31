@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Label label = new Label { Text = "Click the image to resize", VerticalOptions = LayoutOptions.Center };
 
 				var tapGestureRecognizer = new TapGestureRecognizer ();
-				tapGestureRecognizer.Tapped += (object sender, TappedEventArgs e) => {
+				tapGestureRecognizer.Tapped += (object sender, EventArgs e) => {
 					if (_image.HeightRequest < 250) {
 						_image.HeightRequest = _image.Height + 100;
 						ForceUpdateSize ();

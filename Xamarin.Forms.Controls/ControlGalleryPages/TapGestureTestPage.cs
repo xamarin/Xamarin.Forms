@@ -38,17 +38,17 @@ namespace Xamarin.Forms.Controls
 			if (settings.SelectedItem is int count)
 			{
 				var gestureRecognizer = new TapGestureRecognizer { NumberOfTapsRequired = count };
-				gestureRecognizer.Tapped += OnTapped;
+				gestureRecognizer.Tap += OnTap;
 
 				foreach (var recognizer in box.GestureRecognizers.Where(r => r is TapGestureRecognizer).Cast<TapGestureRecognizer>())
-					recognizer.Tapped -= OnTapped;
+					recognizer.Tap -= OnTap;
 
 				box.GestureRecognizers.Clear();
 				box.GestureRecognizers.Add(gestureRecognizer);
 			}
 		}
 
-		void OnTapped(object sender, TappedEventArgs args)
+		void OnTap(object sender, TapEventArgs args)
 		{
 			outputLabel.Text = $"Tapped at {args.Position}";
 		}

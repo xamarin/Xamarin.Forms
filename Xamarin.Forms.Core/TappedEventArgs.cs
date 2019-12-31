@@ -4,13 +4,8 @@ namespace Xamarin.Forms
 {
 	public class TappedEventArgs : EventArgs
 	{
-		public TappedEventArgs(object parameter, Point position = new Point())
-		{
+		public TappedEventArgs(object parameter) =>
 			Parameter = parameter;
-			Position = position;
-		}
-
 		public object Parameter { get; }
-		public Point Position { get; }
 	}
 }
