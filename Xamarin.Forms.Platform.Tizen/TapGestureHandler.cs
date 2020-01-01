@@ -38,10 +38,10 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		protected override void OnCompleted(View sender, object data)
 		{
-			if (Recognizer is TapGestureRecognizer recognizer)
+			if (Recognizer is TapGestureRecognizer recognizer && data is GestureLayer.TapData tap)
 			{
+				recognizer.SendTap(sender, new Point(tap.X, tap.Y));
 				recognizer.SendTapped(sender);
-				// TODO: How to get tap location?
 			}
 		}
 
