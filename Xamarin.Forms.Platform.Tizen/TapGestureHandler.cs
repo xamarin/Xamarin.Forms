@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Recognizer is TapGestureRecognizer recognizer && data is GestureLayer.TapData tap)
 			{
-				recognizer.SendTap(sender, new Point(tap.X, tap.Y));
+				recognizer.SendTap(sender, new Point(Forms.ConvertToScaledDP(tap.X), Forms.ConvertToScaledDP(tap.Y)));
 				recognizer.SendTapped(sender);
 			}
 		}
