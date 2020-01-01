@@ -168,8 +168,8 @@ namespace Xamarin.Forms.Platform.WPF
 			if (children != null)
 				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
 				{
-					recognizer.SendTapped(view);
 					recognizer.SendTap(view, position);
+					recognizer.SendTapped(view);
 					handled = true;
 				}
 
@@ -179,8 +179,8 @@ namespace Xamarin.Forms.Platform.WPF
 			foreach (var gestureRecognizer in
 				view.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
 			{
-				gestureRecognizer.SendTapped(view);
 				gestureRecognizer.SendTap(view, position);
+				gestureRecognizer.SendTapped(view);
 				handled = true;
 			}
 			return handled;
