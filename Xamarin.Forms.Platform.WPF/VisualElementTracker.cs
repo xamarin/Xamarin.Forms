@@ -156,18 +156,20 @@ namespace Xamarin.Forms.Platform.WPF
 
 		bool ElementOnTap(int numberOfTapsRequired, System.Windows.Point tapPosition)
 		{
+			var position = new Point(tapPosition.X, tapPosition.Y);
 			var view = Element as View;
 			if (view == null)
 				return false;
 
 			var handled = false;
 
-			var children = (view as IGestureController)?.GetChildElements(new Point(tapPosition.X, tapPosition.Y));
+			var children = (view as IGestureController)?.GetChildElements(position);
 
 			if (children != null)
 				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
 				{
 					recognizer.SendTapped(view);
+					recognizer.SendTap(view, position);
 					handled = true;
 				}
 
@@ -178,6 +180,7 @@ namespace Xamarin.Forms.Platform.WPF
 				view.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
 			{
 				gestureRecognizer.SendTapped(view);
+				gestureRecognizer.SendTap(view, position);
 				handled = true;
 			}
 			return handled;

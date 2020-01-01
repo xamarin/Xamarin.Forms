@@ -372,8 +372,12 @@ namespace Xamarin.Forms.Platform.GTK
 				IEnumerable<TapGestureRecognizer> tapGestures = view.GestureRecognizers
 					.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == numClicks);
 
+				var point = new Point(args.Event.X, args.Event.Y);
 				foreach (TapGestureRecognizer recognizer in tapGestures)
+				{
 					recognizer.SendTapped(view);
+					recognizer.SendTap(view, point);
+				}
 
 				IEnumerable<ClickGestureRecognizer> clickGestures = view.GestureRecognizers
 					.GetGesturesFor<ClickGestureRecognizer>(g => g.NumberOfClicksRequired == numClicks &&
