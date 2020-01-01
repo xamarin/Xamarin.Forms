@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			var page1 = CreateContentPage("page 1");
-			var page2 = CreateContentPage("page 2");
+			var page2 = new ContentPage() { Title = "page 2" };
 
 			var pushPageBtn = new Button();
 			pushPageBtn.Text = "Push Page";
