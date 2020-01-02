@@ -813,25 +813,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(GetItems(shell).Contains(item1));
 			Assert.IsTrue(GetItems(shell).Contains(item2));
 		}
-
-		[Test]
-		public async Task FailWhenNoShellContentProvided()
-		{
-			var shell = new Shell();
-			var tabBar = new TabBar();
-			var tab = new Tab();
-			tabBar.Items.Add(tab);
-			shell.Items.Add(tabBar);
-			Assert.Catch(typeof(InvalidOperationException), () => Routing.RegisterRoute(string.Empty, typeof(ContentPage)));
-		}
-
-		[Test]
-		public async Task FailWhenNoShellContentOrTabProvided()
-		{
-			var shell = new Shell();
-			var tabBar = new TabBar();
-			shell.Items.Add(tabBar);
-			Assert.Catch(typeof(InvalidOperationException), () => Routing.RegisterRoute(string.Empty, typeof(ContentPage)));
-		}
 	}
 }
