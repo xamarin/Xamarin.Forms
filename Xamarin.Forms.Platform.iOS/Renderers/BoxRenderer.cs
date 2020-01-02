@@ -16,9 +16,9 @@ namespace Xamarin.Forms.Platform.iOS
 		nfloat _bottomRight;
 
 		const float PI = (float)Math.PI;
-		const float PIAndAHalf = (float)(Math.PI * 1.5);
-		const float HalfPI = (float)(Math.PI * .5);
-		const float TwoPI = (float)Math.PI * 2;
+		const float PIAndAHalf = PI * 1.5f;
+		const float HalfPI = PI * .5f;
+		const float TwoPI = PI * 2;
 
 		public override void Draw(RectangleF rect)
 		{
