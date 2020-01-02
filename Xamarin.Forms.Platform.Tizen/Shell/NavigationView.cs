@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using ElmSharp;
 using EColor = ElmSharp.Color;
-using NImage = Xamarin.Forms.Platform.Tizen.Native.Image;
+using EImage = ElmSharp.Image;
 using NBox = Xamarin.Forms.Platform.Tizen.Native.Box;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.Tizen
 	public class NavigationView : Background, INavigationView
 	{
 		NBox _box;
-		NImage _bg;
+		EImage _bg;
 		Aspect _bgImageAspect;
 		ImageSource _bgImageSource;
 		EvasObject _header;
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				_bgImageAspect = value;
 				if (_bg != null)
 				{
-					_bg.Aspect = _bgImageAspect;
+					_bg.ApplyAspect(_bgImageAspect);
 				}
 			}
 		}
@@ -82,11 +82,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					if (_bg == null)
 					{
-						_bg = new NImage(_menu);
+						_bg = new EImage(this);
 					}
 					_menu.BackgroundColor = EColor.Transparent;
 					SetPartContent("elm.swallow.background", _bg);
-					_bg.Aspect = _bgImageAspect;
+					_bg.ApplyAspect(_bgImageAspect);
 					_ = _bg.LoadFromImageSourceAsync(_bgImageSource);
 				}
 				else
