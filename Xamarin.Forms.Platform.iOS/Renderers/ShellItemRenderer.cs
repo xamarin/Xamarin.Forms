@@ -70,6 +70,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					ShellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, renderer.ShellSection);
 					CurrentRenderer = renderer;
+					MoreNavigationController?.PopToRootViewController(false);
 				}
 
 				if (ReferenceEquals(value, MoreNavigationController))
@@ -163,6 +164,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (renderer != null)
 					{
 						ViewControllers = ViewControllers.Remove(renderer.ViewController);
+						CustomizableViewControllers = Array.Empty<UIViewController>();
 						RemoveRenderer(renderer);
 					}
 				}
@@ -199,6 +201,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				ViewControllers = viewControllers;
+				CustomizableViewControllers = Array.Empty<UIViewController>();
 
 				if (goTo)
 					GoTo(ShellItem.CurrentItem);
@@ -264,6 +267,7 @@ namespace Xamarin.Forms.Platform.iOS
 				viewControllers[i++] = renderer.ViewController;
 			}
 			ViewControllers = viewControllers;
+			CustomizableViewControllers = Array.Empty<UIViewController>();
 
 			// No sense showing a bar that has a single icon
 			if (ViewControllers.Length == 1)
