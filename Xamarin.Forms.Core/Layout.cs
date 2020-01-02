@@ -355,7 +355,8 @@ namespace Xamarin.Forms
 				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 			}
 
-			s_resolutionList.Add(new KeyValuePair<Layout, int>(this, GetElementDepth(this)));
+			var kvp = new KeyValuePair<Layout, int>(this, GetElementDepth(this));
+			s_resolutionList.Add(kvp);
 			if (!s_relayoutInProgress)
 			{
 				s_relayoutInProgress = true;
