@@ -73,7 +73,10 @@ steps:
     inputs:
       Contents: |
        **/$(IpaName)
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/**
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
 
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: true
