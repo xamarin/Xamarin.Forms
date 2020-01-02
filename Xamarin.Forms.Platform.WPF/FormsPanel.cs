@@ -63,22 +63,13 @@ namespace Xamarin.Forms.Platform.WPF
 
 			Element.IsInNativeLayout = true;
 
-			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
+			foreach (FrameworkElement child in InternalChildren)
 			{
-				var child = ElementController.LogicalChildren[i] as VisualElement;
-				if (child == null)
-					continue;
-				IVisualElementRenderer renderer = Platform.GetRenderer(child);
-				if (renderer == null)
-					continue;
-
-				FrameworkElement control = renderer.GetNativeElement();
-
-				if (control.ActualWidth != child.Width || control.ActualHeight != child.Height)
+				if (child.ActualWidth != child.Width || child.ActualHeight != child.Height)
 				{
-					double width = child.Width <= -1 ? ActualWidth : child.Width;
-					double height = child.Height <= -1 ? ActualHeight : child.Height;
-					control.Measure(new System.Windows.Size(width, height));
+					double width = child.Width <= -1 || Double.IsNaN(child.Width)? ActualWidth : child.Width;
+					double height = child.Height <= -1 || Double.IsNaN(child.Height) ? ActualHeight : child.Height;
+					child.Measure(new System.Windows.Size(width, height));
 				}
 			}
 

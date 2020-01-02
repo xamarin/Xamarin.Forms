@@ -66,8 +66,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (newCell != null)
 			{
-				newCell.Appearing += Cell_Appearing;
-				((ICellController)newCell).SendAppearing();
 				if (oldCell == null || oldCell.GetType() != newCell.GetType())
 					ContentTemplate = GetTemplate(newCell);
 
@@ -76,6 +74,8 @@ namespace Xamarin.Forms.Platform.WPF
 				SetupContextMenu();
 
 				newCell.PropertyChanged += _propertyChangedHandler;
+				newCell.Appearing += Cell_Appearing;
+				((ICellController)newCell).SendAppearing();
 			}
 			else
 				Content = null;
