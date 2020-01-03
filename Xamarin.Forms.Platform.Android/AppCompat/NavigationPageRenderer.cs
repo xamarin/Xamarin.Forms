@@ -562,7 +562,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
+			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName || e.PropertyName == ToolbarItem.IsVisibleProperty.PropertyName)
 				UpdateMenu();
 		}
 
@@ -927,6 +927,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));					
 					menuItem.SetTitleOrContentDescription(item);
+					menuItem.SetVisible(item.IsVisible);
 				}
 				else
 				{
@@ -936,6 +937,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
 					menuItem.SetTitleOrContentDescription(item);
+					menuItem.SetVisible(item.IsVisible);
 				}
 			}
 		}
