@@ -45,7 +45,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
 
-		public static readonly BindableProperty StepperPositionProperty = BindableProperty.Create("StepperPosition", typeof(int), typeof(Stepper), 0);
+		public static readonly BindableProperty StepperPositionProperty = BindableProperty.Create(nameof(StepperPosition), typeof(int), typeof(Stepper), 0);
 
 		readonly Lazy<PlatformConfigurationRegistry<Stepper>> _platformConfigurationRegistry;
 
