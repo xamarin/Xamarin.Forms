@@ -487,8 +487,6 @@ namespace Xamarin.Forms.Platform.Android
 				_titleViewContainer.View = titleView;
 			}
 		}
-		
-
 
 		protected virtual void UpdateToolbarItems(Toolbar toolbar, Page page)
 		{
