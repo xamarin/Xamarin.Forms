@@ -197,19 +197,19 @@ namespace Xamarin.Forms.Platform.iOS
 					NavigationItem.RightBarButtonItems[i].Dispose();
 			}
 
-			UIBarButtonItem[] items = null;
-			if (Page != null)
+			List<UIBarButtonItem> primaries = null;
+			if (Page.ToolbarItems.Count > 0)
 			{
-				int index = 0;
-				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x=> x.Priority))
+				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x => x.Priority))
 				{
-					items[index] = item.ToUIBarButtonItem(false, true);
-					index++;
+					(primaries = primaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(false, true));
 				}
+
+				if (primaries != null)
+					primaries.Reverse();
 			}
-						
-			Array.Reverse(items);
-			NavigationItem.SetRightBarButtonItems(items, false);
+
+			NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
 
 			var behavior = BackButtonBehavior;
 
