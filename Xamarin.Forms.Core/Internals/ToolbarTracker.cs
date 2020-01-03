@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Internals
 		public IEnumerable<ToolbarItem> ToolbarItems
 		{
 			get
-			{				
+			{
 				if (Target == null)
 					return new ToolbarItem[0];
 
