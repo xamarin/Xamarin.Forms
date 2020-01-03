@@ -43,7 +43,7 @@ namespace Xamarin.Forms
 				eh(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
-		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
+		public static readonly BindableProperty IncrementProperty = BindableProperty.Create(nameof(Increment), typeof(double), typeof(Stepper), 1.0);
 
 		public static readonly BindableProperty StepperPositionProperty = BindableProperty.Create(nameof(StepperPosition), typeof(int), typeof(Stepper), 0);
 
