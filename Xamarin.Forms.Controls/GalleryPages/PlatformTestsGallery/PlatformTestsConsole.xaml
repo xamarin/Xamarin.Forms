@@ -7,7 +7,7 @@
              x:Class="Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery.PlatformTestsConsole">
     <ContentPage.Content>
         <StackLayout>
-            <Grid>
+            <Grid MinimumHeightRequest="90">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
