@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -50,11 +51,16 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		protected ShellItem CreateShellItem(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null, string shellSectionRoute = null, string shellItemRoute = null)
-		{
-			page = page ?? new ContentPage();
+		protected ShellItem CreateShellItem(
+			TemplatedPage page = null, 
+			bool asImplicit = false, 
+			string shellContentRoute = null, 
+			string shellSectionRoute = null, 
+			string shellItemRoute = null,
+			bool templated = false)
+		{			
 			ShellItem item = null;
-			var section = CreateShellSection(page, asImplicit, shellContentRoute, shellSectionRoute);
+			var section = CreateShellSection(page, asImplicit, shellContentRoute, shellSectionRoute, templated: templated);
 
 			if (!String.IsNullOrWhiteSpace(shellItemRoute))
 			{
@@ -73,9 +79,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			return item;
 		}
 
-		protected ShellSection CreateShellSection(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null, string shellSectionRoute = null)
+		protected ShellSection CreateShellSection(
+			TemplatedPage page = null, 
+			bool asImplicit = false, 
+			string shellContentRoute = null, 
+			string shellSectionRoute = null,
+			bool templated = false)
 		{
-			var content = CreateShellContent(page, asImplicit, shellContentRoute);
+			var content = CreateShellContent(page, asImplicit, shellContentRoute, templated: templated);
 
 			ShellSection section = null;
 
@@ -96,23 +107,46 @@ namespace Xamarin.Forms.Core.UnitTests
 			return section;
 		}
 
-		protected ShellContent CreateShellContent(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
+		protected ShellContent CreateShellContent(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null, bool templated = false)
 		{
-			page = page ?? new ContentPage();
 			ShellContent content = null;
 
-			if(!String.IsNullOrWhiteSpace(shellContentRoute))
+			if (!String.IsNullOrWhiteSpace(shellContentRoute))
 			{
-				content = new ShellContent() { Content = page };
+				if (templated)
+					content = new ShellContent() { ContentTemplate = new DataTemplate(() => page ?? new ContentPage()) };
+				else
+					content = new ShellContent() { Content = page ?? new ContentPage() };
+
 				content.Route = shellContentRoute;
 			}
 			else if (asImplicit)
 				content = (ShellContent)page;
 			else
-				content = new ShellContent() { Content = page };
+			{
+				if (templated)
+					content = new ShellContent() { ContentTemplate = new DataTemplate(() => page ?? new ContentPage()) };
+				else
+					content = new ShellContent() { Content = page ?? new ContentPage() };
+			}
 
 
 			return content;
+		}
+
+		protected ReadOnlyCollection<ShellContent> GetItems(ShellSection section)
+		{
+			return (section as IShellSectionController).GetItems();
+		}
+
+		protected ReadOnlyCollection<ShellSection> GetItems(ShellItem item)
+		{
+			return (item as IShellItemController).GetItems();
+		}
+
+		protected ReadOnlyCollection<ShellItem> GetItems(Shell item)
+		{
+			return (item as IShellController).GetItems();
 		}
 
 	}

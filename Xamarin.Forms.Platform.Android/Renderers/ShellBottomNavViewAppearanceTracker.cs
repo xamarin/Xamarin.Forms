@@ -83,11 +83,14 @@ namespace Xamarin.Forms.Platform.Android
 				if (colorChangeRevealDrawable != null && lastColor == newColor)
 					return;
 
-				var index = _shellItem.Items.IndexOf(_shellItem.CurrentItem);
+				var index = ((IShellItemController)_shellItem).GetItems().IndexOf(_shellItem.CurrentItem);
 				var menu = bottomView.Menu;
 				index = Math.Min(index, menu.Size() - 1);
 
 				var child = menuView.GetChildAt(index);
+				if (child == null)
+					return;
+
 				var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
 
 				bottomView.SetBackground(new ColorChangeRevealDrawable(lastColor, newColor, touchPoint));
