@@ -242,9 +242,9 @@ namespace Xamarin.Forms
 							}
 							parent = parent.Parent;
 						}
+						IsExpanded = !IsExpanded;
 						Command?.Execute(CommandParameter);
 						Tapped?.Invoke(this, EventArgs.Empty);
-						IsExpanded = !IsExpanded;
 					})
 				});
 			}

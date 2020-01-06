@@ -1,24 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace Xamarin.Forms.Controls
 {
 	public partial class ExpanderGallery : ContentPage
 	{
+		ICommand _command;
+
 		public ExpanderGallery()
 		{
 			InitializeComponent();
 		}
 
-		public string[] Items { get; } = new string[]
+		public ICommand Command => _command ?? (_command = new Command(p =>
 		{
-			"The First",
-			"The Second",
-			"The Third",
-			"The Fourth",
-			"The Fifth"
+			var sender = (Item)p;
+			if(!sender.IsExpanded)
+			{
+				return;
+			}
+
+			foreach (var item in Items)
+			{
+				item.IsExpanded = sender == item;
+			}
+		}));
+
+		public Item[] Items { get; } = new Item[]
+		{
+			new Item
+			{
+				Name = "The First",
+			},
+			new Item
+			{
+				Name = "The Second",
+				IsExpanded = true
+			},
+			new Item
+			{
+				Name = "The Third",
+			},
+			new Item
+			{
+				Name = "The Fourth",
+			},
+			new Item
+			{
+				Name = "The Fifth"
+			},
 		};
+
+		public sealed class Item: INotifyPropertyChanged {
+			public event PropertyChangedEventHandler PropertyChanged;
+			bool _isExpanded;
+
+			public string Name { get; set; }
+			public bool IsExpanded
+			{
+				get => _isExpanded;
+				set
+				{
+					if(value == _isExpanded)
+					{
+						return;
+					}
+					_isExpanded = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsExpanded)));
+				}
+			}
+
+
+		}
 	}
 }
