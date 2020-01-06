@@ -51,11 +51,7 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (ButtonRenderer))]
 	internal class _ButtonRenderer { }
 
-#if __ANDROID__
 	[RenderWith(typeof(ImageButtonRenderer))]
-#elif !TIZEN4_0
-	[RenderWith(typeof(ImageButtonRenderer))]
-#endif
 	internal class _ImageButtonRenderer { }
 
 	[RenderWith (typeof (TableViewRenderer))]
@@ -63,12 +59,16 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith (typeof (ListViewRenderer))]
 	internal class _ListViewRenderer { }
-#if !TIZEN4_0	
+#if !TIZEN4_0
 	[RenderWith (typeof (CollectionViewRenderer))]
+#else
+	[RenderWith (typeof (StructuredItemsViewRenderer))]
+#endif
 	internal class _CollectionViewRenderer { }
+
 	[RenderWith (typeof (CarouselViewRenderer))]
 	internal class _CarouselViewRenderer { }
-#endif
+
 	[RenderWith (typeof (SliderRenderer))]
 	internal class _SliderRenderer { }
 
@@ -117,6 +117,11 @@ namespace Xamarin.Forms.Platform
 	internal class _CheckBoxRenderer { }
 #endif
 
+#if !TIZEN4_0
+	[RenderWith(typeof(IndicatorViewRenderer))]
+#endif
+	internal class _IndicatorViewRenderer { }
+
 #if __IOS__
 	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
 	// once previewer switches to appcompat then we can remove this
@@ -159,10 +164,12 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
 	internal class _MasterDetailPageRenderer { }
-#if !TIZEN4_0
+
 	[RenderWith(typeof(RefreshViewRenderer))]
-#endif
 	internal class _RefreshViewRenderer { }
+
+	[RenderWith(typeof(SwipeViewRenderer))]
+	internal class _SwipeViewRenderer { }
 }
 
 

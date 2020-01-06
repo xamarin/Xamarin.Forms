@@ -10,13 +10,17 @@ variables:
 - name: SolutionFile
   value: Xamarin.Forms.sln
 - name: BuildVersion
-  value: $[counter('$(Build.SourceBranchName)_counter', 1)]
+  value: $[counter(variables['Build.SourceBranch'], 1)]
+- name: BuildVersion42
+  value: $[counter('xf-nuget-counter', 992000)]
+- name: BuildVersion43
+  value: $[counter('xf-nuget-counter', 992000)]
+- name: BuildVersion44
+  value: $[counter('xf-nuget-counter', 992000)]
 - name: NUGET_VERSION
   value: 5.0.2
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
-- name: winVmImage
-  value: Hosted VS2017
 - name: DOTNET_VERSION
   value: 3.0.100
 
@@ -62,10 +66,25 @@ jobs:
     displayName: Build Windows Phase
     vmImage: $(winVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+    msbuildExtraArguments: '/nowarn:VSX1000'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
+    includeUwp: 'false'
+
+- template: build/steps/build-windows.yml
+  parameters:
+    name: win_2019
+    displayName: Build UWP Phase
+    vmImage: $(win2019VmImage)
+    targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
+    msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
+    buildConfiguration: $(DefaultBuildConfiguration)
+    buildPlatform: $(DefaultBuildPlatform)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
+    slnPath: '.Xamarin.Forms.UAP.nuget.sln'
+    includeNonUwp: 'false'
+
 
 - template: build/steps/build-android.yml
   parameters:
@@ -121,6 +140,7 @@ jobs:
   displayName: Nuget Phase
   dependsOn:
    - win
+   - win_2019
   condition: succeeded()
   pool:
     name: $(winVmImage)

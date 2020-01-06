@@ -9,6 +9,7 @@ using System.Linq;
 #endif
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -45,6 +46,9 @@ namespace Xamarin.Forms
 
 		Page IShellContentController.Page => ContentCache;
 
+		EventHandler _isPageVisibleChanged;
+		event EventHandler IShellContentController.IsPageVisibleChanged { add => _isPageVisibleChanged += value; remove => _isPageVisibleChanged -= value; }
+
 		Page IShellContentController.GetOrCreateContent()
 		{
 			var template = ContentTemplate;
@@ -60,11 +64,6 @@ namespace Xamarin.Forms
 			{
 				result = ContentCache ?? (Page)template.CreateContent(content, this);
 				ContentCache = result;
-			}
-
-			if (result != null && result.Parent != this)
-			{
-				OnChildAdded(result);
 			}
 
 			if (result == null)
@@ -103,17 +102,60 @@ namespace Xamarin.Forms
 				return;
 
 			base.SendAppearing();
-			((ContentCache ?? Content) as Page)?.SendAppearing();
+
+			SendPageAppearing((ContentCache ?? Content) as Page);
+		}
+
+		void SendPageAppearing(Page page)
+		{
+			if (page == null)
+				return;
+
+			if (page.Parent == null)
+			{
+				page.ParentSet += OnPresentedPageParentSet;
+				void OnPresentedPageParentSet(object sender, EventArgs e)
+				{
+					page.SendAppearing();
+					(sender as Page).ParentSet -= OnPresentedPageParentSet;
+				}
+			}
+			else
+			{
+				page.SendAppearing();
+			}
 		}
 
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
-			if (child is Page page && IsVisibleContent)
+			if (child is Page page)
 			{
-				SendAppearing();
-				page.SendAppearing();
+				if (IsVisibleContent && page.IsVisible)
+				{
+					SendAppearing();
+					SendPageAppearing(page);
+				}
+
+				page.PropertyChanged += OnPagePropertyChanged;
+				_isPageVisibleChanged?.Invoke(this, EventArgs.Empty);
 			}
+		}
+
+		protected override void OnChildRemoved(Element child)
+		{
+			base.OnChildRemoved(child);
+			if (child is Page page)
+			{
+				page.PropertyChanged -= OnPagePropertyChanged;
+			}
+		}
+		
+
+		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == Page.IsVisibleProperty.PropertyName)
+				_isPageVisibleChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		Page ContentCache
@@ -122,11 +164,16 @@ namespace Xamarin.Forms
 			set
 			{
 				_contentCache = value;
+				if (value != null && value.Parent != this)
+				{
+					OnChildAdded(value);
+				}
+
 				if (Parent != null)
 					((ShellSection)Parent).UpdateDisplayedPage();
 			}
 		}
-
+		
 		public static implicit operator ShellContent(TemplatedPage page)
 		{
 			var shellContent = new ShellContent();
@@ -162,8 +209,6 @@ namespace Xamarin.Forms
 				{
 					shellContent._logicalChildren.Add((Element)newValue);
 					shellContent.ContentCache = newElement;
-					// parent new item
-					shellContent.OnChildAdded(newElement);
 				}
 				else if(newValue != null)
 				{

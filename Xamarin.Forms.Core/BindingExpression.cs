@@ -20,6 +20,7 @@ namespace Xamarin.Forms
 		WeakReference<object> _weakSource;
 		WeakReference<BindableObject> _weakTarget;
 		List<WeakReference<Element>> _ancestryChain;
+		bool _isBindingContextRelativeSource;
 
 		internal BindingExpression(BindingBase binding, string path)
 		{
@@ -243,6 +244,55 @@ namespace Xamarin.Forms
 			}
 		}
 
+		PropertyInfo GetIndexer(TypeInfo sourceType, string indexerName, string content)
+		{
+			if (int.TryParse(content, out _)) { //try to find an indexer taking an int
+				foreach (var pi in sourceType.DeclaredProperties) {
+					if (pi.Name != indexerName)
+						continue;
+					if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(int))
+						return pi;
+					if (pi.CanWrite && pi.SetMethod.ReturnType == typeof(int))
+						return pi;
+				}
+			}
+
+		
+			//property isn't an int, or there wasn't any int indexer
+			foreach (var pi in sourceType.DeclaredProperties) {
+				if (pi.Name != indexerName)
+					continue;
+				if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(string))
+					return pi;
+				if (pi.CanWrite && pi.SetMethod.ReturnType == typeof(string))
+					return pi;
+			}
+
+			//try to fallback to an object indexer
+			foreach (var pi in sourceType.DeclaredProperties)
+			{
+				if (pi.Name != indexerName)
+					continue;
+				if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(object))
+					return pi;
+				if (pi.CanWrite && pi.SetMethod.ReturnType == typeof(object))
+					return pi;
+			}
+
+			//defined on a base class ?
+			if (sourceType.BaseType is Type baseT && GetIndexer(baseT.GetTypeInfo(), indexerName, content) is PropertyInfo p)
+				return p;
+
+			//defined on an interface ?
+			foreach (var face in sourceType.ImplementedInterfaces) {
+				if (GetIndexer(face.GetTypeInfo(), indexerName, content) is PropertyInfo pi)
+					return pi;
+			}
+
+			return null;
+		}
+
+
 		void SetupPart(TypeInfo sourceType, BindingExpressionPart part)
 		{
 			part.Arguments = null;
@@ -254,8 +304,7 @@ namespace Xamarin.Forms
 			{
 				if (sourceType.IsArray)
 				{
-					int index;
-					if (!int.TryParse(part.Content, out index))
+					if (!int.TryParse(part.Content, out var index))
 						Log.Warning("Binding", "{0} could not be parsed as an index for a {1}", part.Content, sourceType);
 					else
 						part.Arguments = new object[] { index };
@@ -265,46 +314,16 @@ namespace Xamarin.Forms
 					part.SetterType = sourceType.GetElementType();
 				}
 
-				DefaultMemberAttribute defaultMember = null;
-				foreach (var attrib in sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true))
+				string indexerName = "Item";
+				foreach (DefaultMemberAttribute attrib in sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true))
 				{
-					if (attrib is DefaultMemberAttribute d)
-					{
-						defaultMember = d;
-						break;
-					}
+					indexerName = attrib.MemberName;
+					break;
 				}
-
-				string indexerName = defaultMember != null ? defaultMember.MemberName : "Item";
 
 				part.IndexerName = indexerName;
 
-#if NETSTANDARD2_0
-				try {
-					property = sourceType.GetDeclaredProperty(indexerName);
-				}
-				catch (AmbiguousMatchException) {
-					// Get most derived instance of property
-					foreach (var p in sourceType.GetProperties()) {
-						if (p.Name == indexerName && (property == null || property.DeclaringType.IsAssignableFrom(property.DeclaringType)))
-							property = p;
-					}
-				}
-#else
-				property = sourceType.GetDeclaredProperty(indexerName);
-#endif
-
-				if (property == null) //is the indexer defined on the base class?
-					property = sourceType.BaseType.GetProperty(indexerName);
-				if (property == null) //is the indexer defined on implemented interface ?
-				{
-					foreach (var implementedInterface in sourceType.ImplementedInterfaces)
-					{
-						property = implementedInterface.GetProperty(indexerName);
-						if (property != null)
-							break;
-					}
-				}
+				property = GetIndexer(sourceType, indexerName, part.Content);
 
 				if (property != null)
 				{
@@ -312,9 +331,7 @@ namespace Xamarin.Forms
 					ParameterInfo[] array = property.GetIndexParameters();
 
 					if (array.Length > 0)
-					{
 						parameter = array[0];
-					}
 
 					if (parameter != null)
 					{
@@ -451,15 +468,21 @@ namespace Xamarin.Forms
 		// OnElementParentSet are used with RelativeSource ancestor-type bindings, to detect when
 		// there has been an ancestry change requiring re-applying the binding, and to minimize
 		// re-applications especially during visual tree building.
-		internal void SubscribeToAncestryChanges(List<Element> chain)
+		internal void SubscribeToAncestryChanges(List<Element> chain, bool includeBindingContext, bool rootIsSource)
 		{
 			ClearAncestryChangeSubscriptions();
 			if (chain == null)
 				return;
+			_isBindingContextRelativeSource = includeBindingContext;
 			_ancestryChain = new List<WeakReference<Element>>();
-			foreach (var elem in chain)
+			for (int i = 0; i < chain.Count; i++)
 			{
-				elem.ParentSet += OnElementParentSet;
+				var elem = chain[i];
+				if (i != chain.Count - 1 || !rootIsSource)	
+					// don't care about a successfully resolved source's parents
+					elem.ParentSet += OnElementParentSet;
+				if (_isBindingContextRelativeSource)
+					elem.BindingContextChanged += OnElementBindingContextChanged;
 				_ancestryChain.Add(new WeakReference<Element>(elem));
 			}
 		}
@@ -474,7 +497,11 @@ namespace Xamarin.Forms
 				Element elem;
 				var weakElement = _ancestryChain.Last();
 				if (weakElement.TryGetTarget(out elem))
+				{
 					elem.ParentSet -= OnElementParentSet;
+					if (_isBindingContextRelativeSource)
+						elem.BindingContextChanged -= OnElementBindingContextChanged;
+				}
 				_ancestryChain.RemoveAt(_ancestryChain.Count - 1);
 			}
 		}
@@ -493,6 +520,30 @@ namespace Xamarin.Forms
 					return i;
 			}
 			return -1;
+		}
+
+		void OnElementBindingContextChanged(object sender, EventArgs e)
+		{
+			if (!(sender is Element elem) ||
+				!(this.Binding is Binding binding))
+				return;
+
+			BindableObject target = null;
+			if (_weakTarget?.TryGetTarget(out target) != true)
+				return;
+
+			object currentSource = null;
+			if (_weakSource?.TryGetTarget(out currentSource) == true)
+			{
+				// make sure that this isn't just a repeat notice
+				// from someone else in the chain about our already-resolved 
+				// binding source
+				if (object.ReferenceEquals(currentSource, elem.BindingContext))
+					return;
+			}
+
+			binding.Unapply();
+			binding.Apply(null, target, _targetProperty);
 		}
 
 		void OnElementParentSet(object sender, EventArgs e)

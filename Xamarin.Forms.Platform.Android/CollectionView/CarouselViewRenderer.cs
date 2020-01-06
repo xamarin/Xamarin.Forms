@@ -1,14 +1,13 @@
-using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Views;
-using FormsCollectionView = Xamarin.Forms.CollectionView;
+using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
-		protected CarouselView Carousel;
+		protected FormsCarouselView Carousel;
 		ItemDecoration _itemDecoration;
 		bool _isSwipeEnabled;
 		int _oldPosition;
@@ -16,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
-			FormsCollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselViewRenderer));
+			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 		}
 
 		protected override void Dispose(bool disposing)
@@ -35,7 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
-			Carousel = newElement as CarouselView;
+			Carousel = newElement as FormsCarouselView;
 
 			base.SetUpNewElement(newElement);
 
@@ -50,17 +49,18 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void UpdateItemsSource()
 		{
 			UpdateAdapter();
+			UpdateEmptyView();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
-				UpdateItemsSource();
-			else if (changedProperty.Is(CarouselView.PeekAreaInsetsProperty))
+			base.OnElementPropertyChanged(sender, changedProperty);
+   
+			if (changedProperty.Is(FormsCarouselView.PeekAreaInsetsProperty))
 				UpdatePeekAreaInsets();
-			else if (changedProperty.Is(CarouselView.IsSwipeEnabledProperty))
+			else if (changedProperty.Is(FormsCarouselView.IsSwipeEnabledProperty))
 				UpdateIsSwipeEnabled();
-			else if (changedProperty.Is(CarouselView.IsBounceEnabledProperty))
+			else if (changedProperty.Is(FormsCarouselView.IsBounceEnabledProperty))
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
@@ -85,11 +85,13 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					Carousel.SetIsDragging(false);
 			}
+
+			Carousel.IsScrolling = state != ScrollStateIdle;
 		}
 
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
 		{
-			return new CarouselSpacingItemDecoration(itemsLayout);
+			return new CarouselSpacingItemDecoration(itemsLayout, Carousel);
 		}
 
 		protected override void UpdateItemSpacing()
@@ -129,8 +131,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (ItemsLayout is LinearItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				var numberOfVisibleItems = Carousel.NumberOfSideItems * 2 + 1;
-				itemWidth = (int)(Width - Carousel.PeekAreaInsets.Left - Carousel.PeekAreaInsets.Right - Context?.ToPixels(listItemsLayout.ItemSpacing)) / numberOfVisibleItems;
+				itemWidth = (int)(Width - Context?.ToPixels(Carousel.PeekAreaInsets.Left) - Context?.ToPixels(Carousel.PeekAreaInsets.Right) - Context?.ToPixels(listItemsLayout.ItemSpacing));
 			}
 
 			return itemWidth;
@@ -142,8 +143,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (ItemsLayout is LinearItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
 			{
-				var numberOfVisibleItems = Carousel.NumberOfSideItems * 2 + 1;
-				itemHeight = (int)(Height - Carousel.PeekAreaInsets.Top - Carousel.PeekAreaInsets.Bottom - Context?.ToPixels(listItemsLayout.ItemSpacing)) / numberOfVisibleItems;
+				itemHeight = (int)(Height - Context?.ToPixels(Carousel.PeekAreaInsets.Top) - Context?.ToPixels(Carousel.PeekAreaInsets.Bottom) - Context?.ToPixels(listItemsLayout.ItemSpacing));
 			}
 
 			return itemHeight;
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateAdapter();
 		}
 
-		void UpdateAdapter()
+		protected override void UpdateAdapter()
 		{
 			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
 			// But for the Carousel, we want it to create the items to fit the width/height of the viewport

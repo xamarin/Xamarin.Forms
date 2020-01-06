@@ -49,6 +49,8 @@ namespace Xamarin.Forms.Platform.Android
 		AView _outerLayout;
 		IShellBottomNavViewAppearanceTracker _appearanceTracker;
 		BottomNavigationViewTracker _bottomNavigationTracker;
+		BottomSheetDialog _bottomSheetDialog;
+		bool _disposed;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -78,29 +80,55 @@ namespace Xamarin.Forms.Platform.Android
 			return _outerLayout;
 		}
 
-		// Use OnDestory become OnDestroyView may fire before events are completed.
-		public override void OnDestroy()
+
+		void Destroy()
 		{
-			UnhookEvents(ShellItem);
+			if (ShellItem != null)
+				UnhookEvents(ShellItem);
+
+			((IShellController)ShellContext?.Shell)?.RemoveAppearanceObserver(this);
+
+			if (_bottomSheetDialog != null)
+			{
+				_bottomSheetDialog.DismissEvent -= OnMoreSheetDismissed;
+				_bottomSheetDialog?.Dispose();
+				_bottomSheetDialog = null;
+			}
+
+			_navigationArea?.Dispose();
+			_appearanceTracker?.Dispose();
+			_outerLayout?.Dispose();
+
 			if (_bottomView != null)
 			{
 				_bottomView?.SetOnNavigationItemSelectedListener(null);
 				_bottomView?.Background?.Dispose();
 				_bottomView?.Dispose();
-				_bottomView = null;
-
-				_navigationArea?.Dispose();
-				_navigationArea = null;
-
-				_appearanceTracker?.Dispose();
-				_appearanceTracker = null;
-
-				_outerLayout?.Dispose();
-				_outerLayout = null;
 			}
 
-			((IShellController)ShellContext.Shell).RemoveAppearanceObserver(this);
+			_bottomView = null;
+			_navigationArea = null;
+			_appearanceTracker = null;
+			_outerLayout = null;
 
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if (disposing)
+				Destroy();
+
+			base.Dispose(disposing);
+		}
+
+		// Use OnDestory become OnDestroyView may fire before events are completed.
+		public override void OnDestroy()
+		{
+			Destroy();
 			base.OnDestroy();
 		}
 
@@ -134,7 +162,8 @@ namespace Xamarin.Forms.Platform.Android
 			bottomSheetLayout.Orientation = Orientation.Vertical;
 
 			// handle the more tab
-			for (int i = _bottomView.MaxItemCount - 1; i < ShellItem.Items.Count; i++)
+			var items = ((IShellItemController)ShellItem).GetItems();
+			for (int i = _bottomView.MaxItemCount - 1; i < items.Count; i++)
 			{
 				var closure_i = i;
 				var shellContent = ShellItem.Items[i];
@@ -171,11 +200,14 @@ namespace Xamarin.Forms.Platform.Android
 					image.LayoutParameters = lp;
 					lp.Dispose();
 
-					image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());
 					ShellContext.ApplyDrawableAsync(shellContent, ShellSection.IconProperty, icon =>
 					{
 						if (!image.IsDisposed())
+						{
+							var color = Color.Black.MultiplyAlpha(0.6).ToAndroid();
+							icon.SetTint(color);
 							image.SetImageDrawable(icon);
+						}
 					});
 
 					innerLayout.AddView(image);
@@ -212,7 +244,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnShellSectionChanged();
 
-			var index = ShellItem.Items.IndexOf(ShellSection);
+			var index = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
 			using (var menu = _bottomView.Menu)
 			{
 				index = Math.Min(index, menu.Size() - 1);
@@ -242,13 +274,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (id == MoreTabId)
 			{
 				var items = CreateTabList(ShellItem);
-				var bottomSheetDialog = BottomNavigationViewUtils.CreateMoreBottomSheet(OnMoreItemSelected, Context, items, _bottomView.MaxItemCount);
-				bottomSheetDialog.Show();
-				bottomSheetDialog.DismissEvent += OnMoreSheetDismissed;
+				_bottomSheetDialog = BottomNavigationViewUtils.CreateMoreBottomSheet(OnMoreItemSelected, Context, items, _bottomView.MaxItemCount);
+				_bottomSheetDialog.Show();
+				_bottomSheetDialog.DismissEvent += OnMoreSheetDismissed;
 			}
 			else
 			{
-				var shellSection = ShellItem.Items[id];
+				var shellSection = ((IShellItemController)ShellItem).GetItems()[id];
 				if (item.IsChecked)
 				{
 					OnTabReselected(shellSection);
@@ -271,8 +303,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ChangeSection(shellSection);
 
-			dialog.Dismiss();
-			dialog.Dispose();
+			dialog.Dismiss(); //should trigger OnMoreSheetDismissed, which will clean up the dialog
+			if (dialog != _bottomSheetDialog) //should never be true, but just in case, prevent a leak
+				dialog.Dispose();
 		}
 
 		List<(string title, ImageSource icon, bool tabEnabled)> CreateTabList(ShellItem shellItem)
@@ -287,7 +320,17 @@ namespace Xamarin.Forms.Platform.Android
 			return items;
 		}
 
-		protected virtual void OnMoreSheetDismissed(object sender, EventArgs e) => OnShellSectionChanged();
+		protected virtual void OnMoreSheetDismissed(object sender, EventArgs e)
+		{
+			OnShellSectionChanged();
+
+			if (_bottomSheetDialog != null)
+			{
+				_bottomSheetDialog.DismissEvent -= OnMoreSheetDismissed;
+				_bottomSheetDialog.Dispose();
+				_bottomSheetDialog = null;
+			}
+		}
 
 		protected override void OnShellItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -303,9 +346,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.PropertyName == BaseShellItem.IsEnabledProperty.PropertyName)
 			{
 				var content = (ShellSection)sender;
-				var index = ShellItem.Items.IndexOf(content);
+				var index = ((IShellItemController)ShellItem).GetItems().IndexOf(content);
 
-				var itemCount = ShellItem.Items.Count;
+				var itemCount = ((IShellItemController)ShellItem).GetItems().Count;
 				var maxItems = _bottomView.MaxItemCount;
 
 				if (itemCount > maxItems && index > maxItems - 2)
@@ -329,7 +372,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void SetupMenu(IMenu menu, int maxBottomItems, ShellItem shellItem)
 		{
-			var currentIndex = shellItem.Items.IndexOf(ShellSection);
+			var currentIndex = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
 			var items = CreateTabList(shellItem);
 
 			BottomNavigationViewUtils.SetupMenu(

@@ -5,28 +5,32 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class GroupableItemsViewController : SelectableItemsViewController
+	public class GroupableItemsViewController<TItemsView> : SelectableItemsViewController<TItemsView>
+		where TItemsView : GroupableItemsView
 	{
-		GroupableItemsView GroupableItemsView => (GroupableItemsView)ItemsView;
-
 		// Keep a cached value for the current state of grouping around so we can avoid hitting the 
 		// BindableProperty all the time 
 		bool _isGrouped;
 
 		Action _scrollAnimationEndedCallback;
 
-		public GroupableItemsViewController(GroupableItemsView groupableItemsView, ItemsViewLayout layout) 
+		public GroupableItemsViewController(TItemsView groupableItemsView, ItemsViewLayout layout) 
 			: base(groupableItemsView, layout)
 		{
-			_isGrouped = GroupableItemsView.IsGrouped;
+			_isGrouped = ItemsView.IsGrouped;
+		}
+
+		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
+		{
+			return new GroupableItemsViewDelegator<TItemsView, GroupableItemsViewController<TItemsView>>(ItemsViewLayout, this);
 		}
 
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
 			// Use the BindableProperty here (instead of _isGroupingEnabled) because the cached value might not be set yet
-			if (GroupableItemsView.IsGrouped) 
+			if (ItemsView.IsGrouped) 
 			{
-				return ItemsSourceFactory.CreateGrouped(GroupableItemsView.ItemsSource, CollectionView);
+				return ItemsSourceFactory.CreateGrouped(ItemsView.ItemsSource, this);
 			}
 
 			return base.CreateItemsViewSource();
@@ -34,7 +38,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void UpdateItemsSource()
 		{
-			_isGrouped = GroupableItemsView.IsGrouped;
+			_isGrouped = ItemsView.IsGrouped;
 			base.UpdateItemsSource();
 		}
 
@@ -91,8 +95,8 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateTemplatedSupplementaryView(TemplatedCell cell, NSString elementKind, NSIndexPath indexPath)
 		{
 			DataTemplate template = elementKind == UICollectionElementKindSectionKey.Header
-				? GroupableItemsView.GroupHeaderTemplate
-				: GroupableItemsView.GroupFooterTemplate;
+				? ItemsView.GroupHeaderTemplate
+				: ItemsView.GroupFooterTemplate;
 
 			var bindingContext = ItemsSource.Group(indexPath);
 
@@ -106,12 +110,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		string DetermineViewReuseId(NSString elementKind)
 		{
-			if (elementKind == UICollectionElementKindSectionKey.Header)
-			{
-				return DetermineViewReuseId(GroupableItemsView.GroupHeaderTemplate);
-			}
-
-			return DetermineViewReuseId(GroupableItemsView.GroupFooterTemplate);
+			return DetermineViewReuseId(elementKind == UICollectionElementKindSectionKey.Header 
+				? ItemsView.GroupHeaderTemplate 
+				: ItemsView.GroupFooterTemplate);
 		}
 
 		string DetermineViewReuseId(DataTemplate template)
@@ -131,29 +132,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal CGSize GetReferenceSizeForHeader(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
-			if (!_isGrouped)
-			{
-				return CGSize.Empty;
-			}
-
 			// Currently we explicitly measure all of the headers/footers 
 			// Long-term, we might want to look at performance hints (similar to ItemSizingStrategy) for 
 			// headers/footers (if the dev knows for sure they'll all the be the same size)
-
-			var cell = GetViewForSupplementaryElement(collectionView, UICollectionElementKindSectionKey.Header, 
-				NSIndexPath.FromItemSection(0, section)) as ItemsViewCell;
-
-			return cell.Measure();
+			return GetReferenceSizeForheaderOrFooter(collectionView, ItemsView.GroupHeaderTemplate, UICollectionElementKindSectionKey.Header, section);
 		}
 
 		internal CGSize GetReferenceSizeForFooter(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
-			if (!_isGrouped)
+			return GetReferenceSizeForheaderOrFooter(collectionView, ItemsView.GroupFooterTemplate, UICollectionElementKindSectionKey.Footer, section);
+		}
+
+		internal CGSize GetReferenceSizeForheaderOrFooter(UICollectionView collectionView,DataTemplate template, NSString elementKind, nint section)
+		{
+			if (!_isGrouped || template == null)
 			{
 				return CGSize.Empty;
 			}
 
-			var cell = GetViewForSupplementaryElement(collectionView, UICollectionElementKindSectionKey.Footer, 
+			var cell = GetViewForSupplementaryElement(collectionView, elementKind,
 				NSIndexPath.FromItemSection(0, section)) as ItemsViewCell;
 
 			return cell.Measure();
@@ -168,6 +165,47 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_scrollAnimationEndedCallback?.Invoke();
 			_scrollAnimationEndedCallback = null;
+		}
+
+		internal UIEdgeInsets GetInsetForSection(ItemsViewLayout itemsViewLayout,
+			UICollectionView collectionView, nint section)
+		{
+			var uIEdgeInsets = ItemsViewLayout.GetInsetForSection(collectionView, itemsViewLayout, section);
+
+			if (!ItemsView.IsGrouped)
+			{
+				return uIEdgeInsets;
+			}
+
+			// If we're grouping, we'll need to inset the sections to maintain the item spacing between the 
+			// groups and/or their group headers/footers
+
+			var itemsLayout = ItemsView.ItemsLayout;
+			var scrollDirection = itemsViewLayout.ScrollDirection;
+			nfloat lineSpacing = itemsViewLayout.GetMinimumLineSpacingForSection(collectionView, itemsViewLayout, section);
+
+			if (itemsLayout is GridItemsLayout)
+			{
+				nfloat itemSpacing = itemsViewLayout.GetMinimumInteritemSpacingForSection(collectionView, itemsViewLayout, section);
+
+				if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					return new UIEdgeInsets(itemSpacing + uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left, 
+						uIEdgeInsets.Bottom, uIEdgeInsets.Right);
+				}
+
+				return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, itemSpacing + uIEdgeInsets.Left, 
+					uIEdgeInsets.Bottom, uIEdgeInsets.Right);
+			}
+
+			if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
+			{
+				return new UIEdgeInsets(uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left, 
+					uIEdgeInsets.Bottom, uIEdgeInsets.Right);
+			}
+
+			return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, uIEdgeInsets.Left, 
+				uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -22,5 +22,11 @@ namespace Xamarin.Forms
 		void SendInsetChanged(Thickness inset, double tabThickness);
 
 		void SendPopped();
+		void SendPopping(Page page);
+		void SendPopped(Page page);
+
+		ReadOnlyCollection<ShellContent> GetItems();
+
+		event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
 	}
 }

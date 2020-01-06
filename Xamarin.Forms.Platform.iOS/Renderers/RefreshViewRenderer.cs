@@ -23,19 +23,18 @@ namespace Xamarin.Forms.Platform.iOS
 				_isRefreshing = value;
 
 				if (Element != null && Element.IsRefreshing != _isRefreshing)
-					Element.IsRefreshing = _isRefreshing;
+					Element.SetValueFromRenderer(RefreshView.IsRefreshingProperty, _isRefreshing);
 
-				if (_isRefreshing)
+
+				if (_isRefreshing != _refreshControl.Refreshing)
 				{
-					_refreshControl.BeginRefreshing();
+					if (_isRefreshing)
+						_refreshControl.BeginRefreshing();
+					else
+						_refreshControl.EndRefreshing();
 
-					if (Element is RefreshView refreshView && refreshView.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
-						refreshView.Command.Execute(refreshView?.CommandParameter);
+					TryOffsetRefresh(this, IsRefreshing);
 				}
-				else
-					_refreshControl.EndRefreshing();
-
-				TryOffsetRefresh(this, IsRefreshing);
 			}
 		}
 
@@ -119,7 +118,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return true;
 			}
 
-			if (view is UIWebView)
+			if (view is WkWebViewRenderer)
 			{
 				return true;
 			}
@@ -156,7 +155,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return true;
 			}
 
-			if (view is UIWebView webView)
+			if (view is WkWebViewRenderer webView)
 			{
 				webView.ScrollView.InsertSubview(_refreshControl, index);
 				return true;
