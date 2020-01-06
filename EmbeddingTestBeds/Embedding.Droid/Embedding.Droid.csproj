@@ -34,6 +34,7 @@
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <IntermediateOutputPath>C:\Users\shane\AppData\Local\Temp\vsF2A7.tmp\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>portable</DebugType>
@@ -46,6 +47,7 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <IntermediateOutputPath>C:\Users\shane\AppData\Local\Temp\vsF2A7.tmp\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
