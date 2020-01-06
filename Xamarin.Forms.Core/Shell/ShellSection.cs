@@ -351,24 +351,7 @@ namespace Xamarin.Forms
 								continue;
 						}
 
-						while (navStack.Count > i + 1)
-						{
-							if (Navigation.ModalStack.Contains(navStack[navStack.Count - 1]))
-							{
-								await Navigation.PopModalAsync(false);
-							}
-							else if (Navigation.ModalStack.Count > 0)
-							{
-								await Navigation.ModalStack[Navigation.ModalStack.Count - 1].Navigation.PopAsync(false);
-							}
-							else
-							{
-								await OnPopAsync(false);
-							}
-
-							navStack = BuildFlattenedNavigationStack(new List<Page>(_navStack), Navigation?.ModalStack);
-						}
-
+						IsPoppingModalStack = true;
 						while (navStack.Count > i + 1)
 						{
 							if (Navigation.ModalStack.Contains(navStack[navStack.Count - 1]))
@@ -386,6 +369,7 @@ namespace Xamarin.Forms
 							
 							navStack = BuildFlattenedNavigationStack(new List<Page>(_navStack), Navigation?.ModalStack);
 						}
+						IsPoppingModalStack = false;
 
 						break;
 					}
