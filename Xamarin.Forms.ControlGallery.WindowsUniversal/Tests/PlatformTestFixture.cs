@@ -7,7 +7,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 	{
 		protected IVisualElementRenderer GetRenderer(VisualElement element)
 		{
-			return Platform.UWP.Platform.CreateRenderer(element);
+			return element.GetOrCreateRenderer();
 		}
 
 		protected TextBlock GetNativeControl(Label label)
