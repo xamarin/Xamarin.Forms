@@ -492,10 +492,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			protected override void OnAppearing()
 			{
 				base.OnAppearing();
-
-				if (Parent == null)
-					throw new Exception("Parent is null");
-
 				Appearing = true;
 			}
 

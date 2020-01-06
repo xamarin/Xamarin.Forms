@@ -597,6 +597,7 @@ namespace Xamarin.Forms.Controls
 
 		protected TestShell() : base()
 		{
+			Routing.Clear();
 #if APP
 			Init();
 #endif

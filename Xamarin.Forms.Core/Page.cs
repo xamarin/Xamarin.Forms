@@ -308,9 +308,6 @@ namespace Xamarin.Forms
 
 			if(_titleView != null)
 				SetInheritedBindingContext(_titleView, BindingContext);
-
-			if (Shell.GetModalBehavior(this) is ModalBehavior modalBehavior)
-				SetInheritedBindingContext(modalBehavior, BindingContext);
 		}
 
 		protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)

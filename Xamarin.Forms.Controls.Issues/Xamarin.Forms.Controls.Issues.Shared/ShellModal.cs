@@ -25,11 +25,13 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
 #endif
-	public class ShellModalBehavior : TestShell
+	public class ShellModal : TestShell
 	{
 		protected override void Init()
 		{
-			Routing.RegisterRoute(nameof(ShellModalBehavior), typeof(ModalTestPage));
+			Routing.RegisterRoute(nameof(ModalTestPage), typeof(ModalTestPage));
+			Routing.RegisterRoute(nameof(ModalNavigationTestPage), typeof(ModalNavigationTestPage));
+			
 			AddContentPage(new ContentPage()
 			{
 				Content = new StackLayout()
@@ -39,17 +41,33 @@ namespace Xamarin.Forms.Controls.Issues
 						new Button()
 						{
 							Text = "Push Modal",
-							Command = new Command(() =>
+							Command = new Command(async () =>
 							{
-								GoToAsync(nameof(ShellModalBehavior));
+								await GoToAsync(nameof(ModalNavigationTestPage));
 							})
 						},
 						new Button()
 						{
-							Text = "Goto Different Tab and Push Modal",
-							Command = new Command(() =>
+							Text = "Push Two Modals",
+							Command = new Command(async () =>
 							{
-								GoToAsync("//OtherTab/ShellModalBehavior");
+								await GoToAsync($"{nameof(ModalNavigationTestPage)}/{nameof(ModalNavigationTestPage)}");
+							})
+						},
+						new Button()
+						{
+							Text = "Push Modal And Then A Page Onto That Modal Navigation Stack",
+							Command = new Command(async () =>
+							{
+								await GoToAsync($"{nameof(ModalNavigationTestPage)}/{nameof(ModalTestPage)}");
+							})
+						},
+						new Button()
+						{
+							Text = "Goto Different Tab And Push Modal",
+							Command = new Command(async () =>
+							{
+								await GoToAsync("///OtherTab/ModalNavigationTestPage");
 							})
 						}
 					}
@@ -61,20 +79,36 @@ namespace Xamarin.Forms.Controls.Issues
 
 		[Preserve(AllMembers = true)]
 		[QueryProperty("IsModal", "IsModal")]
-		public class ModalTestPage : ContentPage
+		public class ModalNavigationTestPage : NavigationPage
 		{
+			public ModalNavigationTestPage() : base(new ModalTestPage())
+			{
+				IsModal = "true";
+			}
 			public string IsModal
 			{
 				set
 				{
-					Shell.GetModalBehavior(this).Modal = Convert.ToBoolean(value);
+					Shell.SetIsModal(this, Convert.ToBoolean(value));
 				}
 			}
 
+			protected override void OnAppearing()
+			{
+				base.OnAppearing();
+			}
+
+			protected override void OnDisappearing()
+			{
+				base.OnDisappearing();
+			}
+		}
+
+		[Preserve(AllMembers = true)]
+		public class ModalTestPage : ContentPage
+		{
 			public ModalTestPage()
 			{
-				Shell.SetModalBehavior(this, new ModalBehavior());
-
 				Content = new StackLayout()
 				{
 					Children =
@@ -96,15 +130,15 @@ namespace Xamarin.Forms.Controls.Issues
 							Text = "Push Another Modal Page",
 							Command = new Command(async () =>
 							{
-								await Shell.Current.GoToAsync($"{nameof(ShellModalBehavior)}?IsModal=true");
+								await Shell.Current.GoToAsync($"{nameof(ModalNavigationTestPage)}?IsModal=true");
 							})
 						},
 						new Button()
 						{
-							Text = "Push a Content Page Onto Previous Modal Page",
+							Text = "Push Content Page Onto Visible Modal Navigation Stack",
 							Command = new Command(async () =>
 							{
-								await Shell.Current.GoToAsync($"{nameof(ShellModalBehavior)}?IsModal=false");
+								await Shell.Current.GoToAsync($"{nameof(ModalTestPage)}?IsModal=false");
 							})
 						}
 					}

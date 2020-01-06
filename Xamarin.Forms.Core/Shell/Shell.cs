@@ -26,16 +26,9 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(newHandlerBehavior, bindable.BindingContext);
 		}
 
-		public static readonly BindableProperty ModalBehaviorProperty =
-			BindableProperty.CreateAttached("ModalBehavior", typeof(ModalBehavior), typeof(Shell), null, BindingMode.OneTime, propertyChanged: OnModalBehaviorPropertyChanged);
+		public static readonly BindableProperty IsModalProperty = BindableProperty.CreateAttached("IsModal", typeof(bool), typeof(Shell), false);
 
-		static void OnModalBehaviorPropertyChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			if (oldValue is ModalBehavior oldHandlerBehavior)
-				SetInheritedBindingContext(oldHandlerBehavior, null);
-			if (newValue is ModalBehavior newHandlerBehavior)
-				SetInheritedBindingContext(newHandlerBehavior, bindable.BindingContext);
-		}
+		public static readonly BindableProperty IsModalAnimatedProperty = BindableProperty.CreateAttached("IsModalAnimated", typeof(bool), typeof(Shell), true);
 
 		public static readonly BindableProperty FlyoutBehaviorProperty =
 			BindableProperty.CreateAttached("FlyoutBehavior", typeof(FlyoutBehavior), typeof(Shell), FlyoutBehavior.Flyout,
@@ -81,8 +74,11 @@ namespace Xamarin.Forms
 		public static BackButtonBehavior GetBackButtonBehavior(BindableObject obj) => (BackButtonBehavior)obj.GetValue(BackButtonBehaviorProperty);
 		public static void SetBackButtonBehavior(BindableObject obj, BackButtonBehavior behavior) => obj.SetValue(BackButtonBehaviorProperty, behavior);
 
-		public static ModalBehavior GetModalBehavior(BindableObject obj) => (ModalBehavior)obj.GetValue(ModalBehaviorProperty);
-		public static void SetModalBehavior(BindableObject obj, ModalBehavior behavior) => obj.SetValue(ModalBehaviorProperty, behavior);
+		public static bool GetIsModal(BindableObject obj) => (bool)obj.GetValue(IsModalProperty);
+		public static void SetIsModal(BindableObject obj, bool isModal) => obj.SetValue(IsModalProperty, isModal);
+
+		public static bool GetIsModalAnimated(BindableObject obj) => (bool)obj.GetValue(IsModalAnimatedProperty);
+		public static void SetIsModalAnimated(BindableObject obj, bool isModalAnimated) => obj.SetValue(IsModalAnimatedProperty, isModalAnimated);
 
 		public static FlyoutBehavior GetFlyoutBehavior(BindableObject obj) => (FlyoutBehavior)obj.GetValue(FlyoutBehaviorProperty);
 		public static void SetFlyoutBehavior(BindableObject obj, FlyoutBehavior value) => obj.SetValue(FlyoutBehaviorProperty, value);
@@ -455,10 +451,12 @@ namespace Xamarin.Forms
 			var nextActiveSection = shellSection ?? shellItem?.CurrentItem;
 			
 			ShellContent shellContent = navigationRequest.Request.Content;
+			bool modalStackPreBuilt = false;
 
 			// If we're replacing the whole stack and there are global routes then build the navigation stack before setting the shell section visible
 			if (navigationRequest.Request.GlobalRoutes.Count > 0 && nextActiveSection != null && navigationRequest.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
 			{
+				modalStackPreBuilt = true;
 				await nextActiveSection.GoToAsync(navigationRequest, queryData, false);
 			}
 			
@@ -493,16 +491,13 @@ namespace Xamarin.Forms
 					navigatedToNewShellElement = true;
 				}
 
-				if (currentShellSection?.Navigation.ModalStack.Count > 0)
+				if (!modalStackPreBuilt && currentShellSection?.Navigation.ModalStack.Count > 0)
 				{
 					// - navigating to new shell element so just pop everything
 					// - or route contains no global route requests
 					if (navigatedToNewShellElement || navigationRequest.Request.GlobalRoutes.Count == 0)
 					{
-						for (int i = 0; i < currentShellSection.Navigation.ModalStack.Count; i++)
-						{
-							await currentShellSection.Navigation.PopModalAsync();
-						}
+						await currentShellSection.PopModalStackToPage(null);
 					}
 				}
 
@@ -1264,8 +1259,13 @@ namespace Xamarin.Forms
 				if (ModalStack.Count > 0)
 					ModalStack[ModalStack.Count - 1].SendDisappearing();
 
-				if (ModalStack.Count == 1)
-					_shell.CurrentItem.SendAppearing();
+				if (!_shell.CurrentItem.CurrentItem.IsPoppingModalStack)
+				{
+					if (ModalStack.Count == 1)
+						_shell.CurrentItem.SendAppearing();
+					else if (ModalStack.Count > 1)
+						ModalStack[ModalStack.Count - 2].SendAppearing();
+				}
 
 				return base.OnPopModal(animated);
 			}
@@ -1274,7 +1274,9 @@ namespace Xamarin.Forms
 				if (ModalStack.Count == 0)
 					_shell.CurrentItem.SendDisappearing();
 
-				modal.SendAppearing();
+				if(!_shell.CurrentItem.CurrentItem.IsPushingModalStack)
+					modal.SendAppearing();
+
 				return base.OnPushModal(modal, animated);
 			}
 		}

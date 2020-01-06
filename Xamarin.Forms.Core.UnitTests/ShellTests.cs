@@ -462,45 +462,18 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void ModalBehaviorSet()
+		public void ModalSetters()
 		{
 			var page = new ContentPage();
 
-			Assert.IsNull(Shell.GetModalBehavior(page));
+			Assert.IsFalse(Shell.GetIsModal(page));
+			Assert.IsTrue(Shell.GetIsModalAnimated(page));
 
-			var modalBehavior = new ModalBehavior();
+			Shell.SetIsModal(page, true);
+			Shell.SetIsModalAnimated(page, false);
 
-			Shell.SetModalBehavior(page, modalBehavior);
-
-			Assert.AreEqual(modalBehavior, Shell.GetModalBehavior(page));
-		}
-
-		[Test]
-		public void ModalBehaviorBindingContextPropagationOnPageWithExistingBindingContext()
-		{
-			object bindingContext = new object();
-			var page = new ContentPage();
-			var modalBehavior = new ModalBehavior();
-
-			page.BindingContext = bindingContext;
-			Shell.SetModalBehavior(page, modalBehavior);
-
-			Assert.NotNull(page.BindingContext);
-			Assert.AreEqual(page.BindingContext, modalBehavior.BindingContext);
-		}
-
-		[Test]
-		public void ModalBehaviorBindingContextPropagationOnPage()
-		{
-			object bindingContext = new object();
-			var page = new ContentPage();
-			var modalBehavior = new ModalBehavior();
-
-			Shell.SetModalBehavior(page, modalBehavior);
-			page.BindingContext = bindingContext;
-
-			Assert.NotNull(page.BindingContext);
-			Assert.AreEqual(page.BindingContext, modalBehavior.BindingContext);
+			Assert.IsTrue(Shell.GetIsModal(page));
+			Assert.IsFalse(Shell.GetIsModalAnimated(page));
 		}
 
 		[Test]
