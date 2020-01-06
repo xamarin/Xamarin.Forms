@@ -18,6 +18,13 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			return viewRenderer.Control;
 		}
 
+		protected UIView GetNativeControl(VisualElement visualElement)
+		{
+			var renderer = GetRenderer(visualElement);
+			var viewRenderer = renderer as IVisualNativeElementRenderer;
+			return viewRenderer.Control;
+		}
+
 		protected UITextField GetNativeControl(Entry entry)
 		{
 			var renderer = GetRenderer(entry);
