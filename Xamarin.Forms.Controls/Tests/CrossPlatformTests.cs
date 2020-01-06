@@ -15,13 +15,15 @@ namespace Xamarin.Forms.Controls.Tests
 			}
 		}
 
-		[Test(Description = "Always Passes")]
+		[Test]
+		[Description("Always Passes")]
 		public void PassingCrossPlatformTest()
 		{
 			Assert.Pass();
 		}
 
-		[Test(Description = "Setting ListView Header to null should not crash")]
+		[Test]
+		[Description("Setting ListView Header to null should not crash")]
 		public void Bugzilla28575()
 		{
 			string header = "Hello I am Header!!!!";
@@ -39,7 +41,8 @@ namespace Xamarin.Forms.Controls.Tests
 			listview.Header = null;
 		}
 
-		[Test(Description = "isPresentedChanged raises multiple times")]
+		[Test]
+		[Description("isPresentedChanged raises multiple times")]
 		public void Bugzilla32230()
 		{
 			var mdp = new MasterDetailPage();
@@ -54,7 +57,8 @@ namespace Xamarin.Forms.Controls.Tests
 			Assert.That(count, Is.EqualTo(3));
 		}
 
-		[Test(Description = "ButtonRenderer UpdateTextColor function crash")]
+		[Test]
+		[Description("ButtonRenderer UpdateTextColor function crash")]
 		public void Bugzilla35738() 
 		{
 			var customButton = new TestClasses.CustomButton() { Text = "This is a custom button", TextColor = Color.Fuchsia };
