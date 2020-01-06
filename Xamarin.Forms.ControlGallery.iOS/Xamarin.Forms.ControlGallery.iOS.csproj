@@ -116,6 +116,7 @@
     <Compile Include="RegistrarValidationService.cs" />
     <Compile Include="SampleNativeControl.cs" />
     <Compile Include="Tests\BackgroundColorTests.cs" />
+    <Compile Include="Tests\OpacityTests.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="Tests\PlatformTestFixture.cs" />
     <Compile Include="Tests\RendererTests.cs" />
