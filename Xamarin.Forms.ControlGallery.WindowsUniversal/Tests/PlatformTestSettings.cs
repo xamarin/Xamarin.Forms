@@ -14,7 +14,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 		{
 			TestRunSettings = new Dictionary<string, object>
 			{
-				// Creating/modifying any renderers on UWP off the UI thread causes problems
+				// Creating/modifying any renderers off the UI thread causes problems
 				// so we want to force the tests to run on main
 				{ FrameworkPackageSettings.RunOnMainThread, true }
 			};
