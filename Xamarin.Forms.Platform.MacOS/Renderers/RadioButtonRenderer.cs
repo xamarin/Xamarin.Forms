@@ -138,6 +138,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		void HandleButtonPressed()
 		{
 			Element?.SendPressed();
+
+			if (!Element.IsChecked)
+				Element.IsChecked = !Element.IsChecked;
 		}
 
 		void HandleButtonReleased()
