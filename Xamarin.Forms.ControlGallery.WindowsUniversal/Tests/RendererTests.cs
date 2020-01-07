@@ -10,8 +10,8 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 		public void LabelTextMatchesRendererText()
 		{
 			var label = new Label { Text = "foo" };
-			var textView = GetNativeControl(label);
-			Assert.That(label.Text == textView.Text);
+			var textBlock = GetNativeControl(label);
+			Assert.That(label.Text == textBlock.Text);
 		}
 	}
 }

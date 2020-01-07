@@ -10,9 +10,29 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 			return element.GetOrCreateRenderer();
 		}
 
+		protected Control GetNativeControl(VisualElement element)
+		{
+			return GetRenderer(element).GetNativeElement() as Control;
+		}
+
 		protected TextBlock GetNativeControl(Label label)
 		{
 			return GetRenderer(label).GetNativeElement() as TextBlock;
+		}
+
+		protected FormsButton GetNativeControl(Button button)
+		{
+			return GetRenderer(button).GetNativeElement() as FormsButton;
+		}
+
+		protected FormsTextBox GetNativeControl(Entry entry)
+		{
+			return GetRenderer(entry).GetNativeElement() as FormsTextBox;
+		}
+
+		protected FormsTextBox GetNativeControl(Editor editor)
+		{
+			return GetRenderer(editor).GetNativeElement() as FormsTextBox;
 		}
 	}
 }
