@@ -3,7 +3,7 @@ using Windows.UI.Xaml.Input;
 
 // The Content Dialog item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Xamarin.Forms.Platform.UAP
+namespace Xamarin.Forms.Platform.UWP
 {
 	public sealed partial class PromptDialog : ContentDialog
 	{
