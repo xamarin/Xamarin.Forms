@@ -15,6 +15,11 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 			return GetRenderer(element).GetNativeElement() as Control;
 		}
 
+		protected Panel GetContainer(VisualElement element) 
+		{
+			return GetRenderer(element).ContainerElement as Panel;
+		}
+		
 		protected TextBlock GetNativeControl(Label label)
 		{
 			return GetRenderer(label).GetNativeElement() as TextBlock;
