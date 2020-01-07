@@ -161,7 +161,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ButtonElementManager.OnButtonTouchUpInside(this.Element);
 
-			Element.IsChecked = !Element.IsChecked;
+			if (!Element.IsChecked)
+				Element.IsChecked = !Element.IsChecked;
+
 			_radioButtonLayer.SetNeedsDisplay();
 		}
 
