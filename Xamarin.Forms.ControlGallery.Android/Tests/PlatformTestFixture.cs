@@ -36,7 +36,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 
 		protected IVisualElementRenderer GetRenderer(VisualElement element) 
 		{
-			return Platform.Android.Platform.CreateRendererWithContext(element, Context);
+			return element.GetRenderer() ?? Platform.Android.Platform.CreateRendererWithContext(element, Context);
 		}
 
 		protected TextView GetNativeControl(Label label) 
