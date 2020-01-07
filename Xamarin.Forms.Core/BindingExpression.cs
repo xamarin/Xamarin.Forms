@@ -20,6 +20,7 @@ namespace Xamarin.Forms
 		WeakReference<object> _weakSource;
 		WeakReference<BindableObject> _weakTarget;
 		List<WeakReference<Element>> _ancestryChain;
+		bool _isBindingContextRelativeSource;
 
 		internal BindingExpression(BindingBase binding, string path)
 		{
@@ -278,15 +279,16 @@ namespace Xamarin.Forms
 					return pi;
 			}
 
+			//defined on a base class ?
+			if (sourceType.BaseType is Type baseT && GetIndexer(baseT.GetTypeInfo(), indexerName, content) is PropertyInfo p)
+				return p;
+
 			//defined on an interface ?
 			foreach (var face in sourceType.ImplementedInterfaces) {
 				if (GetIndexer(face.GetTypeInfo(), indexerName, content) is PropertyInfo pi)
 					return pi;
 			}
 
-			//defined on a base class ?
-			if (sourceType.BaseType is Type baseT && GetIndexer(baseT.GetTypeInfo(), indexerName, content) is PropertyInfo p)
-				return p;
 			return null;
 		}
 
@@ -466,15 +468,21 @@ namespace Xamarin.Forms
 		// OnElementParentSet are used with RelativeSource ancestor-type bindings, to detect when
 		// there has been an ancestry change requiring re-applying the binding, and to minimize
 		// re-applications especially during visual tree building.
-		internal void SubscribeToAncestryChanges(List<Element> chain)
+		internal void SubscribeToAncestryChanges(List<Element> chain, bool includeBindingContext, bool rootIsSource)
 		{
 			ClearAncestryChangeSubscriptions();
 			if (chain == null)
 				return;
+			_isBindingContextRelativeSource = includeBindingContext;
 			_ancestryChain = new List<WeakReference<Element>>();
-			foreach (var elem in chain)
+			for (int i = 0; i < chain.Count; i++)
 			{
-				elem.ParentSet += OnElementParentSet;
+				var elem = chain[i];
+				if (i != chain.Count - 1 || !rootIsSource)	
+					// don't care about a successfully resolved source's parents
+					elem.ParentSet += OnElementParentSet;
+				if (_isBindingContextRelativeSource)
+					elem.BindingContextChanged += OnElementBindingContextChanged;
 				_ancestryChain.Add(new WeakReference<Element>(elem));
 			}
 		}
@@ -489,7 +497,11 @@ namespace Xamarin.Forms
 				Element elem;
 				var weakElement = _ancestryChain.Last();
 				if (weakElement.TryGetTarget(out elem))
+				{
 					elem.ParentSet -= OnElementParentSet;
+					if (_isBindingContextRelativeSource)
+						elem.BindingContextChanged -= OnElementBindingContextChanged;
+				}
 				_ancestryChain.RemoveAt(_ancestryChain.Count - 1);
 			}
 		}
@@ -508,6 +520,30 @@ namespace Xamarin.Forms
 					return i;
 			}
 			return -1;
+		}
+
+		void OnElementBindingContextChanged(object sender, EventArgs e)
+		{
+			if (!(sender is Element elem) ||
+				!(this.Binding is Binding binding))
+				return;
+
+			BindableObject target = null;
+			if (_weakTarget?.TryGetTarget(out target) != true)
+				return;
+
+			object currentSource = null;
+			if (_weakSource?.TryGetTarget(out currentSource) == true)
+			{
+				// make sure that this isn't just a repeat notice
+				// from someone else in the chain about our already-resolved 
+				// binding source
+				if (object.ReferenceEquals(currentSource, elem.BindingContext))
+					return;
+			}
+
+			binding.Unapply();
+			binding.Apply(null, target, _targetProperty);
 		}
 
 		void OnElementParentSet(object sender, EventArgs e)

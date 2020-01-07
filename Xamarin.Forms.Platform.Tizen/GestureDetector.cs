@@ -1,17 +1,13 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using ElmSharp;
-using Xamarin.Forms.Internals;
 using EGestureType = ElmSharp.GestureLayer.GestureType;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
 	internal class GestureDetector
 	{
-		readonly IDictionary<EGestureType, List<GestureHandler>> _handlerCache = new Dictionary<EGestureType, List<GestureHandler>>();
+		readonly IDictionary<EGestureType, List<GestureHandler>> _handlerCache;
 
 		readonly IVisualElementRenderer _renderer;
 		GestureLayer _gestureLayer;
@@ -50,17 +46,10 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public GestureDetector(IVisualElementRenderer renderer)
 		{
+			_handlerCache = new Dictionary<EGestureType, List<GestureHandler>>();
 			_renderer = renderer;
 			_isEnabled = View.IsEnabled;
 			_inputTransparent = View.InputTransparent;
-
-			(View.GestureRecognizers as ObservableCollection<IGestureRecognizer>).CollectionChanged += OnGestureRecognizerCollectionChanged;
-
-			if (View.GestureRecognizers.Count > 0)
-			{
-				CreateGestureLayer();
-				AddGestures(View.GestureRecognizers);
-			}
 		}
 
 		public void Clear()
@@ -76,6 +65,23 @@ namespace Xamarin.Forms.Platform.Tizen
 				}
 			}
 			_handlerCache.Clear();
+		}
+
+		public void AddGestures(IEnumerable<IGestureRecognizer> recognizers)
+		{
+			if (_gestureLayer == null)
+			{
+				CreateGestureLayer();
+			}
+
+			foreach (var item in recognizers)
+				AddGesture(item);
+		}
+
+		public void RemoveGestures(IEnumerable<IGestureRecognizer> recognizers)
+		{
+			foreach (var item in recognizers)
+				RemoveGesture(item);
 		}
 
 		void CreateGestureLayer()
@@ -96,19 +102,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_gestureLayer.IsEnabled = !_inputTransparent && _isEnabled;
 			}
-		}
-
-
-		void AddGestures(IEnumerable<IGestureRecognizer> recognizers)
-		{
-			foreach (var item in recognizers)
-				AddGesture(item);
-		}
-
-		void RemoveGestures(IEnumerable<IGestureRecognizer> recognizers)
-		{
-			foreach (var item in recognizers)
-				RemoveGesture(item);
 		}
 
 		void AddGesture(IGestureRecognizer recognizer)
@@ -476,7 +469,23 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		GestureHandler CreateHandler(IGestureRecognizer recognizer)
 		{
-			return Registrar.Registered.GetHandlerForObject<GestureHandler>(recognizer, recognizer);
+			if (recognizer is TapGestureRecognizer)
+			{
+				return new TapGestureHandler(recognizer);
+			}
+			else if (recognizer is PinchGestureRecognizer)
+			{
+				return new PinchGestureHandler(recognizer);
+			}
+			else if (recognizer is PanGestureRecognizer)
+			{
+				return new PanGestureHandler(recognizer);
+			}
+			else if (recognizer is SwipeGestureRecognizer)
+			{
+				return new SwipeGestureHandler(recognizer);
+			}
+			return Forms.GetHandlerForObject<GestureHandler>(recognizer, recognizer);
 		}
 
 		GestureHandler LookupHandler(IGestureRecognizer recognizer)
@@ -539,32 +548,6 @@ namespace Xamarin.Forms.Platform.Tizen
 					default:
 						break;
 				}
-			}
-		}
-
-		void OnGestureRecognizerCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			// Gestures will be registered/unregistered according to changes in the GestureRecognizers list
-			switch (e.Action)
-			{
-				case NotifyCollectionChangedAction.Add:
-					if (_gestureLayer == null)
-						CreateGestureLayer();
-					AddGestures(e.NewItems.OfType<IGestureRecognizer>());
-					break;
-
-				case NotifyCollectionChangedAction.Replace:
-					RemoveGestures(e.OldItems.OfType<IGestureRecognizer>());
-					AddGestures(e.NewItems.OfType<IGestureRecognizer>());
-					break;
-
-				case NotifyCollectionChangedAction.Remove:
-					RemoveGestures(e.OldItems.OfType<IGestureRecognizer>());
-					break;
-
-				case NotifyCollectionChangedAction.Reset:
-					Clear();
-					break;
 			}
 		}
 	}

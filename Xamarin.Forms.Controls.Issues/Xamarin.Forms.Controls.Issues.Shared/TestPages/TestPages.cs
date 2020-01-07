@@ -619,12 +619,17 @@ namespace Xamarin.Forms.Controls
 				return;
 			}
 
-			Items[0].Items[0].Items.Add(new ShellContent()
+			var content = new ShellContent()
 			{
 				Title = title ?? page.Title,
 				Content = page,
-				Icon = icon
-			});
+				Icon = icon			
+			};
+
+			Items[0].Items[0].Items.Add(content);
+
+			if (!String.IsNullOrWhiteSpace(content.Title))
+				content.Route = content.Title;
 		}
 
 		public ContentPage AddBottomTab(string title, string icon = null)
@@ -688,6 +693,7 @@ namespace Xamarin.Forms.Controls
 			item.Title = shellItemTitle;
 
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
+			shellSection.Title = shellItemTitle;
 
 			shellSection.Items.Add(new ShellContent()
 			{
@@ -785,7 +791,7 @@ namespace Xamarin.Forms.Controls.Issues
 	using System;
 	using NUnit.Framework;
 
-	// Run setup once for all tests in the Xamarin.Forms.Controls.Issues namespace
+// Run setup once for all tests in the Xamarin.Forms.Controls.Issues namespace
 	// (instead of once for each test)
 	[SetUpFixture]
 	public class IssuesSetup

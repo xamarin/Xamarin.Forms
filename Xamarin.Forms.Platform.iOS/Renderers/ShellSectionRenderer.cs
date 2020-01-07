@@ -31,6 +31,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		IShellSectionController ShellSectionController => ShellSection;
+
 		public UIViewController ViewController => this;
 
 		#endregion IShellContentRenderer
@@ -60,7 +62,6 @@ namespace Xamarin.Forms.Platform.iOS
 		Page _displayedPage;
 		bool _disposed;
 		bool _firstLayoutCompleted;
-		bool _ignorePop;
 		TaskCompletionSource<bool> _popCompletionTask;
 		IShellSectionRootRenderer _renderer;
 		ShellSection _shellSection;
@@ -70,18 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Delegate = new NavDelegate(this);
 			_context = context;
 		}
-
-		public override UIViewController PopViewController(bool animated)
-		{
-			if (!_ignorePop)
-			{
-				_popCompletionTask = new TaskCompletionSource<bool>();
-				SendPoppedOnCompletion(_popCompletionTask.Task);
-			}
-
-			return base.PopViewController(animated);
-		}
-
+		
 		[Export("navigationBar:shouldPopItem:")]
 		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
 		{
@@ -94,7 +84,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (allowPop)
 			{
 				// Do not remove, wonky behavior on some versions of iOS if you dont dispatch
-				CoreFoundation.DispatchQueue.MainQueue.DispatchAsync(() => PopViewController(true));
+				CoreFoundation.DispatchQueue.MainQueue.DispatchAsync(() =>
+				{
+					_popCompletionTask = new TaskCompletionSource<bool>();
+					SendPoppedOnCompletion(_popCompletionTask.Task);
+					PopViewController(true);
+				});
 			}
 			else
 			{
@@ -174,12 +169,17 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTabBarItem();
 		}
 
+		protected virtual IShellSectionRootRenderer CreateShellSectionRootRenderer(ShellSection shellSection, IShellContext shellContext)
+		{
+			return new ShellSectionRootRenderer(shellSection, shellContext);
+		}
+
 		protected virtual void LoadPages()
 		{
-			_renderer = new ShellSectionRootRenderer(ShellSection, _context);
+			_renderer = CreateShellSectionRootRenderer(ShellSection, _context);
 
 			PushViewController(_renderer.ViewController, false);
-
+			
 			var stack = ShellSection.Stack;
 			for (int i = 1; i < stack.Count; i++)
 			{
@@ -202,8 +202,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_displayedPage != null)
 			{
 				_displayedPage.PropertyChanged += OnDisplayedPagePropertyChanged;
-				if (!ShellSection.Stack.Contains(_displayedPage))
-					UpdateNavigationBarHidden();
+				UpdateNavigationBarHidden();
+				UpdateNavigationBarHasShadow();
 			}
 		}
 
@@ -260,9 +260,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_popCompletionTask = new TaskCompletionSource<bool>();
 			e.Task = _popCompletionTask.Task;
 
-			_ignorePop = true;
 			PopViewController(animated);
-			_ignorePop = false;
 
 			await _popCompletionTask.Task;
 
@@ -372,6 +370,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
 				UpdateNavigationBarHidden();
+			else if (e.PropertyName == Shell.NavBarHasShadowProperty.PropertyName)
+				UpdateNavigationBarHasShadow();
 		}
 
 		void PushPage(Page page, bool animated, TaskCompletionSource<bool> completionSource = null)
@@ -424,6 +424,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateNavigationBarHidden()
 		{
 			SetNavigationBarHidden(!Shell.GetNavBarIsVisible(_displayedPage), true);
+		}
+
+		void UpdateNavigationBarHasShadow()
+		{
+			_appearanceTracker.SetHasShadow(this, Shell.GetNavBarHasShadow(_displayedPage));
 		}
 
 		void UpdateShadowImages()
@@ -486,6 +491,20 @@ namespace Xamarin.Forms.Platform.iOS
 					navBarVisible = Shell.GetNavBarIsVisible(element);
 
 				navigationController.SetNavigationBarHidden(!navBarVisible, true);
+
+				var coordinator = viewController.GetTransitionCoordinator();
+				if (coordinator != null)
+				{
+					// handle swipe to dismiss gesture 
+					coordinator.NotifyWhenInteractionEndsUsingBlock((context) =>
+					{
+						if (!context.IsCancelled)
+						{
+							_self._popCompletionTask = new TaskCompletionSource<bool>();
+							_self.SendPoppedOnCompletion(_self._popCompletionTask.Task);
+						}
+					});
+				}
 			}
 		}
 	}
