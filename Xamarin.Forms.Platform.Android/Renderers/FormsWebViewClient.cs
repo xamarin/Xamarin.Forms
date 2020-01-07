@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.Android
 			cookieManager.SetAcceptCookie(true);
 			cookieManager.RemoveAllCookie();
 			var cookies = _renderer.Element.Cookies.GetCookies(new System.Uri(url));
-			for (var i = 0; i < cookies.Count; i++)
+			for (var i = 0; i < (cookies?.Count ?? -1); i++)
 			{
 				string cookieValue = cookies[i].Value;
 				string cookieDomain = cookies[i].Domain;
