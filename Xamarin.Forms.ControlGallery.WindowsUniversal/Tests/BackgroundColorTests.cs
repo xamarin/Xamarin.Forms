@@ -27,7 +27,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 					new ProgressBar { BackgroundColor = Color.AliceBlue },
 					
 					// SearchBar is currently busted; when 8773 gets merged we can turn this back on
-					//new SearchBar { Text = "foo", BackgroundColor = Color.AliceBlue },
+					// new SearchBar { Text = "foo", BackgroundColor = Color.AliceBlue },
 					
 					new Stepper { BackgroundColor = Color.AliceBlue },
 					new Switch { BackgroundColor = Color.AliceBlue },
