@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.CustomAttributes;
@@ -30,9 +32,21 @@ namespace Xamarin.Forms.Core.UITests
 		void ShouldShowMenu()
 		{
 #if __ANDROID__
-			//show secondary menu
-			App.WaitForElement(c => c.Class("OverflowMenuButton"));
-			App.Tap(c => c.Class("OverflowMenuButton"));
+			// show secondary menu
+			// When running these tests as release/d8/r8/AndroidX the runner was having trouble locating "OverflowMenuButton"
+			// so we search through the ActionMenu for the button
+			var menuElements = App.WaitForElement(c => c.Class("ActionMenuView").Descendant());
+			var menuElement = menuElements.Where(x => x.Class.Contains("OverflowMenuButton")).FirstOrDefault();
+
+			if (menuElement != null)
+			{
+				App.Tap(c => c.Class(menuElement.Class));
+			}
+			else
+			{
+				App.WaitForElement(c => c.Class("OverflowMenuButton"));
+				App.Tap(c => c.Class("OverflowMenuButton"));
+			}
 #endif
 		}
 
