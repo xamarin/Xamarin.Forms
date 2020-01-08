@@ -6,7 +6,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 	[Internals.Preserve(AllMembers = true)]
 	public class RendererTests : PlatformTestFixture
 	{
-		[Test]
+		[Test, Category("Label")]
 		[Description("Basic sanity check that Label text matches renderer text")]
 		public void LabelTextMatchesRendererText()
 		{
