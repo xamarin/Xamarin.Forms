@@ -8,7 +8,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.ControlGallery.WindowsUniversal;
 using Xamarin.Forms.Controls.Issues;
-using Xamarin.Forms.Platform.UAP;
 using Xamarin.Forms.Platform.UWP;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Issues.Bugzilla42602.TextBoxView), typeof(Xamarin.Forms.ControlGallery.WindowsUniversal.TextBoxViewRenderer))]

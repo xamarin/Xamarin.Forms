@@ -3,9 +3,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
-using Xamarin.Forms.Platform.UWP;
 
-namespace Xamarin.Forms.Platform.UAP
+namespace Xamarin.Forms.Platform.UWP
 {
 	public class BoxViewBorderRenderer : ViewRenderer<BoxView, Border>
 	{
