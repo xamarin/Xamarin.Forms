@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var gesture = new PanGestureRecognizer();
 
-			this.PropertyChanged += ExampleTemplateCarousel_PropertyChanged;
+			PropertyChanged += ExampleTemplateCarouselPropertyChanged;
 
 			gesture.PanUpdated += (sender, e) =>
 			{
@@ -61,11 +61,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			//GestureRecognizers.Add(gesture);
 		}
 
-		private void ExampleTemplateCarousel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private void ExampleTemplateCarouselPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.ScaleProperty.PropertyName)
 			{
-				System.Diagnostics.Debug.WriteLine($"{this.Scale}");
+				System.Diagnostics.Debug.WriteLine($"{Scale}");
 			}
 		}
 	}

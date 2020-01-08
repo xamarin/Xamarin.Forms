@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Platform.Android
 			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 			_oldViews = new List<View>();
 		}
-
 	
 		protected override void Dispose(bool disposing)
 		{
@@ -43,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Carousel = newElement as FormsCarouselView;
 
-			Carousel.Scrolled += CarouselScrolled;
+			Carousel.Scrolled += CarouselViewScrolled;
 			base.SetUpNewElement(newElement);
 
 			if (newElement == null)
@@ -57,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void TearDownOldElement(ItemsView oldElement)
 		{
 			if (Carousel != null)
-				Carousel.Scrolled -= CarouselScrolled;
+				Carousel.Scrolled -= CarouselViewScrolled;
 			base.TearDownOldElement(oldElement);
 		}
 
@@ -208,11 +207,6 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateAdapter();
 		}
 
-		void CarouselScrolled(object sender, ItemsViewScrolledEventArgs e)
-		{
-			UpdateVisualStates();
-		}
-
 		void UpdateInitialPosition()
 		{
 			_initialPosition = Carousel.Position;
@@ -298,5 +292,9 @@ namespace Xamarin.Forms.Platform.Android
 			_oldViews = newViews;
 		}
 
+		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+		{
+			UpdateVisualStates();
+		}
 	}
 }

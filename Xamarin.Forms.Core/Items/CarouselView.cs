@@ -208,15 +208,13 @@ namespace Xamarin.Forms
 
 		protected override void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
-			//if(!_isUpdating)
-			//	CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
+			CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
 
 			base.OnScrolled(e);
 		}
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			System.Diagnostics.Debug.WriteLine($"old-{oldValue} and new-{newValue}");
 			var carousel = (CarouselView)bindable;
 
 			var args = new PositionChangedEventArgs((int)oldValue, (int)newValue);
