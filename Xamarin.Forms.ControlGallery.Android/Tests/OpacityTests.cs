@@ -16,6 +16,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			{
 				return new VisualElement[]
 				{
+					new Button{ Text = "foo", Opacity = TestOpacity },
 					new CheckBox { Opacity = TestOpacity },
 					new DatePicker { Opacity = TestOpacity  },
 					new Editor { Text = "foo", Opacity = TestOpacity  },
