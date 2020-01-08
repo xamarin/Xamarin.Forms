@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Xamarin.Forms.CustomAttributes;
@@ -9,32 +8,19 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 	[TestFixture]
 	public class OpacityTests : PlatformTestFixture
 	{
-		static readonly double TestOpacity = 0.35;
-
-		static IEnumerable<VisualElement> VisualElements
+		static IEnumerable TestCases
 		{
 			get
 			{
-				return new VisualElement[]
+				foreach (var element in BasicElements)
 				{
-					new Button{ Text = "foo", Opacity = TestOpacity },
-					new CheckBox { Opacity = TestOpacity },
-					new DatePicker { Opacity = TestOpacity  },
-					new Editor { Text = "foo", Opacity = TestOpacity  },
-					new Entry { Text = "foo", Opacity = TestOpacity  },
-					new Image { Opacity = TestOpacity  },
-					new Label { Opacity = TestOpacity  },
-					new Picker { Opacity = TestOpacity  },
-					new ProgressBar { Opacity = TestOpacity  },
-					new SearchBar { Text = "foo", Opacity = TestOpacity  },
-					new Stepper { Opacity = TestOpacity  },
-					new Switch { Opacity = TestOpacity  },
-					new TimePicker { Opacity = TestOpacity  },
-				};
+					element.Opacity = 0.35;
+					yield return new TestCaseData(element);
+				}
 			}
 		}
 
-		[Test, TestCaseSource(nameof(VisualElements))]
+		[Test, TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement opacity should match renderer opacity")]
 		public void OpacityConsistent(VisualElement element)
 		{
