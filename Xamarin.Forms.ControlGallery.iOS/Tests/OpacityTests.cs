@@ -44,7 +44,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 
 					var expected = view.Opacity;
 
-					// Deliberatly casting this to double because Within doesn't seem to grasp nfloat
+					// Deliberately casting this to double because Within doesn't seem to grasp nfloat
 					// If you write this the other way around (casting expected to an nfloat), it fails
 					Assert.That((double)uiView.Alpha, Is.EqualTo(expected).Within(0.001d));
 				}
