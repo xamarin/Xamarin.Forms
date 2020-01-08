@@ -145,9 +145,8 @@ namespace Xamarin.Forms.Platform.UWP
 					return;
 				timerTick = newTimerTick;
 				bool result = callback();
-				if (result)
-					return;
-				CompositionTarget.Rendering -= renderingFrameEventHandler;
+				if (!result)
+					CompositionTarget.Rendering -= renderingFrameEventHandler;
 			}
 			CompositionTarget.Rendering += renderingFrameEventHandler;
 		}
@@ -164,9 +163,8 @@ namespace Xamarin.Forms.Platform.UWP
 					return;
 				timerTick = newTimerTick;
 				bool result = await callback();
-				if (result)
-					return;
-				CompositionTarget.Rendering -= renderingFrameEventHandler;
+				if (!result)
+					CompositionTarget.Rendering -= renderingFrameEventHandler;
 			}
 			CompositionTarget.Rendering += renderingFrameEventHandler;
 		}
