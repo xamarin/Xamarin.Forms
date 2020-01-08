@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Xamarin.Forms.CustomAttributes;
@@ -6,7 +7,7 @@ using Xamarin.Forms.CustomAttributes;
 namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
 	[TestFixture]
-	public class OpacityTests : PlatformTestFixture 
+	public class OpacityTests : PlatformTestFixture
 	{
 		static readonly double TestOpacity = 0.35;
 
