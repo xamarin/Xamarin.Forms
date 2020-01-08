@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Tizen.Telephony;
 using Xamarin.Forms.Internals;
 using TAppControl = Tizen.Applications.AppControl;
 
@@ -133,6 +134,32 @@ namespace Xamarin.Forms.Platform.Tizen
 							}
 							invoking = false;
 						}
+					);
+				}
+			};
+			timer = new Timer(onTimeout, null, Timeout.Infinite, Timeout.Infinite);
+			// set interval separarately to prevent calling onTimeout before `timer' is assigned
+			timer.Change(interval, interval);
+		}
+
+		public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+		{
+			Timer timer = null;
+			bool invoking = false;
+			TimerCallback onTimeout = o =>
+			{
+				if (!invoking)
+				{
+					invoking = true;
+					BeginInvokeOnMainThread( async () =>
+					{
+						var callbackResult = await callback();
+						if (!callbackResult)
+						{
+							timer.Dispose();
+						}
+						invoking = false;
+					}
 					);
 				}
 			};

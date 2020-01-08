@@ -107,6 +107,19 @@ namespace Xamarin.Forms.Platform.GTK
 			});
 		}
 
+		public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+		{
+			bool callbackResult = true;
+
+			GLib.Timeout.Add((uint)interval.TotalMilliseconds, () =>
+			{
+				ExecuteCallBack();
+				return callbackResult;
+			});
+
+			async void ExecuteCallBack() => callbackResult = await callback();
+		}
+
 		private static int Hex(int v)
 		{
 			if (v < 10)

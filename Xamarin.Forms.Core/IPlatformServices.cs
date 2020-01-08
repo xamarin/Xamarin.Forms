@@ -31,6 +31,8 @@ namespace Xamarin.Forms.Internals
 
 		void StartTimer(TimeSpan interval, Func<bool> callback);
 
+		void StartTimer(TimeSpan interval, Func<Task<bool>> callback);
+
 		string RuntimePlatform { get; }
 
 		void QuitApplication();

@@ -755,6 +755,25 @@ namespace Xamarin.Forms
 				}, (long)interval.TotalMilliseconds);
 			}
 
+			public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+			{
+				var handler = new Handler(Looper.MainLooper);
+				handler.PostDelayed(() =>
+				{
+					callback().ContinueWith(completedTask =>
+					{
+						if (completedTask.IsFaulted
+							|| (completedTask.IsCompleted && !completedTask.Result))
+						{
+							StartTimer(interval, callback);
+						}
+
+						handler.Dispose();
+						handler = null;
+					});
+				}, (long)interval.TotalMilliseconds);
+			}
+
 			double ConvertTextAppearanceToSize(int themeDefault, int deviceDefault, double defaultValue)
 			{
 				double myValue;

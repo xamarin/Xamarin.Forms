@@ -334,6 +334,22 @@ namespace Xamarin.Forms
 				NSRunLoop.Main.AddTimer(timer, NSRunLoopMode.Common);
 			}
 
+			public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+			{
+				NSTimer timer = NSTimer.CreateRepeatingTimer(interval, t =>
+				{
+					callback().ContinueWith(completedTask =>
+					{
+						if (completedTask.IsFaulted
+							|| (completedTask.IsCompleted && !completedTask.Result))
+						{
+							t.Invalidate();
+						}
+					});
+				});
+				NSRunLoop.Main.AddTimer(timer, NSRunLoopMode.Common);
+			}
+
 			HttpClient GetHttpClient()
 			{
 				var proxy = CoreFoundation.CFNetwork.GetSystemProxySettings();
