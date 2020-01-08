@@ -730,7 +730,7 @@ namespace Xamarin.Forms.Controls
 			where TShellItem : ShellItem
 			where TShellSection : ShellSection
 		{
-			title = title ?? contentPage.Title;
+			title = title ?? contentPage?.Title;
 			contentPage = contentPage ?? new ContentPage();
 			TShellItem item = Activator.CreateInstance<TShellItem>();
 			item.Title = title;
