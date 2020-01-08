@@ -174,19 +174,34 @@ namespace Xamarin.Forms.Platform.Android
 				result = Typeface.CreateFromAsset(AApplication.Context.Assets, FontNameToFontFile(fontFamily));
 				result = Typeface.Create(result, style);
 			}
+
+			else if (IsResourceFontFamily(fontFamily))
+			{
+				try
+				{
+					var fontResource =
+						AApplication.Context.Resources.GetIdentifier(fontFamily.Split('#')[0], "font",
+							AApplication.Context.PackageName);
+					result = AApplication.Context.Resources.GetFont(fontResource);
+				}
+				catch
+				{
+					var style = ToTypefaceStyle(fontAttribute);
+					result = Typeface.Create(fontFamily, style);
+				}
+			}
 			else
 			{
 				var style = ToTypefaceStyle(fontAttribute);
-
-
-				var fontResource =
-					AApplication.Context.Resources.GetIdentifier(fontFamily, "font",
-						AApplication.Context.PackageName);
-				result = AApplication.Context.Resources.GetFont(fontResource);
-				result = Typeface.Create(result, style);
+				result = Typeface.Create(fontFamily, style);
 			}
 
 			return result;
+		}
+
+		public static bool IsResourceFontFamily(string fontFamily)
+		{
+			return fontFamily.Contains("#");
 		}
 
 		public static TypefaceStyle ToTypefaceStyle(FontAttributes attrs)

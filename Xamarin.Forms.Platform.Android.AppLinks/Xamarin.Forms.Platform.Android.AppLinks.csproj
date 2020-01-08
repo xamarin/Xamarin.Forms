@@ -12,15 +12,21 @@
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  <PropertyGroup  Condition="'$(MSBuildAssemblyVersion)' != '16.0'">
+  <PropertyGroup Condition="'$(MSBuildAssemblyVersion)' != '16.0'">
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\$(Configuration)\$(TargetFramework)</OutputPath>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Resources\Resource.designer.cs" />
+  </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Resource.designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Firebase.AppIndexing" Version="71.1602.0" />
