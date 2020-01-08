@@ -16,19 +16,23 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				foreach (var element in BasicElements)
 				{
 					var typeName = element.GetType().Name;
-					yield return new TestCaseData(element).SetName($"{typeName}_IsEnabled_True");
+					yield return new TestCaseData(element)
+						.SetName($"{typeName}_IsEnabled_True")
+						.SetCategory(typeName);
 				}
 
 				// Generate IsEnabled = false cases
 				foreach (var element in BasicElements)
 				{
 					var typeName = element.GetType().Name;
-					yield return new TestCaseData(element).SetName($"{typeName}_IsEnabled_False");
+					yield return new TestCaseData(element)
+						.SetName($"{typeName}_IsEnabled_False")
+						.SetCategory(typeName);
 				}
 			}
 		}
 
-		[Test, TestCaseSource(nameof(TestCases))]
+		[Test, Category("IsEnabled"), TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement enabled should match renderer enabled")]
 		public void EnabledConsistent(VisualElement element)
 		{

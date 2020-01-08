@@ -19,12 +19,13 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				foreach (var element in BasicElements.Where(e => !(e is Button)))
 				{
 					element.BackgroundColor = Color.AliceBlue;
-					yield return new TestCaseData(element);
+					yield return new TestCaseData(element)
+						.SetCategory(element.GetType().Name);
 				}
 			}
 		}
 
-		[Test]
+		[Test, Category("BackgroundColor"), Category("Button")]
 		[Description("Button background color should match renderer background color")]
 		public void ButtonBackgroundColorConsistent()
 		{
@@ -44,7 +45,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			}
 		}
 
-		[Test, TestCaseSource(nameof(TestCases))]
+		[Test, Category("BackgroundColor"), TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement background color should match renderer background color")]
 		public void BackgroundColorConsistent(VisualElement element)
 		{
