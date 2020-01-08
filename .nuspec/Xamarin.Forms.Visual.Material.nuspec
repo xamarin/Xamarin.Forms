@@ -25,7 +25,7 @@
         <dependency id="Xamarin.Android.Support.v7.AppCompat" version="28.0.0.3"/>
       </group>
       <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.1.0-preview06" />
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.1.0-rc1" />
         <dependency id="Xamarin.Google.Android.Material" version="1.1.0-preview06" />
       </group>
       <group targetFramework="Xamarin.iOS10">
