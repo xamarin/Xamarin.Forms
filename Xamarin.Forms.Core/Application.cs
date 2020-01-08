@@ -76,13 +76,11 @@ namespace Xamarin.Forms
 				if (_mainPage != null)
 				{
 					InternalChildren.Remove(_mainPage);
-					_mainPage.NavigationProxy.Inner = null;
 
 					// Set platform inner proxy to null
 					// otherwise the incoming page will make decisions based on the 
-					// previous application state
+					// previous platform application state
 					NavigationProxy.Inner = null;
-
 					_mainPage.Parent = null;
 				}
 
