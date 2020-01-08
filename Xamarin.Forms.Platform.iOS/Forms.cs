@@ -336,16 +336,11 @@ namespace Xamarin.Forms
 
 			public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
 			{
-				NSTimer timer = NSTimer.CreateRepeatingTimer(interval, t =>
+				NSTimer timer = NSTimer.CreateRepeatingTimer(interval, async t =>
 				{
-					callback().ContinueWith(completedTask =>
-					{
-						if (completedTask.IsFaulted
-							|| (completedTask.IsCompleted && !completedTask.Result))
-						{
-							t.Invalidate();
-						}
-					});
+					var result = await callback();
+					if (result)
+						t.Invalidate();
 				});
 				NSRunLoop.Main.AddTimer(timer, NSRunLoopMode.Common);
 			}

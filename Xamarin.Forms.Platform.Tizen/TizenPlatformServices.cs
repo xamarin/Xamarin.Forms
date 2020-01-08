@@ -151,15 +151,15 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (!invoking)
 				{
 					invoking = true;
-					BeginInvokeOnMainThread( async () =>
-					{
-						var callbackResult = await callback();
-						if (!callbackResult)
+					BeginInvokeOnMainThread(async () =>
 						{
-							timer.Dispose();
+							var result = await callback();
+							if (!result)
+							{
+								timer.Dispose();
+							}
+							invoking = false;
 						}
-						invoking = false;
-					}
 					);
 				}
 			};

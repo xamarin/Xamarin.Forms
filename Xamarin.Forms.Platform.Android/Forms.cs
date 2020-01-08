@@ -758,19 +758,14 @@ namespace Xamarin.Forms
 			public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
 			{
 				var handler = new Handler(Looper.MainLooper);
-				handler.PostDelayed(() =>
+				handler.PostDelayed(async () =>
 				{
-					callback().ContinueWith(completedTask =>
-					{
-						if (completedTask.IsFaulted
-							|| (completedTask.IsCompleted && !completedTask.Result))
-						{
-							StartTimer(interval, callback);
-						}
+					var result = await callback();
+					if (result)
+						StartTimer(interval, callback);
 
-						handler.Dispose();
-						handler = null;
-					});
+					handler.Dispose();
+					handler = null;
 				}, (long)interval.TotalMilliseconds);
 			}
 

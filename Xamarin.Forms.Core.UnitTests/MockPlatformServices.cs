@@ -120,14 +120,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
 		{
 			Timer timer = null;
-			TimerCallback onTimeout = o => BeginInvokeOnMainThread(() => {
-				callback().ContinueWith(completedTask =>
-				{
-					if (!completedTask.IsFaulted && !completedTask.Result)
-						return;
+			TimerCallback onTimeout = o => BeginInvokeOnMainThread(async () =>
+			{
+				var result = await callback();
+				if (result)
+					return;
 
-					timer.Dispose();
-				});					
+				timer.Dispose();
 			});
 			timer = new Timer(onTimeout, null, interval, interval);
 		}
