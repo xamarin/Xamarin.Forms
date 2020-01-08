@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.ControlGallery.iOS.Tests
@@ -8,19 +9,20 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 	{
 		static readonly double TestOpacity = 0.4;
 
-		static IEnumerable<VisualElement> VisualElements
+		static IEnumerable TestCases
 		{
 			get
 			{
-				foreach (var element in BasicElements)
+				foreach (var element in BasicElements.Where(e => !(e is Label)))
 				{
 					element.Opacity = TestOpacity;
-					yield return element;
+					yield return new TestCaseData(element)
+						.SetCategory(element.GetType().Name);
 				}
 			}
 		}
 
-		[Test, TestCaseSource(nameof(VisualElements))]
+		[Test, Category("Opacity"), TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement opacity should match renderer opacity")]
 		public void OpacityConsistent(View view)
 		{
@@ -41,8 +43,8 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			}
 		}
 
-		[Test]
-		[Description("Label background color should match renderer background color")]
+		[Test, Category("Opacity"), Category("Label")]
+		[Description("Label opacity should match renderer opacity")]
 		public void LabelOpacityConsistent()
 		{
 			var label = new Label { Text = "foo", Opacity = TestOpacity };

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using Xamarin.Forms.Platform.iOS;
 
@@ -8,29 +8,20 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 	[TestFixture]
 	public class BackgroundColorTests : PlatformTestFixture 
 	{
-		static IEnumerable<VisualElement> VisualElements 
+		static IEnumerable TestCases
 		{
-			get 
+			get
 			{
-				return new VisualElement[] 
+				foreach (var element in BasicElements.Where(e => !(e is Label)))
 				{
-					new Button { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new CheckBox { BackgroundColor = Color.AliceBlue },
-					new DatePicker { BackgroundColor = Color.AliceBlue },
-					new Editor { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Entry { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Image { BackgroundColor = Color.AliceBlue },
-					new Picker { BackgroundColor = Color.AliceBlue },
-					new ProgressBar { BackgroundColor = Color.AliceBlue },
-					new SearchBar { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Stepper { BackgroundColor = Color.AliceBlue },
-					new Switch { BackgroundColor = Color.AliceBlue },
-					new TimePicker { BackgroundColor = Color.AliceBlue },
-				};
+					element.BackgroundColor = Color.AliceBlue;
+					yield return new TestCaseData(element)
+						.SetCategory(element.GetType().Name);
+				}
 			}
 		}
 
-		[Test, TestCaseSource(nameof(VisualElements))]
+		[Test, Category("BackgroundColor"), TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement background color should match renderer background color")]
 		public void BackgroundColorConsistent(VisualElement element) 
 		{
@@ -41,7 +32,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			}
 		}
 
-		[Test]
+		[Test, Category("BackgroundColor"), Category("Label")]
 		[Description("Label background color should match renderer background color")]
 		public void LabelBackgroundColorConsistent() 
 		{
