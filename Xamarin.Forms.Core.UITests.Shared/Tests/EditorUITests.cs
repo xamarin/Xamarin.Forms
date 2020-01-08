@@ -48,8 +48,13 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 #if __ANDROID__ || __IOS__
-		[Ignore("This is covered by the platform opacity tests")]
+		[Ignore("This is covered by the platform tests")]
 		public override void _Opacity() { }
+#endif
+
+#if __ANDROID__ || __IOS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _IsEnabled() { }
 #endif
 	}
 }
