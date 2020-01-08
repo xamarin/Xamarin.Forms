@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isDisposed;
 		bool _isRefreshing;
 		bool _usingLargeTitles;
-		nfloat _origininalY;
+		nfloat _originalY;
 		nfloat _refreshControlHeight;
 		UIView _refreshControlParent;
 		UIRefreshControl _refreshControl;
@@ -23,19 +23,18 @@ namespace Xamarin.Forms.Platform.iOS
 				_isRefreshing = value;
 
 				if (Element != null && Element.IsRefreshing != _isRefreshing)
-					Element.IsRefreshing = _isRefreshing;
+					Element.SetValueFromRenderer(RefreshView.IsRefreshingProperty, _isRefreshing);
 
-				if (_isRefreshing)
+
+				if (_isRefreshing != _refreshControl.Refreshing)
 				{
-					_refreshControl.BeginRefreshing();
+					if (_isRefreshing)
+						_refreshControl.BeginRefreshing();
+					else
+						_refreshControl.EndRefreshing();
 
-					if (Element is RefreshView refreshView && refreshView.Command != null && refreshView.Command.CanExecute(refreshView?.CommandParameter))
-						refreshView.Command.Execute(refreshView?.CommandParameter);
+					TryOffsetRefresh(this, IsRefreshing);
 				}
-				else
-					_refreshControl.EndRefreshing();
-
-				TryOffsetRefresh(this, IsRefreshing);
 			}
 		}
 
@@ -112,14 +111,14 @@ namespace Xamarin.Forms.Platform.iOS
 					return true;
 
 				if (refreshing)
-					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY - _refreshControlHeight), true);
+					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _originalY - _refreshControlHeight), true);
 				else
-					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _origininalY), true);
+					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _originalY), true);
 
 				return true;
 			}
 
-			if (view is UIWebView)
+			if (view is WkWebViewRenderer)
 			{
 				return true;
 			}
@@ -150,13 +149,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 				scrollView.AlwaysBounceVertical = true;
 
-				_origininalY = scrollView.ContentOffset.Y;
+				_originalY = scrollView.ContentOffset.Y;
 				_refreshControlHeight = _refreshControl.Frame.Size.Height;
 
 				return true;
 			}
 
-			if (view is UIWebView webView)
+			if (view is WkWebViewRenderer webView)
 			{
 				webView.ScrollView.InsertSubview(_refreshControl, index);
 				return true;

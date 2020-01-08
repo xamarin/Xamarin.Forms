@@ -108,13 +108,17 @@ namespace Xamarin.Forms.Platform.WPF
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, Control.Text);
 
 			// If an Entry.TextChanged handler modified the value of the Entry's text, the values could now be 
-			// out-of-sync; re-sync them and force the TextBox cursor to the end of the text
+			// out-of-sync; re-sync them and fix TextBox cursor position
 			string entryText = Element.Text;
 			if (Control.Text != entryText)
 			{
 				Control.Text = entryText;
 				if (Control.Text != null)
-					Control.SelectionStart = Control.Text.Length;
+				{
+					var savedSelectionStart = Control.SelectionStart;
+					var len = Control.Text.Length;
+					Control.SelectionStart = savedSelectionStart > len ? len : savedSelectionStart;
+				}
 			}
 
 			_ignoreTextChange = false;
@@ -144,17 +148,14 @@ namespace Xamarin.Forms.Platform.WPF
 			Entry entry = Element;
 			if (entry != null)
 			{
-				if (!IsNullOrEmpty(entry.Text))
-				{
-					if (!entry.TextColor.IsDefault)
-						Control.Foreground = entry.TextColor.ToBrush();
-					else
-						Control.Foreground = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
+				if (!entry.TextColor.IsDefault)
+					Control.Foreground = entry.TextColor.ToBrush();
+				else
+					Control.Foreground = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
 
-					// Force the PhoneTextBox control to do some internal bookkeeping
-					// so the colors change immediately and remain changed when the control gets focus
-					Control.OnApplyTemplate();
-				}
+				// Force the PhoneTextBox control to do some internal bookkeeping
+				// so the colors change immediately and remain changed when the control gets focus
+				Control.OnApplyTemplate();
 			}
 			else
 				Control.Foreground = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;

@@ -12,6 +12,7 @@
     <Company>Microsoft</Company>
     <Product>Xamarin.Forms</Product>
     <LangVersion>7.3</LangVersion>
+    <ProduceReferenceAssembly Condition="'$(UsingMicrosoftNETSdk)' == 'True' AND '$(Configuration)' == 'Debug'">True</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All"/>
@@ -22,4 +23,10 @@
     <CI>false</CI>
     <CI Condition="'$(TF_BUILD)' == 'true'">true</CI>
   </PropertyGroup>
+  
+  <!-- This is used by the libraries -->
+  <PropertyGroup Condition="'$(AndroidTargetFrameworks)' == ''">
+    <AndroidTargetFrameworks>MonoAndroid90;</AndroidTargetFrameworks>
+  </PropertyGroup>
+  
  </Project>

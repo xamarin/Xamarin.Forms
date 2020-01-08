@@ -18,10 +18,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public ItemsUpdatingScrollMode ItemsUpdatingScrollMode { get; set; }
 
-		protected ItemsViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy)
-		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewLayout));
+		public nfloat ConstrainedDimension { get; set; }
 
+		public Func<UICollectionViewCell> GetPrototype { get; set; }
+
+		internal ItemSizingStrategy ItemSizingStrategy { get; private set; }
+
+		protected ItemsViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy = ItemSizingStrategy.MeasureFirstItem)
+		{
 			ItemSizingStrategy = itemSizingStrategy;
 
 			_itemsLayout = itemsLayout;
@@ -76,12 +80,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateItemSpacing();
 			}
 		}
-
-		public nfloat ConstrainedDimension { get; set; }
-
-		public Func<UICollectionViewCell> GetPrototype { get; set; }
-
-		internal ItemSizingStrategy ItemSizingStrategy { get; private set; }
 
 		public abstract void ConstrainTo(CGSize size);
 

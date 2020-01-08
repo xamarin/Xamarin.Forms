@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class EntryRenderer : EntryRendererBase<UITextField>
 	{
+		[Preserve(Conditional = true)]
 		public EntryRenderer()
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
@@ -343,17 +344,19 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 
-			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
 		}
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
+			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdateText()
 		{
@@ -372,7 +375,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 
 			if (placeHolder != null)
-				Control.AttributedPlaceholder = placeHolder;
+				UpdateAttributedPlaceholder(placeHolder);
 		}
 
 		void UpdateMaxLength()

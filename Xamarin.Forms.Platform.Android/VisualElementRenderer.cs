@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		string _defaultContentDescription;
 		bool? _defaultFocusable;
+		ImportantForAccessibility? _defaultImportantForAccessibility;
 		string _defaultHint;
 		bool _cascadeInputTransparent = true;
 
@@ -304,10 +305,10 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (ManageNativeControlLifetime)
 				{
-					int count = ChildCount;
-					for (var i = 0; i < count; i++)
+					while (ChildCount > 0)
 					{
-						AView child = GetChildAt(i);
+						AView child = GetChildAt(0);
+						child.RemoveFromParent();
 						child.Dispose();
 					}
 				}
@@ -414,7 +415,7 @@ namespace Xamarin.Forms.Platform.Android
 			=> AutomationPropertiesProvider.SetContentDescription(this, Element, ref _defaultContentDescription, ref _defaultHint);
 
 		protected virtual void SetFocusable()
-			=> AutomationPropertiesProvider.SetFocusable(this, Element, ref _defaultFocusable);
+			=> AutomationPropertiesProvider.SetFocusable(this, Element, ref _defaultFocusable, ref _defaultImportantForAccessibility);
 
 		void UpdateInputTransparent()
 		{

@@ -197,17 +197,19 @@ namespace Xamarin.Forms.Platform.iOS
 					NavigationItem.RightBarButtonItems[i].Dispose();
 			}
 
-			List<UIBarButtonItem> items = new List<UIBarButtonItem>();
-			if (Page != null)
+			List<UIBarButtonItem> primaries = null;
+			if (Page.ToolbarItems.Count > 0)
 			{
-				foreach (var item in Page.ToolbarItems)
+				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x => x.Priority))
 				{
-					items.Add(item.ToUIBarButtonItem(false, true));
+					(primaries = primaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(false, true));
 				}
+
+				if (primaries != null)
+					primaries.Reverse();
 			}
 
-			items.Reverse();
-			NavigationItem.SetRightBarButtonItems(items.ToArray(), false);
+			NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
 
 			var behavior = BackButtonBehavior;
 
@@ -269,7 +271,8 @@ namespace Xamarin.Forms.Platform.iOS
 		void LeftBarButtonItemHandler(UIViewController controller, bool isRootPage)
 		{
 			var behavior = BackButtonBehavior;
-			var command = behavior.GetPropertyIfSet(BackButtonBehavior.CommandProperty, new Command(() => OnMenuButtonPressed(this, EventArgs.Empty)));
+			ICommand defaultCommand = new Command(() => OnMenuButtonPressed(this, EventArgs.Empty));
+			var command = behavior.GetPropertyIfSet(BackButtonBehavior.CommandProperty, defaultCommand);
 			var commandParameter = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandParameterProperty, null);
 
 			if (command == null && !isRootPage && controller?.ParentViewController is UINavigationController navigationController)

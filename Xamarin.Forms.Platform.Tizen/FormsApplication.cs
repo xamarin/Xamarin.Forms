@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Reflection;
 using ElmSharp;
 using Tizen.Applications;
 using Xamarin.Forms.Internals;
@@ -49,7 +50,24 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			base.OnPreCreate();
 			Application.ClearCurrent();
-			MainWindow = new Window("FormsWindow");
+			var type = typeof(Window);
+			// Use reflection to avoid breaking compatibility. ElmSharp.Window.CreateWindow() is has been added since API6.
+			var methodInfo = type.GetMethod("CreateWindow", BindingFlags.NonPublic | BindingFlags.Static);
+			Window window = null;
+			if (methodInfo != null)
+			{
+				window = (Window)methodInfo.Invoke(null, new object[] { "FormsWindow" });
+				BaseLayout = (ELayout)window.GetType().GetProperty("BaseLayout")?.GetValue(window);
+			}
+			else
+			{
+				window = PreloadedWindow.GetInstance() ?? new Window("FormsWindow");
+				if (window is PreloadedWindow precreated)
+				{
+					BaseLayout = precreated.BaseLayout;
+				}
+			}
+			MainWindow = window;
 		}
 
 		protected override void OnTerminate()
@@ -151,15 +169,18 @@ namespace Xamarin.Forms.Platform.Tizen
 			MainWindow.Active();
 			MainWindow.Show();
 
-			var conformant = new Conformant(MainWindow);
-			conformant.Show();
+			if (BaseLayout == null)
+			{
+				var conformant = new Conformant(MainWindow);
+				conformant.Show();
 
-			var layout = new ELayout(conformant);
-			layout.SetTheme("layout", "application", "default");
-			layout.Show();
+				var layout = new ELayout(conformant);
+				layout.SetTheme("layout", "application", "default");
+				layout.Show();
 
-			BaseLayout = layout;
-			conformant.SetContent(BaseLayout);
+				BaseLayout = layout;
+				conformant.SetContent(BaseLayout);
+			}
 
 			MainWindow.AvailableRotations = DisplayRotation.Degree_0 | DisplayRotation.Degree_90 | DisplayRotation.Degree_180 | DisplayRotation.Degree_270;
 

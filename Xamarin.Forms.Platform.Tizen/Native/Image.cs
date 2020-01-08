@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using ElmSharp;
-using Xamarin.Forms.Internals;
 using EImage = ElmSharp.Image;
 using ESize = ElmSharp.Size;
 
@@ -11,39 +10,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 	/// </summary>
 	public class Image : EImage, IMeasurable
 	{
-		Aspect _aspect;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Xamarin.Forms.Platform.Tizen.Native.Image"/> class.
 		/// </summary>
 		/// <param name="parent">The parent EvasObject.</param>
 		public Image(EvasObject parent) : base(parent)
 		{
-			IsScaling = true;
-			CanScaleUp = true;
-			CanScaleDown = true;
-
-			ApplyAspect(Aspect.AspectFit);
-		}
-
-		/// <summary>
-		/// Gets or sets the image aspect ratio preserving option.
-		/// </summary>
-		/// <value>The aspect option.</value>
-		public Aspect Aspect
-		{
-			get
-			{
-				return _aspect;
-			}
-
-			set
-			{
-				if (_aspect != value)
-				{
-					ApplyAspect(value);
-				}
-			}
 		}
 
 		/// <summary>
@@ -55,7 +27,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			IImageSourceHandler handler;
 			bool isLoadComplate = false;
-			if (source != null && (handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			if (source != null && (handler = Forms.GetHandlerForObject<IImageSourceHandler>(source)) != null)
 			{
 				isLoadComplate = await handler.LoadImageAsync(this, source);
 			}
@@ -68,6 +40,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return isLoadComplate;
 		}
 
+		public bool LoadFromFile(string file)
+		{
+			if (!string.IsNullOrEmpty(file))
+			{
+				return Load(ResourcePath.GetPath(file));
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Implements the <see cref="Xamarin.Forms.Platform.Tizen.Native.IMeasurable"/> interface.
 		/// </summary>
@@ -76,7 +57,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		public ESize Measure(int availableWidth, int availableHeight)
 		{
 			var imageSize = ObjectSize;
-
 			var size = new ESize()
 			{
 				Width = imageSize.Width,
@@ -96,37 +76,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 
 			return size;
-		}
-
-		/// <summary>
-		/// Sets the <c>IsFixedAspect</c> and <c>CanFillOutside</c> properties according to the given <paramref name="aspect"/>.
-		/// </summary>
-		/// <param name="aspect">The aspect setting to be applied to the image.</param>
-		void ApplyAspect(Aspect aspect)
-		{
-			_aspect = aspect;
-
-			switch (_aspect)
-			{
-				case Aspect.AspectFit:
-					IsFixedAspect = true;
-					CanFillOutside = false;
-					break;
-
-				case Aspect.AspectFill:
-					IsFixedAspect = true;
-					CanFillOutside = true;
-					break;
-
-				case Aspect.Fill:
-					IsFixedAspect = false;
-					CanFillOutside = false;
-					break;
-
-				default:
-					Log.Warn("Invalid Aspect value: {0}", _aspect);
-					break;
-			}
 		}
 	}
 }

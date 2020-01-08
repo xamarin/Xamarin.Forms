@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 		ShellFlyoutRecyclerAdapter _adapter;
 		View _flyoutHeader;
 		int _actionBarHeight;
+		ScrollLayoutManager _layoutManager;
 
 		public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
 		{
@@ -89,6 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 			Profile.FramePartition("Recycler.SetAdapter");
 			_adapter = new ShellFlyoutRecyclerAdapter(shellContext, OnElementSelected);
 			_recycler.SetClipToPadding(false);
+			_recycler.SetLayoutManager(_layoutManager = new ScrollLayoutManager(context, (int)Orientation.Vertical, false));
 			_recycler.SetLayoutManager(new LinearLayoutManager(context, (int)Orientation.Vertical, false));
 			_recycler.SetAdapter(_adapter);
 
@@ -120,6 +122,8 @@ namespace Xamarin.Forms.Platform.Android
 			Profile.FramePartition("UpdateFlyoutBackground");
 			UpdateFlyoutBackground();
 
+			Profile.FramePartition(nameof(UpdateVerticalScrollMode));
+			UpdateVerticalScrollMode();
 			Profile.FrameEnd();
 		}
 
@@ -143,6 +147,14 @@ namespace Xamarin.Forms.Platform.Android
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateFlyoutBackground();
+			else if (e.Is(Shell.FlyoutVerticalScrollModeProperty))
+				UpdateVerticalScrollMode();
+		}
+
+		void UpdateVerticalScrollMode()
+		{
+			if (_layoutManager != null)
+				_layoutManager.ScrollVertically = _shellContext.Shell.FlyoutVerticalScrollMode;
 		}
 
 		protected virtual void UpdateFlyoutBackground()
@@ -288,6 +300,7 @@ namespace Xamarin.Forms.Platform.Android
 				_adapter?.Dispose();
 				_headerView.Dispose();
 				_rootView.Dispose();
+				_layoutManager?.Dispose();
 				_defaultBackgroundColor?.Dispose();
 				_bgImage?.Dispose();
 
@@ -299,6 +312,7 @@ namespace Xamarin.Forms.Platform.Android
 				_recycler = null;
 				_adapter = null;
 				_defaultBackgroundColor = null;
+				_layoutManager = null;
 				_bgImage = null;
 			}
 
@@ -362,7 +376,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				UpdateElevation();
 
-				if(View != null)
+				if (View != null)
 					View.Layout(new Rectangle(paddingLeft, paddingTop, width, height));
 			}
 
@@ -374,13 +388,43 @@ namespace Xamarin.Forms.Platform.Android
 				_isdisposed = true;
 				if (disposing)
 				{
-					if(View != null)
+					if (View != null)
 						View.PropertyChanged -= OnViewPropertyChanged;
 				}
 
 				View = null;
 
 				base.Dispose(disposing);
+			}
+		}
+	}
+
+	internal class ScrollLayoutManager : LinearLayoutManager
+	{
+		public ScrollMode ScrollVertically { get; set; } = ScrollMode.Auto;
+
+		public ScrollLayoutManager(Context context, int orientation, bool reverseLayout) : base(context, orientation, reverseLayout)
+		{
+		}
+
+		int GetVisibleChildCount()
+		{
+			var firstVisibleIndex = FindFirstCompletelyVisibleItemPosition();
+			var lastVisibleIndex = FindLastCompletelyVisibleItemPosition();
+			return lastVisibleIndex - firstVisibleIndex + 1;
+		}
+
+		public override bool CanScrollVertically()
+		{
+			switch (ScrollVertically)
+			{
+				case ScrollMode.Disabled:
+					return false;
+				case ScrollMode.Enabled:
+					return true;
+				default:
+				case ScrollMode.Auto:
+					return ChildCount > GetVisibleChildCount();
 			}
 		}
 	}

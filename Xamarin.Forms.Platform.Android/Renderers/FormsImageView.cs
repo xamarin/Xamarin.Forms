@@ -2,6 +2,7 @@ using System;
 using Android.Content;
 using Android.Runtime;
 using Android.Widget;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -33,6 +34,11 @@ namespace Xamarin.Forms.Platform.Android
 			_skipInvalidate = true;
 		}
 
-		bool IImageRendererController.IsDisposed => false;
+		void IImageRendererController.SetFormsAnimationDrawable(IFormsAnimationDrawable formsAnimationDrawable)
+		{
+		}
+
+
+		bool IImageRendererController.IsDisposed => false || !this.IsAlive();
 	}
 }
