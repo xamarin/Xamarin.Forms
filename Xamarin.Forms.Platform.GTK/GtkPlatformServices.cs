@@ -109,17 +109,22 @@ namespace Xamarin.Forms.Platform.GTK
 
 		public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
 		{
+			//Initialize `callbackResult` to `true` to ensure `ExecuteCallback` runs the first time GLib.TimeoutHandler is called
 			bool callbackResult = true;
 
+			//GLib.Timeout.Add cannot execute async/await code because TimeoutHandler is a delegate that returns `bool` (not Task<bool>)
+			//To use asynchronous tasks, we leverage `ExecuteCallback` to update `callbackResult` using async/await
 			GLib.Timeout.Add((uint)interval.TotalMilliseconds, () =>
 			{
+				//Verify the results of the previous call to ExecuteCallBack before calling ExecuteCallback again 
 				if (callbackResult)
-					ExecuteCallBack();
+					ExecuteCallback();
 
 				return callbackResult;
 			});
 
-			async void ExecuteCallBack() => callbackResult = await callback();
+			//Uses async void to execute the callback while still awaiting its result
+			async void ExecuteCallback() => callbackResult = await callback();
 		}
 
 		private static int Hex(int v)
