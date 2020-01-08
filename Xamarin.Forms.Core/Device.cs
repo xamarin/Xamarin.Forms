@@ -235,6 +235,11 @@ namespace Xamarin.Forms
 			PlatformServices.StartTimer(interval, callback);
 		}
 
+		public static void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+		{
+			PlatformServices.StartTimer(interval, callback);
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Assembly[] GetAssemblies()
 		{
