@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Android.Graphics.Drawables;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -10,24 +12,15 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 	[TestFixture]
 	public class BackgroundColorTests : PlatformTestFixture 
 	{
-		static IEnumerable<VisualElement> VisualElements
+		static IEnumerable TestCases
 		{
 			get
 			{
-				return new VisualElement[]
+				foreach (var element in BasicElements.Where(e => !(e is Button)))
 				{
-					new CheckBox { BackgroundColor = Color.AliceBlue },
-					new DatePicker { BackgroundColor = Color.AliceBlue },
-					new Editor { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Entry { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Image { BackgroundColor = Color.AliceBlue },
-					new Picker { BackgroundColor = Color.AliceBlue },
-					new ProgressBar { BackgroundColor = Color.AliceBlue },
-					new SearchBar { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Stepper { BackgroundColor = Color.AliceBlue },
-					new Switch { BackgroundColor = Color.AliceBlue },
-					new TimePicker { BackgroundColor = Color.AliceBlue },
-				};
+					element.BackgroundColor = Color.AliceBlue;
+					yield return new TestCaseData(element);
+				}
 			}
 		}
 
@@ -51,7 +44,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			}
 		}
 
-		[Test, TestCaseSource(nameof(VisualElements))]
+		[Test, TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement background color should match renderer background color")]
 		public void BackgroundColorConsistent(VisualElement element)
 		{
