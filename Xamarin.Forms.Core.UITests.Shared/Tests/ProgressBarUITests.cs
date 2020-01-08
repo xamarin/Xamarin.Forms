@@ -46,11 +46,6 @@ namespace Xamarin.Forms.Core.UITests
 			base.FixtureTeardown();
 		}
 
-		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
-		public override void _IsEnabled()
-		{
-		}
-
 #if __ANDROID__ || __IOS__
 		[Ignore("This is covered by the platform opacity tests")]
 		public override void _Opacity() { }
