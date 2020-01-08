@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			_finishedAssemblyCount = 0;
 
 			// Only want to run a subset of tests? Create a filter and pass it into _runner.Run()
-			//var filter = new TestNameContainsFilter("Bugzilla");
+			// e.g. var filter = new TestNameContainsFilter("Bugzilla");
 
 			await Task.Run(() => _runner.Run()).ConfigureAwait(false);
 		}

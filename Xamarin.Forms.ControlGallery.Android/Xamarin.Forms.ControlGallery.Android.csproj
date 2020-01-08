@@ -109,6 +109,7 @@
     <Compile Include="Tests\CollectionViewTests.cs" />
     <Compile Include="Tests\BackgroundColorTests.cs" />
     <Compile Include="Tests\Issues.cs" />
+    <Compile Include="Tests\OpacityTests.cs" />
     <Compile Include="Tests\TestingPlatformService.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="PreApplicationClassActivity.cs" />

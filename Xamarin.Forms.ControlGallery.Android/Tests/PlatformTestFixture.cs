@@ -99,5 +99,18 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			nativeView.Measure(widthSpec, heightSpec);
 			nativeView.Layout(0, 0, (int)width, (int)height);
 		}
+
+		// Some of the renderer properties aren't set until the renderer is actually 
+		// attached to the view hierarchy; to test them, we need to add the, run the test,
+		// then remove them
+		protected void ParentView(AView view) 
+		{
+			((ViewGroup)Application.Current.MainPage.GetRenderer().View).AddView(view);
+		}
+
+		protected void UnparentView(AView view)
+		{
+			((ViewGroup)Application.Current.MainPage.GetRenderer().View).RemoveView(view);
+		}
 	}
 }
