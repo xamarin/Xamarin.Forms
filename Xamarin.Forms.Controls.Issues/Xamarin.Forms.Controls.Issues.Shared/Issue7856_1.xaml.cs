@@ -9,7 +9,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue7856_1()
 		{
+#if APP
 			InitializeComponent();
+#endif
 
 			Shell.SetBackButtonBehavior(this, new BackButtonBehavior
 			{
