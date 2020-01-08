@@ -12,21 +12,11 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			get
 			{
-				return new VisualElement[]
+				foreach (var element in BasicElements)
 				{
-					new Button { Text = "foo", Opacity = TestOpacity },
-					new CheckBox { Opacity = TestOpacity },
-					new DatePicker { Opacity = TestOpacity },
-					new Editor { Text = "foo", Opacity = TestOpacity },
-					new Entry { Text = "foo", Opacity = TestOpacity },
-					new Image { Opacity = TestOpacity },
-					new Picker { Opacity = TestOpacity },
-					new ProgressBar { Opacity = TestOpacity },
-					new SearchBar { Text = "foo", Opacity = TestOpacity },
-					new Stepper { Opacity = TestOpacity },
-					new Switch { Opacity = TestOpacity },
-					new TimePicker { Opacity = TestOpacity },
-				};
+					element.Opacity = TestOpacity;
+					yield return element;
+				}
 			}
 		}
 

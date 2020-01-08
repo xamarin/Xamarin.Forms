@@ -15,12 +15,13 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				foreach (var element in BasicElements)
 				{
 					element.Opacity = 0.35;
-					yield return new TestCaseData(element);
+					yield return new TestCaseData(element)
+						.SetCategory(element.GetType().Name);
 				}
 			}
 		}
 
-		[Test, TestCaseSource(nameof(TestCases))]
+		[Test, Category("Opacity"), TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement opacity should match renderer opacity")]
 		public void OpacityConsistent(VisualElement element)
 		{

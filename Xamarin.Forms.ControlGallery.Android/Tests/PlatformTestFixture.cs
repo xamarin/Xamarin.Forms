@@ -18,6 +18,27 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 	{
 		Context _context;
 
+		// Sequence for generating test cases
+		protected static IEnumerable<VisualElement> BasicElements
+		{
+			get
+			{
+				yield return new Button { };
+				yield return new CheckBox { };
+				yield return new DatePicker { };
+				yield return new Editor { };
+				yield return new Entry { };
+				yield return new Image { };
+				yield return new Label { };
+				yield return new Picker { };
+				yield return new ProgressBar { };
+				yield return new SearchBar { };
+				yield return new Stepper { };
+				yield return new Switch { };
+				yield return new TimePicker { };
+			}
+		}
+
 		protected Context Context
 		{
 			get
@@ -225,27 +246,6 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		protected void UnparentView(AView view)
 		{
 			((ViewGroup)Application.Current.MainPage.GetRenderer().View).RemoveView(view);
-		}
-
-		// Sequence for generating test cases
-		protected static IEnumerable<VisualElement> BasicElements
-		{
-			get
-			{
-				yield return new Button { };
-				yield return new CheckBox { };
-				yield return new DatePicker { };
-				yield return new Editor { };
-				yield return new Entry { };
-				yield return new Image { };
-				yield return new Label { };
-				yield return new Picker { };
-				yield return new ProgressBar { };
-				yield return new SearchBar { };
-				yield return new Stepper { };
-				yield return new Switch { };
-				yield return new TimePicker { };
-			}
 		}
 	}
 }

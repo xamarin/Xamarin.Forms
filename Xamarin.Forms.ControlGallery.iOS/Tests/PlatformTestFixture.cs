@@ -1,4 +1,5 @@
-﻿using UIKit;
+﻿using System.Collections.Generic;
+using UIKit;
 using Xamarin.Forms.Platform.iOS;
 
 namespace Xamarin.Forms.ControlGallery.iOS.Tests
@@ -6,6 +7,27 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 	[Internals.Preserve(AllMembers = true)]
 	public class PlatformTestFixture
 	{
+		// Sequence for generating test cases
+		protected static IEnumerable<VisualElement> BasicElements
+		{
+			get
+			{
+				yield return new Button { };
+				yield return new CheckBox { };
+				yield return new DatePicker { };
+				yield return new Editor { };
+				yield return new Entry { };
+				yield return new Image { };
+				yield return new Label { };
+				yield return new Picker { };
+				yield return new ProgressBar { };
+				yield return new SearchBar { };
+				yield return new Stepper { };
+				yield return new Switch { };
+				yield return new TimePicker { };
+			}
+		}
+
 		protected IVisualElementRenderer GetRenderer(VisualElement element)
 		{
 			return Platform.iOS.Platform.CreateRenderer(element);
