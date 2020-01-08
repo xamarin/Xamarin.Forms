@@ -151,6 +151,18 @@ namespace Xamarin.Forms.Platform.WPF
 			};
 		}
 
+		public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+		{
+			var timer = new DispatcherTimer(DispatcherPriority.Background, System.Windows.Application.Current.Dispatcher) { Interval = interval };
+			timer.Start();
+			timer.Tick += async (sender, args) =>
+			{
+				bool result = await callback();
+				if (!result)
+					timer.Stop();
+			};
+		}
+
 		public void QuitApplication()
 		{
 			System.Windows.Application.Current.Shutdown();

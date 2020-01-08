@@ -152,6 +152,25 @@ namespace Xamarin.Forms.Platform.UWP
 			CompositionTarget.Rendering += renderingFrameEventHandler;
 		}
 
+		public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+		{
+			var timerTick = 0L;
+			var stopWatch = new Stopwatch();
+			stopWatch.Start();
+			async void renderingFrameEventHandler(object sender, object args)
+			{
+				var newTimerTick = stopWatch.ElapsedMilliseconds / (long)interval.TotalMilliseconds;
+				if (newTimerTick == timerTick)
+					return;
+				timerTick = newTimerTick;
+				bool result = await callback();
+				if (result)
+					return;
+				CompositionTarget.Rendering -= renderingFrameEventHandler;
+			}
+			CompositionTarget.Rendering += renderingFrameEventHandler;
+		}
+
 		public void QuitApplication()
 		{
 			Log.Warning(nameof(WindowsBasePlatformServices), "Platform doesn't implement QuitApp");
