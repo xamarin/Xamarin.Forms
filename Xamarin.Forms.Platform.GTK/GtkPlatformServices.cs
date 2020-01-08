@@ -113,7 +113,9 @@ namespace Xamarin.Forms.Platform.GTK
 
 			GLib.Timeout.Add((uint)interval.TotalMilliseconds, () =>
 			{
-				ExecuteCallBack();
+				if (callbackResult)
+					ExecuteCallBack();
+
 				return callbackResult;
 			});
 
