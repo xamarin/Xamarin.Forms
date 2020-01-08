@@ -108,7 +108,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				return fastButton;
 			}
 
-			var viewRenderer = renderer.View as ViewRenderer<Button, AppCompatButton>;
+			var viewRenderer = renderer.View as Platform.Android.AppCompat.ButtonRenderer;
 			return viewRenderer.Control;
 		}
 
@@ -121,21 +121,21 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		protected EditText GetNativeControl(DatePicker datePicker)
 		{
 			var renderer = GetRenderer(datePicker);
-			var viewRenderer = renderer.View as ViewRenderer<DatePicker, EditText>;
+			var viewRenderer = renderer.View as DatePickerRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected FormsEditText GetNativeControl(Editor editor)
 		{
 			var renderer = GetRenderer(editor);
-			var viewRenderer = renderer.View as ViewRenderer<Editor, FormsEditText>;
+			var viewRenderer = renderer.View as EditorRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected FormsEditText GetNativeControl(Entry entry)
 		{
 			var renderer = GetRenderer(entry);
-			var viewRenderer = renderer.View as ViewRenderer<Entry, FormsEditText>;
+			var viewRenderer = renderer.View as EntryRenderer;
 			return viewRenderer.Control;
 		}
 
@@ -148,56 +148,56 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				return fastImage;
 			}
 
-			var viewRenderer = renderer.View as ViewRenderer<Image, ImageView>;
+			var viewRenderer = renderer.View as ImageRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected TextView GetNativeControl(Label label) 
 		{
 			var renderer = GetRenderer(label);
-			var viewRenderer = renderer.View as ViewRenderer<Label, TextView>;
+			var viewRenderer = renderer.View as LabelRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected EditText GetNativeControl(Picker picker)
 		{
 			var renderer = GetRenderer(picker);
-			var viewRenderer = renderer.View as ViewRenderer<Picker, EditText>;
+			var viewRenderer = renderer.View as PickerRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected AProgressBar GetNativeControl(ProgressBar progressBar)
 		{
 			var renderer = GetRenderer(progressBar);
-			var viewRenderer = renderer.View as ViewRenderer<ProgressBar, AProgressBar>;
+			var viewRenderer = renderer.View as ProgressBarRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected ASearchView GetNativeControl(SearchBar searchBar)
 		{
 			var renderer = GetRenderer(searchBar);
-			var viewRenderer = renderer.View as ViewRenderer<SearchBar, ASearchView>;
+			var viewRenderer = renderer.View as SearchBarRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected LinearLayout GetNativeControl(Stepper stepper)
 		{
 			var renderer = GetRenderer(stepper);
-			var viewRenderer = renderer.View as ViewRenderer<Stepper, LinearLayout>;
+			var viewRenderer = renderer.View as StepperRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected SwitchCompat GetNativeControl(Switch @switch)
 		{
 			var renderer = GetRenderer(@switch);
-			var viewRenderer = renderer.View as ViewRenderer<Switch, SwitchCompat>;
+			var viewRenderer = renderer.View as Platform.Android.AppCompat.SwitchRenderer;
 			return viewRenderer.Control;
 		}
 
 		protected EditText GetNativeControl(TimePicker timePicker)
 		{
 			var renderer = GetRenderer(timePicker);
-			var viewRenderer = renderer.View as ViewRenderer<TimePicker, EditText>;
+			var viewRenderer = renderer.View as TimePickerRenderer;
 			return viewRenderer.Control;
 		}
 
