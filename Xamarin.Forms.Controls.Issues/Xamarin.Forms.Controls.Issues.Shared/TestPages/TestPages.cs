@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Controls
 			}
 
 			// Running on the simulator
-			//var app = ConfigureApp.iOS
+			// var app = ConfigureApp.iOS
 			//				  .PreferIdeSettings()
 			//		  		  .AppBundle("../../../Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app")
 			//				  .Debug()
@@ -602,6 +602,14 @@ namespace Xamarin.Forms.Controls
 #endif
 		}
 
+		protected ContentPage DisplayedPage
+		{
+			get
+			{
+				return (ContentPage)(CurrentItem.CurrentItem as IShellSectionController).PresentedPage;
+			}
+		}
+
 		public ContentPage AddTopTab(string title)
 		{
 			var page = new ContentPage();
@@ -633,10 +641,18 @@ namespace Xamarin.Forms.Controls
 
 		public ContentPage AddBottomTab(string title)
 		{
-
 			ContentPage page = new ContentPage();
+			if (Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				item.Items[0].Title = title ?? page.Title;
+				return page;
+			}
+
 			Items[0].Items.Add(new ShellSection()
 			{
+				Title = title,
 				Items =
 				{
 					new ShellContent()
@@ -689,6 +705,7 @@ namespace Xamarin.Forms.Controls
 			item.Title = shellItemTitle;
 
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
+			shellSection.Title = shellItemTitle;
 
 			shellSection.Items.Add(new ShellContent()
 			{
@@ -786,7 +803,7 @@ namespace Xamarin.Forms.Controls.Issues
 	using System;
 	using NUnit.Framework;
 
-	// Run setup once for all tests in the Xamarin.Forms.Controls.Issues namespace
+// Run setup once for all tests in the Xamarin.Forms.Controls.Issues namespace
 	// (instead of once for each test)
 	[SetUpFixture]
 	public class IssuesSetup

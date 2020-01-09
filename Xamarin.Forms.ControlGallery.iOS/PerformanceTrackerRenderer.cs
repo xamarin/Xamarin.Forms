@@ -1217,7 +1217,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		}
 	}
 
-	public class PerformanceTrackingWebView : WebViewRenderer, IDrawnObservable
+	public class PerformanceTrackingWebView : WkWebViewRenderer, IDrawnObservable
 	{
 		readonly SubviewWatcher<PerformanceTrackingWebView> _watcher;
 		int _Drawn;

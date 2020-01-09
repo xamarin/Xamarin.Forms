@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected UICollectionViewDelegateFlowLayout Delegator { get; set; }
 
-		public ItemsViewController(TItemsView itemsView, ItemsViewLayout layout) : base(layout)
+		protected ItemsViewController(TItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
 			ItemsView = itemsView;
 			ItemsViewLayout = layout;
@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			cell.ContentSizeChanged -= CellContentSizeChanged;
 
-			cell.Bind(ItemsView, ItemsSource[indexPath]);
+			cell.Bind(ItemsView.ItemTemplate, ItemsSource[indexPath], ItemsView);
 
 			cell.ContentSizeChanged += CellContentSizeChanged;
 

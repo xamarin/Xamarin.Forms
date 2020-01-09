@@ -143,6 +143,8 @@
     <Content Include="default.css" />
     <Content Include="FlowerBuds.jpg" />
     <Content Include="Fruits.jpg" />
+    <Content Include="GifOne.gif" />
+    <Content Include="GifTwo.gif" />
     <Content Include="invalidimage.jpg" />
     <Content Include="Legumes.jpg" />
     <Content Include="local.html" />
@@ -239,9 +241,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
       <Version>2.1.190606001</Version>
-    </PackageReference>
-    <PackageReference Include="NETStandard.Library">
-      <Version>2.0.3</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>

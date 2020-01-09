@@ -74,6 +74,7 @@
     <Compile Include="CollectionView\GroupableItemsViewAdapter.cs" />
     <Compile Include="CollectionView\GroupableItemsViewRenderer.cs" />
     <Compile Include="CollectionView\ICollectionChangedNotifier.cs" />
+    <Compile Include="CollectionView\IndicatorViewRenderer.cs" />
     <Compile Include="CollectionView\ObservableGroupedSource.cs" />
     <Compile Include="CollectionView\RecyclerViewScrollListener.cs" />
     <Compile Include="CollectionView\GridLayoutSpanSizeLookup.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
     <Compile Include="Extensions\ScrollViewExtensions.cs" />
     <Compile Include="Extensions\TextAlignmentExtensions.cs" />
+    <Compile Include="Extensions\ToolbarExtensions.cs" />
     <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
     <Compile Include="AppCompat\PageExtensions.cs" />
     <Compile Include="Extensions\JavaObjectExtensions.cs" />
@@ -139,6 +141,7 @@
     <Compile Include="Extensions\FlowDirectionExtensions.cs" />
     <Compile Include="AppCompat\ImageButtonRenderer.cs" />
     <Compile Include="FastRenderers\ImageElementManager.cs" />
+    <Compile Include="GenericGlobalLayoutListener.cs" />
     <Compile Include="GestureManager.cs" />
     <Compile Include="FastRenderers\LabelRenderer.cs" />
     <Compile Include="FastRenderers\VisualElementRenderer.cs" />
@@ -166,7 +169,9 @@
     <Compile Include="IPickerRenderer.cs" />
     <Compile Include="PickerManager.cs" />
     <Compile Include="EntryAccessibilityDelegate.cs" />
+    <Compile Include="Renderers\BottomNavigationViewTracker.cs" />
     <Compile Include="Renderers\CircularProgress.cs" />
+    <Compile Include="Renderers\IAnimationSourceHandler.cs" />
     <Compile Include="Renderers\PickerEditText.cs" />
     <Compile Include="Renderers\FontImageSourceHandler.cs" />
     <Compile Include="Renderers\FormsWebViewClient.cs" />
@@ -193,6 +198,7 @@
     <Compile Include="LayoutExtensions.cs" />
     <Compile Include="PowerSaveModeBroadcastReceiver.cs" />
     <Compile Include="Renderers\AHorizontalScrollView.cs" />
+    <Compile Include="Renderers\AndroidGIFImageParser.cs" />
     <Compile Include="Renderers\BottomNavigationViewUtils.cs" />
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Renderers\ColorChangeRevealDrawable.cs" />
@@ -335,6 +341,7 @@
     <Compile Include="AppCompat\CheckBoxRenderer.cs" />
     <Compile Include="AppCompat\CheckBoxDesignerRenderer.cs" />
     <Compile Include="Renderers\RefreshViewRenderer.cs" />
+    <Compile Include="Renderers\SwipeViewRenderer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

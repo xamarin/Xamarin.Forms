@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.ComponentModel;
 using Android.Content;
 using Android.Views;
@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
-		protected CarouselView Carousel;
+		protected FormsCarouselView Carousel;
 		ItemDecoration _itemDecoration;
 		bool _isSwipeEnabled;
 		int _oldPosition;
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
-			Carousel = newElement as CarouselView;
+			Carousel = newElement as FormsCarouselView;
 
 			base.SetUpNewElement(newElement);
 
@@ -57,11 +57,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
    
-			if (changedProperty.Is(CarouselView.PeekAreaInsetsProperty))
+			if (changedProperty.Is(FormsCarouselView.PeekAreaInsetsProperty))
 				UpdatePeekAreaInsets();
-			else if (changedProperty.Is(CarouselView.IsSwipeEnabledProperty))
+			else if (changedProperty.Is(FormsCarouselView.IsSwipeEnabledProperty))
 				UpdateIsSwipeEnabled();
-			else if (changedProperty.Is(CarouselView.IsBounceEnabledProperty))
+			else if (changedProperty.Is(FormsCarouselView.IsBounceEnabledProperty))
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
 		{
-			return new CarouselSpacingItemDecoration(itemsLayout);
+			return new CarouselSpacingItemDecoration(itemsLayout, Carousel);
 		}
 
 		protected override void UpdateItemSpacing()
@@ -132,8 +132,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (ItemsLayout is LinearItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				var numberOfVisibleItems = Carousel.NumberOfSideItems * 2 + 1;
-				itemWidth = (int)(Width - Carousel.PeekAreaInsets.Left - Carousel.PeekAreaInsets.Right - Context?.ToPixels(listItemsLayout.ItemSpacing)) / numberOfVisibleItems;
+				itemWidth = (int)(Width - Context?.ToPixels(Carousel.PeekAreaInsets.Left) - Context?.ToPixels(Carousel.PeekAreaInsets.Right) - Context?.ToPixels(listItemsLayout.ItemSpacing));
 			}
 
 			return itemWidth;
@@ -145,8 +144,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (ItemsLayout is LinearItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
 			{
-				var numberOfVisibleItems = Carousel.NumberOfSideItems * 2 + 1;
-				itemHeight = (int)(Height - Carousel.PeekAreaInsets.Top - Carousel.PeekAreaInsets.Bottom - Context?.ToPixels(listItemsLayout.ItemSpacing)) / numberOfVisibleItems;
+				itemHeight = (int)(Height - Context?.ToPixels(Carousel.PeekAreaInsets.Top) - Context?.ToPixels(Carousel.PeekAreaInsets.Bottom) - Context?.ToPixels(listItemsLayout.ItemSpacing));
 			}
 
 			return itemHeight;
@@ -167,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateAdapter();
 		}
 
-		void UpdateAdapter()
+		protected override void UpdateAdapter()
 		{
 			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
 			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
@@ -186,6 +184,28 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateInitialPosition()
 		{
 			_initialPosition = Carousel.Position;
+
+			if (Carousel.CurrentItem != null)
+			{
+				int position = 0;
+
+				var items = Carousel.ItemsSource as IList;
+
+				for (int n = 0; n < items?.Count; n++)
+				{
+					if (items[n] == Carousel.CurrentItem)
+					{
+						position = n;
+						break;
+					}
+				}
+
+				_initialPosition = position;
+				Carousel.Position = _initialPosition;
+			}
+			else
+				_initialPosition = Carousel.Position;
+
 			_oldPosition = _initialPosition;
 			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}

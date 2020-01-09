@@ -12,10 +12,10 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly UICollectionView _collectionView;
 		readonly bool _grouped;
 		readonly int _section;
-		readonly IList _itemsSource;
+		readonly IEnumerable _itemsSource;
 		bool _disposed;
 
-		public ObservableItemsSource(IList itemSource, UICollectionViewController collectionViewController, int group = -1)
+		public ObservableItemsSource(IEnumerable itemSource, UICollectionViewController collectionViewController, int group = -1)
 		{
 			_collectionViewController = collectionViewController;
 			_collectionView = _collectionViewController.CollectionView;
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public int Count { get; private set; }
 
-		public object this[int index] => _itemsSource[index];
+		public object this[int index] => ElementAt(index);
 
 		public void Dispose()
 		{
@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
 
 			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (newCount == args.OldItems.Count)
 			{
-				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 
 				// We are replacing one set of items with a set of equal size; we can do a simple item range update
 				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
@@ -249,7 +249,45 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal int ItemsCount()
 		{
-			return _itemsSource.Count;
+			if (_itemsSource is IList list)
+				return list.Count;
+
+			int count = 0;
+			foreach (var item in _itemsSource)
+				count++;
+			return count;
+		}
+
+		internal object ElementAt(int index)
+		{
+			if (_itemsSource is IList list)
+				return list[index];
+
+			int count = 0;
+			foreach (var item in _itemsSource)
+			{
+				if (count == index)
+					return item;
+				count++;
+			}
+
+			return -1;
+		}
+
+		internal int IndexOf(object item)
+		{
+			if (_itemsSource is IList list)
+				return list.IndexOf(item);
+
+			int count = 0;
+			foreach (var i in _itemsSource)
+			{
+				if (i == item)
+					return count;
+				count++;
+			}
+
+			return -1;
 		}
 	}
 }
