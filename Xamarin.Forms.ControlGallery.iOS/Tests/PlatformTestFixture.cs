@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NUnit.Framework;
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
 
@@ -8,7 +9,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 	public class PlatformTestFixture
 	{
 		// Sequence for generating test cases
-		protected static IEnumerable<VisualElement> BasicElements
+		protected static IEnumerable<View> BasicViews
 		{
 			get
 			{
@@ -26,6 +27,15 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				yield return new Switch { };
 				yield return new TimePicker { };
 			}
+		}
+
+		protected static TestCaseData CreateTestCase(VisualElement element)
+		{
+			// We set the element type as a category on the test so that if you 
+			// filter by category, say, "Button", you'll get any Button test 
+			// generated from here. 
+
+			return new TestCaseData(element).SetCategory(element.GetType().Name);
 		}
 
 		protected IVisualElementRenderer GetRenderer(VisualElement element)

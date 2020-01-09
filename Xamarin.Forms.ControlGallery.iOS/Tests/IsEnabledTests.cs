@@ -11,7 +11,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			get
 			{
 				// Generate IsEnabled = true cases
-				foreach (var element in BasicElements)
+				foreach (var element in BasicViews)
 				{
 					var typeName = element.GetType().Name;
 					yield return new TestCaseData(element)
@@ -20,7 +20,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				}
 
 				// Generate IsEnabled = false cases
-				foreach (var element in BasicElements)
+				foreach (var element in BasicViews)
 				{
 					var typeName = element.GetType().Name;
 					yield return new TestCaseData(element)
@@ -32,18 +32,18 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 
 		[Test, Category("IsEnabled"), TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement enabled should match renderer enabled")]
-		public void EnabledConsistent(VisualElement element)
+		public void EnabledConsistent(View view)
 		{
-			using (var renderer = GetRenderer(element))
+			using (var renderer = GetRenderer(view))
 			{
-				var expected = element.IsEnabled;
+				var expected = view.IsEnabled;
 				var nativeView = renderer.NativeView;
 
 				// Check the container
 				Assert.That(renderer.NativeView.UserInteractionEnabled, Is.EqualTo(expected));
 
 				// Check the actual control
-				var control = GetNativeControl(element);
+				var control = GetNativeControl(view);
 
 				if (control is UIControl uiControl)
 				{
