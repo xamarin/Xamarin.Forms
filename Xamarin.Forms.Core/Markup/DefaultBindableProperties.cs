@@ -6,8 +6,8 @@ namespace Xamarin.Forms.Markup
 {
 	public static class DefaultBindableProperties
 	{
-		static Dictionary<string, BindableProperty> elementTypeDefaultProperty = new Dictionary<string, BindableProperty>
-		{ // Key: full type name of element, Value: the default BindableProperty
+		static Dictionary<string, BindableProperty> bindableObjectTypeDefaultProperty = new Dictionary<string, BindableProperty>
+		{ // Key: full type name of BindableObject, Value: the default BindableProperty
 			{ "Xamarin.Forms.ActivityIndicator", ActivityIndicator.IsRunningProperty },
 			{ "Xamarin.Forms.BoxView", BoxView.ColorProperty },
 			{ "Xamarin.Forms.Button", Button.CommandProperty },
@@ -43,30 +43,31 @@ namespace Xamarin.Forms.Markup
 		public static void Register(params BindableProperty[] properties)
 		{
 			foreach (var property in properties)
-				elementTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
+				bindableObjectTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
 		}
 
-		// We use Element because we want to bind to Cell types as well as View types
-		internal static BindableProperty GetFor(Element element)
+		internal static BindableProperty GetFor(BindableObject bindableObject)
+			=> GetFor(bindableObject.GetType());
+
+		internal static BindableProperty GetFor(Type bindableObjectType)
 		{
 			BindableProperty defaultProperty;
-			var elementType = element.GetType();
-            string forElementTypeName = elementType.FullName;
-            string elementTypeName;
+            string forBindableObjectTypeName = bindableObjectType.FullName;
+            string bindableObjectTypeName;
 
 			do
 			{
-				elementTypeName = elementType.FullName;
-				if (elementTypeDefaultProperty.TryGetValue(elementTypeName, out defaultProperty))
+				bindableObjectTypeName = bindableObjectType.FullName;
+				if (bindableObjectTypeDefaultProperty.TryGetValue(bindableObjectTypeName, out defaultProperty))
 					break;
-				if (elementTypeName.StartsWith("Xamarin.Forms.", StringComparison.Ordinal))
+				if (bindableObjectTypeName.StartsWith("Xamarin.Forms.", StringComparison.Ordinal))
 					throw new NotImplementedException(
-						"No default bindable property is defined for element type " + forElementTypeName +
-						"\r\nEither specify a property when calling Bind() or register a default bindable property for this element type");
+						"No default bindable property is defined for BindableObject type " + forBindableObjectTypeName +
+						"\r\nEither specify a property when calling Bind() or register a default bindable property for this BindableObject type");
 
-				elementType = elementType.GetTypeInfo().BaseType;
+				bindableObjectType = bindableObjectType.GetTypeInfo().BaseType;
 
-				if (elementType == null)
+				if (bindableObjectType == null)
 					return null;
 			} while (true);
 
