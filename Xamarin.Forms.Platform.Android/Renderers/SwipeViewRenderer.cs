@@ -9,13 +9,10 @@ using Android.Graphics.Drawables;
 using AndroidX.Core.Widget;
 using AButton = AndroidX.AppCompat.Widget.AppCompatButton;
 using AndroidX.RecyclerView.Widget;
+using AndroidX.AppCompat.Widget;
 #else
 using Android.Support.V4.Widget;
 using AButton = Android.Support.V7.Widget.AppCompatButton;
-#endif
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-#else
 using Android.Support.V7.Widget;
 #endif
 using Android.Views;

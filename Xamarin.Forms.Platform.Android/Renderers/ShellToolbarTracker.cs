@@ -4,10 +4,6 @@ using Android.Graphics;
 using Android.Graphics.Drawables;
 #if __ANDROID_29__
 using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
-#if __ANDROID_29__
 using AndroidX.AppCompat.Graphics.Drawable;
 using AndroidX.DrawerLayout.Widget;
 using Google.Android.Material.AppBar;
@@ -16,6 +12,7 @@ using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
 using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
 #else
+using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;

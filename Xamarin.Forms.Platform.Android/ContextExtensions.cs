@@ -10,14 +10,11 @@ using AActivity = Android.App.Activity;
 using AndroidX.Fragment.App;
 using AndroidX.AppCompat.App;
 using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
+using AndroidX.AppCompat.App;
 #else
 using AFragmentManager = Android.Support.V4.App.FragmentManager;
 using Android.Support.V4.App;
-#if __ANDROID_29__
-using AndroidX.AppCompat.App;
-#else
 using Android.Support.V7.App;
-#endif
 #endif
 
 namespace Xamarin.Forms.Platform.Android

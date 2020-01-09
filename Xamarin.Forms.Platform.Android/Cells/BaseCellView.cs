@@ -11,13 +11,10 @@ using AColorDraw = Android.Graphics.Drawables.ColorDrawable;
 using Xamarin.Forms.Internals;
 #if __ANDROID_29__
 using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#if __ANDROID_29__
 using AndroidX.Core.Content;
 #else
+using Android.Support.V4.Widget;
 using Android.Support.V4.Content;
-#endif
 #endif
 using Android.OS;
 using System;

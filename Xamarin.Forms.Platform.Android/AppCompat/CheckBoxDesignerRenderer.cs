@@ -3,8 +3,10 @@ using System.ComponentModel;
 using Android.Content;
 #if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
+using AndroidX.Core.Widget;
 #else
 using Android.Support.V7.Widget;
+using Android.Support.V4.Widget;
 #endif
 using AView = Android.Views.View;
 using Android.Views;
@@ -17,11 +19,6 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.OS;
 using Android.Widget;
 using Android.Content.Res;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
 using AAttribute = Android.Resource.Attribute;
 using ACheckBox = Android.Widget.CheckBox;
 

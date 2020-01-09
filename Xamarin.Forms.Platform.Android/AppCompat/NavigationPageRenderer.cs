@@ -13,14 +13,6 @@ using Android.OS;
 using Android.Runtime;
 #if __ANDROID_29__
 using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
-using Android.Util;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using AView = Android.Views.View;
-#if __ANDROID_29__
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
@@ -30,6 +22,7 @@ using AndroidX.AppCompat.Graphics.Drawable;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.AppCompat.App;
 #else
+using Android.Support.V4.Widget;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
@@ -38,6 +31,10 @@ using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
 using Android.Support.V7.Graphics.Drawable;
 using Android.Support.V7.App;
 #endif
+using Android.Util;
+using Android.Views;
+using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
 
 using Object = Java.Lang.Object;
 using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;

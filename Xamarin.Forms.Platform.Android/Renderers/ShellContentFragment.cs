@@ -2,21 +2,15 @@
 using Android.Runtime;
 #if __ANDROID_29__
 using AndroidX.Fragment.App;
-#else
-using Android.Support.V4.App;
-using Android.Support.Design.Widget;
-#endif
-#if __ANDROID_29__
 using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
-#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
 using AndroidX.CoordinatorLayout.Widget;
 using Google.Android.Material.AppBar;
 #else
+using Android.Support.V4.App;
+using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
+using Android.Support.V4.Widget;
 #endif
 using Android.Views;
 using Android.Views.Animations;

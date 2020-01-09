@@ -9,11 +9,6 @@ using Android.OS;
 using Android.Runtime;
 #if __ANDROID_29__
 using AndroidX.Fragment.App;
-#else
-using Android.Support.V4.App;
-using Android.Support.Design.Widget;
-#endif
-#if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.ViewPager.Widget;
 using Google.Android.Material.BottomNavigation;
@@ -21,6 +16,8 @@ using Google.Android.Material.BottomSheet;
 using Google.Android.Material.Tabs;
 using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
 #else
+using Android.Support.V4.App;
+using Android.Support.Design.Widget;
 using Android.Support.V4.View;
 using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
 #endif

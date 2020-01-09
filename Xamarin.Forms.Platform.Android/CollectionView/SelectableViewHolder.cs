@@ -3,13 +3,10 @@ using System.Linq;
 using Android.Graphics.Drawables;
 #if __ANDROID_29__
 using AndroidX.Core.Content;
-#else
-using Android.Support.V4.Content;
-#endif
-#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
 #else
+using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
 #endif
 using Android.Util;
