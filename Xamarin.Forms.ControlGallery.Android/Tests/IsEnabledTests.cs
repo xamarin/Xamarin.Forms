@@ -15,19 +15,15 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				// Generate IsEnabled = true cases
 				foreach (var element in BasicElements)
 				{
-					var typeName = element.GetType().Name;
-					yield return new TestCaseData(element)
-						.SetName($"{typeName}_IsEnabled_True")
-						.SetCategory(typeName);
+					yield return CreateTestCase(element)
+						.SetName($"{element.GetType().Name}_IsEnabled_True");
 				}
 
 				// Generate IsEnabled = false cases
 				foreach (var element in BasicElements)
 				{
-					var typeName = element.GetType().Name;
-					yield return new TestCaseData(element)
-						.SetName($"{typeName}_IsEnabled_False")
-						.SetCategory(typeName);
+					yield return CreateTestCase(element)
+						.SetName($"{element.GetType().Name}_IsEnabled_False");
 				}
 			}
 		}

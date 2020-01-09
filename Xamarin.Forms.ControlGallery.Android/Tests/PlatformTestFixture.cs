@@ -11,6 +11,7 @@ using System;
 using AProgressBar = Android.Widget.ProgressBar;
 using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
@@ -37,6 +38,15 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				yield return new Switch { };
 				yield return new TimePicker { };
 			}
+		}
+
+		protected static TestCaseData CreateTestCase(VisualElement element) 
+		{
+			// We set the element type as a category on the test so that if you 
+			// filter by category, say, "Button", you'll get any Button test 
+			// generated from here. 
+
+			return new TestCaseData(element).SetCategory(element.GetType().Name);
 		}
 
 		protected Context Context
@@ -162,7 +172,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		protected EditText GetNativeControl(Picker picker)
 		{
 			var renderer = GetRenderer(picker);
-			var viewRenderer = renderer.View as PickerRenderer;
+			var viewRenderer = renderer.View as Platform.Android.AppCompat.PickerRenderer;
 			return viewRenderer.Control;
 		}
 

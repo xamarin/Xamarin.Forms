@@ -15,8 +15,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				foreach (var element in BasicElements)
 				{
 					element.Opacity = 0.35;
-					yield return new TestCaseData(element)
-						.SetCategory(element.GetType().Name);
+					yield return CreateTestCase(element);
 				}
 			}
 		}
