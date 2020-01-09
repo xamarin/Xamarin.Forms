@@ -76,6 +76,10 @@
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
+    <Compile Include="Markup\LayoutExtensionsTests.cs" />
+    <Compile Include="Markup\ViewExtensionsTests.cs" />
+    <Compile Include="Markup\LabelExtensionsTests.cs" />
+    <Compile Include="Markup\MarkupBaseTestFixture.cs" />
     <Compile Include="NumericExtensionsTests.cs" />
     <Compile Include="RefreshViewTests.cs" />
     <Compile Include="MockDispatcherProvider.cs" />
@@ -248,6 +252,7 @@
       <LogicalName>Images/crimson.jpg</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Target Name="_CopyNUnitTestAdapterFiles" AfterTargets="Build">
     <ItemGroup>
       <_NUnitTestAdapterFiles Include="$(NuGetPackageRoot)NUnit3TestAdapter\%(Version)\build\net35\**" Condition="@(PackageReference -> '%(Identity)') == 'NUnit3TestAdapter'" InProject="False" />
