@@ -339,7 +339,7 @@ namespace Xamarin.Forms
 				NSTimer timer = NSTimer.CreateRepeatingTimer(interval, async t =>
 				{
 					var result = await callback();
-					if (result)
+					if (!result)
 						t.Invalidate();
 				});
 				NSRunLoop.Main.AddTimer(timer, NSRunLoopMode.Common);
