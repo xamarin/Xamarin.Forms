@@ -16,7 +16,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			{
 				foreach (var element in BasicElements)
 				{
-					element.RotationX = 0.33;
+					element.RotationX = 33.0;
 					yield return CreateTestCase(element);
 				}
 			}
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			{
 				foreach (var element in BasicElements)
 				{
-					element.RotationY = 0.87;
+					element.RotationY = 87.0;
 					yield return CreateTestCase(element);
 				}
 			}
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			{
 				foreach (var element in BasicElements)
 				{
-					element.Rotation = 0.23;
+					element.Rotation = 23.0;
 					yield return CreateTestCase(element);
 				}
 			}

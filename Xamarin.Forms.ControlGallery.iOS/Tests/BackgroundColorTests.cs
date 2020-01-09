@@ -12,7 +12,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			get
 			{
-				foreach (var element in BasicElements.Where(e => !(e is Label)))
+				foreach (var element in BasicViews.Where(e => !(e is Label)))
 				{
 					element.BackgroundColor = Color.AliceBlue;
 					yield return new TestCaseData(element)

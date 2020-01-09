@@ -104,6 +104,12 @@
     <AppExtensionDebugBundleId />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core.UITests.Shared\Utilities\NumericExtensions.cs">
+      <Link>Tests\NumericExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Core.UITests.Shared\Utilities\ParsingUtils.cs">
+      <Link>Tests\ParsingUtils.cs</Link>
+    </Compile>
     <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
@@ -121,6 +127,7 @@
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="Tests\PlatformTestFixture.cs" />
     <Compile Include="Tests\RendererTests.cs" />
+    <Compile Include="Tests\RotationTests.cs" />
     <Compile Include="Tests\TestingPlatformService.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />
