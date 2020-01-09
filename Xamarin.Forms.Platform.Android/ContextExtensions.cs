@@ -10,7 +10,6 @@ using AActivity = Android.App.Activity;
 using AndroidX.Fragment.App;
 using AndroidX.AppCompat.App;
 using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
-using AndroidX.AppCompat.App;
 #else
 using AFragmentManager = Android.Support.V4.App.FragmentManager;
 using Android.Support.V4.App;
