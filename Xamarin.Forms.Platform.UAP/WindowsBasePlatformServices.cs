@@ -144,8 +144,7 @@ namespace Xamarin.Forms.Platform.UWP
 				if (newTimerTick == timerTick)
 					return;
 				timerTick = newTimerTick;
-				bool result = callback();
-				if (!result)
+				if (!callback())
 					CompositionTarget.Rendering -= renderingFrameEventHandler;
 			}
 			CompositionTarget.Rendering += renderingFrameEventHandler;
