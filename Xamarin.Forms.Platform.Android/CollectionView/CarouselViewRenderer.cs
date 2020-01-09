@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 			_oldViews = new List<View>();
 		}
-	
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -59,7 +59,6 @@ namespace Xamarin.Forms.Platform.Android
 				Carousel.Scrolled -= CarouselViewScrolled;
 			base.TearDownOldElement(oldElement);
 		}
-
 		protected override void UpdateItemsSource()
 		{
 			UpdateAdapter();
@@ -68,6 +67,14 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
+
+			if (Carousel.Scrolls.Count > 0 && !Carousel.IsInitialized)
+			{
+				var action = Carousel.Scrolls.Dequeue();
+				action();
+				Carousel.IsInitialized = true;
+			}
+
 			UpdateVisualStates();
 		}
 
@@ -209,8 +216,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateInitialPosition()
 		{
-			_initialPosition = Carousel.Position;
-
 			if (Carousel.CurrentItem != null)
 			{
 				int position = 0;
@@ -233,6 +238,7 @@ namespace Xamarin.Forms.Platform.Android
 				_initialPosition = Carousel.Position;
 
 			_oldPosition = _initialPosition;
+
 			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
 
@@ -253,8 +259,6 @@ namespace Xamarin.Forms.Platform.Android
 			var carouselPosition = Carousel.Position;
 			var previousPosition = carouselPosition - 1;
 			var nextPosition = carouselPosition + 1;
-
-			System.Diagnostics.Debug.WriteLine($"{first} - {last} - position {carouselPosition}");
 
 			for (int i = first; i <= last; i++)
 			{

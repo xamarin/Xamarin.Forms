@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Foundation;
 using UIKit;
 
@@ -93,7 +94,6 @@ namespace Xamarin.Forms.Platform.iOS
 		internal void TearDown()
 		{
 			_carouselView.PropertyChanged -= CarouselViewPropertyChanged;
-			_carouselView = null;
 		}
 
 		public override void DraggingStarted(UIScrollView scrollView)
@@ -111,7 +111,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_carouselView.IsScrolling = isScrolling;
 		}
 
-		bool _isUpdating = false;
 		void UpdateInitialPosition()
 		{
 			if (_carouselView.CurrentItem != null)
@@ -133,21 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_carouselView.Position = initialPosition;
 			}
 
-			if (_carouselView.Position != 0)
-				_carouselView.ScrollTo(_carouselView.Position, -1, ScrollToPosition.Center, false);
-				
-			if (_carouselView.Position != 0 && !_isUpdating)
-			{
-				Device.BeginInvokeOnMainThread(() =>
-				{
-					System.Diagnostics.Debug.WriteLine(_carouselView.Position);
-					_isUpdating = true;
-					_carouselView.IsUpdating(true);
-					_carouselView.ScrollTo(_carouselView.Position, -1, ScrollToPosition.Center, true);
-					_carouselView.IsUpdating(false);
-					_isUpdating = false;
-				});
-			}
+			_carouselView.IsInitialized = true;
 		}
 
 		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
