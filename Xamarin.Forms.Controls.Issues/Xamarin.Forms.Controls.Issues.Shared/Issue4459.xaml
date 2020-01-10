@@ -29,7 +29,7 @@
                 <Entry x:Name="BottomLeft" Text="0" TextChanged="InputView_OnTextChanged"></Entry>
             </StackLayout>
 
-            <issues:Issue4459BoxView x:Name="BoxView" BackgroundColor="#CC3300"
+            <BoxView x:Name="BoxView" BackgroundColor="#CC3300"
                      WidthRequest="200"
                      HeightRequest="100"
                      CornerRadius="10,0,0,10"
