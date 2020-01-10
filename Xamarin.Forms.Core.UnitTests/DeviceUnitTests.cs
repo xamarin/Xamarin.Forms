@@ -128,6 +128,100 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => Device.InvokeOnMainThreadAsync(async () => true).Wait(100));
 		}
 
+		[Test]
+		public async Task DeviceTimerWithSuccessfulTaskReturningTrue()
+		{
+			const int timerDelayInSeconds = 1;
+			const int expectedNumberOfExecutions = 2;
+			int numberOfSuccessfulTaskExecutions = 0;
+
+			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulFunction);
+
+			//Wait for Timer to trigger twice
+			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+
+			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
+
+			bool successfulFunction()
+			{
+				if (++numberOfSuccessfulTaskExecutions >= expectedNumberOfExecutions)
+					return false;
+
+				return true;
+			}
+		}
+
+		[Test]
+		public async Task DeviceTimerWithSuccessfulTaskReturningFalse()
+		{
+			const int timerDelayInSeconds = 1;
+			const int expectedNumberOfExecutions = 1;
+			int numberOfSuccessfulTaskExecutions = 0;
+
+			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulFunction);
+
+			//Wait for Timer to trigger twice
+			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+
+			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
+
+			bool successfulFunction()
+			{
+				numberOfSuccessfulTaskExecutions++;
+				return false;
+			}
+		}
+
+		[Test]
+		public async Task AsyncDeviceTimerWithSuccessfulTaskReturningTrue()
+		{
+			const int timerDelayInSeconds = 1;
+			const int expectedNumberOfExecutions = 2;
+			int numberOfSuccessfulTaskExecutions = 0;
+
+			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulTask);
+
+			//Wait for Timer to trigger twice
+			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+
+			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
+
+			async Task<bool> successfulTask()
+			{
+				await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds / 2));
+
+				if (++numberOfSuccessfulTaskExecutions >= expectedNumberOfExecutions)
+				{
+					return false;
+				}
+
+				return true;
+			}
+		}
+
+		[Test]
+		public async Task AsyncDeviceTimerWithSuccessfulTaskReturningFalse()
+		{
+			const int timerDelayInSeconds = 1;
+			const int expectedNumberOfExecutions = 1;
+			int numberOfSuccessfulTaskExecutions = 0;
+
+			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulTask);
+
+			//Wait for Timer to trigger twice
+			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+
+			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
+
+			async Task<bool> successfulTask()
+			{
+				await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds / 2));
+
+				++numberOfSuccessfulTaskExecutions;
+				return false;
+			}
+		}
+
 		private IPlatformServices MockPlatformServices(Action onInvokeOnMainThread, Action<Action> invokeOnMainThread = null)
 		{
 			return new MockPlatformServices(
