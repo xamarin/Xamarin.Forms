@@ -5,7 +5,13 @@ namespace Xamarin.Forms.Markup
 {
 	public static class ViewInGridExtensions
 	{
-		public static TView Row<TView>(this TView view, int row, int span = 1) where TView : View
+		public static TView Row<TView>(this TView view, int row) where TView : View
+		{
+			view.SetValue(Grid.RowProperty, row);
+			return view;
+		}
+
+		public static TView Row<TView>(this TView view, int row, int span) where TView : View
 		{
 			view.SetValue(Grid.RowProperty, row);
 			view.SetValue(Grid.RowSpanProperty, span);
@@ -18,7 +24,13 @@ namespace Xamarin.Forms.Markup
 			return view;
 		}
 
-		public static TView Col<TView>(this TView view, int col, int span = 1) where TView : View
+		public static TView Col<TView>(this TView view, int col) where TView : View
+		{
+			view.SetValue(Grid.ColumnProperty, col);
+			return view;
+		}
+
+		public static TView Col<TView>(this TView view, int col, int span) where TView : View
 		{
 			view.SetValue(Grid.ColumnProperty, col);
 			view.SetValue(Grid.ColumnSpanProperty, span);
