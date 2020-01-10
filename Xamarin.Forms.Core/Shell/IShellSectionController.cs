@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -21,8 +24,23 @@ namespace Xamarin.Forms
 
 		void SendInsetChanged(Thickness inset, double tabThickness);
 
+		void SendPopping(Task poppingCompleted);
+		void SendPoppingToRoot(Task finishedPopping);
+
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		void SendPopped();
+
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		void SendPopping(Page page);
+
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		void SendPopped(Page page);
+
+		ReadOnlyCollection<ShellContent> GetItems();
+
+		event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
 	}
 }
