@@ -1,5 +1,3 @@
-#region
-
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -9,18 +7,21 @@ using Android.Content;
 using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
+#if __ANDROID_29__
+using AndroidX.AppCompat.App;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
+#else
 using Android.Support.V7.App;
+using AToolbar = Android.Support.V7.Widget.Toolbar;
+#endif
 using Android.Views;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
-using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
 using System.Runtime.CompilerServices;
-
-#endregion
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -56,6 +57,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool _renderersAdded;
 		bool _activityCreated;
+		bool _powerSaveReceiverRegistered;
 		PowerSaveModeBroadcastReceiver _powerSaveModeBroadcastReceiver;
 
 		static readonly ManualResetEventSlim PreviousActivityDestroying = new ManualResetEventSlim(true);
@@ -68,7 +70,6 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
-			RuntimeHelpers.RunClassConstructor(typeof(Anticipator).TypeHandle);
 		}
 
 		public event EventHandler ConfigurationChanged;
@@ -298,10 +299,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_layout.HideKeyboard(true);
 
-			if (Forms.IsLollipopOrNewer)
+			if (_powerSaveReceiverRegistered && Forms.IsLollipopOrNewer)
 			{
-				// Don't listen for power save mode changes while we're paused
-				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+					// Don't listen for power save mode changes while we're paused
+					UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+					_powerSaveReceiverRegistered = false;
 			}
 
 			// Stop animations or other ongoing actions that could consume CPU
@@ -341,12 +343,14 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
 
-			if (Forms.IsLollipopOrNewer)
+			if (!_powerSaveReceiverRegistered && Forms.IsLollipopOrNewer)
 			{
 				// Start listening for power save mode changes
 				RegisterReceiver(_powerSaveModeBroadcastReceiver, new IntentFilter(
 					PowerManager.ActionPowerSaveModeChanged
 				));
+
+				_powerSaveReceiverRegistered = true;
 			}
 
 			OnStateChanged();
@@ -442,7 +446,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_previousState == AndroidApplicationLifecycleState.OnCreate && _currentState == AndroidApplicationLifecycleState.OnStart)
 				_application.SendStart();
-			else if (_previousState == AndroidApplicationLifecycleState.OnStop && _currentState == AndroidApplicationLifecycleState.OnRestart)
+			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)	
 				_application.SendResume();
 			else if (_previousState == AndroidApplicationLifecycleState.OnPause && _currentState == AndroidApplicationLifecycleState.OnStop)
 				_application.SendSleep();

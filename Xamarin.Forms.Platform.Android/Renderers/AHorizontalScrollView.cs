@@ -1,5 +1,9 @@
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
@@ -19,6 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
+			if (_renderer.Element.InputTransparent)
+				return false;
 			// set the start point for the bidirectional scroll; 
 			// Down is swallowed by other controls, so we'll just sneak this in here without actually preventing
 			// other controls from getting the event.
@@ -33,6 +39,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnTouchEvent(MotionEvent ev)
 		{
+			if (!_renderer.Element.IsEnabled)
+				return false;
 			// If the touch is caught by the horizontal scrollview, forward it to the parent so custom renderers can be notified of the touch.
 			var verticalScrollViewerRenderer = Parent as ScrollViewRenderer;
 			if (verticalScrollViewerRenderer != null)
