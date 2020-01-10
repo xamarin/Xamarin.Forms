@@ -11,8 +11,22 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Slider Margin="5" Value="{Binding Position, Mode=TwoWay}" Maximum="{Binding Count}" />
-        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="1" HeightRequest="400"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Slider x:Name="slider" Margin="5" Value="{Binding Position, Mode=TwoWay}" Maximum="{Binding Count}" Grid.ColumnSpan="2" />
+        <Label Text="{Binding Source={x:Reference slider},
+                      Path=Value,
+                      StringFormat='The current Position is {0}'}"
+                      VerticalTextAlignment="Center"
+                      VerticalOptions="Center"
+                      Grid.Column="0" Grid.Row="1"></Label>
+        <Entry Text="{Binding Position}"
+                      VerticalTextAlignment="Center"
+                      VerticalOptions="Center"
+                      Grid.Column="1" Grid.Row="1"></Entry>
+        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="2" HeightRequest="400" Grid.ColumnSpan="2"
                       PeekAreaInsets="50,0">
             <CarouselView.ItemTemplate>
                 <DataTemplate>
@@ -20,7 +34,7 @@
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
-        <Frame Margin="15" x:Name="layoutNormal" Grid.Row="3" HeightRequest="150" OutlineColor="#00000088" Padding="5">
+        <Frame Margin="15" x:Name="layoutNormal" Grid.Row="3" Grid.ColumnSpan="2" HeightRequest="150" OutlineColor="#00000088" Padding="5">
             <Grid>
                 <CarouselView x:Name="carouselNormal" ItemsSource="{Binding Items}" Position="{Binding Position}">
                     <CarouselView.ItemTemplate>

@@ -242,7 +242,7 @@ namespace Xamarin.Forms
 			}
 
 			// User is interacting with the carousel we don't need to scroll to item 
-			if (!carousel.IsDragging && !carousel.IsScrolling && carousel.gotoPosition == -1)
+			if (!carousel.IsDragging && !carousel.IsScrolling)
 			{
 				carousel.gotoPosition = args.CurrentPosition;
 				
