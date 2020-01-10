@@ -9,46 +9,46 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 		[Test]
 		public void TextLeft()
-			=> TestPropertySet(l => l.TextLeft(), (Label.HorizontalTextAlignmentProperty, TextAlignment.End, TextAlignment.Start));
+			=> TestPropertiesSet(l => l.TextLeft(), (Label.HorizontalTextAlignmentProperty, TextAlignment.End, TextAlignment.Start));
 
 		[Test]
 		public void TextCenterH()
-			=> TestPropertySet(l => l.TextCenterH(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
+			=> TestPropertiesSet(l => l.TextCenterH(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
 
 		[Test]
 		public void TextRight()
-			=> TestPropertySet(l => l.TextRight(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.End));
+			=> TestPropertiesSet(l => l.TextRight(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.End));
 
 		[Test]
 		public void TextTop()
-			=> TestPropertySet(l => l.TextTop(), (Label.VerticalTextAlignmentProperty, TextAlignment.End, TextAlignment.Start));
+			=> TestPropertiesSet(l => l.TextTop(), (Label.VerticalTextAlignmentProperty, TextAlignment.End, TextAlignment.Start));
 
 		[Test]
 		public void TextCenterV()
-			=> TestPropertySet(l => l.TextCenterV(), (Label.VerticalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
+			=> TestPropertiesSet(l => l.TextCenterV(), (Label.VerticalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
 
 		[Test]
 		public void TextBottom()
-			=> TestPropertySet(l => l.TextBottom(), (Label.VerticalTextAlignmentProperty, TextAlignment.Start, TextAlignment.End));
+			=> TestPropertiesSet(l => l.TextBottom(), (Label.VerticalTextAlignmentProperty, TextAlignment.Start, TextAlignment.End));
 
 		[Test]
 		public void TextCenter()
-			=> TestPropertySet(
+			=> TestPropertiesSet(
 					l => l.TextCenter(),
 					(Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center),
 					(Label.VerticalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
 
 		[Test]
 		public void FontSize()
-			=> TestPropertySet(l => l.FontSize(8.0), (Label.FontSizeProperty, 6.0, 8.0));
+			=> TestPropertiesSet(l => l.FontSize(8.0), (Label.FontSizeProperty, 6.0, 8.0));
 
 		[Test]
 		public void Bold()
-			=> TestPropertySet(l => l.Bold(), (Label.FontAttributesProperty, FontAttributes.None, FontAttributes.Bold));
+			=> TestPropertiesSet(l => l.Bold(), (Label.FontAttributesProperty, FontAttributes.None, FontAttributes.Bold));
 
 		[Test]
 		public void Italic()
-			=> TestPropertySet(l => l.Italic(), (Label.FontAttributesProperty, FontAttributes.None, FontAttributes.Italic));
+			=> TestPropertiesSet(l => l.Italic(), (Label.FontAttributesProperty, FontAttributes.None, FontAttributes.Italic));
 
 		[Test]
 		public void FormattedTextSingleSpan()

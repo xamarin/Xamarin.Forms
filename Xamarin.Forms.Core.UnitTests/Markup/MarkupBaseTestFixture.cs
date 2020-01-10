@@ -24,15 +24,20 @@ namespace Xamarin.Forms.Markup.UnitTests
 			base.TearDown();
 		}
 
-		protected void TestPropertySet<TPropertyValue>(
+		protected void TestPropertiesSet<TPropertyValue>(
 			Action<TBindable> modify,
 			params (BindableProperty property, TPropertyValue beforeValue, TPropertyValue expectedValue)[] propertyChanges
-		) => TestPropertySet(Bindable, modify, propertyChanges);
+		) => TestPropertiesSet(Bindable, modify, propertyChanges);
+
+		protected void TestPropertiesSet(
+			Action<TBindable> modify,
+			params (BindableProperty property, object beforeValue, object expectedValue)[] propertyChanges
+		) => TestPropertiesSet(Bindable, modify, propertyChanges);
 	}
 
 	public class MarkupBaseTestFixture : BaseTestFixture
 	{
-		protected void TestPropertySet<TBindable, TPropertyValue>(
+		protected void TestPropertiesSet<TBindable, TPropertyValue>(
 			TBindable bindable,
 			Action<TBindable> modify,
 			params (BindableProperty property, TPropertyValue beforeValue, TPropertyValue expectedValue)[] propertyChanges
