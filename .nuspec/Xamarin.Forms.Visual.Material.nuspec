@@ -9,6 +9,7 @@
     <license type="expression">MIT</license>
     <iconUrl>https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Assets/xamarin_128x128.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
+    <repository type="git" url="https://github.com/xamarin/xamarin.forms"/>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Material renderers for Xamarin.Forms</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
@@ -42,9 +43,9 @@
     <file src="Xamarin.Forms.Visual.Material.targets" target="build\MonoAndroid10\Xamarin.Forms.Visual.Material.targets" />
 
     <!--Android 90-->
-    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\Xamarin.Forms.Material.dll" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\Xamarin.Forms.Material.*pdb" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\Xamarin.Forms.Material.*mdb" target="lib\MonoAndroid90" />
+    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid90\Xamarin.Forms.Material.dll" target="lib\MonoAndroid90" />
+    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid90\Xamarin.Forms.Material.*pdb" target="lib\MonoAndroid90" />
+    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid90\Xamarin.Forms.Material.*mdb" target="lib\MonoAndroid90" />
 
     <!--iOS-->
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.dll" target="lib\Xamarin.iOS10" />

@@ -31,6 +31,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		IShellSectionController ShellSectionController => ShellSection;
+
 		public UIViewController ViewController => this;
 
 		#endregion IShellContentRenderer
@@ -60,28 +62,17 @@ namespace Xamarin.Forms.Platform.iOS
 		Page _displayedPage;
 		bool _disposed;
 		bool _firstLayoutCompleted;
-		bool _ignorePop;
 		TaskCompletionSource<bool> _popCompletionTask;
 		IShellSectionRootRenderer _renderer;
 		ShellSection _shellSection;
+		bool _ignorePopCall;
 
 		public ShellSectionRenderer(IShellContext context)
 		{
 			Delegate = new NavDelegate(this);
 			_context = context;
 		}
-
-		public override UIViewController PopViewController(bool animated)
-		{
-			if (!_ignorePop)
-			{
-				_popCompletionTask = new TaskCompletionSource<bool>();
-				SendPoppedOnCompletion(_popCompletionTask.Task);
-			}
-
-			return base.PopViewController(animated);
-		}
-
+		
 		[Export("navigationBar:shouldPopItem:")]
 		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
 		{
@@ -94,7 +85,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (allowPop)
 			{
 				// Do not remove, wonky behavior on some versions of iOS if you dont dispatch
-				CoreFoundation.DispatchQueue.MainQueue.DispatchAsync(() => PopViewController(true));
+				CoreFoundation.DispatchQueue.MainQueue.DispatchAsync(() =>
+				{
+					_popCompletionTask = new TaskCompletionSource<bool>();
+					SendPoppedOnCompletion(_popCompletionTask.Task);
+					PopViewController(true);
+				});
 			}
 			else
 			{
@@ -174,12 +170,17 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTabBarItem();
 		}
 
+		protected virtual IShellSectionRootRenderer CreateShellSectionRootRenderer(ShellSection shellSection, IShellContext shellContext)
+		{
+			return new ShellSectionRootRenderer(shellSection, shellContext);
+		}
+
 		protected virtual void LoadPages()
 		{
-			_renderer = new ShellSectionRootRenderer(ShellSection, _context);
+			_renderer = CreateShellSectionRootRenderer(ShellSection, _context);
 
 			PushViewController(_renderer.ViewController, false);
-
+			
 			var stack = ShellSection.Stack;
 			for (int i = 1; i < stack.Count; i++)
 			{
@@ -202,8 +203,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_displayedPage != null)
 			{
 				_displayedPage.PropertyChanged += OnDisplayedPagePropertyChanged;
-				if (!ShellSection.Stack.Contains(_displayedPage))
-					UpdateNavigationBarHidden();
+				UpdateNavigationBarHidden();
+				UpdateNavigationBarHasShadow();
 			}
 		}
 
@@ -260,25 +261,55 @@ namespace Xamarin.Forms.Platform.iOS
 			_popCompletionTask = new TaskCompletionSource<bool>();
 			e.Task = _popCompletionTask.Task;
 
-			_ignorePop = true;
 			PopViewController(animated);
-			_ignorePop = false;
 
 			await _popCompletionTask.Task;
 
 			DisposePage(page);
 		}
 
-		protected virtual async void OnPopToRootRequested(NavigationRequestedEventArgs e)
+		public override UIViewController[] PopToRootViewController(bool animated)
 		{
-			var animated = e.Animated;
+			if (!_ignorePopCall && ViewControllers.Length > 1)
+			{
+				ProcessPopToRoot();
+			}
 
+			return base.PopToRootViewController(animated);
+		}
+
+		async void ProcessPopToRoot()
+		{
 			var task = new TaskCompletionSource<bool>();
 			var pages = _shellSection.Stack.ToList();
 			_completionTasks[_renderer.ViewController] = task;
-			e.Task = task.Task;
+			((IShellSectionController)ShellSection).SendPoppingToRoot(task.Task);
+			await task.Task;
 
-			PopToRootViewController(animated);
+			for (int i = pages.Count - 1; i >= 1; i--)
+			{
+				var page = pages[i];
+				DisposePage(page);
+			}
+		}
+
+		protected virtual async void OnPopToRootRequested(NavigationRequestedEventArgs e)
+		{
+			var animated = e.Animated;
+			var task = new TaskCompletionSource<bool>();
+			var pages = _shellSection.Stack.ToList();
+
+			try
+			{
+				_ignorePopCall = true;
+				_completionTasks[_renderer.ViewController] = task;
+				e.Task = task.Task;
+				PopToRootViewController(animated);
+			}
+			finally
+			{
+				_ignorePopCall = false;
+			}
 
 			await e.Task;
 
@@ -332,6 +363,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_ = _context.ApplyNativeImageAsync(ShellSection, ShellSection.IconProperty, icon =>
 			{
 				TabBarItem = new UITabBarItem(ShellSection.Title, icon, null);
+				TabBarItem.AccessibilityIdentifier = ShellSection.AutomationId ?? ShellSection.Title;
 			});
 		}
 
@@ -372,6 +404,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
 				UpdateNavigationBarHidden();
+			else if (e.PropertyName == Shell.NavBarHasShadowProperty.PropertyName)
+				UpdateNavigationBarHasShadow();
 		}
 
 		void PushPage(Page page, bool animated, TaskCompletionSource<bool> completionSource = null)
@@ -401,11 +435,10 @@ namespace Xamarin.Forms.Platform.iOS
 			var poppedPage = _shellSection.Stack[_shellSection.Stack.Count - 1];
 
 			// this is used to setup appearance changes based on the incoming page
-			((IShellSectionController)_shellSection).SendPopping(poppedPage);
+			((IShellSectionController)_shellSection).SendPopping(popTask);
 
 			await popTask;
 
-			((IShellSectionController)_shellSection).SendPopped(poppedPage);
 			DisposePage(poppedPage);
 		}
 
@@ -416,7 +449,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var shellContent = shellSection?.CurrentItem;
 			var stack = shellSection?.Stack.ToList();
 
-			stack.RemoveAt(stack.Count - 1);
+			stack?.RemoveAt(stack.Count - 1);
 
 			return ((IShellController)_context.Shell).ProposeNavigation(ShellNavigationSource.Pop, shellItem, shellSection, shellContent, stack, true);
 		}
@@ -424,6 +457,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateNavigationBarHidden()
 		{
 			SetNavigationBarHidden(!Shell.GetNavBarIsVisible(_displayedPage), true);
+		}
+
+		void UpdateNavigationBarHasShadow()
+		{
+			_appearanceTracker.SetHasShadow(this, Shell.GetNavBarHasShadow(_displayedPage));
 		}
 
 		void UpdateShadowImages()
@@ -486,6 +524,25 @@ namespace Xamarin.Forms.Platform.iOS
 					navBarVisible = Shell.GetNavBarIsVisible(element);
 
 				navigationController.SetNavigationBarHidden(!navBarVisible, true);
+
+				var coordinator = viewController.GetTransitionCoordinator();
+				if (coordinator != null && coordinator.IsInteractive)
+				{
+					// handle swipe to dismiss gesture 
+					if (Forms.IsiOS10OrNewer)
+						coordinator.NotifyWhenInteractionChanges(OnInteractionChanged);
+					else
+						coordinator.NotifyWhenInteractionEndsUsingBlock(OnInteractionChanged);
+				}
+			}
+
+			void OnInteractionChanged(IUIViewControllerTransitionCoordinatorContext context)
+			{
+				if (!context.IsCancelled)
+				{
+					_self._popCompletionTask = new TaskCompletionSource<bool>();
+					_self.SendPoppedOnCompletion(_self._popCompletionTask.Task);
+				}
 			}
 		}
 	}
