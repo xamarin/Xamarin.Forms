@@ -20,12 +20,6 @@
 			return view;
 		}
 
-		public static TView Menu<TView>(this TView view, Menu value) where TView : View
-		{
-			FlexLayout.SetMenu(view, value);
-			return view;
-		}
-
 		public static TView Order<TView>(this TView view, int value) where TView : View
 		{
 			FlexLayout.SetOrder(view, value);
