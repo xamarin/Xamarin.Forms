@@ -20,8 +20,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void InputView_OnTextChanged(object sender, TextChangedEventArgs e)
 		{
+#if APP
 			BoxView.CornerRadius = new CornerRadius(double.Parse(TopLeft.Text), double.Parse(TopRight.Text),
 			double.Parse(BottomLeft.Text), double.Parse(BottomRight.Text));
+#endif
 		}
 	}
 }
