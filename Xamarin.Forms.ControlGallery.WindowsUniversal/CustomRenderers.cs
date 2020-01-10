@@ -119,9 +119,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 	}
 
 
-#pragma warning disable 618
-	public class TextBoxViewRenderer : BoxViewRenderer
-#pragma warning restore 618
+	public class TextBoxViewRenderer : BoxViewBorderRenderer
 	{
 		Canvas m_Canvas;
 
