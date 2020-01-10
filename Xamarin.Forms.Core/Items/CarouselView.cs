@@ -18,7 +18,7 @@ namespace Xamarin.Forms
 		public const string VisibleItemVisualState = "VisibleItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
-		int gotoPosition = -1;
+		int _gotoPosition = -1;
 
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
@@ -113,7 +113,14 @@ namespace Xamarin.Forms
 				}
 			}
 
-			carouselView.SetValueCore(PositionProperty, GetPositionForItem(carouselView, newValue));
+			var positionItem = GetPositionForItem(carouselView, newValue);
+			var gotoPosition = carouselView._gotoPosition;
+
+			if (positionItem == gotoPosition || gotoPosition == -1)
+			{ 
+				carouselView._gotoPosition = gotoPosition = - 1;
+				carouselView.SetValueCore(PositionProperty, positionItem);
+			}
 
 			carouselView.CurrentItemChanged?.Invoke(carouselView, args);
 
@@ -234,13 +241,13 @@ namespace Xamarin.Forms
 
 			carousel.PositionChanged?.Invoke(carousel, args);
 
-			if (args.CurrentPosition == carousel.gotoPosition)
-				carousel.gotoPosition = -1;
+			if (args.CurrentPosition == carousel._gotoPosition)
+				carousel._gotoPosition = -1;
 		
 			// User is interacting with the carousel we don't need to scroll to item 
 			if (!carousel.IsDragging && !carousel.IsScrolling)
 			{
-				carousel.gotoPosition = args.CurrentPosition;
+				carousel._gotoPosition = args.CurrentPosition;
 
 				Action actionSCroll = () =>
 				{
