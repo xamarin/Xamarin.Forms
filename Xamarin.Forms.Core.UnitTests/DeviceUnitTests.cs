@@ -129,16 +129,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task DeviceTimerWithSuccessfulTaskReturningTrue()
+		public async Task DeviceTimerWithSuccessfulFunnctionReturningTrue()
 		{
-			const int timerDelayInSeconds = 1;
 			const int expectedNumberOfExecutions = 2;
-			int numberOfSuccessfulTaskExecutions = 0;
+			var timerDelay = TimeSpan.FromSeconds(1);
+			var numberOfSuccessfulTaskExecutions = 0;
 
-			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulFunction);
+			Device.StartTimer(timerDelay, successfulFunction);
 
-			//Wait for Timer to trigger twice
-			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+			//Wait for Timer to trigger at least twice
+			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 
@@ -152,16 +152,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task DeviceTimerWithSuccessfulTaskReturningFalse()
+		public async Task DeviceTimerWithSuccessfulFunctionReturningFalse()
 		{
-			const int timerDelayInSeconds = 1;
 			const int expectedNumberOfExecutions = 1;
-			int numberOfSuccessfulTaskExecutions = 0;
+			var timerDelay = TimeSpan.FromSeconds(1);
+			var numberOfSuccessfulTaskExecutions = 0;
 
-			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulFunction);
+			Device.StartTimer(timerDelay, successfulFunction);
 
-			//Wait for Timer to trigger twice
-			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+			//Wait for Timer to trigger at least twice
+			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 
@@ -173,49 +173,49 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task AsyncDeviceTimerWithSuccessfulTaskReturningTrue()
+		public async Task AsyncDeviceTimerWithSuccessfulShorterTaskReturningTrue()
 		{
-			const int timerDelayInSeconds = 1;
 			const int expectedNumberOfExecutions = 2;
+			var timerDelay = TimeSpan.FromSeconds(1);
+			var taskFunctionDelay = TimeSpan.FromSeconds(0.5);
 			int numberOfSuccessfulTaskExecutions = 0;
 
-			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulTask);
+			Device.StartTimer(timerDelay, successfulTask);
 
-			//Wait for Timer to trigger twice
-			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+			//Wait for Timer to trigger at least twice
+			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 
 			async Task<bool> successfulTask()
 			{
-				await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds / 2));
+				await Task.Delay(taskFunctionDelay);
 
 				if (++numberOfSuccessfulTaskExecutions >= expectedNumberOfExecutions)
-				{
 					return false;
-				}
 
 				return true;
 			}
 		}
 
 		[Test]
-		public async Task AsyncDeviceTimerWithSuccessfulTaskReturningFalse()
+		public async Task AsyncDeviceTimerWithSuccessfulShorterTaskReturningFalse()
 		{
-			const int timerDelayInSeconds = 1;
 			const int expectedNumberOfExecutions = 1;
-			int numberOfSuccessfulTaskExecutions = 0;
+			var timerDelay = TimeSpan.FromSeconds(1);
+			var taskFunctionDelay = TimeSpan.FromSeconds(0.5);
+			var numberOfSuccessfulTaskExecutions = 0;
 
-			Device.StartTimer(TimeSpan.FromSeconds(timerDelayInSeconds), successfulTask);
+			Device.StartTimer(timerDelay, successfulTask);
 
-			//Wait for Timer to trigger twice
-			await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds * 2 + 1));
+			//Wait for Timer to trigger at least twice
+			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 
 			async Task<bool> successfulTask()
 			{
-				await Task.Delay(TimeSpan.FromSeconds(timerDelayInSeconds / 2));
+				await Task.Delay(taskFunctionDelay);
 
 				++numberOfSuccessfulTaskExecutions;
 				return false;
