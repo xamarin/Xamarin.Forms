@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Xamarin.Forms.Platform.UAP;
-using Xamarin.Forms.Platform.UAP.Extensions;
+using Xamarin.Forms.Platform.UWP.Extensions;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Label;
 using WThickness = Windows.UI.Xaml.Thickness;
