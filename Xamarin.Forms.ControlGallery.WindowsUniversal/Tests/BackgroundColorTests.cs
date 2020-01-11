@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -10,29 +11,17 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 	[TestFixture]
 	public class BackgroundColorTests : PlatformTestFixture
 	{
-		static IEnumerable<VisualElement> VisualElements
+		static IEnumerable TestCases
 		{
 			get
 			{
-				return new VisualElement[]
+				// SearchBar is currently busted; when 8773 gets merged we can turn this back on
+				// new SearchBar { Text = "foo", BackgroundColor = Color.AliceBlue },
+				foreach (var element in BasicViews.Where(v => !(v is SearchBar)))
 				{
-					new Button { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new CheckBox { BackgroundColor = Color.AliceBlue },
-					new DatePicker { BackgroundColor = Color.AliceBlue },
-					new Editor { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Entry { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Image { BackgroundColor = Color.AliceBlue },
-					new Label { Text = "foo", BackgroundColor = Color.AliceBlue },
-					new Picker { BackgroundColor = Color.AliceBlue },
-					new ProgressBar { BackgroundColor = Color.AliceBlue },
-					
-					// SearchBar is currently busted; when 8773 gets merged we can turn this back on
-					// new SearchBar { Text = "foo", BackgroundColor = Color.AliceBlue },
-					
-					new Stepper { BackgroundColor = Color.AliceBlue },
-					new Switch { BackgroundColor = Color.AliceBlue },
-					new TimePicker { BackgroundColor = Color.AliceBlue },
-				};
+					element.BackgroundColor = Color.AliceBlue;
+					yield return CreateTestCase(element);
+				}
 			}
 		}
 
@@ -56,17 +45,17 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 			return (panel.Background as SolidColorBrush).Color;
 		}
 
-		[Test, TestCaseSource(nameof(VisualElements))]
-		[Description("VisualElement background color should match renderer background color")]
-		public void BackgroundColorConsistent(VisualElement element)
+		[Test, TestCaseSource(nameof(TestCases))]
+		[Description("View background color should match renderer background color")]
+		public void BackgroundColorConsistent(View view)
 		{
-			var control = GetNativeControl(element);
+			var control = GetNativeControl(view);
 
 			var nativeColor = control != null
 				? GetBackgroundColor(control)
-				: GetBackgroundColor(GetContainer(element));
+				: GetBackgroundColor(GetContainer(view));
 
-			var formsColor = element.BackgroundColor.ToUwpColor();
+			var formsColor = view.BackgroundColor.ToUwpColor();
 			Assert.That(nativeColor, Is.EqualTo(formsColor));
 		}
 	}
