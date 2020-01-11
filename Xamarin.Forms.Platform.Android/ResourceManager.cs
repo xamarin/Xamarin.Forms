@@ -50,6 +50,10 @@ namespace Xamarin.Forms.Platform.Android
 					_resourceClass = FindType("Id", "Resource_Id");
 				return _resourceClass;
 			}
+			set
+			{
+				_resourceClass = value;
+			}
 		}
 
 		public static Type StyleClass { 
@@ -58,6 +62,10 @@ namespace Xamarin.Forms.Platform.Android
 					_styleClass = FindType("Style", "Resource_Style");
 				return _styleClass;
 			}
+			set
+			{
+				_styleClass = value;
+			}
 		}
 
 		public static Type LayoutClass { 
@@ -65,6 +73,10 @@ namespace Xamarin.Forms.Platform.Android
 				if (_layoutClass == null)
 					_layoutClass = FindType("Layout", "Resource_Layout");
 				return _layoutClass;
+			}
+			set
+			{
+				_layoutClass = value;
 			}
 		}
 
