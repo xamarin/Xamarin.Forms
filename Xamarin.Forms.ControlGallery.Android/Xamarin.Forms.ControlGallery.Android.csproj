@@ -112,6 +112,7 @@
     <Compile Include="Tests\Issues.cs" />
     <Compile Include="Tests\OpacityTests.cs" />
     <Compile Include="Tests\RotationTests.cs" />
+    <Compile Include="Tests\ScaleTests.cs" />
     <Compile Include="Tests\TestingPlatformService.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="PreApplicationClassActivity.cs" />
