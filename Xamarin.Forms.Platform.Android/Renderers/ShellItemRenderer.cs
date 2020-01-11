@@ -365,6 +365,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnTabReselected(ShellSection shellSection)
 		{
+			((IShellItemController)ShellItem).SendReselected();
 		}
 
 		protected virtual void ResetAppearance() => _appearanceTracker.ResetAppearance(_bottomView);

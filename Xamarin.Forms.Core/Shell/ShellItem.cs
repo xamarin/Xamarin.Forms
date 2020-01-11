@@ -41,6 +41,14 @@ namespace Xamarin.Forms
 
 		#region IShellItemController
 
+		event EventHandler<ShellSection> IShellItemController.Reselected
+		{
+			add { _reselected += value; }
+			remove { _reselected -= value; }
+		}
+
+		event EventHandler<ShellSection> _reselected;
+
 		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
 		{
 			var shellSection = request.Request.Section;
@@ -75,6 +83,11 @@ namespace Xamarin.Forms
 				SetValueFromRenderer(CurrentItemProperty, shellSection);
 
 			return accept;
+		}
+
+		void IShellItemController.SendReselected()
+		{
+			_reselected?.Invoke(this, CurrentItem);
 		}
 
 		#endregion IShellItemController

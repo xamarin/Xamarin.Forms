@@ -83,6 +83,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ShouldSelectViewController = (tabController, viewController) =>
 			{
+				if (viewController == SelectedViewController)
+				{
+					// let user hander it
+					((IShellItemController)ShellItem).SendReselected();
+					return false;
+				}
+
 				bool accept = true;
 				var r = RendererForViewController(viewController);
 				if (r != null)
