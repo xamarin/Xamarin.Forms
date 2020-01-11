@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// TODO : Find a way to make this cancellable
 			var shellSection = ShellSection;
-			var shellContent = shellSection.Items[position];
+			var shellContent = SectionController.GetItems()[position];
 
 			if (shellContent == shellSection.CurrentItem)
 				return;
@@ -124,12 +124,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		Fragment IShellObservableFragment.Fragment => this;
 		public ShellSection ShellSection { get; set; }
+		IShellSectionController SectionController => (IShellSectionController)ShellSection;
 
 		public override AView OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
 			var shellSection = ShellSection;
 			if (shellSection == null)
 				return null;
+
+			if (shellSection.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {shellSection}. Title: {shellSection.Title}. Route: {shellSection.Route}.");
 
 			var root = inflater.Inflate(Resource.Layout.RootLayout, null).JavaCast<CoordinatorLayout>();
 
@@ -148,14 +152,14 @@ namespace Xamarin.Forms.Platform.Android
 			_tablayout.SetupWithViewPager(_viewPager);
 
 			var currentPage = ((IShellContentController)shellSection.CurrentItem).GetOrCreateContent();
-			var currentIndex = ShellSection.Items.IndexOf(ShellSection.CurrentItem);
+			var currentIndex = SectionController.GetItems().IndexOf(ShellSection.CurrentItem);
 
 			_toolbarTracker = _shellContext.CreateTrackerForToolbar(_toolbar);
 			_toolbarTracker.Page = currentPage;
 
 			_viewPager.CurrentItem = currentIndex;
 
-			if (shellSection.Items.Count == 1)
+			if (SectionController.GetItems().Count == 1)
 			{
 				_tablayout.Visibility = ViewStates.Gone;
 			}
@@ -225,7 +229,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected virtual void OnItemsCollectionChagned(object sender, NotifyCollectionChangedEventArgs e) =>
-			_tablayout.Visibility = (ShellSection.Items.Count > 1) ? ViewStates.Visible : ViewStates.Gone;
+			_tablayout.Visibility = (SectionController.GetItems().Count > 1) ? ViewStates.Visible : ViewStates.Gone;
 
 		protected virtual void OnShellItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -234,7 +238,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
-				var newIndex = ShellSection.Items.IndexOf(ShellSection.CurrentItem);
+				var newIndex = SectionController.GetItems().IndexOf(ShellSection.CurrentItem);
 
 				if (newIndex >= 0)
 				{
@@ -257,14 +261,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void HookEvents()
 		{
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnItemsCollectionChagned;
+			SectionController.ItemsCollectionChanged += OnItemsCollectionChagned;
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, ShellSection);
 			ShellSection.PropertyChanged += OnShellItemPropertyChanged;
 		}
 
 		void UnhookEvents()
 		{
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnItemsCollectionChagned;
+			SectionController.ItemsCollectionChanged -= OnItemsCollectionChagned;
 			((IShellController)_shellContext?.Shell)?.RemoveAppearanceObserver(this);
 			ShellSection.PropertyChanged -= OnShellItemPropertyChanged;
 		}

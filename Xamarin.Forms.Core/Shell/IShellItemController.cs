@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
 	public interface IShellItemController : IElementController
 	{
-		event EventHandler<ShellSection> Reselected;
-
 		bool ProposeSection(ShellSection shellSection, bool setValue = true);
 
+		ReadOnlyCollection<ShellSection> GetItems();
+		event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
+
+		event EventHandler<ShellSection> Reselected;
 		void SendReselected();
 	}
 }

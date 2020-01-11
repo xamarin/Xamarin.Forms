@@ -339,14 +339,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var customIcon = await context.GetFormsDrawableAsync(image);
 
-				if(customIcon != null)
+				if (customIcon != null)
 					icon = new FlyoutIconDrawerDrawable(context, tintColor, customIcon, text);
 			}
 
 			if (!String.IsNullOrWhiteSpace(text) && icon == null)
 				icon = new FlyoutIconDrawerDrawable(context, tintColor, icon, text);
 
-			if(icon == null)
+			if (icon == null)
 			{
 				icon = new DrawerArrowDrawable(context.GetThemedContext());
 				icon.SetColorFilter(tintColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
@@ -359,10 +359,10 @@ namespace Xamarin.Forms.Platform.Android
 				_drawerToggle.DrawerIndicatorEnabled = false;
 				toolbar.NavigationIcon = icon;
 			}
-			else if(_flyoutBehavior == FlyoutBehavior.Flyout)
+			else if (_flyoutBehavior == FlyoutBehavior.Flyout)
 			{
 				_drawerToggle.DrawerIndicatorEnabled = isEnabled;
-				if(isEnabled)
+				if (isEnabled)
 				{
 					_drawerToggle.DrawerArrowDrawable = icon;
 					toolbar.NavigationIcon = null;
@@ -395,7 +395,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				toolbar.NavigationContentDescription = shell.FlyoutIcon.AutomationId;
 			}
-			else if(toolbar.SetNavigationContentDescription(_shellContext.Shell.FlyoutIcon) == null)
+			else if (toolbar.SetNavigationContentDescription(_shellContext.Shell.FlyoutIcon) == null)
 			{
 				toolbar.SetNavigationContentDescription(R.String.Ok);
 			}
@@ -468,7 +468,7 @@ namespace Xamarin.Forms.Platform.Android
 					_titleViewContainer = null;
 				}
 			}
-			else if(_titleViewContainer == null)
+			else if (_titleViewContainer == null)
 			{
 				_titleViewContainer = new ContainerView(context, titleView);
 				_titleViewContainer.MatchHeight = _titleViewContainer.MatchWidth = true;

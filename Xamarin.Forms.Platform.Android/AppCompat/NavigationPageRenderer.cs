@@ -250,6 +250,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_drawerToggle != null)
 				{
+					_drawerToggle.ToolbarNavigationClickListener = null;
 					_drawerToggle.Dispose();
 					_drawerToggle = null;
 				}
@@ -546,6 +547,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.IconColorProperty.PropertyName)
+				UpdateToolbar();
 		}
 
 #pragma warning disable 1998 // considered for removal
@@ -657,9 +660,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(context, _masterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 
+			if (_drawerToggle != null)
+			{
+				_drawerToggle.ToolbarNavigationClickListener = null;
+				_drawerToggle.Dispose();
+			}
+
 			_drawerToggle = new ActionBarDrawerToggle(context.GetActivity(), _drawerLayout, bar,
-													  resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
-													  resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose)
+				resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+				resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose)
 			{
 				ToolbarNavigationClickListener = new ClickListener(Element)
 			};
@@ -667,13 +676,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_drawerListener != null)
 			{
 				_drawerLayout.RemoveDrawerListener(_drawerListener);
+				_drawerListener.Dispose();
 			}
 
 			_drawerListener = new DrawerMultiplexedListener { Listeners = { _drawerToggle, renderer } };
 			_drawerLayout.AddDrawerListener(_drawerListener);
 		}
-
-
 
 		Fragment GetPageFragment(Page page)
 		{
@@ -979,7 +987,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (!textColor.IsDefault)
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
+			Color navIconColor = NavigationPage.GetIconColor(Current);
+			if(!navIconColor.IsDefault)
+				bar.NavigationIcon?.SetColorFilter(navIconColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
+
 			bar.Title = currentPage?.Title ?? string.Empty;
+
+			if (_toolbar.NavigationIcon != null && !textColor.IsDefault)
+			{
+				var icon = _toolbar.NavigationIcon as DrawerArrowDrawable;
+				if (icon != null)
+					icon.Color = textColor.ToAndroid().ToArgb();
+			}
 
 			UpdateTitleIcon();
 

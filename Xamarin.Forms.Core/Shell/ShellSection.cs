@@ -29,6 +29,7 @@ namespace Xamarin.Forms
 
 		#region IShellSectionController
 
+		IShellSectionController ShellSectionController => this;
 		readonly List<(object Observer, Action<Page> Callback)> _displayedPageObservers =
 			new List<(object Observer, Action<Page> Callback)>();
 		readonly List<IShellContentInsetObserver> _observers = new List<IShellContentInsetObserver>();
@@ -72,7 +73,7 @@ namespace Xamarin.Forms
 			ShellContent shellContent = request.Request.Content;
 
 			if (shellContent == null)
-				shellContent = Items[0];
+				shellContent = ShellSectionController.GetItems()[0];
 
 			if (request.Request.GlobalRoutes.Count > 0)
 			{
@@ -170,6 +171,8 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
+		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
+
 		[Obsolete]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		void IShellSectionController.SendPopping(Page page)
@@ -190,6 +193,13 @@ namespace Xamarin.Forms
 
 			RemovePage(page);
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
+		}
+
+
+		event NotifyCollectionChangedEventHandler IShellSectionController.ItemsCollectionChanged
+		{
+			add { ((ShellContentCollection)Items).VisibleItemsChanged += value; }
+			remove { ((ShellContentCollection)Items).VisibleItemsChanged -= value; }
 		}
 
 		#endregion IShellSectionController
@@ -216,10 +226,10 @@ namespace Xamarin.Forms
 
 		public ShellSection()
 		{
-			((INotifyCollectionChanged)Items).CollectionChanged += ItemsCollectionChanged;
+			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
 			Navigation = new NavigationImpl(this);
 		}
-
+				
 		public ShellContent CurrentItem
 		{
 			get { return (ShellContent)GetValue(CurrentItemProperty); }
@@ -350,8 +360,7 @@ namespace Xamarin.Forms
 			else
 			{
 				IShellContentController currentItem = CurrentItem;
-				if (currentItem.Page != null)
-					DisplayedPage = currentItem.Page;
+				DisplayedPage = currentItem?.Page;
 			}
 
 			if (previousPage != DisplayedPage)
@@ -365,10 +374,11 @@ namespace Xamarin.Forms
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
-			if (CurrentItem == null && Items.Contains(child))
+			if (CurrentItem == null && ((IShellSectionController)this).GetItems().Contains(child))
 				SetValueFromRenderer(CurrentItemProperty, child);
 
-			UpdateDisplayedPage();
+			if(CurrentItem != null)
+				UpdateDisplayedPage();
 		}
 
 		protected override void OnChildRemoved(Element child)
@@ -376,7 +386,8 @@ namespace Xamarin.Forms
 			base.OnChildRemoved(child);
 			if (CurrentItem == child)
 			{
-				if (Items.Count == 0)
+				var items = ShellSectionController.GetItems();
+				if (items.Count == 0)
 					ClearValue(CurrentItemProperty);
 				else
 				{
@@ -384,7 +395,7 @@ namespace Xamarin.Forms
 					Device.BeginInvokeOnMainThread(() =>
 					{
 						if (CurrentItem == null)
-							SetValueFromRenderer(CurrentItemProperty, Items[0]);
+							SetValueFromRenderer(CurrentItemProperty, items[0]);
 					});
 				}
 			}
