@@ -387,6 +387,9 @@ namespace Xamarin.Forms.Xaml
 			if (XamlLoader.FallbackTypeResolver != null)
 				type = XamlLoader.FallbackTypeResolver(potentialTypes, type);
 
+			if (type == null && XamlMyExt.FallbackTypeResolver != null)
+				type = XamlMyExt.FallbackTypeResolver(xmlType.NamespaceUri, xmlType.Name);
+
 			if (type != null && typeArguments != null)
 			{
 				XamlParseException innerexception = null;

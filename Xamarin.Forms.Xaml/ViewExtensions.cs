@@ -44,6 +44,20 @@ namespace Xamarin.Forms.Xaml
 			return view;
 		}
 
+#if DEBUG
+		public static TXaml LoadFromXaml_XS1<TXaml>(this TXaml view, string xaml)
+		{
+			XamlLoader.Load(view, xaml);
+			return view;
+		}
+#else
+		public static TXaml LoadFromXaml_My<TXaml>(this TXaml view, string xaml)
+		{
+			XamlLoader.Load(view, xaml);
+			return view;
+		}
+#endif
+
 		internal static TXaml LoadFromXaml<TXaml>(this TXaml view, string xaml, Assembly rootAssembly)
 		{
 			XamlLoader.Load(view, xaml, rootAssembly);

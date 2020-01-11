@@ -90,7 +90,8 @@ namespace Xamarin.Forms.Xaml
 						if (converted != null && converted.GetType() == type)
 							value = converted;
 					}
-					if (value == null) {
+					value = XamlMyExt.HookTypeInstantiate?.Invoke(type);
+					if (value == null) {						
 						try {
 							value = Activator.CreateInstance(type);
 						}
