@@ -2,9 +2,15 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.Fragment.App;
+using AndroidX.DrawerLayout.Widget;
+#else
 using Android.Support.V4.Widget;
-using Android.Views;
 using Android.Support.V4.App;
+#endif
+using Android.Views;
 using AView = Android.Views.View;
 using Android.OS;
 
@@ -117,10 +123,25 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (oldElement != null)
 			{
+				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
+
 				((IMasterDetailPageController)oldElement).BackButtonPressed -= OnBackButtonPressed;
+
 				oldElement.PropertyChanged -= HandlePropertyChanged;
 				oldElement.Appearing -= MasterDetailPageAppearing;
 				oldElement.Disappearing -= MasterDetailPageDisappearing;
+
+				RemoveDrawerListener(this);
+			
+				if (_detailLayout != null)
+				{
+					RemoveView(_detailLayout);
+				}
+
+				if (_masterLayout != null)
+				{
+					RemoveView(_masterLayout);
+				}
 			}
 
 			if (newElement != null)
@@ -167,9 +188,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				SetGestureState();
 
 				Presented = newElement.IsPresented;
-
-				if (element != null && !string.IsNullOrEmpty(element.AutomationId))
-					SetAutomationId(element.AutomationId);
 
 				newElement.SendViewInitialized(this);
 			}
@@ -294,10 +312,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					MasterDetailPageController.CanChangeIsPresented = true;
 					//hack : when the orientation changes and we try to close the Master on Android		
 					//sometimes Android picks the width of the screen previous to the rotation 		
-					//this leaves a little of the master visible, the hack is to delay for 50ms closing the drawer
+					//this leaves a little of the master visible, the hack is to delay for 100ms closing the drawer
 					await Task.Delay(100);
+
+					//Renderer may have been disposed during the delay
+					if (_disposed)
+					{
+						return;
+					}
+
 					CloseDrawer(_masterLayout);
 				}
+
 				UpdateSplitViewLayout();
 			}
 		}
