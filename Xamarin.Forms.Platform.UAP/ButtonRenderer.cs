@@ -9,7 +9,7 @@ using WThickness = Windows.UI.Xaml.Thickness;
 using WButton = Windows.UI.Xaml.Controls.Button;
 using WImage = Windows.UI.Xaml.Controls.Image;
 using Windows.UI.Xaml.Input;
-using Xamarin.Forms.Platform.UAP.Extensions;
+using Xamarin.Forms.Platform.UWP.Extensions;
 
 namespace Xamarin.Forms.Platform.UWP
 {
