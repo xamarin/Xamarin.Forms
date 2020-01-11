@@ -87,17 +87,9 @@ namespace Xamarin.Forms
 			remove { ((ShellSectionCollection)Items).VisibleItemsChanged -= value; }
 		}
 
-		event EventHandler<ShellSection> IShellItemController.Reselected
-		{
-			add { _reselected += value; }
-			remove { _reselected -= value; }
-		}
-
-		event EventHandler<ShellSection> _reselected;
-
 		void IShellItemController.SendReselected()
 		{
-			_reselected?.Invoke(this, CurrentItem);
+			Reselected?.Invoke(this, CurrentItem);
 		}
 
 		#endregion IShellItemController
@@ -119,6 +111,8 @@ namespace Xamarin.Forms
 		readonly ObservableCollection<Element> _children = new ObservableCollection<Element>();
 		ReadOnlyCollection<Element> _logicalChildren;
 		Lazy<PlatformConfigurationRegistry<ShellItem>> _platformConfigurationRegistry;
+
+		event EventHandler<ShellSection> Reselected;
 
 		public ShellItem()
 		{

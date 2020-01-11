@@ -11,7 +11,6 @@ namespace Xamarin.Forms
 		ReadOnlyCollection<ShellSection> GetItems();
 		event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
 
-		event EventHandler<ShellSection> Reselected;
 		void SendReselected();
 	}
 }
