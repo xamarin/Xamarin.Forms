@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (viewController == SelectedViewController)
 				{
-					// let user hander it
+					// let user handers it
 					((IShellItemController)ShellItem).SendReselected();
 					return false;
 				}
