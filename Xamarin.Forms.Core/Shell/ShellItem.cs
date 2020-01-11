@@ -112,7 +112,7 @@ namespace Xamarin.Forms
 		ReadOnlyCollection<Element> _logicalChildren;
 		Lazy<PlatformConfigurationRegistry<ShellItem>> _platformConfigurationRegistry;
 
-		event EventHandler<ShellSection> Reselected;
+		public event EventHandler<ShellSection> Reselected;
 
 		public ShellItem()
 		{
