@@ -22,8 +22,8 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			}
 		}
 
-		void AssertScaleConsistent(View view, Func<View, Core.UITests.Matrix> getRotation,
-			Func<UIView, Core.UITests.Matrix> getNativeRotation)
+		void AssertScaleConsistent(View view, Func<View, Core.UITests.Matrix> getScale,
+			Func<UIView, Core.UITests.Matrix> getNativeScale)
 		{
 			var page = new ContentPage() { Content = view };
 
@@ -33,8 +33,8 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				{
 					page.Layout(new Rectangle(0, 0, 200, 200));
 
-					var expected = getRotation(view);
-					var actual = getNativeRotation(uiView);
+					var expected = getScale(view);
+					var actual = getNativeScale(uiView);
 
 					Assert.That(actual, Is.EqualTo(expected));
 				}
