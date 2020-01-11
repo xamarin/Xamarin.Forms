@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace Xamarin.Forms.Platform.UAP.Extensions
+namespace Xamarin.Forms.Platform.UWP.Extensions
 {
 	internal static class TextBlockExtensions
 	{
