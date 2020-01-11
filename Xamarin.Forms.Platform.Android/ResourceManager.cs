@@ -38,6 +38,10 @@ namespace Xamarin.Forms.Platform.Android
 					_drawableClass = FindType("Drawable", "Resource_Drawable");
 				return _drawableClass;
 			}
+			set
+			{
+				_drawableClass = value;
+			}
 		}
 
 		public static Type ResourceClass { 
