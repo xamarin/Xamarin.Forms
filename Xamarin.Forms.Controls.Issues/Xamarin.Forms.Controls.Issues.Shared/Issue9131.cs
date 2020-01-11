@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Linq;
 
 #if UITEST
 using NUnit.Framework;
@@ -27,7 +28,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 			RunningApp.WaitForElement(resultsLabelQuery);
 			RunningApp.WaitForElement(TestRunningText);
-			RunningApp.WaitForElement(SuccessText, timeout: TimeSpan.FromMinutes(2));
+			try
+			{
+				RunningApp.WaitForElement(SuccessText, $"{nameof(RunDeviceStartTimerTests)} Timed Out", TimeSpan.FromMinutes(2));
+			}
+			catch
+			{
+				if (RunningApp.Query(resultsLabelQuery).First().Text is TestRunningText)
+					throw;
+
+				Assert.Fail(RunningApp.Query(resultsLabelQuery).First().Text);
+			}
 		}
 #endif
 		protected override async void Init()
@@ -56,9 +67,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 				resultsLabel.Text = SuccessText;
 			}
-			catch
+			catch (Exception e)
 			{
-				resultsLabel.Text = FailedText;
+				resultsLabel.Text = FailedText + e.Message;
 			}
 		}
 
