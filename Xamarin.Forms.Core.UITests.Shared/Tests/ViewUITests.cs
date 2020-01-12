@@ -218,6 +218,9 @@ namespace Xamarin.Forms.Core.UITests
 
 		}
 
+#if __ANDROID__
+		// TranslationX is handled by the platform tests
+#else
 		[Test]
 		[UiTest(typeof(VisualElement), "TranslationX")]
 		[Category(UITestCategories.ManualReview)]
@@ -229,7 +232,11 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.Inconclusive(PleaseInspect);
 #endif
 		}
+#endif
 
+#if __ANDROID__
+		// TranslationY is handled by the platform tests
+#else
 		[Test]
 		[UiTest(typeof(VisualElement), "TranslationY")]
 		[Category(UITestCategories.ManualReview)]
@@ -241,6 +248,7 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.Inconclusive(PleaseInspect);
 #endif
 		}
+#endif
 
 		[Test]
 		[UiTest(typeof(VisualElement), "Unfocus")]
