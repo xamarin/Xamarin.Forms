@@ -16,7 +16,8 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		{
 			get
 			{
-				foreach (var element in BasicElements.Where(e => !(e is Button)))
+				foreach (var element in BasicElements
+					.Where(e => !(e is Button) && !(e is ImageButton)))
 				{
 					element.BackgroundColor = Color.AliceBlue;
 					yield return new TestCaseData(element)
@@ -34,6 +35,26 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				Text = "      ",
 				HeightRequest = 100, WidthRequest = 100,
 				BackgroundColor = Color.AliceBlue 
+			};
+
+			using (var nativeButton = GetNativeControl(button))
+			{
+				var expectedColor = button.BackgroundColor.ToAndroid();
+				Layout(button, nativeButton);
+				var nativeColor = GetColorAtCenter(nativeButton);
+				Assert.That(nativeColor, Is.EqualTo(expectedColor));
+			}
+		}
+
+		[Test, Category("BackgroundColor"), Category("Button")]
+		[Description("ImageButton background color should match renderer background color")]
+		public void ImageButtonBackgroundColorConsistent()
+		{
+			var button = new ImageButton
+			{
+				HeightRequest = 100,
+				WidthRequest = 100,
+				BackgroundColor = Color.AliceBlue
 			};
 
 			using (var nativeButton = GetNativeControl(button))

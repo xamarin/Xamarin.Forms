@@ -19,6 +19,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				yield return new Editor { };
 				yield return new Entry { };
 				yield return new Image { };
+				yield return new ImageButton { };
 				yield return new Label { };
 				yield return new Picker { };
 				yield return new ProgressBar { };
