@@ -192,5 +192,18 @@ namespace Xamarin.Forms.Core.UITests
 		[Ignore("This is covered by the platform tests")]
 		public override void _RotationY() { }
 #endif
+
+#if __ANDROID__
+		[Ignore("This is covered by the platform tests")]
+		public override void _TranslationX() { }
+
+		[Ignore("This is covered by the platform tests")]
+		public override void _TranslationY() { }
+#endif
+
+#if __IOS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _Scale() { }
+#endif
 	}
 }
