@@ -30,6 +30,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				yield return new Editor { };
 				yield return new Entry { };
 				yield return new Image { };
+				yield return new ImageButton { };
 				yield return new Label { };
 				yield return new Picker { };
 				yield return new ProgressBar { };
@@ -91,6 +92,8 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 					return GetNativeControl(entry);
 				case Image image:
 					return GetNativeControl(image);
+				case ImageButton imageButton:
+					return GetNativeControl(imageButton);
 				case Label label:
 					return GetNativeControl(label);
 				case Picker picker:
@@ -163,6 +166,11 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 
 			var viewRenderer = renderer.View as ImageRenderer;
 			return viewRenderer.Control;
+		}
+
+		protected AppCompatImageButton GetNativeControl(ImageButton imageButton)
+		{
+			return GetRenderer(imageButton) as AppCompatImageButton;
 		}
 
 		protected TextView GetNativeControl(Label label) 
