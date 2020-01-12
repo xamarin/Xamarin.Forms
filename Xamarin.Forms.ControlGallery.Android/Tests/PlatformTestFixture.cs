@@ -34,6 +34,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				yield return new Picker { };
 				yield return new ProgressBar { };
 				yield return new SearchBar { };
+				yield return new Slider { };
 				yield return new Stepper { };
 				yield return new Switch { };
 				yield return new TimePicker { };
@@ -98,6 +99,8 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 					return GetNativeControl(progressBar);
 				case SearchBar searchBar:
 					return GetNativeControl(searchBar);
+				case Slider slider:
+					return GetNativeControl(slider);
 				case Stepper stepper:
 					return GetNativeControl(stepper);
 				case Switch @switch:
@@ -187,6 +190,13 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		{
 			var renderer = GetRenderer(searchBar);
 			var viewRenderer = renderer.View as SearchBarRenderer;
+			return viewRenderer.Control;
+		}
+
+		protected SeekBar GetNativeControl(Slider slider)
+		{
+			var renderer = GetRenderer(slider);
+			var viewRenderer = renderer.View as SliderRenderer;
 			return viewRenderer.Control;
 		}
 

@@ -23,6 +23,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				yield return new Picker { };
 				yield return new ProgressBar { };
 				yield return new SearchBar { };
+				yield return new Slider { };
 				yield return new Stepper { };
 				yield return new Switch { };
 				yield return new TimePicker { };
