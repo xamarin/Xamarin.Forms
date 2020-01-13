@@ -11,11 +11,8 @@
 			<Button
 				x:Name="btn"
 				HorizontalOptions="CenterAndExpand"
-				Text="CLick to change the bar background color!"
+				Text="Click to change the title view backgroundColor!"
 				VerticalOptions="CenterAndExpand" />
 		</StackLayout>
 	</ContentPage.Content>
-	<NavigationPage.TitleView>
-		<Label Text="I'm a title view!" />
-	</NavigationPage.TitleView>
 </ContentPage>

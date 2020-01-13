@@ -15,11 +15,11 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue7754()
 		{
 			InitializeComponent();
-			btn.Clicked += btn_Clicked;
+			btn.Clicked += Btn_Clicked;
 		}
 
 		Color color = Color.Blue;
-		void btn_Clicked(object sender, EventArgs e)
+		void Btn_Clicked(object sender, EventArgs e)
 		{
 			color = (color == Color.Blue) ? Color.Fuchsia : Color.Blue;
 
