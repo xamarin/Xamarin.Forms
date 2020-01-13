@@ -1,6 +1,5 @@
 ﻿using Android.Content;
 using Android.Content.PM;
-using Android.Support.V7.Widget;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android;
 using AView = Android.Views.View;
@@ -12,6 +11,7 @@ using AProgressBar = Android.Widget.ProgressBar;
 using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
+using AndroidX.AppCompat.Widget;
 
 namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
