@@ -68,9 +68,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 
-			if (Carousel.Scrolls.Count > 0 && !Carousel.IsInitialized)
+			if (Carousel.ScrollToActions.Count > 0 && !Carousel.IsInitialized)
 			{
-				var action = Carousel.Scrolls.Dequeue();
+				var action = Carousel.ScrollToActions.Dequeue();
 				action();
 				Carousel.IsInitialized = true;
 			}

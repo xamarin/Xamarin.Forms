@@ -117,8 +117,9 @@ namespace Xamarin.Forms
 			var gotoPosition = carouselView._gotoPosition;
 
 			if (positionItem == gotoPosition || gotoPosition == -1)
-			{ 
-				carouselView._gotoPosition = gotoPosition = - 1;
+			{
+				System.Diagnostics.Debug.WriteLine($"THis position {positionItem}");
+				carouselView._gotoPosition = -1;
 				carouselView.SetValueCore(PositionProperty, positionItem);
 			}
 
@@ -174,7 +175,7 @@ namespace Xamarin.Forms
 		public bool IsInitialized = false;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public Queue<Action> Scrolls = new Queue<Action>();
+		public Queue<Action> ScrollToActions = new Queue<Action>();
 
 		public event EventHandler<CurrentItemChangedEventArgs> CurrentItemChanged;
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
@@ -215,7 +216,7 @@ namespace Xamarin.Forms
 
 		protected override void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
-			CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
+			SetCurrentItem(GetItemForPosition(this, e.CenterItemIndex));
 
 			base.OnScrolled(e);
 		}
@@ -243,7 +244,7 @@ namespace Xamarin.Forms
 
 			if (args.CurrentPosition == carousel._gotoPosition)
 				carousel._gotoPosition = -1;
-		
+
 			// User is interacting with the carousel we don't need to scroll to item 
 			if (!carousel.IsDragging && !carousel.IsScrolling)
 			{
@@ -255,7 +256,7 @@ namespace Xamarin.Forms
 				};
 
 				if (!carousel.IsInitialized)
-					carousel.Scrolls.Enqueue(actionSCroll);
+					carousel.ScrollToActions.Enqueue(actionSCroll);
 				else
 					actionSCroll();
 			}
@@ -264,8 +265,7 @@ namespace Xamarin.Forms
 		}
 
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static object GetItemForPosition(CarouselView carouselView, int index)
+		static object GetItemForPosition(CarouselView carouselView, int index)
 		{
 			if (!(carouselView?.ItemsSource is IList itemSource))
 				return null;
@@ -276,8 +276,7 @@ namespace Xamarin.Forms
 			return itemSource[index];
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static int GetPositionForItem(CarouselView carouselView, object item)
+		static int GetPositionForItem(CarouselView carouselView, object item)
 		{
 			var itemSource = carouselView?.ItemsSource as IList;
 
