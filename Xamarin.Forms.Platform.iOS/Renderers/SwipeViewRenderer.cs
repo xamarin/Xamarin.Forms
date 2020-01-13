@@ -127,6 +127,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
+			UIColor backgroundColor;
+
+			if (Forms.IsiOS11OrNewer)
+				backgroundColor = UIColor.SystemBackgroundColor;
+			else
+				backgroundColor = UIColor.White;
+
 			if (Element.BackgroundColor != Color.Default)
 			{
 				BackgroundColor = Element.BackgroundColor.ToUIColor();
@@ -135,10 +142,10 @@ namespace Xamarin.Forms.Platform.iOS
 					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			}
 			else
-				BackgroundColor = UIColor.SystemBackgroundColor;
+				BackgroundColor = backgroundColor;
 
 			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
-				_contentView.BackgroundColor = UIColor.SystemBackgroundColor;
+				_contentView.BackgroundColor = backgroundColor;
 		}
 
 		protected override void Dispose(bool disposing)
