@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -10,16 +11,15 @@ namespace Xamarin.Forms
 	{
 		readonly ObservableCollection<ISwipeItem> _swipeItems;
 
-		public SwipeItems()
-		{
-			_swipeItems = new ObservableCollection<ISwipeItem>();
-			_swipeItems.CollectionChanged += OnSwipeItemsChanged;
-		}
-
 		public SwipeItems(IEnumerable<ISwipeItem> swipeItems)
 		{
 			_swipeItems = new ObservableCollection<ISwipeItem>(swipeItems) ?? throw new ArgumentNullException(nameof(swipeItems));
 			_swipeItems.CollectionChanged += OnSwipeItemsChanged;
+		}
+
+		public SwipeItems() : this(Enumerable.Empty<ISwipeItem>())
+		{
+
 		}
 
 		public static readonly BindableProperty ModeProperty = BindableProperty.Create(nameof(Mode), typeof(SwipeMode), typeof(SwipeItems), SwipeMode.Reveal);
