@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.SwipeView)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 8777, "SwipeView crash if Text not is set on SwipeItem", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Github, 8777, "SwipeView crash if Text not is set on SwipeItem", PlatformAffected.iOS | PlatformAffected.Android)]
 	public class Issue8777 : TestContentPage
 	{
 		protected override void Init()
