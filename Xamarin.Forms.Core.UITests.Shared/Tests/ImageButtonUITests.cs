@@ -186,5 +186,10 @@ namespace Xamarin.Forms.Core.UITests
 		[Ignore("This is covered by the platform tests")]
 		public override void _Scale() { }
 #endif
+
+#if __ANDROID__ || __IOS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _IsVisible() { }
+#endif
 	}
 }
