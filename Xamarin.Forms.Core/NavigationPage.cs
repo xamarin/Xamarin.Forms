@@ -10,13 +10,15 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_NavigationPageRenderer))]
-	public class NavigationPage : Page, IPageContainer<Page>, IBarElement, INavigationPageController, IElementConfiguration<NavigationPage> 
+	public class NavigationPage : Page, IPageContainer<Page>, IBarElement, INavigationPageController, IElementConfiguration<NavigationPage>
 	{
 		public static readonly BindableProperty BackButtonTitleProperty = BindableProperty.CreateAttached("BackButtonTitle", typeof(string), typeof(Page), null);
 
 		public static readonly BindableProperty HasNavigationBarProperty = BindableProperty.CreateAttached("HasNavigationBar", typeof(bool), typeof(Page), true);
 
 		public static readonly BindableProperty HasBackButtonProperty = BindableProperty.CreateAttached("HasBackButton", typeof(bool), typeof(NavigationPage), true);
+
+		public static readonly BindableProperty BackgroundTitleViewProperty = BindableProperty.CreateAttached("BackgroundTitleView", typeof(Color), typeof(Page), default(Color));
 
 		[Obsolete("TintProperty is obsolete as of version 1.2.0. Please use BarBackgroundColorProperty and BarTextColorProperty to change NavigationPage bar color properties.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -54,12 +56,14 @@ namespace Xamarin.Forms
 			PushPage(root);
 		}
 
-		public Color BarBackgroundColor {
+		public Color BarBackgroundColor
+		{
 			get => (Color)GetValue(BarElement.BarBackgroundColorProperty);
 			set => SetValue(BarElement.BarBackgroundColorProperty, value);
 		}
 
-		public Color BarTextColor {
+		public Color BarTextColor
+		{
 			get => (Color)GetValue(BarElement.BarTextColorProperty);
 			set => SetValue(BarElement.BarTextColorProperty, value);
 		}
@@ -116,7 +120,7 @@ namespace Xamarin.Forms
 			if (oldValue == newValue)
 				return;
 
-			if(bindable is Page page)
+			if (bindable is Page page)
 			{
 				page.SetTitleView((View)oldValue, (View)newValue);
 			}
@@ -175,6 +179,12 @@ namespace Xamarin.Forms
 		{
 			return PopAsync(true);
 		}
+
+		public static void SetBackgroundTitleView(BindableObject bindable, Color value) =>
+		bindable.SetValue(BackgroundTitleViewProperty, value);
+
+		public static Color GetBackgroundTitleView(BindableObject bindable) =>
+			(Color)bindable.GetValue(BackgroundTitleViewProperty);
 
 		public async Task<Page> PopAsync(bool animated)
 		{
@@ -352,8 +362,7 @@ namespace Xamarin.Forms
 
 			CurrentPage = (Page)InternalChildren.Last();
 
-			if (Popped != null)
-				Popped(this, args);
+			Popped?.Invoke(this, args);
 
 			return page;
 		}

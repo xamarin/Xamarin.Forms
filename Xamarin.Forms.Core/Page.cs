@@ -569,5 +569,12 @@ namespace Xamarin.Forms
 
 			_titleView = newTitleView;
 		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler UpdateBackgroundTitleView;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void FireUpdateBackgroundTitleViewEvent() =>
+			UpdateBackgroundTitleView?.Invoke(null, null);
 	}
 }
