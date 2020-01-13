@@ -13,19 +13,17 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				// Generate IsEnabled = true cases
 				foreach (var element in BasicViews)
 				{
-					var typeName = element.GetType().Name;
-					yield return new TestCaseData(element)
-						.SetName($"{typeName}_IsEnabled_True")
-						.SetCategory(typeName);
+					element.IsEnabled = true;
+					yield return CreateTestCase(element)
+						.SetName($"{element.GetType().Name}_IsEnabled_{element.IsEnabled}");
 				}
 
 				// Generate IsEnabled = false cases
 				foreach (var element in BasicViews)
 				{
-					var typeName = element.GetType().Name;
-					yield return new TestCaseData(element)
-						.SetName($"{typeName}_IsEnabled_False")
-						.SetCategory(typeName);
+					element.IsEnabled = false;
+					yield return CreateTestCase(element)
+						.SetName($"{element.GetType().Name}_IsEnabled_{element.IsEnabled}");
 				}
 			}
 		}
@@ -48,11 +46,6 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				if (control is UIControl uiControl)
 				{
 					Assert.That(uiControl.Enabled, Is.EqualTo(expected));
-				}
-
-				if (control is UILabel uiLabel)
-				{
-					Assert.That(uiLabel.Enabled, Is.EqualTo(expected));
 				}
 			}
 		}

@@ -110,6 +110,7 @@
     <Compile Include="Tests\BackgroundColorTests.cs" />
     <Compile Include="Tests\IsEnabledTests.cs" />
     <Compile Include="Tests\Issues.cs" />
+    <Compile Include="Tests\IsVisibleTests.cs" />
     <Compile Include="Tests\OpacityTests.cs" />
     <Compile Include="Tests\RotationTests.cs" />
     <Compile Include="Tests\ScaleTests.cs" />
