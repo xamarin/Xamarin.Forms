@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using CoreGraphics;
 using CoreText;
 using Foundation;
@@ -14,11 +15,16 @@ namespace Xamarin.Forms.Platform.iOS
 			try
 			{
 				var data = NSData.FromStream(font.ResourceStream);
-
+				var fonts = UIKit.UIFont.FamilyNames.ToList();
 				var provider = new CGDataProvider(data);
 				var cGFont = CGFont.CreateFromProvider(provider);
 				if (CTFontManager.RegisterGraphicsFont(cGFont, out var error))
-					return (true, null);
+				{
+
+					var newFonts = UIKit.UIFont.FamilyNames.ToList();
+					var diff = newFonts.Except(fonts).ToList();
+					return (true, diff.FirstOrDefault());
+				}
 				Debug.WriteLine(error.Description);
 			}
 			catch (Exception ex)
