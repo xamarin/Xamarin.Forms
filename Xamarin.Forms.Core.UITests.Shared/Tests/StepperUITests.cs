@@ -44,14 +44,19 @@ namespace Xamarin.Forms.Core.UITests
 		public override void _IsEnabled()
 		{
 			base._IsEnabled();
-		} 
+		}
 
-		 
+
+#if __ANDROID__ || __IOS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _IsVisible() { }
+#else
 		[Category(UITestCategories.UwpIgnore)] 
 		public override void _IsVisible()
 		{
 			base._IsVisible();
 		}
+#endif
 
 		// TODO
 		// Implement control specific ui tests
@@ -89,5 +94,7 @@ namespace Xamarin.Forms.Core.UITests
 		[Ignore("This is covered by the platform tests")]
 		public override void _Scale() { }
 #endif
+
+
 	}
 }
