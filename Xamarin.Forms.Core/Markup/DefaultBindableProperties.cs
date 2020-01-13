@@ -67,12 +67,15 @@ namespace Xamarin.Forms.Markup
 				bindableObjectTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
 		}
 
+		internal static void Unregister(BindableProperty property)
+			=> bindableObjectTypeDefaultProperty.Remove(property.DeclaringType.FullName);
+
 		internal static BindableProperty GetFor(BindableObject bindableObject)
 		{
 			var type = bindableObject.GetType();
 			var defaultProperty = GetFor(type);
 			if (defaultProperty == null)
-				throw new NotImplementedException(
+				throw new ArgumentException(
 					"No default bindable property is defined for BindableObject type " + type.FullName +
 					"\r\nEither specify a property when calling Bind() or register a default bindable property for this BindableObject type");
 			return defaultProperty;
@@ -80,7 +83,7 @@ namespace Xamarin.Forms.Markup
 
 		internal static BindableProperty GetFor(Type bindableObjectType)
 		{
-			BindableProperty defaultProperty = null;
+			BindableProperty defaultProperty;
 
 			do
 			{
@@ -91,10 +94,7 @@ namespace Xamarin.Forms.Markup
 					break;
 
 				bindableObjectType = bindableObjectType.GetTypeInfo().BaseType;
-
-				if (bindableObjectType == null)
-					break;
-			} while (true);
+			} while (bindableObjectType != null);
 
 			return defaultProperty;
 		}

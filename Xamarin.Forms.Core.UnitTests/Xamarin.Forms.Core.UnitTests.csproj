@@ -76,6 +76,7 @@
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
+    <Compile Include="Markup\DefaultBindablePropertiesTests.cs" />
     <Compile Include="Markup\LayoutExtensionsTests.cs" />
     <Compile Include="Markup\ViewExtensionsTests.cs" />
     <Compile Include="Markup\LabelExtensionsTests.cs" />
