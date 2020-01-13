@@ -70,56 +70,5 @@
 
 		public static TView Margins<TView>(this TView view, double left = 0, double top = 0, double right = 0, double bottom = 0) where TView : View
 		{ view.Margin = new Thickness(left, top, right, bottom); return view; }
-
-		public static TView Font<TView>(
-			this TView view,
-			double? fontSize = null,
-			bool? bold = null,
-			bool? italic = null,
-			string family = null
-		) where TView : View
-		{
-			var attributes = bold == true ? FontAttributes.Bold :
-							 italic == true ? FontAttributes.Italic :
-							 bold.HasValue || italic.HasValue ? FontAttributes.None :
-							 (FontAttributes?)null;
-
-			switch (view)
-			{
-				case Button button:
-					if (fontSize.HasValue)
-						button.FontSize = fontSize.Value;
-					if (attributes.HasValue)
-						button.FontAttributes = attributes.Value;
-					if (family != null)
-						button.FontFamily = family;
-					break;
-				case Label label:
-					if (fontSize.HasValue)
-						label.FontSize = fontSize.Value;
-					if (attributes.HasValue)
-						label.FontAttributes = attributes.Value;
-					if (family != null)
-						label.FontFamily = family;
-					break;
-				case Entry entry:
-					if (fontSize.HasValue)
-						entry.FontSize = fontSize.Value;
-					if (attributes.HasValue)
-						entry.FontAttributes = attributes.Value;
-					if (family != null)
-						entry.FontFamily = family;
-					break;
-				case Picker picker:
-					if (fontSize.HasValue)
-						picker.FontSize = fontSize.Value;
-					if (attributes.HasValue)
-						picker.FontAttributes = attributes.Value;
-					if (family != null)
-						picker.FontFamily = family;
-					break;
-			}
-			return view;
-		}
 	}
 }

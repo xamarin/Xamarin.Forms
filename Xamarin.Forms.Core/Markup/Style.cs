@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Xamarin.Forms.Markup
 {
-	public class Style<T> where T : Element // Should be IStyleElement but can't use that because it's internal
+	public class Style<T> where T : BindableObject
 	{
 		public static implicit operator Style(Style<T> style) => style?.FormsStyle;
 

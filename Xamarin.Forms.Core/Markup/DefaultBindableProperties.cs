@@ -6,68 +6,79 @@ namespace Xamarin.Forms.Markup
 {
 	public static class DefaultBindableProperties
 	{
-		static Dictionary<string, BindableProperty> elementTypeDefaultProperty = new Dictionary<string, BindableProperty>
-		{ // Key: full type name of element, Value: the default BindableProperty
+		static Dictionary<string, BindableProperty> bindableObjectTypeDefaultProperty = new Dictionary<string, BindableProperty>
+		{ // Key: full type name of BindableObject, Value: the default BindableProperty
 			{ "Xamarin.Forms.ActivityIndicator", ActivityIndicator.IsRunningProperty },
 			{ "Xamarin.Forms.BoxView", BoxView.ColorProperty },
 			{ "Xamarin.Forms.Button", Button.CommandProperty },
+			{ "Xamarin.Forms.CarouselPage", Page.TitleProperty },
+			{ "Xamarin.Forms.CheckBox", CheckBox.IsCheckedProperty },
+			{ "Xamarin.Forms.ClickGestureRecognizer", ClickGestureRecognizer.CommandProperty },
+			{ "Xamarin.Forms.ContentPage", Page.TitleProperty },
 			{ "Xamarin.Forms.DatePicker", DatePicker.DateProperty },
 			{ "Xamarin.Forms.Editor", Editor.TextProperty },
 			{ "Xamarin.Forms.Entry", Entry.TextProperty },
+			{ "Xamarin.Forms.EntryCell", EntryCell.TextProperty },
+			{ "Xamarin.Forms.FileImageSource", FileImageSource.FileProperty },
 			{ "Xamarin.Forms.Image", Image.SourceProperty },
+			{ "Xamarin.Forms.ImageCell", ImageCell.ImageSourceProperty },
 			{ "Xamarin.Forms.Label", Label.TextProperty },
 			{ "Xamarin.Forms.ListView", ListView.ItemsSourceProperty },
 			{ "Xamarin.Forms.MasterDetailPage", Page.TitleProperty },
 			{ "Xamarin.Forms.MultiPage", Page.TitleProperty },
 			{ "Xamarin.Forms.NavigationPage", Page.TitleProperty },
-			{ "Xamarin.Forms.CarouselPage", Page.TitleProperty },
-			{ "Xamarin.Forms.ContentPage", Page.TitleProperty },
 			{ "Xamarin.Forms.Page", Page.TitleProperty },
-			{ "Xamarin.Forms.TabbedPage", Page.TitleProperty },
-			{ "Xamarin.Forms.TemplatedPage", Page.TitleProperty },
 			{ "Xamarin.Forms.Picker", Picker.SelectedIndexProperty },
 			{ "Xamarin.Forms.ProgressBar", ProgressBar.ProgressProperty },
 			{ "Xamarin.Forms.SearchBar", SearchBar.SearchCommandProperty },
 			{ "Xamarin.Forms.Slider", Slider.ValueProperty },
+			{ "Xamarin.Forms.Span", Span.TextProperty },
 			{ "Xamarin.Forms.Stepper", Stepper.ValueProperty },
 			{ "Xamarin.Forms.Switch", Switch.IsToggledProperty },
+			{ "Xamarin.Forms.SwitchCell", SwitchCell.OnProperty },
+			{ "Xamarin.Forms.TabbedPage", Page.TitleProperty },
 			{ "Xamarin.Forms.TableView", TableView.BindingContextProperty },
-			{ "Xamarin.Forms.TimePicker", TimePicker.TimeProperty },
-			{ "Xamarin.Forms.WebView", WebView.SourceProperty },
-			{ "Xamarin.Forms.TextCell", TextCell.TextProperty },
-			{ "Xamarin.Forms.ToolbarItem", ToolbarItem.CommandProperty },
 			{ "Xamarin.Forms.TapGestureRecognizer", TapGestureRecognizer.CommandProperty },
-			{ "Xamarin.Forms.Span", Span.TextProperty }
+			{ "Xamarin.Forms.TemplatedPage", Page.TitleProperty },
+			{ "Xamarin.Forms.TextCell", TextCell.TextProperty },
+			{ "Xamarin.Forms.TimePicker", TimePicker.TimeProperty },
+			{ "Xamarin.Forms.ToolbarItem", ToolbarItem.CommandProperty },
+			{ "Xamarin.Forms.WebView", WebView.SourceProperty }  
 		};
 
 		public static void Register(params BindableProperty[] properties)
 		{
 			foreach (var property in properties)
-				elementTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
+				bindableObjectTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
 		}
 
-		// We use Element because we want to bind to Cell types as well as View types
-		internal static BindableProperty GetFor(Element element)
+		internal static BindableProperty GetFor(BindableObject bindableObject)
 		{
-			BindableProperty defaultProperty;
-			var elementType = element.GetType();
-            string forElementTypeName = elementType.FullName;
-            string elementTypeName;
+			var type = bindableObject.GetType();
+			var defaultProperty = GetFor(type);
+			if (defaultProperty == null)
+				throw new NotImplementedException(
+					"No default bindable property is defined for BindableObject type " + type.FullName +
+					"\r\nEither specify a property when calling Bind() or register a default bindable property for this BindableObject type");
+			return defaultProperty;
+		}
+
+		internal static BindableProperty GetFor(Type bindableObjectType)
+		{
+			BindableProperty defaultProperty = null;
 
 			do
 			{
-				elementTypeName = elementType.FullName;
-				if (elementTypeDefaultProperty.TryGetValue(elementTypeName, out defaultProperty))
+				string bindableObjectTypeName = bindableObjectType.FullName;
+				if (bindableObjectTypeDefaultProperty.TryGetValue(bindableObjectTypeName, out defaultProperty))
 					break;
-				if (elementTypeName.StartsWith("Xamarin.Forms.", StringComparison.Ordinal))
-					throw new NotImplementedException(
-						"No default bindable property is defined for element type " + forElementTypeName +
-						"\r\nEither specify a property when calling Bind() or register a default bindable property for this element type");
+				if (bindableObjectTypeName.StartsWith("Xamarin.Forms.", StringComparison.Ordinal))
+					break;
 
-				elementType = elementType.GetTypeInfo().BaseType;
+				bindableObjectType = bindableObjectType.GetTypeInfo().BaseType;
 
-				if (elementType == null)
-					return null;
+				if (bindableObjectType == null)
+					break;
 			} while (true);
 
 			return defaultProperty;
