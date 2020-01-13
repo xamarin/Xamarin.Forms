@@ -101,6 +101,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
+			else if (e.PropertyName == NavigationPage.BackgroundTitleViewProperty.PropertyName)
+				Element?.FireUpdateBackgroundTitleViewEvent();
 		}
 
 		void UpdateHeight()

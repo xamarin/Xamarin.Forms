@@ -121,17 +121,24 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					return;
 
 				if (_current != null)
+				{
 					_current.PropertyChanged -= CurrentOnPropertyChanged;
+					_current.UpdateBackgroundTitleView -= OnUpdateBackgroundTitleView;
+				}
 
 				_current = value;
 
 				if (_current != null)
 				{
 					_current.PropertyChanged += CurrentOnPropertyChanged;
+					_current.UpdateBackgroundTitleView += OnUpdateBackgroundTitleView;
 					ToolbarVisible = NavigationPage.GetHasNavigationBar(_current);
 				}
 			}
 		}
+
+		void OnUpdateBackgroundTitleView(object sender, EventArgs e) =>
+			UpdateToolbar();
 
 		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = Context.GetFragmentManager());
 
@@ -210,7 +217,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					trans.CommitAllowingStateLossEx();
 					fm.ExecutePendingTransactionsEx();
 				}
-				
+
 				_toolbar.RemoveView(_titleView);
 				_titleView?.Dispose();
 				_titleView = null;
@@ -256,7 +263,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_toolbar.Menu.Clear();
 
 					RemoveView(_toolbar);
-				
+
 					_toolbar.Dispose();
 					_toolbar = null;
 				}
@@ -993,7 +1000,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 			}
 
-			Color tintColor = Element.BarBackgroundColor;
+			Color tintColor = Color.Default;
+			if (_current != null)
+				tintColor = NavigationPage.GetBackgroundTitleView(_current);
+
+			if (tintColor.IsDefault)
+				tintColor = Element.BarBackgroundColor;
 
 			if (Forms.IsLollipopOrNewer)
 			{
