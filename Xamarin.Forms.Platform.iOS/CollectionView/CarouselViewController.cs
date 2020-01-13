@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var itemView = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element as View;
 				var item = itemView.BindingContext;
-				var pos = CarouselView.GetPositionForItem(_carouselView, item);
+				var pos = GetPosition(item);
 
 				if (pos == carouselPosition)
 				{
@@ -185,6 +185,25 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			_oldViews = newViews;
+		}
+
+		int GetPosition(object item)
+		{
+			int position = 0;
+
+			var items = _carouselView.ItemsSource as IList;
+
+			for (int n = 0; n < items?.Count; n++)
+			{
+				if (items[n] == item)
+				{
+					position = n;
+					break;
+				}
+			}
+
+			return position;
+
 		}
 	}
 }
