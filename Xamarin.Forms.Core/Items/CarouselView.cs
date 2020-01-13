@@ -118,7 +118,6 @@ namespace Xamarin.Forms
 
 			if (positionItem == gotoPosition || gotoPosition == -1)
 			{
-				System.Diagnostics.Debug.WriteLine($"THis position {positionItem}");
 				carouselView._gotoPosition = -1;
 				carouselView.SetValueCore(PositionProperty, positionItem);
 			}

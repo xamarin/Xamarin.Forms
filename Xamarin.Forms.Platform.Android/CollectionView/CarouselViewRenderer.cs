@@ -238,8 +238,6 @@ namespace Xamarin.Forms.Platform.Android
 				_initialPosition = Carousel.Position;
 
 			_oldPosition = _initialPosition;
-
-			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
 
 		void UpdateVisualStates()
