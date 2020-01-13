@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			Items = new ObservableCollection<CarouselItem>(items);
 			Items.CollectionChanged += ItemsCollectionChanged;
 			Count = Items.Count - 1;
-		
+
 		}
 
 		void ItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -75,10 +75,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		public int Position
 		{
 			get { return _position; }
-			set
-			{
-				SetProperty(ref _position, value);
-			}
+			set { SetProperty(ref _position, value); }
 		}
 
 		public ObservableCollection<CarouselItem> Items

@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			//GestureRecognizers.Add(gesture);
 		}
 
-		private void ExampleTemplateCarouselPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void ExampleTemplateCarouselPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.ScaleProperty.PropertyName)
 			{

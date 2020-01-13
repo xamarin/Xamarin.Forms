@@ -47,31 +47,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillLayoutSubviews();
 
-			//if (!_viewInitialized)
-			//{
-			//	UpdateInitialPosition();
-
-			//	_viewInitialized = true;
-			//}
-
-		}
-
-		public override void ViewDidAppear(bool animated)
-		{
-			base.ViewDidAppear(animated);
 			if (!_viewInitialized)
 			{
 				UpdateInitialPosition();
 
 				_viewInitialized = true;
 			}
-		}
-
-		public override void ViewDidLayoutSubviews()
-		{
-			base.ViewDidLayoutSubviews();
 			UpdateVisualStates();
-			//UpdateInitialPosition();
 		}
 
 		protected override bool IsHorizontal => (_carouselView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
