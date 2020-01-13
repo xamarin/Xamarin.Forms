@@ -174,8 +174,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				var style = ToTypefaceStyle(fontAttribute);
-				result = Typeface.Create(fontFamily, style);
+				result = fontFamily.ToTypeFace(fontAttribute);
 			}
 
 			return result;
