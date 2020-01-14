@@ -8,12 +8,13 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class DatePickerRenderer : ViewRenderer<DatePicker, Windows.UI.Xaml.Controls.DatePicker>, ITabStopOnDescendants
 	{
-		Brush _defaultBrush;
+		WBrush _defaultBrush;
 		bool _fontApplied;
 		FontFamily _defaultFontFamily;
 
@@ -64,6 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_defaultFontFamily = Control.FontFamily;
 			UpdateFont();
 			UpdateTextColor();
+			UpdateBackground();
 		}
 
 		internal override void OnElementFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
@@ -102,6 +104,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
@@ -113,6 +117,12 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
+
+		protected override void UpdateBackground()
+		{
+			if (Element.Background != null && !Element.Background.IsEmpty)
+				Control.Background = Element.Background.ToBrush();
+		}
 
 		void OnControlDateChanged(object sender, DatePickerValueChangedEventArgs e)
 		{

@@ -5,10 +5,11 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
+using Windows.UI.Xaml.Input;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using WThickness = Windows.UI.Xaml.Thickness;
 using WButton = Windows.UI.Xaml.Controls.Button;
 using WImage = Windows.UI.Xaml.Controls.Image;
-using Windows.UI.Xaml.Input;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -41,7 +42,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 				//TODO: We may want to revisit this strategy later. If a user wants to reset any of these to the default, the UI won't update.
 				if (Element.IsSet(VisualElement.BackgroundColorProperty) && Element.BackgroundColor != (Color)VisualElement.BackgroundColorProperty.DefaultValue)
-					UpdateBackground();
+					UpdateBackgroundBrush();
+
+				if (Element.IsSet(VisualElement.BackgroundProperty) && !Element.Background.IsEmpty)
+					UpdateBackgroundBrush();
 
 				if (Element.IsSet(Button.TextColorProperty) && Element.TextColor != (Color)Button.TextColorProperty.DefaultValue)
 					UpdateTextColor();
@@ -91,9 +95,9 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateCharacterSpacing();
 			}
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 			{
-				UpdateBackground();
+				UpdateBackgroundBrush();
 			}
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 			{
@@ -142,14 +146,17 @@ namespace Xamarin.Forms.Platform.UWP
 			((IButtonController)Element)?.SendPressed();
 		}
 
-		void UpdateBackground()
+		void UpdateBackgroundBrush()
 		{
-			Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			if (Element.Background == null || Element.Background.IsEmpty)
+				Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			else
+				Control.Background = Element.Background.ToBrush();
 		}
 
 		void UpdateBorderColor()
 		{
-			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
+			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
 		}
 
 		void UpdateBorderRadius()
@@ -278,7 +285,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTextColor()
 		{
-			Control.Foreground = Element.TextColor != Color.Default ? Element.TextColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
+			Control.Foreground = Element.TextColor != Color.Default ? Element.TextColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
 		}
 
 		void UpdatePadding()

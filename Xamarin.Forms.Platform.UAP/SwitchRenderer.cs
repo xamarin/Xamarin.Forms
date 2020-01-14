@@ -2,11 +2,12 @@
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using WGrid = Windows.UI.Xaml.Controls.Grid;
 using WRectangle = Windows.UI.Xaml.Shapes.Rectangle;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -19,9 +20,9 @@ namespace Xamarin.Forms.Platform.UWP
 		const string ToggleSwitchKnobOn = "SwitchKnobOn";
 		const string ToggleSwitchFillMode = "Fill";
 
-		Brush _originalOnHoverColor;
-		Brush _originalOnColorBrush;
-		Brush _originalThumbOnBrush;
+		WBrush _originalOnHoverColor;
+		WBrush _originalOnColorBrush;
+		WBrush _originalThumbOnBrush;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
 		{
@@ -114,10 +115,10 @@ namespace Xamarin.Forms.Platform.UWP
 							if (frame != null)
 							{
 								if (_originalOnHoverColor == null)
-									_originalOnHoverColor = frame.Value as Brush;
+									_originalOnHoverColor = frame.Value as WBrush;
 
 								if (!Element.OnColor.IsDefault)
-									frame.Value = new SolidColorBrush(Element.OnColor.ToWindowsColor()) { Opacity = _originalOnHoverColor.Opacity };
+									frame.Value = new WSolidColorBrush(Element.OnColor.ToWindowsColor()) { Opacity = _originalOnHoverColor.Opacity };
 								else
 									frame.Value = _originalOnHoverColor;
 							}
@@ -135,7 +136,7 @@ namespace Xamarin.Forms.Platform.UWP
 					_originalOnColorBrush = rect.Fill;
 
 				if (!Element.OnColor.IsDefault)
-					rect.Fill = new SolidColorBrush(Element.OnColor.ToWindowsColor());
+					rect.Fill = new WSolidColorBrush(Element.OnColor.ToWindowsColor());
 				else
 					rect.Fill = _originalOnColorBrush;
 			}
@@ -177,9 +178,9 @@ namespace Xamarin.Forms.Platform.UWP
 								if (_originalThumbOnBrush == null)
 								{
 									if (frame.Value is Windows.UI.Color color)
-										_originalOnColorBrush = new SolidColorBrush(color);
+										_originalOnColorBrush = new WSolidColorBrush(color);
 
-									if (frame.Value is Brush brush)
+									if (frame.Value is WBrush brush)
 										_originalThumbOnBrush = brush;
 								}
 

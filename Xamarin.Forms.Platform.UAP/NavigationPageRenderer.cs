@@ -8,15 +8,13 @@ using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Xamarin.Forms.Internals;
-using static Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
-using WImageSource = Windows.UI.Xaml.Media.ImageSource;
-
-
 using Windows.UI.Core;
 using Windows.UI.Xaml.Data;
+using Xamarin.Forms.Internals;
+using static Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
+using WBrush = Windows.UI.Xaml.Media.Brush;
+using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -62,7 +60,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Dispose(true);
 		}
 
-		Brush ITitleProvider.BarBackgroundBrush
+		WBrush ITitleProvider.BarBackgroundBrush
 		{
 			set
 			{
@@ -71,7 +69,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		Brush ITitleProvider.BarForegroundBrush
+		WBrush ITitleProvider.BarForegroundBrush
 		{
 			set
 			{
@@ -271,20 +269,25 @@ namespace Xamarin.Forms.Platform.UWP
 				changed(this, e);
 		}
 
-		Brush GetBarBackgroundBrush()
+		WBrush GetBarBackgroundBrush()
 		{
-			object defaultColor = GetDefaultColor();
+			if (Element.BarBackground != null && !Element.BarBackground.IsEmpty)
+				return Element.BarBackground.ToBrush();
+			else
+			{
+				object defaultColor = GetDefaultColor();
 
-			if (Element.BarBackgroundColor.IsDefault && defaultColor != null)
-				return (Brush)defaultColor;
-			return Element.BarBackgroundColor.ToBrush();
+				if (Element.BarBackgroundColor.IsDefault && defaultColor != null)
+					return (WBrush)defaultColor;
+				return Element.BarBackgroundColor.ToBrush();
+			}
 		}
 
-		Brush GetBarForegroundBrush()
+		WBrush GetBarForegroundBrush()
 		{
 			object defaultColor = Windows.UI.Xaml.Application.Current.Resources["ApplicationForegroundThemeBrush"];
 			if (Element.BarTextColor.IsDefault)
-				return (Brush)defaultColor;
+				return (WBrush)defaultColor;
 			return Element.BarTextColor.ToBrush();
 		}
 
@@ -364,7 +367,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateTitleColor();
-			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName || e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
 				UpdateNavigationBarBackground();
 			else if (e.PropertyName == Page.PaddingProperty.PropertyName)
 				UpdatePadding();

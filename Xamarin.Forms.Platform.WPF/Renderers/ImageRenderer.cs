@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Xamarin.Forms.Internals;
+using WBrush = System.Windows.Media.Brush;
 using WImage = System.Windows.Controls.Image;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -183,7 +184,7 @@ namespace Xamarin.Forms.Platform.WPF
 			FontWeight fontWeight,
 			FontStretch fontStretch,
 			double fontSize,
-			Brush foreBrush)
+			WBrush foreBrush)
         {
             if (fontFamily == null || string.IsNullOrEmpty(text))
             {

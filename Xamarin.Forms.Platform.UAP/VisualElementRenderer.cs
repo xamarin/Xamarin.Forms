@@ -6,9 +6,10 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
 using Xamarin.Forms.Internals;
 using Windows.UI.Xaml.Input;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -358,6 +359,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateEnabled();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetAutomationPropertiesHelpText();
 			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
@@ -462,7 +465,9 @@ namespace Xamarin.Forms.Platform.UWP
 			control.GotFocus += OnControlGotFocus;
 			control.LostFocus += OnControlLostFocus;
 			Children.Add(control);
+			
 			UpdateBackgroundColor();
+			UpdateBackground();
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
@@ -502,6 +507,24 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					backgroundLayer.ClearValue(BackgroundProperty);
 				}
+			}
+		}
+
+		protected virtual void UpdateBackground()
+		{
+			var backgroundLayer = (Panel)this;
+			if (_backgroundLayer != null)
+			{
+				backgroundLayer = _backgroundLayer;
+				Background = null; // Make the container effectively hit test invisible
+			}
+
+			if (_control != null)
+			{
+				if (Element.Background == null || Element.Background.IsEmpty)
+					return;
+
+				_control.Background = Element.Background.ToBrush();
 			}
 		}
 
@@ -628,7 +651,7 @@ namespace Xamarin.Forms.Platform.UWP
 				// in hit testing. 
 				if (Element is Layout && Background == null)
 				{
-					Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+					Background = new WSolidColorBrush(Windows.UI.Colors.Transparent);
 				}
 			}
 		}
@@ -652,7 +675,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_backgroundLayer = new Canvas { IsHitTestVisible = false };
 			Children.Insert(0, _backgroundLayer);
+
 			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		void RemoveBackgroundLayer()
@@ -664,7 +689,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Children.Remove(_backgroundLayer);
 			_backgroundLayer = null;
+
 			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		internal static bool NeedsBackgroundLayer(VisualElement element)

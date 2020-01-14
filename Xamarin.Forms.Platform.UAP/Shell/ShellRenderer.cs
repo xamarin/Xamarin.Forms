@@ -4,7 +4,7 @@ using System.ComponentModel;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -208,7 +208,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
 				if (overrideColor)
-					toggleButton.Foreground = new SolidColorBrush(titleBar.ButtonForegroundColor.Value);
+					toggleButton.Foreground = new WSolidColorBrush(titleBar.ButtonForegroundColor.Value);
 				else
 					toggleButton.ClearValue(Control.ForegroundProperty);
 			}

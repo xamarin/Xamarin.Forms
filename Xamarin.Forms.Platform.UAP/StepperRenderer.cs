@@ -39,6 +39,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateIncrement();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
 		}
@@ -47,6 +49,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (Control != null)
 				Control.ButtonBackgroundColor = Element.BackgroundColor;
+		}
+
+		protected override void UpdateBackground()
+		{
+			if (Control != null)
+				Control.ButtonBackground = Element.Background;
 		}
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
