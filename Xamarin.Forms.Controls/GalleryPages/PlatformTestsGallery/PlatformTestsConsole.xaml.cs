@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		readonly Color _inconclusiveColor = Color.Goldenrod;
 
 		int _finishedAssemblyCount = 0;
+		int _testsRunCount = 0;
 
 		readonly PlatformTestRunner _runner = new PlatformTestRunner();
 
@@ -43,6 +44,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		{
 			await Device.InvokeOnMainThreadAsync(() => {
 				Status.Text = "Running...";
+				RunCount.Text = "";
 				Results.Children.Clear();
 				Rerun.IsEnabled = false;
 			});
@@ -61,6 +63,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		async Task Run() 
 		{
 			_finishedAssemblyCount = 0;
+			_testsRunCount = 0;
 
 			// Only want to run a subset of tests? Create a filter and pass it into _runner.Run()
 			// e.g. var filter = new TestNameContainsFilter("Bugzilla");
@@ -88,6 +91,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 					Status.TextColor = _successColor;
 				}
 
+				RunCount.Text = $"{_testsRunCount} tests run";
+
 				Rerun.IsEnabled = true;
 			});
 		}
@@ -102,6 +107,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		void AssemblyFinished(ITestResult assembly)
 		{
+			_testsRunCount += (assembly.PassCount + assembly.FailCount + assembly.InconclusiveCount);
+
 			_finishedAssemblyCount += 1;
 			if (_finishedAssemblyCount == 2)
 			{
