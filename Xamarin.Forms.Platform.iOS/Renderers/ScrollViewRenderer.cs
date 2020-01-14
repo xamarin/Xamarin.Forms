@@ -91,6 +91,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateDelaysContentTouches();
 				UpdateContentSize();
 				UpdateBackgroundColor();
+				UpdateBackground();
 				UpdateIsEnabled();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
@@ -204,6 +205,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContentSize();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
 			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
@@ -299,6 +302,14 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateBackgroundColor()
 		{
 			BackgroundColor = Element.BackgroundColor.ToUIColor(Color.Transparent);
+		}
+
+		void UpdateBackground()
+		{
+			if (NativeView == null)
+				return;
+
+			NativeView.UpdateBackground(Element.Background);
 		}
 
 		void UpdateContentSize()

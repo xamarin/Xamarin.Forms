@@ -24,7 +24,8 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName ||
-			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
+				e.PropertyName == VisualElement.BackgroundProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
 				SetupLayer();
@@ -43,6 +44,9 @@ namespace Xamarin.Forms.Platform.iOS
 				Layer.BackgroundColor = UIColor.White.CGColor;
 			else
 				Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
+
+			if (Element.Background != null && !Element.Background.IsEmpty)
+				UpdateBackground(Element.Background);
 
 			if (Element.BorderColor == Color.Default)
 				Layer.BorderColor = UIColor.Clear.CGColor;
@@ -87,6 +91,47 @@ namespace Xamarin.Forms.Platform.iOS
 				_shadowView?.SetNeedsLayout();
 			}
 			base.LayoutSubviews();
+		}
+
+		protected override void SetBackgroundColor(Color color)
+		{
+	
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+
+		}
+
+		void UpdateBackground(Brush brush)
+		{
+			Layer.RemoveGradientLayer();
+
+			if (brush != null && !brush.IsEmpty)
+			{
+				if (brush is SolidColorBrush solidColorBrush)
+				{
+					var backgroundColor = solidColorBrush.Color;
+
+					if (backgroundColor == Color.Default)
+						Layer.BackgroundColor = UIColor.White.CGColor;
+					else
+						Layer.BackgroundColor = backgroundColor.ToCGColor();
+				}
+				else
+				{
+					var gradientLayer = _shadowView.GetGradientLayer(brush);
+
+					if (gradientLayer != null)
+					{
+						Layer.BackgroundColor = UIColor.Clear.CGColor;
+						Layer.InsertGradientLayer(gradientLayer, 0);
+
+						gradientLayer.CornerRadius = Layer.CornerRadius;
+						gradientLayer.BorderColor = Layer.BorderColor;
+					}
+				}
+			}
 		}
 
 		[Preserve(Conditional = true)]

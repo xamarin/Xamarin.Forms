@@ -124,6 +124,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				SetBackgroundColor(Element.BackgroundColor);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				SetBackground(Element.Background);
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
 				UpdateSwipeTransitionMode();
 		}
@@ -149,6 +151,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
 				_contentView.BackgroundColor = backgroundColor;
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			if (Control != null)
+				Control.UpdateBackground(Element.Background);
+
+			if (_contentView != null && Element.Content == null && HasSwipeItems())
+				_contentView.UpdateBackground(Element.Background);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -441,7 +452,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var imageEdgeInsets = new UIEdgeInsets(-(titleSize.Height + spacing), 0.0f, 0.0f, -titleSize.Width);
 			button.ImageEdgeInsets = imageEdgeInsets;
 		}
-  
+
 		Color GetSwipeItemColor(Color backgroundColor)
 		{
 			var luminosity = 0.2126 * backgroundColor.R + 0.7152 * backgroundColor.G + 0.0722 * backgroundColor.B;

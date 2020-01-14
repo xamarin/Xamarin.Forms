@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public class ListViewRenderer : ViewRenderer<ListView, UITableView>
 	{
 		const int DefaultRowHeight = 44;
+
+		UIView _backgroundUIView;
 		ListViewDataSource _dataSource;
 		IVisualElementRenderer _headerRenderer;
 		IVisualElementRenderer _footerRenderer;
@@ -106,6 +108,43 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			if (Control == null)
+				return;
+
+			_backgroundUIView.RemoveGradientLayer();
+
+			if (brush != null && !brush.IsEmpty)
+			{
+				if (_backgroundUIView == null)
+				{
+					_backgroundUIView = new UIView();
+					Control.BackgroundView = _backgroundUIView;
+				}
+
+				if (brush is SolidColorBrush solidColorBrush)
+				{
+					var backgroundColor = solidColorBrush.Color;
+
+					if (backgroundColor == Color.Default)
+						_backgroundUIView.BackgroundColor = UIColor.White;
+					else
+						_backgroundUIView.BackgroundColor = backgroundColor.ToUIColor();
+				}
+				else
+				{
+					var gradientLayer = _backgroundUIView.GetGradientLayer(Element.Background);
+
+					if (gradientLayer != null)
+					{
+						_backgroundUIView.BackgroundColor = UIColor.White;
+						_backgroundUIView.InsertGradientLayer(gradientLayer, 0);
+					}
+				}
+			}
+		}
+
 		void DisposeSubviews(UIView view)
 		{
 			var ver = view as IVisualElementRenderer;
@@ -170,6 +209,12 @@ namespace Xamarin.Forms.Platform.iOS
 					_footerRenderer = null;
 				}
 
+				if (_backgroundUIView != null)
+				{
+					_backgroundUIView.Dispose();
+					_backgroundUIView = null;
+				}
+
 				var headerView = ListView?.HeaderElement as VisualElement;
 				if (headerView != null)
 					headerView.MeasureInvalidated -= OnHeaderMeasureInvalidated;
@@ -219,6 +264,8 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					_tableViewController = new FormsUITableViewController(e.NewElement, _usingLargeTitles);
 					SetNativeControl(_tableViewController.TableView);
+
+					_backgroundUIView = _tableViewController.TableView.BackgroundView;
 
 					_insetTracker = new KeyboardInsetTracker(_tableViewController.TableView, () => Control.Window, insets => Control.ContentInset = Control.ScrollIndicatorInsets = insets, point =>
 					{

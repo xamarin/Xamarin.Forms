@@ -316,7 +316,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnHandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
@@ -500,10 +500,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (bgImage != null)
 					NativeView.BackgroundColor = UIColor.FromPatternImage(bgImage);
-				else if (Element.BackgroundColor.IsDefault)
-					NativeView.BackgroundColor = UIColor.White;
 				else
-					NativeView.BackgroundColor = Element.BackgroundColor.ToUIColor();
+				{
+					if (Element.BackgroundColor.IsDefault)
+						NativeView.BackgroundColor = UIColor.White;
+					else
+						NativeView.BackgroundColor = Element.BackgroundColor.ToUIColor();
+
+					NativeView.UpdateBackground(Element.Background);
+				}
 			});
 		}
 

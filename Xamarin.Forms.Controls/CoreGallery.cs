@@ -16,6 +16,7 @@ using Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery;
 using Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries;
+using Xamarin.Forms.Controls.GalleryPages.GradientGalleries;
 
 namespace Xamarin.Forms.Controls
 {
@@ -338,6 +339,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new DatePickerCoreGalleryPage(), "DatePicker Gallery"),
 				new GalleryPageFactory(() => new EditorCoreGalleryPage(), "Editor Gallery"),
 				new GalleryPageFactory(() => new FrameCoreGalleryPage(), "Frame Gallery"),
+				new GalleryPageFactory(() => new GradientsGallery(), "Gradients Gallery"),
 				new GalleryPageFactory(() => new ImageCoreGalleryPage(), "Image Gallery"),
 				new GalleryPageFactory(() => new ImageButtonCoreGalleryPage(), "Image Button Gallery"),
 				new GalleryPageFactory(() => new KeyboardCoreGallery(), "Keyboard Gallery"),

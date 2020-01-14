@@ -135,6 +135,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Control != null && e.OldElement != null && e.OldElement.BackgroundColor != e.NewElement.BackgroundColor || e.NewElement.BackgroundColor != Color.Default)
 					SetBackgroundColor(e.NewElement.BackgroundColor);
 
+				if(Control != null && e.OldElement != null && e.OldElement.Background != e.NewElement.Background || !e.NewElement.Background.IsEmpty)
+					SetBackground(e.NewElement.Background);
+
 				e.NewElement.FocusChangeRequested += ViewOnFocusChangeRequested;
 			}
 
@@ -150,6 +153,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					UpdateIsEnabled();
 				else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 					SetBackgroundColor(Element.BackgroundColor);
+				else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+					SetBackground(Element.Background);
 				else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 					UpdateFlowDirection();
 			}
@@ -204,6 +209,16 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			if (IsElementOrControlEmpty)
+				return;
+
+#if __MOBILE__
+			Control.UpdateBackground(brush);
+#endif
+		}
+
 		protected void SetNativeControl(TNativeView uiview)
 		{
 			_controlChanging?.Invoke(this, EventArgs.Empty);
@@ -222,6 +237,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control = uiview;
 
 			UpdateBackgroundColor();
+
+			UpdateBackground();
 
 			UpdateIsEnabled();
 
@@ -246,6 +263,15 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Element.BackgroundColor != Color.Default)
 				SetBackgroundColor(Element.BackgroundColor);
+		}
+
+		void UpdateBackground()
+		{
+			if (IsElementOrControlEmpty)
+				return;
+
+			if (Element.Background != null && !Element.Background.IsEmpty)
+				SetBackground(Element.Background);
 		}
 
 		void UpdateIsEnabled()

@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.GradientGalleries.GradientViewsGallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <SolidColorBrush 
+                x:Key="SolidColor"
+                Color="Red"/>
+
+            <LinearGradientBrush 
+                x:Key="HorizontalLinearGradient"
+                StartPoint="0, 0"
+                EndPoint="1, 0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="Yellow" Offset="0.2" />
+                    <GradientStop Color="Orange" Offset="0.4" />
+                    <GradientStop Color="Red" Offset="0.8" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+            <LinearGradientBrush 
+                x:Key="VerticalLinearGradient"
+                StartPoint="0, 0"
+                EndPoint="0, 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="Yellow" Offset="0.2" />
+                    <GradientStop Color="Orange" Offset="0.4" />
+                    <GradientStop Color="Red" Offset="0.8" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+            <RadialGradientBrush
+                x:Key="RadialGradient"
+                GradientOrigin="0.5,0.5" 
+                Center="0.5,0.5" 
+                Radius="0.5">
+                <RadialGradientBrush.GradientStops>
+                    <GradientStop Color="Yellow" Offset="0.2" />
+                    <GradientStop Color="Orange" Offset="0.4" />
+                    <GradientStop Color="Red" Offset="0.8" />
+                </RadialGradientBrush.GradientStops>
+            </RadialGradientBrush>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid
+                Grid.Row="0">
+                <Picker
+                    x:Name="BackgroundPicker"
+                    Title="Choose an option for the Background:"
+                    SelectedIndexChanged="OnBackgroundSelectedIndexChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>BackgroundColor</x:String>
+                            <x:String>SolidColorBrush</x:String>
+                            <x:String>Horizontal LinearGradientBrush</x:String>
+                            <x:String>Vertical LinearGradientBrush</x:String>
+                            <x:String>RadialGradientBrush</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Grid>
+            <ScrollView
+                Grid.Row="1">
+                <StackLayout>
+                    <Button
+                        x:Name="Button"
+                        Text="Button"/>
+                    <BoxView
+                        x:Name="BoxView"
+                        CornerRadius="12"
+                        HeightRequest="100"/>
+                    <CollectionView 
+                        x:Name="CollectionView"
+                        HeightRequest="120">
+                        <CollectionView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>This</x:String>
+                                <x:String>is</x:String>
+                                <x:String>a</x:String>
+                                <x:String>CollectionView</x:String>
+                            </x:Array>
+                        </CollectionView.ItemsSource>
+                    </CollectionView>
+                    <DatePicker
+                        x:Name="DatePicker"/>
+                    <Editor
+                        x:Name="Editor"
+                        Text="Editor"/>
+                    <Entry
+                        x:Name="Entry"
+                        Text="Entry"/>
+                    <Frame
+                        x:Name="Frame"
+                        CornerRadius="12"
+                        HeightRequest="100">
+                        <Label
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Text="Frame"/>
+                    </Frame>
+                    <Grid
+                        x:Name="Grid"
+                        HeightRequest="100">
+                        <Label
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Text="Grid"/>
+                    </Grid>
+                    <ImageButton
+                        x:Name="ImageButton"/>
+                    <Label
+                        x:Name="Label"
+                        Text="Label"/>
+                    <ListView 
+                        x:Name="ListView"
+                        HeightRequest="100">
+                        <ListView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>This</x:String>
+                                <x:String>is</x:String>
+                                <x:String>a</x:String>
+                                <x:String>ListView</x:String>
+                            </x:Array>
+                        </ListView.ItemsSource>
+                    </ListView>
+                    <Picker 
+                        x:Name="Picker"
+                        Title="Gradients"
+                        SelectedIndex="0">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Picker</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <SearchBar
+                        x:Name="SearchBar"
+                        Text="SearchBar"/>
+                    <Slider
+                        x:Name="Slider"/>
+                    <SwipeView
+                        x:Name="SwipeView"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        Margin="12">
+                        <SwipeView.LeftItems>
+                            <SwipeItems
+                                Mode="Execute">
+                                <SwipeItem
+                                    Text="Delete"
+                                    Icon="coffee.png"
+                                    BackgroundColor="Red"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                    <SwipeView.Content>
+                    <Grid
+                        HeightRequest="60"
+                        WidthRequest="300">
+                        <Label
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Text="Swipe Left"/>
+                    </Grid>
+                </SwipeView.Content>
+            </SwipeView>
+                    <Stepper
+                        x:Name="Stepper"/>
+                    <TimePicker
+                        x:Name="TimePicker"/>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

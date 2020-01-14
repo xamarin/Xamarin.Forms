@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MasterDetailPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:gradients="clr-namespace:Xamarin.Forms.Controls.GalleryPages.GradientGalleries"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.GradientGalleries.GradientNavigationPageGallery">
+    <MasterDetailPage.Resources>
+        <ResourceDictionary>
+
+            <LinearGradientBrush 
+                x:Key="HorizontalLinearGradient"
+                StartPoint="0, 0"
+                EndPoint="1, 0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="Yellow" Offset="0.2" />
+                    <GradientStop Color="Orange" Offset="0.4" />
+                    <GradientStop Color="Red" Offset="0.8" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+        </ResourceDictionary>
+    </MasterDetailPage.Resources>
+    <MasterDetailPage.Master>
+        <ContentPage
+            Title="Master"
+            Background="{StaticResource HorizontalLinearGradient}">
+            <Label
+                FontSize="24"
+                TextColor="White"
+                Text="Master"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"/>
+        </ContentPage>
+    </MasterDetailPage.Master>
+    <MasterDetailPage.Detail>
+        <NavigationPage
+            BarBackground="{StaticResource HorizontalLinearGradient}"
+            Title="Gradient NavigationPage">
+        <x:Arguments>
+                <gradients:GradientsGallery />
+            </x:Arguments>
+        </NavigationPage>
+    </MasterDetailPage.Detail>
+</MasterDetailPage>
