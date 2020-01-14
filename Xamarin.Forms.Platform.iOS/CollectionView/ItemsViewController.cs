@@ -22,6 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _emptyUIView;
 		VisualElement _emptyViewFormsElement;
 
+		CoreGraphics.CGRect _boundsSize;
+
 		protected UICollectionViewDelegateFlowLayout Delegator { get; set; }
 
 		protected ItemsViewController(TItemsView itemsView, ItemsViewLayout layout) : base(layout)
@@ -143,6 +145,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillLayoutSubviews();
 
+			//We are possibliy changing orientation, we need to tell our layout and cells
+			//to update based on new size constrains
+			if(!_boundsSize.IsEmpty && _boundsSize != CollectionView.Bounds)
+			{
+				_initialConstraintsSet = false;
+				CollectionView.ReloadData();
+			}
 			// We can't set this constraint up on ViewDidLoad, because Forms does other stuff that resizes the view
 			// and we end up with massive layout errors. And View[Will/Did]Appear do not fire for this controller
 			// reliably. So until one of those options is cleared up, we set this flag so that the initial constraints
@@ -157,6 +166,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ResizeEmptyView();
 			}
+
+			_boundsSize = CollectionView.Bounds;
 		}
   
 		protected virtual UICollectionViewDelegateFlowLayout CreateDelegator()
