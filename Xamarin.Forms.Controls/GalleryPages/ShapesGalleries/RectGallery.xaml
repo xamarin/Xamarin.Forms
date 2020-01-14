@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.RectGallery"
+    Title="Rectangle Gallery">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout
+                Padding="12">
+                <Label
+                    Text="A basic Rectangle"/>
+                <Rect
+                    Fill ="Red"
+                    WidthRequest ="150"
+                    HeightRequest ="50"/>
+                <Label
+                    Text="A Square"/>
+                <Rect
+                    Stroke ="Red"
+                    StrokeThickness="4"
+                    WidthRequest ="150"
+                    HeightRequest ="150"/>
+                <Label
+                    Text="A Rectangle with stroke"/>
+                <Rect
+                    Stroke ="Red"
+                    StrokeThickness="4"
+                    WidthRequest ="150"
+                    HeightRequest ="50"/>
+                <Rect
+                    Fill="DarkBlue"
+                    Stroke ="Red"
+                    StrokeThickness="4"
+                    WidthRequest ="150"
+                    HeightRequest ="50"/>
+                <Label
+                    Text="A Rectangle with stroke dash"/>
+                <Rect
+                    Fill="DarkBlue"
+                    Stroke ="Red"
+                    StrokeThickness="4"
+                    StrokeDashArray="1, 1"
+                    StrokeDashOffset="6"
+                    WidthRequest ="150"
+                    HeightRequest ="50"/>
+                <Label
+                    Text="A Rectangle with curved corners"/>
+                <Rect
+                    RadiusX ="12"
+                    RadiusY ="24"
+                    Fill ="DarkBlue"
+                    WidthRequest ="150"
+                    HeightRequest ="50"/>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

@@ -245,6 +245,14 @@
     <Compile Include="Renderers\ShellNavBarAppearanceTracker.cs" />
     <Compile Include="Renderers\IndicatorViewRenderer.cs" />
     <Compile Include="Renderers\SwipeViewRenderer.cs" />
+    <Compile Include="Renderers\EllipseRenderer.cs" />
+    <Compile Include="Renderers\RectRenderer.cs" />
+    <Compile Include="Renderers\ShapeRenderer.cs" />
+    <Compile Include="Renderers\LineRenderer.cs" />
+    <Compile Include="Renderers\PolygonRenderer.cs" />
+    <Compile Include="Renderers\PolylineRenderer.cs" />
+    <Compile Include="Extensions\PointCollectionExtensions.cs" />
+    <Compile Include="Extensions\DoubleCollectionExtensions.cs" />
     <Compile Include="Extensions\UIApplicationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

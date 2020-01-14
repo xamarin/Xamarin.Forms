@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Xaml;
 
@@ -37,7 +32,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 					new Position(39.828152, -98.569817),
 					Distance.FromMiles(1681)));
 
-			_polyline = new Polyline
+			_polyline = new Maps.Polyline
 			{
 				Geopath =
 				{
@@ -47,7 +42,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 				}
 			};
 
-			_polygon = new Polygon
+			_polygon = new Maps.Polygon
 			{
 				StrokeColor = Color.FromHex("#002868"),
 				FillColor = Color.FromHex("#88BF0A30"),
@@ -108,10 +103,10 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			switch (_selectedType)
 			{
 				case SelectedElementType.Polyline:
-					Map.MapElements.Add(_polyline = new Polyline());
+					Map.MapElements.Add(_polyline = new Maps.Polyline());
 					break;
 				case SelectedElementType.Polygon:
-					Map.MapElements.Add(_polygon = new Polygon());
+					Map.MapElements.Add(_polygon = new Maps.Polygon());
 					break;
 				case SelectedElementType.Circle:
 					Map.MapElements.Add(_circle = new Circle());
@@ -125,18 +120,18 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			{
 				case SelectedElementType.Polyline:
 					Map.MapElements.Remove(_polyline);
-					_polyline = Map.MapElements.OfType<Polyline>().LastOrDefault();
+					_polyline = Map.MapElements.OfType<Maps.Polyline>().LastOrDefault();
 
 					if (_polyline == null)
-						Map.MapElements.Add(_polyline = new Polyline());
+						Map.MapElements.Add(_polyline = new Maps.Polyline());
 
 					break;
 				case SelectedElementType.Polygon:
 					Map.MapElements.Remove(_polygon);
-					_polygon = Map.MapElements.OfType<Polygon>().LastOrDefault();
+					_polygon = Map.MapElements.OfType<Maps.Polygon>().LastOrDefault();
 
 					if (_polygon == null)
-						Map.MapElements.Add(_polygon = new Polygon());
+						Map.MapElements.Add(_polygon = new Maps.Polygon());
 
 					break;
 				case SelectedElementType.Circle:
