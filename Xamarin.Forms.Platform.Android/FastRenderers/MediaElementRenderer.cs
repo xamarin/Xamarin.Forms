@@ -200,7 +200,8 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
-		protected virtual void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
+		//todo: make virtual when unsealed
+		protected void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			if (e.OldElement != null)
 			{
@@ -232,7 +233,8 @@ namespace Xamarin.Forms.Platform.Android
 			Device.BeginInvokeOnMainThread(UpdateLayoutParameters);
 		}
 
-		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		//todo: make virtual when unsealed
+		protected void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch(e.PropertyName)
 			{
