@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
 		const double SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 6;
+		const int SwipeThresholdMargin = 0;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
 
@@ -127,13 +127,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
+			UIColor backgroundColor;
+
+			if (Forms.IsiOS11OrNewer)
+				backgroundColor = UIColor.SystemBackgroundColor;
+			else
+				backgroundColor = UIColor.White;
+
 			if (Element.BackgroundColor != Color.Default)
 			{
 				BackgroundColor = Element.BackgroundColor.ToUIColor();
 
-				if (_contentView != null && Element.Content == null && HasSwipeItems())
+				if (_contentView != null && Element.Content == null)
 					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			}
+			else
+				BackgroundColor = backgroundColor;
+
+			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
+				_contentView.BackgroundColor = backgroundColor;
 		}
 
 		protected override void Dispose(bool disposing)
