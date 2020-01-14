@@ -5,11 +5,12 @@ using Android.Widget;
 using System;
 using System.ComponentModel;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
 
-namespace Xamarin.Forms.Platform.Android.FastRenderers
+namespace Xamarin.Forms.Platform.Android
 {
-	internal sealed class MediaElementRenderer : FrameLayout, IVisualElementRenderer, IViewRenderer, IEffectControlProvider, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnInfoListener, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnErrorListener
+	public class MediaElementRenderer : FrameLayout, IVisualElementRenderer, IViewRenderer, IEffectControlProvider, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnInfoListener, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnErrorListener
 	{
 		bool _isDisposed;
 		int? _defaultLabelFor;
@@ -26,6 +27,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		
 		public MediaElementRenderer(Context context) : base(context)
 		{
+			Xamarin.Forms.MediaElement.VerifyMediaElementFlagEnabled(nameof(MediaElementRenderer));
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
 
@@ -198,7 +200,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			base.Dispose(disposing);
 		}
 
-		void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			if (e.OldElement != null)
 			{
@@ -230,7 +232,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			Device.BeginInvokeOnMainThread(UpdateLayoutParameters);
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch(e.PropertyName)
 			{

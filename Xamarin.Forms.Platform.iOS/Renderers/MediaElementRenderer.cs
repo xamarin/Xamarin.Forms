@@ -33,6 +33,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public MediaElementRenderer()
 		{
+			Xamarin.Forms.MediaElement.VerifyMediaElementFlagEnabled(nameof(MediaElementRenderer));
+
 			_playToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
 			View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 		}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
@@ -9,6 +10,14 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_MediaElementRenderer))]
 	public sealed class MediaElement : View, IMediaElementController
 	{
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void VerifyMediaElementFlagEnabled(
+			string constructorHint = null,
+			[CallerMemberName] string memberName = "")
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(MediaElement), ExperimentalFlags.MediaElementExperimental, memberName: memberName);
+		}
+
 		public static readonly BindableProperty AspectProperty =
 		  BindableProperty.Create(nameof(Aspect), typeof(Aspect), typeof(MediaElement), Aspect.AspectFit);
 

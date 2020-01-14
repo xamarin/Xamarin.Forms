@@ -10,7 +10,12 @@ namespace Xamarin.Forms.Platform.UWP
 		long _bufferingProgressChangedToken;
 		long _positionChangedToken;
 		DisplayRequest _request = new DisplayRequest();
-		
+
+		public MediaElementRenderer()
+		{
+			Xamarin.Forms.MediaElement.VerifyMediaElementFlagEnabled(nameof(MediaElementRenderer));
+		}
+
 		void ReleaseControl()
 		{
 			if (Control is null)

@@ -10,6 +10,11 @@ namespace Xamarin.Forms.Platform.WPF
 		IMediaElementController Controller => Element as IMediaElementController;
 		MediaElementState _requestedState;
 
+		public MediaElementRenderer()
+		{
+			Xamarin.Forms.MediaElement.VerifyMediaElementFlagEnabled(nameof(MediaElementRenderer));
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			base.OnElementChanged(e);
