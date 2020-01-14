@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		protected bool IsAnimated(BindableObject bindableObject)
 		{
-			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.Animated) == PresentationMode.Animated;
+			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
 		}
 
 		protected Uri CreateUri(string uri) => ShellUriHandler.CreateUri(uri);
@@ -55,10 +55,19 @@ namespace Xamarin.Forms.Core.UnitTests
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ShellTestPage : ContentPage
 		{
+			public ShellTestPage()
+			{
+			}
+
 			public string SomeQueryParameter
 			{
 				get;
 				set;
+			}
+
+			protected override void OnParentSet()
+			{
+				base.OnParentSet();
 			}
 		}
 

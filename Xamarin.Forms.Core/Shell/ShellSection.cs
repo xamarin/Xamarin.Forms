@@ -341,18 +341,25 @@ namespace Xamarin.Forms
 
 					if (navPage != null)
 					{
+						// if the routes don't match then pop this route off the stack
+						int popCount = i + 1;
+
 						if (Routing.GetRoute(navPage) == route)
 						{
+							// if the routes do match and this is the last in the loop
+							// pop everything after this route
+							popCount = i + 2;
+							whereToStartNavigation++;
 							Shell.ApplyQueryAttributes(navPage, queryData, isLast);
 
 							// If we're not on the last loop of the stack then continue
 							// otherwise pop the rest of the stack
-							if(i != globalRoutes.Count - 1)
+							if(!isLast)
 								continue;
 						}
 
 						IsPoppingModalStack = true;
-						while (navStack.Count > i + 1)
+						while (navStack.Count > popCount)
 						{
 							if (Navigation.ModalStack.Contains(navStack[navStack.Count - 1]))
 							{
@@ -397,7 +404,6 @@ namespace Xamarin.Forms
 				if (content == null)
 					break;
 
-				var isAnimated = (Shell.GetPresentationMode(content) & PresentationMode.Animated) == PresentationMode.Animated;
 				var isModal = (Shell.GetPresentationMode(content) & PresentationMode.Modal) == PresentationMode.Modal;
 
 				if (isModal)
@@ -420,7 +426,7 @@ namespace Xamarin.Forms
 			for (int i = Navigation.ModalStack.Count; i < modalPageStacks.Count; i++)
 			{
 				bool isLast = i == modalPageStacks.Count - 1;
-				bool isAnimated = (Shell.GetPresentationMode(modalPageStacks[i]) & PresentationMode.Animated) == PresentationMode.Animated;				
+				bool isAnimated = (Shell.GetPresentationMode(modalPageStacks[i]) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;				
 				IsPushingModalStack = !isLast;
 				await ((NavigationImpl)Navigation).PushModalAsync(modalPageStacks[i], isAnimated);
 			}
@@ -694,7 +700,7 @@ namespace Xamarin.Forms
 						IsPoppingModalStack = false;
 					}
 
-					bool isAnimated = (Shell.GetPresentationMode(pageToPop) & PresentationMode.Animated) == PresentationMode.Animated;
+					bool isAnimated = (Shell.GetPresentationMode(pageToPop) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
 					await Navigation.PopModalAsync(isAnimated);
 				}
 
@@ -803,8 +809,23 @@ namespace Xamarin.Forms
 
 		void AddPage(Page page)
 		{
-			_logicalChildren.Add(page);
-			OnChildAdded(page);
+			if (page.Parent == null)
+			{
+				page.Parent = new ShellContent()
+				{
+					Content = page
+				};
+			}
+
+			if (page.Parent is ShellContent content)
+			{
+				_logicalChildren.Add(content);
+				OnChildAdded(content);
+			}
+			else
+			{
+				throw new ArgumentException($"Invalid type on parent: {page.Parent}");
+			}
 		}
 
 		void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

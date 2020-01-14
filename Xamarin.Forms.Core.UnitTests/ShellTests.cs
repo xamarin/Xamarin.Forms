@@ -469,7 +469,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(IsModal(page));
 			Assert.IsTrue(IsAnimated(page));
 
-			Shell.SetPresentationMode(page, PresentationMode.Modal | ~PresentationMode.Animated);
+			Shell.SetPresentationMode(page, PresentationMode.Modal | PresentationMode.NotAnimated);
 
 			Assert.IsTrue(IsModal(page));
 			Assert.IsFalse(IsAnimated(page));
