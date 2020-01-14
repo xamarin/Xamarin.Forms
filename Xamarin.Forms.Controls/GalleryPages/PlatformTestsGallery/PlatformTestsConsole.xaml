@@ -14,9 +14,11 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Label x:Name="Status" Text="Running Tests..." VerticalTextAlignment="Center"/>
-                <Button Grid.Column="1" Text="Run Again" x:Name="Rerun" IsEnabled="False"/>
+                <Label Grid.Column="1" x:Name="RunCount" Text="" VerticalTextAlignment="Center"/>
+                <Button Grid.Column="2" Text="Run Again" x:Name="Rerun" IsEnabled="False"/>
             </Grid>
             
             <ScrollView>
