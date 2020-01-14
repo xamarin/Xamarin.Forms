@@ -809,23 +809,8 @@ namespace Xamarin.Forms
 
 		void AddPage(Page page)
 		{
-			if (page.Parent == null)
-			{
-				page.Parent = new ShellContent()
-				{
-					Content = page
-				};
-			}
-
-			if (page.Parent is ShellContent content)
-			{
-				_logicalChildren.Add(content);
-				OnChildAdded(content);
-			}
-			else
-			{
-				throw new ArgumentException($"Invalid type on parent: {page.Parent}");
-			}
+			_logicalChildren.Add(page);
+			OnChildAdded(page);
 		}
 
 		void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
