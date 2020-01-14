@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Platform.UWP
 		const string TabBarHeaderGridName = "TabbedPageHeaderGrid";
 
 		Color _barBackgroundColor;
+		Brush _barBackground;
 		Color _barTextColor;
 		bool _disposed;
 		bool _showTitle;
@@ -368,17 +369,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var barBackground = Element.BarBackground;
 
-			if (barBackground == null)
+			if (barBackground == _barBackground)
 				return;
 
-			var brush = barBackground.ToBrush();
+			_barBackground = barBackground;
 
-			TitleProvider.BarBackgroundBrush = brush;
-
-			foreach (WGrid tabBarGrid in Control.GetDescendantsByName<WGrid>(TabBarHeaderGridName))
-			{
-				tabBarGrid.Background = brush;
-			}
+			ApplyBarBackground();
 		}
 
 		void ApplyBarBackgroundColor(bool force = false)
@@ -388,6 +384,27 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var brush = GetBarBackgroundBrush();
 			if (brush == controlToolbarBackground && !force) 
+				return;
+
+			TitleProvider.BarBackgroundBrush = brush;
+
+			foreach (WGrid tabBarGrid in Control.GetDescendantsByName<WGrid>(TabBarHeaderGridName))
+			{
+				tabBarGrid.Background = brush;
+			}
+		}
+
+		void ApplyBarBackground()
+		{
+			var controlToolbarBackground = Control.ToolbarBackground;
+			var barBackground = Element.BarBackground;
+
+			if (barBackground == null || barBackground.IsEmpty)
+				return;
+
+			var brush = barBackground.ToBrush();
+
+			if (brush == controlToolbarBackground)
 				return;
 
 			TitleProvider.BarBackgroundBrush = brush;
