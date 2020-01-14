@@ -130,7 +130,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
             var radialGradient = new RadialGradientBrush
             {
                 Center = _center,
-                GradientStops = _gradientStops
+				Radius = 1d,
+				GradientStops = _gradientStops
             };
 
             if (radialGradient.IsEmpty)

@@ -17,7 +17,9 @@
                 Margin="12, 0"
                 Padding="12">
                 <Frame
-                    x:Name="GradientView"
+                    x:Name="GradientView"    
+                    BorderColor="LightGray"
+                    HasShadow="True"
                     HeightRequest="120"
                     WidthRequest="120"
                     CornerRadius="12"/>
@@ -101,7 +103,7 @@
                         Keyboard="Numeric"
                         Placeholder="Center"
                         TextChanged="OnCenterChanged"
-                        Text="0, 0" />
+                        Text="0.5, 0.5" />
                 </StackLayout>
             </ScrollView>
         </Grid>

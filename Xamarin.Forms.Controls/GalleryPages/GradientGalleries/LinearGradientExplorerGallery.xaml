@@ -18,6 +18,8 @@
                 Padding="12">
                 <Frame
                     x:Name="GradientView"
+                    BorderColor="LightGray"
+                    HasShadow="True"
                     HeightRequest="120"
                     WidthRequest="120"
                     CornerRadius="12"/>
