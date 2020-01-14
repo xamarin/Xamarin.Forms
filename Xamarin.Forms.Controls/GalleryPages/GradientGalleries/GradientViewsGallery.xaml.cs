@@ -59,6 +59,7 @@
 
 			Button.BackgroundColor = backgroundColor;
 			BoxView.BackgroundColor = backgroundColor;
+			CheckBox.BackgroundColor = backgroundColor;
 			CollectionView.BackgroundColor = backgroundColor;
 			DatePicker.BackgroundColor = backgroundColor;
 			Editor.BackgroundColor = backgroundColor;
@@ -69,6 +70,7 @@
 			Label.BackgroundColor = backgroundColor;
 			ListView.BackgroundColor = backgroundColor;
 			Picker.BackgroundColor = backgroundColor;
+			ScrollView.BackgroundColor = backgroundColor;
 			SearchBar.BackgroundColor = backgroundColor;
 			Slider.BackgroundColor = backgroundColor;
 			Stepper.BackgroundColor = backgroundColor;
@@ -80,6 +82,7 @@
 		{
 			Button.Background = background;
 			BoxView.Background = background;
+			CheckBox.Background = background;
 			CollectionView.Background = background;
 			DatePicker.Background = background;
 			Editor.Background = background;
@@ -90,6 +93,7 @@
 			Label.Background = background;
 			ListView.Background = background;
 			Picker.Background = background;
+			ScrollView.Background = background;
 			SearchBar.Background = background;
 			Slider.Background = background;
 			Stepper.Background = background;

@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Xamarin.Forms.Controls.GalleryPages.GradientGalleries.GradientViewsGallery">
+             x:Class="Xamarin.Forms.Controls.GalleryPages.GradientGalleries.GradientViewsGallery"
+             Title="Brushes View Gallery">
     <ContentPage.Resources>
         <ResourceDictionary>
 
@@ -79,6 +80,8 @@
                         x:Name="BoxView"
                         CornerRadius="12"
                         HeightRequest="100"/>
+                    <CheckBox 
+                         x:Name="CheckBox"/>
                     <CollectionView 
                         x:Name="CollectionView"
                         HeightRequest="120">
@@ -143,6 +146,20 @@
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
+                    <ScrollView
+                         x:Name="ScrollView"
+                         HeightRequest="150">
+                        <StackLayout>
+                            <Label 
+                                 Text="This"/>
+                            <Label 
+                                 Text="is"/>
+                            <Label 
+                                 Text="a"/>
+                            <Label 
+                                 Text="ScrollView"/>
+                        </StackLayout>
+                    </ScrollView>
                     <SearchBar
                         x:Name="SearchBar"
                         Text="SearchBar"/>

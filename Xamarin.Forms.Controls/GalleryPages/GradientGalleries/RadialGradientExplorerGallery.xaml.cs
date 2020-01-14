@@ -110,7 +110,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
             entry.Text = $"#{red:X2}{green:X2}{blue:X2}";
         }
 
-        void UpdateOffsets(IEnumerable<GradientStop> gradientStops, int offsets)
+		void OnCornerRadiusChanged(object sender, ValueChangedEventArgs e)
+		{
+			GradientView.CornerRadius = (float)e.NewValue;
+		}
+
+		void OnShadowCheckedChanged(object sender, CheckedChangedEventArgs e)
+		{
+			GradientView.HasShadow = e.Value;
+		}
+
+		void UpdateOffsets(IEnumerable<GradientStop> gradientStops, int offsets)
         {
             var offset = 0f;
             var delta = 1f / (offsets - 1);

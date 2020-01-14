@@ -113,6 +113,26 @@
                         Placeholder="End Point"
                         TextChanged="OnEndPointChanged"
                         Text="1, 0" />
+                    <!-- CORNER RADIUS -->
+                    <Label
+                         FontSize="24"
+                         Text="Corner Radius" />
+                    <Slider
+                         x:Name="CornerSlider"
+                         MinimumTrackColor="LightGray"
+                         MaximumTrackColor="DarkGray"
+                         Minimum="0"
+                         Maximum="24"
+                         Value="12"
+                         ValueChanged="OnCornerRadiusChanged"/>
+                    <!-- SHADOW -->
+                    <Label
+                         FontSize="24"
+                         Text="Shadow" />
+                    <CheckBox 
+                         x:Name="ShadowCheckBox"
+                         IsChecked="True"
+                         CheckedChanged="OnShadowCheckedChanged"/>
                 </StackLayout>
             </ScrollView>
         </Grid>
