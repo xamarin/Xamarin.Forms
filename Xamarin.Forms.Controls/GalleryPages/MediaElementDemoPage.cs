@@ -107,11 +107,6 @@ namespace Xamarin.Forms.Controls
 			Content = stack;	
 		}
 
-		private void AspectFitButton_Clicked(object sender, EventArgs e)
-		{
-			throw new NotImplementedException();
-		}
-
 		void Element_MediaOpened(object sender, EventArgs e)
 		{
 			consoleLabel.Text += "Media opened" + Environment.NewLine;
