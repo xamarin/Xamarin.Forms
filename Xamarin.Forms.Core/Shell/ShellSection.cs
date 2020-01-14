@@ -397,9 +397,8 @@ namespace Xamarin.Forms
 				if (content == null)
 					break;
 
-				Shell.ApplyQueryAttributes(content, queryData, isLast);
-
-				var isModal = Shell.GetIsModal(content);
+				var isAnimated = (Shell.GetPresentationMode(content) & PresentationMode.Animated) == PresentationMode.Animated;
+				var isModal = (Shell.GetPresentationMode(content) & PresentationMode.Modal) == PresentationMode.Modal;
 
 				if (isModal)
 				{
@@ -421,7 +420,7 @@ namespace Xamarin.Forms
 			for (int i = Navigation.ModalStack.Count; i < modalPageStacks.Count; i++)
 			{
 				bool isLast = i == modalPageStacks.Count - 1;
-				bool isAnimated = Shell.GetIsModalAnimated(modalPageStacks[i]);
+				bool isAnimated = (Shell.GetPresentationMode(modalPageStacks[i]) & PresentationMode.Animated) == PresentationMode.Animated;				
 				IsPushingModalStack = !isLast;
 				await ((NavigationImpl)Navigation).PushModalAsync(modalPageStacks[i], isAnimated);
 			}
@@ -695,7 +694,7 @@ namespace Xamarin.Forms
 						IsPoppingModalStack = false;
 					}
 
-					bool isAnimated = Shell.GetIsModalAnimated(pageToPop);
+					bool isAnimated = (Shell.GetPresentationMode(pageToPop) & PresentationMode.Animated) == PresentationMode.Animated;
 					await Navigation.PopModalAsync(isAnimated);
 				}
 

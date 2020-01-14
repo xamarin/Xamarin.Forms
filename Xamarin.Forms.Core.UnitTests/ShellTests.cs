@@ -466,14 +466,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var page = new ContentPage();
 
-			Assert.IsFalse(Shell.GetIsModal(page));
-			Assert.IsTrue(Shell.GetIsModalAnimated(page));
+			Assert.IsFalse(IsModal(page));
+			Assert.IsTrue(IsAnimated(page));
 
-			Shell.SetIsModal(page, true);
-			Shell.SetIsModalAnimated(page, false);
+			Shell.SetPresentationMode(page, PresentationMode.Modal | ~PresentationMode.Animated);
 
-			Assert.IsTrue(Shell.GetIsModal(page));
-			Assert.IsFalse(Shell.GetIsModalAnimated(page));
+			Assert.IsTrue(IsModal(page));
+			Assert.IsFalse(IsAnimated(page));
 		}
 
 		[Test]

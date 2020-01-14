@@ -26,9 +26,7 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(newHandlerBehavior, bindable.BindingContext);
 		}
 
-		public static readonly BindableProperty IsModalProperty = BindableProperty.CreateAttached("IsModal", typeof(bool), typeof(Shell), false);
-
-		public static readonly BindableProperty IsModalAnimatedProperty = BindableProperty.CreateAttached("IsModalAnimated", typeof(bool), typeof(Shell), true);
+		public static readonly BindableProperty PresentationModeProperty = BindableProperty.CreateAttached("PresentationMode", typeof(PresentationMode), typeof(Shell), PresentationMode.Animated);
 
 		public static readonly BindableProperty FlyoutBehaviorProperty =
 			BindableProperty.CreateAttached("FlyoutBehavior", typeof(FlyoutBehavior), typeof(Shell), FlyoutBehavior.Flyout,
@@ -74,11 +72,8 @@ namespace Xamarin.Forms
 		public static BackButtonBehavior GetBackButtonBehavior(BindableObject obj) => (BackButtonBehavior)obj.GetValue(BackButtonBehaviorProperty);
 		public static void SetBackButtonBehavior(BindableObject obj, BackButtonBehavior behavior) => obj.SetValue(BackButtonBehaviorProperty, behavior);
 
-		public static bool GetIsModal(BindableObject obj) => (bool)obj.GetValue(IsModalProperty);
-		public static void SetIsModal(BindableObject obj, bool isModal) => obj.SetValue(IsModalProperty, isModal);
-
-		public static bool GetIsModalAnimated(BindableObject obj) => (bool)obj.GetValue(IsModalAnimatedProperty);
-		public static void SetIsModalAnimated(BindableObject obj, bool isModalAnimated) => obj.SetValue(IsModalAnimatedProperty, isModalAnimated);
+		public static PresentationMode GetPresentationMode(BindableObject obj) => (PresentationMode)obj.GetValue(PresentationModeProperty);
+		public static void SetPresentationMode(BindableObject obj, PresentationMode presentationMode) => obj.SetValue(PresentationModeProperty, presentationMode);
 
 		public static FlyoutBehavior GetFlyoutBehavior(BindableObject obj) => (FlyoutBehavior)obj.GetValue(FlyoutBehaviorProperty);
 		public static void SetFlyoutBehavior(BindableObject obj, FlyoutBehavior value) => obj.SetValue(FlyoutBehaviorProperty, value);

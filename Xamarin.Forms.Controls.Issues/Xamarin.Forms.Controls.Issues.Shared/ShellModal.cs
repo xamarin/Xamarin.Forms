@@ -89,7 +89,10 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				set
 				{
-					Shell.SetIsModal(this, Convert.ToBoolean(value));
+					if(Convert.ToBoolean(value))
+						Shell.SetPresentationMode(this, PresentationMode.Modal);
+					else
+						Shell.SetPresentationMode(this, PresentationMode.Animated);
 				}
 			}
 

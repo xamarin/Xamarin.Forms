@@ -25,6 +25,17 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+
+		protected bool IsModal(BindableObject bindableObject)
+		{
+			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.Modal) == PresentationMode.Modal;
+		}
+
+		protected bool IsAnimated(BindableObject bindableObject)
+		{
+			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.Animated) == PresentationMode.Animated;
+		}
+
 		protected Uri CreateUri(string uri) => ShellUriHandler.CreateUri(uri);
 
 		protected ShellSection MakeSimpleShellSection(string route, string contentRoute)

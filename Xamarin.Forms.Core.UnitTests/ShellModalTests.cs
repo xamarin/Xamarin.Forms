@@ -290,7 +290,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			public ModalTestPage()
 			{
-				Shell.SetIsModal(this, true);
+				Shell.SetPresentationMode(this, PresentationMode.Modal);
 			}
 
 			protected override void OnAppearing()
@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			public ModalTestPage2()
 			{
-				Shell.SetIsModal(this, true);
+				Shell.SetPresentationMode(this, PresentationMode.Modal);
 			}
 
 			protected override void OnAppearing()
@@ -316,7 +316,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			public ModalNavigationTestPage() : base(new ModalTestPage())
 			{
-				Shell.SetIsModal(this, true);
+				Shell.SetPresentationMode(this, PresentationMode.Modal);
 			}
 
 			protected override void OnAppearing()
@@ -329,7 +329,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			public SomeCustomPage()
 			{
-				Shell.SetIsModal(this, true);
+				Shell.SetPresentationMode(this, PresentationMode.Modal);
 			}
 		}
 
