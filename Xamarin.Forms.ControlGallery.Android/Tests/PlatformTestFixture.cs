@@ -24,6 +24,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		{
 			get
 			{
+				yield return new BoxView { };
 				yield return new Button { };
 				yield return new CheckBox { };
 				yield return new DatePicker { };
@@ -73,13 +74,22 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 
 		protected IVisualElementRenderer GetRenderer(VisualElement element) 
 		{
-			return element.GetRenderer() ?? Platform.Android.Platform.CreateRendererWithContext(element, Context);
+			var renderer = element.GetRenderer();
+			if (renderer == null) 
+			{
+				renderer = Platform.Android.Platform.CreateRendererWithContext(element, Context);
+				Platform.Android.Platform.SetRenderer(element, renderer);
+			}
+
+			return renderer;
 		}
 
 		protected AView GetNativeControl(VisualElement element)
 		{
 			switch (element)
 			{
+				case BoxView boxView:
+					return GetNativeControl(boxView);
 				case Button button:
 					return GetNativeControl(button);
 				case CheckBox checkBox:
@@ -113,6 +123,12 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			}
 
 			throw new NotImplementedException($"Don't know how to get the native control for {element}");
+		}
+
+		protected BoxRenderer GetNativeControl(BoxView boxView)
+		{
+			var renderer = GetRenderer(boxView);
+			return renderer as BoxRenderer;
 		}
 
 		protected AppCompatButton GetNativeControl(Button button)
@@ -264,7 +280,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		}
 
 		// Some of the renderer properties aren't set until the renderer is actually 
-		// attached to the view hierarchy; to test them, we need to add the, run the test,
+		// attached to the view hierarchy; to test them, we need to add them, run the test,
 		// then remove them
 		protected void ParentView(AView view) 
 		{
