@@ -12,7 +12,8 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			get
 			{
-				foreach (var element in BasicViews.Where(e => !(e is Label)))
+				foreach (var element in BasicViews
+					.Where(e => !(e is Label) && !(e is BoxView)))
 				{
 					element.BackgroundColor = Color.AliceBlue;
 					yield return new TestCaseData(element)
@@ -42,6 +43,28 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				var expectedColor = label.BackgroundColor.ToUIColor();
 				Assert.That(renderer.NativeView.BackgroundColor, Is.EqualTo(expectedColor));
 			}
+		}
+
+		[Test, Category("BackgroundColor"), Category("BoxView")]
+		[Description("BoxView background color should match renderer background color")]
+		public void BoxViewBackgroundColorConsistent()
+		{
+			var boxView = new BoxView { BackgroundColor = Color.AliceBlue };
+			var expectedColor = boxView.BackgroundColor.ToUIColor();
+
+			var page = new ContentPage() { Content = boxView };
+
+			using (var pageRenderer = GetRenderer(page))
+			{
+				using (var uiView = GetRenderer(boxView).NativeView)
+				{
+					page.Layout(new Rectangle(0, 0, 200, 200));
+					
+					var actualColor = GetColorAtCenter(uiView);
+
+					Assert.That(actualColor, Is.EqualTo(expectedColor));
+				} 
+			} 
 		}
 	}
 }

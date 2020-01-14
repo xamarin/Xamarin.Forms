@@ -9,7 +9,7 @@
              ios:Page.UseSafeArea="true"
              x:Class="Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery.PlatformTestsConsole">
     <ContentPage.Content>
-        <StackLayout>
+        <StackLayout Margin="2">
             <Grid MinimumHeightRequest="90">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>

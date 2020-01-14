@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CoreGraphics;
 using NUnit.Framework;
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			get
 			{
+				yield return new BoxView { };
 				yield return new Button { };
 				yield return new CheckBox { };
 				yield return new DatePicker { };
@@ -49,7 +51,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			var renderer = GetRenderer(visualElement);
 			var viewRenderer = renderer as IVisualNativeElementRenderer;
-			return viewRenderer.Control;
+			return viewRenderer?.Control;
 		}
 
 		protected UILabel GetNativeControl(Label label)
@@ -78,6 +80,24 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			var renderer = GetRenderer(button);
 			var viewRenderer = renderer.NativeView as ButtonRenderer;
 			return viewRenderer.Control;
+		}
+
+		protected UIColor GetColorAtCenter(UIView view)
+		{
+			var point = new CGPoint(view.Frame.GetMidX(), view.Frame.GetMidY());
+			var pixel = new byte[4];
+			using (var colorSpace = CGColorSpace.CreateDeviceRGB())
+			{
+				using (var context = new CGBitmapContext(pixel, 1, 1, 8, 4, colorSpace, CGBitmapFlags.PremultipliedLast))
+				{
+					context.TranslateCTM(-point.X, -point.Y);
+
+					view.Layer.RenderInContext(context);
+					var color = new UIColor(pixel[0] / 255.0f, pixel[1] / 255.0f, pixel[2] / 255.0f, pixel[3] / 255.0f);
+
+					return color;
+				}
+			}
 		}
 	}
 }
