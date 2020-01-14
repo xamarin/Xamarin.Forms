@@ -27,12 +27,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Label instructions = new Label
 			{
-				Text = "Check that the yellow background of the Switch below is only around the Switch and text - no extra space around."
+				Text = "Check that the yellow background of the Switch below is only around the Switch and On/Off-text - no extra space to the right."
 			};
 
 			Switch theSwitch = new Switch
 			{
-				BackgroundColor = Color.Yellow
+				BackgroundColor = Color.Yellow,
+				HorizontalOptions = LayoutOptions.Start
 			};
 
 			layout.Children.Add(instructions);
