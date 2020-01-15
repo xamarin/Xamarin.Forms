@@ -11,8 +11,13 @@ using AProgressBar = Android.Widget.ProgressBar;
 using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
+
+#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
 using AndroidX.CardView.Widget;
+#else
+using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
