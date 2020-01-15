@@ -135,9 +135,6 @@ namespace Xamarin.Forms.Platform.iOS
 
         bool _fillMode;
 
-        CGLineCap _strokeLineCap;
-        CGLineJoin _strokeLineJoin;
-
         Stretch _aspect;
 
         public override void DrawInContext(CGContext ctx)
@@ -208,18 +205,6 @@ namespace Xamarin.Forms.Platform.iOS
         public void UpdateStrokeDashOffset(nfloat dashOffset)
         {
             _dashOffset = dashOffset;
-            SetNeedsDisplay();
-        }
-
-        public void UpdateStrokeLineCap(CGLineCap strokeLineCap)
-        {
-            _strokeLineCap = strokeLineCap;
-            SetNeedsDisplay();
-        }
-
-        public void UpdateStrokeLineJoin(CGLineJoin strokeLineJoin)
-        {
-            _strokeLineJoin = strokeLineJoin;
             SetNeedsDisplay();
         }
 
@@ -314,8 +299,6 @@ namespace Xamarin.Forms.Platform.iOS
             graphics.AddPath(_renderPath);
             graphics.SetStrokeColor(_stroke);
             graphics.SetFillColor(_fill);
-            graphics.SetLineCap(_strokeLineCap);
-            graphics.SetLineJoin(_strokeLineJoin);
 
             graphics.DrawPath(_fillMode ? CGPathDrawingMode.FillStroke : CGPathDrawingMode.EOFillStroke);
 
