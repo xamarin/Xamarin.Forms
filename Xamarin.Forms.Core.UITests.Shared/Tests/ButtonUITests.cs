@@ -139,6 +139,7 @@ namespace Xamarin.Forms.Core.UITests
 			remote.GoTo();
 		}
 
+#if !__ANDROID__ && !__IOS__
 		[Test]
 		[UiTest(typeof(Button), "Text")]
 		[Category(UITestCategories.UwpIgnore)]
@@ -150,7 +151,7 @@ namespace Xamarin.Forms.Core.UITests
 			var buttonText = remote.GetProperty<string>(Button.TextProperty);
 			Assert.AreEqual("Text", buttonText);
 		}
-
+#endif
 		//TODO iOS
 
 #if __ANDROID__
