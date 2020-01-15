@@ -155,14 +155,24 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					VisualStateManager.GoToState(itemView, CarouselView.DefaultItemVisualState);
 				}
+
 				newViews.Add(itemView);
+
+				if (!_carouselView.VisibleViews.Contains(itemView))
+				{
+					_carouselView.VisibleViews.Add(itemView);
+				}
 			}
 
-			foreach (var item in _oldViews)
+			foreach (var itemView in _oldViews)
 			{
-				if (!newViews.Contains(item))
+				if (!newViews.Contains(itemView))
 				{
-					VisualStateManager.GoToState(item, CarouselView.DefaultItemVisualState);
+					VisualStateManager.GoToState(itemView, CarouselView.DefaultItemVisualState);
+					if (_carouselView.VisibleViews.Contains(itemView))
+					{
+						_carouselView.VisibleViews.Remove(itemView);
+					}
 				}
 			}
 
