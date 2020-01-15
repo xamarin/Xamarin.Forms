@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Tests
 {
@@ -63,6 +64,14 @@ namespace Xamarin.Forms.Controls.Tests
 		{
 			var customButton = new TestClasses.CustomButton() { Text = "This is a custom button", TextColor = Color.Fuchsia };
 			TestingPlatform.CreateRenderer(customButton);
+		}
+
+		[Test]
+		[Description("[Bug] CollectionView exception when IsGrouped=true and null ItemSource")]
+		public void GitHub8269() 
+		{
+			var collectionView = new CollectionView { ItemsSource = null, IsGrouped = true };
+			TestingPlatform.CreateRenderer(collectionView);
 		}
 	}
 }
