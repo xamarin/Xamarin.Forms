@@ -105,9 +105,22 @@
                         TextChanged="OnCenterChanged"
                         Text="0.5, 0.5" />
                     <!-- CORNER RADIUS -->
-                    <Label
-                         FontSize="24"
-                         Text="Corner Radius" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Label
+                            Grid.Column="0"
+                            FontSize="24"
+                            Text="Corner Radius"
+                            VerticalOptions="Center"/>
+                        <Label
+                            Grid.Column="1"
+                            Text="{Binding Value, Source={x:Reference CornerSlider}}"
+                            FontSize="9"
+                            VerticalOptions="Center"/>
+                        </Grid>
                     <Slider
                          x:Name="CornerSlider"
                          MinimumTrackColor="LightGray"

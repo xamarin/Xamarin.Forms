@@ -34,7 +34,6 @@
 
             <RadialGradientBrush
                 x:Key="RadialGradient"
-                GradientOrigin="0.5,0.5" 
                 Center="0.5,0.5" 
                 Radius="0.5">
                 <RadialGradientBrush.GradientStops>
@@ -179,17 +178,17 @@
                                     BackgroundColor="Red"/>
                             </SwipeItems>
                         </SwipeView.LeftItems>
-                    <SwipeView.Content>
-                    <Grid
-                        HeightRequest="60"
-                        WidthRequest="300">
-                        <Label
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center"
-                            Text="Swipe Left"/>
-                    </Grid>
-                </SwipeView.Content>
-            </SwipeView>
+                        <SwipeView.Content>
+                            <Grid
+                                HeightRequest="60"
+                                WidthRequest="300">
+                                <Label
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    Text="Swipe Left"/>
+                            </Grid>
+                        </SwipeView.Content>
+                    </SwipeView>
                     <Stepper
                         x:Name="Stepper"/>
                     <TimePicker

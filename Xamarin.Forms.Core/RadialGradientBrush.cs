@@ -3,7 +3,7 @@
 	public class RadialGradientBrush : GradientBrush
 	{
 		public static readonly BindableProperty CenterProperty = BindableProperty.Create(
-			nameof(Center), typeof(Point), typeof(RadialGradientBrush), default(Point));
+			nameof(Center), typeof(Point), typeof(RadialGradientBrush), new Point(0.5, 0.5));
 
 		public Point Center
 		{
@@ -11,17 +11,8 @@
 			set => SetValue(CenterProperty, value);
 		}
 
-		public static readonly BindableProperty GradientOriginProperty = BindableProperty.Create(
-			nameof(GradientOrigin), typeof(Point), typeof(RadialGradientBrush), default(Point));
-
-		public Point GradientOrigin
-		{
-			get => (Point)GetValue(GradientOriginProperty);
-			set => SetValue(GradientOriginProperty, value);
-		}
-
 		public static readonly BindableProperty RadiusProperty = BindableProperty.Create(
-			nameof(Radius), typeof(double), typeof(RadialGradientBrush), default(double));
+			nameof(Radius), typeof(double), typeof(RadialGradientBrush), 0.5d);
 
 		public double Radius
 		{

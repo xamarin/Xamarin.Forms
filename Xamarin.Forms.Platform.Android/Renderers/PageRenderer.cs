@@ -134,6 +134,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			_ = this.ApplyDrawableAsync(page, Page.BackgroundImageSourceProperty, Context, drawable =>
 			{
+				Brush bgBrush = page.Background;
+
+				if (bgBrush != null && !bgBrush.IsEmpty)
+				{
+					this.UpdateBackground(bgBrush);
+					return;
+				}
+
 				if (drawable != null)
 				{
 					this.SetBackground(drawable);

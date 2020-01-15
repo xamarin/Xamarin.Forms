@@ -390,6 +390,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateToolbar();
 			else if (e.PropertyName == BarHeightProperty.PropertyName)
@@ -1010,6 +1012,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					bar.SetBackgroundColor(tintColor.ToAndroid());
 				}
 			}
+
+			Brush tintBrush = Element.BarBackground;
+
+			if (tintBrush != null && !tintBrush.IsEmpty)
+				bar.UpdateBackground(tintBrush);
 
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)

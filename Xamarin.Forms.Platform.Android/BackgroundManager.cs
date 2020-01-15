@@ -40,6 +40,16 @@ namespace Xamarin.Forms.Platform.Android
 				Control.SetBackgroundColor(finalColor.ToAndroid());
 		}
 
+		static void UpdateBackground(AView Control, VisualElement Element)
+		{
+			if (Element == null || Control == null)
+				return;
+
+			var background = Element.Background;
+
+			if (background != null && !background.IsEmpty)
+				Control.UpdateBackground(background);
+		}
 
 		static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
 		{
@@ -54,6 +64,7 @@ namespace Xamarin.Forms.Platform.Android
 				var renderer = (sender as IVisualElementRenderer);
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 				UpdateBackgroundColor(renderer?.View, renderer?.Element);
+				UpdateBackground(renderer?.View, renderer?.Element);
 			}
 
 			Performance.Stop(reference);
@@ -66,6 +77,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var renderer = (sender as IVisualElementRenderer);
 				UpdateBackgroundColor(renderer?.View, renderer?.Element);
+			}
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			{
+				var renderer = (sender as IVisualElementRenderer);
+				UpdateBackground(renderer?.View, renderer?.Element);
 			}
 		}
 	}

@@ -141,6 +141,7 @@ namespace Xamarin.Forms.Platform.Android
 			activity?.ActionBar?.SetHomeButtonEnabled(true);
 
 			UpdateBackgroundColor(_page);
+			UpdateBackground(_page);
 			UpdateBackgroundImage(_page);
 
 			OnElementChanged(oldElement, element);
@@ -306,8 +307,10 @@ namespace Xamarin.Forms.Platform.Android
 				SetGestureState();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackgroundImage(_page);
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(_page);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground(_page);
 		}
 
 		void MasterDetailPageAppearing(object sender, EventArgs e)
@@ -354,6 +357,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (view.BackgroundColor != Color.Default)
 				SetBackgroundColor(view.BackgroundColor.ToAndroid());
+		}
+
+		void UpdateBackground(Page view)
+		{
+			if (view.Background != null && !view.Background.IsEmpty)
+				this.UpdateBackground(view.Background);
 		}
 
 		void UpdateBackgroundImage(Page view)
