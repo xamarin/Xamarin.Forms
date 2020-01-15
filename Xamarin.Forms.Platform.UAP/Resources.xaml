@@ -350,8 +350,4 @@
 	<Style TargetType="TextBox">
 		<Setter Property="Margin" Value="0" />
 	</Style>
-
-	<Style TargetType="ToggleSwitch">
-		<Setter Property="MinWidth" Value="0"/>
-	</Style>
 </ResourceDictionary>
