@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 
-				if (!backgroundColorIsDefault)
+				if (!backgroundIsDefault)
 				{
 					Control.UpdateBackground(Element.Background);
 				}

@@ -119,7 +119,16 @@
                             Text="Grid"/>
                     </Grid>
                     <ImageButton
-                        x:Name="ImageButton"/>
+                        x:Name="ImageButton"
+                        HeightRequest="60">
+                        <ImageButton.Source>
+                            <OnPlatform x:TypeArguments="ImageSource">
+                                <On Platform="iOS" Value="cover1.jpg"/>
+                                <On Platform="Android" Value="cover1.jpg"/>
+                                <On Platform="UWP" Value="Assets/coverassets1.jpg"/>
+                            </OnPlatform>
+                        </ImageButton.Source>
+                    </ImageButton>
                     <Label
                         x:Name="Label"
                         Text="Label"/>
