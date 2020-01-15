@@ -23,15 +23,6 @@
 		public static TLabel TextCenter<TLabel>(this TLabel label) where TLabel : Label
 			=> label.TextCenterH().TextCenterV();
 
-		public static TLabel FontSize<TLabel>(this TLabel label, double fontSize) where TLabel : Label
-		{ label.FontSize = fontSize; return label; }
-
-		public static TLabel Bold<TLabel>(this TLabel label) where TLabel : Label
-		{ label.FontAttributes = FontAttributes.Bold; return label; }
-
-		public static TLabel Italic<TLabel>(this TLabel label) where TLabel : Label
-		{ label.FontAttributes = FontAttributes.Italic; return label; }
-
 		public static TLabel FormattedText<TLabel>(this TLabel label, params Span[] spans) where TLabel : Label
 		{
 			label.FormattedText = new FormattedString();

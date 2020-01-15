@@ -11,26 +11,39 @@ namespace Xamarin.Forms.Markup
 			return element;
 		}
 
+		public static TFontElement FontSize<TFontElement>(this TFontElement fontElement, double size) where TFontElement : Element, IFontElement
+		{ fontElement.SetValue(FontElement.FontSizeProperty, size); return fontElement; }
+
+		public static TFontElement Bold<TFontElement>(this TFontElement fontElement) where TFontElement : Element, IFontElement
+		{ fontElement.SetValue(FontElement.FontAttributesProperty, FontAttributes.Bold); return fontElement; }
+
+		public static TFontElement Italic<TFontElement>(this TFontElement fontElement) where TFontElement : Element, IFontElement
+		{ fontElement.SetValue(FontElement.FontAttributesProperty, FontAttributes.Italic); return fontElement; }
+
 		public static TFontElement Font<TFontElement>(
 			this TFontElement fontElement,
-			double? fontSize = null,
+			double? size = null,
 			bool? bold = null,
 			bool? italic = null,
 			string family = null
 		) where TFontElement : Element, IFontElement
 		{
-			var attributes = bold.HasValue || italic.HasValue ? FontAttributes.None : (FontAttributes?)null;
-			if (bold == true)
-				attributes |= FontAttributes.Bold;
-			if (italic == true)
-				attributes |= FontAttributes.Italic;
+			if (size.HasValue)
+				fontElement.SetValue(FontElement.FontSizeProperty, size.Value);
 
-			if (fontSize.HasValue)
-				fontElement.SetValue(FontElement.FontSizeProperty, fontSize.Value);
-			if (attributes.HasValue)
-				fontElement.SetValue(FontElement.FontSizeProperty, attributes.Value);
+			if (bold.HasValue || italic.HasValue)
+			{
+				var attributes = FontAttributes.None;
+				if (bold == true)
+					attributes |= FontAttributes.Bold;
+				if (italic == true)
+					attributes |= FontAttributes.Italic;
+				fontElement.SetValue(FontElement.FontAttributesProperty, attributes);
+			}
+
 			if (family != null)
 				fontElement.SetValue(FontElement.FontFamilyProperty, family);
+
 			return fontElement;
 		}
 	}
