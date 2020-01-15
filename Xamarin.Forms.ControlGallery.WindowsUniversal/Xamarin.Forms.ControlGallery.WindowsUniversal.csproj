@@ -137,6 +137,7 @@
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="Tests\RendererTests.cs" />
     <Compile Include="Tests\RotationTests.cs" />
+    <Compile Include="Tests\ScaleTests.cs" />
     <Compile Include="Tests\TestingPlatformService.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />

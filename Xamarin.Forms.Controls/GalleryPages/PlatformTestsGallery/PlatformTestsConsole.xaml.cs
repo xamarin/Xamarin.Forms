@@ -69,8 +69,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			// e.g. var filter = new TestNameContainsFilter("Bugzilla");
 			// or var filter = new CategoryFilter("Picker");
 
-			var filter = new CategoryFilter("BoxView");
-
 			await Task.Run(() => _runner.Run()).ConfigureAwait(false);
 		}
 
