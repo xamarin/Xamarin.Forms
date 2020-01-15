@@ -129,10 +129,10 @@
     <Compile Include="Tests\OpacityTests.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="Tests\PlatformTestFixture.cs" />
-    <Compile Include="Tests\RendererTests.cs" />
     <Compile Include="Tests\RotationTests.cs" />
     <Compile Include="Tests\ScaleTests.cs" />
     <Compile Include="Tests\TestingPlatformService.cs" />
+    <Compile Include="Tests\TextTests.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
