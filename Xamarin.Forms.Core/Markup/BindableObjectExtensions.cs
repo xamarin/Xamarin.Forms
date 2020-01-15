@@ -4,13 +4,13 @@ namespace Xamarin.Forms.Markup
 {
 	public static class BindableObjectExtensions
 	{
-		const string bindingContextPropertyName = Binding.SelfPath;
+		const string bindingContextPath = Binding.SelfPath;
 
 		/// <summary>Bind to a specified property</summary>
 		public static TBindable Bind<TBindable>(
 			this TBindable bindable,
 			BindableProperty targetProperty,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Markup
 		public static TBindable Bind<TBindable, TSource, TDest>(
 			this TBindable bindable,
 			BindableProperty targetProperty,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			Func<TSource, TDest> convert = null,
 			Func<TDest, TSource> convertBack = null,
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Markup
 		/// <summary>Bind to the default property</summary>
 		public static TBindable Bind<TBindable>(
 			this TBindable bindable,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Markup
 		/// <summary>Bind to the default property with inline conversion</summary>
 		public static TBindable Bind<TBindable, TSource, TDest>(
 			this TBindable bindable,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			Func<TSource, TDest> convert = null,
 			Func<TDest, TSource> convertBack = null,

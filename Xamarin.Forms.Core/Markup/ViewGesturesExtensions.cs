@@ -5,12 +5,14 @@ namespace Xamarin.Forms.Markup
 {
 	public static class ViewGesturesExtensions
 	{
-		const string bindingContextPropertyName = ".";
+		const string bindingContextPath = Binding.SelfPath;
 
+		/// <summary>Bind a specified property of this <typeparamref name="TView"/>'s <typeparamref name="TGestureRecognizer"/></summary>
+		/// <remarks>Creates / updates the <typeparamref name="TGestureRecognizer"/> as needed</remarks>
 		public static TView Bind<TView, TGestureRecognizer>(
 			this TView view,
 			BindableProperty targetProperty,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -25,9 +27,11 @@ namespace Xamarin.Forms.Markup
 			return view;
 		}
 
+		/// <summary>Bind the default property of this <typeparamref name="TView"/>'s <typeparamref name="TGestureRecognizer"/></summary>
+		/// <remarks>Creates / updates the <typeparamref name="TGestureRecognizer"/> as needed</remarks>
 		public static TView Bind<TView, TGestureRecognizer>(
 			this TView view,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -42,10 +46,12 @@ namespace Xamarin.Forms.Markup
 			return view;
 		}
 
+		/// <summary>Bind a specified property of this <typeparamref name="TGestureElement"/>'s <typeparamref name="TGestureRecognizer"/></summary>
+		/// <remarks>Creates / updates the <typeparamref name="TGestureRecognizer"/> as needed</remarks>
 		public static TGestureElement BindGesture<TGestureElement, TGestureRecognizer>(
 			this TGestureElement gestureElement,
 			BindableProperty targetProperty,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -60,9 +66,11 @@ namespace Xamarin.Forms.Markup
 			return gestureElement;
 		}
 
+		/// <summary>Bind the default property of this <typeparamref name="TGestureElement"/>'s <typeparamref name="TGestureRecognizer"/></summary>
+		/// <remarks>Creates / updates the <typeparamref name="TGestureRecognizer"/> as needed</remarks>
 		public static TGestureElement BindGesture<TGestureElement, TGestureRecognizer>(
 			this TGestureElement gestureElement,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -77,9 +85,11 @@ namespace Xamarin.Forms.Markup
 			return gestureElement;
 		}
 
+		/// <summary>Bind the <see cref="TapGestureRecognizer.Command"/> property of this <typeparamref name="TView"/>'s <see cref="TapGestureRecognizer"/></summary>
+		/// <remarks>Creates / updates the <see cref="TapGestureRecognizer"/> as needed</remarks>
 		public static TView BindTapGesture<TView>(
 			this TView view,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			string commandParameterPropertyName = null,
 			object commandParameter = null,
 			BindingMode mode = BindingMode.Default,
@@ -98,9 +108,11 @@ namespace Xamarin.Forms.Markup
 			return view;
 		}
 
+		/// <summary>Bind the <see cref="TapGestureRecognizer.Command"/> property of this <typeparamref name="TGestureElement"/>'s <see cref="TapGestureRecognizer"/></summary>
+		/// <remarks>Creates / updates the <see cref="TapGestureRecognizer"/> as needed</remarks>
 		public static TGestureElement BindTap<TGestureElement>(
 			this TGestureElement gestureElement,
-			string path = bindingContextPropertyName,
+			string path = bindingContextPath,
 			string commandParameterPropertyName = null,
 			object commandParameter = null,
 			BindingMode mode = BindingMode.Default,
