@@ -12,11 +12,13 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 		{
 			get
 			{
+				yield return new BoxView { };
 				yield return new Button { };
 				yield return new CheckBox { };
 				yield return new DatePicker { };
 				yield return new Editor { };
 				yield return new Entry { };
+				yield return new Frame { };
 				yield return new Image { };
 				yield return new ImageButton { };
 				yield return new Label { };
