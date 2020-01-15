@@ -15,9 +15,10 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 		{
 			get
 			{
-				// SearchBar is currently busted; when 8773 gets merged we can turn this back on
-				// new SearchBar { Text = "foo", BackgroundColor = Color.AliceBlue },
-				foreach (var element in BasicViews.Where(v => !(v is SearchBar)))
+				// SearchBar is currently busted; when 8773 gets merged we can stop filtering it
+				foreach (var element in BasicViews
+					.Where(v => !(v is SearchBar))
+					.Where(v => !(v is Frame)))
 				{
 					element.BackgroundColor = Color.AliceBlue;
 					yield return CreateTestCase(element);
@@ -57,6 +58,22 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 
 			var formsColor = view.BackgroundColor.ToUwpColor();
 			Assert.That(nativeColor, Is.EqualTo(formsColor));
+		}
+
+		[Test, Category("BackgroundColor"), Category("Frame")]
+		[Description("Frame background color should match renderer background color")]
+		public void FrameBackgroundColorConsistent()
+		{
+			var frame = new Frame() { BackgroundColor = Color.Orange };
+
+			var renderer = GetRenderer(frame);
+			var nativeElement = renderer.GetNativeElement() as Border;
+
+			var backgroundBrush = nativeElement.Background as SolidColorBrush;
+			var actualColor = backgroundBrush.Color;
+
+			var expectedColor = frame.BackgroundColor.ToUwpColor();
+			Assert.That(actualColor, Is.EqualTo(expectedColor));
 		}
 	}
 }
