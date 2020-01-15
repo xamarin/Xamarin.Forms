@@ -42,12 +42,12 @@ namespace Xamarin.Forms.Core.UITests
 		public override void _Opacity() { }
 #endif
 
-#if __ANDROID__ || __IOS__
+#if __ANDROID__ || __IOS__ || __WINDOWS__
 		[Ignore("This is covered by the platform tests")]
 		public override void _IsEnabled() { }
 #endif
 
-#if __ANDROID__ || __IOS__
+#if __ANDROID__ || __IOS__ || __WINDOWS__
 		[Ignore("This is covered by the platform tests")]
 		public override void _Rotation() { }
 
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Core.UITests
 		public override void _TranslationY() { }
 #endif
 
-#if __IOS__
+#if __IOS__ || __WINDOWS__
 		[Ignore("This is covered by the platform tests")]
 		public override void _Scale() { }
 #endif
