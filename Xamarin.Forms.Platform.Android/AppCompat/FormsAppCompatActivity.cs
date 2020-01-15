@@ -249,23 +249,18 @@ namespace Xamarin.Forms.Platform.Android
 						ie.Message == "Binary XML file line #1: Error inflating class android.support.v7.widget.Toolbar" &&
 						this.TargetSdkVersion() >= 29)
 					{
-						Internals.Log.Warning(nameof(FormsAppCompatActivity), 
+						Internals.Log.Warning(nameof(FormsAppCompatActivity),
 							"Toolbar layout needs to be updated from android.support.v7.widget.Toolbar to androidx.appcompat.widget.Toolbar. " +
 							"Tabbar layout need to be updated from android.support.design.widget.TabLayout to com.google.android.material.tabs.TabLayout. " +
-							"Or If you haven't made any changes to the default Toolbar and Tabbar layout that came with forms then they can just be deleted.");
+							"Or if you haven't made any changes to the default Toolbar and Tabbar layouts they can just be deleted.");
 
-						if (ToolbarResource == 0)
-						{
-							ToolbarResource = Resource.Layout.FallbackToolbarDoNotUse;
-						}
-
-						if (TabLayoutResource == 0)
-						{
-							TabLayoutResource = Resource.Layout.FallbackTabbarDoNotUse;
-						}
+						ToolbarResource = Resource.Layout.FallbackToolbarDoNotUse;
+						TabLayoutResource = Resource.Layout.FallbackTabbarDoNotUse;
 
 						bar = LayoutInflater.Inflate(ToolbarResource, null).JavaCast<AToolbar>();
 					}
+					else
+						throw;
 #else
 				catch
 				{
@@ -274,7 +269,11 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				if (bar == null)
+#if __ANDROID_29__
 					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
+#else
+					throw new InvalidOperationException("ToolbarResource must be set to a androidx.appcompat.widget.Toolbar");
+#endif
 			}
 			else 
 			{
