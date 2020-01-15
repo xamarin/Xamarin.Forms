@@ -545,10 +545,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static int ToolbarResource { get; set; }
 
-		public static int TabLayoutResource2 { get; set; }
-
-		public static int ToolbarResource2 { get; set; }
-
 #endregion
 	}
 }
