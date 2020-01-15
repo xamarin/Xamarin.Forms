@@ -11,11 +11,6 @@ namespace Xamarin.Forms
 	{
 		List<Element> _logicalChildren = new List<Element>();
 
-		protected internal ItemsView()
-		{
-			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(ItemsView));
-		}
-
 		public static readonly BindableProperty EmptyViewProperty =
 			BindableProperty.Create(nameof(EmptyView), typeof(object), typeof(ItemsView), null);
 
@@ -130,25 +125,11 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
 				LinearItemsLayout.Vertical);
 
-
-		//	public abstract IItemsLayout ItemsLayout { get; }
-
-
 		protected IItemsLayout InternalItemsLayout
 		{
 			get => (IItemsLayout)GetValue(InternalItemsLayoutProperty);
 			set => SetValue(InternalItemsLayoutProperty, value);
 		}
-
-		public static readonly BindableProperty ItemSizingStrategyProperty =
-			BindableProperty.Create(nameof(ItemSizingStrategy), typeof(ItemSizingStrategy), typeof(ItemsView));
-
-		public ItemSizingStrategy ItemSizingStrategy
-		{
-			get => (ItemSizingStrategy)GetValue(ItemSizingStrategyProperty);
-			set => SetValue(ItemSizingStrategyProperty, value);
-		}
-
 
 		public static readonly BindableProperty ItemTemplateProperty =
 			BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(ItemsView));

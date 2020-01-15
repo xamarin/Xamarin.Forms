@@ -1,6 +1,11 @@
 ﻿using System;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -74,13 +79,17 @@ namespace Xamarin.Forms.Platform.Android
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
 				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalSpacing;
-				outRect.Bottom = (int)_adjustedVerticalSpacing;
+
+				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
+					outRect.Bottom = (int)_adjustedVerticalSpacing;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
 				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalSpacing;
-				outRect.Right = (int)_adjustedHorizontalSpacing;
+
+				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
+					outRect.Right = (int)_adjustedHorizontalSpacing;
 			}
 		}
 	}

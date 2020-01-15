@@ -10,12 +10,18 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+using AndroidX.Legacy.App;
+#else
 using Android.Support.V4.App;
+using FragmentManager = Android.Support.V4.App.FragmentManager;
+#endif
 using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
@@ -405,14 +411,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
+			var toolbarItems = _toolbarTracker.ToolbarItems;
+			foreach (ToolbarItem item in toolbarItems)
 				item.PropertyChanged -= HandleToolbarItemPropertyChanged;
 			menu.Clear();
 
 			if (!ShouldShowActionBarTitleArea())
 				return;
 
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
+			foreach (ToolbarItem item in toolbarItems)
 			{
 				IMenuItemController controller = item;
 				item.PropertyChanged += HandleToolbarItemPropertyChanged;
@@ -633,7 +640,8 @@ namespace Xamarin.Forms.Platform.Android
 			TabbedPage currentTabs = CurrentTabbedPage;
 
 			var atab = actionBar.NewTab();
-			atab.SetText(page.Title);
+			
+			atab.SetText(new Java.Lang.String(page.Title));
 			atab.TabSelected += (sender, e) =>
 			{
 				if (!_ignoreAndroidSelection)
@@ -812,8 +820,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (NavAnimationInProgress)
 				return true;
 
-			Page root = _navModel.Roots.Last();
-			bool handled = root.SendBackButtonPressed();
+			Page root = _navModel.Roots.LastOrDefault();
+			bool handled = root?.SendBackButtonPressed() ?? false;
 
 			return handled;
 		}
@@ -860,7 +868,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var page = sender as Page;
 				var atab = actionBar.GetTabAt(currentTabs.Children.IndexOf(page));
-				atab.SetText(page.Title);
+				atab.SetText(new Java.Lang.String(page.Title));
 			}
 		}
 
@@ -1194,7 +1202,9 @@ namespace Xamarin.Forms.Platform.Android
 		internal class DefaultRenderer : VisualElementRenderer<View>, ILayoutChanges
 		{
 			public bool NotReallyHandled { get; private set; }
+			
 			IOnTouchListener _touchListener;
+			bool _disposed;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
 			[EditorBrowsable(EditorBrowsableState.Never)]
@@ -1282,8 +1292,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			protected override void Dispose(bool disposing)
 			{
+				if (_disposed)
+				{
+					return;
+				}
+
+				_disposed = true;
+
 				if (disposing)
-					_touchListener = null;
+					SetOnTouchListener(null); 
 
 				base.Dispose(disposing);
 			}

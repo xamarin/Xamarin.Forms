@@ -3,7 +3,11 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
@@ -14,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _disposed;
 		Drawable _defaultTrackDrawable;
 		string _defaultContentDescription;
-		ColorFilter _defaultThumbColorFilter;
+		bool _changedThumbColor;
 
 		public SwitchRenderer(Context context) : base(context)
 		{
@@ -91,7 +95,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					aswitch.SetOnCheckedChangeListener(this);
 					SetNativeControl(aswitch);
 					_defaultTrackDrawable = aswitch.TrackDrawable;
-					_defaultThumbColorFilter = Control.ThumbDrawable.GetColorFilter();
 				}
 				else
 					UpdateEnabled(); // Normally set by SetNativeControl, but not when the Control is reused.
@@ -126,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 				else
 				{
-					Control.TrackDrawable?.SetColorFilter(Element.OnColor.ToAndroid(), PorterDuff.Mode.Multiply);
+					Control.TrackDrawable?.SetColorFilter(Element.OnColor, FilterMode.Multiply);
 				}
 			}
 			else
@@ -140,7 +143,19 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (Element == null)
 				return;
 
-			Control.ThumbDrawable.SetColorFilter(Element.ThumbColor, _defaultThumbColorFilter, PorterDuff.Mode.Multiply);
+			if (Element.ThumbColor != Color.Default)
+			{
+				Control.ThumbDrawable?.SetColorFilter(Element.ThumbColor, FilterMode.Multiply);
+				_changedThumbColor = true;
+			}
+			else
+			{
+				if (_changedThumbColor)
+				{
+					Control.ThumbDrawable?.ClearColorFilter();
+					_changedThumbColor = false;
+				}
+			}
 		}
 
 		void HandleToggled(object sender, EventArgs e)

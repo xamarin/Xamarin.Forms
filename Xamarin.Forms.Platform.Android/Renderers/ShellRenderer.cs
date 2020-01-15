@@ -1,8 +1,19 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+#else
 using Android.Support.V4.App;
+#endif
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.DrawerLayout.Widget;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
+#else
 using Android.Support.V4.Widget;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
+#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -12,7 +23,6 @@ using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -149,11 +159,11 @@ namespace Xamarin.Forms.Platform.Android
 		event EventHandler<PropertyChangedEventArgs> _elementPropertyChanged;
 
 		public ShellRenderer(Context context)
-		{	
+		{
 			AndroidContext = context;
 		}
 
-		
+
 
 		protected Context AndroidContext { get; }
 		protected Shell Element { get; private set; }
@@ -242,7 +252,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Previewer Hack
 			Profile.FramePartition("Previewer Hack");
-			if (AndroidContext.GetActivity() != null)
+			if (AndroidContext.GetActivity() != null && shell.CurrentItem != null)
 				SwitchFragment(FragmentManager, _frameLayout, shell.CurrentItem, false);
 
 			Profile.FrameEnd();
@@ -256,7 +266,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			Profile.FramePartition("IsDesignerContext");
 			if (AndroidContext.IsDesignerContext())
-				return; 
+				return;
 
 			Profile.FramePartition("CreateShellItemRenderer");
 			var previousRenderer = _currentRenderer;
@@ -268,13 +278,13 @@ namespace Xamarin.Forms.Platform.Android
 			FragmentTransaction transaction = manager.BeginTransaction();
 
 			if (animate)
-				transaction.SetTransition((int)global::Android.App.FragmentTransit.EnterMask);
+				transaction.SetTransitionEx((int)global::Android.App.FragmentTransit.EnterMask);
 
-			transaction.Replace(_frameLayout.Id, fragment);
-			transaction.CommitAllowingStateLoss();
+			transaction.ReplaceEx(_frameLayout.Id, fragment);
+			transaction.CommitAllowingStateLossEx();
 
 			Profile.FramePartition("OnDestroyed");
-			void OnDestroyed (object sender, EventArgs args)
+			void OnDestroyed(object sender, EventArgs args)
 			{
 				previousRenderer.Destroyed -= OnDestroyed;
 
@@ -297,7 +307,7 @@ namespace Xamarin.Forms.Platform.Android
 			int height = (int)AndroidContext.ToPixels(Element.Height);
 
 			Profile.FramePartition("Measure");
-			_flyoutRenderer.AndroidView.Measure(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly), 
+			_flyoutRenderer.AndroidView.Measure(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly),
 				MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly));
 
 			Profile.FramePartition("Layout");
@@ -353,7 +363,7 @@ namespace Xamarin.Forms.Platform.Android
 				decorView.SetBackground(split);
 			}
 
-			Profile.FrameEnd();
+			Profile.FrameEnd("UpdtStatBarClr");
 		}
 
 		class SplitDrawable : Drawable
@@ -375,15 +385,17 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var bounds = Bounds;
 
-				var paint = new Paint();
+				using (var paint = new Paint())
+				{
 
-				paint.Color = _color;
+					paint.Color = _color;
 
-				canvas.DrawRect(new Rect(0, 0, bounds.Right, _topSize), paint);
+					canvas.DrawRect(new Rect(0, 0, bounds.Right, _topSize), paint);
 
-				canvas.DrawRect(new Rect(0, bounds.Bottom - _bottomSize, bounds.Right, bounds.Bottom), paint);
+					canvas.DrawRect(new Rect(0, bounds.Bottom - _bottomSize, bounds.Right, bounds.Bottom), paint);
 
-				paint.Dispose();
+					paint.Dispose();
+				}
 			}
 
 			public override void SetAlpha(int alpha)
@@ -404,20 +416,37 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				if (disposing)
+				if (_currentRenderer != null && _currentRenderer.Fragment.IsAlive())
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
-					Element.SizeChanged -= OnElementSizeChanged;
+					FragmentTransaction transaction = FragmentManager.BeginTransaction();
+					transaction.RemoveEx(_currentRenderer.Fragment);
+					transaction.CommitAllowingStateLossEx();
+					FragmentManager.ExecutePendingTransactionsEx();
 				}
 
-				Element = null;
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
+				Element.PropertyChanged -= OnElementPropertyChanged;
+				Element.SizeChanged -= OnElementSizeChanged;
+				((IShellController)Element).RemoveAppearanceObserver(this);
 
-				_disposed = true;
+				// This cast is necessary because IShellFlyoutRenderer doesn't implement IDisposable
+				(_flyoutRenderer as IDisposable)?.Dispose();
+
+				_currentRenderer.Dispose();
+				_currentRenderer = null;
 			}
+
+			Element = null;
+			// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+			// TODO: set large fields to null.
+
+			_disposed = true;
 		}
 
 		#endregion IDisposable

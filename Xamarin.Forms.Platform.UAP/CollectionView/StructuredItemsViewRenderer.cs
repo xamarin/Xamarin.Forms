@@ -1,21 +1,25 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Windows.UI.Xaml.Controls;
-using Xamarin.Forms.Platform.UAP;
+using UWPApp = Windows.UI.Xaml.Application;
+using WListView = Windows.UI.Xaml.Controls.ListView;
+using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
+using WSetter = Windows.UI.Xaml.Setter;
+using WStyle = Windows.UI.Xaml.Style;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class StructuredItemsViewRenderer : ItemsViewRenderer
+	public class StructuredItemsViewRenderer<TItemsView> : ItemsViewRenderer<TItemsView>
+		where TItemsView : StructuredItemsView
 	{
-		StructuredItemsView _structuredItemsView;
 		View _currentHeader;
 		View _currentFooter;
 
-		protected override IItemsLayout Layout { get => _structuredItemsView.ItemsLayout; }
+		protected override IItemsLayout Layout { get => ItemsView?.ItemsLayout; }
 
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
-			_structuredItemsView = newElement as StructuredItemsView;
-
 			base.SetUpNewElement(newElement);
 
 			if (newElement == null)
@@ -47,13 +51,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				case GridItemsLayout gridItemsLayout:
 					return CreateGridView(gridItemsLayout);
-				case LinearItemsLayout listItemsLayout
-					when listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal:
-					return CreateHorizontalListView();
+				case LinearItemsLayout listItemsLayout when listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical:
+					return CreateVerticalListView(listItemsLayout);
+				case LinearItemsLayout listItemsLayout when listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal:
+					return CreateHorizontalListView(listItemsLayout);
 			}
 
-			// Default to a plain old vertical ListView
-			return new Windows.UI.Xaml.Controls.ListView();
+			throw new NotImplementedException("The layout is not implemented");			
 		}
 
 		protected virtual void UpdateHeader()
@@ -69,7 +73,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_currentHeader = null;
 			}
 
-			var header = _structuredItemsView.Header;
+			var header = ItemsView.Header;
 
 			switch (header)
 			{
@@ -90,7 +94,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 
 				default:
-					var headerTemplate = _structuredItemsView.HeaderTemplate;
+					var headerTemplate = ItemsView.HeaderTemplate;
 					if (headerTemplate != null)
 					{
 						ListViewBase.HeaderTemplate = ItemsViewTemplate;
@@ -118,7 +122,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_currentFooter = null;
 			}
 
-			var footer = _structuredItemsView.Footer;
+			var footer = ItemsView.Footer;
 
 			switch (footer)
 			{
@@ -139,7 +143,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 
 				default:
-					var footerTemplate = _structuredItemsView.FooterTemplate;
+					var footerTemplate = ItemsView.FooterTemplate;
 					if (footerTemplate != null)
 					{
 						ListViewBase.FooterTemplate = ItemsViewTemplate;
@@ -154,55 +158,101 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		protected override void HandleLayoutPropertyChange(PropertyChangedEventArgs property)
+		protected override void HandleLayoutPropertyChanged(PropertyChangedEventArgs property)
 		{
 			if (property.Is(GridItemsLayout.SpanProperty))
 			{
 				if (ListViewBase is FormsGridView formsGridView)
 				{
-					formsGridView.MaximumRowsOrColumns = ((GridItemsLayout)Layout).Span;
+					formsGridView.Span = ((GridItemsLayout)Layout).Span;
+				}
+			}
+			else if (property.Is(GridItemsLayout.HorizontalItemSpacingProperty) || property.Is(GridItemsLayout.VerticalItemSpacingProperty))
+			{
+				if (ListViewBase is FormsGridView formsGridView)
+				{
+					formsGridView.ItemContainerStyle = GetItemContainerStyle((GridItemsLayout)Layout);
+				}
+			}
+			else if (property.Is(LinearItemsLayout.ItemSpacingProperty))
+			{
+				switch (ListViewBase)
+				{
+					case FormsListView formsListView:
+						formsListView.ItemContainerStyle = GetVerticalItemContainerStyle((LinearItemsLayout)Layout);
+						break;
+					case WListView listView:
+						listView.ItemContainerStyle = GetHorizontalItemContainerStyle((LinearItemsLayout)Layout);
+						break;
 				}
 			}
 		}
 
 		static ListViewBase CreateGridView(GridItemsLayout gridItemsLayout)
 		{
-			var gridView = new FormsGridView();
-
-			if (gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
+			return new FormsGridView
 			{
-				gridView.UseHorizontalItemsPanel();
+				Orientation = gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
+					? Orientation.Horizontal
+					: Orientation.Vertical,
 
-				// TODO hartez 2018/06/06 12:13:38 Should this logic just be built into FormsGridView?	
-				ScrollViewer.SetHorizontalScrollMode(gridView, ScrollMode.Auto);
-				ScrollViewer.SetHorizontalScrollBarVisibility(gridView,
-					Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto);
-			}
-			else
-			{
-				gridView.UseVerticalalItemsPanel();
-			}
-
-			gridView.MaximumRowsOrColumns = gridItemsLayout.Span;
-
-			return gridView;
+				Span = gridItemsLayout.Span,
+				ItemContainerStyle = GetItemContainerStyle(gridItemsLayout)
+			};
 		}
 
-		static ListViewBase CreateHorizontalListView()
+		static ListViewBase CreateVerticalListView(LinearItemsLayout listItemsLayout)
 		{
-			// TODO hartez 2018/06/05 16:18:57 Is there any performance benefit to caching the ItemsPanelTemplate lookup?	
-			// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
-			var horizontalListView = new Windows.UI.Xaml.Controls.ListView()
+			return new FormsListView()
 			{
-				ItemsPanel =
-					(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["HorizontalListItemsPanel"]
+				ItemContainerStyle = GetVerticalItemContainerStyle(listItemsLayout)
+			};
+		}
+
+		static ListViewBase CreateHorizontalListView(LinearItemsLayout listItemsLayout)
+		{
+			var horizontalListView = new WListView()
+			{
+				ItemsPanel = (ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalListItemsPanel"],
+				ItemContainerStyle = GetHorizontalItemContainerStyle(listItemsLayout)
 			};
 
-			ScrollViewer.SetHorizontalScrollMode(horizontalListView, ScrollMode.Auto);
+			ScrollViewer.SetHorizontalScrollMode(horizontalListView, WScrollMode.Auto);
 			ScrollViewer.SetHorizontalScrollBarVisibility(horizontalListView,
 				Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto);
 
 			return horizontalListView;
+		}
+
+		static WStyle GetItemContainerStyle(GridItemsLayout layout)
+		{
+			var h = layout?.HorizontalItemSpacing ?? 0;
+			var v = layout?.VerticalItemSpacing ?? 0;
+			var margin = new WThickness(h, v, h, v);
+
+			var style = new WStyle(typeof(GridViewItem));
+			style.Setters.Add(new WSetter(GridViewItem.MarginProperty, margin));
+			return style;
+		}
+
+		static WStyle GetVerticalItemContainerStyle(LinearItemsLayout layout)
+		{
+			var v = layout?.ItemSpacing ?? 0;
+			var margin = new WThickness(0, v, 0, v);	
+			
+			var style = new WStyle(typeof(ListViewItem));
+			style.Setters.Add(new WSetter(ListViewItem.MarginProperty, margin));
+			return style;
+		}
+
+		static WStyle GetHorizontalItemContainerStyle(LinearItemsLayout layout)
+		{
+			var h = layout?.ItemSpacing ?? 0;
+			var padding = new WThickness(h, 0, h, 0);
+
+			var style = new WStyle(typeof(ListViewItem));
+			style.Setters.Add(new WSetter(ListViewItem.PaddingProperty, padding));
+			return style;
 		}
 	}
 }

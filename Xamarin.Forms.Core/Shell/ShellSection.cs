@@ -29,6 +29,7 @@ namespace Xamarin.Forms
 
 		#region IShellSectionController
 
+		IShellSectionController ShellSectionController => this;
 		readonly List<(object Observer, Action<Page> Callback)> _displayedPageObservers =
 			new List<(object Observer, Action<Page> Callback)>();
 		readonly List<IShellContentInsetObserver> _observers = new List<IShellContentInsetObserver>();
@@ -72,7 +73,7 @@ namespace Xamarin.Forms
 			ShellContent shellContent = request.Request.Content;
 
 			if (shellContent == null)
-				shellContent = Items[0];
+				shellContent = ShellSectionController.GetItems()[0];
 
 			if (request.Request.GlobalRoutes.Count > 0)
 			{
@@ -118,6 +119,45 @@ namespace Xamarin.Forms
 			_lastTabThickness = tabThickness;
 		}
 
+		async void IShellSectionController.SendPopping(Task poppingCompleted)
+		{
+			if (_navStack.Count <= 1)
+				throw new Exception("Nav Stack consistency error");
+
+			var page = _navStack[_navStack.Count - 1];
+
+			_navStack.Remove(page);
+			UpdateDisplayedPage();
+
+			await poppingCompleted;
+
+			RemovePage(page);
+			SendUpdateCurrentState(ShellNavigationSource.Pop);
+		}
+
+		async void IShellSectionController.SendPoppingToRoot(Task finishedPopping)
+		{
+			if (_navStack.Count <= 1)
+				throw new Exception("Nav Stack consistency error");
+
+			var oldStack = _navStack;
+			_navStack = new List<Page> { null };
+
+			for (int i = 1; i < oldStack.Count; i++)
+				oldStack[i].SendDisappearing();
+
+			UpdateDisplayedPage();
+			await finishedPopping;
+
+			for (int i = 1; i < oldStack.Count; i++)
+				RemovePage(oldStack[i]);
+
+			SendUpdateCurrentState(ShellNavigationSource.PopToRoot);
+		}
+
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+
 		void IShellSectionController.SendPopped()
 		{
 			if (_navStack.Count <= 1)
@@ -129,6 +169,37 @@ namespace Xamarin.Forms
 			RemovePage(last);
 
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
+		}
+
+		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
+
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		void IShellSectionController.SendPopping(Page page)
+		{
+			if (_navStack.Count <= 1)
+				throw new Exception("Nav Stack consistency error");
+
+			_navStack.Remove(page);
+			SendAppearanceChanged();
+		}
+
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		void IShellSectionController.SendPopped(Page page)
+		{
+			if (_navStack.Contains(page))
+				_navStack.Remove(page);
+
+			RemovePage(page);
+			SendUpdateCurrentState(ShellNavigationSource.Pop);
+		}
+
+
+		event NotifyCollectionChangedEventHandler IShellSectionController.ItemsCollectionChanged
+		{
+			add { ((ShellContentCollection)Items).VisibleItemsChanged += value; }
+			remove { ((ShellContentCollection)Items).VisibleItemsChanged -= value; }
 		}
 
 		#endregion IShellSectionController
@@ -155,10 +226,10 @@ namespace Xamarin.Forms
 
 		public ShellSection()
 		{
-			((INotifyCollectionChanged)Items).CollectionChanged += ItemsCollectionChanged;
+			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
 			Navigation = new NavigationImpl(this);
 		}
-
+				
 		public ShellContent CurrentItem
 		{
 			get { return (ShellContent)GetValue(CurrentItemProperty); }
@@ -266,8 +337,6 @@ namespace Xamarin.Forms
 				Shell.ApplyQueryAttributes(content, queryData, isLast);
 				await OnPushAsync(content, i == routes.Count - 1 && animate);
 			}
-
-			SendAppearanceChanged();
 		}
 
 		internal void SendStructureChanged()
@@ -283,6 +352,7 @@ namespace Xamarin.Forms
 		internal void UpdateDisplayedPage()
 		{
 			var stack = Stack;
+			var previousPage = DisplayedPage;
 			if (stack.Count > 1)
 			{
 				DisplayedPage = stack[stack.Count - 1];
@@ -290,20 +360,25 @@ namespace Xamarin.Forms
 			else
 			{
 				IShellContentController currentItem = CurrentItem;
-				if (currentItem.Page != null)
-					DisplayedPage = currentItem.Page;
+				DisplayedPage = currentItem?.Page;
 			}
 
-			PresentedPageAppearing();
+			if (previousPage != DisplayedPage)
+			{
+				previousPage?.SendDisappearing();
+				PresentedPageAppearing();
+				SendAppearanceChanged();
+			}
 		}
 
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
-			if (CurrentItem == null && Items.Contains(child))
+			if (CurrentItem == null && ((IShellSectionController)this).GetItems().Contains(child))
 				SetValueFromRenderer(CurrentItemProperty, child);
 
-			UpdateDisplayedPage();
+			if(CurrentItem != null)
+				UpdateDisplayedPage();
 		}
 
 		protected override void OnChildRemoved(Element child)
@@ -311,7 +386,8 @@ namespace Xamarin.Forms
 			base.OnChildRemoved(child);
 			if (CurrentItem == child)
 			{
-				if (Items.Count == 0)
+				var items = ShellSectionController.GetItems();
+				if (items.Count == 0)
 					ClearValue(CurrentItemProperty);
 				else
 				{
@@ -319,7 +395,7 @@ namespace Xamarin.Forms
 					Device.BeginInvokeOnMainThread(() =>
 					{
 						if (CurrentItem == null)
-							SetValueFromRenderer(CurrentItemProperty, Items[0]);
+							SetValueFromRenderer(CurrentItemProperty, items[0]);
 					});
 				}
 			}
@@ -352,7 +428,6 @@ namespace Xamarin.Forms
 
 			_navStack.Insert(index, page);
 			AddPage(page);
-			SendAppearanceChanged();
 
 			var args = new NavigationRequestedEventArgs(page, before, false)
 			{
@@ -393,7 +468,6 @@ namespace Xamarin.Forms
 			_navStack.Remove(page);
 			PresentedPageAppearing();
 
-			SendAppearanceChanged();
 			_navigationRequested?.Invoke(this, args);
 			if (args.Task != null)
 				await args.Task;
@@ -430,7 +504,6 @@ namespace Xamarin.Forms
 			_navigationRequested?.Invoke(this, args);
 			var oldStack = _navStack;
 			_navStack = new List<Page> { null };
-			SendAppearanceChanged();
 
 			if (args.Task != null)
 				await args.Task;
@@ -470,7 +543,6 @@ namespace Xamarin.Forms
 			_navStack.Add(page);
 			PresentedPageAppearing();
 			AddPage(page);
-			SendAppearanceChanged();
 			_navigationRequested?.Invoke(this, args);
 
 			SendUpdateCurrentState(ShellNavigationSource.Push);
@@ -507,7 +579,6 @@ namespace Xamarin.Forms
 			if(currentPage)
 				PresentedPageAppearing();
 
-			SendAppearanceChanged();
 			RemovePage(page);
 			var args = new NavigationRequestedEventArgs(page, false)
 			{
@@ -535,7 +606,24 @@ namespace Xamarin.Forms
 				if(_navStack.Count == 1)
 					CurrentItem?.SendAppearing();
 
-				sectionController.PresentedPage?.SendAppearing();
+				var presentedPage = sectionController.PresentedPage;
+				if (presentedPage != null)
+				{
+					if(presentedPage.Parent == null)
+					{
+						presentedPage.ParentSet += OnPresentedPageParentSet;
+
+						void OnPresentedPageParentSet(object sender, EventArgs e)
+						{
+							PresentedPageAppearing();
+							(sender as Page).ParentSet -= OnPresentedPageParentSet;
+						}
+					}
+					else
+					{
+						presentedPage.SendAppearing();
+					}
+				}
 			}
 		}
 
@@ -594,7 +682,7 @@ namespace Xamarin.Forms
 		{
 			if (Parent?.Parent is IShellController shell)
 			{
-				shell?.UpdateCurrentState(source);
+				shell.UpdateCurrentState(source);
 			}
 		}
 

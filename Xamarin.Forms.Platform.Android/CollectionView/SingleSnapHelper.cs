@@ -1,5 +1,11 @@
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
+using ALayoutDirection = Android.Views.LayoutDirection;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -17,6 +23,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected static bool IsLayoutReversed(RecyclerView.LayoutManager layoutManager)
 		{
+			if (layoutManager.LayoutDirection == (int)(ALayoutDirection.Rtl))
+				return true;
+
 			if (layoutManager is LinearLayoutManager linearLayoutManager)
 			{
 				return linearLayoutManager.ReverseLayout;

@@ -4,7 +4,11 @@ using System.Threading.Tasks;
 using Android.Animation;
 using Android.Content;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
@@ -28,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 		LayoutDirection _prevLayoutDirection = LayoutDirection.Ltr;
 		bool _checkedForRtlScroll = false;
 
-		public ScrollViewRenderer(Context context) : base(context)
+		public ScrollViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.NestedScrollBarStyle))
 		{
 		}
 

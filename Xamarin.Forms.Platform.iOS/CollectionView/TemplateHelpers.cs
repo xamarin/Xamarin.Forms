@@ -13,8 +13,11 @@ namespace Xamarin.Forms.Platform.iOS
 				throw new ArgumentNullException(nameof(view));
 			}
 
+			Platform.GetRenderer(view)?.DisposeRendererAndChildren();
 			var renderer = Platform.CreateRenderer(view);
 			Platform.SetRenderer(view, renderer);
+
+			renderer.NativeView.Bounds = view.Bounds.ToRectangleF();
 
 			return renderer;
 		}
@@ -44,7 +47,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return (renderer.NativeView, renderer.Element);
 			}
 
-			return (new UILabel { Text = $"{view}" }, null);
+			return (new UILabel { TextAlignment = UITextAlignment.Center, Text = $"{view}" }, null);
 		}
 	}
 }

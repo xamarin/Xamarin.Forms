@@ -10,6 +10,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public event EventHandler<EventArgs> ContentSizeChanged;
 
+		protected CGSize ConstrainedSize;
+
 		protected nfloat ConstrainedDimension;
 
 		DataTemplate _currentTemplate;
@@ -25,9 +27,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal IVisualElementRenderer VisualElementRenderer { get; private set; }
 
+		public override void ConstrainTo(CGSize constraint)
+		{
+			ConstrainedSize = constraint;
+		}
+
 		public override void ConstrainTo(nfloat constant)
 		{
 			ConstrainedDimension = constant;
+
+			// Reset constrained size in case ItemSizingStrategy changes
+			// and we want to measure each item
+			ConstrainedSize = default(CGSize);
 		}
 
 		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
@@ -35,8 +46,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
 
-			// Measure this cell (including the Forms element)
-			var size = Measure();
+			// Measure this cell (including the Forms element) if there is no constrained size
+			var	size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
 
 			// Update the size of the root view to accommodate the Forms element
 			var nativeView = VisualElementRenderer.NativeView;
@@ -53,21 +64,14 @@ namespace Xamarin.Forms.Platform.iOS
 			return preferredAttributes;
 		}
 
-		public void Bind(ItemsView itemsView, object bindingContext)
-		{
-			var template = itemsView.ItemTemplate;
-
-			// Run this through the extension method in case it's really a DataTemplateSelector
-			template = template.SelectDataTemplate(bindingContext, itemsView);
-
-			Bind(template, bindingContext, itemsView);
-		}
-
 		public void Bind(DataTemplate template, object bindingContext, ItemsView itemsView)
 		{
 			var oldElement = VisualElementRenderer?.Element;
 
-			if (template != _currentTemplate)
+			// Run this through the extension method in case it's really a DataTemplateSelector
+			var itemTemplate = template.SelectDataTemplate(bindingContext, itemsView);
+
+			if (itemTemplate != _currentTemplate)
 			{
 				// Remove the old view, if it exists
 				if (oldElement != null)
@@ -79,7 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				// Create the content and renderer for the view 
-				var view = template.CreateContent() as View;
+				var view = itemTemplate.CreateContent() as View;
 				var renderer = TemplateHelpers.CreateRenderer(view);
 				SetRenderer(renderer);
 			}
@@ -87,9 +91,10 @@ namespace Xamarin.Forms.Platform.iOS
 			var currentElement = VisualElementRenderer?.Element;
 
 			// Bind the view to the data item
-			currentElement.BindingContext = bindingContext;
+			if (currentElement != null)
+				currentElement.BindingContext = bindingContext;
 
-			if (template != _currentTemplate)
+			if (itemTemplate != _currentTemplate)
 			{
 				// And make the Element a "child" of the ItemsView
 				// We deliberately do this _after_ setting the binding context for the new element;
@@ -98,7 +103,7 @@ namespace Xamarin.Forms.Platform.iOS
 				itemsView.AddLogicalChild(currentElement);
 			}
 
-			_currentTemplate = template;
+			_currentTemplate = itemTemplate;
 		}
 
 		void SetRenderer(IVisualElementRenderer renderer)

@@ -109,6 +109,19 @@ namespace Xamarin.Forms.Platform.MacOS
 			platformEffect.SetControl(control);
 		}
 
+#if __MOBILE__
+		public override bool CanBecomeFirstResponder
+		{
+			get
+			{
+				if (Element.IsSet(PlatformConfiguration.iOSSpecific.VisualElement.CanBecomeFirstResponderProperty))
+					return PlatformConfiguration.iOSSpecific.VisualElement.GetCanBecomeFirstResponder(Element);
+
+				return base.CanBecomeFirstResponder;
+			}
+		}
+#endif
+
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			var platformEffect = effect as PlatformEffect;
@@ -191,6 +204,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			do
 			{
 				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex) as VisualElement;
+				if (element == null)
+					break;
 #if __MACOS__
 				var renderer = Platform.GetRenderer(element);
 				var control = (renderer as ITabStop)?.TabStop;
@@ -281,7 +296,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
-			SetAccessibilityLabel();
+
+			if (element != null)
+				SetAccessibilityLabel();
+
 			SetAccessibilityHint();
 			SetIsAccessibilityElement();
 			Performance.Stop(reference);

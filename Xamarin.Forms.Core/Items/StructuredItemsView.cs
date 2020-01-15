@@ -38,14 +38,21 @@
 			set => SetValue(FooterTemplateProperty, value);
 		}
 
-		public static readonly BindableProperty ItemsLayoutProperty =
-			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
-				LinearItemsLayout.Vertical);
+		public static readonly BindableProperty ItemsLayoutProperty = InternalItemsLayoutProperty;
 
 		public IItemsLayout ItemsLayout
 		{
 			get => InternalItemsLayout;
 			set => InternalItemsLayout = value;
+		}
+
+		public static readonly BindableProperty ItemSizingStrategyProperty =
+			BindableProperty.Create(nameof(ItemSizingStrategy), typeof(ItemSizingStrategy), typeof(ItemsView));
+
+		public ItemSizingStrategy ItemSizingStrategy
+		{
+			get => (ItemSizingStrategy)GetValue(ItemSizingStrategyProperty);
+			set => SetValue(ItemSizingStrategyProperty, value);
 		}
 	}
 }

@@ -1,8 +1,14 @@
 using System;
 using System.Linq;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
+#endif
 using Android.Util;
 
 namespace Xamarin.Forms.Platform.Android
@@ -27,10 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_isSelected = value;
 
-				if (_isSelected)
-				{
-					EnsureSelectionStates();
-				}
+				SetSelectionStates(_isSelected);
 
 				ItemView.Activated = _isSelected;
 				OnSelectedChanged();
@@ -56,27 +59,20 @@ namespace Xamarin.Forms.Platform.Android
 			Clicked?.Invoke(this, adapterPosition);
 		}
 
-		void EnsureSelectionStates()
+		void SetSelectionStates(bool isSelected)
 		{
-			if (_selectedDrawable != null)
-			{
-				return;
-			}
-
 			if (Forms.IsMarshmallowOrNewer)
 			{
 				// We're looking for the foreground ripple effect, which is not available on older APIs
 				// Limiting this to Marshmallow and newer, because View.setForeground() is not available on lower APIs
-				_selectableItemDrawable = GetSelectableItemDrawable();
+				_selectableItemDrawable = !isSelected ? null : (_selectableItemDrawable ?? GetSelectableItemDrawable());
+
 				ItemView.Foreground = _selectableItemDrawable;
 			}
 
-			_selectedDrawable = GetSelectedDrawable();
-				
-			if (_selectedDrawable != null)
-			{
-				ItemView.Background = _selectedDrawable;
-			}
+			_selectedDrawable = !isSelected ? null : (_selectedDrawable ?? GetSelectedDrawable());
+
+			ItemView.Background = _selectedDrawable;
 		}
 
 		Drawable GetSelectedDrawable()

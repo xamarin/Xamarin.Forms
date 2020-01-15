@@ -1,6 +1,11 @@
 ﻿using System;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 
@@ -23,6 +28,7 @@ namespace Xamarin.Forms.Platform.Android
 		public static SimpleViewHolder FromText(string text, Context context, bool fill = true)
 		{
 			var textView = new TextView(context) { Text = text };
+
 			if (fill)
 			{
 				var layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent,

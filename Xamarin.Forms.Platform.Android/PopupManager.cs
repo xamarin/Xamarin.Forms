@@ -7,6 +7,11 @@ using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
+#if __ANDROID_29__
+using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
+#else
+using AlertDialog = Android.Support.V7.App.AlertDialog;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -140,7 +145,7 @@ namespace Xamarin.Forms.Platform.Android
 				alertDialog.SetMessage(arguments.Message);
 
 				var frameLayout = new FrameLayout(Activity);
-				var editText = new EditText(Activity) { Hint = arguments.Placeholder };
+				var editText = new EditText(Activity) { Hint = arguments.Placeholder, Text = arguments.InitialValue };
 				var layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
 				{
 					LeftMargin = (int)(22 * Activity.Resources.DisplayMetrics.Density),
