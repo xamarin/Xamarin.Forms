@@ -9,6 +9,9 @@ namespace Xamarin.Forms
 	{
 		None = 0,
 		NotAnimated = 1,
-		Modal = 1 << 1
+		Animated = 1 << 1,
+		Modal = 1 << 2,
+		ModalAnimated = PresentationMode.Animated | PresentationMode.Modal,
+		ModalNotAnimated = PresentationMode.NotAnimated | PresentationMode.Modal
 	}
 }
