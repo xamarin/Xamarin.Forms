@@ -17,6 +17,7 @@
 		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
 	    <ResourceDictionary Source="Shell/ShellStyles.xaml" />
         <ResourceDictionary Source="PickerStyle.xaml" />
+        <ResourceDictionary Source="FormsToggleSwitchStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 	
 	<uwp:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
