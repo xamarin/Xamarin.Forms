@@ -308,7 +308,7 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		internal async Task GoToAsync(NavigationRequest request, IDictionary<string, string> queryData, bool animate)
+		internal async Task GoToAsync(NavigationRequest request, IDictionary<string, string> queryData, bool? animate)
 		{
 			List<string> globalRoutes = request.Request.GlobalRoutes;
 			List<Page> navStack = null;
@@ -316,7 +316,7 @@ namespace Xamarin.Forms
 
 			if (globalRoutes == null || globalRoutes.Count == 0)
 			{
-				await Navigation.PopToRootAsync(animate);
+				await Navigation.PopToRootAsync(animate ?? false);
 				return;
 			}
 
@@ -426,7 +426,7 @@ namespace Xamarin.Forms
 			for (int i = Navigation.ModalStack.Count; i < modalPageStacks.Count; i++)
 			{
 				bool isLast = i == modalPageStacks.Count - 1;
-				bool isAnimated = (Shell.GetPresentationMode(modalPageStacks[i]) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;				
+				bool isAnimated = animate ?? (Shell.GetPresentationMode(modalPageStacks[i]) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
 				IsPushingModalStack = !isLast;
 				await ((NavigationImpl)Navigation).PushModalAsync(modalPageStacks[i], isAnimated);
 			}
@@ -436,7 +436,10 @@ namespace Xamarin.Forms
 				bool isLast = i == nonModalPageStacks.Count - 1;
 					
 				if(isLast)
-					await OnPushAsync(nonModalPageStacks[i], animate);
+				{
+					bool isAnimated = animate ?? (Shell.GetPresentationMode(nonModalPageStacks[i]) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
+					await OnPushAsync(nonModalPageStacks[i], isAnimated);
+				}
 				else
 					Navigation.InsertPageBefore(nonModalPageStacks[i], nonModalPageStacks[nonModalPageStacks.Count - 1]);
 			}
@@ -677,7 +680,7 @@ namespace Xamarin.Forms
 			return args.Task;
 		}
 
-		internal async Task PopModalStackToPage(Page page)
+		internal async Task PopModalStackToPage(Page page, bool? animated)
 		{
 			try
 			{
@@ -700,7 +703,7 @@ namespace Xamarin.Forms
 						IsPoppingModalStack = false;
 					}
 
-					bool isAnimated = (Shell.GetPresentationMode(pageToPop) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
+					bool isAnimated = animated ?? (Shell.GetPresentationMode(pageToPop) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
 					await Navigation.PopModalAsync(isAnimated);
 				}
 

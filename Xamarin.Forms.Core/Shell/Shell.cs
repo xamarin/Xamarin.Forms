@@ -345,7 +345,6 @@ namespace Xamarin.Forms
 		bool IShellController.ProposeNavigation(ShellNavigationSource source, ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> stack, bool canCancel)
 		{
 			var proposedState = GetNavigationState(shellItem, shellSection, shellContent, stack, shellSection.Navigation.ModalStack);
-			;
 			return ProposeNavigation(source, proposedState, canCancel);
 		}
 
@@ -419,12 +418,17 @@ namespace Xamarin.Forms
 			return routes;
 		}
 
-		public Task GoToAsync(ShellNavigationState state, bool animate = true)
+		public Task GoToAsync(ShellNavigationState state)
+		{
+			return GoToAsync(state, null, false);
+		}
+
+		public Task GoToAsync(ShellNavigationState state, bool animate)
 		{
 			return GoToAsync(state, animate, false);
 		}
 
-		internal async Task GoToAsync(ShellNavigationState state, bool animate, bool enableRelativeShellRoutes)
+		internal async Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes)
 		{
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
 			var accept = ProposeNavigation(ShellNavigationSource.Unknown, state, true);
@@ -492,7 +496,7 @@ namespace Xamarin.Forms
 					// - or route contains no global route requests
 					if (navigatedToNewShellElement || navigationRequest.Request.GlobalRoutes.Count == 0)
 					{
-						await currentShellSection.PopModalStackToPage(null);
+						await currentShellSection.PopModalStackToPage(null, animate);
 					}
 				}
 
@@ -501,7 +505,7 @@ namespace Xamarin.Forms
 					// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
 					Device.BeginInvokeOnMainThread(async () =>
 					{
-						await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, false);
+						await CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate);
 					});
 				}
 			}
