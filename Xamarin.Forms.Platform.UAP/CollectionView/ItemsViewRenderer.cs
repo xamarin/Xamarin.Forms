@@ -5,11 +5,11 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.Foundation;
 using Xamarin.Forms.Internals;
-using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using UWPApp = Windows.UI.Xaml.Application;
 using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
+using UWPRect = Windows.Foundation.Rect;
+using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -485,8 +485,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (element.Visibility != Visibility.Visible)
 				return false;
 
-			var elementBounds = element.TransformToVisual(container).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
-			var containerBounds = new Rect(0, 0, container.ActualWidth, container.ActualHeight);
+			var elementBounds = element.TransformToVisual(container).TransformBounds(new UWPRect(0, 0, element.ActualWidth, element.ActualHeight));
+			var containerBounds = new UWPRect(0, 0, container.ActualWidth, container.ActualHeight);
 
 			return elementBounds.Top < containerBounds.Bottom && elementBounds.Bottom > containerBounds.Top;
 		}
