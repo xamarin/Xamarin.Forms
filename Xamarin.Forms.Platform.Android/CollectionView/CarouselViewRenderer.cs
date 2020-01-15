@@ -1,5 +1,11 @@
+using System.Collections;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.RecyclerView.Widget;
+#else
+using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using FormsCarouselView = Xamarin.Forms.CarouselView;
 
@@ -8,7 +14,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
 		protected FormsCarouselView Carousel;
-		ItemDecoration _itemDecoration;
+		RecyclerView.ItemDecoration _itemDecoration;
 		bool _isSwipeEnabled;
 		int _oldPosition;
 		int _initialPosition;
@@ -89,7 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 			Carousel.IsScrolling = state != ScrollStateIdle;
 		}
 
-		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
+		protected override RecyclerView.ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
 		{
 			return new CarouselSpacingItemDecoration(itemsLayout, Carousel);
 		}
@@ -183,6 +189,28 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateInitialPosition()
 		{
 			_initialPosition = Carousel.Position;
+
+			if (Carousel.CurrentItem != null)
+			{
+				int position = 0;
+
+				var items = Carousel.ItemsSource as IList;
+
+				for (int n = 0; n < items?.Count; n++)
+				{
+					if (items[n] == Carousel.CurrentItem)
+					{
+						position = n;
+						break;
+					}
+				}
+
+				_initialPosition = position;
+				Carousel.Position = _initialPosition;
+			}
+			else
+				_initialPosition = Carousel.Position;
+
 			_oldPosition = _initialPosition;
 			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
