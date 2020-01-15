@@ -117,7 +117,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 		[Test]
 		public void GetDefaultBindablePropertyForUnsupportedType()
-			=> Assert.Throws<ArgumentException>(() => DefaultBindableProperties.GetFor(new CustomView()));
+			=> Assert.Throws<ArgumentException>(
+				() => DefaultBindableProperties.GetFor(new CustomView()),
+				"No default bindable property is defined for BindableObject type XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews.CustomView" +
+				"\r\nEither specify a property when calling Bind() or register a default bindable property for this BindableObject type");
 
 		[Test]
 		public void RegisterDefaultBindableProperty()
