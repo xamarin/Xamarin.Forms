@@ -79,6 +79,7 @@
     <Compile Include="Markup\DefaultBindablePropertiesTests.cs" />
     <Compile Include="Markup\BindableObjectExtensionsTests.cs" />
     <Compile Include="Markup\ElementExtensionsTests.cs" />
+    <Compile Include="Markup\EnumsForGridRowsAndColumns.cs" />
     <Compile Include="Markup\LayoutExtensionsTests.cs" />
     <Compile Include="Markup\ViewExtensionsTests.cs" />
     <Compile Include="Markup\LabelExtensionsTests.cs" />
