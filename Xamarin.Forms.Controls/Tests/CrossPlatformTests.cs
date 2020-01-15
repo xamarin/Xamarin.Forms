@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Tests
@@ -72,6 +73,18 @@ namespace Xamarin.Forms.Controls.Tests
 		{
 			var collectionView = new CollectionView { ItemsSource = null, IsGrouped = true };
 			TestingPlatform.CreateRenderer(collectionView);
+		}
+
+		[Test]
+		[Description("[Bug] [UWP] NullReferenceException when call SavePropertiesAsync method off the main thread")]
+		public void GitHub8682()
+		{
+			Task.Run(async () =>
+			{
+				await Application.Current.SavePropertiesAsync();
+			}).Wait();
+
+			Assert.True(true);
 		}
 	}
 }
