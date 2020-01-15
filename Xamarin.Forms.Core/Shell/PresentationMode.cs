@@ -7,7 +7,6 @@ namespace Xamarin.Forms
 	[Flags]
 	public enum PresentationMode
 	{
-		None = 0,
 		NotAnimated = 1,
 		Animated = 1 << 1,
 		Modal = 1 << 2,
