@@ -5,6 +5,11 @@ namespace Xamarin.Forms
     [RenderWith(typeof(_RectRenderer))]
     public sealed class Rect : Shape
     {
+		public Rect()
+		{
+			Aspect = Stretch.Fill; 
+		}
+
         public static readonly BindableProperty RadiusXProperty =
             BindableProperty.Create(nameof(RadiusX), typeof(double), typeof(Rect), 0.0d);
 
