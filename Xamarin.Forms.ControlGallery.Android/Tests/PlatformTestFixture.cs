@@ -12,6 +12,7 @@ using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
 using AndroidX.AppCompat.Widget;
+using AndroidX.CardView.Widget;
 
 namespace Xamarin.Forms.ControlGallery.Android.Tests
 {
@@ -30,6 +31,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				yield return new DatePicker { };
 				yield return new Editor { };
 				yield return new Entry { };
+				yield return new Frame { };
 				yield return new Image { };
 				yield return new ImageButton { };
 				yield return new Label { };
@@ -104,6 +106,8 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 					return GetNativeControl(image);
 				case ImageButton imageButton:
 					return GetNativeControl(imageButton);
+				case Frame frame:
+					return GetNativeControl(frame);
 				case Label label:
 					return GetNativeControl(label);
 				case Picker picker:
@@ -187,6 +191,12 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		protected AppCompatImageButton GetNativeControl(ImageButton imageButton)
 		{
 			return GetRenderer(imageButton) as AppCompatImageButton;
+		}
+
+		protected CardView GetNativeControl(Frame frame)
+		{
+			var renderer = GetRenderer(frame);
+			return renderer as CardView;
 		}
 
 		protected TextView GetNativeControl(Label label) 

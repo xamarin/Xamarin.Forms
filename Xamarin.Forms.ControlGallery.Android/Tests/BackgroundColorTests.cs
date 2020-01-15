@@ -17,7 +17,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			get
 			{
 				foreach (var element in BasicElements
-					.Where(e => !(e is Button) && !(e is ImageButton)))
+					.Where(e => !(e is Button) && !(e is ImageButton) && !(e is Frame)))
 				{
 					element.BackgroundColor = Color.AliceBlue;
 					yield return new TestCaseData(element)
@@ -66,6 +66,27 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			}
 		}
 
+		[Test, Category("BackgroundColor")]
+		[Description("Frame background color should match renderer background color")]
+		public void FrameBackgroundColorConsistent()
+		{
+			var frame = new Frame
+			{
+				HeightRequest = 100,
+				WidthRequest = 100,
+				BackgroundColor = Color.AliceBlue
+			};
+
+			using (var renderer = GetRenderer(frame))
+			{
+				var expectedColor = frame.BackgroundColor.ToAndroid();
+				var view = renderer.View;
+				Layout(frame, view);
+				var nativeColor = GetColorAtCenter(view);
+				Assert.That(nativeColor, Is.EqualTo(expectedColor));
+			}
+		}
+
 		[Test, Category("BackgroundColor"), TestCaseSource(nameof(TestCases))]
 		[Description("VisualElement background color should match renderer background color")]
 		public void BackgroundColorConsistent(VisualElement element)
@@ -74,8 +95,8 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			{
 				var expectedColor = element.BackgroundColor.ToAndroid();
 				var view = renderer.View;
-				var drawable = view.Background as ColorDrawable;
-				var nativeColor = drawable.Color;
+				var colorDrawable = view.Background as ColorDrawable;
+				var nativeColor = colorDrawable.Color;
 				Assert.That(nativeColor, Is.EqualTo(expectedColor));
 			}
 		}
