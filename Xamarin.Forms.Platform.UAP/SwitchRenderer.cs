@@ -30,7 +30,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var control = new ToggleSwitch();
+					var control = new ToggleSwitch
+					{
+						Style = Windows.UI.Xaml.Application.Current.Resources["FormsToggleSwitchStyle"] as Windows.UI.Xaml.Style
+					};
 					control.Toggled += OnNativeToggled;
 					control.Loaded += OnControlLoaded;
 					control.ClearValue(ToggleSwitch.OnContentProperty);
