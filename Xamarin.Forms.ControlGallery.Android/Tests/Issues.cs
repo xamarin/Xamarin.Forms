@@ -48,7 +48,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 
 		[Test(Description = "No exceptions should be thrown")]
 		[Issue(IssueTracker.Github, 9185, "[Bug] Java.Lang.IllegalArgumentException: 'order does not contain a valid category.'")]
-		public void ToolbarItemWithReallyHighPriortyDoesntCrash()
+		public void ToolbarItemWithReallyHighPriorityDoesntCrash()
 		{
 			try
 			{
