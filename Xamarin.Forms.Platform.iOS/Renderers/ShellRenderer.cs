@@ -121,6 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetupCurrentShellItem();
 
 			UpdateBackgroundColor();
+			UpdateFlowDirection();
 		}
 
 		protected virtual IShellFlyoutRenderer CreateFlyoutRenderer()
@@ -213,6 +214,36 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == Shell.CurrentItemProperty.PropertyName)
 			{
 				OnCurrentItemChanged();
+				UpdateFlowDirection();
+			}
+			else if(e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			{
+				UpdateFlowDirection(true);
+			}
+		}
+
+		void UpdateFlowDirection(bool readdViews = false)
+		{
+			if (_currentShellItemRenderer?.ViewController == null)
+				return;
+
+			bool update = _currentShellItemRenderer.ViewController.View.UpdateFlowDirection(Element);
+			update = View.UpdateFlowDirection(Element) || update;
+
+			if (update && readdViews)
+			{
+				// For appearance changes to take effect the view has to be removed and readded
+				// We're queueing this on the main thread so flow direction can propagate everywhere
+				// before removing and adding the view
+				this.InvokeOnMainThread(() =>
+				{
+					if (_currentShellItemRenderer?.ViewController != null)
+					{
+						_currentShellItemRenderer.ViewController.View.RemoveFromSuperview();
+						View.AddSubview(_currentShellItemRenderer.ViewController.View);
+						View.SendSubviewToBack(_currentShellItemRenderer.ViewController.View);
+					}
+				});
 			}
 		}
 
