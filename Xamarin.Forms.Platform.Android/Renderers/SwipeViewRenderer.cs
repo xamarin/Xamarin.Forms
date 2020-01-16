@@ -5,13 +5,20 @@ using System.Linq;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AButton = AndroidX.AppCompat.Widget.AppCompatButton;
+using AndroidX.RecyclerView.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.Widget;
+using AButton = Android.Support.V7.Widget.AppCompatButton;
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AButton = Android.Support.V7.Widget.AppCompatButton;
 using APointF = Android.Graphics.PointF;
 using ATextAlignment = Android.Views.TextAlignment;
 using AView = Android.Views.View;
@@ -22,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>, GestureDetector.IOnGestureListener
 	{
 		const int SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 6;
+		const int SwipeThresholdMargin = 0;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
 
@@ -45,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public SwipeViewRenderer(Context context) : base(context)
 		{
-			Xamarin.Forms.SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
+			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
 			_context = context;
 
 			AutoPackage = false;
@@ -126,9 +133,14 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetBackgroundColor(backgroundColor);
 
-				if (_contentView != null && Element.Content == null && HasSwipeItems())
-					_contentView.SetBackgroundColor(backgroundColor);
+				if (Element.Content == null)
+					_contentView?.SetBackgroundColor(backgroundColor);
 			}
+			else
+				Control.SetWindowBackground();
+
+			if (_contentView.Background == null)
+				_contentView?.SetWindowBackground();
 		}
 
 		protected override void OnAttachedToWindow()
@@ -600,7 +612,7 @@ namespace Xamarin.Forms.Platform.Android
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
 				drawable.SetBounds(0, 0, iconSize, iconSize);
-				drawable.SetColorFilter(textColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
+				drawable.SetColorFilter(textColor.ToAndroid(), FilterMode.SrcAtop);
 				swipeButton.SetCompoundDrawables(null, drawable, null, null);
 			});
 

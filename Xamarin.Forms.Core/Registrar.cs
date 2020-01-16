@@ -263,6 +263,7 @@ namespace Xamarin.Forms.Internals
 		//typeof(ExportRendererAttribute);
 		//typeof(ExportCellAttribute);
 		//typeof(ExportImageSourceHandlerAttribute);
+		//TODO this is no longer used?
 		public static void RegisterRenderers(HandlerAttribute[] attributes)
 		{
 			var length = attributes.Length;
@@ -331,46 +332,49 @@ namespace Xamarin.Forms.Internals
 			Profile.FramePartition("Reflect");
 			foreach (Assembly assembly in assemblies)
 			{
-				Profile.FrameBegin(assembly.GetName().Name);
+				var assemblyName = assembly.GetName().Name;
+				Profile.FrameBegin(assemblyName);
 
 				foreach (Type attrType in attrTypes)
 				{
-					object[] attributes;
-					try
-					{
-#if NETSTANDARD2_0
-						attributes = assembly.GetCustomAttributes(attrType, true);
-#else
-						attributes = assembly.GetCustomAttributes(attrType).ToArray();
-#endif
-					}
-					catch (System.IO.FileNotFoundException)
-					{
-						// Sometimes the previewer doesn't actually have everything required for these loads to work
-						Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, attrType.FullName);
+					object[] attributes = assembly.GetCustomAttributesSafe(attrType);
+					if (attributes == null || attributes.Length == 0)
 						continue;
+					
+					var length = attributes.Length;
+					for (var i = 0; i < length; i++)
+					{
+						var a = attributes[i];
+						var attribute = a as HandlerAttribute;
+						if(attribute == null && (a is ExportFontAttribute fa))
+						{
+							FontRegistrar.Register(fa, assembly);
+						}
+						else
+						{
+							if (attribute.ShouldRegister())
+								Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals, attribute.Priority);
+						}
 					}
+				}
 
-					var handlerAttributes = new HandlerAttribute[attributes.Length];
-					Array.Copy(attributes, handlerAttributes, attributes.Length);
-					RegisterRenderers(handlerAttributes);
+				object[] effectAttributes = assembly.GetCustomAttributesSafe(typeof (ExportEffectAttribute));
+				if (effectAttributes == null || effectAttributes.Length == 0)
+				{
+					Profile.FrameEnd(assemblyName);
+					continue;
 				}
 
 				string resolutionName = assembly.FullName;
 				var resolutionNameAttribute = (ResolutionGroupNameAttribute)assembly.GetCustomAttribute(typeof(ResolutionGroupNameAttribute));
 				if (resolutionNameAttribute != null)
 					resolutionName = resolutionNameAttribute.ShortName;
-
-#if NETSTANDARD2_0
-				object[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute), true);
-#else
-				object[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute)).ToArray();
-#endif
+				//NOTE: a simple cast to ExportEffectAttribute[] failed on UWP, hence the Array.Copy
 				var typedEffectAttributes = new ExportEffectAttribute[effectAttributes.Length];
 				Array.Copy(effectAttributes, typedEffectAttributes, effectAttributes.Length);
 				RegisterEffects(resolutionName, typedEffectAttributes);
 
-				Profile.FrameEnd();
+				Profile.FrameEnd(assemblyName);
 			}
 
 			if ((flags & InitializationFlags.DisableCss) == 0)
