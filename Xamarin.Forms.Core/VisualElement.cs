@@ -152,7 +152,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create("BackgroundColor", typeof(Color), typeof(VisualElement), Color.Default);
 
-		public static readonly BindableProperty BackgroundProperty = BindableProperty.Create("Background", typeof(Brush), typeof(VisualElement), new SolidColorBrush(Color.Default));
+		public static readonly BindableProperty BackgroundProperty = BindableProperty.Create("Background", typeof(Brush), typeof(VisualElement), Brush.Default);
 
 		internal static readonly BindablePropertyKey BehaviorsPropertyKey = BindableProperty.CreateReadOnly("Behaviors", typeof(IList<Behavior>), typeof(VisualElement), default(IList<Behavior>),
 			defaultValueCreator: bindable =>
@@ -291,6 +291,7 @@ namespace Xamarin.Forms
 			set { SetValue(BackgroundColorProperty, value); }
 		}
 
+		[TypeConverter(typeof(BrushTypeConverter))]
 		public Brush Background
 		{
 			get { return (Brush)GetValue(BackgroundProperty); }

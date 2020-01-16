@@ -3,7 +3,6 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
-	[TypeConverter(typeof(BrushTypeConverter))]
 	public abstract class Brush : BindableObject
 	{
 		public static Brush Default

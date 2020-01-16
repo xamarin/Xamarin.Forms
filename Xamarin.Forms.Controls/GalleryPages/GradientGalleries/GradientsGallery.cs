@@ -47,7 +47,9 @@
 						GalleryBuilder.NavButton("RadialGradient Explorer", () =>
 							new RadialGradientExplorerGallery(), Navigation),
 						navigationBarButton,
-						tabsButton
+						tabsButton,
+						GalleryBuilder.NavButton("CSS Gradients Explorer", () =>
+							new CssGradientsGallery(), Navigation)
 					}
 				}
 			};
