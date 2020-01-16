@@ -246,7 +246,7 @@ namespace Xamarin.Forms.Platform.Android
 				catch (global::Android.Views.InflateException ie)
 				{
 					if (ie.Cause is Java.Lang.ClassNotFoundException &&
-						ie.Message == "Binary XML file line #1: Error inflating class android.support.v7.widget.Toolbar" &&
+						ie.Message.Contains("Error inflating class android.support.v7.widget.Toolbar") &&
 						this.TargetSdkVersion() >= 29)
 					{
 						Internals.Log.Warning(nameof(FormsAppCompatActivity),
