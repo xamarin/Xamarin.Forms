@@ -284,6 +284,11 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				newViews.Add(itemView);
+
+				if (!Carousel.VisibleViews.Contains(itemView))
+				{
+					Carousel.VisibleViews.Add(itemView);
+				}
 			}
 
 			foreach (var itemView in _oldViews)
@@ -291,6 +296,10 @@ namespace Xamarin.Forms.Platform.Android
 				if (!newViews.Contains(itemView))
 				{
 					VisualStateManager.GoToState(itemView, FormsCarouselView.DefaultItemVisualState);
+					if (Carousel.VisibleViews.Contains(itemView))
+					{
+						Carousel.VisibleViews.Remove(itemView);
+					}
 				}
 			}
 
