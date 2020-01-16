@@ -175,20 +175,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (update && readdViews)
 			{
-				this.InvokeOnMainThread(() =>
-				{
-					if(Detail?.View != null)
-						Detail.View.RemoveFromSuperview();
+				if (Detail?.View != null)
+					Detail.View.RemoveFromSuperview();
 
-					if (Flyout?.ViewController?.View != null)
-						Flyout.ViewController.View.RemoveFromSuperview();
+				if (Flyout?.ViewController?.View != null)
+					Flyout.ViewController.View.RemoveFromSuperview();
 
-					if (Detail?.View != null)
-						View.AddSubview(Detail.View);
+				if (Detail?.View != null)
+					View.AddSubview(Detail.View);
 
-					if (Flyout?.ViewController?.View != null)
-						View.AddSubview(Flyout.ViewController.View);
-				});
+				if (Flyout?.ViewController?.View != null)
+					View.AddSubview(Flyout.ViewController.View);
 			}
 		}
 

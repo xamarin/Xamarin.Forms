@@ -106,12 +106,9 @@ namespace Xamarin.Forms.Platform.iOS
 			update = FlyoutContent.ViewController.View.UpdateFlowDirection(_context.Shell) == true || update;
 			if (update && readdViews && Forms.IsiOS13OrNewer && View != null)
 			{
-				this.InvokeOnMainThread(() =>
-				{
-					var view = View.Superview;
-					View.RemoveFromSuperview();
-					view.AddSubview(View);
-				});
+				var view = View.Superview;
+				View.RemoveFromSuperview();
+				view.AddSubview(View);
 			}
 		}
 

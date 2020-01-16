@@ -335,7 +335,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		{
 			var ve = (Shell)Parent.Parent.Parent.Parent;
 
-			if (ve.FlowDirection == FlowDirection.LeftToRight)
+			if (ve.FlowDirection != FlowDirection.RightToLeft)
 				ve.FlowDirection = FlowDirection.RightToLeft;
 			else
 				ve.FlowDirection = FlowDirection.LeftToRight;

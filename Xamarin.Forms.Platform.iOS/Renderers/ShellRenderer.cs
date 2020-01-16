@@ -232,18 +232,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (update && readdViews)
 			{
-				// For appearance changes to take effect the view has to be removed and readded
-				// We're queueing this on the main thread so flow direction can propagate everywhere
-				// before removing and adding the view
-				this.InvokeOnMainThread(() =>
-				{
-					if (_currentShellItemRenderer?.ViewController != null)
-					{
-						_currentShellItemRenderer.ViewController.View.RemoveFromSuperview();
-						View.AddSubview(_currentShellItemRenderer.ViewController.View);
-						View.SendSubviewToBack(_currentShellItemRenderer.ViewController.View);
-					}
-				});
+				_currentShellItemRenderer.ViewController.View.RemoveFromSuperview();
+				View.AddSubview(_currentShellItemRenderer.ViewController.View);
+				View.SendSubviewToBack(_currentShellItemRenderer.ViewController.View);
 			}
 		}
 
