@@ -72,11 +72,14 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 
-			while(Carousel.ScrollToActions.Count > 0)
+			Device.BeginInvokeOnMainThread(() =>
 			{
-				var action = Carousel.ScrollToActions.Dequeue();
-				action();
-			}
+			   while (Carousel.ScrollToActions.Count > 0)
+			   {
+				   var action = Carousel.ScrollToActions.Dequeue();
+				   action();
+			   }
+			});
 			Carousel.PlatformInitialized();
 			UpdateVisualStates();
 		}
