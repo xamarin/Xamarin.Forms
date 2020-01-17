@@ -15,9 +15,8 @@
                  FontSize="9"
                  TextColor="Red"
                  Text="{Binding Error}"/>
-             <Frame
+             <Grid
                  Background="{Binding BackgroundBrush}"
-                 BorderColor="LightGray"
                  HeightRequest="100"/>
         </StackLayout>
     </ContentPage.Content>

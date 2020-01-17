@@ -194,13 +194,13 @@ namespace Xamarin.Forms
                     CreateLinearGradient(0);
                 }
 
-                var stop = new GradientStop
+                var gradientStop = new GradientStop
                 {
                     Color = color,
                     Offset = offset ?? -1
                 };
 
-                _gradient.GradientStops.Add(stop);
+                _gradient.GradientStops.Add(gradientStop);
             }
 
             void AddGradientStops(Color color, IEnumerable<float> offsets)
@@ -208,8 +208,7 @@ namespace Xamarin.Forms
                 foreach (var offset in offsets)
                     AddGradientStop(color, offset);
             }
-
-
+			
             Tuple<Point, Point> GetCoordinatesByAngle(double angle)
 			{
                 Point startPoint;
