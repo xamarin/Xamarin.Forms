@@ -9,10 +9,20 @@ using AndroidX.RecyclerView.Widget;
 using Android.Support.V7.Widget;
 #endif
 using Android.Views;
+using Java.Interop;
 using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
+	class CarrouselViewwOnGlobalLayoutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
+	{
+		public EventHandler<EventArgs> LayoutReady;
+		public void OnGlobalLayout()
+		{
+			LayoutReady.Invoke(this, new EventArgs());
+		}
+	}
+
 	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
 		protected FormsCarouselView Carousel;
@@ -21,6 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 		int _oldPosition;
 		int _initialPosition;
 		List<View> _oldViews;
+		CarrouselViewwOnGlobalLayoutListener _carrouselViewLayoutListener;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
@@ -37,6 +48,8 @@ namespace Xamarin.Forms.Platform.Android
 					_itemDecoration.Dispose();
 					_itemDecoration = null;
 				}
+
+				ClearLayoutListener();
 			}
 
 			base.Dispose(disposing);
@@ -45,6 +58,8 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
 			Carousel = newElement as FormsCarouselView;
+
+			AddLayoutListener();
 
 			Carousel.Scrolled += CarouselViewScrolled;
 			base.SetUpNewElement(newElement);
@@ -61,27 +76,15 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Carousel != null)
 				Carousel.Scrolled -= CarouselViewScrolled;
+
+			ClearLayoutListener();
 			base.TearDownOldElement(oldElement);
 		}
+
 		protected override void UpdateItemsSource()
 		{
 			UpdateAdapter();
 			UpdateEmptyView();
-		}
-		protected override void OnLayout(bool changed, int l, int t, int r, int b)
-		{
-			base.OnLayout(changed, l, t, r, b);
-
-			Device.BeginInvokeOnMainThread(() =>
-			{
-			   while (Carousel.ScrollToActions.Count > 0)
-			   {
-				   var action = Carousel.ScrollToActions.Dequeue();
-				   action();
-			   }
-			});
-			Carousel.PlatformInitialized();
-			UpdateVisualStates();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -312,6 +315,37 @@ namespace Xamarin.Forms.Platform.Android
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			UpdateVisualStates();
+		}
+
+		void AddLayoutListener()
+		{
+			_carrouselViewLayoutListener = new CarrouselViewwOnGlobalLayoutListener();
+			_carrouselViewLayoutListener.LayoutReady += LayoutReady;
+
+			ViewTreeObserver.AddOnGlobalLayoutListener(_carrouselViewLayoutListener);
+		}
+
+		void LayoutReady(object sender, EventArgs e)
+		{
+			while (Carousel.ScrollToActions.Count > 0)
+			{
+				var action = Carousel.ScrollToActions.Dequeue();
+				action();
+			}
+
+			Carousel.PlatformInitialized();
+			UpdateVisualStates();
+			ClearLayoutListener();
+		}
+
+		void ClearLayoutListener()
+		{
+			if (_carrouselViewLayoutListener == null)
+				return;
+
+			ViewTreeObserver?.RemoveOnGlobalLayoutListener(_carrouselViewLayoutListener);
+			_carrouselViewLayoutListener.LayoutReady -= LayoutReady;
+			_carrouselViewLayoutListener = null;
 		}
 	}
 }
