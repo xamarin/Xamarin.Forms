@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 
                 if (value.StartsWith(LinearGradient) || value.StartsWith(RadialGradient))
                 {
-                    var gradientBrushParser = new GradientBrushParser();
+                    var gradientBrushParser = new GradientBrushParser(_colorTypeConverter);
                     var brush = gradientBrushParser.Parse(value);
 
                     if (brush != null)
@@ -42,11 +42,15 @@ namespace Xamarin.Forms
 		      
         public class GradientBrushParser
         {
-            readonly ColorTypeConverter _colorConverter = new ColorTypeConverter();
-
+			readonly ColorTypeConverter _colorConverter;
             GradientBrush _gradient;
             string[] _parts;
             int _position;
+
+			public GradientBrushParser(ColorTypeConverter colorConverter = null)
+			{
+                _colorConverter = colorConverter ?? new ColorTypeConverter();
+            }
 
             public GradientBrush Parse(string css)
             {
