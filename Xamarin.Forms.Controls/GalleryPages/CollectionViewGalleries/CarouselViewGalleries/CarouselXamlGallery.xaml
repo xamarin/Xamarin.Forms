@@ -44,7 +44,7 @@
             </CarouselView.ItemTemplate>
         </CarouselView>
 
-        <Frame Margin="15" x:Name="layoutNormal" Grid.Row="3" Grid.ColumnSpan="2" HeightRequest="150" OutlineColor="#00000088" Padding="5">
+        <Frame Margin="15" x:Name="layoutNormal" Grid.Row="4" Grid.ColumnSpan="2" HeightRequest="150" OutlineColor="#00000088" Padding="5">
             <Grid>
                 <CarouselView x:Name="carouselNormal" ItemsSource="{Binding Items}" Position="{Binding Position}">
                     <CarouselView.ItemTemplate>
