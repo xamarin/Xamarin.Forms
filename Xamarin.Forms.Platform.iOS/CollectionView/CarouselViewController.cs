@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_carouselView.Position = initialPosition;
 			}
 
-			_carouselView.IsInitialized = true;
+			_carouselView.PlatformInitialized();
 		}
 
 		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

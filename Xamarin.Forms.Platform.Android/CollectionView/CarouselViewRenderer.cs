@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 				var action = Carousel.ScrollToActions.Dequeue();
 				action();
 			}
-			Carousel.IsInitialized = true;
+			Carousel.PlatformInitialized();
 			UpdateVisualStates();
 		}
 

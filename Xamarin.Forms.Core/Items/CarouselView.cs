@@ -19,6 +19,7 @@ namespace Xamarin.Forms
 		public const string VisibleItemVisualState = "VisibleItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
+		bool _isInitialized;
 		int _gotoPosition = -1;
 
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
@@ -170,10 +171,7 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsScrolling { get; set; }
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool IsInitialized = false;
-
+		
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Queue<Action> ScrollToActions = new Queue<Action>();
 
@@ -255,7 +253,7 @@ namespace Xamarin.Forms
 					carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
 				};
 
-				if (!carousel.IsInitialized)
+				if (!carousel._isInitialized)
 					carousel.ScrollToActions.Enqueue(actionSCroll);
 				else
 					actionSCroll();
@@ -300,6 +298,12 @@ namespace Xamarin.Forms
 		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void PlatformInitialized()
+		{
+			_isInitialized = true;
 		}
 	}
 }
