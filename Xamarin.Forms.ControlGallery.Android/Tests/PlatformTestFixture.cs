@@ -11,6 +11,7 @@ using AProgressBar = Android.Widget.ProgressBar;
 using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
+using System.IO;
 
 #if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
@@ -262,23 +263,44 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 
 		protected AColor GetColorAtCenter(AView view) 
 		{
-			var rect = new Rect();
-			rect.Set(0, 0, view.Width, view.Height);
+			var bitmap = ToBitmap(view);
+			return ColorAtPoint(bitmap, view.Width/2, view.Height/2);
+		}
 
-			var bitmap = Bitmap.CreateBitmap(rect.Width(), rect.Height(), Bitmap.Config.Argb8888);
+		protected Bitmap ToBitmap(AView view)
+		{
+			var bitmap = Bitmap.CreateBitmap(view.Width, view.Height, Bitmap.Config.Argb8888);
 			var canvas = new Canvas(bitmap);
 			canvas.Save();
-			canvas.Translate(rect.Left, rect.Top);
+			canvas.Translate(0, 0);
 			view.Draw(canvas);
 			canvas.Restore();
 
-			int pixel = bitmap.GetPixel(rect.CenterX(), rect.CenterY());
+			return bitmap;
+		}
+
+		protected AColor ColorAtPoint(Bitmap bitmap, int x, int y) 
+		{
+			int pixel = bitmap.GetPixel(x, y);
 
 			int red = AColor.GetRedComponent(pixel);
 			int blue = AColor.GetBlueComponent(pixel);
 			int green = AColor.GetGreenComponent(pixel);
 
 			return AColor.Rgb(red, green, blue);
+		}
+
+		protected void AssertColorAtPoint(Bitmap bitmap, AColor expectedColor, int x, int y) 
+		{
+			Assert.That(ColorAtPoint(bitmap, x, y), Is.EqualTo(expectedColor), 
+				() => CreateColorAtPointError(bitmap, expectedColor, x, y));
+		}
+
+		protected string CreateColorAtPointError(Bitmap bitmap, AColor expectedColor, int x, int y) 
+		{
+			var ms = new MemoryStream();
+			bitmap.Compress(Bitmap.CompressFormat.Png, 0, ms);
+			return $"Expected {expectedColor} at point {x},{y} in renderered view. This is what it looked like:<img>{Convert.ToBase64String(ms.ToArray())}</img>";
 		}
 
 		protected void Layout(VisualElement element, AView nativeView) 

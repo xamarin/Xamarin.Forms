@@ -108,6 +108,7 @@
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="Tests\CollectionViewTests.cs" />
     <Compile Include="Tests\BackgroundColorTests.cs" />
+    <Compile Include="Tests\CornerRadiusTests.cs" />
     <Compile Include="Tests\IsEnabledTests.cs" />
     <Compile Include="Tests\Issues.cs" />
     <Compile Include="Tests\IsVisibleTests.cs" />

@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Android.Graphics.Drawables;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -100,5 +103,27 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				Assert.That(nativeColor, Is.EqualTo(expectedColor));
 			}
 		}
+
+		//[Test, Category("BackgroundColor")]
+		//public void FakeBGTest() 
+		//{
+		//	var ve = new BoxView
+		//	{
+		//		HeightRequest = 100,
+		//		WidthRequest = 300,
+		//		CornerRadius = 15,
+		//		BackgroundColor = Color.Red,
+		//	};
+
+		//	using (var renderer = GetRenderer(ve))
+		//	{
+		//		var view = renderer.View;
+		//		Layout(ve, view);
+		//		var bitmap = ToBitmap(view);
+
+
+		//		AssertColorAtPoint(bitmap, Color.Bisque.ToAndroid(), 15, 15);
+		//	}
+		//}
 	}
 }

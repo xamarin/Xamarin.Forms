@@ -6,6 +6,8 @@ using NUnit.Framework.Internal;
 using Xamarin.Forms.Internals;
 using System;
 using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 {
@@ -158,7 +160,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		void OutputTestCaseResult(TestCaseResult result)
 		{
-			var name = result.Test.Name; // ShortenTestName(result.FullName);
+			var name = result.Test.Name; 
 
 			var outcome = "Fail";
 
@@ -197,13 +199,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			{
 				if (assertionResult.Status != AssertionStatus.Passed)
 				{
-					toAdd.Add(new Label { Text = assertionResult.Message });
+					ExtractErrorMessage(toAdd, assertionResult.Message);
 					toAdd.Add(new Editor { Text = assertionResult.StackTrace, IsReadOnly = true });
 				}
 			}
 
 			if (!string.IsNullOrEmpty(result.Output))
 			{
+				var output = result.Output;
 				toAdd.Add(new Label { Text = result.Output, Margin = margin });
 			}
 
@@ -275,6 +278,39 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			{
 				DisplayFailResult(ex.Message);
 			});
+		}
+
+		static void ExtractErrorMessage(List<View> views, string message) 
+		{
+			const string openTag = "<img>";
+			const string closeTag = "</img>";
+			var openTagIndex = message.IndexOf("<img>");
+			var closeTagIndex = message.IndexOf("</img>");
+
+			if (openTagIndex >= 0 && closeTagIndex > openTagIndex)
+			{
+				var imgString = message.Substring(openTagIndex + openTag.Length, closeTagIndex - openTagIndex - openTag.Length);
+				var messageBefore = message.Substring(0, openTagIndex);
+				var messageAfter = message.Substring(closeTagIndex + closeTag.Length);
+				var imgBytes = Convert.FromBase64String(imgString);
+				var stream = new MemoryStream(imgBytes);
+
+				if (!string.IsNullOrEmpty(messageBefore))
+				{
+					views.Add(new Label { Text = messageBefore });
+				} 
+
+				views.Add(new Image { Source = ImageSource.FromStream(() => stream) });
+
+				if (!string.IsNullOrEmpty(messageAfter))
+				{
+					views.Add(new Label { Text = messageAfter });
+				}
+			}
+			else
+			{
+				views.Add(new Label { Text = message });
+			}
 		}
 	}
 }
