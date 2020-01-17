@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		public EventHandler<EventArgs> LayoutReady;
 		public void OnGlobalLayout()
 		{
-			LayoutReady.Invoke(this, new EventArgs());
+			LayoutReady?.Invoke(this, new EventArgs());
 		}
 	}
 
