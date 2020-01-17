@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 
                 while (_position < _parts.Length)
                 {
-                    var part = _parts[_position].Trim();
+                    var part = GetPart().Trim();
 
 					// Hex Color
 					if(part.StartsWith("#", StringComparison.Ordinal))
@@ -75,7 +75,7 @@ namespace Xamarin.Forms
 
 					// Color by name
                     var colorParts = part.Split('.');
-                    if (colorParts[0] == "Color")
+                    if (colorParts[0].Equals("Color", StringComparison.Ordinal))
                     {
                         var parts = part.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         var color = (Color)_colorConverter.ConvertFromInvariantString(parts[0]);
@@ -140,29 +140,40 @@ namespace Xamarin.Forms
                     // RadialGradient
                     if (part == RadialGradient)
                     {
-                        CreateRadialGradient(new Point(0.5, 0.5));
+                        var center = GetGradientCenter();
+                        CreateRadialGradient(center);
                     }
 
                     _position++;
                 }
-
+				
                 return _gradient;
             }
-						
-            string GetNextPart()
-            {
-                _position++;
 
+			string GetPart()
+			{
                 if (!(_position < _parts.Length))
                     return string.Empty;
 
                 return _parts[_position];
+            }  
+
+            string GetNextPart()
+            {
+                _position++;
+                return GetPart();
             }
 
             void CreateLinearGradient(double angle)
             {
+                var coordinates = GetCoordinatesByAngle(angle);
+                var startPoint = coordinates.Item1;
+                var endPoint = coordinates.Item2;
+
                 _gradient = new LinearGradientBrush
                 {
+					StartPoint = startPoint,
+					EndPoint = endPoint,		
                     GradientStops = new GradientStopCollection()
                 };
             }
@@ -198,24 +209,111 @@ namespace Xamarin.Forms
                     AddGradientStop(color, offset);
             }
 
+
+            Tuple<Point, Point> GetCoordinatesByAngle(double angle)
+			{
+                Point startPoint;
+                Point endPoint;
+
+                switch (angle)
+                {
+                    case 90:
+                        startPoint = new Point(0, 1);
+                        endPoint = new Point(0, 0);
+                        break;
+                    case 180:
+                        startPoint = new Point(1, 0);
+                        endPoint = new Point(0, 0);
+                        break;
+                    case 270:
+                        startPoint = new Point(0, 0);
+                        endPoint = new Point(0, 1);
+                        break;
+                    default:
+                    case 360:
+                        startPoint = new Point(0, 0);
+                        endPoint = new Point(1, 0);
+                        break;
+                }
+
+                return new Tuple<Point, Point>(startPoint, endPoint);
+            }
+
             bool TryParseAngle(string part, out double angle)
             {
                 if (TryParseNumber(part, "deg", out var degrees))
                 {
-                    angle = (180 + degrees) % 360;
+                    angle = degrees % 360;
                     return true;
                 }
 
                 if (TryParseNumber(part, "turn", out var turn))
                 {
-                    angle = 180 + (360 * turn);
+                    angle = 360 * turn;
                     return true;
                 }
 
                 angle = 0;
                 return false;
             }
-			
+
+			Point GetGradientCenter()
+			{
+                _position++;
+
+                var part = GetPart().Trim();
+
+                int gradientCenterPosition = 1;
+                var parts = part.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length > gradientCenterPosition)
+                {
+                    var at = parts[gradientCenterPosition].Trim();
+
+                    if (at.Contains("at"))
+                    {
+                        gradientCenterPosition++;
+                        var directionX = gradientCenterPosition < parts.Length ? parts[gradientCenterPosition].Trim() : string.Empty;
+
+                        gradientCenterPosition++;
+                        var directionY = gradientCenterPosition < parts.Length ? parts[gradientCenterPosition].Trim() : string.Empty;
+
+                        var hasPositionX = TryParseOffset(directionX, out var positionX);
+                        var hasPositionY = TryParseOffset(directionY, out var positionY);
+
+						var position = new Point(0.5, 0.5);
+
+                        if (!hasPositionX && !string.IsNullOrEmpty(directionX))
+                            position = GetGradientPositionByDirection(directionX);
+
+                        if (!hasPositionY && !string.IsNullOrEmpty(directionY))
+                            position = GetGradientPositionByDirection(directionY);
+
+                        return new Point(hasPositionX ? positionX : position.X, hasPositionY ? positionY : position.Y);
+                    }
+                }
+
+                return new Point(0.5, 0.5);
+            }
+
+            Point GetGradientPositionByDirection(string direction)
+			{
+                switch (direction)
+                {
+                    case "left":
+                        return new Point(0, 0.5);
+                    case "right":
+                        return new Point(1, 0.5);
+                    case "top":
+                        return new Point(0.5, 0);
+                    case "bottom":
+                        return new Point(0.5, 1);
+                    default:
+                    case "center":
+                        return new Point(0.5, 0.5);
+                }
+            }
+
             bool TryParseNumber(string part, string unit, out float result)
             {
                 if (part.EndsWith(unit))

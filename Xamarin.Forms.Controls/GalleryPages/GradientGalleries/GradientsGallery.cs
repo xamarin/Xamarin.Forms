@@ -49,7 +49,9 @@
 						navigationBarButton,
 						tabsButton,
 						GalleryBuilder.NavButton("CSS Gradients Explorer", () =>
-							new CssGradientsGallery(), Navigation)
+							new CssGradientsGallery(), Navigation),
+						GalleryBuilder.NavButton("CSS Gradients Playground", () =>
+							new CssGradientsPlayground(), Navigation)
 					}
 				}
 			};
