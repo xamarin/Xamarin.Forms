@@ -107,17 +107,17 @@
 	</PropertyGroup>
 
 	<Target Name="XamlC" AfterTargets="AfterCompile" Inputs="$(IntermediateOutputPath)$(TargetFileName)" Outputs="$(IntermediateOutputPath)XamlC.stamp" Condition=" '$(DesignTimeBuild)' != 'True'">
-    <PropertyGroup>
-      <ValidateOnlyValue>$(XFXamlCValidateOnly)</ValidateOnlyValue>
-      <ValidateOnlyValue Condition="'$(BuildingForLiveUnitTesting)' == 'True' ">True</ValidateOnlyValue>
-    </PropertyGroup>
+	    <PropertyGroup>
+		<_XFXamlCValidateOnly>$(XFXamlCValidateOnly)</_XFXamlCValidateOnly>
+		<_XFXamlCValidateOnly Condition="'$(BuildingForLiveUnitTesting)' == 'True' ">True</_XFXamlCValidateOnly>
+	    </PropertyGroup>
 		<XamlCTask
 			Assembly = "$(IntermediateOutputPath)$(TargetFileName)"
 			ReferencePath = "@(ReferencePath)"
 			OptimizeIL = "true"
 			DebugSymbols = "$(DebugSymbols)"
 			DebugType = "$(DebugType)"
-			ValidateOnly = "$(ValidateOnlyValue)"
+			ValidateOnly = "$(_XFXamlCValidateOnly)"
 			KeepXamlResources = "$(XFKeepXamlResources)" />
 		<Touch Files="$(IntermediateOutputPath)XamlC.stamp" AlwaysCreate="True" />
 		<ItemGroup>
