@@ -49,11 +49,25 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue7239TestDensityChangeIssue()
 		{
 			RunningApp.WaitForElement(RefreshButton);
+			var startDensityValue = RunningApp.GetScreenDensity();
+
+			UpdateCurrentDensity();
+			ValidateCurrentDensity(1.5f);
+
+			UpdateCurrentDensity();
+			ValidateCurrentDensity(startDensityValue);
+		}
+
+		void UpdateCurrentDensity()
+		{
 			RunningApp.Tap(ChangeDensityButton);
 			RunningApp.Tap(RefreshButton);
+		}
 
-			var finalDensity = RunningApp.GetScreenDensity();
-			Assert.AreEqual(1.5f, finalDensity);
+		void ValidateCurrentDensity(float expectedValue)
+		{
+			var currentDensityValue = RunningApp.GetScreenDensity();
+			Assert.AreEqual(expectedValue, currentDensityValue);
 		}
 #endif
 	}
