@@ -86,8 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		static void SetupMetrics(Context context)
 		{
-			using (DisplayMetrics metrics = context.Resources.DisplayMetrics)
-				s_displayDensity = metrics.Density;
+			s_displayDensity = context.Resources.DisplayMetrics.Density;
 		}
 
 		public static AActivity GetActivity(this Context context)
