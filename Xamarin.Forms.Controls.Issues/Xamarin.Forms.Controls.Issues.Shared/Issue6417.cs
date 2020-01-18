@@ -39,6 +39,11 @@ namespace Xamarin.Forms.Controls.Issues
 			label1.SetBinding(Label.TextProperty, new Binding("."));
 			var hint = Device.RuntimePlatform == Device.iOS ? "Tip: swipe left for context action" : "Tip: long press for context action";
 			var label2 = new Label { Text = hint };
+			var grid = new Grid(){BackgroundColor = Color.Gray};
+			grid.RowDefinitions.Add(new RowDefinition());
+			grid.RowDefinitions.Add(new RowDefinition());
+			grid.Children.Add(label1, 0, 0);
+			grid.Children.Add(label2, 0, 1);
 
 			var moreAction = new MenuItem { Text = "More" };
 			moreAction.SetBinding(MenuItem.CommandParameterProperty, new Binding("."));
@@ -53,22 +58,11 @@ namespace Xamarin.Forms.Controls.Issues
 				var mi = ((MenuItem)sender);
 				Debug.WriteLine("Delete Context Action clicked: " + mi.CommandParameter);
 			};
-			
+
+			View = grid;
+
 			ContextActions.Add(moreAction);
 			ContextActions.Add(deleteAction);
-			
-			View = new StackLayout
-			{
-				Orientation = StackOrientation.Horizontal,
-				HorizontalOptions = LayoutOptions.StartAndExpand,
-				Padding = new Thickness(15, 5, 5, 15),
-				Children = {
-					new StackLayout {
-						Orientation = StackOrientation.Vertical,
-						Children = { label1, label2 }
-					}
-				}
-			};
 		}
 	}
 }

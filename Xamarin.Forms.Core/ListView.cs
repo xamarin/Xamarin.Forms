@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
@@ -10,7 +9,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ListViewRenderer))]
-	public class ListView : ItemsView<Cell>, IListViewController, IElementConfiguration<ListView>
+	public class ListView : ItemsView<Cell>, IListViewWithContextMenuController, IElementConfiguration<ListView>
 	{
 		public static readonly BindableProperty IsPullToRefreshEnabledProperty = BindableProperty.Create("IsPullToRefreshEnabled", typeof(bool), typeof(ListView), false);
 
@@ -471,9 +470,12 @@ namespace Xamarin.Forms
 			if (SelectionMode != ListViewSelectionMode.None)
 				SetValueCore(SelectedItemProperty, cell?.BindingContext, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearDynamicResource | (changed ? SetValueFlags.RaiseOnEqual : 0));
 
-			if (!isContextMenuRequested)
+			if (isContextMenuRequested || cell == null)
 			{
-				cell?.OnTapped();
+				return;
+			}
+
+			cell.OnTapped();
 
 			var itemSource = ItemsSource?.Cast<object>().ToList();
 			object tappedGroup = null;
@@ -482,7 +484,9 @@ namespace Xamarin.Forms
 				tappedGroup = itemSource.ElementAt(groupIndex);
 			}
 
-			ItemTapped?.Invoke(this, new ItemTappedEventArgs(tappedGroup, cell?.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
+			ItemTapped?.Invoke(this,
+				new ItemTappedEventArgs(tappedGroup, cell.BindingContext,
+					TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
