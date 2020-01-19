@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			CellLayoutContent(sizeInfo.NewSize);
 			base.OnRenderSizeChanged(sizeInfo);
-			if (sizeInfo.WidthChanged)
+			if (sizeInfo.WidthChanged || sizeInfo.HeightChanged)
 				InvalidateMeasure();
 		}
 		
