@@ -127,10 +127,8 @@ namespace Xamarin.Forms.Platform.Android
 						(float)(Context.ToPixels(cornerRadius.BottomRight)),
 						(float)(Context.ToPixels(cornerRadius.BottomRight)),
 
-						0f,
-						0f
-						//(float)(Context.ToPixels(cornerRadius.BottomLeft)),
-						//(float)(Context.ToPixels(cornerRadius.BottomLeft))
+						(float)(Context.ToPixels(cornerRadius.BottomLeft)),
+						(float)(Context.ToPixels(cornerRadius.BottomLeft))
 					};
 
 					backgroundGradient.SetCornerRadii(cornerRadii);
