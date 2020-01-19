@@ -4,14 +4,12 @@ using Android.Widget;
 using Xamarin.Forms.Platform.Android;
 using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
-using Android.Graphics;
 using Android.Views;
 using System;
 using AProgressBar = Android.Widget.ProgressBar;
 using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
-using System.IO;
 
 #if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
@@ -25,6 +23,8 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 	public class PlatformTestFixture
 	{
 		Context _context;
+
+		protected static AColor EmptyBackground = new AColor(0, 0, 0, 255);
 
 		// Sequence for generating test cases
 		protected static IEnumerable<VisualElement> BasicElements
@@ -259,48 +259,6 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			var renderer = GetRenderer(timePicker);
 			var viewRenderer = renderer.View as TimePickerRenderer;
 			return viewRenderer.Control;
-		}
-
-		protected AColor GetColorAtCenter(AView view) 
-		{
-			var bitmap = ToBitmap(view);
-			return ColorAtPoint(bitmap, view.Width/2, view.Height/2);
-		}
-
-		protected Bitmap ToBitmap(AView view)
-		{
-			var bitmap = Bitmap.CreateBitmap(view.Width, view.Height, Bitmap.Config.Argb8888);
-			var canvas = new Canvas(bitmap);
-			canvas.Save();
-			canvas.Translate(0, 0);
-			view.Draw(canvas);
-			canvas.Restore();
-
-			return bitmap;
-		}
-
-		protected AColor ColorAtPoint(Bitmap bitmap, int x, int y) 
-		{
-			int pixel = bitmap.GetPixel(x, y);
-
-			int red = AColor.GetRedComponent(pixel);
-			int blue = AColor.GetBlueComponent(pixel);
-			int green = AColor.GetGreenComponent(pixel);
-
-			return AColor.Rgb(red, green, blue);
-		}
-
-		protected void AssertColorAtPoint(Bitmap bitmap, AColor expectedColor, int x, int y) 
-		{
-			Assert.That(ColorAtPoint(bitmap, x, y), Is.EqualTo(expectedColor), 
-				() => CreateColorAtPointError(bitmap, expectedColor, x, y));
-		}
-
-		protected string CreateColorAtPointError(Bitmap bitmap, AColor expectedColor, int x, int y) 
-		{
-			var ms = new MemoryStream();
-			bitmap.Compress(Bitmap.CompressFormat.Png, 0, ms);
-			return $"Expected {expectedColor} at point {x},{y} in renderered view. This is what it looked like:<img>{Convert.ToBase64String(ms.ToArray())}</img>";
 		}
 
 		protected void Layout(VisualElement element, AView nativeView) 

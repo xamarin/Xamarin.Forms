@@ -123,7 +123,9 @@
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="RegistrarValidationService.cs" />
     <Compile Include="SampleNativeControl.cs" />
+    <Compile Include="Tests\AssertionExtensions.cs" />
     <Compile Include="Tests\BackgroundColorTests.cs" />
+    <Compile Include="Tests\CornerRadiusTests.cs" />
     <Compile Include="Tests\IsEnabledTests.cs" />
     <Compile Include="Tests\IsVisibleTests.cs" />
     <Compile Include="Tests\OpacityTests.cs" />

@@ -107,6 +107,7 @@
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="Tests\CollectionViewTests.cs" />
+    <Compile Include="Tests\AssertionExtensions.cs" />
     <Compile Include="Tests\BackgroundColorTests.cs" />
     <Compile Include="Tests\CornerRadiusTests.cs" />
     <Compile Include="Tests\IsEnabledTests.cs" />
