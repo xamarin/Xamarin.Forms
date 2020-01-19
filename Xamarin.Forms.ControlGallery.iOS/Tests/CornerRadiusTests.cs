@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
-using NUnit.Framework.Internal;
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms.Platform.iOS;
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.ControlGallery.iOS.Tests
 {
 	[TestFixture]
 	public class CornerRadiusTests : PlatformTestFixture
@@ -16,16 +14,16 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				HeightRequest = 100,
 				WidthRequest = 200,
 				CornerRadius = 15,
-				BackgroundColor = Color.Red
+				BackgroundColor = Color.CadetBlue
 			};
 
 			CheckCornerRadius(boxView);
 		}
-	
+
 		[Test, Category("CornerRadius"), Category("Button")]
 		public void ButtonCornerRadius()
 		{
-			var backgroundColor = Color.Red;
+			var backgroundColor = Color.CadetBlue;
 
 			var button = new Button
 			{
@@ -41,7 +39,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		[Test, Category("CornerRadius"), Category("Frame")]
 		public void FrameCornerRadius()
 		{
-			var backgroundColor = Color.Red;
+			var backgroundColor = Color.CadetBlue;
 
 			var frame = new Frame
 			{
@@ -57,7 +55,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		[Test, Category("CornerRadius"), Category("ImageButton")]
 		public void ImageButtonCornerRadius()
 		{
-			var backgroundColor = Color.Red;
+			var backgroundColor = Color.CadetBlue;
 
 			var button = new ImageButton
 			{
@@ -70,19 +68,22 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			CheckCornerRadius(button);
 		}
 
-		public void CheckCornerRadius(VisualElement visualElement) 
+		public void CheckCornerRadius(View view)
 		{
-			using (var renderer = GetRenderer(visualElement))
-			{
-				var view = renderer.View;
-				Layout(visualElement, view);
+			var page = new ContentPage() { Content = view };
 
-				// The corners should show the background color
-				view.AssertColorAtTopLeft(EmptyBackground)
-					.AssertColorAtTopRight(EmptyBackground)
-					.AssertColorAtBottomLeft(EmptyBackground)
-					.AssertColorAtBottomRight(EmptyBackground)
-					.AssertColorAtCenter(visualElement.BackgroundColor.ToAndroid());
+			using (var pageRenderer = GetRenderer(page))
+			{
+				using (var uiView = GetRenderer(view).NativeView)
+				{
+					page.Layout(new Rectangle(0, 0, view.WidthRequest, view.HeightRequest));
+
+					uiView.AssertColorAtCenter(view.BackgroundColor.ToUIColor())
+						.AssertColorAtBottomLeft(EmptyBackground)
+						.AssertColorAtBottomRight(EmptyBackground)
+						.AssertColorAtTopLeft(EmptyBackground)
+						.AssertColorAtTopRight(EmptyBackground);
+				}
 			}
 		}
 	}

@@ -44,8 +44,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			{
 				var expectedColor = button.BackgroundColor.ToAndroid();
 				Layout(button, nativeButton);
-				var nativeColor = GetColorAtCenter(nativeButton);
-				Assert.That(nativeColor, Is.EqualTo(expectedColor));
+				nativeButton.AssertColorAtCenter(expectedColor);
 			}
 		}
 
@@ -64,8 +63,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			{
 				var expectedColor = button.BackgroundColor.ToAndroid();
 				Layout(button, nativeButton);
-				var nativeColor = GetColorAtCenter(nativeButton);
-				Assert.That(nativeColor, Is.EqualTo(expectedColor));
+				nativeButton.AssertColorAtCenter(expectedColor);
 			}
 		}
 
@@ -85,8 +83,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				var expectedColor = frame.BackgroundColor.ToAndroid();
 				var view = renderer.View;
 				Layout(frame, view);
-				var nativeColor = GetColorAtCenter(view);
-				Assert.That(nativeColor, Is.EqualTo(expectedColor));
+				view.AssertColorAtCenter(expectedColor);
 			}
 		}
 
@@ -103,27 +100,5 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				Assert.That(nativeColor, Is.EqualTo(expectedColor));
 			}
 		}
-
-		//[Test, Category("BackgroundColor")]
-		//public void FakeBGTest() 
-		//{
-		//	var ve = new BoxView
-		//	{
-		//		HeightRequest = 100,
-		//		WidthRequest = 300,
-		//		CornerRadius = 15,
-		//		BackgroundColor = Color.Red,
-		//	};
-
-		//	using (var renderer = GetRenderer(ve))
-		//	{
-		//		var view = renderer.View;
-		//		Layout(ve, view);
-		//		var bitmap = ToBitmap(view);
-
-
-		//		AssertColorAtPoint(bitmap, Color.Bisque.ToAndroid(), 15, 15);
-		//	}
-		//}
 	}
 }
