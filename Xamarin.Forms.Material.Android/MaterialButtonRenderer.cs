@@ -22,10 +22,11 @@ using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.Material.Android;
+using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
+using APath = Android.Graphics.Path;
 using AView = Android.Views.View;
-using Xamarin.Forms.Platform.Android;
 
 
 namespace Xamarin.Forms.Material.Android
@@ -124,10 +125,10 @@ namespace Xamarin.Forms.Material.Android
 			{
 				var radiusToPixels = (float)Context.ToPixels(Element.CornerRadius);
 
-				using (var path = new Path())
+				using (var path = new APath())
 				{
 					RectF rect = new RectF(0, 0, canvas.Width, canvas.Height);
-					path.AddRoundRect(rect, radiusToPixels, radiusToPixels, Path.Direction.Ccw);
+					path.AddRoundRect(rect, radiusToPixels, radiusToPixels, APath.Direction.Ccw);
 					canvas.Save();
 					canvas.ClipPath(path);
 					base.Draw(canvas);

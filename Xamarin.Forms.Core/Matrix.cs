@@ -204,19 +204,19 @@ namespace Xamarin.Forms
             }
         }
 
-        public Vector Transform(Vector vector)
+        public Vector2 Transform(Vector2 vector)
         {
-            Vector newVector = vector;
+            Vector2 newVector = vector;
 
 			double x = newVector.X;
             double y = newVector.Y;
 
             MultiplyVector(ref x, ref y);
 
-            return new Vector(x, y);
+            return new Vector2(x, y);
         }
 
-        public void Transform(Vector[] vectors)
+        public void Transform(Vector2[] vectors)
         {
             if (vectors != null)
             {
@@ -228,7 +228,7 @@ namespace Xamarin.Forms
 
                     MultiplyVector(ref x, ref y);
 
-                    vectors[i] = new Vector(x, y);
+                    vectors[i] = new Vector2(x, y);
                 }
             }
         }
@@ -244,7 +244,7 @@ namespace Xamarin.Forms
                         return 1.0;
                     case MatrixTypes.Scaling:
                     case MatrixTypes.Scaling | MatrixTypes.Translation:
-                        return (_m11 * _m22);
+                        return _m11 * _m22;
                     default:
                         return (_m11 * _m22) - (_m12 * _m21);
                 }
