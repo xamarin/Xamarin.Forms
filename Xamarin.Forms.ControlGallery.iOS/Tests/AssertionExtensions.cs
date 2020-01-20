@@ -33,13 +33,13 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			var pixel = bitmap.GetPixel(x, y);
 
-			// Returned pixel data is B, G, R, A (ARGB little endian)
+			// Returned pixel data is B, G, R, A (ARGB little endian byte order)
 			var color = new UIColor(pixel[2] / 255.0f, pixel[1] / 255.0f, pixel[0] / 255.0f, pixel[3] / 255.0f);
 
 			return color;
 		}
 
-		public static byte[] GetPixel(this UIImage bitmap, int x, int y) 
+		public static byte[] GetPixel(this UIImage bitmap, int x, int y)
 		{
 			var cgImage = bitmap.CGImage.WithColorSpace(CGColorSpace.CreateDeviceRGB());
 
@@ -54,6 +54,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 			var dataBytes = new byte[nsData.Length];
 			System.Runtime.InteropServices.Marshal.Copy(nsData.Bytes, dataBytes, 0, (int)nsData.Length);
 
+			// Figure out where the pixel we care about is
 			var pixelLocation = (cgImage.BytesPerRow * y) + (4 * x);
 
 			var pixel = new byte[4]

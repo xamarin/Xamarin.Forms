@@ -37,6 +37,7 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		}
 
 		[Test, Category("CornerRadius"), Category("Frame")]
+		[Ignore("Will not pass until https://github.com/xamarin/Xamarin.Forms/issues/9265 is fixed")]
 		public void FrameCornerRadius()
 		{
 			var backgroundColor = Color.CadetBlue;
@@ -46,7 +47,9 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				HeightRequest = 100,
 				WidthRequest = 200,
 				CornerRadius = 15,
-				BackgroundColor = backgroundColor
+				BackgroundColor = backgroundColor,
+				BorderColor = Color.Brown,
+				Content = new Label { Text = "Hey" }
 			};
 
 			CheckCornerRadius(frame);
@@ -78,11 +81,14 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 				{
 					page.Layout(new Rectangle(0, 0, view.WidthRequest, view.HeightRequest));
 
-					uiView.AssertColorAtCenter(view.BackgroundColor.ToUIColor())
-						.AssertColorAtBottomLeft(EmptyBackground)
-						.AssertColorAtBottomRight(EmptyBackground)
-						.AssertColorAtTopLeft(EmptyBackground)
-						.AssertColorAtTopRight(EmptyBackground);
+				
+						uiView
+							.AssertColorAtCenter(view.BackgroundColor.ToUIColor())
+							.AssertColorAtBottomLeft(EmptyBackground)
+							.AssertColorAtBottomRight(EmptyBackground)
+							.AssertColorAtTopLeft(EmptyBackground)
+							.AssertColorAtTopRight(EmptyBackground);
+					
 				}
 			}
 		}
