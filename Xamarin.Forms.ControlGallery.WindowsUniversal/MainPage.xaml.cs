@@ -9,13 +9,11 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms;
-using Xamarin.Forms.ControlGallery.WindowsUniversal;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.Platform.UWP;
-
+using WRectangleGeometry = Windows.UI.Xaml.Media.RectangleGeometry;
 
 namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 {
@@ -125,7 +123,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 
 					// Arranging the control to the left will make it show up past the edge of the stack layout
 					// We can fix that by clipping it manually
-					var clip = new RectangleGeometry { Rect = new Rect(-diff, 0, finalSize.Width, finalSize.Height) };
+					var clip = new WRectangleGeometry { Rect = new Rect(-diff, 0, finalSize.Width, finalSize.Height) };
 					frameworkElement.Clip = clip;
 
 					return finalSize;

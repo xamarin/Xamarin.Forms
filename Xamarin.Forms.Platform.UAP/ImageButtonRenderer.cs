@@ -1,14 +1,13 @@
 using System;
+using System.Threading.Tasks;
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Internals;
 using WThickness = Windows.UI.Xaml.Thickness;
 using WImage = Windows.UI.Xaml.Controls.Image;
-using Windows.UI.Xaml.Input;
-using System.Threading.Tasks;
-using System.Diagnostics;
+using WStretch = Windows.UI.Xaml.Media.Stretch;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -81,7 +80,7 @@ namespace Xamarin.Forms.Platform.UWP
 					{
 						VerticalAlignment = VerticalAlignment.Center,
 						HorizontalAlignment = HorizontalAlignment.Center,
-						Stretch = Stretch.Uniform,
+						Stretch = WStretch.Uniform,
 					};
 
 					_image.ImageOpened += OnImageOpened;

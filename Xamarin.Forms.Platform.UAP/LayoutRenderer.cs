@@ -4,6 +4,7 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Media;
+using WRectangleGeometry = Windows.UI.Xaml.Media.RectangleGeometry;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -68,7 +69,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Clip = null;
 			if (Element.IsClippedToBounds)
 			{
-				Clip = new RectangleGeometry { Rect = new Rect(0, 0, ActualWidth, ActualHeight) };
+				Clip = new WRectangleGeometry { Rect = new Rect(0, 0, ActualWidth, ActualHeight) };
 			}
 		}
 	}
