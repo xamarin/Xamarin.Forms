@@ -51,6 +51,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateInitialPosition();
 
+				_carouselView.PlatformInitialized();
 				_viewInitialized = true;
 			}
 			UpdateVisualStates();
@@ -114,7 +115,11 @@ namespace Xamarin.Forms.Platform.iOS
 				_carouselView.Position = initialPosition;
 			}
 
-			_carouselView.PlatformInitialized();
+			while (_carouselView.ScrollToActions.Count > 0)
+			{
+				var action = _carouselView.ScrollToActions.Dequeue();
+				action();
+			}
 		}
 
 		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
