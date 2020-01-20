@@ -85,6 +85,7 @@
     <Compile Include="ShellLifeCycleTests.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
     <Compile Include="CheckBoxUnitTests.cs" />
+    <Compile Include="StyleSheets\BaseClassSelectorTests.cs" />
     <Compile Include="VisualTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="ImageButtonUnitTest.cs" />
