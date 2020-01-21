@@ -85,6 +85,7 @@
     <Compile Include="Markup\ViewExtensionsTests.cs" />
     <Compile Include="Markup\LabelExtensionsTests.cs" />
     <Compile Include="Markup\MarkupBaseTestFixture.cs" />
+    <Compile Include="Markup\ElementGesturesExtensionsTests.cs" />
     <Compile Include="Markup\ViewInFlexLayoutExtensionsTests.cs" />
     <Compile Include="Markup\ViewInGridExtensionsTests.cs" />
     <Compile Include="Markup\VisualElementExtensionsTests.cs" />
