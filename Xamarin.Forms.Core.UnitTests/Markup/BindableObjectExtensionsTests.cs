@@ -9,23 +9,18 @@ namespace Xamarin.Forms.Markup.UnitTests
 	[TestFixture]
 	public class BindableObjectExtensionsTests : MarkupBaseTestFixture
 	{
-		MethodInfo getContextMethodInfo;
-		FieldInfo bindingFieldInfo;
 		ViewModel viewModel;
 
 		[SetUp]
 		public override void Setup()
 		{
 			base.Setup();
-			getContextMethodInfo = typeof(BindableObject).GetMethod("GetContext", BindingFlags.NonPublic | BindingFlags.Instance);
 			viewModel = new ViewModel();
 		}
 
 		[TearDown]
 		public override void TearDown()
 		{
-			getContextMethodInfo = null;
-			bindingFieldInfo = null;
 			viewModel = null;
 			base.TearDown();
 		}
@@ -35,7 +30,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			var label = new Label();
 			label.Bind(Label.TextColorProperty, nameof(viewModel.TextColor));
-			AssertBindingExists(label, Label.TextColorProperty, nameof(viewModel.TextColor));
+			BindingHelpers.AssertBindingExists(label, Label.TextColorProperty, nameof(viewModel.TextColor));
 		}
 
 		// Note that we test positional parameters to catch API parameter order changes (which would be breaking).
@@ -63,7 +58,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				button,
 				targetProperty: Button.TextProperty,
 				path: nameof(viewModel.Text),
@@ -87,7 +82,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				convert: (bool isRed) => isRed ? Color.Red : Color.Transparent
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				label,
 				Label.TextColorProperty,
 				nameof(viewModel.IsRed),
@@ -107,7 +102,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				color => color == Color.Red
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				label,
 				Label.TextColorProperty,
 				nameof(viewModel.IsRed),
@@ -139,7 +134,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				button,
 				targetProperty: Button.TextProperty,
 				path: nameof(viewModel.Text),
@@ -177,7 +172,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				button,
 				targetProperty: Button.TextProperty,
 				path: nameof(viewModel.Text),
@@ -196,7 +191,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			var label = new Label();
 			label.Bind(nameof(viewModel.Text));
-			AssertBindingExists(label, Label.TextProperty, nameof(viewModel.Text));
+			BindingHelpers.AssertBindingExists(label, Label.TextProperty, nameof(viewModel.Text));
 		}
 
 		[Test]
@@ -221,7 +216,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				label,
 				targetProperty: Label.TextProperty,
 				path: nameof(viewModel.Text),
@@ -244,7 +239,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				convert: (string text) => $"'{text}'"
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				label,
 				Label.TextProperty,
 				nameof(viewModel.Text),
@@ -263,7 +258,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				text => text?.Trim('\'')
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				label,
 				Label.TextProperty,
 				nameof(viewModel.Text),
@@ -294,7 +289,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				label,
 				targetProperty: Label.TextProperty,
 				path: nameof(viewModel.Text),
@@ -331,7 +326,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue
 			);
 
-			AssertBindingExists(
+			BindingHelpers.AssertBindingExists(
 				label,
 				targetProperty: Label.TextProperty,
 				path: nameof(viewModel.Text),
@@ -379,7 +374,20 @@ namespace Xamarin.Forms.Markup.UnitTests
 				.Assign(out DerivedFromLabel assignDerivedFromLabel);
 		}
 
-		void AssertBindingExists(
+		class ViewModel
+		{
+			public string Text { get; set; }
+			public Color TextColor { get; set; }
+			public bool IsRed { get; set; }
+		}
+	}
+
+	internal static class BindingHelpers
+	{
+		static MethodInfo getContextMethodInfo;
+		static FieldInfo bindingFieldInfo;
+
+		internal static void AssertBindingExists(
 			BindableObject bindable,
 			BindableProperty targetProperty,
 			string path = ".",
@@ -393,7 +401,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			object fallbackValue = null
 		)
 		{
-			var binding =  GetBinding(bindable, targetProperty);
+			var binding = BindingHelpers.GetBinding(bindable, targetProperty);
 			Assert.That(binding, Is.Not.Null);
 			Assert.That(binding.Path, Is.EqualTo(path));
 			Assert.That(binding.Mode, Is.EqualTo(mode));
@@ -413,11 +421,14 @@ namespace Xamarin.Forms.Markup.UnitTests
 		/// we are not testing the binding mechanism itself; this is why it is justified to access
 		/// private binding API's here for testing.
 		/// </remarks>
-		Binding GetBinding(BindableObject bindable, BindableProperty property)
+		internal static Binding GetBinding(BindableObject bindable, BindableProperty property)
 		{
 			// return bindable.GetContext(property)?.Binding as Binding;
 			// Both BindableObject.GetContext and BindableObject.BindablePropertyContext are private; 
 			// use reflection instead of above line.
+
+			if (getContextMethodInfo == null)
+				getContextMethodInfo = typeof(BindableObject).GetMethod("GetContext", BindingFlags.NonPublic | BindingFlags.Instance);
 
 			var context = getContextMethodInfo?.Invoke(bindable, new object[] { property });
 
@@ -425,13 +436,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 				bindingFieldInfo = context?.GetType().GetField("Binding");
 
 			return bindingFieldInfo?.GetValue(context) as Binding;
-		}
-
-		class ViewModel
-		{
-			public string Text { get; set; }
-			public Color TextColor { get; set; }
-			public bool IsRed { get; set; }
 		}
 	}
 }
