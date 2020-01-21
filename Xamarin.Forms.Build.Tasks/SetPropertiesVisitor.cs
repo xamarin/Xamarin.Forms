@@ -902,7 +902,7 @@ namespace Xamarin.Forms.Build.Tasks
 			if (CanAdd(parent, propertyName, valueNode, iXmlLineInfo, context))
 				return Add(parent, propertyName, valueNode, iXmlLineInfo, context).Concat(RegisterSourceInfo(context, valueNode));
 
-			throw new XamlParseException($"No property, bindable property, or event found for '{localName}', or mismatching type between value and property.", iXmlLineInfo);
+			throw new XamlParseException($"No property, bindable property, or event found for '{localName}', or mismatching type between value and property. Did you forget to include the BindingExtension? '{localName}.{{{Binding PropertyName}}}'", iXmlLineInfo);
 		}
 
 		internal static IEnumerable<Instruction> RegisterSourceInfo(ILContext context, INode valueNode)
