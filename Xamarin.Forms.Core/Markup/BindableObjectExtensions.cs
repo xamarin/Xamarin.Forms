@@ -20,21 +20,13 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
-				bindable.SetBinding(targetProperty, new Binding(
-					path: path,
-					mode: mode,
-					converter: converter,
-					converterParameter: converterParameter,
-					stringFormat: stringFormat,
-					source: source
-				)
+			bindable.SetBinding(
+				targetProperty, 
+				new Binding(path, mode, converter, converterParameter, stringFormat, source)
 				{
 					TargetNullValue = targetNullValue,
 					FallbackValue = fallbackValue
 				});
-			else
-				bindable.SetBinding(targetProperty, path, mode, converter, stringFormat);
 			return bindable;
 		}
 
@@ -54,21 +46,13 @@ namespace Xamarin.Forms.Markup
 		) where TBindable : BindableObject
 		{
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
-			if (source != null || converterParameter != null || targetNullValue != null || fallbackValue != null)
-				bindable.SetBinding(targetProperty, new Binding(
-					path: path,
-					mode: mode,
-					converter: converter,
-					converterParameter: converterParameter,
-					stringFormat: stringFormat,
-					source: source
-				)
+			bindable.SetBinding(
+				targetProperty,
+				new Binding(path, mode, converter, converterParameter, stringFormat, source)
 				{
 					TargetNullValue = targetNullValue,
 					FallbackValue = fallbackValue
 				});
-			else
-				bindable.SetBinding(targetProperty, path, mode, converter, stringFormat);
 			return bindable;
 		}
 
@@ -86,15 +70,8 @@ namespace Xamarin.Forms.Markup
 		) where TBindable : BindableObject
 		{
 			bindable.Bind(
-				targetProperty: DefaultBindableProperties.GetFor(bindable),
-				path: path,
-				mode: mode,
-				converter: converter,
-				converterParameter: converterParameter,
-				stringFormat: stringFormat,
-				source: source,
-				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
+				DefaultBindableProperties.GetFor(bindable),
+				path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue
 			);
 			return bindable;
 		}
@@ -115,15 +92,8 @@ namespace Xamarin.Forms.Markup
 		{
 			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
 			bindable.Bind(
-				targetProperty: DefaultBindableProperties.GetFor(bindable),
-				path: path,
-				mode: mode,
-				converter: converter,
-				converterParameter: converterParameter,
-				stringFormat: stringFormat,
-				source: source,
-				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
+				DefaultBindableProperties.GetFor(bindable),
+				path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue
 			);
 			return bindable;
 		}
