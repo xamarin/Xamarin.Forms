@@ -174,6 +174,7 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(SwipeViewRenderer))]
 	internal class _SwipeViewRenderer { }
 
+#if !TIZEN4_0
 	[RenderWith(typeof(EllipseRenderer))]
 	internal class _EllipseRenderer { }
 
@@ -188,6 +189,7 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith(typeof(RectRenderer))]
 	internal class _RectRenderer { }
+#endif
 }
 
 
