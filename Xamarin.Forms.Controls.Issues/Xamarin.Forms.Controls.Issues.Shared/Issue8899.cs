@@ -59,6 +59,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = layout;
 		}
 
+		[Preserve(AllMembers = true)]
 		public class _8899ViewModel
 		{ 
 			public ObservableCollection<_8899Group> Groups { get; set; }
@@ -73,6 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
+		[Preserve(AllMembers = true)]
 		public class _8899Group : List<_8899Item>
 		{ 
 			public string GroupName { get; set; }
