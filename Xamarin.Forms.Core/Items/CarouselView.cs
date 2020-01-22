@@ -18,6 +18,14 @@ namespace Xamarin.Forms
 		public const string PreviousItemVisualState = "PreviousItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
+		public static readonly BindableProperty LoopProperty = BindableProperty.Create(nameof(Loop), typeof(bool), typeof(CarouselView), false);
+
+		public bool Loop
+		{
+			get { return (bool)GetValue(LoopProperty); }
+			set { SetValue(LoopProperty, value); }
+		}
+
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
 		public Thickness PeekAreaInsets
@@ -219,6 +227,19 @@ namespace Xamarin.Forms
 		protected virtual void OnCurrentItemChanged(EventArgs args)
 		{
 		}
+
+		// protected override void OnScrolled(ItemsViewScrolledEventArgs e)
+		// {
+		// 	var realIndex = e.CenterItemIndex;
+		// 	if(Loop)
+		// 	{
+		// 		realIndex = e.CenterItemIndex % (ItemsSource as IList).Count;
+		// 	}
+
+		// 	CurrentItem = GetItemForPosition(this, realIndex);
+
+		// 	base.OnScrolled(e);
+		// }
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
