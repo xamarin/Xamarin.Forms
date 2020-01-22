@@ -605,12 +605,19 @@ namespace Xamarin.Forms.Markup.UnitTests
 					nameof(viewModel.Text),
 					convert: (string text) => $"'{text}'")
 				.Bind(
+					nameof(viewModel.Text),
+					convert: (string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat)))
+				.Bind(
 					DerivedFromLabel.TextColorProperty, 
 					nameof(viewModel.TextColor))
 				.Bind(
 					DerivedFromLabel.BackgroundColorProperty,
 					nameof(viewModel.IsRed),
 					convert: (bool isRed) => isRed ? Color.Black : Color.Transparent)
+				.Bind(
+					Label.TextColorProperty,
+					nameof(viewModel.IsRed),
+					convert: (bool isRed, double alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha))
 				.Invoke(l => l.Text = nameof(SupportDerivedFromLabel))
 				.Assign(out DerivedFromLabel assignDerivedFromLabel);
 		}
