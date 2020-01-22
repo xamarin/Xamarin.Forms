@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (uriSource.Uri.Scheme == "ms-appx")
 				{
-					Control.Source = new Uri(uriSource.Uri.ToString().Replace("ms-appx://", "pack://application:,,,"));
+					Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx:///", ""), UriKind.Relative);
 				}
 				else if (uriSource.Uri.Scheme == "ms-appdata")
 				{
