@@ -30,7 +30,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Label instructions = new Label
 			{
-				Text = "Look at the layout below. The green and the blue squares should both be at the same vertical position as the red bar to the left, and should be same size. "
+				Text = "Look at the layout below.\n\n"
+				     + "The green and the blue squares should both be at the same vertical position as the red bar to the left, and should be same size.\n\n"
 					 + "If the green square is below the blue square, it means there is a problem.",
 				Margin = 10
 			};
@@ -48,7 +49,7 @@ namespace Xamarin.Forms.Controls.Issues
 			referenceRectAL.TranslationY = 100;
 			testAL.Children.Add(referenceRectAL);
 
-			// Problem green rectangle positionned at 100, 100, size 100, 100, scaled 50%.
+			// Problem green rectangle positioned at 100, 100, size 100, 100, scaled 50%.
 			Xamarin.Forms.AbsoluteLayout scaleRectAL = new Xamarin.Forms.AbsoluteLayout();
 			scaleRectAL.BackgroundColor = Xamarin.Forms.Color.Green;
 			Xamarin.Forms.AbsoluteLayout.SetLayoutBounds(scaleRectAL, new Xamarin.Forms.Rectangle(0, 0, 100, 100));
@@ -61,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 			scaleRectAL.TranslationY = 100;
 			testAL.Children.Add(scaleRectAL);
 
-			// Blue rectangle positionned at 200, 100, size 100, 100, scaled 50% - rotated invisibly a small amount on X-axis.
+			// Blue rectangle positioned at 200, 100, size 100, 100, scaled 50% - rotated invisibly a small amount on X-axis.
 			Xamarin.Forms.AbsoluteLayout scaleRect3DAL = new Xamarin.Forms.AbsoluteLayout();
 			scaleRect3DAL.BackgroundColor = Xamarin.Forms.Color.Blue;
 			Xamarin.Forms.AbsoluteLayout.SetLayoutBounds(scaleRect3DAL, new Xamarin.Forms.Rectangle(0, 0, 100, 100));
