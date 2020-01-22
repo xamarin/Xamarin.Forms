@@ -729,8 +729,8 @@ namespace Xamarin.Forms.Platform.UWP
 						Rotation = rotation,
 						ScaleX = scaleX,
 						ScaleY = scaleY,
-						TranslateX = scaleX == 0 ? 0 : translationX / scaleX,
-						TranslateY = scaleY == 0 ? 0 : translationY / scaleY
+						TranslateX = translationX,
+						TranslateY = translationY
 					};
 				}
 			}
