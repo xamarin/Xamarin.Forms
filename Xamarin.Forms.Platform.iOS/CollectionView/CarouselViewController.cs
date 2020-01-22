@@ -15,6 +15,9 @@ namespace Xamarin.Forms.Platform.iOS
 		List<View> _oldViews;
 		int _gotoPosition = -1;
 		CGSize _size;
+		internal int currentNegative;
+		internal int currentIndex;
+		internal int currentMaxItemsCount;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -26,14 +29,39 @@ namespace Xamarin.Forms.Platform.iOS
 			_oldViews = new List<View>();
 		}
 
+		public override nint GetItemsCount(UICollectionView collectionView, nint section)
+		{
+			currentMaxItemsCount = Math.Max((currentIndex + 1), ItemsSource.ItemCount) + 1 + currentNegative;
+
+			return _carouselView.Loop ? currentMaxItemsCount : base.GetItemsCount(collectionView, section);
+		}
+
+
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			var cell = base.GetCell(collectionView, indexPath);
+
+			currentIndex = _carouselView.Loop ? GetloopIndex(indexPath, currentIndex, currentNegative, ItemsSource.ItemCount) : indexPath.Row;
+
+			var cell = base.GetCell(collectionView, NSIndexPath.FromItemSection(currentIndex, indexPath.LongSection));
 
 			var element = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element;
 			if (element != null)
 				VisualStateManager.GoToState(element, CarouselView.DefaultItemVisualState);
 			return cell;
+
+		}
+
+		int GetloopIndex(NSIndexPath indexPath, int existingIndex, int existingNegativeIndex, int itemSourceCount)
+		{
+			var index = indexPath.Row % itemSourceCount;
+
+			if (existingIndex == 0 && existingNegativeIndex > 0)
+			{
+				index = ItemsSource.ItemCount - (indexPath.Row % itemSourceCount) - existingNegativeIndex;
+			}
+
+			System.Diagnostics.Debug.WriteLine($"IndexPath {indexPath.Row} currentIndex {index} and {existingNegativeIndex}");
+			return index;
 		}
 
 		public override void ViewWillLayoutSubviews()
