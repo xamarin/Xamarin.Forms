@@ -45,7 +45,33 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
+			var converter = new FuncConverter<TSource, object, TDest>(convert, convertBack);
+			bindable.SetBinding(
+				targetProperty,
+				new Binding(path, mode, converter, converterParameter, stringFormat, source)
+				{
+					TargetNullValue = targetNullValue,
+					FallbackValue = fallbackValue
+				});
+			return bindable;
+		}
+
+		/// <summary>Bind to a specified property with inline conversion and conversion parameter</summary>
+		public static TBindable Bind<TBindable, TSource, TParam, TDest>(
+			this TBindable bindable,
+			BindableProperty targetProperty,
+			string path = bindingContextPath,
+			BindingMode mode = BindingMode.Default,
+			Func<TSource, TParam, TDest> convert = null,
+			Func<TDest, TParam, TSource> convertBack = null,
+			object converterParameter = null,
+			string stringFormat = null,
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
+		) where TBindable : BindableObject
+		{
+			var converter = new FuncConverter<TSource, TParam, TDest>(convert, convertBack);
 			bindable.SetBinding(
 				targetProperty,
 				new Binding(path, mode, converter, converterParameter, stringFormat, source)
@@ -90,7 +116,29 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			var converter = new FuncConverter<TSource, TDest>(convert, convertBack);
+			var converter = new FuncConverter<TSource, object, TDest>(convert, convertBack);
+			bindable.Bind(
+				DefaultBindableProperties.GetFor(bindable),
+				path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue
+			);
+			return bindable;
+		}
+
+		/// <summary>Bind to the default property with inline conversion and conversion parameter</summary>
+		public static TBindable Bind<TBindable, TSource, TParam, TDest>(
+			this TBindable bindable,
+			string path = bindingContextPath,
+			BindingMode mode = BindingMode.Default,
+			Func<TSource, TParam, TDest> convert = null,
+			Func<TDest, TParam, TSource> convertBack = null,
+			object converterParameter = null,
+			string stringFormat = null,
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
+		) where TBindable : BindableObject
+		{
+			var converter = new FuncConverter<TSource, TParam, TDest>(convert, convertBack);
 			bindable.Bind(
 				DefaultBindableProperties.GetFor(bindable),
 				path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue

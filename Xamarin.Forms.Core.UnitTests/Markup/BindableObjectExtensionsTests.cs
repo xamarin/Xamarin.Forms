@@ -4,6 +4,8 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
+	using System.Globalization;
+	using System.Linq;
 	using XamarinFormsMarkupUnitTestsBindableObjectViews;
 
 	[TestFixture]
@@ -73,7 +75,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void BindSpecifiedPropertyWithOneWayInlineConvertAndDefaults()
+		public void BindSpecifiedPropertyWithInlineOneWayConvertAndDefaults()
 		{
 			var label = new Label();
 			label.Bind(
@@ -86,12 +88,33 @@ namespace Xamarin.Forms.Markup.UnitTests
 				label,
 				Label.TextColorProperty,
 				nameof(viewModel.IsRed),
-				assertConverterInstanceIsAnyNotNull: true
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert(true, Color.Red).AssertConvert(false, Color.Transparent)
 			);
 		}
 
 		[Test]
-		public void BindSpecifiedPropertyWithTwoWayInlineConvertAndDefaults()
+		public void BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndDefaults()
+		{
+			var label = new Label();
+			label.Bind(
+				Label.TextColorProperty,
+				nameof(viewModel.IsRed),
+				convert: (bool isRed, double alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha)
+			);
+
+			BindingHelpers.AssertBindingExists(
+				label,
+				Label.TextColorProperty,
+				nameof(viewModel.IsRed),
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5))
+									 .AssertConvert(false, 0.2, Color.Green.MultiplyAlpha(0.2))
+			);
+		}
+
+		[Test]
+		public void BindSpecifiedPropertyWithInlineTwoWayConvertAndDefaults()
 		{
 			var label = new Label();
 			label.Bind(
@@ -107,21 +130,46 @@ namespace Xamarin.Forms.Markup.UnitTests
 				Label.TextColorProperty,
 				nameof(viewModel.IsRed),
 				BindingMode.TwoWay,
-				assertConverterInstanceIsAnyNotNull: true
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert(true, Color.Red, twoWay: true)
+									 .AssertConvert(false, Color.Transparent, twoWay: true)
 			);
 		}
 
 		[Test]
-		public void BindSpecifiedPropertyWithOneWayInlineConvertAndPositionalParameters()
+		public void BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndDefaults()
+		{
+			var label = new Label();
+			label.Bind(
+				Label.TextColorProperty,
+				nameof(viewModel.IsRed),
+				BindingMode.TwoWay,
+				(bool isRed, double alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha),
+				(color, alpha) => color == Color.Red.MultiplyAlpha(alpha)
+			);
+
+			BindingHelpers.AssertBindingExists(
+				label,
+				Label.TextColorProperty,
+				nameof(viewModel.IsRed),
+				BindingMode.TwoWay,
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5), twoWay: true)
+									 .AssertConvert(false, 0.2, Color.Green.MultiplyAlpha(0.2), twoWay: true)
+			);
+		}
+
+		[Test]
+		public void BindSpecifiedPropertyWithInlineOneWayConvertAndPositionalParameters()
 		{
 			var button = new Button();
 			object converterParameter = 1;
-			string stringFormat = nameof(BindSpecifiedPropertyWithOneWayInlineConvertAndPositionalParameters) + " {0}";
+			string stringFormat = nameof(BindSpecifiedPropertyWithInlineOneWayConvertAndPositionalParameters) + " {0}";
 			object source = new ViewModel();
-			object targetNullValue = nameof(BindSpecifiedPropertyWithOneWayInlineConvertAndPositionalParameters) + " null";
-			object fallbackValue = nameof(BindSpecifiedPropertyWithOneWayInlineConvertAndPositionalParameters) + " fallback";
+			object targetNullValue = nameof(BindSpecifiedPropertyWithInlineOneWayConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindSpecifiedPropertyWithInlineOneWayConvertAndPositionalParameters) + " fallback";
 
-			button.Bind<Button, string, string>(
+			button.Bind(
 				Button.TextProperty,
 				nameof(viewModel.Text),
 				BindingMode.OneWay,
@@ -144,20 +192,58 @@ namespace Xamarin.Forms.Markup.UnitTests
 				stringFormat: stringFormat,
 				source: source,
 				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", "'test'")
 			);
 		}
 
-
 		[Test]
-		public void BindSpecifiedPropertyWithTwoWayInlineConvertAndPositionalParameters()
+		public void BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters()
 		{
 			var button = new Button();
 			object converterParameter = 1;
-			string stringFormat = nameof(BindSpecifiedPropertyWithTwoWayInlineConvertAndPositionalParameters) + " {0}";
+			string stringFormat = nameof(BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters) + " {0}";
 			object source = new ViewModel();
-			object targetNullValue = nameof(BindSpecifiedPropertyWithTwoWayInlineConvertAndPositionalParameters) + " null";
-			object fallbackValue = nameof(BindSpecifiedPropertyWithTwoWayInlineConvertAndPositionalParameters) + " fallback";
+			object targetNullValue = nameof(BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters) + " fallback";
+
+			button.Bind(
+				Button.TextProperty,
+				nameof(viewModel.Text),
+				BindingMode.OneWay,
+				(string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat)),
+				null,
+				converterParameter,
+				stringFormat,
+				source,
+				targetNullValue,
+				fallbackValue
+			);
+
+			BindingHelpers.AssertBindingExists(
+				button,
+				targetProperty: Button.TextProperty,
+				path: nameof(viewModel.Text),
+				mode: BindingMode.OneWay,
+				assertConverterInstanceIsAnyNotNull: true,
+				converterParameter: converterParameter,
+				stringFormat: stringFormat,
+				source: source,
+				targetNullValue: targetNullValue,
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", 2, "'test''test'")
+			);
+		}
+
+		[Test]
+		public void BindSpecifiedPropertyWithInlineTwoWayConvertAndPositionalParameters()
+		{
+			var button = new Button();
+			object converterParameter = 1;
+			string stringFormat = nameof(BindSpecifiedPropertyWithInlineTwoWayConvertAndPositionalParameters) + " {0}";
+			object source = new ViewModel();
+			object targetNullValue = nameof(BindSpecifiedPropertyWithInlineTwoWayConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindSpecifiedPropertyWithInlineTwoWayConvertAndPositionalParameters) + " fallback";
 
 			button.Bind(
 				Button.TextProperty,
@@ -182,7 +268,46 @@ namespace Xamarin.Forms.Markup.UnitTests
 				stringFormat: stringFormat,
 				source: source,
 				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", "'test'", twoWay: true)
+			);
+		}
+
+		[Test]
+		public void BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters()
+		{
+			var button = new Button();
+			object converterParameter = 1;
+			string stringFormat = nameof(BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters) + " {0}";
+			object source = new ViewModel();
+			object targetNullValue = nameof(BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters) + " fallback";
+
+			button.Bind(
+				Button.TextProperty,
+				nameof(viewModel.Text),
+				BindingMode.TwoWay,
+				(string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat)),
+				(text, repeat) => text?.Substring(0, text.Length / repeat).Trim('\''),
+				converterParameter,
+				stringFormat,
+				source,
+				targetNullValue,
+				fallbackValue
+			);
+
+			BindingHelpers.AssertBindingExists(
+				button,
+				targetProperty: Button.TextProperty,
+				path: nameof(viewModel.Text),
+				mode: BindingMode.TwoWay,
+				assertConverterInstanceIsAnyNotNull: true,
+				converterParameter: converterParameter,
+				stringFormat: stringFormat,
+				source: source,
+				targetNullValue: targetNullValue,
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", 2, "'test''test'", twoWay: true)
 			);
 		}
 
@@ -231,7 +356,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void BindDefaultPropertyWithOneWayInlineConvertAndDefaults()
+		public void BindDefaultPropertyWithInlineOneWayConvertAndDefaults()
 		{
 			var label = new Label();
 			label.Bind(
@@ -243,12 +368,31 @@ namespace Xamarin.Forms.Markup.UnitTests
 				label,
 				Label.TextProperty,
 				nameof(viewModel.Text),
-				assertConverterInstanceIsAnyNotNull: true
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert("test", "'test'")
 			);
 		}
 
 		[Test]
-		public void BindDefaultPropertyWithTwoWayInlineConvertAndDefaults()
+		public void BindDefaultPropertyWithInlineOneWayParameterizedConvertAndDefaults()
+		{
+			var label = new Label();
+			label.Bind(
+				nameof(viewModel.Text),
+				convert: (string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat))
+			);
+
+			BindingHelpers.AssertBindingExists(
+				label,
+				Label.TextProperty,
+				nameof(viewModel.Text),
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert("test", 2, "'test''test'")
+			);
+		}
+
+		[Test]
+		public void BindDefaultPropertyWithInlineTwoWayConvertAndDefaults()
 		{
 			var label = new Label();
 			label.Bind(
@@ -263,21 +407,43 @@ namespace Xamarin.Forms.Markup.UnitTests
 				Label.TextProperty,
 				nameof(viewModel.Text),
 				BindingMode.TwoWay,
-				assertConverterInstanceIsAnyNotNull: true
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert("test", "'test'", twoWay: true)
 			);
 		}
 
 		[Test]
-		public void BindDefaultPropertyWithOneWayInlineConvertAndPositionalParameters()
+		public void BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndDefaults()
+		{
+			var label = new Label();
+			label.Bind(
+				nameof(viewModel.Text),
+				BindingMode.TwoWay,
+				(string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat)),
+				(text, repeat) => text?.Substring(0, text.Length / repeat).Trim('\'')
+			);
+
+			BindingHelpers.AssertBindingExists(
+				label,
+				Label.TextProperty,
+				nameof(viewModel.Text),
+				BindingMode.TwoWay,
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => c.AssertConvert("test", 2, "'test''test'", twoWay: true)
+			);
+		}
+
+		[Test]
+		public void BindDefaultPropertyWithInlineOneWayConvertAndPositionalParameters()
 		{
 			var label = new Label();
 			object converterParameter = 1;
-			string stringFormat = nameof(BindDefaultPropertyWithOneWayInlineConvertAndPositionalParameters) + " {0}";
+			string stringFormat = nameof(BindDefaultPropertyWithInlineOneWayConvertAndPositionalParameters) + " {0}";
 			object source = new ViewModel();
-			object targetNullValue = nameof(BindDefaultPropertyWithOneWayInlineConvertAndPositionalParameters) + " null";
-			object fallbackValue = nameof(BindDefaultPropertyWithOneWayInlineConvertAndPositionalParameters) + " fallback";
+			object targetNullValue = nameof(BindDefaultPropertyWithInlineOneWayConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindDefaultPropertyWithInlineOneWayConvertAndPositionalParameters) + " fallback";
 
-			label.Bind<Label, string, string>(
+			label.Bind(
 				nameof(viewModel.Text),
 				BindingMode.OneWay,
 				(string text) => $"'{text?.Trim('\'')}'",
@@ -299,20 +465,57 @@ namespace Xamarin.Forms.Markup.UnitTests
 				stringFormat: stringFormat,
 				source: source,
 				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", "'test'")
 			);
 		}
 
-
 		[Test]
-		public void BindDefaultPropertyWithTwoWayInlineConvertAndPositionalParameters()
+		public void BindDefaultPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters()
 		{
 			var label = new Label();
 			object converterParameter = 1;
-			string stringFormat = nameof(BindDefaultPropertyWithTwoWayInlineConvertAndPositionalParameters) + " {0}";
+			string stringFormat = nameof(BindDefaultPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters) + " {0}";
 			object source = new ViewModel();
-			object targetNullValue = nameof(BindDefaultPropertyWithTwoWayInlineConvertAndPositionalParameters) + " null";
-			object fallbackValue = nameof(BindDefaultPropertyWithTwoWayInlineConvertAndPositionalParameters) + " fallback";
+			object targetNullValue = nameof(BindDefaultPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindDefaultPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters) + " fallback";
+
+			label.Bind(
+				nameof(viewModel.Text),
+				BindingMode.OneWay,
+				(string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat)),
+				null,
+				converterParameter,
+				stringFormat,
+				source,
+				targetNullValue,
+				fallbackValue
+			);
+
+			BindingHelpers.AssertBindingExists(
+				label,
+				targetProperty: Label.TextProperty,
+				path: nameof(viewModel.Text),
+				mode: BindingMode.OneWay,
+				assertConverterInstanceIsAnyNotNull: true,
+				converterParameter: converterParameter,
+				stringFormat: stringFormat,
+				source: source,
+				targetNullValue: targetNullValue,
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", 2, "'test''test'")
+			);
+		}
+
+		[Test]
+		public void BindDefaultPropertyWithInlineTwoWayConvertAndPositionalParameters()
+		{
+			var label = new Label();
+			object converterParameter = 1;
+			string stringFormat = nameof(BindDefaultPropertyWithInlineTwoWayConvertAndPositionalParameters) + " {0}";
+			object source = new ViewModel();
+			object targetNullValue = nameof(BindDefaultPropertyWithInlineTwoWayConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindDefaultPropertyWithInlineTwoWayConvertAndPositionalParameters) + " fallback";
 
 			label.Bind(
 				nameof(viewModel.Text),
@@ -336,7 +539,45 @@ namespace Xamarin.Forms.Markup.UnitTests
 				stringFormat: stringFormat,
 				source: source,
 				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", "'test'", twoWay: true)
+			);
+		}
+
+		[Test]
+		public void BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters()
+		{
+			var label = new Label();
+			object converterParameter = 1;
+			string stringFormat = nameof(BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters) + " {0}";
+			object source = new ViewModel();
+			object targetNullValue = nameof(BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters) + " null";
+			object fallbackValue = nameof(BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters) + " fallback";
+
+			label.Bind(
+				nameof(viewModel.Text),
+				BindingMode.TwoWay,
+				(string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat)),
+				(text, repeat) => text?.Substring(0, text.Length / repeat).Trim('\''),
+				converterParameter,
+				stringFormat,
+				source,
+				targetNullValue,
+				fallbackValue
+			);
+
+			BindingHelpers.AssertBindingExists(
+				label,
+				targetProperty: Label.TextProperty,
+				path: nameof(viewModel.Text),
+				mode: BindingMode.TwoWay,
+				assertConverterInstanceIsAnyNotNull: true,
+				converterParameter: converterParameter,
+				stringFormat: stringFormat,
+				source: source,
+				targetNullValue: targetNullValue,
+				fallbackValue: fallbackValue,
+				assertConvert: c => c.AssertConvert("test", 2, "'test''test'", twoWay: true)
 			);
 		}
 
@@ -398,7 +639,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 			string stringFormat = null,
 			object source = null,
 			object targetNullValue = null,
-			object fallbackValue = null
+			object fallbackValue = null,
+			Action<IValueConverter> assertConvert = null
 		)
 		{
 			var binding = BindingHelpers.GetBinding(bindable, targetProperty);
@@ -414,6 +656,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(binding.Source, Is.EqualTo(source));
 			Assert.That(binding.TargetNullValue, Is.EqualTo(targetNullValue));
 			Assert.That(binding.FallbackValue, Is.EqualTo(fallbackValue));
+
+			assertConvert?.Invoke(binding.Converter);
 		}
 
 		/// <remarks>
@@ -437,6 +681,16 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			return bindingFieldInfo?.GetValue(context) as Binding;
 		}
+
+		internal static IValueConverter AssertConvert<TValue, TConvertedValue>(this IValueConverter converter, TValue value, object parameter, TConvertedValue expectedConvertedValue, bool twoWay = false, bool backOnly = false)
+		{
+			Assert.That(converter?.Convert(value, typeof(object), parameter, CultureInfo.InvariantCulture), Is.EqualTo(backOnly ? default(TConvertedValue) : expectedConvertedValue));
+			Assert.That(converter?.ConvertBack(expectedConvertedValue, typeof(object), parameter, CultureInfo.InvariantCulture), Is.EqualTo(twoWay || backOnly ? value : default(TValue)));
+			return converter;
+		}
+
+		internal static IValueConverter AssertConvert<TValue, TConvertedValue>(this IValueConverter converter, TValue value, TConvertedValue expectedConvertedValue, bool twoWay = false, bool backOnly = false)
+			=> AssertConvert(converter, value, null, expectedConvertedValue, twoWay: twoWay, backOnly: backOnly);
 	}
 }
 
