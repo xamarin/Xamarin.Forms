@@ -11,7 +11,8 @@
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
 		<ResourceDictionary Source="FormsCheckBoxStyle.xaml" />
 		<ResourceDictionary Source="FormsAutoSuggestBoxStyle.xaml" />
-		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
+        <ResourceDictionary Source="FormsButtonStyle.xaml" />
+        <ResourceDictionary Source="MasterDetailControlStyle.xaml" />
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
 		<ResourceDictionary Source="SliderStyle.xaml" />
 		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
