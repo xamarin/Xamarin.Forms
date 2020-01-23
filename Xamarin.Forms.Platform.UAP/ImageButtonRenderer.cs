@@ -72,7 +72,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					_formsButton = new FormsButton();
+					_formsButton = new FormsButton
+					{
+						Style = Windows.UI.Xaml.Application.Current.Resources["FormsButtonStyle"] as Windows.UI.Xaml.Style
+					};
+
 					_formsButton.Padding = new WThickness(0);
 					_formsButton.BorderThickness = new WThickness(0);
 					_formsButton.Background = null;
