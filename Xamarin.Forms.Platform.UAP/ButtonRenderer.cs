@@ -24,7 +24,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var button = new FormsButton();
+					var button = new FormsButton
+					{
+						Style = Windows.UI.Xaml.Application.Current.Resources["FormsButtonStyle"] as Windows.UI.Xaml.Style
+					};
 
 					button.Click += OnButtonClick;
 					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
