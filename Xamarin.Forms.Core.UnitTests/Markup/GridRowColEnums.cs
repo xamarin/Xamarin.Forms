@@ -1,11 +1,11 @@
 ﻿using System;
 using NUnit.Framework;
-using static Xamarin.Forms.Markup.EnumsForGridRowsAndColumns;
+using static Xamarin.Forms.Markup.GridRowColEnums;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
 	[TestFixture]
-	public class EnumsForGridRowsAndColumns : MarkupBaseTestFixture
+	public class GridRowColEnums : MarkupBaseTestFixture
 	{
 		enum Row { First, Second, Third }
 		enum Col { First, Second, Third, Fourth }
@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void DefineRows()
 		{
-			var grid = new Grid
+			var grid = new Forms.Grid
 			{
 				RowDefinitions = Rows.Define(
 					(Row.First, Auto),
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void DefineColumns()
 		{
-			var grid = new Grid
+			var grid = new Forms.Grid
 			{
 				ColumnDefinitions = Columns.Define(
 					(Col.First, Auto),

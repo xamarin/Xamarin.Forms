@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Xamarin.Forms.Markup
 {
-	public static class EnumsForGridRowsAndColumns
+	public static class GridRowColEnums
 	{
 		public static GridLength Auto => GridLength.Auto;
 
