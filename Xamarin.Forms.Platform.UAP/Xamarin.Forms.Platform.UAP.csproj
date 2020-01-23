@@ -98,17 +98,29 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <None Remove="FormsButtonStyle.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="FormsButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup  Condition=" '$(OS)' == 'Windows_NT' ">
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <PackageReference Include="Microsoft.UI.Xaml">
       <Version>2.1.190606001</Version>
     </PackageReference>
     <PackageReference Include="Win2D.uwp">
       <Version>1.20.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="FormsButtonStyle.xaml" />
   </ItemGroup>
 </Project>
