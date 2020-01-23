@@ -10,21 +10,42 @@ namespace Xamarin.Forms.Markup
 
 		public static TGestureElement BindClickGesture<TGestureElement>(
 			this TGestureElement gestureElement,
-			string path = bindingContextPath
+			string path = bindingContextPath,
+			BindingMode mode = BindingMode.Default,
+			IValueConverter converter = null,
+			object converterParameter = null,
+			string stringFormat = null,
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
 		) where TGestureElement : Element, IGestureRecognizers
-			=> ClickGesture(gestureElement, g => g.Bind(path));
+			=> ClickGesture(gestureElement, g => g.Bind(path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue));
 
 		public static TGestureElement BindSwipeGesture<TGestureElement>(
 			this TGestureElement gestureElement,
-			string path = bindingContextPath
+			string path = bindingContextPath,
+			BindingMode mode = BindingMode.Default,
+			IValueConverter converter = null,
+			object converterParameter = null,
+			string stringFormat = null,
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
 		) where TGestureElement : Element, IGestureRecognizers
-			=> SwipeGesture(gestureElement, g => g.Bind(path));
+			=> SwipeGesture(gestureElement, g => g.Bind(path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue));
 
 		public static TGestureElement BindTapGesture<TGestureElement>(
 			this TGestureElement gestureElement,
-			string path = bindingContextPath
+			string path = bindingContextPath,
+			BindingMode mode = BindingMode.Default,
+			IValueConverter converter = null,
+			object converterParameter = null,
+			string stringFormat = null,
+			object source = null,
+			object targetNullValue = null,
+			object fallbackValue = null
 		) where TGestureElement : Element, IGestureRecognizers
-			=> TapGesture(gestureElement, g => g.Bind(path));
+			=> TapGesture(gestureElement, g => g.Bind(path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue));
 
 		public static TGestureElement ClickGesture<TGestureElement>(this TGestureElement gestureElement, Action<ClickGestureRecognizer> init)
 			where TGestureElement : Element, IGestureRecognizers
