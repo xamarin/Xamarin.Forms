@@ -29,7 +29,8 @@ namespace Xamarin.Forms.Controls.Issues
 			Label instructions = new Label
 			{
 				Text = "Run this test in UWP with Target Platform Version above 17134.\n\n"
-					 + "Check that the BackgroundColor of the Button below stays yellow, when hovering the mouse."
+					 + "Check that the BackgroundColor of the Button below stays yellow when hovering the mouse pointer.\n\n"
+					 + "Likewise, check that the BackgroundColor of the ImageButton with the coffee cup stays yellow-green, when hovering over it."
 			};
 
 			Button testButton = new Button
@@ -37,9 +38,18 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Yellow Button",
 				BackgroundColor = Color.Yellow
 			};
-			
+
+			ImageButton testImageButton = new ImageButton
+			{
+				HorizontalOptions = LayoutOptions.Start,
+				VerticalOptions = LayoutOptions.End,
+				Source = "coffee.png",
+				BackgroundColor = Color.YellowGreen
+			};
+
 			layout.Children.Add(instructions);
 			layout.Children.Add(testButton);
+			layout.Children.Add(testImageButton);
 
 			Content = layout;
 		}
