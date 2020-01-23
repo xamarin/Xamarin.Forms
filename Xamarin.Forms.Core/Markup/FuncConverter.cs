@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Xamarin.Forms.Markup
 {
-	public class FuncConverter<TSource, TParam, TDest> : IValueConverter
+	public class FuncConverter<TSource, TDest, TParam> : IValueConverter
 	{
 		readonly Func<TSource, TDest> convert;
 		readonly Func<TDest, TSource> convertBack;
@@ -46,9 +46,9 @@ namespace Xamarin.Forms.Markup
 		}
 	}
 
-	public class FuncConverter<TSource, TParam> : FuncConverter<TSource, TParam, object>
+	public class FuncConverter<TSource, TDest> : FuncConverter<TSource, TDest, object>
 	{
-		public FuncConverter(Func<TSource, TParam, object> convert = null, Func<object, TParam, TSource> convertBack = null)
+		public FuncConverter(Func<TSource, TDest> convert = null, Func<TDest, TSource> convertBack = null)
 			: base(convert, convertBack) { }
 	}
 
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Markup
 			: base(convert, convertBack) { }
 	}
 
-	public class ToStringConverter : FuncConverter<object, object, string>
+	public class ToStringConverter : FuncConverter<object, string>
 	{
 		public ToStringConverter(string format = "{0}")
 			: base(o => string.Format(CultureInfo.InvariantCulture, format, o)) { }

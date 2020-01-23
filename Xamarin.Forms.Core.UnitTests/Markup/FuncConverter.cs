@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void FullyTypedTwoWayWithParam()
 		{
-			var converter = new FuncConverter<bool, double, Color>(
+			var converter = new FuncConverter<bool, Color, double>(
 				(isRed, alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha),
 				(color, alpha) => color == Color.Red.MultiplyAlpha(alpha)
 			).AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5), twoWay: true)
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void FullyTypedTwoWay()
 		{
-			var converter = new FuncConverter<bool, object, Color>(
+			var converter = new FuncConverter<bool, Color, object>(
 				isRed => isRed ? Color.Red : Color.Green,
 				color => color == Color.Red
 			).AssertConvert(true, Color.Red, twoWay: true)
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void FullyTypedOneWayWithParam()
 		{
-			new FuncConverter<bool, double, Color>(
+			new FuncConverter<bool, Color, double>(
 				(isRed, alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha)
 			).AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5))
 			 .AssertConvert(false, 0.2, Color.Green.MultiplyAlpha(0.2));
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void FullyTypedOneWay()
 		{
-			new FuncConverter<bool, object, Color>(
+			new FuncConverter<bool, Color, object>(
 				isRed => isRed ? Color.Red : Color.Green
 			).AssertConvert(true, Color.Red)
 			 .AssertConvert(false, Color.Green);
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void FullyTypedBackOnlyWithParam()
 		{
-			new FuncConverter<bool, double, Color>(
+			new FuncConverter<bool, Color, double>(
 				null,
 				(color, alpha) => color == Color.Red.MultiplyAlpha(alpha)
 			).AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5), backOnly: true)
@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void FullyTypedBackOnly()
 		{
-			new FuncConverter<bool, object, Color>(
+			new FuncConverter<bool, Color, object>(
 				null,
 				color => color == Color.Red
 			).AssertConvert(true, Color.Red, backOnly: true)
@@ -71,32 +71,32 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void UntypedDestTwoWayWithParam()
+		public void TwoWay()
 		{
-			new FuncConverter<bool, double>(
-				(isRed, alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha),
-				(color, alpha) => (Color)color == Color.Red.MultiplyAlpha(alpha)
-			).AssertConvert(true, 0.5, (object)Color.Red.MultiplyAlpha(0.5), twoWay: true)
-			 .AssertConvert(false, 0.2, (object)Color.Green.MultiplyAlpha(0.2), twoWay: true);
+			new FuncConverter<bool, Color>(
+				isRed => isRed ? Color.Red : Color.Green,
+				color => color == Color.Red
+			).AssertConvert(true, Color.Red, twoWay: true)
+			 .AssertConvert(false, Color.Green, twoWay: true);
 		}
 
 		[Test]
-		public void UntypedDestOneWayWithParam()
+		public void OneWay()
 		{
-			new FuncConverter<bool, double>(
-				(isRed, alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha)
-			).AssertConvert(true, 0.5, (object)Color.Red.MultiplyAlpha(0.5))
-			 .AssertConvert(false, 0.2, (object)Color.Green.MultiplyAlpha(0.2));
+			new FuncConverter<bool, Color>(
+				isRed => isRed ? Color.Red : Color.Green
+			).AssertConvert(true, Color.Red)
+			 .AssertConvert(false, Color.Green);
 		}
 
 		[Test]
-		public void UntypedDestBackOnlyWithParam()
+		public void BackOnly()
 		{
-			new FuncConverter<bool, double>(
+			new FuncConverter<bool, Color>(
 				null,
-				(color, alpha) => (Color)color == Color.Red.MultiplyAlpha(alpha)
-			).AssertConvert(true, 0.5, (object)Color.Red.MultiplyAlpha(0.5), backOnly: true)
-			 .AssertConvert(false, 0.2, (object)Color.Green.MultiplyAlpha(0.2), backOnly: true);
+				color => color == Color.Red
+			).AssertConvert(true, Color.Red, backOnly: true)
+			 .AssertConvert(false, Color.Green, backOnly: true);
 		}
 
 		[Test]

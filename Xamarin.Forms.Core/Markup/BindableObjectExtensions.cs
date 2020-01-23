@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			var converter = new FuncConverter<TSource, object, TDest>(convert, convertBack);
+			var converter = new FuncConverter<TSource, TDest, object>(convert, convertBack);
 			bindable.SetBinding(
 				targetProperty,
 				new Binding(path, mode, converter, converterParameter, stringFormat, source)
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			var converter = new FuncConverter<TSource, TParam, TDest>(convert, convertBack);
+			var converter = new FuncConverter<TSource, TDest, TParam>(convert, convertBack);
 			bindable.SetBinding(
 				targetProperty,
 				new Binding(path, mode, converter, converterParameter, stringFormat, source)
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			var converter = new FuncConverter<TSource, object, TDest>(convert, convertBack);
+			var converter = new FuncConverter<TSource, TDest, object>(convert, convertBack);
 			bindable.Bind(
 				DefaultBindableProperties.GetFor(bindable),
 				path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			var converter = new FuncConverter<TSource, TParam, TDest>(convert, convertBack);
+			var converter = new FuncConverter<TSource, TDest, TParam>(convert, convertBack);
 			bindable.Bind(
 				DefaultBindableProperties.GetFor(bindable),
 				path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue
