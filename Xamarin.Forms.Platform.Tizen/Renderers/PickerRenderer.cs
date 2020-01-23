@@ -52,6 +52,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				};
 				entry.SetVerticalTextAlignment("elm.text", 0.5);
 				entry.HorizontalTextAlignment = Native.TextAlignment.Center;
+				entry.IsEditable = false;
 				entry.TextBlockFocused += OnTextBlockFocused;
 
 				if (Device.Idiom == TargetIdiom.TV)

@@ -43,6 +43,7 @@ namespace Xamarin.Forms.Platform.Tizen
 					InputPanelShowByOnDemand = true,
 				};
 				entry.SetVerticalTextAlignment("elm.text", 0.5);
+				entry.IsEditable = false;
 				entry.TextBlockFocused += OnTextBlockFocused;
 				SetNativeControl(entry);
 
