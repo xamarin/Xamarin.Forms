@@ -28,8 +28,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Label instructions = new Label
 			{
-				Text = "Run this test in UWP with Target Platform Version > 16299.\n\n"
-					 + "Chack that the BackgroundColor of the Button below stays yellow, when hovering the mouse."
+				Text = "Run this test in UWP with Target Platform Version above 17134.\n\n"
+					 + "Check that the BackgroundColor of the Button below stays yellow, when hovering the mouse."
 			};
 
 			Button testButton = new Button
