@@ -19,10 +19,12 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			// Initialize ui here instead of ctor
-			Content = new Label
+			Content = new Image
 			{
 				AutomationId = "Issue1Label",
-				Text = "See if I'm here"
+				WidthRequest = 50,
+				HeightRequest = 50,
+				Source = "https://files.mastodon.social/accounts/avatars/000/458/416/original/c751c2d7145c883e.png"
 			};
 
 			BindingContext = new ViewModelIssue1();

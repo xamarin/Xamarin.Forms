@@ -16,5 +16,17 @@ namespace Xamarin.Forms.Core.UITests.Shared
 		{
 			App.WaitForElement("SUCCESS", timeout: TimeSpan.FromMinutes(1));
 		}
+
+		protected override void TestTearDown()
+		{
+			base.TestTearDown();
+			//
+			/* See if we can set CurrentResult here to a custom subclass of TestResult/TestSuiteResult
+			 * which we can construct with an XML string and that overrides AddToXml with that XML string
+			 * If that works and the results are legible, we can retrieve the actual device results XML 
+			 * via the mechanism in ContolGalleryTestListener + IApp.Invoke
+			 */
+			//NUnit.Framework.Internal.TestExecutionContext.CurrentContext.CurrentResult
+		}
 	}
 }

@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Xml;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 
@@ -16,6 +19,15 @@ namespace Xamarin.Forms.Controls.Tests
 			if (test is TestAssembly testAssembly)
 			{
 				MessagingCenter.Send(result, "AssemblyFinished");
+
+				var sb = new StringBuilder();
+				var tw = new StringWriter(sb);
+				var xw = new XmlTextWriter(tw);
+				result.ToXml(true).WriteTo(xw);
+
+				var s = sb.ToString();
+
+				System.Diagnostics.Debug.WriteLine(s);
 			}
 			else
 			{
