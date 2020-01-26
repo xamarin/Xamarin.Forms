@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
 using Windows.UI;
@@ -43,7 +44,7 @@ namespace Xamarin.Forms.Platform.UWP
 				throw new ArgumentNullException(nameof(element));
 
 			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ??
-			                                  new DefaultRenderer();
+											  new DefaultRenderer();
 			renderer.SetElement(element);
 			return renderer;
 		}
@@ -328,6 +329,8 @@ namespace Xamarin.Forms.Platform.UWP
 				if (_currentPage != null)
 				{
 					Page previousPage = _currentPage;
+					IVisualElementRenderer previousRenderer = GetRenderer(previousPage);
+					_container.Children.Remove(previousRenderer.ContainerElement);
 
 					if (modal && !popping && !newPage.BackgroundColor.IsDefault)
 						_modalBackgroundPage = previousPage;
@@ -358,7 +361,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				await UpdateToolbarItems();
 			}
-			catch(Exception error)
+			catch (Exception error)
 			{
 				//This exception prevents the Main Page from being changed in a child 
 				//window or a different thread, except on the Main thread. 
@@ -417,8 +420,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			_bounds = new Rectangle(0, 0, _page.ActualWidth, _page.ActualHeight);
 
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            {
+			if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+			{
 				StatusBar statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)
 				{
@@ -442,8 +445,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void InitializeStatusBar()
 		{
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            {
+			if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+			{
 				StatusBar statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)
 				{
@@ -470,7 +473,7 @@ namespace Xamarin.Forms.Platform.UWP
 		internal async Task UpdateToolbarItems()
 		{
 			var toolbarProvider = GetToolbarProvider();
-			
+
 			if (toolbarProvider == null)
 			{
 				return;
@@ -548,9 +551,70 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal static void SubscribeAlertsAndActionSheets()
 		{
+			MessagingCenter.Subscribe<Page, SnackbarArguments>(Window.Current, Page.SnackbarSignalName, OnPageSnackbar);
 			MessagingCenter.Subscribe<Page, AlertArguments>(Window.Current, Page.AlertSignalName, OnPageAlert);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(Window.Current, Page.ActionSheetSignalName, OnPageActionSheet);
 			MessagingCenter.Subscribe<Page, PromptArguments>(Window.Current, Page.PromptSignalName, OnPagePrompt);
+		}
+
+		static void OnPageSnackbar(Page page, SnackbarArguments snackbarArguments)
+		{
+			var content = new ToastContent()
+			{
+				Visual = new ToastVisual()
+				{
+					BindingGeneric = new ToastBindingGeneric()
+					{
+						Children =
+						{
+							new AdaptiveText()
+							{
+								Text = snackbarArguments.Message
+							}
+						}
+					}
+				}
+			};
+
+			if (!string.IsNullOrEmpty(snackbarArguments.ActionButtonText))
+			{
+				content.Actions = new ToastActionsCustom()
+				{
+					Buttons =
+					{
+						new ToastButton(snackbarArguments.ActionButtonText, "")
+						{
+							ActivationType = ToastActivationType.Foreground
+						}
+					}
+				};
+			}
+
+			var notifier = ToastNotificationManager.CreateToastNotifier();
+			var toast = new ToastNotification(content.GetXml())
+			{
+				ExpirationTime = DateTimeOffset.Now.AddMilliseconds(snackbarArguments.Duration)
+			};
+			toast.Dismissed += (ToastNotification sender, ToastDismissedEventArgs args) =>
+			{
+				if (args.Reason != ToastDismissalReason.ApplicationHidden)
+				{
+					snackbarArguments.SetResult(false);
+					notifier.Hide(toast);
+				}
+			};
+
+			if (snackbarArguments.Action != null)
+			{
+				toast.Activated += async delegate
+				  {
+					  notifier.Hide(toast);
+					  await snackbarArguments.Action();
+					  snackbarArguments.SetResult(true);
+				  };
+			}
+
+			notifier.Show(toast);
 		}
 
 		static void OnPageActionSheet(object sender, ActionSheetArguments options)

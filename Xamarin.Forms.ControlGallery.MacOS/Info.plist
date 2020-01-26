@@ -37,5 +37,7 @@
 	<string>Main</string>
 	<key>ATSApplicationFontsPath</key>
 	<string>Fonts</string>
+	<key>NSUserNotificationAlertStyle</key>
+	<string>alert</string>
 </dict>
 </plist>

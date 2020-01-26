@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Xamarin.Forms.Platform.WPF.Extensions;
 using Xamarin.Forms.Platform.WPF.Helpers;
@@ -35,6 +36,26 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 		public static readonly DependencyProperty CurrentContentDialogProperty = DependencyProperty.Register("CurrentContentDialog", typeof(FormsContentDialog), typeof(FormsWindow));
 		public static readonly DependencyProperty TitleBarBackgroundColorProperty = DependencyProperty.Register("TitleBarBackgroundColor", typeof(Brush), typeof(FormsWindow));
 		public static readonly DependencyProperty TitleBarTextColorProperty = DependencyProperty.Register("TitleBarTextColor", typeof(Brush), typeof(FormsWindow));
+		public static readonly DependencyProperty SnackbarActionCommandProperty = DependencyProperty.Register("SnackbarActionCommand", typeof(ICommand), typeof(FormsWindow));
+		public static readonly DependencyProperty SnackbarActionButtonTextProperty = DependencyProperty.Register("SnackbarActionButtonText", typeof(string), typeof(FormsWindow));
+		public static readonly DependencyProperty SnackbarMessageProperty = DependencyProperty.Register("SnackbarMessage", typeof(string), typeof(FormsWindow));
+		public string SnackbarActionButtonText
+		{
+			get { return (string)GetValue(SnackbarActionButtonTextProperty); }
+			private set { SetValue(SnackbarActionButtonTextProperty, value); }
+		}
+
+		public ICommand SnackbarActionCommand
+		{
+			get { return (ICommand)GetValue(SnackbarActionCommandProperty); }
+			private set { SetValue(SnackbarActionCommandProperty, value); }
+		}
+
+		public string SnackbarMessage
+		{
+			get { return (string)GetValue(SnackbarMessageProperty); }
+			private set { SetValue(SnackbarMessageProperty, value); }
+		}
 
 		public Brush TitleBarBackgroundColor
 		{
@@ -221,7 +242,8 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			IEnumerable<FormsPage> childrens = this.FindVisualChildren<FormsPage>();
 
 			var page = childrens.FirstOrDefault();
-			if (page == null) return;
+			if (page == null)
+				return;
 
 			topAppBar.PrimaryCommands = page.GetPrimaryTopBarCommands().OrderBy(ti => ti.GetValue(FrameworkElementAttached.PriorityProperty));
 			topAppBar.SecondaryCommands = page.GetSecondaryTopBarCommands().OrderBy(ti => ti.GetValue(FrameworkElementAttached.PriorityProperty));
@@ -241,6 +263,28 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 		public void HideContentDialog()
 		{
 			this.CurrentContentDialog = null;
+		}
+
+		public Action OnSnackbarActionExecuted;
+		public void ShowSnackBar(string message, string actionButtonText, Func<Task> action)
+		{
+			SnackbarMessage = message;
+			SnackbarActionButtonText = actionButtonText;
+			if (action != null)
+			{
+				SnackbarActionCommand = new Command(async () =>
+				{
+					OnSnackbarActionExecuted?.Invoke();
+					await action();
+				});
+			}
+		}
+
+		public void HideSnackBar()
+		{
+			SnackbarMessage = null;
+			SnackbarActionButtonText = null;
+			SnackbarActionCommand = null;
 		}
 
 		public ObservableCollection<object> InternalChildren { get; } = new ObservableCollection<object>();

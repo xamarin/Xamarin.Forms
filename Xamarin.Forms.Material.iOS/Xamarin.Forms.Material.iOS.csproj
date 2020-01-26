@@ -64,6 +64,7 @@
     <Compile Include="MaterialPickerRenderer.cs" />
     <Compile Include="MaterialDatePickerRenderer.cs" />
     <Compile Include="MaterialMultiLineTextField.cs" />
+    <Compile Include="MaterialSnackbar.cs" />
     <Compile Include="MaterialTextManager.cs" />
     <Compile Include="MaterialTimePickerRenderer.cs" />
     <Compile Include="MaterialTextField.cs" />

@@ -8,6 +8,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Xamarin.Forms.Platform.iOS.Controls.Snackbar;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -83,12 +84,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IReadOnlyList<Page> INavigation.ModalStack
 		{
-			get 
+			get
 			{
 				if (_disposed)
 					return new List<Page>();
 
-				return _modals; 
+				return _modals;
 			}
 		}
 
@@ -317,9 +318,9 @@ namespace Xamarin.Forms.Platform.iOS
 			_renderer.View.ContentMode = UIViewContentMode.Redraw;
 
 #pragma warning disable CS0618 // Type or member is obsolete
-				// The Platform property is no longer necessary, but we have to set it because some third-party
-				// library might still be retrieving it and using it
-				Page.Platform = this;
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
 #pragma warning restore CS0618 // Type or member is obsolete
 
 			AddChild(Page);
@@ -397,6 +398,35 @@ namespace Xamarin.Forms.Platform.iOS
 			PresentPopUp(window, alert);
 		}
 
+		void PresentSnackbar(SnackbarArguments arguments)
+		{
+			var snackbar = SnackBar.MakeSnackbar(arguments.Message)
+				.SetDuration(arguments.Duration)
+				.SetTimeoutAction(() =>
+				{
+					arguments.SetResult(false);
+					return Task.CompletedTask;
+				});
+
+			if (!UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+			{
+				snackbar.SetParentController(ViewController);
+			}
+
+			if (!string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null)
+			{
+				snackbar.SetActionButtonText(arguments.ActionButtonText);
+				snackbar.SetAction(async () =>
+				{
+					await arguments.Action();
+					snackbar.Dismiss();
+					arguments.SetResult(true);
+				});
+			}
+
+			snackbar.Show();
+		}
+
 		void PresentPrompt(PromptArguments arguments)
 		{
 			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
@@ -471,7 +501,7 @@ namespace Xamarin.Forms.Platform.iOS
 				alert.PopoverPresentationController.PermittedArrowDirections = 0; // No arrow
 			}
 
-			if(!Forms.IsiOS9OrNewer)
+			if (!Forms.IsiOS9OrNewer)
 			{
 				// For iOS 8, we need to explicitly set the size of the window
 				window.Frame = new RectangleF(0, 0, UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
@@ -534,7 +564,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			public override UIView HitTest(CGPoint point, UIEvent uievent)
 			{
-				if (!UserInteractionEnabled) 
+				if (!UserInteractionEnabled)
 				{
 					// This view can't interact, and neither can its children
 					return null;
@@ -576,7 +606,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal static string ResolveMsAppDataUri(Uri uri)
 		{
-			if(uri.Scheme == "ms-appdata")
+			if (uri.Scheme == "ms-appdata")
 			{
 				string filePath = string.Empty;
 
@@ -601,7 +631,7 @@ namespace Xamarin.Forms.Platform.iOS
 				throw new ArgumentException("uri");
 			}
 		}
-    
+
 		#region Obsolete 
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
@@ -623,11 +653,18 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
-			{	
+			{
 				if (!PageIsChildOfPlatform(sender))
 					return;
 				PresentAlert(arguments);
 			});
+
+			MessagingCenter.Subscribe(this, Page.SnackbarSignalName, (Action<Page, SnackbarArguments>)((Page sender, SnackbarArguments arguments) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+				PresentSnackbar(arguments);
+			}));
 
 			MessagingCenter.Subscribe(this, Page.PromptSignalName, (Page sender, PromptArguments arguments) =>
 			{
@@ -655,6 +692,7 @@ namespace Xamarin.Forms.Platform.iOS
 		internal void UnsubscribeFromAlertsAndActionsSheets()
 		{
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			MessagingCenter.Unsubscribe<Page, SnackbarArguments>(this, Page.SnackbarSignalName);
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, PromptArguments>(this, Page.PromptSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);

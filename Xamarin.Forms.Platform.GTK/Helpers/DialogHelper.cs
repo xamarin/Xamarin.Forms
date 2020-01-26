@@ -1,5 +1,6 @@
 ﻿using Gtk;
 using System.Linq;
+using System.Timers;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.GTK.Extensions;
 
@@ -31,6 +32,49 @@ namespace Xamarin.Forms.Platform.GTK.Helpers
 				arguments.SetResult(false);
 			}
 
+			messageDialog.Destroy();
+		}
+
+		static Timer _snackbarTimer;
+		public static void ShowSnackbar(PlatformRenderer platformRender, SnackbarArguments arguments)
+		{
+			var isActionDialog = !string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null;
+			MessageDialog messageDialog = new MessageDialog(
+					platformRender.Toplevel as Window,
+					DialogFlags.DestroyWithParent,
+					MessageType.Other,
+					isActionDialog ? ButtonsType.Ok : ButtonsType.None,
+					arguments.Message);
+
+			if (isActionDialog)
+			{
+				SetButtonText(arguments.ActionButtonText, ButtonsType.Ok, messageDialog);
+			}
+
+			var isActionButtonClicked = false;
+			messageDialog.Destroyed += async delegate
+			{
+				_snackbarTimer.Stop();
+				if (isActionButtonClicked)
+				{
+					await arguments.Action();
+					arguments.SetResult(true);
+				}
+				else
+				{
+					arguments.SetResult(false);
+				}
+			};
+
+			_snackbarTimer = new Timer(arguments.Duration);
+			_snackbarTimer.Elapsed += delegate
+			  {
+				  messageDialog.Destroy();
+				  _snackbarTimer.Stop();
+			  };
+			_snackbarTimer.Start();
+			var result = messageDialog.Run();
+			isActionButtonClicked = result == (int)ResponseType.Ok;
 			messageDialog.Destroy();
 		}
 
@@ -85,13 +129,15 @@ namespace Xamarin.Forms.Platform.GTK.Helpers
 				.OfType<HButtonBox>()
 				.FirstOrDefault();
 
-			if (buttonsBox == null) return;
+			if (buttonsBox == null)
+				return;
 
 			var targetButton = buttonsBox.GetDescendants()
 				.OfType<Gtk.Button>()
 				.FirstOrDefault(x => x.Label == gtkLabel);
 
-			if (targetButton == null) return;
+			if (targetButton == null)
+				return;
 
 			if (string.IsNullOrEmpty(text))
 			{

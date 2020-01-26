@@ -15,6 +15,8 @@ namespace Xamarin.Forms
 	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>, IPaddingElement
 	{
 		public const string BusySetSignalName = "Xamarin.BusySet";
+		
+		public const string SnackbarSignalName = "Xamarin.SendSnackbar";
 
 		public const string AlertSignalName = "Xamarin.SendAlert";
 
@@ -205,6 +207,17 @@ namespace Xamarin.Forms
 				MessagingCenter.Send(this, AlertSignalName, args);
 			else
 				_pendingActions.Add(() => MessagingCenter.Send(this, AlertSignalName, args));
+
+			return args.Result.Task;
+		}
+
+		public Task<bool> DisplaySnackbar(string message, int duration = 3000, string actionButtonText = null, Func<Task> action = null)
+		{
+			var args = new SnackbarArguments(message, duration, actionButtonText, action);
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, SnackbarSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, SnackbarSignalName, args));
 
 			return args.Result.Task;
 		}

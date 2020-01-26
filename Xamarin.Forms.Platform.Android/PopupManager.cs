@@ -10,9 +10,11 @@ using Xamarin.Forms.Internals;
 #if __ANDROID_29__
 using AppCompatAlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using AppCompatActivity = AndroidX.AppCompat.App.AppCompatActivity;
+using Google.Android.Material.Snackbar;
 #else
 using AppCompatAlertDialog = global::Android.Support.V7.App.AlertDialog;
-using AppCompatActivity =global::Android.Support.V7.App.AppCompatActivity;
+using AppCompatActivity = global::Android.Support.V7.App.AppCompatActivity;
+using Android.Support.Design.Widget;
 #endif
 
 namespace Xamarin.Forms.Platform.Android
@@ -55,6 +57,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Activity = context;
 				MessagingCenter.Subscribe<Page, bool>(Activity, Page.BusySetSignalName, OnPageBusy);
+				MessagingCenter.Subscribe<Page, SnackbarArguments>(Activity, Page.SnackbarSignalName, OnSnackbarRequested);
 				MessagingCenter.Subscribe<Page, AlertArguments>(Activity, Page.AlertSignalName, OnAlertRequested);
 				MessagingCenter.Subscribe<Page, PromptArguments>(Activity, Page.PromptSignalName, OnPromptRequested);
 				MessagingCenter.Subscribe<Page, ActionSheetArguments>(Activity, Page.ActionSheetSignalName, OnActionSheetRequested);
@@ -65,6 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 			public void Dispose()
 			{
 				MessagingCenter.Unsubscribe<Page, bool>(Activity, Page.BusySetSignalName);
+				MessagingCenter.Unsubscribe<Page, SnackbarArguments>(Activity, Page.SnackbarSignalName);
 				MessagingCenter.Unsubscribe<Page, AlertArguments>(Activity, Page.AlertSignalName);
 				MessagingCenter.Unsubscribe<Page, PromptArguments>(Activity, Page.PromptSignalName);
 				MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(Activity, Page.ActionSheetSignalName);
@@ -82,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					return;
 				}
-				
+
 				_busyCount = Math.Max(0, enabled ? _busyCount + 1 : _busyCount - 1);
 
 				UpdateProgressBarVisibility(_busyCount > 0);
@@ -131,8 +135,34 @@ namespace Xamarin.Forms.Platform.Android
 				if (arguments.Accept != null)
 					alert.SetButton((int)DialogButtonType.Positive, arguments.Accept, (o, args) => arguments.SetResult(true));
 				alert.SetButton((int)DialogButtonType.Negative, arguments.Cancel, (o, args) => arguments.SetResult(false));
-				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); }); 
+				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); });
 				alert.Show();
+			}
+
+			void OnSnackbarRequested(Page sender, SnackbarArguments arguments)
+			{
+				// Verify that the page making the request is part of this activity 
+				if (!PageIsInThisContext(sender))
+				{
+					return;
+				}
+
+				var view = Platform.GetRenderer(sender).View;
+				Snackbar snackbar = Snackbar.Make(view, arguments.Message, arguments.Duration);
+				var snackbarView = snackbar.View;
+				TextView snackTextView = snackbarView.FindViewById<TextView>(Resource.Id.snackbar_text);
+				snackTextView.SetMaxLines(10);
+
+				if (!string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null)
+				{
+					snackbar.SetAction(arguments.ActionButtonText, async (v) =>
+					{
+						await arguments.Action();
+					});
+				}
+
+				snackbar.AddCallback(new SnackbarCallback(arguments));
+				snackbar.Show();
 			}
 
 			void OnPromptRequested(Page sender, PromptArguments arguments)
@@ -161,7 +191,7 @@ namespace Xamarin.Forms.Platform.Android
 					editText.KeyListener = LocalizedDigitsKeyListener.Create(editText.InputType);
 
 				if (arguments.MaxLength > -1)
-					editText.SetFilters(new IInputFilter[]{ new InputFilterLengthFilter(arguments.MaxLength)});
+					editText.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(arguments.MaxLength) });
 
 				frameLayout.AddView(editText);
 				alertDialog.SetView(frameLayout);
@@ -227,7 +257,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				public DialogBuilder(Activity activity)
 				{
-					if (activity is AppCompatActivity)				
+					if (activity is AppCompatActivity)
 					{
 						_appcompatBuilder = new AppCompatAlertDialog.Builder(activity);
 						_useAppCompat = true;
@@ -411,6 +441,30 @@ namespace Xamarin.Forms.Platform.Android
 						_legacyAlertDialog.Show();
 					}
 				}
+			}
+		}
+	}
+
+	class SnackbarCallback : Snackbar.BaseCallback
+	{
+		readonly SnackbarArguments _arguments;
+
+		public SnackbarCallback(SnackbarArguments arguments)
+		{
+			_arguments = arguments;
+		}
+
+		public override void OnDismissed(Java.Lang.Object transientBottomBar, int e)
+		{
+			base.OnDismissed(transientBottomBar, e);
+			switch (e)
+			{
+				case DismissEventTimeout:
+					_arguments.SetResult(false);
+					break;
+				case DismissEventAction:
+					_arguments.SetResult(true);
+					break;
 			}
 		}
 	}

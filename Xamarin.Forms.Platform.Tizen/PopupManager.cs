@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			_platform = platform;
 			MessagingCenter.Subscribe<Page, bool>(this, Page.BusySetSignalName, OnBusySetRequest);
+			MessagingCenter.Subscribe<Page, SnackbarArguments>(this, Page.SnackbarSignalName, OnSnackbarRequest);
 			MessagingCenter.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnAlertRequest);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnActionSheetRequest);
 			MessagingCenter.Subscribe<Page, PromptArguments>(this, Page.PromptSignalName, OnPromptRequested);
@@ -34,6 +35,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (disposing)
 			{
+				MessagingCenter.Unsubscribe<Page, SnackbarArguments>(this, Page.SnackbarSignalName);
 				MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 				MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 				MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
@@ -85,6 +87,52 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_pageBusyDialog.Dismiss();
 				_pageBusyDialog = null;
+			}
+		}
+
+		void OnSnackbarRequest(Page sender, SnackbarArguments arguments)
+		{
+			// Verify that the page making the request is child of this platform
+			if (!_platform.PageIsChildOfPlatform(sender))
+				return;
+
+			var _snackbarDialog = Native.Dialog.CreateDialog(Forms.NativeParent, (arguments.ActionButtonText != null));
+			_snackbarDialog.Timeout = TimeSpan.FromMilliseconds(arguments.Duration).TotalSeconds;
+
+			var message = arguments.Message.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace(Environment.NewLine, "<br>");
+			_snackbarDialog.Message = message;
+
+			if (!string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null)
+			{
+				var ok = new EButton(_snackbarDialog) { Text = arguments.ActionButtonText };
+				_snackbarDialog.NeutralButton = ok;
+				ok.Clicked += async (s, evt) =>
+				{
+					_alerts.Remove(_snackbarDialog);
+					_snackbarDialog.Dismiss();
+					await arguments.Action();
+					arguments.SetResult(true);
+				};
+			}
+
+			_snackbarDialog.TimedOut += (s, evt) =>
+			{
+				DismissSnackbar();
+			};
+
+			_snackbarDialog.BackButtonPressed += (s, evt) =>
+			{
+				DismissSnackbar();
+			};
+
+			_snackbarDialog.Show();
+			_alerts.Add(_snackbarDialog);
+
+			void DismissSnackbar()
+			{
+				_alerts.Remove(_snackbarDialog);
+				_snackbarDialog.Dismiss();
+				arguments.SetResult(false);
 			}
 		}
 

@@ -109,6 +109,9 @@
     <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs" Link="StreamWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">

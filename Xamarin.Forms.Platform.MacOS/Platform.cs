@@ -3,6 +3,7 @@ using AppKit;
 using RectangleF = CoreGraphics.CGRect;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -31,6 +32,53 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_renderer = new PlatformRenderer(this);
 
+			MessagingCenter.Subscribe(this, Page.SnackbarSignalName, (Page sender, SnackbarArguments arguments) =>
+			{
+				var isNotificationActivated = false;
+				NSUserNotificationCenter center = NSUserNotificationCenter.DefaultUserNotificationCenter;
+								
+				// If we return true here, Notification will show up even if your app is TopMost.
+				center.ShouldPresentNotification = (c, n) => { return true; };
+
+				var notification = new NSUserNotification
+				{
+					Identifier = Guid.NewGuid().ToString(),
+					InformativeText = arguments.Message,
+					DeliveryDate = (NSDate)DateTime.Now
+				};
+				var _snackbarTimer = NSTimer.CreateScheduledTimer(TimeSpan.FromMilliseconds(arguments.Duration), t =>
+				{
+					if (!isNotificationActivated)
+					{
+						center.RemoveDeliveredNotification(notification);
+						arguments.SetResult(false);
+					}
+				});
+
+				if (!string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null)
+				{
+					notification.HasActionButton = true;
+					notification.ActionButtonTitle = arguments.ActionButtonText;
+					center.DidActivateNotification += async (s, e) =>
+					{
+						if (e.Notification.Identifier == notification.Identifier &&
+							e.Notification.ActivationType == NSUserNotificationActivationType.ActionButtonClicked)
+						{
+							await arguments.Action();
+							arguments.SetResult(true);
+						}
+						else
+						{
+							arguments.SetResult(false);
+						}
+
+						isNotificationActivated = true;
+					};
+				}
+
+				center.ScheduleNotification(notification);
+			});
+
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				var alert = NSAlert.WithMessage(arguments.Title, arguments.Cancel, arguments.Accept, null, arguments.Message);
@@ -48,13 +96,16 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					int maxScrollHeight = (int)(0.6 * NSScreen.MainScreen.Frame.Height);
 					NSView extraButtons = GetExtraButton(arguments);
-					if (extraButtons.Frame.Height > maxScrollHeight) {
+					if (extraButtons.Frame.Height > maxScrollHeight)
+					{
 						NSScrollView scrollView = new NSScrollView();
 						scrollView.Frame = new RectangleF(0, 0, extraButtons.Frame.Width, maxScrollHeight);
 						scrollView.DocumentView = extraButtons;
 						scrollView.HasVerticalScroller = true;
 						alert.AccessoryView = scrollView;
-					} else {
+					}
+					else
+					{
 						alert.AccessoryView = extraButtons;
 					}
 					alert.Layout();
@@ -103,6 +154,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			Page.DescendantRemoved -= HandleChildRemoved;
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			MessagingCenter.Unsubscribe<Page, SnackbarArguments>(this, Page.SnackbarSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
 			Page.DisposeModalAndChildRenderers();

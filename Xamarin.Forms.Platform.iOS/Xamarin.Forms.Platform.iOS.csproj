@@ -264,6 +264,13 @@
     <Compile Include="Renderers\SwipeViewRenderer.cs" />
     <Compile Include="Extensions\UIApplicationExtensions.cs" />
     <Compile Include="Extensions\UICollectionViewExtensions.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarLayout.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarAppearance.cs" />
+    <Compile Include="Controls\Snackbar\SnackBar.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarViews\MessageSnackbarView.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarViews\ActionMessageSnackbarView.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarViews\BaseSnackbarView.cs" />
+    <Compile Include="Controls\Snackbar\Extensions\UIViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />

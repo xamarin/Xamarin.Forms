@@ -4,21 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.WPF.Controls;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	public class Platform : BindableObject, INavigation
+	public class Platform : BindableObject, INavigation, IDisposable
 #pragma warning disable CS0618
 		, IPlatform
 #pragma warning restore
 	{
 		readonly FormsApplicationPage _page;
+
+		bool _disposed;
 		Page Page { get; set; }
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer));
-		
+
 		internal Platform(FormsApplicationPage page)
 		{
 			_page = page;
@@ -30,9 +33,10 @@ namespace Xamarin.Forms.Platform.WPF
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
 			});
 
+			MessagingCenter.Subscribe<Page, SnackbarArguments>(this, Page.SnackbarSignalName, OnPageSnackbar);
 			MessagingCenter.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnPageAlert);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnPageActionSheet);
-			
+
 		}
 
 		async void OnPageAlert(Page sender, AlertArguments options)
@@ -66,6 +70,32 @@ namespace Xamarin.Forms.Platform.WPF
 			options.SetResult(dialogResult == LightContentDialogResult.Primary);
 		}
 
+		Timer _snackbarTimer;
+		void OnPageSnackbar(Page sender, SnackbarArguments options)
+		{
+			if (System.Windows.Application.Current.MainWindow is FormsWindow window)
+			{
+				_snackbarTimer = new Timer { Interval = options.Duration };
+				_snackbarTimer.Tick += delegate
+				{
+					window.HideSnackBar();
+					_snackbarTimer.Stop();
+					options.SetResult(false);
+				};
+				window.OnSnackbarActionExecuted += delegate
+				{
+					window.HideSnackBar();
+					_snackbarTimer.Stop();
+					options.SetResult(true);
+				};
+				_snackbarTimer.Start();
+				window.ShowSnackBar(options.Message, options.ActionButtonText, options.Action);
+			}
+			else
+			{
+				options.SetResult(false);
+			}
+		}
 
 		async void OnPageActionSheet(Page sender, ActionSheetArguments options)
 		{
@@ -74,7 +104,7 @@ namespace Xamarin.Forms.Platform.WPF
 				Style = (System.Windows.Style)System.Windows.Application.Current.Resources["ActionSheetList"],
 				ItemsSource = options.Buttons
 			};
-			
+
 			var dialog = new FormsContentDialog
 			{
 				Content = list,
@@ -85,7 +115,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			list.SelectionChanged += (s, e) =>
 			{
-				if(list.SelectedItem != null)
+				if (list.SelectedItem != null)
 				{
 					dialog.Hide();
 					options.SetResult((string)list.SelectedItem);
@@ -185,7 +215,8 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			get
 			{
-				return _page.InternalChildren.Cast<Page>().ToList(); }
+				return _page.InternalChildren.Cast<Page>().ToList();
+			}
 		}
 
 		Task INavigation.PushAsync(Page root)
@@ -246,9 +277,9 @@ namespace Xamarin.Forms.Platform.WPF
 			var tcs = new TaskCompletionSource<bool>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
-				// The Platform property is no longer necessary, but we have to set it because some third-party
-				// library might still be retrieving it and using it
-				page.Platform = this;
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			page.Platform = this;
 #pragma warning restore CS0618 // Type or member is obsolete
 
 			_page.PushModal(page, animated);
@@ -259,9 +290,21 @@ namespace Xamarin.Forms.Platform.WPF
 		Task<Page> INavigation.PopModalAsync(bool animated)
 		{
 			var tcs = new TaskCompletionSource<Page>();
-			var page =_page.PopModal(animated) as Page;
-			tcs.SetResult(page); 
+			var page = _page.PopModal(animated) as Page;
+			tcs.SetResult(page);
 			return tcs.Task;
+		}
+
+		void IDisposable.Dispose()
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			MessagingCenter.Unsubscribe<Page, SnackbarArguments>(this, Page.SnackbarSignalName);
+			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 		}
 
 		#region Obsolete 
@@ -273,4 +316,4 @@ namespace Xamarin.Forms.Platform.WPF
 
 		#endregion
 	}
-} 
+}

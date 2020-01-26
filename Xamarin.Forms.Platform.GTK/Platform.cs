@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Platform.GTK
 			_modals = new List<Page>();
 			Application.Current.NavigationProxy.Inner = this;
 
+			MessagingCenter.Subscribe(this, Page.SnackbarSignalName, (Page sender, SnackbarArguments arguments) => DialogHelper.ShowSnackbar(PlatformRenderer, arguments));
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) => DialogHelper.ShowAlert(PlatformRenderer, arguments));
 			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) => DialogHelper.ShowActionSheet(PlatformRenderer, arguments));
 		}
@@ -106,6 +107,7 @@ namespace Xamarin.Forms.Platform.GTK
 
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			MessagingCenter.Unsubscribe<Page, SnackbarArguments>(this, Page.SnackbarSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
 			foreach (var modal in _modals)
