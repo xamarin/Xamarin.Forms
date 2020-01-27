@@ -501,13 +501,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			void OnModalPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
-				if (e.PropertyName == Page.ModalBackgroundColorProperty.PropertyName)
+				if (e.PropertyName == Page.BackgroundColorProperty.PropertyName)
 					UpdateBackgroundColor();
 			}
 
 			void UpdateBackgroundColor()
 			{
-				Color modalBkgndColor = _modal.ModalBackgroundColor;
+				Color modalBkgndColor = _modal.BackgroundColor;
 				if (modalBkgndColor.IsDefault)
 					_backgroundView.SetWindowBackground();
 				else
