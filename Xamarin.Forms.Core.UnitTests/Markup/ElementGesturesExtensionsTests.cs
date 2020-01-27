@@ -19,126 +19,85 @@ namespace Xamarin.Forms.Markup.UnitTests
 		public void BindClickGestureDefaults()
 		{
 			var gestureElement = new TGestureElement();
+
 			if (initExistingGestureRecognizer)
 				gestureElement.BindClickGesture();
 			gestureElement.BindClickGesture(commandPath);
+
 			var gestureRecognizer = AssertHasGestureRecognizer<ClickGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandProperty, commandPath);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandParameterProperty);
 		}
 
 		[Test]
 		public void BindClickGesturePositionalParameters()
 		{
 			var gestureElement = new TGestureElement();
+			object commandSource = new ViewModel();
+			object parameterSource = new ViewModel();
 
 			if (initExistingGestureRecognizer)
 				gestureElement.BindClickGesture();
-
-			object converterParameter = 1;
-			string stringFormat = nameof(BindClickGesturePositionalParameters) + " {0}";
-			IValueConverter converter = new ToStringConverter();
-			object source = new ViewModel();
-			object targetNullValue = nameof(BindClickGesturePositionalParameters) + " null";
-			object fallbackValue = nameof(BindClickGesturePositionalParameters) + " fallback";
-
-			gestureElement.BindClickGesture(
-				commandPath,
-				BindingMode.OneWay,
-				converter,
-				converterParameter,
-				stringFormat,
-				source,
-				targetNullValue,
-				fallbackValue
-			);
+			gestureElement.BindClickGesture(commandPath, commandSource, parameterPath, parameterSource);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<ClickGestureRecognizer>(gestureElement);
-			BindingHelpers.AssertBindingExists(
-				gestureRecognizer, 
-				ClickGestureRecognizer.CommandProperty, 
-				commandPath,
-				mode: BindingMode.OneWay,
-				converter: converter,
-				converterParameter: converterParameter,
-				stringFormat: stringFormat,
-				source: source,
-				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
-			);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandProperty, commandPath, source: commandSource);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandParameterProperty, parameterPath, source: parameterSource);
 		}
 
 		[Test]
 		public void BindTapGestureDefaults()
 		{
 			var gestureElement = new TGestureElement();
+
 			if (initExistingGestureRecognizer)
 				gestureElement.BindTapGesture();
 			gestureElement.BindTapGesture(commandPath);
+
 			var gestureRecognizer = AssertHasGestureRecognizer<TapGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandProperty, commandPath);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandParameterProperty);
 		}
 
 		[Test]
 		public void BindTapGesturePositionalParameters()
 		{
 			var gestureElement = new TGestureElement();
+			object commandSource = new ViewModel();
+			object parameterSource = new ViewModel();
 
 			if (initExistingGestureRecognizer)
 				gestureElement.BindTapGesture();
-
-			object converterParameter = 1;
-			string stringFormat = nameof(BindTapGesturePositionalParameters) + " {0}";
-			IValueConverter converter = new ToStringConverter();
-			object source = new ViewModel();
-			object targetNullValue = nameof(BindTapGesturePositionalParameters) + " null";
-			object fallbackValue = nameof(BindTapGesturePositionalParameters) + " fallback";
-
-			gestureElement.BindTapGesture(
-				commandPath,
-				BindingMode.OneWay,
-				converter,
-				converterParameter,
-				stringFormat,
-				source,
-				targetNullValue,
-				fallbackValue
-			);
+			gestureElement.BindTapGesture(commandPath, commandSource, parameterPath, parameterSource);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<TapGestureRecognizer>(gestureElement);
-			
-			BindingHelpers.AssertBindingExists(
-				gestureRecognizer, 
-				TapGestureRecognizer.CommandProperty, 
-				commandPath,
-				mode: BindingMode.OneWay,
-				converter: converter,
-				converterParameter: converterParameter,
-				stringFormat: stringFormat,
-				source: source,
-				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
-			);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandProperty, commandPath, source: commandSource);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandParameterProperty, parameterPath, source: parameterSource);
 		}
 
 		[Test]
 		public void ClickGesture()
 		{
-			ClickGestureRecognizer gestureRecognizer = null;
 			var gestureElement = new TGestureElement();
+			ClickGestureRecognizer gestureRecognizer = null;
+
 			if (initExistingGestureRecognizer)
 				gestureElement.ClickGesture(g => { });
 			gestureElement.ClickGesture(g => gestureRecognizer = g);
+
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
 		}
 
 		[Test]
 		public void TapGesture()
 		{
-			TapGestureRecognizer gestureRecognizer = null;
 			var gestureElement = new TGestureElement();
+			TapGestureRecognizer gestureRecognizer = null;
+
 			if (initExistingGestureRecognizer)
 				gestureElement.TapGesture(g => { });
 			gestureElement.TapGesture(g => gestureRecognizer = g);
+
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
 		}
 	}
@@ -155,96 +114,81 @@ namespace Xamarin.Forms.Markup.UnitTests
 		public void BindSwipeGestureDefaults()
 		{
 			var gestureElement = new Label();
+
 			if (initExistingGestureRecognizer)
 				gestureElement.BindSwipeGesture();
 			gestureElement.BindSwipeGesture(commandPath);
+
 			var gestureRecognizer = AssertHasGestureRecognizer<SwipeGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandProperty, commandPath);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandParameterProperty);
 		}
 
 		[Test]
 		public void BindSwipeGesturePositionalParameters()
 		{
 			var gestureElement = new Label();
+			object commandSource = new ViewModel();
+			object parameterSource = new ViewModel();
 
 			if (initExistingGestureRecognizer)
 				gestureElement.BindSwipeGesture();
-
-			object converterParameter = 1;
-			string stringFormat = nameof(BindSwipeGesturePositionalParameters) + " {0}";
-			IValueConverter converter = new ToStringConverter();
-			object source = new ViewModel();
-			object targetNullValue = nameof(BindSwipeGesturePositionalParameters) + " null";
-			object fallbackValue = nameof(BindSwipeGesturePositionalParameters) + " fallback";
-
-			gestureElement.BindSwipeGesture(
-				commandPath,
-				BindingMode.OneWay,
-				converter,
-				converterParameter,
-				stringFormat,
-				source,
-				targetNullValue,
-				fallbackValue
-			);
+			gestureElement.BindSwipeGesture(commandPath, commandSource, parameterPath, parameterSource);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<SwipeGestureRecognizer>(gestureElement);
-
-			BindingHelpers.AssertBindingExists(
-				gestureRecognizer, 
-				SwipeGestureRecognizer.CommandProperty, 
-				commandPath,
-				mode: BindingMode.OneWay,
-				converter: converter,
-				converterParameter: converterParameter,
-				stringFormat: stringFormat,
-				source: source,
-				targetNullValue: targetNullValue,
-				fallbackValue: fallbackValue
-			);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandProperty, commandPath, source: commandSource);
+			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandParameterProperty, parameterPath, source: parameterSource);
 		}
 
 		[Test]
 		public void PanGesture()
 		{
-			PanGestureRecognizer gestureRecognizer = null;
 			var gestureElement = new Label();
+			PanGestureRecognizer gestureRecognizer = null;
+
 			if (initExistingGestureRecognizer)
 				gestureElement.PanGesture(g => { });
 			gestureElement.PanGesture(g => gestureRecognizer = g);
+
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
 		}
 
 		[Test]
 		public void PinchGesture()
 		{
-			PinchGestureRecognizer gestureRecognizer = null;
 			var gestureElement = new Label();
+			PinchGestureRecognizer gestureRecognizer = null;
+
 			if (initExistingGestureRecognizer)
 				gestureElement.PinchGesture(g => { });
 			gestureElement.PinchGesture(g => gestureRecognizer = g);
+
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
 		}
 
 		[Test]
 		public void SwipeGesture()
 		{
-			SwipeGestureRecognizer gestureRecognizer = null;
 			var gestureElement = new Label();
+			SwipeGestureRecognizer gestureRecognizer = null;
+
 			if (initExistingGestureRecognizer)
 				gestureElement.SwipeGesture(g => { });
 			gestureElement.SwipeGesture(g => gestureRecognizer = g);
+
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
 		}
 
 		[Test]
 		public void Gesture()
 		{
-			DerivedFromGestureRecognizer gestureRecognizer = null;
 			var gestureElement = new Label();
+			DerivedFromGestureRecognizer gestureRecognizer = null;
+
 			if (initExistingGestureRecognizer)
 				gestureElement.Gesture((DerivedFromGestureRecognizer g) => { });
 			gestureElement.Gesture((DerivedFromGestureRecognizer g) => gestureRecognizer = g);
+
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
 		}
 
@@ -267,7 +211,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 	public class ElementGesturesBaseTestFixture : MarkupBaseTestFixture
 	{
-		protected const string commandPath = nameof(ViewModel.Command);
+		protected const string commandPath = nameof(ViewModel.Command), parameterPath = nameof(ViewModel.Id);
 
 		protected TGestureRecognizer AssertHasGestureRecognizer<TGestureRecognizer>(IGestureRecognizers element, TGestureRecognizer gestureRecognizer = null)
 			where TGestureRecognizer : GestureRecognizer
@@ -289,6 +233,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 		protected class ViewModel
 		{
+			public Guid Id { get; set; }
+
 			public ICommand Command { get; set; }
 		}
 	}
