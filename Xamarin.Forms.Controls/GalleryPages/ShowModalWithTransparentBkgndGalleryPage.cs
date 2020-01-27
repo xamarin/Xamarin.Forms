@@ -9,6 +9,12 @@ namespace Xamarin.Forms.Controls.GalleryPages
 	{
 		readonly Picker _modalPresentationStylesPicker;
 		readonly PageWithTransparentBkgnd _pageWithTransparentBkgnd;
+		int _appearingPageCount = 0;
+		int _disappearingPageCount = 0;
+		int _appearingModalCount = 0;
+		int _disappearingModalCount = 0;
+		Label _pageLifeCycleCount = new Label();
+		Label _modalLifeCycleCount = new Label();
 
 		public ShowModalWithTransparentBkgndGalleryPage()
 		{
@@ -63,24 +69,50 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			showTransparentModalPageButton.Clicked += ShowModalBtnClicked;
 
 			layout.Children.Add(showTransparentModalPageButton);
+			layout.Children.Add(_pageLifeCycleCount);
+			layout.Children.Add(_modalLifeCycleCount);
 
 			Content = layout;
 
 			_pageWithTransparentBkgnd = new PageWithTransparentBkgnd();
 
+			_pageWithTransparentBkgnd.Appearing += (_, __) =>
+			{
+				_appearingModalCount++;
+				UpdateLabels();
+			};
+
+			_pageWithTransparentBkgnd.Disappearing += (_, __) =>
+			{
+				_disappearingModalCount++;
+				UpdateLabels();
+			};
+
 			_pageWithTransparentBkgnd.On<iOS>().SetModalPresentationStyle(UIModalPresentationStyle.OverFullScreen);
+		}
+
+
+		void UpdateLabels()
+		{
+			_pageLifeCycleCount.Text = $"Page Appearing: {_appearingPageCount} Disappearing: {_disappearingPageCount}";
+
+			_modalLifeCycleCount.Text = $"Modal Appearing: {_appearingModalCount} Disappearing: {_disappearingModalCount}";
 		}
 
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
 			Console.WriteLine("OnAppearing");
+			_appearingPageCount++;
+			UpdateLabels();
 		}
 
 		protected override void OnDisappearing()
 		{
 			base.OnDisappearing();
 			Console.WriteLine("OnDisappearing");
+			_disappearingPageCount++;
+			UpdateLabels();
 		}
 
 		void ShowModalBtnClicked(object sender, EventArgs e)
