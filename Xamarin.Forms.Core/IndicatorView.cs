@@ -107,7 +107,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create("ItemsSourceBy", typeof(VisualElement), typeof(IndicatorView), default(VisualElement), propertyChanged: (bindable, oldValue, newValue)
-		 => LinkToCarouselView(bindable as IndicatorView, newValue as CarouselView));
+		 => (bindable as IndicatorView)?.LinkToVisualElement(newValue as VisualElement));
 
 		[TypeConverter(typeof(ReferenceTypeConverter))]
 		public static VisualElement GetItemsSourceBy(BindableObject bindable)
@@ -118,6 +118,12 @@ namespace Xamarin.Forms
 		public static void SetItemsSourceBy(BindableObject bindable, VisualElement value)
 		{
 			bindable.SetValue(ItemsSourceByProperty, value);
+		}
+
+		public virtual void LinkToVisualElement(VisualElement visualElement)
+		{
+			if (visualElement is CarouselView carouselView)
+				LinkToCarouselView(this, carouselView);
 		}
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
