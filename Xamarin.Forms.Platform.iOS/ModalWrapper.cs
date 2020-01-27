@@ -42,7 +42,9 @@ namespace Xamarin.Forms.Platform.iOS
 				PresentationController.Delegate = this;
 #endif
 			((Page)modal.Element).PropertyChanged += OnModalPagePropertyChanged;
-			PresentationController.Delegate = this;
+
+			if (Forms.IsiOS13OrNewer)
+				PresentationController.Delegate = this;
 		}
 
 
