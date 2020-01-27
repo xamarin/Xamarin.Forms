@@ -6,6 +6,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 {
 	using System.Globalization;
 	using System.Linq;
+	using System.Windows.Input;
 	using XamarinFormsMarkupUnitTestsBindableObjectViews;
 
 	[TestFixture]
@@ -582,6 +583,45 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
+		public void BindCommandWithDefaults()
+		{
+			var textCell = new TextCell();
+			string path = nameof(viewModel.Command);
+
+			textCell.BindCommand(path);
+
+			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandProperty, path);
+			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandParameterProperty);
+		}
+
+		[Test]
+		public void BindCommandWithoutParameter()
+		{
+			var textCell = new TextCell();
+			string path = nameof(viewModel.Command);
+
+			textCell.BindCommand(path, parameterPath: null);
+
+			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandProperty, path);
+			Assert.That(BindingHelpers.GetBinding(textCell, TextCell.CommandParameterProperty), Is.Null);
+		}
+
+		[Test]
+		public void BindCommandWithPositionalParameters()
+		{
+			var textCell = new TextCell();
+			object source = new ViewModel();
+			string path = nameof(viewModel.Command);
+			string parameterPath = nameof(viewModel.Id);
+			object parameterSource = new ViewModel();
+
+			textCell.BindCommand(path, source, parameterPath, parameterSource);
+
+			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandProperty, path, source: source);
+			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandParameterProperty, parameterPath, source: parameterSource);
+		}
+
+		[Test]
 		public void Assign()
 		{
 			var createdLabel = new Label().Assign(out Label assignLabel);
@@ -596,9 +636,9 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void SupportDerivedFromLabel()
+		public void SupportDerivedElements()
 		{
-			DerivedFromLabel createdDerivedFromLabel =
+			DerivedFromLabel _ =
 				new DerivedFromLabel()
 				.Bind(nameof(viewModel.Text))
 				.Bind(
@@ -618,12 +658,18 @@ namespace Xamarin.Forms.Markup.UnitTests
 					Label.TextColorProperty,
 					nameof(viewModel.IsRed),
 					convert: (bool isRed, double alpha) => (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha))
-				.Invoke(l => l.Text = nameof(SupportDerivedFromLabel))
+				.Invoke(l => l.Text = nameof(SupportDerivedElements))
 				.Assign(out DerivedFromLabel assignDerivedFromLabel);
+
+			DerivedFromTextCell __ =
+				new DerivedFromTextCell()
+				.BindCommand(nameof(viewModel.Command));
 		}
 
 		class ViewModel
 		{
+			public Guid Id { get; set; }
+			public ICommand Command { get; set; }
 			public string Text { get; set; }
 			public Color TextColor { get; set; }
 			public bool IsRed { get; set; }
@@ -682,6 +728,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 				getContextMethodInfo = typeof(BindableObject).GetMethod("GetContext", BindingFlags.NonPublic | BindingFlags.Instance);
 
 			var context = getContextMethodInfo?.Invoke(bindable, new object[] { property });
+			if (context == null)
+				return null;
 
 			if (bindingFieldInfo == null)
 				bindingFieldInfo = context?.GetType().GetField("Binding");
@@ -706,4 +754,5 @@ namespace XamarinFormsMarkupUnitTestsBindableObjectViews
 	using Xamarin.Forms;
 
 	class DerivedFromLabel : Label { }
+	class DerivedFromTextCell : TextCell { }
 }

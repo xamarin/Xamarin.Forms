@@ -146,6 +146,27 @@ namespace Xamarin.Forms.Markup
 			return bindable;
 		}
 
+		/// <summary>Bind to the <typeparamref name="TBindable"/>'s default Command and CommandParameter properties </summary>
+		/// <param name="parameterPath">If null, no binding is created for the CommandParameter property</param>
+		public static TBindable BindCommand<TBindable>(
+			this TBindable bindable,
+
+			string path = bindingContextPath,
+			object source = null,
+			string parameterPath = bindingContextPath,
+			object parameterSource = null
+		) where TBindable : BindableObject
+		{
+			(var commandProperty, var parameterProperty) = DefaultBindableProperties.GetForCommand(bindable);
+
+			bindable.SetBinding(commandProperty, new Binding(path: path, source: source));
+
+			if (parameterPath != null)
+				bindable.SetBinding(parameterProperty, new Binding(path: parameterPath, source: parameterSource));
+
+			return bindable;
+		}
+
 		public static TBindable Assign<TBindable, TVariable>(this TBindable bindable, out TVariable variable)
 			where TBindable : BindableObject, TVariable
 		{

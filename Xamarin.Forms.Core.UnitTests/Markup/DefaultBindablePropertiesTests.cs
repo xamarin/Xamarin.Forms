@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		public void GetDefaultBindablePropertyForUnsupportedType()
 			=> Assert.Throws<ArgumentException>(
 				() => DefaultBindableProperties.GetFor(new CustomView()),
-				"No default bindable property is defined for BindableObject type XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews.CustomView" +
+				"No default bindable property is registered for BindableObject type XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews.CustomView" +
 				"\r\nEither specify a property when calling Bind() or register a default bindable property for this BindableObject type");
 
 		[Test]
@@ -131,11 +131,39 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(DefaultBindableProperties.GetFor(v), Is.EqualTo(CustomViewWithText.TextProperty));
 		}
 
+
+		[Test]
+		public void GetDefaultBindableCommandPropertiesForBuiltInType()
+			=> Assert.That(DefaultBindableProperties.GetForCommand(new Button()), Is.Not.Null);
+
+		[Test]
+		public void GetDefaultBindableCommandPropertiesForDerivedType()
+			=> Assert.That(DefaultBindableProperties.GetFor(new DerivedFromButton()), Is.Not.Null);
+
+		[Test]
+		public void GetDefaultBindableCommandPropertiesForUnsupportedType()
+			=> Assert.Throws<ArgumentException>(
+				() => DefaultBindableProperties.GetFor(new CustomView()),
+				"No command + command parameter properties are registered for BindableObject type XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews.CustomView" +
+				"\r\nRegister command + command parameter properties for this BindableObject type");
+
+		[Test]
+		public void RegisterDefaultBindableCommandProperties()
+		{
+			var v = new CustomViewWithCommand();
+			Assert.Throws<ArgumentException>(() => DefaultBindableProperties.GetForCommand(v));
+			DefaultBindableProperties.RegisterForCommand((CustomViewWithCommand.CommandProperty, CustomViewWithCommand.CommandParameterProperty));
+			Assert.That(DefaultBindableProperties.GetForCommand(v), Is.EqualTo((CustomViewWithCommand.CommandProperty, CustomViewWithCommand.CommandParameterProperty)));
+		}
+
 		[TearDown]
 		public override void TearDown()
 		{
 			if (DefaultBindableProperties.GetFor(typeof(CustomViewWithText)) != null)
 				DefaultBindableProperties.Unregister(CustomViewWithText.TextProperty);
+
+			if (DefaultBindableProperties.GetForCommand(typeof(CustomViewWithCommand)) != (null, null))
+				DefaultBindableProperties.UnregisterForCommand(CustomViewWithCommand.CommandProperty);
 			base.TearDown();
 		}
 	}
@@ -143,9 +171,11 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 namespace XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews
 {
+	using System.Windows.Input;
 	using Xamarin.Forms;
 
 	internal class DerivedFromBoxView : BoxView { }
+	internal class DerivedFromButton : Button { }
 
 	internal class CustomView : View { }
 
@@ -155,8 +185,26 @@ namespace XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews
 
 		public string Text
 		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
+			get => (string)GetValue(TextProperty);
+			set => SetValue(TextProperty, value);
+		}
+	}
+
+	internal class CustomViewWithCommand : View
+	{
+		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(CustomViewWithCommand), default(ICommand));
+		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(CustomViewWithCommand), default(object));
+
+		public ICommand Command
+		{
+			get => (ICommand)GetValue(CommandProperty);
+			set => SetValue(CommandProperty, value);
+		}
+
+		public object CommandParameter
+		{
+			get => GetValue(CommandParameterProperty);
+			set => SetValue(CommandParameterProperty, value);
 		}
 	}
 }
