@@ -7,22 +7,24 @@
              x:Class="Xamarin.Forms.Controls.GalleryPages.PageWithTransparentBkgnd"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              ios:Page.UseSafeArea="true"
-             BackgroundColor="#700000FF"
-             ios:Page.ModalPresentationStyle="OverFullScreen">
-    <Frame VerticalOptions="Center"
-           HorizontalOptions="Center"
-           WidthRequest="300"
-           HeightRequest="200"
-           Padding="15, 10"
-           BackgroundColor="LightGreen">
+             BackgroundColor="#700000FF">
+    <Frame
+        VerticalOptions="Center"
+        HorizontalOptions="Center"
+        WidthRequest="300"
+        HeightRequest="200"
+        Padding="15, 10"
+        BackgroundColor="LightGreen">
         <StackLayout>
-            <Label Text="Modal page with custom modal background"
-                   HorizontalOptions="Center"
-                   VerticalOptions="CenterAndExpand" />
-            <Button Text="Close"
-                    HorizontalOptions="End"
-                    Clicked="ClosePageButtonClicked"
-                    VerticalOptions="End" />
+            <Label
+                Text="Modal page with custom modal background"
+                HorizontalOptions="Center"
+                VerticalOptions="CenterAndExpand" />
+            <Button
+                Text="Close"
+                HorizontalOptions="End"
+                Clicked="ClosePageButtonClicked"
+                VerticalOptions="End" />
         </StackLayout>
     </Frame>
 </ContentPage>
