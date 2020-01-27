@@ -64,7 +64,9 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				HeightRequest = 100,
 				WidthRequest = 200,
 				CornerRadius = 15,
-				BackgroundColor = backgroundColor
+				BackgroundColor = backgroundColor,
+				BorderColor = Color.Black,
+				BorderWidth = 2
 			};
 
 			CheckCornerRadius(button);
@@ -77,12 +79,17 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				var view = renderer.View;
 				Layout(visualElement, view);
 
+				// Need to parent the Frame for it to work on lower APIs (below Marshmallow)
+				ParentView(view);
+
 				// The corners should show the background color
 				view.AssertColorAtTopLeft(EmptyBackground)
 					.AssertColorAtTopRight(EmptyBackground)
 					.AssertColorAtBottomLeft(EmptyBackground)
 					.AssertColorAtBottomRight(EmptyBackground)
 					.AssertColorAtCenter(visualElement.BackgroundColor.ToAndroid());
+
+				UnparentView(view);
 			}
 		}
 	}
