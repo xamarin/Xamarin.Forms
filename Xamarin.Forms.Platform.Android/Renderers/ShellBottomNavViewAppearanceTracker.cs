@@ -1,7 +1,13 @@
 ﻿using Android.Content.Res;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using Google.Android.Material.BottomNavigation;
+#else
 using Android.Support.Design.Internal;
 using Android.Support.Design.Widget;
+using Android.Support.V4.Widget;
+#endif
 using System;
 using AColor = Android.Graphics.Color;
 using R = Android.Resource;
@@ -83,7 +89,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (colorChangeRevealDrawable != null && lastColor == newColor)
 					return;
 
-				var index = _shellItem.Items.IndexOf(_shellItem.CurrentItem);
+				var index = ((IShellItemController)_shellItem).GetItems().IndexOf(_shellItem.CurrentItem);
 				var menu = bottomView.Menu;
 				index = Math.Min(index, menu.Size() - 1);
 

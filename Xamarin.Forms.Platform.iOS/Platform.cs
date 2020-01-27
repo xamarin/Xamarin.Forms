@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly int _alertPadding = 10;
 
 		readonly List<Page> _modals;
+		List<Page> _previousModals;
 		readonly PlatformRenderer _renderer;
 		bool _animateModals = true;
 		bool _appeared;
@@ -81,7 +82,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IReadOnlyList<Page> INavigation.ModalStack
 		{
-			get { return _modals; }
+			get 
+			{
+				if (_disposed)
+					return new List<Page>();
+
+				return _modals; 
+			}
 		}
 
 		IReadOnlyList<Page> INavigation.NavigationStack
@@ -615,14 +622,23 @@ namespace Xamarin.Forms.Platform.iOS
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 		}
 
+		internal void MarkForRemoval()
+		{
+			_previousModals = new List<Page>(_modals);
+			_modals.Clear();
+		}
+
 		internal void CleanUpPages()
 		{
 			Page.DescendantRemoved -= HandleChildRemoved;
 
 			Page.DisposeModalAndChildRenderers();
 
-			foreach (var modal in _modals)
+			foreach (var modal in (_previousModals ?? _modals))
 				modal.DisposeModalAndChildRenderers();
+
+			_previousModals?.Clear();
+			_modals.Clear();
 
 			(Page.Parent as IDisposable)?.Dispose();
 		}

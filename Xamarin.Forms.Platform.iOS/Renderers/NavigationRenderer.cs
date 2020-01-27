@@ -667,9 +667,13 @@ namespace Xamarin.Forms.Platform.iOS
 			var statusBarColorMode = NavPage.OnThisPlatform().GetStatusBarTextColorMode();
 
 			// set Tint color (i. e. Back Button arrow and Text)
-			NavigationBar.TintColor = barTextColor == Color.Default || statusBarColorMode == StatusBarTextColorMode.DoNotAdjust
+			var iconColor = NavigationPage.GetIconColor(Current);
+			if (iconColor.IsDefault)
+				iconColor = barTextColor;
+
+			NavigationBar.TintColor = iconColor == Color.Default || statusBarColorMode == StatusBarTextColorMode.DoNotAdjust
 				? UINavigationBar.Appearance.TintColor
-				: barTextColor.ToUIColor();
+				: iconColor.ToUIColor();
 		}
 
 		void SetStatusBarStyle()
@@ -680,7 +684,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (statusBarColorMode == StatusBarTextColorMode.DoNotAdjust || barTextColor.Luminosity <= 0.5)
 			{
 				// Use dark text color for status bar
-				UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
+				if (Forms.IsiOS13OrNewer)
+				{
+					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.DarkContent;
+				}
+				else
+				{
+					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
+				}
 			}
 			else
 			{
@@ -927,6 +938,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					UpdateHasBackButton();
 					UpdateLargeTitles();
+					UpdateIconColor();
 				}
 			}
 
@@ -952,6 +964,18 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				base.ViewDidDisappear(animated);
 
+				// force a redraw for right toolbar items by resetting TintColor to prevent
+				// toolbar items being grayed out when canceling swipe to a previous page
+				foreach (var item in NavigationItem?.RightBarButtonItems)
+				{
+					if (item.Image != null)
+						continue;
+
+					var tintColor = item.TintColor;
+					item.TintColor = tintColor == null ? UIColor.Clear : null;
+					item.TintColor = tintColor;
+				}
+				
 				Disappearing?.Invoke(this, EventArgs.Empty);
 			}
 
@@ -1042,6 +1066,8 @@ namespace Xamarin.Forms.Platform.iOS
 				else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 					UpdateTitleArea(Child);
+				else if (e.PropertyName == NavigationPage.IconColorProperty.PropertyName)
+					UpdateIconColor();
 			}
 
 
@@ -1118,6 +1144,12 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateTitleImage(titleViewContainer, titleIcon);
 					NavigationItem.TitleView = titleViewContainer;
 				}
+			}
+			
+			void UpdateIconColor()
+			{
+				if (_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
+					navigationRenderer.UpdateBarTextColor();
 			}
 
 			async void UpdateTitleImage(Container titleViewContainer, ImageSource titleIcon)
@@ -1211,7 +1243,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				List<UIBarButtonItem> primaries = null;
 				List<UIBarButtonItem> secondaries = null;
-				foreach (var item in _tracker.ToolbarItems)
+				var toolbarItems = _tracker.ToolbarItems;
+				foreach (var item in toolbarItems)
 				{
 					if (item.Order == ToolbarItemOrder.Secondary)
 						(secondaries = secondaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(true));
