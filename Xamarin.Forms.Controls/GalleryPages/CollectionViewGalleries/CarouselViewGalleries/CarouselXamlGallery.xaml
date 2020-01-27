@@ -30,5 +30,6 @@
                 </CarouselView>
             </Grid>
         </Frame>
+        <IndicatorView ItemsSourceBy="carouselNormal" IndicatorColor="Gray" SelectedIndicatorColor="Black" Grid.Row="4"></IndicatorView>
     </Grid>
 </ContentPage>

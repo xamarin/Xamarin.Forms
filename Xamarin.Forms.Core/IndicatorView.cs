@@ -106,19 +106,17 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create("ItemsSourceBy", typeof(VisualElement), typeof(IndicatorView), default(VisualElement), propertyChanged: (bindable, oldValue, newValue)
-		 => (bindable as IndicatorView)?.LinkToVisualElement(newValue as VisualElement));
 
 		[TypeConverter(typeof(ReferenceTypeConverter))]
-		public static VisualElement GetItemsSourceBy(BindableObject bindable)
+		public VisualElement ItemsSourceBy
 		{
-			return (VisualElement)bindable.GetValue(ItemsSourceByProperty);
+			get => (VisualElement)GetValue(ItemsSourceByProperty);
+			set => SetValue(ItemsSourceByProperty, value);
 		}
 
-		public static void SetItemsSourceBy(BindableObject bindable, VisualElement value)
-		{
-			bindable.SetValue(ItemsSourceByProperty, value);
-		}
+		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create(nameof(ItemsSourceBy), typeof(VisualElement), typeof(IndicatorView), default(VisualElement), propertyChanged: (bindable, oldValue, newValue)
+		 => (bindable as IndicatorView)?.LinkToVisualElement(newValue as VisualElement));
+
 
 		public virtual void LinkToVisualElement(VisualElement visualElement)
 		{
