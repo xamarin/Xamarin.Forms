@@ -45,10 +45,6 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			var cgImage = bitmap.CGImage.WithColorSpace(CGColorSpace.CreateDeviceRGB());
 
-			// Check our assumptions; we want to call out that these are wrong so we know that our tests are faulty
-			System.Diagnostics.Debug.Assert(cgImage.ByteOrderInfo == CGImageByteOrderInfo.ByteOrder32Little);
-			System.Diagnostics.Debug.Assert(cgImage.AlphaInfo == CGImageAlphaInfo.PremultipliedFirst);
-
 			// Grab the raw image data
 			var nsData = cgImage.DataProvider.CopyData();
 
