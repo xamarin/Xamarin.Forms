@@ -127,7 +127,6 @@ namespace Xamarin.Forms
 			if (IndicatorTemplate != null)
 				return baseRequest;
 
-			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding;
 			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding + 1;
 			var items = Count;
 			var sizeRequest = new SizeRequest(new Size(items * defaultSize, IndicatorSize), new Size(10, 10));
