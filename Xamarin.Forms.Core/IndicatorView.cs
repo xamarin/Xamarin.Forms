@@ -115,12 +115,12 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create(nameof(ItemsSourceBy), typeof(ItemsView), typeof(IndicatorView), default(VisualElement), propertyChanged: (bindable, oldValue, newValue)
-		 => ((IndicatorView)bindable).LinkToVisualElement(newValue as ItemsView));
+		 => ((IndicatorView)bindable).LinkToItemsView(newValue as ItemsView));
 
 
-		public virtual void LinkToVisualElement(VisualElement visualElement)
+		public virtual void LinkToItemsView(ItemsView itemsView)
 		{
-			if (visualElement is CarouselView carouselView)
+			if (itemsView is CarouselView carouselView)
 				LinkToCarouselView(this, carouselView);
 		}
 
