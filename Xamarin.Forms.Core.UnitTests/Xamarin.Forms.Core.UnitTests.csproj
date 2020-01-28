@@ -82,7 +82,6 @@
     <Compile Include="Markup\GridRowColEnums.cs" />
     <Compile Include="Markup\FuncConverter.cs" />
     <Compile Include="Markup\LayoutExtensionsTests.cs" />
-    <Compile Include="Markup\PlatformSpecificsExtensionsTests.cs" />
     <Compile Include="Markup\StyleTests.cs" />
     <Compile Include="Markup\ViewExtensionsTests.cs" />
     <Compile Include="Markup\LabelExtensionsTests.cs" />
