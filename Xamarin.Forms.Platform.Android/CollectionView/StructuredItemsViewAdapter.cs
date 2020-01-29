@@ -139,7 +139,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (content is View formsView)
 			{
-				return SimpleViewHolder.FromFormsView(formsView, context);
+				var viewHolder = SimpleViewHolder.FromFormsView(formsView, context);
+
+				// Propagate the binding context from the ItemsView to the header/footer
+				viewHolder.View.BindingContext = ItemsView.BindingContext;
+
+				return viewHolder;
 			}
 
 			// No template, Footer is not a Forms View, so just display Footer.ToString
