@@ -25,15 +25,19 @@ namespace Xamarin.Forms.Core.UITests.Shared
 		protected override void TestTearDown()
 		{
 			base.TestTearDown();
-		
+
+			System.Diagnostics.Debug.WriteLine($">>>>>> Attempting to parse external test result XML");
+
 			var crossPlatformTestXml = (string)App.Invoke("GetCrossPlatformTestResults");
 			var nativePlatformTestXml = (string)App.Invoke("GetNativePlatformTestResults");
+
+			System.Diagnostics.Debug.WriteLine($"crossPlatformTestXml: ${crossPlatformTestXml}");
+			System.Diagnostics.Debug.WriteLine($"nativePlatformTestXml: ${nativePlatformTestXml}");
 
 			var executionContext = TestExecutionContext.CurrentContext;
 
 			var crossPlatformResult = new PlatformTestResult(executionContext.CurrentTest, crossPlatformTestXml);
 			var nativePlatformResult = new PlatformTestResult(executionContext.CurrentTest, nativePlatformTestXml);
-
 
 			executionContext.CurrentResult = new CombinedTestResult(executionContext.CurrentTest, crossPlatformResult, nativePlatformResult);
 		}
@@ -67,10 +71,10 @@ namespace Xamarin.Forms.Core.UITests.Shared
 		public override bool HasChildren { get => false; }
 		public override IEnumerable<ITestResult> Children { get; }
 
-		public PlatformTestResult(ITest test, string externalResultXML) : base(test)
+		public PlatformTestResult(ITest test, string externalResultXml) : base(test)
 		{
 			var doc = new XmlDocument();
-			doc.LoadXml(externalResultXML);
+			doc.LoadXml(externalResultXml);
 			_node = doc.FirstChild;
 
 			// Take care of the override values
