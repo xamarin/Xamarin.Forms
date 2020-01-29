@@ -147,13 +147,13 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 
 		[Export("GetNativePlatformTestResults")]
-		public string GetNativePlatformTestResults(string arg) 
+		public string GetNativePlatformTestResults() 
 		{
 			return _app.NativePlatformTestResults;		
 		}
 
 		[Export("GetCrossPlatformTestResults")]
-		public string GetCrossPlatformTestResults(string arg)
+		public string GetCrossPlatformTestResults()
 		{
 			return _app.CrossPlatformTestResults;
 		}
