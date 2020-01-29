@@ -30,6 +30,10 @@ namespace Xamarin.Forms.Controls
 		public const string DefaultMainPageId = "ControlGalleryMainPage";
 
 		public static bool PreloadTestCasesIssuesList { get; set; } = true;
+
+		public string CrossPlatformTestResults { get; set; }
+		public string NativePlatformTestResults { get; set; }
+
 		public App()
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();

@@ -146,6 +146,18 @@ namespace Xamarin.Forms.ControlGallery.Android
 			_app.Reset();
 		}
 
+		[Export("GetNativePlatformTestResults")]
+		public string GetNativePlatformTestResults() 
+		{
+			return _app.NativePlatformTestResults;		
+		}
+
+		[Export("GetCrossPlatformTestResults")]
+		public string GetCrossPlatformTestResults()
+		{
+			return _app.CrossPlatformTestResults;
+		}
+
 		void SetUpForceRestartTest()
 		{
 			// Listen for messages from the app restart test
