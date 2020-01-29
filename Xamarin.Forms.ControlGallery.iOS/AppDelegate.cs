@@ -399,6 +399,18 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			return String.Empty;
 		}
 
+		[Export("GetNativePlatformTestResults")]
+		public string GetNativePlatformTestResults()
+		{
+			return _app.NativePlatformTestResults;
+		}
+
+		[Export("GetCrossPlatformTestResults")]
+		public string GetCrossPlatformTestResults()
+		{
+			return _app.CrossPlatformTestResults;
+		}
+
 		[Export("iOSVersion")]
 		public int iOSVersion()
 		{
