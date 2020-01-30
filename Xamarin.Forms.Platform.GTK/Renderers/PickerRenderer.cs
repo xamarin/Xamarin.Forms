@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			{
 				if (cellView.Cells.FirstOrDefault() is CellRendererText cellRenderer)
 				{
-					cellRenderer.Xalign = GetAlignmentValue(Element.HorizontalTextAlignment);
+					cellRenderer.Xalign = Element.HorizontalTextAlignment.ToAlignmentValue();
 				}
 			}
 		}
@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			{
 				if (cellView.Cells.FirstOrDefault() is CellRendererText cellRenderer)
 				{
-					cellRenderer.Yalign = GetAlignmentValue(Element.VerticalTextAlignment);
+					cellRenderer.Yalign = Element.VerticalTextAlignment.ToAlignmentValue();
 				}
 			}
 		}
@@ -223,8 +223,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		}
 
 		private float GetAlignmentValue(TextAlignment alignment)
-		{		
-
+		{
 			switch (alignment)
 			{
 				case TextAlignment.Start:
