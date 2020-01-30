@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using WDoubleCollection = Windows.UI.Xaml.Media.DoubleCollection;
+using WPenLineCap = Windows.UI.Xaml.Media.PenLineCap;
+using WPenLineJoin = Windows.UI.Xaml.Media.PenLineJoin;
 using WRect = Windows.Foundation.Rect;
 using WShape = Windows.UI.Xaml.Shapes.Shape;
 using WStretch = Windows.UI.Xaml.Media.Stretch;
@@ -25,6 +27,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateStrokeThickness();
 				UpdateStrokeDashArray();
 				UpdateStrokeDashOffset();
+				UpdateStrokeLineCap();
+				UpdateStrokeLineJoin();
 			}
 		}
 
@@ -34,12 +38,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
 			{
-				_height = Element.HeightRequest;
+				_height = Element.Height;
 				InvalidateArrange();
 			}
 			else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
 			{
-				_width = Element.WidthRequest;
+				_width = Element.Width;
 				InvalidateArrange();
 			}
 			else if (args.PropertyName == Shape.AspectProperty.PropertyName)
@@ -54,6 +58,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateStrokeDashArray();
 			else if (args.PropertyName == Shape.StrokeDashOffsetProperty.PropertyName)
 				UpdateStrokeDashOffset();
+			else if (args.PropertyName == Shape.StrokeLineCapProperty.PropertyName)
+				UpdateStrokeLineCap();
+			else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
+				UpdateStrokeLineJoin();
 		}
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
@@ -132,6 +140,49 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateStrokeDashOffset()
 		{
 			Control.StrokeDashOffset = Element.StrokeDashOffset;
+		}
+
+		void UpdateStrokeLineCap()
+		{
+			PenLineCap lineCap = Element.StrokeLineCap;
+			WPenLineCap wLineCap = WPenLineCap.Flat;
+
+			switch (lineCap)
+			{
+				case PenLineCap.Flat:
+					wLineCap = WPenLineCap.Flat;
+					break;
+				case PenLineCap.Square:
+					wLineCap = WPenLineCap.Square;
+					break;
+				case PenLineCap.Round:
+					wLineCap = WPenLineCap.Round;
+					break;
+			}
+
+			Control.StrokeStartLineCap = wLineCap;
+			Control.StrokeEndLineCap = wLineCap;
+		}
+
+		void UpdateStrokeLineJoin()
+		{
+			PenLineJoin lineJoin = Element.StrokeLineJoin;
+			WPenLineJoin wLineJoin = WPenLineJoin.Miter;
+
+			switch (lineJoin)
+			{
+				case PenLineJoin.Miter:
+					wLineJoin = WPenLineJoin.Miter;
+					break;
+				case PenLineJoin.Bevel:
+					wLineJoin = WPenLineJoin.Bevel;
+					break;
+				case PenLineJoin.Round:
+					wLineJoin = WPenLineJoin.Round;
+					break;
+			}
+
+			Control.StrokeLineJoin = wLineJoin;
 		}
 	}
 }
