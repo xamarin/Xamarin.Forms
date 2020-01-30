@@ -17,7 +17,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 					GalleryBuilder.NavButton("Line Gallery", () => new LineGallery(), Navigation),
 					GalleryBuilder.NavButton("Polygon Gallery", () => new PolygonGallery(), Navigation),
 					GalleryBuilder.NavButton("Polyline Gallery", () => new PolylineGallery(), Navigation),
-					GalleryBuilder.NavButton("Rectangle Gallery", () => new RectGallery(), Navigation)
+					GalleryBuilder.NavButton("Rectangle Gallery", () => new RectGallery(), Navigation),
+					GalleryBuilder.NavButton("LineCap Gallery", () => new LineCapGallery(), Navigation),
+					GalleryBuilder.NavButton("LineJoin Gallery", () => new LineJoinGallery(), Navigation),
+					GalleryBuilder.NavButton("AutoSize Shapes Gallery", () => new AutoSizeShapesGallery(), Navigation)
 				}
 			};
 		}

@@ -35,6 +35,8 @@ namespace Xamarin.Forms.Platform.Android
                 UpdateStroke();
                 UpdateStrokeThickness();
                 UpdateStrokeDashArray();
+                UpdateStrokeLineCap();
+                UpdateStrokeLineJoin();
             }
         }
 
@@ -62,6 +64,10 @@ namespace Xamarin.Forms.Platform.Android
                 UpdateStrokeThickness();
             else if (args.PropertyName == Shape.StrokeDashArrayProperty.PropertyName)
                 UpdateStrokeDashArray();
+            else if (args.PropertyName == Shape.StrokeLineCapProperty.PropertyName)
+                UpdateStrokeLineCap();
+            else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
+                UpdateStrokeLineJoin();
         }
 
         public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -101,7 +107,49 @@ namespace Xamarin.Forms.Platform.Android
 
         void UpdateStrokeDashArray()
         {
-            Control.UpdateStrokeDash(Element.StrokeDashArray.ToArray());
+            Control.UpdateStrokeDashArray(Element.StrokeDashArray.ToArray());
+        }
+
+        void UpdateStrokeLineCap()
+        {
+            PenLineCap lineCap = Element.StrokeLineCap;
+            Paint.Cap aLineCap = Paint.Cap.Butt;
+
+            switch (lineCap)
+            {
+                case PenLineCap.Flat:
+                    aLineCap = Paint.Cap.Butt;
+                    break;
+                case PenLineCap.Square:
+                    aLineCap = Paint.Cap.Square;
+                    break;
+                case PenLineCap.Round:
+                    aLineCap = Paint.Cap.Round;
+                    break;
+            }
+
+            Control.UpdateStrokeLineCap(aLineCap);
+        }
+
+        void UpdateStrokeLineJoin()
+        {
+            PenLineJoin lineJoin = Element.StrokeLineJoin;
+            Paint.Join aLineJoin = Paint.Join.Miter;
+
+            switch (lineJoin)
+            {
+                case PenLineJoin.Miter:
+                    aLineJoin = Paint.Join.Miter;
+                    break;
+                case PenLineJoin.Bevel:
+                    aLineJoin = Paint.Join.Bevel;
+                    break;
+                case PenLineJoin.Round:
+                    aLineJoin = Paint.Join.Round;
+                    break;
+            }
+
+            Control.UpdateStrokeLineJoin(aLineJoin);
         }
     }
 
@@ -111,7 +159,6 @@ namespace Xamarin.Forms.Platform.Android
         protected float _density;
 
         APath _path;
-
         readonly RectF _pathFillBounds;
         readonly RectF _pathStrokeBounds;
 
@@ -121,18 +168,18 @@ namespace Xamarin.Forms.Platform.Android
         float _strokeWidth;
         float[] _strokeDash;
 
-        double _height;
-        double _width;
-
         Stretch _aspect;
 
         public ShapeView(Context context) : base(context)
         {
             _drawable = new ShapeDrawable(null);
+
             _density = Resources.DisplayMetrics.Density;
 
             _pathFillBounds = new RectF();
             _pathStrokeBounds = new RectF();
+
+            _aspect = Stretch.None;
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -142,10 +189,11 @@ namespace Xamarin.Forms.Platform.Android
             if (_path == null)
                 return;
 
-            AMatrix matrix = CreateMatrix();
-            _path.Transform(matrix);
-            matrix.MapRect(_pathFillBounds);
-            matrix.MapRect(_pathStrokeBounds);
+            AMatrix transformMatrix = CreateMatrix();
+
+            _path.Transform(transformMatrix);
+            transformMatrix.MapRect(_pathFillBounds);
+            transformMatrix.MapRect(_pathStrokeBounds);
 
             if (_fill != null)
             {
@@ -163,11 +211,11 @@ namespace Xamarin.Forms.Platform.Android
                 _drawable.Paint.SetShader(null);
             }
 
-            AMatrix inverseMatrix = new AMatrix();
-            matrix.Invert(inverseMatrix);
-            _path.Transform(inverseMatrix);
-            inverseMatrix.MapRect(_pathFillBounds);
-            inverseMatrix.MapRect(_pathStrokeBounds);
+            AMatrix inverseTransformMatrix = new AMatrix();
+            transformMatrix.Invert(inverseTransformMatrix);
+            _path.Transform(inverseTransformMatrix);
+            inverseTransformMatrix.MapRect(_pathFillBounds);
+            inverseTransformMatrix.MapRect(_pathStrokeBounds);
         }
 
         public void UpdateShape(APath path)
@@ -180,7 +228,8 @@ namespace Xamarin.Forms.Platform.Android
         {
             if (_path != null)
             {
-                return new SizeRequest(new Size(Math.Max(0, _pathStrokeBounds.Right),
+                return new SizeRequest(new Size(
+                    Math.Max(0, _pathStrokeBounds.Right),
                     Math.Max(0, _pathStrokeBounds.Bottom)));
             }
 
@@ -209,9 +258,10 @@ namespace Xamarin.Forms.Platform.Android
         {
             _strokeWidth = _density * strokeWidth;
             _drawable.Paint.StrokeWidth = _strokeWidth;
+            UpdatePathStrokeBounds();
         }
 
-        public void UpdateStrokeDash(float[] dash)
+        public void UpdateStrokeDashArray(float[] dash)
         {
             _strokeDash = dash;
 
@@ -226,30 +276,38 @@ namespace Xamarin.Forms.Platform.Android
             }
             else
                 _drawable.Paint.SetPathEffect(null);
+
+            UpdatePathStrokeBounds();
+        }
+
+        public void UpdateStrokeLineCap(Paint.Cap strokeCap)
+        {
+            _drawable.Paint.StrokeCap = strokeCap;
+            UpdatePathStrokeBounds();
+        }
+
+        public void UpdateStrokeLineJoin(Paint.Join strokeJoin)
+        {
+            _drawable.Paint.StrokeJoin = strokeJoin;
+            Invalidate();
         }
 
         public void UpdateSize(double width, double height)
         {
-            _width = width;
-            _height = height;
-
-            _drawable.SetBounds(0, 0, (int)(_width * _density), (int)(_height * _density));
+            _drawable.SetBounds(0, 0, (int)(width * _density), (int)(height * _density));
             UpdatePathShape();
         }
 
-        void UpdatePathShape()
+        protected void UpdatePathShape()
         {
-            if (_drawable.Bounds.IsEmpty)
-                return;
-
-            if (_path != null)
+            if (_path != null && !_drawable.Bounds.IsEmpty)
                 _drawable.Shape = new PathShape(_path, _drawable.Bounds.Width(), _drawable.Bounds.Height());
             else
                 _drawable.Shape = null;
 
             if (_path != null)
             {
-                using (var fillPath = new APath())
+                using (APath fillPath = new APath())
                 {
                     _drawable.Paint.StrokeWidth = 0.01f;
                     _drawable.Paint.SetStyle(Paint.Style.Stroke);
@@ -257,18 +315,20 @@ namespace Xamarin.Forms.Platform.Android
                     fillPath.ComputeBounds(_pathFillBounds, false);
                     _drawable.Paint.StrokeWidth = _strokeWidth;
                 }
-			}
+            }
             else
+            {
                 _pathFillBounds.SetEmpty();
+            }
 
             UpdatePathStrokeBounds();
         }
 
         AMatrix CreateMatrix()
         {
-			var matrix = new AMatrix();
+            AMatrix matrix = new AMatrix();
 
-			var drawableBounds = new RectF(_drawable.Bounds);
+            RectF drawableBounds = new RectF(_drawable.Bounds);
             float halfStrokeWidth = _drawable.Paint.StrokeWidth / 2;
 
             drawableBounds.Left += halfStrokeWidth;
@@ -279,6 +339,7 @@ namespace Xamarin.Forms.Platform.Android
             switch (_aspect)
             {
                 case Stretch.None:
+                    break;
                 case Stretch.Fill:
                     matrix.SetRectToRect(_pathFillBounds, drawableBounds, AMatrix.ScaleToFit.Fill);
                     break;
@@ -289,10 +350,10 @@ namespace Xamarin.Forms.Platform.Android
                     float widthScale = drawableBounds.Width() / _pathFillBounds.Width();
                     float heightScale = drawableBounds.Height() / _pathFillBounds.Height();
                     float maxScale = Math.Max(widthScale, heightScale);
-
                     matrix.SetScale(maxScale, maxScale);
-                    matrix.PostTranslate(drawableBounds.Left - maxScale * _pathFillBounds.Left,
-                                         drawableBounds.Top - maxScale * _pathFillBounds.Top);
+                    matrix.PostTranslate(
+                        drawableBounds.Left - maxScale * _pathFillBounds.Left,
+                        drawableBounds.Top - maxScale * _pathFillBounds.Top);
                     break;
             }
 
@@ -303,15 +364,17 @@ namespace Xamarin.Forms.Platform.Android
         {
             if (_path != null)
             {
-                using (var strokePath = new APath())
+                using (APath strokePath = new APath())
                 {
                     _drawable.Paint.SetStyle(Paint.Style.Stroke);
                     _drawable.Paint.GetFillPath(_path, strokePath);
-                    strokePath.ComputeBounds(_pathStrokeBounds, true);
+                    strokePath.ComputeBounds(_pathStrokeBounds, false);
                 }
             }
             else
+            {
                 _pathStrokeBounds.SetEmpty();
+            }
 
             Invalidate();
         }
