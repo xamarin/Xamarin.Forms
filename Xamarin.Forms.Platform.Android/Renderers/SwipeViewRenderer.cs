@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>, GestureDetector.IOnGestureListener
 	{
 		const int SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 6;
+		const int SwipeThresholdMargin = 0;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
 
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public SwipeViewRenderer(Context context) : base(context)
 		{
-			Xamarin.Forms.SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
+			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
 			_context = context;
 
 			AutoPackage = false;
@@ -133,9 +133,14 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetBackgroundColor(backgroundColor);
 
-				if (_contentView != null && Element.Content == null && HasSwipeItems())
-					_contentView.SetBackgroundColor(backgroundColor);
+				if (Element.Content == null)
+					_contentView?.SetBackgroundColor(backgroundColor);
 			}
+			else
+				Control.SetWindowBackground();
+
+			if (_contentView.Background == null)
+				_contentView?.SetWindowBackground();
 		}
 
 		protected override void OnAttachedToWindow()
@@ -417,7 +422,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool ProcessTouchMove(APointF point)
 		{
-			if (_contentView == null)
+			if (_contentView == null || !TouchInsideContent(point))
 				return false;
 
 			if (!_isSwiping)
@@ -602,8 +607,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			int contentHeight = _contentView.Height;
 			int contentWidth = (int)_context.ToPixels(SwipeItemWidth);
-			int iconSize = Math.Min(contentHeight, contentWidth) / 2;
-	
+			int iconSize = formsSwipeItem.IconImageSource != null ? Math.Min(contentHeight, contentWidth) / 2 : 0;
+
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
 				drawable.SetBounds(0, 0, iconSize, iconSize);
@@ -611,7 +616,7 @@ namespace Xamarin.Forms.Platform.Android
 				swipeButton.SetCompoundDrawables(null, drawable, null, null);
 			});
 
-			var textSize = (int)swipeButton.TextSize;
+			var textSize = !string.IsNullOrEmpty(formsSwipeItem.Text) ? (int)swipeButton.TextSize : 0;
 			var buttonPadding = (contentHeight - (iconSize + textSize + 6)) / 2;
 			swipeButton.SetPadding(0, buttonPadding, 0, buttonPadding);
 			swipeButton.SetOnTouchListener(null);
@@ -904,7 +909,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				if (isHorizontal)
-					swipeThreshold = SwipeThreshold;
+					swipeThreshold = CalculateSwipeThreshold();
 				else
 				{
 					var contentHeight = (float)_context.FromPixels(_contentView.Height);
@@ -913,6 +918,18 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return ValidateSwipeThreshold(swipeThreshold);
+		}
+
+		float CalculateSwipeThreshold()
+		{
+			if (_contentView != null)
+			{
+				var swipeThreshold = (float)(_contentView.Width * 0.8);
+
+				return swipeThreshold;
+			}
+
+			return SwipeThreshold;
 		}
 
 		float ValidateSwipeThreshold(float swipeThreshold)
