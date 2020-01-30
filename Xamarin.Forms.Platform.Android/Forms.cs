@@ -53,7 +53,9 @@ namespace Xamarin.Forms
 
 		const int TabletCrossover = 600;
 
+		static BuildVersionCodes? s_sdkInt;
 		static bool? s_isLollipopOrNewer;
+		static bool? s_is29OrNewer;
 		static bool? s_isMarshmallowOrNewer;
 		static bool? s_isNougatOrNewer;
 
@@ -71,7 +73,24 @@ namespace Xamarin.Forms
 		static Color _ColorButtonNormal = Color.Default;
 		public static Color ColorButtonNormalOverride { get; set; }
 
-		internal static BuildVersionCodes SdkInt => Anticipator.SdkInt;
+		internal static BuildVersionCodes SdkInt {
+			get {
+				if (!s_sdkInt.HasValue)
+					s_sdkInt = Build.VERSION.SdkInt;
+				return (BuildVersionCodes)s_sdkInt;
+			}
+		}
+
+		internal static bool Is29OrNewer
+		{
+			get
+			{
+				if (!s_is29OrNewer.HasValue)
+					s_is29OrNewer = (int)SdkInt >= 29;
+				return s_is29OrNewer.Value;
+			}
+		}
+
 		internal static bool IsLollipopOrNewer
 		{
 			get
@@ -112,7 +131,7 @@ namespace Xamarin.Forms
 			//this doesn't seem to work
 			using (var value = new TypedValue())
 			{
-				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true)) 
+				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true))
 				{
 					size = value.Data;
 				}
@@ -284,6 +303,9 @@ namespace Xamarin.Forms
 					var flags = options.Flags;
 					var effectScopes = options.EffectScopes;
 
+					//TODO: ExportCell?
+					//TODO: ExportFont
+
 					// renderers
 					Registrar.RegisterRenderers(handlers);
 
@@ -308,15 +330,36 @@ namespace Xamarin.Forms
 					Registrar.RegisterAll(new[] {
 						typeof(ExportRendererAttribute),
 						typeof(ExportCellAttribute),
-						typeof(ExportImageSourceHandlerAttribute)
+						typeof(ExportImageSourceHandlerAttribute),
+						typeof(ExportFontAttribute)
 					});
 				}
 			}
 
 			Profile.FramePartition("Epilog");
-			// This could change as a result of a config change, so we need to check it every time
-			int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
-			Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
+
+			var currentIdiom = TargetIdiom.Unsupported;
+
+			// first try UIModeManager
+			using (var uiModeManager = UiModeManager.FromContext(ApplicationContext))
+			{
+				try
+				{
+					var uiMode = uiModeManager?.CurrentModeType ?? UiMode.TypeUndefined;
+					currentIdiom = DetectIdiom(uiMode);
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine($"Unable to detect using UiModeManager: {ex.Message}");
+				}
+			}
+
+			if (TargetIdiom.Unsupported == currentIdiom)
+			{
+				// This could change as a result of a config change, so we need to check it every time
+				int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
+				Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
+			}
 
 			if (SdkInt >= BuildVersionCodes.JellyBeanMr1)
 				Device.SetFlowDirection(activity.Resources.Configuration.LayoutDirection.ToFlowDirection());
@@ -326,6 +369,22 @@ namespace Xamarin.Forms
 
 			IsInitialized = true;
 			Profile.FrameEnd();
+		}
+
+		static TargetIdiom DetectIdiom(UiMode uiMode)
+		{
+			var returnValue = TargetIdiom.Unsupported;
+			if (uiMode.HasFlag(UiMode.TypeNormal))
+				returnValue = TargetIdiom.Unsupported;
+			else if (uiMode.HasFlag(UiMode.TypeTelevision))
+				returnValue = TargetIdiom.TV;
+			else if (uiMode.HasFlag(UiMode.TypeDesk))
+				returnValue = TargetIdiom.Desktop;
+			else if (SdkInt >= BuildVersionCodes.KitkatWatch && uiMode.HasFlag(UiMode.TypeWatch))
+				returnValue = TargetIdiom.Watch;
+
+			Device.SetIdiom(returnValue);
+			return returnValue;
 		}
 
 		static IReadOnlyList<string> s_flags;
@@ -659,7 +718,7 @@ namespace Xamarin.Forms
 
 			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
-				using (var client = new HttpClient())				
+				using (var client = new HttpClient())
 				{
 					HttpResponseMessage response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
 					if (!response.IsSuccessStatusCode)
@@ -668,9 +727,9 @@ namespace Xamarin.Forms
 						return null;
 					}
 
-					// the HttpResponseMessage needs to be disposed of after the calling code is done with the stream 
+					// the HttpResponseMessage needs to be disposed of after the calling code is done with the stream
 					// otherwise the stream may get disposed before the caller can use it
-					return new StreamWrapper(await response.Content.ReadAsStreamAsync().ConfigureAwait(false), response);					
+					return new StreamWrapper(await response.Content.ReadAsStreamAsync().ConfigureAwait(false), response);
 				}
 			}
 
