@@ -245,11 +245,12 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly Windows.UI.Xaml.Controls.Page _page;
 		Windows.UI.Xaml.Controls.ProgressBar _busyIndicator;
 		Page _currentPage;
-		Page _currentModalBackgroundPage;
+		Page _modalBackgroundPage;
 		readonly NavigationModel _navModel = new NavigationModel();
 		readonly ToolbarTracker _toolbarTracker = new ToolbarTracker();
 		readonly ImageConverter _imageConverter = new ImageConverter();
 		readonly ImageSourceIconElementConverter _imageSourceIconElementConverter = new ImageSourceIconElementConverter();
+
 		Windows.UI.Xaml.Controls.ProgressBar GetBusyIndicator()
 		{
 			if (_busyIndicator == null)
@@ -312,12 +313,13 @@ namespace Xamarin.Forms.Platform.UWP
 				if (_currentPage != null)
 				{
 					Page previousPage = _currentPage;
-					RemovePage(previousPage);
 
-					if (_currentModalBackgroundPage != null)
+					if (modal && !popping && !newPage.BackgroundColor.IsDefault)
+						_modalBackgroundPage = previousPage;
+					else
 					{
-						RemovePage(_currentModalBackgroundPage);
-						_currentModalBackgroundPage = null;
+						RemovePage(previousPage);
+						_modalBackgroundPage = null;
 					}
 
 					if (popping)
@@ -330,20 +332,9 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 
 				newPage.Layout(ContainerBounds);
-
-				if (modal && !popping)
-				{
-					if (!newPage.BackgroundColor.IsDefault)
-					{
-						_currentModalBackgroundPage = _currentPage;
-						AddPage(_currentModalBackgroundPage);
-					}
-
-					AddPage(newPage);
-				}
-				else
-					AddPage(newPage);
-
+											
+				AddPage(newPage);
+								
 				completedCallback?.Invoke();
 
 				_currentPage = newPage;
@@ -369,8 +360,13 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_container == null || page == null)
 				return;
 
+			if (_modalBackgroundPage != null)
+				_modalBackgroundPage.GetCurrentPage()?.SendAppearing();
+
 			IVisualElementRenderer pageRenderer = GetRenderer(page);
-			_container.Children.Remove(pageRenderer.ContainerElement);
+
+			if (_container.Children.Contains(pageRenderer.ContainerElement))
+				_container.Children.Remove(pageRenderer.ContainerElement);
 		}
 
 		void AddPage(Page page)
@@ -378,8 +374,13 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_container == null || page == null)
 				return;
 
+			if (_modalBackgroundPage != null)
+				_modalBackgroundPage.GetCurrentPage()?.SendDisappearing();
+
 			IVisualElementRenderer pageRenderer = page.GetOrCreateRenderer();
-			_container.Children.Add(pageRenderer.ContainerElement);
+
+			if (!_container.Children.Contains(pageRenderer.ContainerElement))
+				_container.Children.Add(pageRenderer.ContainerElement);
 
 			pageRenderer.ContainerElement.Width = _container.ActualWidth;
 			pageRenderer.ContainerElement.Height = _container.ActualHeight;
