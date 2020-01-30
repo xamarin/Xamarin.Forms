@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (args.NewElement != null)
 			{
 				UpdateData();
+				UpdateRenderTransform();
 			}
 		}
 
@@ -26,11 +27,19 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (args.PropertyName == Path.DataProperty.PropertyName)
 				UpdateData();
+			else if (args.PropertyName == Path.RenderTransformProperty.PropertyName)
+				UpdateRenderTransform();
 		}
 
 		void UpdateData()
 		{
 			Control.Data = Element.Data.ToWindows();
+		}
+
+		void UpdateRenderTransform()
+		{
+			if (Element.RenderTransform != null)
+				Control.RenderTransform = Element.RenderTransform.ToWindows();
 		}
 	}
 }
