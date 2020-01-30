@@ -400,13 +400,13 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		}
 
 		[Export("getNativePlatformTestResults:")]
-		public string GetNativePlatformTestResults(string arg)
+		public string GetNativePlatformTestResults()
 		{
 			return _app.NativePlatformTestResults;
 		}
 
 		[Export("getCrossPlatformTestResults:")]
-		public string GetCrossPlatformTestResults(string arg)
+		public string GetCrossPlatformTestResults()
 		{
 			return _app.CrossPlatformTestResults;
 		}
