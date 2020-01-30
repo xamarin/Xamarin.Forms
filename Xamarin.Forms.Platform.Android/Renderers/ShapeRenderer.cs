@@ -44,15 +44,15 @@ namespace Xamarin.Forms.Platform.Android
 
             if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
             {
-                _height = (Element.HeightRequest > 0) ? Element.HeightRequest : Element.Height;
+                _height = Element.Height;
                 UpdateSize();
             }
             else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
             {
-                _width = (Element.WidthRequest > 0) ? Element.WidthRequest : Element.Width;
+                _width = Element.Width;
                 UpdateSize();
             }
-            else if (args.PropertyName == Shape.AspectProperty.PropertyName)
+            if (args.PropertyName == Shape.AspectProperty.PropertyName)
                 UpdateAspect();
             else if (args.PropertyName == Shape.FillProperty.PropertyName)
                 UpdateFill();
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Platform.Android
 
         void UpdateStrokeDashArray()
         {
-            Control.UpdateStrokeDash(Element.StrokeDashArray.ToArray());
+            Control.UpdateStrokeDashArray(Element.StrokeDashArray.ToArray());
         }
     }
 
@@ -111,7 +111,6 @@ namespace Xamarin.Forms.Platform.Android
         protected float _density;
 
         APath _path;
-
         readonly RectF _pathFillBounds;
         readonly RectF _pathStrokeBounds;
 
@@ -121,18 +120,20 @@ namespace Xamarin.Forms.Platform.Android
         float _strokeWidth;
         float[] _strokeDash;
 
-        double _height;
-        double _width;
-
         Stretch _aspect;
+
+        AMatrix _transform;
 
         public ShapeView(Context context) : base(context)
         {
             _drawable = new ShapeDrawable(null);
+
             _density = Resources.DisplayMetrics.Density;
 
             _pathFillBounds = new RectF();
             _pathStrokeBounds = new RectF();
+
+            _aspect = Stretch.None;
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -142,10 +143,11 @@ namespace Xamarin.Forms.Platform.Android
             if (_path == null)
                 return;
 
-            AMatrix matrix = CreateMatrix();
-            _path.Transform(matrix);
-            matrix.MapRect(_pathFillBounds);
-            matrix.MapRect(_pathStrokeBounds);
+            AMatrix transformMatrix = CreateMatrix();
+
+            _path.Transform(transformMatrix);
+            transformMatrix.MapRect(_pathFillBounds);
+            transformMatrix.MapRect(_pathStrokeBounds);
 
             if (_fill != null)
             {
@@ -163,11 +165,11 @@ namespace Xamarin.Forms.Platform.Android
                 _drawable.Paint.SetShader(null);
             }
 
-            AMatrix inverseMatrix = new AMatrix();
-            matrix.Invert(inverseMatrix);
-            _path.Transform(inverseMatrix);
-            inverseMatrix.MapRect(_pathFillBounds);
-            inverseMatrix.MapRect(_pathStrokeBounds);
+            AMatrix inverseTransformMatrix = new AMatrix();
+            transformMatrix.Invert(inverseTransformMatrix);
+            _path.Transform(inverseTransformMatrix);
+            inverseTransformMatrix.MapRect(_pathFillBounds);
+            inverseTransformMatrix.MapRect(_pathStrokeBounds);
         }
 
         public void UpdateShape(APath path)
@@ -176,12 +178,20 @@ namespace Xamarin.Forms.Platform.Android
             UpdatePathShape();
         }
 
+        public void UpdateShapeTransform(AMatrix matrix)
+        {
+            _transform = matrix;
+            _path.Transform(_transform);
+            Invalidate();
+        }
+
         public SizeRequest GetDesiredSize()
         {
             if (_path != null)
             {
-                return new SizeRequest(new Size(Math.Max(0, _pathStrokeBounds.Right),
-                    Math.Max(0, _pathStrokeBounds.Bottom)));
+                return new SizeRequest(new Size(
+					Math.Max(0, _pathStrokeBounds.Right),
+					Math.Max(0, _pathStrokeBounds.Bottom)));
             }
 
             return new SizeRequest();
@@ -209,9 +219,10 @@ namespace Xamarin.Forms.Platform.Android
         {
             _strokeWidth = _density * strokeWidth;
             _drawable.Paint.StrokeWidth = _strokeWidth;
+            UpdatePathStrokeBounds();
         }
 
-        public void UpdateStrokeDash(float[] dash)
+        public void UpdateStrokeDashArray(float[] dash)
         {
             _strokeDash = dash;
 
@@ -226,24 +237,20 @@ namespace Xamarin.Forms.Platform.Android
             }
             else
                 _drawable.Paint.SetPathEffect(null);
+
+            UpdatePathStrokeBounds();
         }
 
         public void UpdateSize(double width, double height)
         {
-            _width = width;
-            _height = height;
-
-            _drawable.SetBounds(0, 0, (int)(_width * _density), (int)(_height * _density));
+            _drawable.SetBounds(0, 0, (int)(width * _density), (int)(height * _density));
             UpdatePathShape();
         }
 
-        void UpdatePathShape()
+        protected void UpdatePathShape()
         {
-            if (_drawable.Bounds.IsEmpty)
-                return;
-
-            if (_path != null)
-                _drawable.Shape = new PathShape(_path, _drawable.Bounds.Width(), _drawable.Bounds.Height());
+            if (_path != null && !_drawable.Bounds.IsEmpty)
+				_drawable.Shape = new PathShape(_path, _drawable.Bounds.Width(), _drawable.Bounds.Height());
             else
                 _drawable.Shape = null;
 
@@ -259,7 +266,9 @@ namespace Xamarin.Forms.Platform.Android
                 }
             }
             else
+            {
                 _pathFillBounds.SetEmpty();
+            }
 
             UpdatePathStrokeBounds();
         }
@@ -279,6 +288,7 @@ namespace Xamarin.Forms.Platform.Android
             switch (_aspect)
             {
                 case Stretch.None:
+                    break;
                 case Stretch.Fill:
                     matrix.SetRectToRect(_pathFillBounds, drawableBounds, AMatrix.ScaleToFit.Fill);
                     break;
@@ -289,10 +299,10 @@ namespace Xamarin.Forms.Platform.Android
                     float widthScale = drawableBounds.Width() / _pathFillBounds.Width();
                     float heightScale = drawableBounds.Height() / _pathFillBounds.Height();
                     float maxScale = Math.Max(widthScale, heightScale);
-
                     matrix.SetScale(maxScale, maxScale);
-                    matrix.PostTranslate(drawableBounds.Left - maxScale * _pathFillBounds.Left,
-                                         drawableBounds.Top - maxScale * _pathFillBounds.Top);
+                    matrix.PostTranslate(
+						drawableBounds.Left - maxScale * _pathFillBounds.Left,
+						drawableBounds.Top - maxScale * _pathFillBounds.Top);
                     break;
             }
 
@@ -307,11 +317,13 @@ namespace Xamarin.Forms.Platform.Android
                 {
                     _drawable.Paint.SetStyle(Paint.Style.Stroke);
                     _drawable.Paint.GetFillPath(_path, strokePath);
-                    strokePath.ComputeBounds(_pathStrokeBounds, true);
+                    strokePath.ComputeBounds(_pathStrokeBounds, false);
                 }
-			}
+            }
             else
+            {
                 _pathStrokeBounds.SetEmpty();
+            }
 
             Invalidate();
         }

@@ -1,7 +1,7 @@
 ﻿namespace Xamarin.Forms
 {
-    public abstract class Geometry : BindableObject
+	public abstract class Geometry : BindableObject
     {
-
+        
     }
 }

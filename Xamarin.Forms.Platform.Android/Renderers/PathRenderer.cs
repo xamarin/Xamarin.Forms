@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Android.Content;
+using AMatrix = Android.Graphics.Matrix;
 using APath = Android.Graphics.Path;
 
 namespace Xamarin.Forms.Platform.Android
@@ -23,6 +24,7 @@ namespace Xamarin.Forms.Platform.Android
             if (args.NewElement != null)
             {
                 UpdateData();
+                UpdateRenderTransform();
             }
         }
 
@@ -32,11 +34,25 @@ namespace Xamarin.Forms.Platform.Android
 
             if (args.PropertyName == Path.DataProperty.PropertyName)
                 UpdateData();
+            else if (args.PropertyName == Path.RenderTransformProperty.PropertyName)
+            {
+                UpdateData();
+                UpdateRenderTransform();
+            }
         }
 
         void UpdateData()
         {
             Control.UpdateData(Element.Data.ToAPath(Context));
+        }
+
+        void UpdateRenderTransform()
+        {
+            if (Element.RenderTransform != null)
+            {
+                var density = Resources.DisplayMetrics.Density;
+                Control.UpdateTransform(Element.RenderTransform.ToAndroid(density));
+            }
         }
     }
 
@@ -49,6 +65,11 @@ namespace Xamarin.Forms.Platform.Android
         public void UpdateData(APath path)
         {
             UpdateShape(path);
+        }
+
+        public void UpdateTransform(AMatrix transform)
+        {
+            UpdateShapeTransform(transform);
         }
     }
 }

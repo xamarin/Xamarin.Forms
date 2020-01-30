@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
             if (args.NewElement != null)
             {
                 UpdateData();
+                UpdateRenderTransform();
             }
         }
 
@@ -26,11 +27,19 @@ namespace Xamarin.Forms.Platform.iOS
 
             if (args.PropertyName == Path.DataProperty.PropertyName)
                 UpdateData();
+            else if (args.PropertyName == Path.RenderTransformProperty.PropertyName)
+                UpdateRenderTransform();
         }
 
         void UpdateData()
         {
             Control.UpdateData(Element.Data.ToCGPath());
+        }
+
+        void UpdateRenderTransform()
+        {
+            if (Element.RenderTransform != null)
+                Control.UpdateTransform(Element.RenderTransform.ToCGAffineTransform());
         }
     }
 
@@ -46,6 +55,11 @@ namespace Xamarin.Forms.Platform.iOS
         {
             ShapeLayer.UpdateShape(path.Data);
             ShapeLayer.UpdateFillMode(path == null ? false : path.IsNonzeroFillRule);
+        }
+
+		public void UpdateTransform(CGAffineTransform transform)
+		{
+            Transform = transform;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Xamarin.Forms
         Unknown = 4
     }
 
+    [TypeConverter(typeof(MatrixTypeConverter))]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public struct Matrix
     {

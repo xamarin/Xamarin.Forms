@@ -2,6 +2,16 @@
 {
     public class LineSegment : PathSegment
     {
+		public LineSegment()
+		{
+
+		}
+
+		public LineSegment(Point point)
+		{
+            Point = point;
+        }
+
         public static readonly BindableProperty PointProperty =
             BindableProperty.Create(nameof(Point), typeof(Point), typeof(LineSegment), new Point(0, 0));
 

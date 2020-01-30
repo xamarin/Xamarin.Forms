@@ -50,11 +50,11 @@ namespace Xamarin.Forms.Platform.iOS
                 UpdateStroke();
             else if (args.PropertyName == Shape.StrokeThicknessProperty.PropertyName)
                 UpdateStrokeThickness();
-            else if (args.PropertyName == Shape.StrokeDashArrayProperty.PropertyName)
-                UpdateStrokeDashArray();
-            else if (args.PropertyName == Shape.StrokeDashOffsetProperty.PropertyName)
-                UpdateStrokeDashOffset();
-        }
+			else if (args.PropertyName == Shape.StrokeDashArrayProperty.PropertyName)
+				UpdateStrokeDashArray();
+			else if (args.PropertyName == Shape.StrokeDashOffsetProperty.PropertyName)
+				UpdateStrokeDashOffset();
+		}
 
         public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
         {
@@ -91,16 +91,16 @@ namespace Xamarin.Forms.Platform.iOS
             Control.ShapeLayer.UpdateStrokeThickness(Element.StrokeThickness);
         }
 
-        void UpdateStrokeDashArray()
-        {
-            Control.ShapeLayer.UpdateStrokeDash(Element.StrokeDashArray.ToArray());
-        }
+		void UpdateStrokeDashArray()
+		{
+			Control.ShapeLayer.UpdateStrokeDash(Element.StrokeDashArray.ToArray());
+		}
 
-        void UpdateStrokeDashOffset()
-        {
-            Control.ShapeLayer.UpdateStrokeDashOffset((nfloat)Element.StrokeDashOffset);
-        }
-    }
+		void UpdateStrokeDashOffset()
+		{
+			Control.ShapeLayer.UpdateStrokeDashOffset((nfloat)Element.StrokeDashOffset);
+		}
+	}
 
     public class ShapeView : UIView
     {
@@ -121,10 +121,18 @@ namespace Xamarin.Forms.Platform.iOS
 
     public class ShapeLayer : CALayer
     {
+		// TODO: Expose this properties
+        const CGLineCap StrokeLineCap = CGLineCap.Butt;
+        const CGLineJoin StrokeLineJoin = CGLineJoin.Miter;
+        const float StrokeMiterLimit = 10f;
+
         CGPath _path;
-        CGRect _pathBounds;
+        CGRect _pathFillBounds;
+        CGRect _pathStrokeBounds;
 
         CGPath _renderPath;
+
+        bool _fillMode;
 
         CGColor _stroke;
         CGColor _fill;
@@ -133,9 +141,13 @@ namespace Xamarin.Forms.Platform.iOS
         nfloat[] _strokeDash;
         nfloat _dashOffset;
 
-        bool _fillMode;
+        Stretch _stretch;
 
-        Stretch _aspect;
+        public ShapeLayer()
+        {
+            _fillMode = false;
+            _stretch = Stretch.None;
+        }
 
         public override void DrawInContext(CGContext ctx)
         {
@@ -148,22 +160,24 @@ namespace Xamarin.Forms.Platform.iOS
             _path = path;
 
             if (_path != null)
-                _pathBounds = _path.PathBoundingBox;
+                _pathFillBounds = _path.PathBoundingBox;
             else
-                _pathBounds = new CGRect();
+                _pathFillBounds = new CGRect();
 
-            BuildRenderPath();
+            UpdatePathStrokeBounds();
         }
 
         public void UpdateFillMode(bool fillMode)
         {
             _fillMode = fillMode;
             SetNeedsDisplay();
-        }
+        }	
 
-        public SizeRequest GetDesiredSize()
+		public SizeRequest GetDesiredSize()
         {
-            return new SizeRequest(new Size(Bounds.Width, Bounds.Height));
+            return new SizeRequest(new Size(
+				Math.Max(0, _pathStrokeBounds.Right),
+				Math.Max(0, _pathStrokeBounds.Bottom)));
         }
 
         public void UpdateSize(CGSize size)
@@ -172,9 +186,9 @@ namespace Xamarin.Forms.Platform.iOS
             BuildRenderPath();
         }
 
-        public void UpdateAspect(Stretch aspect)
+        public void UpdateAspect(Stretch stretch)
         {
-            _aspect = aspect;
+            _stretch = stretch;
             BuildRenderPath();
         }
 
@@ -219,31 +233,29 @@ namespace Xamarin.Forms.Platform.iOS
             CATransaction.Begin();
             CATransaction.DisableActions = true;
 
-            CGRect viewBounds = Bounds;
-            viewBounds.X += _strokeWidth / 2;
-            viewBounds.Y += _strokeWidth / 2;
-            viewBounds.Width -= _strokeWidth;
-            viewBounds.Height -= _strokeWidth;
-
-            nfloat widthScale = viewBounds.Width / _pathBounds.Width;
-            nfloat heightScale = viewBounds.Height / _pathBounds.Height;
-            CGAffineTransform stretchTransform = CGAffineTransform.MakeIdentity();
-
-            if (_aspect == Stretch.None)
+            if (_stretch != Stretch.None)
             {
-                stretchTransform.Scale(widthScale, heightScale);
-                stretchTransform.Translate(viewBounds.Left - widthScale * _pathBounds.Left, viewBounds.Top - heightScale * _pathBounds.Top);
-            }
-            else
-            {
-                switch (_aspect)
+                CGRect viewBounds = Bounds;
+                viewBounds.X += _strokeWidth / 2;
+                viewBounds.Y += _strokeWidth / 2;
+                viewBounds.Width -= _strokeWidth;
+                viewBounds.Height -= _strokeWidth;
+
+                nfloat widthScale = viewBounds.Width / _pathFillBounds.Width;
+                nfloat heightScale = viewBounds.Height / _pathFillBounds.Height;
+				var stretchTransform = CGAffineTransform.MakeIdentity();
+
+                switch (_stretch)
                 {
+                    case Stretch.None:
+                        break;
+
                     case Stretch.Fill:
                         stretchTransform.Scale(widthScale, heightScale);
 
                         stretchTransform.Translate(
-                            viewBounds.Left - widthScale * _pathBounds.Left,
-                            viewBounds.Top - heightScale * _pathBounds.Top);
+							viewBounds.Left - widthScale * _pathFillBounds.Left,
+							viewBounds.Top - heightScale * _pathFillBounds.Top);
                         break;
 
                     case Stretch.Uniform:
@@ -252,26 +264,51 @@ namespace Xamarin.Forms.Platform.iOS
                         stretchTransform.Scale(minScale, minScale);
 
                         stretchTransform.Translate(
-                            viewBounds.Left - minScale * _pathBounds.Left +
-                            (viewBounds.Width - minScale * _pathBounds.Width) / 2,
-                            viewBounds.Top - minScale * _pathBounds.Top +
-                            (viewBounds.Height - minScale * _pathBounds.Height) / 2);
+							viewBounds.Left - minScale * _pathFillBounds.Left +
+							(viewBounds.Width - minScale * _pathFillBounds.Width) / 2,
+							viewBounds.Top - minScale * _pathFillBounds.Top + 
+							(viewBounds.Height - minScale * _pathFillBounds.Height) / 2);
                         break;
 
                     case Stretch.UniformToFill:
                         nfloat maxScale = NMath.Max(widthScale, heightScale);
+
                         stretchTransform.Scale(maxScale, maxScale);
 
                         stretchTransform.Translate(
-                            viewBounds.Left - maxScale * _pathBounds.Left,
-                            viewBounds.Top - maxScale * _pathBounds.Top);
+							viewBounds.Left - maxScale * _pathFillBounds.Left,
+							viewBounds.Top - maxScale * _pathFillBounds.Top);
                         break;
                 }
+
+                Frame = Bounds;
+                _renderPath = _path.CopyByTransformingPath(stretchTransform);
             }
+            else
+            {
+                nfloat adjustX = NMath.Min(0, _pathStrokeBounds.X);
+                nfloat adjustY = NMath.Min(0, _pathStrokeBounds.Y);
 
+                if (adjustX < 0 || adjustY < 0)
+                {
+                    nfloat width = Bounds.Width;
+                    nfloat height = Bounds.Height;
 
-            Frame = Bounds;
-            _renderPath = _path.CopyByTransformingPath(stretchTransform);
+                    if (_pathStrokeBounds.Width > Bounds.Width)
+                        width = Bounds.Width - adjustX;
+                    if (_pathStrokeBounds.Height > Bounds.Height)
+                        height = Bounds.Height - adjustY;
+
+                    Frame = new CGRect(adjustX, adjustY, width, height);
+                    var transform = new CGAffineTransform(Bounds.Width / width, 0, 0, Bounds.Height / height, -adjustX, -adjustY);
+                    _renderPath = _path.CopyByTransformingPath(transform);
+                }
+                else
+                {
+                    Frame = Bounds;
+                    _renderPath = _path.CopyByTransformingPath(CGAffineTransform.MakeIdentity());
+                }
+            }
 
             CATransaction.Commit();
 
@@ -289,20 +326,36 @@ namespace Xamarin.Forms.Platform.iOS
             CATransaction.Begin();
             CATransaction.DisableActions = true;
 
-            graphics.SetLineWidth(_strokeWidth);
+            var lengths = new nfloat[0];
 
-            var lengths = new nfloat[_strokeDash.Length];
+			if(_strokeDash.Length > 0)
+                lengths = new nfloat[_strokeDash.Length];
+
             for (int i = 0; i < _strokeDash.Length; i++)
                 lengths[i] = new nfloat(_dashOffset * _strokeDash[i]);
 
+            graphics.SetLineWidth(_strokeWidth);
             graphics.SetLineDash(_dashOffset * _strokeWidth, lengths);
+            graphics.SetLineCap(StrokeLineCap);
+            graphics.SetLineJoin(StrokeLineJoin);
+            graphics.SetMiterLimit(StrokeMiterLimit * _strokeWidth / 4);
+			
             graphics.AddPath(_renderPath);
             graphics.SetStrokeColor(_stroke);
             graphics.SetFillColor(_fill);
-
             graphics.DrawPath(_fillMode ? CGPathDrawingMode.FillStroke : CGPathDrawingMode.EOFillStroke);
 
             CATransaction.Commit();
+        }
+
+        void UpdatePathStrokeBounds()
+        {
+            if (_path != null)
+                _pathStrokeBounds = _path.CopyByStrokingPath(_strokeWidth, StrokeLineCap, StrokeLineJoin, StrokeMiterLimit).PathBoundingBox;
+            else
+                _pathStrokeBounds = new CGRect();
+
+            BuildRenderPath();
         }
     }
 }

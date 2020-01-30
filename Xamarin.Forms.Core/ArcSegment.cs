@@ -2,6 +2,20 @@
 {
     public class ArcSegment : PathSegment
     {
+		public ArcSegment()
+		{
+
+		}
+
+		public ArcSegment(Point point, Size size, double rotationAngle, SweepDirection sweepDirection, bool isLargeArc)
+		{
+            Point = point;
+            Size = size;
+            RotationAngle = rotationAngle;
+            SweepDirection = sweepDirection;
+            IsLargeArc = isLargeArc;
+		}
+
         public static readonly BindableProperty PointProperty =
             BindableProperty.Create(nameof(Point), typeof(Point), typeof(ArcSegment), new Point(0, 0));
 

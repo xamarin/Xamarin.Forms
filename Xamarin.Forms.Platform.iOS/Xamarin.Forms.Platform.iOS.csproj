@@ -249,6 +249,7 @@
     <Compile Include="Renderers\ShapeRenderer.cs" />
     <Compile Include="Extensions\GeometryExtensions.cs" />
     <Compile Include="Extensions\DoubleCollectionExtensions.cs" />
+    <Compile Include="Extensions\TransformExtensions.cs" />
     <Compile Include="Extensions\UIApplicationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

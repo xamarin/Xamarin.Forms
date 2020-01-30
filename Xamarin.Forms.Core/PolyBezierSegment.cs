@@ -7,6 +7,11 @@
             Points = new PointCollection();
         }
 
+        public PolyBezierSegment(PointCollection points)
+        {
+            Points = points;
+        }
+
         public static readonly BindableProperty PointsProperty =
             BindableProperty.Create(nameof(Points), typeof(PointCollection), typeof(PolyBezierSegment), null);
 
@@ -17,4 +22,3 @@
         }
     }
 }
-

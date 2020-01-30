@@ -2,6 +2,17 @@
 {
     public class QuadraticBezierSegment : PathSegment
     {
+		public QuadraticBezierSegment()
+		{
+
+		}
+
+		public QuadraticBezierSegment(Point point1, Point point2)
+		{
+            Point1 = point1;
+            Point2 = point2;
+		}
+
         public static readonly BindableProperty Point1Property =
             BindableProperty.Create(nameof(Point1), typeof(Point), typeof(QuadraticBezierSegment), new Point(0, 0));
 

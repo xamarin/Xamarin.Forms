@@ -80,5 +80,8 @@
     <Compile Update="Extensions\DoubleCollectionExtensions.cs">
       <SubType></SubType>
     </Compile>
+    <Compile Update="Extensions\TransformExtensions.cs">
+      <SubType></SubType>
+    </Compile>
   </ItemGroup>
 </Project>

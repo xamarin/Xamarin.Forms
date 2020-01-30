@@ -7,6 +7,11 @@
             Points = new PointCollection();
         }
 
+		public PolyLineSegment(PointCollection points)
+		{
+            Points = points;
+		}
+
         public static readonly BindableProperty PointsProperty =
             BindableProperty.Create(nameof(Points), typeof(PointCollection), typeof(PolyLineSegment), null);
 

@@ -2,7 +2,7 @@
 namespace Xamarin.Forms
 {
     [ContentProperty("Segments")]
-    public sealed class PathFigure : BindableObject
+    public sealed class PathFigure : BindableObject, IAnimatable
     {
         public PathFigure()
         {
@@ -43,6 +43,16 @@ namespace Xamarin.Forms
         {
             set { SetValue(IsFilledProperty, value); }
             get { return (bool)GetValue(IsFilledProperty); }
+        }
+
+        public void BatchBegin()
+        {
+
+        }
+
+        public void BatchCommit()
+        {
+
         }
     }
 }
