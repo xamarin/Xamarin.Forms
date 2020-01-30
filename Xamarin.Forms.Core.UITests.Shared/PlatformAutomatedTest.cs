@@ -29,8 +29,8 @@ namespace Xamarin.Forms.Core.UITests.Shared
 			System.Diagnostics.Debug.WriteLine($">>>>>> Attempting to parse external test result XML");
 
 #if __IOS__
-			var crossPlatformTestXml = (string)App.Invoke("getCrossPlatformTestResults:");
-			var nativePlatformTestXml = (string)App.Invoke("getNativePlatformTestResults:");
+			var crossPlatformTestXml = (string)App.Invoke("getCrossPlatformTestResults:", null);
+			var nativePlatformTestXml = (string)App.Invoke("getNativePlatformTestResults:", null);
 #elif __ANDROID__
 			var crossPlatformTestXml = (string)App.Invoke("GetCrossPlatformTestResults");
 			var nativePlatformTestXml = (string)App.Invoke("GetNativePlatformTestResults");
