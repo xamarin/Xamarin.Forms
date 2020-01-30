@@ -47,12 +47,21 @@ namespace Xamarin.Forms.Core.UITests.Shared
 			System.Diagnostics.Debug.WriteLine($"crossPlatformTestXml: ${crossPlatformTestXml}");
 			System.Diagnostics.Debug.WriteLine($"nativePlatformTestXml: ${nativePlatformTestXml}");
 
-			var executionContext = TestExecutionContext.CurrentContext;
+			try
+			{
+				var executionContext = TestExecutionContext.CurrentContext;
 
-			var crossPlatformResult = new PlatformTestResult(executionContext.CurrentTest, crossPlatformTestXml);
-			var nativePlatformResult = new PlatformTestResult(executionContext.CurrentTest, nativePlatformTestXml);
+				var crossPlatformResult = new PlatformTestResult(executionContext.CurrentTest, crossPlatformTestXml);
+				var nativePlatformResult = new PlatformTestResult(executionContext.CurrentTest, nativePlatformTestXml);
 
-			executionContext.CurrentResult = new CombinedTestResult(executionContext.CurrentTest, crossPlatformResult, nativePlatformResult);
+				executionContext.CurrentResult = new CombinedTestResult(executionContext.CurrentTest, crossPlatformResult, nativePlatformResult);
+			}
+			catch (Exception ex) 
+			{
+				var message = $"{ex.Message}| crossPlatformTestXml: ${crossPlatformTestXml}| nativePlatformTestXml: ${nativePlatformTestXml}";
+
+				throw new Exception(message, ex);
+			}
 		}
 	}
 

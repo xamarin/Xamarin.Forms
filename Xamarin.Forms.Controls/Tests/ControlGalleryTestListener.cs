@@ -36,10 +36,12 @@ namespace Xamarin.Forms.Controls.Tests
 
 			if (assemblyName.StartsWith("Xamarin.Forms.Controls"))
 			{
+				System.Diagnostics.Debug.WriteLine($">>>>>> Setting cross platform results");
 				(Application.Current as App).CrossPlatformTestResults = xmlResult;
 			}
 			else
 			{
+				System.Diagnostics.Debug.WriteLine($">>>>>> Setting native platform results");
 				(Application.Current as App).NativePlatformTestResults = xmlResult;
 			}
 		}
