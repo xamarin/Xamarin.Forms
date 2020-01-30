@@ -20,20 +20,6 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.UWP)]
 	public partial class Issue8787 : TestContentPage
 	{
-		Entry _theEntry;
-
-		string _entryText = "Bound text - not a problem.";
-
-		public string EntryText
-		{
-			get => _entryText;
-			set
-			{
-				_entryText = value;
-				OnPropertyChanged();
-			}
-		}
-
 		public Issue8787()
 		{
 #if APP
