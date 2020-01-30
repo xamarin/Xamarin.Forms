@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="Xamarin.Forms.Controls.Issues.Issue8787"
-        Title="Issue 8787 - Entry not immediately visible"
+        Title="Issue 8787 - Entry text not immediately visible"
         x:Name="Instance"
         BindingContext="{x:Reference Instance}"
         BackgroundColor="Beige">
