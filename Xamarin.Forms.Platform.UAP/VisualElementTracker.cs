@@ -8,6 +8,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
+using WScaleTransform = Windows.UI.Xaml.Media.ScaleTransform;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -557,7 +559,7 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 				else
 				{
-					frameworkElement.RenderTransform = new CompositeTransform
+					frameworkElement.RenderTransform = new WCompositeTransform
 					{
 						CenterX = anchorX,
 						CenterY = anchorY,
@@ -576,7 +578,7 @@ namespace Xamarin.Forms.Platform.UWP
 			double anchorX = view.AnchorX;
 			double anchorY = view.AnchorY;
 			frameworkElement.RenderTransformOrigin = new Windows.Foundation.Point(anchorX, anchorY);
-			frameworkElement.RenderTransform = new ScaleTransform { ScaleX = view.Scale * view.ScaleX, ScaleY = view.Scale * view.ScaleY };
+			frameworkElement.RenderTransform = new WScaleTransform { ScaleX = view.Scale * view.ScaleX, ScaleY = view.Scale * view.ScaleY };
 
 			UpdateRotation(view, frameworkElement);
 		}

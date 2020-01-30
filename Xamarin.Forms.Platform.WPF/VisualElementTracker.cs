@@ -5,8 +5,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using Xamarin.Forms.Internals;
+using WTransformGroup = System.Windows.Media.TransformGroup;
+using WTransformCollection = System.Windows.Media.TransformCollection;
+using WRotateTransform = System.Windows.Media.RotateTransform;
+using WTranslateTransform = System.Windows.Media.TranslateTransform;
+using WScaleTransform = System.Windows.Media.ScaleTransform;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -271,22 +275,22 @@ namespace Xamarin.Forms.Platform.WPF
 			double offsetY = scale == 0 ? 0 : translationY / scale;
 
 			Control.RenderTransformOrigin = new System.Windows.Point(anchorX, anchorY);
-			Control.RenderTransform = new TransformGroup()
+			Control.RenderTransform = new WTransformGroup()
 			{
-				Children = new TransformCollection()
+				Children = new WTransformCollection()
 				{
-					new RotateTransform()
+					new WRotateTransform()
 					{
 						CenterX = anchorX,
 						CenterY = anchorY,
 						Angle = Element.Rotation
 					},
-					new TranslateTransform()
+					new WTranslateTransform()
 					{
 						X = offsetX,
 						Y = offsetY
 					},
-					new ScaleTransform
+					new WScaleTransform
 					{
 						ScaleX = scale,
 						ScaleY = scale
