@@ -1,7 +1,11 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -43,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 		AView IVisualElementRenderer.View => this;
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
-		bool IDisposedState.IsDisposed => _disposed;
+		bool IDisposedState.IsDisposed => ((IImageRendererController)this).IsDisposed;
 
 		public ImageButton Element
 		{
@@ -56,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void IImageRendererController.SkipInvalidate() => _skipInvalidate = true;
-		bool IImageRendererController.IsDisposed => _disposed;
+		bool IImageRendererController.IsDisposed => _disposed || !Control.IsAlive();
 
 		AppCompatImageButton Control => this;
 		public ImageButtonRenderer(Context context) : base(context)

@@ -5,7 +5,11 @@ using AScaleType = Android.Widget.ImageView.ScaleType;
 using ARect = Android.Graphics.Rect;
 using System;
 using Xamarin.Forms.Internals;
+#if __ANDROID_29__
+using AViewCompat = AndroidX.Core.View.ViewCompat;
+#else
 using AViewCompat = Android.Support.V4.View.ViewCompat;
+#endif
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -51,13 +55,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
             var oldImageElementManager = e.OldElement as IImageElement;
             var rendererController = renderer as IImageRendererController;
 
-            await TryUpdateBitmap(rendererController, view, newImageElementManager, oldImageElementManager);
-            UpdateAspect(rendererController, view, newImageElementManager, oldImageElementManager);
+			if (rendererController.IsDisposed)
+				return;
 
-            if (!rendererController.IsDisposed)
-            {
-                ElevationHelper.SetElevation(view, renderer.Element);
-            }
+			await TryUpdateBitmap(rendererController, view, newImageElementManager, oldImageElementManager);
+			
+			if (rendererController.IsDisposed)
+				return;
+
+			UpdateAspect(rendererController, view, newImageElementManager, oldImageElementManager);
+
+			if (rendererController.IsDisposed)
+				return;
+
+            ElevationHelper.SetElevation(view, renderer.Element);
         }
 
         async static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -136,6 +147,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
                     imageController.SetIsLoading(false);
             }
 
+			if (rendererController.IsDisposed)
+				return;
+			
 			if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
 			{
 				rendererController.SetFormsAnimationDrawable(updatedAnimation);
