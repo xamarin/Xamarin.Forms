@@ -56,6 +56,7 @@ steps:
     inputs:
       solutionFile: $(slnPath)
       configuration: $(buildConfiguration)
+      args: /bl:$(Build.ArtifactStagingDirectory)/ios.binlog
 
 
   - task: CopyFiles@2
@@ -73,7 +74,11 @@ steps:
     inputs:
       Contents: |
        **/$(IpaName)
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/**
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
 
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: true
@@ -83,7 +88,13 @@ steps:
   - task: CopyFiles@2
     displayName: 'Copy Android Files for UITest'
     inputs:
-      Contents: 'Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/**'
+      Contents: |
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/nunit.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/NUnit3.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/Plugin.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/Xamarin.*
+       
       TargetFolder: '$(build.artifactstagingdirectory)/android'
       CleanTargetFolder: true
       flattenFolders: true
@@ -91,6 +102,7 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: iOS'
+    condition: always()
     inputs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
       ArtifactName: OSXArtifacts
