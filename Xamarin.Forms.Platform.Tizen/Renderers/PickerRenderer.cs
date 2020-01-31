@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Picker.FontAttributesProperty, UpdateFontAttributes);
 			RegisterPropertyHandler(Picker.TitleProperty, UpdateTitle);
 			RegisterPropertyHandler(Picker.TitleColorProperty, UpdateTitleColor);
+			RegisterPropertyHandler(Picker.HorizontalTextAlignmentProperty, UpdateHorizontalTextAlignment);			
 		}
 
 		protected override void Dispose(bool disposing)
@@ -100,6 +101,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			Control.PlaceholderColor = Element.TitleColor.ToNative();
 		}
+
+		void UpdateHorizontalTextAlignment()
+		{
+			Control.HorizontalTextAlignment = Element.HorizontalTextAlignment.ToNative();
+		}		
 
 		void OnLayoutFocused(object sender, EventArgs e)
 		{
