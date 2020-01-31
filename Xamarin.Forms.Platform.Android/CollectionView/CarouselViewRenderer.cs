@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 		int _oldPosition;
 		int _initialPosition;
 		List<View> _oldViews;
-		CarrouselViewwOnGlobalLayoutListener _carrouselViewLayoutListener;
+		CarrouselViewwOnGlobalLayoutListener _carouselViewLayoutListener;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
@@ -319,10 +319,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void AddLayoutListener()
 		{
-			_carrouselViewLayoutListener = new CarrouselViewwOnGlobalLayoutListener();
-			_carrouselViewLayoutListener.LayoutReady += LayoutReady;
+			_carouselViewLayoutListener = new CarrouselViewwOnGlobalLayoutListener();
+			_carouselViewLayoutListener.LayoutReady += LayoutReady;
 
-			ViewTreeObserver.AddOnGlobalLayoutListener(_carrouselViewLayoutListener);
+			ViewTreeObserver.AddOnGlobalLayoutListener(_carouselViewLayoutListener);
 		}
 
 		void LayoutReady(object sender, EventArgs e)
@@ -340,12 +340,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ClearLayoutListener()
 		{
-			if (_carrouselViewLayoutListener == null)
+			if (_carouselViewLayoutListener == null)
 				return;
 
-			ViewTreeObserver?.RemoveOnGlobalLayoutListener(_carrouselViewLayoutListener);
-			_carrouselViewLayoutListener.LayoutReady -= LayoutReady;
-			_carrouselViewLayoutListener = null;
+			ViewTreeObserver?.RemoveOnGlobalLayoutListener(_carouselViewLayoutListener);
+			_carouselViewLayoutListener.LayoutReady -= LayoutReady;
+			_carouselViewLayoutListener = null;
 		}
 	}
 }

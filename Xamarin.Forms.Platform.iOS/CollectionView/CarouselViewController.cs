@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_oldViews = new List<View>();
 		}
 
-		private void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			UpdateVisualStates();
 		}
