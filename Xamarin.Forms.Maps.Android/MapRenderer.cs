@@ -5,10 +5,17 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Android;
 using Android.Content;
+using Android.Content.PM;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.OS;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
+using Android.Support.V4.Content;
+#endif
 using Java.Lang;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
@@ -175,7 +182,7 @@ namespace Xamarin.Forms.Maps.Android
 
 			if (e.PropertyName == Map.IsShowingUserProperty.PropertyName)
 			{
-				gmap.MyLocationEnabled = gmap.UiSettings.MyLocationButtonEnabled = Map.IsShowingUser;
+				SetUserVisible();
 			}
 			else if (e.PropertyName == Map.HasScrollEnabledProperty.PropertyName)
 			{
@@ -229,7 +236,7 @@ namespace Xamarin.Forms.Maps.Android
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ScrollGesturesEnabled = Map.HasScrollEnabled;
-			map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = Map.IsShowingUser;
+			SetUserVisible();
 			SetMapType();
 		}
 
@@ -779,6 +786,36 @@ namespace Xamarin.Forms.Maps.Android
 		}
 
 		#endregion
+
+		void SetUserVisible()
+		{
+			GoogleMap map = NativeMap;
+			if (map == null)
+			{
+				return;
+			}
+
+			if (Map.IsShowingUser)
+			{
+				var coarseLocationPermission = ContextCompat.CheckSelfPermission(Context, Manifest.Permission.AccessCoarseLocation);
+				var fineLocationPermission = ContextCompat.CheckSelfPermission(Context, Manifest.Permission.AccessFineLocation);
+
+				if (coarseLocationPermission == Permission.Granted || fineLocationPermission == Permission.Granted)
+				{
+					map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = true;
+				}
+				else
+				{
+					Log.Warning("Xamarin.Forms.MapRenderer", "Missing location permissions for IsShowingUser");
+					map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = false;
+				}
+			}
+			else
+			{
+				map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = false;
+			}
+		}
+
 		void IOnMapReadyCallback.OnMapReady(GoogleMap map)
 		{
 			NativeMap = map;

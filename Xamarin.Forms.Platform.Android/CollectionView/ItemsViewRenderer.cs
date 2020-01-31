@@ -2,12 +2,18 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+using AViewCompat = AndroidX.Core.View.ViewCompat;
+#else
 using Android.Support.V7.Widget;
+using AViewCompat = Android.Support.V4.View.ViewCompat;
+#endif
 using Android.Views;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.CollectionView;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using AViewCompat = Android.Support.V4.View.ViewCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -487,6 +493,15 @@ namespace Xamarin.Forms.Platform.Android
 					_emptyViewAdapter = new EmptyViewAdapter(ItemsView);
 				}
 
+				if (ItemsView is StructuredItemsView structuredItemsView)
+				{
+					_emptyViewAdapter.Header = structuredItemsView.Header;
+					_emptyViewAdapter.HeaderTemplate = structuredItemsView.HeaderTemplate;
+
+					_emptyViewAdapter.Footer = structuredItemsView.Footer;
+					_emptyViewAdapter.FooterTemplate = structuredItemsView.FooterTemplate;
+				}
+
 				_emptyViewAdapter.EmptyView = emptyView;
 				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
 
@@ -600,7 +615,16 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var showEmptyView = ItemsView?.EmptyView != null && ItemsViewAdapter.ItemCount == 0;
+			int itemCount = 0;
+			if(ItemsView is StructuredItemsView itemsView)
+			{
+				if (itemsView.Header != null || itemsView.HeaderTemplate != null)
+					itemCount++;
+				if (itemsView.Footer != null || itemsView.FooterTemplate != null)
+					itemCount++;
+			}
+   
+			var showEmptyView = ItemsView?.EmptyView != null && ItemsViewAdapter.ItemCount == itemCount;
 
 			var currentAdapter = GetAdapter();
 			if (showEmptyView && currentAdapter != _emptyViewAdapter)
