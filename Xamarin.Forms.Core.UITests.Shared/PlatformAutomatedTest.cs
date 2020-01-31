@@ -39,16 +39,21 @@ namespace Xamarin.Forms.Core.UITests.Shared
 			var nativePlatformTestXml = "";
 #endif
 
-			if (string.IsNullOrEmpty(crossPlatformTestXml))
-			{
-				return;
-			}
-
-			System.Diagnostics.Debug.WriteLine($"crossPlatformTestXml: ${crossPlatformTestXml}");
-			System.Diagnostics.Debug.WriteLine($"nativePlatformTestXml: ${nativePlatformTestXml}");
-
 			try
 			{
+				if (string.IsNullOrEmpty(crossPlatformTestXml))
+				{
+					throw new Exception(">>>>>> crossPlatformTestXml value came back empty from Invoke");
+				}
+
+				if (string.IsNullOrEmpty(nativePlatformTestXml))
+				{
+					throw new Exception(">>>>>> nativePlatformTestXml value came back empty from Invoke");
+				}
+
+				System.Diagnostics.Debug.WriteLine($"crossPlatformTestXml: ${crossPlatformTestXml}");
+				System.Diagnostics.Debug.WriteLine($"nativePlatformTestXml: ${nativePlatformTestXml}");
+
 				var executionContext = TestExecutionContext.CurrentContext;
 
 				var crossPlatformResult = new PlatformTestResult(executionContext.CurrentTest, crossPlatformTestXml);
