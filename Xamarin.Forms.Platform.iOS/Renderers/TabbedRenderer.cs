@@ -121,6 +121,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element == null)
 				return;
 
+			if (Element.Parent is BaseShellItem)
+				Element.Layout(View.Bounds.ToRectangle());
+
 			if (!Element.Bounds.IsEmpty)
 			{
 				View.Frame = new System.Drawing.RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
@@ -466,7 +469,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Tabbed.IsSet(TabbedPage.SelectedTabColorProperty) && Tabbed.SelectedTabColor != Color.Default)
 				TabBar.SelectedImageTintColor = Tabbed.SelectedTabColor.ToUIColor();
 			else
-				TabBar.SelectedImageTintColor = null;
+				TabBar.SelectedImageTintColor = UITabBar.Appearance.SelectedImageTintColor;
 
 			if (!Forms.IsiOS10OrNewer)
 				return;
@@ -474,7 +477,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
 				TabBar.UnselectedItemTintColor = Tabbed.UnselectedTabColor.ToUIColor();
 			else
-				TabBar.UnselectedItemTintColor = null;
+				TabBar.UnselectedItemTintColor = UITabBar.Appearance.TintColor;
 		}
 
 		/// <summary>
