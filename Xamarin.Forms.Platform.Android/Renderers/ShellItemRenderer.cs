@@ -1,7 +1,12 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
+#if __ANDROID_29__
+using Google.Android.Material.BottomNavigation;
+using Google.Android.Material.BottomSheet;
+#else
 using Android.Support.Design.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -68,7 +73,10 @@ namespace Xamarin.Forms.Platform.Android
 			_bottomView.SetOnNavigationItemSelectedListener(this);
 
 			if (ShellItem == null)
-				throw new ArgumentException("Active Shell Item not set. Have you added any Shell Items to your Shell?", nameof(ShellItem));
+				throw new InvalidOperationException("Active Shell Item not set. Have you added any Shell Items to your Shell?");
+
+			if (ShellItem.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
 
 			HookEvents(ShellItem);
 			SetupMenu();

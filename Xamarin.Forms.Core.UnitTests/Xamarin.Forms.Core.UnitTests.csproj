@@ -76,6 +76,7 @@
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
+    <Compile Include="NumericExtensionsTests.cs" />
     <Compile Include="RefreshViewTests.cs" />
     <Compile Include="MultiTapGestureRecognizerTests.cs" />
     <Compile Include="LongPressGestureRecognizerTests.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="MockDispatcher.cs" />
     <Compile Include="DeviceUnitTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
+    <Compile Include="ShellModalTests.cs" />
     <Compile Include="ShellTestBase.cs" />
     <Compile Include="ShellLifeCycleTests.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
@@ -95,6 +97,8 @@
     <Compile Include="ImageButtonUnitTest.cs" />
     <Compile Include="ItemsViewTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
+    <Compile Include="MediaElementTests.cs" />
+    <Compile Include="MediaSourceTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
     <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
