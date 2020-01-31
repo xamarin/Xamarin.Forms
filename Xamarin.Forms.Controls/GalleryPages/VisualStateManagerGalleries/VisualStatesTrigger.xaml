@@ -8,12 +8,12 @@
             <Entry>
                 <Entry.Triggers>
                     <EventTrigger Event="Focused">
-                        <VisualStateTrigger GoToState="Focused" />
-                        <VisualStateTrigger GoToState="FocusedBox" Target="{x:Reference BoxForState}" />
+                        <VisualStateTrigger State="Focused" />
+                        <VisualStateTrigger State="FocusedBox" Target="{x:Reference BoxForState}" />
                     </EventTrigger>
                     <EventTrigger Event="TextChanged">
-                        <VisualStateTrigger GoToState="Text" />
-                        <VisualStateTrigger GoToState="TextBox" Target="{x:Reference BoxForState}" />
+                        <VisualStateTrigger State="Text" />
+                        <VisualStateTrigger State="TextBox" Target="{x:Reference BoxForState}" />
                     </EventTrigger>
                 </Entry.Triggers>
                 <VisualStateManager.VisualStateGroups>
