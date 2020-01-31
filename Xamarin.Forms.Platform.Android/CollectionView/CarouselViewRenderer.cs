@@ -14,7 +14,7 @@ using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	class CarrouselViewwOnGlobalLayoutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
+	class CarouselViewwOnGlobalLayoutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
 	{
 		public EventHandler<EventArgs> LayoutReady;
 		public void OnGlobalLayout()
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 		int _oldPosition;
 		int _initialPosition;
 		List<View> _oldViews;
-		CarrouselViewwOnGlobalLayoutListener _carouselViewLayoutListener;
+		CarouselViewwOnGlobalLayoutListener _carouselViewLayoutListener;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
@@ -319,7 +319,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void AddLayoutListener()
 		{
-			_carouselViewLayoutListener = new CarrouselViewwOnGlobalLayoutListener();
+			_carouselViewLayoutListener = new CarouselViewwOnGlobalLayoutListener();
 			_carouselViewLayoutListener.LayoutReady += LayoutReady;
 
 			ViewTreeObserver.AddOnGlobalLayoutListener(_carouselViewLayoutListener);
