@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.WPF
 		ScrollViewer _scrollViewer;
 
 		// Header and Footer
-        readonly WGrid _grid = new WGrid(); 
+		readonly WGrid _grid = new WGrid(); 
 		WList _listview = null;
 		IVisualElementRenderer _headerRenderer;
 		IVisualElementRenderer _footerRenderer;
@@ -324,7 +324,7 @@ namespace Xamarin.Forms.Platform.WPF
 		void OnNativeMouseUp(object sender, MouseButtonEventArgs e)
 			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
 
-		void OnNativeTouchUp(object sender, TouchEventArgs e)
+		void OnNativeTouchUp(object sender, System.Windows.Input.TouchEventArgs e)
 			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
 
 		void OnNativeStylusUp(object sender, StylusEventArgs e)
