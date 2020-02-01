@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WProgressBar = System.Windows.Controls.ProgressBar;
+using Xamarin.Forms.Platform.WPF.Controls;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, WProgressBar>
+	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, FormsProgressRing>
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
@@ -16,10 +12,10 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (Control == null) // construct and SetNativeControl and suscribe control event
 				{
-					SetNativeControl(new WProgressBar());
+					SetNativeControl(new FormsProgressRing());
 				}
 
-				UpdateIsIndeterminate();
+				UpdateIsActive();
 				UpdateColor();
 			}
 
@@ -31,19 +27,35 @@ namespace Xamarin.Forms.Platform.WPF
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == ActivityIndicator.IsRunningProperty.PropertyName)
-				UpdateIsIndeterminate();
+				UpdateIsActive();
 			else if (e.PropertyName == ActivityIndicator.ColorProperty.PropertyName)
 				UpdateColor();
 		}
 
-		void UpdateColor()
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
-			Control.UpdateDependencyColor(WProgressBar.ForegroundProperty, Element.Color);
+			// Restrict control to a square
+			return base.GetDesiredSize(Math.Min(widthConstraint, heightConstraint), Math.Min(widthConstraint, heightConstraint));
 		}
 
-		void UpdateIsIndeterminate()
+		protected override void Dispose(bool disposing)
 		{
-			Control.IsIndeterminate = Element.IsRunning;
+			if (Element is object)
+			{
+				Element.IsRunning = false;
+			}
+
+			base.Dispose(disposing);
+		}
+
+		void UpdateColor()
+		{
+			Control.UpdateDependencyColor(FormsProgressRing.ForegroundProperty, Element.Color);
+		}
+
+		void UpdateIsActive()
+		{
+			Control.IsActive = Element.IsRunning;
 		}
 	}
 }
