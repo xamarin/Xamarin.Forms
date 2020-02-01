@@ -402,12 +402,14 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		[Export("getNativePlatformTestResults")]
 		public string GetNativePlatformTestResults()
 		{
+			System.Diagnostics.Debug.WriteLine($">>>>>> UITest is asking for native platform results: {_app.NativePlatformTestResults}");
 			return _app.NativePlatformTestResults;
 		}
 
 		[Export("getCrossPlatformTestResults")]
 		public string GetCrossPlatformTestResults()
 		{
+			System.Diagnostics.Debug.WriteLine($">>>>>> UITest is asking for cross platform results: {_app.CrossPlatformTestResults}");
 			return _app.CrossPlatformTestResults;
 		}
 

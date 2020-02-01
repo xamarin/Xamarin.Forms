@@ -21,5 +21,12 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				Assert.That(centeredVertical, Is.True);
 			}
 		}
+
+		[Test]
+		[Description("This is a demo failed test so we can see the results in azops")]
+		public void ThisTestIsGonnaFail()
+		{
+			Assert.Fail();
+		}
 	}
 }
