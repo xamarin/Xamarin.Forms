@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\Environment.Build.props" />
   <PropertyGroup>
@@ -101,6 +101,7 @@
     <Compile Include="Tests\BackgroundColorTests.cs" />
     <Compile Include="Tests\CornerRadiusTests.cs" />
     <Compile Include="Tests\IsEnabledTests.cs" />
+    <Compile Include="Tests\CollectionViewTests.cs" />
     <Compile Include="Tests\Issues.cs" />
     <Compile Include="Tests\IsVisibleTests.cs" />
     <Compile Include="Tests\OpacityTests.cs" />
@@ -137,6 +138,7 @@
     </Compile>
     <Compile Include="ApiLabelRenderer.cs" />
     <Compile Include="Issue7249SwitchRenderer.cs" />
+    <Compile Include="_9087CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\default.css" />
