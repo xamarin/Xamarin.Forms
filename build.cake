@@ -222,7 +222,7 @@ Task("Build")
         MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
                     GetMSBuildSettings()
                         .WithRestore()
-                        .WithProperty("DisableEmbeddedXbf", "true"));
+                        .WithProperty("DisableEmbeddedXbf", "false"));
     }
     catch(Exception)
     {
