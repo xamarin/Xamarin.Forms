@@ -37,6 +37,7 @@ if(bases.length == 0){
 			string htmlWithBaseTag;
 
 			// Set up an internal WebView we can use to load and parse the original HTML string
+			// Make _internalWebView a field instead of local variable to avoid garbage collection
 			_internalWebView = new Windows.UI.Xaml.Controls.WebView();
 
 			// When the 'navigation' to the original HTML string is done, we can modify it to include our <base> tag
@@ -51,6 +52,7 @@ if(bases.length == 0){
 
 				// Set the HTML for the 'real' WebView to the updated HTML
 				Control.NavigateToString(!IsNullOrEmpty(htmlWithBaseTag) ? htmlWithBaseTag : html);
+				// free up memory after we're done with _internalWebView
 				_internalWebView = null;
 			};
 
