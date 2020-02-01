@@ -51,6 +51,7 @@ if(bases.length == 0){
 
 				// Set the HTML for the 'real' WebView to the updated HTML
 				Control.NavigateToString(!IsNullOrEmpty(htmlWithBaseTag) ? htmlWithBaseTag : html);
+				_internalWebView = null;
 			};
 
 			// Kick off the initial navigation
