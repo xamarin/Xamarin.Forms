@@ -26,6 +26,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		[Description("This is a demo failed test so we can see the results in azops")]
 		public void ThisTestIsGonnaFail()
 		{
+			//Pointless comment
 			Assert.Fail();
 		}
 	}
