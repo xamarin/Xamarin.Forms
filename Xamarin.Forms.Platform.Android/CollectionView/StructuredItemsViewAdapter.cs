@@ -141,8 +141,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var viewHolder = SimpleViewHolder.FromFormsView(formsView, context);
 
-				// Propagate the binding context from the ItemsView to the header/footer
-				viewHolder.View.BindingContext = ItemsView.BindingContext;
+				// Propagate the binding context, visual, etc. from the ItemsView to the header/footer
+				ItemsView.AddLogicalChild(viewHolder.View);
 
 				return viewHolder;
 			}
