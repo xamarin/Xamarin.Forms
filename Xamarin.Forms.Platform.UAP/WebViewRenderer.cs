@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		WebNavigationEvent _eventState;
 		bool _updating;
+		private Windows.UI.Xaml.Controls.WebView _internalWebView;
 		const string LocalScheme = "ms-appx-web:///";
 
 		// Script to insert a <base> tag into an HTML document
@@ -36,10 +37,10 @@ if(bases.length == 0){
 			string htmlWithBaseTag;
 
 			// Set up an internal WebView we can use to load and parse the original HTML string
-			var internalWebView = new Windows.UI.Xaml.Controls.WebView();
+			_internalWebView = new Windows.UI.Xaml.Controls.WebView();
 
 			// When the 'navigation' to the original HTML string is done, we can modify it to include our <base> tag
-			internalWebView.NavigationCompleted += async (sender, args) =>
+			_internalWebView.NavigationCompleted += async (sender, args) =>
 			{
 				// Generate a version of the <base> script with the correct <base> tag
 				var script = BaseInsertionScript.Replace("baseTag", baseTag);
@@ -53,7 +54,7 @@ if(bases.length == 0){
 			};
 
 			// Kick off the initial navigation
-			internalWebView.NavigateToString(html);
+			_internalWebView.NavigateToString(html);
 		}
 
 		public void LoadUrl(string url)
