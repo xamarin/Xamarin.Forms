@@ -286,8 +286,8 @@
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\TabbedPageStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\CollectionView\ItemsViewStyles.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\CollectionView" />
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\Shell\ShellStyles.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Shell" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\Microsoft.UI.Xaml\DensityStyles\Compact.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\DensityStyles" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\Microsoft.UI.Xaml\Themes\generic.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\Themes" />
+    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\DensityStyles\Compact.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\DensityStyles" />
+    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\Themes\generic.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\Themes" />
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsAutoSuggestBoxStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsCheckBoxStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsCommandBarStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
