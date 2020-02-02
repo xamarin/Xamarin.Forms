@@ -62,6 +62,7 @@ steps:
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/release'
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: nuget'
