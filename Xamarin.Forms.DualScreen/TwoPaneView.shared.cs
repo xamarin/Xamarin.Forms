@@ -34,7 +34,7 @@ namespace Xamarin.Forms.DualScreen
 		static TwoPaneView()
 		{
 #if UWP
-			DependencyService.Register<NoDualScreenServiceImpl>();
+			DependencyService.Register<DualScreenService>();
 #elif !ANDROID
 			DependencyService.Register<NoDualScreenServiceImpl>();
 #endif
