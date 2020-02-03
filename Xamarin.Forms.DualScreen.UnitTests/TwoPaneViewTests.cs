@@ -20,6 +20,27 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			Device.info = new TestDeviceInfo();
 		}
 
+		TwoPaneView CreateTwoPaneView(View pane1 = null, View pane2 = null)
+		{
+			TwoPaneView view = new TwoPaneView()
+			{
+				IsPlatformEnabled = true,
+				Pane1 = pane1,
+				Pane2 = pane2
+			};
+
+			if (pane1 != null)
+				pane1.IsPlatformEnabled = true;
+
+			if (pane2 != null)
+				pane2.IsPlatformEnabled = true;
+
+			view.Children[0].IsPlatformEnabled = true;
+			view.Children[1].IsPlatformEnabled = true;
+
+			return view;
+		}
+
 		[Test]
 		public void GettersAndSetters()
 		{
@@ -80,27 +101,85 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			Assert.AreEqual(TwoPaneViewMode.Tall, twoPaneView.Mode);
 		}
 
-		//[Test]
-		//public void PaneLengthTallMode()
-		//{
-		//	TwoPaneView twoPaneView = new TwoPaneView()
-		//	{
-		//		Pane1 = new BoxView()
-		//		{
-		//			IsPlatformEnabled = true
-		//		},
-		//		Pane2 = new BoxView()
-		//		{
-		//			IsPlatformEnabled = true
-		//		},
-		//		IsPlatformEnabled = true
-		//	};
+		[Test]
+		public void Pane1LengthTallMode()
+		{
+			var pane1 = new BoxView();
+			var pane2 = new BoxView();
 
-		//	twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
-		//	twoPaneView.MinTallModeHeight = 100;
-		//	twoPaneView.Pane1Length = 100;
-		//	Assert.AreEqual(100, twoPaneView.Pane1.Height);
-		//}
+			TwoPaneView twoPaneView = CreateTwoPaneView(pane1, pane2);
+
+			twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
+			twoPaneView.MinTallModeHeight = 100;
+			Assert.AreNotEqual(100, twoPaneView.Pane1.Height);
+			twoPaneView.Pane1Length = 100;
+			Assert.AreEqual(100, twoPaneView.Pane1.Height);
+		}
+
+
+		[Test]
+		public void Pane1LengthWideMode()
+		{
+			var pane1 = new BoxView();
+			var pane2 = new BoxView();
+
+			TwoPaneView twoPaneView = CreateTwoPaneView(pane1, pane2);
+
+			twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
+			twoPaneView.MinWideModeWidth = 100;
+			Assert.AreNotEqual(100, twoPaneView.Pane1.Width);
+			twoPaneView.Pane1Length = 100;
+			Assert.AreEqual(100, twoPaneView.Pane1.Width);
+		}
+
+
+		[Test]
+		public void Pane2LengthTallMode()
+		{
+			var pane1 = new BoxView();
+			var pane2 = new BoxView();
+
+			TwoPaneView twoPaneView = CreateTwoPaneView(pane1, pane2);
+
+			twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
+			twoPaneView.MinTallModeHeight = 100;
+			Assert.AreNotEqual(100, twoPaneView.Pane2.Height);
+			twoPaneView.Pane2Length = 100;
+			Assert.AreEqual(100, twoPaneView.Pane2.Height);
+		}
+
+
+		[Test]
+		public void Pane2LengthWideMode()
+		{
+			var pane1 = new BoxView();
+			var pane2 = new BoxView();
+
+			TwoPaneView twoPaneView = CreateTwoPaneView(pane1, pane2);
+
+			twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
+			twoPaneView.MinWideModeWidth = 100;
+			Assert.AreNotEqual(100, twoPaneView.Pane2.Width);
+			twoPaneView.Pane2Length = 100;
+			Assert.AreEqual(100, twoPaneView.Pane2.Width);
+		}
+
+
+		[Test]
+		public void PanePriority()
+		{
+			var pane1 = new BoxView();
+			var pane2 = new BoxView();
+
+			TwoPaneView twoPaneView = CreateTwoPaneView(pane1, pane2);
+
+			twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
+			twoPaneView.MinWideModeWidth = 500;
+			twoPaneView.MinTallModeHeight = 500;
+
+			Assert.LessOrEqual(pane2.Height, 0);
+			Assert.LessOrEqual(pane2.Width, 0);
+		}
 
 
 		internal class TestDeviceInfo : DeviceInfo
