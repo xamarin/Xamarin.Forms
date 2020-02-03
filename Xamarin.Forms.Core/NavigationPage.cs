@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -178,29 +177,34 @@ namespace Xamarin.Forms
 
 		public async Task<Page> PopAsync(bool animated)
 		{
-			var tcs = new TaskCompletionSource<bool>();
-			try
-			{
-				if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
-				{
-					var oldTask = CurrentNavigationTask;
-					CurrentNavigationTask = tcs.Task;
-					await oldTask;
-				}
-				else
-					CurrentNavigationTask = tcs.Task;
+			Task<Page> navigationTask;
+			Page page;
 
-				var result = await PopAsyncInner(animated, false);
-				tcs.SetResult(true);
-				return result;
+			if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
+			{
+				var tcs = new TaskCompletionSource<Page>();
+				var oldTask = CurrentNavigationTask;	
+				CurrentNavigationTask = navigationTask = tcs.Task;
+			
+				await oldTask;
+
+				page = await PopAsyncInner(animated, false);
+
+				tcs.SetResult(page);
 			}
-			catch (Exception)
+			else
+			{
+				CurrentNavigationTask = navigationTask = PopAsyncInner(animated, false);
+
+				page = await navigationTask;
+			}
+			
+			if (navigationTask == CurrentNavigationTask)
 			{
 				CurrentNavigationTask = null;
-				tcs.SetCanceled();
-
-				throw;
 			}
+
+			return page;
 		}
 
 		public event EventHandler<NavigationEventArgs> Popped;
@@ -214,21 +218,31 @@ namespace Xamarin.Forms
 
 		public async Task PopToRootAsync(bool animated)
 		{
+			Task navigationTask;
+
 			if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
 			{
 				var tcs = new TaskCompletionSource<bool>();
-				Task oldTask = CurrentNavigationTask;
-				CurrentNavigationTask = tcs.Task;
+				var oldTask = CurrentNavigationTask;	
+				CurrentNavigationTask = navigationTask = tcs.Task;
+			
 				await oldTask;
 
 				await PopToRootAsyncInner(animated);
-				tcs.SetResult(true);
-				return;
-			}
 
-			Task result = PopToRootAsyncInner(animated);
-			CurrentNavigationTask = result;
-			await result;
+				tcs.SetResult(true);
+			}
+			else
+			{
+				CurrentNavigationTask = navigationTask = PopToRootAsyncInner(animated);
+
+				await navigationTask;
+			}
+			
+			if (navigationTask == CurrentNavigationTask)
+			{
+				CurrentNavigationTask = null;
+			}
 		}
 
 		public Task PushAsync(Page page)
@@ -238,20 +252,31 @@ namespace Xamarin.Forms
 
 		public async Task PushAsync(Page page, bool animated)
 		{
+			Task navigationTask;
+
 			if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
 			{
 				var tcs = new TaskCompletionSource<bool>();
-				Task oldTask = CurrentNavigationTask;
-				CurrentNavigationTask = tcs.Task;
+				var oldTask = CurrentNavigationTask;	
+				CurrentNavigationTask = navigationTask = tcs.Task;
+			
 				await oldTask;
 
 				await PushAsyncInner(page, animated);
-				tcs.SetResult(true);
-				return;
-			}
 
-			CurrentNavigationTask = PushAsyncInner(page, animated);
-			await CurrentNavigationTask;
+				tcs.SetResult(true);
+			}
+			else
+			{
+				CurrentNavigationTask = navigationTask = PushAsyncInner(page, animated);
+
+				await navigationTask;
+			}
+			
+			if (navigationTask == CurrentNavigationTask)
+			{
+				CurrentNavigationTask = null;
+			}
 		}
 
 		public event EventHandler<NavigationEventArgs> Pushed;

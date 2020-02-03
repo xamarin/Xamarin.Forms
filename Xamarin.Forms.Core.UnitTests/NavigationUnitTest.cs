@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(childRoot, nav.RootPage);
 			Assert.AreSame(childRoot, nav.CurrentPage);
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
+			Assert.IsNull(nav.CurrentNavigationTask);
 		}
 
 		[Test]
@@ -55,6 +56,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(childRoot, nav.CurrentPage);
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 			Assert.AreEqual (childRoot2, popped);
+			Assert.IsNull(nav.CurrentNavigationTask);
 
 			await nav.PopAsync ();
 			var last = await nav.Navigation.PopAsync ();
