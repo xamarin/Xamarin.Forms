@@ -28,7 +28,7 @@ namespace Xamarin.Forms.DualScreen
     }
 
     [ContentProperty("")]
-    public class TwoPaneView : Grid
+    public partial class TwoPaneView : Grid
 	{
 
 		static TwoPaneView()

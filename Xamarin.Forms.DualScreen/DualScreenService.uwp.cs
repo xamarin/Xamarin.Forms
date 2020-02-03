@@ -17,7 +17,7 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: Dependency(typeof(DualScreenService))]
 namespace Xamarin.Forms.DualScreen
 {
-    internal class DualScreenService : IDualScreenService
+    internal partial class DualScreenService : IDualScreenService
 	{
 #pragma warning disable CS0067
 		public event EventHandler OnScreenChanged;
