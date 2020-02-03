@@ -306,7 +306,7 @@ namespace Xamarin.Forms
 			InvalidateMeasure();
 		}
 
-		public void OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)
+		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)
 		{
 
 		}
