@@ -19,11 +19,11 @@ namespace Xamarin.Forms.DualScreen
         Rectangle _rightPane;
         TwoPaneViewMode _mode;
         Layout _layout;
-        private bool isLandscape;
+        bool _isLandscape;
         public event PropertyChangedEventHandler PropertyChanged;
         List<string> _pendingPropertyChanges = new List<string>();
 
-        private TwoPaneViewLayoutGuide()
+        TwoPaneViewLayoutGuide()
         {
         }
 
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.DualScreen
         public bool IsLandscape
         {
             get => DualScreenService.IsLandscape;
-            set => SetProperty(ref isLandscape, value);
+            set => SetProperty(ref _isLandscape, value);
         }
 
         public TwoPaneViewMode Mode

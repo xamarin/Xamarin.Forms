@@ -80,36 +80,10 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			Assert.AreEqual(TwoPaneViewMode.Tall, twoPaneView.Mode);
 		}
 
-		public class Thing : StackLayout
-		{
-			protected override void LayoutChildren(double x, double y, double width, double height)
-			{
-				base.LayoutChildren(x, y, width, height);
-			}
-
-			protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
-			{
-				return base.OnMeasure(widthConstraint, heightConstraint);
-			}
-		}
-		
-		public class ThingPaneView : TwoPaneView
-		{
-			protected override void LayoutChildren(double x, double y, double width, double height)
-			{
-				base.LayoutChildren(x, y, width, height);
-			}
-
-			protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
-			{
-				return base.OnMeasure(widthConstraint, heightConstraint);
-			}
-		}
-
-		[Test]
+		//[Test]
 		//public void PaneLengthTallMode()
 		//{
-		//	TwoPaneView twoPaneView = new ThingPaneView()
+		//	TwoPaneView twoPaneView = new TwoPaneView()
 		//	{
 		//		Pane1 = new BoxView()
 		//		{
