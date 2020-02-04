@@ -176,8 +176,19 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			twoPaneView.MinWideModeWidth = 500;
 			twoPaneView.MinTallModeHeight = 500;
 
-			Assert.LessOrEqual(pane2.Height, 0);
-			Assert.LessOrEqual(pane2.Width, 0);
+			Assert.IsFalse(twoPaneView.Children[1].IsVisible);
+			Assert.IsTrue(twoPaneView.Children[0].IsVisible);
+
+			Assert.AreEqual(pane1.Height, 300);
+			Assert.AreEqual(pane1.Width, 300);
+
+			twoPaneView.PanePriority = TwoPaneViewPriority.Pane2;
+
+			Assert.AreEqual(pane2.Height, 300);
+			Assert.AreEqual(pane2.Width, 300);
+
+			Assert.IsFalse(twoPaneView.Children[0].IsVisible);
+			Assert.IsTrue(twoPaneView.Children[1].IsVisible);
 		}
 
 

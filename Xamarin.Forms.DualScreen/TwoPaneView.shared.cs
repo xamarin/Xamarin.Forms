@@ -446,13 +446,16 @@ namespace Xamarin.Forms.DualScreen
                     break;
                 case ViewMode.Pane1Only:
                     SetRowColumn(_content1, 0, 0);
-                    _content2.IsVisible = false;
+					SetRowColumn(_content2, 0, 2);
+					_content1.IsVisible = true;
+					_content2.IsVisible = false;
                     break;
                 case ViewMode.Pane2Only:
-                    SetRowColumn(_content1, 0, 0);
-                    SetRowColumn(_content2, 0, 2);
+                    SetRowColumn(_content1, 0, 2);
+                    SetRowColumn(_content2, 0, 0);
                     _content1.IsVisible = false;
-                    break;
+					_content2.IsVisible = true;
+					break;
             }
 
             void SetRowColumn(BindableObject bo, int row, int column)
