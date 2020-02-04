@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.DualScreen.UnitTests
 {
 	[TestFixture]
-	public class TwoPaneViewTests : BaseTestFixture
+	public class TwoPaneViewNotSpannedTests : BaseTestFixture
 	{
 		[SetUp]
 		public override void Setup()
