@@ -78,9 +78,9 @@ namespace Xamarin.Forms.Material.Tizen.Native
 			_isTexstBlockFocused = isFocused;
 
 			if (isFocused)
-				InvokeTextBlockFocused();
+				OnTextBlockFocused();
 			else
-				InvokeTextBlcokUnfocused();
+				OnTextBlcokUnfocused();
 		}
 	}
 }

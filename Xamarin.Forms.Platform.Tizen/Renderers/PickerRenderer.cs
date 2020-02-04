@@ -35,8 +35,8 @@ namespace Xamarin.Forms.Platform.Tizen
 						ie.TextBlockFocused -= OnTextBlockFocused;
 						if (Device.Idiom == TargetIdiom.TV)
 						{
-							ie.LayoutFocused -= OnLayoutFocused;
-							ie.LayoutUnfocused -= OnLayoutUnfocused;
+							ie.EntryLayoutFocused -= OnLayoutFocused;
+							ie.EntryLayoutUnfocused -= OnLayoutUnfocused;
 						}
 					}
 					CleanView();
@@ -57,8 +57,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 					if (Device.Idiom == TargetIdiom.TV)
 					{
-						ie.LayoutFocused += OnLayoutFocused;
-						ie.LayoutUnfocused += OnLayoutUnfocused;
+						ie.EntryLayoutFocused += OnLayoutFocused;
+						ie.EntryLayoutUnfocused += OnLayoutUnfocused;
 					}
 				}
 				SetNativeControl(entry);

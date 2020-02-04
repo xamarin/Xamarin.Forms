@@ -79,12 +79,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <summary>
 		/// Occurs when the layout of entry get focused.
 		/// </summary>
-		public event EventHandler LayoutFocused;
+		public event EventHandler EntryLayoutFocused;
 
 		/// <summary>
 		/// Occurs when the layout of entry loses focus
 		/// </summary>
-		public event EventHandler LayoutUnfocused;
+		public event EventHandler EntryLayoutUnfocused;
 
 		/// <summary>
 		/// Gets or sets the text.
@@ -385,24 +385,24 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		}
 
-		protected virtual void InvokeTextBlockFocused()
+		protected virtual void OnTextBlockFocused()
 		{
 			TextBlockFocused?.Invoke(this, EventArgs.Empty);
 		}
 
-		protected virtual void InvokeTextBlcokUnfocused()
+		protected virtual void OnTextBlcokUnfocused()
 		{
 			TextBlockUnfocused?.Invoke(this, EventArgs.Empty);
 		}
 
-		protected virtual void InvokeLayoutFocused()
+		protected virtual void OnEntryLayoutFocused()
 		{
-			LayoutFocused?.Invoke(this, EventArgs.Empty);
+			EntryLayoutFocused?.Invoke(this, EventArgs.Empty);
 		}
 
-		protected virtual void InvokeLayoutUnfocused()
+		protected virtual void OnEntryLayoutUnfocused()
 		{
-			LayoutUnfocused?.Invoke(this, EventArgs.Empty);
+			EntryLayoutUnfocused?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected virtual void OnTextChanged(string oldValue, string newValue)

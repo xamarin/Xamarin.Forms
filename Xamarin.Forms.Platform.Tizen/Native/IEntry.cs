@@ -30,8 +30,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		event EventHandler TextBlockUnfocused;
 
-		event EventHandler LayoutFocused;
+		event EventHandler EntryLayoutFocused;
 
-		event EventHandler LayoutUnfocused;
+		event EventHandler EntryLayoutUnfocused;
 	}
 }

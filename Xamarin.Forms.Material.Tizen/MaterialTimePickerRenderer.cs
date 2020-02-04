@@ -5,10 +5,10 @@ using Xamarin.Forms.Material.Tizen;
 using Xamarin.Forms.Material.Tizen.Native;
 using Xamarin.Forms.Platform.Tizen;
 
-[assembly: ExportRenderer(typeof(TimePicker), typeof(MaterialTimePckerRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
+[assembly: ExportRenderer(typeof(TimePicker), typeof(MaterialTimePickerRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
-	public class MaterialTimePckerRenderer : TimePickerRenderer
+	public class MaterialTimePickerRenderer : TimePickerRenderer
 	{
 		Color _defaultTitleColor = Color.Black;
 		static readonly string _defaultFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern;

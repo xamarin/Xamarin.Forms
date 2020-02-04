@@ -4,10 +4,10 @@ using Xamarin.Forms.Material.Tizen;
 using Xamarin.Forms.Material.Tizen.Native;
 using Xamarin.Forms.Platform.Tizen;
 
-[assembly: ExportRenderer(typeof(Picker), typeof(MaterialPckerRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
+[assembly: ExportRenderer(typeof(Picker), typeof(MaterialPickerRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
-	public class MaterialPckerRenderer : PickerRenderer
+	public class MaterialPickerRenderer : PickerRenderer
 	{
 		Color _defaultTitleColor = Color.Black;
 

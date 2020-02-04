@@ -65,9 +65,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			IsTextBlockFocused = isFocused;
 
 			if (isFocused)
-				InvokeTextBlockFocused();
+				OnTextBlockFocused();
 			else
-				InvokeTextBlcokUnfocused();
+				OnTextBlcokUnfocused();
 		}
 
 		public override ElmSharp.Size Measure(int availableWidth, int availableHeight)
@@ -130,12 +130,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				SetFocusOnTextBlock(false);
 				layout.SignalEmit("elm,state,unfocused", "");
-				InvokeLayoutUnfocused();
+				OnEntryLayoutUnfocused();
 			};
 			layout.Focused += (s, e) =>
 			{
 				layout.SignalEmit("elm,state,focused", "");
-				InvokeLayoutFocused();
+				OnEntryLayoutFocused();
 			};
 
 			layout.KeyDown += (s, e) =>

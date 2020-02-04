@@ -3,10 +3,10 @@ using Xamarin.Forms.Material.Tizen;
 using Xamarin.Forms.Material.Tizen.Native;
 using Xamarin.Forms.Platform.Tizen;
 
-[assembly: ExportRenderer(typeof(DatePicker), typeof(MaterialDatePckerRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
+[assembly: ExportRenderer(typeof(DatePicker), typeof(MaterialDatePickerRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
-	public class MaterialDatePckerRenderer : DatePickerRenderer
+	public class MaterialDatePickerRenderer : DatePickerRenderer
 	{
 		Color _defaultTitleColor = Color.Black;
 
