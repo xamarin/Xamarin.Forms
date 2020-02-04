@@ -50,9 +50,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				Margin = new Thickness(15, 20),
 				IndicatorColor = Color.Gray,
 				SelectedIndicatorColor = Color.Black,
-				IndicatorsShape = IndicatorShape.Square,
-				ItemsSourceBy = carouselView
+				IndicatorsShape = IndicatorShape.Square
 			};
+
+			carouselView.IndicatorView = indicators;
 
 			absolute.Children.Add(indicators, new Rectangle(.5, 1, -1, -1), AbsoluteLayoutFlags.PositionProportional);
 

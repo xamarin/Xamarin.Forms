@@ -107,23 +107,6 @@ namespace Xamarin.Forms
 		}
 
 
-		[TypeConverter(typeof(ReferenceTypeConverter))]
-		public ItemsView ItemsSourceBy
-		{
-			get => (ItemsView)GetValue(ItemsSourceByProperty);
-			set => SetValue(ItemsSourceByProperty, value);
-		}
-
-		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create(nameof(ItemsSourceBy), typeof(ItemsView), typeof(IndicatorView), default(VisualElement), propertyChanged: (bindable, oldValue, newValue)
-		 => ((IndicatorView)bindable).LinkToItemsView(newValue as ItemsView));
-
-
-		public virtual void LinkToItemsView(ItemsView itemsView)
-		{
-			if (itemsView is CarouselView carouselView)
-				LinkToCarouselView(this, carouselView);
-		}
-
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
 			var baseRequest = base.OnMeasure(widthConstraint, heightConstraint);
@@ -148,24 +131,6 @@ namespace Xamarin.Forms
 				(indicatorView.IndicatorLayout as IndicatorStackLayout).Remove();
 				indicatorView.IndicatorLayout = null;
 			}
-		}
-
-		static void LinkToCarouselView(IndicatorView indicatorView, CarouselView carouselView)
-		{
-			if (carouselView == null || indicatorView == null)
-				return;
-
-			indicatorView.SetBinding(PositionProperty, new Binding
-			{
-				Path = nameof(CarouselView.Position),
-				Source = carouselView
-			});
-
-			indicatorView.SetBinding(ItemsSourceProperty, new Binding
-			{
-				Path = nameof(ItemsView.ItemsSource),
-				Source = carouselView
-			});
 		}
 
 		void ResetItemsSource(IEnumerable oldItemsSource)

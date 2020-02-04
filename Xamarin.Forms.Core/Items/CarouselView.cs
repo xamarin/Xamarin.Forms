@@ -158,6 +158,38 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsLayoutProperty, value);
 		}
 
+
+		[TypeConverter(typeof(ReferenceTypeConverter))]
+		public IndicatorView IndicatorView
+		{
+			get => (IndicatorView)GetValue(IndicatorViewProperty);
+			set => SetValue(IndicatorViewProperty, value);
+		}
+
+		public static readonly BindableProperty IndicatorViewProperty = BindableProperty.Create(nameof(IndicatorView), typeof(IndicatorView), typeof(CarouselView), default(IndicatorView), propertyChanged: (bindable, oldValue, newValue)
+		 => LinkToIndicatorView(newValue as IndicatorView, bindable as CarouselView));
+
+
+		static void LinkToIndicatorView(IndicatorView indicatorView, CarouselView carouselView)
+		{
+			if (carouselView == null || indicatorView == null)
+				return;
+
+			indicatorView.SetBinding(IndicatorView.PositionProperty, new Binding
+			{
+				Path = nameof(CarouselView.Position),
+				Source = carouselView
+			});
+
+			indicatorView.SetBinding(IndicatorView.ItemsSourceProperty, new Binding
+			{
+				Path = nameof(ItemsView.ItemsSource),
+				Source = carouselView
+			});
+		}
+
+
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsScrolling { get; set; }
 

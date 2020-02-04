@@ -12,7 +12,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Slider Margin="5" Value="{Binding Position, Mode=TwoWay}" Maximum="{Binding Count}" />
-        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="1" HeightRequest="400">
+        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="1" HeightRequest="400" IndicatorView="indicator">
             <CarouselView.ItemTemplate>
                 <DataTemplate>
                     <gallery:ExampleTemplateCarousel />
@@ -30,6 +30,6 @@
                 </CarouselView>
             </Grid>
         </Frame>
-        <IndicatorView ItemsSourceBy="carouselNormal" IndicatorColor="Gray" SelectedIndicatorColor="Black" Grid.Row="4"></IndicatorView>
+        <IndicatorView x:Name="indicator" IndicatorColor="Gray" SelectedIndicatorColor="Black" Grid.Row="4"></IndicatorView>
     </Grid>
 </ContentPage>

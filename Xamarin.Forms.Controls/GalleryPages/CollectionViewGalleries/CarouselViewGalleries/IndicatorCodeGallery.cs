@@ -59,9 +59,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				IndicatorColor = Color.Gray,
 				SelectedIndicatorColor = Color.Black,
 				IndicatorsShape = IndicatorShape.Square,
-				AutomationId = "TheIndicatorView",
-				ItemsSourceBy = carouselView
+				AutomationId = "TheIndicatorView"
 			};
+
+			carouselView.IndicatorView = indicatorView;
 
 			layout.Children.Add(indicatorView);
 
