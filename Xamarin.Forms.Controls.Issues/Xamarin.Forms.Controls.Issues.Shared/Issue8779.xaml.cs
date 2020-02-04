@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
     [Preserve(AllMembers = true)]
-    [Issue(IssueTracker.Github, 8779, "[iOS][Android] Entry in custom SwipeItemView can't gain focus", PlatformAffected.Android)]
+    [Issue(IssueTracker.Github, 8779, "[iOS][Android] Entry in custom SwipeItemView can't gain focus", PlatformAffected.Android | PlatformAffected.iOS)]
     public partial class Issue8779 : TestContentPage
     {
         public Issue8779()
