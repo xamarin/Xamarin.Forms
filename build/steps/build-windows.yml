@@ -91,7 +91,7 @@ jobs:
       inputs:
         testAssemblyVer2: |
           **/bin/$(BuildConfiguration)/Xamarin.Forms.Core.UnitTests.dll
-          **/bin/$(BuildConfiguration)/Xamarin.Forms.DualScreen.UnitTests.dll
+          **/bin/$(BuildConfiguration)/**/Xamarin.Forms.DualScreen.UnitTests.dll
           **/bin/$(BuildConfiguration)/Xamarin.Forms.Pages.UnitTests.dll
           **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
         searchFolder: ${{ parameters.nunitTestFolder }}
