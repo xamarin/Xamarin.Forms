@@ -11,17 +11,9 @@
 				<Setter Property="VisualStateManager.VisualStateGroups">
 					<VisualStateGroupList>
 					     <VisualStateGroup>
-                             <VisualState x:Name="Narrow">
-					            <VisualState.StateTriggers>
-						            <AdaptiveTrigger MinWindowWidth="600" />
-					            </VisualState.StateTriggers>
-					            <VisualState.Setters>
-						            <Setter Property="BackgroundColor" Value="Blue" />
-					            </VisualState.Setters>
-				            </VisualState>
 				            <VisualState x:Name="Medium">
 					            <VisualState.StateTriggers>
-						            <AdaptiveTrigger MinWindowWidth="720" />
+						            <AdaptiveTrigger MinWindowWidth="300" />
 					            </VisualState.StateTriggers>
 					            <VisualState.Setters>
 						            <Setter Property="BackgroundColor" Value="Red" />
@@ -29,7 +21,7 @@
 				            </VisualState>
 				            <VisualState x:Name="Wide">
 					            <VisualState.StateTriggers>
-						            <AdaptiveTrigger MinWindowWidth="1000" />
+						            <AdaptiveTrigger MinWindowWidth="720" />
 					            </VisualState.StateTriggers>
 					            <VisualState.Setters>
 						            <Setter Property="BackgroundColor" Value="Green" />
