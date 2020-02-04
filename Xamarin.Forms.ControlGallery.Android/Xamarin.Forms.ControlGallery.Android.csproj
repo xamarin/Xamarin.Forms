@@ -49,7 +49,7 @@
     <Debugger>Xamarin</Debugger>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -96,6 +96,7 @@
     <Compile Include="MainApplication.cs" />
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
+    <Compile Include="Tests\CollectionViewTests.cs" />
     <Compile Include="Tests\Issues.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="PreApplicationClassActivity.cs" />
@@ -125,6 +126,7 @@
     </Compile>
     <Compile Include="ApiLabelRenderer.cs" />
     <Compile Include="Issue7249SwitchRenderer.cs" />
+    <Compile Include="_9087CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\default.css" />
