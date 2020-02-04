@@ -31,12 +31,12 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			}
 		}
 
-		private static void IsActiveChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		static void IsActiveChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
 			((FormsProgressRing)sender).OnIsActiveChanged(Convert.ToBoolean(e.NewValue));
 		}
 
-		private void OnIsActiveChanged(bool newValue)
+		void OnIsActiveChanged(bool newValue)
 		{
 			if (newValue)
 			{
