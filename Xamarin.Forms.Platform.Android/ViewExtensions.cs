@@ -1,12 +1,18 @@
 using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
 using Android.Support.V4.Content;
+#endif
 using Android.Util;
 using Android.Views;
 using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
 using Android.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -187,6 +193,25 @@ namespace Xamarin.Forms.Platform.Android
 				return t;
 
 			return view.Parent.GetParentOfType<T>();
+		}
+
+		internal static T FindParentOfType<T>(this VisualElement element)
+		{
+			var navPage = element.GetParentsPath()
+				.OfType<T>()
+				.FirstOrDefault();
+			return navPage;
+		}
+
+		internal static IEnumerable<Element> GetParentsPath(this VisualElement self)
+		{
+			Element current = self;
+
+			while (!Application.IsApplicationOrNull(current.RealParent))
+			{
+				current = current.RealParent;
+				yield return current;
+			}
 		}
 	}
 }

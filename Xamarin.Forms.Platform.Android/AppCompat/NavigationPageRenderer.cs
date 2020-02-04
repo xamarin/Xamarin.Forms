@@ -11,17 +11,31 @@ using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Runtime;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using Fragment = AndroidX.Fragment.App.Fragment;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
+using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+using AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.DrawerLayout.Widget;
+using AndroidX.AppCompat.App;
+#else
 using Android.Support.V4.Widget;
-using Android.Support.V7.Graphics.Drawable;
-using Android.Util;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
-using AView = Android.Views.View;
-using AToolbar = Android.Support.V7.Widget.Toolbar;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using AToolbar = Android.Support.V7.Widget.Toolbar;
+using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
+using Android.Support.V7.Graphics.Drawable;
+using Android.Support.V7.App;
+#endif
+using Android.Util;
+using Android.Views;
+using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
+
 using Object = Java.Lang.Object;
 using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 using static Android.Views.View;
@@ -32,8 +46,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>, IManageFragments, IOnClickListener, ILifeCycleState
 	{
-		const int DefaultDisabledToolbarAlpha = 127;
-
 		readonly List<Fragment> _fragmentStack = new List<Fragment>();
 
 		Drawable _backgroundDrawable;
@@ -57,6 +69,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _isAttachedToWindow;
 		Platform _platform;
 		string _defaultNavigationContentDescription;
+		List<IMenuItem> _currentMenuItems = new List<IMenuItem>();
 
 		// The following is based on https://android.googlesource.com/platform/frameworks/support.git/+/4a7e12af4ec095c3a53bb8481d8d92f63157c3b7/v4/java/android/support/v4/app/FragmentManager.java#677
 		// Must be overriden in a custom renderer to match durations in XML animation resource files
@@ -171,7 +184,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (disposing)
 			{
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
-			
+
+				if (_currentMenuItems != null)
+				{
+					_currentMenuItems.Clear();
+					_currentMenuItems = null;
+				}
+
 				if (NavigationPageController != null)
 				{
 					var navController = NavigationPageController;
@@ -220,8 +239,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					_toolbarTracker.CollectionChanged -= ToolbarTrackerOnCollectionChanged;
 
-					foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
-						item.PropertyChanged -= OnToolbarItemPropertyChanged;
+					_toolbar.DisposeMenuItems(_toolbarTracker?.ToolbarItems, OnToolbarItemPropertyChanged);
 
 					_toolbarTracker.Target = null;
 					_toolbarTracker = null;
@@ -253,6 +271,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_drawerToggle != null)
 				{
+					_drawerToggle.ToolbarNavigationClickListener = null;
 					_drawerToggle.Dispose();
 					_drawerToggle = null;
 				}
@@ -559,12 +578,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				ResetToolbar();
 		}
 
-		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
-				UpdateMenu();
-		}
-
 		void InsertPageBefore(Page page, Page before)
 		{
 			if (!_isAttachedToWindow)
@@ -661,9 +674,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(context, _masterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 
+			if (_drawerToggle != null)
+			{
+				_drawerToggle.ToolbarNavigationClickListener = null;
+				_drawerToggle.Dispose();
+			}
+
 			_drawerToggle = new ActionBarDrawerToggle(context.GetActivity(), _drawerLayout, bar,
-													  resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
-													  resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose)
+				resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+				resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose)
 			{
 				ToolbarNavigationClickListener = new ClickListener(Element)
 			};
@@ -671,13 +690,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_drawerListener != null)
 			{
 				_drawerLayout.RemoveDrawerListener(_drawerListener);
+				_drawerListener.Dispose();
 			}
 
 			_drawerListener = new DrawerMultiplexedListener { Listeners = { _drawerToggle, renderer } };
 			_drawerLayout.AddDrawerListener(_drawerListener);
 		}
-
-
 
 		Fragment GetPageFragment(Page page)
 		{
@@ -900,54 +918,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateMenu()
 		{
-			if (_disposed)
+			if (_disposed || _currentMenuItems == null)
 				return;
 
-			AToolbar bar = _toolbar;
-			Context context = Context;
-			IMenu menu = bar.Menu;
+			_currentMenuItems.Clear();
+			_currentMenuItems = new List<IMenuItem>();
+			_toolbar.UpdateMenuItems(_toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged, _currentMenuItems, UpdateMenuItemIcon);
+		}
 
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
-				item.PropertyChanged -= OnToolbarItemPropertyChanged;
-			menu.Clear();
-
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
-			{
-				IMenuItemController controller = item;
-				item.PropertyChanged += OnToolbarItemPropertyChanged;
-				if (item.Order == ToolbarItemOrder.Secondary)
-				{
-					IMenuItem menuItem = menu.Add(item.Text);
-					menuItem.SetEnabled(controller.IsEnabled);
-					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));					
-					menuItem.SetTitleOrContentDescription(item);
-				}
-				else
-				{
-					IMenuItem menuItem = menu.Add(item.Text);
-					menuItem.SetEnabled(controller.IsEnabled);
-					UpdateMenuItemIcon(context, menuItem, item);
-					menuItem.SetShowAsAction(ShowAsAction.Always);
-					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
-					menuItem.SetTitleOrContentDescription(item);
-				}
-			}
+		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			_toolbar.OnToolbarItemPropertyChanged(e, (ToolbarItem)sender, _toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged, _currentMenuItems, UpdateMenuItemIcon);
 		}
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
-			_ = this.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconImageSourceProperty, Context, iconDrawable =>
-			{
-				if (iconDrawable != null)
-				{
-					if (!menuItem.IsEnabled)
-					{
-						iconDrawable.Mutate().SetAlpha(DefaultDisabledToolbarAlpha);
-					}
-
-					menuItem.SetIcon(iconDrawable);
-				}
-			});
+			ToolbarExtensions.UpdateMenuItemIcon(context, _toolbar.Menu, _currentMenuItems, menuItem, toolBarItem, null);
 		}
 
 		void UpdateToolbar()
@@ -976,7 +962,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						toggle.SyncState();
 					}
 
-					var activity = (global::Android.Support.V7.App.AppCompatActivity)context.GetActivity();
+					var activity = (AppCompatActivity)context.GetActivity();
 					var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext);
 					icon.Progress = 1;
 					bar.NavigationIcon = icon;
@@ -1028,6 +1014,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
 			bar.Title = currentPage?.Title ?? string.Empty;
+
+			if (_toolbar.NavigationIcon != null && !textColor.IsDefault)
+			{
+				var icon = _toolbar.NavigationIcon as DrawerArrowDrawable;
+				if (icon != null)
+					icon.Color = textColor.ToAndroid().ToArgb();
+			}
 
 			UpdateTitleIcon();
 

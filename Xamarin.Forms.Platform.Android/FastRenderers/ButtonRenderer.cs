@@ -2,8 +2,13 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
+#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -121,24 +126,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			Performance.Start(out string reference);
 
-			if (oldElement != null)
-			{
-				oldElement.PropertyChanged -= OnElementPropertyChanged;
-			}
-
-
-			element.PropertyChanged += OnElementPropertyChanged;
-
-			if (_tracker == null)
-			{
-				// Can't set up the tracker in the constructor because it access the Element (for now)
-				SetTracker(new VisualElementTracker(this));
-			}
-			if (_visualElementRenderer == null)
-			{
-				_visualElementRenderer = new VisualElementRenderer(this);
-			}
-
 			OnElementChanged(new ElementChangedEventArgs<Button>(oldElement as Button, Button));
 
 			SendVisualElementInitialized(element, this);
@@ -221,9 +208,24 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
+			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
+		
+			if (e.OldElement != null)
+			{
+				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
+			}
+
 			if (e.NewElement != null && !_isDisposed)
 			{
 				this.EnsureId();
+
+				if (_tracker == null)
+				{
+					// Can't set up the tracker in the constructor because it access the Element (for now)
+					SetTracker(new VisualElementTracker(this));
+				}
+
+				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 
 				_textColorSwitcher = new Lazy<TextColorSwitcher>(
 					() => new TextColorSwitcher(TextColors, e.NewElement.UseLegacyColorManagement()));
@@ -237,8 +239,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
-
-			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -293,6 +293,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_buttonLayoutManager = new ButtonLayoutManager(this);
 			_backgroundTracker = new BorderBackgroundManager(this);
+			_visualElementRenderer = new VisualElementRenderer(this);
 
 			SoundEffectsEnabled = false;
 			SetOnClickListener(this);

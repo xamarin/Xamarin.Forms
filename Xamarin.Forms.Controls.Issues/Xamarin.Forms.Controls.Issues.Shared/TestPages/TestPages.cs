@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Controls
 				// then initializing the app causes a "NUnit.Framework.InconclusiveException" with the exception-
 				// message "App did not start for some reason. System.Argument.Exception: 1 is not supported code page.
 				// Parameter name: codepage."
-				if(System.Threading.Thread.CurrentThread.CurrentCulture != System.Globalization.CultureInfo.InvariantCulture)
+				if (System.Threading.Thread.CurrentThread.CurrentCulture != System.Globalization.CultureInfo.InvariantCulture)
 					System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
 				runningApp = InitializeApp();
@@ -597,22 +597,31 @@ namespace Xamarin.Forms.Controls
 
 		protected TestShell() : base()
 		{
+			Routing.Clear();
 #if APP
 			Init();
 #endif
 		}
 
-		public ContentPage AddTopTab(string title)
+		protected ContentPage DisplayedPage
+		{
+			get
+			{
+				return (ContentPage)(CurrentItem.CurrentItem as IShellSectionController).PresentedPage;
+			}
+		}
+
+		public ContentPage AddTopTab(string title, string icon = null)
 		{
 			var page = new ContentPage();
-			AddTopTab(page, title);
+			AddTopTab(page, title, icon);
 			return page;
 		}
 
 
-		public void AddTopTab(ContentPage page, string title = null)
+		public void AddTopTab(ContentPage page, string title = null, string icon = null)
 		{
-			if(Items.Count == 0)
+			if (Items.Count == 0)
 			{
 				var item = AddContentPage(page);
 				item.Items[0].Items[0].Title = title ?? page.Title;
@@ -622,7 +631,8 @@ namespace Xamarin.Forms.Controls
 			var content = new ShellContent()
 			{
 				Title = title ?? page.Title,
-				Content = page
+				Content = page,
+				Icon = icon			
 			};
 
 			Items[0].Items[0].Items.Add(content);
@@ -631,12 +641,23 @@ namespace Xamarin.Forms.Controls
 				content.Route = content.Title;
 		}
 
-		public ContentPage AddBottomTab(string title)
+		public ContentPage AddBottomTab(string title, string icon = null)
 		{
-
 			ContentPage page = new ContentPage();
+			if (Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				item.Items[0].Title = title ?? page.Title;
+				return page;
+			}
+
 			Items[0].Items.Add(new ShellSection()
 			{
+				AutomationId = title,
+				Route = title,
+				Title = title,
+				Icon = icon,
 				Items =
 				{
 					new ShellContent()
@@ -675,7 +696,7 @@ namespace Xamarin.Forms.Controls
 			return item;
 		}
 
-		public ContentPage CreateContentPage(string shellItemTitle = null) 
+		public ContentPage CreateContentPage(string shellItemTitle = null)
 			=> CreateContentPage<ShellItem, ShellSection>(shellItemTitle);
 
 		public ContentPage CreateContentPage<TShellItem, TShellSection>(string shellItemTitle = null)
@@ -689,6 +710,7 @@ namespace Xamarin.Forms.Controls
 			item.Title = shellItemTitle;
 
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
+			shellSection.Title = shellItemTitle;
 
 			shellSection.Items.Add(new ShellContent()
 			{
@@ -701,24 +723,34 @@ namespace Xamarin.Forms.Controls
 			return page;
 		}
 
-		public ShellItem AddContentPage(ContentPage contentPage = null)
-			=> AddContentPage<ShellItem, ShellSection>(contentPage);
+		public ShellItem AddContentPage(ContentPage contentPage = null, string title = null)
+			=> AddContentPage<ShellItem, ShellSection>(contentPage, title);
 
-		public TShellItem AddContentPage<TShellItem, TShellSection>(ContentPage contentPage = null)
+		public TShellItem AddContentPage<TShellItem, TShellSection>(ContentPage contentPage = null, string title = null)
 			where TShellItem : ShellItem
 			where TShellSection : ShellSection
 		{
+			title = title ?? contentPage?.Title;
 			contentPage = contentPage ?? new ContentPage();
 			TShellItem item = Activator.CreateInstance<TShellItem>();
-			item.Title = contentPage.Title;
+			item.Title = title;
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
 			Items.Add(item);
 			item.Items.Add(shellSection);
+			shellSection.Title = title;
 
-			shellSection.Items.Add(new ShellContent()
+			var content = new ShellContent()
 			{
-				ContentTemplate = new DataTemplate(() => contentPage)
-			});
+				ContentTemplate = new DataTemplate(() => contentPage),
+				Title = title
+			};
+
+			shellSection.Items.Add(content);
+
+			if(!String.IsNullOrWhiteSpace(title))
+			{
+				content.Route = title;
+			}
 
 			return item;
 		}
@@ -748,10 +780,10 @@ namespace Xamarin.Forms.Controls
 				AppSetup.EndIsolate();
 			}
 		}
-		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true, string timeoutMessage = null)
-		{			
-			if(testForFlyoutIcon)
-				RunningApp.WaitForElement(flyoutIcon, timeoutMessage);
+		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true)
+		{
+			if (testForFlyoutIcon)
+				RunningApp.WaitForElement(flyoutIcon);
 
 			if (usingSwipe)
 			{
@@ -768,7 +800,7 @@ namespace Xamarin.Forms.Controls
 		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
 		{
 			timeoutMessage = timeoutMessage ?? text;
-			ShowFlyout(flyoutIcon, usingSwipe, timeoutMessage: timeoutMessage);
+			ShowFlyout(flyoutIcon, usingSwipe);
 			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
 		}

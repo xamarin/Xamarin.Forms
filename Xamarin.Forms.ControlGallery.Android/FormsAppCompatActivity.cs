@@ -33,6 +33,8 @@ namespace Xamarin.Forms.ControlGallery.Android
 	{
 		protected override void OnCreate(Bundle bundle)
 		{
+			Profile.Start();
+
 			ToolbarResource = Resource.Layout.Toolbar;
 			TabLayoutResource = Resource.Layout.Tabbar;
 
@@ -101,7 +103,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			}
 		}
 
-		
+		protected override void OnResume()
+		{
+			base.OnResume();
+			Profile.Stop();
+		}
+
 		[Export("IsPreAppCompat")]
 		public bool IsPreAppCompat()
 		{

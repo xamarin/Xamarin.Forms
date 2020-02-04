@@ -12,7 +12,7 @@
     <AssemblyName>Xamarin.Forms.ControlGallery.WindowsUniversal</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
@@ -105,6 +105,10 @@
       <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj">
+      <Project>{fb4a866a-5721-4545-9e5d-b7f7d59875a4}</Project>
+      <Name>Xamarin.Forms.DualScreen</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Maps.UWP\Xamarin.Forms.Maps.UWP.csproj">
       <Project>{04d89a60-78ef-4a32-ae17-87e47e0233a5}</Project>
       <Name>Xamarin.Forms.Maps.UWP</Name>
@@ -132,6 +136,8 @@
     <Compile Include="_58406EffectRenderer.cs" />
     <Compile Include="_5886DependencyService.cs" />
     <Compile Include="_60122ImageRenderer.cs" />
+    <Compile Include="_9087CustomRenderer.cs" />
+    <Content Include="Assets\coverassets1.jpg" />
     <Content Include="Assets\Fonts\OFL.txt" />
     <Content Include="bank.png" />
     <Content Include="calculator.png" />
@@ -240,7 +246,7 @@
       <Version>6.0.15</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.1.190606001</Version>
+      <Version>2.3.191211002</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>

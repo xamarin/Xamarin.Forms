@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
+using System.ComponentModel; 
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -25,7 +24,6 @@ namespace Xamarin.Forms.Platform.WPF
 			new List<EventHandler<VisualElementChangedEventArgs>>();
 
 		VisualElementTracker _tracker;
-		WControl _wcontrol => Control as WControl;
 		bool _disposed;
 
 		IElementController ElementController => Element as IElementController;
@@ -137,9 +135,9 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateEnabled();
-			else if (e.PropertyName == Frame.HeightProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
-			else if (e.PropertyName == Frame.WidthProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.WidthProperty.PropertyName)
 				UpdateWidth();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
@@ -212,7 +210,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected virtual void UpdateBackground()
 		{
-			_wcontrol?.UpdateDependencyColor(WControl.BackgroundProperty, Element.BackgroundColor);
+			if(Control is WControl wControl)
+				wControl?.UpdateDependencyColor(WControl.BackgroundProperty, Element.BackgroundColor);
 		}
 
 		protected virtual void UpdateHeight()
@@ -240,19 +239,19 @@ namespace Xamarin.Forms.Platform.WPF
 
 		internal virtual void OnModelFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
 		{
-			if (_wcontrol == null)
+			if (Control == null)
 				return;
 
 			if (args.Focus)
-				args.Result = _wcontrol.Focus();
+				args.Result = Control.Focus();
 			else
 			{
-				UnfocusControl(_wcontrol);
+				UnfocusControl(Control);
 				args.Result = true;
 			}
 		}
 
-		internal void UnfocusControl(WControl control)
+		internal void UnfocusControl(FrameworkElement control)
 		{
 			if (control == null || !control.IsEnabled)
 				return;
@@ -266,26 +265,27 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected void UpdateTabStop()
 		{
-			if (_wcontrol == null)
-				return;
-			_wcontrol.IsTabStop = Element.IsTabStop;
+			if (Control is WControl wControl)
+			{
+				wControl.IsTabStop = Element.IsTabStop;
 
-			// update TabStop of children for complex controls (like as DatePicker, TimePicker, SearchBar and Stepper)
-			var children = FrameworkElementExtensions.GetChildren<WControl>(_wcontrol);
-			foreach (var child in children)
-				child.IsTabStop = _wcontrol.IsTabStop;
+				// update TabStop of children for complex controls (like as DatePicker, TimePicker, SearchBar and Stepper)
+				var children = FrameworkElementExtensions.GetChildren<WControl>(Control);
+				foreach (var child in children)
+					child.IsTabStop = wControl.IsTabStop;
+			}
 		}
 
 		protected void UpdateTabIndex()
 		{
-			if (_wcontrol != null)
-				_wcontrol.TabIndex = Element.TabIndex;
+			if (Control is WControl wControl)
+				wControl.TabIndex = Element.TabIndex;
 		}
 
 		protected virtual void UpdateEnabled()
 		{
-			if (_wcontrol != null)
-				_wcontrol.IsEnabled = Element.IsEnabled;
+			if (Control != null)
+				Control.IsEnabled = Element.IsEnabled;
 		}
 
 		void UpdateAlignment()
