@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _checkedForRtlScroll = false;
 		bool _previousLTR = true;
 
+		[Preserve(Conditional = true)]
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
 			ScrollAnimationEnded += HandleScrollAnimationEnded;
@@ -146,7 +147,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFlowDirection()
 		{
-			if (Superview == null || _requestedScroll != null || _checkedForRtlScroll)
+			if (Superview == null || ScrollView.Content == null || _requestedScroll != null || _checkedForRtlScroll)
 				return;
 
 			if (Element is IVisualElementController controller && ScrollView.Orientation != ScrollOrientation.Vertical)

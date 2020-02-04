@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -200,6 +201,8 @@ namespace Xamarin.Forms
 					SetInheritedBindingContext(this, null);
 				}
 
+				VisualDiagnostics.SendVisualTreeChanged(this, value);
+
 				OnParentSet();
 
 				OnPropertyChanged();
@@ -367,7 +370,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public IEnumerable<Element> Descendants()
 		{
-			var queue = new FormsQueue<Element>(16);
+			var queue = new Queue<Element>(16);
 			queue.Enqueue(this);
 
 			while (queue.Count > 0)
@@ -503,7 +506,7 @@ namespace Xamarin.Forms
 
 		internal IEnumerable<Element> VisibleDescendants()
 		{
-			var queue = new FormsQueue<Element>(16);
+			var queue = new Queue<Element>(16);
 			queue.Enqueue(this);
 
 			while (queue.Count > 0)
