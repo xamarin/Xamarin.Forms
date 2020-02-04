@@ -39,8 +39,7 @@ namespace Xamarin.Forms.Xaml.MarkupExtensions
 				}
 				catch (Exception ex)
 				{
-					var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider lineInfoProvider) ? lineInfoProvider.XmlLineInfo : new XmlLineInfo();
-
+					var lineInfo = GetLineInfo(serviceProvider);
 					throw new XamlParseException($"DependencyTemplateExtension: Could not load template {templateType} due to an exception, see the inner exception for detail", lineInfo, ex);
 				}
 			}
