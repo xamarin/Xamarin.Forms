@@ -1,14 +1,12 @@
-﻿namespace Xamarin.Forms
+﻿using System.ComponentModel;
+
+namespace Xamarin.Forms
 {
 	public class StateTriggerBase : BindableObject
 	{
-		protected StateTriggerBase()
-		{
-
-		}
-
 		internal bool IsTriggerActive { get; set; }
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal VisualState VisualState { get; set; }
 
 		protected void SetActive(bool active)

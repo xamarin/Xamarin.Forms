@@ -49,22 +49,20 @@ namespace Xamarin.Forms
 			switch (Orientation)
 			{
 				case DeviceOrientation.Landscape:
-					SetActive(currentOrientation == DeviceOrientation.Landscape);
-					break;
 				case DeviceOrientation.LandscapeLeft:
-					SetActive(currentOrientation == DeviceOrientation.LandscapeLeft);
-					break;
 				case DeviceOrientation.LandscapeRight:
-					SetActive(currentOrientation == DeviceOrientation.LandscapeRight);
+					SetActive(
+						currentOrientation == DeviceOrientation.Landscape ||
+						currentOrientation == DeviceOrientation.LandscapeLeft ||
+						currentOrientation == DeviceOrientation.LandscapeRight);
 					break;
 				case DeviceOrientation.Portrait:
-					SetActive(currentOrientation == DeviceOrientation.Portrait);
-					break;
 				case DeviceOrientation.PortraitDown:
-					SetActive(currentOrientation == DeviceOrientation.PortraitDown);
-					break;
 				case DeviceOrientation.PortraitUp:
-					SetActive(currentOrientation == DeviceOrientation.PortraitUp);
+					SetActive(
+						currentOrientation == DeviceOrientation.Portrait ||
+						currentOrientation == DeviceOrientation.PortraitDown ||
+						currentOrientation == DeviceOrientation.PortraitUp);
 					break;
 			}
 		}
