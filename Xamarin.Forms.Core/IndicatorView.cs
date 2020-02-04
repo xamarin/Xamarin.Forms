@@ -1,7 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Runtime.CompilerServices;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -21,8 +19,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty MaximumVisibleProperty = BindableProperty.Create(nameof(MaximumVisible), typeof(int), typeof(IndicatorView), int.MaxValue);
 
-		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanged: (bindable, oldValue, newValue)
-			=> UpdateIndicatorLayout(((IndicatorView)bindable), newValue));
+		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanging: (bindable, oldValue, newValue)
+			=> UpdateIndicatorLayout((IndicatorView)bindable, newValue));
 
 		public static readonly BindableProperty HideSingleProperty = BindableProperty.Create(nameof(HideSingle), typeof(bool), typeof(IndicatorView), true);
 
@@ -129,7 +127,7 @@ namespace Xamarin.Forms
 			if (IndicatorTemplate != null)
 				return baseRequest;
 
-			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding;
+			var defaultSize = IndicatorSize + DefaultPadding + DefaultPadding + 1;
 			var items = Count;
 			var sizeRequest = new SizeRequest(new Size(items * defaultSize, IndicatorSize), new Size(10, 10));
 			return sizeRequest;
@@ -192,6 +190,5 @@ namespace Xamarin.Forms
 			}
 			Count = count;
 		}
-
 	}
 }

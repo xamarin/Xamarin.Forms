@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -50,6 +51,18 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		void GroupsChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			if (_container.Dispatcher.IsInvokeRequired)
+			{
+				_container.Dispatcher.BeginInvokeOnMainThread(() => GroupsChanged(args));
+			}
+			else
+			{
+				GroupsChanged(args);
+			}
+		}
+
+		void GroupsChanged(NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
 			{
@@ -150,12 +163,10 @@ namespace Xamarin.Forms.Platform.UWP
 		void Reset()
 		{
 			Items.Clear();
-			_groupList.Clear();
 
 			foreach (var group in _itemsSource)
 			{
 				var groupTemplateContext = CreateGroupTemplateContext(group);
-				_groupList.Add(group);
 				Items.Add(groupTemplateContext);
 			}
 

@@ -20,5 +20,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 		{
 			DisplayAlert("OnClicked", "The RightItems Button has been clicked.", "Ok");
 		}
+
+		void OnButtonClicked(object sender, EventArgs e)
+		{
+			DisplayAlert("Custom SwipeItem", "Button Clicked!", "Ok");
+		}
 	}
+
 }
