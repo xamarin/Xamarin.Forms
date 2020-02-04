@@ -23,7 +23,15 @@ using System.Reflection;
 using Android.Text;
 using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
-
+#if __ANDROID_29__
+using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
+using NestedScrollView = global::AndroidX.Core.Widget.NestedScrollView;
+#else
+using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using NestedScrollView = global::Android.Support.V4.Widget.NestedScrollView;
+#endif
+using System.IO;
+using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
 
 [assembly: ExportRenderer(typeof(Issue5461.ScrollbarFadingEnabledFalseScrollView), typeof(ScrollbarFadingEnabledFalseScrollViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue1942.CustomGrid), typeof(Issue1942GridRenderer))]
@@ -46,6 +54,7 @@ using Xamarin.Forms.Controls.Issues;
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Issues.NoFlashTestNavigationPage), typeof(Xamarin.Forms.ControlGallery.Android.NoFlashTestNavigationPage))]
 [assembly: ExportRenderer(typeof(ShellGestures.TouchTestView), typeof(ShellGesturesTouchTestViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue7249Switch), typeof(Issue7249SwitchRenderer))]
+[assembly: ExportRenderer(typeof(Issue9360.Issue9360NavigationPage), typeof(Issue9360NavigationPageRenderer))]
 
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
@@ -54,6 +63,42 @@ using Xamarin.Forms.Controls.Issues;
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
+	public class Issue9360NavigationPageRenderer : Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer
+	{
+		public Issue9360NavigationPageRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
+		{
+			if (toolBarItem.Text == "BAD")
+			{
+				toolBarItem = new ToolbarItem
+				{
+					Text = "OK",
+					IconImageSource = ImageSource.FromFile("heart.xml"),
+					Order = toolBarItem.Order,
+					Priority = toolBarItem.Priority
+				};
+
+				if (toolBarItem.IconImageSource is FileImageSource fileImageSource)
+				{
+					var name = Path.GetFileNameWithoutExtension(fileImageSource.File);
+					var id = Xamarin.Forms.Platform.Android.ResourceManager.GetDrawableByName(name);
+					if (id != 0)
+					{
+						var drawable = context.GetDrawable(id);
+						menuItem.SetIcon(drawable);
+						AMenuItemCompat.SetContentDescription(menuItem, new Java.Lang.String("HEART"));
+						return;
+					}
+				}
+			}
+
+			base.UpdateMenuItemIcon(context, menuItem, toolBarItem);
+		}
+	}
+
 	public class NonAppCompatSwitchRenderer : Xamarin.Forms.Platform.Android.SwitchRenderer
 	{
 		public NonAppCompatSwitchRenderer(Context context) : base(context)
@@ -66,7 +111,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 		public ScrollbarFadingEnabledFalseScrollViewRenderer(Context context) : base(context)
 		{
 			// I do a cast here just so this will fail just to be sure we don't change the base types
-			var castingTest = (global::Android.Support.V4.Widget.NestedScrollView)this;
+			var castingTest = (NestedScrollView)this;
 			castingTest.ScrollbarFadingEnabled = false;
 		}
 	}
@@ -856,7 +901,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 #endif
 	{
 #if !FORMS_APPLICATION_ACTIVITY
-		protected override void SetupPageTransition(global::Android.Support.V4.App.FragmentTransaction transaction, bool isPush)
+		protected override void SetupPageTransition(FragmentTransaction transaction, bool isPush)
 		{
 			transaction.SetTransition((int)FragmentTransit.None);
 		}

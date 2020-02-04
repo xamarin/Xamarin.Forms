@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
 using Android.Support.V4.Content;
+#endif
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -221,7 +225,17 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 
-		protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
+		protected virtual void UpdatePlaceHolderText()
+		{
+			if (EditText.Hint == Element.Placeholder)
+				return;
+
+			EditText.Hint = Element.Placeholder;
+			if (EditText.IsFocused)
+			{
+				EditText.ShowKeyboard();
+			}
+		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -302,12 +316,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateHorizontalTextAlignment()
 		{
-			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
+			EditText.UpdateTextAlignment(Element.HorizontalTextAlignment, Element.VerticalTextAlignment);
 		}
 
 		void UpdateVerticalTextAlignment()
 		{
-			EditText.UpdateVerticalAlignment(Element.VerticalTextAlignment);
+			EditText.UpdateTextAlignment(Element.HorizontalTextAlignment, Element.VerticalTextAlignment);
 		}
 
 		protected abstract void UpdateColor();

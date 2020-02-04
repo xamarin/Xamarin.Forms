@@ -5,13 +5,19 @@ using System.Linq;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AButton = AndroidX.AppCompat.Widget.AppCompatButton;
+using AndroidX.RecyclerView.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.Widget;
+using AButton = Android.Support.V7.Widget.AppCompatButton;
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
-using Android.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AButton = Android.Support.V7.Widget.AppCompatButton;
 using APointF = Android.Graphics.PointF;
 using ATextAlignment = Android.Views.TextAlignment;
 using AView = Android.Views.View;
@@ -22,13 +28,14 @@ namespace Xamarin.Forms.Platform.Android
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>, GestureDetector.IOnGestureListener
 	{
 		const int SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 6;
+		const int SwipeThresholdMargin = 0;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
+		const double SwipeMinimumDelta = 10;
 
 		readonly Context _context;
 		GestureDetector _detector;
-		AView _scrollParent;
+		View _scrollParent;
 		AView _contentView;
 		LinearLayoutCompat _actionView;
 		SwipeTransitionMode _swipeTransitionMode;
@@ -41,14 +48,18 @@ namespace Xamarin.Forms.Platform.Android
 		SwipeDirection? _swipeDirection;
 		float _swipeOffset;
 		float _swipeThreshold;
+		double _previousScrollX;
+		double _previousScrollY;
 		bool _isDisposed;
 
 		public SwipeViewRenderer(Context context) : base(context)
 		{
+			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
 			_context = context;
 
 			AutoPackage = false;
-			ClipToOutline = true;
+
+			this.SetClipToOutline(true, Element);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<SwipeView> e)
@@ -125,38 +136,43 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetBackgroundColor(backgroundColor);
 
-				if (_contentView != null && Element.Content == null && HasSwipeItems())
-					_contentView.SetBackgroundColor(backgroundColor);
+				if (Element.Content == null)
+					_contentView?.SetBackgroundColor(backgroundColor);
 			}
+			else
+				Control.SetWindowBackground();
+
+			if (_contentView.Background == null)
+				_contentView?.SetWindowBackground();
 		}
 
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
 
-			if (Forms.IsLollipopOrNewer && Control != null)
+			if (Element != null && _scrollParent == null)
 			{
-				_scrollParent = Parent.GetParentOfType<NestedScrollView>();
+				_scrollParent = Element.FindParentOfType<ScrollView>();
 
-				if (_scrollParent != null)
+				if (_scrollParent is ScrollView scrollView)
 				{
-					_scrollParent.ScrollChange += OnParentScrollChange;
+					scrollView.Scrolled += OnParentScrolled;
 					return;
 				}
 
-				_scrollParent = Parent.GetParentOfType<AbsListView>();
+				_scrollParent = Element.FindParentOfType<ListView>();
 
-				if (_scrollParent is AbsListView listView)
+				if (_scrollParent is ListView listView)
 				{
-					listView.ScrollStateChanged += OnParentScrollStateChanged;
+					listView.Scrolled += OnParentScrolled;
 					return;
 				}
 
-				_scrollParent = Parent.GetParentOfType<RecyclerView>();
+				_scrollParent = Element.FindParentOfType<Xamarin.Forms.CollectionView>();
 
-				if (_scrollParent != null)
+				if (_scrollParent is Xamarin.Forms.CollectionView collectionView)
 				{
-					_scrollParent.ScrollChange += OnParentScrollChange;
+					collectionView.Scrolled += OnParentScrolled;
 				}
 			}
 		}
@@ -181,12 +197,14 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_scrollParent != null)
 				{
-					if (_scrollParent is AbsListView listView)
-						listView.ScrollStateChanged += OnParentScrollStateChanged;
-					else
-						_scrollParent.ScrollChange -= OnParentScrollChange;
+					if (_scrollParent is ScrollView scrollView)
+						scrollView.Scrolled -= OnParentScrolled;
 
-					_scrollParent = null;
+					if (_scrollParent is ListView listView)
+						listView.Scrolled -= OnParentScrolled;
+
+					if (_scrollParent is Xamarin.Forms.CollectionView collectionView)
+						collectionView.Scrolled -= OnParentScrolled;
 				}
 
 				if (_contentView != null)
@@ -217,7 +235,7 @@ namespace Xamarin.Forms.Platform.Android
 			float x = Math.Abs((_downX - e.GetX()) / density);
 			float y = Math.Abs((_downY - e.GetY()) / density);
 
-			if (e.Action != MotionEventActions.Move | (x > 10f || y > 10f))
+			if (e.Action != MotionEventActions.Move | (x > SwipeMinimumDelta || y > SwipeMinimumDelta))
 			{
 				_detector.OnTouchEvent(e);
 			}
@@ -409,7 +427,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool ProcessTouchMove(APointF point)
 		{
-			if (_contentView == null)
+			if (_contentView == null || !TouchInsideContent(point))
 				return false;
 
 			if (!_isSwiping)
@@ -495,6 +513,31 @@ namespace Xamarin.Forms.Platform.Android
 				case SwipeDirection.Down:
 					swipeOffset = endPoint.Y - initialPoint.Y;
 					break;
+			}
+
+			if (swipeOffset == 0)
+				swipeOffset = GetSwipeContentOffset();
+
+			return swipeOffset;
+		}
+
+		float GetSwipeContentOffset()
+		{
+			float swipeOffset = 0;
+
+			if (_contentView != null)
+			{
+				switch (_swipeDirection)
+				{
+					case SwipeDirection.Left:
+					case SwipeDirection.Right:
+						swipeOffset = _contentView.TranslationX;
+						break;
+					case SwipeDirection.Up:
+					case SwipeDirection.Down:
+						swipeOffset = _contentView.TranslationY;
+						break;
+				}
 			}
 
 			return swipeOffset;
@@ -585,7 +628,7 @@ namespace Xamarin.Forms.Platform.Android
 			var swipeButton = new AButton(_context)
 			{
 				Background = new ColorDrawable(formsSwipeItem.BackgroundColor.ToAndroid()),
-				Text = formsSwipeItem.Text
+				Text = formsSwipeItem.Text ?? string.Empty
 			};
 
 			var textColor = GetSwipeItemColor(formsSwipeItem.BackgroundColor);
@@ -594,16 +637,16 @@ namespace Xamarin.Forms.Platform.Android
 
 			int contentHeight = _contentView.Height;
 			int contentWidth = (int)_context.ToPixels(SwipeItemWidth);
-			int iconSize = Math.Min(contentHeight, contentWidth) / 2;
-	
+			int iconSize = formsSwipeItem.IconImageSource != null ? Math.Min(contentHeight, contentWidth) / 2 : 0;
+
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
 				drawable.SetBounds(0, 0, iconSize, iconSize);
-				drawable.SetColorFilter(textColor.ToAndroid(), PorterDuff.Mode.SrcAtop);
+				drawable.SetColorFilter(textColor.ToAndroid(), FilterMode.SrcAtop);
 				swipeButton.SetCompoundDrawables(null, drawable, null, null);
 			});
 
-			var textSize = (int)swipeButton.TextSize;
+			var textSize = !string.IsNullOrEmpty(swipeButton.Text) ? (int)swipeButton.TextSize : 0;
 			var buttonPadding = (contentHeight - (iconSize + textSize + 6)) / 2;
 			swipeButton.SetPadding(0, buttonPadding, 0, buttonPadding);
 			swipeButton.SetOnTouchListener(null);
@@ -896,7 +939,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				if (isHorizontal)
-					swipeThreshold = SwipeThreshold;
+					swipeThreshold = CalculateSwipeThreshold();
 				else
 				{
 					var contentHeight = (float)_context.FromPixels(_contentView.Height);
@@ -905,6 +948,18 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return ValidateSwipeThreshold(swipeThreshold);
+		}
+
+		float CalculateSwipeThreshold()
+		{
+			if (_contentView != null)
+			{
+				var swipeThreshold = (float)(_contentView.Width * 0.8);
+
+				return swipeThreshold;
+			}
+
+			return SwipeThreshold;
 		}
 
 		float ValidateSwipeThreshold(float swipeThreshold)
@@ -1028,28 +1083,21 @@ namespace Xamarin.Forms.Platform.Android
 			ResetSwipe();
 		}
 
-		void OnParentScrollChange(object sender, ScrollChangeEventArgs e)
+		void OnParentScrolled(object sender, ScrolledEventArgs e)
 		{
-			if (sender is RecyclerView recyclerView)
-			{
-				var scrollState = (ScrollState)recyclerView.ScrollState;
+			var horizontalDelta = e.ScrollX - _previousScrollX;
+			var verticalDelta = e.ScrollY - _previousScrollY;
 
-				if (scrollState == ScrollState.Fling || scrollState == ScrollState.TouchScroll)
-					ResetSwipe();
-			}
-			else
-			{
-				var x = Math.Abs(e.ScrollX - e.OldScrollX);
-				var y = Math.Abs(e.ScrollY - e.OldScrollY);
+			if (horizontalDelta > SwipeMinimumDelta || verticalDelta > SwipeMinimumDelta)
+				ResetSwipe();
 
-				if (x > 10 || y > 10)
-					ResetSwipe();
-			}
+			_previousScrollX = e.ScrollX;
+			_previousScrollY = e.ScrollY;
 		}
 
-		void OnParentScrollStateChanged(object sender, AbsListView.ScrollStateChangedEventArgs e)
+		void OnParentScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
-			if (e.ScrollState == ScrollState.Fling || e.ScrollState == ScrollState.TouchScroll)
+			if (e.HorizontalDelta > SwipeMinimumDelta || e.VerticalDelta > SwipeMinimumDelta)
 				ResetSwipe();
 		}
 
