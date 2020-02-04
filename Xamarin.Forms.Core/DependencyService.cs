@@ -16,6 +16,14 @@ namespace Xamarin.Forms
 		static readonly List<Type> DependencyTypes = new List<Type>();
 		static readonly Dictionary<Type, DependencyData> DependencyImplementations = new Dictionary<Type, DependencyData>();
 
+
+		public static object Resolve(Type serviceType, DependencyFetchTarget fallbackFetchTarget = DependencyFetchTarget.GlobalInstance)
+		{
+			var result = DependencyResolver.Resolve(serviceType);
+
+			return result ?? Get(serviceType, fallbackFetchTarget);
+		}
+
 		public static T Resolve<T>(DependencyFetchTarget fallbackFetchTarget = DependencyFetchTarget.GlobalInstance) where T : class
 		{
 			var result = DependencyResolver.Resolve(typeof(T)) as T;
@@ -23,14 +31,19 @@ namespace Xamarin.Forms
 			return result ?? Get<T>(fallbackFetchTarget);
 		}
 
-		public static T Get<T>(DependencyFetchTarget fetchTarget = DependencyFetchTarget.GlobalInstance) where T : class
+
+		public static object Get(Type targetType, DependencyFetchTarget fetchTarget = DependencyFetchTarget.GlobalInstance)
 		{
+			if (targetType is null)
+			{
+				throw new ArgumentNullException(nameof(targetType));
+			}
+
 			Initialize();
 
 			DependencyData dependencyImplementation;
 			lock (s_dependencyLock)
 			{
-				Type targetType = typeof(T);
 				if (!DependencyImplementations.TryGetValue(targetType, out dependencyImplementation))
 				{
 					Type implementor = FindImplementor(targetType);
@@ -53,9 +66,14 @@ namespace Xamarin.Forms
 						}
 					}
 				}
-				return (T)dependencyImplementation.GlobalInstance;
+				return dependencyImplementation.GlobalInstance;
 			}
-			return (T)Activator.CreateInstance(dependencyImplementation.ImplementorType);
+			return Activator.CreateInstance(dependencyImplementation.ImplementorType);
+		}
+
+		public static T Get<T>(DependencyFetchTarget fetchTarget = DependencyFetchTarget.GlobalInstance) where T : class
+		{
+			return (T)Get(typeof(T), fetchTarget);
 		}
 
 		public static void Register<T>() where T : class
@@ -78,7 +96,7 @@ namespace Xamarin.Forms
 
 		static Type FindImplementor(Type target) =>
 			DependencyTypes.FirstOrDefault(t => target.IsAssignableFrom(t));
-	
+
 		static void Initialize()
 		{
 			if (s_initialized)
