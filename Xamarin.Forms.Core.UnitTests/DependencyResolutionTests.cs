@@ -110,6 +110,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void ThrowsIfServiceTypeIsNull()
+		{
+			MockServiceImpl impl = new MockServiceImpl();
+			DependencyService.Register<MockServiceImpl>();
+			Assert.Throws<ArgumentNullException>(() =>  DependencyService.Resolve(null));
+		}
+
+		[Test]
 		public void GetHandlerFromContainer()
 		{
 			Internals.Registrar.Registered.Register(typeof(MockElement), typeof(MockElementRenderer));

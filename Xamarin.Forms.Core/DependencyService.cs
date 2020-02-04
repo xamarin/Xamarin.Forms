@@ -19,6 +19,11 @@ namespace Xamarin.Forms
 
 		public static object Resolve(Type serviceType, DependencyFetchTarget fallbackFetchTarget = DependencyFetchTarget.GlobalInstance)
 		{
+			if (serviceType is null)
+			{
+				throw new ArgumentNullException(nameof(serviceType));
+			}
+
 			var result = DependencyResolver.Resolve(serviceType);
 
 			return result ?? Get(serviceType, fallbackFetchTarget);
