@@ -128,7 +128,7 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			twoPaneView.MinWideModeWidth = 100;
 			Assert.AreNotEqual(100, twoPaneView.Pane1.Width);
 			twoPaneView.Pane1Length = 100;
-			Assert.AreEqual(100, twoPaneView.Pane1.Width);
+			Assert.AreEqual(100, twoPaneView.Pane1.Width);			
 		}
 
 
@@ -189,6 +189,72 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 
 			Assert.IsFalse(twoPaneView.Children[0].IsVisible);
 			Assert.IsTrue(twoPaneView.Children[1].IsVisible);
+		}
+
+		[Test]
+		public void TallModeConfiguration()
+		{
+			var pane1 = new BoxView();
+			var pane2 = new BoxView();
+			TwoPaneView twoPaneView = CreateTwoPaneView(pane1, pane2);
+			twoPaneView.MinTallModeHeight = 100;
+			twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
+
+			Assert.AreEqual(0, twoPaneView.Children[0].Bounds.Y);
+			Assert.AreEqual(150, twoPaneView.Children[1].Bounds.Y);
+
+			twoPaneView.TallModeConfiguration = TwoPaneViewTallModeConfiguration.BottomTop;
+
+			Assert.AreEqual(150, twoPaneView.Children[0].Bounds.Y);
+			Assert.AreEqual(0, twoPaneView.Children[1].Bounds.Y);
+
+			twoPaneView.TallModeConfiguration = TwoPaneViewTallModeConfiguration.SinglePane;
+
+			Assert.IsTrue(twoPaneView.Children[0].IsVisible);
+			Assert.IsFalse(twoPaneView.Children[1].IsVisible);
+
+			twoPaneView.PanePriority = TwoPaneViewPriority.Pane2;
+
+			Assert.IsFalse(twoPaneView.Children[0].IsVisible);
+			Assert.IsTrue(twoPaneView.Children[1].IsVisible);
+
+			twoPaneView.PanePriority = TwoPaneViewPriority.Pane1;
+
+			Assert.IsTrue(twoPaneView.Children[0].IsVisible);
+			Assert.IsFalse(twoPaneView.Children[1].IsVisible);
+		}
+
+		[Test]
+		public void WideModeConfiguration()
+		{
+			var pane1 = new BoxView();
+			var pane2 = new BoxView();
+			TwoPaneView twoPaneView = CreateTwoPaneView(pane1, pane2);
+			twoPaneView.MinWideModeWidth = 100;
+			twoPaneView.Layout(new Rectangle(0, 0, 300, 300));
+
+			Assert.AreEqual(0, twoPaneView.Children[0].Bounds.X);
+			Assert.AreEqual(150, twoPaneView.Children[1].Bounds.X);
+
+			twoPaneView.WideModeConfiguration = TwoPaneViewWideModeConfiguration.RightLeft;
+
+			Assert.AreEqual(150, twoPaneView.Children[0].Bounds.X);
+			Assert.AreEqual(0, twoPaneView.Children[1].Bounds.X);
+
+			twoPaneView.WideModeConfiguration = TwoPaneViewWideModeConfiguration.SinglePane;
+
+			Assert.IsTrue(twoPaneView.Children[0].IsVisible);
+			Assert.IsFalse(twoPaneView.Children[1].IsVisible);
+
+			twoPaneView.PanePriority = TwoPaneViewPriority.Pane2;
+
+			Assert.IsFalse(twoPaneView.Children[0].IsVisible);
+			Assert.IsTrue(twoPaneView.Children[1].IsVisible);
+
+			twoPaneView.PanePriority = TwoPaneViewPriority.Pane1;
+
+			Assert.IsTrue(twoPaneView.Children[0].IsVisible);
+			Assert.IsFalse(twoPaneView.Children[1].IsVisible);
 		}
 
 
