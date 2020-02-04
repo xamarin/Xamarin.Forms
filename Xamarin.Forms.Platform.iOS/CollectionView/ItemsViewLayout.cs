@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -19,10 +18,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public ItemsUpdatingScrollMode ItemsUpdatingScrollMode { get; set; }
 
-		protected ItemsViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy)
-		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewLayout));
+		public nfloat ConstrainedDimension { get; set; }
 
+		public Func<UICollectionViewCell> GetPrototype { get; set; }
+
+		internal ItemSizingStrategy ItemSizingStrategy { get; private set; }
+
+		protected ItemsViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy = ItemSizingStrategy.MeasureFirstItem)
+		{
 			ItemSizingStrategy = itemSizingStrategy;
 
 			_itemsLayout = itemsLayout;
@@ -71,24 +74,28 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void HandlePropertyChanged(PropertyChangedEventArgs propertyChanged)
 		{
-			if (propertyChanged.IsOneOf(ListItemsLayout.ItemSpacingProperty,
+			if (propertyChanged.IsOneOf(LinearItemsLayout.ItemSpacingProperty,
 				GridItemsLayout.HorizontalItemSpacingProperty, GridItemsLayout.VerticalItemSpacingProperty))
 			{
 				UpdateItemSpacing();
 			}
 		}
 
-		public nfloat ConstrainedDimension { get; set; }
-
-		public Func<UICollectionViewCell> GetPrototype { get; set; }
-
-		internal ItemSizingStrategy ItemSizingStrategy { get; private set; }
-
 		public abstract void ConstrainTo(CGSize size);
 
 		public virtual UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
 			nint section)
 		{
+			if (_itemsLayout is GridItemsLayout gridItemsLayout)
+			{
+				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					return new UIEdgeInsets(0, 0, 0, (nfloat)gridItemsLayout.HorizontalItemSpacing * collectionView.NumberOfItemsInSection(section));
+				}
+
+				return new UIEdgeInsets(0,0, (nfloat)gridItemsLayout.VerticalItemSpacing * collectionView.NumberOfItemsInSection(section), 0);
+			}
+
 			return UIEdgeInsets.Zero;
 		}
 
@@ -111,7 +118,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public virtual nfloat GetMinimumLineSpacingForSection(UICollectionView collectionView,
 			UICollectionViewLayout layout, nint section)
 		{
-			if (_itemsLayout is ListItemsLayout listViewLayout)
+			if (_itemsLayout is LinearItemsLayout listViewLayout)
 			{
 				return (nfloat)listViewLayout.ItemSpacing;
 			}
@@ -475,7 +482,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
 			{
-				ForceScrollToLastItem(CollectionView);
+				ForceScrollToLastItem(CollectionView, _itemsLayout);
 			}
 		}
 
@@ -542,7 +549,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return false;
 		}
 
-		static void ForceScrollToLastItem(UICollectionView collectionView)
+		static void ForceScrollToLastItem(UICollectionView collectionView, ItemsLayout itemsLayout)
 		{
 			var sections = (int)collectionView.NumberOfSections();
 
@@ -557,7 +564,12 @@ namespace Xamarin.Forms.Platform.iOS
 				if (itemCount > 0)
 				{
 					var lastIndexPath = NSIndexPath.FromItemSection(itemCount - 1, section);
-					collectionView.ScrollToItem(lastIndexPath, UICollectionViewScrollPosition.Bottom, true);
+
+					if (itemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
+						collectionView.ScrollToItem(lastIndexPath, UICollectionViewScrollPosition.Bottom, true);
+					else
+						collectionView.ScrollToItem(lastIndexPath, UICollectionViewScrollPosition.Right, true);
+
 					return;
 				}
 			}

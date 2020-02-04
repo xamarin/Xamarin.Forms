@@ -4,7 +4,7 @@ using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ItemContentView : ViewGroup
+	public class ItemContentView : ViewGroup
 	{
 		protected IVisualElementRenderer Content;
 		Size? _size;
@@ -25,6 +25,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			RequestLayout();
 		}
+
+		internal IVisualElementRenderer VisualElementRenderer => Content;
 
 		internal void Recycle()
 		{

@@ -81,8 +81,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items[0].Items.Add(shellSection);
 
 			Assert.AreSame(shellSection.BindingContext, viewModel);
-			Assert.AreSame(shellSection.Items[0].BindingContext, viewModel);
-			Assert.AreSame((shellSection.Items[0].Content as BindableObject).BindingContext, viewModel);
+			Assert.AreSame(GetItems(shellSection)[0].BindingContext, viewModel);
+			Assert.AreSame((GetItems(shellSection)[0].Content as BindableObject).BindingContext, viewModel);
 		}
 
 		[Test]
@@ -391,6 +391,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("4321", testPage.SomeQueryParameter);
 		}
 
+		[Test]
+		public async Task BasicQueryStringTest()
+		{
+			var shell = new Shell();
+
+			var item = CreateShellItem(shellSectionRoute: "section2");
+			Routing.RegisterRoute("details", typeof(ShellTestPage));
+			shell.Items.Add(item);
+			await shell.GoToAsync(new ShellNavigationState($"details?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
+			Assert.AreEqual("1234", testPage.SomeQueryParameter);
+		}
+
 
 		[Test]
 		public async Task NavigationWithQueryStringAndNoDataTemplate()
@@ -459,6 +472,46 @@ namespace Xamarin.Forms.Core.UnitTests
 			Shell.SetBackButtonBehavior(page, backButtonBehavior);
 
 			Assert.AreEqual(backButtonBehavior, Shell.GetBackButtonBehavior(page));
+		}
+
+		[Test]
+		public void ModalSetters()
+		{
+			var page = new ContentPage();
+
+			Assert.IsFalse(IsModal(page));
+			Assert.IsTrue(IsAnimated(page));
+
+			Shell.SetPresentationMode(page, PresentationMode.Modal | PresentationMode.NotAnimated);
+
+			Assert.IsTrue(IsModal(page));
+			Assert.IsFalse(IsAnimated(page));
+		}
+
+		[Test]
+		public void BackButtonBehaviorBindingContextPropagation()
+		{
+			object bindingContext = new object();
+			var page = new ContentPage();
+			var backButtonBehavior = new BackButtonBehavior();
+
+			Shell.SetBackButtonBehavior(page, backButtonBehavior);
+			page.BindingContext = bindingContext;
+
+			Assert.AreEqual(page.BindingContext, backButtonBehavior.BindingContext);
+		}
+
+		[Test]
+		public void BackButtonBehaviorBindingContextPropagationWithExistingBindingContext()
+		{
+			object bindingContext = new object();
+			var page = new ContentPage();
+			var backButtonBehavior = new BackButtonBehavior();
+
+			page.BindingContext = bindingContext;
+			Shell.SetBackButtonBehavior(page, backButtonBehavior);
+
+			Assert.AreEqual(page.BindingContext, backButtonBehavior.BindingContext);
 		}
 
 		[Test]
@@ -668,7 +721,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(bindingContext, menuItem2.BindingContext);
 		}
 
-    [Test]
+		[Test]
 		public async Task TitleViewLogicalChild()
 		{
 			Shell shell = new Shell();
@@ -709,9 +762,37 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.FlyoutHeader = null;
 
 			Assert.False(shell.ChildrenNotDrawnByThisElement.Contains(layout));
-    }
-    
-    
+		}
+
+
+		[Test]
+		public async Task ShellFlyoutBehaviorCalculation()
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			shell.Items.Add(CreateShellItem(page: page));
+			Assert.AreEqual(FlyoutBehavior.Flyout, shell.GetEffectiveFlyoutBehavior());
+
+			Shell.SetFlyoutBehavior(page, FlyoutBehavior.Disabled);
+			Shell.SetFlyoutBehavior(shell.Items[0].Items[0].Items[0], FlyoutBehavior.Flyout);
+			Shell.SetFlyoutBehavior(shell.Items[0].Items[0], FlyoutBehavior.Disabled);
+			Shell.SetFlyoutBehavior(shell.Items[0], FlyoutBehavior.Locked);
+
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
+
+			page.ClearValue(Shell.FlyoutBehaviorProperty);
+			Assert.AreEqual(FlyoutBehavior.Flyout, shell.GetEffectiveFlyoutBehavior());
+
+			shell.Items[0].Items[0].Items[0].ClearValue(Shell.FlyoutBehaviorProperty);
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
+
+			shell.Items[0].Items[0].ClearValue(Shell.FlyoutBehaviorProperty);
+			Assert.AreEqual(FlyoutBehavior.Locked, shell.GetEffectiveFlyoutBehavior());
+
+			shell.Items[0].ClearValue(Shell.FlyoutBehaviorProperty);
+			Assert.AreEqual(FlyoutBehavior.Flyout, shell.GetEffectiveFlyoutBehavior());
+		}
+
 		[Test]
 		public async Task TabBarAutoCreation()
 		{
@@ -772,5 +853,18 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("//rootlevelcontent1/details", shell.CurrentState.Location.ToString());
 		}
 
+		[Test]
+		public async Task ShellItemNotVisible()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(new ContentPage() { IsVisible = false });
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			Assert.IsFalse(GetItems(shell).Contains(item1));
+			Assert.IsTrue(GetItems(shell).Contains(item2));
+		}
 	}
 }

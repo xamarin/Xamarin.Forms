@@ -89,8 +89,10 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 
 					_defaultTextColor = entry.TextColor;
-					
+
 					_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
+
+					entry.AccessibilityTraits = UIAccessibilityTrait.Button;
 
 					SetNativeControl(entry);
 				}
@@ -173,7 +175,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
 
 			if (placeHolder != null)
-				Control.AttributedPlaceholder = placeHolder;
+				UpdateAttributedPlaceholder(placeHolder);
 		}
 
         protected internal virtual void UpdateFont()
@@ -194,18 +196,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 
-			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing));
 		}
 
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) => 
+			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdatePicker()
 		{

@@ -1,18 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Android.Graphics;
+﻿#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.CollectionView
 {
-	public class RecyclerViewScrollListener : RecyclerView.OnScrollListener
+	public class RecyclerViewScrollListener<TItemsView, TItemsViewSource> : RecyclerView.OnScrollListener 
+		where TItemsView : ItemsView
+		where TItemsViewSource : IItemsViewSource
 	{
 		bool _disposed;
 		int _horizontalOffset, _verticalOffset;
-		ItemsView _itemsView;
-		ItemsViewAdapter _itemsViewAdapter;
+		TItemsView _itemsView;
+		ItemsViewAdapter<TItemsView, TItemsViewSource> _itemsViewAdapter;
 
-		public RecyclerViewScrollListener(ItemsView itemsView, ItemsViewAdapter itemsViewAdapter)
+		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter)
 		{
 			_itemsView = itemsView;
 			_itemsViewAdapter = itemsViewAdapter;
@@ -37,15 +42,16 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			{
 				firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
 				lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
-				centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, lastVisibleItemIndex, linearLayoutManager);
+				centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, recyclerView, linearLayoutManager);
 			}
 
+			var context = recyclerView.Context;
 			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
 			{
-				HorizontalDelta = dx,
-				VerticalDelta = dy,
-				HorizontalOffset = _horizontalOffset,
-				VerticalOffset = _verticalOffset,
+				HorizontalDelta = context.FromPixels(dx),
+				VerticalDelta = context.FromPixels(dy),
+				HorizontalOffset = context.FromPixels(_horizontalOffset),
+				VerticalOffset = context.FromPixels(_verticalOffset),
 				FirstVisibleItemIndex = firstVisibleItemIndex,
 				CenterItemIndex = centerItemIndex,
 				LastVisibleItemIndex = lastVisibleItemIndex
@@ -73,30 +79,27 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			}
 		}
 
-		static int CalculateCenterItemIndex(int firstVisibleItemIndex, int lastVisibleItemIndex, LinearLayoutManager linearLayoutManager)
+		static int CalculateCenterItemIndex(int firstVisibleItemIndex, RecyclerView recyclerView, LinearLayoutManager linearLayoutManager)
 		{
 			// This can happen if a layout pass has not happened yet
 			if (firstVisibleItemIndex == -1)
 				return firstVisibleItemIndex;
 
-			var keyValuePairs = new Dictionary<int, int>();
-			for (var i = firstVisibleItemIndex; i <= lastVisibleItemIndex; i++)
-			{
-				var view = linearLayoutManager.FindViewByPosition(i);
-				var rect = new Rect();
+			AView centerView;
 
-				view.GetLocalVisibleRect(rect);
-				keyValuePairs[i] = rect.Height();
+			if (linearLayoutManager.Orientation == LinearLayoutManager.Horizontal)
+			{
+				float centerX = recyclerView.Width / 2;
+				centerView = recyclerView.FindChildViewUnder(centerX, recyclerView.Top);
+			}
+			else
+			{
+				float centerY = recyclerView.Height / 2;
+				centerView = recyclerView.FindChildViewUnder(recyclerView.Left, centerY);
 			}
 
-			var center = keyValuePairs.Values.Sum() / 2.0;
-			foreach (var keyValuePair in keyValuePairs)
-			{
-				center -= keyValuePair.Value;
-
-				if (center <= 0)
-					return keyValuePair.Key;
-			}
+			if (centerView != null)
+				return recyclerView.GetChildAdapterPosition(centerView);
 
 			return firstVisibleItemIndex;
 		}

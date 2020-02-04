@@ -3,7 +3,11 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+#else
 using Android.Support.V4.View;
+#endif
 using Android.Text;
 using Android.Util;
 using Android.Views;
@@ -115,8 +119,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					return _lastSizeRequest.Value;
 			}
 
+			//We need to clear the Hint or else it will interfere with the sizing of the Label
+			var hint = Control.Hint;
+			if (!string.IsNullOrEmpty(hint))
+				Control.Hint = string.Empty;
+
 			Measure(widthConstraint, heightConstraint);
-			SizeRequest result = new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+			var result = new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+
+			//Set Hint back after sizing
+			Control.Hint = hint;
+
 			result.Minimum = new Size(Math.Min(Context.ToPixels(10), result.Request.Width), result.Request.Height);
 
 			// if the measure of the view has changed then trigger a request for layout
@@ -240,7 +253,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 
-				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
 				UpdateCharacterSpacing();
@@ -251,6 +263,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateGravity();
 				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+
 				UpdatePadding();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -263,7 +276,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateGravity();
-			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
+			else if (e.PropertyName == Label.TextColorProperty.PropertyName ||
+				e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
@@ -380,7 +394,23 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					SetTextColor(_labelTextColorDefault);
 					_lastUpdateColor = Color.Default;
 				}
-				Text = Element.Text;
+
+				switch (Element.TextType)
+				{
+					case TextType.Html:
+						if (Forms.IsNougatOrNewer)
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty, FromHtmlOptions.ModeCompact), BufferType.Spannable);
+						else
+#pragma warning disable CS0618 // Type or member is obsolete
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty), BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+						break;
+
+					default:
+						Text = Element.Text;
+						break;
+				}
+				
 				UpdateColor();
 				UpdateFont();
 

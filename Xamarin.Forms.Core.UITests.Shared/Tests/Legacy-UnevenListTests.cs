@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UITests
 {
 	[TestFixture]
     [Ignore("check if the last one fails")]
-	[Category("Cells")]
+	[Category(UITestCategories.Cells)]
 	internal class UnevenListTests : BaseTestFixture
 	{
 		public UnevenListTests()
@@ -31,8 +31,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public static bool ShouldRunTest(IApp app)
 		{
-			var appAs = app as iOSApp;
-			return (appAs != null && appAs.Device.IsPhone);
+			return app.IsPhone();
 		}
 	}
 }

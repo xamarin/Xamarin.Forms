@@ -11,8 +11,10 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
 using NativeAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperties;
+using WImage = Windows.UI.Xaml.Controls.Image;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -22,8 +24,7 @@ namespace Xamarin.Forms.Platform.UWP
 #pragma warning restore CS0618 // Type or member is obsolete
 	{
 		static Task<bool> s_currentAlert;
-
-		internal static StatusBar MobileStatusBar => ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar") ? StatusBar.GetForCurrentView() : null;
+		static Task<string> s_currentPrompt;
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer",
 			typeof(IVisualElementRenderer), typeof(Windows.Foundation.Metadata.Platform), default(IVisualElementRenderer));
@@ -240,6 +241,7 @@ namespace Xamarin.Forms.Platform.UWP
 		Page _currentPage;
 		readonly NavigationModel _navModel = new NavigationModel();
 		readonly ToolbarTracker _toolbarTracker = new ToolbarTracker();
+		readonly ImageConverter _imageConverter = new ImageConverter();
 		readonly ImageSourceIconElementConverter _imageSourceIconElementConverter = new ImageSourceIconElementConverter();
 		Windows.UI.Xaml.Controls.ProgressBar GetBusyIndicator()
 		{
@@ -361,7 +363,7 @@ namespace Xamarin.Forms.Platform.UWP
 
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
-				StatusBar statusBar = MobileStatusBar;
+				StatusBar statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)
 				{
 					bool landscape = Device.Info.CurrentOrientation.IsLandscape();
@@ -386,7 +388,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
-				StatusBar statusBar = MobileStatusBar;
+				StatusBar statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)
 				{
 					statusBar.Showing += (sender, args) => UpdateBounds();
@@ -430,13 +432,25 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var toolBarForegroundBinder = GetToolbarProvider() as IToolBarForegroundBinder;
 
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems.OrderBy(ti => ti.Priority))
+			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
 			{
 				toolBarForegroundBinder?.BindForegroundColor(commandBar);
 
 				var button = new AppBarButton();
 				button.SetBinding(AppBarButton.LabelProperty, "Text");
-				button.SetBinding(AppBarButton.IconProperty, "IconImageSource", _imageSourceIconElementConverter);
+
+				if (commandBar.IsDynamicOverflowEnabled && item.Order == ToolbarItemOrder.Secondary)
+				{
+					button.SetBinding(AppBarButton.IconProperty, "IconImageSource", _imageSourceIconElementConverter);
+				}
+				else
+				{
+					var img = new WImage();
+					img.SetBinding(WImage.SourceProperty, "Value");
+					img.SetBinding(WImage.DataContextProperty, "IconImageSource", _imageConverter);
+					button.Content = img;
+				}
+
 				button.Command = new MenuItemCommand(item);
 				button.DataContext = item;
 				button.SetValue(NativeAutomationProperties.AutomationIdProperty, item.AutomationId);
@@ -480,6 +494,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			MessagingCenter.Subscribe<Page, AlertArguments>(Window.Current, Page.AlertSignalName, OnPageAlert);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(Window.Current, Page.ActionSheetSignalName, OnPageActionSheet);
+			MessagingCenter.Subscribe<Page, PromptArguments>(Window.Current, Page.PromptSignalName, OnPagePrompt);
 		}
 
 		static void OnPageActionSheet(object sender, ActionSheetArguments options)
@@ -515,6 +530,45 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Window.Current.Content is FrameworkElement mainPage)
 					actionSheet.ShowAt(mainPage);
 			}
+		}
+
+		static async void OnPagePrompt(Page sender, PromptArguments options)
+		{
+			var promptDialog = new PromptDialog
+			{
+				Title = options.Title ?? string.Empty,
+				Message = options.Message ?? string.Empty,
+				Input = options.InitialValue ?? string.Empty,
+				Placeholder = options.Placeholder ?? string.Empty,
+				MaxLength = options.MaxLength >= 0 ? options.MaxLength : 0,
+				InputScope = options.Keyboard.ToInputScope()
+			};
+
+			if (options.Cancel != null)
+				promptDialog.SecondaryButtonText = options.Cancel;
+
+			if (options.Accept != null)
+				promptDialog.PrimaryButtonText = options.Accept;
+
+			var currentAlert = s_currentPrompt;
+			while (currentAlert != null)
+			{
+				await currentAlert;
+				currentAlert = s_currentPrompt;
+			}
+
+			s_currentPrompt = ShowPrompt(promptDialog);
+			options.SetResult(await s_currentPrompt.ConfigureAwait(false));
+			s_currentPrompt = null;
+		}
+
+		static async Task<string> ShowPrompt(PromptDialog prompt)
+		{
+			ContentDialogResult result = await prompt.ShowAsync();
+
+			if (result == ContentDialogResult.Primary)
+				return prompt.Input;
+			return null;
 		}
 
 		static async void OnPageAlert(Page sender, AlertArguments options)

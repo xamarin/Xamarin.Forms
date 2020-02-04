@@ -1,9 +1,17 @@
 ﻿using Android.OS;
 using Android.Runtime;
-using Android.Support.Design.Widget;
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+using AndroidX.Core.Widget;
+using AndroidX.AppCompat.Widget;
+using AndroidX.CoordinatorLayout.Widget;
+using Google.Android.Material.AppBar;
+#else
 using Android.Support.V4.App;
-using Android.Support.V4.Widget;
+using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
+using Android.Support.V4.Widget;
+#endif
 using Android.Views;
 using Android.Views.Animations;
 using System;
@@ -54,6 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 		ShellContent _shellContent;
 		Toolbar _toolbar;
 		IShellToolbarTracker _toolbarTracker;
+		bool _disposed;
 
 		public ShellContentFragment(IShellContext shellContext, ShellContent shellContent)
 		{
@@ -131,22 +140,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, _page);
 
+			if (_shellPageContainer.LayoutParameters is CoordinatorLayout.LayoutParams layoutParams)
+				layoutParams.Behavior = new AppBarLayout.ScrollingViewBehavior();			
+
 			return _root;
 		}
 
-		// Use OnDestroy instead of OnDestroyView because OnDestroyView will be
-		// called before the animation completes. This causes tons of tiny issues.
-		public override void OnDestroy()
+		void Destroy()
 		{
-			base.OnDestroy();
-
-			_shellPageContainer.RemoveAllViews();
-			_renderer?.Dispose();
-			_root?.Dispose();
-			_toolbarTracker.Dispose();
-			_appearanceTracker.Dispose();
-
-			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
+			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);			
 
 			if (_shellContent != null)
 			{
@@ -155,11 +157,49 @@ namespace Xamarin.Forms.Platform.Android
 				_page = null;
 			}
 
+			if (_shellPageContainer != null)
+			{
+				_shellPageContainer.RemoveAllViews();
+
+				if (_root is ViewGroup vg)
+					vg.RemoveView(_shellPageContainer);
+			}
+
+			_renderer?.Dispose();
+			_root?.Dispose();
+			_toolbarTracker?.Dispose();
+			_appearanceTracker?.Dispose();
+
+
 			_appearanceTracker = null;
-			_toolbar = null;
 			_toolbarTracker = null;
+			_toolbar = null;
 			_root = null;
 			_renderer = null;
+			_shellContent = null;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+			if (disposing)
+			{
+				Destroy();
+				_page = null;
+			}
+
+			base.Dispose(disposing);
+		}
+
+		// Use OnDestroy instead of OnDestroyView because OnDestroyView will be
+		// called before the animation completes. This causes tons of tiny issues.
+		public override void OnDestroy()
+		{
+			base.OnDestroy();
+			Destroy();
 		}
 
 		protected virtual void ResetAppearance() => _appearanceTracker.ResetAppearance(_toolbar, _toolbarTracker);

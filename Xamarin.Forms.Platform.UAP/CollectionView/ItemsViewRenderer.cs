@@ -1,40 +1,44 @@
-﻿using System;
+﻿using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.Foundation;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform.UAP;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using UWPApp = Windows.UI.Xaml.Application;
 using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class ItemsViewRenderer : ViewRenderer<ItemsView, ListViewBase>
+	public abstract class ItemsViewRenderer<TItemsView> : ViewRenderer<TItemsView, ListViewBase>
+		where TItemsView : ItemsView
 	{
-		IItemsLayout _layout;
-		CollectionViewSource _collectionViewSource;
+		protected CollectionViewSource CollectionViewSource;
 
-		protected ListViewBase ListViewBase { get; private set; }
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
 		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
+		FrameworkElement _emptyView;
+		View _formsEmptyView;
+		ScrollViewer _scrollViewer;
+		double _previousHorizontalOffset;
+		double _previousVerticalOffset;
 
-		UWPDataTemplate ViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["View"];
-		UWPDataTemplate ItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["ItemsViewDefaultTemplate"];
+		protected ListViewBase ListViewBase { get; private set; }
+		protected UWPDataTemplate ViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["View"];
+		protected UWPDataTemplate ItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["ItemsViewDefaultTemplate"];
 
-		View _currentHeader;
-		View _currentFooter;
+		protected ItemsViewRenderer()
+		{
+			AutoPackage = false;
+		}
 
+		protected TItemsView ItemsView => Element;
 		protected ItemsControl ItemsControl { get; private set; }
 
-		protected override void OnElementChanged(ElementChangedEventArgs<ItemsView> args)
+		protected override void OnElementChanged(ElementChangedEventArgs<TItemsView> args)
 		{
 			base.OnElementChanged(args);
 			TearDownOldElement(args.OldElement);
@@ -45,46 +49,32 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
+			if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemsSourceProperty))
 			{
 				UpdateItemsSource();
 			}
-			else if (changedProperty.Is(ItemsView.ItemTemplateProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemTemplateProperty))
 			{
 				UpdateItemTemplate();
 			}
-			else if(changedProperty.Is(ItemsView.HorizontalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.HorizontalScrollBarVisibilityProperty))
 			{
 				UpdateHorizontalScrollBarVisibility();
 			}
-			else if (changedProperty.Is(ItemsView.VerticalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Xamarin.Forms.ItemsView.VerticalScrollBarVisibilityProperty))
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
-			else if (changedProperty.IsOneOf(ItemsView.HeaderProperty, ItemsView.HeaderTemplateProperty))
+			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty, 
+				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
-				UpdateHeader();
-			}
-			else if (changedProperty.IsOneOf(ItemsView.FooterProperty, ItemsView.FooterTemplateProperty))
-			{
-				UpdateFooter();
+				UpdateEmptyView();
 			}
 		}
 
-		protected virtual ListViewBase SelectLayout(IItemsLayout layoutSpecification)
-		{
-			switch (layoutSpecification)
-			{
-				case GridItemsLayout gridItemsLayout:
-					return CreateGridView(gridItemsLayout);
-				case ListItemsLayout listItemsLayout
-					when listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal:
-					return CreateHorizontalListView();
-			}
-
-			// Default to a plain old vertical ListView
-			return new Windows.UI.Xaml.Controls.ListView();
-		}
+		protected abstract ListViewBase SelectListViewBase();
+		protected abstract void HandleLayoutPropertyChanged(PropertyChangedEventArgs property);
+		protected abstract IItemsLayout Layout { get; }
 
 		protected virtual void UpdateItemsSource()
 		{
@@ -93,33 +83,78 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			// TODO hartez 2018-05-22 12:59 PM Handle grouping
 
+			CleanUpCollectionViewSource();
+
+			if (Element.ItemsSource == null)
+			{
+				return;
+			}
+
+			CollectionViewSource = CreateCollectionViewSource();
+
+			if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
+			{
+				incc.CollectionChanged += ItemsChanged;
+			}
+
+			ListViewBase.ItemsSource = CollectionViewSource.View;
+
+			UpdateEmptyViewVisibility();
+		}
+
+		protected virtual void CleanUpCollectionViewSource()
+		{
+			if (CollectionViewSource != null)
+			{
+				if (CollectionViewSource.Source is ObservableItemTemplateCollection observableItemTemplateCollection)
+				{
+					observableItemTemplateCollection.CleanUp();
+				}
+			}
+
+			if (Element?.ItemsSource == null)
+			{
+				if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
+				{
+					incc.CollectionChanged -= ItemsChanged;
+				}
+
+				if (CollectionViewSource != null)
+				{
+					CollectionViewSource.Source = null;
+				}
+
+				CollectionViewSource = null;
+				ListViewBase.ItemsSource = null;
+				return;
+			}
+		}
+
+		protected virtual CollectionViewSource CreateCollectionViewSource()
+		{
 			var itemsSource = Element.ItemsSource;
-
 			var itemTemplate = Element.ItemTemplate;
+
 			if (itemTemplate != null)
 			{
-				// The ItemContentControls need the actual data item and the template so they can inflate the template
-				// and bind the result to the data item.
-				// ItemTemplateEnumerator handles pairing them up for the ItemContentControls to consume
-
-				_collectionViewSource = new CollectionViewSource
+				return new CollectionViewSource
 				{
 					Source = TemplatedItemSourceFactory.Create(itemsSource, itemTemplate, Element),
 					IsSourceGrouped = false
 				};
 			}
-			else
+			
+			return new CollectionViewSource
 			{
-				_collectionViewSource = new CollectionViewSource
-				{
-					Source = itemsSource,
-					IsSourceGrouped = false
-				};
-			}
+				Source = itemsSource,
+				IsSourceGrouped = false
+			};
+		}
 
-			ListViewBase.ItemsSource = _collectionViewSource.View;
+		void ItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			UpdateEmptyViewVisibility();
 		}
 
 		protected virtual void UpdateItemTemplate()
@@ -129,182 +164,14 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			var formsTemplate = Element.ItemTemplate;
-			var itemsControlItemTemplate = ListViewBase.ItemTemplate;
+			ListViewBase.ItemTemplate = Element.ItemTemplate == null ? null : ItemsViewTemplate;
 
-			if (formsTemplate == null)
-			{
-				ListViewBase.ItemTemplate = null;
-
-				if (itemsControlItemTemplate != null)
-				{
-					// We've removed the template; the itemssource should be updated
-					// TODO hartez 2018/06/25 21:25:24 I don't love that changing the template might reset the whole itemssource. We should think about a way to make that unnecessary	
-					UpdateItemsSource();
-				}
-
-				return;
-			}
-
-			// TODO hartez 2018/06/23 13:47:27 Handle DataTemplateSelector case
-			// Actually, DataTemplateExtensions CreateContent might handle the selector for us
-
-			ListViewBase.ItemTemplate = ItemsViewTemplate;
-
-			if (itemsControlItemTemplate == null)
-			{
-				// We're using a data template now, so we'll need to update the itemsource
-				UpdateItemsSource();
-			}
-		}
-
-		protected virtual void UpdateHeader()
-		{
-			if (ListViewBase == null)
-			{
-				return;
-			}
-
-			if (_currentHeader != null)
-			{
-				Element.RemoveLogicalChild(_currentHeader);
-				_currentHeader = null;
-			}
-
-			var header = Element.Header;
-
-			switch (header)
-			{
-				case null:
-					ListViewBase.Header = null;
-					break;
-
-				case string text:
-					ListViewBase.HeaderTemplate = null;
-					ListViewBase.Header = new TextBlock { Text = text };
-					break;
-
-				case View view:
-					ListViewBase.HeaderTemplate = ViewTemplate;
-					_currentHeader = view;
-					Element.AddLogicalChild(_currentHeader);
-					ListViewBase.Header = view;
-					break;
-
-				default:
-					var headerTemplate = Element.HeaderTemplate;
-					if (headerTemplate != null)
-					{
-						ListViewBase.HeaderTemplate = ItemsViewTemplate;
-						ListViewBase.Header = new ItemTemplateContext(headerTemplate, header, Element);
-					}
-					else
-					{
-						ListViewBase.HeaderTemplate = null;
-						ListViewBase.Header = null;
-					}
-					break;
-			}
-		}
-
-		protected virtual void UpdateFooter()
-		{
-			if (ListViewBase == null)
-			{
-				return;
-			}
-
-			if (_currentFooter != null)
-			{
-				Element.RemoveLogicalChild(_currentFooter);
-				_currentFooter = null;
-			}
-
-			var footer = Element.Footer;
-
-			switch (footer)
-			{
-				case null:
-					ListViewBase.Footer = null;
-					break;
-
-				case string text:
-					ListViewBase.FooterTemplate = null;
-					ListViewBase.Footer = new TextBlock { Text = text };
-					break;
-
-				case View view:
-					ListViewBase.FooterTemplate = ViewTemplate;
-					_currentFooter = view;
-					Element.AddLogicalChild(_currentFooter);
-					ListViewBase.Footer = view;
-					break;
-
-				default:
-					var footerTemplate = Element.FooterTemplate;
-					if (footerTemplate != null)
-					{
-						ListViewBase.FooterTemplate = ItemsViewTemplate;
-						ListViewBase.Footer = new ItemTemplateContext(footerTemplate, footer, Element);
-					}
-					else
-					{
-						ListViewBase.FooterTemplate = null;
-						ListViewBase.Footer = null;
-					}
-					break;
-			}
-		}
-
-		static ListViewBase CreateGridView(GridItemsLayout gridItemsLayout)
-		{
-			var gridView = new FormsGridView();
-
-			if (gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
-			{
-				gridView.UseHorizontalItemsPanel();
-
-				// TODO hartez 2018/06/06 12:13:38 Should this logic just be built into FormsGridView?	
-				ScrollViewer.SetHorizontalScrollMode(gridView, ScrollMode.Auto);
-				ScrollViewer.SetHorizontalScrollBarVisibility(gridView,
-					Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto);
-			}
-			else
-			{
-				gridView.UseVerticalalItemsPanel();
-			}
-
-			gridView.MaximumRowsOrColumns = gridItemsLayout.Span;
-
-			return gridView;
-		}
-
-		static ListViewBase CreateHorizontalListView()
-		{
-			// TODO hartez 2018/06/05 16:18:57 Is there any performance benefit to caching the ItemsPanelTemplate lookup?	
-			// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
-			var horizontalListView = new Windows.UI.Xaml.Controls.ListView()
-			{
-				ItemsPanel =
-					(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["HorizontalListItemsPanel"]
-			};
-
-			ScrollViewer.SetHorizontalScrollMode(horizontalListView, ScrollMode.Auto);
-			ScrollViewer.SetHorizontalScrollBarVisibility(horizontalListView,
-				Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto);
-
-			return horizontalListView;
+			UpdateItemsSource();
 		}
 
 		void LayoutPropertyChanged(object sender, PropertyChangedEventArgs property)
 		{
-			if (property.Is(GridItemsLayout.SpanProperty))
-			{
-				if (ListViewBase is FormsGridView formsGridView)
-				{
-					formsGridView.MaximumRowsOrColumns = ((GridItemsLayout)_layout).Span;
-				}
-			}
+			HandleLayoutPropertyChanged(property);
 		}
 
 		protected virtual void SetUpNewElement(ItemsView newElement)
@@ -316,20 +183,21 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (ListViewBase == null)
 			{
-				ListViewBase = SelectLayout(newElement.ItemsLayout);
+				ListViewBase = SelectListViewBase();
+				ListViewBase.IsSynchronizedWithCurrentItem = false;
 
-				_layout = newElement.ItemsLayout;
-				_layout.PropertyChanged += LayoutPropertyChanged;
+				FindScrollViewer(ListViewBase);
+
+				Layout.PropertyChanged += LayoutPropertyChanged;
 
 				SetNativeControl(ListViewBase);
 			}
 
 			UpdateItemTemplate();
 			UpdateItemsSource();
-			UpdateHeader();
-			UpdateFooter();
 			UpdateVerticalScrollBarVisibility();
 			UpdateHorizontalScrollBarVisibility();
+			UpdateEmptyView();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -342,146 +210,29 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			if (_layout != null)
+			if (Layout != null)
 			{
 				// Stop tracking the old layout
-				_layout.PropertyChanged -= LayoutPropertyChanged;
-				_layout = null;
+				Layout.PropertyChanged -= LayoutPropertyChanged;
 			}
 
 			// Stop listening for ScrollTo requests
 			oldElement.ScrollToRequested -= ScrollToRequested;
-		}
 
-		async void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
-		{
-			await ScrollTo(args);
-		}
-
-		object FindBoundItem(ScrollToRequestEventArgs args)
-		{
-			if (args.Mode == ScrollToMode.Position)
+			if (CollectionViewSource != null)
 			{
-				return _collectionViewSource.View[args.Index];
+				CleanUpCollectionViewSource();
 			}
 
-			if (Element.ItemTemplate == null)
+			if (ListViewBase != null)
 			{
-				return args.Item;
+				ListViewBase.ItemsSource = null;
 			}
 
-			for (int n = 0; n < _collectionViewSource.View.Count; n++)
+			if (_scrollViewer != null)
 			{
-				if (_collectionViewSource.View[n] is ItemTemplateContext pair)
-				{
-					if (pair.Item == args.Item)
-					{
-						return _collectionViewSource.View[n];
-					}
-				}
+				_scrollViewer.ViewChanged -= OnScrollViewChanged;
 			}
-
-			return null;
-		}
-
-		async Task JumpTo(ListViewBase list, object targetItem, ScrollToPosition scrollToPosition)
-		{
-			var tcs = new TaskCompletionSource<object>();
-			void ViewChanged(object s, ScrollViewerViewChangedEventArgs e) => tcs.TrySetResult(null);
-			var scrollViewer = list.GetFirstDescendant<ScrollViewer>();
-
-			try
-			{
-				scrollViewer.ViewChanged += ViewChanged;
-
-				if (scrollToPosition == ScrollToPosition.Start)
-				{
-					list.ScrollIntoView(targetItem, ScrollIntoViewAlignment.Leading);
-				}
-				else if (scrollToPosition == ScrollToPosition.MakeVisible)
-				{
-					list.ScrollIntoView(targetItem, ScrollIntoViewAlignment.Default);
-				}
-				else
-				{
-					// Center and End are going to be more complicated.
-				}
-
-				await tcs.Task;
-			}
-			finally
-			{
-				scrollViewer.ViewChanged -= ViewChanged;
-			}
-
-		}
-
-		async Task ChangeViewAsync(ScrollViewer scrollViewer, double? horizontalOffset, double? verticalOffset, bool disableAnimation)
-		{
-			var tcs = new TaskCompletionSource<object>();
-			void ViewChanged(object s, ScrollViewerViewChangedEventArgs e) => tcs.TrySetResult(null);
-
-			try
-			{
-				scrollViewer.ViewChanged += ViewChanged;
-				scrollViewer.ChangeView(horizontalOffset, verticalOffset, null, disableAnimation);
-				await tcs.Task;
-			}
-			finally
-			{
-				scrollViewer.ViewChanged -= ViewChanged;
-			}
-		}
-
-		async Task AnimateTo(ListViewBase list, object targetItem, ScrollToPosition scrollToPosition)
-		{
-			var scrollViewer = list.GetFirstDescendant<ScrollViewer>();
-
-			var targetContainer = list.ContainerFromItem(targetItem) as UIElement;
-
-			if (targetContainer == null)
-			{
-				var horizontalOffset = scrollViewer.HorizontalOffset;
-				var verticalOffset = scrollViewer.VerticalOffset;
-
-				await JumpTo(list, targetItem, scrollToPosition);
-				targetContainer = list.ContainerFromItem(targetItem) as UIElement;
-				await ChangeViewAsync(scrollViewer, horizontalOffset, verticalOffset, true);
-			}
-
-			if (targetContainer == null)
-			{
-				// Did not find the target item anywhere
-				return;
-			}
-
-			// TODO hartez 2018/10/04 16:37:35 Okay, this sort of works for vertical lists but fails totally on horizontal lists. 
-			var transform = targetContainer.TransformToVisual(scrollViewer.Content as UIElement);
-			var position = transform?.TransformPoint(new Windows.Foundation.Point(0, 0));
-
-			if (!position.HasValue)
-			{
-				return;
-			}
-
-			// TODO hartez 2018/10/05 17:23:23 The animated scroll works fine vertically if we are scrolling to a greater Y offset.	
-			// If we're scrolling back up to a lower Y offset, it just gives up and sends us to 0 (first item)
-			// Works fine if we disable animation, but that's not very helpful
-
-			scrollViewer.ChangeView(position.Value.X, position.Value.Y, null, false);
-
-			//if (scrollToPosition == ScrollToPosition.End)
-			//{
-			//	// Modify position
-			//}
-			//else if (scrollToPosition == ScrollToPosition.Center)
-			//{
-			//	// Modify position
-			//}
-			//else
-			//{
-
-			//}
 		}
 
 		void UpdateVerticalScrollBarVisibility()
@@ -522,6 +273,27 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		protected virtual void FindScrollViewer(ListViewBase listView)
+		{
+			var scrollViewer = listView.GetFirstDescendant<ScrollViewer>();
+
+			if (scrollViewer != null)
+			{
+				_scrollViewer = scrollViewer;
+				_scrollViewer.ViewChanged += OnScrollViewChanged;
+				return;
+			}
+
+			void ListViewLoaded(object sender, RoutedEventArgs e)
+			{
+				var lv = (ListViewBase)sender;
+				lv.Loaded -= ListViewLoaded;
+				FindScrollViewer(listView);
+			}
+
+			listView.Loaded += ListViewLoaded;
+		}
+
 		protected virtual async Task ScrollTo(ScrollToRequestEventArgs args)
 		{
 			if (!(Control is ListViewBase list))
@@ -529,20 +301,194 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			var targetItem = FindBoundItem(args);
+			var item = FindBoundItem(args);
+
+			if (item == null)
+			{
+				// Item wasn't found in the list, so there's nothing to scroll to
+				return;
+			}
 
 			if (args.IsAnimated)
 			{
-				await AnimateTo(list, targetItem, args.ScrollToPosition);
+				await ScrollHelpers.AnimateToItemAsync(list, item, args.ScrollToPosition);
 			}
 			else
 			{
-				await JumpTo(list, targetItem, args.ScrollToPosition);
+				await ScrollHelpers.JumpToItemAsync(list, item, args.ScrollToPosition);
 			}
 		}
 
-		
+		async void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		{
+			await ScrollTo(args);
+		}
 
-		
+		object FindBoundItem(ScrollToRequestEventArgs args)
+		{
+			if (args.Mode == ScrollToMode.Position)
+			{
+				if (args.Index >= CollectionViewSource.View.Count)
+				{
+					return null;
+				}
+
+				return CollectionViewSource.View[args.Index];
+			}
+
+			if (Element.ItemTemplate == null)
+			{
+				return args.Item;
+			}
+
+			for (int n = 0; n < CollectionViewSource.View.Count; n++)
+			{
+				if (CollectionViewSource.View[n] is ItemTemplateContext pair)
+				{
+					if (pair.Item == args.Item)
+					{
+						return CollectionViewSource.View[n];
+					}
+				}
+			}
+
+			return null;
+		}
+
+		protected virtual void UpdateEmptyView()
+		{
+			if (Element == null || ListViewBase == null)
+			{
+				return;
+			}
+
+			var emptyView = Element.EmptyView;
+
+			if (emptyView == null)
+			{
+				return;
+			}
+
+			switch (emptyView)
+			{
+				case string text:
+					_emptyView = new TextBlock
+					{
+						HorizontalAlignment = HorizontalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Center,
+						Text = text
+					};
+					break;
+				case View view:
+					_emptyView = RealizeEmptyView(view);
+					break;
+				default:
+					_emptyView = RealizeEmptyViewTemplate(emptyView, Element.EmptyViewTemplate);
+					break;
+			}
+
+			(ListViewBase as IEmptyView)?.SetEmptyView(_emptyView, _formsEmptyView);
+
+			UpdateEmptyViewVisibility();
+		}
+
+		FrameworkElement RealizeEmptyViewTemplate(object bindingContext, DataTemplate emptyViewTemplate)
+		{
+			if (emptyViewTemplate == null)
+			{
+				return new TextBlock
+				{
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
+					Text = bindingContext.ToString()
+				};
+			}
+
+			var template = emptyViewTemplate.SelectDataTemplate(bindingContext, null);
+			var view = template.CreateContent() as View;
+			view.BindingContext = bindingContext;
+
+			return RealizeEmptyView(view);
+		}
+
+		FrameworkElement RealizeEmptyView(View view)
+		{
+			_formsEmptyView = view;
+			return view.GetOrCreateRenderer().ContainerElement;
+		}
+
+		protected virtual void UpdateEmptyViewVisibility()
+		{
+			if (_emptyView != null && ListViewBase is IEmptyView emptyView)
+			{
+				emptyView.EmptyViewVisibility = (CollectionViewSource?.View?.Count ?? 0) == 0
+					? Visibility.Visible
+					: Visibility.Collapsed;
+
+				if (emptyView.EmptyViewVisibility == Visibility.Visible)
+				{
+					if (ActualWidth >= 0 && ActualHeight >= 0)
+					{
+						_formsEmptyView?.Layout(new Rectangle(0, 0, ActualWidth, ActualHeight));
+					}
+				}
+			}
+		}
+
+		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+		{
+			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
+			{
+				HorizontalOffset = _scrollViewer.HorizontalOffset,
+				HorizontalDelta = _scrollViewer.HorizontalOffset - _previousHorizontalOffset,
+				VerticalOffset = _scrollViewer.VerticalOffset,
+				VerticalDelta = _scrollViewer.VerticalOffset - _previousVerticalOffset,
+			};
+
+			_previousHorizontalOffset = _scrollViewer.HorizontalOffset;
+			_previousVerticalOffset = _scrollViewer.VerticalOffset;
+
+			int firstVisibleItemIndex = -1;
+			int lastVisibleItemIndex = -1;
+
+			var presenters = ListViewBase.GetChildren<ListViewItemPresenter>();
+
+			if (presenters != null)
+			{
+				int count = 0;
+				foreach (ListViewItemPresenter presenter in presenters)
+				{
+					if (IsListViewItemVisible(presenter, _scrollViewer))
+					{
+						if (firstVisibleItemIndex == -1)
+							firstVisibleItemIndex = count;
+
+						lastVisibleItemIndex = count;
+					}
+
+					count++;
+				}
+
+				itemsViewScrolledEventArgs.FirstVisibleItemIndex = firstVisibleItemIndex;
+				itemsViewScrolledEventArgs.CenterItemIndex = (lastVisibleItemIndex + firstVisibleItemIndex) / 2;
+				itemsViewScrolledEventArgs.LastVisibleItemIndex = lastVisibleItemIndex;
+			}
+
+			Element.SendScrolled(itemsViewScrolledEventArgs);
+		}
+
+		bool IsListViewItemVisible(FrameworkElement element, FrameworkElement container)
+		{
+			if (element == null || container == null)
+				return false;
+
+			if (element.Visibility != Visibility.Visible)
+				return false;
+
+			var elementBounds = element.TransformToVisual(container).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
+			var containerBounds = new Rect(0, 0, container.ActualWidth, container.ActualHeight);
+
+			return elementBounds.Top < containerBounds.Bottom && elementBounds.Bottom > containerBounds.Top;
+		}
 	}
 }

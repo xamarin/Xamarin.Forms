@@ -21,7 +21,6 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>default</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -30,7 +29,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>default</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
@@ -65,6 +63,7 @@
     <Compile Include="Controls\FormsAppBar.cs" />
     <Compile Include="Controls\FormsAppBarButton.cs" />
     <Compile Include="Controls\FormsBitmapIcon.cs" />
+    <Compile Include="Controls\FormsButton.cs" />
     <Compile Include="Controls\FormsCarouselPage.cs" />
     <Compile Include="Controls\FormsContentControl.cs" />
     <Compile Include="Controls\FormsContentDialog.cs" />
@@ -168,6 +167,7 @@
     <Compile Include="Renderers\LayoutRenderer.cs" />
     <Compile Include="Renderers\ListViewRenderer.cs" />
     <Compile Include="Renderers\MasterDetailPageRenderer.cs" />
+    <Compile Include="Renderers\MediaElementRenderer.cs" />
     <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="Renderers\PageRenderer.cs" />

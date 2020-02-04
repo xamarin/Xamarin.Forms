@@ -7,14 +7,9 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class ItemsView : View
+	public abstract class ItemsView : View
 	{
 		List<Element> _logicalChildren = new List<Element>();
-
-		protected internal ItemsView()
-		{
-			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(ItemsView));
-		}
 
 		public static readonly BindableProperty EmptyViewProperty =
 			BindableProperty.Create(nameof(EmptyView), typeof(object), typeof(ItemsView), null);
@@ -37,13 +32,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ItemsSourceProperty =
 			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null);
 
-		public IEnumerable ItemsSource 
+		public IEnumerable ItemsSource
 		{
 			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty = 
+		public static readonly BindableProperty RemainingItemsThresholdReachedCommandProperty =
 			BindableProperty.Create(nameof(RemainingItemsThresholdReachedCommand), typeof(ICommand), typeof(ItemsView), null);
 
 		public ICommand RemainingItemsThresholdReachedCommand
@@ -93,47 +88,11 @@ namespace Xamarin.Forms
 			set => SetValue(RemainingItemsThresholdProperty, value);
 		}
 
-		public static readonly BindableProperty HeaderProperty =
-			BindableProperty.Create(nameof(Header), typeof(object), typeof(ItemsView), null);
-
-		public object Header
-		{
-			get => GetValue(HeaderProperty);
-			set => SetValue(HeaderProperty, value);
-		}
-
-		public static readonly BindableProperty HeaderTemplateProperty =
-			BindableProperty.Create(nameof(HeaderTemplate), typeof(DataTemplate), typeof(ItemsView), null);
-
-		public DataTemplate HeaderTemplate
-		{
-			get => (DataTemplate)GetValue(HeaderTemplateProperty);
-			set => SetValue(HeaderTemplateProperty, value);
-		}
-
-		public static readonly BindableProperty FooterProperty =
-			BindableProperty.Create(nameof(Footer), typeof(object), typeof(ItemsView), null);
-
-		public object Footer
-		{
-			get => GetValue(FooterProperty);
-			set => SetValue(FooterProperty, value);
-		}
-
-		public static readonly BindableProperty FooterTemplateProperty =
-			BindableProperty.Create(nameof(FooterTemplate), typeof(DataTemplate), typeof(ItemsView), null);
-
-		public DataTemplate FooterTemplate
-		{
-			get => (DataTemplate)GetValue(FooterTemplateProperty);
-			set => SetValue(FooterTemplateProperty, value);
-		}
-
 		public void AddLogicalChild(Element element)
 		{
-			if(element == null)
+			if (element == null)
 			{
-				return;	
+				return;
 			}
 
 			_logicalChildren.Add(element);
@@ -162,14 +121,23 @@ namespace Xamarin.Forms
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildren.AsReadOnly();
 #endif
 
-		public static readonly BindableProperty ItemsLayoutProperty =
-			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView), 
-				ListItemsLayout.Vertical);
+		internal static readonly BindableProperty InternalItemsLayoutProperty =
+			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
+				LinearItemsLayout.Vertical, propertyChanged: OnInternalItemsLayoutPropertyChanged);
 
-		public IItemsLayout ItemsLayout
+		static void OnInternalItemsLayoutPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			get => (IItemsLayout)GetValue(ItemsLayoutProperty);
-			set => SetValue(ItemsLayoutProperty, value);
+			if (oldValue is BindableObject boOld)
+				SetInheritedBindingContext(boOld, null);
+
+			if (newValue is BindableObject boNew)
+				SetInheritedBindingContext(boNew, bindable.BindingContext);
+		}
+
+		protected IItemsLayout InternalItemsLayout
+		{
+			get => (IItemsLayout)GetValue(InternalItemsLayoutProperty);
+			set => SetValue(InternalItemsLayoutProperty, value);
 		}
 
 		public static readonly BindableProperty ItemTemplateProperty =
@@ -179,15 +147,6 @@ namespace Xamarin.Forms
 		{
 			get => (DataTemplate)GetValue(ItemTemplateProperty);
 			set => SetValue(ItemTemplateProperty, value);
-		}
-
-		public static readonly BindableProperty ItemSizingStrategyProperty =
-			BindableProperty.Create(nameof(ItemSizingStrategy), typeof(ItemSizingStrategy), typeof(ItemsView));
-
-		public ItemSizingStrategy ItemSizingStrategy
-		{
-			get => (ItemSizingStrategy)GetValue(ItemSizingStrategyProperty);
-			set => SetValue(ItemSizingStrategyProperty, value);
 		}
 
 		public static readonly BindableProperty ItemsUpdatingScrollModeProperty =
@@ -261,6 +220,13 @@ namespace Xamarin.Forms
 		protected virtual void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
 			
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+			if (InternalItemsLayout is BindableObject bo)
+				SetInheritedBindingContext(bo, BindingContext);
 		}
 	}
 }

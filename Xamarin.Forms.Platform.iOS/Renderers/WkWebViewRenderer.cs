@@ -7,11 +7,12 @@ using ObjCRuntime;
 using UIKit;
 using WebKit;
 using Xamarin.Forms.Internals;
+using PreserveAttribute = Foundation.PreserveAttribute;
 using Uri = System.Uri;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class WkWebViewRenderer : WKWebView, IVisualElementRenderer, IWebViewDelegate, IEffectControlProvider
+	public class WkWebViewRenderer : WKWebView, IVisualElementRenderer, IWebViewDelegate, IEffectControlProvider, ITabStop
 	{
 		EventTracker _events;
 		bool _ignoreSourceChanges;
@@ -20,10 +21,15 @@ namespace Xamarin.Forms.Platform.iOS
 #pragma warning disable 0414
 		VisualElementTracker _tracker;
 #pragma warning restore 0414
+
+
+		[Preserve(Conditional = true)]
 		public WkWebViewRenderer() : base(RectangleF.Empty, new WKWebViewConfiguration())
 		{
 		}
 
+
+		[Preserve(Conditional = true)]
 		public WkWebViewRenderer(WKWebViewConfiguration config) : base(RectangleF.Empty, config)
 		{
 		}
@@ -249,6 +255,10 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					case WKNavigationType.LinkActivated:
 						navEvent = WebNavigationEvent.NewPage;
+
+						if (navigationAction.TargetFrame == null)
+							webView?.LoadRequest(navigationAction.Request);
+
 						break;
 					case WKNavigationType.FormSubmitted:
 						navEvent = WebNavigationEvent.NewPage;
@@ -364,7 +374,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (cancelAction != null)
 					AddCancelAction(controller, () => cancelAction(controller));
 
-				GetTopViewController(UIApplication.SharedApplication.KeyWindow.RootViewController)
+				GetTopViewController(UIApplication.SharedApplication.GetKeyWindow().RootViewController)
 					.PresentViewController(controller, true, null);
 			}
 
@@ -394,6 +404,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get { return null; }
 		}
+
+		UIView ITabStop.TabStop => this;
 
 		#endregion
 

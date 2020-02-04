@@ -2,21 +2,37 @@
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.DrawerLayout.Widget;
+using Google.Android.Material.AppBar;
+using AndroidX.AppCompat.Widget;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
+using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
+using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+#else
 using Android.Support.V4.Widget;
-using Android.Support.V7.Graphics.Drawable;
 using Android.Support.V7.Widget;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
+using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
+using Android.Support.V7.Graphics.Drawable;
+using Android.Support.Design.Widget;
+using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
+#endif
 using Android.Views;
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using R = Android.Resource;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
-using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
+using ATextView = global::Android.Widget.TextView;
+using AColor = Android.Graphics.Color;
+using Xamarin.Forms.Internals;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -49,13 +65,20 @@ namespace Xamarin.Forms.Platform.Android
 		//assume the default
 		Color _tintColor = Color.Default;
 		Toolbar _toolbar;
+		AppBarLayout _appBar;
+		float _appBarElevation;
+		GenericGlobalLayoutListener _globalLayoutListener;
+		List<IMenuItem> _currentMenuItems = new List<IMenuItem>();
 
 		public ShellToolbarTracker(IShellContext shellContext, Toolbar toolbar, DrawerLayout drawerLayout)
 		{
 			_shellContext = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
 			_toolbar = toolbar ?? throw new ArgumentNullException(nameof(toolbar));
 			_drawerLayout = drawerLayout ?? throw new ArgumentNullException(nameof(drawerLayout));
+			_appBar = _toolbar.Parent.GetParentOfType<AppBarLayout>();
 
+			_globalLayoutListener = new GenericGlobalLayoutListener(() => UpdateNavBarHasShadow(Page));
+			_appBar.ViewTreeObserver.AddOnGlobalLayoutListener(_globalLayoutListener);
 			_toolbar.SetNavigationOnClickListener(this);
 			((IShellController)_shellContext.Shell).AddFlyoutBehaviorObserver(this);
 		}
@@ -127,8 +150,6 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					_shellContext.Shell.FlyoutIsPresented = !_shellContext.Shell.FlyoutIsPresented;
 			}
-
-			v.Dispose();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -136,11 +157,25 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed)
 				return;
 
+			_disposed = true;
+
 			if (disposing)
 			{
+				if (_appBar.IsAlive() && _appBar.ViewTreeObserver.IsAlive())
+					_appBar.ViewTreeObserver.RemoveOnGlobalLayoutListener(_globalLayoutListener);
+
+				_globalLayoutListener.Invalidate();
+
+				if (_backButtonBehavior != null)
+					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+
+
+				_toolbar.DisposeMenuItems(Page?.ToolbarItems, OnToolbarItemPropertyChanged);
+
+				((IShellController)_shellContext?.Shell)?.RemoveFlyoutBehaviorObserver(this);
+
 				UpdateTitleView(_shellContext.AndroidContext, _toolbar, null);
 
-				_drawerToggle?.Dispose();
 				if (_searchView != null)
 				{
 					_searchView.View.RemoveFromParent();
@@ -149,12 +184,14 @@ namespace Xamarin.Forms.Platform.Android
 					_searchView.Dispose();
 				}
 
-				((IShellController)_shellContext.Shell).RemoveFlyoutBehaviorObserver(this);
+				if (_currentMenuItems != null)
+					_currentMenuItems.Clear();
 
-				if (_backButtonBehavior != null)
-					_backButtonBehavior.PropertyChanged -= OnBackButtonBehaviorChanged;
+				_drawerToggle?.Dispose();
 			}
 
+			_currentMenuItems = null;
+			_globalLayoutListener = null;
 			_backButtonBehavior = null;
 			SearchHandler = null;
 			_shellContext = null;
@@ -162,8 +199,8 @@ namespace Xamarin.Forms.Platform.Android
 			_searchView = null;
 			Page = null;
 			_toolbar = null;
+			_appBar = null;
 			_drawerLayout = null;
-			_disposed = true;
 			base.Dispose(disposing);
 		}
 
@@ -202,6 +239,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLeftBarButtonItem();
 				UpdateToolbarItems();
 				UpdateNavBarVisible(_toolbar, newPage);
+				UpdateNavBarHasShadow(newPage);
 				UpdateTitleView();
 			}
 		}
@@ -215,6 +253,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateToolbarItems();
 			else if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
 				UpdateNavBarVisible(_toolbar, Page);
+			else if (e.PropertyName == Shell.NavBarHasShadowProperty.PropertyName)
+				UpdateNavBarHasShadow(Page);
 			else if (e.PropertyName == Shell.BackButtonBehaviorProperty.PropertyName)
 			{
 				var backButtonHandler = Shell.GetBackButtonBehavior(Page);
@@ -234,33 +274,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnBackButtonBehaviorChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName == BackButtonBehavior.IsEnabledProperty.PropertyName)
-			{
-				UpdateBackButtonBehaviorIsEnabled();
-				_drawerToggle.SyncState();
-			}
-
 			UpdateLeftBarButtonItem();
 		}
 
-		void UpdateBackButtonBehaviorIsEnabled()
-		{
-			if (_drawerLayout == null || _drawerToggle == null)
-				return;
-
-			bool isEnabled = _backButtonBehavior?.IsEnabled ?? true;
-
-			if (isEnabled)
-			{
-				_drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
-				_drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
-			}
-			else
-			{
-				_drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedClosed);
-				_drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeLockedClosed);
-			}
-		}
 
 		protected virtual void OnPageToolbarItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -314,6 +330,7 @@ namespace Xamarin.Forms.Platform.Android
 			var image = backButtonHandler.GetPropertyIfSet<ImageSource>(BackButtonBehavior.IconOverrideProperty, null);
 			var text = backButtonHandler.GetPropertyIfSet(BackButtonBehavior.TextOverrideProperty, String.Empty);
 			var command = backButtonHandler.GetPropertyIfSet<ICommand>(BackButtonBehavior.CommandProperty, null);
+			bool isEnabled = _backButtonBehavior.GetPropertyIfSet(BackButtonBehavior.IsEnabledProperty, true);
 
 			if (image == null)
 			{
@@ -339,19 +356,17 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var customIcon = await context.GetFormsDrawableAsync(image);
 
-				if(customIcon != null)
+				if (customIcon != null)
 					icon = new FlyoutIconDrawerDrawable(context, tintColor, customIcon, text);
 			}
 
 			if (!String.IsNullOrWhiteSpace(text) && icon == null)
 				icon = new FlyoutIconDrawerDrawable(context, tintColor, icon, text);
 
-			if(icon == null)
+			if (icon == null)
 			{
 				icon = new DrawerArrowDrawable(context.GetThemedContext());
-
-				ADrawableCompat.SetTint(icon, tintColor.ToAndroid());
-				ADrawableCompat.SetTintMode(icon, PorterDuff.Mode.SrcAtop);
+				icon.SetColorFilter(tintColor, FilterMode.SrcAtop);
 			}
 
 			icon.Progress = (CanNavigateBack) ? 1 : 0;
@@ -361,14 +376,23 @@ namespace Xamarin.Forms.Platform.Android
 				_drawerToggle.DrawerIndicatorEnabled = false;
 				toolbar.NavigationIcon = icon;
 			}
-			else 
+			else if (_flyoutBehavior == FlyoutBehavior.Flyout)
 			{
-				toolbar.NavigationIcon = null;
-				_drawerToggle.DrawerIndicatorEnabled = true;
-				_drawerToggle.DrawerArrowDrawable = icon;
+				_drawerToggle.DrawerIndicatorEnabled = isEnabled;
+				if (isEnabled)
+				{
+					_drawerToggle.DrawerArrowDrawable = icon;
+					toolbar.NavigationIcon = null;
+				}
+				else
+					toolbar.NavigationIcon = icon;
+			}
+			else
+			{
+				_drawerToggle.DrawerIndicatorEnabled = false;
 			}
 
-			UpdateBackButtonBehaviorIsEnabled();
+
 			_drawerToggle.SyncState();
 
 			//this needs to be set after SyncState
@@ -388,7 +412,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				toolbar.NavigationContentDescription = shell.FlyoutIcon.AutomationId;
 			}
-			else if(toolbar.SetNavigationContentDescription(_shellContext.Shell.FlyoutIcon) == null)
+			else if (toolbar.SetNavigationContentDescription(_shellContext.Shell.FlyoutIcon) == null)
 			{
 				toolbar.SetNavigationContentDescription(R.String.Ok);
 			}
@@ -414,7 +438,7 @@ namespace Xamarin.Forms.Platform.Android
 					using (var newDrawable = constant.NewDrawable())
 					using (var iconDrawable = newDrawable.Mutate())
 					{
-						iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+						iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), FilterMode.SrcAtop);
 						menuItem.SetIcon(iconDrawable);
 					}
 				}
@@ -425,6 +449,24 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var navBarVisible = Shell.GetNavBarIsVisible(page);
 			toolbar.Visibility = navBarVisible ? ViewStates.Visible : ViewStates.Gone;
+		}
+
+		void UpdateNavBarHasShadow(Page page)
+		{
+			if (page == null || !_appBar.IsAlive())
+				return;
+
+			if (Shell.GetNavBarHasShadow(page))
+			{
+				if (_appBarElevation > 0)
+					_appBar.SetElevation(_appBarElevation);
+			}
+			else
+			{
+				// 4 is the default
+				_appBarElevation = _appBar.Context.ToPixels(4);
+				_appBar.SetElevation(0f);
+			}
 		}
 
 		protected virtual void UpdatePageTitle(Toolbar toolbar, Page page)
@@ -443,7 +485,7 @@ namespace Xamarin.Forms.Platform.Android
 					_titleViewContainer = null;
 				}
 			}
-			else
+			else if (_titleViewContainer == null)
 			{
 				_titleViewContainer = new ContainerView(context, titleView);
 				_titleViewContainer.MatchHeight = _titleViewContainer.MatchWidth = true;
@@ -457,26 +499,18 @@ namespace Xamarin.Forms.Platform.Android
 
 				_toolbar.AddView(_titleViewContainer);
 			}
+			else
+			{
+				_titleViewContainer.View = titleView;
+			}
 		}
 
 		protected virtual void UpdateToolbarItems(Toolbar toolbar, Page page)
 		{
 			var menu = toolbar.Menu;
-			menu.Clear();
+			var sortedItems = System.Linq.Enumerable.OrderBy(page.ToolbarItems, x => x.Order);
 
-			foreach (var item in page.ToolbarItems)
-			{
-				using (var title = new Java.Lang.String(item.Text))
-				{
-					var menuitem = menu.Add(title);
-					UpdateMenuItemIcon(_shellContext.AndroidContext, menuitem, item);
-					menuitem.SetTitleOrContentDescription(item);
-					menuitem.SetEnabled(item.IsEnabled);
-					menuitem.SetShowAsAction(ShowAsAction.Always);
-					menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
-					menuitem.Dispose();
-				}
-			}
+			toolbar.UpdateMenuItems(sortedItems, _shellContext.AndroidContext, TintColor, OnToolbarItemPropertyChanged, _currentMenuItems);
 
 			SearchHandler = Shell.GetSearchHandler(page);
 			if (SearchHandler != null && SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Hidden)
@@ -505,7 +539,7 @@ namespace Xamarin.Forms.Platform.Android
 					item.SetEnabled(SearchHandler.IsSearchEnabled);
 					item.SetIcon(Resource.Drawable.abc_ic_search_api_material);
 					using (var icon = item.Icon)
-						icon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+						icon.SetColorFilter(TintColor.ToAndroid(Color.White), FilterMode.SrcAtop);
 					item.SetShowAsAction(ShowAsAction.IfRoom | ShowAsAction.CollapseActionView);
 
 					if (_searchView.View.Parent != null)
@@ -535,6 +569,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			menu.Dispose();
+		}
+
+		void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var sortedItems = System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x => x.Order);
+			_toolbar.OnToolbarItemPropertyChanged(e, (ToolbarItem)sender, sortedItems, _shellContext.AndroidContext, TintColor, OnToolbarItemPropertyChanged, _currentMenuItems);
 		}
 
 		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)

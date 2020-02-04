@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -40,7 +40,7 @@ namespace Xamarin.Forms
 				if (_style == value)
 					return;
 				if (value != null && !value.TargetType.IsAssignableFrom(TargetType))
-					throw new ArgumentException($"Style TargetType {value.TargetType.FullName} is not compatible with element target type {TargetType}");
+					Log.Warning("Styles", $"Style TargetType {value.TargetType.FullName} is not compatible with element target type {TargetType}");
 				SetStyle(ImplicitStyle, ClassStyles, value);
 			}
 		}
@@ -53,7 +53,7 @@ namespace Xamarin.Forms
 				if (_styleClass == value)
 					return;
 
-				if (_styleClass != null && _classStyles != null)
+				if (_styleClass != null && _classStyleProperties != null)
 					foreach (var classStyleProperty in _classStyleProperties)
 						Target.RemoveDynamicResource(classStyleProperty);
 
@@ -67,6 +67,10 @@ namespace Xamarin.Forms
 						_classStyleProperties.Add (classStyleProperty);
 						Target.OnSetDynamicResource (classStyleProperty, Forms.Style.StyleClassPrefix + styleClass);
 					}
+
+					//reapply the css stylesheets
+					if (Target is Element targetelement)
+						targetelement.ApplyStyleSheetsOnParentSet();
 				}
 			}
 		}

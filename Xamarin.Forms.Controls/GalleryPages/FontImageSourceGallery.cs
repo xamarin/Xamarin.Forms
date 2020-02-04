@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.Controls.Issues;
+﻿using Xamarin.Forms.Controls.Issues;
 
 namespace Xamarin.Forms.Controls
 {
@@ -19,11 +18,16 @@ namespace Xamarin.Forms.Controls
 			var fontFamily = "";
 			switch (Device.RuntimePlatform)
 			{
+				case Device.macOS:
 				case Device.iOS:
 					fontFamily = "Ionicons";
 					break;
 				case Device.UWP:
 					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.WPF:
+				case Device.GTK:
+					fontFamily = "Assets/ionicons.ttf#ionicons";
 					break;
 				case Device.Android:
 				default:

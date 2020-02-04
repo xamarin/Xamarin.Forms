@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateRowHeight();
 
 				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController) : new ListViewDataSource(e.NewElement, _tableViewController);
-
+			
 				UpdateHeader();
 				UpdateFooter();
 				UpdatePullToRefreshEnabled();
@@ -360,7 +360,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TableHeaderView = _headerRenderer.NativeView;
 		}
 
-		async void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
+		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
 		{
 			if (Superview == null)
 			{
@@ -386,14 +386,16 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.Layer.RemoveAllAnimations();
 					//iOS11 hack
 					if (Forms.IsiOS11OrNewer)
-					{
-						await Task.Delay(1);
-					}
-					Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
+						this.QueueForLater(() =>
+						{
+							if (Control != null && !_disposed)
+								Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
+						});
+					else
+						Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
 				}
 			}
 		}
-
 
 		void UpdateFooter()
 		{
@@ -1218,6 +1220,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void Scrolled(UIScrollView scrollView)
 			{
+				var args = new ScrolledEventArgs(scrollView.ContentOffset.X, scrollView.ContentOffset.Y);
+				List?.SendScrolled(args);
+
 				if (_isDragging && scrollView.ContentOffset.Y < 0)
 				{
 					// If the refresh spinner is currently displayed and pull-to-refresh is not enabled,
@@ -1455,6 +1460,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _disposed;
 		internal bool _usingLargeTitles;
 		bool _isRefreshing;
+		bool _isStartRefreshingPending;
 
 		public FormsUITableViewController(ListView element, bool usingLargeTitles)
 		: base(element.OnThisPlatform().GetGroupHeaderStyle() == GroupHeaderStyle.Plain
@@ -1483,12 +1489,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (!_refresh.Refreshing)
 				{
+					_isStartRefreshingPending = true;
 					//hack: On iOS11 with large titles we need to adjust the scroll offset manually
 					//since our UITableView is not the first child of the UINavigationController
 					//This also forces the spinner color to be correct if we started refreshing immediately after changing it.
 					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, () =>
 					{
-						_refresh.BeginRefreshing();
+						if (_refresh == null || _disposed)
+							return;
+
+						if( _isStartRefreshingPending)
+							StartRefreshing();
+
+
 						//hack: when we don't have cells in our UITableView the spinner fails to appear
 						CheckContentSize();
 						TableView.ScrollRectToVisible(new RectangleF(0, 0, _refresh.Bounds.Width, _refresh.Bounds.Height), true);
@@ -1500,7 +1513,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (RefreshControl == null)
 					return;
 
-				_refresh.EndRefreshing();
+				EndRefreshing();
 
 				UpdateContentOffset(-1);
 
@@ -1508,6 +1521,24 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!_list.IsPullToRefreshEnabled)
 					RemoveRefresh();
 			}
+		}
+
+		void StartRefreshing()
+		{
+			_isStartRefreshingPending = false;
+			if (_refresh?.Refreshing == true)
+				return;
+
+			_refresh.BeginRefreshing();
+		}
+
+		void EndRefreshing()
+		{
+			_isStartRefreshingPending = false;
+			if (_refresh?.Refreshing == false)
+				return;
+
+			_refresh.EndRefreshing();
 		}
 
 		public void UpdatePullToRefreshEnabled(bool pullToRefreshEnabled)
@@ -1539,7 +1570,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_refresh.Refreshing && !_isRefreshing)
 			{
 				_isRefreshing = true;
-				UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, _refresh.BeginRefreshing);
+				UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, StartRefreshing);
 				_list.SendRefreshing();
 			}
 		}
@@ -1587,7 +1618,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_refresh != null)
 				{
 					_refresh.ValueChanged -= OnRefreshingChanged;
-					_refresh.EndRefreshing();
+					EndRefreshing();
 					_refresh.Dispose();
 					_refresh = null;
 				}
@@ -1622,7 +1653,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (_refresh.Refreshing || _isRefreshing)
-				_refresh.EndRefreshing();
+				EndRefreshing();
 
 			RefreshControl = null;
 			_refreshAdded = false;
@@ -1642,6 +1673,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public FormsRefreshControl(bool usingLargeTitles)
 		{
 			_usingLargeTitles = usingLargeTitles;
+			AccessibilityIdentifier = "RefreshControl";
 		}
 
 		public override bool Hidden

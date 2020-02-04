@@ -39,6 +39,34 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(contentAppearing, "Content Appearing");
 		}
 
+		[Test]
+		public void MisfiringOfAppearingWithMultipleTabs()
+		{
+			Shell shell = new Shell();
+
+			var item0 = CreateShellItem(shellContentRoute: "Outbox", templated: true);
+			var item1 = CreateShellItem(shellSectionRoute: "RequestType1", shellContentRoute: "RequestType1Details", templated: true);
+			var section2 = CreateShellSection(shellSectionRoute: "RequestType2",  shellContentRoute: "RequestType2Dates", templated: true);
+
+			item1.Items.Add(section2);
+			shell.Items.Add(item0);
+			shell.Items.Add(item1);
+
+			int appearingCounter = 0;
+			shell.GoToAsync("//Outbox");
+			shell.GoToAsync("//RequestType1Details");
+			shell.GoToAsync("//Outbox");
+
+
+			item1.Items[0].Appearing += (_, __) =>
+			{
+				appearingCounter++;
+			};
+
+			shell.GoToAsync("//RequestType2Dates");
+			Assert.AreEqual(0, appearingCounter);
+		}
+
 
 		[Test]
 		public void AppearingOnCreateFromTemplate()
@@ -79,6 +107,88 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
+		[TestCase(true)]
+		[TestCase(false)]
+		public void EnsureOnAppearingFiresAfterParentIsSet(bool templated)
+		{
+			Shell shell = new Shell();
+
+			ContentPage page = new ContentPage();
+
+			bool parentSet = false;
+			bool pageAppearing = false;
+			page.Appearing += (_, __) =>
+			{
+				if (page.Parent == null || !parentSet)
+					throw new Exception("Appearing firing before parent set is called");
+
+				pageAppearing = true;
+			};
+
+			page.ParentSet += (_, __) => parentSet = true;
+			shell.Items.Add(CreateShellItem(page, templated: templated));
+
+			var createdContent = (shell.Items[0].Items[0].Items[0] as IShellContentController).GetOrCreateContent();
+
+			Assert.IsTrue(pageAppearing);
+		}
+
+		[Test]
+		public async Task EnsureOnAppearingFiresForNavigatedToPage()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+			await shell.GoToAsync("LifeCyclePage");
+
+			var page = (LifeCyclePage)shell.GetVisiblePage();
+
+			Assert.IsTrue(page.Appearing);
+			Assert.IsTrue(page.ParentSet);
+		}
+
+		[Test]
+		public async Task EnsureOnAppearingFiresForLastPageOnly()
+		{
+			Shell shell = new Shell();
+			LifeCyclePage shellContentPage = new LifeCyclePage();
+			shell.Items.Add(CreateShellItem(page: shellContentPage));
+			await shell.GoToAsync("LifeCyclePage/LifeCyclePage");
+
+			var page = (LifeCyclePage)shell.GetVisiblePage();
+			var nonVisiblePage = (LifeCyclePage)shell.Navigation.NavigationStack[1];
+
+			Assert.IsFalse(nonVisiblePage.Appearing);
+			Assert.IsTrue(page.Appearing);
+		}
+		
+		[Test]
+		public async Task EnsureOnAppearingFiresForLastPageOnlyAbsoluteRoute()
+		{
+			Shell shell = new Shell();
+			LifeCyclePage shellContentPage = new LifeCyclePage();
+			shell.Items.Add(CreateShellItem());
+			shell.Items.Add(CreateShellItem(page: shellContentPage, shellItemRoute:"ShellItemRoute"));
+			await shell.GoToAsync("///ShellItemRoute/LifeCyclePage/LifeCyclePage");
+
+			var page = (LifeCyclePage)shell.GetVisiblePage();
+			var nonVisiblePage = (LifeCyclePage)shell.Navigation.NavigationStack[1];
+
+			Assert.IsFalse(shellContentPage.Appearing);
+			Assert.IsFalse(nonVisiblePage.Appearing);
+			Assert.IsTrue(page.Appearing);
+		}
+
+
+		[Test]
+		public async Task EnsureOnAppearingFiresForPushedPage()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+			shell.Navigation.PushAsync(new LifeCyclePage());
+			var page = (LifeCyclePage)shell.GetVisiblePage();
+			Assert.IsTrue(page.Appearing);
+			Assert.IsTrue(page.ParentSet);
+		}
 
 		[Test]
 		public async Task NavigatedFiresAfterContentIsCreatedWhenUsingTemplate()
@@ -327,7 +437,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 		[Test]
-		public async Task OnNavigatedOnlyFiresOnce()
+		public void OnNavigatedOnlyFiresOnce()
 		{
 			int navigated = 0;
 			Shell shell = new Shell();
@@ -342,7 +452,61 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
+		[Test]
+		public void AppearingOnlyForVisiblePage()
+		{
+			Shell shell = new Shell();
+			var pageAppearing = new ContentPage();
+			var pageNotAppearing = new ContentPage();
 
+			FlyoutItem flyoutItem = new FlyoutItem();
+			Tab tab = new Tab();
+			ShellContent content = new ShellContent() { Content = pageAppearing };
+
+			bool pageAppearingFired = false;
+			bool pageNotAppearingFired = false;
+
+			pageAppearing.Appearing += (_, __) => pageAppearingFired = true;
+			pageNotAppearing.Appearing += (_, __) =>
+			{
+				pageNotAppearingFired = true;
+			};
+
+			shell.Items.Add(flyoutItem);
+			flyoutItem.Items.Add(tab);
+			tab.Items.Add(content);
+
+			var notAppearingContent = new ShellContent();
+			tab.Items.Add(notAppearingContent);
+			notAppearingContent.Content = pageNotAppearing;
+
+			Assert.True(pageAppearingFired, "Correct Page Appearing Fired");
+			Assert.False(pageNotAppearingFired, "Incorrect Page Appearing Fired");
+		}
+
+		public class LifeCyclePage : ContentPage
+		{
+			public bool Appearing;
+			public bool ParentSet;
+
+			protected override void OnAppearing()
+			{
+				base.OnAppearing();
+				Appearing = true;
+			}
+
+			protected override void OnParentSet()
+			{
+				base.OnParentSet();
+				ParentSet = true;
+			}
+		}
+
+		public override void Setup()
+		{
+			base.Setup();
+			Routing.RegisterRoute("LifeCyclePage", typeof(LifeCyclePage));
+		}
 
 		class ShellLifeCycleState
 		{

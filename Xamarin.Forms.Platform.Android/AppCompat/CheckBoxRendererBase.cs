@@ -1,7 +1,11 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -10,7 +14,11 @@ using Android.Graphics;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Widget;
 using Android.Content.Res;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using AAttribute = Android.Resource.Attribute;
 
 namespace Xamarin.Forms.Platform.Android
@@ -23,7 +31,6 @@ namespace Xamarin.Forms.Platform.Android
 		ITabStop
 	{
 		bool _disposed;
-		bool _skipInvalidate;
 		int? _defaultLabelFor;
 		VisualElementTracker _tracker;
 		VisualElementRenderer _visualElementRenderer;
@@ -83,17 +90,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			base.Dispose(disposing);
-		}
-
-		public override void Invalidate()
-		{
-			if (_skipInvalidate)
-			{
-				_skipInvalidate = false;
-				return;
-			}
-
-			base.Invalidate();
 		}
 
 		Size MinimumSize()
@@ -228,6 +224,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var mode = PorterDuff.Mode.SrcIn;
 
+			
 			CompoundButtonCompat.SetButtonTintList(Control, GetColorStateList());
 			CompoundButtonCompat.SetButtonTintMode(Control, mode);
 		}
