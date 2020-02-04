@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Xamarin.Forms.Xaml.MarkupExtensions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -24,6 +25,8 @@ namespace Xamarin.Forms.Xaml
 				markupExtension = new OnIdiomExtension();
 			else if (match == "DataTemplate")
 				markupExtension = new DataTemplateExtension();
+			else if (match == "DependencyTemplate")
+				markupExtension = new DependencyTemplateExtension();
 			else
 			{
 				if (typeResolver == null)
