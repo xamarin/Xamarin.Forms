@@ -11,33 +11,30 @@
 				<Setter Property="VisualStateManager.VisualStateGroups">
 					<VisualStateGroupList>
 					     <VisualStateGroup>
-                            <VisualState
-                                x:Name="AndroidState">
-                                <VisualState.StateTriggers>
-                                    <DeviceStateTrigger Device="Android" />
-                                </VisualState.StateTriggers>
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="Blue" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState
-                                x:Name="iOSState">
-                                <VisualState.StateTriggers>
-                                    <DeviceStateTrigger Device="iOS" />
-                                </VisualState.StateTriggers>
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="Red" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState
-                                x:Name="UWPState">
-                                <VisualState.StateTriggers>
-                                    <DeviceStateTrigger Device="UWP" />
-                                </VisualState.StateTriggers>
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="Green" />
-                                </VisualState.Setters>
-                            </VisualState>
+                             <VisualState x:Name="Narrow">
+					            <VisualState.StateTriggers>
+						            <AdaptiveTrigger MinWindowWidth="0" />
+					            </VisualState.StateTriggers>
+					            <VisualState.Setters>
+						            <Setter Property="BackgroundColor" Value="Blue" />
+					            </VisualState.Setters>
+				            </VisualState>
+				            <VisualState x:Name="Medium">
+					            <VisualState.StateTriggers>
+						            <AdaptiveTrigger MinWindowWidth="600" />
+					            </VisualState.StateTriggers>
+					            <VisualState.Setters>
+						            <Setter Property="BackgroundColor" Value="Red" />
+					            </VisualState.Setters>
+				            </VisualState>
+				            <VisualState x:Name="Wide">
+					            <VisualState.StateTriggers>
+						            <AdaptiveTrigger MinWindowWidth="1000" />
+					            </VisualState.StateTriggers>
+					            <VisualState.Setters>
+						            <Setter Property="BackgroundColor" Value="Green" />
+					            </VisualState.Setters>
+				            </VisualState>
                         </VisualStateGroup>
 					</VisualStateGroupList>
 				</Setter>
@@ -49,7 +46,7 @@
          <Grid
              Style="{StaticResource AdaptiveTriggerGridStyle}">
             <Label
-                Text="This page changes color when the width of the Grid changes"
+                Text="This Grid changes color when the width changes"
                 HorizontalOptions="Center"
                 VerticalOptions="Center" />
         </Grid>

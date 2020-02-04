@@ -12,7 +12,8 @@
 				{
 					GalleryBuilder.NavButton("AdaptiveTrigger Gallery", () => new AdaptiveTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("DeviceStateTrigger Gallery", () => new DeviceStateTriggerGallery(), Navigation),
-					GalleryBuilder.NavButton("OrientationStateTrigger Gallery", () => new OrientationStateTriggerGallery(), Navigation)
+					GalleryBuilder.NavButton("OrientationStateTrigger Gallery", () => new OrientationStateTriggerGallery(), Navigation),
+					GalleryBuilder.NavButton("StateTriggers directly on Elements", () => new StateTriggersDirectlyOnElements(), Navigation)
 				}
 			};
 		}

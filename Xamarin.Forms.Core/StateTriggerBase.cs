@@ -7,23 +7,15 @@
 
 		}
 
-		internal StateTriggerPrecedence CurrentPrecedence { get; set; } = 0;
+		internal bool IsTriggerActive { get; private set; }
 
-		//internal VisualState VisualState => this.GetParent() as VisualState;
+		internal VisualState VisualState { get; set; }
 
 		protected void SetActive(bool active)
 		{
-			SetActivePrecedence(active ? StateTriggerPrecedence.CustomTrigger : StateTriggerPrecedence.Inactive);
-		}
+			IsTriggerActive = active;
 
-		internal void SetActivePrecedence(StateTriggerPrecedence precedence)
-		{
-			if (CurrentPrecedence == precedence)
-				return;
-
-			CurrentPrecedence = precedence;
-
-			//VisualState?.VisualStateGroup?.RefreshStateTriggers(null);
+			VisualState?.VisualStateGroup?.UpdateStateTriggers();
 		}
 	}
 }

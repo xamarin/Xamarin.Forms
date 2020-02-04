@@ -26,27 +26,18 @@ namespace Xamarin.Forms
 
 		void UpdateState()
 		{
-			var isActive = !string.IsNullOrEmpty(Device);
-
-			if (isActive)
+			switch (Device)
 			{
-				SetActivePrecedence(StateTriggerPrecedence.CustomTrigger);
-
-				switch (Device)
-				{
-					case FormsDevice.Android:
-						SetActive(FormsDevice.RuntimePlatform == FormsDevice.Android);
-						break;
-					case FormsDevice.iOS:
-						SetActive(FormsDevice.RuntimePlatform == FormsDevice.iOS);
-						break;
-					case FormsDevice.UWP:
-						SetActive(FormsDevice.RuntimePlatform == FormsDevice.UWP);
-						break;
-				}
+				case FormsDevice.Android:
+					SetActive(FormsDevice.RuntimePlatform == FormsDevice.Android);
+					break;
+				case FormsDevice.iOS:
+					SetActive(FormsDevice.RuntimePlatform == FormsDevice.iOS);
+					break;
+				case FormsDevice.UWP:
+					SetActive(FormsDevice.RuntimePlatform == FormsDevice.UWP);
+					break;
 			}
-			else
-				SetActivePrecedence(StateTriggerPrecedence.Inactive);
 		}
 	}
 }

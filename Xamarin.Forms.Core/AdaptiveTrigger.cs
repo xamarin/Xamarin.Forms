@@ -64,14 +64,7 @@ namespace Xamarin.Forms
 			var mw = MinWindowWidth;
 			var mh = MinWindowHeight;
 
-			var isActive = w >= mw && h >= mh;
-
-			if (isActive && mw >= 0)
-				SetActivePrecedence(StateTriggerPrecedence.MinWidthTrigger);
-			else if (isActive)
-				SetActivePrecedence(StateTriggerPrecedence.MinHeightTrigger);
-			else
-				SetActivePrecedence(StateTriggerPrecedence.Inactive);
+			SetActive(w >= mw && h >= mh);
 		}
 	}
 }

@@ -12,7 +12,7 @@
 					<VisualStateGroupList>
 					     <VisualStateGroup>
                             <VisualState
-                                x:Name="LandscapeState">
+                                x:Name="Landscape">
                                 <VisualState.StateTriggers>
                                     <OrientationStateTrigger Orientation="Landscape" />
                                 </VisualState.StateTriggers>
@@ -21,7 +21,7 @@
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState
-                                x:Name="PortraitState">
+                                x:Name="Portrait">
                                 <VisualState.StateTriggers>
                                     <OrientationStateTrigger Orientation="Portrait" />
                                 </VisualState.StateTriggers>
@@ -40,7 +40,7 @@
          <Grid
              Style="{StaticResource OrientationStateTriggerGridStyle}">
             <Label
-                Text="This page changes the color based on the orientation device where the App is running."
+                Text="This Grid changes the color based on the orientation device where the App is running."
                 HorizontalOptions="Center"
                 VerticalOptions="Center" />
         </Grid>

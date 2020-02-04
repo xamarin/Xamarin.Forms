@@ -12,7 +12,7 @@
 					<VisualStateGroupList>
 					     <VisualStateGroup>
                             <VisualState
-                                x:Name="AndroidState">
+                                x:Name="Android">
                                 <VisualState.StateTriggers>
                                     <DeviceStateTrigger Device="Android" />
                                 </VisualState.StateTriggers>
@@ -21,7 +21,7 @@
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState
-                                x:Name="iOSState">
+                                x:Name="iOS">
                                 <VisualState.StateTriggers>
                                     <DeviceStateTrigger Device="iOS" />
                                 </VisualState.StateTriggers>
@@ -30,7 +30,7 @@
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState
-                                x:Name="UWPState">
+                                x:Name="UWP">
                                 <VisualState.StateTriggers>
                                     <DeviceStateTrigger Device="UWP" />
                                 </VisualState.StateTriggers>

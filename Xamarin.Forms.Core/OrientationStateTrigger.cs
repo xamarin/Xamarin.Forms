@@ -44,38 +44,29 @@ namespace Xamarin.Forms
 
 		void UpdateState()
 		{
-			var isActive = Orientation != DeviceOrientation.Other;
+			var currentOrientation = FormsDevice.Info.CurrentOrientation;
 
-			if (isActive)
+			switch (Orientation)
 			{
-				SetActivePrecedence(StateTriggerPrecedence.CustomTrigger);
-
-				var currentOrientation = FormsDevice.Info.CurrentOrientation;
-
-				switch (Orientation)
-				{
-					case DeviceOrientation.Landscape:
-						SetActive(currentOrientation == DeviceOrientation.Landscape);
-						break;
-					case DeviceOrientation.LandscapeLeft:
-						SetActive(currentOrientation == DeviceOrientation.LandscapeLeft);
-						break;
-					case DeviceOrientation.LandscapeRight:
-						SetActive(currentOrientation == DeviceOrientation.LandscapeRight);
-						break;
-					case DeviceOrientation.Portrait:
-						SetActive(currentOrientation == DeviceOrientation.Portrait);
-						break;
-					case DeviceOrientation.PortraitDown:
-						SetActive(currentOrientation == DeviceOrientation.PortraitDown);
-						break;
-					case DeviceOrientation.PortraitUp:
-						SetActive(currentOrientation == DeviceOrientation.PortraitUp);
-						break;
-				}
+				case DeviceOrientation.Landscape:
+					SetActive(currentOrientation == DeviceOrientation.Landscape);
+					break;
+				case DeviceOrientation.LandscapeLeft:
+					SetActive(currentOrientation == DeviceOrientation.LandscapeLeft);
+					break;
+				case DeviceOrientation.LandscapeRight:
+					SetActive(currentOrientation == DeviceOrientation.LandscapeRight);
+					break;
+				case DeviceOrientation.Portrait:
+					SetActive(currentOrientation == DeviceOrientation.Portrait);
+					break;
+				case DeviceOrientation.PortraitDown:
+					SetActive(currentOrientation == DeviceOrientation.PortraitDown);
+					break;
+				case DeviceOrientation.PortraitUp:
+					SetActive(currentOrientation == DeviceOrientation.PortraitUp);
+					break;
 			}
-			else
-				SetActivePrecedence(StateTriggerPrecedence.Inactive);
 		}
 	}
 }
