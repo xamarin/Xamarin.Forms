@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.DualScreen.UnitTests
 {
 	[TestFixture]
-    public class TwoPaneViewTests : BaseTestFixture
+	public class TwoPaneViewTests : BaseTestFixture
 	{
 		[SetUp]
 		public override void Setup()
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 		public void GettersAndSetters()
 		{
 			var Pane1 = new StackLayout();
-			var	Pane2 = new Grid();
+			var Pane2 = new Grid();
 
 			TwoPaneView twoPaneView = new TwoPaneView()
 			{
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			twoPaneView.MinWideModeWidth = 100;
 			Assert.AreNotEqual(100, twoPaneView.Pane1.Width);
 			twoPaneView.Pane1Length = 100;
-			Assert.AreEqual(100, twoPaneView.Pane1.Width);			
+			Assert.AreEqual(100, twoPaneView.Pane1.Width);
 		}
 
 

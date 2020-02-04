@@ -18,7 +18,7 @@ using Stream = System.IO.Stream;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
-	public class MockPlatformServices : Internals.IPlatformServices
+	internal class MockPlatformServices : Internals.IPlatformServices
 	{
 		Action<Action> invokeOnMainThread;
 		Action<Uri> openUriAction;
