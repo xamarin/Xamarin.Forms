@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		WebNavigationEvent _eventState;
 		bool _updating;
-		private Windows.UI.Xaml.Controls.WebView _internalWebView;
+		Windows.UI.Xaml.Controls.WebView _internalWebView;
 		const string LocalScheme = "ms-appx-web:///";
 
 		// Script to insert a <base> tag into an HTML document
