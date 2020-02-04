@@ -24,12 +24,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			base.OnElementPropertyChanged(sender, e);
-
 			if (e.PropertyName == ActivityIndicator.IsRunningProperty.PropertyName)
 				UpdateIsActive();
 			else if (e.PropertyName == ActivityIndicator.ColorProperty.PropertyName)
 				UpdateColor();
+
+			base.OnElementPropertyChanged(sender, e);
 		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateColor()
 		{
-			Control.UpdateDependencyColor(FormsProgressRing.ForegroundProperty, Element.Color);
+			Control.UpdateDependencyColor(FormsProgressRing.ForegroundProperty, Element.Color != Color.Default ? Element.Color : Color.Accent);
 		}
 
 		void UpdateIsActive()
