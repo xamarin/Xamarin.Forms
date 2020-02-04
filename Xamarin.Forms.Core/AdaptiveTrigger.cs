@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty MinWindowHeightProperty =
-		BindableProperty.Create(nameof(MinWindowHeight), typeof(double), typeof(AdaptiveTrigger), -1d,
+		BindableProperty.Create(nameof(MinWindowHeight), typeof(double), typeof(AdaptiveTrigger), default(double),
 			propertyChanged: OnMinWindowHeightChanged);
 
 		static void OnMinWindowHeightChanged(BindableObject bindable, object oldvalue, object newvalue)
@@ -42,7 +42,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty MinWindowWidthProperty =
-			BindableProperty.Create(nameof(MinWindowWidthProperty), typeof(double), typeof(AdaptiveTrigger), -1d,
+			BindableProperty.Create(nameof(MinWindowWidthProperty), typeof(double), typeof(AdaptiveTrigger), default(double),
 				propertyChanged: OnMinWindowWidthChanged);
 
 		static void OnMinWindowWidthChanged(BindableObject bindable, object oldvalue, object newvalue)
@@ -57,14 +57,41 @@ namespace Xamarin.Forms
 
 		void UpdateState()
 		{
-			var size = Device.Info.PixelScreenSize;
+			var mainPage = Application.Current.MainPage;
 
-			var w = size.Width;
-			var h = size.Height;
+			var w = mainPage.Width;
+			var h = mainPage.Height;
 			var mw = MinWindowWidth;
 			var mh = MinWindowHeight;
 
+			ResetActiveTriggers();
 			SetActive(w >= mw && h >= mh);
+		}
+
+		void ResetActiveTriggers()
+		{
+			if (VisualState == null)
+				return;
+
+			var group = VisualState.VisualStateGroup;
+
+			if (group == null)
+				return;
+			
+			for (var stateIndex = 0; stateIndex < group.States.Count; stateIndex++)
+			{
+				var state = group.States[stateIndex];
+
+				for (var triggerIndex = 0; triggerIndex < state.StateTriggers.Count; triggerIndex++)
+				{
+					var trigger = state.StateTriggers[triggerIndex];
+
+					if (trigger is AdaptiveTrigger adaptiveTrigger && adaptiveTrigger.IsTriggerActive)
+					{
+						adaptiveTrigger.IsTriggerActive = false;
+					}
+				}
+			}
 		}
 	}
 }

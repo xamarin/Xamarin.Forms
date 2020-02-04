@@ -7,7 +7,7 @@
 
 		}
 
-		internal bool IsTriggerActive { get; private set; }
+		internal bool IsTriggerActive { get; set; }
 
 		internal VisualState VisualState { get; set; }
 

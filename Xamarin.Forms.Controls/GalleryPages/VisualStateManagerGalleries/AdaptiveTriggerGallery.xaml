@@ -2,7 +2,7 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="Xamarin.Forms.Controls.GalleryPages.AdaptiveTriggerGallery"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.AdaptiveTriggerGallery"
     Title="AdaptiveTriggers">
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -13,7 +13,7 @@
 					     <VisualStateGroup>
                              <VisualState x:Name="Narrow">
 					            <VisualState.StateTriggers>
-						            <AdaptiveTrigger MinWindowWidth="0" />
+						            <AdaptiveTrigger MinWindowWidth="600" />
 					            </VisualState.StateTriggers>
 					            <VisualState.Setters>
 						            <Setter Property="BackgroundColor" Value="Blue" />
@@ -21,7 +21,7 @@
 				            </VisualState>
 				            <VisualState x:Name="Medium">
 					            <VisualState.StateTriggers>
-						            <AdaptiveTrigger MinWindowWidth="600" />
+						            <AdaptiveTrigger MinWindowWidth="720" />
 					            </VisualState.StateTriggers>
 					            <VisualState.Setters>
 						            <Setter Property="BackgroundColor" Value="Red" />
