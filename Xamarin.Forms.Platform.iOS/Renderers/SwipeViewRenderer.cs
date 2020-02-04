@@ -14,9 +14,10 @@ namespace Xamarin.Forms.Platform.iOS
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
 		const double SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 6;
+		const int SwipeThresholdMargin = 0;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
+		const double SwipeMinimumDelta = 10;
 
 		View _scrollParent;
 		UIView _contentView;
@@ -31,11 +32,13 @@ namespace Xamarin.Forms.Platform.iOS
 		double _swipeThreshold;
 		CGRect _originalBounds;
 		List<CGRect> _swipeItemsRect;
+		double _previousScrollX;
+		double _previousScrollY;
 		bool _isDisposed;
 
 		public SwipeViewRenderer()
 		{
-			Xamarin.Forms.SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
+			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
 
 			_tapGestureRecognizer = new UITapGestureRecognizer(OnTap)
 			{
@@ -127,13 +130,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
+			UIColor backgroundColor;
+
+			if (Forms.IsiOS11OrNewer)
+				backgroundColor = UIColor.SystemBackgroundColor;
+			else
+				backgroundColor = UIColor.White;
+
 			if (Element.BackgroundColor != Color.Default)
 			{
 				BackgroundColor = Element.BackgroundColor.ToUIColor();
 
-				if (_contentView != null && Element.Content == null && HasSwipeItems())
+				if (_contentView != null && Element.Content == null)
 					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			}
+			else
+				BackgroundColor = backgroundColor;
+
+			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
+				_contentView.BackgroundColor = backgroundColor;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -421,8 +436,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var titleEdgeInsets = new UIEdgeInsets(spacing, -imageSize.Width, -imageSize.Height, 0.0f);
 			button.TitleEdgeInsets = titleEdgeInsets;
 
-			var labelString = button.TitleLabel.Text;
-			var titleSize = labelString.StringSize(button.TitleLabel.Font);
+			var labelString = button.TitleLabel.Text ?? string.Empty;
+			var titleSize = !string.IsNullOrEmpty(labelString) ? labelString.StringSize(button.TitleLabel.Font) : CGSize.Empty;
 			var imageEdgeInsets = new UIEdgeInsets(-(titleSize.Height + spacing), 0.0f, 0.0f, -titleSize.Width);
 			button.ImageEdgeInsets = imageEdgeInsets;
 		}
@@ -528,7 +543,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProcessTouchMove(CGPoint point)
 		{
-			if (!_isSwiping)
+			if (!_isSwiping && _swipeThreshold == 0)
 			{
 				_swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
 				RaiseSwipeStarted();
@@ -858,7 +873,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				if (isHorizontal)
-					swipeThreshold = SwipeThreshold;
+					swipeThreshold = CalculateSwipeThreshold();
 				else
 				{
 					var contentHeight = _contentView.Frame.Height;
@@ -867,6 +882,18 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return ValidateSwipeThreshold(swipeThreshold);
+		}
+
+		double CalculateSwipeThreshold()
+		{
+			if (_contentView != null)
+			{
+				var swipeThreshold = _contentView.Frame.Width * 0.8;
+
+				return swipeThreshold;
+			}
+
+			return SwipeThreshold;
 		}
 
 		double ValidateSwipeThreshold(double swipeThreshold)
@@ -995,7 +1022,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		UIViewController GetViewController()
 		{
-			var window = UIApplication.SharedApplication.KeyWindow;
+			var window = UIApplication.SharedApplication.GetKeyWindow();
 			var viewController = window.RootViewController;
 
 			while (viewController.PresentedViewController != null)
@@ -1042,12 +1069,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnParentScrolled(object sender, ScrolledEventArgs e)
 		{
-			ResetSwipe();
+			var horizontalDelta = e.ScrollX - _previousScrollX;
+			var verticalDelta = e.ScrollY - _previousScrollY;
+
+			if (horizontalDelta > SwipeMinimumDelta || verticalDelta > SwipeMinimumDelta)
+				ResetSwipe();
+
+			_previousScrollX = e.ScrollX;
+			_previousScrollY = e.ScrollY;
 		}
 
 		void OnParentScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
-			if (e.HorizontalDelta > 10 || e.VerticalDelta > 10)
+			if (e.HorizontalDelta > SwipeMinimumDelta || e.VerticalDelta > SwipeMinimumDelta)
 				ResetSwipe();
 		}
 
