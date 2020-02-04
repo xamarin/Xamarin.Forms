@@ -1,14 +1,18 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.Core.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
+#endif
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Specifics = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -72,6 +76,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_renderer != null)
 					{
+						if (_element != null)
+						{
+							_element.PropertyChanged -= OnElementPropertyChanged;
+						}
+
 						_renderer.ElementChanged -= OnElementChanged;
 						_renderer = null;
 					}

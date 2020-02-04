@@ -13,6 +13,19 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
 
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			var req = Control.SizeRequest();
+
+			var widthFits = widthConstraint >= req.Width;
+			var heightFits = heightConstraint >= req.Height;
+
+			var size = new Size(widthFits ? req.Width : (int)widthConstraint,
+				heightFits ? req.Height : (int)heightConstraint);
+
+			return new SizeRequest(size);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (Control != null)
@@ -123,7 +136,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				FontAttributes = Element.FontAttributes,
 				FontFamily = Element.FontFamily,
 				FontSize = Element.FontSize,
-				Text = GLib.Markup.EscapeText(Element.Text ?? string.Empty)
+				Text = Element.Text ?? string.Empty
 			};
 
 			Control.LabelWidget.SetTextFromSpan(span);

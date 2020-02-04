@@ -1,7 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -18,6 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				case IList _ when itemsSource is INotifyCollectionChanged:
 					return new ObservableItemsSource(itemsSource as IList, notifier);
+				case IEnumerable _ when itemsSource is INotifyCollectionChanged:
+					return new ObservableItemsSource(itemsSource as IEnumerable, notifier);
 				case IEnumerable<object> generic:
 					return new ListSource(generic);
 			}

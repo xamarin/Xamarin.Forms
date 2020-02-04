@@ -6,7 +6,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public abstract class ItemsViewController<TItemsView> : UICollectionViewController
 	where TItemsView : ItemsView
-	{ 
+	{
+		public const int HeaderTag = 111;
+		public const int FooterTag = 222;
+		public const int EmptyTag = 333;
+
 		public IItemsViewSource ItemsSource { get; protected set; }
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
@@ -14,14 +18,13 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isEmpty;
 		bool _currentBackgroundIsEmptyView;
 		bool _disposed;
-
-		UIView _backgroundUIView;
+  
 		UIView _emptyUIView;
 		VisualElement _emptyViewFormsElement;
 
 		protected UICollectionViewDelegateFlowLayout Delegator { get; set; }
 
-		public ItemsViewController(TItemsView itemsView, ItemsViewLayout layout) : base(layout)
+		protected ItemsViewController(TItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
 			ItemsView = itemsView;
 			ItemsViewLayout = layout;
@@ -59,10 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_emptyUIView?.Dispose();
 				_emptyUIView = null;
-
-				_backgroundUIView?.Dispose();
-				_backgroundUIView = null;
-
+	
 				_emptyViewFormsElement = null;
 			}
 
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewWillLayoutSubviews()
 		{
 			base.ViewWillLayoutSubviews();
-
+			
 			// We can't set this constraint up on ViewDidLoad, because Forms does other stuff that resizes the view
 			// and we end up with massive layout errors. And View[Will/Did]Appear do not fire for this controller
 			// reliably. So until one of those options is cleared up, we set this flag so that the initial constraints
@@ -157,6 +157,17 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ResizeEmptyView();
 			}
+		}
+
+		public override void WillAnimateRotation(UIInterfaceOrientation toInterfaceOrientation, double duration)
+		{
+			//We are changing orientation and we need to tell our layout
+			//to update based on new size constrains
+			ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			//We call ReloadData so our VisibleCells also update their size
+			CollectionView.ReloadData();
+
+			base.WillAnimateRotation(toInterfaceOrientation, duration);
 		}
 
 		protected virtual UICollectionViewDelegateFlowLayout CreateDelegator()
@@ -196,7 +207,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			cell.ContentSizeChanged -= CellContentSizeChanged;
 
-			cell.Bind(ItemsView, ItemsSource[indexPath]);
+			cell.Bind(ItemsView.ItemTemplate, ItemsSource[indexPath], ItemsView);
 
 			cell.ContentSizeChanged += CellContentSizeChanged;
 
@@ -283,11 +294,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ResizeEmptyView()
 		{
+			nfloat headerHeight = 0;
+			var headerView = CollectionView.ViewWithTag(HeaderTag);
+
+			if (headerView != null)
+				headerHeight = headerView.Frame.Height;
+
+			nfloat footerHeight = 0;
+			var footerView = CollectionView.ViewWithTag(FooterTag);
+
+			if (footerView != null)
+				footerHeight = footerView.Frame.Height;
+
+			var emptyViewFrame = new CoreGraphics.CGRect(CollectionView.Frame.X, CollectionView.Frame.Y, CollectionView.Frame.Width, Math.Abs(CollectionView.Frame.Height - (headerHeight + footerHeight)));
+
 			if (_emptyUIView != null)
-				_emptyUIView.Frame = CollectionView.Frame;
+				_emptyUIView.Frame = emptyViewFrame;
 
 			if (_emptyViewFormsElement != null)
-				_emptyViewFormsElement.Layout(CollectionView.Frame.ToRectangle());
+				_emptyViewFormsElement.Layout(emptyViewFrame.ToRectangle());
 		}
 
 		protected void RemeasureLayout(VisualElement formsElement)
@@ -342,15 +367,16 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (isEmpty && _emptyUIView != null)
 			{
-				if (!_currentBackgroundIsEmptyView)
+				var emptyView = CollectionView.ViewWithTag(EmptyTag);
+
+				if(emptyView != null)
 				{
-					// Cache any existing background view so we can restore it later
-					_backgroundUIView = CollectionView.BackgroundView;
+					emptyView.RemoveFromSuperview();
+					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 
-				// Replace any current background with the EmptyView. This will also set the native empty view's frame
-				// to match the UICollectionView's frame
-				CollectionView.BackgroundView = _emptyUIView;
+				_emptyUIView.Tag = EmptyTag;
+				CollectionView.AddSubview(_emptyUIView);
 
 				if (_emptyViewFormsElement != null)
 				{
@@ -371,7 +397,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// Is the empty view currently in the background? Swap back to the default.
 				if (_currentBackgroundIsEmptyView)
 				{
-					CollectionView.BackgroundView = _backgroundUIView;
+					_emptyUIView.RemoveFromSuperview();
 					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 

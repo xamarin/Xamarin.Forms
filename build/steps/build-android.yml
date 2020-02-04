@@ -39,29 +39,23 @@ jobs:
 
       - task: Bash@3
         displayName: 'Cake Provision'
-        condition: eq(variables['provisioning'], 'false')
+        condition: eq(variables['provisioningCake'], 'true')
         inputs:
           targetType: 'filePath'
           filePath: 'build.sh'
           arguments: --target provision
 
-      - task: DotNetCoreInstaller@0
+      - task: UseDotNet@2
         displayName: 'Install .net core $(DOTNET_VERSION)'
         condition: ne(variables['DOTNET_VERSION'], '')
         inputs:
           version: $(DOTNET_VERSION)
-
-      - script: |
-          export PATH="$PATH:/Users/vsts/.dotnet/tools"
-          export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-          dotnet new globaljson --sdk-version $(DOTNET_VERSION)
-        displayName: 'Add globaljson file'
-        condition: ne(variables['DOTNET_VERSION'], '')
+          packageType: 'sdk'
 
       - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
         displayName: 'Select MONO ${{ parameters.monoVersion }}'
 
-      - task: NuGetToolInstaller@0
+      - task: NuGetToolInstaller@1
         displayName: 'Use NuGet'
         condition: ne(variables['NUGET_VERSION'], '')
         inputs:
@@ -76,6 +70,7 @@ jobs:
         displayName: 'Build ${{ parameters.buildTaskPath  }}'
         inputs:
           solution: ${{ parameters.buildTaskPath }}
+          configuration: ${{ parameters.buildConfiguration }}
 
       - task: MSBuild@1
         displayName: 'Build Android ${{ parameters.name }}'
@@ -87,7 +82,7 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copy ${{ parameters.name }}'
         inputs:
-          SourceFolder: ${{ parameters.androidPath }}/bin/Debug/
+          SourceFolder: ${{ parameters.androidPath }}/bin/${{ parameters.buildConfiguration }}/
           Contents: '**/*.apk'
           TargetFolder: ${{ parameters.targetFolder }}
           CleanTargetFolder: true
@@ -103,6 +98,7 @@ jobs:
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: AndroidApps'
+        condition: always()
         inputs:
           PathtoPublish: '$(build.artifactstagingdirectory)'
           ArtifactName: OSXArtifacts
