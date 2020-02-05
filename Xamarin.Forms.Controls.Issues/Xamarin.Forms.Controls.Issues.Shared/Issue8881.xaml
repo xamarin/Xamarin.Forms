@@ -16,7 +16,7 @@
 			<issues:Issue1905 />
 		</ShellContent>
 	</FlyoutItem>
-	<FlyoutItem Title="Issues">
+	<FlyoutItem Title="Issues" FlyoutDisplayOptions="AsMultipleItems">
 		<Tab Title="seussI">
 			<ShellContent Title="4493 Issue">
 				<issues:Issue4493 />

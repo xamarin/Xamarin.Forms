@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		DataTemplate _defaultMenuItemTemplate;
 		List<List<Element>> _groups;
 		Dictionary<Element, View> _views;
-		int footerCount;
+		int _footerCount;
 
 		public ShellTableViewSource(IShellContext context, Action<Element> onElementSelected)
 		{
@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var request = view.Measure(tableView.Bounds.Width, double.PositiveInfinity, MeasureFlags.None);
 
-				if(request.Request.Height > defaultHeight)
+				if (request.Request.Height > defaultHeight)
 					height = (float)request.Request.Height;
 				else
 					height = defaultHeight;
@@ -124,12 +124,12 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 		public override UIView GetViewForFooter(UITableView tableView, nint section)
 		{
-			if(footerCount >= Groups.Count - 2)
+			if (_footerCount >= Groups.Count - 2)
 			{
-				footerCount = 0;
+				_footerCount = 0;
 				return new UIView();
 			}
-			footerCount ++;
+			_footerCount++;
 			return new SeparatorView();
 		}
 
