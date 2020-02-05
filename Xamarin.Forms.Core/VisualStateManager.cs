@@ -137,7 +137,6 @@ namespace Xamarin.Forms
 
 	public class VisualStateGroupList : IList<VisualStateGroup>
 	{
-		VisualElement _visualElement;
 		readonly IList<VisualStateGroup> _internalList;
 
 		// Used to check for duplicate names; we keep it around because it's cheaper to create it once and clear it
@@ -291,23 +290,7 @@ namespace Xamarin.Forms
 			set => _internalList[index] = value;
 		}
 
-        internal VisualElement VisualElement
-		{
-			get { return _visualElement; }
-			set
-			{
-				_visualElement = value;
-				PropagateBindingContext(_visualElement);
-			}
-		}
-
-		void PropagateBindingContext(VisualElement visualElement)
-		{
-			if (visualElement == null)
-				return;
-
-			visualElement.PropagateBindingContext(_internalList);
-		}
+        internal VisualElement VisualElement { get; set; }
 
         void OnStatesChanged()
 		{

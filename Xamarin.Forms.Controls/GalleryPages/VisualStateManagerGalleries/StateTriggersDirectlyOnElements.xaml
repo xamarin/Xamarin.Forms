@@ -2,15 +2,19 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries"
     x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.StateTriggersDirectlyOnElements"
     Title="StateTriggers directly on Elements">
+    <ContentPage.BindingContext>
+        <viewmodels:StateTriggersDirectlyOnElementsViewModel />
+    </ContentPage.BindingContext>
     <ContentPage.Content>
         <Grid>
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup>
                     <VisualState x:Name="Wide">
                         <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="1000" />
+                            <CompareStateTrigger Property="{Binding ToggleState}" Value="True" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Property="BackgroundColor" Value="Green" />
@@ -18,7 +22,7 @@
                     </VisualState>
                     <VisualState x:Name="Narrow">
                         <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="600" />
+                            <CompareStateTrigger Property="{Binding ToggleState}" Value="False" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Property="BackgroundColor" Value="Red" />
@@ -34,8 +38,9 @@
                     </VisualState>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            <Label
-                Text="This Grid changes color when the width changes"
+            <Button
+                Text="Click to toggle BackgroundColor"
+                Command="{Binding ToggleCommand}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center" />
         </Grid>
