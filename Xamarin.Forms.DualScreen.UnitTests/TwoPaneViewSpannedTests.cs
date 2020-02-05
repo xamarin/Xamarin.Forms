@@ -57,6 +57,12 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			Assert.AreEqual(490, result.Children[0].Width);
 			Assert.AreEqual(490, result.Children[1].Width);
 			Assert.AreEqual(510, result.Children[1].X);
+
+			Assert.AreEqual(490, result.Pane1.Width);
+			Assert.AreEqual(490, result.Pane2.Width);
+
+			Assert.AreEqual(deviceInfo.ScaledScreenSize.Height, result.Pane1.Height);
+			Assert.AreEqual(deviceInfo.ScaledScreenSize.Height, result.Pane2.Height);
 		}
 
 		[Test]

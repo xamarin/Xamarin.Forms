@@ -248,7 +248,7 @@ namespace Xamarin.Forms.DualScreen
 
 		void OnTwoPaneViewLayoutGuide(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			UpdateMode();
+			OnJustInvalidateLayout(this, null, null);
 		}
 
 		protected override void LayoutChildren(double x, double y, double width, double height)
@@ -264,6 +264,12 @@ namespace Xamarin.Forms.DualScreen
 
 		void UpdateMode()
 		{
+			if (_updatingMode)
+			{
+				_processPendingChange = true;
+				return;
+			}
+
 			_updatingMode = true;
 			try
 			{
@@ -383,6 +389,7 @@ namespace Xamarin.Forms.DualScreen
 
 			Rectangle pane1 = _twoPaneViewLayoutGuide.Pane1;
 			Rectangle pane2 = _twoPaneViewLayoutGuide.Pane2;
+			bool isLayoutSpanned = _twoPaneViewLayoutGuide.Mode != TwoPaneViewMode.SinglePane;
 
 			columnMiddle.Width = new GridLength(0, GridUnitType.Absolute);
 			rowMiddle.Height = new GridLength(0, GridUnitType.Absolute);
@@ -435,9 +442,17 @@ namespace Xamarin.Forms.DualScreen
 					_content2.IsVisible = true;
 					_content2.IsVisible = true;
 
-					// add padding to content where the content is under the hinge
-					_content1.Padding = new Thickness(pane1.X, 0, 0, 0);
-					_content2.Padding = new Thickness(0, 0, Width - pane1.Width, 0);
+					if (!isLayoutSpanned)
+					{
+						// add padding to content where the content is under the hinge
+						_content1.Padding = new Thickness(pane1.X, 0, 0, 0);
+						_content2.Padding = new Thickness(0, 0, Width - pane1.Width, 0);
+					}
+					else
+					{
+						_content1.Padding = new Thickness(0, 0, 0, 0);
+						_content2.Padding = new Thickness(0, 0, 0, 0);
+					}
 					break;
 				case ViewMode.RightLeft:
 					SetRowColumn(_content1, 0, 2);
@@ -445,9 +460,17 @@ namespace Xamarin.Forms.DualScreen
 					_content2.IsVisible = true;
 					_content2.IsVisible = true;
 
-					// add padding to content where the content is under the hinge
-					_content2.Padding = new Thickness(pane1.X, 0, 0, 0);
-					_content1.Padding = new Thickness(0, 0, Width - pane1.Width, 0);
+					if (!isLayoutSpanned)
+					{
+						// add padding to content where the content is under the hinge
+						_content2.Padding = new Thickness(pane1.X, 0, 0, 0);
+						_content1.Padding = new Thickness(0, 0, Width - pane1.Width, 0);
+					}
+					else
+					{
+						_content1.Padding = new Thickness(0, 0, 0, 0);
+						_content2.Padding = new Thickness(0, 0, 0, 0);
+					}
 					break;
 				case ViewMode.TopBottom:
 					SetRowColumn(_content1, 0, 0);
@@ -455,9 +478,18 @@ namespace Xamarin.Forms.DualScreen
 					_content2.IsVisible = true;
 					_content2.IsVisible = true;
 
-					// add padding to content where the content is under the hinge
-					_content1.Padding = new Thickness(0, pane1.Y, 0, 0);
-					_content2.Padding = new Thickness(0, 0, 0, Height - pane1.Height);
+					if (!isLayoutSpanned)
+					{
+						// add padding to content where the content is under the hinge
+						_content1.Padding = new Thickness(0, pane1.Y, 0, 0);
+						_content2.Padding = new Thickness(0, 0, 0, Height - pane1.Height);
+					}
+					else
+					{
+						_content1.Padding = new Thickness(0, 0, 0, 0);
+						_content2.Padding = new Thickness(0, 0, 0, 0);
+					}
+
 					break;
 				case ViewMode.BottomTop:
 					SetRowColumn(_content1, 2, 0);
@@ -465,29 +497,51 @@ namespace Xamarin.Forms.DualScreen
 					_content2.IsVisible = true;
 					_content2.IsVisible = true;
 
-					// add padding to content where the content is under the hinge
-					_content2.Padding = new Thickness(0, pane1.Y, 0, 0);
-					_content1.Padding = new Thickness(0, 0, 0, Height - pane1.Height);
+					if (!isLayoutSpanned)
+					{
+						// add padding to content where the content is under the hinge
+						_content2.Padding = new Thickness(0, pane1.Y, 0, 0);
+						_content1.Padding = new Thickness(0, 0, 0, Height - pane1.Height);
+					}
+					else
+					{
+						_content1.Padding = new Thickness(0, 0, 0, 0);
+						_content2.Padding = new Thickness(0, 0, 0, 0);
+					}
 					break;
 				case ViewMode.Pane1Only:
 					SetRowColumn(_content1, 0, 0);
 					SetRowColumn(_content2, 0, 2);
 					_content1.IsVisible = true;
 					_content2.IsVisible = false;
-
-					// add padding to content where the content is under the hinge
-					_content1.Padding = new Thickness(pane1.X, pane1.Y, Width - pane1.Width - pane1.X, Height - pane1.Height - pane1.Y);
-					_content2.Padding = new Thickness(0, 0, 0, 0);
+					if (!isLayoutSpanned)
+					{
+						// add padding to content where the content is under the hinge
+						_content1.Padding = new Thickness(pane1.X, pane1.Y, Width - pane1.Width - pane1.X, Height - pane1.Height - pane1.Y);
+						_content2.Padding = new Thickness(0, 0, 0, 0);
+					}
+					else
+					{
+						_content1.Padding = new Thickness(0, 0, 0, 0);
+						_content2.Padding = new Thickness(0, 0, 0, 0);
+					}
 					break;
 				case ViewMode.Pane2Only:
 					SetRowColumn(_content1, 0, 2);
 					SetRowColumn(_content2, 0, 0);
 					_content1.IsVisible = false;
 					_content2.IsVisible = true;
-
-					_content1.Padding = new Thickness(0, 0, 0, 0);
-					// add padding to content where the content is under the hinge
-					_content2.Padding = new Thickness(pane1.X, pane1.Y, Width - pane1.Width - pane1.X, Height - pane1.Height - pane1.Y);
+					if (!isLayoutSpanned)
+					{
+						_content1.Padding = new Thickness(0, 0, 0, 0);
+						// add padding to content where the content is under the hinge
+						_content2.Padding = new Thickness(pane1.X, pane1.Y, Width - pane1.Width - pane1.X, Height - pane1.Height - pane1.Y);
+					}
+					else
+					{
+						_content1.Padding = new Thickness(0, 0, 0, 0);
+						_content2.Padding = new Thickness(0, 0, 0, 0);
+					}
 					break;
 			}
 
