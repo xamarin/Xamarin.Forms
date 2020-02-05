@@ -368,7 +368,7 @@ namespace Xamarin.Forms.DualScreen
 				}
 				else
 				{
-					Device.BeginInvokeOnMainThread(InvalidateLayout);
+					InvalidateLayout();
 				}
 			}
 			finally
