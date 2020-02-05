@@ -382,13 +382,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				SetupMenu();
 			}
-			// TODO: More text
 			else if (e.PropertyName == BaseShellItem.BadgeTextProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeTextColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeUnselectedColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeUnselectedTextColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.IsCheckedProperty.PropertyName)
+				e.PropertyName == BaseShellItem.BadgeEffectiveTextColorProperty.PropertyName ||
+				e.PropertyName == BaseShellItem.BadgeEffectiveColorProperty.PropertyName ||
+				e.PropertyName == BaseShellItem.BadgeMoreTextProperty.PropertyName)
 			{
 				var content = (ShellSection)sender;
 				var index = ShellItem.Items.IndexOf(content);
