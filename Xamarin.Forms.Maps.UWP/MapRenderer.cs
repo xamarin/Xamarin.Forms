@@ -35,12 +35,12 @@ namespace Xamarin.Forms.Maps.UWP
 
 				if (Control == null)
 				{
-					SetNativeControl(new MapControl()); 
+					SetNativeControl(new MapControl());
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.MapTapped += OnMapTapped;
-					Control.LayoutUpdated += OnLayoutUpdated; 
+					Control.LayoutUpdated += OnLayoutUpdated;
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
@@ -123,33 +123,42 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			Device.BeginInvokeOnMainThread(() =>
+			if (Device.IsInvokeRequired)
 			{
-				switch (e.Action)
-				{
-					case NotifyCollectionChangedAction.Add:
-						foreach (Pin pin in e.NewItems)
-							LoadPin(pin);
-						break;
-					case NotifyCollectionChangedAction.Move:
-						// no matter
-						break;
-					case NotifyCollectionChangedAction.Remove:
-						foreach (Pin pin in e.OldItems)
-							RemovePin(pin);
-						break;
-					case NotifyCollectionChangedAction.Replace:
-						foreach (Pin pin in e.OldItems)
-							RemovePin(pin);
-						foreach (Pin pin in e.NewItems)
-							LoadPin(pin);
-						break;
-					case NotifyCollectionChangedAction.Reset:
-						ClearPins();
-						LoadPins();
-						break;
-				}
-			});
+				Device.BeginInvokeOnMainThread(() => PinCollectionChanged(e));
+			}
+			else
+			{
+				PinCollectionChanged(e);
+			}
+		}
+
+		void PinCollectionChanged(NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					foreach (Pin pin in e.NewItems)
+						LoadPin(pin);
+					break;
+				case NotifyCollectionChangedAction.Move:
+					// no matter
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					foreach (Pin pin in e.OldItems)
+						RemovePin(pin);
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					foreach (Pin pin in e.OldItems)
+						RemovePin(pin);
+					foreach (Pin pin in e.NewItems)
+						LoadPin(pin);
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					ClearPins();
+					LoadPins();
+					break;
+			}
 		}
 
 		void LoadPins()
@@ -184,6 +193,18 @@ namespace Xamarin.Forms.Maps.UWP
 		}
 
 		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => MapElementCollectionChanged(e));
+			}
+			else
+			{
+				MapElementCollectionChanged(e);
+			}
+		}
+
+		void MapElementCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -446,7 +467,7 @@ namespace Xamarin.Forms.Maps.UWP
 				Longitude = span.Center.Longitude + span.LongitudeDegrees / 2
 			};
 			var boundingBox = new GeoboundingBox(nw, se);
-			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation); 
+			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation);
 		}
 
 		async Task UpdateVisibleRegion()

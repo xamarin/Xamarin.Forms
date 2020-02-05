@@ -302,7 +302,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				}
 			}
 		}
-		
+
 		void OnCalloutClicked(IMKAnnotation annotation)
 		{
 			// lookup pin
@@ -408,33 +408,42 @@ namespace Xamarin.Forms.Maps.MacOS
 			((MKMapView)Control).SetRegion(mapRegion, animated);
 		}
 
-		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			Device.BeginInvokeOnMainThread(() =>
+			if (Device.IsInvokeRequired)
 			{
-				switch (notifyCollectionChangedEventArgs.Action)
-				{
-					case NotifyCollectionChangedAction.Add:
-						AddPins(notifyCollectionChangedEventArgs.NewItems);
-						break;
-					case NotifyCollectionChangedAction.Remove:
-						RemovePins(notifyCollectionChangedEventArgs.OldItems);
-						break;
-					case NotifyCollectionChangedAction.Replace:
-						RemovePins(notifyCollectionChangedEventArgs.OldItems);
-						AddPins(notifyCollectionChangedEventArgs.NewItems);
-						break;
-					case NotifyCollectionChangedAction.Reset:
-						var mapView = (MKMapView)Control;
-						if (mapView.Annotations?.Length > 0)
-							mapView.RemoveAnnotations(mapView.Annotations);
-						AddPins((IList)(Element as Map).Pins);
-						break;
-					case NotifyCollectionChangedAction.Move:
-						//do nothing
-						break;
-				}
-			});
+				Device.BeginInvokeOnMainThread(() => PinCollectionChanged(e));
+			}
+			else
+			{
+				PinCollectionChanged(e);
+			}
+		}
+
+		void PinCollectionChanged(NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					AddPins(e.NewItems);
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemovePins(e.OldItems);
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					RemovePins(e.OldItems);
+					AddPins(e.NewItems);
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					var mapView = (MKMapView)Control;
+					if (mapView.Annotations?.Length > 0)
+						mapView.RemoveAnnotations(mapView.Annotations);
+					AddPins((IList)(Element as Map).Pins);
+					break;
+				case NotifyCollectionChangedAction.Move:
+					//do nothing
+					break;
+			}
 		}
 
 		void RemovePins(IList pins)
@@ -485,6 +494,18 @@ namespace Xamarin.Forms.Maps.MacOS
 		}
 
 		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => MapElementCollectionChanged(e));
+			}
+			else
+			{
+				MapElementCollectionChanged(e);
+			}
+		}
+
+		void MapElementCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
