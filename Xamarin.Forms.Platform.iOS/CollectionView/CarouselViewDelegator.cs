@@ -1,6 +1,4 @@
-﻿using System;
-using Foundation;
-using UIKit;
+﻿using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -26,29 +24,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void DecelerationEnded(UIScrollView scrollView)
 		{
 			(ViewController as CarouselViewController)?.UpdateIsScrolling(false);
-
-			var cIndex = (int)(scrollView.ContentOffset.X / scrollView.ContentSize.Width * (ViewController as CarouselViewController).currentMaxItemsCount);
-
-			bool goingRight = (ViewController as CarouselViewController).currentIndex < cIndex;
-
-			(ViewController as CarouselViewController).currentIndex = cIndex;
-			
-			if (cIndex == 0)
-			{
-				if(goingRight)
-				{
-					(ViewController as CarouselViewController).currentNegative--;
-				}
-				else
-				{
-					(ViewController as CarouselViewController).currentNegative++;
-					var indexPath = new NSIndexPath[] { NSIndexPath.FromItemSection(-1, 0) };
-
-					(ViewController as CarouselViewController).CollectionView.InsertItems(indexPath);
-				}
-			
-			}
-			(ViewController as CarouselViewController).CollectionView.ReloadData();
 		}
 
 		public override void DraggingStarted(UIScrollView scrollView)

@@ -13,7 +13,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Xamarin.Forms.Platform.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <!-- 
+    <!--
         This is needed for non SDK style project so the IDE will pick the correct LangVersion.
         Once this is an SDK style project it will pick this up from the Directory.Build.Props file correctly
      -->
@@ -283,6 +283,8 @@
     <Compile Include="Shapes\PolylineRenderer.cs" />
     <Compile Include="Shapes\RectangleRenderer.cs" />
     <Compile Include="Extensions\BrushExtensions.cs" />
+    <Compile Include="CollectionView\CarouselUICollectionView.cs" />
+    <Compile Include="CollectionView\CarouselViewDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />

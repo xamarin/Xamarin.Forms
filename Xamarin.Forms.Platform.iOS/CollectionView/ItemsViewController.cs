@@ -122,6 +122,8 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsSource = CreateItemsViewSource();
 			ItemsViewLayout.GetPrototype = GetPrototype;
 
+			CollectionView = CreateUICollectionView();
+
 			Delegator = CreateDelegator();
 			CollectionView.Delegate = Delegator;
 
@@ -157,6 +159,22 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				LayoutEmptyView();
 			}
+		}
+
+		public override void WillAnimateRotation(UIInterfaceOrientation toInterfaceOrientation, double duration)
+		{
+			//We are changing orientation and we need to tell our layout
+			//to update based on new size constrains
+			ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			//We call ReloadData so our VisibleCells also update their size
+			CollectionView.ReloadData();
+
+			base.WillAnimateRotation(toInterfaceOrientation, duration);
+		}
+
+		protected virtual UICollectionView CreateUICollectionView()
+		{
+			return new UICollectionView(View.Bounds, ItemsViewLayout);
 		}
 
 		protected virtual UICollectionViewDelegateFlowLayout CreateDelegator()

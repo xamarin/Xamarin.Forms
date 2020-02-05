@@ -27,41 +27,31 @@ namespace Xamarin.Forms.Platform.iOS
 			Carousel.PropertyChanged += CarouselViewPropertyChanged;
 			Carousel.Scrolled += CarouselViewScrolled;
 			_oldViews = new List<View>();
-		}
 
-		public override nint GetItemsCount(UICollectionView collectionView, nint section)
+		protected override UICollectionView CreateUICollectionView()
 		{
-			currentMaxItemsCount = Math.Max((currentIndex + 1), ItemsSource.ItemCount) + 1 + currentNegative;
+			if(Carousel.Loop)
+			{
+				var dataSource = new CarouselViewDataSource(ItemsView, ItemsViewLayout, ItemsSource, DetermineCellReuseId());
 
-			return _carouselView.Loop ? currentMaxItemsCount : base.GetItemsCount(collectionView, section);
+				return new CarouselUICollectionView(View.Bounds, ItemsViewLayout, dataSource);
+			}
+			return base.CreateUICollectionView();
 		}
 
+		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
+		{
+			return new CarouselViewDelegator(ItemsViewLayout, this);
+		}
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-
-			currentIndex = _carouselView.Loop ? GetloopIndex(indexPath, currentIndex, currentNegative, ItemsSource.ItemCount) : indexPath.Row;
-
-			var cell = base.GetCell(collectionView, NSIndexPath.FromItemSection(currentIndex, indexPath.LongSection));
+			var cell = base.GetCell(collectionView, indexPath);
 
 			var element = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element;
 			if (element != null)
 				VisualStateManager.GoToState(element, CarouselView.DefaultItemVisualState);
 			return cell;
-
-		}
-
-		int GetloopIndex(NSIndexPath indexPath, int existingIndex, int existingNegativeIndex, int itemSourceCount)
-		{
-			var index = indexPath.Row % itemSourceCount;
-
-			if (existingIndex == 0 && existingNegativeIndex > 0)
-			{
-				index = ItemsSource.ItemCount - (indexPath.Row % itemSourceCount) - existingNegativeIndex;
-			}
-
-			System.Diagnostics.Debug.WriteLine($"IndexPath {indexPath.Row} currentIndex {index} and {existingNegativeIndex}");
-			return index;
 		}
 
 		public override void ViewWillLayoutSubviews()
@@ -71,6 +61,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_viewInitialized = true;
 				_size = CollectionView.Bounds.Size;
+				(CollectionView as CarouselUICollectionView)?.SetupCellDimensions();
 			}
 
 			UpdateVisualStates();
