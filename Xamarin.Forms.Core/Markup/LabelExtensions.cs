@@ -2,13 +2,13 @@
 {
 	public static class LabelExtensions
 	{
-		public static TLabel TextLeft<TLabel>(this TLabel label) where TLabel : Label
+		public static TLabel TextStart<TLabel>(this TLabel label) where TLabel : Label
 		{ label.HorizontalTextAlignment = TextAlignment.Start; return label; }
 
 		public static TLabel TextCenterH<TLabel>(this TLabel label) where TLabel : Label
 		{ label.HorizontalTextAlignment = TextAlignment.Center; return label; }
 
-		public static TLabel TextRight<TLabel>(this TLabel label) where TLabel : Label
+		public static TLabel TextEnd<TLabel>(this TLabel label) where TLabel : Label
 		{ label.HorizontalTextAlignment = TextAlignment.End; return label; }
 
 		public static TLabel TextTop<TLabel>(this TLabel label) where TLabel : Label
