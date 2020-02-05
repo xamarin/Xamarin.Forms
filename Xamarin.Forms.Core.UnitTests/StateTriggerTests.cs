@@ -5,6 +5,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class StateTriggerTests
 	{
+		const string NormalStateName = "Normal";
 		const string RedStateName = "Red";
 		const string GreenStateName = "Green";
 
@@ -14,6 +15,8 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var stateGroups = new VisualStateGroupList();
 			var visualStateGroup = new VisualStateGroup();
+			
+			var normalState = new VisualState { Name = NormalStateName };
 
 			var greenStateTrigger = new CompareStateTrigger { Property = TestEntry.Text, Value = "Test" };
 			var greenState = new VisualState { Name = GreenStateName };
@@ -23,12 +26,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			var redState = new VisualState { Name = RedStateName };
 			redState.StateTriggers.Add(redStateTrigger);
 
+			visualStateGroup.States.Add(normalState);
 			visualStateGroup.States.Add(greenState);
 			visualStateGroup.States.Add(redState);
 
 			stateGroups.Add(visualStateGroup);
 
 			return stateGroups;
+		}
+
+		[Test]
+		public void InitialStateIsNormalIfAvailable()
+		{
+			var label1 = new Label();
+
+			VisualStateManager.SetVisualStateGroups(label1, CreateTestStateGroups());
+
+			var groups1 = VisualStateManager.GetVisualStateGroups(label1);
+
+			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
 
 		[Test]

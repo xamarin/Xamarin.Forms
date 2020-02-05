@@ -102,27 +102,6 @@ namespace Xamarin.Forms
 			return element.IsSet(VisualStateGroupsProperty);
 		}
 
-		internal static void UnApplyVisualState(VisualElement visualElement)
-		{
-			if (visualElement == null)
-				return;
-
-			var groups = (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
-
-			foreach (VisualStateGroup group in groups)
-			{
-				if (group.CurrentState != null)
-				{
-					foreach (Setter setter in group.CurrentState.Setters)
-					{
-						setter.UnApply(visualElement);
-					}
-				}
-
-				group.CurrentState = null;
-			}
-		}
-
 		internal static void UpdateStateTriggers(VisualElement visualElement)
 		{
 			var groups = (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
@@ -436,13 +415,8 @@ namespace Xamarin.Forms
 			var newStateTrigger = GetActiveTrigger();
 
 			if (newStateTrigger == null)
-			{
-				if (VisualElement != null)
-					VisualStateManager.UnApplyVisualState(VisualElement);
-
 				return;
-			}
-
+			
 			var oldStateTrigger = CurrentState;
 
 			if (newStateTrigger == oldStateTrigger)
