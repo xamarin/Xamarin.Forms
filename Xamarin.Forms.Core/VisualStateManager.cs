@@ -328,6 +328,22 @@ namespace Xamarin.Forms
 			return null;
 		}
 
+		internal bool HasStateTriggers()
+		{
+			bool hasStateTriggers = false;
+
+			foreach (VisualState state in States)
+			{
+				if (state.StateTriggers.Count > 0)
+				{
+					hasStateTriggers = true;
+					break;
+				}
+			}
+
+			return hasStateTriggers;
+		}
+
 		internal VisualState GetActiveTrigger()
 		{
 			var defaultState = default(VisualState);
@@ -412,11 +428,16 @@ namespace Xamarin.Forms
 			if (VisualElement == null)
 				return;
 
+			bool hasStateTriggers = HasStateTriggers();
+
+			if (!hasStateTriggers)
+				return;
+
 			var newStateTrigger = GetActiveTrigger();
 
 			if (newStateTrigger == null)
 			{
-				if(VisualElement != null)
+				if (VisualElement != null)
 					VisualStateManager.UnApplyVisualState(VisualElement);
 
 				return;
