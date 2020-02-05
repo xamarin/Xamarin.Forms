@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Markup
 		const string bindingContextPath = Binding.SelfPath;
 
 		/// <summary>Ensure that <typeparamref name="TGestureElement"/> has a <see cref="ClickGestureRecognizer"/>,
-		/// and bind to it's Command and CommandParameter properties</summary>
+		/// and bind to its Command and CommandParameter properties</summary>
 		/// <param name="parameterPath">If null, no binding is created for the CommandParameter property</param>
 		public static TGestureElement BindClickGesture<TGestureElement>(
 			this TGestureElement gestureElement,
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Markup
 			=> ClickGesture(gestureElement, g => g.BindCommand(commandPath, commandSource, parameterPath, parameterSource));
 
 		/// <summary>Ensure that <typeparamref name="TGestureElement"/> has a <see cref="SwipeGestureRecognizer"/>,
-		/// and bind to it's Command and CommandParameter properties</summary>
+		/// and bind to its Command and CommandParameter properties</summary>
 		/// <param name="parameterPath">If null, no binding is created for the CommandParameter property</param>
 		public static TGestureElement BindSwipeGesture<TGestureElement>(
 			this TGestureElement gestureElement,
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Markup
 			=> SwipeGesture(gestureElement, g => g.BindCommand(commandPath, commandSource, parameterPath, parameterSource));
 
 		/// <summary>Ensure that <typeparamref name="TGestureElement"/> has a <see cref="TapGestureRecognizer"/>,
-		/// and bind to it's Command and CommandParameter properties</summary>
+		/// and bind to its Command and CommandParameter properties</summary>
 		/// <param name="parameterPath">If null, no binding is created for the CommandParameter property</param>
 		public static TGestureElement BindTapGesture<TGestureElement>(
 			this TGestureElement gestureElement,
