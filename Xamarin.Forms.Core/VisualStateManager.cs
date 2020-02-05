@@ -374,13 +374,13 @@ namespace Xamarin.Forms
 
 			var adaptiveTriggers = conflicts.Where(c => c is AdaptiveTrigger);
 
-			var minWindowWidthAdaptiveTriggers = adaptiveTriggers.OrderByDescending(c => ((AdaptiveTrigger)c).MinWindowWidth);
+			var minWindowWidthAdaptiveTriggers = adaptiveTriggers.Where(c => ((AdaptiveTrigger)c).MinWindowWidth != -1d).OrderByDescending(c => ((AdaptiveTrigger)c).MinWindowWidth);
 			var latestMinWindowWidthAdaptiveTrigger = minWindowWidthAdaptiveTriggers.FirstOrDefault();
 
 			if (latestMinWindowWidthAdaptiveTrigger != null)
 				return latestMinWindowWidthAdaptiveTrigger.VisualState;
 
-			var minWindowHeightAdaptiveTriggers = adaptiveTriggers.OrderByDescending(c => ((AdaptiveTrigger)c).MinWindowHeight);
+			var minWindowHeightAdaptiveTriggers = adaptiveTriggers.Where(c => ((AdaptiveTrigger)c).MinWindowHeight != -1d).OrderByDescending(c => ((AdaptiveTrigger)c).MinWindowHeight);
 			var latestMinWindowHeightAdaptiveTrigger = minWindowHeightAdaptiveTriggers.FirstOrDefault();
 
 			if (latestMinWindowHeightAdaptiveTrigger != null)
