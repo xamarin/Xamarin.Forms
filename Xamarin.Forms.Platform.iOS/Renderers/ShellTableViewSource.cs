@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		DataTemplate _defaultMenuItemTemplate;
 		List<List<Element>> _groups;
 		Dictionary<Element, View> _views;
+		int footerCount;
 
 		public ShellTableViewSource(IShellContext context, Action<Element> onElementSelected)
 		{
@@ -121,9 +122,14 @@ namespace Xamarin.Forms.Platform.iOS
 				return 1;
 			return 0;
 		}
-
 		public override UIView GetViewForFooter(UITableView tableView, nint section)
 		{
+			if(footerCount >= Groups.Count - 2)
+			{
+				footerCount = 0;
+				return new UIView();
+			}
+			footerCount ++;
 			return new SeparatorView();
 		}
 
