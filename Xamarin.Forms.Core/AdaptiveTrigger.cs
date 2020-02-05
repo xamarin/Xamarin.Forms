@@ -57,41 +57,14 @@ namespace Xamarin.Forms
 
 		void UpdateState()
 		{
-			var mainPage = Application.Current.MainPage;
+			var scaledScreenSize = Device.Info.ScaledScreenSize;
 
-			var w = mainPage.Width;
-			var h = mainPage.Height;
+			var w = scaledScreenSize.Width;
+			var h = scaledScreenSize.Height;
 			var mw = MinWindowWidth;
 			var mh = MinWindowHeight;
 
-			ResetActiveTriggers();
 			SetActive(w >= mw && h >= mh);
-		}
-
-		void ResetActiveTriggers()
-		{
-			if (VisualState == null)
-				return;
-
-			var group = VisualState.VisualStateGroup;
-
-			if (group == null)
-				return;
-			
-			for (var stateIndex = 0; stateIndex < group.States.Count; stateIndex++)
-			{
-				var state = group.States[stateIndex];
-
-				for (var triggerIndex = 0; triggerIndex < state.StateTriggers.Count; triggerIndex++)
-				{
-					var trigger = state.StateTriggers[triggerIndex];
-
-					if (trigger is AdaptiveTrigger adaptiveTrigger && adaptiveTrigger.IsTriggerActive)
-					{
-						adaptiveTrigger.IsTriggerActive = false;
-					}
-				}
-			}
 		}
 	}
 }

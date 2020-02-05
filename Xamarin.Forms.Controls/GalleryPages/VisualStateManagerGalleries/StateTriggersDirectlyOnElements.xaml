@@ -8,28 +8,34 @@
         <Grid>
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup>
-                    <VisualState
-                        x:Name="Landscape">
+                    <VisualState x:Name="Wide">
                         <VisualState.StateTriggers>
-                            <OrientationStateTrigger Orientation="Landscape" />
+                            <AdaptiveTrigger MinWindowWidth="1000" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="Blue" />
+                            <Setter Property="BackgroundColor" Value="Green" />
                         </VisualState.Setters>
                     </VisualState>
-                    <VisualState
-                        x:Name="Portrait">
+                    <VisualState x:Name="Narrow">
                         <VisualState.StateTriggers>
-                            <OrientationStateTrigger Orientation="Portrait" />
+                            <AdaptiveTrigger MinWindowWidth="600" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Property="BackgroundColor" Value="Red" />
                         </VisualState.Setters>
                     </VisualState>
+                    <VisualState x:Name="Medium">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="720" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="Blue" />
+                        </VisualState.Setters>
+                    </VisualState>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Label
-                Text="This Grid changes the color based on the orientation device where the App is running."
+                Text="This Grid changes color when the width changes"
                 HorizontalOptions="Center"
                 VerticalOptions="Center" />
         </Grid>
