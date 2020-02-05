@@ -257,7 +257,7 @@ namespace Xamarin.Forms.DualScreen
 						_newPane1 = new Rectangle(0, amountObscured, locationOnScreen.Width, locationOnScreen.Height - amountObscured);
 					}
 					else
-						_newPane1 = new Rectangle(0, 0, locationOnScreen.Height, locationOnScreen.Height);
+						_newPane1 = new Rectangle(0, 0, locationOnScreen.Width, locationOnScreen.Height);
 
 					_newPane2 = Rectangle.Zero;
 				}

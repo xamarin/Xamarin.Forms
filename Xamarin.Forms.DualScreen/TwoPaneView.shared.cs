@@ -368,7 +368,7 @@ namespace Xamarin.Forms.DualScreen
 				}
 				else
 				{
-					InvalidateLayout();
+					Device.BeginInvokeOnMainThread(InvalidateLayout);
 				}
 			}
 			finally
@@ -394,28 +394,6 @@ namespace Xamarin.Forms.DualScreen
 			columnMiddle.Width = new GridLength(0, GridUnitType.Absolute);
 			rowMiddle.Height = new GridLength(0, GridUnitType.Absolute);
 
-			if (newMode == ViewMode.LeftRight || newMode == ViewMode.RightLeft)
-			{
-				columnLeft.Width = ((newMode == ViewMode.LeftRight) ? Pane1Length : Pane2Length);
-				columnRight.Width = ((newMode == ViewMode.LeftRight) ? Pane2Length : Pane1Length);
-			}
-			else
-			{
-				columnLeft.Width = new GridLength(1, GridUnitType.Star);
-				columnRight.Width = new GridLength(0, GridUnitType.Absolute);
-			}
-
-			if (newMode == ViewMode.TopBottom || newMode == ViewMode.BottomTop)
-			{
-				rowTop.Height = ((newMode == ViewMode.TopBottom) ? Pane1Length : Pane2Length);
-				rowBottom.Height = ((newMode == ViewMode.TopBottom) ? Pane2Length : Pane1Length);
-			}
-			else
-			{
-				rowTop.Height = new GridLength(1, GridUnitType.Star);
-				rowBottom.Height = new GridLength(0, GridUnitType.Absolute);
-			}
-
 			if (TwoPaneViewLayoutGuide.Mode != TwoPaneViewMode.SinglePane && newMode != ViewMode.Pane1Only && newMode != ViewMode.Pane2Only)
 			{
 				Rectangle hinge = _twoPaneViewLayoutGuide.Hinge;
@@ -423,14 +401,44 @@ namespace Xamarin.Forms.DualScreen
 				if (TwoPaneViewLayoutGuide.Mode == TwoPaneViewMode.Wide)
 				{
 					columnMiddle.Width = new GridLength(hinge.Width, GridUnitType.Absolute);
+
 					columnLeft.Width = new GridLength(pane1.Width, GridUnitType.Absolute);
 					columnRight.Width = new GridLength(pane2.Width, GridUnitType.Absolute);
+					rowTop.Height = GridLength.Star;
+					rowBottom.Height = new GridLength(0, GridUnitType.Absolute);
 				}
 				else
 				{
 					rowMiddle.Height = new GridLength(hinge.Height, GridUnitType.Absolute);
+
 					rowTop.Height = new GridLength(pane1.Height, GridUnitType.Absolute);
 					rowBottom.Height = new GridLength(pane2.Height, GridUnitType.Absolute);
+					columnLeft.Width = GridLength.Star;
+					columnRight.Width = new GridLength(0, GridUnitType.Absolute);
+				}
+			}
+			else
+			{
+				if (newMode == ViewMode.LeftRight || newMode == ViewMode.RightLeft)
+				{
+					columnLeft.Width = ((newMode == ViewMode.LeftRight) ? Pane1Length : Pane2Length);
+					columnRight.Width = ((newMode == ViewMode.LeftRight) ? Pane2Length : Pane1Length);
+				}
+				else
+				{
+					columnLeft.Width = new GridLength(1, GridUnitType.Star);
+					columnRight.Width = new GridLength(0, GridUnitType.Absolute);
+				}
+
+				if (newMode == ViewMode.TopBottom || newMode == ViewMode.BottomTop)
+				{
+					rowTop.Height = ((newMode == ViewMode.TopBottom) ? Pane1Length : Pane2Length);
+					rowBottom.Height = ((newMode == ViewMode.TopBottom) ? Pane2Length : Pane1Length);
+				}
+				else
+				{
+					rowTop.Height = new GridLength(1, GridUnitType.Star);
+					rowBottom.Height = new GridLength(0, GridUnitType.Absolute);
 				}
 			}
 
