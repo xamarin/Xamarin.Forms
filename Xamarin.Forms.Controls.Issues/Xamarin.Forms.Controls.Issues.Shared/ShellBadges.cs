@@ -74,27 +74,27 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if __IOS__
 		// Color.White.ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
-        // $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
+		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
 		protected string TextColorDefault = "rgb(255,255,255)";
 
 		// Color.DarkBlue.ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
-        // $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
+		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
 		protected string TextColorSet = "rgb(0,0,139)";
 
 		// Color.DarkGreen.ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
-        // $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
+		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
 		protected string UnselectedTextColorSet = "rgb(0,100,0)";
 
 		// Color.FromRgb(255, 59, 48).ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
-        // $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
+		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
 		protected string BadgeColorDefault = "rgb(255,59,48)";
 
 		// Color.DarkOrange.ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
-        // $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
+		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
 		protected string BadgeColorSet = "rgb(255,140,0)";
 
 		// Color.DarkMagenta.ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
-        // $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
+		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
 		protected string UnselectedColorSet = "rgb(139,0,139)";
 #endif
 
