@@ -155,23 +155,8 @@ namespace Xamarin.Forms
 		protected override void OnBindingContextChanged()
 		{
 			this.PropagateBindingContext(GestureRecognizers);
-			PropagateBindingContextToStateTriggers();
 
 			base.OnBindingContextChanged();
-		}
-
-		void PropagateBindingContextToStateTriggers()
-		{
-			var stateTriggers = new List<StateTriggerBase>();
-
-			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
-
-			foreach (var group in groups)
-				foreach (var state in group.States)
-					foreach (var stateTrigger in state.StateTriggers)
-						stateTriggers.Add(stateTrigger);
-
-			this.PropagateBindingContext(stateTriggers);
 		}
 
 		static void MarginPropertyChanged(BindableObject bindable, object oldValue, object newValue)

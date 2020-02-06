@@ -737,6 +737,12 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
+		protected override void OnBindingContextChanged()
+		{
+			PropagateBindingContextToStateTriggers();
+			base.OnBindingContextChanged();
+		}
+
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
@@ -888,6 +894,20 @@ namespace Xamarin.Forms
 		internal void UnmockBounds()
 		{
 			_mockX = _mockY = _mockWidth = _mockHeight = -1;
+		}
+
+		void PropagateBindingContextToStateTriggers()
+		{
+			var stateTriggers = new List<StateTriggerBase>();
+
+			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
+
+			foreach (var group in groups)
+				foreach (var state in group.States)
+					foreach (var stateTrigger in state.StateTriggers)
+						stateTriggers.Add(stateTrigger);
+
+			this.PropagateBindingContext(stateTriggers);
 		}
 
 		void OnFocused()
