@@ -7,23 +7,7 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal class PresentationControllerDelegate : UIAdaptivePresentationControllerDelegate
-	{
-		readonly Func<Task> _dismissModal;
-
-		public PresentationControllerDelegate(Func<Task> disposeViewAsync)
-		{
-			_dismissModal = disposeViewAsync;
-		}
-
-		[Export("presentationControllerDidDismiss:")]
-		public override void DidDismiss(UIPresentationController presentationController)
-		{
-			_dismissModal();
-		}
-	}
-
-	internal class ModalWrapper : UIViewController
+	internal class ModalWrapper : UIViewController, IUIAdaptivePresentationControllerDelegate
 	{
 		IVisualElementRenderer _modal;
 
@@ -32,8 +16,16 @@ namespace Xamarin.Forms.Platform.iOS
 			_modal = modal;
 
 			var elementConfiguration = modal.Element as IElementConfiguration<Page>;
-			var modalPresentationStyle = elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle() ?? PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FullScreen;
-			ModalPresentationStyle = modalPresentationStyle.ToNativeModalPresentationStyle();
+			if (elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle() is PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
+			{
+				var result = style.ToNativeModalPresentationStyle();
+				if (!Forms.IsiOS13OrNewer && result == UIKit.UIModalPresentationStyle.Automatic)
+				{
+					result = UIKit.UIModalPresentationStyle.FullScreen;
+				}
+
+				ModalPresentationStyle = result;
+			}
 
 			View.BackgroundColor = UIColor.White;
 			View.AddSubview(modal.ViewController.View);
@@ -43,12 +35,13 @@ namespace Xamarin.Forms.Platform.iOS
 			modal.ViewController.DidMoveToParentViewController(this);
 
 			if (Forms.IsiOS13OrNewer)
-				PresentationController.Delegate = new PresentationControllerDelegate(DismissModalAsync);
+				PresentationController.Delegate = this;
 		}
 
-		async Task DismissModalAsync()
+		[Export("presentationControllerDidDismiss:")]
+		public async void DidDismiss(UIPresentationController presentationController)
 		{
-			await _modal.Element.NavigationProxy.PopModalAsync();
+			await Application.Current.NavigationProxy.PopModalAsync(false);
 		}
 
 		public override void DismissViewController(bool animated, Action completionHandler)

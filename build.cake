@@ -137,7 +137,6 @@ Task("provision-androidsdk")
     .Does(async () =>
     {
         Information ("ANDROID_HOME: {0}", ANDROID_HOME);
-        Information ("androidSDK: {0}", androidSDK);
 
         if(androidSdkManagerInstalls.Length > 0)
         {
