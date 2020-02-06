@@ -70,6 +70,18 @@ namespace Xamarin.Forms.Platform.Android
 			ViewRenderer.MeasureExactly(this, Element, Context);
 		}
 
+		void UnsubscribeFromEvents(MediaElement element)
+		{
+			if (element == null)
+				return;
+
+			element.PropertyChanged -= OnElementPropertyChanged;
+			element.SeekRequested -= SeekRequested;
+			element.StateRequested -= StateRequested;
+			element.PositionRequested -= OnPositionRequested;
+
+		}
+
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
 			if (element is null)
@@ -85,9 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (oldElement != null)
 			{
-				oldElement.PropertyChanged -= OnElementPropertyChanged;
-				oldElement.SeekRequested -= SeekRequested;
-				oldElement.StateRequested -= StateRequested;
+				UnsubscribeFromEvents(oldElement);
 			}
 
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
@@ -205,7 +215,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
+					UnsubscribeFromEvents(Element as MediaElement);
 
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
