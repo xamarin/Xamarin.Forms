@@ -11,7 +11,8 @@
 				Children =
 				{
 					GalleryBuilder.NavButton("MinWindowWidth AdaptiveTrigger Gallery", () => new MinWindowWidthAdaptiveTriggerGallery(), Navigation),
-					GalleryBuilder.NavButton("MinWindowHeight AdaptiveTrigger Gallery", () => new MinWindowHeightAdaptiveTriggerGallery(), Navigation),                       GalleryBuilder.NavButton("CompareStateTrigger Gallery", () => new CompareStateTriggerGallery(), Navigation),
+					GalleryBuilder.NavButton("MinWindowHeight AdaptiveTrigger Gallery", () => new MinWindowHeightAdaptiveTriggerGallery(), Navigation),
+					GalleryBuilder.NavButton("CompareStateTrigger Gallery", () => new CompareStateTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("DeviceStateTrigger Gallery", () => new DeviceStateTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("OrientationStateTrigger Gallery", () => new OrientationStateTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("StateTriggers directly on Elements", () => new StateTriggersDirectlyOnElements(), Navigation)
