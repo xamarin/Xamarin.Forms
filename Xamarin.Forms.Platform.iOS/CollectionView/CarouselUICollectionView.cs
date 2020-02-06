@@ -50,6 +50,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var contentHeight = GetTotalContentHeight();
 
+			if (contentHeight == 0)
+				return;
+
 			var centerOffsetY = (3 * contentHeight) / 2;
 
 			var distFromCentre = centerOffsetY - currentOffset.Y;
@@ -57,15 +60,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Math.Abs(distFromCentre) > (contentHeight / 4))
 			{
 				var cellcount = distFromCentre / (_cellHeight + _cellPadding);
-
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
-
 				var offsetCorrection = (Math.Abs(cellcount) % 1.0) * (_cellHeight + _cellPadding);
 
 				if (ContentOffset.Y < centerOffsetY)
 				{
 					ContentOffset = new CGPoint(currentOffset.X, centerOffsetY - offsetCorrection);
-
 				}
 				else if (ContentOffset.Y > centerOffsetY)
 				{
@@ -84,6 +84,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nfloat contentWidth = GetTotalContentWidth();
 
+			if (contentWidth == 0)
+				return;
+
 			var centerOffsetX = (3 * contentWidth - Bounds.Size.Width) / 2;
 
 			var distFromCentre = centerOffsetX - currentOffset.X;
@@ -91,9 +94,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Math.Abs(distFromCentre) > (contentWidth / 4))
 			{
 				var cellcount = distFromCentre / (_cellWidth + _cellPadding);
-
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
-
 				var offsetCorrection = (Math.Abs(cellcount % 1.0f)) * (_cellWidth + _cellPadding);
 
 				if (ContentOffset.X < centerOffsetX)

@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly IItemsViewSource _source;
 		readonly string _reuseId;
 		int _indexOffset = 0;
-		
+
 		public CarouselViewDataSource(ItemsView itemsView, ItemsViewLayout itemsViewLayout, IItemsViewSource source, string reuseId)
 		{
 			_itemsView = itemsView;
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public int GetCorrectedIndex(int indexToCorrect)
 		{
 			var itemsCount = GetItemsSourceCount();
-			if (indexToCorrect < itemsCount && indexToCorrect >= 0)
+			if ((indexToCorrect < itemsCount && indexToCorrect >= 0) || itemsCount == 0)
 				return indexToCorrect;
 
 			var countInIndex = (double)(indexToCorrect / itemsCount);

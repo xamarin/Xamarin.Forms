@@ -231,12 +231,21 @@ namespace Xamarin.Forms
 		// protected override void OnScrolled(ItemsViewScrolledEventArgs e)
 		// {
 		// 	var realIndex = e.CenterItemIndex;
-		// 	if (Loop)
+		// 	var count = (ItemsSource as IList).Count;
+		// 	if (count > 0)
 		// 	{
-		// 		realIndex = e.CenterItemIndex % (ItemsSource as IList).Count;
-		// 	}
+		// 		if (Loop)
+		// 		{
+		// 			realIndex = e.CenterItemIndex % (ItemsSource as IList).Count;
+		// 		}
 
-		// 	CurrentItem = GetItemForPosition(this, realIndex);
+		// 		CurrentItem = GetItemForPosition(this, realIndex);
+		// 	}
+		// 	else
+		// 	{
+		// 		CurrentItem = null;
+		// 	}
+			
 
 		// 	base.OnScrolled(e);
 		// }
