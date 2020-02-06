@@ -106,10 +106,13 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackgroundColor();
 			}
 
-			MediaElement.PropertyChanged += OnElementPropertyChanged;
-			MediaElement.SeekRequested += SeekRequested;
-			MediaElement.StateRequested += StateRequested;
-			MediaElement.PositionRequested += OnPositionRequested;
+			if (MediaElement != null)
+			{
+				MediaElement.PropertyChanged += OnElementPropertyChanged;
+				MediaElement.SeekRequested += SeekRequested;
+				MediaElement.StateRequested += StateRequested;
+				MediaElement.PositionRequested += OnPositionRequested;
+			}
 
 			if (_tracker is null)
 			{
