@@ -67,8 +67,10 @@ namespace Xamarin.Forms.Platform.iOS
 			var countInIndex = (double)(indexToCorrect / itemsCount);
 			var flooredValue = (int)(Math.Floor(countInIndex));
 			var offset = itemsCount * flooredValue;
-			return indexToCorrect - offset;
-
+			var newIndex = indexToCorrect - offset;
+			if (newIndex < 0)
+				return (itemsCount - Math.Abs(newIndex));
+			return newIndex;
 		}
 	}
 }

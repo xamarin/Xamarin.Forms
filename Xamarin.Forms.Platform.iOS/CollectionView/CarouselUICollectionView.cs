@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 		internal void SetupCellDimensions()
 		{
 			var layout = CollectionViewLayout as UICollectionViewFlowLayout;
-			_cellPadding = layout.MinimumInteritemSpacing;
+			_cellPadding = 0;
 			_cellWidth = layout.ItemSize.Width;
 			_cellHeight = layout.ItemSize.Height;
 			_isSized = true;
