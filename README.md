@@ -56,9 +56,10 @@ VS 2019+ is required for developing Xamarin.Forms. If you do not already have it
 - Universal Windows Platform Development - In the `Summary > Optional select the Windows 10 Mobile Emulator`.
 - Mobile Development with .NET - In the `Summary > Optional select Xamarin Remoted Simulator, Xamarin SDK Manager, Intel Hardware Accelerated Execution Manager (HAXM)`
 
-The Android 10.0 API 29 SDK is required for developing Xamarin.Forms. It can be installed by using the [Xamarin Android SDK Manager](https://docs.microsoft.com/xamarin/android/get-started/installation/android-sdk).
+The Android 10.0 API 29, 9.0 API 28, and 8.1 API 27 SDK are required for developing Xamarin.Forms. It can be installed by using the [Xamarin Android SDK Manager](https://docs.microsoft.com/xamarin/android/get-started/installation/android-sdk).
 
-We also recommend installing [Xamarin Android Device Manager](https://developer.xamarin.com/guides/android/getting_started/installation/android-emulator/xamarin-device-manager/) This will use the HAXM tools installed above and allow you to configure Android Virtual Devices (AVDs) that emulate Android devices.
+Your can run the included `android-setup.ps1` script in **Administrator Mode** and it will automatically setup your Android environment.
+
 If you already have VS 2019+ installed, you can verify that these features are installed by modifying the VS 2019+ installation via the Visual Studio Installer.
 
 ### Mac ###
