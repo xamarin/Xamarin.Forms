@@ -17,5 +17,15 @@
 
 			VisualState?.VisualStateGroup?.UpdateStateTriggers();
 		}
+
+		internal virtual void OnAttached()
+		{
+
+		}
+
+		internal virtual void OnDetached()
+		{
+
+		}
 	}
 }

@@ -9,17 +9,6 @@ namespace Xamarin.Forms
 		public OrientationStateTrigger()
 		{
 			UpdateState();
-
-			if (!DesignMode.IsDesignModeEnabled)
-			{
-				var weakEvent = new WeakEventListener<OrientationStateTrigger, object, PropertyChangedEventArgs>(this)
-				{
-					OnEventAction = (instance, source, eventArgs) => OnInfoPropertyChanged(source, eventArgs),
-					OnDetachAction = (listener) => { FormsDevice.Info.PropertyChanged -= listener.OnEvent; }
-				};
-
-				FormsDevice.Info.PropertyChanged += weakEvent.OnEvent;
-			}
 		}
 
 		public DeviceOrientation Orientation
@@ -35,6 +24,23 @@ namespace Xamarin.Forms
 		static void OnOrientationChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			((OrientationStateTrigger)bindable).UpdateState();
+		}
+
+		internal override void OnAttached()
+		{
+			base.OnAttached();
+
+			if (!DesignMode.IsDesignModeEnabled)
+			{
+				FormsDevice.Info.PropertyChanged += OnInfoPropertyChanged;
+			}
+		}
+
+		internal override void OnDetached()
+		{
+			base.OnDetached();
+
+			FormsDevice.Info.PropertyChanged -= OnInfoPropertyChanged;
 		}
 
 		void OnInfoPropertyChanged(object sender, PropertyChangedEventArgs e)

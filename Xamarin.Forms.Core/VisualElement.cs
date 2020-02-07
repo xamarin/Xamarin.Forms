@@ -538,9 +538,11 @@ namespace Xamarin.Forms
 				if (value && IsNativeStateConsistent)
 					InvalidateMeasureInternal(InvalidationTrigger.RendererReady);
 
+				InvalidateStateTriggers(IsPlatformEnabled);
+
 				OnIsPlatformEnabledChanged();
 			}
-		}
+		}		
 
 		internal LayoutConstraint SelfConstraint
 		{
@@ -827,6 +829,25 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(trigger);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal void InvalidateStateTriggers(bool attach)
+		{
+			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
+
+			if (groups.Count == 0)
+				return;
+
+			foreach (var group in groups)
+				foreach (var state in group.States)
+					foreach (var stateTrigger in state.StateTriggers)
+					{
+						if(attach)
+							stateTrigger.OnAttached();
+						else
+							stateTrigger.OnDetached();
+					}
+		}
+
 		internal void MockBounds(Rectangle bounds)
 		{
 #if NETSTANDARD2_0
@@ -899,6 +920,9 @@ namespace Xamarin.Forms
 		void PropagateBindingContextToStateTriggers()
 		{
 			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
+
+			if (groups.Count == 0)
+				return;
 
 			foreach (var group in groups)
 				foreach (var state in group.States)

@@ -7,17 +7,6 @@ namespace Xamarin.Forms
 		public AdaptiveTrigger()
 		{
 			UpdateState();
-
-			if (!DesignMode.IsDesignModeEnabled)
-			{
-				var weakEvent = new WeakEventListener<AdaptiveTrigger, object, EventArgs>(this)
-				{
-					OnEventAction = (instance, source, eventArgs) => OnSizeChanged(source, eventArgs),
-					OnDetachAction = (listener) => { Application.Current.MainPage.SizeChanged -= listener.OnEvent; }
-				};
-
-				Application.Current.MainPage.SizeChanged += weakEvent.OnEvent;
-			}
 		}
 
 		public double MinWindowHeight
@@ -48,6 +37,23 @@ namespace Xamarin.Forms
 		static void OnMinWindowWidthChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			((AdaptiveTrigger)bindable).UpdateState();
+		}
+
+		internal override void OnAttached()
+		{
+			base.OnAttached();
+
+			if (!DesignMode.IsDesignModeEnabled)
+			{
+				Application.Current.MainPage.SizeChanged += OnSizeChanged;
+			}
+		}
+
+		internal override void OnDetached()
+		{
+			base.OnDetached();
+
+			Application.Current.MainPage.SizeChanged -= OnSizeChanged;
 		}
 
 		void OnSizeChanged(object sender, EventArgs e)

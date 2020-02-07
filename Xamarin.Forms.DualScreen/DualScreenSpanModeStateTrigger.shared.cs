@@ -7,17 +7,6 @@ namespace Xamarin.Forms.DualScreen
 		public DualScreenSpanModeStateTrigger()
 		{
 			UpdateState();
-
-			if (!DesignMode.IsDesignModeEnabled)
-			{
-				var weakEvent = new WeakEventListener<DualScreenSpanModeStateTrigger, object, PropertyChangedEventArgs>(this)
-				{
-					OnEventAction = (instance, source, eventArgs) => OnDualScreenInfoPropertyChanged(source, eventArgs),
-					OnDetachAction = (listener) => { DualScreenInfo.Current.PropertyChanged -= listener.OnEvent; }
-				};
-
-				DualScreenInfo.Current.PropertyChanged += weakEvent.OnEvent;
-			}
 		}
 
 		public TwoPaneViewMode SpanMode
@@ -33,6 +22,23 @@ namespace Xamarin.Forms.DualScreen
 		static void OnSpanModeChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			((DualScreenSpanModeStateTrigger)bindable).UpdateState();
+		}
+
+		internal override void OnAttached()
+		{
+			base.OnAttached();
+
+			if (!DesignMode.IsDesignModeEnabled)
+			{
+				DualScreenInfo.Current.PropertyChanged += OnDualScreenInfoPropertyChanged;
+			}
+		}
+
+		internal override void OnDetached()
+		{
+			base.OnDetached();
+
+			DualScreenInfo.Current.PropertyChanged -= OnDualScreenInfoPropertyChanged;
 		}
 
 		void OnDualScreenInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
