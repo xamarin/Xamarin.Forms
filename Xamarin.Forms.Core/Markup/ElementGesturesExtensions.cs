@@ -7,37 +7,37 @@ namespace Xamarin.Forms.Markup
 		const string bindingContextPath = Binding.SelfPath;
 
 		/// <summary>Add a <see cref="ClickGestureRecognizer"/>,
-		/// and bind to its Command and CommandParameter properties</summary>
-		/// <param name="parameterPath">If null, no binding is created for the CommandParameter property</param>
+		/// and bind to its Command and (optionally) CommandParameter properties</summary>
+		/// <param name="parameterPath">If not specified or null, no binding is created for the CommandParameter property</param>
 		public static TGestureElement BindClickGesture<TGestureElement>(
 			this TGestureElement gestureElement,
 			string commandPath = bindingContextPath,
 			object commandSource = null,
-			string parameterPath = bindingContextPath,
+			string parameterPath = null,
 			object parameterSource = null
 		) where TGestureElement : Element, IGestureRecognizers
 			=> ClickGesture(gestureElement, g => g.BindCommand(commandPath, commandSource, parameterPath, parameterSource));
 
 		/// <summary>Add a <see cref="SwipeGestureRecognizer"/>,
-		/// and bind to its Command and CommandParameter properties</summary>
-		/// <param name="parameterPath">If null, no binding is created for the CommandParameter property</param>
+		/// and bind to its Command and (optionally) CommandParameter properties</summary>
+		/// <param name="parameterPath">If not specified or null, no binding is created for the CommandParameter property</param>
 		public static TGestureElement BindSwipeGesture<TGestureElement>(
 			this TGestureElement gestureElement,
 			string commandPath = bindingContextPath,
 			object commandSource = null,
-			string parameterPath = bindingContextPath,
+			string parameterPath = null,
 			object parameterSource = null
 		) where TGestureElement : Element, IGestureRecognizers
 			=> SwipeGesture(gestureElement, g => g.BindCommand(commandPath, commandSource, parameterPath, parameterSource));
 
 		/// <summary>Add a <see cref="TapGestureRecognizer"/>,
-		/// and bind to its Command and CommandParameter properties</summary>
-		/// <param name="parameterPath">If null, no binding is created for the CommandParameter property</param>
+		/// and bind to its Command and (optionally) CommandParameter properties</summary>
+		/// <param name="parameterPath">If not specified or null, no binding is created for the CommandParameter property</param>
 		public static TGestureElement BindTapGesture<TGestureElement>(
 			this TGestureElement gestureElement,
 			string commandPath = bindingContextPath,
 			object commandSource = null,
-			string parameterPath = bindingContextPath,
+			string parameterPath = null,
 			object parameterSource = null
 		) where TGestureElement : Element, IGestureRecognizers
 			=> TapGesture(gestureElement, g => g.BindCommand(commandPath, commandSource, parameterPath, parameterSource));

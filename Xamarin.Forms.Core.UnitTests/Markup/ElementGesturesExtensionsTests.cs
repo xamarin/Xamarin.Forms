@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var gestureRecognizer = AssertHasGestureRecognizer<ClickGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandProperty, commandPath);
-			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandParameterProperty);
 		}
 
 		[Test]
@@ -44,7 +43,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var gestureRecognizer = AssertHasGestureRecognizer<TapGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandProperty, commandPath);
-			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandParameterProperty);
 		}
 
 		[Test]
@@ -96,7 +94,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var gestureRecognizer = AssertHasGestureRecognizer<SwipeGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandProperty, commandPath);
-			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandParameterProperty);
 		}
 
 		[Test]
