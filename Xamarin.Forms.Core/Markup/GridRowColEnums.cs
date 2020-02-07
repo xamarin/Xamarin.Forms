@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Xamarin.Forms.Markup
 {
-	public static class GridRowColEnums
+	public static class GridRowCol
 	{
 		public static GridLength Auto => GridLength.Auto;
 
@@ -11,6 +11,16 @@ namespace Xamarin.Forms.Markup
 
 		public static class Columns
 		{
+			public static ColumnDefinitionCollection Define(params GridLength [] widths)
+			{
+				var columnDefinitions = new ColumnDefinitionCollection();
+
+				for (int i = 0; i < widths.Length; i++)
+					columnDefinitions.Add(new ColumnDefinition { Width = widths[i] });
+
+				return columnDefinitions;
+			}
+
 			public static ColumnDefinitionCollection Define<TEnum>(params (TEnum name, GridLength width)[] cols) where TEnum : Enum
 			{
 				var columnDefinitions = new ColumnDefinitionCollection();
@@ -29,6 +39,16 @@ namespace Xamarin.Forms.Markup
 
 		public static class Rows
 		{
+			public static RowDefinitionCollection Define(params GridLength[] heights)
+			{
+				var rowDefinitions = new RowDefinitionCollection();
+
+				for (int i = 0; i < heights.Length; i++)
+					rowDefinitions.Add(new RowDefinition { Height = heights[i] });
+
+				return rowDefinitions;
+			}
+
 			public static RowDefinitionCollection Define<TEnum>(params (TEnum name, GridLength height)[] rows) where TEnum : Enum
 			{
 				var rowDefinitions = new RowDefinitionCollection();

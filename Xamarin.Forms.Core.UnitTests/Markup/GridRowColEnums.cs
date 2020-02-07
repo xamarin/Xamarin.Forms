@@ -1,17 +1,31 @@
 ﻿using System;
 using NUnit.Framework;
-using static Xamarin.Forms.Markup.GridRowColEnums;
+using static Xamarin.Forms.Markup.GridRowCol;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
 	[TestFixture]
-	public class GridRowColEnums : MarkupBaseTestFixture
+	public class GridRowCol : MarkupBaseTestFixture
 	{
 		enum Row { First, Second, Third }
 		enum Col { First, Second, Third, Fourth }
 
 		[Test]
-		public void DefineRows()
+		public void DefineRowsWithoutEnums()
+		{
+			var grid = new Forms.Grid
+			{
+				RowDefinitions = Rows.Define(Auto, Star, 20)
+			};
+
+			Assert.That(grid.RowDefinitions.Count, Is.EqualTo(3));
+			Assert.That(grid.RowDefinitions[0]?.Height, Is.EqualTo(GridLength.Auto));
+			Assert.That(grid.RowDefinitions[1]?.Height, Is.EqualTo(GridLength.Star));
+			Assert.That(grid.RowDefinitions[2]?.Height, Is.EqualTo(new GridLength(20)));
+		}
+
+		[Test]
+		public void DefineRowsWithEnums()
 		{
 			var grid = new Forms.Grid
 			{
@@ -29,7 +43,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void InvalidRowOrder()
+		public void InvalidRowEnumOrder()
 		{
 			Assert.Throws<ArgumentException>(
 				() => Rows.Define((Row.First, 8), (Row.Third, 8)),
@@ -39,7 +53,22 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void DefineColumns()
+		public void DefineColumnsWithoutEnums()
+		{
+			var grid = new Forms.Grid
+			{
+				ColumnDefinitions = Columns.Define(Auto, Star, 20, 40)
+			};
+
+			Assert.That(grid.ColumnDefinitions.Count, Is.EqualTo(4));
+			Assert.That(grid.ColumnDefinitions[0]?.Width, Is.EqualTo(GridLength.Auto));
+			Assert.That(grid.ColumnDefinitions[1]?.Width, Is.EqualTo(GridLength.Star));
+			Assert.That(grid.ColumnDefinitions[2]?.Width, Is.EqualTo(new GridLength(20)));
+			Assert.That(grid.ColumnDefinitions[3]?.Width, Is.EqualTo(new GridLength(40)));
+		}
+
+		[Test]
+		public void DefineColumnsWithEnums()
 		{
 			var grid = new Forms.Grid
 			{
@@ -59,7 +88,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void InvalidColumnOrder()
+		public void InvalidColumnEnumOrder()
 		{
 			Assert.Throws<ArgumentException>(
 				() => Columns.Define((Col.Second, 8), (Col.First, 8)),
