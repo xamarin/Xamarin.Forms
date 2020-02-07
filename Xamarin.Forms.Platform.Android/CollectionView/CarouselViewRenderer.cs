@@ -208,6 +208,46 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateAdapter();
 		}
 
+		protected override void UpdateAdapter()
+		{
+			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
+			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
+			// So we give it an alternate delegate for creating the views
+
+			var oldItemViewAdapter = ItemsViewAdapter;
+			UnsubscribeCollectionItemsSourceChanged(oldItemViewAdapter);
+
+			ItemsViewAdapter = new ItemsViewAdapter<ItemsView, IItemsViewSource>(ItemsView,
+				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
+
+
+			SwapAdapter(ItemsViewAdapter, false);
+
+			if (ItemsViewAdapter?.ItemsSource is ObservableItemsSource observableItemsSource)
+				observableItemsSource.CollectionItemsSourceChanged += CollectionItemsSourceChanged;
+
+			oldItemViewAdapter?.Dispose();
+		}
+
+		void UnsubscribeCollectionItemsSourceChanged(ItemsViewAdapter<ItemsView, IItemsViewSource> oldItemViewAdapter)
+		{
+			if (oldItemViewAdapter?.ItemsSource is ObservableItemsSource oldObservableItemsSource)
+				oldObservableItemsSource.CollectionItemsSourceChanged -= CollectionItemsSourceChanged;
+		}
+
+		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			var centerItemIndex = -1;
+
+			if (GetLayoutManager() is LinearLayoutManager linearLayoutManager)
+			{
+				var firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
+				centerItemIndex = RecyclerExtensions.CalculateCenterItemIndex(firstVisibleItemIndex, this, linearLayoutManager);
+			}
+
+			Carousel.SetCurrentItem(null, centerItemIndex);
+		}
+
 		void UpdateInitialPosition()
 		{
 			if (Carousel.CurrentItem != null)
