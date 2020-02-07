@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms
 {
-	public class AdaptiveTrigger : StateTriggerBase
+	public sealed class AdaptiveTrigger : StateTriggerBase
 	{
 		public AdaptiveTrigger()
 		{

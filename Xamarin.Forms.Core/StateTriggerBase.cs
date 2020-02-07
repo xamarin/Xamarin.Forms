@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms
 {
-	public class StateTriggerBase : BindableObject
+	public abstract class StateTriggerBase : BindableObject
 	{
 		internal bool IsTriggerActive { get; set; }
 

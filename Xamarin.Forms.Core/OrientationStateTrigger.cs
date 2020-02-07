@@ -4,7 +4,7 @@ using FormsDevice = Xamarin.Forms.Device;
 
 namespace Xamarin.Forms
 {
-	public class OrientationStateTrigger : StateTriggerBase
+	public sealed class OrientationStateTrigger : StateTriggerBase
 	{
 		public OrientationStateTrigger()
 		{

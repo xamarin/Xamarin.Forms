@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms
 {
-	public class DeviceStateTrigger : StateTriggerBase
+	public sealed class DeviceStateTrigger : StateTriggerBase
 	{
 		public DeviceStateTrigger()
 		{

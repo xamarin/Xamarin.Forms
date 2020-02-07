@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace Xamarin.Forms
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
-    public sealed class WeakEventListener<TInstance, TSource, TEventArgs>
+    internal sealed class WeakEventListener<TInstance, TSource, TEventArgs>
         where TInstance : class
     {
         private readonly WeakReference _weakInstance;

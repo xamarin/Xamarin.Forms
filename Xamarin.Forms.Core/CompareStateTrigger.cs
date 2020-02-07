@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Xamarin.Forms
 {
-	public class CompareStateTrigger : StateTriggerBase
+	public sealed class CompareStateTrigger : StateTriggerBase
 	{
 		public CompareStateTrigger()
 		{
