@@ -8,8 +8,8 @@
 
 			var button = new Button
 			{
-				Text = "Enable AdaptiveTriggers",
-				AutomationId = "EnableAdaptiveTriggers"
+				Text = "Enable StateTriggers",
+				AutomationId = "EnableStateTriggers"
 			};
 			button.Clicked += ButtonClicked;
 
@@ -33,11 +33,11 @@
 		{
 			var button = sender as Button;
 
-			button.Text = "AdaptiveTriggers Enabled!";
+			button.Text = "StateTriggers Enabled!";
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.AdaptiveTriggersExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.StateTriggersExperimental });
 		}
 	}
 }

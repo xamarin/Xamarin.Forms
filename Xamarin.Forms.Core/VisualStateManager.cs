@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Xaml;
 
@@ -290,8 +289,6 @@ namespace Xamarin.Forms
 		public string Name { get; set; }
 		public IList<VisualState> States { get; }
 		public VisualState CurrentState { get; internal set; }
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal VisualElement VisualElement { get; set; }
 
 		internal VisualState GetState(string name)
@@ -456,8 +453,6 @@ namespace Xamarin.Forms
 		public IList<Setter> Setters { get; }
 		public IList<StateTriggerBase> StateTriggers { get; }
 		public Type TargetType { get; set; }
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal VisualStateGroup VisualStateGroup { get; set; }
 
 		internal VisualState Clone()

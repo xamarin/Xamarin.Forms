@@ -898,16 +898,12 @@ namespace Xamarin.Forms
 
 		void PropagateBindingContextToStateTriggers()
 		{
-			var stateTriggers = new List<StateTriggerBase>();
-
 			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
 
 			foreach (var group in groups)
 				foreach (var state in group.States)
 					foreach (var stateTrigger in state.StateTriggers)
-						stateTriggers.Add(stateTrigger);
-
-			this.PropagateBindingContext(stateTriggers);
+						SetInheritedBindingContext(stateTrigger, BindingContext);
 		}
 
 		void OnFocused()

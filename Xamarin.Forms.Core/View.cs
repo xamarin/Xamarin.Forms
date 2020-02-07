@@ -155,7 +155,6 @@ namespace Xamarin.Forms
 		protected override void OnBindingContextChanged()
 		{
 			this.PropagateBindingContext(GestureRecognizers);
-
 			base.OnBindingContextChanged();
 		}
 
