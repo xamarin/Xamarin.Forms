@@ -27,17 +27,14 @@ namespace Xamarin.Forms.DualScreen
 		List<string> _pendingPropertyChanges = new List<string>();
 		Rectangle _absoluteLayoutPosition;
 		bool _isWatchingForChanges = false;
-		readonly WeakEventManager _weakEventManager = new WeakEventManager();
 
 		TwoPaneViewLayoutGuide()
 		{
 			
 		}
 
-		public TwoPaneViewLayoutGuide(Layout layout)
+		public TwoPaneViewLayoutGuide(Layout layout) : this(layout, null)
 		{
-			_layout = layout;
-			_layout.PropertyChanged += OnLayoutPropertyChanged;
 		}
 
 
@@ -45,6 +42,9 @@ namespace Xamarin.Forms.DualScreen
 		{
 			_layout = layout;
 			_dualScreenService = dualScreenService;
+
+			if(_layout != null)
+				_layout.PropertyChanged += OnLayoutPropertyChanged;
 		}
 
 		void OnLayoutPropertyChanged(object sender, PropertyChangedEventArgs e)
