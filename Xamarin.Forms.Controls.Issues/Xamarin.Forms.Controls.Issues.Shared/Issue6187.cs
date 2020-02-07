@@ -34,24 +34,22 @@ namespace Xamarin.Forms.Controls.Issues
 				TextColor = Color.Red
 			};
 
+			Label label = new Label
+			{
+				Text = "The underline of the Entry above should be Green to match the " +
+						"color of the Placeholder text shown, " +
+						"not Red which is the Text Color"
+			};
+
 			StackLayout layout = new StackLayout
 			{
 				Padding = new Thickness(0, 50, 0, 0)
 			};
 
 			layout.Children.Add(entry);
+			layout.Children.Add(label);
 
 			Content = layout;
 		}
-
-
-
-#if UITEST
-		[Test]
-		public void ImageShouldLayoutOnTopOfButton()
-		{
-			
-		}
-#endif
 	}
 }
