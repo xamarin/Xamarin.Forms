@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -33,6 +34,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			stateGroups.Add(visualStateGroup);
 
 			return stateGroups;
+		}
+
+
+		[SetUp]
+		public void Setup()
+		{
+			Device.SetFlags(new List<string> { ExperimentalFlags.StateTriggersExperimental });
 		}
 
 		[Test]
