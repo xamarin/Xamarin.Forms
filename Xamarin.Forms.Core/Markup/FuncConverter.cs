@@ -70,10 +70,10 @@ namespace Xamarin.Forms.Markup
 			: base(o => string.Format(CultureInfo.InvariantCulture, format, o)) { }
 	}
 
-	public class BoolNotConverter : FuncConverter<bool>
+	public class NotConverter : FuncConverter<bool, bool>
 	{
-		static readonly Lazy<BoolNotConverter> instance = new Lazy<BoolNotConverter>(() => new BoolNotConverter());
-		public static BoolNotConverter Instance => instance.Value;
-		public BoolNotConverter() : base(t => !t) { }
+		static readonly Lazy<NotConverter> instance = new Lazy<NotConverter>(() => new NotConverter());
+		public static NotConverter Instance => instance.Value;
+		public NotConverter() : base(t => !t, t => !t) { }
 	}
 }

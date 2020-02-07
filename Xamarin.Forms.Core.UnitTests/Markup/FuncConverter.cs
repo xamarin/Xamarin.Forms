@@ -172,15 +172,15 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void BoolNotConverter()
+		public void NotConverter()
 		{
-			Markup.BoolNotConverter.Instance // Ensure instance create path covered
-				.AssertConvert(true, false)
-				.AssertConvert(false, true);
+			Markup.NotConverter.Instance // Ensure instance create path covered
+				.AssertConvert(true, false, twoWay: true)
+				.AssertConvert(false, true, twoWay: true);
 
-			Markup.BoolNotConverter.Instance // Ensure instance reuse path covered
-				.AssertConvert(true, false)
-				.AssertConvert(false, true);
+			Markup.NotConverter.Instance // Ensure instance reuse path covered
+				.AssertConvert(true, false, twoWay: true)
+				.AssertConvert(false, true, twoWay: true);
 		}
 	}
 }
