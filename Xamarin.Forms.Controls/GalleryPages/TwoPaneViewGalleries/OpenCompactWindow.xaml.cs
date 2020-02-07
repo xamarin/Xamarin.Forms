@@ -29,9 +29,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			{
 				Children =
 				{
+					new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},
 					button
 				},
-				BackgroundColor = Color.Blue,
+				BackgroundColor = Color.Yellow,
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill
 			};
@@ -50,7 +51,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 
 		private void Layout_BatchCommitted(object sender, Internals.EventArg<VisualElement> e)
 		{
-
+			if (sender is StackLayout layout)
+				System.Diagnostics.Debug.WriteLine($"{layout.Bounds}");
 		}
 	}
 }

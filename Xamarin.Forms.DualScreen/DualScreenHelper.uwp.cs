@@ -75,6 +75,7 @@ namespace Xamarin.Forms.DualScreen
 					}, 
 					true);
 
+
 					void OnFrameSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
                     {
 						if (windowClosed)
@@ -82,14 +83,7 @@ namespace Xamarin.Forms.DualScreen
 
                         contentPage.HeightRequest = frame.ActualWidth;
                         contentPage.WidthRequest = frame.ActualHeight;
-
-						Layout.LayoutChildIntoBoundingRegion(contentPage, new Rectangle(0, 0, frame.ActualWidth, frame.Height));
-
-						if (contentPage.Content is Layout layout)
-						{
-							Layout.LayoutChildIntoBoundingRegion(layout, new Rectangle(0, 0, frame.ActualWidth, frame.Height));
-						}
-
+						Layout.LayoutChildIntoBoundingRegion(contentPage, new Rectangle(0, 0, frame.ActualWidth, frame.ActualHeight));
 					}
 
 					void AppWindow_Closed(AppWindow sender, AppWindowClosedEventArgs a)
