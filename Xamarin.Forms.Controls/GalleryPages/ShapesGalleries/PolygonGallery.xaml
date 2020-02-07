@@ -58,14 +58,14 @@
                 <Label
                     Text="EvenOdd Polygon"/>
                 <Polygon
-                    HeightRequest="100"
+                    HeightRequest="200"
                     WidthRequest="200"
                     Style="{StaticResource EvenOddPolygon}"
                     FillRule="EvenOdd" />
                 <Label
                     Text="NonZero Polygon"/>
                 <Polygon
-                    HeightRequest="100"
+                    HeightRequest="200"
                     WidthRequest="200"
                     Style="{StaticResource NonzeroPolygon}"
                     FillRule="Nonzero" />
