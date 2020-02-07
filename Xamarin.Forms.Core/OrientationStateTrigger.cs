@@ -32,6 +32,7 @@ namespace Xamarin.Forms
 
 			if (!DesignMode.IsDesignModeEnabled)
 			{
+				UpdateState();
 				FormsDevice.Info.PropertyChanged += OnInfoPropertyChanged;
 			}
 		}

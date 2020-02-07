@@ -829,7 +829,6 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(trigger);
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal void InvalidateStateTriggers(bool attach)
 		{
 			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);

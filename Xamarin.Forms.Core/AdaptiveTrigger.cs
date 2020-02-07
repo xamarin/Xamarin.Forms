@@ -45,6 +45,7 @@ namespace Xamarin.Forms
 
 			if (!DesignMode.IsDesignModeEnabled)
 			{
+				UpdateState();
 				Application.Current.MainPage.SizeChanged += OnSizeChanged;
 			}
 		}

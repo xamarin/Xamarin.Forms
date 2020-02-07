@@ -2,9 +2,9 @@
 
 namespace Xamarin.Forms.DualScreen
 {
-	public class DualScreenSpanModeStateTrigger : StateTriggerBase
+	public class SpanModeStateTrigger : StateTriggerBase
 	{
-		public DualScreenSpanModeStateTrigger()
+		public SpanModeStateTrigger()
 		{
 			UpdateState();
 		}
@@ -16,12 +16,12 @@ namespace Xamarin.Forms.DualScreen
 		}
 
 		public static readonly BindableProperty SpanModeProperty =
-			BindableProperty.Create(nameof(SpanMode), typeof(TwoPaneViewMode), typeof(DualScreenSpanModeStateTrigger), default(TwoPaneViewMode),
+			BindableProperty.Create(nameof(SpanMode), typeof(TwoPaneViewMode), typeof(SpanModeStateTrigger), default(TwoPaneViewMode),
 				propertyChanged: OnSpanModeChanged);
 
 		static void OnSpanModeChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
-			((DualScreenSpanModeStateTrigger)bindable).UpdateState();
+			((SpanModeStateTrigger)bindable).UpdateState();
 		}
 
 		internal override void OnAttached()
@@ -30,6 +30,7 @@ namespace Xamarin.Forms.DualScreen
 
 			if (!DesignMode.IsDesignModeEnabled)
 			{
+				UpdateState();
 				DualScreenInfo.Current.PropertyChanged += OnDualScreenInfoPropertyChanged;
 			}
 		}

@@ -11,7 +11,7 @@
                 <VisualStateGroup>
                     <VisualState x:Name="NotSpanned">
                         <VisualState.StateTriggers>
-                            <dualScreen:DualScreenSpanModeStateTrigger SpanMode="SinglePane"/>
+                            <dualScreen:SpanModeStateTrigger SpanMode="SinglePane"/>
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Property="BackgroundColor" Value="Red" />
@@ -19,7 +19,7 @@
                     </VisualState>
                     <VisualState x:Name="Spanned">
                         <VisualState.StateTriggers>
-                            <dualScreen:DualScreenSpanModeStateTrigger SpanMode="Wide" />
+                            <dualScreen:SpanModeStateTrigger SpanMode="Wide" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Property="BackgroundColor" Value="Green" />
