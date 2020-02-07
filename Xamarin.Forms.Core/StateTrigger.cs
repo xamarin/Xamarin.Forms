@@ -16,8 +16,19 @@
 		{
 			if (newvalue is bool b)
 			{
-				((StateTrigger)bindable).SetActive(b);
+				((StateTrigger)bindable).UpdateState();
 			}
+		}
+
+		internal override void OnAttached()
+		{
+			base.OnAttached();
+			UpdateState();
+		}
+
+		void UpdateState()
+		{
+			SetActive(IsActive);
 		}
 	}
 }
