@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Xamarin.Forms.Maps;
 using Xamarin.Forms.Xaml;
+using Xamarin.Forms.Maps;
+using Map = Xamarin.Forms.Maps;
 
 namespace Xamarin.Forms.Controls.GalleryPages
 {
@@ -17,9 +18,9 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		SelectedElementType _selectedType;
 
-		Polyline _polyline;
-		Polygon _polygon;
-		Circle _circle;
+		Map.Polyline _polyline;
+		Map.Polygon _polygon;
+		Map.Circle _circle;
 
 		Random _random = new Random();
 
