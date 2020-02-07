@@ -1,4 +1,5 @@
-﻿using Mono.Cecil;
+﻿using System.IO;
+using Mono.Cecil;
 using NUnit.Framework;
 using IOPath = System.IO.Path;
 
@@ -10,7 +11,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		{
 			AssemblyDefinition assembly;
 			var localPath = IOPath.GetFullPath(IOPath.Combine(TestContext.CurrentContext.TestDirectory, $"{name.Name}.dll"));
-			if (IOPath.Exists(localPath))
+			if (File.Exists(localPath))
 				assembly = AssemblyDefinition.ReadAssembly(localPath);
 			else
 				assembly = base.Resolve(name);
