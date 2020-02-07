@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms.DualScreen
 {
-	public class SpanModeStateTrigger : StateTriggerBase
+	public sealed class SpanModeStateTrigger : StateTriggerBase
 	{
 		public SpanModeStateTrigger()
 		{
