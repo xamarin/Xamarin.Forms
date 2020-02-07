@@ -232,30 +232,25 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 				// Dont ever attempt to actually change the layout of a Page unless it is a ContentPage
 				// iOS is a really big fan of you not actually modifying the View's of the UIViewControllers
+				RectangleF? newTarget = null;
 				if (shouldUpdate && TrackFrame)
 				{
 #if __MOBILE__
-					var target = new RectangleF(x, y, width, height);
+					newTarget = new RectangleF(x, y, width, height);
 #else
 					var visualParent = parent as VisualElement;
 					float newY = visualParent == null ? y : Math.Max(0, (float)(visualParent.Height - y - view.Height));
 					var target = new RectangleF(x, newY, width, height);
 #endif
-
-					// must reset transform prior to setting frame...
-					if(caLayer.AnchorPoint != _originalAnchor)
-						caLayer.AnchorPoint = _originalAnchor;
-
-					caLayer.Transform = transform;
-					uiview.Frame = target;
-					if (shouldRelayoutSublayers)
-						caLayer.LayoutSublayers();
 				}
 				else if (width <= 0 || height <= 0)
 				{
 					//TODO: FInd why it doesn't work
 #if __MOBILE__
+				if (Foundation.NSThread.IsMain)
 					caLayer.Hidden = true;
+				else
+					CoreFoundation.DispatchQueue.MainQueue.DispatchAsync(() => caLayer.Hidden = true);
 #endif
 					return;
 				}
@@ -306,15 +301,29 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
 
-				if (Foundation.NSThread.IsMain)
+				void applyUpdate()
 				{
-					caLayer.Transform = transform;
-					return;
+					if (newTarget.HasValue) {
+						// must reset transform prior to setting frame...
+						if (caLayer.AnchorPoint != _originalAnchor)
+							caLayer.AnchorPoint = _originalAnchor;
+
+						caLayer.Transform = transform;
+						uiview.Frame = newTarget;
+
+						if (shouldRelayoutSublayers)
+							caLayer.LayoutSublayers();
+					}
+					else
+					{
+						caLayer.Transform = transform;
+					}
 				}
-				CoreFoundation.DispatchQueue.MainQueue.DispatchAsync(() =>
-				{
-					caLayer.Transform = transform;
-				});
+
+				if (Foundation.NSThread.IsMain)
+					applyUpdate();
+				else
+					CoreFoundation.DispatchQueue.MainQueue.DispatchAsync(applyUpdate);
 			}
 
 #if __MOBILE__
