@@ -4,24 +4,24 @@ namespace Xamarin.Forms
 {
 	public abstract class StateTriggerBase : BindableObject
 	{
-		bool _isTriggerActive;
-		public event EventHandler IsTriggerActiveChanged;
+		bool _isActive;
+		public event EventHandler IsActiveChanged;
 
 		public StateTriggerBase()
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(IndicatorView), ExperimentalFlags.StateTriggersExperimental);
 		}
 
-		public bool IsTriggerActive
+		public bool IsActive
 		{
-			get => _isTriggerActive;
+			get => _isActive;
 			private set
 			{
-				if (_isTriggerActive == value)
+				if (_isActive == value)
 					return;
 
-				_isTriggerActive = value;
-				IsTriggerActiveChanged?.Invoke(this, EventArgs.Empty);
+				_isActive = value;
+				IsActiveChanged?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
@@ -29,7 +29,7 @@ namespace Xamarin.Forms
 
 		protected void SetActive(bool active)
 		{
-			IsTriggerActive = active;
+			IsActive = active;
 
 			VisualState?.VisualStateGroup?.UpdateStateTriggers();
 		}

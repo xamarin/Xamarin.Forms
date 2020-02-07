@@ -333,7 +333,7 @@ namespace Xamarin.Forms
 				{
 					var trigger = state.StateTriggers[triggerIndex];
 
-					if (trigger.IsTriggerActive)
+					if (trigger.IsActive)
 					{
 						if(visualState == defaultState)
 							visualState = state;

@@ -24,7 +24,8 @@
 					GalleryBuilder.NavButton("DeviceStateTrigger Gallery", () => new DeviceStateTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("OrientationStateTrigger Gallery", () => new OrientationStateTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("StateTriggers directly on Elements", () => new StateTriggersDirectlyOnElements(), Navigation),
-					GalleryBuilder.NavButton("DualScreenStateTrigger Gallery", () => new DualScreenStateTriggerGallery(), Navigation)
+					GalleryBuilder.NavButton("DualScreenStateTrigger Gallery", () => new DualScreenStateTriggerGallery(), Navigation),
+					GalleryBuilder.NavButton("State Trigger IsActive Toggling", () => new StateTriggerToggleGallery(), Navigation),
 				}
 			};
 		}

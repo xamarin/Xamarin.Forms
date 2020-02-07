@@ -2,7 +2,7 @@
 {
 	public sealed class StateTrigger : StateTriggerBase
 	{
-		public bool IsActive
+		public new bool IsActive
 		{
 			get => (bool)GetValue(IsActiveProperty);
 			set => SetValue(IsActiveProperty, value);
