@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms
 {
-	public class StateTrigger : StateTriggerBase
+	public sealed class StateTrigger : StateTriggerBase
 	{
 		public bool IsActive
 		{
