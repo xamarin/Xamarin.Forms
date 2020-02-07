@@ -14,7 +14,7 @@
                         <VisualStateGroup>
                             <VisualState x:Name="Wide">
                                 <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding IsChecked, Source={x:Reference CheckBox}}"/>
+                                    <StateTrigger IsActive="{Binding ToggleState}"/>
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
                                     <Setter Property="BackgroundColor" Value="Green" />
@@ -22,7 +22,7 @@
                             </VisualState>
                             <VisualState x:Name="Narrow">
                                 <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding IsChecked, Source={x:Reference CheckBox}}"/>
+                                    <StateTrigger IsActive="{Binding ToggleStateInverted}"/>
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
                                     <Setter Property="BackgroundColor" Value="Red" />

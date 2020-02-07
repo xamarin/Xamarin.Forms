@@ -23,6 +23,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 			bool _toggleState;
 			bool _toggleStateInverted;
 
+			public StateTriggerToggleGalleryViewModel()
+			{
+				ToggleState = false;
+			}
+
 			public bool ToggleState
 			{
 				get => _toggleState;
