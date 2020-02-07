@@ -6,10 +6,18 @@
 		{
 			Title = "StateTrigger Gallery";
 
+			var button = new Button
+			{
+				Text = "Enable AdaptiveTriggers",
+				AutomationId = "EnableAdaptiveTriggers"
+			};
+			button.Clicked += ButtonClicked;
+
 			Content = new StackLayout
 			{
 				Children =
 				{
+					button,
 					GalleryBuilder.NavButton("MinWindowWidth AdaptiveTrigger Gallery", () => new MinWindowWidthAdaptiveTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("MinWindowHeight AdaptiveTrigger Gallery", () => new MinWindowHeightAdaptiveTriggerGallery(), Navigation),
 					GalleryBuilder.NavButton("CompareStateTrigger Gallery", () => new CompareStateTriggerGallery(), Navigation),
@@ -19,6 +27,17 @@
 					GalleryBuilder.NavButton("DualScreenStateTrigger Gallery", () => new DualScreenStateTriggerGallery(), Navigation)
 				}
 			};
+		}
+
+		void ButtonClicked(object sender, System.EventArgs e)
+		{
+			var button = sender as Button;
+
+			button.Text = "AdaptiveTriggers Enabled!";
+			button.TextColor = Color.Black;
+			button.IsEnabled = false;
+
+			Device.SetFlags(new[] { ExperimentalFlags.AdaptiveTriggersExperimental });
 		}
 	}
 }
