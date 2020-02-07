@@ -29,16 +29,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Entry entry = new Entry
 			{
-				Placeholder = "Enter text...",
+				Placeholder = "Placeholder text...",
 				PlaceholderColor = Color.Green,
+				Text = "Typed Text ",
 				TextColor = Color.Red
 			};
 
 			Label label = new Label
 			{
 				Text = "The underline of the Entry above should be Green to match the " +
-						"color of the Placeholder text shown, " +
-						"not Red which is the Text Color"
+						"color of the Placeholder text.",
+				FontSize = 18.0
 			};
 
 			StackLayout layout = new StackLayout
