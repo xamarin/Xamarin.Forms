@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.ComponentModel;
 using Xamarin.Forms.Internals;
 using FormsDevice = Xamarin.Forms.Device;
 
@@ -12,13 +12,13 @@ namespace Xamarin.Forms
 
 			if (!DesignMode.IsDesignModeEnabled)
 			{
-				var weakEvent = new WeakEventListener<OrientationStateTrigger, object, EventArgs>(this)
+				var weakEvent = new WeakEventListener<OrientationStateTrigger, object, PropertyChangedEventArgs>(this)
 				{
-					OnEventAction = (instance, source, eventArgs) => OnSizeChanged(source, eventArgs),
-					OnDetachAction = (listener) => { Application.Current.MainPage.SizeChanged -= listener.OnEvent; }
+					OnEventAction = (instance, source, eventArgs) => OnInfoPropertyChanged(source, eventArgs),
+					OnDetachAction = (listener) => { FormsDevice.Info.PropertyChanged -= listener.OnEvent; }
 				};
 
-				Application.Current.MainPage.SizeChanged += weakEvent.OnEvent;
+				FormsDevice.Info.PropertyChanged += weakEvent.OnEvent;
 			}
 		}
 
@@ -37,9 +37,10 @@ namespace Xamarin.Forms
 			((OrientationStateTrigger)bindable).UpdateState();
 		}
 
-		void OnSizeChanged(object sender, EventArgs e)
+		void OnInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			UpdateState();
+			if(e.PropertyName == "CurrentOrientation")
+				UpdateState();
 		}
 
 		void UpdateState()
