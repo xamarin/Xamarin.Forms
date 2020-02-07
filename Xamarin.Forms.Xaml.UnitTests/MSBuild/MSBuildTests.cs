@@ -557,14 +557,14 @@ namespace Xamarin.Forms.MSBuild.UnitTests
 		{
 			var project = NewProject (sdkStyle);
 			project.Add (AddFile ("MainPage.txt", "EmbeddedResource", "notxmlatall"));
-			var projectFile = Path.Combine (tempDirectory, "test.csproj");
+			var projectFile = IOPath.Combine (tempDirectory, "test.csproj");
 			project.Save (projectFile);
 			RestoreIfNeeded (projectFile, sdkStyle);
 			Build (projectFile);
 
-			AssertExists (Path.Combine (intermediateDirectory, "test.dll"), nonEmpty: true);
-			AssertDoesNotExist (Path.Combine (intermediateDirectory, "MainPage.txt.g.cs"));
-			AssertExists (Path.Combine (intermediateDirectory, "XamlC.stamp"));
+			AssertExists (IOPath.Combine (intermediateDirectory, "test.dll"), nonEmpty: true);
+			AssertDoesNotExist (IOPath.Combine (intermediateDirectory, "MainPage.txt.g.cs"));
+			AssertExists (IOPath.Combine (intermediateDirectory, "XamlC.stamp"));
 		}
 	}
 }
