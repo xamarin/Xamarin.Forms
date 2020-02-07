@@ -5,23 +5,15 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
-	[TestFixture(typeof(Label), false)] // Derived from View
-	[TestFixture(typeof(Label), true)]
-	[TestFixture(typeof(Span), false)]  // Derived from GestureElement
-	[TestFixture(typeof(Span), true)]
+	[TestFixture(typeof(Label))] // Derived from View
+	[TestFixture(typeof(Span))]  // Derived from GestureElement
 	public class ElementGesturesExtensionsTests<TGestureElement> : ElementGesturesBaseTestFixture where TGestureElement : Element, IGestureRecognizers, new()
 	{
-		readonly bool initExistingGestureRecognizer;
-
-		public ElementGesturesExtensionsTests(bool initExistingGestureRecognizer) { this.initExistingGestureRecognizer = initExistingGestureRecognizer; }
-
 		[Test]
 		public void BindClickGestureDefaults()
 		{
 			var gestureElement = new TGestureElement();
 
-			if (initExistingGestureRecognizer)
-				gestureElement.BindClickGesture();
 			gestureElement.BindClickGesture(commandPath);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<ClickGestureRecognizer>(gestureElement);
@@ -36,8 +28,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 			object commandSource = new ViewModel();
 			object parameterSource = new ViewModel();
 
-			if (initExistingGestureRecognizer)
-				gestureElement.BindClickGesture();
 			gestureElement.BindClickGesture(commandPath, commandSource, parameterPath, parameterSource);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<ClickGestureRecognizer>(gestureElement);
@@ -50,8 +40,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			var gestureElement = new TGestureElement();
 
-			if (initExistingGestureRecognizer)
-				gestureElement.BindTapGesture();
 			gestureElement.BindTapGesture(commandPath);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<TapGestureRecognizer>(gestureElement);
@@ -66,8 +54,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 			object commandSource = new ViewModel();
 			object parameterSource = new ViewModel();
 
-			if (initExistingGestureRecognizer)
-				gestureElement.BindTapGesture();
 			gestureElement.BindTapGesture(commandPath, commandSource, parameterPath, parameterSource);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<TapGestureRecognizer>(gestureElement);
@@ -81,8 +67,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureElement = new TGestureElement();
 			ClickGestureRecognizer gestureRecognizer = null;
 
-			if (initExistingGestureRecognizer)
-				gestureElement.ClickGesture(g => { });
 			gestureElement.ClickGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
@@ -94,29 +78,20 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureElement = new TGestureElement();
 			TapGestureRecognizer gestureRecognizer = null;
 
-			if (initExistingGestureRecognizer)
-				gestureElement.TapGesture(g => { });
 			gestureElement.TapGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
 		}
 	}
 
-	[TestFixture(false)]
-	[TestFixture(true)]
+	[TestFixture]
 	public class ElementGesturesExtensionsTests : ElementGesturesBaseTestFixture
 	{
-		readonly bool initExistingGestureRecognizer;
-
-		public ElementGesturesExtensionsTests(bool initExistingGestureRecognizer) { this.initExistingGestureRecognizer = initExistingGestureRecognizer; }
-
 		[Test]
 		public void BindSwipeGestureDefaults()
 		{
 			var gestureElement = new Label();
 
-			if (initExistingGestureRecognizer)
-				gestureElement.BindSwipeGesture();
 			gestureElement.BindSwipeGesture(commandPath);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<SwipeGestureRecognizer>(gestureElement);
@@ -131,8 +106,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 			object commandSource = new ViewModel();
 			object parameterSource = new ViewModel();
 
-			if (initExistingGestureRecognizer)
-				gestureElement.BindSwipeGesture();
 			gestureElement.BindSwipeGesture(commandPath, commandSource, parameterPath, parameterSource);
 
 			var gestureRecognizer = AssertHasGestureRecognizer<SwipeGestureRecognizer>(gestureElement);
@@ -146,8 +119,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureElement = new Label();
 			PanGestureRecognizer gestureRecognizer = null;
 
-			if (initExistingGestureRecognizer)
-				gestureElement.PanGesture(g => { });
 			gestureElement.PanGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
@@ -159,8 +130,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureElement = new Label();
 			PinchGestureRecognizer gestureRecognizer = null;
 
-			if (initExistingGestureRecognizer)
-				gestureElement.PinchGesture(g => { });
 			gestureElement.PinchGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
@@ -172,11 +141,24 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureElement = new Label();
 			SwipeGestureRecognizer gestureRecognizer = null;
 
-			if (initExistingGestureRecognizer)
-				gestureElement.SwipeGesture(g => { });
 			gestureElement.SwipeGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
+		}
+
+		[Test]
+		public void MultipleGestures()
+		{
+			var gestureElement = new Label();
+			TapGestureRecognizer gestureRecognizer1 = null, gestureRecognizer2 = null;
+			SwipeGestureRecognizer gestureRecognizer3 = null;
+
+			gestureElement.TapGesture(g => gestureRecognizer1 = g);
+			gestureElement.TapGesture(g => gestureRecognizer2 = g);
+			gestureElement.SwipeGesture(g => gestureRecognizer3 = g);
+
+			AssertHasGestureRecognizers(gestureElement, gestureRecognizer1, gestureRecognizer2);
+			AssertHasGestureRecognizer(gestureElement, gestureRecognizer3);
 		}
 
 		[Test]
@@ -185,8 +167,6 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureElement = new Label();
 			DerivedFromGestureRecognizer gestureRecognizer = null;
 
-			if (initExistingGestureRecognizer)
-				gestureElement.Gesture((DerivedFromGestureRecognizer g) => { });
 			gestureElement.Gesture((DerivedFromGestureRecognizer g) => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
@@ -213,16 +193,30 @@ namespace Xamarin.Forms.Markup.UnitTests
 	{
 		protected const string commandPath = nameof(ViewModel.Command), parameterPath = nameof(ViewModel.Id);
 
-		protected TGestureRecognizer AssertHasGestureRecognizer<TGestureRecognizer>(IGestureRecognizers element, TGestureRecognizer gestureRecognizer = null)
+		protected TGestureRecognizer AssertHasGestureRecognizer<TGestureRecognizer>(IGestureRecognizers element)
+			where TGestureRecognizer : GestureRecognizer
+			=> AssertHasGestureRecognizers<TGestureRecognizer>(element, 1)[0];
+
+		protected TGestureRecognizer AssertHasGestureRecognizer<TGestureRecognizer>(IGestureRecognizers element, TGestureRecognizer gestureRecognizer)
+			where TGestureRecognizer : GestureRecognizer
+			=> AssertHasGestureRecognizers(element, 1, gestureRecognizer)[0];
+
+		protected TGestureRecognizer[] AssertHasGestureRecognizers<TGestureRecognizer>(IGestureRecognizers element, params TGestureRecognizer[] gestureRecognizers)
+			where TGestureRecognizer : GestureRecognizer
+			=> AssertHasGestureRecognizers(element, gestureRecognizers.Length, gestureRecognizers: gestureRecognizers);
+
+		protected TGestureRecognizer[] AssertHasGestureRecognizers<TGestureRecognizer>(IGestureRecognizers element, int count, params TGestureRecognizer[] gestureRecognizers)
 			where TGestureRecognizer : GestureRecognizer
 		{
-			if (gestureRecognizer == null)
-				gestureRecognizer = (TGestureRecognizer)element?.GestureRecognizers?.FirstOrDefault(g => g is TGestureRecognizer);
+			if (gestureRecognizers.Length == 0)
+				gestureRecognizers = element?.GestureRecognizers?.Where(g => g is TGestureRecognizer).Cast<TGestureRecognizer>().ToArray();
 
-			Assert.That(gestureRecognizer, Is.Not.Null);
-			Assert.That(element?.GestureRecognizers?.Count(g => Object.ReferenceEquals(g, gestureRecognizer)) ?? 0, Is.EqualTo(1));
+			Assert.That(gestureRecognizers.Length, Is.EqualTo(count));
 
-			return gestureRecognizer;
+			foreach (var gestureRecognizer in gestureRecognizers)
+				Assert.That(element?.GestureRecognizers?.Count(g => Object.ReferenceEquals(g, gestureRecognizer)) ?? 0, Is.EqualTo(1));
+
+			return gestureRecognizers;
 		}
 
 		protected class DerivedFromLabel : Label { }
