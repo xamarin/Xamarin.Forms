@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
@@ -34,7 +35,7 @@ namespace Xamarin.Forms.Controls
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
 
-			SetMainPage(CreateDefaultMainPage());
+			SetMainPage(new OpenCompactWindow());
 
 			//TestMainPageSwitches();
 

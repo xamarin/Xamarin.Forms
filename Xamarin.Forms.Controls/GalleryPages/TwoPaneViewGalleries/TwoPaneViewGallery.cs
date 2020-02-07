@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 				Children =
 				{
 					GalleryBuilder.NavButton("Nested TwoPaneView Split Across Hinge", () => new NestedTwoPaneViewSplitAcrossHinge(), Navigation),
+					GalleryBuilder.NavButton("Open Picture in Picture Window", () => new OpenCompactWindow(), Navigation),
 				}
 			};
 		}

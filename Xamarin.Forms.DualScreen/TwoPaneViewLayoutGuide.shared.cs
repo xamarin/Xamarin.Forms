@@ -47,11 +47,14 @@ namespace Xamarin.Forms.DualScreen
 				_layout.PropertyChanged += OnLayoutPropertyChanged;
 		}
 
-		void OnLayoutPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void CheckIsPlatformEnabled()
 		{
-			if(_layout.IsPlatformEnabled)
+			if (_layout == null)
+				return;
+
+			if (_layout.IsPlatformEnabled)
 			{
-				if(!_isWatchingForChanges)
+				if (!_isWatchingForChanges)
 				{
 					WatchForChanges();
 					_isWatchingForChanges = true;
@@ -65,7 +68,10 @@ namespace Xamarin.Forms.DualScreen
 					_isWatchingForChanges = false;
 				}
 			}
+
 		}
+
+		void OnLayoutPropertyChanged(object sender, PropertyChangedEventArgs e) => CheckIsPlatformEnabled();
 
 		public void WatchForChanges()
 		{
@@ -100,11 +106,13 @@ namespace Xamarin.Forms.DualScreen
 
 		void OnScreenChanged(object sender, EventArgs e)
 		{
-			if(_layout == null)
+			if (_layout == null)
 			{
 				UpdateLayouts();
 				return;
 			}
+
+			CheckIsPlatformEnabled();
 
 			var screenPosition = DualScreenService.GetLocationOnScreen(_layout);
 			if (screenPosition == null)
@@ -121,6 +129,7 @@ namespace Xamarin.Forms.DualScreen
 
 		void OnDeviceInfoChanged(object sender, PropertyChangedEventArgs args)
 		{
+			CheckIsPlatformEnabled();
 			if (args.PropertyName == nameof(DualScreenService.DeviceInfo.CurrentOrientation))
 			{
 				UpdateLayouts();
@@ -218,6 +227,8 @@ namespace Xamarin.Forms.DualScreen
 
 		internal void UpdateLayouts()
 		{
+			CheckIsPlatformEnabled();
+
 			Rectangle containerArea = GetContainerArea();
 			if (containerArea.Width <= 0)
 			{
