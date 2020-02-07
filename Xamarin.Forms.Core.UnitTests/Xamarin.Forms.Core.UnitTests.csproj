@@ -79,7 +79,7 @@
     <Compile Include="Markup\DefaultBindablePropertiesTests.cs" />
     <Compile Include="Markup\BindableObjectExtensionsTests.cs" />
     <Compile Include="Markup\ElementExtensionsTests.cs" />
-    <Compile Include="Markup\GridRowColEnums.cs" />
+    <Compile Include="Markup\GridRowsColumns.cs" />
     <Compile Include="Markup\FuncConverter.cs" />
     <Compile Include="Markup\LayoutExtensionsTests.cs" />
     <Compile Include="Markup\StyleTests.cs" />

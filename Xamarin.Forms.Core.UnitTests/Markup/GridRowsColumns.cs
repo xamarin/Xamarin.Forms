@@ -1,11 +1,11 @@
 ﻿using System;
 using NUnit.Framework;
-using static Xamarin.Forms.Markup.GridRowCol;
+using static Xamarin.Forms.Markup.GridRowsColumns;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
 	[TestFixture]
-	public class GridRowCol : MarkupBaseTestFixture
+	public class GridRowsColumns : MarkupBaseTestFixture
 	{
 		enum Row { First, Second, Third }
 		enum Col { First, Second, Third, Fourth }
