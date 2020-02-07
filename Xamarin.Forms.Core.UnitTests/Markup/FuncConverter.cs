@@ -7,6 +7,25 @@ namespace Xamarin.Forms.Markup.UnitTests
 	public class FuncConverter : MarkupBaseTestFixture
 	{
 		[Test]
+		public void FullyTypedTwoWayWithParamAndCulture()
+		{
+			CultureInfo convertCulture = null, convertBackCulture = null;
+			var expectedCulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
+			var converter = new FuncConverter<bool, Color, double>(
+				(isRed, alpha, culture) => { convertCulture = culture; return (isRed ? Color.Red : Color.Green).MultiplyAlpha(alpha); },
+				(color, alpha, culture) => { convertBackCulture = culture; return color == Color.Red.MultiplyAlpha(alpha); }
+			).AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5), twoWay: true, culture: expectedCulture)
+			 .AssertConvert(false, 0.2, Color.Green.MultiplyAlpha(0.2), twoWay: true, culture: expectedCulture);
+
+			Assert.That(convertCulture, Is.EqualTo(expectedCulture));
+			Assert.That(convertBackCulture, Is.EqualTo(expectedCulture));
+
+			Assert.That(converter.Convert(null, typeof(object), null, CultureInfo.InvariantCulture), Is.EqualTo(Color.Green.MultiplyAlpha(default(double))));
+			Assert.That(converter.ConvertBack(null, typeof(object), null, CultureInfo.InvariantCulture), Is.EqualTo(default(bool)));
+		}
+
+		[Test]
 		public void FullyTypedTwoWayWithParam()
 		{
 			var converter = new FuncConverter<bool, Color, double>(

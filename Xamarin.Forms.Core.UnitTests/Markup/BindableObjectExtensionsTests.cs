@@ -737,15 +737,15 @@ namespace Xamarin.Forms.Markup.UnitTests
 			return bindingFieldInfo?.GetValue(context) as Binding;
 		}
 
-		internal static IValueConverter AssertConvert<TValue, TConvertedValue>(this IValueConverter converter, TValue value, object parameter, TConvertedValue expectedConvertedValue, bool twoWay = false, bool backOnly = false)
+		internal static IValueConverter AssertConvert<TValue, TConvertedValue>(this IValueConverter converter, TValue value, object parameter, TConvertedValue expectedConvertedValue, bool twoWay = false, bool backOnly = false, CultureInfo culture = null)
 		{
-			Assert.That(converter?.Convert(value, typeof(object), parameter, CultureInfo.InvariantCulture), Is.EqualTo(backOnly ? default(TConvertedValue) : expectedConvertedValue));
-			Assert.That(converter?.ConvertBack(expectedConvertedValue, typeof(object), parameter, CultureInfo.InvariantCulture), Is.EqualTo(twoWay || backOnly ? value : default(TValue)));
+			Assert.That(converter?.Convert(value, typeof(object), parameter, culture), Is.EqualTo(backOnly ? default(TConvertedValue) : expectedConvertedValue));
+			Assert.That(converter?.ConvertBack(expectedConvertedValue, typeof(object), parameter, culture), Is.EqualTo(twoWay || backOnly ? value : default(TValue)));
 			return converter;
 		}
 
-		internal static IValueConverter AssertConvert<TValue, TConvertedValue>(this IValueConverter converter, TValue value, TConvertedValue expectedConvertedValue, bool twoWay = false, bool backOnly = false)
-			=> AssertConvert(converter, value, null, expectedConvertedValue, twoWay: twoWay, backOnly: backOnly);
+		internal static IValueConverter AssertConvert<TValue, TConvertedValue>(this IValueConverter converter, TValue value, TConvertedValue expectedConvertedValue, bool twoWay = false, bool backOnly = false, CultureInfo culture = null)
+			=> AssertConvert(converter, value, null, expectedConvertedValue, twoWay: twoWay, backOnly: backOnly, culture: culture);
 	}
 }
 
