@@ -71,7 +71,6 @@ namespace Xamarin.Forms.DualScreen
             }
         }
 
-
         Rectangle[] GetSpanningBounds()
         {
             var guide = _twoPaneViewLayoutGuide;

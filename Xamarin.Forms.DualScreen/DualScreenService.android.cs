@@ -80,8 +80,8 @@ namespace Xamarin.Forms.DualScreen
 
 				if (_HingeService._hingeSensor != null)
 				{
-					_HingeService._hingeSensor.OnSensorChanged -= _HingeService.OnSensorChanged;
-					_HingeService._hingeSensor.StopListening();
+					//_HingeService._hingeSensor.OnSensorChanged -= _HingeService.OnSensorChanged;
+					//_HingeService._hingeSensor.StopListening();
 				}
 
 				_HingeService._isDuo = _HingeService._helper.Initialize(_HingeService.MainActivity);
@@ -140,8 +140,8 @@ namespace Xamarin.Forms.DualScreen
 			{
 				if (_hingeSensor != null)
 				{
-					_hingeSensor.OnSensorChanged -= OnSensorChanged;
-					_hingeSensor.StopListening();
+					//_hingeSensor.OnSensorChanged -= OnSensorChanged;
+					//_hingeSensor.StopListening();
 				}
 			}
 
