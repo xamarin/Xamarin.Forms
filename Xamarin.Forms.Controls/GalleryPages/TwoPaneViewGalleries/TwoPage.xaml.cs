@@ -97,9 +97,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 		{
 			ContentWidth = IsSpanned ? (DualScreenLayoutInfo.SpanningBounds[0].Width) : layout.Width;
 			ContentHeight = (!DualScreenLayoutInfo.IsLandscape) ? Pane1Height : Pane1Height + Pane2Height;
-
 			disableUpdates = true;
-            var resetCV = cv;
             if (linearLayout == null && cv.ItemsLayout is LinearItemsLayout linear)
             {
                 linearLayout = cv.ItemsLayout;
@@ -114,38 +112,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
             {
                 if (cv.ItemsLayout != linearLayout)
                 {
-                    //resetCV.ItemsSource = null;
-                    resetCV.ItemsLayout = linearLayout;
-                   // layout.Children.Remove(cv);
+					cv.ItemsLayout = linearLayout;
                 }
             }
             else
             {
                 if (cv.ItemsLayout != gridLayout)
                 {
-                    //esetCV.ItemsSource = null;
-                    resetCV.ItemsLayout = gridLayout;
-                    //layout.Children.Remove(cv);
+					cv.ItemsLayout = gridLayout;
                 }
-            }
+			}
 
-            if (layout.Children.Count == 0 || resetCV.ItemsSource == null)
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    //layout.Children.Add(cv);
-                    resetCV.ItemsSource =
-                        Enumerable.Range(0, 1000)
-                            .Select(i => $"Page {i}")
-                            .ToList();
-
-                    disableUpdates = false;
-                });
-            }
-            else
-            {
-                disableUpdates = false;
-            }
+			disableUpdates = false;
         }
     }
 }
