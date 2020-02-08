@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
+using Android.Util;
 using Android.Views;
 using Microsoft.Device.Display;
 using Xamarin.Forms;
@@ -25,7 +26,6 @@ namespace Xamarin.Forms.DualScreen
 		internal class DualScreenServiceImpl : IDualScreenService, IDisposable
 		{
 			public event EventHandler OnScreenChanged;
-			GenericGlobalLayoutListener _genericGlobalLayoutListener;
 			ScreenHelper _helper;
 			bool _isDuo = false;
 			HingeSensor _hingeSensor;
@@ -35,6 +35,7 @@ namespace Xamarin.Forms.DualScreen
 			int _hingeAngle;
 			Rectangle _hingeLocation;
 			bool _isLandscape;
+			Size _pixelScreenSize;
 
 			Activity MainActivity
 			{
@@ -45,7 +46,6 @@ namespace Xamarin.Forms.DualScreen
 			public DualScreenServiceImpl()
 			{
 				_HingeService = this;
-				_genericGlobalLayoutListener = new GenericGlobalLayoutListener(() => OnScreenChanged?.Invoke(this, EventArgs.Empty));
 				if (_mainActivity != null)
 					Init(_mainActivity);
 			}
@@ -89,17 +89,38 @@ namespace Xamarin.Forms.DualScreen
 				if (_HingeService._isDuo)
 				{
 					_HingeService._hingeSensor = new HingeSensor(_HingeService.MainActivity);
-					_HingeService._hingeSensor.OnSensorChanged += _HingeService.OnSensorChanged;
-					_HingeService._hingeSensor.StartListening();
+					//_HingeService._hingeSensor.OnSensorChanged += _HingeService.OnSensorChanged;
+					//_HingeService._hingeSensor.StartListening();
 				}
 			}
 
 			void ConfigurationChanged(object sender, EventArgs e)
 			{
+				bool screenChanged = false;
 				if (_isLandscape != IsLandscape)
-					OnScreenChanged?.Invoke(this, e);
+				{
+					_isLandscape = IsLandscape;
+					screenChanged = true;
+				}
 
-				_isLandscape = IsLandscape;
+				if (_mainActivity != null)
+				{
+					using (DisplayMetrics display = _mainActivity.Resources.DisplayMetrics)
+					{
+						var scalingFactor = display.Density;
+						_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
+						var newSize = new Size(_pixelScreenSize.Width / scalingFactor, _pixelScreenSize.Height / scalingFactor);
+
+						if (newSize != ScaledScreenSize)
+						{
+							ScaledScreenSize = newSize;
+							screenChanged = true;
+						}
+					}
+				}
+
+				if(screenChanged)
+					OnScreenChanged?.Invoke(this, e);
 			}
 
 			void OnSensorChanged(object sender, HingeSensor.HingeSensorChangedEventArgs e)
@@ -124,10 +145,14 @@ namespace Xamarin.Forms.DualScreen
 				}
 			}
 
+			public Size ScaledScreenSize
+			{
+				get;
+				private set;
+			}
+
 			public bool IsSpanned
 				=> _isDuo && (_helper?.IsDualMode ?? false);
-
-			public DeviceInfo DeviceInfo => Device.info;
 
 			public Rectangle GetHinge()
 			{
@@ -170,23 +195,54 @@ namespace Xamarin.Forms.DualScreen
 				return new Point(view.View.Context.FromPixels(location[0]), view.View.Context.FromPixels(location[1]));
 			}
 
-			public void WatchForChangesOnLayout(VisualElement visualElement)
+			public object WatchForChangesOnLayout(VisualElement visualElement, Action action)
 			{
+				if (action == null)
+					return null;
+
 				var view = Platform.Android.Platform.GetRenderer(visualElement);
+				var androidView = view?.View;
 
-				if (view?.View == null)
-					return;
+				if (androidView == null)
+					return null;
 
-				view.View.ViewTreeObserver.AddOnGlobalLayoutListener(_genericGlobalLayoutListener);
+				ViewTreeObserver.IOnGlobalLayoutListener listener = null;
+				listener = new GenericGlobalLayoutListener(() =>
+				{
+					if (!androidView.IsAlive())
+					{
+						action = null;
+						androidView = null;
+						try
+						{
+							_mainActivity?.Window?.DecorView?.RootView?.ViewTreeObserver?.RemoveOnGlobalLayoutListener(listener);
+						}
+						catch
+						{
+							// just in case something along the call path here is disposed of
+						}
+
+						return;
+					}
+
+					action?.Invoke();
+				});
+
+				view.View.ViewTreeObserver.AddOnGlobalLayoutListener(listener);
+				return listener;
 			}
 
-			public void StopWatchingForChangesOnLayout(VisualElement visualElement)
+			public void StopWatchingForChangesOnLayout(VisualElement visualElement, object handle)
 			{
+				if (handle == null)
+					return;
+
 				var view = Platform.Android.Platform.GetRenderer(visualElement);
 				if (view?.View == null)
 					return;
 
-				view.View.ViewTreeObserver.RemoveOnGlobalLayoutListener(_genericGlobalLayoutListener);
+				if (handle is ViewTreeObserver.IOnGlobalLayoutListener vto)
+					view.View.ViewTreeObserver.RemoveOnGlobalLayoutListener(vto);
 			}
 		}
 	}

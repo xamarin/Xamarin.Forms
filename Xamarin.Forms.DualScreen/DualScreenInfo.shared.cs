@@ -76,7 +76,6 @@ namespace Xamarin.Forms.DualScreen
         {
             var guide = _twoPaneViewLayoutGuide;
             var hinge = guide.Hinge;
-            guide.UpdateLayouts();
 
             if (hinge == Rectangle.Zero)
                 return new Rectangle[0];
@@ -90,7 +89,6 @@ namespace Xamarin.Forms.DualScreen
         Rectangle GetHingeBounds()
         {
             var guide = _twoPaneViewLayoutGuide;
-            guide.UpdateLayouts();
             return guide.Hinge;
         }
 
@@ -101,6 +99,7 @@ namespace Xamarin.Forms.DualScreen
         static DualScreenInfo OnCreate()
         {
             DualScreenInfo dualScreenInfo = new DualScreenInfo(null);
+			dualScreenInfo._twoPaneViewLayoutGuide.WatchForChanges();
 			dualScreenInfo._twoPaneViewLayoutGuide.PropertyChanged += dualScreenInfo.OnTwoPaneViewLayoutGuideChanged;
             return dualScreenInfo;
         }
