@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,6 @@ using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.Widget;
 using Android.Support.V7.Graphics.Drawable;
@@ -25,7 +25,6 @@ using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 using Object = Java.Lang.Object;
 using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 using static Android.Views.View;
-using System.IO;
 using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
@@ -224,6 +223,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_toolbarTracker != null)
 				{
 					_toolbarTracker.CollectionChanged -= ToolbarTrackerOnCollectionChanged;
+					_toolbarTracker.ToolbarItemsCollectionChanged -= ToolbarTrackerOnToolbarItemsCollectionChanged;
 
 					_toolbar.DisposeMenuItems(_toolbarTracker?.ToolbarItems, OnToolbarItemPropertyChanged);
 
@@ -340,6 +340,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					SetupToolbar();
 					_toolbarTracker = new ToolbarTracker();
 					_toolbarTracker.CollectionChanged += ToolbarTrackerOnCollectionChanged;
+					_toolbarTracker.ToolbarItemsCollectionChanged += ToolbarTrackerOnToolbarItemsCollectionChanged;
 				}
 
 				var parents = new List<Page>();
@@ -894,6 +895,19 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void ToolbarTrackerOnCollectionChanged(object sender, EventArgs eventArgs)
 		{
 			UpdateMenu();
+		}
+
+		void ToolbarTrackerOnToolbarItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.OldItems == null)
+			{
+				return;
+			}
+
+			foreach (var toolbarItem in e.OldItems.OfType<ToolbarItem>())
+			{
+				toolbarItem.PropertyChanged -= OnToolbarItemPropertyChanged;
+			}
 		}
 
 		void UpdateMenu()

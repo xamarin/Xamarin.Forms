@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -57,8 +57,8 @@ namespace Xamarin.Forms.Internals
 				List<ToolbarItem> returnValue = GetCurrentToolbarItems(Target);
 
 				if (AdditionalTargets != null)
-					foreach(var item in AdditionalTargets)
-						foreach(var toolbarItem in item.ToolbarItems)
+					foreach (var item in AdditionalTargets)
+						foreach (var toolbarItem in item.ToolbarItems)
 							returnValue.Add(toolbarItem);
 
 				returnValue.Sort(_toolBarItemComparer);
@@ -70,6 +70,11 @@ namespace Xamarin.Forms.Internals
 
 		void EmitCollectionChanged()
 			=> CollectionChanged?.Invoke(this, EventArgs.Empty);
+
+		public event EventHandler<NotifyCollectionChangedEventArgs> ToolbarItemsCollectionChanged;
+
+		void EmitToolbarItemsCollectionChanged(NotifyCollectionChangedEventArgs eventArgs) 
+			=> ToolbarItemsCollectionChanged?.Invoke(this, eventArgs);
 
 		List<ToolbarItem> GetCurrentToolbarItems(Page page)
 		{
@@ -131,6 +136,8 @@ namespace Xamarin.Forms.Internals
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
 			EmitCollectionChanged();
+
+			EmitToolbarItemsCollectionChanged(notifyCollectionChangedEventArgs);
 		}
 
 		void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
