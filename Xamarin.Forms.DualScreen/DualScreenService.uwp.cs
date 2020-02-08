@@ -37,7 +37,7 @@ namespace Xamarin.Forms.DualScreen
         {
             get
             {
-                var visibleBounds = ApplicationView.GetForCurrentView().VisibleBounds;
+                var visibleBounds = Window.Current.Bounds;
 
                 if (visibleBounds.Height > 1200 || visibleBounds.Width > 1200)
                     return true;

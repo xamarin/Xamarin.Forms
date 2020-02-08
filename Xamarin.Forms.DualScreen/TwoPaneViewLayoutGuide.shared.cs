@@ -44,13 +44,13 @@ namespace Xamarin.Forms.DualScreen
 			_dualScreenService = dualScreenService;
 
 			if(_layout != null)
+			{
 				_layout.PropertyChanged += OnLayoutPropertyChanged;
-
-			if (_layout != null)
 				_layout.PropertyChanging += OnLayoutPropertyChanging;
+			}
 		}
 
-		private void OnLayoutPropertyChanging(object sender, PropertyChangingEventArgs e)
+		void OnLayoutPropertyChanging(object sender, PropertyChangingEventArgs e)
 		{
 			if (e.PropertyName == "Renderer")
 				StopWatchingForChanges();

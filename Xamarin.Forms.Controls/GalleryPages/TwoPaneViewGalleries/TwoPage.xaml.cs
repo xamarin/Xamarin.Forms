@@ -14,8 +14,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TwoPage : ContentPage
     {
-        IItemsLayout linearLayout = null;
-        IItemsLayout gridLayout = null;
+		IItemsLayout horizontalLayout = null;
+        IItemsLayout verticalItemsLayout = null;
         bool disableUpdates = false;
 		private double contentWidth;
 		private double contentHeight;
@@ -98,29 +98,30 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			ContentWidth = IsSpanned ? (DualScreenLayoutInfo.SpanningBounds[0].Width) : layout.Width;
 			ContentHeight = (!DualScreenLayoutInfo.IsLandscape) ? Pane1Height : Pane1Height + Pane2Height;
 			disableUpdates = true;
-            if (linearLayout == null && cv.ItemsLayout is LinearItemsLayout linear)
-            {
-                linearLayout = cv.ItemsLayout;
-                linear.SnapPointsType = SnapPointsType.None;
-                linear.SnapPointsAlignment = SnapPointsAlignment.Start;
-            }
-
-            if (gridLayout == null && cv.ItemsLayout is GridItemsLayout)
-                gridLayout = cv.ItemsLayout;
-            
-            if (DualScreenLayoutInfo.IsLandscape)
-            {
-                if (cv.ItemsLayout != linearLayout)
-                {
-					cv.ItemsLayout = linearLayout;
-                }
-            }
-            else
-            {
-                if (cv.ItemsLayout != gridLayout)
-                {
-					cv.ItemsLayout = gridLayout;
-                }
+			if (verticalItemsLayout == null)
+			{
+				horizontalLayout = cv.ItemsLayout;
+				verticalItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical)
+				{
+					SnapPointsAlignment = SnapPointsAlignment.Start,
+					SnapPointsType = SnapPointsType.None
+				};
+			}
+			
+			if (!DualScreenLayoutInfo.IsLandscape)
+			{
+				if (cv.ItemsLayout != horizontalLayout)
+				{
+					cv.ItemsLayout = horizontalLayout;
+				}
+			}
+			else
+			{
+					
+				if (cv.ItemsLayout != verticalItemsLayout)
+				{
+					cv.ItemsLayout = verticalItemsLayout;
+				}
 			}
 
 			disableUpdates = false;

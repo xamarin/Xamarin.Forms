@@ -203,7 +203,7 @@ namespace Xamarin.Forms.DualScreen
 				var view = Platform.Android.Platform.GetRenderer(visualElement);
 				var androidView = view?.View;
 
-				if (androidView == null)
+				if (androidView == null || !androidView.IsAlive())
 					return null;
 
 				ViewTreeObserver.IOnGlobalLayoutListener listener = null;
@@ -228,7 +228,7 @@ namespace Xamarin.Forms.DualScreen
 					action?.Invoke();
 				});
 
-				view.View.ViewTreeObserver.AddOnGlobalLayoutListener(listener);
+				androidView.ViewTreeObserver.AddOnGlobalLayoutListener(listener);
 				return listener;
 			}
 
