@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
             if (detailsPage.BindingContext == null)
                 return;
 
-            if (!IsSpanned || DualScreenInfo.Current.IsLandscape)
+            if (!IsSpanned)
             {
                 if (!Navigation.NavigationStack.Contains(detailsPagePushed))
                 {

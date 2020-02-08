@@ -60,6 +60,13 @@ namespace Xamarin.Forms.DualScreen
 		bool _updatingMode = false;
 		bool _performingLayout = false;
 		bool _processPendingChange = false;
+		Rectangle _layoutGuidePane1;
+		Rectangle _layoutGuidePane2;
+		TwoPaneViewMode _layoutGuideMode;
+		Rectangle _layoutGuideHinge;
+		bool _layoutGuideIsLandscape;
+		double _previousWidth = -1;
+		double _previousHeight = -1;
 
 		public static readonly BindableProperty TallModeConfigurationProperty
 			= BindableProperty.Create("TallModeConfiguration", typeof(TwoPaneViewTallModeConfiguration), typeof(TwoPaneView), defaultValue: TwoPaneViewTallModeConfiguration.TopBottom, propertyChanged: OnJustInvalidateLayout);
@@ -114,6 +121,23 @@ namespace Xamarin.Forms.DualScreen
 		static void OnJustInvalidateLayout(BindableObject bindable, object oldValue, object newValue)
 		{
 			var b = (TwoPaneView)bindable;
+
+			if (b._twoPaneViewLayoutGuide.Pane1 == b._layoutGuidePane1 &&
+				b._twoPaneViewLayoutGuide.Pane2 == b._layoutGuidePane2 &&
+				b._twoPaneViewLayoutGuide.Mode == b._layoutGuideMode &&
+				b._twoPaneViewLayoutGuide.Hinge == b._layoutGuideHinge &&
+				b._twoPaneViewLayoutGuide.IsLandscape == b._layoutGuideIsLandscape)
+			{
+				return;
+			}
+
+			b._layoutGuidePane1 = b._twoPaneViewLayoutGuide.Pane1;
+			b._layoutGuidePane2 = b._twoPaneViewLayoutGuide.Pane2;
+			b._layoutGuideMode = b._twoPaneViewLayoutGuide.Mode;
+			b._layoutGuideHinge = b._twoPaneViewLayoutGuide.Hinge;
+			b._layoutGuideIsLandscape = b._twoPaneViewLayoutGuide.IsLandscape;
+
+
 			if (!b._performingLayout && !b._updatingMode)
 			{
 				b.UpdateMode();
@@ -251,6 +275,23 @@ namespace Xamarin.Forms.DualScreen
 			OnJustInvalidateLayout(this, null, null);
 		}
 
+
+		protected override void OnSizeAllocated(double width, double height)
+		{
+			if (!_updatingMode &&
+				width > 0 &&
+				height > 0 &&
+				width != _previousWidth &&
+				height != _previousHeight)
+			{
+				_previousWidth = width;
+				_previousHeight = height;
+				UpdateMode(false);
+			}
+
+			base.OnSizeAllocated(width, height);
+		}
+
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
 			if (_updatingMode)
@@ -262,8 +303,12 @@ namespace Xamarin.Forms.DualScreen
 				UpdateMode();
 		}
 
-		void UpdateMode()
+		void UpdateMode(bool invalidateLayout = true)
 		{
+			// controls hasn't fully been created yet
+			if (RowDefinitions.Count != 3 || ColumnDefinitions.Count != 3)
+				return;
+
 			if (_updatingMode)
 			{
 				_processPendingChange = true;
@@ -368,12 +413,8 @@ namespace Xamarin.Forms.DualScreen
 				}
 				else
 				{
-					InvalidateLayout();
-					Device.BeginInvokeOnMainThread(() =>
-					{
-						TwoPaneViewLayoutGuide.UpdateLayouts();
+					if (invalidateLayout)
 						InvalidateLayout();
-					});
 				}
 			}
 			finally
@@ -396,31 +437,6 @@ namespace Xamarin.Forms.DualScreen
 			Rectangle pane2 = _twoPaneViewLayoutGuide.Pane2;
 			bool isLayoutSpanned = _twoPaneViewLayoutGuide.Mode != TwoPaneViewMode.SinglePane;
 
-			columnMiddle.Width = new GridLength(0, GridUnitType.Absolute);
-			rowMiddle.Height = new GridLength(0, GridUnitType.Absolute);
-
-			if (newMode == ViewMode.LeftRight || newMode == ViewMode.RightLeft)
-			{
-				columnLeft.Width = ((newMode == ViewMode.LeftRight) ? Pane1Length : Pane2Length);
-				columnRight.Width = ((newMode == ViewMode.LeftRight) ? Pane2Length : Pane1Length);
-			}
-			else
-			{
-				columnLeft.Width = new GridLength(1, GridUnitType.Star);
-				columnRight.Width = new GridLength(0, GridUnitType.Absolute);
-			}
-
-			if (newMode == ViewMode.TopBottom || newMode == ViewMode.BottomTop)
-			{
-				rowTop.Height = ((newMode == ViewMode.TopBottom) ? Pane1Length : Pane2Length);
-				rowBottom.Height = ((newMode == ViewMode.TopBottom) ? Pane2Length : Pane1Length);
-			}
-			else
-			{
-				rowTop.Height = new GridLength(1, GridUnitType.Star);
-				rowBottom.Height = new GridLength(0, GridUnitType.Absolute);
-			}
-
 			if (TwoPaneViewLayoutGuide.Mode != TwoPaneViewMode.SinglePane && newMode != ViewMode.Pane1Only && newMode != ViewMode.Pane2Only)
 			{
 				Rectangle hinge = _twoPaneViewLayoutGuide.Hinge;
@@ -430,12 +446,47 @@ namespace Xamarin.Forms.DualScreen
 					columnMiddle.Width = new GridLength(hinge.Width, GridUnitType.Absolute);
 					columnLeft.Width = new GridLength(pane1.Width, GridUnitType.Absolute);
 					columnRight.Width = new GridLength(pane2.Width, GridUnitType.Absolute);
+
+					rowMiddle.Height = new GridLength(0, GridUnitType.Absolute);
+					rowTop.Height = GridLength.Star;
+					rowBottom.Height = new GridLength(0, GridUnitType.Absolute);
 				}
 				else
 				{
 					rowMiddle.Height = new GridLength(hinge.Height, GridUnitType.Absolute);
 					rowTop.Height = new GridLength(pane1.Height, GridUnitType.Absolute);
 					rowBottom.Height = new GridLength(pane2.Height, GridUnitType.Absolute);
+
+					columnMiddle.Width = new GridLength(0, GridUnitType.Absolute);
+					columnLeft.Width = GridLength.Star;
+					columnRight.Width = new GridLength(0, GridUnitType.Absolute);
+				}
+			}
+			else
+			{
+				columnMiddle.Width = new GridLength(0, GridUnitType.Absolute);
+				rowMiddle.Height = new GridLength(0, GridUnitType.Absolute);
+
+				if (newMode == ViewMode.LeftRight || newMode == ViewMode.RightLeft)
+				{
+					columnLeft.Width = ((newMode == ViewMode.LeftRight) ? Pane1Length : Pane2Length);
+					columnRight.Width = ((newMode == ViewMode.LeftRight) ? Pane2Length : Pane1Length);
+				}
+				else
+				{
+					columnLeft.Width = new GridLength(1, GridUnitType.Star);
+					columnRight.Width = new GridLength(0, GridUnitType.Absolute);
+				}
+
+				if (newMode == ViewMode.TopBottom || newMode == ViewMode.BottomTop)
+				{
+					rowTop.Height = ((newMode == ViewMode.TopBottom) ? Pane1Length : Pane2Length);
+					rowBottom.Height = ((newMode == ViewMode.TopBottom) ? Pane2Length : Pane1Length);
+				}
+				else
+				{
+					rowTop.Height = new GridLength(1, GridUnitType.Star);
+					rowBottom.Height = new GridLength(0, GridUnitType.Absolute);
 				}
 			}
 
