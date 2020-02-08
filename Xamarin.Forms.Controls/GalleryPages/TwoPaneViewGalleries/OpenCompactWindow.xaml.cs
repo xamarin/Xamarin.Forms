@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			InitializeComponent();
 		}
 
-		private async void Button_Clicked(object sender, EventArgs e)
+		async void Button_Clicked(object sender, EventArgs e)
 		{
 			ContentPage page = new ContentPage() { BackgroundColor = Color.Purple };
 			var button = new Button()
