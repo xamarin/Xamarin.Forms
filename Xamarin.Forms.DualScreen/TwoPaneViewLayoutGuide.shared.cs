@@ -45,6 +45,7 @@ namespace Xamarin.Forms.DualScreen
 
 			if(_layout != null)
 			{
+				UpdateLayouts();
 				_layout.PropertyChanged += OnLayoutPropertyChanged;
 				_layout.PropertyChanging += OnLayoutPropertyChanging;
 			}

@@ -12,9 +12,25 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class OpenCompactWindow : ContentPage
 	{
+		DualScreen.DualScreenInfo info;
 		public OpenCompactWindow()
 		{
 			InitializeComponent();
+			info = new DualScreen.DualScreenInfo(layout);
+			info.PropertyChanged += Info_PropertyChanged;
+		}
+
+		private void Info_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (info.SpanningBounds.Length > 0)
+			{
+				var bounds = info.SpanningBounds[0];
+				layout.Padding = new Thickness(bounds.Width / 2 - button.Width / 2, bounds.Height / 2 - button.Height / 2, 0, 0);
+			}
+			else
+			{
+				layout.Padding = new Thickness(0);
+			}
 		}
 
 		async void Button_Clicked(object sender, EventArgs e)

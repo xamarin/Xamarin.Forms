@@ -75,6 +75,9 @@
     <EmbeddedResource Update="GalleryPages\TwoPaneViewGalleries\TwoPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\TwoPaneViewGalleries\TwoPanePropertiesGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">

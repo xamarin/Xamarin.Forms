@@ -24,7 +24,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			{
 				Children =
 				{
-					
+
+					GalleryBuilder.NavButton("TwoPanePropertiesGallery", () => new TwoPanePropertiesGallery(), Navigation),
 					GalleryBuilder.NavButton("Master Details Sample", () => new MasterDetail(), Navigation),
 					GalleryBuilder.NavButton("Companion Pane", () => new CompanionPane(), Navigation),
 					GalleryBuilder.NavButton("ExtendCanvas Sample", () => new ExtendCanvas(), Navigation),
