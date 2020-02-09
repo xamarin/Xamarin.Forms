@@ -32,6 +32,7 @@ namespace Xamarin.Forms.DualScreen
 			static Activity _mainActivity;
 			static DualScreenServiceImpl _HingeService;
 
+			bool _isDisposed;
 			bool _isLandscape;
 			Size _pixelScreenSize;
 			object _hingeAngleLock = new object();
@@ -118,8 +119,14 @@ namespace Xamarin.Forms.DualScreen
 
 			public void Dispose()
 			{
-				
-				
+				if (_isDisposed)
+					return;
+
+				_isDisposed = true;
+
+				// make sure the one shot task is cleared out if it's running
+				SetHingeAngle(0);
+				StopListeningForHingeChanges();
 			}
 
 			public Size ScaledScreenSize
@@ -152,6 +159,11 @@ namespace Xamarin.Forms.DualScreen
 
 			void OnSensorChanged(object sender, HingeSensor.HingeSensorChangedEventArgs e)
 			{
+				SetHingeAngle(e.HingeAngle);
+			}
+
+			void SetHingeAngle(int hingeAngle)
+			{
 				TaskCompletionSource<int> toSet = null;
 				lock (_hingeAngleLock)
 				{
@@ -161,7 +173,7 @@ namespace Xamarin.Forms.DualScreen
 				}
 
 				if (toSet != null)
-					toSet.SetResult(e.HingeAngle);
+					toSet.SetResult(hingeAngle);
 			}
 
 			public Task<int> GetHingeAngleAsync()
