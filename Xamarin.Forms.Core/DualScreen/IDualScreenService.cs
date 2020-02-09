@@ -16,5 +16,6 @@ namespace Xamarin.Forms.DualScreen
 		Point? GetLocationOnScreen(VisualElement visualElement);
 		object WatchForChangesOnLayout(VisualElement visualElement, Action action);
 		void StopWatchingForChangesOnLayout(VisualElement visualElement, object handle);
+		Task<int> GetHingeAngleAsync();
 	}
 }

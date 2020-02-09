@@ -4,6 +4,7 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:Xamarin.Forms.DualScreen;assembly=Xamarin.Forms.DualScreen"
+             xmlns:twoPaneGallery="clr-namespace:Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries"
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries.TwoPanePropertiesGallery">
     <ContentPage.Content>
@@ -29,6 +30,8 @@
                     </Picker>
                     <Picker Title="WideModeConfiguration" x:Name="WideModeConfiguration" SelectedIndex="1">
                     </Picker>
+                    <Label Text="Hinge Angle:"></Label>
+                    <twoPaneGallery:HingeAngleLabel />
                 </StackLayout>
             </local:TwoPaneView.Pane1>
             <local:TwoPaneView.Pane2>

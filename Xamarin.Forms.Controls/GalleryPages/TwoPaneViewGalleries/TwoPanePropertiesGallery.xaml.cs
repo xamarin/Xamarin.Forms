@@ -64,4 +64,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			Pane2Length.Value = 0.5;
 		}
 	}
+
+	public class HingeAngleLabel : Label { }
 }

@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			{
 				Children =
 				{
-					new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},new Label(){ Text = "rabbit"},
+					new Label(){ Text = "Welcome to your Compact Mode Window" }, 
 					button
 				},
 				BackgroundColor = Color.Yellow,
@@ -55,13 +55,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 
 
 			layout.BatchCommitted += Layout_BatchCommitted;
-			page.Content = layout;
+			page.Content = new ScrollView() { Content = layout };
 
 			var args = await DualScreen.DualScreenHelper.OpenCompactMode(page);
 
 			button.Command = new Command(async () =>
 			{
-				await args.Close();
+				await args.CloseAsync();
 			});
 		}
 

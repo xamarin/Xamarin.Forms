@@ -16,7 +16,10 @@ namespace Xamarin.Forms.DualScreen
 		bool _isLandscape;
 		TwoPaneViewMode _spanMode;
 		TwoPaneViewLayoutGuide _twoPaneViewLayoutGuide;
+		IDualScreenService _dualScreenService;
 		public static DualScreenInfo Current => _dualScreenInfo.Value;
+		IDualScreenService DualScreenService =>
+			_dualScreenService ?? DependencyService.Get<IDualScreenService>() ?? NoDualScreenServiceImpl.Instance;
 
 		public DualScreenInfo(Layout layout) : this(layout, null)
 		{
@@ -24,6 +27,7 @@ namespace Xamarin.Forms.DualScreen
 
 		internal DualScreenInfo(Layout layout, IDualScreenService dualScreenService)
 		{
+			_dualScreenService = dualScreenService;
 			if (layout == null)
 			{
 				_twoPaneViewLayoutGuide = TwoPaneViewLayoutGuide.Instance;
@@ -52,6 +56,10 @@ namespace Xamarin.Forms.DualScreen
 				SetProperty(ref _hingeBounds, value);
 			}
 		}
+
+#if ANDROID
+		public Task<int> GetHingeAngleAsync() => DualScreenService.GetHingeAngleAsync();
+#endif
 
 		public bool IsLandscape
 		{

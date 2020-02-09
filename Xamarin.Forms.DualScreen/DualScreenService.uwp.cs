@@ -28,6 +28,8 @@ namespace Xamarin.Forms.DualScreen
 				Window.Current.SizeChanged += OnCurrentSizeChanged;
 		}
 
+		public Task<int> GetHingeAngleAsync() => Task.FromResult(0);
+
 		void OnCurrentSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
 		{
 			OnScreenChanged?.Invoke(this, EventArgs.Empty);
