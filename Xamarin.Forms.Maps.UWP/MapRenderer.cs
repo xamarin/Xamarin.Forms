@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Maps.UWP
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
-				UpdateIsShowingTraffic();
+				UpdateTrafficEnabled();
 				UpdateMapType();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
@@ -89,8 +89,8 @@ namespace Xamarin.Forms.Maps.UWP
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
-			else if (e.PropertyName == Map.IsShowingTrafficProperty.PropertyName)
-				UpdateIsShowingTraffic();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -517,9 +517,9 @@ namespace Xamarin.Forms.Maps.UWP
 			}
 		}
 
-		void UpdateIsShowingTraffic()
+		void UpdateTrafficEnabled()
 		{
-			Control.TrafficFlowVisible = Element.IsShowingTraffic;
+			Control.TrafficFlowVisible = Element.TrafficEnabled;
 		}
 
 		void UpdateMapType()

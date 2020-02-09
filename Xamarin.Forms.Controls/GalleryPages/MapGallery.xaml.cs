@@ -177,7 +177,7 @@ namespace Xamarin.Forms.Controls
 		void ShowTrafficToggled(object sender, ToggledEventArgs e)
 		{
 			var control = (Switch)sender;
-			Map.IsShowingTraffic = control.IsToggled;
+			Map.TrafficEnabled = control.IsToggled;
 		}
 	}
 }

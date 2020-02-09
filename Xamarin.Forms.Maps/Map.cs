@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Maps
 
 		public static readonly BindableProperty IsShowingUserProperty = BindableProperty.Create("IsShowingUser", typeof(bool), typeof(Map), default(bool));
 
-		public static readonly BindableProperty IsShowingTrafficProperty = BindableProperty.Create("IsShowingTraffic", typeof(bool), typeof(Map), default(bool));
+		public static readonly BindableProperty TrafficEnabledProperty = BindableProperty.Create("TrafficEnabled", typeof(bool), typeof(Map), default(bool));
 
 		public static readonly BindableProperty HasScrollEnabledProperty = BindableProperty.Create("HasScrollEnabled", typeof(bool), typeof(Map), true);
 
@@ -68,10 +68,10 @@ namespace Xamarin.Forms.Maps
 			set { SetValue(IsShowingUserProperty, value); }
 		}
 
-		public bool IsShowingTraffic
+		public bool TrafficEnabled
 		{
-			get => (bool)GetValue(IsShowingTrafficProperty);
-			set => SetValue(IsShowingTrafficProperty, value);
+			get => (bool)GetValue(TrafficEnabledProperty);
+			set => SetValue(TrafficEnabledProperty, value);
 		}
 
 		public MapType MapType

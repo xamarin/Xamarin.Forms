@@ -196,9 +196,9 @@ namespace Xamarin.Forms.Maps.Android
 				gmap.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 				gmap.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			}
-			else if (e.PropertyName == Map.IsShowingTrafficProperty.PropertyName)
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
 			{
-				gmap.TrafficEnabled = Map.IsShowingTraffic;
+				gmap.TrafficEnabled = Map.TrafficEnabled;
 			}
 		}
 
@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Maps.Android
 			map.InfoWindowClick += OnInfoWindowClick;
 			map.MapClick += OnMapClick;
 
-			map.TrafficEnabled = Map.IsShowingTraffic;
+			map.TrafficEnabled = Map.TrafficEnabled;
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ScrollGesturesEnabled = Map.HasScrollEnabled;

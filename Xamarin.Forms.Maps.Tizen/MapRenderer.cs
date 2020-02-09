@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Maps.Tizen
 				UpdateHasZoomEnabled();
 				UpdateIsShowingUser();
 				UpdateVisibleRegion();
-				UpdateIsShowingTraffic();
+				UpdateTrafficEnabled();
 			}
 			base.OnElementChanged(e);
 		}
@@ -124,8 +124,8 @@ namespace Xamarin.Forms.Maps.Tizen
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
-			else if (e.PropertyName == Map.IsShowingTrafficProperty.PropertyName)
-				UpdateIsShowingTraffic();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
 
 
@@ -242,9 +242,9 @@ namespace Xamarin.Forms.Maps.Tizen
 			AddPins((Element as Map).Pins);
 		}
 
-		void UpdateIsShowingTraffic()
+		void UpdateTrafficEnabled()
 		{
-			Control.TrafficEnabled = Element.IsShowingTraffic;
+			Control.TrafficEnabled = Element.TrafficEnabled;
 		}
 
 		void UpdateHasZoomEnabled()
