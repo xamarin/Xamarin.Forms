@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms.DualScreen
 {
-	public class DualScreenInfo : INotifyPropertyChanged
+	public partial class DualScreenInfo : INotifyPropertyChanged
 	{
 		static Lazy<DualScreenInfo> _dualScreenInfo { get; } = new Lazy<DualScreenInfo>(OnCreate);
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -56,10 +56,6 @@ namespace Xamarin.Forms.DualScreen
 				SetProperty(ref _hingeBounds, value);
 			}
 		}
-
-#if ANDROID
-		public Task<int> GetHingeAngleAsync() => DualScreenService.GetHingeAngleAsync();
-#endif
 
 		public bool IsLandscape
 		{
