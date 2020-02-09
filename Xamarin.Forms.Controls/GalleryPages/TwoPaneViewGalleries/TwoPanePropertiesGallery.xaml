@@ -30,7 +30,7 @@
                     </Picker>
                     <Picker Title="WideModeConfiguration" x:Name="WideModeConfiguration" SelectedIndex="1">
                     </Picker>
-                    <Label Text="Hinge Angle:"></Label>
+                    <Label Text="Hinge Angle (only works on Android):"></Label>
                     <twoPaneGallery:HingeAngleLabel />
                 </StackLayout>
             </local:TwoPaneView.Pane1>
