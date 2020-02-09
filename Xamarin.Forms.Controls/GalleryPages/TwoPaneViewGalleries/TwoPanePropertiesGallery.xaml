@@ -12,8 +12,7 @@
                            MinWideModeWidth="{Binding Source={x:Reference MinWideModeWidth}, Path=Value}" 
                            PanePriority="{Binding Source={x:Reference PanePriority}, Path=SelectedItem, Mode=TwoWay}" 
                            TallModeConfiguration="{Binding Source={x:Reference TallModeConfiguration}, Path=SelectedItem}" 
-                           WideModeConfiguration="{Binding Source={x:Reference WideModeConfiguration}, Path=SelectedItem}" 
-                           >
+                           WideModeConfiguration="{Binding Source={x:Reference WideModeConfiguration}, Path=SelectedItem}">
             <local:TwoPaneView.Pane1>
                 <StackLayout Padding="20">
                     <Label Text="MinTallModeHeight"></Label>
@@ -25,31 +24,17 @@
                     <Label Text="Pane2Length"></Label>
                     <Slider x:Name="Pane2Length" Maximum="1" Value="1"></Slider>
                     <Picker Title="PanePriority" x:Name="PanePriority" SelectedIndex="0">
-                        <Picker.Items>
-                            <x:String>Pane1</x:String>
-                            <x:String>Pane2</x:String>
-                        </Picker.Items>
                     </Picker>
                     <Picker Title="TallModeConfiguration" x:Name="TallModeConfiguration" SelectedIndex="1">
-                        <Picker.Items>
-                            <x:String>SinglePane</x:String>
-                            <x:String>TopBottom</x:String>
-                            <x:String>BottomTop</x:String>
-                        </Picker.Items>
                     </Picker>
                     <Picker Title="WideModeConfiguration" x:Name="WideModeConfiguration" SelectedIndex="1">
-                        <Picker.Items>
-                            <x:String>SinglePane</x:String>
-                            <x:String>LeftRight</x:String>
-                            <x:String>RightLeft</x:String>
-                        </Picker.Items>
                     </Picker>
                 </StackLayout>
             </local:TwoPaneView.Pane1>
             <local:TwoPaneView.Pane2>
                 <StackLayout BackgroundColor="Yellow">
                     <Label Text="Secondary Content"></Label>
-                    <Button Text="Switch Pane Priority" Clicked="OnSwitchPanePriority"></Button>
+                    <Button Text="Reset" Clicked="OnReset"></Button>
                 </StackLayout>
             </local:TwoPaneView.Pane2>
         </local:TwoPaneView>

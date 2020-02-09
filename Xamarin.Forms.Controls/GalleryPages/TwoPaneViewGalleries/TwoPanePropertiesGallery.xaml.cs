@@ -15,9 +15,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 		public TwoPanePropertiesGallery()
 		{
 			InitializeComponent();
-			twoPaneView.ModeChanged += OnModeChanged;
 			Pane1Length.ValueChanged += PaneLengthChanged;
 			Pane2Length.ValueChanged += PaneLengthChanged;
+			PanePriority.ItemsSource = Enum.GetValues(typeof(DualScreen.TwoPaneViewPriority));
+			TallModeConfiguration.ItemsSource = Enum.GetValues(typeof(DualScreen.TwoPaneViewTallModeConfiguration));
+			WideModeConfiguration.ItemsSource = Enum.GetValues(typeof(DualScreen.TwoPaneViewWideModeConfiguration));
+			twoPaneView.PanePriority = DualScreen.TwoPaneViewPriority.Pane1;
+			Pane1Length.Value = 0.5;
+			Pane2Length.Value = 0.5;
 		}
 
 		void PaneLengthChanged(object sender, ValueChangedEventArgs e)
@@ -26,15 +31,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			twoPaneView.Pane2Length = new GridLength(Pane2Length.Value, GridUnitType.Star);
 		}
 
-		void OnModeChanged(object sender, EventArgs e)
-		{
-			Setup(Width, Height);
-		}
-
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
 			Setup(Width, Height);
+
+			PanePriority.SelectedIndex = 0;
+			TallModeConfiguration.SelectedIndex = 1;
+			WideModeConfiguration.SelectedIndex = 1;
 		}
 
 		void Setup(double width, double height)
@@ -53,12 +57,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			Setup(width, height);
 		}
 
-		void OnSwitchPanePriority(object sender, EventArgs e)
+		void OnReset(object sender, EventArgs e)
 		{
-			if (twoPaneView.PanePriority == DualScreen.TwoPaneViewPriority.Pane1)
-				twoPaneView.PanePriority = DualScreen.TwoPaneViewPriority.Pane2;
-			else
-				twoPaneView.PanePriority = DualScreen.TwoPaneViewPriority.Pane1;
+			twoPaneView.PanePriority = DualScreen.TwoPaneViewPriority.Pane1;
+			Pane1Length.Value = 0.5;
+			Pane2Length.Value = 0.5;
 		}
 	}
 }
