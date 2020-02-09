@@ -167,6 +167,10 @@ namespace Xamarin.Forms
 
 		public event EventHandler<Page> PageDisappearing;
 
+		public event EventHandler Asleep;
+
+		public event EventHandler Resumed;
+
 		async void SaveProperties()
 		{
 			try
@@ -272,12 +276,14 @@ namespace Xamarin.Forms
 		{
 			Current = this;
 			OnResume();
+			Resumed?.Invoke(this, EventArgs.Empty);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendSleep()
 		{
 			OnSleep();
+			Asleep?.Invoke(this, EventArgs.Empty);
 			SavePropertiesAsFireAndForget();
 		}
 
@@ -285,6 +291,7 @@ namespace Xamarin.Forms
 		public Task SendSleepAsync()
 		{
 			OnSleep();
+			Asleep?.Invoke(this, EventArgs.Empty);
 			return SavePropertiesAsync();
 		}
 
