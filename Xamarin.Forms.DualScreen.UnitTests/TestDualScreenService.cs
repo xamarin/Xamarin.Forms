@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.DualScreen.UnitTests
@@ -55,6 +56,8 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			if(handle is EventHandler<EventArg<VisualElement>> eh)
 				visualElement.BatchCommitted -= eh;
 		}
+
+		public Task<int> GetHingeAngleAsync() => Task.FromResult(0);
 	}
 
 	internal class TestDualScreenServiceLandscape : TestDualScreenService
