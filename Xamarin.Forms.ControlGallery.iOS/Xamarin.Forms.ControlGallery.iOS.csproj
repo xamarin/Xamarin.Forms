@@ -68,7 +68,7 @@
     </CodesignEntitlements>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
-    <MtouchExtraArgs>--nolinkaway</MtouchExtraArgs>
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
     <MtouchFastDev>False</MtouchFastDev>
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
     <MtouchUseLlvm>False</MtouchUseLlvm>
