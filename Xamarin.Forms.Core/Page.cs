@@ -44,9 +44,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
-		static readonly BindablePropertyKey IsPresentedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsPresented), typeof(bool), typeof(Page), false);
+		static readonly BindablePropertyKey IsAppearedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsAppeared), typeof(bool), typeof(Page), false);
 
-		public static readonly BindableProperty IsPresentedProperty = IsPresentedPropertyKey.BindableProperty;
+		public static readonly BindableProperty IsAppearedProperty = IsAppearedPropertyKey.BindableProperty;
 
 		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -147,10 +147,10 @@ namespace Xamarin.Forms
 			set { SetValue(StatusBarStyleProperty, value); }
 		}
 
-		public bool IsPresented
+		public bool IsAppeared
 		{
-			get { return (bool)GetValue(IsPresentedProperty); }
-			private set { SetValue(IsPresentedPropertyKey, value); }
+			get { return (bool)GetValue(IsAppearedProperty); }
+			private set { SetValue(IsAppearedPropertyKey, value); }
 		}
 
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }
@@ -423,10 +423,10 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendAppearing()
 		{
-			if (IsPresented)
+			if (IsAppeared)
 				return;
 
-			IsPresented = true;
+			IsAppeared = true;
 
 			if (IsBusy)
 			{
@@ -450,10 +450,10 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDisappearing()
 		{
-			if (!IsPresented)
+			if (!IsAppeared)
 				return;
 
-			IsPresented = false;
+			IsAppeared = false;
 
 			if (IsBusy)
 				MessagingCenter.Send(this, BusySetSignalName, false);
@@ -517,7 +517,7 @@ namespace Xamarin.Forms
 
 		void OnPageBusyChanged()
 		{
-			if (!IsPresented)
+			if (!IsAppeared)
 				return;
 
 			MessagingCenter.Send(this, BusySetSignalName, IsBusy);
