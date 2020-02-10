@@ -16,6 +16,37 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(_carouselViewGalleries);
 		}
 
+		[TestCase("CarouselView (XAML, Horizontal)")]
+		public void CarouselViewRemoveAndUpdateCurrentItem(string subgallery)
+		{
+			VisitSubGallery(subgallery);
+			var position = App.WaitForElement(x => x.Marked("lblPosition")).First().Text;
+			Assert.IsTrue(position == "0");
+			var currentItem = App.WaitForElement(x => x.Marked("lblCurrentItem")).First().Text;
+			Assert.IsTrue(currentItem == "0");
+			var selected = App.WaitForElement(x => x.Marked("lblSelected")).First().Text;
+			Assert.IsTrue(selected == "0");
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			var centerX = rect.CenterX;
+			var rightX = rect.X + 1;
+			App.DragCoordinates(centerX, rect.CenterY, rightX, rect.CenterY);
+			var positionAfter = App.WaitForElement(x => x.Marked("lblPosition")).First().Text;
+			Assert.IsTrue(positionAfter == "1");
+			var currentItemAfter = App.WaitForElement(x => x.Marked("lblCurrentItem")).First().Text;
+			Assert.IsTrue(currentItemAfter == "1");
+			var selectedAfter = App.WaitForElement(x => x.Marked("lblSelected")).First().Text;
+			Assert.IsTrue(selectedAfter == "1");
+			App.Tap(x => x.Marked("btnRemove"));
+			var positionAfterRemove = App.WaitForElement(x => x.Marked("lblPosition")).First().Text;
+			Assert.IsTrue(positionAfterRemove == "1");
+			var currentItemAfterRemove = App.WaitForElement(x => x.Marked("lblCurrentItem")).First().Text;
+			Assert.IsTrue(currentItemAfterRemove == "2");
+			var selectedAfterRemove = App.WaitForElement(x => x.Marked("lblSelected")).First().Text;
+			Assert.IsTrue(selectedAfterRemove == "2");
+
+
+		}
+
 		[TestCase("CarouselView (Code, Horizontal)")]
 		//[TestCase("CarouselView (XAML, Horizontal)")]
 		public void CarouselViewHorizontal(string subgallery)

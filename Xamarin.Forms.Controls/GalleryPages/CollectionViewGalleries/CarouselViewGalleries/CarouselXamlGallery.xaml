@@ -38,13 +38,14 @@
                       AutomationId="lblVisibleViews"
                       Padding="7"/>
         <StackLayout Orientation="Vertical"  Grid.Row="3">
-            <Label Text="{Binding Path=Position , Source={x:Reference Name=carousel}}"></Label>
-            <Label Text="{Binding Path=CurrentItem.Index , Source={x:Reference Name=carousel}}"></Label>
-            <Label Text="{Binding Selected.Index}"></Label>
-            <Button Command="{Binding RemoveCommand}" Text="{Binding Selected.Index}"></Button>
+            <Label Text="Position:" />
+            <Label Text="{Binding Path=Position , Source={x:Reference Name=carousel}}"  AutomationId="lblPosition"/>
+            <Label Text="CurrentItem :" />
+            <Label Text="{Binding Path=CurrentItem.Index , Source={x:Reference Name=carousel}}" AutomationId="lblCurrentItem"/>
+            <Label Text="Selected: " />
+            <Label Text="{Binding Selected.Index}" AutomationId="lblSelected"/>
         </StackLayout>
-
-        <Button Command="{Binding RemoveCommand}" Grid.Row="4"
+        <Button Command="{Binding RemoveCommand}" Grid.Row="4" AutomationId="btnRemove"
                 Text="{Binding Selected.Index}" BackgroundColor="LightGray" TextColor="Black" />
         <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="5"
                       CurrentItem="{Binding Selected}" >
