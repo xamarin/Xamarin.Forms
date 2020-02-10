@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -79,10 +81,61 @@ namespace Xamarin.Forms.Platform.iOS
 			base.BoundsSizeChanged();
 			_carouselView.ScrollTo(_carouselView.Position, position: ScrollToPosition.Center, animate: false);
 		}
+		
+		protected override IItemsViewSource CreateItemsViewSource()
+		{
+			var itemsSource = base.CreateItemsViewSource();
+			SubscribeCollectionItemsSourceChanged(itemsSource);
+			return itemsSource;
+		}
+
+		public override void UpdateItemsSource()
+		{
+			UnsubscribeCollectionItemsSourceChanged(ItemsSource);
+			base.UpdateItemsSource();
+			SubscribeCollectionItemsSourceChanged(ItemsSource);
+		}
+
+		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			var centerItemIndex = -1;
+
+			var indexPathsForVisibleItems = CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row).ToList();
+
+			if (indexPathsForVisibleItems.Count == 0)
+				return;
+
+			var collectionView = CollectionView;
+
+			var contentInset = collectionView.ContentInset;
+			var contentOffsetX = collectionView.ContentOffset.X + contentInset.Left;
+			var contentOffsetY = collectionView.ContentOffset.Y + contentInset.Top;
+
+			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
+
+			var centerPoint = new CGPoint(collectionView.Center.X + collectionView.ContentOffset.X, collectionView.Center.Y + collectionView.ContentOffset.Y);
+			var centerIndexPath = collectionView.IndexPathForItemAtPoint(centerPoint);
+			centerItemIndex = centerIndexPath?.Row ?? firstVisibleItemIndex;
+
+			_carouselView.SetCurrentItem(null, centerItemIndex);
+		}
+
+		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
+		{
+			if (itemsSource is ObservableItemsSource newItemsSource)
+				newItemsSource.CollectionItemsSourceChanged += CollectionItemsSourceChanged;
+		}
+
+		void UnsubscribeCollectionItemsSourceChanged(IItemsViewSource oldItemsSource)
+		{
+			if (oldItemsSource is ObservableItemsSource oldObservableItemsSource)
+				oldObservableItemsSource.CollectionItemsSourceChanged -= CollectionItemsSourceChanged;
+		}
 
 		internal void TearDown()
 		{
 			_carouselView.PropertyChanged -= CarouselViewPropertyChanged;
+			UnsubscribeCollectionItemsSourceChanged(ItemsSource);
 		}
 
 		public override void DraggingStarted(UIScrollView scrollView)
