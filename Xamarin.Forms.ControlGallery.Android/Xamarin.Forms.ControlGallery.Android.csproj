@@ -1,5 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\Environment.Build.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,9 +16,11 @@
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidTargetFrameworkVersion Condition="$(AndroidTargetFrameworkVersion) == ''">v9.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == '' AND '$(Use2017)' == 'true'">v9.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v10.0</AndroidTargetFrameworkVersion>
     <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
-    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) != 'v9.0'">Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v9.0'">Properties\AndroidManifest28.xml</AndroidManifest>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
@@ -57,13 +60,15 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AndroidDexTool Condition="'$(Use2017)' == 'false'">d8</AndroidDexTool>
+    <AndroidLinkTool Condition="'$(Use2017)' == 'false'">r8</AndroidLinkTool>
+    <AndroidEnableMultiDex>$(Use2017)</AndroidEnableMultiDex>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
     <AndroidLinkMode>Full</AndroidLinkMode>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
-    <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -84,6 +89,7 @@
     <Compile Include="BorderEffect.cs" />
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="CacheService.cs" />
+    <Compile Include="DrawableExtensions.cs" />
     <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="DisposeLabelRenderer.cs" />
     <Compile Include="DisposePageRenderer.cs" />
@@ -91,6 +97,7 @@
     <Compile Include="MainApplication.cs" />
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
+    <Compile Include="Tests\CollectionViewTests.cs" />
     <Compile Include="Tests\Issues.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="PreApplicationClassActivity.cs" />
@@ -120,6 +127,7 @@
     </Compile>
     <Compile Include="ApiLabelRenderer.cs" />
     <Compile Include="Issue7249SwitchRenderer.cs" />
+    <Compile Include="_9087CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\default.css" />
@@ -179,6 +187,10 @@
       <Project>{4dcd0420-1168-4b77-86db-6196ee4bd491}</Project>
       <Name>Xamarin.Forms.CustomAttributes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj">
+      <Project>{fb4a866a-5721-4545-9e5d-b7f7d59875a4}</Project>
+      <Name>Xamarin.Forms.DualScreen</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Maps.Android\Xamarin.Forms.Maps.Android.csproj">
       <Project>{bd50b39a-ebc5-408f-9c5e-923a8ebae473}</Project>
       <Name>Xamarin.Forms.Maps.Android</Name>
@@ -221,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Properties\AndroidManifest28.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\error.xml" />

@@ -10,15 +10,27 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewGroupTypeIssue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue2674.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3228.xaml.cs">
       <DependentUpon>Issue3228.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)issue3262.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8262.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8899.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8902.xaml.cs">
+      <DependentUpon>Issue8902.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue9006.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8207.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6362.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7393.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7505.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4459.xaml.cs">
+      <DependentUpon>Issue4459.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewItemsSourceTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1455.xaml.cs">
       <DependentUpon>Issue1455.xaml</DependentUpon>
@@ -36,7 +48,12 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue7773.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8186.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue2172.xaml.cs">
+      <DependentUpon>Issue2172.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue3475.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5168.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5749.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -61,7 +78,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue7181.cs" />
-	  <Compile Include="$(MSBuildThisFileDirectory)Issue5367.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5367.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6878.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7253.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7581.cs" />
@@ -113,6 +130,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7593.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7992.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7792.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -136,6 +154,7 @@
       <DependentUpon>Issue7803.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue8087.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8203.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8222.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8167.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8345.cs" />
@@ -153,12 +172,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7963.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8741.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8743.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9092.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9087.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9355.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8784.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9360.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefreshViewTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7338.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrollToGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NestedCollectionViews.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7339.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellAppearanceChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShellModal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellFlyoutBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7128.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellItemIsVisible.cs" />
@@ -244,6 +269,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue1724.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3524.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1678.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7701.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2004.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3333.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2338.cs" />
@@ -1157,7 +1183,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue4356.cs">
       <DependentUpon>Issue4356.xaml</DependentUpon>
     </Compile>
-	<Compile Include="$(MSBuildThisFileDirectory)Issue4854.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4854.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5951.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Github6021.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5132.cs" />
@@ -1210,20 +1236,40 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue8198.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7249.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8200.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6932.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>Issue6932.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6932_emptyviewtemplate.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>Issue6932_emptyviewtemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue6932_emptyviewstring.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>Issue6932_emptyviewstring.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue8417.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8647.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7510.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8753.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8693.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7813.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8638.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8294.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8392.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8672.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8779.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8806.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8781.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8782.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8821.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8326.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8449.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7875.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8973.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7924.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8461.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8777.cs" />   
     <Compile Include="$(MSBuildThisFileDirectory)Issue9143.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1364,9 +1410,15 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7886.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6932.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6932_emptyviewtemplate.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6932_emptyviewstring.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8417.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7813.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8638.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8779.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8781.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8782.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8326.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8449.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7924.xaml" />
@@ -1561,9 +1613,9 @@
     <Compile Update="$(MSBuildThisFileDirectory)Issue5749.xaml.cs">
       <DependentUpon>Issue5749.xaml</DependentUpon>
     </Compile>
-	  <Compile Update="$(MSBuildThisFileDirectory)Issue5108.xaml.cs">
+    <Compile Update="$(MSBuildThisFileDirectory)Issue5108.xaml.cs">
       <DependentUpon>Issue5108.xaml</DependentUpon>
-	  </Compile>
+    </Compile>
     <Compile Update="$(MSBuildThisFileDirectory)Issue7357.xaml.cs">
       <DependentUpon>Issue7357.xaml</DependentUpon>
     </Compile>
@@ -1648,7 +1700,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5108.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-	</EmbeddedResource>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7357.xaml">
@@ -1678,6 +1730,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5354.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue4459.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1726,7 +1784,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7803.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-	  </EmbeddedResource>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7048.xaml">
@@ -1754,13 +1812,23 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue4744.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue3228.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue2172.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8902.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

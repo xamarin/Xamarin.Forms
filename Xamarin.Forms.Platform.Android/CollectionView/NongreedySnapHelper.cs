@@ -1,4 +1,10 @@
-﻿using Android.Support.V7.Widget;
+﻿#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
+using System;
+using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -10,6 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool _disposed;
 		RecyclerView _recyclerView;
+		InitialScrollListener _initialScrollListener;
 
 		public override void AttachToRecyclerView(RecyclerView recyclerView)
 		{
@@ -19,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_recyclerView != null)
 			{
-				_recyclerView.ScrollChange += RecyclerViewScrollChange;
+				StartListeningForScroll();
 			}
 		}
 
@@ -36,16 +43,40 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_recyclerView != null)
 				{
-					_recyclerView.ScrollChange -= RecyclerViewScrollChange;
+					StopListeningForScroll();
+					_initialScrollListener?.Dispose();
 				}
 			}
 
 			base.Dispose(disposing);
 		}
 
-		void RecyclerViewScrollChange(object sender, global::Android.Views.View.ScrollChangeEventArgs e)
+		void StartListeningForScroll()
 		{
-			CanSnap = true;
+			_initialScrollListener = new InitialScrollListener(this);
+			_recyclerView.AddOnScrollListener(_initialScrollListener);
+		}
+
+		void StopListeningForScroll() 
+		{
+			if (_recyclerView != null && _initialScrollListener != null)
+			{
+				_recyclerView.RemoveOnScrollListener(_initialScrollListener);
+			}
+		}
+
+		class InitialScrollListener : RecyclerView.OnScrollListener
+		{
+			readonly NongreedySnapHelper _helper;
+
+			public InitialScrollListener(NongreedySnapHelper helper) => _helper = helper;
+
+			public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
+			{
+				base.OnScrolled(recyclerView, dx, dy);
+				_helper.CanSnap = true;
+				_helper.StopListeningForScroll();
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
@@ -32,6 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly int _alertPadding = 10;
 
 		readonly List<Page> _modals;
+		List<Page> _previousModals;
 		readonly PlatformRenderer _renderer;
 		bool _animateModals = true;
 		bool _appeared;
@@ -80,7 +82,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IReadOnlyList<Page> INavigation.ModalStack
 		{
-			get { return _modals; }
+			get 
+			{
+				if (_disposed)
+					return new List<Page>();
+
+				return _modals; 
+			}
 		}
 
 		IReadOnlyList<Page> INavigation.NavigationStack
@@ -214,8 +222,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (!Forms.IsiOS11OrNewer)
 					safeAreaInsets = new UIEdgeInsets(UIApplication.SharedApplication.StatusBarFrame.Size.Height, 0, 0, 0);
-				else if (UIApplication.SharedApplication.KeyWindow != null)
-					safeAreaInsets = UIApplication.SharedApplication.KeyWindow.SafeAreaInsets;
+				else if (UIApplication.SharedApplication.GetKeyWindow() != null)
+					safeAreaInsets = UIApplication.SharedApplication.GetKeyWindow().SafeAreaInsets;
 				else if (UIApplication.SharedApplication.Windows.Length > 0)
 					safeAreaInsets = UIApplication.SharedApplication.Windows[0].SafeAreaInsets;
 				else
@@ -535,6 +543,34 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		internal static string ResolveMsAppDataUri(Uri uri)
+		{
+			if(uri.Scheme == "ms-appdata")
+			{
+				string filePath = string.Empty;
+
+				if (uri.LocalPath.StartsWith("/local"))
+				{
+					var libraryPath = NSFileManager.DefaultManager.GetUrls(NSSearchPathDirectory.LibraryDirectory, NSSearchPathDomain.User)[0].Path;
+					filePath = Path.Combine(libraryPath, uri.LocalPath.Substring(7));
+				}
+				else if (uri.LocalPath.StartsWith("/temp"))
+				{
+					filePath = Path.Combine(Path.GetTempPath(), uri.LocalPath.Substring(6));
+				}
+				else
+				{
+					throw new ArgumentException("Invalid Uri", "Source");
+				}
+
+				return filePath;
+			}
+			else
+			{
+				throw new ArgumentException("uri");
+			}
+		}
+    
 		#region Obsolete 
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
@@ -556,7 +592,7 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
-			{
+			{	
 				if (!PageIsChildOfPlatform(sender))
 					return;
 				PresentAlert(arguments);
@@ -586,14 +622,23 @@ namespace Xamarin.Forms.Platform.iOS
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 		}
 
+		internal void MarkForRemoval()
+		{
+			_previousModals = new List<Page>(_modals);
+			_modals.Clear();
+		}
+
 		internal void CleanUpPages()
 		{
 			Page.DescendantRemoved -= HandleChildRemoved;
 
 			Page.DisposeModalAndChildRenderers();
 
-			foreach (var modal in _modals)
+			foreach (var modal in (_previousModals ?? _modals))
 				modal.DisposeModalAndChildRenderers();
+
+			_previousModals?.Clear();
+			_modals.Clear();
 
 			(Page.Parent as IDisposable)?.Dispose();
 		}
