@@ -43,12 +43,9 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		// Here because ViewDidAppear (and associates) are not fired consistently for this class
-		// See a more extensive explanation in the ItemsViewController.ViewWillLayoutSubviews method
-		public override void ViewWillLayoutSubviews()
+		public override void ViewDidLayoutSubviews()
 		{
-			base.ViewWillLayoutSubviews();
-
+			base.ViewDidLayoutSubviews();
 			if (!_viewInitialized)
 			{
 				UpdateInitialPosition();
@@ -98,26 +95,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			var centerItemIndex = -1;
+			UpdateCarouselViewPosition();
+		}
 
-			var indexPathsForVisibleItems = CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row).ToList();
+		void UpdateCarouselViewPosition()
+		{
+			var centerItemIndex = CollectionView.GetCenteredIndex();
 
-			if (indexPathsForVisibleItems.Count == 0)
-				return;
-
-			var collectionView = CollectionView;
-
-			var contentInset = collectionView.ContentInset;
-			var contentOffsetX = collectionView.ContentOffset.X + contentInset.Left;
-			var contentOffsetY = collectionView.ContentOffset.Y + contentInset.Top;
-
-			var firstVisibleItemIndex = (int)indexPathsForVisibleItems.First().Item;
-
-			var centerPoint = new CGPoint(collectionView.Center.X + collectionView.ContentOffset.X, collectionView.Center.Y + collectionView.ContentOffset.Y);
-			var centerIndexPath = collectionView.IndexPathForItemAtPoint(centerPoint);
-			centerItemIndex = centerIndexPath?.Row ?? firstVisibleItemIndex;
-
-			_carouselView.SetCurrentItem(null, centerItemIndex);
+			if (centerItemIndex != -1)
+				_carouselView.SetCurrentItem(null, centerItemIndex);
 		}
 
 		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
@@ -172,6 +158,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var initialPosition = position;
 				_carouselView.Position = initialPosition;
+			}
+			else
+			{
+				UpdateCarouselViewPosition();
 			}
 
 			while (_carouselView.ScrollToActions.Count > 0)
