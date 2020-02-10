@@ -232,6 +232,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateStatusBarStyle();
 			}
+			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
+			{
+				UpdateStatusBarStyle();
+				UpdateStatusBarColor();
+			}
 
 			_elementPropertyChanged?.Invoke(sender, e);
 

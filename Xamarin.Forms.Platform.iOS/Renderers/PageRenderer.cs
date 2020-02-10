@@ -345,6 +345,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (ShouldUseSafeArea() && Page.Padding != SafeAreaInsets)
 					_userOverriddenSafeArea = true;
 			}
+			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
+			{
+				UpdateStatusBarStyle();
+				UpdateStatusBarColor();
+			}
 		}
 
 		public override UIKit.UIStatusBarAnimation PreferredStatusBarUpdateAnimation

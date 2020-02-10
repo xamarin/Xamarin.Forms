@@ -217,6 +217,11 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateStatusBarStyle();
 			}
+			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
+			{
+				UpdateStatusBarStyle();
+				UpdateStatusBarColor();
+			}
 		}
 
 		protected virtual void OnElementSet(Shell element)

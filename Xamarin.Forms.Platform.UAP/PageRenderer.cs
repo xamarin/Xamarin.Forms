@@ -77,6 +77,11 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateStatusBarColor();
 			else if (e.PropertyName == Page.StatusBarStyleProperty.PropertyName)
 				UpdateStatusBarStyle();
+			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
+			{
+				UpdateStatusBarStyle();
+				UpdateStatusBarColor();
+			}
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
