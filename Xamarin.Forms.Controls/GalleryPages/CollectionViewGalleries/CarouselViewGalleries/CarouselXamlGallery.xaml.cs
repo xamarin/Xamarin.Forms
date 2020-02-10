@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
@@ -11,7 +12,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			InitializeComponent();
 			BindingContext = new CarouselViewModel(CarouselXamlSampleType.Peek);
-			carouselNormal.BindingContext = new CarouselViewModel(CarouselXamlSampleType.Normal);
+			//carouselNormal.BindingContext = new CarouselViewModel(CarouselXamlSampleType.Normal);
 		}
 
 		protected override void OnAppearing()
@@ -83,6 +84,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			get { return _items; }
 			set { SetProperty(ref _items, value); }
 		}
+
+		CarouselItem _selected;
+		public CarouselItem Selected
+		{
+			get { return _selected; }
+			set { SetProperty(ref _selected, value); }
+		}
+
+		public ICommand RemoveCommand => new Command(() => {
+			Items.Remove(Selected);
+		
+		});
 	}
 
 	[Preserve(AllMembers = true)]
