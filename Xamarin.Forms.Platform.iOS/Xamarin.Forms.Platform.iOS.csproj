@@ -258,6 +258,7 @@
     <Compile Include="Renderers\SwipeViewRenderer.cs" />
     <Compile Include="Extensions\UIApplicationExtensions.cs" />
     <Compile Include="Extensions\CollectionViewExtensions.cs" />
+    <Compile Include="Extensions\UICollectionViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
