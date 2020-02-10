@@ -60,13 +60,5 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			};
 			//GestureRecognizers.Add(gesture);
 		}
-
-		void ExampleTemplateCarouselPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == VisualElement.ScaleProperty.PropertyName)
-			{
-				System.Diagnostics.Debug.WriteLine($"{Scale}");
-			}
-		}
 	}
 }
