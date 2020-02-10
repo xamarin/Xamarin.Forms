@@ -309,7 +309,7 @@ namespace Xamarin.Forms.Platform.MacOS
 							caLayer.AnchorPoint = _originalAnchor;
 
 						caLayer.Transform = transform;
-						uiview.Frame = newTarget;
+						uiview.Frame = newTarget.Value;
 
 						if (shouldRelayoutSublayers)
 							caLayer.LayoutSublayers();
