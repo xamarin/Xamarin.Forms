@@ -382,7 +382,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarColor()
 		{
-			if (!Element.IsPresented)
+			if (!Element.IsAppeared)
 				return;
 
 			if (Element.StatusBarColor == Color.Default)
@@ -393,7 +393,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarStyle()
 		{
-			if (!Element.IsPresented)
+			if (!Element.IsAppeared)
 				return;
 
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.M)

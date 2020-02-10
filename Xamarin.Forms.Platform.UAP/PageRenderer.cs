@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateStatusBarColor()
 		{
-			if (!Element.IsPresented)
+			if (!Element.IsAppeared)
 				return;
 
 			if (Element.StatusBarColor == Color.Default)
@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateStatusBarStyle()
 		{
-			if (!Element.IsPresented)
+			if (!Element.IsAppeared)
 				return;
 
 			Color foregroundColor = Color.Default;

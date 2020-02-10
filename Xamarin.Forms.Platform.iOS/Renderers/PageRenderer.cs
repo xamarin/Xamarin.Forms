@@ -552,7 +552,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarColor()
 		{
-			if (!Page.IsPresented)
+			if (!Page.IsAppeared)
 				return;
 
 			if (Page.StatusBarColor == Color.Default)
@@ -585,7 +585,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarStyle()
 		{
-			if (!Page.IsPresented)
+			if (!Page.IsAppeared)
 				return;
 
 			switch (Page.StatusBarStyle)

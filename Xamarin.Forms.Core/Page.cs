@@ -56,7 +56,7 @@ namespace Xamarin.Forms
 
 		bool _allocatedFlag;
 		Rectangle _containerArea;
-
+		bool _hasAppeared;
 		bool _containerAreaSet;
 
 		ReadOnlyCollection<Element> _logicalChildren;
@@ -423,10 +423,10 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendAppearing()
 		{
-			if (IsAppeared)
+			if (_hasAppeared)
 				return;
 
-			IsAppeared = true;
+			_hasAppeared = true;
 
 			if (IsBusy)
 			{
@@ -441,19 +441,20 @@ namespace Xamarin.Forms
 
 			var pageContainer = this as IPageContainer<Page>;
 			pageContainer?.CurrentPage?.SendAppearing();
-
+			IsAppeared = true;
 			RefreshStatusBarColor();
 			RefreshStatusBarStyle();
+
 			FindApplication(this)?.OnPageAppearing(this);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDisappearing()
 		{
-			if (!IsAppeared)
+			if (!_hasAppeared)
 				return;
 
-			IsAppeared = false;
+			_hasAppeared = false;
 
 			if (IsBusy)
 				MessagingCenter.Send(this, BusySetSignalName, false);
@@ -463,6 +464,7 @@ namespace Xamarin.Forms
 
 			OnDisappearing();
 			Disappearing?.Invoke(this, EventArgs.Empty);
+			IsAppeared = false;
 
 			FindApplication(this)?.OnPageDisappearing(this);
 		}
@@ -517,7 +519,7 @@ namespace Xamarin.Forms
 
 		void OnPageBusyChanged()
 		{
-			if (!IsAppeared)
+			if (!_hasAppeared)
 				return;
 
 			MessagingCenter.Send(this, BusySetSignalName, IsBusy);
