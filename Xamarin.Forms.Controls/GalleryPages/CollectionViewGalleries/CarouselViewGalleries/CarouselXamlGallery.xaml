@@ -21,7 +21,7 @@
                       StringFormat='The current Position is {0}'}"
                       VerticalTextAlignment="Center"
                       VerticalOptions="Center"
-                      Grid.Column="0" Grid.Row="1" 
+                      Grid.Column="0" Grid.Row="1"
                       Padding="7"/>
         <Entry Text="{Binding Position}"
                       VerticalTextAlignment="Center"
@@ -35,26 +35,19 @@
                       Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
                       AutomationId="lblVisibleViews"
                       Padding="7"/>
-        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="3" HeightRequest="400" Grid.ColumnSpan="2"
-                      PeekAreaInsets="50,0">
+        <StackLayout Orientation="Vertical"  Grid.Row="3">
+            <Label Text="{Binding Path=Position , Source={x:Reference Name=carousel}}"></Label>
+            <Label Text="{Binding Path=CurrentItem.Index , Source={x:Reference Name=carousel}}"></Label>
+            <Label Text="{Binding Selected.Index}"></Label>
+            <Button Command="{Binding RemoveCommand}" Text="{Binding Selected.Index}"></Button>
+        </StackLayout>
+
+        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="4" CurrentItem="{Binding Selected}" HeightRequest="400">
             <CarouselView.ItemTemplate>
                 <DataTemplate>
                     <gallery:ExampleTemplateCarousel />
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
-
-        <Frame Margin="15" x:Name="layoutNormal" Grid.Row="4" Grid.ColumnSpan="2" HeightRequest="150" OutlineColor="#00000088" Padding="5">
-            <Grid>
-                <CarouselView x:Name="carouselNormal" ItemsSource="{Binding Items}" Position="{Binding Position}">
-                    <CarouselView.ItemTemplate>
-                        <DataTemplate>
-                            <Image Source="{Binding Image}" Aspect="AspectFill" />
-                        </DataTemplate>
-                    </CarouselView.ItemTemplate>
-                </CarouselView>
-            </Grid>
-        </Frame>
-        <IndicatorView x:Name="indicator" IndicatorColor="Gray" SelectedIndicatorColor="Black" Grid.Row="4"></IndicatorView>
     </Grid>
 </ContentPage>
