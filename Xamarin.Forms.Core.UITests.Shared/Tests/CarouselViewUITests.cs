@@ -28,8 +28,8 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.IsTrue(selected == "0");
 			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
 			var centerX = rect.CenterX;
-			var rightX = rect.X + 1;
-			App.DragCoordinates(centerX, rect.CenterY, rightX, rect.CenterY);
+			var rightX = rect.X - 5;
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
 			var positionAfter = App.WaitForElement(x => x.Marked("lblPosition")).First().Text;
 			Assert.IsTrue(positionAfter == "1");
 			var currentItemAfter = App.WaitForElement(x => x.Marked("lblCurrentItem")).First().Text;
