@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
 using Xamarin.Forms;
 using Xamarin.Forms.DualScreen;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.UWP;
 
 [assembly: Dependency(typeof(DualScreenService))]
@@ -19,29 +20,36 @@ namespace Xamarin.Forms.DualScreen
 {
     internal partial class DualScreenService : IDualScreenService
 	{
-#pragma warning disable CS0067
 		public event EventHandler OnScreenChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore CS0067
 
 		public DualScreenService()
         {
-        }
+			if(Window.Current != null)
+				Window.Current.SizeChanged += OnCurrentSizeChanged;
+		}
 
-        public bool IsSpanned
+		public Task<int> GetHingeAngleAsync() => Task.FromResult(0);
+
+		void OnCurrentSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+		{
+			OnScreenChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		public bool IsSpanned
         {
             get
             {
-                var visibleBounds = ApplicationView.GetForCurrentView().VisibleBounds;
+                var visibleBounds = Window.Current.Bounds;
 
                 if (visibleBounds.Height > 1200 || visibleBounds.Width > 1200)
                     return true;
 
                 return false;
             }
-        }
+		}
+		public DeviceInfo DeviceInfo => Device.info;
 
-        public bool IsLandscape
+		public bool IsLandscape
         {
             get
             {
@@ -52,7 +60,16 @@ namespace Xamarin.Forms.DualScreen
             }
         }
 
-        public void Dispose()
+		public Size ScaledScreenSize
+		{
+			get
+			{
+				Windows.Foundation.Rect windowSize = Window.Current.Bounds;
+				return new Size(windowSize.Width, windowSize.Height);
+			}
+		}
+
+		public void Dispose()
         {
         }
 
@@ -86,5 +103,35 @@ namespace Xamarin.Forms.DualScreen
 
             return new Point(screenCoords.X, screenCoords.Y);
         }
+
+		public object WatchForChangesOnLayout(VisualElement visualElement, Action action)
+		{
+			var view = Platform.UWP.Platform.GetRenderer(visualElement);
+
+			if (view?.ContainerElement == null)
+				return null;
+
+			EventHandler<object> layoutUpdated = (_, __) =>
+			{
+				action();
+			};
+
+			view.ContainerElement.LayoutUpdated += layoutUpdated;
+			return layoutUpdated;
+		}
+
+		public void StopWatchingForChangesOnLayout(VisualElement visualElement, object handle)
+		{
+			if (handle == null)
+				return;
+
+			var view = Platform.UWP.Platform.GetRenderer(visualElement);
+
+			if (view?.ContainerElement == null)
+				return;
+
+			if(handle is EventHandler<object> handler)
+				view.ContainerElement.LayoutUpdated -= handler;
+		}
 	}
 }
