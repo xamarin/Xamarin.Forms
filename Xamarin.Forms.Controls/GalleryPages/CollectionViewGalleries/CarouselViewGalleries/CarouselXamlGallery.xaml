@@ -2,14 +2,16 @@
 <ContentPage
     xmlns:gallery="clr-namespace:Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries.CarouselXamlGallery"
-    Title="CarouselView Xaml" >
-    <Grid Margin="0,20,00,0">
+    Title="CarouselView Xaml">
+    <Grid Margin="10,50,10,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="150" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -42,12 +44,26 @@
             <Button Command="{Binding RemoveCommand}" Text="{Binding Selected.Index}"></Button>
         </StackLayout>
 
-        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="4" CurrentItem="{Binding Selected}" HeightRequest="400">
+        <Button Command="{Binding RemoveCommand}" Grid.Row="4"
+                Text="{Binding Selected.Index}" BackgroundColor="LightGray" TextColor="Black" />
+        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="5"
+                      CurrentItem="{Binding Selected}" >
             <CarouselView.ItemTemplate>
                 <DataTemplate>
                     <gallery:ExampleTemplateCarousel />
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
+        <Frame Margin="15" x:Name="layoutNormal" Grid.Row="6" OutlineColor="#00000088" Padding="5">
+            <Grid>
+                <CarouselView x:Name="carouselNormal" ItemsSource="{Binding Items}" Position="{Binding Position}">
+                    <CarouselView.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding Image}" Aspect="AspectFill" />
+                        </DataTemplate>
+                    </CarouselView.ItemTemplate>
+                </CarouselView>
+            </Grid>
+        </Frame>
     </Grid>
 </ContentPage>
