@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Threading;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -244,7 +244,7 @@ namespace Xamarin.Forms
 		EffectiveFlowDirection IVisualElementController.EffectiveFlowDirection => FlowController.EffectiveFlowDirection;
 
 		readonly Dictionary<Size, SizeRequest> _measureCache = new Dictionary<Size, SizeRequest>();
-
+		readonly ReaderWriterLockSlim _measureCacheLock = new ReaderWriterLockSlim();
 		
 
 		int _batched;
@@ -627,58 +627,74 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public virtual SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
 		{
-			SizeRequest cachedResult;
-			var constraintSize = new Size(widthConstraint, heightConstraint);
-			if (_measureCache.TryGetValue(constraintSize, out cachedResult))
+			_measureCacheLock.EnterUpgradeableReadLock();
+			try
 			{
-				return cachedResult;
+				SizeRequest cachedResult;
+				var constraintSize = new Size(widthConstraint, heightConstraint);
+				if (_measureCache.TryGetValue(constraintSize, out cachedResult))
+				{
+					return cachedResult;
+				}
+
+				double widthRequest = WidthRequest;
+				double heightRequest = HeightRequest;
+				if (widthRequest >= 0)
+					widthConstraint = Math.Min(widthConstraint, widthRequest);
+				if (heightRequest >= 0)
+					heightConstraint = Math.Min(heightConstraint, heightRequest);
+
+				SizeRequest result = OnMeasure(widthConstraint, heightConstraint);
+				bool hasMinimum = result.Minimum != result.Request;
+				Size request = result.Request;
+				Size minimum = result.Minimum;
+
+				if (heightRequest != -1)
+				{
+					request.Height = heightRequest;
+					if (!hasMinimum)
+						minimum.Height = heightRequest;
+				}
+
+				if (widthRequest != -1)
+				{
+					request.Width = widthRequest;
+					if (!hasMinimum)
+						minimum.Width = widthRequest;
+				}
+
+				double minimumHeightRequest = MinimumHeightRequest;
+				double minimumWidthRequest = MinimumWidthRequest;
+
+				if (minimumHeightRequest != -1)
+					minimum.Height = minimumHeightRequest;
+				if (minimumWidthRequest != -1)
+					minimum.Width = minimumWidthRequest;
+
+				minimum.Height = Math.Min(request.Height, minimum.Height);
+				minimum.Width = Math.Min(request.Width, minimum.Width);
+
+				var r = new SizeRequest(request, minimum);
+
+				if (r.Request.Width > 0 && r.Request.Height > 0)
+				{
+					_measureCacheLock.EnterWriteLock();
+					try
+					{
+						_measureCache[constraintSize] = r;
+					}
+					finally
+					{
+						_measureCacheLock.ExitWriteLock();
+					}
+				}
+
+				return r;
 			}
-
-			double widthRequest = WidthRequest;
-			double heightRequest = HeightRequest;
-			if (widthRequest >= 0)
-				widthConstraint = Math.Min(widthConstraint, widthRequest);
-			if (heightRequest >= 0)
-				heightConstraint = Math.Min(heightConstraint, heightRequest);
-
-			SizeRequest result = OnMeasure(widthConstraint, heightConstraint);
-			bool hasMinimum = result.Minimum != result.Request;
-			Size request = result.Request;
-			Size minimum = result.Minimum;
-
-			if (heightRequest != -1)
+			finally
 			{
-				request.Height = heightRequest;
-				if (!hasMinimum)
-					minimum.Height = heightRequest;
+				_measureCacheLock.ExitUpgradeableReadLock();
 			}
-
-			if (widthRequest != -1)
-			{
-				request.Width = widthRequest;
-				if (!hasMinimum)
-					minimum.Width = widthRequest;
-			}
-
-			double minimumHeightRequest = MinimumHeightRequest;
-			double minimumWidthRequest = MinimumWidthRequest;
-
-			if (minimumHeightRequest != -1)
-				minimum.Height = minimumHeightRequest;
-			if (minimumWidthRequest != -1)
-				minimum.Width = minimumWidthRequest;
-
-			minimum.Height = Math.Min(request.Height, minimum.Height);
-			minimum.Width = Math.Min(request.Width, minimum.Width);
-
-			var r = new SizeRequest(request, minimum);
-
-			if (r.Request.Width > 0 && r.Request.Height > 0)
-			{
-				_measureCache[constraintSize] = r;
-			}
-
-			return r;
 		}
 
 		public void Layout(Rectangle bounds)
@@ -812,7 +828,15 @@ namespace Xamarin.Forms
 		}
 		internal virtual void InvalidateMeasureInternal(InvalidationTrigger trigger)
 		{
-			_measureCache.Clear();
+			_measureCacheLock.EnterWriteLock();
+			try
+			{
+				_measureCache.Clear();
+			}
+			finally
+			{
+				_measureCacheLock.ExitWriteLock();
+			}
 			MeasureInvalidated?.Invoke(this, new InvalidationEventArgs(trigger));
 		}
 
