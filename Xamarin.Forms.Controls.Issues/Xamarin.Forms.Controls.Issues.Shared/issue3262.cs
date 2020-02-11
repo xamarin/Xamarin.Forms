@@ -58,7 +58,17 @@ namespace Xamarin.Forms.Controls.Issues
 					Children =
 					{
 						header,
-						webView
+						webView,
+						new Button()
+						{
+							Text = "Load page without cookies and app shouldn't crash",
+							AutomationId = "PageWithoutCookies",
+							Command = new Command(() =>
+							{
+								webView.Cookies = null;
+								webView.Source = "file:///android_asset/googlemapsearch.html";
+							})
+						}
 					}
 				};
 			}
@@ -68,5 +78,15 @@ namespace Xamarin.Forms.Controls.Issues
 				throw;
 			}
 		}
+
+#if UITEST
+		[Test]
+		public void LoadingPageWithoutCookiesSpecifiedDoesntCrash()
+		{
+			RunningApp.Tap("PageWithoutCookies");
+			RunningApp.WaitForElement("PageWithoutCookies");
+		}
+#endif
+
 	}
 }
