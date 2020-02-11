@@ -120,24 +120,11 @@ namespace Xamarin.Forms.Platform.iOS
 						await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(jCookie));
 					}
 				}
-				else
+				else if(WebView.Cookies.Count > 0)
 				{
-					NSMutableUrlRequest nSMutableUrlRequest = new NSMutableUrlRequest(new Uri(safeHostUri, safeRelativeUri));
+					WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(uri)), WKUserScriptInjectionTime.AtDocumentStart, false);
+					Configuration.UserContentController.AddUserScript(wKUserScript);
 
-					var jCookies = WebView.Cookies.GetCookies(uri);
-
-					StringBuilder cookieBuilder = new StringBuilder();
-					foreach (System.Net.Cookie jCookie in jCookies)
-					{
-						cookieBuilder.Append(jCookie.Name);
-						cookieBuilder.Append("=");
-						cookieBuilder.Append(jCookie.Value);
-						cookieBuilder.Append(";");
-					}
-
-
-					nSMutableUrlRequest["Cookie"] = cookieBuilder.ToString();
-					request = nSMutableUrlRequest;
 				}
 			}
 
@@ -241,6 +228,49 @@ namespace Xamarin.Forms.Platform.iOS
 			((IWebViewController)WebView).CanGoForward = CanGoForward;
 		}
 
+
+
+		string GetCookieString(Uri url)
+		{ 
+			var jCookies = WebView.Cookies.GetCookies(url);
+
+			StringBuilder cookieBuilder = new StringBuilder();
+			foreach (System.Net.Cookie jCookie in jCookies)
+			{
+
+				cookieBuilder.Append("document.cookie = '");
+				cookieBuilder.Append(jCookie.Name);
+				cookieBuilder.Append("=");
+				cookieBuilder.Append(jCookie.Value);
+
+				if (!jCookie.Expired)
+				{
+					cookieBuilder.Append($"; Max-Age={jCookie.Expires.Subtract(DateTime.UtcNow).TotalSeconds}");
+				}
+
+				if (!String.IsNullOrWhiteSpace(jCookie.Domain))
+				{
+					cookieBuilder.Append($"; Domain={jCookie.Domain}");
+				}
+				if (!String.IsNullOrWhiteSpace(jCookie.Domain))
+				{
+					cookieBuilder.Append($"; Path={jCookie.Path}");
+				}
+				if (jCookie.Secure)
+				{
+					cookieBuilder.Append($"; Secure");
+				}
+				if (jCookie.HttpOnly)
+				{
+					cookieBuilder.Append($"; HttpOnly");
+				}
+
+				cookieBuilder.Append("';");
+			}
+
+			return cookieBuilder.ToString();
+		}
+
 		class CustomWebViewNavigationDelegate : WKNavigationDelegate
 		{
 			readonly WkWebViewRenderer _renderer;
@@ -282,6 +312,7 @@ namespace Xamarin.Forms.Platform.iOS
 				WebView.SendNavigated(args);
 
 				_renderer.UpdateCanGoBackForward();
+
 			}
 
 			public override void DidStartProvisionalNavigation(WKWebView webView, WKNavigation navigation)
