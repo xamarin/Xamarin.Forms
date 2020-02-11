@@ -24,20 +24,20 @@ namespace Xamarin.Forms.Markup
 			return view;
 		}
 
-		public static TView Col<TView>(this TView view, int col) where TView : View
+		public static TView Column<TView>(this TView view, int column) where TView : View
 		{
-			view.SetValue(Grid.ColumnProperty, col);
+			view.SetValue(Grid.ColumnProperty, column);
 			return view;
 		}
 
-		public static TView Col<TView>(this TView view, int col, int span) where TView : View
+		public static TView Column<TView>(this TView view, int column, int span) where TView : View
 		{
-			view.SetValue(Grid.ColumnProperty, col);
+			view.SetValue(Grid.ColumnProperty, column);
 			view.SetValue(Grid.ColumnSpanProperty, span);
 			return view;
 		}
 
-		public static TView ColSpan<TView>(this TView view, int span) where TView : View
+		public static TView ColumnSpan<TView>(this TView view, int span) where TView : View
 		{
 			view.SetValue(Grid.ColumnSpanProperty, span);
 			return view;
@@ -59,19 +59,19 @@ namespace Xamarin.Forms.Markup
 			return view;
 		}
 
-		public static TView Col<TView, TCol>(this TView view, TCol col) where TView : View where TCol : Enum
+		public static TView Column<TView, TColumn>(this TView view, TColumn column) where TView : View where TColumn : Enum
 		{
-			int colIndex = col.ToInt();
-			view.SetValue(Grid.ColumnProperty, colIndex);
+			int columnIndex = column.ToInt();
+			view.SetValue(Grid.ColumnProperty, columnIndex);
 			return view;
 		}
 
-		public static TView Col<TView, TCol>(this TView view, TCol first, TCol last) where TView : View where TCol : Enum
+		public static TView Column<TView, TColumn>(this TView view, TColumn first, TColumn last) where TView : View where TColumn : Enum
 		{
-			int colIndex = first.ToInt();
-			view.SetValue(Grid.ColumnProperty, colIndex);
+			int columnIndex = first.ToInt();
+			view.SetValue(Grid.ColumnProperty, columnIndex);
 
-			int span = last.ToInt() + 1 - colIndex;
+			int span = last.ToInt() + 1 - columnIndex;
 			view.SetValue(Grid.ColumnSpanProperty, span);
 
 			return view;

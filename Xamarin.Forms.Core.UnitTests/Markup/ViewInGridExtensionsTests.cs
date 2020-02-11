@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 	{
 
 		enum TestRow { First, Second }
-		enum TestCol { First, Second }
+		enum TestColumn { First, Second }
 
 		[Test]
 		public void Row()
@@ -25,19 +25,19 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(b => b.RowSpan(2), (Grid.RowSpanProperty, 1, 2));
 
 		[Test]
-		public void Col()
-			=> TestPropertiesSet(b => b.Col(1), (Grid.ColumnProperty, 0, 1));
+		public void Column()
+			=> TestPropertiesSet(b => b.Column(1), (Grid.ColumnProperty, 0, 1));
 
 		[Test]
-		public void ColWithSpan()
+		public void ColumnWithSpan()
 			=> TestPropertiesSet(
-					b => b.Col(1, 2),
+					b => b.Column(1, 2),
 					(Grid.ColumnProperty, 0, 1),
 					(Grid.ColumnSpanProperty, 1, 2));
 
 		[Test]
-		public void ColSpan()
-			=> TestPropertiesSet(b => b.ColSpan(2), (Grid.ColumnSpanProperty, 1, 2));
+		public void ColumnSpan()
+			=> TestPropertiesSet(b => b.ColumnSpan(2), (Grid.ColumnSpanProperty, 1, 2));
 
 		[Test]
 		public void RowEnum()
@@ -51,14 +51,14 @@ namespace Xamarin.Forms.Markup.UnitTests
 					(Grid.RowSpanProperty, 1, 2));
 
 		[Test]
-		public void ColEnum()
-			=> TestPropertiesSet(b => b.Col(TestCol.Second), (Grid.ColumnProperty, (int)TestCol.First, (int)TestCol.Second));
+		public void ColumnEnum()
+			=> TestPropertiesSet(b => b.Column(TestColumn.Second), (Grid.ColumnProperty, (int)TestColumn.First, (int)TestColumn.Second));
 
 		[Test]
-		public void ColWithLastColEnum()
+		public void ColumnWithLastColumnEnum()
 			=> TestPropertiesSet(
-					b => b.Col(TestCol.First, TestCol.Second),
-					(Grid.ColumnProperty, (int)TestCol.Second, (int)TestCol.First),
+					b => b.Column(TestColumn.First, TestColumn.Second),
+					(Grid.ColumnProperty, (int)TestColumn.Second, (int)TestColumn.First),
 					(Grid.ColumnSpanProperty, 1, 2));
 	}
 }

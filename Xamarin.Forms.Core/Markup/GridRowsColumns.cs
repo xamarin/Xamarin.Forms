@@ -21,17 +21,17 @@ namespace Xamarin.Forms.Markup
 				return columnDefinitions;
 			}
 
-			public static ColumnDefinitionCollection Define<TEnum>(params (TEnum name, GridLength width)[] cols) where TEnum : Enum
+			public static ColumnDefinitionCollection Define<TEnum>(params (TEnum name, GridLength width)[] columns) where TEnum : Enum
 			{
 				var columnDefinitions = new ColumnDefinitionCollection();
-				for (int i = 0; i < cols.Length; i++)
+				for (int i = 0; i < columns.Length; i++)
 				{
-					if (i != cols[i].name.ToInt())
+					if (i != columns[i].name.ToInt())
 						throw new ArgumentException(
-							$"Value of column name { cols[i].name } is not { i }. " +
+							$"Value of column name { columns[i].name } is not { i }. " +
 							"Columns must be defined with enum names whose values form the sequence 0,1,2,..."
 						);
-					columnDefinitions.Add(new ColumnDefinition { Width = cols[i].width });
+					columnDefinitions.Add(new ColumnDefinition { Width = columns[i].width });
 				}
 				return columnDefinitions;
 			}
