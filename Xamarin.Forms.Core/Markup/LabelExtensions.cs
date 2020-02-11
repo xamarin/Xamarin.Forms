@@ -31,4 +31,28 @@
 			return label;
 		}
 	}
+
+	namespace LeftToRight
+	{
+		public static class LabelExtensions
+		{
+			public static TLabel TextLeft<TLabel>(this TLabel label) where TLabel : Label
+			{ label.HorizontalTextAlignment = TextAlignment.Start; return label; }
+
+			public static TLabel TextRight<TLabel>(this TLabel label) where TLabel : Label
+			{ label.HorizontalTextAlignment = TextAlignment.End; return label; }
+		}
+	}
+
+	namespace RightToLeft
+	{
+		public static class LabelExtensions
+		{
+			public static TLabel TextLeft<TLabel>(this TLabel label) where TLabel : Label
+			{ label.HorizontalTextAlignment = TextAlignment.End; return label; }
+
+			public static TLabel TextRight<TLabel>(this TLabel label) where TLabel : Label
+			{ label.HorizontalTextAlignment = TextAlignment.Start; return label; }
+		}
+	}
 }

@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		Label Label => Bindable;
 
 		[Test]
-		public void TextLeft()
+		public void TextStart()
 			=> TestPropertiesSet(l => l.TextStart(), (Label.HorizontalTextAlignmentProperty, TextAlignment.End, TextAlignment.Start));
 
 		[Test]
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(l => l.TextCenterH(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
 
 		[Test]
-		public void TextRight()
+		public void TextEnd()
 			=> TestPropertiesSet(l => l.TextEnd(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.End));
 
 		[Test]

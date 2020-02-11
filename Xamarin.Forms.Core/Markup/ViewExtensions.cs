@@ -2,7 +2,7 @@
 {
 	public static class ViewExtensions
 	{
-		public static TView Left<TView>(this TView view) where TView : View
+		public static TView Start<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.Start; return view; }
 
 		public static TView CenterH<TView>(this TView view) where TView : View
@@ -11,10 +11,10 @@
 		public static TView FillH<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.Fill; return view; }
 
-		public static TView Right<TView>(this TView view) where TView : View
+		public static TView End<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.End; return view; }
 
-		public static TView LeftExpand<TView>(this TView view) where TView : View
+		public static TView StartExpand<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.StartAndExpand; return view; }
 
 		public static TView CenterExpandH<TView>(this TView view) where TView : View
@@ -23,7 +23,7 @@
 		public static TView FillExpandH<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.FillAndExpand; return view; }
 
-		public static TView RightExpand<TView>(this TView view) where TView : View
+		public static TView EndExpand<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.EndAndExpand; return view; }
 
 		public static TView Top<TView>(this TView view) where TView : View
@@ -70,5 +70,41 @@
 
 		public static TView Margins<TView>(this TView view, double left = 0, double top = 0, double right = 0, double bottom = 0) where TView : View
 		{ view.Margin = new Thickness(left, top, right, bottom); return view; }
+	}
+
+	namespace LeftToRight
+	{
+		public static class ViewExtensions
+		{
+			public static TView Left<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.Start; return view; }
+
+			public static TView Right<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.End; return view; }
+
+			public static TView LeftExpand<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.StartAndExpand; return view; }
+
+			public static TView RightExpand<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.EndAndExpand; return view; }
+		}
+	}
+
+	namespace RightToLeft
+	{
+		public static class ViewExtensions
+		{
+			public static TView Left<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.End; return view; }
+
+			public static TView Right<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.Start; return view; }
+
+			public static TView LeftExpand<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.EndAndExpand; return view; }
+
+			public static TView RightExpand<TView>(this TView view) where TView : View
+			{ view.HorizontalOptions = LayoutOptions.StartAndExpand; return view; }
+		}
 	}
 }

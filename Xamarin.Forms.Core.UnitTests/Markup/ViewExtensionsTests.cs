@@ -6,8 +6,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 	public class ViewExtensionsTests : MarkupBaseTestFixture<BoxView>
 	{
 		[Test]
-		public void Left()
-			=> TestPropertiesSet(v => v.Left(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Start));
+		public void Start()
+			=> TestPropertiesSet(v => v.Start(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Start));
 
 		[Test]
 		public void CenterH()
@@ -18,12 +18,12 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(v => v.FillH(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Fill));
 
 		[Test]
-		public void Right()
-			=> TestPropertiesSet(v => v.Right(), (View.HorizontalOptionsProperty, LayoutOptions.Start, LayoutOptions.End));
+		public void End()
+			=> TestPropertiesSet(v => v.End(), (View.HorizontalOptionsProperty, LayoutOptions.Start, LayoutOptions.End));
 
 		[Test]
-		public void LeftExpand()
-			=> TestPropertiesSet(v => v.LeftExpand(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.StartAndExpand));
+		public void StartExpand()
+			=> TestPropertiesSet(v => v.StartExpand(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.StartAndExpand));
 
 		[Test]
 		public void CenterExpandH()
@@ -34,8 +34,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(v => v.FillExpandH(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.FillAndExpand));
 
 		[Test]
-		public void RightExpand()
-			=> TestPropertiesSet(v => v.RightExpand(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.EndAndExpand));
+		public void EndExpand()
+			=> TestPropertiesSet(v => v.EndExpand(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.EndAndExpand));
 
 		[Test]
 		public void Top()
@@ -119,14 +119,14 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			DerivedFromView _ =
 				new DerivedFromView()
-				.Left()
+				.Start()
 				.CenterH()
 				.FillH()
-				.Right()
-				.LeftExpand()
+				.End()
+				.StartExpand()
 				.CenterExpandH()
 				.FillExpandH()
-				.RightExpand()
+				.EndExpand()
 				.Top()
 				.Bottom()
 				.CenterV()
