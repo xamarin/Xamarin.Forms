@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Text;
 using System.Threading.Tasks;
 using Foundation;
 using ObjCRuntime;
@@ -94,12 +96,52 @@ namespace Xamarin.Forms.Platform.iOS
 				LoadHtmlString(html, baseUrl == null ? new NSUrl(NSBundle.MainBundle.BundlePath, true) : new NSUrl(baseUrl, true));
 		}
 
-		public void LoadUrl(string url)
+		public async void LoadUrl(string url)
 		{
 			var uri = new Uri(url);
 			var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
 			var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
-			LoadRequest(new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri)));
+			NSUrlRequest request = new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri));
+
+			if (WebView.Cookies != null)
+			{
+				if (Forms.IsiOS11OrNewer)
+				{
+					var existingCookies = await Configuration.WebsiteDataStore.HttpCookieStore.GetAllCookiesAsync();
+
+					foreach (var cookie in existingCookies)
+						await Configuration.WebsiteDataStore.HttpCookieStore.DeleteCookieAsync(cookie);
+
+
+					var jCookies = WebView.Cookies.GetCookies(uri);
+
+					foreach (System.Net.Cookie jCookie in jCookies)
+					{
+						await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(jCookie));
+					}
+				}
+				else
+				{
+					NSMutableUrlRequest nSMutableUrlRequest = new NSMutableUrlRequest(new Uri(safeHostUri, safeRelativeUri));
+
+					var jCookies = WebView.Cookies.GetCookies(uri);
+
+					StringBuilder cookieBuilder = new StringBuilder();
+					foreach (System.Net.Cookie jCookie in jCookies)
+					{
+						cookieBuilder.Append(jCookie.Name);
+						cookieBuilder.Append("=");
+						cookieBuilder.Append(jCookie.Value);
+						cookieBuilder.Append(";");
+					}
+
+
+					nSMutableUrlRequest["Cookie"] = cookieBuilder.ToString();
+					request = nSMutableUrlRequest;
+				}
+			}
+
+			LoadRequest(request);
 		}
 
 		public override void LayoutSubviews()
