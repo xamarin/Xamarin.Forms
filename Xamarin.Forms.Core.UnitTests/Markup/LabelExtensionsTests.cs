@@ -12,8 +12,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(l => l.TextStart(), (Label.HorizontalTextAlignmentProperty, TextAlignment.End, TextAlignment.Start));
 
 		[Test]
-		public void TextCenterH()
-			=> TestPropertiesSet(l => l.TextCenterH(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
+		public void TextCenterHorizontal()
+			=> TestPropertiesSet(l => l.TextCenterHorizontal(), (Label.HorizontalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
 
 		[Test]
 		public void TextEnd()
@@ -24,8 +24,8 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(l => l.TextTop(), (Label.VerticalTextAlignmentProperty, TextAlignment.End, TextAlignment.Start));
 
 		[Test]
-		public void TextCenterV()
-			=> TestPropertiesSet(l => l.TextCenterV(), (Label.VerticalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
+		public void TextCenterVertical()
+			=> TestPropertiesSet(l => l.TextCenterVertical(), (Label.VerticalTextAlignmentProperty, TextAlignment.Start, TextAlignment.Center));
 
 		[Test]
 		public void TextBottom()
@@ -81,10 +81,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			DerivedFromLabel _ =
 				new DerivedFromLabel()
 				.TextStart()
-				.TextCenterH()
+				.TextCenterHorizontal()
 				.TextEnd()
 				.TextTop()
-				.TextCenterV()
+				.TextCenterVertical()
 				.TextBottom()
 				.TextCenter()
 				.FontSize(8.0)

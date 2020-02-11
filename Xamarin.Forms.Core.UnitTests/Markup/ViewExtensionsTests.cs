@@ -10,12 +10,12 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(v => v.Start(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Start));
 
 		[Test]
-		public void CenterH()
-			=> TestPropertiesSet(v => v.CenterH(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Center));
+		public void CenterHorizontal()
+			=> TestPropertiesSet(v => v.CenterHorizontal(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Center));
 
 		[Test]
-		public void FillH()
-			=> TestPropertiesSet(v => v.FillH(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Fill));
+		public void FillHorizontal()
+			=> TestPropertiesSet(v => v.FillHorizontal(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.Fill));
 
 		[Test]
 		public void End()
@@ -26,12 +26,12 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(v => v.StartExpand(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.StartAndExpand));
 
 		[Test]
-		public void CenterExpandH()
-			=> TestPropertiesSet(v => v.CenterExpandH(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.CenterAndExpand));
+		public void CenterExpandHorizontal()
+			=> TestPropertiesSet(v => v.CenterExpandHorizontal(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.CenterAndExpand));
 
 		[Test]
-		public void FillExpandH()
-			=> TestPropertiesSet(v => v.FillExpandH(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.FillAndExpand));
+		public void FillExpandHorizontal()
+			=> TestPropertiesSet(v => v.FillExpandHorizontal(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.FillAndExpand));
 
 		[Test]
 		public void EndExpand()
@@ -46,12 +46,12 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(v => v.Bottom(), (View.VerticalOptionsProperty, LayoutOptions.Start, LayoutOptions.End));
 
 		[Test]
-		public void CenterV()
-			=> TestPropertiesSet(v => v.CenterV(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.Center));
+		public void CenterVertical()
+			=> TestPropertiesSet(v => v.CenterVertical(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.Center));
 
 		[Test]
-		public void FillV()
-			=> TestPropertiesSet(v => v.FillV(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.Fill));
+		public void FillVertical()
+			=> TestPropertiesSet(v => v.FillVertical(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.Fill));
 
 		[Test]
 		public void TopExpand()
@@ -62,12 +62,12 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(v => v.BottomExpand(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.EndAndExpand));
 
 		[Test]
-		public void CenterExpandV()
-			=> TestPropertiesSet(v => v.CenterExpandV(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.CenterAndExpand));
+		public void CenterExpandVertical()
+			=> TestPropertiesSet(v => v.CenterExpandVertical(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.CenterAndExpand));
 
 		[Test]
-		public void FillExpandV()
-			=> TestPropertiesSet(v => v.FillExpandV(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.FillAndExpand));
+		public void FillExpandVertical()
+			=> TestPropertiesSet(v => v.FillExpandVertical(), (View.VerticalOptionsProperty, LayoutOptions.End, LayoutOptions.FillAndExpand));
 
 		[Test]
 		public void Center()
@@ -120,21 +120,21 @@ namespace Xamarin.Forms.Markup.UnitTests
 			DerivedFromView _ =
 				new DerivedFromView()
 				.Start()
-				.CenterH()
-				.FillH()
+				.CenterHorizontal()
+				.FillHorizontal()
 				.End()
 				.StartExpand()
-				.CenterExpandH()
-				.FillExpandH()
+				.CenterExpandHorizontal()
+				.FillExpandHorizontal()
 				.EndExpand()
 				.Top()
 				.Bottom()
-				.CenterV()
-				.FillV()
+				.CenterVertical()
+				.FillVertical()
 				.TopExpand()
 				.BottomExpand()
-				.CenterExpandV()
-				.FillExpandV()
+				.CenterExpandVertical()
+				.FillExpandVertical()
 				.Center()
 				.Fill()
 				.CenterExpand()

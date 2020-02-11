@@ -5,10 +5,10 @@
 		public static TView Start<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.Start; return view; }
 
-		public static TView CenterH<TView>(this TView view) where TView : View
+		public static TView CenterHorizontal<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.Center; return view; }
 
-		public static TView FillH<TView>(this TView view) where TView : View
+		public static TView FillHorizontal<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.Fill; return view; }
 
 		public static TView End<TView>(this TView view) where TView : View
@@ -17,10 +17,10 @@
 		public static TView StartExpand<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.StartAndExpand; return view; }
 
-		public static TView CenterExpandH<TView>(this TView view) where TView : View
+		public static TView CenterExpandHorizontal<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.CenterAndExpand; return view; }
 
-		public static TView FillExpandH<TView>(this TView view) where TView : View
+		public static TView FillExpandHorizontal<TView>(this TView view) where TView : View
 		{ view.HorizontalOptions = LayoutOptions.FillAndExpand; return view; }
 
 		public static TView EndExpand<TView>(this TView view) where TView : View
@@ -32,10 +32,10 @@
 		public static TView Bottom<TView>(this TView view) where TView : View
 		{ view.VerticalOptions = LayoutOptions.End; return view; }
 
-		public static TView CenterV<TView>(this TView view) where TView : View
+		public static TView CenterVertical<TView>(this TView view) where TView : View
 		{ view.VerticalOptions = LayoutOptions.Center; return view; }
 
-		public static TView FillV<TView>(this TView view) where TView : View
+		public static TView FillVertical<TView>(this TView view) where TView : View
 		{ view.VerticalOptions = LayoutOptions.Fill; return view; }
 
 		public static TView TopExpand<TView>(this TView view) where TView : View
@@ -44,23 +44,23 @@
 		public static TView BottomExpand<TView>(this TView view) where TView : View
 		{ view.VerticalOptions = LayoutOptions.EndAndExpand; return view; }
 
-		public static TView CenterExpandV<TView>(this TView view) where TView : View
+		public static TView CenterExpandVertical<TView>(this TView view) where TView : View
 		{ view.VerticalOptions = LayoutOptions.CenterAndExpand; return view; }
 
-		public static TView FillExpandV<TView>(this TView view) where TView : View
+		public static TView FillExpandVertical<TView>(this TView view) where TView : View
 		{ view.VerticalOptions = LayoutOptions.FillAndExpand; return view; }
 
 		public static TView Center<TView>(this TView view) where TView : View
-			=> view.CenterH().CenterV();
+			=> view.CenterHorizontal().CenterVertical();
 
 		public static TView Fill<TView>(this TView view) where TView : View
-			=> view.FillH().FillV();
+			=> view.FillHorizontal().FillVertical();
 
 		public static TView CenterExpand<TView>(this TView view) where TView : View
-			=> view.CenterExpandH().CenterExpandV();
+			=> view.CenterExpandHorizontal().CenterExpandVertical();
 
 		public static TView FillExpand<TView>(this TView view) where TView : View
-			=> view.FillExpandH().FillExpandV();
+			=> view.FillExpandHorizontal().FillExpandVertical();
 
 		public static TView Margin<TView>(this TView view, Thickness margin) where TView : View
 		{ view.Margin = margin; return view; }
