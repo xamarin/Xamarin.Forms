@@ -314,10 +314,13 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetCurrentItem(object item, int position = -1)
 		{
-			if(item == null && position != -1)
+			if (item == null && position != -1)
 				item = GetItemForPosition(this, position);
 
-			SetValueFromRenderer(CurrentItemProperty, item);
+			if (item == CurrentItem && position != -1 && position != Position)
+				SetValueFromRenderer(PositionProperty, position);
+			else
+				SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
