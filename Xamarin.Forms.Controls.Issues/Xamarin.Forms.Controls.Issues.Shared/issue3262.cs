@@ -52,6 +52,8 @@ namespace Xamarin.Forms.Controls.Issues
 					Cookies = cookieContainer
 				};
 
+
+
 				Content = new StackLayout
 				{
 					Padding = new Thickness(20),
@@ -59,6 +61,15 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						header,
 						webView,
+						new Button()
+						{
+							Text = "Display all Cookies. You should see a cookie called 'TestCookie'",
+							AutomationId = "DisplayAllCookies",
+							Command = new Command(async () =>
+							{
+								await webView.EvaluateJavaScriptAsync("alert(document.cookie);");
+							})
+						},
 						new Button()
 						{
 							Text = "Load page without cookies and app shouldn't crash",
