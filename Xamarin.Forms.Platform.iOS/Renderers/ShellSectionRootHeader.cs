@@ -247,6 +247,12 @@ namespace Xamarin.Forms.Platform.iOS
 			public UIColor SelectedColor { get; set; }
 			public UIColor UnSelectedColor { get; set; }
 
+			[Internals.Preserve(Conditional = true)]
+			public ShellSectionHeaderCell()
+			{
+
+			}
+
 			public override bool Selected
 			{
 				get => base.Selected;

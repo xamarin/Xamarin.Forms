@@ -214,8 +214,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			// Constrain and measure the prototype cell
-			prototype.ConstrainTo(ConstrainedDimension);
+			prototype.ConstrainTo(ConstrainedDimension);			
 
 			var measure = prototype.Measure();
 
