@@ -64,7 +64,7 @@ namespace Xamarin.Forms
 			// This means the user hasn't set FlowDirection anywhere so we just return the
 			// Device FlowDirection
 			if ((int)self == 0)
-				return Device.FlowDirection == FlowDirection.RightToLeft;
+				return Device.FlowDirection == FlowDirection.LeftToRight;
 
 			return (self & EffectiveFlowDirection.RightToLeft) != EffectiveFlowDirection.RightToLeft;
 		}
