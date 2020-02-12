@@ -71,11 +71,6 @@ namespace Xamarin.Forms.Internals
 		void EmitCollectionChanged()
 			=> CollectionChanged?.Invoke(this, EventArgs.Empty);
 
-		public event EventHandler<NotifyCollectionChangedEventArgs> ToolbarItemsCollectionChanged;
-
-		void EmitToolbarItemsCollectionChanged(NotifyCollectionChangedEventArgs eventArgs) 
-			=> ToolbarItemsCollectionChanged?.Invoke(this, eventArgs);
-
 		List<ToolbarItem> GetCurrentToolbarItems(Page page)
 		{
 			var result = new List<ToolbarItem>();
@@ -136,8 +131,6 @@ namespace Xamarin.Forms.Internals
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
 			EmitCollectionChanged();
-
-			EmitToolbarItemsCollectionChanged(notifyCollectionChangedEventArgs);
 		}
 
 		void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
