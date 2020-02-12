@@ -18,14 +18,10 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static bool UpdateFlowDirection(this UIView view, IVisualElementController controller)
+		internal static UISemanticContentAttribute GetFlowDirection(this IVisualElementController controller, UISemanticContentAttribute updateValue)
 		{
-			if (controller == null || view == null || !Forms.IsiOS9OrNewer)
-				return false;
-
-			UISemanticContentAttribute updateValue = view.SemanticContentAttribute;
-
-			if(!controller.EffectiveFlowDirection.HasExplicitParent())
+			if(!controller.EffectiveFlowDirection.HasExplicitParent() &&
+				!controller.EffectiveFlowDirection.IsExplicit())
 			{
 				updateValue = UISemanticContentAttribute.Unspecified;
 			}
@@ -43,6 +39,16 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 					updateValue = UISemanticContentAttribute.Unspecified;
 			}
+
+			return updateValue;
+		}
+
+		internal static bool UpdateFlowDirection(this UIView view, IVisualElementController controller)
+		{
+			if (controller == null || view == null || !Forms.IsiOS9OrNewer)
+				return false;
+
+			UISemanticContentAttribute updateValue = controller.GetFlowDirection(view.SemanticContentAttribute);
 
 			if(updateValue != view.SemanticContentAttribute)
 			{

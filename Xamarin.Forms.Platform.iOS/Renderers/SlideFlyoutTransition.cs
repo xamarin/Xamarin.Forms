@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var shellWidth = shell.Frame.Width;
 
 			if(shell.SemanticContentAttribute == UISemanticContentAttribute.ForceRightToLeft ||
-				Device.FlowDirection == FlowDirection.RightToLeft)
+				(shell.SemanticContentAttribute == UISemanticContentAttribute.Unspecified && Device.FlowDirection == FlowDirection.RightToLeft))
 			{
 				var positionY = shellWidth - openPixels;
 				flyout.Frame = new CGRect(positionY, 0, flyoutWidth, bounds.Height);

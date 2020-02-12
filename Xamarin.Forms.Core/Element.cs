@@ -468,24 +468,29 @@ namespace Xamarin.Forms
 			if (controller == null)
 				return;
 
+			var parentView = child.Parent as IFlowDirectionController;
+			if (parentView == null)
+				return;
+
 			if (controller.EffectiveFlowDirection.IsImplicit())
 			{
-				var parentView = child.Parent as IFlowDirectionController;
-				if (parentView == null)
-					return;
 
 				var flowDirection = parentView.EffectiveFlowDirection.ToFlowDirection();
 
 				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
 				{
 					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
-
-					if(parentView.EffectiveFlowDirection.IsExplicit() ||
-						parentView.EffectiveFlowDirection.HasExplicitParent())
-					{
-						controller.EffectiveFlowDirection = controller.EffectiveFlowDirection | EffectiveFlowDirection.HasExplicitParent;
-					}
 				}
+			}
+
+			if(parentView.EffectiveFlowDirection.IsExplicit() ||
+				parentView.EffectiveFlowDirection.HasExplicitParent())
+			{
+				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection | EffectiveFlowDirection.HasExplicitParent;
+			}
+			else
+			{
+				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection & ~EffectiveFlowDirection.HasExplicitParent;
 			}
 		}
 
