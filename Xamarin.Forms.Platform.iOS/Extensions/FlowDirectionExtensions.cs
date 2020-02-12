@@ -25,10 +25,24 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UISemanticContentAttribute updateValue = view.SemanticContentAttribute;
 
-			if (controller.EffectiveFlowDirection.IsRightToLeft())
-				updateValue = UISemanticContentAttribute.ForceRightToLeft;
+			if(!controller.EffectiveFlowDirection.HasExplicitParent())
+			{
+				updateValue = UISemanticContentAttribute.Unspecified;
+			}
+			else if (controller.EffectiveFlowDirection.IsRightToLeft())
+			{
+				if (Device.FlowDirection == FlowDirection.LeftToRight)
+					updateValue = UISemanticContentAttribute.ForceRightToLeft;
+				else
+					updateValue = UISemanticContentAttribute.Unspecified;
+			}
 			else if (controller.EffectiveFlowDirection.IsLeftToRight())
-				updateValue = UISemanticContentAttribute.ForceLeftToRight;
+			{
+				if (Device.FlowDirection == FlowDirection.RightToLeft)
+					updateValue = UISemanticContentAttribute.ForceLeftToRight;
+				else
+					updateValue = UISemanticContentAttribute.Unspecified;
+			}
 
 			if(updateValue != view.SemanticContentAttribute)
 			{

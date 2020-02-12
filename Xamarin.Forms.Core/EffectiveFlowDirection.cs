@@ -7,5 +7,6 @@ namespace Xamarin.Forms
 	{
 		RightToLeft = 1 << 0,
 		Explicit = 1 << 1,
+		HasExplicitParent = 1 << 2
 	}
 }
