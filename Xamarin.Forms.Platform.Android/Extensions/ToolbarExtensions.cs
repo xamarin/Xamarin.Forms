@@ -69,14 +69,13 @@ namespace Xamarin.Forms.Platform.Android
 			item.PropertyChanged -= toolbarItemChanged;
 			item.PropertyChanged += toolbarItemChanged;
 
-			toolbarItemsCreated?.Add(item);
-
 			IMenuItem menuitem;
 
 			if (menuItemIndex == null)
 			{
 				menuitem = menu.Add(new Java.Lang.String(item.Text));
 				menuItemsCreated?.Add(menuitem);
+				toolbarItemsCreated?.Add(item);
 			}
 			else
 			{
