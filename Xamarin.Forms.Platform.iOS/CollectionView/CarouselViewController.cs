@@ -43,9 +43,10 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		public override void ViewDidLayoutSubviews()
+
+		public override void ViewWillLayoutSubviews()
 		{
-			base.ViewDidLayoutSubviews();
+			base.ViewWillLayoutSubviews();
 			if (!_viewInitialized)
 			{
 				UpdateInitialPosition();
@@ -54,6 +55,13 @@ namespace Xamarin.Forms.Platform.iOS
 				_viewInitialized = true;
 			}
 			UpdateVisualStates();
+		}
+
+		public override void ViewDidLayoutSubviews()
+		{
+			base.ViewDidLayoutSubviews();
+
+			UpdateCarouselViewPosition();
 		}
 
 		protected override bool IsHorizontal => (_carouselView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
@@ -159,10 +167,8 @@ namespace Xamarin.Forms.Platform.iOS
 				var initialPosition = position;
 				_carouselView.Position = initialPosition;
 			}
-			else
-			{
-				UpdateCarouselViewPosition();
-			}
+
+			UpdateCarouselViewPosition();
 
 			while (_carouselView.ScrollToActions.Count > 0)
 			{

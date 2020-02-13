@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Core.UITests
 			var selectedAfterRemove = App.WaitForElement(x => x.Marked("lblSelected")).First().Text;
 			Assert.IsTrue(selectedAfterRemove == "2");
 
-
+			App.Back();
 		}
 
 		[TestCase("CarouselView (Code, Horizontal)")]
@@ -113,6 +113,7 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 #endif
+			App.Back();
 		}
 
 		void VisitSubGallery(string galleryName)
