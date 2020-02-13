@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialConstraintsSet;
 		bool _isEmpty;
-		bool _currentBackgroundIsEmptyView;
+		bool _emptyViewDisplayed;
 		bool _disposed;
   
 		UIView _emptyUIView;
@@ -377,6 +377,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_emptyUIView.Tag = EmptyTag;
 				CollectionView.AddSubview(_emptyUIView);
+				ResizeEmptyView();
 
 				if (_emptyViewFormsElement != null)
 				{
@@ -390,18 +391,18 @@ namespace Xamarin.Forms.Platform.iOS
 					_emptyViewFormsElement.Layout(_emptyUIView.Frame.ToRectangle());
 				}
 
-				_currentBackgroundIsEmptyView = true;
+				_emptyViewDisplayed = true;
 			}
 			else
 			{
 				// Is the empty view currently in the background? Swap back to the default.
-				if (_currentBackgroundIsEmptyView)
+				if (_emptyViewDisplayed)
 				{
 					_emptyUIView.RemoveFromSuperview();
 					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 
-				_currentBackgroundIsEmptyView = false;
+				_emptyViewDisplayed = false;
 			}
 		}
 	}
