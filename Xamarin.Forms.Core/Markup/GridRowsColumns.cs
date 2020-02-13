@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using static Xamarin.Forms.Core.Markup.Markup;
 
 namespace Xamarin.Forms.Markup
 {
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.Markup
 		{
 			public static ColumnDefinitionCollection Define(params GridLength [] widths)
 			{
+				VerifyExperimental();
 				var columnDefinitions = new ColumnDefinitionCollection();
 
 				for (int i = 0; i < widths.Length; i++)
@@ -23,6 +25,7 @@ namespace Xamarin.Forms.Markup
 
 			public static ColumnDefinitionCollection Define<TEnum>(params (TEnum name, GridLength width)[] columns) where TEnum : Enum
 			{
+				VerifyExperimental();
 				var columnDefinitions = new ColumnDefinitionCollection();
 				for (int i = 0; i < columns.Length; i++)
 				{
@@ -41,6 +44,7 @@ namespace Xamarin.Forms.Markup
 		{
 			public static RowDefinitionCollection Define(params GridLength[] heights)
 			{
+				VerifyExperimental();
 				var rowDefinitions = new RowDefinitionCollection();
 
 				for (int i = 0; i < heights.Length; i++)
@@ -51,6 +55,7 @@ namespace Xamarin.Forms.Markup
 
 			public static RowDefinitionCollection Define<TEnum>(params (TEnum name, GridLength height)[] rows) where TEnum : Enum
 			{
+				VerifyExperimental();
 				var rowDefinitions = new RowDefinitionCollection();
 				for (int i = 0; i < rows.Length; i++)
 				{
@@ -67,6 +72,7 @@ namespace Xamarin.Forms.Markup
 
 		public static int All<TEnum>() where TEnum : Enum
 		{
+			VerifyExperimental();
 			var values = Enum.GetValues(typeof(TEnum));
 			int span = (int)values.GetValue(values.Length - 1) + 1;
 			return span;
@@ -74,6 +80,7 @@ namespace Xamarin.Forms.Markup
 
 		public static int Last<TEnum>() where TEnum : Enum
 		{
+			VerifyExperimental();
 			var values = Enum.GetValues(typeof(TEnum));
 			int last = (int)values.GetValue(values.Length - 1);
 			return last;

@@ -2,13 +2,16 @@
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class ElementExtensionsTests : MarkupBaseTestFixture<Label>
 	{
+		public ElementExtensionsTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		Label Label => Bindable;
 
 		[Test]
-		public void EffectSingle()
+		public void EffectSingle() => AssertExperimental(() =>
 		{
 			Label.Effects?.Clear();
 			Assume.That((Label.Effects?.Count ?? 0), Is.EqualTo(0));
@@ -18,10 +21,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			Assert.That((Label.Effects?.Count ?? 0), Is.EqualTo(1));
 			Assert.That(Label.Effects.Contains(effect1));
-		}
+		});
 
 		[Test]
-		public void EffectsMultiple()
+		public void EffectsMultiple() => AssertExperimental(() =>
 		{
 			Label.Effects?.Clear();
 			Assume.That((Label.Effects?.Count ?? 0), Is.EqualTo(0));
@@ -32,7 +35,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That((Label.Effects?.Count ?? 0), Is.EqualTo(2));
 			Assert.That(Label.Effects.Contains(effect1));
 			Assert.That(Label.Effects.Contains(effect2));
-		}
+		});
 
 		[Test]
 		public void FontSize()
@@ -71,7 +74,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(l => l.Font(family: "AFontName"), (FontElement.FontFamilyProperty, "", "AFontName"));
 
 		[Test]
-		public void SupportDerivedFromLabel()
+		public void SupportDerivedFromLabel() => AssertExperimental(() =>
 		{
 			DerivedFromLabel _ =
 				new DerivedFromLabel()
@@ -80,7 +83,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				.Bold()
 				.Italic()
 				.Font(8, true, true, "AFontName");
-		}
+		});
 
 		class DerivedFromLabel : Label { }
 	}

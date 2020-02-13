@@ -4,14 +4,17 @@ using static Xamarin.Forms.Markup.GridRowsColumns;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class GridRowsColumns : MarkupBaseTestFixture
 	{
+		public GridRowsColumns(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		enum Row { First, Second, Third }
 		enum Col { First, Second, Third, Fourth }
 
 		[Test]
-		public void DefineRowsWithoutEnums()
+		public void DefineRowsWithoutEnums() => AssertExperimental(() =>
 		{
 			var grid = new Forms.Grid
 			{
@@ -22,10 +25,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(grid.RowDefinitions[0]?.Height, Is.EqualTo(GridLength.Auto));
 			Assert.That(grid.RowDefinitions[1]?.Height, Is.EqualTo(GridLength.Star));
 			Assert.That(grid.RowDefinitions[2]?.Height, Is.EqualTo(new GridLength(20)));
-		}
+		});
 
 		[Test]
-		public void DefineRowsWithEnums()
+		public void DefineRowsWithEnums() => AssertExperimental(() =>
 		{
 			var grid = new Forms.Grid
 			{
@@ -40,20 +43,21 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(grid.RowDefinitions[0]?.Height, Is.EqualTo(GridLength.Auto));
 			Assert.That(grid.RowDefinitions[1]?.Height, Is.EqualTo(GridLength.Star));
 			Assert.That(grid.RowDefinitions[2]?.Height, Is.EqualTo(new GridLength(20)));
-		}
+		});
 
 		[Test]
 		public void InvalidRowEnumOrder()
 		{
-			Assert.Throws<ArgumentException>(
-				() => Rows.Define((Row.First, 8), (Row.Third, 8)),
-				$"Value of row name Third is not 1. " +
-				"Rows must be defined with enum names whose values form the sequence 0,1,2,..."
-			);
+			if (withExperimentalFlag)
+				Assert.Throws<ArgumentException>(
+					() => Rows.Define((Row.First, 8), (Row.Third, 8)),
+					$"Value of row name Third is not 1. " +
+					"Rows must be defined with enum names whose values form the sequence 0,1,2,..."
+				);
 		}
 
 		[Test]
-		public void DefineColumnsWithoutEnums()
+		public void DefineColumnsWithoutEnums() => AssertExperimental(() =>
 		{
 			var grid = new Forms.Grid
 			{
@@ -65,10 +69,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(grid.ColumnDefinitions[1]?.Width, Is.EqualTo(GridLength.Star));
 			Assert.That(grid.ColumnDefinitions[2]?.Width, Is.EqualTo(new GridLength(20)));
 			Assert.That(grid.ColumnDefinitions[3]?.Width, Is.EqualTo(new GridLength(40)));
-		}
+		});
 
 		[Test]
-		public void DefineColumnsWithEnums()
+		public void DefineColumnsWithEnums() => AssertExperimental(() =>
 		{
 			var grid = new Forms.Grid
 			{
@@ -85,24 +89,25 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(grid.ColumnDefinitions[1]?.Width, Is.EqualTo(GridLength.Star));
 			Assert.That(grid.ColumnDefinitions[2]?.Width, Is.EqualTo(new GridLength(20)));
 			Assert.That(grid.ColumnDefinitions[3]?.Width, Is.EqualTo(new GridLength(40)));
-		}
+		});
 
 		[Test]
 		public void InvalidColumnEnumOrder()
 		{
-			Assert.Throws<ArgumentException>(
-				() => Columns.Define((Col.Second, 8), (Col.First, 8)),
+			if (withExperimentalFlag)
+				Assert.Throws<ArgumentException>(
+				() => AssertExperimental(() => Columns.Define((Col.Second, 8), (Col.First, 8))),
 				$"Value of column name Second is not 0. " +
 				"Columns must be defined with enum names whose values form the sequence 0,1,2,..."
 			);
 		}
 
 		[Test]
-		public void AllColumns()
-			=> Assert.That(All<Col>(), Is.EqualTo(4));
+		public void AllColumns() => AssertExperimental(()
+			=> Assert.That(All<Col>(), Is.EqualTo(4)));
 
 		[Test]
-		public void LastRow()
-			=> Assert.That(Last<Row>(), Is.EqualTo(2));
+		public void LastRow() => AssertExperimental(()
+			=> Assert.That(Last<Row>(), Is.EqualTo(2)));
 	}
 }

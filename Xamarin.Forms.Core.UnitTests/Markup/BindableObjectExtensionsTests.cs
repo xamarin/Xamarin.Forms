@@ -9,10 +9,13 @@ namespace Xamarin.Forms.Markup.UnitTests
 	using System.Windows.Input;
 	using XamarinFormsMarkupUnitTestsBindableObjectViews;
 
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class BindableObjectExtensionsTests : MarkupBaseTestFixture
 	{
 		ViewModel viewModel;
+
+		public BindableObjectExtensionsTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
 
 		[SetUp]
 		public override void Setup()
@@ -29,17 +32,17 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
-		public void BindSpecifiedPropertyWithDefaults()
+		public void BindSpecifiedPropertyWithDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(Label.TextColorProperty, nameof(viewModel.TextColor));
 			BindingHelpers.AssertBindingExists(label, Label.TextColorProperty, nameof(viewModel.TextColor));
-		}
+		});
 
 		// Note that we test positional parameters to catch API parameter order changes (which would be breaking).
 		// Testing named parameters is not useful because a parameter rename operation in the API would also rename it in the test
 		[Test]
-		public void BindSpecifiedPropertyWithPositionalParameters()
+		public void BindSpecifiedPropertyWithPositionalParameters() => AssertExperimental(() =>
 		{
 			var button = new Button();
 			object converterParameter = 1;
@@ -73,10 +76,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				targetNullValue: targetNullValue,
 				fallbackValue: fallbackValue
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineOneWayConvertAndDefaults()
+		public void BindSpecifiedPropertyWithInlineOneWayConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -92,10 +95,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConverterInstanceIsAnyNotNull: true,
 				assertConvert: c => c.AssertConvert(true, Color.Red).AssertConvert(false, Color.Transparent)
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndDefaults()
+		public void BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -112,10 +115,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConvert: c => c.AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5))
 									 .AssertConvert(false, 0.2, Color.Green.MultiplyAlpha(0.2))
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineTwoWayConvertAndDefaults()
+		public void BindSpecifiedPropertyWithInlineTwoWayConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -135,10 +138,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConvert: c => c.AssertConvert(true, Color.Red, twoWay: true)
 									 .AssertConvert(false, Color.Transparent, twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndDefaults()
+		public void BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -158,10 +161,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConvert: c => c.AssertConvert(true, 0.5, Color.Red.MultiplyAlpha(0.5), twoWay: true)
 									 .AssertConvert(false, 0.2, Color.Green.MultiplyAlpha(0.2), twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineOneWayConvertAndPositionalParameters()
+		public void BindSpecifiedPropertyWithInlineOneWayConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var button = new Button();
 			object converterParameter = 1;
@@ -196,10 +199,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", "'test'")
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters()
+		public void BindSpecifiedPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var button = new Button();
 			object converterParameter = 1;
@@ -234,10 +237,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", 2, "'test''test'")
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineTwoWayConvertAndPositionalParameters()
+		public void BindSpecifiedPropertyWithInlineTwoWayConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var button = new Button();
 			object converterParameter = 1;
@@ -272,10 +275,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", "'test'", twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters()
+		public void BindSpecifiedPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var button = new Button();
 			object converterParameter = 1;
@@ -310,18 +313,18 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", 2, "'test''test'", twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithDefaults()
+		public void BindDefaultPropertyWithDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(nameof(viewModel.Text));
 			BindingHelpers.AssertBindingExists(label, Label.TextProperty, nameof(viewModel.Text));
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithPositionalParameters()
+		public void BindDefaultPropertyWithPositionalParameters() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			object converterParameter = 1;
@@ -354,10 +357,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				targetNullValue: targetNullValue,
 				fallbackValue: fallbackValue
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineOneWayConvertAndDefaults()
+		public void BindDefaultPropertyWithInlineOneWayConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -372,10 +375,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConverterInstanceIsAnyNotNull: true,
 				assertConvert: c => c.AssertConvert("test", "'test'")
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineOneWayParameterizedConvertAndDefaults()
+		public void BindDefaultPropertyWithInlineOneWayParameterizedConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -390,10 +393,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConverterInstanceIsAnyNotNull: true,
 				assertConvert: c => c.AssertConvert("test", 2, "'test''test'")
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineTwoWayConvertAndDefaults()
+		public void BindDefaultPropertyWithInlineTwoWayConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -411,10 +414,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConverterInstanceIsAnyNotNull: true,
 				assertConvert: c => c.AssertConvert("test", "'test'", twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndDefaults()
+		public void BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndDefaults() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			label.Bind(
@@ -432,10 +435,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				assertConverterInstanceIsAnyNotNull: true,
 				assertConvert: c => c.AssertConvert("test", 2, "'test''test'", twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineOneWayConvertAndPositionalParameters()
+		public void BindDefaultPropertyWithInlineOneWayConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			object converterParameter = 1;
@@ -469,10 +472,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", "'test'")
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters()
+		public void BindDefaultPropertyWithInlineOneWayParameterizedConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			object converterParameter = 1;
@@ -506,10 +509,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", 2, "'test''test'")
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineTwoWayConvertAndPositionalParameters()
+		public void BindDefaultPropertyWithInlineTwoWayConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			object converterParameter = 1;
@@ -543,10 +546,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", "'test'", twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters()
+		public void BindDefaultPropertyWithInlineTwoWayParameterizedConvertAndPositionalParameters() => AssertExperimental(() =>
 		{
 			var label = new Label();
 			object converterParameter = 1;
@@ -580,10 +583,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 				fallbackValue: fallbackValue,
 				assertConvert: c => c.AssertConvert("test", 2, "'test''test'", twoWay: true)
 			);
-		}
+		});
 
 		[Test]
-		public void BindCommandWithDefaults()
+		public void BindCommandWithDefaults() => AssertExperimental(() =>
 		{
 			var textCell = new TextCell();
 			string path = nameof(viewModel.Command);
@@ -592,10 +595,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandProperty, path);
 			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandParameterProperty);
-		}
+		});
 
 		[Test]
-		public void BindCommandWithoutParameter()
+		public void BindCommandWithoutParameter() => AssertExperimental(() =>
 		{
 			var textCell = new TextCell();
 			string path = nameof(viewModel.Command);
@@ -604,10 +607,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandProperty, path);
 			Assert.That(BindingHelpers.GetBinding(textCell, TextCell.CommandParameterProperty), Is.Null);
-		}
+		});
 
 		[Test]
-		public void BindCommandWithPositionalParameters()
+		public void BindCommandWithPositionalParameters() => AssertExperimental(() =>
 		{
 			var textCell = new TextCell();
 			object source = new ViewModel();
@@ -619,24 +622,24 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandProperty, path, source: source);
 			BindingHelpers.AssertBindingExists(textCell, TextCell.CommandParameterProperty, parameterPath, source: parameterSource);
-		}
+		});
 
 		[Test]
-		public void Assign()
+		public void Assign() => AssertExperimental(() =>
 		{
 			var createdLabel = new Label().Assign(out Label assignLabel);
 			Assert.That(Object.ReferenceEquals(createdLabel, assignLabel));
-		}
+		});
 
 		[Test]
-		public void Invoke()
+		public void Invoke() => AssertExperimental(() =>
 		{
 			var createdLabel = new Label().Invoke(null).Invoke(l => l.Text = nameof(Invoke));
 			Assert.That(createdLabel.Text, Is.EqualTo(nameof(Invoke)));
-		}
+		});
 
 		[Test]
-		public void SupportDerivedElements()
+		public void SupportDerivedElements() => AssertExperimental(() =>
 		{
 			DerivedFromLabel _ =
 				new DerivedFromLabel()
@@ -648,7 +651,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 					nameof(viewModel.Text),
 					convert: (string text, int repeat) => string.Concat(Enumerable.Repeat($"'{text?.Trim('\'')}'", repeat)))
 				.Bind(
-					DerivedFromLabel.TextColorProperty, 
+					DerivedFromLabel.TextColorProperty,
 					nameof(viewModel.TextColor))
 				.Bind(
 					DerivedFromLabel.BackgroundColorProperty,
@@ -664,7 +667,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			DerivedFromTextCell __ =
 				new DerivedFromTextCell()
 				.BindCommand(nameof(viewModel.Command));
-		}
+		});
 
 		class ViewModel
 		{

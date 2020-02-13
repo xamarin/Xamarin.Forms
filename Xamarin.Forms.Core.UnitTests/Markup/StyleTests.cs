@@ -3,11 +3,14 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class StyleTests : MarkupBaseTestFixture
 	{
+		public StyleTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		[Test]
-		public void ImplicitCast()
+		public void ImplicitCast() => AssertExperimental(() =>
 		{
 			Style<Label> style = null;
 
@@ -17,10 +20,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			style = new Style<Label>();
 			formsStyle = style;
 			Assert.That(Object.ReferenceEquals(style.FormsStyle, formsStyle));
-		}
+		});
 
 		[Test]
-		public void StyleSingleSetter()
+		public void StyleSingleSetter() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>(
 				(Label.TextColorProperty, Color.Red)
@@ -32,10 +35,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var setter = formsStyle.Setters[0];
 			Assert.That(setter.Property, Is.EqualTo(Label.TextColorProperty));
 			Assert.That(setter.Value, Is.EqualTo(Color.Red));
-		}
+		});
 
 		[Test]
-		public void StyleMultipleSetters()
+		public void StyleMultipleSetters() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>(
 				(Label.TextColorProperty, Color.Red),
@@ -52,10 +55,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var setter2 = formsStyle.Setters[1];
 			Assert.That(setter2.Property, Is.EqualTo(Label.TranslationXProperty));
 			Assert.That(setter2.Value, Is.EqualTo(8.0));
-		}
+		});
 
 		[Test]
-		public void ApplyToDerivedTypes()
+		public void ApplyToDerivedTypes() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -63,20 +66,20 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.IsFalse(formsStyle.ApplyToDerivedTypes);
 			style.ApplyToDerivedTypes(true);
 			Assert.IsTrue(formsStyle.ApplyToDerivedTypes);
-		}
+		});
 
 		[Test]
-		public void BasedOn()
+		public void BasedOn() => AssertExperimental(() =>
 		{
 			var baseStyle = new Style<Label>();
 			var style = new Style<Label>().BasedOn(baseStyle);
 			Style formsStyle = style, formsBaseStyle = baseStyle;
 
 			Assert.That(Object.ReferenceEquals(formsStyle.BasedOn, formsBaseStyle));
-		}
+		});
 
 		[Test]
-		public void AddSingleSetter()
+		public void AddSingleSetter() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -90,10 +93,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var setter = formsStyle.Setters[0];
 			Assert.That(setter.Property, Is.EqualTo(Label.TextColorProperty));
 			Assert.That(setter.Value, Is.EqualTo(Color.Red));
-		}
+		});
 
 		[Test]
-		public void AddMultipleSetters()
+		public void AddMultipleSetters() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -113,10 +116,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var setter2 = formsStyle.Setters[1];
 			Assert.That(setter2.Property, Is.EqualTo(Label.TranslationXProperty));
 			Assert.That(setter2.Value, Is.EqualTo(8.0));
-		}
+		});
 
 		[Test]
-		public void AddSingleBehavior()
+		public void AddSingleBehavior() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -127,10 +130,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			Assert.That(formsStyle.Behaviors?.Count, Is.EqualTo(1));
 			Assert.That(Object.ReferenceEquals(formsStyle.Behaviors[0], behavior));
-		}
+		});
 
 		[Test]
-		public void AddMultipleBehaviors()
+		public void AddMultipleBehaviors() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -143,10 +146,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(formsStyle.Behaviors?.Count, Is.EqualTo(2));
 			Assert.That(Object.ReferenceEquals(formsStyle.Behaviors[0], behavior1));
 			Assert.That(Object.ReferenceEquals(formsStyle.Behaviors[1], behavior2));
-		}
+		});
 
 		[Test]
-		public void AddSingleTrigger()
+		public void AddSingleTrigger() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -157,10 +160,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			Assert.That(formsStyle.Triggers?.Count, Is.EqualTo(1));
 			Assert.That(Object.ReferenceEquals(formsStyle.Triggers[0], trigger));
-		}
+		});
 
 		[Test]
-		public void AddMultipleTriggers()
+		public void AddMultipleTriggers() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -173,10 +176,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.That(formsStyle.Triggers?.Count, Is.EqualTo(2));
 			Assert.That(Object.ReferenceEquals(formsStyle.Triggers[0], trigger1));
 			Assert.That(Object.ReferenceEquals(formsStyle.Triggers[1], trigger2));
-		}
+		});
 
 		[Test]
-		public void CanCascade()
+		public void CanCascade() => AssertExperimental(() =>
 		{
 			var style = new Style<Label>();
 			Style formsStyle = style;
@@ -184,10 +187,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Assert.IsFalse(formsStyle.CanCascade);
 			style.CanCascade(true);
 			Assert.IsTrue(formsStyle.CanCascade);
-		}
+		});
 
 		[Test]
-		public void Fluent()
+		public void Fluent() => AssertExperimental(() =>
 		{
 			Style<Label> style =
 				new Style<Label>()
@@ -197,7 +200,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				.Add(new LabelBehavior())
 				.Add(new Trigger(typeof(Label)))
 				.CanCascade(true);
-		}
+		});
 
 		class LabelBehavior : Behavior<Label> { }
 	}

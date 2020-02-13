@@ -9,9 +9,12 @@ namespace Xamarin.Forms.Markup.UnitTests
 {
 	using XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews;
 
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class DefaultBindablePropertiesTests : MarkupBaseTestFixture
 	{
+		public DefaultBindablePropertiesTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		[Test]
 		public void AllBindableElementsInCoreHaveDefaultBindablePropertyOrAreExcluded()
 		{
@@ -73,10 +76,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var failMessage = new StringBuilder();
 			var bindableObjectTypes = typeof(BindableObject).Assembly.GetExportedTypes()
 				.Where(t => typeof(BindableObject).IsAssignableFrom(t) && !typeof(Layout).IsAssignableFrom(t) && !t.ContainsGenericParameters);
-				// The logical default property for a Layout is for its child view(s), which is not a bindable property. 
-				// So we exclude Layouts from this test. Note that it is still perfectly OK to define a default 
-				// bindable property for a Layout where that makes sense.
-				// We also do not support specifying default properties for unconstructed generic types.
+			// The logical default property for a Layout is for its child view(s), which is not a bindable property. 
+			// So we exclude Layouts from this test. Note that it is still perfectly OK to define a default 
+			// bindable property for a Layout where that makes sense.
+			// We also do not support specifying default properties for unconstructed generic types.
 
 			foreach (var type in bindableObjectTypes)
 			{
@@ -127,10 +130,12 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			var v = new CustomViewWithText();
 			Assert.Throws<ArgumentException>(() => DefaultBindableProperties.GetFor(v));
-			DefaultBindableProperties.Register(CustomViewWithText.TextProperty);
-			Assert.That(DefaultBindableProperties.GetFor(v), Is.EqualTo(CustomViewWithText.TextProperty));
-		}
 
+			AssertExperimental(() => DefaultBindableProperties.Register(CustomViewWithText.TextProperty));
+
+			if (withExperimentalFlag)
+				Assert.That(DefaultBindableProperties.GetFor(v), Is.EqualTo(CustomViewWithText.TextProperty));
+		}
 
 		[Test]
 		public void GetDefaultBindableCommandPropertiesForBuiltInType()
@@ -152,8 +157,11 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			var v = new CustomViewWithCommand();
 			Assert.Throws<ArgumentException>(() => DefaultBindableProperties.GetForCommand(v));
-			DefaultBindableProperties.RegisterForCommand((CustomViewWithCommand.CommandProperty, CustomViewWithCommand.CommandParameterProperty));
-			Assert.That(DefaultBindableProperties.GetForCommand(v), Is.EqualTo((CustomViewWithCommand.CommandProperty, CustomViewWithCommand.CommandParameterProperty)));
+
+			AssertExperimental(() => DefaultBindableProperties.RegisterForCommand((CustomViewWithCommand.CommandProperty, CustomViewWithCommand.CommandParameterProperty)));
+
+			if (withExperimentalFlag)
+				Assert.That(DefaultBindableProperties.GetForCommand(v), Is.EqualTo((CustomViewWithCommand.CommandProperty, CustomViewWithCommand.CommandParameterProperty)));
 		}
 
 		[TearDown]

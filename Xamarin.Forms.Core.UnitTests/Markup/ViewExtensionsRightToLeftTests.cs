@@ -3,9 +3,12 @@ using Xamarin.Forms.Markup.RightToLeft;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class ViewExtensionsRightToLeftTests : MarkupBaseTestFixture<BoxView>
 	{
+		public ViewExtensionsRightToLeftTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		[Test]
 		public void Left()
 			=> TestPropertiesSet(v => v.Left(), (View.HorizontalOptionsProperty, LayoutOptions.Start, LayoutOptions.End));
@@ -23,7 +26,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(v => v.RightExpand(), (View.HorizontalOptionsProperty, LayoutOptions.End, LayoutOptions.StartAndExpand));
 
 		[Test]
-		public void SupportDerivedFromView()
+		public void SupportDerivedFromView() => AssertExperimental(() =>
 		{
 			DerivedFromView _ =
 				new DerivedFromView()
@@ -31,7 +34,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				.Right()
 				.LeftExpand()
 				.RightExpand();
-		}
+		});
 
 		class DerivedFromView : BoxView { }
 	}

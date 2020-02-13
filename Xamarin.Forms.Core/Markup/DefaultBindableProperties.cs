@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using static Xamarin.Forms.Core.Markup.Markup;
 
 namespace Xamarin.Forms.Markup
 {
@@ -77,12 +78,14 @@ namespace Xamarin.Forms.Markup
 
 		public static void Register(params BindableProperty[] properties)
 		{
+			VerifyExperimental();
 			foreach (var property in properties)
 				bindableObjectTypeDefaultProperty.Add(property.DeclaringType.FullName, property);
 		}
 
 		public static void RegisterForCommand(params (BindableProperty commandProperty, BindableProperty parameterProperty)[] propertyPairs)
 		{
+			VerifyExperimental();
 			foreach (var propertyPair in propertyPairs)
 				bindableObjectTypeDefaultCommandAndParameterProperties.Add(propertyPair.commandProperty.DeclaringType.FullName, propertyPair);
 		}

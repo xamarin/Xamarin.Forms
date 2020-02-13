@@ -5,12 +5,16 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
-	[TestFixture(typeof(Label))] // Derived from View
-	[TestFixture(typeof(Span))]  // Derived from GestureElement
+	[TestFixture(typeof(Label), true)] // Derived from View
+	[TestFixture(typeof(Label), false)]
+	[TestFixture(typeof(Span), true)]  // Derived from GestureElement
+	[TestFixture(typeof(Span), false)]
 	public class ElementGesturesExtensionsTests<TGestureElement> : ElementGesturesBaseTestFixture where TGestureElement : Element, IGestureRecognizers, new()
 	{
+		public ElementGesturesExtensionsTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		[Test]
-		public void BindClickGestureDefaults()
+		public void BindClickGestureDefaults() => AssertExperimental(() =>
 		{
 			var gestureElement = new TGestureElement();
 
@@ -18,10 +22,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var gestureRecognizer = AssertHasGestureRecognizer<ClickGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandProperty, commandPath);
-		}
+		});
 
 		[Test]
-		public void BindClickGesturePositionalParameters()
+		public void BindClickGesturePositionalParameters() => AssertExperimental(() =>
 		{
 			var gestureElement = new TGestureElement();
 			object commandSource = new ViewModel();
@@ -32,10 +36,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureRecognizer = AssertHasGestureRecognizer<ClickGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandProperty, commandPath, source: commandSource);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, ClickGestureRecognizer.CommandParameterProperty, parameterPath, source: parameterSource);
-		}
+		});
 
 		[Test]
-		public void BindTapGestureDefaults()
+		public void BindTapGestureDefaults() => AssertExperimental(() =>
 		{
 			var gestureElement = new TGestureElement();
 
@@ -43,10 +47,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var gestureRecognizer = AssertHasGestureRecognizer<TapGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandProperty, commandPath);
-		}
+		});
 
 		[Test]
-		public void BindTapGesturePositionalParameters()
+		public void BindTapGesturePositionalParameters() => AssertExperimental(() =>
 		{
 			var gestureElement = new TGestureElement();
 			object commandSource = new ViewModel();
@@ -57,10 +61,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureRecognizer = AssertHasGestureRecognizer<TapGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandProperty, commandPath, source: commandSource);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, TapGestureRecognizer.CommandParameterProperty, parameterPath, source: parameterSource);
-		}
+		});
 
 		[Test]
-		public void ClickGesture()
+		public void ClickGesture() => AssertExperimental(() =>
 		{
 			var gestureElement = new TGestureElement();
 			ClickGestureRecognizer gestureRecognizer = null;
@@ -68,10 +72,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			gestureElement.ClickGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
-		}
+		});
 
 		[Test]
-		public void TapGesture()
+		public void TapGesture() => AssertExperimental(() =>
 		{
 			var gestureElement = new TGestureElement();
 			TapGestureRecognizer gestureRecognizer = null;
@@ -79,14 +83,17 @@ namespace Xamarin.Forms.Markup.UnitTests
 			gestureElement.TapGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
-		}
+		});
 	}
 
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class ElementGesturesExtensionsTests : ElementGesturesBaseTestFixture
 	{
+		public ElementGesturesExtensionsTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		[Test]
-		public void BindSwipeGestureDefaults()
+		public void BindSwipeGestureDefaults() => AssertExperimental(() =>
 		{
 			var gestureElement = new Label();
 
@@ -94,10 +101,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var gestureRecognizer = AssertHasGestureRecognizer<SwipeGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandProperty, commandPath);
-		}
+		});
 
 		[Test]
-		public void BindSwipeGesturePositionalParameters()
+		public void BindSwipeGesturePositionalParameters() => AssertExperimental(() =>
 		{
 			var gestureElement = new Label();
 			object commandSource = new ViewModel();
@@ -108,10 +115,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var gestureRecognizer = AssertHasGestureRecognizer<SwipeGestureRecognizer>(gestureElement);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandProperty, commandPath, source: commandSource);
 			BindingHelpers.AssertBindingExists(gestureRecognizer, SwipeGestureRecognizer.CommandParameterProperty, parameterPath, source: parameterSource);
-		}
+		});
 
 		[Test]
-		public void PanGesture()
+		public void PanGesture() => AssertExperimental(() =>
 		{
 			var gestureElement = new Label();
 			PanGestureRecognizer gestureRecognizer = null;
@@ -119,10 +126,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			gestureElement.PanGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
-		}
+		});
 
 		[Test]
-		public void PinchGesture()
+		public void PinchGesture() => AssertExperimental(() =>
 		{
 			var gestureElement = new Label();
 			PinchGestureRecognizer gestureRecognizer = null;
@@ -130,10 +137,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			gestureElement.PinchGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
-		}
+		});
 
 		[Test]
-		public void SwipeGesture()
+		public void SwipeGesture() => AssertExperimental(() =>
 		{
 			var gestureElement = new Label();
 			SwipeGestureRecognizer gestureRecognizer = null;
@@ -141,10 +148,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 			gestureElement.SwipeGesture(g => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
-		}
+		});
 
 		[Test]
-		public void MultipleGestures()
+		public void MultipleGestures() => AssertExperimental(() =>
 		{
 			var gestureElement = new Label();
 			TapGestureRecognizer gestureRecognizer1 = null, gestureRecognizer2 = null;
@@ -156,10 +163,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			AssertHasGestureRecognizers(gestureElement, gestureRecognizer1, gestureRecognizer2);
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer3);
-		}
+		});
 
 		[Test]
-		public void Gesture()
+		public void Gesture() => AssertExperimental(() =>
 		{
 			var gestureElement = new Label();
 			DerivedFromGestureRecognizer gestureRecognizer = null;
@@ -167,27 +174,29 @@ namespace Xamarin.Forms.Markup.UnitTests
 			gestureElement.Gesture((DerivedFromGestureRecognizer g) => gestureRecognizer = g);
 
 			AssertHasGestureRecognizer(gestureElement, gestureRecognizer);
-		}
+		});
 
 		[Test]
-		public void SupportDerivedFromLabel() // A View
+		public void SupportDerivedFromLabel() => AssertExperimental(() => // A View
 		{
 			DerivedFromLabel _ =
 				new DerivedFromLabel()
 				.Gesture((TapGestureRecognizer g) => g.Bind(nameof(ViewModel.Command)));
-		}
+		});
 
 		[Test]
-		public void SupportDerivedFromSpan() // A GestureElement
+		public void SupportDerivedFromSpan() => AssertExperimental(() => // A GestureElement
 		{
 			DerivedFromSpan _ =
 				new DerivedFromSpan()
 				.Gesture((TapGestureRecognizer g) => g.Bind(nameof(ViewModel.Command)));
-		}
+		});
 	}
 
 	public class ElementGesturesBaseTestFixture : MarkupBaseTestFixture
 	{
+		public ElementGesturesBaseTestFixture(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		protected const string commandPath = nameof(ViewModel.Command), parameterPath = nameof(ViewModel.Id);
 
 		protected TGestureRecognizer AssertHasGestureRecognizer<TGestureRecognizer>(IGestureRecognizers element)

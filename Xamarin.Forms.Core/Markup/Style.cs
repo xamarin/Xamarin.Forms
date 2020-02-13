@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Markup
+﻿using static Xamarin.Forms.Core.Markup.Markup;
+
+namespace Xamarin.Forms.Markup
 {
 	public class Style<T> where T : BindableObject
 	{
@@ -8,6 +10,7 @@
 
 		public Style(params (BindableProperty Property, object Value)[] setters)
 		{
+			VerifyExperimental();
 			FormsStyle = new Style(typeof(T)) { };
 			Add(setters);
 		}

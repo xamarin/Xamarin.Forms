@@ -2,9 +2,12 @@
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class LabelExtensionsTests : MarkupBaseTestFixture<Label>
 	{
+		public LabelExtensionsTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
+
 		Label Label => Bindable;
 
 		[Test]
@@ -51,7 +54,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			=> TestPropertiesSet(l => l.Italic(), (Label.FontAttributesProperty, FontAttributes.None, FontAttributes.Italic));
 
 		[Test]
-		public void FormattedTextSingleSpan()
+		public void FormattedTextSingleSpan() => AssertExperimental(() =>
 		{
 			Label.FormattedText = null;
 			Label.FormattedText(
@@ -60,10 +63,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var spans = Label.FormattedText?.Spans;
 			Assert.That(spans?.Count == 1 && spans[0].BackgroundColor == Color.Blue);
-		}
+		});
 
 		[Test]
-		public void FormattedTextMultipleSpans()
+		public void FormattedTextMultipleSpans() => AssertExperimental(() =>
 		{
 			Label.FormattedText = null;
 			Label.FormattedText(
@@ -73,10 +76,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			var spans = Label.FormattedText?.Spans;
 			Assert.That(spans?.Count == 2 && spans[0].BackgroundColor == Color.Blue && spans[1].BackgroundColor == Color.Green);
-		}
+		});
 
 		[Test]
-		public void SupportDerivedFromLabel()
+		public void SupportDerivedFromLabel() => AssertExperimental(() =>
 		{
 			DerivedFromLabel _ =
 				new DerivedFromLabel()
@@ -91,7 +94,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				.Bold()
 				.Italic()
 				.FormattedText();
-		}
+		});
 
 		class DerivedFromLabel : Label { }
 	}

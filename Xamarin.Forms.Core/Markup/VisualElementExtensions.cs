@@ -1,18 +1,20 @@
-﻿namespace Xamarin.Forms.Markup
+﻿using static Xamarin.Forms.Core.Markup.Markup;
+
+namespace Xamarin.Forms.Markup
 {
 	public static class VisualElementExtensions
 	{
 		public static TElement Height<TElement>(this TElement element, double request) where TElement : VisualElement
-		{ element.HeightRequest = request; return element; }
+		{ VerifyExperimental(); element.HeightRequest = request; return element; }
 
 		public static TElement Width<TElement>(this TElement element, double request) where TElement : VisualElement
-		{ element.WidthRequest = request; return element; }
+		{ VerifyExperimental(); element.WidthRequest = request; return element; }
 
 		public static TElement MinHeight<TElement>(this TElement element, double request) where TElement : VisualElement
-		{ element.MinimumHeightRequest = request; return element; }
+		{ VerifyExperimental(); element.MinimumHeightRequest = request; return element; }
 
 		public static TElement MinWidth<TElement>(this TElement element, double request) where TElement : VisualElement
-		{ element.MinimumWidthRequest = request; return element; }
+		{ VerifyExperimental(); element.MinimumWidthRequest = request; return element; }
 
 		public static TElement Size<TElement>(this TElement element, double widthRequest, double heightRequest) where TElement : VisualElement
 			=> element.Width(widthRequest).Height(heightRequest);
@@ -27,6 +29,6 @@
 			=> element.MinWidth(sizeRequest).MinHeight(sizeRequest);
 
 		public static T Style<T>(this T view, Style<T> style) where T : VisualElement
-		{ view.Style = style; return view; }
+		{ VerifyExperimental(); view.Style = style; return view; }
 	}
 }
