@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls
