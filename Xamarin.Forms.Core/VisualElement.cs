@@ -182,7 +182,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty MinimumHeightRequestProperty = BindableProperty.Create("MinimumHeightRequest", typeof(double), typeof(VisualElement), -1d, propertyChanged: OnRequestChanged);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocused",
+		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocusedInternal",
 			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedKeyPropertyChanged);
 
 		public static readonly BindableProperty IsFocusedProperty = BindableProperty.Create("IsFocused", typeof(bool), typeof(VisualElement), default(bool),
@@ -614,7 +614,7 @@ namespace Xamarin.Forms
 
 		public bool Focus()
 		{
-			if (IsFocused)
+			if (IsElementHasFocus)
 				return true;
 
 			if (FocusChangeRequested == null)
@@ -724,7 +724,7 @@ namespace Xamarin.Forms
 
 		public void Unfocus()
 		{
-			if (!IsFocused)
+			if (!IsElementHasFocus)
 				return;
 
 			FocusChangeRequested?.Invoke(this, new FocusRequestArgs());
@@ -993,6 +993,8 @@ namespace Xamarin.Forms
 			element.ChangeVisualState();
 		}
 
+		internal bool IsElementHasFocus;
+
 		static void OnIsFocusedKeyPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			var element = (VisualElement)bindable;
@@ -1002,9 +1004,9 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			var isFocused = (bool)newvalue;
+			element.IsElementHasFocus = (bool)newvalue;
 
-			if (isFocused)
+			if (element.IsElementHasFocus)
 			{
 				element.OnFocused();
 			}
@@ -1013,11 +1015,7 @@ namespace Xamarin.Forms
 				element.OnUnfocus();
 			}
 
-			if (element.IsFocused != isFocused)
-			{
-				element.IsFocused = isFocused;
-			}
-			
+			element.IsFocused = element.IsElementHasFocus;
 			element.ChangeVisualState();
 		}
 		
@@ -1030,9 +1028,9 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			var old = (bool)oldvalue;
 			var isFocused = (bool)newvalue;
-			if(old == isFocused || element.IsFocused == isFocused)
+
+			if (element.IsElementHasFocus == isFocused)
 			{
 				return;
 			}
