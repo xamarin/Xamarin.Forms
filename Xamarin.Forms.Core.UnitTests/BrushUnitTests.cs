@@ -30,7 +30,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		[TestCase("#ff00ff")]
 		[TestCase("#00FF33")]
 		[TestCase("#00FFff 40%")]
-		[TestCase("ff00ff")]
 		public void TestBrushTypeConverterWithColorHex(string colorHex)
 		{ 
 			Assert.True(_converter.CanConvertFrom(typeof(string)));
@@ -38,10 +37,10 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		[TestCase("red")]
 		[TestCase("Color.yellow")]
-		[TestCase("blue 90%")]
+		[TestCase("Color.Blue")]
 		[TestCase("Color.pink.50%")]
+		[TestCase("Color.Red.50%")]
 		public void TestBrushTypeConverterWithColorName(string colorHex)
 		{
 			Assert.True(_converter.CanConvertFrom(typeof(string)));
