@@ -58,6 +58,13 @@ namespace Xamarin.Forms.Platform.iOS
 		Color _selectedColor;
 		Color _unselectedColor;
 
+		[Internals.Preserve(Conditional = true)]
+		public ShellSectionRootHeader()
+		{
+
+		}
+
+		[Internals.Preserve(Conditional = true)]
 		public ShellSectionRootHeader(IShellContext shellContext) : base(new UICollectionViewFlowLayout())
 		{
 			_shellContext = shellContext;
@@ -253,6 +260,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 			}
 
+			[Export("initWithFrame:")]
+			[Internals.Preserve(Conditional = true)]
+			public ShellSectionHeaderCell(CGRect frame) : base(frame)
+			{
+				Label = new UILabel();
+				Label.TextAlignment = UITextAlignment.Center;
+				Label.Font = UIFont.BoldSystemFontOfSize(14);
+				ContentView.AddSubview(Label);
+			}
+
 			public override bool Selected
 			{
 				get => base.Selected;
@@ -261,15 +278,6 @@ namespace Xamarin.Forms.Platform.iOS
 					base.Selected = value;
 					Label.TextColor = value ? SelectedColor : UnSelectedColor;
 				}
-			}
-
-			[Export("initWithFrame:")]
-			public ShellSectionHeaderCell(CGRect frame) : base(frame)
-			{
-				Label = new UILabel();
-				Label.TextAlignment = UITextAlignment.Center;
-				Label.Font = UIFont.BoldSystemFontOfSize(14);
-				ContentView.AddSubview(Label);
 			}
 
 			public UILabel Label { get; }
