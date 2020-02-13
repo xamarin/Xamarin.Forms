@@ -21,7 +21,6 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>default</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -30,7 +29,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>default</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
@@ -76,6 +74,9 @@
     <Compile Include="Controls\FormsPage.cs" />
     <Compile Include="Controls\FormsNavigationPage.cs" />
     <Compile Include="Controls\FormsPathIcon.cs" />
+    <Compile Include="Controls\FormsProgressRing.xaml.cs">
+      <DependentUpon>FormsProgressRing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FormsSymbolIcon.cs" />
     <Compile Include="Controls\FormsTabbedPage.cs" />
     <Compile Include="Controls\FormsTransitioningContentControl.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="Renderers\LayoutRenderer.cs" />
     <Compile Include="Renderers\ListViewRenderer.cs" />
     <Compile Include="Renderers\MasterDetailPageRenderer.cs" />
+    <Compile Include="Renderers\MediaElementRenderer.cs" />
     <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="Renderers\PageRenderer.cs" />
@@ -227,6 +229,9 @@
     <Page Include="Assets\Default.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\FormsProgressRing.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>

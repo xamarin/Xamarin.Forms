@@ -1,4 +1,9 @@
-﻿using Android.Support.V7.Widget;
+﻿#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
+using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -14,42 +19,58 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void NotifyDataSetChanged()
 		{
-			_adapter.NotifyDataSetChanged();
+			if (IsValidAdapter())
+				_adapter.NotifyDataSetChanged();
 		}
 
 		public void NotifyItemChanged(IItemsViewSource source, int startIndex)
 		{
-			_adapter.NotifyItemChanged(startIndex);
+			if (IsValidAdapter())
+				_adapter.NotifyItemChanged(startIndex);
 		}
 
 		public void NotifyItemInserted(IItemsViewSource source, int startIndex)
 		{
-			_adapter.NotifyItemInserted(startIndex);
+			if (IsValidAdapter())
+				_adapter.NotifyItemInserted(startIndex);
 		}
 
 		public void NotifyItemMoved(IItemsViewSource source, int fromPosition, int toPosition)
 		{
-			_adapter.NotifyItemMoved(fromPosition, toPosition);
+			if (IsValidAdapter())
+				_adapter.NotifyItemMoved(fromPosition, toPosition);
 		}
 
 		public void NotifyItemRangeChanged(IItemsViewSource source, int start, int end)
 		{
-			_adapter.NotifyItemRangeChanged(start, end);
+			if (IsValidAdapter())
+				_adapter.NotifyItemRangeChanged(start, end);
 		}
 
 		public void NotifyItemRangeInserted(IItemsViewSource source, int startIndex, int count)
 		{
-			_adapter.NotifyItemRangeInserted(startIndex, count);
+			if (IsValidAdapter())
+				_adapter.NotifyItemRangeInserted(startIndex, count);
 		}
 
 		public void NotifyItemRangeRemoved(IItemsViewSource source, int startIndex, int count)
 		{
-			_adapter.NotifyItemRangeRemoved(startIndex, count);
+			if (IsValidAdapter())
+				_adapter.NotifyItemRangeRemoved(startIndex, count);
 		}
 
 		public void NotifyItemRemoved(IItemsViewSource source, int startIndex)
 		{
-			_adapter.NotifyItemRemoved(startIndex);
+			if (IsValidAdapter())
+				_adapter.NotifyItemRemoved(startIndex);
+		}
+
+		internal bool IsValidAdapter()
+		{
+			if (_adapter == null || _adapter.IsDisposed())
+				return false;
+
+			return true;
 		}
 	}
 }

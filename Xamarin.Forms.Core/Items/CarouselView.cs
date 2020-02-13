@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Xamarin.Forms.Platform;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms
 {
@@ -15,8 +16,10 @@ namespace Xamarin.Forms
 		public const string CurrentItemVisualState = "CurrentItem";
 		public const string NextItemVisualState = "NextItem";
 		public const string PreviousItemVisualState = "PreviousItem";
-		public const string VisibleItemVisualState = "VisibleItem";
 		public const string DefaultItemVisualState = "DefaultItem";
+
+		bool _isInitialized;
+		int _gotoPosition = -1;
 
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
@@ -26,11 +29,11 @@ namespace Xamarin.Forms
 			set { SetValue(PeekAreaInsetsProperty, value); }
 		}
 
-		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(List<View>), typeof(CarouselView), null);
+		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(ObservableCollection<View>), typeof(CarouselView), new ObservableCollection<View>());
 
 		public static readonly BindableProperty VisibleViewsProperty = VisibleViewsPropertyKey.BindableProperty;
 
-		public List<View> VisibleViews => (List<View>)GetValue(VisibleViewsProperty);
+		public ObservableCollection<View> VisibleViews => (ObservableCollection<View>)GetValue(VisibleViewsProperty);
 
 		static readonly BindablePropertyKey IsDraggingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsDragging), typeof(bool), typeof(CarouselView), false);
 
@@ -45,15 +48,6 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(IsBounceEnabledProperty); }
 			set { SetValue(IsBounceEnabledProperty, value); }
-		}
-
-		public static readonly BindableProperty NumberOfSideItemsProperty =
-			BindableProperty.Create(nameof(NumberOfSideItems), typeof(int), typeof(CarouselView), 0);
-
-		public int NumberOfSideItems
-		{
-			get { return (int)GetValue(NumberOfSideItemsProperty); }
-			set { SetValue(NumberOfSideItemsProperty, value); }
 		}
 
 		public static readonly BindableProperty IsSwipeEnabledProperty =
@@ -75,7 +69,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty CurrentItemProperty =
-		BindableProperty.Create(nameof(CurrentItem), typeof(object), typeof(CarouselView), default, BindingMode.TwoWay, 
+		BindableProperty.Create(nameof(CurrentItem), typeof(object), typeof(CarouselView), default, BindingMode.TwoWay,
 			propertyChanged: CurrentItemPropertyChanged);
 
 		public static readonly BindableProperty CurrentItemChangedCommandProperty =
@@ -120,7 +114,14 @@ namespace Xamarin.Forms
 				}
 			}
 
-			carouselView.SetValueCore(PositionProperty, GetPositionForItem(carouselView, newValue));
+			var positionItem = GetPositionForItem(carouselView, newValue);
+			var gotoPosition = carouselView._gotoPosition;
+
+			if (positionItem == gotoPosition || gotoPosition == -1)
+			{
+				carouselView._gotoPosition = -1;
+				carouselView.SetValueCore(PositionProperty, positionItem);
+			}
 
 			carouselView.CurrentItemChanged?.Invoke(carouselView, args);
 
@@ -160,6 +161,7 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(ItemsLayout), typeof(LinearItemsLayout), typeof(ItemsView),
 				LinearItemsLayout.CarouselDefault);
 
+		[TypeConverter(typeof(CarouselLayoutTypeConverter))]
 		public LinearItemsLayout ItemsLayout
 		{
 			get => (LinearItemsLayout)GetValue(ItemsLayoutProperty);
@@ -168,6 +170,9 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsScrolling { get; set; }
+		
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public Queue<Action> ScrollToActions = new Queue<Action>();
 
 		public event EventHandler<CurrentItemChangedEventArgs> CurrentItemChanged;
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
@@ -180,7 +185,6 @@ namespace Xamarin.Forms
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
-			ItemSizingStrategy = ItemSizingStrategy.None;
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -195,9 +199,7 @@ namespace Xamarin.Forms
 			}
 			catch (InvalidOperationException)
 			{
-				// We'll still honor the CollectionView_Experimental flag for CarouselView stuff
-				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CollectionViewExperimental,
-					constructorHint, memberName);
+
 			}
 		}
 
@@ -211,13 +213,14 @@ namespace Xamarin.Forms
 
 		protected override void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
-			CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
+			SetCurrentItem(GetItemForPosition(this, e.CenterItemIndex));
 
 			base.OnScrolled(e);
 		}
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
+
 			var carousel = (CarouselView)bindable;
 
 			var args = new PositionChangedEventArgs((int)oldValue, (int)newValue);
@@ -236,22 +239,36 @@ namespace Xamarin.Forms
 
 			carousel.PositionChanged?.Invoke(carousel, args);
 
+			if (args.CurrentPosition == carousel._gotoPosition)
+				carousel._gotoPosition = -1;
+
 			// User is interacting with the carousel we don't need to scroll to item 
 			if (!carousel.IsDragging && !carousel.IsScrolling)
-				carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
+			{
+				carousel._gotoPosition = args.CurrentPosition;
+
+				Action actionSCroll = () =>
+				{
+					carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
+				};
+
+				if (!carousel._isInitialized)
+					carousel.ScrollToActions.Enqueue(actionSCroll);
+				else
+					actionSCroll();
+			}
 
 			carousel.OnPositionChanged(args);
 		}
+
 
 		static object GetItemForPosition(CarouselView carouselView, int index)
 		{
 			if (!(carouselView?.ItemsSource is IList itemSource))
 				return null;
 
-			if (index < 0 || index >= itemSource.Count)
-			{
+			if (itemSource.Count == 0)
 				return null;
-			}
 
 			return itemSource[index];
 		}
@@ -280,6 +297,12 @@ namespace Xamarin.Forms
 		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void PlatformInitialized()
+		{
+			_isInitialized = true;
 		}
 	}
 }

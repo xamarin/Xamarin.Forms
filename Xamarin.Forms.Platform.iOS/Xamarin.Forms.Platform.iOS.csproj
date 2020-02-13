@@ -105,12 +105,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\WebViewRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CellExtensions.cs" />
-    <Compile Include="..\Xamarin.Forms.Core\corefx\FormsQueue.cs">
-      <Link>corefx\FormsQueue.cs</Link>
-    </Compile>
-    <Compile Include="..\Xamarin.Forms.Core\corefx\FormsStack.cs">
-      <Link>corefx\FormsStack.cs</Link>
-    </Compile>
     <Compile Include="CADisplayLinkTicker.cs" />
     <Compile Include="CollectionView\CarouselViewDelegator.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
@@ -126,6 +120,7 @@
     <Compile Include="CollectionView\IndexPathExtensions.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ItemsViewCell.cs" />
+    <Compile Include="CollectionView\ItemsViewRenderer.cs" />
     <Compile Include="CollectionView\DefaultCell.cs" />
     <Compile Include="CollectionView\HorizontalDefaultCell.cs" />
     <Compile Include="CollectionView\ItemsViewController.cs" />
@@ -165,8 +160,12 @@
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="IOSDeviceInfo.cs" />
+    <Compile Include="LinkerSafeAttribute.cs" />
     <Compile Include="ModalWrapper.cs" />
+    <Compile Include="Renderers\FormsCAKeyFrameAnimation.cs" />
     <Compile Include="Renderers\FormsCheckBox.cs" />
+    <Compile Include="Renderers\FormsUIImageView.cs" />
+    <Compile Include="Renderers\ImageAnimationHelper.cs" />
     <Compile Include="Renderers\ImageElementManager.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeViewWrapper.cs" />
@@ -176,6 +175,7 @@
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
     <Compile Include="Renderers\IAccessibilityElementsController.cs" />
+    <Compile Include="Renderers\IShellSectionRootHeader.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\CheckBoxRendererBase.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
@@ -198,7 +198,6 @@
     <Compile Include="Renderers\ShellFlyoutRenderer.cs" />
     <Compile Include="Renderers\ShellItemRenderer.cs" />
     <Compile Include="Renderers\ShellItemTransition.cs" />
-    <Compile Include="Renderers\ShellNavBarAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellPageRendererTracker.cs" />
     <Compile Include="Renderers\ShellRenderer.cs" />
     <Compile Include="Renderers\ShellScrollViewTracker.cs" />
@@ -217,7 +216,7 @@
     <Compile Include="Renderers\ButtonElementManager.cs" />
     <Compile Include="Renderers\IImageVisualElementRenderer.cs" />
     <Compile Include="Renderers\ImageButtonRenderer.cs" />
-    <Compile Include="CollectionView\ItemsViewRenderer.cs" />
+    <Compile Include="Renderers\MediaElementRenderer.cs" />
     <Compile Include="Resources\StringResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -236,12 +235,17 @@
     <Compile Include="Extensions\FontExtensions.Shared.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
+    <Compile Include="EmbeddedFontLoader.cs" />
     <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
     <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="CollectionView\CarouselViewLayout.cs" />
     <Compile Include="CollectionView\CarouselViewController.cs" />
     <Compile Include="CollectionView\CarouselTemplatedCell.cs" />
     <Compile Include="Renderers\RefreshViewRenderer.cs" />
+    <Compile Include="Renderers\ShellNavBarAppearanceTracker.cs" />
+    <Compile Include="Renderers\IndicatorViewRenderer.cs" />
+    <Compile Include="Renderers\SwipeViewRenderer.cs" />
+    <Compile Include="Extensions\UIApplicationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -292,5 +296,7 @@
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Condition="'$(CI)' == 'true'" Include="Xamarin.Build.TypeRedirector" Version="0.1.2-preview" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

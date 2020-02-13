@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Drawing;
 using CoreAnimation;
 using CoreGraphics;
+using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -88,12 +89,14 @@ namespace Xamarin.Forms.Platform.iOS
 			base.LayoutSubviews();
 		}
 
+		[Preserve(Conditional = true)]
 		class ShadowView : UIView
 		{
 			CALayer _shadowee;
 			CGRect _previousBounds;
 			CGRect _previousFrame;
 
+			[Preserve(Conditional = true)]
 			public ShadowView(CALayer shadowee)
 			{
 				_shadowee = shadowee;
@@ -102,6 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Layer.ShadowOpacity = 0.8f;
 				Layer.ShadowOffset = new SizeF();
 				Layer.BorderWidth = 1;
+				UserInteractionEnabled = false;
 			}
 
 			public void UpdateBackgroundColor()

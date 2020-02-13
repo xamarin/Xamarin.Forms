@@ -13,6 +13,7 @@ namespace Xamarin.Forms
 	internal class BindingExpression
 	{
 		internal const string PropertyNotFoundErrorMessage = "'{0}' property not found on '{1}', target property: '{2}.{3}'";
+		static readonly char[] ExpressionSplit = new[] { '.' };
 
 		readonly List<BindingExpressionPart> _parts = new List<BindingExpressionPart>();
 
@@ -20,6 +21,7 @@ namespace Xamarin.Forms
 		WeakReference<object> _weakSource;
 		WeakReference<BindableObject> _weakTarget;
 		List<WeakReference<Element>> _ancestryChain;
+		bool _isBindingContextRelativeSource;
 
 		internal BindingExpression(BindingBase binding, string path)
 		{
@@ -109,7 +111,6 @@ namespace Xamarin.Forms
 			for (var i = 0; i < _parts.Count; i++)
 			{
 				part = _parts[i];
-				bool isLast = i + 1 == _parts.Count;
 
 				if (!part.IsSelf && current != null)
 				{
@@ -118,7 +119,7 @@ namespace Xamarin.Forms
 					if (part.LastGetter == null || !part.LastGetter.DeclaringType.GetTypeInfo().IsAssignableFrom(currentType))
 						SetupPart(currentType, part);
 
-					if (!isLast)
+					if (i < _parts.Count - 1)
 						part.TryGetValue(current, out current);
 				}
 
@@ -139,8 +140,7 @@ namespace Xamarin.Forms
 
 			if (needsGetter)
 			{
-				object value = property.DefaultValue;
-				if (part.TryGetValue(current, out value) || part.IsSelf) {
+				if (part.TryGetValue(current, out object value) || part.IsSelf) {
 					value = Binding.GetSourceValue(value, property.ReturnType);
 				}
 				else
@@ -184,38 +184,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		IEnumerable<BindingExpressionPart> GetPart(string part)
-		{
-			part = part.Trim();
-			if (part == string.Empty)
-				throw new FormatException("Path contains an empty part");
-
-			BindingExpressionPart indexer = null;
-
-			int lbIndex = part.IndexOf('[');
-			if (lbIndex != -1)
-			{
-				int rbIndex = part.LastIndexOf(']');
-				if (rbIndex == -1)
-					throw new FormatException("Indexer did not contain closing bracket");
-
-				int argLength = rbIndex - lbIndex - 1;
-				if (argLength == 0)
-					throw new FormatException("Indexer did not contain arguments");
-
-				string argString = part.Substring(lbIndex + 1, argLength);
-				indexer = new BindingExpressionPart(this, argString, true);
-
-				part = part.Substring(0, lbIndex);
-				part = part.Trim();
-			}
-
-			if (part.Length > 0)
-				yield return new BindingExpressionPart(this, part);
-			if (indexer != null)
-				yield return indexer;
-		}
-
 		void ParsePath()
 		{
 			string p = Path.Trim();
@@ -231,14 +199,44 @@ namespace Xamarin.Forms
 				p = p.Substring(1);
 			}
 
-			string[] pathParts = p.Split('.');
+			string[] pathParts = p.Split(ExpressionSplit);
 			for (var i = 0; i < pathParts.Length; i++)
 			{
-				foreach (BindingExpressionPart part in GetPart(pathParts[i]))
+				string part = pathParts[i].Trim();
+				if (part == string.Empty)
+					throw new FormatException("Path contains an empty part");
+
+				BindingExpressionPart indexer = null;
+
+				int lbIndex = part.IndexOf('[');
+				if (lbIndex != -1)
 				{
-					last.NextPart = part;
-					_parts.Add(part);
-					last = part;
+					int rbIndex = part.LastIndexOf(']');
+					if (rbIndex == -1)
+						throw new FormatException("Indexer did not contain closing bracket");
+
+					int argLength = rbIndex - lbIndex - 1;
+					if (argLength == 0)
+						throw new FormatException("Indexer did not contain arguments");
+
+					string argString = part.Substring(lbIndex + 1, argLength);
+					indexer = new BindingExpressionPart(this, argString, true);
+
+					part = part.Substring(0, lbIndex);
+					part = part.Trim();
+				}
+				if (part.Length > 0)
+				{
+					var next = new BindingExpressionPart(this, part);
+					last.NextPart = next;
+					_parts.Add(next);
+					last = next;
+				}
+				if (indexer != null)
+				{
+					last.NextPart = indexer;
+					_parts.Add(indexer);
+					last = indexer;
 				}
 			}
 		}
@@ -278,15 +276,16 @@ namespace Xamarin.Forms
 					return pi;
 			}
 
+			//defined on a base class ?
+			if (sourceType.BaseType is Type baseT && GetIndexer(baseT.GetTypeInfo(), indexerName, content) is PropertyInfo p)
+				return p;
+
 			//defined on an interface ?
 			foreach (var face in sourceType.ImplementedInterfaces) {
 				if (GetIndexer(face.GetTypeInfo(), indexerName, content) is PropertyInfo pi)
 					return pi;
 			}
 
-			//defined on a base class ?
-			if (sourceType.BaseType is Type baseT && GetIndexer(baseT.GetTypeInfo(), indexerName, content) is PropertyInfo p)
-				return p;
 			return null;
 		}
 
@@ -466,15 +465,21 @@ namespace Xamarin.Forms
 		// OnElementParentSet are used with RelativeSource ancestor-type bindings, to detect when
 		// there has been an ancestry change requiring re-applying the binding, and to minimize
 		// re-applications especially during visual tree building.
-		internal void SubscribeToAncestryChanges(List<Element> chain)
+		internal void SubscribeToAncestryChanges(List<Element> chain, bool includeBindingContext, bool rootIsSource)
 		{
 			ClearAncestryChangeSubscriptions();
 			if (chain == null)
 				return;
+			_isBindingContextRelativeSource = includeBindingContext;
 			_ancestryChain = new List<WeakReference<Element>>();
-			foreach (var elem in chain)
+			for (int i = 0; i < chain.Count; i++)
 			{
-				elem.ParentSet += OnElementParentSet;
+				var elem = chain[i];
+				if (i != chain.Count - 1 || !rootIsSource)	
+					// don't care about a successfully resolved source's parents
+					elem.ParentSet += OnElementParentSet;
+				if (_isBindingContextRelativeSource)
+					elem.BindingContextChanged += OnElementBindingContextChanged;
 				_ancestryChain.Add(new WeakReference<Element>(elem));
 			}
 		}
@@ -489,7 +494,11 @@ namespace Xamarin.Forms
 				Element elem;
 				var weakElement = _ancestryChain.Last();
 				if (weakElement.TryGetTarget(out elem))
+				{
 					elem.ParentSet -= OnElementParentSet;
+					if (_isBindingContextRelativeSource)
+						elem.BindingContextChanged -= OnElementBindingContextChanged;
+				}
 				_ancestryChain.RemoveAt(_ancestryChain.Count - 1);
 			}
 		}
@@ -508,6 +517,30 @@ namespace Xamarin.Forms
 					return i;
 			}
 			return -1;
+		}
+
+		void OnElementBindingContextChanged(object sender, EventArgs e)
+		{
+			if (!(sender is Element elem) ||
+				!(this.Binding is Binding binding))
+				return;
+
+			BindableObject target = null;
+			if (_weakTarget?.TryGetTarget(out target) != true)
+				return;
+
+			object currentSource = null;
+			if (_weakSource?.TryGetTarget(out currentSource) == true)
+			{
+				// make sure that this isn't just a repeat notice
+				// from someone else in the chain about our already-resolved 
+				// binding source
+				if (object.ReferenceEquals(currentSource, elem.BindingContext))
+					return;
+			}
+
+			binding.Unapply();
+			binding.Apply(null, target, _targetProperty);
 		}
 
 		void OnElementParentSet(object sender, EventArgs e)
