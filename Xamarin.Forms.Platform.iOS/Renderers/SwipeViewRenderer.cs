@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		const int SwipeThresholdMargin = 0;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
+		const double SwipeMinimumDelta = 10;
 
 		View _scrollParent;
 		UIView _contentView;
@@ -31,6 +32,8 @@ namespace Xamarin.Forms.Platform.iOS
 		double _swipeThreshold;
 		CGRect _originalBounds;
 		List<CGRect> _swipeItemsRect;
+		double _previousScrollX;
+		double _previousScrollY;
 		bool _isDisposed;
 
 		public SwipeViewRenderer()
@@ -129,7 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UIColor backgroundColor;
 
-			if (Forms.IsiOS11OrNewer)
+			if (Forms.IsiOS13OrNewer)
 				backgroundColor = UIColor.SystemBackgroundColor;
 			else
 				backgroundColor = UIColor.White;
@@ -201,6 +204,41 @@ namespace Xamarin.Forms.Platform.iOS
 			_isDisposed = true;
 
 			base.Dispose(disposing);
+		}
+
+		public override UIView HitTest(CGPoint point, UIEvent uievent)
+		{
+			if (!UserInteractionEnabled || Hidden)
+				return null;
+			
+			foreach (var subview in Subviews)
+			{
+				var view = HitTest(subview, point, uievent);
+
+				if (view != null)
+					return view;
+			}
+				
+			return base.HitTest(point, uievent);
+		}
+
+		UIView HitTest(UIView view, CGPoint point, UIEvent uievent)
+		{
+			if (view.Subviews == null)
+				return null;
+
+			foreach (var subview in view.Subviews)
+			{
+				CGPoint subPoint = subview.ConvertPointFromView(point, this);
+				UIView result = subview.HitTest(subPoint, uievent);
+
+				if (result != null)
+				{
+					return result;
+				}
+			}
+
+			return null;
 		}
 
 		public override void TouchesBegan(NSSet touches, UIEvent evt)
@@ -398,8 +436,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var titleEdgeInsets = new UIEdgeInsets(spacing, -imageSize.Width, -imageSize.Height, 0.0f);
 			button.TitleEdgeInsets = titleEdgeInsets;
 
-			var labelString = button.TitleLabel.Text;
-			var titleSize = labelString.StringSize(button.TitleLabel.Font);
+			var labelString = button.TitleLabel.Text ?? string.Empty;
+			var titleSize = !string.IsNullOrEmpty(labelString) ? labelString.StringSize(button.TitleLabel.Font) : CGSize.Empty;
 			var imageEdgeInsets = new UIEdgeInsets(-(titleSize.Height + spacing), 0.0f, 0.0f, -titleSize.Width);
 			button.ImageEdgeInsets = imageEdgeInsets;
 		}
@@ -505,7 +543,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProcessTouchMove(CGPoint point)
 		{
-			if (!_isSwiping)
+			if (!_isSwiping && _swipeThreshold == 0)
 			{
 				_swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
 				RaiseSwipeStarted();
@@ -984,7 +1022,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		UIViewController GetViewController()
 		{
-			var window = UIApplication.SharedApplication.KeyWindow;
+			var window = UIApplication.SharedApplication.GetKeyWindow();
 			var viewController = window.RootViewController;
 
 			while (viewController.PresentedViewController != null)
@@ -1031,12 +1069,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnParentScrolled(object sender, ScrolledEventArgs e)
 		{
-			ResetSwipe();
+			var horizontalDelta = e.ScrollX - _previousScrollX;
+			var verticalDelta = e.ScrollY - _previousScrollY;
+
+			if (horizontalDelta > SwipeMinimumDelta || verticalDelta > SwipeMinimumDelta)
+				ResetSwipe();
+
+			_previousScrollX = e.ScrollX;
+			_previousScrollY = e.ScrollY;
 		}
 
 		void OnParentScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
-			if (e.HorizontalDelta > 10 || e.VerticalDelta > 10)
+			if (e.HorizontalDelta > SwipeMinimumDelta || e.VerticalDelta > SwipeMinimumDelta)
 				ResetSwipe();
 		}
 
