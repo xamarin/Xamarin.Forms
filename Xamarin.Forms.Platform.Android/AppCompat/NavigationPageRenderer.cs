@@ -1013,10 +1013,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 			}
 
-			Brush tintBrush = Element.BarBackground;
-
-			if (tintBrush != null && !tintBrush.IsEmpty)
-				bar.UpdateBackground(tintBrush);
+			Brush barBackground = Element.BarBackground;
+			bar.UpdateBackground(barBackground);
 
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)

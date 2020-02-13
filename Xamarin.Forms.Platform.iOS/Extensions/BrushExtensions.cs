@@ -18,10 +18,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null)
 				return;
 
-			// Remove previous background gradient layer if any
-			RemoveGradientLayer(control);
+			UIView view = ShouldUseParentView(control) ? control.Superview : control;
 
-			if (brush == null)
+			// Remove previous background gradient layer if any
+			RemoveGradientLayer(view);
+
+			if (brush == null || brush.IsEmpty)
 				return;
 
 			if (brush is SolidColorBrush solidColorBrush)
@@ -37,16 +39,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (gradientLayer != null)
 				{
-					control.BackgroundColor = null;
+					control.BackgroundColor = UIColor.Clear;
 
-					int index = GetGradientLayerIndex(control);
-					control.InsertGradientLayer(gradientLayer, index);
+					view.InsertGradientLayer(gradientLayer, 0);
 				}
 			}
 		}
 
 		public static CAGradientLayer GetGradientLayer(this UIView control, Brush brush)
 		{
+			if (control == null)
+				return null;
+
 			if (brush is LinearGradientBrush linearGradientBrush)
 			{
 				var p1 = linearGradientBrush.StartPoint;
@@ -83,7 +87,7 @@ namespace Xamarin.Forms.Platform.iOS
 					LayerType = CAGradientLayerType.Radial,
 					StartPoint = new CGPoint(center.X, center.Y),
 					EndPoint = new CGPoint(1, 1),
-					CornerRadius = (float)(radius)
+					CornerRadius = (float)radius
 				};
 
 				if (radialGradientBrush.GradientStops != null && radialGradientBrush.GradientStops.Count > 0)
@@ -101,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static UIImage GetGradientImage(this UIView control, Brush brush)
 		{
-			if (brush == null)
+			if (control == null || brush == null || brush.IsEmpty)
 				return null;
 
 			var gradientLayer = control.GetGradientLayer(brush);
@@ -109,10 +113,15 @@ namespace Xamarin.Forms.Platform.iOS
 			if (gradientLayer == null)
 				return null;
 
-			UIGraphics.BeginImageContextWithOptions(gradientLayer.Frame.Size, false, 0);
-			gradientLayer.RenderInContext(UIGraphics.GetCurrentContext());
-			var gradientImage = UIGraphics.GetImageFromCurrentImageContext();
+			UIGraphics.BeginImageContextWithOptions(gradientLayer.Bounds.Size, false, UIScreen.MainScreen.Scale);
 
+			if (UIGraphics.GetCurrentContext() == null)
+				return null;
+
+			gradientLayer.RenderInContext(UIGraphics.GetCurrentContext());
+			UIImage gradientImage = UIGraphics.GetImageFromCurrentImageContext();
+			UIGraphics.EndImageContext();
+			
 			return gradientImage;
 		}
 
@@ -142,43 +151,12 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static int GetGradientLayerIndex(UIView view)
+		static bool ShouldUseParentView(UIView view)
 		{
-			int index = 0;
-			var sublayers = view.Layer.Sublayers;
+			if (view is UILabel)
+				return true;
 
-			if (HasCustomLayers(sublayers))
-			{
-				int count = 0;
-
-				foreach (var sublayer in sublayers)
-				{
-					count++;
-
-					if (sublayers.GetType() != typeof(CALayer))
-						break;
-				}
-
-				index = count;
-			}
-
-			return index;
-		}
-
-		internal static bool HasCustomLayers(CALayer[] sublayers)
-		{
-			if (sublayers == null)
-				return false;
-
-			int count = 0;
-
-			foreach (var sublayer in sublayers)
-			{
-				if (sublayer.Sublayers == null && sublayers.GetType() != typeof(CALayer))
-					count++;
-			}
-
-			return count > 0;
+			return false;
 		}
 	}
 }

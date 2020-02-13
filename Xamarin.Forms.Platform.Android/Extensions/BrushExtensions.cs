@@ -11,34 +11,42 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		public static void UpdateBackground(this AView view, Brush brush)
 		{
-			GradientStopCollection gradients = null;
-
-			if (brush is SolidColorBrush solidColorBrush)
-			{
-				var backgroundColor = solidColorBrush.Color;
-
-				if (backgroundColor.IsDefault)
-					view.SetBackground(null);
-				else
-					view.SetBackgroundColor(backgroundColor.ToAndroid());
-
+			if (view == null)
 				return;
+
+			if (view.Background is GradientStrokeDrawable)
+			{
+				// Remove previous background gradient if any
+				view.SetBackground(null);
 			}
 
+			if (brush == null || brush.IsEmpty)
+				return;
+
 			if (brush is LinearGradientBrush linearGradientBrush)
-				gradients = linearGradientBrush.GradientStops;
+			{
+				GradientStopCollection gradients = linearGradientBrush.GradientStops;
+
+				if (!IsValidGradient(gradients))
+					return;
+			}
 
 			if (brush is RadialGradientBrush radialGradientBrush)
-				gradients = radialGradientBrush.GradientStops;
+			{
+				GradientStopCollection gradients = radialGradientBrush.GradientStops;
 
-			if (gradients == null || gradients.Count == 0)
-				return;
+				if (!IsValidGradient(gradients))
+					return;
+			}
 
 			view.SetPaintGradient(brush);
 		}
 
 		public static void UpdateBackground(this Paint paint, Brush brush, int height, int width)
 		{
+			if (paint == null || brush == null || brush.IsEmpty)
+				return;
+
 			if (brush is SolidColorBrush solidColorBrush)
 			{
 				var backgroundColor = solidColorBrush.Color;
@@ -102,13 +110,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static void UpdateBackground(this GradientDrawable gradientDrawable, Brush brush, int height, int width)
 		{
-			if (brush == null && brush.IsEmpty)
+			if (gradientDrawable == null || brush == null || brush.IsEmpty)
 				return;
 
 			if (brush is SolidColorBrush solidColorBrush)
 			{
 				Color bgColor = solidColorBrush.Color;
-				gradientDrawable.SetColor(bgColor.IsDefault ? Color.White.ToAndroid() : bgColor.ToAndroid());
+				gradientDrawable.SetColor(bgColor.IsDefault ? Color.Default.ToAndroid() : bgColor.ToAndroid());
 			}
 
 			if (brush is LinearGradientBrush linearGradientBrush)
@@ -155,13 +163,37 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		public static bool UseGradients(this GradientDrawable gradientDrawable)
+		{
+			if (!Forms.IsNougatOrNewer)
+				return false;
+
+			var colors = gradientDrawable.GetColors();
+			return colors != null && colors.Length > 1;
+		}
+
+		internal static bool IsValidGradient(GradientStopCollection gradients)
+		{
+			if (gradients == null || gradients.Count == 0)
+				return false;
+
+			return true;
+		}
+
 		internal static void SetPaintGradient(this AView view, Brush brush)
 		{
 			var gradientStrokeDrawable = new GradientStrokeDrawable
 			{
 				Shape = new RectShape()
 			};
-			gradientStrokeDrawable.SetGradient(brush);
+
+			if (brush is SolidColorBrush solidColorBrush)
+			{
+				var color = solidColorBrush.Color.IsDefault ? Color.Default.ToAndroid() : solidColorBrush.Color.ToAndroid();
+				gradientStrokeDrawable.SetColor(color);
+			}
+			else
+				gradientStrokeDrawable.SetGradient(brush);
 
 			view.Background?.Dispose();
 			view.Background = gradientStrokeDrawable;
@@ -171,12 +203,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var orientation =
 				angle >= 0 && angle < 45 ? Orientation.LeftRight :
-				angle < 90 ? Orientation.BlTr :
-				angle < 135 ? Orientation.BottomTop :
+				angle < 90 ? Orientation.TrBl :
+				angle < 135 ? Orientation.TopBottom :
 				angle < 180 ? Orientation.BrTl :
 				angle < 225 ? Orientation.RightLeft :
-				angle < 270 ? Orientation.TrBl :
-				angle < 315 ? Orientation.TopBottom : Orientation.TlBr;
+				angle < 270 ? Orientation.BlTr :
+				angle < 315 ? Orientation.BottomTop : Orientation.TlBr;
 
 			drawable.SetOrientation(orientation);
 		}

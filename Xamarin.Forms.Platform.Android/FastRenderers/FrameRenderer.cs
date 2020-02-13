@@ -264,12 +264,25 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (_disposed)
 				return;
 
-			Brush bgBrush = Element.Background;
+			Brush background = Element.Background;
 
-			if (bgBrush == null || bgBrush.IsEmpty)
-				return;
+			if (background == null || background.IsEmpty)
+			{
+				if (_backgroundDrawable.UseGradients())
+				{
+					_backgroundDrawable.Dispose();
+					_backgroundDrawable = null;
+					this.SetBackground(null);
 
-			_backgroundDrawable.UpdateBackground(bgBrush, Control.Height, Control.Width);
+					_backgroundDrawable = new GradientDrawable();
+					_backgroundDrawable.SetShape(ShapeType.Rectangle);
+					this.SetBackground(_backgroundDrawable);
+				}
+
+				UpdateBackgroundColor();
+			}
+			else
+				_backgroundDrawable.UpdateBackground(background, Control.Height, Control.Width);
 		}
 
 		void UpdateBorderColor()

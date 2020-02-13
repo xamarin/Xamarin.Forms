@@ -10,7 +10,7 @@
             <Setter Property="FontSize" Value="9" />
         </Style>
 
-           <Style TargetType="Grid">
+        <Style TargetType="Grid">
             <Setter Property="HeightRequest" Value="60" />
         </Style>
 

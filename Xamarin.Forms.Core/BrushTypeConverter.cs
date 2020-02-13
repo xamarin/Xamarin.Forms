@@ -33,8 +33,17 @@ namespace Xamarin.Forms
 
                 if (value.StartsWith(Rgb) || value.StartsWith(Rgba) || value.StartsWith(Hsl) || value.StartsWith(Hsla))
                 {
-                    return _colorTypeConverter.ConvertFromInvariantString(value);
+                    var color = (Color)_colorTypeConverter.ConvertFromInvariantString(value);
+                    return new SolidColorBrush(color);
                 }
+            }
+
+            string[] parts = value.Split('.');
+
+            if (parts.Length == 1 || (parts.Length == 2 && parts[0] == "Color"))
+            {
+				var color = (Color)_colorTypeConverter.ConvertFromInvariantString(value);
+                return new SolidColorBrush(color);
             }
 
             return new SolidColorBrush(Color.Default);

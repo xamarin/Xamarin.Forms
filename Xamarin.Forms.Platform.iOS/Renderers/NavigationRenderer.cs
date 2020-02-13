@@ -652,8 +652,17 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateBarBackground()
 		{
 			var barBackgroundBrush = NavPage.BarBackground;
+
 			var gradientImage = NavigationBar.GetGradientImage(barBackgroundBrush);
-			NavigationBar.SetBackgroundImage(gradientImage, UIBarMetrics.Default);
+
+			var navigationBarAppearance = new UINavigationBarAppearance
+			{
+				BackgroundImage = gradientImage
+			};
+
+			NavigationBar.CompactAppearance = navigationBarAppearance;
+			NavigationBar.StandardAppearance = navigationBarAppearance;
+			NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
 		}
 
 		void UpdateBarTextColor()

@@ -472,14 +472,14 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void UpdateBackground(Brush brush = null)
 		{
 			if (Element == null)
-			{
 				return;
-			}
 
 			if (!(this is RecyclerView recyclerView))
 				return;
 
-			recyclerView.UpdateBackground(brush ?? Element.Background);
+			Brush background = Element.Background;
+
+			recyclerView.UpdateBackground(background);
 		}
 
 		protected virtual void UpdateFlowDirection()

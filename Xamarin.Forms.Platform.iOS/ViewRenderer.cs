@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Control != null && e.OldElement != null && e.OldElement.BackgroundColor != e.NewElement.BackgroundColor || e.NewElement.BackgroundColor != Color.Default)
 					SetBackgroundColor(e.NewElement.BackgroundColor);
 
-				if(Control != null && e.OldElement != null && e.OldElement.Background != e.NewElement.Background || !e.NewElement.Background.IsEmpty)
+				if(Control != null && e.OldElement != null && e.OldElement.Background != e.NewElement.Background)
 					SetBackground(e.NewElement.Background);
 
 				e.NewElement.FocusChangeRequested += ViewOnFocusChangeRequested;
@@ -270,8 +270,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (IsElementOrControlEmpty)
 				return;
 
-			if (Element.Background != null && !Element.Background.IsEmpty)
-				SetBackground(Element.Background);
+			SetBackground(Element.Background);
 		}
 
 		void UpdateIsEnabled()

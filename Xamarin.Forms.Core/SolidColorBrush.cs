@@ -1,5 +1,6 @@
 ﻿namespace Xamarin.Forms
 {
+	[TypeConverter(typeof(BrushTypeConverter))]
 	public class SolidColorBrush : Brush
 	{
 		public SolidColorBrush() { }

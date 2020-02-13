@@ -361,8 +361,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground(Page view)
 		{
-			if (view.Background != null && !view.Background.IsEmpty)
-				this.UpdateBackground(view.Background);
+			Brush background = view.Background;
+
+			this.UpdateBackground(background);
 		}
 
 		void UpdateBackgroundImage(Page view)

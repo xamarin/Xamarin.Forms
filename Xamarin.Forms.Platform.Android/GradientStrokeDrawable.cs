@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class GradientStrokeDrawable : PaintDrawable
 	{
 		readonly Paint _strokePaint;
+		AColor _backgroundColor;
 
 		public GradientStrokeDrawable()
 		{
@@ -22,7 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetColor(AColor backgroundColor)
 		{
-			_strokePaint.Color = backgroundColor;
+			_backgroundColor = backgroundColor;
+			InvalidateSelf();
 		}
 
 		public void SetStroke(int strokeWidth, AColor strokeColor)
@@ -71,6 +73,9 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnDraw(Shape shape, Canvas canvas, Paint paint)
 		{
 			base.OnDraw(shape, canvas, paint);
+
+			if (_backgroundColor != null)
+				paint.Color = _backgroundColor;
 
 			shape.Draw(canvas, _strokePaint);
 		}

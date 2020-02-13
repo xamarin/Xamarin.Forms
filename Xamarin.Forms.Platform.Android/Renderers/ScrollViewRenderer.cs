@@ -481,12 +481,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground()
 		{
-			var bgBrush = Element.Background;
+			Brush background = Element.Background;
 
-			if (bgBrush == null || bgBrush.IsEmpty)
-				return;
-
-			this.UpdateBackground(bgBrush);
+			this.UpdateBackground(background);
 		}
 
 		void UpdateOrientation()

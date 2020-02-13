@@ -45,8 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
 
-			if (Element.Background != null && !Element.Background.IsEmpty)
-				UpdateBackground(Element.Background);
+			UpdateBackground();
 
 			if (Element.BorderColor == Color.Default)
 				Layer.BorderColor = UIColor.Clear.CGColor;
@@ -63,7 +62,9 @@ namespace Xamarin.Forms.Platform.iOS
 					_shadowView = new ShadowView(Layer);
 					SetNeedsLayout();
 				}
+
 				_shadowView.UpdateBackgroundColor();
+
 				_shadowView.Layer.CornerRadius = Layer.CornerRadius;
 				_shadowView.Layer.BorderColor = Layer.BorderColor;
 			}
@@ -90,6 +91,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_shadowView?.SetNeedsLayout();
 			}
+
 			base.LayoutSubviews();
 		}
 
@@ -103,13 +105,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
-		void UpdateBackground(Brush brush)
+		void UpdateBackground()
 		{
+			Brush background = Element.Background;
+
 			Layer.RemoveGradientLayer();
 
-			if (brush != null && !brush.IsEmpty)
+			if (background != null && !background.IsEmpty)
 			{
-				if (brush is SolidColorBrush solidColorBrush)
+				if (background is SolidColorBrush solidColorBrush)
 				{
 					var backgroundColor = solidColorBrush.Color;
 
@@ -120,7 +124,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					var gradientLayer = _shadowView.GetGradientLayer(brush);
+					var gradientLayer = this.GetGradientLayer(background);
 
 					if (gradientLayer != null)
 					{
@@ -137,7 +141,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Preserve(Conditional = true)]
 		class ShadowView : UIView
 		{
-			CALayer _shadowee;
+			readonly CALayer _shadowee;
 			CGRect _previousBounds;
 			CGRect _previousFrame;
 

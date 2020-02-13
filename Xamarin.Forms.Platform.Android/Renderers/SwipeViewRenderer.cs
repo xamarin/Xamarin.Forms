@@ -55,11 +55,12 @@ namespace Xamarin.Forms.Platform.Android
 		public SwipeViewRenderer(Context context) : base(context)
 		{
 			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
+
 			_context = context;
 
-			AutoPackage = false;
+			this.SetClipToOutline(true);
 
-			this.SetClipToOutline(true, Element);
+			AutoPackage = false;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<SwipeView> e)
@@ -79,6 +80,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateContent();
 				UpdateSwipeTransitionMode();
 				UpdateBackgroundColor();
+				UpdateBackground();
 			}
 
 			if (e.OldElement != null)
@@ -100,6 +102,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
 				UpdateSwipeTransitionMode();
 		}
@@ -142,8 +146,18 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				Control.SetWindowBackground();
 
-			if (_contentView.Background == null)
+			if (_contentView != null && _contentView.Background == null)
 				_contentView?.SetWindowBackground();
+		}
+
+		protected override void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
+
+			if (Element.Content == null)
+				_contentView?.UpdateBackground(background);
 		}
 
 		protected override void OnAttachedToWindow()

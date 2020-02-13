@@ -462,10 +462,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateBackground()
 		{
-			var background = Element.Background;
-
-			if (background == null || background.IsEmpty)
-				return;
+			Brush background = Element.Background;
 
 			this.UpdateBackground(background);
 		}

@@ -224,10 +224,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground()
 		{
-			var brush = Element.Background;
+			Brush background = Element.Background;
 
-			if (brush != null && !brush.IsEmpty)
-				this.UpdateBackground(brush);
+			this.UpdateBackground(background);
 		}
 
 		void UpdateOnColor()

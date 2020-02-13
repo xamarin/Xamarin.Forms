@@ -309,7 +309,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (NativeView == null)
 				return;
 
-			NativeView.UpdateBackground(Element.Background);
+			Brush background = Element.Background;
+
+			NativeView.UpdateBackground(background);
 		}
 
 		void UpdateContentSize()

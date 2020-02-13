@@ -152,7 +152,6 @@ namespace Xamarin.Forms.Platform.Android
 					if (Forms.IsLollipopOrNewer)
 					{
 						var rippleColor = _backgroundDrawable.PressedBackgroundColor.ToAndroid();
-
 						_rippleDrawable = new RippleDrawable(ColorStateList.ValueOf(rippleColor), _backgroundDrawable, null);
 						Control.SetBackground(_rippleDrawable);
 					}
@@ -164,7 +163,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (!backgroundIsDefault)
 				{
-					Control.UpdateBackground(Element.Background);
+					Brush background = Element.Background;
+
+					Control.UpdateBackground(background);
 				}
 
 				_drawableEnabled = true;

@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					if (gradientLayer != null)
 					{
-						_backgroundUIView.BackgroundColor = UIColor.White;
+						_backgroundUIView.BackgroundColor = UIColor.Clear;
 						_backgroundUIView.InsertGradientLayer(gradientLayer, 0);
 					}
 				}

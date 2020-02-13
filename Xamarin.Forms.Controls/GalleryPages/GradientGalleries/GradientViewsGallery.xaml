@@ -15,9 +15,9 @@
                 StartPoint="0, 0"
                 EndPoint="1, 0">
                 <LinearGradientBrush.GradientStops>
-                    <GradientStop Color="Yellow" Offset="0.2" />
-                    <GradientStop Color="Orange" Offset="0.4" />
-                    <GradientStop Color="Red" Offset="0.8" />
+                    <GradientStop Color="#8A2387" Offset="0.1" />
+                    <GradientStop Color="#E94057" Offset="0.6" />
+                    <GradientStop Color="#F27121" Offset="1.0" />
                 </LinearGradientBrush.GradientStops>
             </LinearGradientBrush>
 
@@ -26,9 +26,9 @@
                 StartPoint="0, 0"
                 EndPoint="0, 1">
                 <LinearGradientBrush.GradientStops>
-                    <GradientStop Color="Yellow" Offset="0.2" />
-                    <GradientStop Color="Orange" Offset="0.4" />
-                    <GradientStop Color="Red" Offset="0.8" />
+                    <GradientStop Color="#8A2387" Offset="0.1" />
+                    <GradientStop Color="#E94057" Offset="0.6" />
+                    <GradientStop Color="#F27121" Offset="1.0" />
                 </LinearGradientBrush.GradientStops>
             </LinearGradientBrush>
 
@@ -37,9 +37,9 @@
                 Center="0.5,0.5" 
                 Radius="0.5">
                 <RadialGradientBrush.GradientStops>
-                    <GradientStop Color="Yellow" Offset="0.2" />
-                    <GradientStop Color="Orange" Offset="0.4" />
-                    <GradientStop Color="Red" Offset="0.8" />
+                    <GradientStop Color="#8A2387" Offset="0.1" />
+                    <GradientStop Color="#E94057" Offset="0.6" />
+                    <GradientStop Color="#F27121" Offset="1.0" />
                 </RadialGradientBrush.GradientStops>
             </RadialGradientBrush>
 
@@ -60,6 +60,7 @@
                     SelectedIndexChanged="OnBackgroundSelectedIndexChanged">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
+                            <x:String>None</x:String>
                             <x:String>BackgroundColor</x:String>
                             <x:String>SolidColorBrush</x:String>
                             <x:String>Horizontal LinearGradientBrush</x:String>
@@ -189,6 +190,7 @@
                         </SwipeView.LeftItems>
                         <SwipeView.Content>
                             <Grid
+                                x:Name="SwipeViewContent"
                                 HeightRequest="60"
                                 WidthRequest="300">
                                 <Label
@@ -200,6 +202,9 @@
                     </SwipeView>
                     <Stepper
                         x:Name="Stepper"/>
+                    <TableView
+                        x:Name="TableView"
+                        HeightRequest="100" />
                     <TimePicker
                         x:Name="TimePicker"/>
                 </StackLayout>

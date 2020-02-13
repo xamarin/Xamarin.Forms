@@ -23,19 +23,23 @@
 			switch (selectedIndex)
 			{
 				case 0:
-					backgroundColor = Color.Red;
+					backgroundColor = null;
 					background = null;
 					break;
 				case 1:
-					background = Resources["SolidColor"] as Brush;
+					backgroundColor = Color.Red;
+					background = null;
 					break;
 				case 2:
-					background = Resources["HorizontalLinearGradient"] as Brush;
+					background = Resources["SolidColor"] as Brush;
 					break;
 				case 3:
-					background = Resources["VerticalLinearGradient"] as Brush;
+					background = Resources["HorizontalLinearGradient"] as Brush;
 					break;
 				case 4:
+					background = Resources["VerticalLinearGradient"] as Brush;
+					break;
+				case 5:
 					background = Resources["RadialGradient"] as Brush;
 					break;
 			}
@@ -43,13 +47,15 @@
 			if (backgroundColor != null)
 			{
 				UpdateBackgroundColor(backgroundColor);
-				UpdateBackground(null);
 			}
-
-			if (background != null)
+			else if (background != null)
+			{
+				UpdateBackground(background);
+			}
+			else
 			{
 				UpdateBackgroundColor(null);
-				UpdateBackground(background);
+				UpdateBackground(null);
 			}
 		}
 
@@ -75,11 +81,13 @@
 			Slider.BackgroundColor = backgroundColor;
 			Stepper.BackgroundColor = backgroundColor;
 			SwipeView.BackgroundColor = backgroundColor;
+			SwipeViewContent.BackgroundColor = backgroundColor;
+			TableView.BackgroundColor = backgroundColor;
 			TimePicker.BackgroundColor = backgroundColor;
 		}
 
 		void UpdateBackground(Brush background)
-		{
+		{ 
 			Button.Background = background;
 			BoxView.Background = background;
 			CheckBox.Background = background;
@@ -98,6 +106,8 @@
 			Slider.Background = background;
 			Stepper.Background = background;
 			SwipeView.Background = background;
+			SwipeViewContent.Background = background;
+			TableView.Background = background;
 			TimePicker.Background = background;
 		}
 	}

@@ -4,10 +4,17 @@
 	{
 		public GradientsGallery()
 		{
-			var descriptionLabel =
-				new Label { Text = "Gradients Galleries", Margin = new Thickness(2, 2, 2, 2) };
+			Title = "Brushes Galleries";
 
-			Title = "Gradients Galleries";
+			var descriptionLabel =
+				new Label { Text = "Brushes Galleries", Margin = new Thickness(2, 2, 2, 2) };
+
+			var button = new Button
+			{
+				Text = "Enable SwipeView",
+				AutomationId = "EnableSwipeView"
+			};
+			button.Clicked += ButtonClicked;
 
 			var navigationBarButton = new Button
 			{
@@ -40,8 +47,11 @@
 					Children =
 					{
 						descriptionLabel,
+						button,
 						GalleryBuilder.NavButton("Gradient Views", () =>
 							new GradientViewsGallery(), Navigation),
+						GalleryBuilder.NavButton("SolidColorBrush Converter Gallery", () =>
+							new SolidColorBrushConverterGallery(), Navigation),
 						GalleryBuilder.NavButton("LinearGradientBrush Explorer", () =>
 							new LinearGradientExplorerGallery(), Navigation),
 						GalleryBuilder.NavButton("RadialGradient Explorer", () =>
@@ -55,6 +65,17 @@
 					}
 				}
 			};
+		}
+
+		void ButtonClicked(object sender, System.EventArgs e)
+		{
+			var button = sender as Button;
+
+			button.Text = "SwipeView Enabled!";
+			button.TextColor = Color.Black;
+			button.IsEnabled = false;
+
+			Device.SetFlags(new[] { ExperimentalFlags.SwipeViewExperimental });
 		}
 	}
 }

@@ -372,10 +372,6 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var barBackground = Tabbed.BarBackground;
-			var isEmpty = barBackground == null || barBackground.IsEmpty;
-
-			if (isEmpty)
-				return;
 
 			TabBar.UpdateBackground(barBackground);
 		}

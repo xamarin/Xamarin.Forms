@@ -45,10 +45,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null || Control == null)
 				return;
 
-			var background = Element.Background;
+			Brush background = Element.Background;
 
-			if (background != null && !background.IsEmpty)
-				Control.UpdateBackground(background);
+			Control.UpdateBackground(background);
 		}
 
 		static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -61,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement != null)
 			{
-				var renderer = (sender as IVisualElementRenderer);
+				var renderer = sender as IVisualElementRenderer;
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 				UpdateBackgroundColor(renderer?.View, renderer?.Element);
 				UpdateBackground(renderer?.View, renderer?.Element);

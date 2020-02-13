@@ -155,11 +155,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackground(Brush brush)
 		{
+			Brush background = Element.Background;
+
 			if (Control != null)
-				Control.UpdateBackground(Element.Background);
+				Control.UpdateBackground(background);
 
 			if (_contentView != null && Element.Content == null && HasSwipeItems())
-				_contentView.UpdateBackground(Element.Background);
+				_contentView.UpdateBackground(background);
 		}
 
 		protected override void Dispose(bool disposing)

@@ -786,9 +786,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			var barBackground = Element.BarBackground;
 
-			if (barBackground == null || barBackground.IsEmpty)
-				return;
-
 			if (IsBottomTabPlacement)
 				_bottomNavigationView.UpdateBackground(barBackground);
 			else
