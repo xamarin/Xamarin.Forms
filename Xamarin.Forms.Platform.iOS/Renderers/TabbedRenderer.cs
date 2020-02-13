@@ -477,9 +477,9 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				if (Forms.IsiOS10OrNewer)
-					TabBar.TintColor = null;
+					TabBar.TintColor = UITabBar.Appearance.TintColor;
 				else
-					TabBar.SelectedImageTintColor = null;
+					TabBar.SelectedImageTintColor = UITabBar.Appearance.SelectedImageTintColor;
 			}
 
 			if (!Forms.IsiOS10OrNewer)
