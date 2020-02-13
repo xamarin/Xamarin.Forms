@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue9539">   
+    <ContentPage.Resources>
+        <OnIdiom x:Key="CellHeightInt" x:TypeArguments="x:Int32" Phone="100" Tablet="110" Desktop="110" TV="120" />
+        <OnPlatform x:Key="CellSpacing" x:TypeArguments="Thickness">
+            <On Platform="iOS" Value="4,2" />
+            <On Platform="Android" Value="4" />
+            <On Platform="UWP" Value="10,6" />
+        </OnPlatform>
+        <OnPlatform x:Key="DefaultCellPadding" x:TypeArguments="Thickness">
+            <On Platform="iOS">
+                <On.Value>
+                    <OnIdiom
+                        x:TypeArguments="Thickness"
+                        Tablet="8,4"
+                        Phone="6,2" />
+                </On.Value>
+            </On>
+            <On Platform="Android" Value="4,2" />
+            <On Platform="UWP" Value="8" />
+        </OnPlatform>
+        <OnPlatform x:Key="CellPaddingForOptionsButton" x:TypeArguments="Thickness">
+            <On Platform="iOS">
+                <On.Value>
+                    <OnIdiom
+                        x:TypeArguments="Thickness"
+                        Tablet="8,4,0,4"
+                        Phone="6,2,0,2" />
+                </On.Value>
+            </On>
+            <On Platform="Android" Value="4,2,0,2" />
+            <On Platform="UWP" Value="8" />
+        </OnPlatform>
+        <OnPlatform x:Key="MediumTextSize" x:TypeArguments="x:Double">
+            <On Platform="iOS">
+                <On.Value>
+                    <OnIdiom x:TypeArguments="x:Double" Phone="13" Tablet="16" Desktop="14" TV="18" />
+                </On.Value>
+            </On>
+            <On Platform="Android,UWP">
+                <On.Value>
+                    <OnIdiom x:TypeArguments="x:Double" Phone="13" Tablet="16" Desktop="14" TV="18" />
+                </On.Value>
+            </On>
+        </OnPlatform>
+
+        <Style x:Key="CellStyleBase" TargetType="Frame">
+            <Setter Property="Margin" Value="{StaticResource CellSpacing}" />
+            <Setter Property="HasShadow">
+                <Setter.Value>
+                    <OnPlatform x:TypeArguments="x:Boolean">
+                        <On Platform="iOS,UWP" Value="False" />
+                        <On Platform="Android" Value="True" />
+                    </OnPlatform>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding" Value="{StaticResource DefaultCellPadding}" />
+            <Setter Property="MinimumHeightRequest" Value="80" />
+            <Setter Property="CornerRadius">
+                <Setter.Value>
+                    <OnPlatform x:TypeArguments="x:Single">
+                        <On Platform="Android" Value="2" />
+                        <On Platform="iOS" Value="7" />
+                        <On Platform="UWP" Value="0" />
+                    </OnPlatform>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ChecklistCellStyle" TargetType="Frame" BasedOn="{StaticResource CellStyleBase}" />
+
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ListView ItemsSource="{Binding Items}"
+                  RowHeight="{StaticResource CellHeightInt}"
+                  HasUnevenRows="true"
+                  IsGroupingEnabled="false">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Frame Style="{StaticResource ChecklistCellStyle}"
+                               Padding="{StaticResource CellPaddingForOptionsButton}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="72" />
+                                    <ColumnDefinition Width="40" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="48" />
+                                </Grid.ColumnDefinitions>
+                                <StackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                                             VerticalOptions="Center">
+
+                                    <StackLayout Orientation="Horizontal">
+
+                                        <!-- the following label leads to a crash because
+                                        
+                                        - of the layout-combinations it is in (Frame/Grid/Stacklayout/Stacklayout)
+                                            We suppose it is the fact that it is in some nested layouts, but not necessarily in the exact combination as shown here
+                                        - the label uses FormattedText, MaxLines and LineBreakMode TailTruncation
+                                        - and the text from the viewmodel actually contains LINEBREAKS!
+                                        
+                                        -->
+                                        <Label
+                                            FormattedText="{Binding .}"
+                                            MaxLines="3"
+                                            LineBreakMode="TailTruncation"
+                                             />
+
+                                    </StackLayout>
+
+                                </StackLayout>
+
+                            </Grid>
+                        </Frame>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </ContentPage.Content>
+</ContentPage>
