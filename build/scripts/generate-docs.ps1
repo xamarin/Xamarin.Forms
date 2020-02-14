@@ -49,8 +49,12 @@ function ScrubIndex {
             
 			if(-not (test-path "$($folder)\$($typeName).xml")) {
                 $selector = "//Namespace[@Name='$($folder)']/Type[@Name='$($typeName)']"
-				$toRemove =  $index.SelectSingleNode($selector)
-				$removed = $toRemove.ParentNode.RemoveChild($toRemove)
+                $toRemove =  $index.SelectSingleNode($selector)
+                
+                if($toRemove -and $toRemove.ParentNode)
+                {
+                    $removed = $toRemove.ParentNode.RemoveChild($toRemove)
+                }
 			}
 		}
 	}
