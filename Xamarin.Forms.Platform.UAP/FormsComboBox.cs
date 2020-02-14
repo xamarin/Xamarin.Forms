@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public FormsComboBox()
 		{
+			DefaultStyleKey = typeof(FormsComboBox);
 			DropDownOpened += FormsComboBoxDropDownOpened;
 			SelectionChanged += FormsComboBoxSelectionChanged;
 		}
@@ -28,11 +29,6 @@ namespace Xamarin.Forms.Platform.UWP
 		internal bool IsFullScreen => Device.Idiom == TargetIdiom.Phone && Items != null && Items.Count > 5;
 
 		internal bool IsOpeningAnimated { get; private set; }
-
-		public FormsComboBox() 
-		{
-			DefaultStyleKey = typeof(FormsComboBox);
-		}
 
 		protected override void OnApplyTemplate()
 		{
