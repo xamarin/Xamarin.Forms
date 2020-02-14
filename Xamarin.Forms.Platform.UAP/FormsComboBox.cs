@@ -9,22 +9,16 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public FormsComboBox()
 		{
-			DropDownOpened += FormsComboBox_DropDownOpened;
-			SelectionChanged += FormsComboBox_SelectionChanged;
+			DropDownOpened += FormsComboBoxDropDownOpened;
+			SelectionChanged += FormsComboBoxSelectionChanged;
 		}
 
-		~FormsComboBox()
-		{
-			DropDownOpened -= FormsComboBox_DropDownOpened;
-			SelectionChanged -= FormsComboBox_SelectionChanged;
-		}
-
-		void FormsComboBox_DropDownOpened(object sender, object e)
+		void FormsComboBoxDropDownOpened(object sender, object e)
 		{
 			MinWidth = ActualWidth;
 		}
 
-		void FormsComboBox_SelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
+		void FormsComboBoxSelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
 		{
 			MinWidth = 0;
 		}
