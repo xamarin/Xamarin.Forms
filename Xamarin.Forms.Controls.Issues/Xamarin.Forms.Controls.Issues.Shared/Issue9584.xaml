@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:controls="clr-namespace:Xamarin.Forms.Controls;assembly=Xamarin.Forms.Core.Android.UITests"
+                          mc:Ignorable="d"
+                          x:Class="Xamarin.Forms.Controls.Issues.Issue9584">
+    <controls:TestContentPage.Content>
+        <CollectionView ItemsSource="{Binding Persons}">
+            <CollectionView.Header>
+                <Grid BackgroundColor="Bisque">
+                <Entry Placeholder="Search" Text="{Binding SearchString}"/>
+                </Grid>
+            </CollectionView.Header>
+            <CollectionView.Footer>
+                <Grid BackgroundColor="Bisque">
+                    <Entry Placeholder="Search" Text="{Binding SearchString}"/>
+                </Grid>
+            </CollectionView.Footer>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Orientation="Horizontal" BackgroundColor="WhiteSmoke" Margin="2">
+                        <Label Text="{Binding Name}"/>
+                        <Label Text="{Binding Surname}"/>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </controls:TestContentPage.Content>
+</controls:TestContentPage>
