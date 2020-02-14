@@ -45,7 +45,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void ResetIndicators()
+		internal void ResetIndicators()
 		{
 			try
 			{
