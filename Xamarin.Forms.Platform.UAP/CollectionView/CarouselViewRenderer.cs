@@ -150,6 +150,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			CarouselView.SetIsDragging(e.IsIntermediate);
 			CarouselView.IsScrolling = e.IsIntermediate;
+
+			var visibleIndexes = CollectionViewExtensions.GetVisibleIndexes(ListViewBase, CarouselItemsLayout.Orientation);
+
+			if (visibleIndexes.centerItemIndex != -1)
+				CarouselView.Position = visibleIndexes.centerItemIndex;
 		}
 
 		void UpdatePeekAreaInsets()
