@@ -72,6 +72,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIndicatorsColor()
 		{
+			_fillColor = new SolidColorBrush(Element.IndicatorColor.ToWindowsColor());
+			_selectedColor = new SolidColorBrush(Element.SelectedIndicatorColor.ToWindowsColor());
 			var position = Element.Position;
 			int i = 0;
 			foreach (var item in (Control as ItemsControl).Items)
