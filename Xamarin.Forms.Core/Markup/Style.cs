@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Markup
 
 		public Style(params (BindableProperty Property, object Value)[] setters)
 		{
-			VerifyExperimental();
+			VerifyExperimental(constructorHint: nameof(Style));
 			FormsStyle = new Style(typeof(T)) { };
 			Add(setters);
 		}

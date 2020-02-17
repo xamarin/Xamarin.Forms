@@ -6,12 +6,12 @@ namespace Xamarin.Forms.Core.Markup
 	{
 		static bool isExperimentalFlagSet = false;
 
-		internal static void VerifyExperimental([CallerMemberName] string memberName = "")
+		internal static void VerifyExperimental([CallerMemberName] string memberName = "", string constructorHint = null)
 		{
 			if (isExperimentalFlagSet)
 				return;
 
-			ExperimentalFlags.VerifyFlagEnabled(nameof(Markup), ExperimentalFlags.MarkupExperimental, memberName: memberName);
+			ExperimentalFlags.VerifyFlagEnabled(nameof(Markup), ExperimentalFlags.MarkupExperimental, constructorHint, memberName);
 
 			isExperimentalFlagSet = true;
 		}
