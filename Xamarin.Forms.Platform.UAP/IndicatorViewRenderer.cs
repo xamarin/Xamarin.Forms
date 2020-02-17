@@ -16,17 +16,10 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	class IndicatorViewRenderer : ViewRenderer<IndicatorView, FrameworkElement>
 	{
-		SolidColorBrush selectedColor;
-		SolidColorBrush fillColor;
-		double _defaultIndicatorSize = 7;
-		double _defaultIndicatorPadding = 4;
-
-		ObservableCollection<Shape> Dots;
-
-		public IndicatorViewRenderer()
-		{
-			AutoPackage = false;
-		}
+		const int DefaultPadding = 4;
+		SolidColorBrush _selectedColor;
+		SolidColorBrush _fillColor;
+		ObservableCollection<Shape> _dots;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<IndicatorView> e)
 		{
@@ -36,13 +29,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					UpdateControl();	
+					UpdateControl();
 				}
 			}
 
-			fillColor = new SolidColorBrush(Element.IndicatorColor.ToWindowsColor());
+			_fillColor = new SolidColorBrush(Element.IndicatorColor.ToWindowsColor());
 
-			selectedColor = new SolidColorBrush(Element.SelectedIndicatorColor.ToWindowsColor());
+			_selectedColor = new SolidColorBrush(Element.SelectedIndicatorColor.ToWindowsColor());
 
 			CreateIndicators();
 		}
@@ -51,14 +44,15 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.IsOneOf(IndicatorView.IndicatorColorProperty, IndicatorView.SelectedIndicatorColorProperty))
+			if (e.IsOneOf(IndicatorView.IndicatorColorProperty, IndicatorView.SelectedIndicatorColorProperty, IndicatorView.PositionProperty))
 				UpdateIndicatorsColor();
+
+			if (e.IsOneOf(IndicatorView.CountProperty, IndicatorView.ItemsSourceProperty))
+				CreateIndicators();
 		}
 
 		void UpdateControl()
 		{
-			ClearIndicators();
-
 			var control = (Element.IndicatorTemplate != null)
 				? (FrameworkElement)Element.IndicatorLayout.GetOrCreateRenderer()
 				: CreateNativeControl();
@@ -68,11 +62,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		FrameworkElement CreateNativeControl()
 		{
-			var itemsControl = new ItemsControl
+			return new ItemsControl
 			{
-				ItemsPanel = ParseItemsPanelTemplate(typeof(StackPanel))
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				ItemsPanel = GetItemsPanelTemplate()
 			};
-			return itemsControl;
 		}
 
 		void UpdateIndicatorsColor()
@@ -81,12 +76,12 @@ namespace Xamarin.Forms.Platform.UWP
 			int i = 0;
 			foreach (var item in (Control as ItemsControl).Items)
 			{
-				((Shape)item).Fill = i ==  position ? selectedColor : fillColor;
+				((Shape)item).Fill = i == position ? _selectedColor : _fillColor;
 				i++;
 			}
 		}
 
-		ItemsPanelTemplate ParseItemsPanelTemplate(Type panelType)
+		ItemsPanelTemplate GetItemsPanelTemplate()
 		{
 			var itemsPanelTemplateXaml =
 				$@"<ItemsPanelTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
@@ -115,33 +110,31 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			Dots = new ObservableCollection<Shape>(indicators);
-			(Control as ItemsControl).ItemsSource = Dots;
-		}
-		void ClearIndicators()
-		{
+			_dots = new ObservableCollection<Shape>(indicators);
+			(Control as ItemsControl).ItemsSource = _dots;
 		}
 
 		Shape CreateIndicator(int i, int position)
 		{
+			var indicatorSize = Element.IndicatorSize;
 			if (Element.IndicatorsShape == IndicatorShape.Circle)
 			{
 				return new Ellipse()
 				{
-					Fill = i == position ? selectedColor : fillColor,
-					Height = _defaultIndicatorSize,
-					Width = _defaultIndicatorSize,
-					Margin = new Windows.UI.Xaml.Thickness(_defaultIndicatorPadding)
+					Fill = i == position ? _selectedColor : _fillColor,
+					Height = indicatorSize,
+					Width = indicatorSize,
+					Margin = new Windows.UI.Xaml.Thickness(DefaultPadding, 0, DefaultPadding, 0)
 				};
 			}
 			else
 			{
 				return new Windows.UI.Xaml.Shapes.Rectangle()
 				{
-					Fill = i == position ? selectedColor : fillColor,
-					Height = _defaultIndicatorSize,
-					Width = _defaultIndicatorSize,
-					Margin = new Windows.UI.Xaml.Thickness(_defaultIndicatorPadding)
+					Fill = i == position ? _selectedColor : _fillColor,
+					Height = indicatorSize,
+					Width = indicatorSize,
+					Margin = new Windows.UI.Xaml.Thickness(DefaultPadding, 0, DefaultPadding, 0)
 				};
 			}
 		}
