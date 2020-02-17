@@ -55,8 +55,7 @@ namespace Xamarin.Forms
 				Removing(e.OldItems);
 			}
 			
-			if(e.OldItems != null || e.NewItems != null)
-				CollectionChanged?.Invoke(this, e);
+			CollectionChanged?.Invoke(this, e);
 		}
 
 		void Removing(IEnumerable items)
