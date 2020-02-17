@@ -21,6 +21,11 @@ namespace Xamarin.Forms.Platform.UWP
 		SolidColorBrush _fillColor;
 		ObservableCollection<Shape> _dots;
 
+		public IndicatorViewRenderer()
+		{
+			AutoPackage = false;
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<IndicatorView> e)
 		{
 			base.OnElementChanged(e);
@@ -74,6 +79,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIndicatorsColor()
 		{
+			if (!(Control is ItemsControl))
+				return;
+			
 			_fillColor = new SolidColorBrush(Element.IndicatorColor.ToWindowsColor());
 			_selectedColor = new SolidColorBrush(Element.SelectedIndicatorColor.ToWindowsColor());
 			var position = Element.Position;
@@ -98,7 +106,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void CreateIndicators()
 		{
-			if (!Element.IsVisible)
+			if (!Element.IsVisible || !(Control is ItemsControl))
 				return;
 
 			var position = Element.Position;
