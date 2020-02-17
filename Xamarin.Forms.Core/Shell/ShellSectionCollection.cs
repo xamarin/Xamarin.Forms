@@ -1,74 +1,11 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
 
 namespace Xamarin.Forms
 {
-	internal sealed class ShellSectionCollection : IList<ShellSection>, INotifyCollectionChanged
+	internal sealed class ShellSectionCollection : ShellAbstractCollection<ShellSection>
 	{
-		public event NotifyCollectionChangedEventHandler VisibleItemsChanged;
-		IList<ShellSection> _inner;
-		ObservableCollection<ShellSection> _visibleContents = new ObservableCollection<ShellSection>();
-
-		public ShellSectionCollection()
-		{
-			VisibleItems = new ReadOnlyCollection<ShellSection>(_visibleContents);
-			_visibleContents.CollectionChanged += (_, args) =>
-			{
-				VisibleItemsChanged?.Invoke(VisibleItems, args);
-			};
-		}
-
-		public ReadOnlyCollection<ShellSection> VisibleItems { get; }
-
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-		public int Count => Inner.Count;
-		public bool IsReadOnly => Inner.IsReadOnly;
-		internal IList<ShellSection> Inner
-		{
-			get => _inner;
-			set
-			{
-				_inner = value;
-				((INotifyCollectionChanged)_inner).CollectionChanged += InnerCollectionChanged;
-			}
-		}
-
-		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if (e.NewItems != null)
-			{
-				foreach (ShellSection element in e.NewItems)
-				{
-					if (element is IShellSectionController controller)
-						controller.ItemsCollectionChanged += OnShellSectionControllerItemsCollectionChanged;
-
-					CheckVisibility(element);
-				}
-			}
-
-			if (e.OldItems != null)
-			{
-				Removing(e.OldItems);
-			}
-			
-			CollectionChanged?.Invoke(this, e);
-		}
-
-		void Removing(IEnumerable items)
-		{
-			foreach (ShellSection element in items)
-			{
-				if (_visibleContents.Contains(element))
-					_visibleContents.Remove(element);
-
-				if (element is IShellSectionController controller)
-					controller.ItemsCollectionChanged -= OnShellSectionControllerItemsCollectionChanged;
-			}
-		}
+		public ShellSectionCollection() : base() {}
 
 		void OnShellSectionControllerItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -88,7 +25,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void CheckVisibility(ShellSection section)
+		protected override void CheckVisibility(ShellSection section)
 		{
 			if (section is IShellSectionController controller && controller.GetItems().Count > 0)
 			{
@@ -115,36 +52,16 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public ShellSection this[int index]
+		protected override void OnElementControllerInserting(IElementController element)
 		{
-			get => Inner[index];
-			set => Inner[index] = value;
+			if (element is IShellSectionController controller)
+				controller.ItemsCollectionChanged += OnShellSectionControllerItemsCollectionChanged;
 		}
 
-		public void Add(ShellSection item) => Inner.Add(item);
-
-		public void Clear()
+		protected override void OnElementControllerRemoving(IElementController element)
 		{
-			var list = Inner.ToList();
-			Removing(Inner);
-			Inner.Clear();
-			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list));
+			if (element is IShellSectionController controller)
+				controller.ItemsCollectionChanged -= OnShellSectionControllerItemsCollectionChanged;
 		}
-
-		public bool Contains(ShellSection item) => Inner.Contains(item);
-
-		public void CopyTo(ShellSection[] array, int arrayIndex) => Inner.CopyTo(array, arrayIndex);
-
-		public IEnumerator<ShellSection> GetEnumerator() => Inner.GetEnumerator();
-
-		public int IndexOf(ShellSection item) => Inner.IndexOf(item);
-
-		public void Insert(int index, ShellSection item) => Inner.Insert(index, item);
-
-		public bool Remove(ShellSection item) => Inner.Remove(item);
-
-		public void RemoveAt(int index) => Inner.RemoveAt(index);
-
-		IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Inner).GetEnumerator();
 	}
 }
