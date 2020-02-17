@@ -47,7 +47,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (e.IsOneOf(IndicatorView.IndicatorColorProperty, IndicatorView.SelectedIndicatorColorProperty, IndicatorView.PositionProperty))
 				UpdateIndicatorsColor();
 
-			if (e.IsOneOf(IndicatorView.CountProperty, IndicatorView.ItemsSourceProperty))
+			if (e.IsOneOf(IndicatorView.CountProperty,
+						  IndicatorView.ItemsSourceProperty,
+						  IndicatorView.IndicatorsShapeProperty))
 				CreateIndicators();
 		}
 
