@@ -2,9 +2,8 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.WPF;
+using Xamarin.Forms.Platform.WPF; 
 
-[assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 
 [assembly: ExportRenderer(typeof(Layout), typeof(LayoutRenderer))]
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
@@ -30,7 +29,9 @@ using Xamarin.Forms.Platform.WPF;
 [assembly: ExportRenderer(typeof(ActivityIndicator), typeof(ActivityIndicatorRenderer))]
 [assembly: ExportRenderer(typeof(Frame), typeof(FrameRenderer))]
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
+#if !NETCOREAPP3_0
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
+#endif
 [assembly: ExportRenderer(typeof(MediaElement), typeof(MediaElementRenderer))]
 [assembly: ExportRenderer(typeof(ImageButton), typeof(ImageButtonRenderer))]
 
