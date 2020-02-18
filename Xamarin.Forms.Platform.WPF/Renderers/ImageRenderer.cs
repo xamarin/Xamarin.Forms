@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.WPF
                 var width = glyphTypeface.AdvanceWidths[glyphIndex] * 1.0;
                 advanceWidths[n] = width;
             }
-
+			 
 #if NETCOREAPP3_0
 			var dpi = VisualTreeHelper.GetDpi(System.Windows.Application.Current.MainWindow).PixelsPerDip;
 			var gr = new GlyphRun(glyphTypeface,
@@ -219,16 +219,15 @@ namespace Xamarin.Forms.Platform.WPF
 				advanceWidths,
 				null, null, null, null, null, null);
 #else
-            var gr = new GlyphRun(glyphTypeface,
-                0, false,
-                fontSize,
-                glyphIndexes,
-                new System.Windows.Point(0, 0),
-                advanceWidths,
-                null, null, null, null, null, null);
+			var gr = new GlyphRun(glyphTypeface,
+		        0, false,
+		        fontSize,
+				glyphIndexes,
+		        new System.Windows.Point(0, 0),
+		        advanceWidths,
+		        null, null, null, null, null, null);
 #endif
-
-            var glyphRunDrawing = new GlyphRunDrawing(foreBrush, gr);
+			var glyphRunDrawing = new GlyphRunDrawing(foreBrush, gr);
             return new DrawingImage(glyphRunDrawing);
         }
     }
