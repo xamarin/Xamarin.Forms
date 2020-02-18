@@ -18,8 +18,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var gesture = new PanGestureRecognizer();
 
-			PropertyChanged += ExampleTemplateCarouselPropertyChanged;
-
 			gesture.PanUpdated += (sender, e) =>
 			{
 				if (e.StatusType == GestureStatus.Started)

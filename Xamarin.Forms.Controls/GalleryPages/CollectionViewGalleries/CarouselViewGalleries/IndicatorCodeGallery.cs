@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			Grid.SetRow(stckTemplate, 2);
 			Grid.SetRow(stckSize, 3);
 			Grid.SetRow(_carouselView, 4);
-			Grid.SetRow(indicatorView, 5);
+			Grid.SetRow(indicatorView, 6);
 
 			var btn = new Button
 			{
