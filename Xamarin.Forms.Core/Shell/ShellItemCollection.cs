@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 
 		void OnShellItemControllerItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			foreach (ShellSection section in (e.NewItems ?? e.OldItems ?? (IList)_inner))
+			foreach (ShellSection section in (e.NewItems ?? e.OldItems ?? (IList)Inner))
 			{
 				if (section.Parent == null)
 					section.ParentSet += OnParentSet;
@@ -33,9 +33,9 @@ namespace Xamarin.Forms
 					return;
 
 				int visibleIndex = 0;
-				for (var i = 0; i < _inner.Count; i++)
+				for (var i = 0; i < Inner.Count; i++)
 				{
-					var item = _inner[i];
+					var item = Inner[i];
 
 					if (!IsShellItemVisible(item))
 						continue;

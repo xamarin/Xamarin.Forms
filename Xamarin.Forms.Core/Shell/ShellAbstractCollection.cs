@@ -10,7 +10,8 @@ namespace Xamarin.Forms
 	internal abstract class ShellAbstractCollection<T> : IList<T>, INotifyCollectionChanged where T : class
 	{
 		protected readonly ObservableCollection<T> _visibleContents = new ObservableCollection<T>();
-		protected IList<T> _inner = new ObservableCollection<T>();
+
+		IList<T> _inner;
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		public event NotifyCollectionChangedEventHandler VisibleItemsChanged;
@@ -30,10 +31,10 @@ namespace Xamarin.Forms
 		protected ShellAbstractCollection()
 		{
 			VisibleItems = new ReadOnlyCollection<T>(_visibleContents);
+			Inner = new ObservableCollection<T>();
+
 			_visibleContents.CollectionChanged += (_, args) =>
-			{
 				VisibleItemsChanged?.Invoke(VisibleItems, args);
-			};
 		}
 
 		#region IList
