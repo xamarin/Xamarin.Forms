@@ -66,6 +66,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
+			if (e.PropertyName == IndicatorSizeProperty.PropertyName)
+				UpdateIndicatorSize();
 			if (e.PropertyName == IndicatorsShapeProperty.PropertyName ||
 				e.PropertyName == ItemsSourceProperty.PropertyName)
 				UpdateIndicator();
@@ -90,7 +92,11 @@ namespace Xamarin.Forms.Platform.iOS
 				UIPager.ValueChanged -= UIPagerValueChanged;
 			}
 
-			var uiPager = new FormsPageControl { IsSquare = Element.IndicatorsShape == IndicatorShape.Square };
+			var uiPager = new FormsPageControl
+			{
+				IsSquare = Element.IndicatorsShape == IndicatorShape.Square,
+				IndicatorSize = Element.IndicatorSize
+			};
 			_defaultPagesIndicatorTintColor = uiPager.PageIndicatorTintColor;
 			_defaultCurrentPagesIndicatorTintColor = uiPager.CurrentPageIndicatorTintColor;
 			uiPager.ValueChanged += UIPagerValueChanged;
@@ -128,6 +134,12 @@ namespace Xamarin.Forms.Platform.iOS
 			ClearIndicators();
 			UIPager.IsSquare = Element.IndicatorsShape == IndicatorShape.Square;
 			AddSubview(UIPager);
+			UIPager.LayoutSubviews();
+		}
+
+		void UpdateIndicatorSize()
+		{
+			UIPager.IndicatorSize = Element.IndicatorSize;
 			UIPager.LayoutSubviews();
 		}
 
@@ -201,16 +213,27 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public bool IsSquare { get; set; }
 
+		public double IndicatorSize { get; set; }
+
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
 
-			if (Subviews.Length == 0 || !IsSquare)
+			if (Subviews.Length == 0)
 				return;
 
 			foreach (var view in Subviews)
 			{
-				view.Layer.CornerRadius = 0;
+				if(IsSquare)
+				{
+					view.Layer.CornerRadius = 0;
+				}
+
+				float scale = (float)IndicatorSize / 7;
+				System.Diagnostics.Debug.WriteLine($"{IndicatorSize} scale {scale}");
+				CGAffineTransform newTransform = CGAffineTransform.MakeScale(scale, scale);
+
+				view.Transform = newTransform;
 			}
 		}
 	}
