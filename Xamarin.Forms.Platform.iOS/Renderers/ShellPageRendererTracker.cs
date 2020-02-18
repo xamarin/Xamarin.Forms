@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				try
 				{
-					await UpdateToolbarItems();
+					await UpdateToolbarItems().ConfigureAwait(false);
 				}
 				catch(Exception exc)
 				{
