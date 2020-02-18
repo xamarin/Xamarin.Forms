@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.Platform.UWP;
 using WColor = Windows.UI.Color;
 
@@ -26,7 +27,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 			}
 		}
 
-		WColor GetBackgroundColor(Control control) 
+		WColor GetBackgroundColor(Control control)
 		{
 			if (control is FormsButton button)
 			{
@@ -41,21 +42,41 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 			return (control.Background as SolidColorBrush).Color;
 		}
 
-		WColor GetBackgroundColor(Panel panel) 
+		WColor GetBackgroundColor(Panel panel)
 		{
 			return (panel.Background as SolidColorBrush).Color;
+		}
+
+		WColor GetBackgroundColor(Border border)
+		{
+			return (border.Background as SolidColorBrush).Color;
+		}
+
+		WColor GetNativeColor(View view)
+		{
+			var control = GetNativeControl(view);
+
+			if (control != null)
+			{
+				return GetBackgroundColor(control);
+			}
+
+			var border = GetBorder(view);
+
+			if (border != null)
+			{
+				return GetBackgroundColor(border);
+			}
+
+			var panel = GetPanel(view);
+			return GetBackgroundColor(panel);
 		}
 
 		[Test, TestCaseSource(nameof(TestCases))]
 		[Description("View background color should match renderer background color")]
 		public void BackgroundColorConsistent(View view)
 		{
-			var control = GetNativeControl(view);
-
-			var nativeColor = control != null
-				? GetBackgroundColor(control)
-				: GetBackgroundColor(GetContainer(view));
-
+			var nativeColor = GetNativeColor(view);
 			var formsColor = view.BackgroundColor.ToUwpColor();
 			Assert.That(nativeColor, Is.EqualTo(formsColor));
 		}

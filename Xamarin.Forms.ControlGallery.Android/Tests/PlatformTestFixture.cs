@@ -209,7 +209,15 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		{
 			var renderer = GetRenderer(label);
 			var viewRenderer = renderer.View as LabelRenderer;
-			return viewRenderer.Control;
+
+			if (viewRenderer != null)
+			{
+				return viewRenderer.Control;
+			}
+
+			var fastRenderer = renderer.View as Platform.Android.FastRenderers.LabelRenderer;
+
+			return fastRenderer;
 		}
 
 		protected EditText GetNativeControl(Picker picker)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.Platform.UWP;
 
 namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
@@ -51,9 +52,16 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 			return GetRenderer(element).GetNativeElement() as Control;
 		}
 
-		protected Panel GetContainer(VisualElement element) 
+		protected Panel GetPanel(VisualElement element) 
 		{
 			return GetRenderer(element).ContainerElement as Panel;
+		}
+
+		protected Border GetBorder(VisualElement element) 
+		{
+			var renderer = GetRenderer(element);
+			var nativeElement = renderer.GetNativeElement();
+			return nativeElement as Border;
 		}
 		
 		protected TextBlock GetNativeControl(Label label)
