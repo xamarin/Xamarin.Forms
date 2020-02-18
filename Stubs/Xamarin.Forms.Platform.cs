@@ -172,6 +172,9 @@ namespace Xamarin.Forms.Platform
 #endif
 	internal class _MasterDetailPageRenderer { }
 
+	[RenderWith (typeof(MediaElementRenderer))]
+	internal class _MediaElementRenderer { }
+
 	[RenderWith(typeof(RefreshViewRenderer))]
 	internal class _RefreshViewRenderer { }
 

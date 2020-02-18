@@ -38,6 +38,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (CarouselPage), typeof (CarouselPageRenderer))]
 [assembly: ExportRenderer (typeof (Page), typeof (PageRenderer))]
 [assembly: ExportRenderer (typeof (MasterDetailPage), typeof (MasterDetailRenderer))]
+[assembly: ExportRenderer (typeof (MediaElement), typeof(MediaElementRenderer))]
 [assembly: ExportRenderer (typeof (RefreshView), typeof (RefreshViewRenderer))]
 #endif
 
@@ -60,3 +61,4 @@ using Xamarin.Forms.Platform.Android;
 [assembly: Preserve]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Material")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.DualScreen")]

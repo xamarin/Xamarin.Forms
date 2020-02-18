@@ -391,6 +391,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("4321", testPage.SomeQueryParameter);
 		}
 
+		[Test]
+		public async Task BasicQueryStringTest()
+		{
+			var shell = new Shell();
+
+			var item = CreateShellItem(shellSectionRoute: "section2");
+			Routing.RegisterRoute("details", typeof(ShellTestPage));
+			shell.Items.Add(item);
+			await shell.GoToAsync(new ShellNavigationState($"details?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
+			Assert.AreEqual("1234", testPage.SomeQueryParameter);
+		}
+
 
 		[Test]
 		public async Task NavigationWithQueryStringAndNoDataTemplate()
@@ -459,6 +472,46 @@ namespace Xamarin.Forms.Core.UnitTests
 			Shell.SetBackButtonBehavior(page, backButtonBehavior);
 
 			Assert.AreEqual(backButtonBehavior, Shell.GetBackButtonBehavior(page));
+		}
+
+		[Test]
+		public void ModalSetters()
+		{
+			var page = new ContentPage();
+
+			Assert.IsFalse(IsModal(page));
+			Assert.IsTrue(IsAnimated(page));
+
+			Shell.SetPresentationMode(page, PresentationMode.Modal | PresentationMode.NotAnimated);
+
+			Assert.IsTrue(IsModal(page));
+			Assert.IsFalse(IsAnimated(page));
+		}
+
+		[Test]
+		public void BackButtonBehaviorBindingContextPropagation()
+		{
+			object bindingContext = new object();
+			var page = new ContentPage();
+			var backButtonBehavior = new BackButtonBehavior();
+
+			Shell.SetBackButtonBehavior(page, backButtonBehavior);
+			page.BindingContext = bindingContext;
+
+			Assert.AreEqual(page.BindingContext, backButtonBehavior.BindingContext);
+		}
+
+		[Test]
+		public void BackButtonBehaviorBindingContextPropagationWithExistingBindingContext()
+		{
+			object bindingContext = new object();
+			var page = new ContentPage();
+			var backButtonBehavior = new BackButtonBehavior();
+
+			page.BindingContext = bindingContext;
+			Shell.SetBackButtonBehavior(page, backButtonBehavior);
+
+			Assert.AreEqual(page.BindingContext, backButtonBehavior.BindingContext);
 		}
 
 		[Test]

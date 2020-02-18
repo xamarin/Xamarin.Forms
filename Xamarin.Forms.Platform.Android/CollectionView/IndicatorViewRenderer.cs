@@ -50,6 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public IndicatorViewRenderer(Context context) : base(context)
 		{
+			SetGravity(GravityFlags.Center);
 			_visualElementRenderer = new VisualElementRenderer(this);
 		}
 
@@ -197,18 +198,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateItemsSource();
 
 			ElevationHelper.SetElevation(this, newElement);
-		}
 
-		void IndicatorsViewItemSourcePropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
-		{
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
-			{
-				UpdateItemsSource();
-			}
-			else if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
-			{
-				UpdateSelectedIndicator();
-			}
+			UpdateSelectedIndicator();
 		}
 
 		void UpdateSelectedIndicator()

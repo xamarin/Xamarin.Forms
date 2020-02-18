@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Foundation;
 using UIKit;
@@ -19,6 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 #pragma warning disable 0414
 		VisualElementTracker _tracker;
 #pragma warning restore 0414
+
+		[Internals.Preserve(Conditional = true)]
 		public WebViewRenderer() : base(RectangleF.Empty)
 		{
 		}
@@ -268,6 +273,29 @@ namespace Xamarin.Forms.Platform.iOS
 				_lastEvent = navEvent;
 				var lastUrl = request.Url.ToString();
 				var args = new WebNavigatingEventArgs(navEvent, new UrlWebViewSource { Url = lastUrl }, lastUrl);
+
+				// Set cookies here
+				var cookieJar = NSHttpCookieStorage.SharedStorage;
+				cookieJar.AcceptPolicy = NSHttpCookieAcceptPolicy.Always;
+
+				//clean up old cookies
+				foreach (var aCookie in cookieJar.Cookies)
+				{
+					cookieJar.DeleteCookie(aCookie);
+				}
+				//set up the new cookies
+				if (WebView.Cookies != null)
+				{
+					var jCookies = WebView.Cookies.GetCookies(request.Url);
+					IList<NSHttpCookie> eCookies =
+						(from object jCookie in jCookies
+						 where jCookie != null
+						 select (Cookie)jCookie
+						 into netCookie
+						 select new NSHttpCookie(netCookie)).ToList();
+
+					cookieJar.SetCookies(eCookies.ToArray(), request.Url, request.Url);
+				}
 
 				WebView.SendNavigating(args);
 				_renderer.UpdateCanGoBackForward();
