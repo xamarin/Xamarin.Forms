@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 
-		public event EventHandler<NotifyCollectionChangedEventArgs> CollectionItemsSourceChanged;
+		public event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
 
 		public int Count => ItemsCount() + (HasHeader ? 1 : 0) + (HasFooter ? 1 : 0);
 

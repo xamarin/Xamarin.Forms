@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.iOS
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
-		public event EventHandler<NotifyCollectionChangedEventArgs> CollectionItemsSourceChanged;
+		public event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
 
 		public int Count { get; private set; }
 
