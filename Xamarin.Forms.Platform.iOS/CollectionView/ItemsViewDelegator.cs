@@ -57,19 +57,7 @@ namespace Xamarin.Forms.Platform.iOS
 			PreviousHorizontalOffset = (float)contentOffsetX;
 			PreviousVerticalOffset = (float)contentOffsetY;
 
-			switch (itemsView.RemainingItemsThreshold)
-			{
-				case -1:
-					return;
-				case 0:
-					if (lastVisibleItemIndex == source.ItemCount - 1)
-						itemsView.SendRemainingItemsThresholdReached();
-					break;
-				default:
-					if (source.ItemCount - 1 - lastVisibleItemIndex <= itemsView.RemainingItemsThreshold)
-						itemsView.SendRemainingItemsThresholdReached();
-					break;
-			}
+			itemsView.ResolveRemainingItemsThreshold(source.ItemCount, lastVisibleItemIndex);
 		}
 
 		public override UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,

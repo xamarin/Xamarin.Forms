@@ -181,6 +181,23 @@ namespace Xamarin.Forms
 			OnRemainingItemsThresholdReached();
 		}
 
+		public void ResolveRemainingItemsThreshold(int itemsCount, int lastVisibleItemIndex)
+		{
+			switch (RemainingItemsThreshold)
+			{
+				case -1:
+					return;
+				case 0:
+					if (lastVisibleItemIndex == itemsCount - 1)
+						SendRemainingItemsThresholdReached();
+					break;
+				default:
+					if (itemsCount - 1 - lastVisibleItemIndex <= RemainingItemsThreshold)
+						SendRemainingItemsThresholdReached();
+					break;
+			}
+		}
+
 		public void SendScrolled(ItemsViewScrolledEventArgs e)
 		{
 			Scrolled?.Invoke(this, e);

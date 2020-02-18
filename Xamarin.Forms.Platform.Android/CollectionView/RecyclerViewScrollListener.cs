@@ -64,19 +64,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			if (lastVisibleItemIndex == -1)
 				return;
 
-			switch (_itemsView.RemainingItemsThreshold)
-			{
-				case -1:
-					return;
-				case 0:
-					if (lastVisibleItemIndex == _itemsViewAdapter.ItemCount - 1)
-						_itemsView.SendRemainingItemsThresholdReached();
-					break;
-				default:
-					if (_itemsViewAdapter.ItemCount - 1 - lastVisibleItemIndex <= _itemsView.RemainingItemsThreshold)
-						_itemsView.SendRemainingItemsThresholdReached();
-					break;
-			}
+			_itemsView.ResolveRemainingItemsThreshold(_itemsViewAdapter.ItemCount, lastVisibleItemIndex);
 		}
 
 		static int CalculateCenterItemIndex(int firstVisibleItemIndex, RecyclerView recyclerView, LinearLayoutManager linearLayoutManager)

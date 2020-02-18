@@ -1,4 +1,6 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
@@ -451,6 +453,10 @@ namespace Xamarin.Forms.Platform.UWP
 			int firstVisibleItemIndex = -1;
 			int lastVisibleItemIndex = -1;
 
+			int firstVisibleSourceItemIndex = -1;
+			
+			List<object> sourceItems = GetSourceItems();
+			
 			var presenters = ListViewBase.GetChildren<ListViewItemPresenter>();
 
 			if (presenters != null)
@@ -461,8 +467,11 @@ namespace Xamarin.Forms.Platform.UWP
 					if (IsListViewItemVisible(presenter, _scrollViewer))
 					{
 						if (firstVisibleItemIndex == -1)
+						{
 							firstVisibleItemIndex = count;
-
+							firstVisibleSourceItemIndex = GetFirstVisibleSourceItemIndex(sourceItems, presenter);
+						}
+						
 						lastVisibleItemIndex = count;
 					}
 
@@ -475,6 +484,44 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			Element.SendScrolled(itemsViewScrolledEventArgs);
+
+			int lastVisibleSourceItemIndex = GetLastVisibleSourceItemIndex(firstVisibleSourceItemIndex,
+				firstVisibleItemIndex, lastVisibleItemIndex);
+			
+			Element.ResolveRemainingItemsThreshold(sourceItems.Count, lastVisibleSourceItemIndex);
+		}
+
+		List<object> GetSourceItems()
+		{
+			var sourceItems = new List<object>();
+
+			if (ItemsView.ItemsSource is ICollection itemsSourceCollection)
+			{
+				bool isGrouped = (ItemsView as GroupableItemsView)?.IsGrouped ?? false;
+
+				if (isGrouped)
+				{
+					foreach (object group in itemsSourceCollection)
+					{
+						if (group is ICollection groupCollection)
+						{
+							foreach (object item in groupCollection)
+							{
+								sourceItems.Add(item);
+							}
+						}
+					}
+				}
+				else
+				{
+					foreach (object item in itemsSourceCollection)
+					{
+						sourceItems.Add(item);
+					}
+				}
+			}
+
+			return sourceItems;
 		}
 
 		bool IsListViewItemVisible(FrameworkElement element, FrameworkElement container)
@@ -489,6 +536,30 @@ namespace Xamarin.Forms.Platform.UWP
 			var containerBounds = new Rect(0, 0, container.ActualWidth, container.ActualHeight);
 
 			return elementBounds.Top < containerBounds.Bottom && elementBounds.Bottom > containerBounds.Top;
+		}
+
+		int GetFirstVisibleSourceItemIndex(List<object> sourceItems, ListViewItemPresenter firstVisiblePresenter)
+		{
+			int firstVisibleSourceItemIndex = -1;
+
+			if (firstVisiblePresenter.DataContext is ItemTemplateContext itemTemplateContext)
+			{
+				firstVisibleSourceItemIndex = sourceItems.IndexOf(itemTemplateContext.Item);
+			}
+
+			return firstVisibleSourceItemIndex;
+		}
+
+		int GetLastVisibleSourceItemIndex(int firstVisibleSourceItemIndex, int firstVisibleItemIndex, int lastVisibleItemIndex)
+		{
+			int lastVisibleSourceItemIndex = -1;
+
+			if (firstVisibleSourceItemIndex > -1)
+			{
+				lastVisibleSourceItemIndex = firstVisibleSourceItemIndex + (lastVisibleItemIndex - firstVisibleItemIndex);
+			}
+
+			return lastVisibleSourceItemIndex;
 		}
 	}
 }
