@@ -211,6 +211,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 	class FormsPageControl : UIPageControl
 	{
+		const int DefaultIndicatorSize = 7;
+
 		public bool IsSquare { get; set; }
 
 		public double IndicatorSize { get; set; }
@@ -219,21 +221,19 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
+			float scale = (float)IndicatorSize / DefaultIndicatorSize;
+			var newTransform = CGAffineTransform.MakeScale(scale, scale);
+
+			Transform = newTransform;
 			if (Subviews.Length == 0)
 				return;
 
 			foreach (var view in Subviews)
 			{
-				if(IsSquare)
+				if (IsSquare)
 				{
 					view.Layer.CornerRadius = 0;
 				}
-
-				float scale = (float)IndicatorSize / 7;
-				System.Diagnostics.Debug.WriteLine($"{IndicatorSize} scale {scale}");
-				CGAffineTransform newTransform = CGAffineTransform.MakeScale(scale, scale);
-
-				view.Transform = newTransform;
 			}
 		}
 	}
