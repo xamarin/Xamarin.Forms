@@ -512,19 +512,39 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void UpdateBackground()
 		{
+			Color backgroundColor = Element.BackgroundColor;
+			Brush background = Element.Background;
+
 			var backgroundLayer = (Panel)this;
 			if (_backgroundLayer != null)
 			{
 				backgroundLayer = _backgroundLayer;
-				Background = null; // Make the container effectively hit test invisible
+				Background = null;
 			}
 
 			if (_control != null)
 			{
-				if (Element.Background == null || Element.Background.IsEmpty)
-					return;
-
-				_control.Background = Element.Background.ToBrush();
+				if (background != null && !background.IsEmpty)
+					_control.Background = background.ToBrush();
+				else
+				{
+					if (!backgroundColor.IsDefault)
+						backgroundLayer.Background = backgroundColor.ToBrush();
+					else
+						backgroundLayer.ClearValue(BackgroundProperty);
+				}
+			}
+			else
+			{
+				if (background != null && !background.IsEmpty)
+					backgroundLayer.Background = background.ToBrush();
+				else
+				{
+					if (!backgroundColor.IsDefault)
+						backgroundLayer.Background = backgroundColor.ToBrush();
+					else
+						backgroundLayer.ClearValue(BackgroundProperty);
+				}
 			}
 		}
 
