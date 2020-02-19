@@ -104,6 +104,16 @@ namespace Xamarin.Forms
 			PlatformServices.BeginInvokeOnMainThread(action);
 		}
 
+		public static void InvokeOnMainThreadIfRequired(Action action)
+		{
+			if (IsInvokeRequired)
+			{
+				BeginInvokeOnMainThread(action);
+				return;
+			}
+			action.Invoke();
+		}
+
 		public static Task<T> InvokeOnMainThreadAsync<T>(Func<T> func)
 		{
 			var tcs = new TaskCompletionSource<T>();
