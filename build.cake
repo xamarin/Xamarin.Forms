@@ -49,14 +49,17 @@ string androidSDK_windows = "";//"https://aka.ms/xamarin-android-commercial-d15-
 string iOSSDK_windows = "";//"https://download.visualstudio.microsoft.com/download/pr/71f33151-5db4-49cc-ac70-ba835a9f81e2/d256c6c50cd80ec0207783c5c7a4bc2f/xamarin.visualstudio.apple.sdk.4.12.3.83.vsix";
 string macSDK_windows = "";
 
-monoMajorVersion = "6.4.0";
-monoPatchVersion = "198";
-monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
-
-string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d16-3-macos";
+monoMajorVersion = "6.6.0";
+monoPatchVersion = "";
+if(String.IsNullOrWhiteSpace(monoPatchVersion))
+    monoVersion = $"{monoMajorVersion}";
+else
+    monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
+    
+string androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d16-4-macos";
 string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
-string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
-string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
+string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode11.3/5f802ef535488d12886f264b598b9c59ca2f2404/36/package/notarized/xamarin.ios-13.10.0.17.pkg";
+string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode11.3/5f802ef535488d12886f264b598b9c59ca2f2404/36/package/notarized/xamarin.mac-6.10.0.17.pkg";
 
 string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
 string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
@@ -211,7 +214,6 @@ Task("Restore")
 Task("Build")
     .Description("Builds all necessary projects to create Nuget Packages")
     .IsDependentOn("Restore")
-    .IsDependentOn("Android81")
     .Does(() =>
 {
     try{
@@ -229,24 +231,14 @@ Task("Build")
     }
 });
 
-Task("Android81")
-    .Description("Builds Monodroid81 targets")
+Task("Android100")
+    .Description("Builds Monodroid10.0 targets")
     .Does(() =>
     {
-        string[] androidProjects =
-            new []
-            {
-                "./Xamarin.Forms.Platform.Android/Xamarin.Forms.Platform.Android.csproj",
-                "./Xamarin.Forms.Platform.Android.AppLinks/Xamarin.Forms.Platform.Android.AppLinks.csproj",
-                "./Xamarin.Forms.Maps.Android/Xamarin.Forms.Maps.Android.csproj",
-                "./Stubs/Xamarin.Forms.Platform.Android/Xamarin.Forms.Platform.Android (Forwarders).csproj"
-            };
-
-        foreach(var project in androidProjects)
-            MSBuild(project,
+            MSBuild("Xamarin.Forms.sln",
                     GetMSBuildSettings()
                         .WithRestore()
-                        .WithProperty("AndroidTargetFrameworkVersion", "v8.1"));
+                        .WithProperty("AndroidTargetFrameworks", "MonoAndroid90;MonoAndroid10.0"));
     });
 
 Task("VSMAC")

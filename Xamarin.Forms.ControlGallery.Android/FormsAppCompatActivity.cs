@@ -18,7 +18,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 	[Activity(Label = "Control Gallery", Icon = "@drawable/icon", Theme = "@style/MyTheme",
 		MainLauncher = true, HardwareAccelerated = true, 
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
 	[IntentFilter(new[] { Intent.ActionView },
 		Categories = new[]
 		{
@@ -33,6 +33,8 @@ namespace Xamarin.Forms.ControlGallery.Android
 	{
 		protected override void OnCreate(Bundle bundle)
 		{
+			Profile.Start();
+
 			ToolbarResource = Resource.Layout.Toolbar;
 			TabLayoutResource = Resource.Layout.Tabbar;
 
@@ -45,11 +47,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// Fake_Flag is here so we can test for flag initialization issues
 			Forms.SetFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
 #else
-			Forms.SetFlags("UseLegacyRenderers", "SwipeView_Experimental");
+			Forms.SetFlags("UseLegacyRenderers", "SwipeView_Experimental", "MediaElement_Experimental");
 #endif
 			Forms.Init(this, bundle);
 
 			FormsMaps.Init(this, bundle);
+			DualScreen.DualScreenService.Init(this);
 			FormsMaterial.Init(this, bundle);
 			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
@@ -101,7 +104,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			}
 		}
 
-		
+		protected override void OnResume()
+		{
+			base.OnResume();
+			Profile.Stop();
+		}
+
 		[Export("IsPreAppCompat")]
 		public bool IsPreAppCompat()
 		{

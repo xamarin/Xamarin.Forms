@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _disposed;
 
+		[Internals.Preserve(Conditional = true)]
 		internal PlatformRenderer(Platform platform)
 		{
 			Platform = platform;
@@ -70,7 +71,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			Platform.DidAppear();
+			// For some reason iOS calls this after it's already been disposed
+			// while it's being replaced on the Window.RootViewController with a new MainPage
+			if (!_disposed)
+				Platform.DidAppear();
+
 			base.ViewDidAppear(animated);
 		}
 
@@ -82,8 +87,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
-			View.BackgroundColor = UIColor.White;
-			Platform.WillAppear();
+			// For some reason iOS calls this after it's already been disposed
+			// while it's being replaced on the Window.RootViewController with a new MainPage
+			if (!_disposed)
+			{
+				View.BackgroundColor = UIColor.White;
+				Platform.WillAppear();
+			}
+
 			base.ViewWillAppear(animated);
 		}
 
