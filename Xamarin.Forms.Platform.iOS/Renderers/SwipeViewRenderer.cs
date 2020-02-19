@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Platform.iOS
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
 		const double SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 0;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
 		const double SwipeMinimumDelta = 10;
@@ -53,6 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.NewElement != null)
 			{
+				e.NewElement.OpenRequested += OnOpenRequested;
 				e.NewElement.CloseRequested += OnCloseRequested;
 
 				if (Control == null)
@@ -67,7 +67,10 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			if (e.OldElement != null)
+			{
+				e.OldElement.OpenRequested -= OnOpenRequested;
 				e.OldElement.CloseRequested -= OnCloseRequested;
+			}
 
 			base.OnElementChanged(e);
 		}
@@ -114,9 +117,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Element.Content != null)
 				Element.Content.Layout(Bounds.ToRectangle());
-
-			if (_contentView != null)
-				_contentView.Frame = Bounds;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -165,6 +165,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Element != null)
 				{
+					Element.OpenRequested -= OnOpenRequested;
 					Element.CloseRequested -= OnCloseRequested;
 				}
 
@@ -299,10 +300,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				var content = Subviews.FirstOrDefault(v => v is Platform.DefaultRenderer);
-
-				if (content != null)
-					_contentView = content;
+				if (Subviews.Length > 0)
+					_contentView = Subviews[0];
 			}
 		}
 
@@ -625,14 +624,10 @@ namespace Xamarin.Forms.Platform.iOS
 				switch (_swipeDirection)
 				{
 					case SwipeDirection.Left:
-						_contentView.Frame = new CGRect(_originalBounds.X + ValidateSwipeOffset(_swipeOffset), _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
-						break;
 					case SwipeDirection.Right:
 						_contentView.Frame = new CGRect(_originalBounds.X + ValidateSwipeOffset(_swipeOffset), _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
 						break;
 					case SwipeDirection.Up:
-						_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y + ValidateSwipeOffset(_swipeOffset), _originalBounds.Width, _originalBounds.Height);
-						break;
 					case SwipeDirection.Down:
 						_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y + ValidateSwipeOffset(_swipeOffset), _originalBounds.Width, _originalBounds.Height);
 						break;
@@ -916,13 +911,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (swipeThreshold > _contentView.Frame.Width)
 					swipeThreshold = _contentView.Frame.Width;
 
-				return swipeThreshold - SwipeThresholdMargin;
+				return swipeThreshold;
 			}
 
 			if (swipeThreshold > _contentView.Frame.Height)
 				swipeThreshold = _contentView.Frame.Height;
 
-			return swipeThreshold - SwipeThresholdMargin / 2;
+			return swipeThreshold;
 		}
 
 		Size GetSwipeItemSize(ISwipeItem swipeItem)
@@ -1096,6 +1091,49 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.HorizontalDelta > SwipeMinimumDelta || e.VerticalDelta > SwipeMinimumDelta)
 				ResetSwipe();
+		}
+
+		void OnOpenRequested(object sender, OpenSwipeEventArgs e)
+		{
+			if (_contentView == null)
+				return;
+
+			var openSwipeItem = e.OpenSwipeItem;
+			ProgrammaticallyOpenSwipeItem(openSwipeItem);
+		}
+
+		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem)
+		{
+			switch (openSwipeItem)
+			{
+				case OpenSwipeItem.BottomItems:
+					_swipeDirection = SwipeDirection.Up;
+					break;
+				case OpenSwipeItem.LeftItems:
+					_swipeDirection = SwipeDirection.Right;
+					break;
+				case OpenSwipeItem.RightItems:
+					_swipeDirection = SwipeDirection.Left;
+					break;
+				case OpenSwipeItem.TopItems:
+					_swipeDirection = SwipeDirection.Down;
+					break;
+			}
+
+			var swipeItems = GetSwipeItemsByDirection();
+
+			if (swipeItems == null)
+				return;
+
+			var swipeThreshold = GetSwipeThreshold();
+			_swipeOffset = swipeThreshold;
+
+			UpdateSwipeItems();
+
+			Animate(SwipeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
+			{
+				Swipe();
+			}, null);
 		}
 
 		void OnCloseRequested(object sender, EventArgs e)
