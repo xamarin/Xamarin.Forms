@@ -31,7 +31,7 @@
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
-        <IndicatorView x:Name="indicators" Grid.Row="1" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center"  />
+        <IndicatorView x:Name="indicators" Grid.Row="1" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center" />
         <IndicatorView x:Name="indicatorsForms" Grid.Row="2" ItemsSourceBy="carousel" IndicatorColor="Transparent" SelectedIndicatorColor="Gray" HorizontalOptions="Center"  Margin="0,20,0,20" Visual="Forms" >
             <IndicatorView.IndicatorTemplate>
                 <DataTemplate>
