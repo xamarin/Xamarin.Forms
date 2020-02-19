@@ -34,8 +34,10 @@ namespace Xamarin.Forms.Platform.iOS
 		List<CGRect> _swipeItemsRect;
 		double _previousScrollX;
 		double _previousScrollY;
+		bool _isSwipeEnabled;
 		bool _isDisposed;
 
+		[Internals.Preserve(Conditional = true)]
 		public SwipeViewRenderer()
 		{
 			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
@@ -59,6 +61,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				UpdateContent();
+				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
 				SetBackgroundColor(Element.BackgroundColor);
 			}
@@ -126,6 +129,8 @@ namespace Xamarin.Forms.Platform.iOS
 				SetBackgroundColor(Element.BackgroundColor);
 			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				SetBackground(Element.Background);
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
 				UpdateSwipeTransitionMode();
 		}
@@ -134,7 +139,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UIColor backgroundColor;
 
-			if (Forms.IsiOS11OrNewer)
+			if (Forms.IsiOS13OrNewer)
 				backgroundColor = UIColor.SystemBackgroundColor;
 			else
 				backgroundColor = UIColor.White;
@@ -312,6 +317,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (content != null)
 					_contentView = content;
 			}
+		}
+
+		void UpdateIsSwipeEnabled()
+		{
+			_isSwipeEnabled = Element.IsEnabled;
 		}
 
 		UIView CreateEmptyContent()
@@ -511,6 +521,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleTouchInteractions(NSSet touches, GestureStatus gestureStatus)
 		{
+			if (!_isSwipeEnabled)
+				return;
+
 			var anyObject = touches.AnyObject as UITouch;
 			nfloat x = anyObject.LocationInView(this).X;
 			nfloat y = anyObject.LocationInView(this).Y;
