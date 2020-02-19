@@ -12,13 +12,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			InitializeComponent();
 			BindingContext = new CarouselViewModel(CarouselXamlSampleType.Peek);
-			carouselNormal.BindingContext = new CarouselViewModel(CarouselXamlSampleType.Normal);
 		}
 
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			(BindingContext as CarouselViewModel).Position = 2;
+		//	(BindingContext as CarouselViewModel).Position = 2;
 		}
 	}
 
