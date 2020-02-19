@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly CarouselView _carouselView;
 		bool _viewInitialized;
 		List<View> _oldViews;
+		int _initialPosition = -1;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -54,6 +55,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_carouselView.PlatformInitialized();
 				_viewInitialized = true;
 			}
+
 			UpdateVisualStates();
 		}
 
@@ -110,7 +112,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var centerItemIndex = CollectionView.GetCenteredIndex();
 
-			if (centerItemIndex != -1)
+			//check if we scrolled to the initial positions
+			_initialPosition = _initialPosition == centerItemIndex ? -1 : _initialPosition;
+
+			if (centerItemIndex != -1 && _initialPosition < 1)
 				_carouselView.SetCurrentItem(null, centerItemIndex);
 		}
 
@@ -172,6 +177,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			while (_carouselView.ScrollToActions.Count > 0)
 			{
+				_initialPosition = _carouselView.Position;
 				var action = _carouselView.ScrollToActions.Dequeue();
 				action();
 			}
