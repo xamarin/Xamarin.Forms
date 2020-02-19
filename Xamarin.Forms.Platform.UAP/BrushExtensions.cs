@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using WBrush = Windows.UI.Xaml.Media.Brush;
 using WGradientStopCollection = Windows.UI.Xaml.Media.GradientStopCollection;
 using WGradientStop = Windows.UI.Xaml.Media.GradientStop;
@@ -26,17 +25,13 @@ namespace Xamarin.Forms.Platform.UWP
 					gradientStopCollection.Add(new WGradientStop { Offset = item.Offset, Color = item.Color.ToWindowsColor() });
 
 				var p1 = linearGradientBrush.StartPoint;
-				var x1 = p1.X;
-				var y1 = p1.Y;
-
 				var p2 = linearGradientBrush.EndPoint;
-				var x2 = p2.X;
-				var y2 = p2.Y;
 
-				var radians = Math.Atan2(y2 - y1, x2 - x1);
-				var angle = radians * (180 / Math.PI);
-
-				return new WLinearGradientBrush(gradientStopCollection, angle);
+				return new WLinearGradientBrush(gradientStopCollection, 0)
+				{
+					StartPoint = new WPoint(p1.X, p1.Y),
+					EndPoint = new WPoint(p2.X, p2.Y)
+				};
 			}
 
 			if (brush is Xamarin.Forms.RadialGradientBrush radialGradientBrush)

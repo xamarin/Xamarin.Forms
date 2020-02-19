@@ -51,7 +51,9 @@
 						GalleryBuilder.NavButton("Gradient Views", () =>
 							new GradientViewsGallery(), Navigation),
 						GalleryBuilder.NavButton("SolidColorBrush Converter Gallery", () =>
-							new SolidColorBrushConverterGallery(), Navigation),
+							new SolidColorBrushConverterGallery(), Navigation),    
+						GalleryBuilder.NavButton("LinearGradientBrush Points Gallery", () =>
+							new LinearGradientPointsGallery(), Navigation),
 						GalleryBuilder.NavButton("LinearGradientBrush Explorer", () =>
 							new LinearGradientExplorerGallery(), Navigation),
 						GalleryBuilder.NavButton("RadialGradient Explorer", () =>
