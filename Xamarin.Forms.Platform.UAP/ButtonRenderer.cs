@@ -133,6 +133,11 @@ namespace Xamarin.Forms.Platform.UWP
 			return;
 		}
 
+		protected override void UpdateBackground()
+		{
+			return;
+		}
+
 		protected override bool PreventGestureBubbling { get; set; } = true;
 
 		void OnButtonClick(object sender, RoutedEventArgs e)
@@ -151,7 +156,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Element.Background == null || Element.Background.IsEmpty)
 				Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
 			else
-				Control.Background = Element.Background.ToBrush();
+				Control.BackgroundColor = Element.Background.ToBrush();
 		}
 
 		void UpdateBorderColor()

@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Platform.UWP
 			ImageElementManager.Init(this);
 		}
 
-
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -101,6 +100,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 				//TODO: We may want to revisit this strategy later. If a user wants to reset any of these to the default, the UI won't update.
 				if (Element.IsSet(VisualElement.BackgroundColorProperty) && Element.BackgroundColor != (Color)VisualElement.BackgroundColorProperty.DefaultValue)
+					UpdateImageButtonBackground();
+
+				if (Element.IsSet(VisualElement.BackgroundProperty) && Element.Background != (Brush)VisualElement.BackgroundProperty.DefaultValue)
 					UpdateImageButtonBackground();
 
 				if (Element.IsSet(ImageButton.BorderColorProperty) && Element.BorderColor != (Color)ImageButton.BorderColorProperty.DefaultValue)
@@ -182,7 +184,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 			{
 				UpdateImageButtonBackground();
 			}
@@ -247,7 +249,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateImageButtonBackground()
 		{
-			Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			if (Element.Background == null || Element.Background.IsEmpty)
+				Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			else
+				Control.BackgroundColor = Element.Background.ToBrush();
 		}
 
 		void UpdateBorderColor()
