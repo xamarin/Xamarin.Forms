@@ -74,6 +74,12 @@ namespace Xamarin.Forms.Platform.iOS
 			base.RegisterViewTypes();
 		}
 
+		public override void BoundsSizeChanged()
+		{
+			base.BoundsSizeChanged();
+			_carouselView.ScrollTo(_carouselView.Position, animate: false);
+		}
+
 		internal void TearDown()
 		{
 			_carouselView.PropertyChanged -= CarouselViewPropertyChanged;
