@@ -221,15 +221,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			var centerItemIndex = -1;
-
-			if (GetLayoutManager() is LinearLayoutManager linearLayoutManager)
-			{
-				var firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
-				centerItemIndex = RecyclerExtensions.CalculateCenterItemIndex(firstVisibleItemIndex, this, linearLayoutManager);
-			}
-
-			Carousel.SetCurrentItem(null, centerItemIndex);
+			if (ItemsViewAdapter?.ItemsSource is IItemsViewSource observableItemsSource)
+				Carousel.SetCurrentItem(observableItemsSource.GetItem(Carousel.Position));
 		}
 
 		void UpdateInitialPosition()
