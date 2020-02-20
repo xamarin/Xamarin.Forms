@@ -141,9 +141,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateIndicatorTemplate();
 			}
-			else if (changedProperty.Is(IndicatorView.IndicatorsShapeProperty) ||
-					 changedProperty.Is(IndicatorView.IndicatorColorProperty) ||
-					 changedProperty.Is(IndicatorView.SelectedIndicatorColorProperty))
+			else if (changedProperty.IsOneOf(IndicatorView.IndicatorsShapeProperty,
+											IndicatorView.IndicatorColorProperty,
+											IndicatorView.IndicatorSizeProperty,
+											IndicatorView.SelectedIndicatorColorProperty))
 			{
 				ResetIndicators();
 			}
@@ -198,18 +199,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateItemsSource();
 
 			ElevationHelper.SetElevation(this, newElement);
-		}
 
-		void IndicatorsViewItemSourcePropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
-		{
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
-			{
-				UpdateItemsSource();
-			}
-			else if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
-			{
-				UpdateSelectedIndicator();
-			}
+			UpdateSelectedIndicator();
 		}
 
 		void UpdateSelectedIndicator()
