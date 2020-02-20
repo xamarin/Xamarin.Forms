@@ -1,4 +1,4 @@
-﻿using Gdk;
+using Gdk;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -49,6 +49,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				SetImage(e.OldElement);
 				SetAspect();
 				SetOpacity();
+				SetScaleX();
+				SetScaleY();
+				SetRotation();
 			}
 
 			base.OnElementChanged(e);
@@ -64,6 +67,14 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				SetOpacity();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				SetAspect();
+			else if (e.PropertyName == Image.ScaleProperty.PropertyName)
+				SetScale();
+			else if (e.PropertyName == Image.ScaleXProperty.PropertyName)
+				SetScaleX();
+			else if (e.PropertyName == Image.ScaleYProperty.PropertyName)
+				SetScaleY();
+			else if (e.PropertyName == Image.RotationProperty.PropertyName)
+				SetRotation();
 		}
 
 		protected override void OnSizeAllocated(Gdk.Rectangle allocation)
@@ -128,6 +139,26 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			var opacity = Element.Opacity;
 
 			Control.SetAlpha(opacity);
+		}
+
+		void SetScale()
+		{
+			Control.Scale = Element.Scale;
+		}
+
+		void SetScaleX()
+		{
+			Control.ScaleX = Element.ScaleX;
+		}
+
+		void SetScaleY()
+		{
+			Control.ScaleY = Element.ScaleY;
+		}
+
+		void SetRotation()
+		{
+			Control.Rotation = Element.Rotation;
 		}
 	}
 
@@ -266,3 +297,4 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		}
 	}
 }
+
