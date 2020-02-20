@@ -236,17 +236,16 @@ namespace Xamarin.Forms.Core.UITests
 
 		void TestItemsPosition(string gallery)
 		{
+			var firstItem = "Item: 0";
+			var secondItem = "Item: 1";
+			var fourthItem = "Item: 3";
+
 			var isVertical = !gallery.Contains("Horizontal");
 			var isList = !gallery.Contains("Grid");
-			App.WaitForNoElement(t => t.Marked(gallery));
-
-			var element1 = App.Query(c => c.Marked("Item: 0"))[0];
-			if (App.Query(c => c.Marked("Item: 2")).Length == 0)
-			{
-				var collectionViewFrame = App.Query(q => q.Marked(_collectionViewId))[0].Rect;
-				App.ScrollForElement($"* marked:'Item: 2'", new Drag(collectionViewFrame, isVertical ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long), 50);
-			}
-			var element2 = App.Query(c => c.Marked("Item: 2"))[0];
+			App.WaitForNoElement(gallery);
+						
+			var element1 = App.Query(firstItem)[0];
+			var element2 = App.Query(secondItem)[0];
 
 			if (isVertical)
 			{
@@ -257,7 +256,7 @@ namespace Xamarin.Forms.Core.UITests
 				}
 				else
 				{
-					var element3 = App.Query(c => c.Marked("Item: 3"))[0];
+					var element3 = App.Query(fourthItem)[0];
 					Assert.AreEqual(element2.Rect.Y, element1.Rect.Y, message: $"{gallery} Elements are not align");
 					Assert.Greater(element3.Rect.Y, element1.Rect.Y, message: $"{gallery} Element3.Y is not greater that Element1.Y");
 					Assert.AreEqual(element3.Rect.X, element1.Rect.X, message: $"{gallery} Element3.X on second row is not below Element1X");
@@ -272,7 +271,7 @@ namespace Xamarin.Forms.Core.UITests
 				}
 				else
 				{
-					var element3 = App.Query(c => c.Marked("Item: 3"))[0];
+					var element3 = App.Query(fourthItem)[0];
 					Assert.AreEqual(element2.Rect.X, element1.Rect.X, message: $"{gallery} Elements are not align");
 					Assert.Greater(element3.Rect.X, element1.Rect.X, message: $"{gallery} Element2.X is not greater that Element1.X");
 					Assert.AreEqual(element3.Rect.Y, element1.Rect.Y, message: $"{gallery} Element3.Y is not in the same row as Element1.Y");
