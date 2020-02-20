@@ -40,6 +40,7 @@ namespace Xamarin.Forms.Markup
 			{ "Xamarin.Forms.Page", Page.TitleProperty },
 			{ "Xamarin.Forms.Picker", Picker.SelectedIndexProperty },
 			{ "Xamarin.Forms.ProgressBar", ProgressBar.ProgressProperty },
+			{ "Xamarin.Forms.RadioButton", RadioButton.IsCheckedProperty },
 			{ "Xamarin.Forms.RefreshView", RefreshView.CommandProperty },
 			{ "Xamarin.Forms.SearchBar", SearchBar.SearchCommandProperty },
 			{ "Xamarin.Forms.SearchHandler", SearchHandler.CommandProperty },
