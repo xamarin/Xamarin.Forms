@@ -7,23 +7,23 @@
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.TabIndexTest.TabIndex">
     <ContentPage.Content>
-        <ScrollView IsTabStop="False">
-            <StackLayout IsTabStop="False">
+        <ScrollView x:Name="scroll">
+            <StackLayout x:Name="stack">
                 <Label Text="Select Days" HorizontalOptions="CenterAndExpand"
-                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="1"/>
+                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="1" x:Name="label"/>
 
-                <views:DaysOfWeekView/>
+                <views:DaysOfWeekView x:Name="composite"/>
 
                 <Label Text="Start Time" HorizontalOptions="FillAndExpand"
-                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="10"/>
+                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="10" x:Name="label2"/>
                 <TimePicker
-                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="11"/>
+                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="11" x:Name="timePicker"/>
 
                 <Label Text="Stop Time" HorizontalOptions="FillAndExpand"
-                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="12"/>
+                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="12" x:Name="label3"/>
 
                 <TimePicker
-                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="13"/>
+                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="13" x:Name="timePicker2"/>
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>
