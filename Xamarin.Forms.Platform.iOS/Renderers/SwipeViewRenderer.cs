@@ -14,10 +14,9 @@ namespace Xamarin.Forms.Platform.iOS
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
 		const double SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 0;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
-		const double SwipeMinimumDelta = 10;
+		const double SwipeMinimumDelta = 20;
 
 		View _scrollParent;
 		UIView _contentView;
@@ -31,10 +30,12 @@ namespace Xamarin.Forms.Platform.iOS
 		double _swipeOffset;
 		double _swipeThreshold;
 		CGRect _originalBounds;
+		CGRect _initialBounds;
 		List<CGRect> _swipeItemsRect;
 		double _previousScrollX;
 		double _previousScrollY;
 		bool _isSwipeEnabled;
+		bool _isResettingSwipe;
 		bool _isDisposed;
 
 		[Internals.Preserve(Conditional = true)]
@@ -299,11 +300,12 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				var content = Subviews.FirstOrDefault(v => v is Platform.DefaultRenderer);
-
-				if (content != null)
-					_contentView = content;
+				if (Subviews.Length > 0)
+					_contentView = Subviews[0];
 			}
+
+			if (_contentView != null)
+				_initialBounds = _contentView.Bounds;
 		}
 
 		void UpdateIsSwipeEnabled()
@@ -497,9 +499,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var point = _tapGestureRecognizer.LocationInView(this);
 
-				bool touchContent = TouchInsideContent(_contentView.Frame.X, _contentView.Frame.Y, _contentView.Frame.Width, _contentView.Frame.Height, point.X, point.Y);
-
-				if (!touchContent)
+				if (!TouchInsideContent(point))
 					ProcessTouchSwipeItems(point);
 				else
 					ResetSwipe();
@@ -530,7 +530,7 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 				case GestureStatus.Canceled:
 				case GestureStatus.Completed:
-					ProcessTouchUp();
+					ProcessTouchUp(point);
 					break;
 			}
 
@@ -542,8 +542,21 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_isSwiping || _isTouchDown || _contentView == null)
 				return;
 
+			if (TouchInsideContent(point))
+				ResetSwipe();
+			
 			_initialPoint = point;
 			_isTouchDown = true;
+		}
+
+		bool TouchInsideContent(CGPoint point)
+		{
+			if (_contentView == null)
+				return false;
+
+			bool touchContent = TouchInsideContent(_contentView.Frame.Left, _contentView.Frame.Top, _contentView.Frame.Width, _contentView.Frame.Height, point.X, point.Y);
+
+			return touchContent;
 		}
 
 		bool TouchInsideContent(double x1, double y1, double x2, double y2, double x, double y)
@@ -556,19 +569,36 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProcessTouchMove(CGPoint point)
 		{
-			if (!_isSwiping && _swipeThreshold == 0)
+			if (_contentView == null || !TouchInsideContent(point))
+				return;
+
+			var swipeDirection = _swipeDirection;
+			bool isInitialPosition = IsInitialPosition();
+
+			if (isInitialPosition && !_isResettingSwipe)
+				swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
+
+			if (_swipeDirection != swipeDirection)
 			{
-				_swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
+				_swipeDirection = swipeDirection;
+
+				if (isInitialPosition)
+				{
+					DisposeSwipeItems();
+					UpdateSwipeItems();
+				}
+			}
+
+			if (!_isSwiping)
+			{
 				RaiseSwipeStarted();
 				_isSwiping = true;
 			}
 
-			if (!ValidateSwipeDirection())
+			if (!ValidateSwipeDirection() || _isResettingSwipe)
 				return;
 
 			_swipeOffset = GetSwipeOffset(_initialPoint, point);
-
-			UpdateSwipeItems();
 
 			if (Math.Abs(_swipeOffset) > double.Epsilon)
 				Swipe();
@@ -578,16 +608,35 @@ namespace Xamarin.Forms.Platform.iOS
 			RaiseSwipeChanging();
 		}
 
-		void ProcessTouchUp()
+		void ProcessTouchUp(CGPoint point)
 		{
 			_isTouchDown = false;
-			_isSwiping = false;
-			RaiseSwipeEnded();
 
-			if (!ValidateSwipeDirection())
+			if (!TouchInsideContent(point))
+				ProcessTouchSwipeItems(point);
+
+			if (!_isSwiping)
 				return;
 
+			_isSwiping = false;
+
+			RaiseSwipeEnded();
+
+			if (_isResettingSwipe || !ValidateSwipeDirection())
+				return;
+						
 			ValidateSwipeThreshold();
+		}
+
+		bool IsInitialPosition()
+		{
+			if (_initialBounds == null)
+				return false;
+
+			if (_contentView.Frame.X == _initialBounds.X && _contentView.Frame.Y == _initialBounds.Y)
+				return true;
+
+			return false;
 		}
 
 		SwipeItems GetSwipeItemsByDirection()
@@ -680,11 +729,17 @@ namespace Xamarin.Forms.Platform.iOS
 					if (offset > 0)
 						offset = 0;
 
+					if (_isResettingSwipe && offset < 0)
+						offset = 0;
+						
 					if (Math.Abs(offset) > swipeThreshold)
 						return -swipeThreshold;
 					break;
 				case SwipeDirection.Right:
 					if (offset < 0)
+						offset = 0;
+
+					if (_isResettingSwipe && offset > 0)
 						offset = 0;
 
 					if (Math.Abs(offset) > swipeThreshold)
@@ -694,11 +749,17 @@ namespace Xamarin.Forms.Platform.iOS
 					if (offset > 0)
 						offset = 0;
 
+					if (_isResettingSwipe && offset < 0)
+						offset = 0;
+
 					if (Math.Abs(offset) > swipeThreshold)
 						return -swipeThreshold;
 					break;
 				case SwipeDirection.Down:
 					if (offset < 0)
+						offset = 0;
+
+					if (_isResettingSwipe && offset > 0)
 						offset = 0;
 
 					if (Math.Abs(offset) > swipeThreshold)
@@ -725,23 +786,25 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void ResetSwipe()
+		void ResetSwipe(bool animated = true)
 		{
-			if (_swipeItemsRect == null)
+			if (_swipeItemsRect == null || _contentView == null)
 				return;
+			
+			_isResettingSwipe = true;
+			_isSwiping = false;
+			_swipeThreshold = 0;
+			_swipeDirection = null;
 
-			if (_contentView != null)
+			Animate(animated ? SwipeAnimationDuration : 0, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
 			{
-				_isSwiping = false;
-				_swipeThreshold = 0;
-				_swipeDirection = null;
-
-				Animate(SwipeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
-				{
-					_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
-				},
-				DisposeSwipeItems);
-			}
+				_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
+			},
+			() =>
+			{
+				DisposeSwipeItems();
+				_isResettingSwipe = false;
+			});
 		}
 
 		void ValidateSwipeThreshold()
@@ -772,16 +835,16 @@ namespace Xamarin.Forms.Platform.iOS
 					CompleteSwipe();
 			}
 			else
-			{
 				ResetSwipe();
-			}
 		}
 
-		void CompleteSwipe()
+		void CompleteSwipe(bool animated = true)
 		{
+			var completeAnimationDuration = animated ? SwipeAnimationDuration : 0;
+
 			if (_swipeTransitionMode == SwipeTransitionMode.Reveal)
 			{
-				Animate(SwipeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseIn,
+				Animate(completeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseIn,
 					() =>
 					{
 						double swipeThreshold = GetSwipeThreshold();
@@ -810,7 +873,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_swipeTransitionMode == SwipeTransitionMode.Drag)
 			{
-				Animate(SwipeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseIn,
+				Animate(completeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseIn,
 					() =>
 					{
 						double swipeThreshold = GetSwipeThreshold();
@@ -916,13 +979,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (swipeThreshold > _contentView.Frame.Width)
 					swipeThreshold = _contentView.Frame.Width;
 
-				return swipeThreshold - SwipeThresholdMargin;
+				return swipeThreshold;
 			}
 
 			if (swipeThreshold > _contentView.Frame.Height)
 				swipeThreshold = _contentView.Frame.Height;
 
-			return swipeThreshold - SwipeThresholdMargin / 2;
+			return swipeThreshold;
 		}
 
 		Size GetSwipeItemSize(ISwipeItem swipeItem)
@@ -1005,6 +1068,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProcessTouchSwipeItems(CGPoint point)
 		{
+			if (_isResettingSwipe)
+				return;
+
 			var swipeItems = GetSwipeItemsByDirection();
 
 			if (swipeItems == null || _swipeItemsRect == null)
