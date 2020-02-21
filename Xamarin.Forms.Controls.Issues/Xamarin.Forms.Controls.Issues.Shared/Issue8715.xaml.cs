@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
 	[Issue(IssueTracker.Github, 8715, "NullReferenceException Xamarin.Forms.Platform.iOS.StructuredItemsViewRenderer [Bug]",
 		PlatformAffected.iOS)]
 	public partial class Issue8715 : TestShell
