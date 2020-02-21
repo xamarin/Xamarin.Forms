@@ -48,15 +48,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Container == null || Element == null)
 				return null;
 
-			var children = Element.Descendants();
-			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
 			List<NSObject> views = new List<NSObject>();
-			foreach (var child in children)
+			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
+			foreach (var child in Element.LogicalChildren)
 			{
 				if (!(child is VisualElement ve))
 					continue;
 
-				tabIndexes = ve.GetSortedTabIndexesOnParentPage(out _);
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage();
 				break;
 			}
 
@@ -68,18 +67,13 @@ namespace Xamarin.Forms.Platform.iOS
 				var tabGroup = tabIndexes[idx];
 				foreach (var child in tabGroup)
 				{
-					if (
-						!(
-							child is VisualElement ve && ve.IsTabStop
-							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
-							&& ve.GetRenderer()?.NativeView is UIView view)
-						 )
+					if (!(child is VisualElement ve && ve.GetRenderer()?.NativeView is UIView view))
 						continue;
 
 					var thisControl = view;
 
-					if (view is ITabStop tabstop)
-						thisControl = tabstop.TabStop;
+					if (view is ITabStop tabStop)
+						thisControl = tabStop.TabStop;
 
 					if (thisControl == null)
 						continue;

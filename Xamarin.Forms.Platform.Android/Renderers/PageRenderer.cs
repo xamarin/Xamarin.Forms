@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (!(child is VisualElement ve))
 					continue;
 
-				tabIndexes = ve.GetSortedTabIndexesOnParentPage(out _);
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage();
 				break;
 			}
 
@@ -183,15 +183,13 @@ namespace Xamarin.Forms.Platform.Android
 				var tabGroup = tabIndexes[idx];
 				foreach (var child in tabGroup)
 				{
-					if (child is Layout || 
-						!(
-							child is VisualElement ve && ve.IsTabStop
-							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
-							&& ve.GetRenderer()?.View is ITabStop tabStop)
-						 )
+					if (!(child is VisualElement ve && ve.GetRenderer()?.View is AView view))
 						continue;
 
-					var thisControl = tabStop.TabStop;
+					AView thisControl = view;
+
+					if (view is ITabStop tabStop)
+						thisControl = tabStop.TabStop;
 
 					if (thisControl == null)
 						continue;
@@ -206,6 +204,10 @@ namespace Xamarin.Forms.Platform.Android
 						if (thisControl != prevControl)
 							thisControl.AccessibilityTraversalAfter = prevControl.Id;
 					}
+
+					if (thisControl is global::Android.Widget.TextView tv)
+						if (prevControl is global::Android.Widget.TextView pv)
+							System.Diagnostics.Debug.WriteLine($"{tv.Text} after {pv.Text}");
 
 					prevControl = thisControl;
 				}
