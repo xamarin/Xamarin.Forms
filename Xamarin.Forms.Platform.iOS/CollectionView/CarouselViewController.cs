@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void BoundsSizeChanged()
 		{
 			base.BoundsSizeChanged();
-			_carouselView.ScrollTo(_carouselView.Position, animate: false);
+			_carouselView.ScrollTo(_carouselView.Position, position: ScrollToPosition.Center, animate: false);
 		}
 
 		internal void TearDown()
