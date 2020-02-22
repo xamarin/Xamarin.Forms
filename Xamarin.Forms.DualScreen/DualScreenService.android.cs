@@ -184,7 +184,7 @@ namespace Xamarin.Forms.DualScreen
 				var rotation = ScreenHelper.GetRotation(_helper.Activity);
 				var hinge = _helper.DisplayMask.GetBoundingRectsForRotation(rotation).FirstOrDefault();
 
-				if (hinge == null)
+				if (hinge == null) // check for null rect
 					return Rectangle.Zero;
 
 				var hingeDp = new Rectangle(PixelsToDp(hinge.Left), PixelsToDp(hinge.Top), PixelsToDp(hinge.Width()), PixelsToDp(hinge.Height()));
