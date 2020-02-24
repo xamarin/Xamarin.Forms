@@ -492,6 +492,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnTap()
 		{
+			if (_scrollParent == null || !(_scrollParent is ListView))
+			{
+				return;
+			}
+
 			var state = _tapGestureRecognizer.State;
 
 			if (state != UIGestureRecognizerState.Cancelled)
