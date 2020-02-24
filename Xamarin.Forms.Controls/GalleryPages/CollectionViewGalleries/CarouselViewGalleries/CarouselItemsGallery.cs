@@ -29,7 +29,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			new LinearItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center
+				SnapPointsAlignment = SnapPointsAlignment.Center,
+				ItemSpacing = 8
 			};
 
 			var itemTemplate = GetCarouselTemplate();
