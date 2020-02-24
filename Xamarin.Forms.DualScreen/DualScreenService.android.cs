@@ -88,6 +88,7 @@ namespace Xamarin.Forms.DualScreen
 
 			void ConfigurationChanged(object sender, EventArgs e)
 			{
+				_helper?.Update();
 				bool screenChanged = false;
 				if (_isLandscape != IsLandscape)
 				{
