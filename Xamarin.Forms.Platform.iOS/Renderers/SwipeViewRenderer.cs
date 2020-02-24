@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 		}
-  
+
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
@@ -117,7 +117,12 @@ namespace Xamarin.Forms.Platform.iOS
 				Element.Content.Layout(Bounds.ToRectangle());
 
 			if (_contentView != null)
+			{
 				_contentView.Frame = Bounds;
+
+				if (Bounds != CGRect.Empty)
+					_initialBounds = _contentView.Bounds;
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -303,9 +308,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Subviews.Length > 0)
 					_contentView = Subviews[0];
 			}
-
-			if (_contentView != null)
-				_initialBounds = _contentView.Bounds;
 		}
 
 		void UpdateIsSwipeEnabled()
@@ -633,7 +635,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_initialBounds == null)
 				return false;
 
-			if (_contentView.Frame.X == _initialBounds.X && _contentView.Frame.Y == _initialBounds.Y)
+			if (_contentView.Frame.X == -1f &&
+				_contentView.Frame.Y == -1f)
+				return true;
+
+			if (_contentView.Frame.X == _initialBounds.X &&
+				_contentView.Frame.Y == _initialBounds.Y)
 				return true;
 
 			return false;
@@ -772,6 +779,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void DisposeSwipeItems()
 		{
+			_swipeThreshold = 0;
+
 			if (_actionView != null)
 			{
 				_actionView.RemoveFromSuperview();
@@ -913,7 +922,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		double GetSwipeThreshold()
-		{
+		{ 
 			if (Math.Abs(_swipeThreshold) > double.Epsilon)
 				return _swipeThreshold;
 

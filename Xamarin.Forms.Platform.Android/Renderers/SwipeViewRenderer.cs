@@ -712,6 +712,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void DisposeSwipeItems()
 		{
+			_swipeThreshold = 0;
+
 			if (_actionView != null)
 			{
 				RemoveView(_actionView);
