@@ -222,7 +222,12 @@ namespace Xamarin.Forms.Platform.Android
 		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			if (ItemsViewAdapter?.ItemsSource is IItemsViewSource observableItemsSource)
-				Carousel.SetCurrentItem(observableItemsSource.GetItem(Carousel.Position));
+			{
+				var positon = Carousel.Position;
+				var count = observableItemsSource.Count;
+				if (count > 0 && positon < count)
+					Carousel.SetCurrentItem(observableItemsSource.GetItem(Carousel.Position));
+			}
 		}
 
 		void UpdateInitialPosition()
