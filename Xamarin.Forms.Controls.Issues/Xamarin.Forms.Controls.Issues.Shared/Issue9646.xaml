@@ -9,8 +9,7 @@
     x:Class="Xamarin.Forms.Controls.Issues.Issue9646"
     Title="Issue 9646">
     <ContentPage.Content>
-         <StackLayout
-             Spacing="50">
+         <StackLayout>
              <CollectionView
                  ItemsSource="{Binding Items}"
                  BackgroundColor="LightGray">
@@ -20,7 +19,7 @@
                     <Label
                         Text="I'm a CollectionView with SwipeItems and 50 margin."/>
                     <Label
-                        Text="BUG: If you scroll me with a SwipeItem open past the recycle point, you might see a swipe item behind me. If you swipe again, you can trigger ANOTHER SWIPE ITEM!"/>
+                        Text="BUG: If you scroll me with a SwipeItem open past the recycle point, you might see a swipe item behind me."/>
                     </StackLayout>
                 </CollectionView.Header>
             <CollectionView.ItemTemplate>
@@ -32,9 +31,8 @@
                                 BackgroundColor="#2e2140" />
                         </SwipeView.RightItems>
                             <StackLayout
-                                Margin="50"
                                 BackgroundColor="PaleGreen"
-                                Opacity="0.75">
+                                Opacity="0.5">
                                 <StackLayout
                                     Orientation="Horizontal">
                                     <Label
