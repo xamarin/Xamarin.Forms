@@ -282,11 +282,15 @@ namespace Xamarin.Forms
 				}
 			}
 
-			public Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
+			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
 				using (var client = GetHttpClient())
 				{
-					return StreamWrapper.GetStreamAsync(uri, cancellationToken, client);
+					// Do not remove this await otherwise the client will dispose before
+					// the stream even starts
+					var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
+
+					return result;
 				}
 			}
 

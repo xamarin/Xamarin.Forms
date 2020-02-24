@@ -93,13 +93,6 @@ namespace Xamarin.Forms
 		}
 
 #if !NETSTANDARD1_0
-		public static Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
-		{
-			using (var client = new HttpClient())
-			{
-				return GetStreamAsync(uri, cancellationToken, client);
-			}
-		}
 
 		public static async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken, HttpClient client)
 		{

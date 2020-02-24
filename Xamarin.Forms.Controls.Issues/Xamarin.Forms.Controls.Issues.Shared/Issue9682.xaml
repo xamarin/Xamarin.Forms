@@ -43,10 +43,7 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Aspect="AspectFill" AutomationId="MonkeyImages">
-                                        <Image.Source>
-                                            <UriImageSource Uri="{Binding Image}" CachingEnabled="False"></UriImageSource>
-                                        </Image.Source>
+                                    <Image Aspect="AspectFill" AutomationId="MonkeyImages" Source="{Binding Image}">
                                     </Image>
                                     <StackLayout
                                     Grid.Column="1"
