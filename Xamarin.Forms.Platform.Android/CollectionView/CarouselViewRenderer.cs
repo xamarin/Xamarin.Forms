@@ -129,13 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (_itemDecoration != null)
-			{
-				RemoveItemDecoration(_itemDecoration);
-			}
-
-			_itemDecoration = CreateSpacingDecoration(ItemsLayout);
-			AddItemDecoration(_itemDecoration);
+			UpdateItemDecoration();
 
 			var adapter = GetAdapter();
 
@@ -226,8 +220,25 @@ namespace Xamarin.Forms.Platform.Android
 				var positon = Carousel.Position;
 				var count = observableItemsSource.Count;
 				if (count > 0 && positon < count)
+				{
 					Carousel.SetCurrentItem(observableItemsSource.GetItem(Carousel.Position));
-			}
+				}
+
+				//If we are adding or removing the last item we need to update
+				//the inset that we give to items so they are centered
+				if (e.NewStartingIndex == count - 1 || e.OldStartingIndex == count)
+				{
+					UpdateItemDecoration();
+				}
+			}	
+		}
+
+		void UpdateItemDecoration()
+		{
+			if (_itemDecoration != null)
+				RemoveItemDecoration(_itemDecoration);
+			_itemDecoration = CreateSpacingDecoration(ItemsLayout);
+			AddItemDecoration(_itemDecoration);
 		}
 
 		void UpdateInitialPosition()
