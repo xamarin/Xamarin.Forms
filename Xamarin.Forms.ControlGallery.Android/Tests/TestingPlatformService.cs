@@ -10,8 +10,10 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 	{
 		public void CreateRenderer(VisualElement visualElement)
 		{
-			Platform.Android.Platform.CreateRendererWithContext(visualElement,
+			var renderer = Platform.Android.Platform.CreateRendererWithContext(visualElement,
 				DependencyService.Resolve<Context>());
+
+			Platform.Android.Platform.SetRenderer(visualElement, renderer);
 		}
 	}
 }

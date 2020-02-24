@@ -287,6 +287,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
 			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
@@ -294,7 +299,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
-
 
 		// general state related
 		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
@@ -311,7 +315,6 @@ namespace Xamarin.Forms.Platform.Android
 		bool IOnTouchListener.OnTouch(AView v, MotionEvent e) =>
 			ButtonElementManager.OnTouch(Element, Element, v, e);
 		// Button related
-
 
 		float IBorderVisualElementRenderer.ShadowRadius => Context.ToPixels(OnThisPlatform().GetShadowRadius());
 		float IBorderVisualElementRenderer.ShadowDx => Context.ToPixels(OnThisPlatform().GetShadowOffset().Width);
