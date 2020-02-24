@@ -72,20 +72,9 @@ namespace Xamarin.Forms.Platform.GTK
 			}
 		}
 
-		public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
+		public Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 		{
-			using (var client = new HttpClient())
-			{
-				HttpResponseMessage streamResponse = await client.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
-
-				if (!streamResponse.IsSuccessStatusCode)
-				{
-					Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {streamResponse.StatusCode}");
-					return null;
-				}
-
-				return await streamResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
-			}
+			return StreamWrapper.GetStreamAsync(uri, cancellationToken);
 		}
 
 		public IIsolatedStorageFile GetUserStoreForApplication()

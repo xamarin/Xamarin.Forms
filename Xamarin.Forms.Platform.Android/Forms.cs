@@ -748,21 +748,9 @@ namespace Xamarin.Forms
 				}
 			}
 
-			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
+			public Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
-				using (var client = new HttpClient())
-				{
-					HttpResponseMessage response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
-					if (!response.IsSuccessStatusCode)
-					{
-						Internals.Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
-						return null;
-					}
-
-					// the HttpResponseMessage needs to be disposed of after the calling code is done with the stream
-					// otherwise the stream may get disposed before the caller can use it
-					return new StreamWrapper(await response.Content.ReadAsStreamAsync().ConfigureAwait(false), response);
-				}
+				return StreamWrapper.GetStreamAsync(uri, cancellationToken);
 			}
 
 			public IIsolatedStorageFile GetUserStoreForApplication()
