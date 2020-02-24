@@ -1,11 +1,21 @@
-#if __ANDROID_28__
+
 using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+#else
 using Android.Support.V4.View;
+#endif
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using MButton = Google.Android.Material.Button.MaterialButton;
+#else
 using Android.Support.V7.Widget;
+using MButton = Android.Support.Design.Button.MaterialButton;
+#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms;
@@ -15,9 +25,7 @@ using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
-using MButton = Android.Support.Design.Button.MaterialButton;
 using Xamarin.Forms.Platform.Android;
-
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -404,4 +412,3 @@ namespace Xamarin.Forms.Material.Android
 		}
 	}
 }
-#endif

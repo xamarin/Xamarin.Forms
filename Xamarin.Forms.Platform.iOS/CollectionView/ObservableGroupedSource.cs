@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using Foundation;
 using UIKit;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	internal class ObservableGroupedSource : IItemsViewSource
 	{
 		readonly UICollectionView _collectionView;
-		UICollectionViewController _collectionViewController;
+		readonly UICollectionViewController _collectionViewController;
 		readonly IList _groupSource;
 		bool _disposed;
 		List<ObservableItemsSource> _groups = new List<ObservableItemsSource>();
@@ -121,7 +120,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			for (int n = 0; n < _groupSource.Count; n++)
 			{
-				if (_groupSource[n] is INotifyCollectionChanged && _groupSource[n] is IList list)
+				if (_groupSource[n] is INotifyCollectionChanged && _groupSource[n] is IEnumerable list)
 				{
 					_groups.Add(new ObservableItemsSource(list, _collectionViewController, n));
 				}
@@ -129,6 +128,18 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => CollectionChanged(args));
+			}
+			else
+			{
+				CollectionChanged(args);
+			}
+		}
+
+		void CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
 			{
@@ -182,6 +193,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (NotLoadedYet())
 			{
+				_collectionView.ReloadData();
+				return;
+			}
+
+			if (_collectionView.NumberOfSections() == 0)
+			{
+				// Okay, we're going from completely empty to more than 0 items; there's an iOS bug which apparently
+				// will just crash if we call InsertItems here, so we have to do ReloadData.
 				_collectionView.ReloadData();
 				return;
 			}

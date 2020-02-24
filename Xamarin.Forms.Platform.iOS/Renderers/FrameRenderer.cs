@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Drawing;
 using CoreAnimation;
 using CoreGraphics;
+using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -9,6 +10,12 @@ namespace Xamarin.Forms.Platform.iOS
 	public class FrameRenderer : VisualElementRenderer<Frame>
 	{
 		ShadowView _shadowView;
+
+		[Internals.Preserve(Conditional = true)]
+		public FrameRenderer()
+		{
+
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
 		{
@@ -80,7 +87,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_shadowView != null)
 			{
-				if (_shadowView.Superview == null)
+				if (_shadowView.Superview == null && Superview != null)
 					Superview.InsertSubviewBelow(_shadowView, this);
 
 				_shadowView?.SetNeedsLayout();
@@ -88,12 +95,14 @@ namespace Xamarin.Forms.Platform.iOS
 			base.LayoutSubviews();
 		}
 
+		[Preserve(Conditional = true)]
 		class ShadowView : UIView
 		{
 			CALayer _shadowee;
 			CGRect _previousBounds;
 			CGRect _previousFrame;
 
+			[Preserve(Conditional = true)]
 			public ShadowView(CALayer shadowee)
 			{
 				_shadowee = shadowee;
@@ -102,6 +111,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Layer.ShadowOpacity = 0.8f;
 				Layer.ShadowOffset = new SizeF();
 				Layer.BorderWidth = 1;
+				UserInteractionEnabled = false;
 			}
 
 			public void UpdateBackgroundColor()

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 using NUnit.Framework;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+
+using WindowsOS = Xamarin.Forms.PlatformConfiguration.Windows;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -135,10 +138,24 @@ namespace Xamarin.Forms.Core.UnitTests
 			var defaultWebView = new WebView();
 
 			var jsAlertsAllowedWebView = new WebView();
-			jsAlertsAllowedWebView.On<Windows>().SetIsJavaScriptAlertEnabled(true);
+			jsAlertsAllowedWebView.On<WindowsOS>().SetIsJavaScriptAlertEnabled(true);
 
-			Assert.AreEqual(defaultWebView.On<Windows>().IsJavaScriptAlertEnabled(), false);
-			Assert.AreEqual(jsAlertsAllowedWebView.On<Windows>().IsJavaScriptAlertEnabled(), true);
+			Assert.AreEqual(defaultWebView.On<WindowsOS>().IsJavaScriptAlertEnabled(), false);
+			Assert.AreEqual(jsAlertsAllowedWebView.On<WindowsOS>().IsJavaScriptAlertEnabled(), true);
+		}
+
+		[Test]
+		public void TestSettingOfCookie()
+		{
+			var defaultWebView = new WebView();
+			var CookieContainer = new CookieContainer();
+
+			CookieContainer.Add(new Cookie("TestCookie", "My Test Cookie...", "/", "microsoft.com"));
+
+			defaultWebView.Cookies = CookieContainer;
+			defaultWebView.Source = "http://xamarin.com";
+
+			Assert.IsNotNull(defaultWebView.Cookies);
 		}
 	}
 }

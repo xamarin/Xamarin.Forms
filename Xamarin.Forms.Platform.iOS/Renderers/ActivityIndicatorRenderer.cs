@@ -6,13 +6,22 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, UIActivityIndicatorView>
 	{
+		[Internals.Preserve(Conditional = true)]
+		public ActivityIndicatorRenderer()
+		{
+
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray });
+					if(Forms.IsiOS13OrNewer)
+						SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Medium });
+					else
+						SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray });
 				}
 
 				UpdateColor();

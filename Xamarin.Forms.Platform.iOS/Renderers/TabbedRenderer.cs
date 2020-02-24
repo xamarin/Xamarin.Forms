@@ -7,6 +7,8 @@ using UIKit;
 using Xamarin.Forms.Internals;
 using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
+using TabbedPageConfiguration = Xamarin.Forms.PlatformConfiguration.iOSSpecific.TabbedPage;
+using TranslucencyMode = Xamarin.Forms.PlatformConfiguration.iOSSpecific.TranslucencyMode;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -18,10 +20,17 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _defaultBarTextColorSet;
 		UIColor _defaultBarColor;
 		bool _defaultBarColorSet;
+		bool? _defaultBarTranslucent;
 		bool _loaded;
 		Size _queuedSize;
 
 		Page Page => Element as Page;
+
+		[Internals.Preserve(Conditional = true)]
+		public TabbedRenderer()
+		{
+
+		}
 
 		public override UIViewController SelectedViewController
 		{
@@ -74,6 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
 			UpdateSelectedTabColors();
+			UpdateBarTranslucent();
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -116,6 +126,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Element == null)
 				return;
+
+			if (Element.Parent is BaseShellItem)
+				Element.Layout(View.Bounds.ToRectangle());
 
 			if (!Element.Bounds.IsEmpty)
 			{
@@ -240,6 +253,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSelectedTabColors();
 			else if (e.PropertyName == PrefersHomeIndicatorAutoHiddenProperty.PropertyName)
 				UpdatePrefersHomeIndicatorAutoHiddenOnPages();
+			else if (e.PropertyName == TabbedPageConfiguration.TranslucencyModeProperty.PropertyName)
+				UpdateBarTranslucent();
 
 		}
 
@@ -391,6 +406,26 @@ namespace Xamarin.Forms.Platform.iOS
 			TabBar.TintColor = isDefaultColor ? _defaultBarTextColor : barTextColor.ToUIColor();
 		}
 
+		void UpdateBarTranslucent()
+		{
+			if (Tabbed == null || TabBar == null || Element == null)
+				return;
+
+			_defaultBarTranslucent = _defaultBarTranslucent ?? TabBar.Translucent;
+			switch (TabbedPageConfiguration.GetTranslucencyMode(Element))
+			{
+				case TranslucencyMode.Translucent:
+					TabBar.Translucent = true;
+					return;
+				case TranslucencyMode.Opaque:
+					TabBar.Translucent = false;
+					return;
+				default:
+					TabBar.Translucent = _defaultBarTranslucent.GetValueOrDefault();
+					return;
+			}
+		}
+
 		void UpdateChildrenOrderIndex(UIViewController[] viewControllers)
 		{
 			for (var i = 0; i < viewControllers.Length; i++)
@@ -438,9 +473,20 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (Tabbed.IsSet(TabbedPage.SelectedTabColorProperty) && Tabbed.SelectedTabColor != Color.Default)
-				TabBar.SelectedImageTintColor = Tabbed.SelectedTabColor.ToUIColor();
+			{
+				if (Forms.IsiOS10OrNewer)
+					TabBar.TintColor = Tabbed.SelectedTabColor.ToUIColor();
+				else
+					TabBar.SelectedImageTintColor = Tabbed.SelectedTabColor.ToUIColor();
+
+			}
 			else
-				TabBar.SelectedImageTintColor = null;
+			{
+				if (Forms.IsiOS10OrNewer)
+					TabBar.TintColor = UITabBar.Appearance.TintColor;
+				else
+					TabBar.SelectedImageTintColor = UITabBar.Appearance.SelectedImageTintColor;
+			}
 
 			if (!Forms.IsiOS10OrNewer)
 				return;
@@ -448,7 +494,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
 				TabBar.UnselectedItemTintColor = Tabbed.UnselectedTabColor.ToUIColor();
 			else
-				TabBar.UnselectedItemTintColor = null;
+				TabBar.UnselectedItemTintColor = UITabBar.Appearance.TintColor;
 		}
 
 		/// <summary>

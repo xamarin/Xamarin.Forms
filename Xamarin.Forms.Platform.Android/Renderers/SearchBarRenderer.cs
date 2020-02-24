@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override SearchView CreateNativeControl()
 		{
-			var context = (Context as ContextThemeWrapper).BaseContext ?? Context;
+			var context = (Context as ContextThemeWrapper)?.BaseContext ?? Context;
 			return new SearchView(context);
 		}
 
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (image != null && image.Drawable != null)
 				{
 					if (Element.CancelButtonColor != Color.Default)
-						image.Drawable.SetColorFilter(Element.CancelButtonColor.ToAndroid(), PorterDuff.Mode.SrcIn);
+						image.Drawable.SetColorFilter(Element.CancelButtonColor, FilterMode.SrcIn);
 					else
 						image.Drawable.ClearColorFilter();
 				}

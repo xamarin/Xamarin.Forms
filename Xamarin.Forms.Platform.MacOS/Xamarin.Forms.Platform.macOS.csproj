@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <PropertyGroup>
+  <PropertyGroup>
     <Description>macOS Backend for Xamarin.Forms</Description>
     <AssemblyName>Xamarin.Forms.Platform.macOS</AssemblyName>
   </PropertyGroup>
@@ -115,6 +115,7 @@
     <Compile Include="ImageSourceHandlers.cs" />
     <Compile Include="Extensions\ButtonExtensions.cs" />
     <Compile Include="Renderers\BoxViewRenderer.cs" />
+    <Compile Include="Renderers\RadioButtonRenderer.cs" />
     <Compile Include="Renderers\ScrollViewRenderer.cs" />
     <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
     <Compile Include="Renderers\DatePickerRenderer.cs" />
