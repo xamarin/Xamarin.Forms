@@ -17,47 +17,40 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <RefreshView IsEnabled="True"
-                     Command="{Binding GetMonkeysCommand}"
-                     IsRefreshing="{Binding IsBusy, Mode=OneWay}"
-                     Grid.ColumnSpan="2"
-                     Margin="5,5,5,0" >
-                <CollectionView ItemsSource="{Binding Monkeys}">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
+            <ListView ItemsSource="{Binding Monkeys}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
                             <Frame
-                                Margin="10,5"
-                                Padding="0"
-                                BackgroundColor="White"
-                                CornerRadius="10"
-                                HeightRequest="125"
-                                InputTransparent="True"
-                                IsClippedToBounds="True"
-                                HasShadow="True"
-                                Visual="Material">
-                                <Grid Padding="0" ColumnSpacing="10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image Aspect="AspectFill" AutomationId="MonkeyImages" Source="{Binding Image}">
-                                    </Image>
-                                    <StackLayout
-                                    Grid.Column="1"
-                                    Padding="10"
-                                    VerticalOptions="Center">
-                                        <Label FontSize="Large" Text="{Binding Name}" />
-                                        <Label FontSize="Medium" Text="{Binding Location}" />
-                                    </StackLayout>
-                                </Grid>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </RefreshView>
+                            Margin="10,5"
+                            Padding="0"
+                            BackgroundColor="White"
+                            CornerRadius="10"
+                            HeightRequest="125"
+                            InputTransparent="True"
+                            IsClippedToBounds="True"
+                            HasShadow="True"
+                            Visual="Material">
+                            <Grid Padding="0" ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Aspect="AspectFill" AutomationId="MonkeyImages" Source="{Binding Image}">
+                                </Image>
+                                <StackLayout
+                                Grid.Column="1"
+                                Padding="10"
+                                VerticalOptions="Center">
+                                    <Label FontSize="Large" Text="{Binding Name}" />
+                                    <Label FontSize="Medium" Text="{Binding Location}" />
+                                </StackLayout>
+                            </Grid>
+                        </Frame>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
             <BoxView Grid.Row="1" 
                  Grid.ColumnSpan="2" 
