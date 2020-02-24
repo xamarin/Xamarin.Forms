@@ -27,7 +27,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			new LinearItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center
+				SnapPointsAlignment = SnapPointsAlignment.Center,
+				ItemSpacing = 8
 			};
 
 			var itemTemplate = GetCarouselTemplate();
@@ -39,7 +40,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				ItemsSource = viewModel.Items,
 				IsScrollAnimated = true,
 				IsBounceEnabled = true,
-				EmptyView = "This is the empty view"
+				EmptyView = "This is the empty view",
+				PeekAreaInsets = new Thickness(50)	
 			};
 
 			var absolute = new AbsoluteLayout();
