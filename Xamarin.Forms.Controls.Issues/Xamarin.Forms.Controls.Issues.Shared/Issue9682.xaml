@@ -17,10 +17,10 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <ListView ItemsSource="{Binding Monkeys}">
+            <ListView ItemsSource="{Binding Monkeys}" HasUnevenRows="True">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <ViewCell>
+                        <ViewCell Height="150">
                             <Frame
                             Margin="10,5"
                             Padding="0"
@@ -64,7 +64,8 @@
                 Command="{Binding GetMonkeysCommand}"
                 AutomationId="MonkeyLoadButton"
                 Text="Click Me and Monkey Images Should Load" />
-            <Label IsVisible="{Binding IsBusy}" Text="Monkeys Loaded" x:Name="monkeysLoaded" AutomationId="monkeysLoaded"></Label>
+
+            <Label Grid.Row="2" IsVisible="{Binding IsLoaded}" Text="Monkeys Loaded" x:Name="monkeysLoaded" AutomationId="monkeysLoaded"></Label>
         </Grid>
     </ContentPage.Content>
 </controls:TestContentPage>

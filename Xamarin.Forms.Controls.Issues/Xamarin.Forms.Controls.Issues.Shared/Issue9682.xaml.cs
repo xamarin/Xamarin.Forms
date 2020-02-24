@@ -46,8 +46,17 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("MonkeyLoadButton");
 			RunningApp.WaitForElement("monkeysLoaded");
 
-			var monkeyImages = RunningApp.WaitForElement("MonkeyImages");
+			var monkeyImages = RunningApp.QueryUntilPresent(() =>
+			{
+				var images = RunningApp.WaitForElement("MonkeyImages");
 
+				if (images[0].Rect.Height < 50 || images[0].Rect.Width < 50)
+					return null;
+
+				return images;
+			});
+
+			Assert.IsNotNull(monkeyImages);
 			Assert.GreaterOrEqual(monkeyImages[0].Rect.Height, 50);
 			Assert.GreaterOrEqual(monkeyImages[0].Rect.Width, 50);
 		}
@@ -78,10 +87,12 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		HttpClient httpClient;
 		bool _isBusy;
+		bool _isLoaded;
 		HttpClient Client => httpClient ?? (httpClient = new HttpClient());
 
 		public Command GetMonkeysCommand { get; }
 		public ObservableCollection<Monkey> Monkeys { get; }
+
 		public bool IsBusy
 		{
 			get => _isBusy;
@@ -92,6 +103,16 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
+		public bool IsLoaded
+		{
+			get => _isLoaded;
+			set
+			{
+				_isLoaded = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLoaded)));
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public MonkeysViewModel()
@@ -99,6 +120,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Monkeys = new ObservableCollection<Monkey>();
 			GetMonkeysCommand = new Command(async () => await GetMonkeysAsync());
 			IsBusy = false;
+			IsLoaded = false;
 		}
 
 
@@ -107,6 +129,7 @@ namespace Xamarin.Forms.Controls.Issues
 			if (IsBusy)
 				return;
 
+			IsLoaded = false;
 			try
 			{
 				IsBusy = true;
@@ -126,6 +149,7 @@ namespace Xamarin.Forms.Controls.Issues
 			finally
 			{
 				IsBusy = false;
+				IsLoaded = true;
 			}
 		}
 	}
