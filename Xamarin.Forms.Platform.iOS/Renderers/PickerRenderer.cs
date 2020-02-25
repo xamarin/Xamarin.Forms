@@ -118,6 +118,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCharacterSpacing();
 				UpdateHorizontalTextAlignment();
 				UpdateVerticalTextAlignment();
+				UpdateFlowDirection();
 
 				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -152,7 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateHorizontalTextAlignment();
+				UpdateFlowDirection();
 		}
 
 		void OnEditing(object sender, EventArgs eventArgs)
@@ -282,6 +283,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateVerticalTextAlignment()
 		{
 			Control.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();			
+		}
+
+		void UpdateFlowDirection()
+		{			
+			(Control as UITextField).UpdateTextAlignment(Element);
 		}
 
 		protected internal virtual void UpdateTextColor()
