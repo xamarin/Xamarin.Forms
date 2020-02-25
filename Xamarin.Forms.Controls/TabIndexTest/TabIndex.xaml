@@ -10,7 +10,7 @@
         <ScrollView x:Name="scroll">
             <StackLayout x:Name="stack">
                 <Label Text="Select Days" HorizontalOptions="CenterAndExpand"
-                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="1" x:Name="label"/>
+                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" x:Name="label"/>
 
                 <views:DaysOfWeekView x:Name="composite"/>
 

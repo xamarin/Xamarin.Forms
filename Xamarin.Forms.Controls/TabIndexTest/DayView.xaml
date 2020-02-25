@@ -60,37 +60,37 @@
                 <Frame.Triggers>
                     <DataTrigger TargetType="Frame" Binding="{Binding Day}" Value="{x:Static enums:DaysOfWeek.Sunday}">
                         <Setter Property="AutomationProperties.Name" Value="Sunday"/>
-                        <Setter Property="TabIndex" Value="1"/>
+                        <!--<Setter Property="TabIndex" Value="1"/>-->
                     </DataTrigger>
 
                     <DataTrigger TargetType="Frame" Binding="{Binding Day}" Value="{x:Static enums:DaysOfWeek.Monday}">
                         <Setter Property="AutomationProperties.Name" Value="Monday"/>
-                        <Setter Property="TabIndex" Value="2"/>
+                        <!--<Setter Property="TabIndex" Value="2"/>-->
                     </DataTrigger>
 
                     <DataTrigger TargetType="Frame" Binding="{Binding Day}" Value="{x:Static enums:DaysOfWeek.Tuesday}">
                         <Setter Property="AutomationProperties.Name" Value="Tuesday"/>
-                        <Setter Property="TabIndex" Value="3"/>
+                        <!--<Setter Property="TabIndex" Value="3"/>-->
                     </DataTrigger>
 
                     <DataTrigger TargetType="Frame" Binding="{Binding Day}" Value="{x:Static enums:DaysOfWeek.Wednesday}">
                         <Setter Property="AutomationProperties.Name" Value="Wednesday"/>
-                        <Setter Property="TabIndex" Value="4"/>
+                        <!--<Setter Property="TabIndex" Value="4"/>-->
                     </DataTrigger>
 
                     <DataTrigger TargetType="Frame" Binding="{Binding Day}" Value="{x:Static enums:DaysOfWeek.Thursday}">
                         <Setter Property="AutomationProperties.Name" Value="Thursday"/>
-                        <Setter Property="TabIndex" Value="5"/>
+                        <!--<Setter Property="TabIndex" Value="5"/>-->
                     </DataTrigger>
 
                     <DataTrigger TargetType="Frame" Binding="{Binding Day}" Value="{x:Static enums:DaysOfWeek.Friday}">
                         <Setter Property="AutomationProperties.Name" Value="Friday"/>
-                        <Setter Property="TabIndex" Value="6"/>
+                        <!--<Setter Property="TabIndex" Value="6"/>-->
                     </DataTrigger>
 
                     <DataTrigger TargetType="Frame" Binding="{Binding Day}" Value="{x:Static enums:DaysOfWeek.Saturday}">
                         <Setter Property="AutomationProperties.Name" Value="Saturday"/>
-                        <Setter Property="TabIndex" Value="7"/>
+                        <!--<Setter Property="TabIndex" Value="7"/>-->
                     </DataTrigger>
 
                     <DataTrigger TargetType="Frame" Binding="{Binding IsSelected}" Value="True">
