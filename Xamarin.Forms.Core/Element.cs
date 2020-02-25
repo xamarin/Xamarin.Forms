@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -199,6 +200,8 @@ namespace Xamarin.Forms
 				{
 					SetInheritedBindingContext(this, null);
 				}
+
+				VisualDiagnostics.SendVisualTreeChanged(this, value);
 
 				OnParentSet();
 
@@ -453,8 +456,7 @@ namespace Xamarin.Forms
 		{
 			base.OnSetDynamicResource(property, key);
 			DynamicResources[property] = key;
-			object value;
-			if (this.TryGetResource(key, out value))
+			if (this.TryGetResource(key, out var value))
 				OnResourceChanged(property, value);
 		}
 

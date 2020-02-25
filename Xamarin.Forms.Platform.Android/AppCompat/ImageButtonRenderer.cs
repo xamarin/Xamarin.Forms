@@ -1,7 +1,11 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -33,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElementRenderer _visualElementRenderer;
 		BorderBackgroundManager _backgroundTracker;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, ImageButton> _platformElementConfiguration;
-		private ImageButton _imageButton;
+		ImageButton _imageButton;		
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -42,8 +46,8 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElement IVisualElementRenderer.Element => Element;
 		AView IVisualElementRenderer.View => this;
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
-		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;		
-		bool IDisposedState.IsDisposed => _disposed;
+		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
+		bool IDisposedState.IsDisposed => ((IImageRendererController)this).IsDisposed;
 
 		public ImageButton Element
 		{
@@ -56,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void IImageRendererController.SkipInvalidate() => _skipInvalidate = true;
-		bool IImageRendererController.IsDisposed => _disposed;
+		bool IImageRendererController.IsDisposed => _disposed || !Control.IsAlive();
 
 		AppCompatImageButton Control => this;
 		public ImageButtonRenderer(Context context) : base(context)
@@ -192,6 +196,7 @@ namespace Xamarin.Forms.Platform.Android
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
+
 		public override void Draw(Canvas canvas)
 		{
 			if (Element == null)
@@ -200,7 +205,7 @@ namespace Xamarin.Forms.Platform.Android
 			var backgroundDrawable = _backgroundTracker?.BackgroundDrawable;
 			RectF drawableBounds = null;
 
-			if(Drawable != null)
+			if (Drawable != null)
 			{
 				if ((int)Forms.SdkInt >= 18 && backgroundDrawable != null)
 				{
@@ -232,9 +237,15 @@ namespace Xamarin.Forms.Platform.Android
 					Drawable.SetBounds((int)drawableBounds.Left, (int)drawableBounds.Top, (int)drawableBounds.Right, (int)drawableBounds.Bottom);
 			}
 
-			base.Draw(canvas);
 			if (_backgroundTracker?.BackgroundDrawable != null)
+			{
+				_backgroundTracker.BackgroundDrawable.DrawCircle(canvas, canvas.Width, canvas.Height, base.Draw);
 				_backgroundTracker.BackgroundDrawable.DrawOutline(canvas, canvas.Width, canvas.Height);
+			}
+			else
+			{
+				base.Draw(canvas);
+			}
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
@@ -318,6 +329,10 @@ namespace Xamarin.Forms.Platform.Android
 				_platformElementConfiguration = Element.OnThisPlatform();
 
 			return _platformElementConfiguration;
+		}
+
+		void IImageRendererController.SetFormsAnimationDrawable(IFormsAnimationDrawable value)
+		{
 		}
 	}
 }

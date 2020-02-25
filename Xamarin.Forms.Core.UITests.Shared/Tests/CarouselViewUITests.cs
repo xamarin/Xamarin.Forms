@@ -1,13 +1,11 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using Xamarin.UITest;
 
 namespace Xamarin.Forms.Core.UITests
 {
 	[Category(UITestCategories.CarouselView)]
 	internal class CarouselViewUITests : BaseTestFixture
 	{
-		string _enableControl = "Enable CarouselView";
 		string _carouselViewGalleries = "CarouselView Galleries";
 
 		protected override void NavigateToGallery()
@@ -16,8 +14,6 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.WaitForElement(_carouselViewGalleries);
 			App.Tap(_carouselViewGalleries);
-			App.WaitForElement(_enableControl);
-			App.Tap(_enableControl);
 		}
 
 		[TestCase("CarouselView (Code, Horizontal)")]
@@ -53,7 +49,9 @@ namespace Xamarin.Forms.Core.UITests
 			App.Back();
 		}
 
+#if __IOS__
 		[TestCase("CarouselView (Code, Vertical)")]
+#endif
 		public void CarouselViewVertical(string subgallery)
 		{
 			VisitSubGallery(subgallery);

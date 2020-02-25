@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _checkedForRtlScroll = false;
 		bool _previousLTR = true;
 
+		[Preserve(Conditional = true)]
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
 			ScrollAnimationEnded += HandleScrollAnimationEnded;
@@ -146,7 +147,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFlowDirection()
 		{
-			if (Superview == null || _requestedScroll != null || _checkedForRtlScroll)
+			if (Superview == null || ScrollView.Content == null || _requestedScroll != null || _checkedForRtlScroll)
 				return;
 
 			if (Element is IVisualElementController controller && ScrollView.Orientation != ScrollOrientation.Vertical)
@@ -267,9 +268,8 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				var positionOnScroll = ScrollView.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
-
-				positionOnScroll.X = positionOnScroll.X.Clamp(0, ContentSize.Width - Bounds.Size.Width);
-				positionOnScroll.Y = positionOnScroll.Y.Clamp(0, ContentSize.Height - Bounds.Size.Height);
+				positionOnScroll.X = positionOnScroll.X.Clamp(0, ContentSize.Width);
+				positionOnScroll.Y = positionOnScroll.Y.Clamp(0, ContentSize.Height);
 
 				switch (ScrollView.Orientation)
 				{

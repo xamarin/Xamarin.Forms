@@ -1,7 +1,14 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using ASupportDrawable = AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.CardView.Widget;
+#else
 using Android.Support.V7.Widget;
+using ASupportDrawable = Android.Support.V7.Graphics.Drawable;
+#endif
 using Android.Text;
 using Android.Views;
 using Android.Views.InputMethods;
@@ -115,7 +122,6 @@ namespace Xamarin.Forms.Platform.Android
 				v.HideKeyboard();
 				SearchConfirmed?.Invoke(this, EventArgs.Empty);
 				Controller.QueryConfirmed();
-				_textBlock.Text = "";
 			}
 
 			return true;
@@ -207,8 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 			_textBlock.Threshold = 1;
 			_textBlock.Adapter = new ShellSearchViewAdapter(SearchHandler, _shellContext);
 			_textBlock.ItemClick += OnTextBlockItemClicked;
-			if (Forms.IsMarshmallowOrNewer)
-				_textBlock.SetDropDownBackgroundDrawable(new ClipDrawableWrapper(_textBlock.DropDownBackground));
+			_textBlock.SetDropDownBackgroundDrawable(new ClipDrawableWrapper(_textBlock.DropDownBackground));
 
 			// A note on accessibility. The _textBlocks hint is what android defaults to reading in the screen
 			// reader. Therefore, we do not need to set something else.
@@ -367,7 +372,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		class ClipDrawableWrapper : DrawableWrapper
+		class ClipDrawableWrapper : ASupportDrawable.DrawableWrapper
 		{
 			public ClipDrawableWrapper(Drawable dr) : base(dr)
 			{

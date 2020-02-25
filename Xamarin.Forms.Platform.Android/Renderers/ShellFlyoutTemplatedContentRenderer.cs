@@ -1,7 +1,13 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
-using Android.Support.Design.Widget;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+using Google.Android.Material.AppBar;
+#else
 using Android.Support.V7.Widget;
+using Android.Support.Design.Widget;
+#endif
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -121,8 +127,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			Profile.FramePartition("UpdateFlyoutBackground");
 			UpdateFlyoutBackground();
-
-			Profile.FrameEnd();
 
 			Profile.FramePartition(nameof(UpdateVerticalScrollMode));
 			UpdateVerticalScrollMode();
