@@ -177,6 +177,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (tabIndexes == null)
 				return;
 
+			// Let the page handle tab order itself
+			if (tabIndexes.Count <= 1)
+				return;
+
 			AView prevControl = null;
 			foreach (var idx in tabIndexes?.Keys)
 			{
@@ -186,7 +190,7 @@ namespace Xamarin.Forms.Platform.Android
 					if (!(child is VisualElement ve && ve.GetRenderer()?.View is AView view))
 						continue;
 
-					AView thisControl = view;
+					AView thisControl = null;
 
 					if (view is ITabStop tabStop)
 						thisControl = tabStop.TabStop;
@@ -204,10 +208,6 @@ namespace Xamarin.Forms.Platform.Android
 						if (thisControl != prevControl)
 							thisControl.AccessibilityTraversalAfter = prevControl.Id;
 					}
-
-					if (thisControl is global::Android.Widget.TextView tv)
-						if (prevControl is global::Android.Widget.TextView pv)
-							System.Diagnostics.Debug.WriteLine($"{tv.Text} after {pv.Text}");
 
 					prevControl = thisControl;
 				}
