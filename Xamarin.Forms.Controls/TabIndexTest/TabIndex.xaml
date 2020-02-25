@@ -15,15 +15,15 @@
                 <views:DaysOfWeekView x:Name="composite"/>
 
                 <Label Text="Start Time" HorizontalOptions="FillAndExpand"
-                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="10" x:Name="label2"/>
+                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True"  x:Name="label2"/>
                 <TimePicker
-                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="11" x:Name="timePicker"/>
+                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True"  x:Name="timePicker"/>
 
                 <Label Text="Stop Time" HorizontalOptions="FillAndExpand"
-                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="12" x:Name="label3"/>
+                       AutomationProperties.IsInAccessibleTree="True" IsTabStop="True"  x:Name="label3"/>
 
                 <TimePicker
-                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" TabIndex="13" x:Name="timePicker2"/>
+                    AutomationProperties.IsInAccessibleTree="True" IsTabStop="True" x:Name="timePicker2"/>
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>
