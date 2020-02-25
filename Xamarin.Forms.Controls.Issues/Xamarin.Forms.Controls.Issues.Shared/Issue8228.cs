@@ -3,6 +3,12 @@ using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using Xamarin.UITest.iOS;
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
@@ -12,45 +18,83 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			Title = "Grouped CollectionView";
-			Content = new CollectionView
+			var collectionItems = new ObservableCollection<CategoryGroup>
 			{
-				ItemsLayout = LinearItemsLayout.Vertical,
-				IsGrouped = true,
-				GroupHeaderTemplate = new DataTemplate(() =>
+				new CategoryGroup("GroupHeader1", "GroupFooter1", new ObservableCollection<Category>
 				{
-					var nameLabel = new Label
-					{
-						TextColor = Color.Green
-					};
-					nameLabel.SetBinding(Label.TextProperty, "GroupName");
-					return nameLabel;
+					new Category { Name = "Item1" },
+					new Category { Name = "Item2" },
+					new Category { Name = "Item3" }
 				}),
-				ItemTemplate = new DataTemplate(() =>
+				new CategoryGroup("GroupHeader2", "GroupFooter2", new ObservableCollection<Category>
 				{
-					var nameLabel = new Label
-					{
-						Padding = new Thickness(20)
-					};
-					nameLabel.SetBinding(Label.TextProperty, "Name");
-					return nameLabel;
-				}),
-				ItemsSource = new List<CategoryGroup>
+					new Category { Name = "Item1" },
+					new Category { Name = "Item2" },
+					new Category { Name = "Item3" }
+				})
+			};
+			Content = new StackLayout
+			{
+				Children =
 				{
-					new CategoryGroup("Group1", new ObservableCollection<Category>
+					new Button
 					{
-						new Category { Name = "Item1" },
-						new Category { Name = "Item2" },
-						new Category { Name = "Item3" }
-					}),
-					new CategoryGroup("Group2", new ObservableCollection<Category>
+						Text = "Add Empty Header and Footer group",
+						Command = new Command((parameter) => {
+							collectionItems.Add(new CategoryGroup("", "", new ObservableCollection<Category>
+							{
+								new Category { Name = "Item1" },
+								new Category { Name = "Item2" },
+								new Category { Name = "Item3" }
+							}));
+						})
+					},
+					new CollectionView
 					{
-						new Category { Name = "Item1" },
-						new Category { Name = "Item2" },
-						new Category { Name = "Item3" }
-					})
+						ItemsLayout = LinearItemsLayout.Vertical,
+						IsGrouped = true,
+						GroupHeaderTemplate = new DataTemplate(() =>
+						{
+							var nameLabel = new Label
+							{
+								TextColor = Color.Green
+							};
+							nameLabel.SetBinding(Label.TextProperty, "GroupHeaderName");
+							return nameLabel;
+						}),
+						GroupFooterTemplate = new DataTemplate(() =>
+						{
+							var nameLabel = new Label
+							{
+								TextColor = Color.Red
+							};
+							nameLabel.SetBinding(Label.TextProperty, "GroupFooterName");
+							return nameLabel;
+						}),
+						ItemTemplate = new DataTemplate(() =>
+						{
+							var nameLabel = new Label
+							{
+								Padding = new Thickness(20)
+							};
+							nameLabel.SetBinding(Label.TextProperty, "Name");
+							return nameLabel;
+						}),
+						ItemsSource = collectionItems
+					}
 				}
 			};
 		}
+
+#if UITEST
+		[Test]
+		public void EmptyGroupHeaderTest()
+		{
+			RunningApp.WaitForElement(q => q.Button("Add Empty Header and Footer group"));
+			RunningApp.Tap(q => q.Button("Add Empty Header and Footer group"));
+			RunningApp.WaitForNoElement(q => q.Marked(nameof(CategoryGroup)));
+		}
+#endif
 	}
 
 	public class Category
@@ -60,11 +104,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 	public class CategoryGroup : List<Category>
 	{
-		public string GroupName { get; set; }
+		public string GroupHeaderName { get; set; }
+		public string GroupFooterName { get; set; }
 
-		public CategoryGroup(string groupName, ObservableCollection<Category> categories) : base(categories)
+		public CategoryGroup(string groupHeaderName, string groupFooterName, ObservableCollection<Category> categories) : base(categories)
 		{
-			GroupName = groupName;
+			GroupHeaderName = groupHeaderName;
+			GroupFooterName = groupFooterName;
 		}
 	}
 }
