@@ -62,6 +62,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (tabIndexes == null)
 				return null;
 
+			// Just return all elements on the page in order.
+			if (tabIndexes.Count <= 1)
+				return null;
+
 			foreach (var idx in tabIndexes?.Keys)
 			{
 				var tabGroup = tabIndexes[idx];
@@ -70,7 +74,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (!(child is VisualElement ve && ve.GetRenderer()?.NativeView is UIView view))
 						continue;
 
-					var thisControl = view;
+					UIView thisControl = null;
 
 					if (view is ITabStop tabStop)
 						thisControl = tabStop.TabStop;

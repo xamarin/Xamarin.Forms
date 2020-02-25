@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class PageContainer : UIView, IUIAccessibilityContainer
 	{
 		readonly IAccessibilityElementsController _parent;
-		List<NSObject> _accessibilityElements = new List<NSObject>();
+		List<NSObject> _accessibilityElements = null;
 		bool _disposed;
 
 		public PageContainer(IAccessibilityElementsController parent)
@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Platform.iOS
 			IsAccessibilityElement = false;
 		}
 
+		List<NSObject> DefaultOrder => this.Descendants().Select(i => i as NSObject).ToList();
+
 		List<NSObject> AccessibilityElements
 		{
 			get
@@ -30,19 +32,11 @@ namespace Xamarin.Forms.Platform.iOS
 				// lazy-loading this list so that the expensive call to GetAccessibilityElements only happens when VoiceOver is on.
 				if (_accessibilityElements == null)
 				{
-					_accessibilityElements = _parent.GetAccessibilityElements();
-					if (_accessibilityElements == null)
-					{
-						NSObject defaultElements = AccessibilityContainer.GetAccessibilityElements();
-						if (defaultElements != null)
-							_accessibilityElements = NSArray.ArrayFromHandle<NSObject>(defaultElements.Handle).ToList();
-					}
+					_accessibilityElements = _parent.GetAccessibilityElements() ?? DefaultOrder;
 				}
 				return _accessibilityElements;
 			}
 		}
-
-		IUIAccessibilityContainer AccessibilityContainer => this;
 
 		public void ClearAccessibilityElements()
 		{
@@ -72,6 +66,9 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("accessibilityElementAtIndex:")]
 		NSObject GetAccessibilityElementAt(nint index)
 		{
+			if (AccessibilityElements == null)
+				return NSNull.Null;
+
 			// Note: this will only be called when VoiceOver is enabled
 			return AccessibilityElements[(int)index];
 		}
@@ -79,6 +76,9 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("indexOfAccessibilityElement:")]
 		int GetIndexOfAccessibilityElement(NSObject element)
 		{
+			if (AccessibilityElements == null)
+				return int.MaxValue;
+
 			// Note: this will only be called when VoiceOver is enabled
 			return AccessibilityElements.IndexOf(element);
 		}
