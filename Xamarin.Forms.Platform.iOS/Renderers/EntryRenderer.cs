@@ -191,11 +191,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == Specifics.AdjustsFontSizeToFitWidthProperty.PropertyName)
 				UpdateAdjustsFontSizeToFitWidth();
-			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-			{				
-				UpdateFlowDirection();
-			}
-				
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)							
+				UpdateFlowDirection();				
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
@@ -209,8 +206,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
 			else if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
-				UpdateClearButtonVisibility();			
-				
+				UpdateClearButtonVisibility();
 
 			base.OnElementPropertyChanged(sender, e);
 		}

@@ -26,8 +26,6 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateTitle();
 				UpdateSelectedIndex();
 				UpdateTextColor();
-				UpdateHorizontalTextAlignment();
-				UpdateVerticalTextAlignment();
 				Control.ItemsSource = ((LockableObservableListWrapper)Element.Items)._list;
 			}
 
@@ -50,14 +48,6 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				UpdateTextColor();
 			}
-			else if (e.PropertyName == Picker.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-			{
-				UpdateHorizontalTextAlignment();
-			}
-			else if (e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
-			{
-				UpdateVerticalTextAlignment();
-			}
 		}
 
 		void UpdateTitle()
@@ -73,15 +63,6 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateSelectedIndex()
 		{
 			Control.SelectedIndex = Element.SelectedIndex;
-		}
-
-		void UpdateHorizontalTextAlignment()
-		{
-			Control.HorizontalContentAlignment = Element.HorizontalTextAlignment.ToNativeHorizontalAlignment();
-		}
-		void UpdateVerticalTextAlignment()
-		{
-			Control.VerticalContentAlignment = Element.VerticalTextAlignment.ToNativeVerticalAlignment();
 		}
 
 		private void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
