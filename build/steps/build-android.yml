@@ -14,10 +14,15 @@ parameters:
   androidProjectArguments : ''
   buildConfiguration : 'Debug'
   nugetVersion: $(NUGET_VERSION)
+  monoVersion: $(MONO_VERSION)
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
+  provisionatorPath: 'build/provisioning/provisioning.csx'
+  provisionatorExtraArguments: ''
 
 jobs:
   - job: ${{ parameters.name }}
+    workspace:
+      clean: all
     displayName: ${{ parameters.displayName }}
     timeoutInMinutes: 120
     pool:
@@ -25,21 +30,49 @@ jobs:
     dependsOn: ${{ parameters.dependsOn }}
     steps:
       - checkout: self
+        clean: true
 
-      - task: NuGetToolInstaller@0
-        displayName: 'Use NuGet ${{ parameters.nugetVersion }}'
+      - task: xamops.azdevex.provisionator-task.provisionator@1
+        displayName: 'Provisionator'
+        condition: eq(variables['provisioning'], 'true')
         inputs:
-          versionSpec: ${{ parameters.nugetVersion }}
+          provisioning_script: ${{ parameters.provisionatorPath }}
+          provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+
+      - task: Bash@3
+        displayName: 'Cake Provision'
+        condition: eq(variables['provisioningCake'], 'true')
+        inputs:
+          targetType: 'filePath'
+          filePath: 'build.sh'
+          arguments: --target provision
+
+      - task: UseDotNet@2
+        displayName: 'Install .net core $(DOTNET_VERSION)'
+        condition: ne(variables['DOTNET_VERSION'], '')
+        inputs:
+          version: $(DOTNET_VERSION)
+          packageType: 'sdk'
+
+      - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
+        displayName: 'Select MONO ${{ parameters.monoVersion }}'
+
+      - task: NuGetToolInstaller@1
+        displayName: 'Use NuGet'
+        condition: ne(variables['NUGET_VERSION'], '')
+        inputs:
+          versionSpec: $(NUGET_VERSION)
 
       - task: NuGetCommand@2
         displayName: 'NuGet restore ${{ parameters.slnPath }}'
         inputs:
-          restoreSolution: ${{ parameters.slnPath }}
+          restoreSolution:  ${{ parameters.slnPath }}
 
       - task: MSBuild@1
         displayName: 'Build ${{ parameters.buildTaskPath  }}'
         inputs:
           solution: ${{ parameters.buildTaskPath }}
+          configuration: ${{ parameters.buildConfiguration }}
 
       - task: MSBuild@1
         displayName: 'Build Android ${{ parameters.name }}'
@@ -51,7 +84,7 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copy ${{ parameters.name }}'
         inputs:
-          SourceFolder: ${{ parameters.androidPath }}/bin/Debug/
+          SourceFolder: ${{ parameters.androidPath }}/bin/${{ parameters.buildConfiguration }}/
           Contents: '**/*.apk'
           TargetFolder: ${{ parameters.targetFolder }}
           CleanTargetFolder: true
@@ -67,6 +100,7 @@ jobs:
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: AndroidApps'
+        condition: always()
         inputs:
           PathtoPublish: '$(build.artifactstagingdirectory)'
           ArtifactName: OSXArtifacts

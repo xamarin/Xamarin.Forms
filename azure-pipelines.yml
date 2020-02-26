@@ -10,13 +10,19 @@ variables:
 - name: SolutionFile
   value: Xamarin.Forms.sln
 - name: BuildVersion
-  value: $[counter('$(Build.SourceBranchName)_counter', 1)]
-- name: MONO_VERSION
-  value: 5_18_1
-- name: XCODE_VERSION
-  value: 10.2
+  value: $[counter('nuget-counter', 126)]
+- name: BuildVersion42
+  value: $[counter('xf-nuget-counter', 992000)]
+- name: BuildVersion43
+  value: $[counter('xf-nuget-counter', 992000)]
+- name: BuildVersion44
+  value: $[counter('xf-nuget-counter', 992000)]
 - name: NUGET_VERSION
-  value: 5.0.2
+  value: 5.4.0
+- name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+  value: true
+- name: DOTNET_VERSION
+  value: 3.1.100
 
 resources:
   repositories:
@@ -46,16 +52,23 @@ pr:
     - 4.*
     - 3.*
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+
 jobs:
 - template: build/steps/build-windows.yml
   parameters:
     name: win
     displayName: Build Windows Phase
-    vmImage: $(winVmImage)
-    targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
+    vmImage: $(win2019VmImage)
+    msbuildExtraArguments: '/nowarn:VSX1000'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -63,8 +76,9 @@ jobs:
     displayName: Build Android [Legacy Renderers]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)\android-legacy.binlog'
-    buildConfiguration: $(DefaultBuildConfiguration)
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="LEGACY" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
+    buildConfiguration: $(AndroidBuildConfiguration)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -72,8 +86,9 @@ jobs:
     displayName: Build Android [Pre-AppCompat]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)\android-preappcompact.binlog'
-    buildConfiguration: $(DefaultBuildConfiguration)
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="PREAPPCOMPAT" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
+    buildConfiguration: $(AndroidBuildConfiguration)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
@@ -81,10 +96,13 @@ jobs:
     displayName: Build Android [Fast Renderers]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)\android-newrenderers.binlog'
-    buildConfiguration: $(DefaultBuildConfiguration)
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="FAST" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
+    buildConfiguration: $(AndroidBuildConfiguration)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - job: osx
+  workspace:
+    clean: all
   displayName: OSX Phase
   pool:
     name: $(macOSVmImage)
@@ -94,18 +112,18 @@ jobs:
       - msbuild
       - Xamarin.iOS
   variables:
-    provisioningOSX : $(provisioning)
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
     provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
     buildConfiguration: $(DefaultBuildConfiguration)
     slnPath: $(SolutionFile)
-    nugetVersion: $(NUGET_VERSION)
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
   steps:
      - template: build/steps/build-osx.yml
 
 - job: nuget_pack
+  workspace:
+    clean: all
   displayName: Nuget Phase
   dependsOn:
    - win
@@ -115,7 +133,6 @@ jobs:
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
-    nugetVersion: $(NUGET_VERSION)
     nugetPackageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
   steps:
      - template: build/steps/build-nuget.yml
@@ -130,6 +147,4 @@ jobs:
     steps:
       - template: build/steps/build-sign.yml
     condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
-
-
 

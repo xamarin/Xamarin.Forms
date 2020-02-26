@@ -1,6 +1,12 @@
 ﻿using System;
 using Android.Views;
+#if __ANDROID_29__
+using AMenuItemCompat = AndroidX.Core.View.MenuItemCompat;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
+#else
 using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
+using AToolbar = Android.Support.V7.Widget.Toolbar;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -24,15 +30,28 @@ namespace Xamarin.Forms.Platform.Android
 			return _defaultContentDescription;
 		}
 
-		public static bool? SetFocusable(this global::Android.Views.View Control, Element Element, bool? _defaultFocusable = null)
+		public static bool? SetFocusable(this global::Android.Views.View Control, Element Element, bool? _defaultFocusable)
+		{
+			return Control.SetFocusable(Element, _defaultFocusable, null);
+		}
+
+		public static bool? SetFocusable(this global::Android.Views.View Control, Element Element, bool? _defaultFocusable = null, ImportantForAccessibility? _defaultImportantForAccessibility = null)
 		{
 			if (Element == null)
 				return _defaultFocusable;
 
 			if (!_defaultFocusable.HasValue)
+			{
 				_defaultFocusable = Control.Focusable;
+			}
+			if (!_defaultImportantForAccessibility.HasValue)
+			{
+				_defaultImportantForAccessibility = Control.ImportantForAccessibility;
+			}
 
-			Control.Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			bool? isInAccessibleTree = (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
+			Control.Focusable = (bool)(isInAccessibleTree ?? _defaultFocusable);
+			Control.ImportantForAccessibility = !isInAccessibleTree.HasValue ? (ImportantForAccessibility)_defaultImportantForAccessibility : (bool)isInAccessibleTree ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
 
 			return _defaultFocusable;
 		}
@@ -83,7 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 			return _defaultLabelFor;
 		}
 
-		public static string SetNavigationContentDescription(this global::Android.Support.V7.Widget.Toolbar Control, Element Element, string _defaultNavigationContentDescription = null)
+		public static string SetNavigationContentDescription(this AToolbar Control, Element Element, string _defaultNavigationContentDescription = null)
 		{
 			if (Element == null)
 				return _defaultNavigationContentDescription;
@@ -110,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Element == null)
 				return;
-			
+
 			var elemValue = ConcatenateNameAndHint(Element);
 
 			if (string.IsNullOrWhiteSpace(elemValue))

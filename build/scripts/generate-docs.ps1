@@ -33,19 +33,47 @@ function StripNodes {
     $streamWriter.Close()
 }
 
+function ScrubIndex {
+	Param($indexPath)
+	
+	[xml]$index = Get-Content $indexPath -Encoding UTF8
+	
+	$nameSpaces = $index.SelectNodes("//Namespace") 
+	
+	$nameSpaces | % {
+		$folder = $_.Name
+		$types = $_.Type
+		
+		$types | % {
+            $typeName = $_.Name
+            
+			$path = Join-Path (Get-Location) "docs\$($folder)\$($typeName).xml"
+			
+			if(-not (Test-Path $path)) {
+                $selector = "//Namespace[@Name='$($folder)']/Type[@Name='$($typeName)']"
+				$toRemove =  $index.SelectSingleNode($selector)
+				
+				if($toRemove -ne $null) {
+					$removed = $toRemove.ParentNode.RemoveChild($toRemove)	
+				}
+			} 
+		}
+	}
+	
+	$index.Save((Join-Path (Get-Location) $indexPath))
+}
+
 pushd ..\..
 
+if(test-path docstemp){ del docstemp -Recurse -Force }
 mkdir docstemp
 pushd docstemp
 
 # Default Language Stuff
 # Clone Xamarin.Forms-api-docs in docstemp\Xamarin.Forms-api-docs
-git clone -b $branch --single-branch $docsUri 
+git clone -qb $branch --single-branch $docsUri 
 
 pushd .\Xamarin.Forms-api-docs
-
-# Temporary hack to handle a typo (https://github.com/xamarin/Xamarin.Forms/pull/6103)
-copy .\docs\Xamarin.Forms\SearchBoxVisibility.xml .\docs\Xamarin.Forms\SearchBoxVisiblity.xml
 
 # Run mdoc
 & $mdoc export-msxdoc .\docs
@@ -69,10 +97,10 @@ $translations =
 @{"lang" = "ru-ru"; "target" = "ru"},
 @{"lang" = "zh-cn"; "target" = "zh-Hans"},
 @{"lang" = "zh-tw"; "target" = "zh-Hant"}
+
 #@{"lang" = "cs-cz"; "target" = "cs"},
 #@{"lang" = "pl-pl"; "target" = "pl"},
 #@{"lang" = "tr-tr"; "target" = "tr"},
-
 
 $branch = "live"
 
@@ -82,14 +110,14 @@ $translations | % {
     $translationFolder = ".\Xamarin.Forms-api-docs.$($_.lang)"
     
     # Clone the translation repo
-    git clone -b $branch --single-branch $translationUri
+    git clone -qb $branch --single-branch $translationUri
 
     # Go into the language-specific folder
     pushd $translationFolder\docs
 
     # Copy everything over the stuff in the default language folder 
     # (So untranslated bits still remain in the default language)
-    copy-item -Path . -Destination ..\..\Xamarin.Forms-api-docs -Recurse -Force    
+    copy-item -Path . -Destination ..\..\Xamarin.Forms-api-docs -Recurse -Force 
 
     # Return from the language-specific folder
     popd
@@ -97,9 +125,13 @@ $translations | % {
     # Go into the default language folder
     pushd .\Xamarin.Forms-api-docs
 
+    # Clean up the index so it's not trying to convert missing docs
+    Write-Host "Cleaning up the index for $($_.lang)"
+    ScrubIndex .\docs\index.xml
+
     Write-Host "Stripping out unused XML for $($_.lang)"
 
-    dir .\docs -R *.xml | Select -ExpandProperty FullName | % {
+    dir .\docs -R *.xml -Exclude ns-*.xml | Select -ExpandProperty FullName | % {
     
         $xpaths = "//remarks",
             "//summary[text()='To be added.']",

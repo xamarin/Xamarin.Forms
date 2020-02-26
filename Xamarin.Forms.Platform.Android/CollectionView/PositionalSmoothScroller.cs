@@ -1,5 +1,10 @@
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -9,7 +14,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public PositionalSmoothScroller(Context context, ScrollToPosition scrollToPosition) : base(context)
 		{
-			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(PositionalSmoothScroller));
 			_scrollToPosition = scrollToPosition;
 		}
 

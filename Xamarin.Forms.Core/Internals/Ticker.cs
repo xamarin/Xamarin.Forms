@@ -41,7 +41,13 @@ namespace Xamarin.Forms.Internals
 		public static void SetDefault(Ticker ticker) => Default = ticker;
 		public static Ticker Default
 		{
-			internal set { s_ticker = value; }
+			internal set {
+				if (value == null && s_ticker != null)
+				{
+					(s_ticker as IDisposable)?.Dispose();
+				}
+				s_ticker = value;
+			}
 			get
 			{
 				if (s_ticker == null)
@@ -78,14 +84,27 @@ namespace Xamarin.Forms.Internals
 		{
 			Device.BeginInvokeOnMainThread(() =>
 			{
-				_timeouts.RemoveAll(t => t.Item1 == handle);
-
-				if (_timeouts.Count == 0)
-				{
-					_enabled = false;
-					Disable();
-				}
+				RemoveTimeout(handle);
 			});
+		}
+
+		public virtual void Remove(int handle, IDispatcher dispatcher)
+		{
+			dispatcher.BeginInvokeOnMainThread(() =>
+			{
+				RemoveTimeout(handle);
+			});
+		}
+
+		void RemoveTimeout(int handle)
+		{
+			_timeouts.RemoveAll(t => t.Item1 == handle);
+
+			if (_timeouts.Count == 0)
+			{
+				_enabled = false;
+				Disable();
+			}
 		}
 
 		protected abstract void DisableTimer();

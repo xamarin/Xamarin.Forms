@@ -36,8 +36,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Github5623()
 		{
-			Device.SetFlags(new List<string> { CollectionView.CollectionViewExperimental });
-
 			InitializeComponent();
 
 			BindingContext = new ViewModel5623();
@@ -117,20 +115,20 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void CollectionViewInfiniteScroll()
 		{
-			RunningApp.WaitForElement ("CollectionView5623");
+			RunningApp.WaitForElement("CollectionView5623");
 
 			var colView = RunningApp.Query("CollectionView5623").Single();
 
 			AppResult[] lastCellResults = null;
 
-			RunningApp.RetryUntilPresent(() =>
-			{
-				RunningApp.DragCoordinates(colView.Rect.CenterX, colView.Rect.Y + colView.Rect.Height - 50, colView.Rect.CenterX, colView.Rect.Y + 5);
+			RunningApp.QueryUntilPresent(() =>
+			 {
+				 RunningApp.DragCoordinates(colView.Rect.CenterX, colView.Rect.Y + colView.Rect.Height - 50, colView.Rect.CenterX, colView.Rect.Y + 5);
 
-				lastCellResults = RunningApp.Query("99");
+				 lastCellResults = RunningApp.Query("99");
 
-				return lastCellResults;
-			}, 100, 1);
+				 return lastCellResults;
+			 }, 100, 1);
 
 			Assert.IsTrue(lastCellResults?.Any() ?? false);
 		}
@@ -172,7 +170,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class Model5623
 	{
-		RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+		Random random = new Random();
 
 		public string Text { get; set; }
 
@@ -185,7 +183,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public Model5623(bool isUneven)
 		{
 			var byteArray = new byte[4];
-			provider.GetBytes(byteArray);
+			random.NextBytes(byteArray);
 
 			if (isUneven)
 				Height = 100 + (BitConverter.ToInt32(byteArray, 0) % 300 + 300) % 300;

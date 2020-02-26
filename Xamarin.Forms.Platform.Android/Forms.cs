@@ -20,12 +20,11 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Resource = Android.Resource;
 using Trace = System.Diagnostics.Trace;
-using ALayoutDirection = Android.Views.LayoutDirection;
 using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
-	public struct ActivationOptions
+	public struct InitializationOptions
 	{
 		public struct EffectScope
 		{
@@ -33,29 +32,32 @@ namespace Xamarin.Forms
 			public ExportEffectAttribute[] Effects;
 		}
 
-		public ActivationOptions(Context activity, Bundle bundle, Assembly resourceAssembly)
+		public InitializationOptions(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
-			this = default(ActivationOptions);
-			this.Activity = activity;
-			this.Bundle = bundle;
-			this.ResourceAssembly = resourceAssembly;
+			this = default(InitializationOptions);
+			Activity = activity;
+			Bundle = bundle;
+			ResourceAssembly = resourceAssembly;
 		}
 		public Context Activity;
 		public Bundle Bundle;
 		public Assembly ResourceAssembly;
 		public HandlerAttribute[] Handlers;
 		public EffectScope[] EffectScopes;
-		public ActivationFlags Flags;
+		public InitializationFlags Flags;
 	}
 
 	public static class Forms
 	{
-
 		const int TabletCrossover = 600;
 
 		static BuildVersionCodes? s_sdkInt;
 		static bool? s_isLollipopOrNewer;
+		static bool? s_is29OrNewer;
 		static bool? s_isMarshmallowOrNewer;
+		static bool? s_isNougatOrNewer;
+		static bool? s_isOreoOrNewer;
+		static bool? s_isJellyBeanMr1OrNewer;
 
 		[Obsolete("Context is obsolete as of version 2.5. Please use a local context instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -71,19 +73,42 @@ namespace Xamarin.Forms
 		static Color _ColorButtonNormal = Color.Default;
 		public static Color ColorButtonNormalOverride { get; set; }
 
-		internal static BuildVersionCodes SdkInt {
-			get {
+		internal static BuildVersionCodes SdkInt
+		{
+			get
+			{
 				if (!s_sdkInt.HasValue)
 					s_sdkInt = Build.VERSION.SdkInt;
 				return (BuildVersionCodes)s_sdkInt;
 			}
 		}
+
+		internal static bool Is29OrNewer
+		{
+			get
+			{
+				if (!s_is29OrNewer.HasValue)
+					s_is29OrNewer = (int)SdkInt >= 29;
+				return s_is29OrNewer.Value;
+			}
+		}
+		
+		internal static bool IsJellyBeanMr1OrNewer
+		{
+			get
+			{
+				if (!s_isJellyBeanMr1OrNewer.HasValue)
+					s_isJellyBeanMr1OrNewer = SdkInt >= BuildVersionCodes.JellyBeanMr1;
+				return s_isJellyBeanMr1OrNewer.Value;
+			}
+		}
+
 		internal static bool IsLollipopOrNewer
 		{
 			get
 			{
 				if (!s_isLollipopOrNewer.HasValue)
-					s_isLollipopOrNewer = (int)SdkInt >= 21;
+					s_isLollipopOrNewer = SdkInt >= BuildVersionCodes.Lollipop;
 				return s_isLollipopOrNewer.Value;
 			}
 		}
@@ -93,8 +118,28 @@ namespace Xamarin.Forms
 			get
 			{
 				if (!s_isMarshmallowOrNewer.HasValue)
-					s_isMarshmallowOrNewer = (int)SdkInt >= 23;
+					s_isMarshmallowOrNewer = SdkInt >= BuildVersionCodes.M;
 				return s_isMarshmallowOrNewer.Value;
+			}
+		}
+
+		internal static bool IsNougatOrNewer
+		{
+			get
+			{
+				if (!s_isNougatOrNewer.HasValue)
+					s_isNougatOrNewer = SdkInt >= BuildVersionCodes.N;
+				return s_isNougatOrNewer.Value;
+			}
+		}
+
+		internal static bool IsOreoOrNewer
+		{
+			get
+			{
+				if (!s_isOreoOrNewer.HasValue)
+					s_isOreoOrNewer = SdkInt >= BuildVersionCodes.O;
+				return s_isOreoOrNewer.Value;
 			}
 		}
 
@@ -108,7 +153,7 @@ namespace Xamarin.Forms
 			//this doesn't seem to work
 			using (var value = new TypedValue())
 			{
-				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true)) 
+				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true))
 				{
 					size = value.Data;
 				}
@@ -136,7 +181,7 @@ namespace Xamarin.Forms
 
 			Profile.FrameBegin("Assembly.GetCallingAssembly");
 			resourceAssembly = Assembly.GetCallingAssembly();
-			Profile.FrameEnd();
+			Profile.FrameEnd("Assembly.GetCallingAssembly");
 
 			Profile.FrameBegin();
 			SetupInit(activity, resourceAssembly, null);
@@ -150,13 +195,13 @@ namespace Xamarin.Forms
 			Profile.FrameEnd();
 		}
 
-		public static void Initialize(ActivationOptions activation)
+		public static void Init(InitializationOptions options)
 		{
 			Profile.FrameBegin();
 			SetupInit(
-				activation.Activity,
-				activation.ResourceAssembly,
-				activation
+				options.Activity,
+				options.ResourceAssembly,
+				options
 			);
 			Profile.FrameEnd();
 		}
@@ -211,10 +256,11 @@ namespace Xamarin.Forms
 		static void SetupInit(
 			Context activity,
 			Assembly resourceAssembly,
-			ActivationOptions? maybeOptions = null
+			InitializationOptions? maybeOptions = null
 		)
 		{
 			Profile.FrameBegin();
+
 			if (!IsInitialized)
 			{
 				// Only need to get this once; it won't change
@@ -259,16 +305,14 @@ namespace Xamarin.Forms
 
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because Device.Info watches for orientation changes and we need a current activity for that
-			Profile.FramePartition("new AndroidDeviceInfo(activity)");
+			Profile.FramePartition("create AndroidDeviceInfo");
 			Device.Info = new AndroidDeviceInfo(activity);
+
+			Profile.FramePartition("setFlags");
 			Device.SetFlags(s_flags);
 
 			Profile.FramePartition("AndroidTicker");
-
-			var ticker = Ticker.Default as AndroidTicker;
-			if (ticker != null)
-				ticker.Dispose();
-			Ticker.SetDefault(new AndroidTicker());
+			Ticker.SetDefault(null);
 
 			Profile.FramePartition("RegisterAll");
 
@@ -280,6 +324,9 @@ namespace Xamarin.Forms
 					var handlers = options.Handlers;
 					var flags = options.Flags;
 					var effectScopes = options.EffectScopes;
+
+					//TODO: ExportCell?
+					//TODO: ExportFont
 
 					// renderers
 					Registrar.RegisterRenderers(handlers);
@@ -295,7 +342,7 @@ namespace Xamarin.Forms
 					}
 
 					// css
-					var noCss = (flags & ActivationFlags.NoCss) != 0;
+					var noCss = (flags & InitializationFlags.DisableCss) != 0;
 					if (!noCss)
 						Registrar.RegisterStylesheets();
 				}
@@ -305,15 +352,36 @@ namespace Xamarin.Forms
 					Registrar.RegisterAll(new[] {
 						typeof(ExportRendererAttribute),
 						typeof(ExportCellAttribute),
-						typeof(ExportImageSourceHandlerAttribute)
+						typeof(ExportImageSourceHandlerAttribute),
+						typeof(ExportFontAttribute)
 					});
 				}
 			}
 
 			Profile.FramePartition("Epilog");
-			// This could change as a result of a config change, so we need to check it every time
-			int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
-			Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
+
+			var currentIdiom = TargetIdiom.Unsupported;
+
+			// first try UIModeManager
+			using (var uiModeManager = UiModeManager.FromContext(ApplicationContext))
+			{
+				try
+				{
+					var uiMode = uiModeManager?.CurrentModeType ?? UiMode.TypeUndefined;
+					currentIdiom = DetectIdiom(uiMode);
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine($"Unable to detect using UiModeManager: {ex.Message}");
+				}
+			}
+
+			if (TargetIdiom.Unsupported == currentIdiom)
+			{
+				// This could change as a result of a config change, so we need to check it every time
+				int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
+				Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
+			}
 
 			if (SdkInt >= BuildVersionCodes.JellyBeanMr1)
 				Device.SetFlowDirection(activity.Resources.Configuration.LayoutDirection.ToFlowDirection());
@@ -323,6 +391,22 @@ namespace Xamarin.Forms
 
 			IsInitialized = true;
 			Profile.FrameEnd();
+		}
+
+		static TargetIdiom DetectIdiom(UiMode uiMode)
+		{
+			var returnValue = TargetIdiom.Unsupported;
+			if (uiMode.HasFlag(UiMode.TypeNormal))
+				returnValue = TargetIdiom.Unsupported;
+			else if (uiMode.HasFlag(UiMode.TypeTelevision))
+				returnValue = TargetIdiom.TV;
+			else if (uiMode.HasFlag(UiMode.TypeDesk))
+				returnValue = TargetIdiom.Desktop;
+			else if (SdkInt >= BuildVersionCodes.KitkatWatch && uiMode.HasFlag(UiMode.TypeWatch))
+				returnValue = TargetIdiom.Watch;
+
+			Device.SetIdiom(returnValue);
+			return returnValue;
 		}
 
 		static IReadOnlyList<string> s_flags;
@@ -409,6 +493,7 @@ namespace Xamarin.Forms
 			double _scalingFactor;
 
 			Orientation _previousOrientation = Orientation.Undefined;
+			Platform.Android.DualScreen.IDualScreenService DualScreenService => DependencyService.Get<Platform.Android.DualScreen.IDualScreenService>();
 
 			public AndroidDeviceInfo(Context formsActivity)
 			{
@@ -471,7 +556,16 @@ namespace Xamarin.Forms
 
 			void CheckOrientationChanged(Context formsActivity)
 			{
-				var orientation = formsActivity.Resources.Configuration.Orientation;
+				Orientation orientation;
+
+				if (DualScreenService?.IsSpanned == true)
+				{
+					orientation = (DualScreenService.IsLandscape) ? Orientation.Landscape : Orientation.Portrait;
+				}
+				else
+				{
+					orientation = formsActivity.Resources.Configuration.Orientation;
+				}
 
 				if (!_previousOrientation.Equals(orientation))
 					CurrentOrientation = orientation.ToDeviceOrientation();
@@ -537,6 +631,12 @@ namespace Xamarin.Forms
 
 			public void BeginInvokeOnMainThread(Action action)
 			{
+				if (_context.IsDesignerContext())
+				{
+					action();
+					return;
+				}
+
 				if (s_handler == null || s_handler.Looper != Looper.MainLooper)
 				{
 					s_handler = new Handler(Looper.MainLooper);
@@ -651,14 +751,17 @@ namespace Xamarin.Forms
 			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
 				using (var client = new HttpClient())
-				using (HttpResponseMessage response = await client.GetAsync(uri, cancellationToken))
 				{
+					HttpResponseMessage response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
 					if (!response.IsSuccessStatusCode)
 					{
 						Internals.Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
 						return null;
 					}
-					return await response.Content.ReadAsStreamAsync();
+
+					// the HttpResponseMessage needs to be disposed of after the calling code is done with the stream
+					// otherwise the stream may get disposed before the caller can use it
+					return new StreamWrapper(await response.Content.ReadAsStreamAsync().ConfigureAwait(false), response);
 				}
 			}
 

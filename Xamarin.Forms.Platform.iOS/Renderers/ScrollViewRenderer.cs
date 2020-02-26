@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _checkedForRtlScroll = false;
 		bool _previousLTR = true;
 
+		[Preserve(Conditional = true)]
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
 			ScrollAnimationEnded += HandleScrollAnimationEnded;
@@ -123,7 +124,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
-			if(Superview != null)
+			if(Superview != null && ScrollView != null)
 			{
 				if (_requestedScroll != null)
 				{
@@ -146,7 +147,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFlowDirection()
 		{
-			if (Superview == null || _requestedScroll != null || _checkedForRtlScroll)
+			if (Superview == null || ScrollView.Content == null || _requestedScroll != null || _checkedForRtlScroll)
 				return;
 
 			if (Element is IVisualElementController controller && ScrollView.Orientation != ScrollOrientation.Vertical)
@@ -260,29 +261,33 @@ namespace Xamarin.Forms.Platform.iOS
 				_requestedScroll = e;
 				return;
 			}
+
+			PointF newOffset = PointF.Empty;
 			if (e.Mode == ScrollToMode.Position)
-				SetContentOffset(new PointF((nfloat)e.ScrollX, (nfloat)e.ScrollY), e.ShouldAnimate);
+				newOffset = new PointF((nfloat)e.ScrollX, (nfloat)e.ScrollY);
 			else
 			{
 				var positionOnScroll = ScrollView.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
-
-				positionOnScroll.X = positionOnScroll.X.Clamp(0, ContentSize.Width - Bounds.Size.Width);
-				positionOnScroll.Y = positionOnScroll.Y.Clamp(0, ContentSize.Height - Bounds.Size.Height);
+				positionOnScroll.X = positionOnScroll.X.Clamp(0, ContentSize.Width);
+				positionOnScroll.Y = positionOnScroll.Y.Clamp(0, ContentSize.Height);
 
 				switch (ScrollView.Orientation)
 				{
 					case ScrollOrientation.Horizontal:
-						SetContentOffset(new PointF((nfloat)positionOnScroll.X, ContentOffset.Y), e.ShouldAnimate);
+						newOffset = new PointF((nfloat)positionOnScroll.X, ContentOffset.Y);
 						break;
 					case ScrollOrientation.Vertical:
-						SetContentOffset(new PointF(ContentOffset.X, (nfloat)positionOnScroll.Y), e.ShouldAnimate);
+						newOffset = new PointF(ContentOffset.X, (nfloat)positionOnScroll.Y);
 						break;
 					case ScrollOrientation.Both:
-						SetContentOffset(new PointF((nfloat)positionOnScroll.X, (nfloat)positionOnScroll.Y), e.ShouldAnimate);
+						newOffset = new PointF((nfloat)positionOnScroll.X, (nfloat)positionOnScroll.Y);
 						break;
 				}
 			}
-			if (!e.ShouldAnimate)
+			var sameOffset = newOffset == ContentOffset;
+			SetContentOffset(newOffset, e.ShouldAnimate);
+
+			if (!e.ShouldAnimate || sameOffset)
 				ScrollView.SendScrollFinished();
 		}
 

@@ -4,6 +4,11 @@ using Android.Views;
 using AView = Android.Views.View;
 using AListView = Android.Widget.ListView;
 using System.ComponentModel;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
+using Android.Support.V4.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -57,6 +62,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			_adapter = GetModelRenderer(listView, view);
 			listView.Adapter = _adapter;
+		}
+		protected override void OnAttachedToWindow()
+		{
+			base.OnAttachedToWindow();
+
+			if (Forms.IsLollipopOrNewer && Control != null)
+				Control.NestedScrollingEnabled = (Parent.GetParentOfType<NestedScrollView>() != null);
 		}
 
 		protected override void Dispose(bool disposing)

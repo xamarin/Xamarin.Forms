@@ -10,6 +10,7 @@ using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
 using System.Linq;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
@@ -17,7 +18,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 	[Activity(Label = "Control Gallery", Icon = "@drawable/icon", Theme = "@style/MyTheme",
 		MainLauncher = true, HardwareAccelerated = true, 
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
 	[IntentFilter(new[] { Intent.ActionView },
 		Categories = new[]
 		{
@@ -32,6 +33,8 @@ namespace Xamarin.Forms.ControlGallery.Android
 	{
 		protected override void OnCreate(Bundle bundle)
 		{
+			Profile.Start();
+
 			ToolbarResource = Resource.Layout.Toolbar;
 			TabLayoutResource = Resource.Layout.Tabbar;
 
@@ -44,11 +47,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// Fake_Flag is here so we can test for flag initialization issues
 			Forms.SetFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
 #else
-			Forms.SetFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental" */);
+			Forms.SetFlags("UseLegacyRenderers", "SwipeView_Experimental", "MediaElement_Experimental");
 #endif
 			Forms.Init(this, bundle);
 
 			FormsMaps.Init(this, bundle);
+			DualScreen.DualScreenService.Init(this);
 			FormsMaterial.Init(this, bundle);
 			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
@@ -81,6 +85,16 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			SetUpForceRestartTest();
 
+			// Make the activity accessible to platform unit tests
+			DependencyResolver.ResolveUsing((t) => {
+				if (t == typeof(Context))
+				{
+					return this;
+				}
+
+				return null;
+			});
+
 			LoadApplication(_app);
 			if (Forms.Flags.Contains("FastRenderers_Experimental"))
 			{
@@ -90,7 +104,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			}
 		}
 
-		
+		protected override void OnResume()
+		{
+			base.OnResume();
+			Profile.Stop();
+		}
+
 		[Export("IsPreAppCompat")]
 		public bool IsPreAppCompat()
 		{

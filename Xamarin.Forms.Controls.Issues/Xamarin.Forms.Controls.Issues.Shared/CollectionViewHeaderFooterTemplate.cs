@@ -22,13 +22,11 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 #if APP
-			FlagTestHelpers.SetCollectionViewTestFlag();
-
 			PushAsync(new GalleryPages.CollectionViewGalleries.HeaderFooterGalleries.HeaderFooterTemplate());
 #endif
 		}
 
-#if UITEST && __ANDROID__ // TODO ezhart When this feature is implemented on iOS, update this check
+#if UITEST
 		[Test]
 		public void CollectionViewHeaderAndFooterUsingTemplates()
 		{

@@ -90,6 +90,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate CarouselXamlTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				return new CarouselViewGalleries.ExampleTemplateCarousel();
+			});
+		}
+
 		public static DataTemplate CarouselTemplate()
 		{
 			return new DataTemplate(() =>
@@ -113,15 +121,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
 
-				var caption = new Label
+				var caption = new Button
 				{
 					BackgroundColor = Color.Gray,
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center,
 					Margin = new Thickness(5)
 				};
 
-				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
+				caption.SetBinding(Button.TextProperty, new Binding("Caption"));
+				caption.SetBinding(Button.AutomationIdProperty, new Binding("Caption"));
+				caption.Clicked += (sender, e) =>
+				{
+					App.Current.MainPage.DisplayAlert("Button works", (sender as Button).Text, "Ok");
+				};
 
 				grid.Children.Add(image);
 				grid.Children.Add(caption);
@@ -135,6 +147,28 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				};
 
 				return frame;
+			});
+		}
+
+		public static DataTemplate IndicatorTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var image = new Image
+				{
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center,
+					Aspect = Aspect.AspectFill,
+					Source = new FontImageSource
+					{
+						FontFamily = DefaultFontFamily(),
+						Glyph = "\uf30c",
+					},
+					HeightRequest = 10,
+					WidthRequest = 10
+				};
+
+				return image;
 			});
 		}
 
@@ -455,6 +489,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		static void More_Clicked(object sender, EventArgs e)
 		{
 			throw new NotImplementedException();
+		}
+
+		static string DefaultFontFamily()
+		{
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+
+			return fontFamily;
 		}
 
 		class IndexRequestConverter : IValueConverter

@@ -7,10 +7,7 @@ namespace Xamarin.Forms.Xaml
 {
 	class ExpandMarkupsVisitor : IXamlNodeVisitor
 	{
-		public ExpandMarkupsVisitor(HydrationContext context)
-		{
-			Context = context;
-		}
+		public ExpandMarkupsVisitor(HydrationContext context) => Context = context;
 
 		public static readonly IList<XmlName> Skips = new List<XmlName>
 		{
@@ -93,8 +90,7 @@ namespace Xamarin.Forms.Xaml
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0) {
 				var ex = new XamlParseException("Expression did not end in '}'", xmlLineInfo);
-				if (Context.ExceptionHandler != null)
-				{
+				if (Context.ExceptionHandler != null) {
 					Context.ExceptionHandler(ex);
 					return null;
 				}
@@ -108,7 +104,7 @@ namespace Xamarin.Forms.Xaml
 
 		public class MarkupExpansionParser : MarkupExpressionParser, IExpressionParser<INode>
 		{
-			IElementNode node;
+			IElementNode _node;
 			internal Action<Exception> ExceptionHandler { get; set; }
 			object IExpressionParser.Parse(string match, ref string remaining, IServiceProvider serviceProvider)
 			{
@@ -117,38 +113,65 @@ namespace Xamarin.Forms.Xaml
 
 			public INode Parse(string match, ref string remaining, IServiceProvider serviceProvider)
 			{
-				var nsResolver = serviceProvider.GetService(typeof (IXmlNamespaceResolver)) as IXmlNamespaceResolver;
-				if (nsResolver == null)
+				if (!(serviceProvider.GetService(typeof(IXmlNamespaceResolver)) is IXmlNamespaceResolver nsResolver))
 					throw new ArgumentException();
 				IXmlLineInfo xmlLineInfo = null;
-				var xmlLineInfoProvider = serviceProvider.GetService(typeof (IXmlLineInfoProvider)) as IXmlLineInfoProvider;
-				if (xmlLineInfoProvider != null)
+				if (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider xmlLineInfoProvider)
 					xmlLineInfo = xmlLineInfoProvider.XmlLineInfo;
 
-				var split = match.Split(':');
-				if (split.Length > 2)
-					throw new ArgumentException();
+				var (prefix, name) = ParseName(match);
 
-				string prefix; //, name;
-				if (split.Length == 2)
-				{
-					prefix = split[0];
-					//					name = split [1];
+				var namespaceuri = nsResolver.LookupNamespace(prefix) ?? "";
+
+				IList<XmlType> typeArguments = null;
+				var childnodes = new List<(XmlName, INode)>();
+				var contentname = new XmlName(null, null);
+
+				if (remaining.StartsWith("}", StringComparison.Ordinal)) {
+					remaining = remaining.Substring(1);
 				}
-				else
-				{
-					prefix = "";
-					//					name = split [0];
+				else {
+					Property parsed;
+					do {
+						parsed = ParseProperty(serviceProvider, ref remaining);
+						XmlName childname;
+
+						if (parsed.name == null) {
+							childname = contentname;
+						}
+						else {
+							var (propertyPrefix, propertyName) = ParseName(parsed.name);
+
+							childname = XamlParser.ParsePropertyName(new XmlName(
+								propertyPrefix == "" ? null : nsResolver.LookupNamespace(propertyPrefix),
+								propertyName));
+
+							if (childname.NamespaceURI == null && childname.LocalName == null)
+								continue;
+						}
+
+						if (childname == XmlName.xTypeArguments) {
+							typeArguments = TypeArgumentsParser.ParseExpression(parsed.strValue, nsResolver, xmlLineInfo);
+							childnodes.Add((childname, new ValueNode(typeArguments, nsResolver)));
+						}
+						else {
+							var childnode = parsed.value as INode ?? new ValueNode(parsed.strValue, nsResolver);
+							childnodes.Add((childname, childnode));
+						}
+					}
+					while (!parsed.last);
 				}
 
-				Type type;
-				var typeResolver = serviceProvider.GetService(typeof (IXamlTypeResolver)) as IXamlTypeResolver;
-				if (typeResolver == null)
-					type = null;
-				else
-				{
-					//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
-					if (!typeResolver.TryResolve(match + "Extension", out type) && !typeResolver.TryResolve(match, out type)) {
+
+				if (!(serviceProvider.GetService(typeof (IXamlTypeResolver)) is XamlTypeResolver typeResolver))
+					throw new NotSupportedException();
+
+				var xmltype = new XmlType(namespaceuri, name + "Extension", typeArguments);
+
+				//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
+				if (!typeResolver.TryResolve(xmltype, out _)) {
+					xmltype = new XmlType(namespaceuri, name, typeArguments);
+					if (!typeResolver.TryResolve(xmltype, out _)) {
 						var ex = new XamlParseException($"MarkupExtension not found for {match}", serviceProvider);
 						if (ExceptionHandler != null) {
 							ExceptionHandler(ex);
@@ -158,43 +181,23 @@ namespace Xamarin.Forms.Xaml
 					}
 				}
 
-				var namespaceuri = nsResolver.LookupNamespace(prefix) ?? "";
-				var xmltype = new XmlType(namespaceuri, type.Name, null);
-
-				if (type == null)
-					throw new NotSupportedException();
-
-				node = xmlLineInfo == null
+				_node = xmlLineInfo == null
 					? new ElementNode(xmltype, null, nsResolver)
 					: new ElementNode(xmltype, null, nsResolver, xmlLineInfo.LineNumber, xmlLineInfo.LinePosition);
 
-				if (remaining.StartsWith("}", StringComparison.Ordinal))
-				{
-					remaining = remaining.Substring(1);
-					return node;
+				foreach (var (childname, childnode) in childnodes) {
+					childnode.Parent = _node;
+
+					if (childname == contentname) {
+						//ContentProperty
+						_node.CollectionItems.Add(childnode);
+					}
+					else {
+						_node.Properties[childname] = childnode;
+					}
 				}
 
-				char next;
-				string piece;
-				while ((piece = GetNextPiece(ref remaining, out next)) != null)
-					HandleProperty(piece, serviceProvider, ref remaining, next != '=');
-
-				return node;
-			}
-
-			protected override void SetPropertyValue(string prop, string strValue, object value, IServiceProvider serviceProvider)
-			{
-				var nsResolver = serviceProvider.GetService(typeof (IXmlNamespaceResolver)) as IXmlNamespaceResolver;
-
-				var childnode = value as INode ?? new ValueNode(strValue, nsResolver);
-				childnode.Parent = node;
-				if (prop != null)
-				{
-					var name = new XmlName(node.NamespaceURI, prop);
-					node.Properties[name] = childnode;
-				}
-				else //ContentProperty
-					node.CollectionItems.Add(childnode);
+				return _node;
 			}
 		}
 	}

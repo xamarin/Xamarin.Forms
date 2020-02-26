@@ -45,8 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="2.6.4" />
-    <PackageReference Include="NUnitTestAdapter" Version="2.1.1" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter">
+      <Version>3.15.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
@@ -68,22 +70,31 @@
     <Compile Include="BindingUnitTests.cs" />
     <Compile Include="ButtonUnitTest.cs" />
     <Compile Include="CarouselPageTests.cs" />
+    <Compile Include="CarouselViewTests.cs" />
     <Compile Include="CellTests.cs" />
     <Compile Include="ColorUnitTests.cs" />
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
+    <Compile Include="NumericExtensionsTests.cs" />
+    <Compile Include="RefreshViewTests.cs" />
+    <Compile Include="MockDispatcherProvider.cs" />
+    <Compile Include="MockDispatcher.cs" />
     <Compile Include="DeviceUnitTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
+    <Compile Include="ShellModalTests.cs" />
     <Compile Include="ShellTestBase.cs" />
     <Compile Include="ShellLifeCycleTests.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
     <Compile Include="CheckBoxUnitTests.cs" />
+    <Compile Include="StateTriggerTests.cs" />
     <Compile Include="VisualTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="ImageButtonUnitTest.cs" />
     <Compile Include="ItemsViewTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
+    <Compile Include="MediaElementTests.cs" />
+    <Compile Include="MediaSourceTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
     <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
@@ -243,8 +254,9 @@
   </ItemGroup>
   <Target Name="_CopyNUnitTestAdapterFiles" AfterTargets="Build">
     <ItemGroup>
-      <_NUnitTestAdapterFiles Include="$(NuGetPackageRoot)NUnitTestAdapter\%(Version)\**" Condition="@(PackageReference -> '%(Identity)') == 'NUnitTestAdapter'" InProject="False" />
+      <_NUnitTestAdapterFiles Include="$(NuGetPackageRoot)NUnit3TestAdapter\%(Version)\build\net35\**" Condition="@(PackageReference -> '%(Identity)') == 'NUnit3TestAdapter'" InProject="False" />
     </ItemGroup>
-    <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)packages\NUnitTestAdapter.AnyVersion\%(RecursiveDir)" ContinueOnError="true" Retries="0" />
+    <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)packages\NUnitTestAdapter.AnyVersion\tools\%(RecursiveDir)" ContinueOnError="true" Retries="0" />
+    <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)packages\NUnitTestAdapter.AnyVersion\build\%(RecursiveDir)" ContinueOnError="true" Retries="0" />
   </Target>
 </Project>

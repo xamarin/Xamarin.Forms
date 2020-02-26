@@ -11,20 +11,29 @@ if "%1" == "droid" (
    set CONFIG=debug
    call .create-stubs.bat
    %NUGET_EXE% restore .xamarin.forms.android.nuget.sln
-   msbuild /v:m /p:platform="any cpu" /p:WarningLevel=0 /p:CreateAllAndroidTargets=true .xamarin.forms.android.nuget.sln
+   msbuild /v:m /p:platform="any cpu" /p:WarningLevel=0 .xamarin.forms.android.nuget.sln /t:Restore
+   msbuild /v:m /p:platform="any cpu" /p:WarningLevel=0 .xamarin.forms.android.nuget.sln
 )
 if "%1" == "rdroid" (
    set CONFIG=release
    call .create-stubs.bat
    %NUGET_EXE% restore .xamarin.forms.android.nuget.sln
+   msbuild /v:m /p:configuration=release /p:platform="any cpu" /p:WarningLevel=0 .xamarin.forms.android.nuget.sln /t:Restore
    msbuild /v:m /p:configuration=release /p:platform="any cpu" /p:WarningLevel=0 .xamarin.forms.android.nuget.sln
+)
+if "%1" == "adroid" (
+   call .create-nuget.bat droid
+   call .create-nuget.bat rdroid
+   EXIT /b
 )
 if "%1" == "pdroid" (
    set CONFIG=release
+   msbuild /v:m /p:configuration=release /p:platform="anyCpu" /p:WarningLevel=0 Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android.csproj /t:Restore
    msbuild /v:m /p:configuration=release /p:platform="anyCpu" /p:WarningLevel=0 Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android.csproj
 )
 if "%1" == "pddroid" (
    set CONFIG=debug
+   msbuild /v:m /p:configuration=debug /p:platform="anyCpu" /p:WarningLevel=0 Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android.csproj /t:Restore
    msbuild /v:m /p:configuration=debug /p:platform="anyCpu" /p:WarningLevel=0 Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android.csproj
 )
 if "%1" == "ios" (
@@ -65,6 +74,7 @@ if "%1" == "rall" (
    call .create-stubs.bat
    %NUGET_EXE% restore .xamarin.forms.nuget.sln
    msbuild /v:m /p:platform="any cpu" .xamarin.forms.uap.nuget.sln /t:restore /p:configuration=release
+   msbuild /v:m /p:platform="any cpu" /p:WarningLevel=0 .xamarin.forms.nuget.sln /p:configuration=release /t:Restore
    msbuild /v:m /p:platform="any cpu" /p:WarningLevel=0 .xamarin.forms.nuget.sln /p:configuration=release
 )
 

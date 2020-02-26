@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
-		
+
 		public static readonly BindableProperty BackgroundImageSourceProperty = BindableProperty.Create(nameof(BackgroundImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
 		[Obsolete("BackgroundImageProperty is obsolete as of 4.0.0. Please use BackgroundImageSourceProperty instead.")]
@@ -54,6 +54,8 @@ namespace Xamarin.Forms
 		ReadOnlyCollection<Element> _logicalChildren;
 
 		View _titleView;
+
+		List<Action> _pendingActions = new List<Action>();
 
 		public Page()
 		{
@@ -167,7 +169,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => 
+		internal override ReadOnlyCollection<Element> LogicalChildrenInternal =>
 			_logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(InternalChildren));
 
 		public event EventHandler LayoutChanged;
@@ -179,7 +181,12 @@ namespace Xamarin.Forms
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
 			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
-			MessagingCenter.Send(this, ActionSheetSignalName, args);
+
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, ActionSheetSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, ActionSheetSignalName, args));
+
 			return args.Result.Task;
 		}
 
@@ -194,15 +201,43 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException("cancel");
 
 			var args = new AlertArguments(title, message, accept, cancel);
-			MessagingCenter.Send(this, AlertSignalName, args);
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, AlertSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, AlertSignalName, args));
+
 			return args.Result.Task;
 		}
 
+		[Obsolete("DisplayPromptAsync overload is obsolete as of version 4.5.0 and is no longer supported.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard))
 		{
-			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard);
-			MessagingCenter.Send(this, PromptSignalName, args);
+			return DisplayPromptAsync(title, message, accept, cancel, placeholder, maxLength, keyboard, "");
+		}
+
+		public Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = null, int maxLength = -1, Keyboard keyboard = default(Keyboard), string initialValue = "")
+		{
+			var args = new PromptArguments(title, message, accept, cancel, placeholder, maxLength, keyboard, initialValue);
+
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, PromptSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, PromptSignalName, args));
+
 			return args.Result.Task;
+		}
+
+		internal override void OnIsPlatformEnabledChanged()
+		{
+			base.OnIsPlatformEnabledChanged();
+			if(IsPlatformEnabled && _pendingActions.Count > 0)
+			{
+				var actionsToProcess = _pendingActions.ToList();
+				_pendingActions.Clear();
+				foreach(var pendingAction in actionsToProcess)
+					pendingAction();
+			}
 		}
 
 		public void ForceLayout()
@@ -368,7 +403,12 @@ namespace Xamarin.Forms
 			_hasAppeared = true;
 
 			if (IsBusy)
-				MessagingCenter.Send(this, BusySetSignalName, true);
+			{
+				if (IsPlatformEnabled)
+					MessagingCenter.Send(this, BusySetSignalName, true);
+				else
+					_pendingActions.Add(() => MessagingCenter.Send(this, BusySetSignalName, true));
+			}
 
 			OnAppearing();
 			Appearing?.Invoke(this, EventArgs.Empty);

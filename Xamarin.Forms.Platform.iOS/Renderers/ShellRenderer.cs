@@ -6,6 +6,12 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellRenderer : UIViewController, IShellContext, IVisualElementRenderer, IEffectControlProvider
 	{
+		[Internals.Preserve(Conditional = true)]
+		public ShellRenderer()
+		{
+
+		}
+
 		#region IShellContext
 
 		bool IShellContext.AllowFlyoutGesture
@@ -176,7 +182,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual IShellTabBarAppearanceTracker CreateTabBarAppearanceTracker()
 		{
-			return new SafeShellTabBarAppearanceTracker();
+			return new ShellTabBarAppearanceTracker();
 		}
 
 		protected override void Dispose(bool disposing)

@@ -36,9 +36,9 @@ namespace Xamarin.Forms
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
 		static bool? s_isiOS11OrNewer;
-#endif
+		static bool? s_isiOS13OrNewer;
+		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
-#if __MOBILE__
 		internal static bool IsiOS9OrNewer
 		{
 			get
@@ -69,6 +69,39 @@ namespace Xamarin.Forms
 				return s_isiOS11OrNewer.Value;
 			}
 		}
+
+		internal static bool IsiOS13OrNewer
+		{
+			get
+			{
+				if (!s_isiOS13OrNewer.HasValue)
+					s_isiOS13OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(13, 0);
+				return s_isiOS13OrNewer.Value;
+			}
+		}
+
+		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (!s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.HasValue)
+					s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden = new UIViewController().RespondsToSelector(new ObjCRuntime.Selector("setNeedsUpdateOfHomeIndicatorAutoHidden"));
+				return s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.Value;
+			}
+		}
+#else
+		static bool? s_isMojaveOrNewer;
+
+		internal static bool IsMojaveOrNewer
+		{
+			get
+			{
+				if (!s_isMojaveOrNewer.HasValue)
+					s_isMojaveOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 14, 0));
+				return s_isMojaveOrNewer.Value;
+			}
+		}
+
 #endif
 
 		static IReadOnlyList<string> s_flags;
@@ -117,7 +150,7 @@ namespace Xamarin.Forms
 #endif
 
 			Internals.Registrar.RegisterAll(new[]
-				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(ExportFontAttribute) });
 			ExpressionSearch.Default = new iOSExpressionSearch();
 		}
 

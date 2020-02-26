@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class EntryRenderer : EntryRendererBase<UITextField>
 	{
+		[Preserve(Conditional = true)]
 		public EntryRenderer()
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
@@ -146,6 +147,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateCursorColor();
 			UpdateIsReadOnly();
+
+			if (Element.ClearButtonVisibility != ClearButtonVisibility.Never)
+				UpdateClearButtonVisibility();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -200,6 +204,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCursorColor();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
+				UpdateClearButtonVisibility();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -241,7 +247,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.ResignFirstResponder();
 			((IEntryController)Element).SendCompleted();
 
-			if (Element.ReturnType == ReturnType.Next)
+			if (Element != null && Element.ReturnType == ReturnType.Next)
 			{
 				FocusSearch(true);
 			}
@@ -338,17 +344,19 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 
-			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
 		}
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
+			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdateText()
 		{
@@ -367,7 +375,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 
 			if (placeHolder != null)
-				Control.AttributedPlaceholder = placeHolder;
+				UpdateAttributedPlaceholder(placeHolder);
 		}
 
 		void UpdateMaxLength()
@@ -534,9 +542,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-        void UpdateIsReadOnly()
-        {
-            Control.UserInteractionEnabled = !Element.IsReadOnly;
-        }
-    }
+		void UpdateIsReadOnly()
+		{
+			Control.UserInteractionEnabled = !Element.IsReadOnly;
+		}
+
+		void UpdateClearButtonVisibility()
+		{
+			Control.ClearButtonMode = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing ? UITextFieldViewMode.WhileEditing : UITextFieldViewMode.Never;
+		}
+	}
 }

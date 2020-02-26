@@ -35,6 +35,10 @@
 	{
 	}
 
+	internal class _RadioButtonRenderer
+	{
+	}
+
 	internal class _TableViewRenderer
 	{
 	}
@@ -87,6 +91,10 @@
 	{
 	}
 
+	internal class _RefreshViewRenderer
+	{
+	}
+
 	internal class _ScrollViewRenderer
 	{
 	}
@@ -100,6 +108,10 @@
 	}
 
 	internal class _CheckBoxRenderer
+	{
+	}
+
+	internal class _IndicatorViewRenderer
 	{
 	}
 
@@ -124,6 +136,14 @@
 	}
 
 	internal class _MasterDetailPageRenderer
+	{
+	}
+
+	internal class _MediaElementRenderer
+  {
+	}
+   
+  internal class _SwipeViewRenderer
 	{
 	}
 }
