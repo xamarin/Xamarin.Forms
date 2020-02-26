@@ -3,6 +3,7 @@ using Xamarin.Forms.Xaml;
 using Xamarin.Forms.CustomAttributes;
 using System;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 #if UITEST
 using NUnit.Framework;
@@ -25,6 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue8781()
 		{
 #if APP
+			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
 			InitializeComponent();
 			BindingContext = this;
 #endif
@@ -34,6 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		async void OnCheckAnswer(string parameter)
 		{
+#if APP
 			if (string.IsNullOrEmpty(parameter))
 				return;
 
@@ -48,6 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 				resultEntry.Text = string.Empty;
 				await DisplayAlert("Incorrect!", "Try again.", "OK");
 			}
+#endif
 		}
 	}
 }
