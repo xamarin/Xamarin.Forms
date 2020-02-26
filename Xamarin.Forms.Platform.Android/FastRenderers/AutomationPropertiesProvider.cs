@@ -1,5 +1,10 @@
 using System;
 using System.ComponentModel;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+#else
+using Android.Support.V4.View;
+#endif
 using Android.Views;
 using Android.Widget;
 using AView = Android.Views.View;
@@ -55,15 +60,31 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (defaultContentDescription == null)
 				defaultContentDescription = control.ContentDescription;
-
+			
 			string value = ConcatenateNameAndHelpText(bindableObject);
+			string contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+			string automationId = (bindableObject as Element)?.AutomationId;
 
-			var contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
-
-			if (String.IsNullOrWhiteSpace(contentDescription) && bindableObject is Element element)
-				contentDescription = element.AutomationId;
-
-			control.ContentDescription = contentDescription;
+			if (!string.IsNullOrWhiteSpace(automationId) && !string.IsNullOrWhiteSpace(contentDescription))
+			{
+				var target = control;
+				if (control is IButtonLayoutRenderer buttonLayoutRenderer)
+				{
+					target = buttonLayoutRenderer.View;
+				}
+				else if (control is AppCompat.SwitchRenderer switchRenderer)
+				{
+					target = switchRenderer.Control;
+				}
+				target.ContentDescription = automationId;
+				ViewCompat.SetAccessibilityDelegate(target, new NameAndHelpTextAccessibilityDelegate {
+					AccessibilityText = contentDescription
+				});
+			}
+			else
+			{
+				control.ContentDescription = string.IsNullOrWhiteSpace(contentDescription) ? automationId : contentDescription;
+			}
 		}
 
 		internal static void SetContentDescription(
@@ -238,15 +259,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		internal static string ConcatenateNameAndHelpText(BindableObject Element)
 		{
-			var name = (string)Element.GetValue(AutomationProperties.NameProperty);
+			var name = (string)Element.GetValue(AutomationProperties.NameProperty) ?? (Element as Button)?.Text;
 			var helpText = (string)Element.GetValue(AutomationProperties.HelpTextProperty);
 
 			if (string.IsNullOrWhiteSpace(name))
 				return helpText;
-			if (string.IsNullOrWhiteSpace(helpText))
-				return name;
 
-			return $"{name}. {helpText}";
+			return string.IsNullOrWhiteSpace(helpText) ? $"{name}" : $"{name}. {helpText}";
 		}
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
