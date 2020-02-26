@@ -97,6 +97,12 @@ namespace Xamarin.Forms.Platform.iOS
 			SubscribeCollectionItemsSourceChanged(ItemsSource);
 		}
 
+		protected override void BoundsSizeChanged()
+		{
+			base.BoundsSizeChanged();
+			_carouselView.ScrollTo(_carouselView.Position, position: ScrollToPosition.Center, animate: false);
+		}
+
 		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			UpdateCarouselViewPosition();
@@ -195,7 +201,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			foreach (var cell in cells)
 			{
-				var itemView = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element as View;
+				if (!((cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element is View itemView))
+					return;
+
 				var item = itemView.BindingContext;
 				var pos = GetPosition(item);
 

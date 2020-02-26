@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
-				Position = 1,
+				Position = 2,
 				Margin = new Thickness(0,10,0,10),
 				BackgroundColor = Color.LightGray,
 				AutomationId = "TheCarouselView"
