@@ -20,8 +20,12 @@
                         Text="I'm a CollectionView with SwipeItems and 50 margin."/>
                     <Label
                         Text="BUG: If you scroll me with a SwipeItem open past the recycle point, you might see a swipe item behind me."/>
-                    </StackLayout>
-                </CollectionView.Header>
+                    <Label
+                        BackgroundColor="Black"
+                        TextColor="White"
+                        Text="Verify that SwipeView eliminates the SwipeItems when closed."/>
+                </StackLayout>
+            </CollectionView.Header>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <SwipeView>
