@@ -148,15 +148,8 @@ namespace Xamarin.Forms
 
 		public double Volume
 		{
-			get
-			{
-				VolumeRequested?.Invoke(this, EventArgs.Empty);
-				return (double)GetValue(VolumeProperty);
-			}
-			set
-			{
-				SetValue(VolumeProperty, value);
-			}
+			get => (double)GetValue(VolumeProperty);
+			set => SetValue(VolumeProperty, value);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -167,10 +160,6 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler PositionRequested;
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public event EventHandler VolumeRequested;
-
 
 		public void Play()
 		{

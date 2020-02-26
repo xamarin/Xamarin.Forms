@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 		NSObject _playedToEndObserver;
 		NSObject _statusObserver;
 		NSObject _rateObserver;
+		NSObject _volumeObserver;
 				
 		bool _idleTimerDisabled = false;
 
@@ -100,6 +101,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_avPlayerViewController.Player = new AVPlayer(item);
 					_rateObserver = (NSObject)_avPlayerViewController.Player.AddObserver("rate", NSKeyValueObservingOptions.New, ObserveRate);
+					_volumeObserver = (NSObject)_avPlayerViewController.Player.AddObserver("volume", NSKeyValueObservingOptions.New, ObserveVolume);
 				}
 				
 				if (Element.AutoPlay)
@@ -123,11 +125,11 @@ namespace Xamarin.Forms.Platform.iOS
 				_playedToEndObserver = null;
 			}
 
-			if(_rateObserver != null)
-			{
-				_rateObserver.Dispose();
-				_rateObserver = null;
-			}
+			_rateObserver?.Dispose();
+			_rateObserver = null;
+
+			_volumeObserver?.Dispose();
+			_volumeObserver = null;
 
 			RemoveStatusObserver();
 
@@ -172,6 +174,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void ObserveVolume(NSObservedChange e)
+		{
+			if (Controller == null)
+				return;
+			Controller.Volume = _avPlayerViewController.Player.Volume;
+		}
+
 		void ObserveStatus(NSObservedChange e)
 		{
 			Controller.Volume = _avPlayerViewController.Player.Volume;
@@ -202,7 +211,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (_avPlayerViewController.Player.CurrentTime.IsInvalid)
+				if (_avPlayerViewController.Player?.CurrentTime.IsInvalid ?? true)
 					return TimeSpan.Zero;
 
 				return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentTime.Seconds);
@@ -213,9 +222,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Element.IsLooping)
 			{
-				_avPlayerViewController.Player.Seek(CMTime.Zero);
+				_avPlayerViewController.Player?.Seek(CMTime.Zero);
 				Controller.Position = Position;
-				_avPlayerViewController.Player.Play();
+				_avPlayerViewController.Player?.Play();
 			}
 			else
 			{
@@ -259,14 +268,15 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case nameof(MediaElement.Volume):
-					_avPlayerViewController.Player.Volume = (float)Element.Volume;
+					if(_avPlayerViewController.Player != null)
+						_avPlayerViewController.Player.Volume = (float)Element.Volume;
 					break;
 			}
 		}
 
 		void MediaElementSeekRequested(object sender, SeekRequested e)
 		{
-			if (_avPlayerViewController.Player.Status != AVPlayerStatus.ReadyToPlay || _avPlayerViewController.Player.CurrentItem == null)
+			if (_avPlayerViewController.Player.Status != AVPlayerStatus.ReadyToPlay || _avPlayerViewController.Player?.CurrentItem == null)
 				return;
 
 			NSValue[] ranges = _avPlayerViewController.Player.CurrentItem.SeekableTimeRanges;
@@ -310,8 +320,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void MediaElementStateRequested(object sender, StateRequested e)
 		{
-			MediaElementVolumeRequested(this, EventArgs.Empty);
-
 			switch (e.State)
 			{
 				case MediaElementState.Playing:
@@ -373,10 +381,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void MediaElementVolumeRequested(object sender, EventArgs e)
-		{
-			Controller.Volume = _avPlayerViewController.Player.Volume;
-		}
 
 		void MediaElementPositionRequested(object sender, EventArgs e)
 		{
@@ -393,7 +397,6 @@ namespace Xamarin.Forms.Platform.iOS
 				e.OldElement.SeekRequested -= MediaElementSeekRequested;
 				e.OldElement.StateRequested -= MediaElementStateRequested;
 				e.OldElement.PositionRequested -= MediaElementPositionRequested;
-				e.OldElement.VolumeRequested -= MediaElementVolumeRequested;
 
 				if (_playedToEndObserver != null)
 				{
@@ -421,7 +424,6 @@ namespace Xamarin.Forms.Platform.iOS
 				Element.SeekRequested += MediaElementSeekRequested;
 				Element.StateRequested += MediaElementStateRequested;
 				Element.PositionRequested += MediaElementPositionRequested;
-				Element.VolumeRequested += MediaElementVolumeRequested;
 
 				_avPlayerViewController.ShowsPlaybackControls = Element.ShowsPlaybackControls;
 				_avPlayerViewController.VideoGravity = AspectToGravity(Element.Aspect);
