@@ -232,11 +232,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateStatusBarStyle();
 			}
-			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
-			{
-				UpdateStatusBarStyle();
-				UpdateStatusBarColor();
-			}
 
 			_elementPropertyChanged?.Invoke(sender, e);
 
@@ -387,7 +382,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarColor()
 		{
-			if (!Element.IsAppeared)
+			if (!Element.HasAppeared)
 				return;
 
 			if (Element.StatusBarColor == Color.Default)
@@ -398,7 +393,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarStyle()
 		{
-			if (!Element.IsAppeared)
+			if (!Element.HasAppeared)
 				return;
 
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.M)

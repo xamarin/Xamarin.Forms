@@ -345,11 +345,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (ShouldUseSafeArea() && Page.Padding != SafeAreaInsets)
 					_userOverriddenSafeArea = true;
 			}
-			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
-			{
-				UpdateStatusBarStyle();
-				UpdateStatusBarColor();
-			}
 		}
 
 		public override UIKit.UIStatusBarAnimation PreferredStatusBarUpdateAnimation
@@ -557,7 +552,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarColor()
 		{
-			if (!Page.IsAppeared)
+			if (!Page.HasAppeared)
 				return;
 
 			if (Page.StatusBarColor == Color.Default)
@@ -590,7 +585,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarStyle()
 		{
-			if (!Page.IsAppeared)
+			if (!Page.HasAppeared)
 				return;
 
 			switch (Page.StatusBarStyle)

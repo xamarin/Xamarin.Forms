@@ -217,11 +217,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateStatusBarStyle();
 			}
-			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
-			{
-				UpdateStatusBarStyle();
-				UpdateStatusBarColor();
-			}
 		}
 
 		protected virtual void OnElementSet(Shell element)
@@ -281,7 +276,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarColor()
 		{
-			if (!Shell.IsAppeared)
+			if (!Shell.HasAppeared)
 				return;
 
 			if (Shell.StatusBarColor == Color.Default)
@@ -314,7 +309,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarStyle()
 		{
-			if (!Shell.IsAppeared)
+			if (!Shell.HasAppeared)
 				return;
 
 			switch (Shell.StatusBarStyle)

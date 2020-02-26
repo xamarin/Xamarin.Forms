@@ -45,30 +45,18 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(Page), default(ImageSource));
 
-		static readonly BindablePropertyKey IsAppearedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsAppeared), typeof(bool), typeof(Page), false);
-
-		public static readonly BindableProperty IsAppearedProperty = IsAppearedPropertyKey.BindableProperty;
-
-		public static readonly BindableProperty AppearingCommandProperty = BindableProperty.Create(nameof(AppearingCommand), typeof(ICommand), typeof(Page), null);
-
-		public static readonly BindableProperty AppearingCommandParameterProperty = BindableProperty.Create(nameof(AppearingCommandParameter), typeof(object), typeof(Page), null);
-
-		public static readonly BindableProperty DisappearingCommandProperty = BindableProperty.Create(nameof(DisappearingCommand), typeof(ICommand), typeof(Page), null);
-
-		public static readonly BindableProperty DisappearingCommandParameterProperty = BindableProperty.Create(nameof(DisappearingCommandParameter), typeof(object), typeof(Page), null);
-
-
-
 		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty IconProperty = IconImageSourceProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Page>> _platformConfigurationRegistry;
-
 		bool _allocatedFlag;
 		Rectangle _containerArea;
 		bool _hasAppeared;
 		bool _containerAreaSet;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool HasAppeared { get => _hasAppeared; }
 
 		ReadOnlyCollection<Element> _logicalChildren;
 
@@ -156,36 +144,6 @@ namespace Xamarin.Forms
 		{
 			get { return (StatusBarStyle)GetValue(StatusBarStyleProperty); }
 			set { SetValue(StatusBarStyleProperty, value); }
-		}
-
-		public bool IsAppeared
-		{
-			get { return (bool)GetValue(IsAppearedProperty); }
-			private set { SetValue(IsAppearedPropertyKey, value); }
-		}
-
-		public ICommand AppearingCommand
-		{
-			get { return (ICommand)GetValue(AppearingCommandProperty); }
-			set { SetValue(AppearingCommandProperty, value); }
-		}
-
-		public object AppearingCommandParameter
-		{
-			get { return GetValue(AppearingCommandParameterProperty); }
-			set { SetValue(AppearingCommandParameterProperty, value); }
-		}
-
-		public ICommand DisappearingCommand
-		{
-			get { return (ICommand)GetValue(DisappearingCommandProperty); }
-			set { SetValue(DisappearingCommandProperty, value); }
-		}
-
-		public object DisappearingCommandParameter
-		{
-			get { return GetValue(DisappearingCommandParameterProperty); }
-			set { SetValue(DisappearingCommandParameterProperty, value); }
 		}
 
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }
@@ -473,14 +431,9 @@ namespace Xamarin.Forms
 
 			OnAppearing();
 			Appearing?.Invoke(this, EventArgs.Empty);
-			if (AppearingCommand?.CanExecute(AppearingCommandParameter) == true)
-			{
-				AppearingCommand.Execute(AppearingCommandParameter);
-			}
-
 			var pageContainer = this as IPageContainer<Page>;
 			pageContainer?.CurrentPage?.SendAppearing();
-			IsAppeared = true;
+
 			RefreshStatusBarColor();
 			RefreshStatusBarStyle();
 
@@ -503,12 +456,6 @@ namespace Xamarin.Forms
 
 			OnDisappearing();
 			Disappearing?.Invoke(this, EventArgs.Empty);
-			if (DisappearingCommand?.CanExecute(DisappearingCommandParameter) == true)
-			{
-				DisappearingCommand.Execute(DisappearingCommandParameter);
-			}
-			IsAppeared = false;
-
 			FindApplication(this)?.OnPageDisappearing(this);
 		}
 

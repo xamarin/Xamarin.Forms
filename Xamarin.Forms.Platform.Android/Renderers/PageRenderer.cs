@@ -108,12 +108,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
-			else if (e.PropertyName == Page.IsAppearedProperty.PropertyName)
-			{
-				UpdateStatusBarStyle();
-				UpdateStatusBarColor();
-			}
-				
 		}
 
 		void UpdateHeight()
@@ -177,7 +171,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarColor()
 		{
-			if (!Element.IsAppeared)
+			if (!Element.HasAppeared)
 				return;
 
 			if (Element.StatusBarColor == Color.Default)
@@ -188,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStatusBarStyle()
 		{
-			if (!Element.IsAppeared)
+			if (!Element.HasAppeared)
 				return;
 
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
