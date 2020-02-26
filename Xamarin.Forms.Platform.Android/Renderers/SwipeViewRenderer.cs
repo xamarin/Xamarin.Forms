@@ -1156,7 +1156,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var swipeItems = GetSwipeItemsByDirection();
 
-			if (swipeItems == null)
+			if (swipeItems.Count == 0)
 				return;
 
 			var swipeThreshold = GetSwipeThreshold();
