@@ -15,15 +15,6 @@ using Xamarin.Forms.Platform.Android.CollectionView;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	class CarouselViewwOnGlobalLayoutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
-	{
-		public EventHandler<EventArgs> LayoutReady;
-		public void OnGlobalLayout()
-		{
-			LayoutReady?.Invoke(this, new EventArgs());
-		}
-	}
-
 	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
 		protected FormsCarouselView Carousel;
@@ -105,7 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
-			else if (changedProperty.Is(FormsCarouselView.PositionProperty))
+			else if (changedProperty.IsOneOf(FormsCarouselView.PositionProperty, FormsCarouselView.CurrentItemProperty))
 				UpdateVisualStates();
 		}
 
@@ -217,11 +208,20 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (ItemsViewAdapter?.ItemsSource is IItemsViewSource observableItemsSource)
 			{
-				var positon = Carousel.Position;
+				var position = Carousel.Position;
+				var currentItemPosition = observableItemsSource.GetPosition(Carousel.CurrentItem);
 				var count = observableItemsSource.Count;
-				if (count > 0 && positon < count)
+
+				//we are removing the current item we use the position
+				if (currentItemPosition == -1)
 				{
-					Carousel.SetCurrentItem(observableItemsSource.GetItem(Carousel.Position));
+					var item = observableItemsSource.GetItem(position);
+					Carousel.SetCurrentItem(item);
+				}
+				else
+				{
+					position = observableItemsSource.GetPosition(Carousel.CurrentItem);
+					Carousel.SetCurrentItem(null, position);
 				}
 
 				//If we are adding or removing the last item we need to update
@@ -230,7 +230,8 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					UpdateItemDecoration();
 				}
-			}	
+				UpdateVisualStates();
+			}
 		}
 
 		void UpdateItemDecoration()
@@ -397,6 +398,15 @@ namespace Xamarin.Forms.Platform.Android
 				base.OnScrolled(recyclerView, dx, dy);
 				CarouselViewRenderer carouselViewRenderer = (CarouselViewRenderer)recyclerView;
 				carouselViewRenderer.UpdateVisualStates();
+			}
+		}
+
+		class CarouselViewwOnGlobalLayoutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
+		{
+			public EventHandler<EventArgs> LayoutReady;
+			public void OnGlobalLayout()
+			{
+				LayoutReady?.Invoke(this, new EventArgs());
 			}
 		}
 	}
