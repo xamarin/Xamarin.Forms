@@ -575,7 +575,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateSwipeItems()
 		{
-			if (_contentView == null)
+			if (_contentView == null || _actionView != null)
 				return;
 
 			var items = GetSwipeItemsByDirection();
@@ -727,36 +727,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_actionView != null)
 			{
-				RemoveView(_actionView);
+				_actionView.RemoveFromParent();
 				_actionView.Dispose();
 				_actionView = null;
-
-				UpdateParentAdapter();
 			}
-		}
-
-		void UpdateParentAdapter()
-		{
-			if (_contentView == null)
-				return;
-
-			var recyclerView = _contentView.Parent.GetParentOfType<RecyclerView>();
-
-			if (recyclerView == null)
-				return;
-
-			var layoutManager = recyclerView.GetLayoutManager();
-
-			if (layoutManager == null)
-				return;
-
-			var recyclerViewState = layoutManager.OnSaveInstanceState();
-
-			var adapter = recyclerView.GetAdapter();
-			recyclerView.SetAdapter(null);
-			recyclerView.SwapAdapter(adapter, false);
-			
-			layoutManager.OnRestoreInstanceState(recyclerViewState);
 		}
 
 		void Swipe()
