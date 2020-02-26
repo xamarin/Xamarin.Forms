@@ -1,8 +1,13 @@
 ﻿using System;
 using Android.Runtime;
+
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.Core.View.Accessibiity;
+#else
 using Android.Support.V4.View;
 using Android.Support.V4.View.Accessibility;
-using Android.Views;
+#endif
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -24,5 +29,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			base.OnInitializeAccessibilityNodeInfo(host, info);
 			info.ContentDescription = AccessibilityText;
 		}
+
 	}
 }
