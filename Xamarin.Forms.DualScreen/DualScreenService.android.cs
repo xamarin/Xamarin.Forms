@@ -23,7 +23,7 @@ namespace Xamarin.Forms.DualScreen
 			DualScreenServiceImpl.Init(activity);
 		}
 
-		internal class DualScreenServiceImpl : IDualScreenService, IDisposable
+		internal class DualScreenServiceImpl : IDualScreenService, Platform.Android.DualScreen.IDualScreenService
 		{
 			public event EventHandler OnScreenChanged;
 			ScreenHelper _helper;
@@ -32,7 +32,6 @@ namespace Xamarin.Forms.DualScreen
 			static Activity _mainActivity;
 			static DualScreenServiceImpl _HingeService;
 
-			bool _isDisposed;
 			bool _isLandscape;
 			Size _pixelScreenSize;
 			object _hingeAngleLock = new object();
@@ -89,6 +88,7 @@ namespace Xamarin.Forms.DualScreen
 
 			void ConfigurationChanged(object sender, EventArgs e)
 			{
+				_helper?.Update();
 				bool screenChanged = false;
 				if (_isLandscape != IsLandscape)
 				{
@@ -114,19 +114,6 @@ namespace Xamarin.Forms.DualScreen
 
 				if(screenChanged)
 					OnScreenChanged?.Invoke(this, e);
-			}
-
-
-			public void Dispose()
-			{
-				if (_isDisposed)
-					return;
-
-				_isDisposed = true;
-
-				// make sure the one shot task is cleared out if it's running
-				SetHingeAngle(0);
-				StopListeningForHingeChanges();
 			}
 
 			public Size ScaledScreenSize
@@ -194,10 +181,13 @@ namespace Xamarin.Forms.DualScreen
 			{
 				if (!_isDuo || _helper == null)
 					return Rectangle.Zero;
+								
+				var hinge = _helper.GetHingeBoundsDip();
 
-				var rotation = ScreenHelper.GetRotation(_helper.Activity);
-				var hinge = _helper.DisplayMask.GetBoundingRectsForRotation(rotation).FirstOrDefault();
-				var hingeDp = new Rectangle(PixelsToDp(hinge.Left), PixelsToDp(hinge.Top), PixelsToDp(hinge.Width()), PixelsToDp(hinge.Height()));
+				if (hinge == null)
+					return Rectangle.Zero;
+				
+				var hingeDp = new Rectangle((hinge.Left), (hinge.Top), (hinge.Width()), (hinge.Height()));
 				
 				return hingeDp;
 			}
@@ -207,7 +197,13 @@ namespace Xamarin.Forms.DualScreen
 				get
 				{
 					if (!_isDuo || _helper == null)
-						return false;
+					{
+						if (_mainActivity == null)
+							return false;
+
+						var orientation = _mainActivity.Resources.Configuration.Orientation;
+						return orientation == global::Android.Content.Res.Orientation.Landscape;
+					}
 
 					var rotation = ScreenHelper.GetRotation(_helper.Activity);
 

@@ -17,7 +17,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty CountProperty = BindableProperty.Create(nameof(Count), typeof(int), typeof(IndicatorView), default(int), propertyChanged: (bindable, oldValue, newValue)
 			=> (((IndicatorView)bindable).IndicatorLayout as IndicatorStackLayout)?.ResetIndicatorCount((int)oldValue));
 
-		public static readonly BindableProperty MaximumVisibleProperty = BindableProperty.Create(nameof(MaximumVisible), typeof(int), typeof(IndicatorView), int.MaxValue);
+		public static readonly BindableProperty MaximumVisibleProperty = BindableProperty.Create(nameof(MaximumVisible), typeof(int), typeof(IndicatorView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue)
+		=> (((IndicatorView) bindable).IndicatorLayout as IndicatorStackLayout)?.ResetIndicators());
 
 		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanging: (bindable, oldValue, newValue)
 			=> UpdateIndicatorLayout((IndicatorView)bindable, newValue));
@@ -106,19 +107,6 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsSourceProperty, value);
 		}
 
-		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create("ItemsSourceBy", typeof(VisualElement), typeof(IndicatorView), default(VisualElement), propertyChanged: (bindable, oldValue, newValue)
-		 => LinkToCarouselView(bindable as IndicatorView, newValue as CarouselView));
-
-		[TypeConverter(typeof(ReferenceTypeConverter))]
-		public static VisualElement GetItemsSourceBy(BindableObject bindable)
-		{
-			return (VisualElement)bindable.GetValue(ItemsSourceByProperty);
-		}
-
-		public static void SetItemsSourceBy(BindableObject bindable, VisualElement value)
-		{
-			bindable.SetValue(ItemsSourceByProperty, value);
-		}
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
@@ -144,24 +132,6 @@ namespace Xamarin.Forms
 				(indicatorView.IndicatorLayout as IndicatorStackLayout).Remove();
 				indicatorView.IndicatorLayout = null;
 			}
-		}
-
-		static void LinkToCarouselView(IndicatorView indicatorView, CarouselView carouselView)
-		{
-			if (carouselView == null || indicatorView == null)
-				return;
-
-			indicatorView.SetBinding(PositionProperty, new Binding
-			{
-				Path = nameof(CarouselView.Position),
-				Source = carouselView
-			});
-
-			indicatorView.SetBinding(ItemsSourceProperty, new Binding
-			{
-				Path = nameof(ItemsView.ItemsSource),
-				Source = carouselView
-			});
 		}
 
 		void ResetItemsSource(IEnumerable oldItemsSource)
