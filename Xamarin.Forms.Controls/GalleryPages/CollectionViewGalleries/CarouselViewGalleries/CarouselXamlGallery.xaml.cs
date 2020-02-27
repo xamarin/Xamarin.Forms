@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-		//	(BindingContext as CarouselViewModel).Position = 2;
+			//	(BindingContext as CarouselViewModel).Position = 2;
 		}
 	}
 
@@ -91,9 +91,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			set { SetProperty(ref _selected, value); }
 		}
 
-		public ICommand RemoveCommand => new Command(() => {
+		public ICommand RemoveCommand => new Command(() =>
+		{
 			Items.Remove(Selected);
-		
+		});
+
+		public ICommand PreviousCommand => new Command(() =>
+		{
+			var indexCurrent = Items.IndexOf(Selected);
+			if (indexCurrent > 0)
+			{
+				var newItem = Items[indexCurrent - 1];
+				Selected = newItem;
+			}
+		});
+
+		public ICommand NextCommand => new Command(() =>
+		{
+			var indexCurrent = Items.IndexOf(Selected);
+			if (indexCurrent < Items.Count - 1)
+			{
+				var newItem = Items[indexCurrent + 1];
+				Selected = newItem;
+			}
 		});
 	}
 

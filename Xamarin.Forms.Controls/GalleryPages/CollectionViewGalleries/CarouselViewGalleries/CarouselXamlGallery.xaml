@@ -23,8 +23,12 @@
         <Label Text="{Binding Path=CurrentItem.Index , Source={x:Reference Name=carousel}}" AutomationId="lblCurrentItem" Grid.Row="2" Grid.Column="1" />
         <Label Text="Selected: " Grid.Row="3" Grid.Column="0" />
         <Label Text="{Binding Selected.Index}" AutomationId="lblSelected" Grid.Row="3" Grid.Column="1" />
-        <Button Command="{Binding RemoveCommand}" Grid.Row="4" Grid.ColumnSpan="2" AutomationId="btnRemove"
-                Text="{Binding Selected.Index}" BackgroundColor="LightGray" TextColor="Black" />
+
+        <StackLayout Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="Center">
+            <Button Command="{Binding PreviousCommand}" AutomationId="btnPrev" Text="&lt;" FontAttributes="Bold" BackgroundColor="LightGray" TextColor="Black" />
+            <Button Command="{Binding RemoveCommand}"  AutomationId="btnRemove" Text="{Binding Path=Selected.Index, StringFormat='Remove {0}'}" BackgroundColor="LightGray" TextColor="Black" />
+            <Button Command="{Binding NextCommand}"  AutomationId="btnNext" Text="&gt;" FontAttributes="Bold" BackgroundColor="LightGray" TextColor="Black" />
+        </StackLayout>
         <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="5" Grid.ColumnSpan="2"
                       CurrentItem="{Binding Selected}" >
             <CarouselView.ItemTemplate>
