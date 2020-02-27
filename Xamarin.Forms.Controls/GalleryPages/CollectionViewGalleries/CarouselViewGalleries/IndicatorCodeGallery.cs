@@ -182,18 +182,42 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			Grid.SetRow(_carouselView, 4);
 			Grid.SetRow(indicatorView, 6);
 
-			var btn = new Button
+			var layoutBtn = new StackLayout
 			{
-				Text = "Remove",
+				Orientation = StackOrientation.Horizontal,
+				HorizontalOptions = LayoutOptions.Center,
+			};
+
+			var btnRemove = new Button
+			{
+				Text = "Remove First",
+				BackgroundColor = Color.LightGray,
+				Padding = new Thickness(20),
 				Command = new Command(() =>
 				{
 					var items = (_carouselView.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>);
 					items.Remove(items[0]);
 				})
 			};
+
+			var btnAdd = new Button
+			{
+				Text = "Remove Last",
+				BackgroundColor = Color.LightGray,
+				Padding = new Thickness(20),
+				Command = new Command(() =>
+				{
+					var items = (_carouselView.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>);
+					items.Remove(items[items.Count -1]);
+				})
+			};
+
+			layoutBtn.Children.Add(btnRemove);
+			layoutBtn.Children.Add(btnAdd);
+
 			_carouselView.PropertyChanged += CarouselView_PropertyChanged;
-			layout.Children.Add(btn);
-			Grid.SetRow(btn, 5);
+			layout.Children.Add(layoutBtn);
+			Grid.SetRow(layoutBtn, 5);
 			Content = layout;
 		}
 
