@@ -212,6 +212,14 @@ namespace Xamarin.Forms.Platform.Android
 				var currentItemPosition = observableItemsSource.GetPosition(Carousel.CurrentItem);
 				var count = observableItemsSource.Count;
 
+				bool removingCurrentElement = currentItemPosition == -1;
+				bool removingLastElement = e.OldStartingIndex == count;
+				bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
+
+				if (removingCurrentElementButNotFirst)
+				{
+					position = Carousel.Position - 1;
+				}
 				//we are removing the current item we use the position
 				if (currentItemPosition == -1)
 				{
@@ -226,7 +234,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				//If we are adding or removing the last item we need to update
 				//the inset that we give to items so they are centered
-				if (e.NewStartingIndex == count - 1 || e.OldStartingIndex == count)
+				if (e.NewStartingIndex == count - 1 || removingLastElement)
 				{
 					UpdateItemDecoration();
 				}
