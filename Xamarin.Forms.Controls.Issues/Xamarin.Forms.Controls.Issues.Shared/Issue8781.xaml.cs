@@ -31,12 +31,11 @@ namespace Xamarin.Forms.Controls.Issues
 			BindingContext = this;
 #endif
 		}
-
+#if APP
 		public ICommand CheckAnswerCommand => new Command<string>(OnCheckAnswer);
 
 		async void OnCheckAnswer(string parameter)
 		{
-#if APP
 			if (string.IsNullOrEmpty(parameter))
 				return;
 
@@ -51,7 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 				resultEntry.Text = string.Empty;
 				await DisplayAlert("Incorrect!", "Try again.", "OK");
 			}
-#endif
 		}
+#endif
 	}
 }
