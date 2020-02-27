@@ -36,7 +36,7 @@ jobs:
     steps:
     - checkout: self
       clean: true
-    - script: build.cmd -Target provision --verbosity=diagnostic
+    - script: build.cmd -Target provision
       displayName: 'Cake Provision'
       condition: eq(variables['provisioningCake'], 'true')
 
@@ -65,7 +65,7 @@ jobs:
       inputs:
         restoreSolution: ${{ parameters.slnPath }}
 
-    - script: build.cmd -Target BuildForNuget --verbosity=diagnostic -ScriptArgs '-configuration="$(BuildConfiguration)"'
+    - script: build.cmd -Target BuildForNuget -ScriptArgs '-configuration="$(BuildConfiguration)"'
       displayName: 'Build Projects For Nuget'
 
     - task: VSTest@2
