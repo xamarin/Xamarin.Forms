@@ -65,9 +65,6 @@ jobs:
     name: win
     displayName: Build Windows Phase
     vmImage: $(win2019VmImage)
-    msbuildExtraArguments: '/nowarn:VSX1000'
-    buildConfiguration: $(DefaultBuildConfiguration)
-    buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml

@@ -37,7 +37,7 @@ PowerShell:
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
 var packageVersion = Argument("packageVersion", "");
-
+var artifactStagingDirectory = EnvironmentVariable("Build.ArtifactStagingDirectory") ?? ".";
 var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
@@ -168,6 +168,7 @@ Task("provision")
 Task("NuGetPack")
     .Description("Build and Create Nugets")
     .IsDependentOn("Build")
+    .IsDependentOn("BuildForNuget")
     .IsDependentOn("_NuGetPack");
 
 
@@ -220,18 +221,49 @@ Task("Restore")
         }
     });
 
-Task("Build")
+Task("BuildForNuget")
     .Description("Builds all necessary projects to create Nuget Packages")
+    .Does(() =>
+{
+    try{
+
+        var msbuildSettings = GetMSBuildSettings();
+        var binaryLogger = new MSBuildBinaryLogSettings {
+            Enabled  = true
+        };
+
+        msbuildSettings.BinaryLogger = binaryLogger;
+        msbuildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
+        binaryLogger.FileName = $"{artifactStagingDirectory}\win-${configuration}.binlog";
+
+        MSBuild("./Xamarin.Forms.sln", msbuildSettings.WithRestore());
+
+        binaryLogger.FileName = $"{artifactStagingDirectory}\win-${configuration}-csproj.binlog";
+        MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
+                    msbuildSettings
+                        .WithTarget("rebuild")
+                        .WithProperty("DisableEmbeddedXbf", "false"));
+
+        binaryLogger.FileName = $"{artifactStagingDirectory}\ios-${configuration}-csproj.binlog";
+        MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
+                    msbuildSettings
+                        .WithTarget("rebuild")
+                        .WithProperty("USE2017", "true"));
+    }
+    catch(Exception)
+    {
+        if(IsRunningOnWindows())
+            throw;
+    }
+});
+
+Task("Build")
+    .Description("Builds all necessary projects to run Control Gallery")
     .IsDependentOn("Restore")
     .Does(() =>
 {
     try{
         MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithRestore());
-
-        MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
-                    GetMSBuildSettings()
-                        .WithRestore()
-                        .WithProperty("DisableEmbeddedXbf", "false"));
     }
     catch(Exception)
     {

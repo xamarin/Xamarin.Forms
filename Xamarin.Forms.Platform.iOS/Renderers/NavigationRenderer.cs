@@ -628,6 +628,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
+#if __XCODE11__
 				var navigationBarAppearance = new UINavigationBarAppearance();
 
 				if (barBackgroundColor == Color.Default)
@@ -641,6 +642,7 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.CompactAppearance = navigationBarAppearance;
 				NavigationBar.StandardAppearance = navigationBarAppearance;
 				NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
+#endif
 			}
 		}
 
@@ -669,6 +671,7 @@ namespace Xamarin.Forms.Platform.iOS
 				};
 			}
 
+#if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
 			{
 				NavigationBar.CompactAppearance.TitleTextAttributes = titleTextAttributes;
@@ -681,6 +684,7 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.ScrollEdgeAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
 			}
 			else
+#endif
 			{
 				NavigationBar.TitleTextAttributes = titleTextAttributes;
 
@@ -701,14 +705,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (statusBarColorMode == StatusBarTextColorMode.DoNotAdjust || barTextColor.Luminosity <= 0.5)
 			{
+#if __XCODE11__
 				// Use dark text color for status bar
 				if (Forms.IsiOS13OrNewer)
 				{
 					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.DarkContent;
 				}
 				else
+#endif
 				{
-					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
+						UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
 				}
 			}
 			else

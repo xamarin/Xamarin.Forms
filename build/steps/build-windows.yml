@@ -9,9 +9,6 @@ parameters:
   postBuildSteps: []  # any additional steps to run after the build
   slnPath : 'Xamarin.Forms.sln'
   csprojPath : 'Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj'
-  buildConfiguration : 'Debug'
-  releaseBuildConfiguration : 'Release'
-  buildPlatform : 'any cpu'
   msbuildExtraArguments : ''
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
   artifactsName: 'win_build'
@@ -33,11 +30,9 @@ jobs:
     strategy:
       matrix:
         debug:
-          BuildConfiguration:  ${{ parameters.buildConfiguration }}
-          BuildPlatform: ${{ parameters.buildPlatform }}
+          BuildConfiguration:  'Debug'
         release:
-          BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
-          BuildPlatform: ${{ parameters.buildPlatform }}
+          BuildConfiguration:  'Release'
     steps:
     - checkout: self
       clean: true
