@@ -115,6 +115,7 @@ namespace Xamarin.Forms
 			}
 
 			var positionItem = GetPositionForItem(carouselView, newValue);
+
 			var gotoPosition = carouselView._gotoPosition;
 
 			if (positionItem == gotoPosition || gotoPosition == -1)
@@ -244,7 +245,6 @@ namespace Xamarin.Forms
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-
 			var carousel = (CarouselView)bindable;
 
 			var args = new PositionChangedEventArgs((int)oldValue, (int)newValue);
@@ -266,11 +266,14 @@ namespace Xamarin.Forms
 			if (args.CurrentPosition == carousel._gotoPosition)
 				carousel._gotoPosition = -1;
 
-			// User is interacting with the carousel we don't need to scroll to item 
-			if (!carousel.IsDragging && !carousel.IsScrolling)
+			var currentItemPosition = GetPositionForItem(carousel, carousel.CurrentItem);
+
+			// User is interacting with the carousel we don't need to scroll to item
+			// If the currentItemPosition is the same as the new Position we don't need to scroll
+			if ((!carousel.IsDragging && !carousel.IsScrolling) && currentItemPosition != args.CurrentPosition)
 			{
 				carousel._gotoPosition = args.CurrentPosition;
-
+				
 				Action actionSCroll = () =>
 				{
 					carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
