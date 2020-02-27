@@ -21,7 +21,9 @@ namespace Xamarin.Forms.Platform.Android
 		RecyclerView.ItemDecoration _itemDecoration;
 		bool _isSwipeEnabled;
 		int _oldPosition;
-		int _initialPosition;
+		int _gotoPosition = -1;
+		bool _noNeedForScroll;
+
 		List<View> _oldViews;
 		CarouselViewwOnGlobalLayoutListener _carouselViewLayoutListener;
 
@@ -56,7 +58,6 @@ namespace Xamarin.Forms.Platform.Android
 			if (newElement == null)
 				return;
 
-			Carousel.Scrolled += CarouselViewScrolled;
 			AddLayoutListener();
 			UpdateIsSwipeEnabled();
 			UpdateIsBounceEnabled();
@@ -96,8 +97,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
-			else if (changedProperty.IsOneOf(FormsCarouselView.PositionProperty, FormsCarouselView.CurrentItemProperty))
-				UpdateVisualStates();
+			else if (changedProperty.Is(FormsCarouselView.PositionProperty))
+				UpdateFromPosition();
+			else if (changedProperty.Is(FormsCarouselView.CurrentItemProperty))
+				UpdateFromCurrentItem();
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
@@ -208,25 +211,29 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (ItemsViewAdapter?.ItemsSource is IItemsViewSource observableItemsSource)
 			{
-				var position = Carousel.Position;
+				var carouselPosition = Carousel.Position;
 				var currentItemPosition = observableItemsSource.GetPosition(Carousel.CurrentItem);
 				var count = observableItemsSource.Count;
 
-				//we are removing the current item we use the position
-				if (currentItemPosition == -1)
-				{
-					var item = observableItemsSource.GetItem(position);
-					Carousel.SetCurrentItem(item);
-				}
-				else
-				{
-					position = observableItemsSource.GetPosition(Carousel.CurrentItem);
-					Carousel.SetCurrentItem(null, position);
-				}
+				bool removingCurrentElement = currentItemPosition == -1;
+				bool removingLastElement = e.OldStartingIndex == count;
+				bool removingFirstElement = e.OldStartingIndex == 0;
+				bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
 
+				if (removingCurrentElementButNotFirst)
+				{
+					carouselPosition = Carousel.Position - 1;
+				}
+				else if (removingFirstElement && !removingCurrentElement)
+				{
+					carouselPosition = currentItemPosition;
+					_noNeedForScroll = true;
+				}
+				SetCurrentItem(carouselPosition);
+				UpdatePosition(carouselPosition);
 				//If we are adding or removing the last item we need to update
 				//the inset that we give to items so they are centered
-				if (e.NewStartingIndex == count - 1 || e.OldStartingIndex == count)
+				if (e.NewStartingIndex == count - 1 || removingLastElement)
 				{
 					UpdateItemDecoration();
 				}
@@ -244,10 +251,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateInitialPosition()
 		{
+			int position = 0;
+
 			if (Carousel.CurrentItem != null)
 			{
-				int position = 0;
-
+			
 				var items = Carousel.ItemsSource as IList;
 
 				for (int n = 0; n < items?.Count; n++)
@@ -259,13 +267,14 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 
-				_initialPosition = position;
-				Carousel.Position = _initialPosition;
+				Carousel.Position = position;
 			}
 			else
-				_initialPosition = Carousel.Position;
+				position = Carousel.Position;
 
-			_oldPosition = _initialPosition;
+			_oldPosition = position;
+
+			SetCurrentItem(_oldPosition);
 		}
 
 		void UpdateVisualStates()
@@ -334,7 +343,58 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
+			UpdatePosition(e.CenterItemIndex);
 			UpdateVisualStates();
+		}
+
+		void UpdatePosition(int position)
+		{
+			var carouselPosition = Carousel.Position;
+			//we arrived center
+			if (position == _gotoPosition)
+				_gotoPosition = -1;
+
+			if (_gotoPosition == -1 && carouselPosition != position)
+			{
+				Carousel.SetValueFromRenderer(FormsCarouselView.PositionProperty, position);
+			}
+		}
+
+		void SetCurrentItem(int carouselPosition)
+		{
+			var item = (ItemsViewAdapter.ItemsSource as IItemsViewSource).GetItem(carouselPosition);
+			Carousel.SetValueFromRenderer(FormsCarouselView.CurrentItemProperty, item);
+		}
+
+		void UpdateFromCurrentItem()
+		{
+			var currentItemPosition = (ItemsViewAdapter.ItemsSource as IItemsViewSource).GetPosition(Carousel.CurrentItem);
+			var carouselPosition = Carousel.Position;
+
+			if (_gotoPosition == -1 && currentItemPosition != carouselPosition)
+			{
+				_gotoPosition = currentItemPosition;
+				Carousel.ScrollTo(currentItemPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+			}
+		}
+		void UpdateFromPosition()
+		{
+			var carouselPosition = Carousel.Position;
+			if (carouselPosition == _gotoPosition)
+				_gotoPosition = -1;
+
+			if (_noNeedForScroll)
+			{
+				_noNeedForScroll = false;
+				return;
+			}
+
+			if (_gotoPosition == -1 && !Carousel.IsDragging && !Carousel.IsScrolling)
+			{
+				_gotoPosition = carouselPosition;
+				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+			}
+			SetCurrentItem(carouselPosition);
 		}
 
 		void AddLayoutListener()
@@ -350,13 +410,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void LayoutReady(object sender, EventArgs e)
 		{
-			while (Carousel.ScrollToActions.Count > 0)
-			{
-				var action = Carousel.ScrollToActions.Dequeue();
-				action();
-			}
+			Carousel.Scrolled += CarouselViewScrolled;
 
-			Carousel.PlatformInitialized();
+			if (Carousel.Position > 0)
+				Carousel.ScrollTo(Carousel.Position, -1, Xamarin.Forms.ScrollToPosition.Center, Carousel.IsScrollAnimated);
+
 			UpdateVisualStates();
 			ClearLayoutListener();
 		}
