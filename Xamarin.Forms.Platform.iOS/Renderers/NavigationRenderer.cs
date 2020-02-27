@@ -619,16 +619,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var barBackgroundColor = NavPage.BarBackgroundColor;
 
-			if (!Forms.IsiOS13OrNewer)
-			{
-				// Set navigation bar background color
-				NavigationBar.BarTintColor = barBackgroundColor == Color.Default
-				? UINavigationBar.Appearance.BarTintColor
-				: barBackgroundColor.ToUIColor();
-			}
-			else
-			{
 #if __XCODE11__
+			if (Forms.IsiOS13OrNewer)
+			{
 				var navigationBarAppearance = new UINavigationBarAppearance();
 
 				if (barBackgroundColor == Color.Default)
@@ -642,7 +635,14 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.CompactAppearance = navigationBarAppearance;
 				NavigationBar.StandardAppearance = navigationBarAppearance;
 				NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
+			}
+			else
 #endif
+			{
+				// Set navigation bar background color
+				NavigationBar.BarTintColor = barBackgroundColor == Color.Default
+				? UINavigationBar.Appearance.BarTintColor
+				: barBackgroundColor.ToUIColor();
 			}
 		}
 
