@@ -167,7 +167,6 @@ Task("provision")
 
 Task("NuGetPack")
     .Description("Build and Create Nugets")
-    .IsDependentOn("Build")
     .IsDependentOn("BuildForNuget")
     .IsDependentOn("_NuGetPack");
 
@@ -234,17 +233,17 @@ Task("BuildForNuget")
 
         msbuildSettings.BinaryLogger = binaryLogger;
         msbuildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
-        binaryLogger.FileName = $"{artifactStagingDirectory}\win-${configuration}.binlog";
+        binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}.binlog";
 
         MSBuild("./Xamarin.Forms.sln", msbuildSettings.WithRestore());
 
-        binaryLogger.FileName = $"{artifactStagingDirectory}\win-${configuration}-csproj.binlog";
+        binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
                     msbuildSettings
                         .WithTarget("rebuild")
                         .WithProperty("DisableEmbeddedXbf", "false"));
 
-        binaryLogger.FileName = $"{artifactStagingDirectory}\ios-${configuration}-csproj.binlog";
+        binaryLogger.FileName = $"{artifactStagingDirectory}/ios-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
                     msbuildSettings
                         .WithTarget("rebuild")
