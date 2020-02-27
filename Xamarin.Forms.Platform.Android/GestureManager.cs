@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.Android
 		IVisualElementRenderer _renderer;
 		readonly Lazy<ScaleGestureDetector> _scaleDetector;
 		readonly Lazy<GestureDetector> _tapAndPanAndSwipeDetector;
+		readonly Lazy<TouchGestureDetector> _touchGestureDetector;
 
 		bool _disposed;
 		bool _inputTransparent;
@@ -35,6 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_tapAndPanAndSwipeDetector = new Lazy<GestureDetector>(InitializeTapAndPanAndSwipeDetector);
 			_scaleDetector = new Lazy<ScaleGestureDetector>(InitializeScaleDetector);
+			_touchGestureDetector = new Lazy<TouchGestureDetector>(InitializeTouchGestureDetector);
 		}
 
 		public bool OnTouchEvent(MotionEvent e)
@@ -55,6 +57,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var eventConsumed = false;
+			if (ViewTouchGestures())
+			{
+				eventConsumed = _touchGestureDetector.Value.OnTouchEvent(e);
+			}
+
+			
 			if (ViewHasPinchGestures())
 			{
 				eventConsumed = _scaleDetector.Value.OnTouchEvent(e);
@@ -113,6 +121,36 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		public class TouchGestureDetector : GestureDetector
+		{
+			InnerTouchGestureListener _listener;
+
+			public TouchGestureDetector(Context context, InnerTouchGestureListener listener) : base(context, listener)
+			{
+				_listener = listener;
+			}
+
+
+			public override bool OnTouchEvent(MotionEvent ev)
+			{
+				return _listener.OnTouchEvent(ev);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				base.Dispose(disposing);
+
+				if (disposing)
+				{
+					if (_listener != null)
+					{
+						_listener.Dispose();
+						_listener = null;
+					}
+				}
+			}
+		}
+
 		public void Dispose()
 		{
 			Dispose(true);
@@ -130,6 +168,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (_tapAndPanAndSwipeDetector.IsValueCreated && _tapAndPanAndSwipeDetector.Value.Handle == IntPtr.Zero)
+			{
+				return false;
+			}
+
+			if (_touchGestureDetector.IsValueCreated && _touchGestureDetector.Value.Handle == IntPtr.Zero)
 			{
 				return false;
 			}
@@ -153,6 +196,14 @@ namespace Xamarin.Forms.Platform.Android
 			return new TapAndPanGestureDetector(context, listener);
 		}
 
+		TouchGestureDetector InitializeTouchGestureDetector()
+		{
+			var context = Control.Context;
+			var handler = new TouchGestureHandler(() => View, context.FromPixels);
+			var listener = new InnerTouchGestureListener(handler);
+			return new TouchGestureDetector(context, listener);
+		}
+
 		ScaleGestureDetector InitializeScaleDetector()
 		{
 			var context = Control.Context;
@@ -166,6 +217,11 @@ namespace Xamarin.Forms.Platform.Android
 		bool ViewHasPinchGestures()
 		{
 			return View != null && View.GestureRecognizers.OfType<PinchGestureRecognizer>().Any();
+		}
+
+		bool ViewTouchGestures()
+		{
+			return View != null && View.GestureRecognizers.OfType<GestureRecognizer>().Any();
 		}
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -220,6 +276,11 @@ namespace Xamarin.Forms.Platform.Android
 					_scaleDetector.Value.Dispose();
 				}
 
+				if (_touchGestureDetector.IsValueCreated)
+				{
+					_touchGestureDetector.Value.Dispose();
+				}
+
 				_renderer = null;
 			}
 		}
@@ -242,6 +303,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_isEnabled = Element.IsEnabled;
+		}
+
+		public static InnerTouchGestureListener CreateTouchGestureListener(Func<View> getView, Func<double, double> fromPixels)
+		{
+			return new InnerTouchGestureListener(new TouchGestureHandler(getView, fromPixels,true));
 		}
 	}
 }

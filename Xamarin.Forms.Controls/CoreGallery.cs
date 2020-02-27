@@ -310,6 +310,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new NativeBindingGalleryPage(), "Native Binding Controls Gallery"),
 				new GalleryPageFactory(() => new XamlNativeViews(), "Xaml Native Views Gallery"),
 				new GalleryPageFactory(() => new CharacterSpacingGallery(), "CharacterSpacing Views Gallery"),
+				new GalleryPageFactory(() => new TouchGesturesGalleryPage(), "TouchGestures Views Gallery"),
 				new GalleryPageFactory(() => new AppLinkPageGallery(), "App Link Page Gallery"),
 				new GalleryPageFactory(() => new NestedNativeControlGalleryPage(), "Nested Native Controls Gallery"),
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
@@ -369,7 +370,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new WkWebViewCoreGalleryPage(), "WkWebView Gallery"),
 				new GalleryPageFactory(() => new DynamicViewGallery(), "Dynamic ViewGallery"),
 				//pages
- 				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
+				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
 				new GalleryPageFactory(() => new MasterDetailPageTabletPage(), "MasterDetailPage Tablet Page"),
 				// legacy galleries
 				new GalleryPageFactory(() => new AbsoluteLayoutGallery(), "AbsoluteLayout Gallery - Legacy"),

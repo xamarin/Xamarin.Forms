@@ -19,7 +19,8 @@
 						GalleryBuilder.NavButton("Code (No XAML) Example", () => new CodeOnlyExample(), Navigation),
 						GalleryBuilder.NavButton("VisualStates directly on Elements", () => new VisualStatesDirectlyOnElements(), Navigation),
 						GalleryBuilder.NavButton("VisualStateManager Setter Target", () => new VisualStateSetterTarget(), Navigation),
-						GalleryBuilder.NavButton("StateTriggers Gallery", () => new StateTriggerGallery(), Navigation)
+						GalleryBuilder.NavButton("StateTriggers Gallery", () => new StateTriggerGallery(), Navigation),
+						GalleryBuilder.NavButton("TouchStates from TouchGestureRecognizer", () => new VisualStatesTouchStates(), Navigation)
 					}
 				}
 			};

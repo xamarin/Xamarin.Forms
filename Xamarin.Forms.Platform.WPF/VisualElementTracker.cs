@@ -300,7 +300,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (_touchFrameReportedEventSet)
 				return;
 
-			Touch.FrameReported -= Touch_FrameReported;
+			System.Windows.Input.Touch.FrameReported -= Touch_FrameReported;
 			_touchFrameReportedEventSet = false;
 
 			var view = Element as View;
@@ -310,7 +310,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (!view.GestureRecognizers.GetGesturesFor<PanGestureRecognizer>().Any(g => g.TouchPoints > 1))
 				return;
 
-			Touch.FrameReported += Touch_FrameReported;
+			System.Windows.Input.Touch.FrameReported += Touch_FrameReported;
 			_touchFrameReportedEventSet = true;
 		}
 

@@ -660,6 +660,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_recyclerViewScrollListener = CreateScrollListener();
 			AddOnScrollListener(_recyclerViewScrollListener);
+			SetOnTouchListener(GestureManager.CreateTouchGestureListener(() => Element as View, Context.FromPixels));
 		}
 
 		void RemoveScrollListener()

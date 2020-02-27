@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.TouchGesturesGalleryPage">
+    <Grid>
+        <!--<ScrollView>
+
+        </ScrollView>-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="250" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ScrollView Grid.Row="0" Orientation="Horizontal">
+            <StackLayout Orientation="Horizontal" >
+                <Button Text="BoxView" Clicked="BoxViewTest_Click" HeightRequest="50"/>
+                <Button Text="ListView" Clicked="ListViewTest_Click" HeightRequest="50"/>
+                <Button Text="ScrollView" Clicked="ScrollViewTest_Click" HeightRequest="50"/>
+                <Button Text="CollectionView" Clicked="CollectionViewTest_Click" HeightRequest="50"/>
+            </StackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1" x:Name="BoxViewGrid">
+            <BoxView BackgroundColor="LightGray" Margin="20">
+                <BoxView.GestureRecognizers>
+                    <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+
+            <Label VerticalOptions="Center" HorizontalOptions="Center" Text="Touch area" Opacity="0.5" />
+        </Grid>
+
+        <Grid Grid.Row="1" x:Name="ListViewGrid" IsVisible="False">
+            <ListView x:Name="TouchListView">
+                <ListView.GestureRecognizers>
+                    <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                </ListView.GestureRecognizers>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid HeightRequest="80" Margin="2">
+                                <Grid BackgroundColor="LightGreen" Margin="2">
+                                    <Grid.GestureRecognizers>
+                                        <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+                                <Label VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding}"
+                                       Opacity="0.5" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        <Grid Grid.Row="1" x:Name="CollectionViewGrid" IsVisible="False">
+            <CollectionView x:Name="TouchCollectionView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HeightRequest="80" Margin="2">
+                            <Grid BackgroundColor="LightGreen" Margin="2">
+                                <Grid.GestureRecognizers>
+                                    <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Label VerticalOptions="Center" HorizontalOptions="Center" Text="{Binding}"
+                                   Opacity="0.5" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+        <Grid Grid.Row="1" x:Name="ScrollViewGrid" IsVisible="False">
+            <ScrollView VerticalScrollBarVisibility="Always" HeightRequest="80">
+                <ScrollView.GestureRecognizers>
+                    <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                </ScrollView.GestureRecognizers>
+                <StackLayout>
+                    <BoxView BackgroundColor="LightSalmon" Margin="10" WidthRequest="60" HeightRequest="60">
+                        <BoxView.GestureRecognizers>
+                            <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                        </BoxView.GestureRecognizers>
+                    </BoxView>
+                    <BoxView BackgroundColor="LightYellow" Margin="10" WidthRequest="60" HeightRequest="60">
+                        <BoxView.GestureRecognizers>
+                            <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                        </BoxView.GestureRecognizers>
+                    </BoxView>
+                    <BoxView BackgroundColor="LightBlue" Margin="10" WidthRequest="60" HeightRequest="60">
+                        <BoxView.GestureRecognizers>
+                            <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                        </BoxView.GestureRecognizers>
+                    </BoxView>
+                    <BoxView BackgroundColor="LightSteelBlue" Margin="10" WidthRequest="60" HeightRequest="60">
+                        <BoxView.GestureRecognizers>
+                            <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                        </BoxView.GestureRecognizers>
+                    </BoxView>
+                    <BoxView BackgroundColor="LightPink" Margin="10" WidthRequest="60" HeightRequest="60">
+                        <BoxView.GestureRecognizers>
+                            <TouchGestureRecognizer TouchUpdated="TouchGestureRecognizer_OnTouchUpdated" />
+                        </BoxView.GestureRecognizers>
+                    </BoxView>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+
+
+        <ListView x:Name="LogListView" Grid.Row="2" />
+
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.VisualStatesTouchStates"
+             Title="VisualStateGroups TouchGestureRecognizer and TouchStates">
+    <ContentPage.Content>
+        <Grid Margin="20">
+            <BoxView BackgroundColor="LightGreen" Margin="20">
+                <BoxView.GestureRecognizers>
+                    <TouchGestureRecognizer />
+                </BoxView.GestureRecognizers>
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="TouchStates">
+                        <VisualState x:Name="Press">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.7" />
+                                <Setter Property="BackgroundColor" Value="DarkGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Release">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Cancel">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Fail">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Enter">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.7" />
+                                <Setter Property="BackgroundColor" Value="DarkGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Exit">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.7" />
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </BoxView>
+            <Label Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center" Text="Touch Area" Opacity="0.5" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

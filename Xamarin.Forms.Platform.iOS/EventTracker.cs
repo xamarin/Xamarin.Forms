@@ -192,6 +192,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			});
 		}
 
+		Action<UITouchGestureRecognizer, TouchEventArgs> CreateTouchRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer, GestureRecognizer touchRecognizer)
+		{
+			return new Action<UITouchGestureRecognizer, TouchEventArgs>((sender, ev) =>
+			{
+				EventTracker eventTracker = weakEventTracker.Target as EventTracker;
+				View view = eventTracker?._renderer?.Element as View;
+				if (weakRecognizer.Target is GestureRecognizer touchGestureRecognizer && view != null)
+					touchGestureRecognizer.SendTouch(view, ev);
+			});
+		}
+
 		Action<UITapGestureRecognizer> CreateChildRecognizerHandler(WeakReference weakEventTracker, WeakReference weakRecognizer)
 		{
 			return new Action<UITapGestureRecognizer>((sender) =>
@@ -209,7 +220,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				var tapGestureRecognizer = ((ChildGestureRecognizer)weakRecognizer.Target).GestureRecognizer as TapGestureRecognizer;
 				foreach (var item in recognizers)
 					if (item == tapGestureRecognizer && view != null)
-						tapGestureRecognizer.SendTapped(view);
+						tapGestureRecognizer?.SendTapped(view);
 			});
 		}
 #endif
@@ -415,6 +426,17 @@ namespace Xamarin.Forms.Platform.MacOS
 				return uiRecognizer;
 			}
 
+#if __MOBILE__
+			var touchRecognizer = recognizer as GestureRecognizer;
+			if (touchRecognizer != null)
+			{
+				var eventTracker = weakEventTracker.Target as EventTracker;
+				var returnAction = CreateTouchRecognizerHandler(weakEventTracker, weakRecognizer, touchRecognizer);
+				var uiRecognizer = CreateTouchRecognizer(returnAction, ()=> eventTracker?._renderer?.Element as View);
+				return uiRecognizer;
+			}
+#endif
+
 			return null;
 		}
 
@@ -454,6 +476,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				ShouldRecognizeSimultaneously = ShouldRecognizeTapsTogether
 			};
 
+			return result;
+		}
+
+		UITouchGestureRecognizer CreateTouchRecognizer(Action<UITouchGestureRecognizer, TouchEventArgs> action, Func<View> getView)
+		{
+			var result = new UITouchGestureRecognizer(action, getView);
 			return result;
 		}
 #else
