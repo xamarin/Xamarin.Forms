@@ -18,9 +18,6 @@ namespace Xamarin.Forms
 		public const string PreviousItemVisualState = "PreviousItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
-		bool _isInitialized;
-		int _gotoPosition = -1;
-
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
 		public Thickness PeekAreaInsets
@@ -112,16 +109,6 @@ namespace Xamarin.Forms
 				{
 					command.Execute(commandParameter);
 				}
-			}
-
-			var positionItem = GetPositionForItem(carouselView, newValue);
-
-			var gotoPosition = carouselView._gotoPosition;
-
-			if (positionItem == gotoPosition || gotoPosition == -1)
-			{
-				carouselView._gotoPosition = -1;
-				carouselView.SetValueCore(PositionProperty, positionItem);
 			}
 
 			carouselView.CurrentItemChanged?.Invoke(carouselView, args);
@@ -236,13 +223,6 @@ namespace Xamarin.Forms
 		{
 		}
 
-		protected override void OnScrolled(ItemsViewScrolledEventArgs e)
-		{
-			SetCurrentItem(GetItemForPosition(this, e.CenterItemIndex));
-
-			base.OnScrolled(e);
-		}
-
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var carousel = (CarouselView)bindable;
@@ -263,79 +243,13 @@ namespace Xamarin.Forms
 
 			carousel.PositionChanged?.Invoke(carousel, args);
 
-			if (args.CurrentPosition == carousel._gotoPosition)
-				carousel._gotoPosition = -1;
-
-			var currentItemPosition = GetPositionForItem(carousel, carousel.CurrentItem);
-
-			// User is interacting with the carousel we don't need to scroll to item
-			// If the currentItemPosition is the same as the new Position we don't need to scroll
-			if ((!carousel.IsDragging && !carousel.IsScrolling) && currentItemPosition != args.CurrentPosition)
-			{
-				carousel._gotoPosition = args.CurrentPosition;
-				
-				Action actionSCroll = () =>
-				{
-					carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
-				};
-
-				if (!carousel._isInitialized)
-					carousel.ScrollToActions.Enqueue(actionSCroll);
-				else
-					actionSCroll();
-			}
-
 			carousel.OnPositionChanged(args);
-		}
-
-
-		static object GetItemForPosition(CarouselView carouselView, int index)
-		{
-			if (!(carouselView?.ItemsSource is IList itemSource))
-				return null;
-
-			if (itemSource.Count == 0)
-				return null;
-
-			return itemSource[index];
-		}
-
-		static int GetPositionForItem(CarouselView carouselView, object item)
-		{
-			var itemSource = carouselView?.ItemsSource as IList;
-
-			for (int n = 0; n < itemSource?.Count; n++)
-			{
-				if (itemSource[n] == item)
-				{
-					return n;
-				}
-			}
-			return 0;
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SetCurrentItem(object item, int position = -1)
-		{
-			if (item == null && position != -1)
-				item = GetItemForPosition(this, position);
-
-			if (item == CurrentItem && position != -1 && position != Position)
-				SetValueFromRenderer(PositionProperty, position);
-			else
-				SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetIsDragging(bool value)
 		{
 			SetValue(IsDraggingPropertyKey, value);
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void PlatformInitialized()
-		{
-			_isInitialized = true;
 		}
 	}
 }

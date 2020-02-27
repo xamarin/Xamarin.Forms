@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!(ListViewBase.Items[position - 1] is ItemTemplateContext itemTemplateContext))
 				throw new InvalidOperationException("Visible item not found");
 
-			CarouselView.SetCurrentItem(itemTemplateContext.Item);
+		//	CarouselView.SetCurrentItem(itemTemplateContext.Item);
 		}
 
 		ListViewBase CreateCarouselListLayout(ItemsLayoutOrientation layoutOrientation)
