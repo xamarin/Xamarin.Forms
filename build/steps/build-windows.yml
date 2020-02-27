@@ -65,7 +65,7 @@ jobs:
       inputs:
         restoreSolution: ${{ parameters.slnPath }}
 
-    - script: build.cmd -Target BuildForNuget -ScriptArgs '-configuration="$(BuildConfiguration)"'
+    - script: build.cmd -Target BuildForNuget -ScriptArgs '-configuration="$(BuildConfiguration) -Build_ArtifactStagingDirectory=$(Build.ArtifactStagingDirectory)"'
       displayName: 'Build Projects For Nuget'
 
     - task: VSTest@2
