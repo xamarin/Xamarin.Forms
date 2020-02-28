@@ -298,10 +298,9 @@
     <!--Mac-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="lib\Xamarin.Mac" />
+    <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.dll" target="lib\Xamarin.Mac" />
     <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.macOS.dll" target="build\XCODE11" />
-    <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.dll" target="build\XCODE11" />
     <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\2017\Xamarin.Forms.Platform.macOS.dll" target="build\XCODE10" />
-    <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\2017\Xamarin.Forms.Platform.dll" target="build\XCODE10" />
 
     <!-- iOS Localized String Resource Assemblies -->
     <file src="..\Xamarin.Forms.Platform.iOS\bin\$Configuration$\ar\Xamarin.Forms.Platform.iOS.resources.dll" target="lib\Xamarin.iOS10\ar" />
