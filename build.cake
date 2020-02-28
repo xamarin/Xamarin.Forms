@@ -263,6 +263,12 @@ Task("BuildForNuget")
                     msbuildSettings
                         .WithTarget("rebuild")
                         .WithProperty("USE2017", "true"));
+
+        binaryLogger.FileName = $"{artifactStagingDirectory}/macos-{configuration}-csproj.binlog";
+        MSBuild("./Xamarin.Forms.Platform.MacOS/Xamarin.Forms.Platform.MacOS.csproj",
+                    msbuildSettings
+                        .WithTarget("rebuild")
+                        .WithProperty("USE2017", "true"));
     }
     catch(Exception)
     {
