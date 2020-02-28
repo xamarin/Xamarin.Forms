@@ -181,6 +181,7 @@ Task("provision")
 
 Task("NuGetPack")
     .Description("Build and Create Nugets")
+    .IsDependentOn("Restore")
     .IsDependentOn("BuildForNuget")
     .IsDependentOn("_NuGetPack");
 
