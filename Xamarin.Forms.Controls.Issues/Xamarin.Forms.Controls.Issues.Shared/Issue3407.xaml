@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:local="clr-namespace:Xamarin.Forms.Controls"
+                       xmlns:issues="clr-namespace:Xamarin.Forms.Controls.Issues"
+                       x:Class="Xamarin.Forms.Controls.Issues.Issue3407">
+    <ContentPage.Resources>
+        <issues:Issue3407GroupDataTemplateSelectorForAllTypes x:Key="Issue3407GroupDataTemplateSelectorForAllTypes"/>
+        <issues:Issue3407ItemDataTemplateSelector x:Key="Issue3407ItemDataTemplateSelector"/>
+        <issues:Issue3407GroupDataTemplateSelector x:Key="Issue3407GroupDataTemplateSelector"/>
+
+        <issues:Issue3407CollectionGroupDataTemplateSelectorForAllTypes x:Key="Issue3407CollectionGroupDataTemplateSelectorForAllTypes"/>
+        <issues:Issue3407CollectionItemDataTemplateSelector x:Key="Issue3407CollectionItemDataTemplateSelector"/>
+        <issues:Issue3407CollectionGroupDataTemplateSelector x:Key="Issue3407CollectionGroupDataTemplateSelector"/>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackLayout Orientation="Horizontal" Grid.Row="0">
+            <Button Text="ListView" Clicked="Button_OnClicked" AutomationId="list_button"/>
+            <Button Text="CollectionView" Clicked="Button_OnClicked" AutomationId="collection_button"/>
+        </StackLayout>
+
+        <ListView Grid.Row="1" ItemTemplate="{StaticResource Issue3407GroupDataTemplateSelectorForAllTypes}" AutomationId="list1"
+                  IsGroupingEnabled="true" GroupHeaderTemplate="{StaticResource Issue3407GroupDataTemplateSelectorForAllTypes}"
+                  ItemsSource="{Binding PersonsList}" CachingStrategy="RecycleElementAndDataTemplate" x:Name="list1" IsVisible="True"/>
+
+        <ListView Grid.Row="2" ItemTemplate="{StaticResource Issue3407ItemDataTemplateSelector}" AutomationId="list2"
+                  IsGroupingEnabled="true" GroupHeaderTemplate="{StaticResource Issue3407GroupDataTemplateSelector}"
+                  ItemsSource="{Binding PersonsList}" CachingStrategy="RecycleElementAndDataTemplate" x:Name="list2" IsVisible="True"/>
+
+        <CollectionView Grid.Row="1" ItemTemplate="{StaticResource Issue3407CollectionGroupDataTemplateSelectorForAllTypes}" AutomationId="collection1"
+                        IsGrouped="true" GroupHeaderTemplate="{StaticResource Issue3407CollectionGroupDataTemplateSelectorForAllTypes}"
+                        ItemsSource="{Binding PersonsList}" x:Name="collection1" IsVisible="False"/>
+
+        <CollectionView Grid.Row="2" ItemTemplate="{StaticResource Issue3407CollectionItemDataTemplateSelector}" AutomationId="collection2"
+                        IsGrouped="true" GroupHeaderTemplate="{StaticResource Issue3407CollectionGroupDataTemplateSelector}"
+                        ItemsSource="{Binding PersonsList}" x:Name="collection2" IsVisible="False"/>
+
+    </Grid>
+
+</local:TestContentPage>
