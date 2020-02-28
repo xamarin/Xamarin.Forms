@@ -48,14 +48,9 @@ var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ??
 
 string[] androidSdkManagerInstalls = new string[0];//new [] { "platforms;android-24", "platforms;android-28"};
 
-string androidSDK_macos = "";
-string monoSDK_macos = "";
-string iOSSDK_macos = "";
-string macSDK_macos = "";
 
 Information ("Team Project: {0}", teamProject);
 Information ("buildForVS2017: {0}", buildForVS2017);
-
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -69,6 +64,9 @@ string androidSDK_macos = "";
 string monoSDK_macos = "";
 string iOSSDK_macos = "";
 string macSDK_macos = "";
+string monoPatchVersion = "";
+string monoMajorVersion = "";
+string monoVersion = "";
 
 if(buildForVS2017)
 {
