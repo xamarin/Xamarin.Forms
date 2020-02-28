@@ -16,6 +16,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue3262.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3407.xaml.cs">
+      <DependentUpon>Issue3407.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue8715.xaml.cs">
       <DependentUpon>Issue8715.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -1861,6 +1864,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8715.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue3407.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
