@@ -42,7 +42,6 @@ steps:
 
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
-    condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       certSecureFile: 'Xamarin Forms iOS Certificate.p12'
       certPwd: $(P12password)
