@@ -74,6 +74,12 @@ namespace Xamarin.Forms.Platform.iOS
 			base.RegisterViewTypes();
 		}
 
+		protected override void BoundsSizeChanged()
+		{
+			base.BoundsSizeChanged();
+			_carouselView.ScrollTo(_carouselView.Position, position: ScrollToPosition.Center, animate: false);
+		}
+
 		internal void TearDown()
 		{
 			_carouselView.PropertyChanged -= CarouselViewPropertyChanged;
@@ -140,7 +146,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			foreach (var cell in cells)
 			{
-				var itemView = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element as View;
+				if (!((cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element is View itemView))
+					return;
+
 				var item = itemView.BindingContext;
 				var pos = GetPosition(item);
 
