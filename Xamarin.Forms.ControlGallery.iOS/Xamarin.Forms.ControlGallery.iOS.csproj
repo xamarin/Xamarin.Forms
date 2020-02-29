@@ -68,7 +68,7 @@
     </CodesignEntitlements>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
-    <MtouchExtraArgs>--nolinkaway</MtouchExtraArgs>
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
     <MtouchFastDev>False</MtouchFastDev>
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
     <MtouchUseLlvm>False</MtouchUseLlvm>
@@ -99,14 +99,22 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
     <MtouchLink>Full</MtouchLink>
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core.UITests.Shared\Utilities\NumericExtensions.cs">
+      <Link>Tests\NumericExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Core.UITests.Shared\Utilities\ParsingUtils.cs">
+      <Link>Tests\ParsingUtils.cs</Link>
+    </Compile>
     <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
+    <Compile Include="CustomRenderers\_9087CustomRenderer.cs" />
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="SearchbarEffect.cs" />
     <Compile Include="CustomRenderer40251.cs" />
@@ -115,9 +123,18 @@
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="RegistrarValidationService.cs" />
     <Compile Include="SampleNativeControl.cs" />
+    <Compile Include="Tests\AssertionExtensions.cs" />
+    <Compile Include="Tests\BackgroundColorTests.cs" />
+    <Compile Include="Tests\CornerRadiusTests.cs" />
+    <Compile Include="Tests\IsEnabledTests.cs" />
+    <Compile Include="Tests\IsVisibleTests.cs" />
+    <Compile Include="Tests\OpacityTests.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
     <Compile Include="Tests\PlatformTestFixture.cs" />
-    <Compile Include="Tests\RendererTests.cs" />
+    <Compile Include="Tests\RotationTests.cs" />
+    <Compile Include="Tests\ScaleTests.cs" />
+    <Compile Include="Tests\TestingPlatformService.cs" />
+    <Compile Include="Tests\TextTests.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
@@ -140,6 +157,10 @@
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
       <Project>{cb9c96ce-125c-4a68-b6a1-c3ff1fbf93e1}</Project>
       <Name>Xamarin.Forms.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj">
+      <Project>{fb4a866a-5721-4545-9e5d-b7f7d59875a4}</Project>
+      <Name>Xamarin.Forms.DualScreen</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Maps.iOS\Xamarin.Forms.Maps.iOS.csproj">
       <Project>{aba078c4-f9bb-4924-8b2b-10fe0d2f5491}</Project>

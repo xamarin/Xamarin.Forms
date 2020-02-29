@@ -597,9 +597,18 @@ namespace Xamarin.Forms.Controls
 
 		protected TestShell() : base()
 		{
+			Routing.Clear();
 #if APP
 			Init();
 #endif
+		}
+
+		protected ContentPage DisplayedPage
+		{
+			get
+			{
+				return (ContentPage)(CurrentItem.CurrentItem as IShellSectionController).PresentedPage;
+			}
 		}
 
 		public ContentPage AddTopTab(string title, string icon = null)
@@ -635,6 +644,14 @@ namespace Xamarin.Forms.Controls
 		public ContentPage AddBottomTab(string title, string icon = null)
 		{
 			ContentPage page = new ContentPage();
+			if (Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				item.Items[0].Title = title ?? page.Title;
+				return page;
+			}
+
 			Items[0].Items.Add(new ShellSection()
 			{
 				AutomationId = title,
@@ -693,6 +710,7 @@ namespace Xamarin.Forms.Controls
 			item.Title = shellItemTitle;
 
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
+			shellSection.Title = shellItemTitle;
 
 			shellSection.Items.Add(new ShellContent()
 			{
@@ -705,24 +723,34 @@ namespace Xamarin.Forms.Controls
 			return page;
 		}
 
-		public ShellItem AddContentPage(ContentPage contentPage = null)
-			=> AddContentPage<ShellItem, ShellSection>(contentPage);
+		public ShellItem AddContentPage(ContentPage contentPage = null, string title = null)
+			=> AddContentPage<ShellItem, ShellSection>(contentPage, title);
 
-		public TShellItem AddContentPage<TShellItem, TShellSection>(ContentPage contentPage = null)
+		public TShellItem AddContentPage<TShellItem, TShellSection>(ContentPage contentPage = null, string title = null)
 			where TShellItem : ShellItem
 			where TShellSection : ShellSection
 		{
+			title = title ?? contentPage?.Title;
 			contentPage = contentPage ?? new ContentPage();
 			TShellItem item = Activator.CreateInstance<TShellItem>();
-			item.Title = contentPage.Title;
+			item.Title = title;
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
 			Items.Add(item);
 			item.Items.Add(shellSection);
+			shellSection.Title = title;
 
-			shellSection.Items.Add(new ShellContent()
+			var content = new ShellContent()
 			{
-				ContentTemplate = new DataTemplate(() => contentPage)
-			});
+				ContentTemplate = new DataTemplate(() => contentPage),
+				Title = title
+			};
+
+			shellSection.Items.Add(content);
+
+			if(!String.IsNullOrWhiteSpace(title))
+			{
+				content.Route = title;
+			}
 
 			return item;
 		}

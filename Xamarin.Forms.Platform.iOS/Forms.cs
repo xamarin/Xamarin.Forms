@@ -38,9 +38,7 @@ namespace Xamarin.Forms
 		static bool? s_isiOS11OrNewer;
 		static bool? s_isiOS13OrNewer;
 		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
-#endif
 
-#if __MOBILE__
 		internal static bool IsiOS9OrNewer
 		{
 			get
@@ -91,6 +89,19 @@ namespace Xamarin.Forms
 				return s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.Value;
 			}
 		}
+#else
+		static bool? s_isMojaveOrNewer;
+
+		internal static bool IsMojaveOrNewer
+		{
+			get
+			{
+				if (!s_isMojaveOrNewer.HasValue)
+					s_isMojaveOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 14, 0));
+				return s_isMojaveOrNewer.Value;
+			}
+		}
+
 #endif
 
 		static IReadOnlyList<string> s_flags;
@@ -274,14 +285,12 @@ namespace Xamarin.Forms
 			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
 				using (var client = GetHttpClient())
-				using (var response = await client.GetAsync(uri, cancellationToken))
 				{
-					if (!response.IsSuccessStatusCode)
-					{
-						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
-						return null;
-					}
-					return await response.Content.ReadAsStreamAsync();
+					// Do not remove this await otherwise the client will dispose before
+					// the stream even starts
+					var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
+
+					return result;
 				}
 			}
 

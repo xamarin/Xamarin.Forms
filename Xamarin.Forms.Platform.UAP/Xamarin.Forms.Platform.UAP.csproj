@@ -1,14 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
-  <PropertyGroup Condition="$(TargetFramework) == 'uap10.0.14393'">
-    <DefineConstants>$(DefineConstants);UWP_14393</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup>
     <AssemblyName>Xamarin.Forms.Platform.UAP</AssemblyName>
     <RootNamespace>Xamarin.Forms.Platform.UAP</RootNamespace>
     <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <GenerateLibraryLayout Condition="'$(MSBuildAssemblyVersion)' != '16.0'">true</GenerateLibraryLayout>
+    <GenerateLibraryLayout Condition="'$(Use2017)' == 'true'">true</GenerateLibraryLayout>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,7 +27,7 @@
     </NoWarn>
   </PropertyGroup>
   <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <Page Include="AutoSuggestStyle.xaml">
+    <Page Include="FormsAutoSuggestBoxStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -71,6 +68,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PromptDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -98,14 +99,20 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs" Link="StreamWrapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup  Condition=" '$(OS)' == 'Windows_NT' ">
-    <PackageReference Include="Microsoft.UI.Xaml">
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <PackageReference Include="Microsoft.UI.Xaml" Condition="$(TargetFramework) == 'uap10.0.14393'">
       <Version>2.1.190606001</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.UI.Xaml" Condition="$(TargetFramework) == 'uap10.0.16299'">
+      <Version>2.3.191211002</Version>
     </PackageReference>
     <PackageReference Include="Win2D.uwp">
       <Version>1.20.0</Version>
