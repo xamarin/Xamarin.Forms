@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.iOS
 			get
 			{
 				// lazy-loading this list so that the expensive call to GetAccessibilityElements only happens when VoiceOver is on.
-				if (AccessibilityElements == null || AccessibilityElements.Count == 0)
+				if (_accessibilityElements == null || _accessibilityElements.Count == 0)
 				{
 					_accessibilityElements = _parent.GetAccessibilityElements();
 				}
