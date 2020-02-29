@@ -1,7 +1,6 @@
 using Foundation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -23,16 +22,14 @@ namespace Xamarin.Forms.Platform.iOS
 			IsAccessibilityElement = false;
 		}
 
-		List<NSObject> DefaultOrder => this.Descendants().Select(i => i as NSObject).ToList();
-
 		List<NSObject> AccessibilityElements
 		{
 			get
 			{
 				// lazy-loading this list so that the expensive call to GetAccessibilityElements only happens when VoiceOver is on.
-				if (_accessibilityElements == null)
+				if (AccessibilityElements == null || AccessibilityElements.Count == 0)
 				{
-					_accessibilityElements = _parent.GetAccessibilityElements() ?? DefaultOrder;
+					_accessibilityElements = _parent.GetAccessibilityElements();
 				}
 				return _accessibilityElements;
 			}
@@ -56,7 +53,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("accessibilityElementCount")]
 		nint AccessibilityElementCount()
 		{
-			if (AccessibilityElements == null)
+			if (AccessibilityElements == null || AccessibilityElements.Count == 0)
 				return 0;
 
 			// Note: this will only be called when VoiceOver is enabled
@@ -66,7 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("accessibilityElementAtIndex:")]
 		NSObject GetAccessibilityElementAt(nint index)
 		{
-			if (AccessibilityElements == null)
+			if (AccessibilityElements == null || AccessibilityElements.Count == 0)
 				return NSNull.Null;
 
 			// Note: this will only be called when VoiceOver is enabled
@@ -76,7 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("indexOfAccessibilityElement:")]
 		int GetIndexOfAccessibilityElement(NSObject element)
 		{
-			if (AccessibilityElements == null)
+			if (AccessibilityElements == null || AccessibilityElements.Count == 0)
 				return int.MaxValue;
 
 			// Note: this will only be called when VoiceOver is enabled

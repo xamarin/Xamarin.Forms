@@ -43,12 +43,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
+		List<NSObject> DefaultOrder()
+		{
+			var views = new List<NSObject>();
+			views.AddRange(Container.DescendantsTree());
+			return views;
+		}
+
 		public List<NSObject> GetAccessibilityElements()
 		{
 			if (Container == null || Element == null)
-				return null;
+				return new List<NSObject>();
 
-			List<NSObject> views = new List<NSObject>();
 			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
 			foreach (var child in Element.LogicalChildren)
 			{
@@ -60,12 +66,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			if (tabIndexes == null)
-				return null;
+				return DefaultOrder();
 
 			// Just return all elements on the page in order.
 			if (tabIndexes.Count <= 1)
-				return null;
+				return DefaultOrder();
 
+			var views = new List<NSObject>();
 			foreach (var idx in tabIndexes?.Keys)
 			{
 				var tabGroup = tabIndexes[idx];
