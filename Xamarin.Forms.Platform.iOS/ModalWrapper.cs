@@ -19,10 +19,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle() is PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
 			{
 				var result = style.ToNativeModalPresentationStyle();
+#if __XCODE11__
 				if (!Forms.IsiOS13OrNewer && result == UIKit.UIModalPresentationStyle.Automatic)
 				{
 					result = UIKit.UIModalPresentationStyle.FullScreen;
 				}
+#endif
 
 				ModalPresentationStyle = result;
 			}
@@ -33,17 +35,18 @@ namespace Xamarin.Forms.Platform.iOS
 			AddChildViewController(modal.ViewController);
 
 			modal.ViewController.DidMoveToParentViewController(this);
-
+#if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
 				PresentationController.Delegate = this;
+#endif
 		}
-
+#if __XCODE11__
 		[Export("presentationControllerDidDismiss:")]
 		public async void DidDismiss(UIPresentationController presentationController)
 		{
 			await Application.Current.NavigationProxy.PopModalAsync(false);
 		}
-
+#endif
 		public override void DismissViewController(bool animated, Action completionHandler)
 		{
 			if (PresentedViewController == null)
