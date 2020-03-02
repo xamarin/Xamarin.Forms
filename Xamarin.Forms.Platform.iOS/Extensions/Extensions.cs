@@ -158,6 +158,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			AddKerningAdjustment(mutableAttributedString, text, characterSpacing);
+			UpdateDefaultWritingDirection(mutableAttributedString, text);
 
 			return mutableAttributedString;
 		}
@@ -188,6 +189,23 @@ namespace Xamarin.Forms.Platform.iOS
 				(
 					UIStringAttributeKey.KerningAdjustment,
 					NSObject.FromObject(characterSpacing), new NSRange(0, text.Length - 1)
+				);
+			}
+		}
+
+		internal static void UpdateDefaultWritingDirection(NSMutableAttributedString mutableAttributedString, string text)
+		{
+			if (!string.IsNullOrEmpty(text))
+			{
+				var paragraphStyle = new NSMutableParagraphStyle
+				{
+					BaseWritingDirection = NSParagraphStyle.GetDefaultWritingDirection(NaturalLanguage.NLLanguageRecognizer.GetDominantLanguage(text).ToString())
+				};
+
+				mutableAttributedString.AddAttribute
+				(
+					UIStringAttributeKey.ParagraphStyle,
+					NSObject.FromObject(paragraphStyle), new NSRange(0, text.Length - 1)
 				);
 			}
 		}
