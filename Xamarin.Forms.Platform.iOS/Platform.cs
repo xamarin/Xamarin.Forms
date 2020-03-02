@@ -176,15 +176,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
+				// While the above IsiOS13OrNewer will always be false if __XCODE11__ is true
+				// the UIModalPresentationStyle.Automatic is the only Xcode 11 API
+				// for readability I decided to only take this part out
+#if __XCODE11__
 				if (presentationStyle == UIKit.UIModalPresentationStyle.Automatic)
 					shouldFire = false;
-				else if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
+#endif
+				if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
 					shouldFire = false; // This is mainly for backwards compatibility
 			}
 
 			if (_appeared && shouldFire)
 				Page.GetCurrentPage()?.SendDisappearing();
-
 
 			_modals.Add(modal);
 
