@@ -183,9 +183,6 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsScrolling { get; set; }
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public Queue<Action> ScrollToActions = new Queue<Action>();
-
 		public event EventHandler<CurrentItemChangedEventArgs> CurrentItemChanged;
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
 
