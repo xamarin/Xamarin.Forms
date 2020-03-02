@@ -3,6 +3,7 @@ using System.Collections;
 using NUnit.Framework;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
 
 namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 {
@@ -103,7 +104,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 
 		double GetRotation(FrameworkElement fe)
 		{
-			if (fe.RenderTransform is CompositeTransform compositeTransform)
+			if (fe.RenderTransform is WCompositeTransform compositeTransform)
 			{
 				return compositeTransform.Rotation;
 			}
