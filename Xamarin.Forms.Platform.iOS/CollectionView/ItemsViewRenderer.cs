@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected TViewController Controller { get; private set; }
 
+		[Internals.Preserve(Conditional = true)]
 		protected ItemsViewRenderer()
 		{
 			AutoPackage = false;
@@ -91,7 +92,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateLayout();
 			Controller = CreateController(newElement, _layout);
 			 
-
 			SetNativeControl(Controller.View);
 			Controller.CollectionView.BackgroundColor = UIColor.Clear;
 			UpdateHorizontalScrollBarVisibility();

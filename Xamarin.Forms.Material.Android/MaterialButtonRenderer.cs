@@ -28,7 +28,6 @@ using AColor = Android.Graphics.Color;
 using APath = Android.Graphics.Path;
 using AView = Android.Views.View;
 
-
 namespace Xamarin.Forms.Material.Android
 {
 	public class MaterialButtonRenderer : MButton,

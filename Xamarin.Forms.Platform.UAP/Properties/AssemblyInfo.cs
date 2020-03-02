@@ -12,6 +12,7 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(ImageButton), typeof(ImageButtonRenderer))]
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
 [assembly: ExportRenderer(typeof(Button), typeof(ButtonRenderer))]
+[assembly: ExportRenderer(typeof(RadioButton), typeof(RadioButtonRenderer))]
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
 [assembly: ExportRenderer(typeof(CarouselView), typeof(CarouselViewRenderer))]
 [assembly: ExportRenderer(typeof(CollectionView), typeof(CollectionViewRenderer))]
@@ -36,6 +37,7 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(RefreshView), typeof(RefreshViewRenderer))]
 [assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 [assembly: ExportRenderer(typeof(Path), typeof(PathRenderer))]
+[assembly: ExportRenderer(typeof(IndicatorView), typeof(IndicatorViewRenderer))]
 
 //ImageSources
 
@@ -64,3 +66,5 @@ using Xamarin.Forms.Platform.UWP;
 
 //Fonts
 [assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.DualScreen")]

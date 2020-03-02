@@ -56,6 +56,8 @@ using IOPath = System.IO.Path;
 [assembly: ExportRenderer(typeof(ShellGestures.TouchTestView), typeof(ShellGesturesTouchTestViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue7249Switch), typeof(Issue7249SwitchRenderer))]
 [assembly: ExportRenderer(typeof(Issue9360.Issue9360NavigationPage), typeof(Issue9360NavigationPageRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries.HingeAngleLabel), typeof(HingeAngleLabelRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Tests.TestClasses.CustomButton), typeof(CustomButtonRenderer))]
 
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
@@ -64,6 +66,56 @@ using IOPath = System.IO.Path;
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
+	public class HingeAngleLabelRenderer : Xamarin.Forms.Platform.Android.FastRenderers.LabelRenderer
+	{
+		System.Timers.Timer _hingeTimer;
+		public HingeAngleLabelRenderer(Context context) : base(context)
+		{
+		}
+
+		async void OnTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			if (_hingeTimer == null)
+				return;
+
+			_hingeTimer.Stop();
+			var hingeAngle = await DualScreen.DualScreenInfo.Current.GetHingeAngleAsync();
+
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				if (_hingeTimer != null)
+					Element.Text = hingeAngle.ToString();
+			});
+
+			if(_hingeTimer != null)
+				_hingeTimer.Start();
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
+		{
+			base.OnElementChanged(e);
+
+			if(_hingeTimer == null)
+			{
+				_hingeTimer = new System.Timers.Timer(100);
+				_hingeTimer.Elapsed += OnTimerElapsed;
+				_hingeTimer.Start();
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_hingeTimer != null)
+			{
+				_hingeTimer.Elapsed -= OnTimerElapsed;
+				_hingeTimer.Stop();
+				_hingeTimer = null;
+			}
+
+			base.Dispose(disposing);
+		}
+	}
+
 	public class Issue9360NavigationPageRenderer : Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer
 	{
 		public Issue9360NavigationPageRenderer(Context context) : base(context)

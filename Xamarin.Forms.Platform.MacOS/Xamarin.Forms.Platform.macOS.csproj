@@ -70,6 +70,9 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs">
+      <Link>StreamWrapper.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\LabelExtensions.cs">
       <Link>Extensions\LabelExtensions.cs</Link>
     </Compile>
@@ -115,6 +118,7 @@
     <Compile Include="ImageSourceHandlers.cs" />
     <Compile Include="Extensions\ButtonExtensions.cs" />
     <Compile Include="Renderers\BoxViewRenderer.cs" />
+    <Compile Include="Renderers\RadioButtonRenderer.cs" />
     <Compile Include="Renderers\ScrollViewRenderer.cs" />
     <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
     <Compile Include="Renderers\DatePickerRenderer.cs" />

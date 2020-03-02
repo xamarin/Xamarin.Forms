@@ -20,41 +20,63 @@ namespace Xamarin.Forms.DualScreen
 		Rectangle _leftPage;
 		Rectangle _rightPane;
 		TwoPaneViewMode _mode;
-		Layout _layout;
+		VisualElement _layout;
 		readonly IDualScreenService _dualScreenService;
 		bool _isLandscape;
 		public event PropertyChangedEventHandler PropertyChanged;
 		List<string> _pendingPropertyChanges = new List<string>();
 		Rectangle _absoluteLayoutPosition;
+		object _watchHandle = null;
 
 		TwoPaneViewLayoutGuide()
 		{
+			
 		}
 
-		public TwoPaneViewLayoutGuide(Layout layout)
+		public TwoPaneViewLayoutGuide(VisualElement layout) : this(layout, null)
 		{
-			_layout = layout;
 		}
 
-		internal TwoPaneViewLayoutGuide(Layout layout, IDualScreenService dualScreenService)
+
+		internal TwoPaneViewLayoutGuide(VisualElement layout, IDualScreenService dualScreenService)
 		{
 			_layout = layout;
 			_dualScreenService = dualScreenService;
+
+			if(_layout != null)
+			{
+				UpdateLayouts();
+				_layout.PropertyChanged += OnLayoutPropertyChanged;
+				_layout.PropertyChanging += OnLayoutPropertyChanging;
+				WatchForChanges();
+			}
+		}
+
+		void OnLayoutPropertyChanging(object sender, PropertyChangingEventArgs e)
+		{
+			if (e.PropertyName == "Renderer")
+				StopWatchingForChanges();
+		}
+
+		void OnLayoutPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "Renderer")
+				WatchForChanges();
 		}
 
 		public void WatchForChanges()
 		{
 			StopWatchingForChanges();
-			DualScreenService.OnScreenChanged += OnScreenChanged;
 
 			if (_layout != null)
 			{
-				DualScreenService.WatchForChangesOnLayout(_layout);
+				_watchHandle = DualScreenService.WatchForChangesOnLayout(_layout, () => OnScreenChanged(DualScreenService, EventArgs.Empty));
+
+				if (_watchHandle == null)
+					return;
 			}
-			else if (DualScreenService.DeviceInfo is INotifyPropertyChanged npc)
-			{
-				npc.PropertyChanged += OnDeviceInfoChanged;
-			}
+
+			DualScreenService.OnScreenChanged += OnScreenChanged;
 		}
 
 		public void StopWatchingForChanges()
@@ -63,18 +85,14 @@ namespace Xamarin.Forms.DualScreen
 
 			if (_layout != null)
 			{
-				DualScreenService.StopWatchingForChangesOnLayout(_layout);
-			}
-			
-			if (DualScreenService.DeviceInfo is INotifyPropertyChanged npc)
-			{
-				npc.PropertyChanged -= OnDeviceInfoChanged;
+				DualScreenService.StopWatchingForChangesOnLayout(_layout, _watchHandle);
+				_watchHandle = null;
 			}
 		}
 
 		void OnScreenChanged(object sender, EventArgs e)
 		{
-			if(_layout == null)
+			if (_layout == null)
 			{
 				UpdateLayouts();
 				return;
@@ -89,14 +107,6 @@ namespace Xamarin.Forms.DualScreen
 			if (newPosition != _absoluteLayoutPosition)
 			{
 				_absoluteLayoutPosition = newPosition;
-				UpdateLayouts();
-			}
-		}
-
-		void OnDeviceInfoChanged(object sender, PropertyChangedEventArgs args)
-		{
-			if (args.PropertyName == nameof(DualScreenService.DeviceInfo.CurrentOrientation))
-			{
 				UpdateLayouts();
 			}
 		}
@@ -160,7 +170,7 @@ namespace Xamarin.Forms.DualScreen
 			Rectangle containerArea;
 			if (_layout == null)
 			{
-				containerArea = new Rectangle(Point.Zero, DualScreenService.DeviceInfo.ScaledScreenSize);
+				containerArea = new Rectangle(Point.Zero, DualScreenService.ScaledScreenSize);
 			}
 			else
 			{
@@ -175,7 +185,7 @@ namespace Xamarin.Forms.DualScreen
 			Rectangle containerArea;
 			if (_layout == null)
 			{
-				containerArea = new Rectangle(Point.Zero, DualScreenService.DeviceInfo.ScaledScreenSize);
+				containerArea = new Rectangle(Point.Zero, DualScreenService.ScaledScreenSize);
 			}
 			else
 			{
@@ -326,7 +336,7 @@ namespace Xamarin.Forms.DualScreen
 
 		TwoPaneViewMode GetTwoPaneViewMode()
 		{
-			if (!IsInMultipleRegions(GetContainerArea()))
+			if (!IsInMultipleRegions(GetScreenRelativeBounds()))
 				return TwoPaneViewMode.SinglePane;
 
 			if (DualScreenService.IsLandscape)
