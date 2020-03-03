@@ -196,7 +196,7 @@ namespace Xamarin.Forms
 #if __MOBILE__
 				//The standard accisibility size for a font is 18, we can get a
 				//close aproximation to the new Size by multiplying by this scale factor
-				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 18f;
+				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 17f;
 #endif
 			}
 
