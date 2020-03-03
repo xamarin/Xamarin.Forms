@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					await UpdateToolbarItems().ConfigureAwait(false);
 				}
-				catch(Exception exc)
+				catch (Exception exc)
 				{
 					Internals.Log.Warning(nameof(ShellPageRendererTracker), $"Failed to update toolbar items: {exc}");
 				}
@@ -236,7 +236,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var enabled = behavior.GetPropertyIfSet(BackButtonBehavior.IsEnabledProperty, true);
 			var text = behavior.GetPropertyIfSet<string>(BackButtonBehavior.TextOverrideProperty, null);
 			var command = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandProperty, null);
-			
+
 			UIImage icon = null;
 
 			if (image == null && String.IsNullOrWhiteSpace(text) && (!IsRootPage || _flyoutBehavior != FlyoutBehavior.Flyout))
@@ -264,37 +264,28 @@ namespace Xamarin.Forms.Platform.iOS
 				else if (text == null)
 					icon = DrawHamburger();
 
-				if (text != null || image != null)
+
+
+				if (text != null)
 				{
-
 					var backButton = new UIBarButtonItem { Style = UIBarButtonItemStyle.Plain };
-
-					if (text != null)
-					{
-						backButton.Title = text;
-					}
-
-					if (image != null)
-					{
-						backButton.Image = icon;
-					}
+					backButton.Title = text;
 
 					NavigationItem.BackBarButtonItem = backButton;
 				}
-
-				if (IsRootPage)
+				else if (icon == null)
 				{
-					if (icon == null)
-					{
-						NavigationItem.LeftBarButtonItem =
-							new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
-					}
-					else
-					{
-						NavigationItem.LeftBarButtonItem =
-							new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
-					}
+					NavigationItem.LeftBarButtonItem =
+						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+				}
+				else
+				{
+					NavigationItem.LeftBarButtonItem =
+						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+				}
 
+				if (NavigationItem.LeftBarButtonItem != null)
+				{
 					if (String.IsNullOrWhiteSpace(image?.AutomationId))
 						NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
 					else
