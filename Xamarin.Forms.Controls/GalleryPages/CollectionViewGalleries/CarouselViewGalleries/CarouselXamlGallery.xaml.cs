@@ -56,13 +56,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => Items.Remove(obj.BindingContext as CarouselItem));
 
 			Items = new ObservableCollection<CarouselItem>(items);
-			Items.CollectionChanged += ItemsCollectionChanged;
-			Count = Items.Count - 1;
-
-		}
-
-		void ItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-		{
 			Count = Items.Count - 1;
 		}
 
@@ -94,6 +87,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		public ICommand RemoveCommand => new Command(() =>
 		{
 			Items.Remove(Selected);
+			Count = Items.Count - 1;
 		});
 
 		public ICommand PreviousCommand => new Command(() =>
