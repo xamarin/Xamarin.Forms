@@ -33,11 +33,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UIGraphics.BeginImageContext(size);
 			var context = UIGraphics.GetCurrentContext();
+#if __XCODE11__
+			context.SetFillColor(UIColor.SystemRedColor.ToColor().ToCGColor());
+#else
 			context.SetFillColor(1, 0, 0, 1);
+#endif
 			context.FillRect(rect);
 			DestructiveBackground = UIGraphics.GetImageFromCurrentImageContext();
 
+#if __XCODE11__
+			context.SetFillColor(UIColor.SystemGrayColor.ToColor().ToCGColor());
+#else
 			context.SetFillColor(UIColor.LightGray.ToColor().ToCGColor());
+#endif
 			context.FillRect(rect);
 
 			NormalBackground = UIGraphics.GetImageFromCurrentImageContext();

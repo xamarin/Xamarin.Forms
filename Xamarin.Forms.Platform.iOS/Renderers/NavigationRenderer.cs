@@ -358,6 +358,16 @@ namespace Xamarin.Forms.Platform.iOS
 			return shown;
 		}
 
+#if __XCODE11__
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+
+			// Make sure the control adheres to changes UI theme
+			UpdateBackgroundColor();
+		}
+#endif
+
 		ParentingViewController CreateViewControllerForPage(Page page)
 		{
 			if (Platform.GetRenderer(page) == null)
@@ -640,7 +650,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackgroundColor()
 		{
-			var color = Element.BackgroundColor == Color.Default ? Color.White : Element.BackgroundColor;
+			var color = Element.BackgroundColor == Color.Default ? ColorExtensions.BackgroundColor.ToColor() : Element.BackgroundColor;
 			View.BackgroundColor = color.ToUIColor();
 		}
 

@@ -301,7 +301,15 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
 				UpdateHorizontalScrollBarVisibility();
 		}
+#if __XCODE11__
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
 
+			// Make sure the cells adhere to changes UI theme
+			ReloadData();
+		}
+#endif
 		NSIndexPath[] GetPaths(int section, int index, int count)
 		{
 			var paths = new NSIndexPath[count];
@@ -685,7 +693,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// ...and Steve said to the unbelievers the separator shall be gray, and gray it was. The unbelievers looked on, and saw that it was good, and
 			// they went forth and documented the default color. The holy scripture still reflects this default.
 			// Defined here: https://developer.apple.com/library/ios/documentation/UIKit/Reference/UITableView_Class/#//apple_ref/occ/instp/UITableView/separatorColor
-			Control.SeparatorColor = color.ToUIColor(UIColor.Gray);
+			Control.SeparatorColor = color.ToUIColor(ColorExtensions.SeparatorColor);
 		}
 
 		void UpdateSeparatorVisibility()
