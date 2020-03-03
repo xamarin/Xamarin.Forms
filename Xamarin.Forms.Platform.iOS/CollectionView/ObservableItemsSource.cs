@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.iOS
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
-		public event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
+		internal event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
 
 		public int Count { get; private set; }
 
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
-
+			
 			_collectionView.PerformBatchUpdates(() =>
 			{
 				_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
