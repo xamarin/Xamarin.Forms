@@ -46,7 +46,8 @@ namespace Xamarin.Forms.Platform.iOS
 		List<NSObject> DefaultOrder()
 		{
 			var views = new List<NSObject>();
-			views.AddRange(Container.DescendantsTree());
+			if (Container != null)
+				views.AddRange(Container.DescendantsTree());
 			return views;
 		}
 
