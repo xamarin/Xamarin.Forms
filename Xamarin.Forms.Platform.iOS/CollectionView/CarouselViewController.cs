@@ -22,6 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 			Carousel.PropertyChanged += CarouselViewPropertyChanged;
 			Carousel.Scrolled += CarouselViewScrolled;
 			_oldViews = new List<View>();
+
+			
 		}
 
 		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
@@ -145,29 +147,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (removingFirstElement && !removingCurrentElement)
 			{
 				carouselPosition = currentItemPosition;
-				//when removing an item before the current item
-				//the UICollectionView always scrolls to the next item
-				//but we want to keept it on the same item
-				HackForPositionScroll();
 			}
 
 			SetCurrentItem(carouselPosition);
 			SetPosition(carouselPosition);
-		}
-
-		void HackForPositionScroll()
-		{
-			Device.StartTimer(new System.TimeSpan(1), () =>
-			{
-				var offset = CollectionView.ContentOffset;
-				var newOffset = new CGPoint(offset);
-				if (IsHorizontal)
-					newOffset = new CGPoint(offset.X - ItemsViewLayout.ItemSize.Width, offset.Y);
-				else
-					newOffset = new CGPoint(offset.X, offset.Y - ItemsViewLayout.ItemSize.Height);
-				CollectionView.SetContentOffset(newOffset, false);
-				return false;
-			});
 		}
 
 		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
