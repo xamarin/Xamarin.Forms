@@ -73,25 +73,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(countFired == 1);
 		}
 
-		[Test]
-		public void TestCurrentItemChangesPosition()
-		{
-			var gotoPosition = 1;
-			var source = new List<string> { "1", "2", "3" };
-			var carouselView = new CarouselView
-			{
-				ItemsSource = source
-			};
+		//[Test]
+		//public void TestCurrentItemChangesPosition()
+		//{
+		//	var gotoPosition = 1;
+		//	var source = new List<string> { "1", "2", "3" };
+		//	var carouselView = new CarouselView
+		//	{
+		//		ItemsSource = source
+		//	};
 
-			int countFired = 0;
-			carouselView.PositionChangedCommand = new Command(() =>
-			{
-				countFired += 1;
-			});
-			Assert.AreSame(source, carouselView.ItemsSource);
-			carouselView.CurrentItem = source[gotoPosition];
-			Assert.AreEqual(gotoPosition, carouselView.Position);
-		}
+		//	int countFired = 0;
+		//	carouselView.PositionChangedCommand = new Command(() =>
+		//	{
+		//		countFired += 1;
+		//	});
+		//	Assert.AreSame(source, carouselView.ItemsSource);
+		//	carouselView.CurrentItem = source[gotoPosition];
+		//	Assert.AreEqual(gotoPosition, carouselView.Position);
+		//}
 
 		[Test]
 		public void TestCurrentItemChangedCommand()
