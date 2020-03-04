@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -10,6 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class CarouselViewController : ItemsViewController<CarouselView>
 	{
 		protected readonly CarouselView Carousel;
+
 		bool _viewInitialized;
 		List<View> _oldViews;
 		int _gotoPosition = -1;
@@ -22,13 +21,6 @@ namespace Xamarin.Forms.Platform.iOS
 			Carousel.PropertyChanged += CarouselViewPropertyChanged;
 			Carousel.Scrolled += CarouselViewScrolled;
 			_oldViews = new List<View>();
-
-			
-		}
-
-		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
-		{
-			return new CarouselViewDelegator(ItemsViewLayout, this);
 		}
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
@@ -78,12 +70,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override bool IsHorizontal => (Carousel?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
 
+		protected override UICollectionViewDelegateFlowLayout CreateDelegator() => new CarouselViewDelegator(ItemsViewLayout, this);
+
 		protected override string DetermineCellReuseId()
 		{
 			if (Carousel.ItemTemplate != null)
-			{
 				return CarouselTemplatedCell.ReuseId;
-			}
+
 			return base.DetermineCellReuseId();
 		}
 
@@ -164,37 +157,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (oldItemsSource is ObservableItemsSource oldObservableItemsSource)
 				oldObservableItemsSource.CollectionItemsSourceChanged -= CollectionItemsSourceChanged;
 		}
-		
+
 		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
 		{
 			if (changedProperty.Is(CarouselView.PositionProperty))
 				UpdateFromPosition();
 			else if (changedProperty.Is(CarouselView.CurrentItemProperty))
 				UpdateFromCurrentItem();
-		}
-
-		void UpdateInitialPosition()
-		{
-			if (Carousel.CurrentItem != null)
-			{
-				int position = 0;
-
-				var items = Carousel.ItemsSource as IList;
-
-				for (int n = 0; n < items?.Count; n++)
-				{
-					if (items[n] == Carousel.CurrentItem)
-					{
-						position = n;
-						break;
-					}
-				}
-
-				var initialPosition = position;
-				Carousel.Position = initialPosition;
-			}
-
-			SetCurrentItem(Carousel.Position);
 		}
 
 		void SetPosition(int position)
@@ -236,13 +205,38 @@ namespace Xamarin.Forms.Platform.iOS
 			var carouselPosition = Carousel.Position;
 			if (carouselPosition == _gotoPosition)
 				_gotoPosition = -1;
-			
-			if (_gotoPosition == -1 && !Carousel.IsDragging && !Carousel.IsScrolling && currentItemPosition != carouselPosition)
+
+			if (_gotoPosition == -1 && !Carousel.IsDragging && currentItemPosition != carouselPosition)
 			{
 				_gotoPosition = carouselPosition;
 				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center);
 			}
+
 			SetCurrentItem(carouselPosition);
+		}
+
+		void UpdateInitialPosition()
+		{
+			if (Carousel.CurrentItem != null)
+			{
+				int position = 0;
+
+				var items = Carousel.ItemsSource as IList;
+
+				for (int n = 0; n < items?.Count; n++)
+				{
+					if (items[n] == Carousel.CurrentItem)
+					{
+						position = n;
+						break;
+					}
+				}
+
+				var initialPosition = position;
+				Carousel.Position = initialPosition;
+			}
+
+			SetCurrentItem(Carousel.Position);
 		}
 
 		void UpdateVisualStates()
