@@ -271,7 +271,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CreateTabRenderers()
 		{
-			if(ShellItem.CurrentItem == null)
+			if (ShellItem.CurrentItem == null)
 				throw new InvalidOperationException($"Content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
 
 			var items = ShellItemController.GetItems();
@@ -303,13 +303,23 @@ namespace Xamarin.Forms.Platform.iOS
 			for (i = 0; i < ViewControllers.Length; i++)
 			{
 				var renderer = RendererForViewController(ViewControllers[i]);
+
 				if (!renderer.ShellSection.IsEnabled)
 				{
-					TabBar.Items[i].Enabled = false;
+					if (TabBar.Items.Length > i + 1)
+						TabBar.Items[i].Enabled = false;
+					else
+					{
+						var tv = MoreNavigationController.ChildViewControllers[0].View as UITableView;
+						var source = tv.IndexPathsForVisibleRows;
+						var cell = tv.CellAt(source[i - 4]);
+						cell.UserInteractionEnabled = false;
+						cell.TextLabel.TextColor = Color.FromRgb(213, 213, 213).ToUIColor();
+					}
 				}
 			}
 		}
-			   
+
 		void GoTo(ShellSection shellSection)
 		{
 			if (shellSection == null || _currentSection == shellSection)

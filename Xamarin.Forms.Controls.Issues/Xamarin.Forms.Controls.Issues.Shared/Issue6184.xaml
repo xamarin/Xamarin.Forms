@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestShell
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Xamarin.Forms.Controls.Issues"
+    mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue6184">
+    <ShellItem>
+        <ShellSection Title="Issue 1" IsEnabled="False">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 2" IsEnabled="False">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 3" IsEnabled="False">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 4" IsEnabled="False">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 5" IsEnabled="False">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 6">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 7">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 8" >
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 9" IsEnabled="False">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 10">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 12">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 13">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 14">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 15">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 16">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 17">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+        <ShellSection Title="Issue 18" IsEnabled="False">
+            <ShellContent>
+                <local:Issue1900/>
+            </ShellContent>
+        </ShellSection>
+    </ShellItem>
+</controls:TestShell>
