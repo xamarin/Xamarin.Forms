@@ -3,9 +3,9 @@ using System.ComponentModel;
 
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
-using UIKit;
 
 #if __MOBILE__
+using UIKit;
 using NativeColor = UIKit.UIColor;
 using NativeControl = UIKit.UIControl;
 using NativeView = UIKit.UIView;
@@ -233,6 +233,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			_controlChanged?.Invoke(this, EventArgs.Empty);
 		}
 
+#if __MOBILE__
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
@@ -243,7 +244,6 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
-#if __MOBILE__
 		internal override void SendVisualElementInitialized(VisualElement element, NativeView nativeView)
 		{
 			base.SendVisualElementInitialized(element, Control);
