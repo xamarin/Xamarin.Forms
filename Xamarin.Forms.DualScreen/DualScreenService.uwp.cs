@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Windows.Foundation.Metadata;
 using Windows.Graphics.Display;
 using Windows.UI.ViewManagement;
 
@@ -39,6 +40,9 @@ namespace Xamarin.Forms.DualScreen
         {
             get
             {
+				if (!ApiInformation.IsMethodPresent("Windows.UI.ViewManagement.ApplicationView", "GetSpanningRects"))
+					return false;
+
                 var visibleBounds = Window.Current.Bounds;
 
                 if (visibleBounds.Height > 1200 || visibleBounds.Width > 1200)
