@@ -3,6 +3,7 @@ using System.ComponentModel;
 
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using UIKit;
 
 #if __MOBILE__
 using NativeColor = UIKit.UIColor;
@@ -230,6 +231,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			AddSubview(uiview);
 
 			_controlChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the cells adhere to changes UI theme
+			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				Control.SetNeedsDisplay();
+#endif
 		}
 
 #if __MOBILE__
