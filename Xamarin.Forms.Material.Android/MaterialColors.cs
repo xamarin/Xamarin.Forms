@@ -220,10 +220,10 @@ namespace Xamarin.Forms.Material.Tizen
 					layer0.SetColor(backgroundColor);
 
 				if (progressDrawable.GetDrawable(1) is AScaleDrawable layer1)
-					layer1.SetColorFilter(progressColor, PorterDuff.Mode.SrcIn);
+					layer1.SetColorFilter(progressColor, FilterMode.SrcIn);
 
 				if (progressDrawable.GetDrawable(2) is AScaleDrawable layer2)
-					layer2.SetColorFilter(progressColor, PorterDuff.Mode.SrcIn);
+					layer2.SetColorFilter(progressColor, FilterMode.SrcIn);
 			}
 			else if (Forms.IsLollipopOrNewer)
 			{
