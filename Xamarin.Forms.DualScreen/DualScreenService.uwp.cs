@@ -36,11 +36,13 @@ namespace Xamarin.Forms.DualScreen
 			OnScreenChanged?.Invoke(this, EventArgs.Empty);
 		}
 
+		bool IsDualScreenDevice => ApiInformation.IsMethodPresent("Windows.UI.ViewManagement.ApplicationView", "GetSpanningRects");
+
 		public bool IsSpanned
         {
             get
             {
-				if (!ApiInformation.IsMethodPresent("Windows.UI.ViewManagement.ApplicationView", "GetSpanningRects"))
+				if (!IsDualScreenDevice)
 					return false;
 
                 var visibleBounds = Window.Current.Bounds;
@@ -51,6 +53,7 @@ namespace Xamarin.Forms.DualScreen
                 return false;
             }
 		}
+
 		public DeviceInfo DeviceInfo => Device.info;
 
 		public bool IsLandscape
@@ -73,12 +76,11 @@ namespace Xamarin.Forms.DualScreen
 			}
 		}
 
-		public void Dispose()
-        {
-        }
-
         public Rectangle GetHinge()
         {
+			if (!IsDualScreenDevice)
+				return Rectangle.Zero;
+
             var screen = DisplayInformation.GetForCurrentView();
 
             if (IsLandscape)
