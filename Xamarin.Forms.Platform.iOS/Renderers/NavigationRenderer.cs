@@ -358,15 +358,16 @@ namespace Xamarin.Forms.Platform.iOS
 			return shown;
 		}
 
-#if __XCODE11__
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-
+#if __XCODE11__
 			// Make sure the control adheres to changes UI theme
-			UpdateBackgroundColor();
-		}
+			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				UpdateBackgroundColor();
 #endif
+		}
+
 
 		ParentingViewController CreateViewControllerForPage(Page page)
 		{

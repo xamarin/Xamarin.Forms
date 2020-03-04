@@ -176,15 +176,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return sizeThatFits;
 		}
-#if __XCODE11__
+
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-
+#if __XCODE11__
 			// Make sure the control adheres to changes UI theme
-			UpdateTextColor();
-		}
+			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				UpdateTextColor();
 #endif
+		}
+
 		void OnCancelClicked(object sender, EventArgs args)
 		{
 			ElementController.SetValueFromRenderer(SearchBar.TextProperty, null);

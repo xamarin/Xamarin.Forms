@@ -301,15 +301,17 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
 				UpdateHorizontalScrollBarVisibility();
 		}
-#if __XCODE11__
+
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-
+#if __XCODE11__
 			// Make sure the cells adhere to changes UI theme
-			ReloadData();
-		}
+			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				ReloadData();
 #endif
+		}
+
 		NSIndexPath[] GetPaths(int section, int index, int count)
 		{
 			var paths = new NSIndexPath[count];

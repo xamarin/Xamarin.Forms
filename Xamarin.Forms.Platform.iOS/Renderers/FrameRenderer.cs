@@ -38,15 +38,15 @@ namespace Xamarin.Forms.Platform.iOS
 				SetupLayer();
 		}
 
-#if __XCODE11__
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-
+#if __XCODE11__
 			// Make sure the control adheres to changes UI theme
-			SetupLayer();
-		}
+			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				SetupLayer();
 #endif
+		}
 
 		public virtual void SetupLayer()
 		{

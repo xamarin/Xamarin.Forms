@@ -115,6 +115,42 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
+		internal static UIColor Red
+		{
+			get
+			{
+#if __XCODE11__
+				if (Forms.IsiOS13OrNewer)
+					return UIColor.SystemRedColor;
+#endif
+				return UIColor.FromRGBA(1, 0, 0, 1);
+			}
+		}
+
+		internal static UIColor Gray
+		{
+			get
+			{
+#if __XCODE11__
+				if (Forms.IsiOS13OrNewer)
+					return UIColor.SystemGrayColor;
+#endif
+				return UIColor.Gray;
+			}
+		}
+
+		internal static UIColor LightGray
+		{
+			get
+			{
+#if __XCODE11__
+				if (Forms.IsiOS13OrNewer)
+					return UIColor.SystemGray2Color;
+#endif
+				return UIColor.LightGray;
+			}
+		}
+
 #else
 		internal static readonly NSColor Black = NSColor.Black;
 		internal static readonly NSColor SeventyPercentGrey = NSColor.FromRgba(0.7f, 0.7f, 0.7f, 1);
