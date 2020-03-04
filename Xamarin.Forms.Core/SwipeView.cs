@@ -63,8 +63,7 @@ namespace Xamarin.Forms
 
 		static void OnSwipeItemsChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if (bindable is SwipeView swipeView)
-				swipeView.UpdateSwipeItemsParent((SwipeItems)newValue);
+			((SwipeView)bindable).UpdateSwipeItemsParent((SwipeItems)newValue);
 		}
 
 		public event EventHandler<SwipeStartedEventArgs> SwipeStarted;
