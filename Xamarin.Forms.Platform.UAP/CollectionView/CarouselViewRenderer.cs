@@ -9,21 +9,24 @@ using WScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using WSnapPointsType = Windows.UI.Xaml.Controls.SnapPointsType;
 using WSnapPointsAlignment = Windows.UI.Xaml.Controls.Primitives.SnapPointsAlignment;
 using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class CarouselViewRenderer : ItemsViewRenderer<CarouselView>
 	{
 		ScrollViewer _scrollViewer;
+		int _gotoPosition = -1;
+		bool _noNeedForScroll;
 
 		public CarouselViewRenderer()
 		{
 			CarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselView));
 		}
 
-		CarouselView CarouselView => Element;
-		protected override IItemsLayout Layout => CarouselView?.ItemsLayout;
-		LinearItemsLayout CarouselItemsLayout => CarouselView?.ItemsLayout;
+		protected CarouselView Carousel => Element;
+		protected override IItemsLayout Layout => Carousel?.ItemsLayout;
+		LinearItemsLayout CarouselItemsLayout => Carousel?.ItemsLayout;
 
 		UWPDataTemplate CarouselItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["CarouselItemsViewDefaultTemplate"];
 
@@ -41,6 +44,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateIsSwipeEnabled();
 			else if (changedProperty.Is(CarouselView.IsBounceEnabledProperty))
 				UpdateIsBounceEnabled();
+			else if (changedProperty.Is(CarouselView.PositionProperty))
+				UpdateFromPosition();
+			else if (changedProperty.Is(CarouselView.CurrentItemProperty))
+				UpdateFromCurrentItem();
 		}
 
 		protected override void HandleLayoutPropertyChanged(PropertyChangedEventArgs property)
@@ -60,7 +67,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (newElement != null)
 			{
 				ListViewBase.SizeChanged += OnListSizeChanged;
+				//SetCurrentItem(0);
 			}
+			
 		}
 
 		protected override void TearDownOldElement(ItemsView oldElement)
@@ -101,7 +110,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			return new CollectionViewSource
 			{
-				Source = TemplatedItemSourceFactory.Create(Element.ItemsSource, Element.ItemTemplate, Element, 
+				Source = TemplatedItemSourceFactory.Create(Element.ItemsSource, Element.ItemTemplate, Element,
 					GetItemHeight(), GetItemWidth(), GetItemSpacing()),
 				IsSourceGrouped = false
 			};
@@ -124,15 +133,15 @@ namespace Xamarin.Forms.Platform.UWP
 			ListViewBase.ItemTemplate = CarouselItemsViewTemplate;
 		}
 
-		protected override Task ScrollTo(ScrollToRequestEventArgs args)
-		{
-			var targetItem = FindCarouselItem(args);
+		//protected override Task ScrollTo(ScrollToRequestEventArgs args)
+		//{
+		//	var targetItem = FindCarouselItem(args);
 
-			// TODO: jsuarezruiz Include support to animated scroll.
-			ListViewBase.ScrollIntoView(targetItem);
+		//	// TODO: jsuarezruiz Include support to animated scroll.
+		//	ListViewBase.ScrollIntoView(targetItem);
 
-			return Task.FromResult<object>(null);
-		}
+		//	return Task.FromResult<object>(null);
+		//}
 
 		void OnListSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
 		{
@@ -143,14 +152,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnScrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
 		{
-			CarouselView.SetIsDragging(true);
-			CarouselView.IsScrolling = true;
+			Carousel.SetIsDragging(true);
+			Carousel.IsScrolling = true;
 		}
 
 		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
 		{
-			CarouselView.SetIsDragging(e.IsIntermediate);
-			CarouselView.IsScrolling = e.IsIntermediate;
+			Carousel.SetIsDragging(e.IsIntermediate);
+			Carousel.IsScrolling = e.IsIntermediate;
 
 			UpdatePositionFromScroll();
 		}
@@ -162,20 +171,20 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIsSwipeEnabled()
 		{
-			if (CarouselView == null)
+			if (Carousel == null)
 				return;
 
-			ListViewBase.IsSwipeEnabled = CarouselView.IsSwipeEnabled;
+			ListViewBase.IsSwipeEnabled = Carousel.IsSwipeEnabled;
 
 			switch (CarouselItemsLayout.Orientation)
 			{
 				case ItemsLayoutOrientation.Horizontal:
-					ScrollViewer.SetHorizontalScrollMode(ListViewBase, CarouselView.IsSwipeEnabled ? WScrollMode.Auto : WScrollMode.Disabled);
-					ScrollViewer.SetHorizontalScrollBarVisibility(ListViewBase, CarouselView.IsSwipeEnabled ? WScrollBarVisibility.Auto : WScrollBarVisibility.Disabled);
+					ScrollViewer.SetHorizontalScrollMode(ListViewBase, Carousel.IsSwipeEnabled ? WScrollMode.Auto : WScrollMode.Disabled);
+					ScrollViewer.SetHorizontalScrollBarVisibility(ListViewBase, Carousel.IsSwipeEnabled ? WScrollBarVisibility.Auto : WScrollBarVisibility.Disabled);
 					break;
 				case ItemsLayoutOrientation.Vertical:
-					ScrollViewer.SetVerticalScrollMode(ListViewBase, CarouselView.IsSwipeEnabled ? WScrollMode.Auto : WScrollMode.Disabled);
-					ScrollViewer.SetVerticalScrollBarVisibility(ListViewBase, CarouselView.IsSwipeEnabled ? WScrollBarVisibility.Auto : WScrollBarVisibility.Disabled);
+					ScrollViewer.SetVerticalScrollMode(ListViewBase, Carousel.IsSwipeEnabled ? WScrollMode.Auto : WScrollMode.Disabled);
+					ScrollViewer.SetVerticalScrollBarVisibility(ListViewBase, Carousel.IsSwipeEnabled ? WScrollBarVisibility.Auto : WScrollBarVisibility.Disabled);
 					break;
 			}
 		}
@@ -183,7 +192,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateIsBounceEnabled()
 		{
 			if (_scrollViewer != null)
-				_scrollViewer.IsScrollInertiaEnabled = CarouselView.IsBounceEnabled;
+				_scrollViewer.IsScrollInertiaEnabled = Carousel.IsBounceEnabled;
 		}
 
 		void UpdateItemSpacing()
@@ -242,15 +251,65 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePosition(position);
 		}
 
+
+		void UpdateFromCurrentItem()
+		{
+			var currentItemPosition = FindCarouselItemIndex(Carousel.CurrentItem);
+			var carouselPosition = Carousel.Position;
+
+			if (_gotoPosition == -1 && currentItemPosition != carouselPosition)
+			{
+				_gotoPosition = currentItemPosition;
+				Carousel.ScrollTo(currentItemPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+			}
+		}
+
+		void UpdateFromPosition()
+		{
+			var carouselPosition = Carousel.Position;
+			if (carouselPosition == _gotoPosition)
+				_gotoPosition = -1;
+
+			if (_noNeedForScroll)
+			{
+				_noNeedForScroll = false;
+				return;
+			}
+
+			if (_gotoPosition == -1 && !Carousel.IsDragging && !Carousel.IsScrolling)
+			{
+				_gotoPosition = carouselPosition;
+				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+			}
+			SetCurrentItem(carouselPosition);
+		}
+
 		void UpdatePosition(int position)
 		{
-			if (position <= 0)
+			var carouselPosition = Carousel.Position;
+
+			if (position <= 0 || position >= ListViewBase.Items.Count)
 				return;
 
-			if (!(ListViewBase.Items[position - 1] is ItemTemplateContext itemTemplateContext))
+			if (position == _gotoPosition)
+				_gotoPosition = -1;
+
+			if (_gotoPosition == -1 && carouselPosition != position)
+			{
+				Carousel.SetValueFromRenderer(CarouselView.PositionProperty, position);
+			}
+		}
+
+		void SetCurrentItem(int carouselPosition)
+		{
+			if (carouselPosition < 0 && carouselPosition > ListViewBase.Items.Count)
+				return;
+
+			if (!(ListViewBase.Items[carouselPosition] is ItemTemplateContext itemTemplateContext))
 				throw new InvalidOperationException("Visible item not found");
 
-		//	CarouselView.SetCurrentItem(itemTemplateContext.Item);
+			var item = itemTemplateContext.Item;
+			Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, item);
 		}
 
 		ListViewBase CreateCarouselListLayout(ItemsLayoutOrientation layoutOrientation)
@@ -282,7 +341,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (CarouselItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				itemWidth = (ActualWidth - CarouselView.PeekAreaInsets.Left - CarouselView.PeekAreaInsets.Right - CarouselItemsLayout.ItemSpacing);
+				itemWidth = (ActualWidth - Carousel.PeekAreaInsets.Left - Carousel.PeekAreaInsets.Right - CarouselItemsLayout.ItemSpacing);
 			}
 
 			return Math.Max(itemWidth, 0);
@@ -294,7 +353,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (CarouselItemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
 			{
-				itemHeight = (ActualHeight - CarouselView.PeekAreaInsets.Top - CarouselView.PeekAreaInsets.Bottom - CarouselItemsLayout.ItemSpacing);
+				itemHeight = (ActualHeight - Carousel.PeekAreaInsets.Top - Carousel.PeekAreaInsets.Bottom - CarouselItemsLayout.ItemSpacing);
 			}
 
 			return Math.Max(itemHeight, 0);
@@ -333,6 +392,21 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			return null;
+		}
+
+		int FindCarouselItemIndex(object item)
+		{
+			for (int n = 0; n < CollectionViewSource?.View.Count; n++)
+			{
+				if (CollectionViewSource.View[n] is ItemTemplateContext pair)
+				{
+					if (pair.Item == item)
+					{
+						return n;
+					}
+				}
+			}
+			return -1;
 		}
 
 		WSnapPointsType GetWindowsSnapPointsType(SnapPointsType snapPointsType)
