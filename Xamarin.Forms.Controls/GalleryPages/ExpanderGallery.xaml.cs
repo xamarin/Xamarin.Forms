@@ -74,7 +74,6 @@ namespace Xamarin.Forms.Controls
 				}
 			}
 
-
 		}
 	}
 }
