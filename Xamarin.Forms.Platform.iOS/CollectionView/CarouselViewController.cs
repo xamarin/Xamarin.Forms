@@ -175,6 +175,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetCurrentItem(int carouselPosition)
 		{
+			if (ItemsSource.ItemCount == 0)
+				return;
+
 			var item = GetItemAtIndex(NSIndexPath.FromItemSection(carouselPosition, 0));
 			Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, item);
 			UpdateVisualStates();
