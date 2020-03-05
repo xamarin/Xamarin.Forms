@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls.Tests
 				if (runOnMainThread)
 				{
 					// FrameworkPackageSettings.RunOnMainThread will force all the tests to run sequentially on the thread
-					// they are started on; we have to do this for iOS to avoid cross-thread exceptions when updating
+					// they are started on; we have to do this to avoid cross-thread exceptions when updating
 					// renderer properties. It's a less nice runner experience, because we don't get progress updates
 					// while it runs, but that's life. Anyway, we push the test runs onto the main thread and wait.
 
@@ -56,10 +56,9 @@ namespace Xamarin.Forms.Controls.Tests
 				}
 				else
 				{
-					// So far, Android lets us get away with running tests asynchronously, so we get
+					// What we really want is this - running tests asynchronously, so we get
 					// progress updates as they run. This should be our default until we run into cross-thread
 					// or "not on the UI thread" issues with a platform, at which point we need to set RunOnMainThread
-					// like we do for iOS
 
 					runner.Load(controls, testRunSettings);
 					runner.Run(_testListener, testFilter);
