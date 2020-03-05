@@ -10,6 +10,7 @@ using WSnapPointsType = Windows.UI.Xaml.Controls.SnapPointsType;
 using WSnapPointsAlignment = Windows.UI.Xaml.Controls.Primitives.SnapPointsAlignment;
 using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
 using System.Linq;
+using System.Collections;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -17,7 +18,6 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		ScrollViewer _scrollViewer;
 		int _gotoPosition = -1;
-		bool _noNeedForScroll;
 
 		public CarouselViewRenderer()
 		{
@@ -67,9 +67,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (newElement != null)
 			{
 				ListViewBase.SizeChanged += OnListSizeChanged;
-				//SetCurrentItem(0);
 			}
-			
+
 		}
 
 		protected override void TearDownOldElement(ItemsView oldElement)
@@ -82,6 +81,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (ListViewBase != null)
 			{
 				ListViewBase.SizeChanged -= OnListSizeChanged;
+				if (CollectionViewSource?.Source is ObservableItemTemplateCollection observableItemsSource)
+					observableItemsSource.CollectionChanged -= CollectionItemsSourceChanged;
+
 			}
 
 			if (_scrollViewer != null)
@@ -108,10 +110,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override CollectionViewSource CreateCollectionViewSource()
 		{
+			var collectionViewSource = TemplatedItemSourceFactory.Create(Element.ItemsSource, Element.ItemTemplate, Element,
+					GetItemHeight(), GetItemWidth(), GetItemSpacing());
+
+			if(collectionViewSource is ObservableItemTemplateCollection observableItemsSource)
+				observableItemsSource.CollectionChanged += CollectionItemsSourceChanged;
+		
 			return new CollectionViewSource
 			{
-				Source = TemplatedItemSourceFactory.Create(Element.ItemsSource, Element.ItemTemplate, Element,
-					GetItemHeight(), GetItemWidth(), GetItemSpacing()),
+				Source = collectionViewSource,
 				IsSourceGrouped = false
 			};
 		}
@@ -133,21 +140,54 @@ namespace Xamarin.Forms.Platform.UWP
 			ListViewBase.ItemTemplate = CarouselItemsViewTemplate;
 		}
 
-		//protected override Task ScrollTo(ScrollToRequestEventArgs args)
-		//{
-		//	var targetItem = FindCarouselItem(args);
+		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			var carouselPosition = Carousel.Position;
+			var currentItemPosition = FindCarouselItemIndex(Carousel.CurrentItem);
+			var count = (sender as IList).Count;
 
-		//	// TODO: jsuarezruiz Include support to animated scroll.
-		//	ListViewBase.ScrollIntoView(targetItem);
+			bool removingCurrentElement = currentItemPosition == -1;
+			bool removingLastElement = e.OldStartingIndex == count;
+			bool removingFirstElement = e.OldStartingIndex == 0;
+			bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
 
-		//	return Task.FromResult<object>(null);
-		//}
+			if (removingCurrentElementButNotFirst)
+			{
+				carouselPosition = Carousel.Position - 1;
+			
+			}
+			else if (removingFirstElement && !removingCurrentElement)
+			{
+				carouselPosition = currentItemPosition;
+			}
+
+			if(removingCurrentElement)
+			{
+				SetCurrentItem(carouselPosition);
+				UpdatePosition(carouselPosition);
+			}
+			
+		}
 
 		void OnListSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
 		{
 			UpdateItemsSource();
 			UpdateSnapPointsType();
 			UpdateSnapPointsAlignment();
+
+			HackFixInitialPadding();
+			UpdateInitialPosition();
+		}
+
+		void HackFixInitialPadding()
+		{
+			//There's a 12 pixel on the left that i couldn't figure yet how to remove
+			//We set the offset to 12 pixels to make align correctly
+			Device.StartTimer(TimeSpan.FromMilliseconds(10), () =>
+			{
+				_scrollViewer.ChangeView(12, null, null);
+				return false;
+			});
 		}
 
 		void OnScrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
@@ -231,6 +271,23 @@ namespace Xamarin.Forms.Platform.UWP
 				_scrollViewer.VerticalSnapPointsAlignment = GetWindowsSnapPointsAlignment(CarouselItemsLayout.SnapPointsAlignment);
 		}
 
+		void UpdateInitialPosition()
+		{
+			int position;
+
+			if (Carousel.CurrentItem != null)
+			{
+				position = FindCarouselItemIndex(Carousel.CurrentItem);
+				Carousel.Position = position;
+			}
+			else
+			{
+				position = Carousel.Position;
+			}
+
+			SetCurrentItem(position);
+		}
+
 		void UpdatePositionFromScroll()
 		{
 			if (_scrollViewer == null)
@@ -251,7 +308,6 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePosition(position);
 		}
 
-
 		void UpdateFromCurrentItem()
 		{
 			var currentItemPosition = FindCarouselItemIndex(Carousel.CurrentItem);
@@ -270,12 +326,6 @@ namespace Xamarin.Forms.Platform.UWP
 			if (carouselPosition == _gotoPosition)
 				_gotoPosition = -1;
 
-			if (_noNeedForScroll)
-			{
-				_noNeedForScroll = false;
-				return;
-			}
-
 			if (_gotoPosition == -1 && !Carousel.IsDragging && !Carousel.IsScrolling)
 			{
 				_gotoPosition = carouselPosition;
@@ -287,17 +337,17 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdatePosition(int position)
 		{
 			var carouselPosition = Carousel.Position;
+			var newPosition = FixPosition(position);
 
-			if (position <= 0 || position >= ListViewBase.Items.Count)
+			if (newPosition < 0 || newPosition > ListViewBase.Items.Count)
 				return;
 
-			if (position == _gotoPosition)
+			//we arrived center
+			if (newPosition == _gotoPosition)
 				_gotoPosition = -1;
 
-			if (_gotoPosition == -1 && carouselPosition != position)
-			{
-				Carousel.SetValueFromRenderer(CarouselView.PositionProperty, position);
-			}
+			if (_gotoPosition == -1 && carouselPosition != newPosition)
+				Carousel.SetValueFromRenderer(CarouselView.PositionProperty, newPosition);
 		}
 
 		void SetCurrentItem(int carouselPosition)
@@ -372,28 +422,6 @@ namespace Xamarin.Forms.Platform.UWP
 			return new Thickness(0);
 		}
 
-		object FindCarouselItem(ScrollToRequestEventArgs args)
-		{
-			if (args.Mode == ScrollToMode.Position)
-				return CollectionViewSource.View[args.Index];
-
-			if (Element.ItemTemplate == null)
-				return args.Item;
-
-			for (int n = 0; n < CollectionViewSource?.View.Count; n++)
-			{
-				if (CollectionViewSource.View[n] is ItemTemplateContext pair)
-				{
-					if (pair.Item == args.Item)
-					{
-						return CollectionViewSource.View[n];
-					}
-				}
-			}
-
-			return null;
-		}
-
 		int FindCarouselItemIndex(object item)
 		{
 			for (int n = 0; n < CollectionViewSource?.View.Count; n++)
@@ -449,7 +477,6 @@ namespace Xamarin.Forms.Platform.UWP
 				// TODO: jsuarezruiz This breaks the ScrollTo override. Review it.
 				_scrollViewer.ViewChanging += OnScrollViewChanging;
 				_scrollViewer.ViewChanged += OnScrollViewChanged;
-
 				return;
 			}
 
@@ -462,5 +489,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			listView.Loaded += ListViewLoaded;
 		}
+
+		static int FixPosition(int position) => position - 1;
 	}
 }
