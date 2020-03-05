@@ -255,7 +255,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Carousel.CurrentItem != null)
 			{
-			
 				var items = Carousel.ItemsSource as IList;
 
 				for (int n = 0; n < items?.Count; n++)
@@ -362,7 +361,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetCurrentItem(int carouselPosition)
 		{
-			var item = (ItemsViewAdapter.ItemsSource as IItemsViewSource).GetItem(carouselPosition);
+			if (ItemsViewAdapter?.ItemsSource?.Count == 0)
+				return;
+
+			var item = ItemsViewAdapter.ItemsSource.GetItem(carouselPosition);
 			Carousel.SetValueFromRenderer(FormsCarouselView.CurrentItemProperty, item);
 		}
 
