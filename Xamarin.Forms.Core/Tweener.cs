@@ -36,6 +36,14 @@ namespace Xamarin.Forms
 		int _timer;
 		long _frames;
 
+		public Tweener(uint length)
+		{
+			Value = 0.0f;
+			Length = length;
+			Rate = 1;
+			Loop = false;
+		}
+
 		public Tweener(uint length, uint rate)
 		{
 			Value = 0.0f;
