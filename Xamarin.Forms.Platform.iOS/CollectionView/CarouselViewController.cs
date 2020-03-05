@@ -86,12 +86,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.RegisterViewTypes();
 		}
 
-		protected override void BoundsSizeChanged()
-		{
-			base.BoundsSizeChanged();
-			_carouselView.ScrollTo(_carouselView.Position, position: ScrollToPosition.Center, animate: false);
-		}
-		
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
 			var itemsSource = base.CreateItemsViewSource();
