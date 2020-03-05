@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
 
-			SetMainPage(new NavigationPage(new GalleryPages.CollectionViewGalleries.CarouselViewGalleries.CarouselViewGallery()));
+			SetMainPage(CreateDefaultMainPage());
 
 			//TestMainPageSwitches();
 
