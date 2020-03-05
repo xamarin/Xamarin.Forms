@@ -312,5 +312,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				views.Add(new Label { Text = message });
 			}
 		}
+
+		async void ResultsAdded(object sender, ElementEventArgs e)
+		{
+			var stackLayout = (StackLayout)sender;
+			await ResultsScrollView.ScrollToAsync(0, stackLayout.Height - ResultsScrollView.Height, false);
+		}
 	}
 }
