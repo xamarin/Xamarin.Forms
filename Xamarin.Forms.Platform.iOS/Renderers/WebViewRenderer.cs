@@ -22,6 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 #pragma warning disable 0414
 		VisualElementTracker _tracker;
 #pragma warning restore 0414
+
+		[Internals.Preserve(Conditional = true)]
 		public WebViewRenderer() : base(RectangleF.Empty)
 		{
 		}
@@ -282,15 +284,18 @@ namespace Xamarin.Forms.Platform.iOS
 					cookieJar.DeleteCookie(aCookie);
 				}
 				//set up the new cookies
-				var jCookies = WebView.Cookies.GetCookies(request.Url);
-				IList<NSHttpCookie> eCookies =
-					(from object jCookie in jCookies
-					 where jCookie != null
-					 select (Cookie)jCookie
-					 into netCookie
-					 select new NSHttpCookie(netCookie)).ToList();
+				if (WebView.Cookies != null)
+				{
+					var jCookies = WebView.Cookies.GetCookies(request.Url);
+					IList<NSHttpCookie> eCookies =
+						(from object jCookie in jCookies
+						 where jCookie != null
+						 select (Cookie)jCookie
+						 into netCookie
+						 select new NSHttpCookie(netCookie)).ToList();
 
-				cookieJar.SetCookies(eCookies.ToArray(), request.Url, request.Url);
+					cookieJar.SetCookies(eCookies.ToArray(), request.Url, request.Url);
+				}
 
 				WebView.SendNavigating(args);
 				_renderer.UpdateCanGoBackForward();

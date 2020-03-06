@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 				
 		bool _idleTimerDisabled = false;
 
+		[Internals.Preserve(Conditional = true)]
 		public MediaElementRenderer()
 		{
 			Xamarin.Forms.MediaElement.VerifyMediaElementFlagEnabled(nameof(MediaElementRenderer));
@@ -56,6 +57,9 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					if (uriSource.Uri.Scheme == "ms-appx")
 					{
+						if (uriSource.Uri.LocalPath.Length <= 1)
+							return;
+
 						// used for a file embedded in the application package
 						asset = AVAsset.FromUrl(NSUrl.FromFilename(uriSource.Uri.LocalPath.Substring(1)));
 					}
@@ -179,7 +183,13 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case AVPlayerStatus.ReadyToPlay:
-					Controller.Duration = TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Duration.Seconds);
+					var duration = _avPlayerViewController.Player.CurrentItem.Duration;
+
+					if (duration.IsIndefinite)
+						Controller.Duration = TimeSpan.Zero;
+					else
+						Controller.Duration = TimeSpan.FromSeconds(duration.Seconds);
+
 					Controller.VideoHeight = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
 					Controller.VideoWidth = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
 					Controller.OnMediaOpened();

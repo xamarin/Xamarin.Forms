@@ -65,9 +65,6 @@ jobs:
     name: win
     displayName: Build Windows Phase
     vmImage: $(win2019VmImage)
-    msbuildExtraArguments: '/nowarn:VSX1000'
-    buildConfiguration: $(DefaultBuildConfiguration)
-    buildPlatform: $(DefaultBuildPlatform)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
@@ -76,7 +73,7 @@ jobs:
     displayName: Build Android [Legacy Renderers]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="LEGACY" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
     buildConfiguration: $(AndroidBuildConfiguration)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
@@ -86,7 +83,7 @@ jobs:
     displayName: Build Android [Pre-AppCompat]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="PREAPPCOMPAT" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
     buildConfiguration: $(AndroidBuildConfiguration)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
@@ -96,11 +93,13 @@ jobs:
     displayName: Build Android [Fast Renderers]
     vmImage: $(macOSVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
-    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
+    androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="FAST" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
     buildConfiguration: $(AndroidBuildConfiguration)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - job: osx
+  workspace:
+    clean: all
   displayName: OSX Phase
   pool:
     name: $(macOSVmImage)
@@ -109,6 +108,12 @@ jobs:
       - sh
       - msbuild
       - Xamarin.iOS
+  strategy:
+    matrix:
+      BuildForVS2017:
+        buildForVS2017:  'true'
+      BuildForVS2019:
+        buildForVS2017:  'false'
   variables:
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
     provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
@@ -116,10 +121,13 @@ jobs:
     slnPath: $(SolutionFile)
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
+    buildForVS2017: $(buildForVS2017)
   steps:
      - template: build/steps/build-osx.yml
 
 - job: nuget_pack
+  workspace:
+    clean: all
   displayName: Nuget Phase
   dependsOn:
    - win

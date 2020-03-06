@@ -23,11 +23,13 @@ Follow the style used by the [.NET Foundation](https://github.com/dotnet/corefx/
 - We do not use the `private` keyword, as it is the default accessibility level in C#.
 - We use hard tabs over spaces.
 
-Read and follow our [Pull Request template](https://github.com/xamarin/Xamarin.Forms/blob/master/PULL_REQUEST_TEMPLATE.md).
+Read and follow our [Pull Request template](PULL_REQUEST_TEMPLATE.md).
 
 ### Pull Request Requirements
 
- We use red-green-refactor test driven development. If you're planning to work on a bug fix, please be sure to create a test case in the UI tests suite (or unit tests, if you're working on Core/XAML code) that proves that the behavior is broken and then proves that the behavior was resolved after your changes. If at all possible, the test should be automated. If the test cannot be automated, then it should include manual testing instructions on screen.
+We use red-green-refactor test driven development. If you're planning to work on a bug fix, please be sure to create a test case in the UI tests suite (or unit tests, if you're working on Core/XAML code) that proves that the behavior is broken and then proves that the behavior was resolved after your changes. If at all possible, the test should be automated. If the test cannot be automated, then it should include manual testing instructions on screen.
+
+Please check the "Allow edits from maintainers" checkbox on your pull request. This allows us to quickly make minor fixes and resolve conflicts for you.
 
 ## Proposals/Enhancements/Suggestions
 

@@ -34,8 +34,10 @@ namespace Xamarin.Forms.Platform.iOS
 		List<CGRect> _swipeItemsRect;
 		double _previousScrollX;
 		double _previousScrollY;
+		bool _isSwipeEnabled;
 		bool _isDisposed;
 
+		[Internals.Preserve(Conditional = true)]
 		public SwipeViewRenderer()
 		{
 			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
@@ -59,6 +61,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				UpdateContent();
+				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
 				SetBackgroundColor(Element.BackgroundColor);
 			}
@@ -124,6 +127,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				SetBackgroundColor(Element.BackgroundColor);
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
 				UpdateSwipeTransitionMode();
 		}
@@ -132,9 +137,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UIColor backgroundColor;
 
-			if (Forms.IsiOS11OrNewer)
+#if __XCODE11__
+			if (Forms.IsiOS13OrNewer)
 				backgroundColor = UIColor.SystemBackgroundColor;
 			else
+#endif
 				backgroundColor = UIColor.White;
 
 			if (Element.BackgroundColor != Color.Default)
@@ -206,6 +213,41 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
+		public override UIView HitTest(CGPoint point, UIEvent uievent)
+		{
+			if (!UserInteractionEnabled || Hidden)
+				return null;
+			
+			foreach (var subview in Subviews)
+			{
+				var view = HitTest(subview, point, uievent);
+
+				if (view != null)
+					return view;
+			}
+				
+			return base.HitTest(point, uievent);
+		}
+
+		UIView HitTest(UIView view, CGPoint point, UIEvent uievent)
+		{
+			if (view.Subviews == null)
+				return null;
+
+			foreach (var subview in view.Subviews)
+			{
+				CGPoint subPoint = subview.ConvertPointFromView(point, this);
+				UIView result = subview.HitTest(subPoint, uievent);
+
+				if (result != null)
+				{
+					return result;
+				}
+			}
+
+			return null;
+		}
+
 		public override void TouchesBegan(NSSet touches, UIEvent evt)
 		{
 			var navigationController = GetUINavigationController(GetViewController());
@@ -264,6 +306,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (content != null)
 					_contentView = content;
 			}
+		}
+
+		void UpdateIsSwipeEnabled()
+		{
+			_isSwipeEnabled = Element.IsEnabled;
 		}
 
 		UIView CreateEmptyContent()
@@ -463,6 +510,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleTouchInteractions(NSSet touches, GestureStatus gestureStatus)
 		{
+			if (!_isSwipeEnabled)
+				return;
+
 			var anyObject = touches.AnyObject as UITouch;
 			nfloat x = anyObject.LocationInView(this).X;
 			nfloat y = anyObject.LocationInView(this).Y;
@@ -508,7 +558,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProcessTouchMove(CGPoint point)
 		{
-			if (!_isSwiping)
+			if (!_isSwiping && _swipeThreshold == 0)
 			{
 				_swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
 				RaiseSwipeStarted();
