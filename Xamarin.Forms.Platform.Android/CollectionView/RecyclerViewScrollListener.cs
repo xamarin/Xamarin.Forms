@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			{
 				firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
 				lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
-				centerItemIndex = RecyclerExtensions.CalculateCenterItemIndex(firstVisibleItemIndex, recyclerView, linearLayoutManager);
+				centerItemIndex = recyclerView.CalculateCenterItemIndex(firstVisibleItemIndex, linearLayoutManager);
 			}
 
 			var context = recyclerView.Context;

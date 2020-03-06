@@ -8,9 +8,9 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class RecyclerExtensions
+	internal static class RecyclerExtensions
 	{
-		public static int CalculateCenterItemIndex(int firstVisibleItemIndex, RecyclerView recyclerView, LinearLayoutManager linearLayoutManager)
+		public static int CalculateCenterItemIndex(this RecyclerView recyclerView, int firstVisibleItemIndex, LinearLayoutManager linearLayoutManager)
 		{
 			// This can happen if a layout pass has not happened yet
 			if (firstVisibleItemIndex == -1)
