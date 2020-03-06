@@ -394,7 +394,7 @@ namespace Xamarin.Forms.Platform.iOS
 
    			bool shouldReceive(UIGestureRecognizer g, UITouch t)
 			{
-				return !(t.View is UISlider) && !(IsSwipeView(t.View));
+				return !(t.View is UISlider) && !IsSwipeView(t.View);
 			}
    
 			var center = new PointF();
