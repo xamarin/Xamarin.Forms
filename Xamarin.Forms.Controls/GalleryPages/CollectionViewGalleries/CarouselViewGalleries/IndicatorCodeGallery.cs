@@ -194,10 +194,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var btnRemove = new Button
 			{
-				Text = "Remove First",
+				Text = "DEL First",
+				FontSize = 8,
 				AutomationId = "btnRemoveFirst",
 				BackgroundColor = Color.LightGray,
-				Padding = new Thickness(10),
+				Padding = new Thickness(5),
 				Command = new Command(() =>
 				{
 					var items = (_carouselView.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>);
@@ -208,9 +209,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			_btnPrev = new Button
 			{
 				Text = "Prev",
+				FontSize = 8,
 				AutomationId = "btnPrev",
 				BackgroundColor = Color.LightGray,
-				Padding = new Thickness(10),
+				Padding = new Thickness(5),
 				Command = new Command(() =>
 				{
 					_carouselView.Position--;
@@ -223,9 +225,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			_btnNext = new Button
 			{
 				Text = "Next",
+				FontSize = 8,
 				AutomationId = "btnNext",
 				BackgroundColor = Color.LightGray,
-				Padding = new Thickness(10),
+				Padding = new Thickness(5),
 				Command = new Command(() =>
 				{
 					_carouselView.Position++;
@@ -238,10 +241,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var btnRemoveLast = new Button
 			{
-				Text = "Remove Last",
+				Text = "DEL Last",
+				FontSize = 8,
 				AutomationId = "btnRemoveLast",
 				BackgroundColor = Color.LightGray,
-				Padding = new Thickness(10),
+				Padding = new Thickness(5),
 				Command = new Command(() =>
 				{
 					var items = (_carouselView.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>);
