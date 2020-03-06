@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				mkMapView.DidSelectAnnotationView -= MkMapViewOnAnnotationViewSelected;
 				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
 				mkMapView.GetViewForAnnotation = null;
-				mkMapView.OverlayRenderer = null;
+				mkMapView.OverlayRenderer = null; 
 				if (mkMapView.Delegate != null)
 				{
 					mkMapView.Delegate.Dispose();
@@ -165,6 +165,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				if (mapModel.LastMoveToRegion != null)
 					MoveToRegion(mapModel.LastMoveToRegion, false);
 
+				UpdateTrafficEnabled();
 				UpdateMapType();
 				UpdateIsShowingUser();
 				UpdateHasScrollEnabled();
@@ -190,8 +191,10 @@ namespace Xamarin.Forms.Maps.MacOS
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName && ((Map)Element).LastMoveToRegion != null)
-				_shouldUpdateRegion = ((Map)Element).MoveToLastRegionOnLayoutChange;
+				_shouldUpdateRegion = ((Map)Element).MoveToLastRegionOnLayoutChange; 
 		}
 
 #if __MOBILE__
@@ -448,6 +451,11 @@ namespace Xamarin.Forms.Maps.MacOS
 			((MKMapView)Control).ScrollEnabled = ((Map)Element).HasScrollEnabled;
 		}
 
+		void UpdateTrafficEnabled()
+		{
+			((MKMapView)Control).ShowsTraffic = ((Map)Element).TrafficEnabled;
+		}
+
 		void UpdateHasZoomEnabled()
 		{
 			((MKMapView)Control).ZoomEnabled = ((Map)Element).HasZoomEnabled;
@@ -531,6 +539,11 @@ namespace Xamarin.Forms.Maps.MacOS
 							.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
 							.ToArray());
 						break;
+					case Circle circle:
+						overlay = MKCircle.Circle(
+							new CLLocationCoordinate2D(circle.Center.Latitude, circle.Center.Longitude),
+							circle.Radius.Meters);
+						break;
 				}
 
 				element.MapElementId = overlay;
@@ -566,6 +579,8 @@ namespace Xamarin.Forms.Maps.MacOS
 					return GetViewForPolyline(polyline);
 				case MKPolygon polygon:
 					return GetViewForPolygon(polygon);
+				case MKCircle circle:
+					return GetViewForCircle(circle);
 			}
 
 			return null;
@@ -632,6 +647,39 @@ namespace Xamarin.Forms.Maps.MacOS
 				FillColor = targetPolygon.FillColor.ToNSColor(),
 #endif
 				LineWidth = targetPolygon.StrokeWidth
+			};
+		}
+
+		protected virtual MKCircleRenderer GetViewForCircle(MKCircle mkCircle)
+		{
+			var map = (Map)Element;
+			Circle targetCircle = null;
+
+			for (int i = 0; i < map.MapElements.Count; i++)
+			{
+				var element = map.MapElements[i];
+				if (ReferenceEquals(element.MapElementId, mkCircle))
+				{
+					targetCircle = (Circle)element;
+					break;
+				}
+			}
+
+			if (targetCircle == null)
+			{
+				return null;
+			}
+
+			return new MKCircleRenderer(mkCircle)
+			{
+#if __MOBILE__
+				StrokeColor = targetCircle.StrokeColor.ToUIColor(Color.Black),
+				FillColor = targetCircle.FillColor.ToUIColor(),
+#else
+				StrokeColor = targetCircle.StrokeColor.ToNSColor(Color.Black),
+				FillColor = targetCircle.FillColor.ToNSColor(),
+#endif
+				LineWidth = targetCircle.StrokeWidth
 			};
 		}
 	}

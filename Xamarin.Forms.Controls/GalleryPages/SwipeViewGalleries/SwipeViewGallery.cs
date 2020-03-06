@@ -9,8 +9,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 		{
 			var button = new Button
 			{
-				Text = "Enable CarouselView",
-				AutomationId = "EnableCarouselView"
+				Text = "Enable SwipeView",
+				AutomationId = "EnableSwipeView"
 			};
 			button.Clicked += ButtonClicked;
 
@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 						GalleryBuilder.NavButton("CarouselView Gallery", () => new SwipeCarouselViewGallery(), Navigation),
 						GalleryBuilder.NavButton("SwipeBehaviorOnInvoked Gallery", () => new SwipeBehaviorOnInvokedGallery(), Navigation),
 						GalleryBuilder.NavButton("Custom SwipeItem Galleries", () => new CustomSwipeItemGallery(), Navigation),
+						GalleryBuilder.NavButton("SwipeView BindingContext Gallery", () => new SwipeViewBindingContextGallery(), Navigation),
 						GalleryBuilder.NavButton("SwipeItem Icon Gallery", () => new SwipeItemIconGallery(), Navigation),
 						GalleryBuilder.NavButton("SwipeTransitionMode Gallery", () => new SwipeTransitionModeGallery(), Navigation),
 						GalleryBuilder.NavButton("Add/Remove SwipeItems Gallery", () => new AddRemoveSwipeItemsGallery(), Navigation),
@@ -43,11 +44,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 		{
 			var button = sender as Button;
 
-			button.Text = "CarouselView Enabled!";
+			button.Text = "SwipeView Enabled!";
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.CarouselViewExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.SwipeViewExperimental });
 		}
 	}
 }

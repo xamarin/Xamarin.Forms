@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (cell is ItemsViewCell)
 			{
-				cell.ConstrainTo(ItemsViewLayout.ConstrainedDimension);
+				cell.ConstrainTo(GetLayoutSpanCount() * ItemsViewLayout.ConstrainedDimension);
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (cell is ItemsViewCell)
 			{
-				cell.ConstrainTo(ItemsViewLayout.ConstrainedDimension);
+				cell.ConstrainTo(GetLayoutSpanCount() * ItemsViewLayout.ConstrainedDimension);
 			}
 		}
 
@@ -143,9 +143,14 @@ namespace Xamarin.Forms.Platform.iOS
 			return GetReferenceSizeForheaderOrFooter(collectionView, ItemsView.GroupFooterTemplate, UICollectionElementKindSectionKey.Footer, section);
 		}
 
-		internal CGSize GetReferenceSizeForheaderOrFooter(UICollectionView collectionView,DataTemplate template, NSString elementKind, nint section)
+		internal CGSize GetReferenceSizeForheaderOrFooter(UICollectionView collectionView, DataTemplate template, NSString elementKind, nint section)
 		{
 			if (!_isGrouped || template == null)
+			{
+				return CGSize.Empty;
+			}
+
+			if (ItemsSource.GroupCount < 1)
 			{
 				return CGSize.Empty;
 			}
@@ -156,7 +161,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell.Measure();
 		}
 
-
 		internal void SetScrollAnimationEndedCallback(Action callback)
 		{
 			_scrollAnimationEndedCallback = callback;
@@ -166,6 +170,59 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_scrollAnimationEndedCallback?.Invoke();
 			_scrollAnimationEndedCallback = null;
+		}
+
+		int GetLayoutSpanCount()
+		{
+			var span = 1;
+
+			if (ItemsView?.ItemsLayout is GridItemsLayout gridItemsLayout)
+			{
+				span = gridItemsLayout.Span;
+			}
+
+			return span;
+		}
+
+		internal UIEdgeInsets GetInsetForSection(ItemsViewLayout itemsViewLayout,
+			UICollectionView collectionView, nint section)
+		{
+			var uIEdgeInsets = ItemsViewLayout.GetInsetForSection(collectionView, itemsViewLayout, section);
+
+			if (!ItemsView.IsGrouped)
+			{
+				return uIEdgeInsets;
+			}
+
+			// If we're grouping, we'll need to inset the sections to maintain the item spacing between the 
+			// groups and/or their group headers/footers
+
+			var itemsLayout = ItemsView.ItemsLayout;
+			var scrollDirection = itemsViewLayout.ScrollDirection;
+			nfloat lineSpacing = itemsViewLayout.GetMinimumLineSpacingForSection(collectionView, itemsViewLayout, section);
+
+			if (itemsLayout is GridItemsLayout)
+			{
+				nfloat itemSpacing = itemsViewLayout.GetMinimumInteritemSpacingForSection(collectionView, itemsViewLayout, section);
+
+				if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					return new UIEdgeInsets(itemSpacing + uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left, 
+						uIEdgeInsets.Bottom, uIEdgeInsets.Right);
+				}
+
+				return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, itemSpacing + uIEdgeInsets.Left, 
+					uIEdgeInsets.Bottom, uIEdgeInsets.Right);
+			}
+
+			if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
+			{
+				return new UIEdgeInsets(uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left, 
+					uIEdgeInsets.Bottom, uIEdgeInsets.Right);
+			}
+
+			return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, uIEdgeInsets.Left, 
+				uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 		}
 	}
 }

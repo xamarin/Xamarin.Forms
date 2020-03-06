@@ -81,8 +81,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items[0].Items.Add(shellSection);
 
 			Assert.AreSame(shellSection.BindingContext, viewModel);
-			Assert.AreSame(shellSection.Items[0].BindingContext, viewModel);
-			Assert.AreSame((shellSection.Items[0].Content as BindableObject).BindingContext, viewModel);
+			Assert.AreSame(GetItems(shellSection)[0].BindingContext, viewModel);
+			Assert.AreSame((GetItems(shellSection)[0].Content as BindableObject).BindingContext, viewModel);
 		}
 
 		[Test]
@@ -391,6 +391,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("4321", testPage.SomeQueryParameter);
 		}
 
+		[Test]
+		public async Task BasicQueryStringTest()
+		{
+			var shell = new Shell();
+
+			var item = CreateShellItem(shellSectionRoute: "section2");
+			Routing.RegisterRoute("details", typeof(ShellTestPage));
+			shell.Items.Add(item);
+			await shell.GoToAsync(new ShellNavigationState($"details?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
+			Assert.AreEqual("1234", testPage.SomeQueryParameter);
+		}
+
 
 		[Test]
 		public async Task NavigationWithQueryStringAndNoDataTemplate()
@@ -459,6 +472,46 @@ namespace Xamarin.Forms.Core.UnitTests
 			Shell.SetBackButtonBehavior(page, backButtonBehavior);
 
 			Assert.AreEqual(backButtonBehavior, Shell.GetBackButtonBehavior(page));
+		}
+
+		[Test]
+		public void ModalSetters()
+		{
+			var page = new ContentPage();
+
+			Assert.IsFalse(IsModal(page));
+			Assert.IsTrue(IsAnimated(page));
+
+			Shell.SetPresentationMode(page, PresentationMode.Modal | PresentationMode.NotAnimated);
+
+			Assert.IsTrue(IsModal(page));
+			Assert.IsFalse(IsAnimated(page));
+		}
+
+		[Test]
+		public void BackButtonBehaviorBindingContextPropagation()
+		{
+			object bindingContext = new object();
+			var page = new ContentPage();
+			var backButtonBehavior = new BackButtonBehavior();
+
+			Shell.SetBackButtonBehavior(page, backButtonBehavior);
+			page.BindingContext = bindingContext;
+
+			Assert.AreEqual(page.BindingContext, backButtonBehavior.BindingContext);
+		}
+
+		[Test]
+		public void BackButtonBehaviorBindingContextPropagationWithExistingBindingContext()
+		{
+			object bindingContext = new object();
+			var page = new ContentPage();
+			var backButtonBehavior = new BackButtonBehavior();
+
+			page.BindingContext = bindingContext;
+			Shell.SetBackButtonBehavior(page, backButtonBehavior);
+
+			Assert.AreEqual(page.BindingContext, backButtonBehavior.BindingContext);
 		}
 
 		[Test]
@@ -800,5 +853,81 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("//rootlevelcontent1/details", shell.CurrentState.Location.ToString());
 		}
 
+		[Test]
+		public async Task ShellItemNotVisible()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(new ContentPage() { IsVisible = false });
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			Assert.IsFalse(GetItems(shell).Contains(item1));
+			Assert.IsTrue(GetItems(shell).Contains(item2));
+		}
+		
+		[Test]
+		public async Task ShellContentCollectionClear()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			var section2 = CreateShellSection();
+			
+			shell.Items.Add(item1);
+			item1.Items.Add(section2);
+
+			var mainTab = item1.Items[0];
+			var content1 = CreateShellContent();
+			var clearedContent = mainTab.Items[0];
+			mainTab.Items.Clear();
+			mainTab.Items.Add(content1);
+			mainTab.Items.Add(CreateShellContent());
+			
+			Assert.IsNull(clearedContent.Parent);
+			Assert.AreEqual(2, mainTab.Items.Count);
+			Assert.AreEqual(content1, mainTab.CurrentItem);
+		}
+		
+		[Test]
+		public async Task ShellItemCollectionClear()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			shell.Items.Add(item1);
+
+			
+			var item2 = CreateShellItem();
+			var item3 = CreateShellItem();
+			
+			shell.Items.Clear();
+			shell.Items.Add(item2);
+			shell.Items.Add(item3);
+			
+			Assert.IsNull(item1.Parent);
+			Assert.AreEqual(2, shell.Items.Count);
+			Assert.AreEqual(item2, shell.CurrentItem);
+		}
+		
+		[Test]
+		public async Task ShellSectionCollectionClear()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			shell.Items.Add(item1);
+
+			var section1 = CreateShellSection();
+			var section2 = CreateShellSection();
+			var clearedSection = item1.Items[0];
+			
+			Assert.IsNotNull(clearedSection.Parent);
+			item1.Items.Clear();
+			item1.Items.Add(section1);
+			item1.Items.Add(section2);
+			
+			Assert.IsNull(clearedSection.Parent);
+			Assert.AreEqual(2, item1.Items.Count);
+			Assert.AreEqual(section1, shell.CurrentItem.CurrentItem);
+		}
 	}
 }

@@ -2,11 +2,14 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -220,6 +223,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		AppCompatButton IButtonLayoutRenderer.View => Control;
-		bool IDisposedState.IsDisposed => _isDisposed;
+		bool IDisposedState.IsDisposed => _isDisposed || !Control.IsAlive();
 	}
 }

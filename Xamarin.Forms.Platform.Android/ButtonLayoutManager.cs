@@ -3,11 +3,18 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.Core.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
+#endif
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
+using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -53,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
 		}
 
-		AppCompatButton View => _renderer?.View;
+		AButton View => _renderer?.View ?? _renderer as AButton;
 
 		Context Context => _renderer?.View?.Context;
 
@@ -105,7 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed || _renderer == null || _element == null)
 				return;
 
-			AppCompatButton view = View;
+			AButton view = View;
 			if (view == null)
 				return;
 
@@ -216,7 +223,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePadding()
 		{
-			AppCompatButton view = View;
+			AButton view = View;
 			if (view == null)
 				return;
 
@@ -254,7 +261,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed || _renderer == null || _element == null)
 				return false;
 
-			AppCompatButton view = View;
+			AButton view = View;
 			if (view == null)
 				return false;
 
@@ -276,7 +283,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed || _renderer == null || _element == null)
 				return;
 
-			AppCompatButton view = View;
+			AButton view = View;
 			if (view == null)
 				return;
 

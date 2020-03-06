@@ -15,7 +15,7 @@ steps:
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target provision
+      arguments: --target provision --buildForVS2017=$(buildForVS2017)
 
   - task: UseDotNet@2
     displayName: 'Install .net core $(DOTNET_VERSION)'
@@ -56,10 +56,12 @@ steps:
     inputs:
       solutionFile: $(slnPath)
       configuration: $(buildConfiguration)
+      args: /bl:$(Build.ArtifactStagingDirectory)/ios-2017_$(buildForVS2017).binlog
 
 
   - task: CopyFiles@2
     displayName: 'Copy test-cloud.exe'
+    condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       Contents: '**/Xamarin.UITest.*/tools/test-cloud.exe'
       TargetFolder: '$(build.artifactstagingdirectory)/testcloud'
@@ -70,10 +72,15 @@ steps:
 
   - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'
+    condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       Contents: |
        **/$(IpaName)
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/**
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
+       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
 
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: true
@@ -82,8 +89,15 @@ steps:
 
   - task: CopyFiles@2
     displayName: 'Copy Android Files for UITest'
+    condition: eq(variables['buildForVS2017'], 'false')
     inputs:
-      Contents: 'Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/**'
+      Contents: |
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/nunit.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/NUnit3.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/Plugin.*
+       Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/Xamarin.*
+       
       TargetFolder: '$(build.artifactstagingdirectory)/android'
       CleanTargetFolder: true
       flattenFolders: true
@@ -91,6 +105,7 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: iOS'
+    condition: always()
     inputs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
       ArtifactName: OSXArtifacts

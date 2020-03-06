@@ -41,6 +41,7 @@ using Xamarin.Forms.Platform.Tizen;
 [assembly: ExportRenderer(typeof(CarouselView), typeof(CarouselViewRenderer))]
 [assembly: ExportRenderer(typeof(SwipeView), typeof(SwipeViewRenderer))]
 [assembly: ExportRenderer(typeof(RefreshView), typeof(RefreshViewRenderer))]
+[assembly: ExportRenderer(typeof(MediaElement), typeof(MediaElementRenderer))]
 
 [assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImageSourceHandler))]
@@ -51,6 +52,8 @@ using Xamarin.Forms.Platform.Tizen;
 [assembly: ExportCell(typeof(SwitchCell), typeof(SwitchCellRenderer))]
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]
 [assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
+
+[assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]
 
 [assembly: ExportHandler(typeof(TapGestureRecognizer), typeof(TapGestureHandler))]
 [assembly: ExportHandler(typeof(PinchGestureRecognizer), typeof(PinchGestureHandler))]

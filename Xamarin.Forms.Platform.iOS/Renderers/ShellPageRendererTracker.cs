@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationItem.Title = Page.Title;
 		}
 
-		protected virtual void OnPageSet(Page oldPage, Page newPage)
+		protected virtual async void OnPageSet(Page oldPage, Page newPage)
 		{
 			if (oldPage != null)
 			{
@@ -149,6 +149,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (oldPage == null)
 				((IShellController)_context.Shell).AddFlyoutBehaviorObserver(this);
+
+			if (newPage != null)
+			{
+				try
+				{
+					await UpdateToolbarItems().ConfigureAwait(false);
+				}
+				catch(Exception exc)
+				{
+					Internals.Log.Warning(nameof(ShellPageRendererTracker), $"Failed to update toolbar items: {exc}");
+				}
+			}
 		}
 
 		protected virtual void OnRendererSet()
@@ -197,17 +209,19 @@ namespace Xamarin.Forms.Platform.iOS
 					NavigationItem.RightBarButtonItems[i].Dispose();
 			}
 
-			List<UIBarButtonItem> items = new List<UIBarButtonItem>();
-			if (Page != null)
+			List<UIBarButtonItem> primaries = null;
+			if (Page.ToolbarItems.Count > 0)
 			{
-				foreach (var item in Page.ToolbarItems)
+				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x => x.Priority))
 				{
-					items.Add(item.ToUIBarButtonItem(false, true));
+					(primaries = primaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(false, true));
 				}
+
+				if (primaries != null)
+					primaries.Reverse();
 			}
 
-			items.Reverse();
-			NavigationItem.SetRightBarButtonItems(items.ToArray(), false);
+			NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
 
 			var behavior = BackButtonBehavior;
 
@@ -567,7 +581,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SearchButtonClicked(object sender, EventArgs e)
 		{
-			_searchController.Active = false;
 			((ISearchHandlerController)SearchHandler).QueryConfirmed();
 		}
 

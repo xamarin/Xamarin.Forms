@@ -130,14 +130,16 @@ namespace Xamarin.Forms.Platform.MacOS
 				var eventTracker = weakEventTracker.Target as EventTracker;
 				var view = eventTracker?._renderer?.Element as View;
 
+				var handled = false;
 				if (tapGestureRecognizer != null && view != null)
 				{
 					var position = gesturerecognizer.LocationInView(null);
 					tapGestureRecognizer.SendTap(view, new Point(position.X, position.Y));
 					tapGestureRecognizer.SendTapped(view);
+					handled = true;
 				}
 
-				return false;
+				return handled;
 			});
 		}
 
@@ -170,15 +172,17 @@ namespace Xamarin.Forms.Platform.MacOS
 				var nativeRecognizer = gesturerecognizer as NSClickGestureRecognizer;
 				var recognizers = childGestures?.GetChildGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)nativeRecognizer.NumberOfClicksRequired);
 		
+				var handled = false;
 				var position = gesturerecognizer.LocationInView(null);
 				foreach (var item in recognizers)
 					if (item == tapGestureRecognizer && view != null)
 					{
 						tapGestureRecognizer.SendTap(view, new Point(position.X, position.Y));
 						tapGestureRecognizer.SendTapped(view);
+						handled = true;
 					}
 						
-				return false;
+				return handled;
 			});
 		}
 #else
@@ -321,7 +325,7 @@ namespace Xamarin.Forms.Platform.MacOS
 						var oldScale = eventTracker._previousScale;
 						var originPoint = r.LocationInView(null);
 #if __MOBILE__
-						originPoint = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
+						originPoint = UIApplication.SharedApplication.GetKeyWindow().ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 #else
 						originPoint = NSApplication.SharedApplication.KeyWindow.ContentView.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 #endif

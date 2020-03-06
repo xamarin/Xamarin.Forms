@@ -2,8 +2,13 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
+#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -99,7 +104,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			var result  = _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 
-			Control.Hint = hint;
+			if (Control.Hint != hint)
+			{
+				Control.Hint = hint;
+			}
 
 			return result;
 		}
