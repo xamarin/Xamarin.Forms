@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using UWPApp = Windows.UI.Xaml.Application;
@@ -9,7 +8,6 @@ using WScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using WSnapPointsType = Windows.UI.Xaml.Controls.SnapPointsType;
 using WSnapPointsAlignment = Windows.UI.Xaml.Controls.Primitives.SnapPointsAlignment;
 using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
-using System.Linq;
 using System.Collections;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -68,7 +66,6 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				ListViewBase.SizeChanged += OnListSizeChanged;
 			}
-
 		}
 
 		protected override void TearDownOldElement(ItemsView oldElement)
@@ -174,20 +171,6 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateItemsSource();
 			UpdateSnapPointsType();
 			UpdateSnapPointsAlignment();
-
-			HackFixInitialPadding();
-			UpdateInitialPosition();
-		}
-
-		void HackFixInitialPadding()
-		{
-			//There's a 12 pixel on the left that i couldn't figure yet how to remove
-			//We set the offset to 12 pixels to make align correctly
-			Device.StartTimer(TimeSpan.FromMilliseconds(10), () =>
-			{
-				_scrollViewer.ChangeView(12, null, null);
-				return false;
-			});
 		}
 
 		void OnScrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
@@ -286,6 +269,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			SetCurrentItem(position);
+			UpdatePosition(position);
 		}
 
 		void UpdatePositionFromScroll()
@@ -339,7 +323,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var carouselPosition = Carousel.Position;
 			var newPosition = FixPosition(position);
 
-			if (newPosition < 0 || newPosition > ListViewBase.Items.Count)
+			if (newPosition < 0 || newPosition >= ListViewBase.Items.Count)
 				return;
 
 			//we arrived center
