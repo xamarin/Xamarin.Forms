@@ -110,9 +110,9 @@ namespace Xamarin.Forms.Platform.UWP
 			var collectionViewSource = TemplatedItemSourceFactory.Create(Element.ItemsSource, Element.ItemTemplate, Element,
 					GetItemHeight(), GetItemWidth(), GetItemSpacing());
 
-			if(collectionViewSource is ObservableItemTemplateCollection observableItemsSource)
+			if (collectionViewSource is ObservableItemTemplateCollection observableItemsSource)
 				observableItemsSource.CollectionChanged += CollectionItemsSourceChanged;
-		
+
 			return new CollectionViewSource
 			{
 				Source = collectionViewSource,
@@ -151,19 +151,19 @@ namespace Xamarin.Forms.Platform.UWP
 			if (removingCurrentElementButNotFirst)
 			{
 				carouselPosition = Carousel.Position - 1;
-			
+
 			}
 			else if (removingFirstElement && !removingCurrentElement)
 			{
 				carouselPosition = currentItemPosition;
 			}
 
-			if(removingCurrentElement)
+			if (removingCurrentElement)
 			{
 				SetCurrentItem(carouselPosition);
 				UpdatePosition(carouselPosition);
 			}
-			
+
 		}
 
 		void OnListSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
@@ -282,6 +282,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (itemCount == 0)
 				return;
 
+			itemCount--;
+
 			int position;
 
 			if (_scrollViewer.HorizontalOffset > _scrollViewer.VerticalOffset)
@@ -320,23 +322,25 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdatePosition(int position)
 		{
-			var carouselPosition = Carousel.Position;
-			var newPosition = FixPosition(position);
-
-			if (newPosition < 0 || newPosition >= ListViewBase.Items.Count)
+			if (!ValidatePosition(position))
 				return;
 
+			var carouselPosition = Carousel.Position;
+
 			//we arrived center
-			if (newPosition == _gotoPosition)
+			if (position == _gotoPosition)
 				_gotoPosition = -1;
 
-			if (_gotoPosition == -1 && carouselPosition != newPosition)
-				Carousel.SetValueFromRenderer(CarouselView.PositionProperty, newPosition);
+			if (_gotoPosition == -1 && carouselPosition != position)
+				Carousel.SetValueFromRenderer(CarouselView.PositionProperty, position);
 		}
 
 		void SetCurrentItem(int carouselPosition)
 		{
-			if (carouselPosition < 0 && carouselPosition > ListViewBase.Items.Count)
+			if (ListViewBase.Items.Count == 0)
+				return;
+
+			if (!ValidatePosition(carouselPosition))
 				return;
 
 			if (!(ListViewBase.Items[carouselPosition] is ItemTemplateContext itemTemplateContext))
@@ -344,6 +348,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var item = itemTemplateContext.Item;
 			Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, item);
+		}
+
+		bool ValidatePosition(int position)
+		{
+			if (ListViewBase.Items.Count == 0)
+				return false;
+
+			if (position < 0 || position >= ListViewBase.Items.Count)
+				return false;
+
+			return true;
 		}
 
 		ListViewBase CreateCarouselListLayout(ItemsLayoutOrientation layoutOrientation)
@@ -473,7 +488,5 @@ namespace Xamarin.Forms.Platform.UWP
 
 			listView.Loaded += ListViewLoaded;
 		}
-
-		static int FixPosition(int position) => position - 1;
 	}
 }
