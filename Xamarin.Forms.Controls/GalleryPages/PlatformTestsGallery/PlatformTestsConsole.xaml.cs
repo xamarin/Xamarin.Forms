@@ -315,8 +315,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		async void ResultsAdded(object sender, ElementEventArgs e)
 		{
-			var stackLayout = (StackLayout)sender;
-			await ResultsScrollView.ScrollToAsync(0, stackLayout.Height - ResultsScrollView.Height, false);
+			await ResultsScrollView.ScrollToAsync(e.Element, ScrollToPosition.MakeVisible, false);
 		}
 	}
 }
