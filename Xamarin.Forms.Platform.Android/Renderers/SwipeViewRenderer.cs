@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.Android
 		const int SwipeThreshold = 250;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
-		const float SwipeMinimumDelta = 20f;
+		const float SwipeMinimumDelta = 10f;
 
 		readonly Context _context;
 		View _scrollParent;
@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 		double _previousScrollY;
 		bool _isSwipeEnabled;
 		bool _isResettingSwipe;
+		bool _isOpen;
 		bool _isDisposed;
 
 		public SwipeViewRenderer(Context context) : base(context)
@@ -247,12 +248,6 @@ namespace Xamarin.Forms.Platform.Android
 					_initialPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
 					break;
 				case MotionEventActions.Move:
-					float x = Math.Abs((_downX - e.GetX()) / _density);
-					float y = Math.Abs((_downY - e.GetY()) / _density);
-
-					if (x > SwipeMinimumDelta || y > SwipeMinimumDelta)
-						ProcessSwipingInteractions(e);
-					break;
 				case MotionEventActions.Cancel:
 				case MotionEventActions.Up:
 					ProcessSwipingInteractions(e);
@@ -328,9 +323,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool ProcessSwipingInteractions(MotionEvent e)
 		{
-			if (_isResettingSwipe)
-				return false;
-
 			bool? handled = true;
 			var point = new APointF(e.GetX() / _density, e.GetY() / _density);
 
@@ -389,6 +381,7 @@ namespace Xamarin.Forms.Platform.Android
 					return !ProcessTouchDown(point);
 				case GestureStatus.Running:
 					return !ProcessTouchMove(point);
+				case GestureStatus.Canceled:
 				case GestureStatus.Completed:
 					ProcessTouchUp(point);
 					break;
@@ -404,7 +397,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_isSwiping || _isTouchDown || _contentView == null)
 				return false;
 
-			if (TouchInsideContent(point))
+			if (TouchInsideContent(point) && _isOpen)
 				ResetSwipe();
 
 			_initialPoint = point;
@@ -419,16 +412,15 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			var swipeDirection = _swipeDirection;
-			bool isInitialPosition = IsInitialPosition();
 
-			if (isInitialPosition && !_isResettingSwipe)
+			if (!_isOpen && !_isResettingSwipe)
 				swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
 
 			if (_swipeDirection != swipeDirection)
 			{
 				_swipeDirection = swipeDirection;
 
-				if (isInitialPosition)
+				if (!_isOpen)
 				{
 					DisposeSwipeItems();
 					UpdateSwipeItems();
@@ -443,13 +435,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!ValidateSwipeDirection() || _isResettingSwipe)
 				return false;
-
+			
 			_swipeOffset = GetSwipeOffset(_initialPoint, point);
 
 			if (Math.Abs(_swipeOffset) > double.Epsilon)
 				Swipe();
-			else
-				ResetSwipe();
 
 			RaiseSwipeChanging();
 
@@ -491,17 +481,6 @@ namespace Xamarin.Forms.Platform.Android
 		bool TouchInsideContent(double x1, double y1, double x2, double y2, double x, double y)
 		{
 			if (x > x1 && x < (x1 + x2) && y > y1 && y < (y1 + y2))
-				return true;
-
-			return false;
-		}
-
-		bool IsInitialPosition()
-		{
-			if (_contentView == null)
-				return false;
-
-			if (_contentView.TranslationX == 0 && _contentView.TranslationY == 0)
 				return true;
 
 			return false;
@@ -712,6 +691,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void DisposeSwipeItems()
 		{
+			_isOpen = false;
 			_swipeThreshold = 0;
 
 			if (_actionView != null)
@@ -725,6 +705,7 @@ namespace Xamarin.Forms.Platform.Android
 		void Swipe()
 		{
 			var offset = _context.ToPixels(ValidateSwipeOffset(_swipeOffset));
+			_isOpen = offset != 0;
 
 			if (_swipeTransitionMode == SwipeTransitionMode.Reveal)
 			{
@@ -1093,7 +1074,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isResettingSwipe)
 				return;
-
+			
 			var swipeItems = GetSwipeItemsByDirection();
 
 			if (swipeItems == null || _actionView == null)
