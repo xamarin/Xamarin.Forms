@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 		int _oldPosition;
 		int _gotoPosition = -1;
 		bool _noNeedForScroll;
+		bool _initialized;
 
 		List<View> _oldViews;
 		CarouselViewwOnGlobalLayoutListener _carouselViewLayoutListener;
@@ -418,13 +419,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void LayoutReady(object sender, EventArgs e)
 		{
-			Carousel.Scrolled += CarouselViewScrolled;
+			if(!_initialized)
+			{
+				Carousel.Scrolled += CarouselViewScrolled;
 
-			if (Carousel.Position > 0)
-				Carousel.ScrollTo(Carousel.Position, -1, Xamarin.Forms.ScrollToPosition.Center, Carousel.IsScrollAnimated);
+				UpdateInitialPosition();
+				_initialized = true;
+			}
 
 			UpdateVisualStates();
-			ClearLayoutListener();
 		}
 
 		void ClearLayoutListener()
@@ -457,13 +460,6 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				carouselViewRenderer.Carousel.IsScrolling = state != ScrollStateIdle;
-			}
-
-			public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
-			{
-				base.OnScrolled(recyclerView, dx, dy);
-				CarouselViewRenderer carouselViewRenderer = (CarouselViewRenderer)recyclerView;
-				carouselViewRenderer.UpdateVisualStates();
 			}
 		}
 
