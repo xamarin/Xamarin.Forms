@@ -229,6 +229,12 @@ namespace Xamarin.Forms.Platform.Android
 					carouselPosition = currentItemPosition;
 					_noNeedForScroll = true;
 				}
+
+				if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+				{
+					carouselPosition = 0;
+				}
+
 				SetCurrentItem(carouselPosition);
 				UpdatePosition(carouselPosition);
 				//If we are adding or removing the last item we need to update
