@@ -59,12 +59,12 @@ namespace Xamarin.Forms.Controls.Issues
 				await Task.Delay(1000);
 
 				Items = new List<string>();
-				for (int i = 0; i < 10; i++)
+				for (int i = 0; i < 100; i++)
 				{
 					Items.Add(i.ToString());
 				}
 
-				//Position = 100 / 2;
+				Position = 100 / 2;
 
 				IsLoading = false;
 			});

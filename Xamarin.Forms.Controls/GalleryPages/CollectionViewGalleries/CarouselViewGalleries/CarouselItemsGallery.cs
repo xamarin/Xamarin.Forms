@@ -10,9 +10,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	[Preserve(AllMembers = true)]
 	public class CarouselItemsGallery : ContentPage
 	{
-		public CarouselItemsGallery()
+		public CarouselItemsGallery(bool empty, bool async, bool nativeIndicator)
 		{
-			var viewModel = new CarouselItemsGalleryViewModel();
+			var viewModel = new CarouselItemsGalleryViewModel(empty, async);
 
 			Title = $"CarouselView (Indicators)";
 
@@ -39,12 +39,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
-				ItemsSource = viewModel.Items,
 				IsScrollAnimated = true,
 				IsBounceEnabled = true,
 				EmptyView = "This is the empty view",
-				PeekAreaInsets = new Thickness(50)
+				PeekAreaInsets = new Thickness(50),
+				BindingContext = viewModel
 			};
+
+			carouselView.SetBinding(CarouselView.ItemsSourceProperty, nameof(viewModel.Items));
 
 			var absolute = new AbsoluteLayout();
 			absolute.Children.Add(carouselView, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All);
@@ -56,6 +58,21 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				SelectedIndicatorColor = Color.Black,
 				IndicatorsShape = IndicatorShape.Square
 			};
+
+			if (!nativeIndicator)
+			{
+				indicators.IndicatorTemplate = new DataTemplate(() =>
+				{
+					return new Image
+					{
+						Source = new FontImageSource
+						{
+							FontFamily = DefaultFontFamily(),
+							Glyph = "\uf30c",
+						},
+					};
+				});
+			}
 
 			carouselView.IndicatorView = indicators;
 
@@ -145,6 +162,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				return frame;
 			});
 		}
+
+		static string DefaultFontFamily()
+		{
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+
+			return fontFamily;
+		}
 	}
 
 	[Preserve(AllMembers = true)]
@@ -152,14 +189,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	{
 		ObservableCollection<CarouselData> _items;
 
-		public CarouselItemsGalleryViewModel()
+		public CarouselItemsGalleryViewModel(bool empty, bool async)
 		{
-			Task.Run(async () =>
+			if (async)
 			{
-				await Task.Delay(200);
-				var random = new Random();
+				Task.Run(async () =>
+				{
+					await Task.Delay(400);
+					SetSource(empty);
+				});
+			}
+			else
+			{
+				SetSource(empty);
+			}
+		}
 
-				var source = new List<CarouselData>();
+		void SetSource(bool empty)
+		{
+			var random = new Random();
+
+			var source = new List<CarouselData>();
+			if (!empty)
+			{
 				for (int n = 0; n < 5; n++)
 				{
 					source.Add(new CarouselData
@@ -168,9 +220,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						Name = $"{n + 1}"
 					});
 				}
-				Items = new ObservableCollection<CarouselData>(source);
-			});
-
+			}
+			Items = new ObservableCollection<CarouselData>(source);
 		}
 
 		public ObservableCollection<CarouselData> Items
@@ -179,7 +230,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			set
 			{
 				_items = value;
-				OnPropertyChanged();
+				OnPropertyChanged(nameof(Items));
 			}
 		}
 	}
