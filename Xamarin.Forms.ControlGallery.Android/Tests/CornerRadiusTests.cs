@@ -22,7 +22,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 
 			await CheckCornerRadius(boxView);
 		}
-	
+
 		[Test, Category("CornerRadius"), Category("Button")]
 		public async Task ButtonCornerRadius()
 		{
@@ -73,15 +73,30 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			await CheckCornerRadius(button);
 		}
 
-		public async Task CheckCornerRadius(VisualElement visualElement) 
+		public async Task CheckCornerRadius(VisualElement visualElement)
 		{
-			var centerColor = visualElement.BackgroundColor.ToAndroid();
-			var screenshot = await GetRendererProperty(visualElement, ver => ver.View.ToBitmap(), requiresLayout: true);
+			var screenshot = await Device.InvokeOnMainThreadAsync(() => { 
+
+				using (var renderer = GetRenderer(visualElement))
+				{
+					var view = renderer.View;
+					Layout(visualElement, view);
+
+					// Need to parent the Frame for it to work on lower APIs (below Marshmallow)
+					ParentView(view);
+					var image = view.ToBitmap();
+					UnparentView(view);
+
+					return image;
+				}
+			});
+
+			// The corners should show the background color
 			screenshot.AssertColorAtTopLeft(EmptyBackground)
 				.AssertColorAtTopRight(EmptyBackground)
 				.AssertColorAtBottomLeft(EmptyBackground)
 				.AssertColorAtBottomRight(EmptyBackground)
-				.AssertColorAtCenter(centerColor);
+				.AssertColorAtCenter(visualElement.BackgroundColor.ToAndroid());
 		}
 	}
 }
