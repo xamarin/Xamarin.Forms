@@ -266,7 +266,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 
 
-				if (text != null)
+				if (text != null && !IsRootPage)
 				{
 					var backButton = new UIBarButtonItem { Style = UIBarButtonItemStyle.Plain };
 					backButton.Title = text;
