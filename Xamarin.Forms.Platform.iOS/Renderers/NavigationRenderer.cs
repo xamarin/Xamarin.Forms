@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _hasNavigationBar;
 		UIImage _defaultNavBarShadowImage;
 		UIImage _defaultNavBarBackImage;
+		bool _disposed;
 
 		[Preserve(Conditional = true)]
 		public NavigationRenderer() : base(typeof(FormsNavigationBar), null)
@@ -247,6 +248,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
 			if (disposing)
 			{
 				MessagingCenter.Unsubscribe<IVisualElementRenderer>(this, UpdateToolbarButtons);
@@ -275,7 +283,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.Dispose(disposing);
-			if (_appeared)
+			
+			if (disposing && _appeared)
 			{
 				PageController.SendDisappearing();
 
@@ -939,6 +948,7 @@ namespace Xamarin.Forms.Platform.iOS
 			readonly WeakReference<NavigationRenderer> _navigation;
 
 			Page _child;
+			bool _disposed;
 			ToolbarTracker _tracker = new ToolbarTracker();
 
 			public ParentingViewController(NavigationRenderer navigation)
@@ -1050,6 +1060,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			protected override void Dispose(bool disposing)
 			{
+				if (_disposed)
+				{
+					return;
+				}
+
+				_disposed = true;
+
 				if (disposing)
 				{
 					Child.SendDisappearing();
@@ -1076,6 +1093,7 @@ namespace Xamarin.Forms.Platform.iOS
 							ToolbarItems[i].Dispose();
 					}
 				}
+
 				base.Dispose(disposing);
 			}
 
