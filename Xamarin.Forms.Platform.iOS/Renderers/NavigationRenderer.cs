@@ -1456,6 +1456,7 @@ namespace Xamarin.Forms.Platform.iOS
 			FormsNavigationBar _bar;
 			IVisualElementRenderer _child;
 			UIImageView _icon;
+			bool _disposed;
 
 			public Container(View view, UINavigationBar bar) : base(bar.Bounds)
 			{
@@ -1571,6 +1572,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			protected override void Dispose(bool disposing)
 			{
+				if (_disposed)
+				{
+					return;
+				}
+
+				_disposed = true;
+
 				if (disposing)
 				{
 
@@ -1587,6 +1595,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_icon?.Dispose();
 					_icon = null;
 				}
+
 				base.Dispose(disposing);
 			}
 		}
