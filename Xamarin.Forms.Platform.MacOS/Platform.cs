@@ -3,6 +3,7 @@ using AppKit;
 using RectangleF = CoreGraphics.CGRect;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -24,13 +25,16 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		bool _appeared;
 		bool _disposed;
-
+		readonly System.Collections.Generic.List<Page> _modals;
 		internal static NativeToolbarTracker NativeToolbarTracker = new NativeToolbarTracker();
-
-		internal Platform()
+		bool PageIsChildOfPlatform(Page page)
 		{
-			_renderer = new PlatformRenderer(this);
+			var parent = page.AncestorToRoot();
+			return Page == parent || _modals.Contains(parent);
+		}
 
+		internal void SubscribeToAlertsAndActionSheets()
+		{
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				var alert = NSAlert.WithMessage(arguments.Title, arguments.Cancel, arguments.Accept, null, arguments.Message);
@@ -41,6 +45,34 @@ namespace Xamarin.Forms.Platform.MacOS
 					arguments.SetResult(result == 0);
 			});
 
+			MessagingCenter.Subscribe(this, Page.PromptSignalName, (Page sender, PromptArguments arguments) =>
+			{
+				if (arguments != null)
+				{
+					var input = new NSTextField(new CGRect(0, 0, 300, 20));
+
+					var alert = new NSAlert()
+					{
+						AlertStyle = NSAlertStyle.Informational,
+						InformativeText = arguments.Message,
+						MessageText = arguments.Title,
+					};
+					alert.AddButton(arguments.Accept);
+					alert.AddButton(arguments.Cancel);
+
+					alert.ShowsSuppressionButton = false;
+					alert.AccessoryView = input;
+					alert.Layout();
+					alert.BeginSheetForResponse(new NSWindow(), (result) => {
+						arguments.SetResult(input.StringValue);
+
+					});
+
+				}
+
+			});
+
+
 			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
 			{
 				var alert = NSAlert.WithMessage(arguments.Title, arguments.Cancel, arguments.Destruction, null, "");
@@ -48,13 +80,16 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					int maxScrollHeight = (int)(0.6 * NSScreen.MainScreen.Frame.Height);
 					NSView extraButtons = GetExtraButton(arguments);
-					if (extraButtons.Frame.Height > maxScrollHeight) {
+					if (extraButtons.Frame.Height > maxScrollHeight)
+					{
 						NSScrollView scrollView = new NSScrollView();
 						scrollView.Frame = new RectangleF(0, 0, extraButtons.Frame.Width, maxScrollHeight);
 						scrollView.DocumentView = extraButtons;
 						scrollView.HasVerticalScroller = true;
 						alert.AccessoryView = scrollView;
-					} else {
+					}
+					else
+					{
 						alert.AccessoryView = extraButtons;
 					}
 					alert.Layout();
@@ -71,6 +106,21 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				arguments.SetResult(titleResult);
 			});
+		}
+
+		internal Platform()
+		{
+			_renderer = new PlatformRenderer(this);
+			_modals = new System.Collections.Generic.List<Page>();
+
+			SubscribeToAlertsAndActionSheets();
+
+
+		}
+
+		public void PresentPrompt(PromptArguments arguments)
+		{
+
 		}
 
 		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
@@ -107,7 +157,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Page.DisposeModalAndChildRenderers();
 			//foreach (var modal in _modals)
-				//modal.DisposeModalAndChildRenderers();
+			//modal.DisposeModalAndChildRenderers();
 			_renderer.Dispose();
 		}
 
