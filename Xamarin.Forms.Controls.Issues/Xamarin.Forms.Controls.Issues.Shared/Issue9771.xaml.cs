@@ -26,6 +26,10 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			InitializeComponent();
+			carousel.Scrolled += (s, e) =>
+			{
+				System.Diagnostics.Debug.WriteLine($" Center Item:{e.CenterItemIndex} Scroll:{e.HorizontalOffset} Delta:{e.HorizontalDelta}");
+			};
 #endif
 		}
 
@@ -64,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 					Items.Add(i.ToString());
 				}
 
-				Position = 100 / 2;
+				Position = Items.Count / 2;
 
 				IsLoading = false;
 			});

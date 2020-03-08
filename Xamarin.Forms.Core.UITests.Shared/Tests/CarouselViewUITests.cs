@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using Xamarin.UITest;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -201,9 +202,16 @@ namespace Xamarin.Forms.Core.UITests
 
 		void VisitSubGallery(string galleryName, bool enableIndicator = false)
 		{
-			App.WaitForElement(t => t.Marked(galleryName));
+		
 			if (enableIndicator)
 				App.Tap(t => t.Marked("EnableIndicatorView"));
+
+			App.QueryUntilPresent(() =>
+			{
+				App.ScrollDown();
+				return App.Query(t => t.Marked(galleryName));
+			});
+
 			App.Tap(t => t.Marked(galleryName));
 		}
 	}
