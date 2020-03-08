@@ -28,10 +28,13 @@ jobs:
       matrix:
         android_legacy:
           renderers: 'LEGACY'
+          outputfolder: 'legacyRenderers'
         android_preAppCompat:
           renderers: 'PREAPPCOMPAT'
+          outputfolder: 'preAppCompat'
         android_newRenderers:
           renderers: 'FAST'
+          outputfolder: 'newRenderers'
     steps:
       - checkout: self
         clean: true
@@ -106,7 +109,7 @@ jobs:
         inputs:
           SourceFolder: Xamarin.Forms.ControlGallery.Android/bin/${{ parameters.buildConfiguration }}/
           Contents: '**/*.apk'
-          TargetFolder: 'Xamarin.Forms.ControlGallery.Android/$(renderers)/'
+          TargetFolder: 'Xamarin.Forms.ControlGallery.Android/$(outputfolder)/'
           CleanTargetFolder: true
           OverWrite: true
 
@@ -114,7 +117,7 @@ jobs:
         displayName: 'Copy Android apk $(renderers) for UITest'
         inputs:
           Contents: |
-            Xamarin.Forms.ControlGallery.Android/$(renderers)/$(ApkName)
+            Xamarin.Forms.ControlGallery.Android/$(outputfolder)/$(ApkName)
           TargetFolder: '$(build.artifactstagingdirectory)/androidApp'
           CleanTargetFolder: true
 
