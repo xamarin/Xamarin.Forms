@@ -21,24 +21,24 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			StackLayout stackLayout = new StackLayout();
-
+			string imageSource = "coffee.png";
 			ImageButton imageButton1 = new ImageButton()
 			{
-				Source = "coffee.png",
+				Source = imageSource,
 				Aspect = Aspect.AspectFill,
 				AutomationId = "TestImage"
 			};
 
 			ImageButton imageButton2 = new ImageButton()
 			{
-				Source = "coffee.png",
+				Source = imageSource,
 				Aspect = Aspect.AspectFit,
 				AutomationId = "TestImage"
 			};
 
 			ImageButton imageButton3 = new ImageButton()
 			{
-				Source = "coffee.png",
+				Source = imageSource,
 				Aspect = Aspect.Fill,
 				AutomationId = "TestImage"
 			};
