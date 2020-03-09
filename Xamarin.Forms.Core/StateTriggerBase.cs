@@ -46,7 +46,7 @@ namespace Xamarin.Forms
 
 		}
 
-		internal virtual void SendAttached()
+		internal void SendAttached()
 		{
 			if (IsAttached)
 				return;
@@ -54,7 +54,7 @@ namespace Xamarin.Forms
 			IsAttached = true;
 		}
 
-		internal virtual void SendDetached()
+		internal void SendDetached()
 		{
 			if (!IsAttached)
 				return;
