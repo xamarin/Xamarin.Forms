@@ -35,6 +35,10 @@
 	{
 	}
 
+	internal class _RadioButtonRenderer
+	{
+	}
+
 	internal class _TableViewRenderer
 	{
 	}
@@ -135,7 +139,11 @@
 	{
 	}
 
-	internal class _SwipeViewRenderer
+	internal class _MediaElementRenderer
+  {
+	}
+   
+  internal class _SwipeViewRenderer
 	{
 	}
 }

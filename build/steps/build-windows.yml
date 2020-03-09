@@ -9,16 +9,14 @@ parameters:
   postBuildSteps: []  # any additional steps to run after the build
   slnPath : 'Xamarin.Forms.sln'
   csprojPath : 'Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj'
-  buildConfiguration : 'Debug'
-  releaseBuildConfiguration : 'Release'
-  buildPlatform : 'any cpu'
   msbuildExtraArguments : ''
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
   artifactsName: 'win_build'
   nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
   nunitTestFolder: '$(build.sourcesdirectory)'
   includeUwp: 'true'
-  includeNonUwp: 'true'
+  includeAndroid: 'true'
+  includeNonUwpAndNonAndroid: 'true'
 
 jobs:
   - job: ${{ parameters.name }}
@@ -32,15 +30,13 @@ jobs:
     strategy:
       matrix:
         debug:
-          BuildConfiguration:  ${{ parameters.buildConfiguration }}
-          BuildPlatform: ${{ parameters.buildPlatform }}
+          BuildConfiguration:  'Debug'
         release:
-          BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
-          BuildPlatform: ${{ parameters.buildPlatform }}
+          BuildConfiguration:  'Release'
     steps:
     - checkout: self
       clean: true
-    - script: build.cmd -Target provision --verbosity=diagnostic
+    - script: build.cmd -Target provision
       displayName: 'Cake Provision'
       condition: eq(variables['provisioningCake'], 'true')
 
@@ -69,29 +65,16 @@ jobs:
       inputs:
         restoreSolution: ${{ parameters.slnPath }}
 
-    - task: MSBuild@1
-      displayName: 'Build solution ${{ parameters.slnPath }}'
+    - script: build.cmd -Target BuildForNuget -ScriptArgs '-configuration="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
       name: winbuild
-      inputs:
-        solution: ${{ parameters.slnPath }}
-        platform: '$(BuildPlatform)'
-        configuration: '$(BuildConfiguration)'
-        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
-
-    - task: MSBuild@1
-      displayName: 'Embed XBF into PRI'
-      condition: eq(${{ parameters.includeUwp }}, 'true')
-      name: winbuild_pri_embed
-      inputs:
-        solution: ${{ parameters.csprojPath }}
-        configuration: '$(BuildConfiguration)'
-        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /t:rebuild /p:DisableEmbeddedXbf=false /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration)-csproj.binlog
+      displayName: 'Build Projects For Nuget'
 
     - task: VSTest@2
       displayName: 'Unit Tests'
       inputs:
         testAssemblyVer2: |
           **/bin/$(BuildConfiguration)/Xamarin.Forms.Core.UnitTests.dll
+          **/bin/$(BuildConfiguration)/**/Xamarin.Forms.DualScreen.UnitTests.dll
           **/bin/$(BuildConfiguration)/Xamarin.Forms.Pages.UnitTests.dll
           **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
         searchFolder: ${{ parameters.nunitTestFolder }}
@@ -102,7 +85,7 @@ jobs:
 
     - task: CopyFiles@2
       displayName: 'Copy Files dlls'
-      condition: eq(${{ parameters.includeNonUwp }}, 'true')
+      condition: eq(${{ parameters.includeNonUwpAndNonAndroid }}, 'true')
       inputs:
         Contents: |
           Stubs/**/bin/**/*.dll
@@ -121,19 +104,12 @@ jobs:
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.pdb
-          Xamarin.Forms.Platform.Android/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Platform.Android/bin/$(BuildConfiguration)/**/*.pdb
-          Xamarin.Forms.Platform.Android.FormsViewGroup/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Platform.Android.FormsViewGroup/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Platform.iOS/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Material.iOS/bin/$(BuildConfiguration)/**/*.mdb
-          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.pdb
-          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Material.Tizen/bin/$(BuildConfiguration)/**/*.mdb
@@ -142,7 +118,6 @@ jobs:
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.mdb
-          Xamarin.Forms.Maps.Android/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Maps.MacOS/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll
@@ -151,9 +126,6 @@ jobs:
           Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.mdb
-          Xamarin.Forms.Platform.Android.AppLinks/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Platform.Android.AppLinks/bin/$(BuildConfiguration)/**/*.pdb
-          Xamarin.Forms.Platform.Android.AppLinks/bin/$(BuildConfiguration)/**/*.mdb
           Xamarin.Forms.Core.UnitTests/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Xaml.UnitTests/bin/$(BuildConfiguration)/**/*.dll
           Xamarin.Forms.Pages.UnitTests/bin/$(BuildConfiguration)/**/*.dll
@@ -181,6 +153,10 @@ jobs:
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.dll
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.mdb
           Microsoft.XamlStandard/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.DualScreen.UnitTests/bin/$(BuildConfiguration)/**/*.dll
           **/*.binlog
 
         TargetFolder: ${{ parameters.artifactsTargetFolder }}
@@ -200,6 +176,36 @@ jobs:
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pdb
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.pri
           Xamarin.Forms.Maps.UWP/bin/$(BuildConfiguration)/**/*.xbf
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.DualScreen.UnitTests/bin/$(BuildConfiguration)/**/*.dll
+
+        TargetFolder: ${{ parameters.artifactsTargetFolder }}
+
+        
+    - task: CopyFiles@2
+      displayName: 'Copy Android Files dlls'
+      condition: eq('${{ parameters.includeAndroid }}', true)
+      inputs:
+        Contents: |
+          Stubs/**/bin/**/*.dll
+          Xamarin.Forms.Platform.Android/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Platform.Android/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Platform.Android.FormsViewGroup/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Platform.Android.FormsViewGroup/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Material.Android/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.Maps.Android/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Platform.Android.AppLinks/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Platform.Android.AppLinks/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Platform.Android.AppLinks/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.mdb
+          Xamarin.Forms.DualScreen.UnitTests/bin/$(BuildConfiguration)/**/*.dll
+          **/*.binlog
 
         TargetFolder: ${{ parameters.artifactsTargetFolder }}
 

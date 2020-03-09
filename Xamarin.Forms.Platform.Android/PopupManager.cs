@@ -7,7 +7,13 @@ using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
+#if __ANDROID_29__
+using AppCompatAlertDialog = AndroidX.AppCompat.App.AlertDialog;
+using AppCompatActivity = AndroidX.AppCompat.App.AppCompatActivity;
+#else
 using AppCompatAlertDialog = global::Android.Support.V7.App.AlertDialog;
+using AppCompatActivity =global::Android.Support.V7.App.AppCompatActivity;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -142,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 				alertDialog.SetMessage(arguments.Message);
 
 				var frameLayout = new FrameLayout(Activity);
-				var editText = new EditText(Activity) { Hint = arguments.Placeholder };
+				var editText = new EditText(Activity) { Hint = arguments.Placeholder, Text = arguments.InitialValue };
 				var layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
 				{
 					LeftMargin = (int)(22 * Activity.Resources.DisplayMetrics.Density),
@@ -221,7 +227,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				public DialogBuilder(Activity activity)
 				{
-					if (activity is global::Android.Support.V7.App.AppCompatActivity)
+					if (activity is AppCompatActivity)				
 					{
 						_appcompatBuilder = new AppCompatAlertDialog.Builder(activity);
 						_useAppCompat = true;

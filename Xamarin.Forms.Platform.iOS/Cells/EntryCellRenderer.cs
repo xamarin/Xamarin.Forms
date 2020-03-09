@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Foundation;
 using UIKit;
 using RectangleF = CoreGraphics.CGRect;
 
@@ -8,6 +9,11 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EntryCellRenderer : CellRenderer
 	{
 		static readonly Color DefaultTextColor = Color.Black;
+
+		[Preserve(Conditional = true)]
+		public EntryCellRenderer()
+		{
+		}
 
 		public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
@@ -125,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 			cell.TextField.Text = entryCell.Text;
 		}
 
-		class EntryCellTableViewCell : CellTableViewCell
+		public class EntryCellTableViewCell : CellTableViewCell
 		{
 			public EntryCellTableViewCell(string cellName) : base(UITableViewCellStyle.Value1, cellName)
 			{

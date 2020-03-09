@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -24,6 +25,17 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+
+		protected bool IsModal(BindableObject bindableObject)
+		{
+			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.Modal) == PresentationMode.Modal;
+		}
+
+		protected bool IsAnimated(BindableObject bindableObject)
+		{
+			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
+		}
+
 		protected Uri CreateUri(string uri) => ShellUriHandler.CreateUri(uri);
 
 		protected ShellSection MakeSimpleShellSection(string route, string contentRoute)
@@ -43,10 +55,19 @@ namespace Xamarin.Forms.Core.UnitTests
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ShellTestPage : ContentPage
 		{
+			public ShellTestPage()
+			{
+			}
+
 			public string SomeQueryParameter
 			{
 				get;
 				set;
+			}
+
+			protected override void OnParentSet()
+			{
+				base.OnParentSet();
 			}
 		}
 
@@ -131,6 +152,21 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 			return content;
+		}
+
+		protected ReadOnlyCollection<ShellContent> GetItems(ShellSection section)
+		{
+			return (section as IShellSectionController).GetItems();
+		}
+
+		protected ReadOnlyCollection<ShellSection> GetItems(ShellItem item)
+		{
+			return (item as IShellItemController).GetItems();
+		}
+
+		protected ReadOnlyCollection<ShellItem> GetItems(Shell item)
+		{
+			return (item as IShellController).GetItems();
 		}
 
 	}

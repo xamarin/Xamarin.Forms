@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _checkedForRtlScroll = false;
 		bool _previousLTR = true;
 
+		[Preserve(Conditional = true)]
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
 			ScrollAnimationEnded += HandleScrollAnimationEnded;
@@ -123,7 +124,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
-			if(Superview != null)
+			if(Superview != null && ScrollView != null)
 			{
 				if (_requestedScroll != null)
 				{
