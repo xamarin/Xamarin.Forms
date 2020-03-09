@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Platform.iOS
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
 		const double SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 0;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
 		const double SwipeMinimumDelta = 10;
@@ -34,8 +33,10 @@ namespace Xamarin.Forms.Platform.iOS
 		List<CGRect> _swipeItemsRect;
 		double _previousScrollX;
 		double _previousScrollY;
+		bool _isSwipeEnabled;
 		bool _isDisposed;
 
+		[Internals.Preserve(Conditional = true)]
 		public SwipeViewRenderer()
 		{
 			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
@@ -59,6 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				UpdateContent();
+				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
 				SetBackgroundColor(Element.BackgroundColor);
 			}
@@ -124,6 +126,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				SetBackgroundColor(Element.BackgroundColor);
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
 				UpdateSwipeTransitionMode();
 		}
@@ -132,16 +136,18 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UIColor backgroundColor;
 
-			if (Forms.IsiOS11OrNewer)
+#if __XCODE11__
+			if (Forms.IsiOS13OrNewer)
 				backgroundColor = UIColor.SystemBackgroundColor;
 			else
+#endif
 				backgroundColor = UIColor.White;
 
 			if (Element.BackgroundColor != Color.Default)
 			{
 				BackgroundColor = Element.BackgroundColor.ToUIColor();
 
-				if (_contentView != null && Element.Content == null)
+				if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
 					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			}
 			else
@@ -294,11 +300,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				var content = Subviews.FirstOrDefault(v => v is Platform.DefaultRenderer);
-
-				if (content != null)
-					_contentView = content;
+				if (Subviews.Length > 0)
+					_contentView = Subviews[0];
 			}
+		}
+
+		void UpdateIsSwipeEnabled()
+		{
+			_isSwipeEnabled = Element.IsEnabled;
 		}
 
 		UIView CreateEmptyContent()
@@ -498,6 +507,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleTouchInteractions(NSSet touches, GestureStatus gestureStatus)
 		{
+			if (!_isSwipeEnabled)
+				return;
+
 			var anyObject = touches.AnyObject as UITouch;
 			nfloat x = anyObject.LocationInView(this).X;
 			nfloat y = anyObject.LocationInView(this).Y;
@@ -903,13 +915,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (swipeThreshold > _contentView.Frame.Width)
 					swipeThreshold = _contentView.Frame.Width;
 
-				return swipeThreshold - SwipeThresholdMargin;
+				return swipeThreshold;
 			}
 
 			if (swipeThreshold > _contentView.Frame.Height)
 				swipeThreshold = _contentView.Frame.Height;
 
-			return swipeThreshold - SwipeThresholdMargin / 2;
+			return swipeThreshold;
 		}
 
 		Size GetSwipeItemSize(ISwipeItem swipeItem)

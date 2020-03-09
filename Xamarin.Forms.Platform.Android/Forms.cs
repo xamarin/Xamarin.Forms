@@ -493,6 +493,7 @@ namespace Xamarin.Forms
 			double _scalingFactor;
 
 			Orientation _previousOrientation = Orientation.Undefined;
+			Platform.Android.DualScreen.IDualScreenService DualScreenService => DependencyService.Get<Platform.Android.DualScreen.IDualScreenService>();
 
 			public AndroidDeviceInfo(Context formsActivity)
 			{
@@ -555,7 +556,16 @@ namespace Xamarin.Forms
 
 			void CheckOrientationChanged(Context formsActivity)
 			{
-				var orientation = formsActivity.Resources.Configuration.Orientation;
+				Orientation orientation;
+
+				if (DualScreenService?.IsSpanned == true)
+				{
+					orientation = (DualScreenService.IsLandscape) ? Orientation.Landscape : Orientation.Portrait;
+				}
+				else
+				{
+					orientation = formsActivity.Resources.Configuration.Orientation;
+				}
 
 				if (!_previousOrientation.Equals(orientation))
 					CurrentOrientation = orientation.ToDeviceOrientation();
@@ -742,16 +752,11 @@ namespace Xamarin.Forms
 			{
 				using (var client = new HttpClient())
 				{
-					HttpResponseMessage response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
-					if (!response.IsSuccessStatusCode)
-					{
-						Internals.Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
-						return null;
-					}
+					// Do not remove this await otherwise the client will dispose before
+					// the stream even starts
+					var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
 
-					// the HttpResponseMessage needs to be disposed of after the calling code is done with the stream
-					// otherwise the stream may get disposed before the caller can use it
-					return new StreamWrapper(await response.Content.ReadAsStreamAsync().ConfigureAwait(false), response);
+					return result;
 				}
 			}
 

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
+using Android.Util;
 using Android.Views;
 using Microsoft.Device.Display;
 using Xamarin.Forms;
 using Xamarin.Forms.DualScreen;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: Dependency(typeof(DualScreenService.DualScreenServiceImpl))]
@@ -22,30 +20,23 @@ namespace Xamarin.Forms.DualScreen
 			DualScreenServiceImpl.Init(activity);
 		}
 
-		internal class DualScreenServiceImpl : IDualScreenService, IDisposable
+		internal class DualScreenServiceImpl : IDualScreenService, Platform.Android.DualScreen.IDualScreenService
 		{
 			public event EventHandler OnScreenChanged;
-			GenericGlobalLayoutListener _genericGlobalLayoutListener;
 			ScreenHelper _helper;
 			bool _isDuo = false;
+			bool IsDuo => (_helper == null || _HingeService == null || _mainActivity == null || _hingeSensor == null) ? false : _isDuo;
 			HingeSensor _hingeSensor;
 			static Activity _mainActivity;
 			static DualScreenServiceImpl _HingeService;
-
-			int _hingeAngle;
-			Rectangle _hingeLocation;
 			bool _isLandscape;
-
-			Activity MainActivity
-			{
-				get => _mainActivity;
-				set => _mainActivity = value;
-			}
+			Size _pixelScreenSize;
+			object _hingeAngleLock = new object();
+			TaskCompletionSource<int> _gettingHingeAngle;
 
 			public DualScreenServiceImpl()
 			{
 				_HingeService = this;
-				_genericGlobalLayoutListener = new GenericGlobalLayoutListener(() => OnScreenChanged?.Invoke(this, EventArgs.Empty));
 				if (_mainActivity != null)
 					Init(_mainActivity);
 			}
@@ -58,86 +49,150 @@ namespace Xamarin.Forms.DualScreen
 					return;
 				}
 
-				if (activity == _HingeService.MainActivity && _HingeService._helper != null)
+				if (activity == _mainActivity && _HingeService._helper != null)
 					return;
 
 				if (_mainActivity is IDeviceInfoProvider oldDeviceInfoProvider)
-				{
 					oldDeviceInfoProvider.ConfigurationChanged -= _HingeService.ConfigurationChanged;
-				}
 
 				_mainActivity = activity;
 
+				if (_mainActivity == null)
+					return;
+
+				bool isDuo = _HingeService._isDuo = ScreenHelper.IsDualScreenDevice(_mainActivity);
+				if (!isDuo)
+					return;
+
+				var screenHelper = _HingeService._helper ?? new ScreenHelper();
+				isDuo = screenHelper.Initialize(_mainActivity);
+				_HingeService._isDuo = isDuo;
+
+				if (!isDuo)
+				{
+					_HingeService._helper = null;					
+					_HingeService._hingeSensor = null;
+					return;
+				}
+
+				_HingeService._helper = screenHelper;
+				_HingeService._hingeSensor = new HingeSensor(_mainActivity);
 				if (_mainActivity is IDeviceInfoProvider newDeviceInfoProvider)
 				{
 					newDeviceInfoProvider.ConfigurationChanged += _HingeService.ConfigurationChanged;
 				}
-
-				if (_HingeService._helper == null)
-				{
-					_HingeService._helper = new ScreenHelper();
-				}
-
-				if (_HingeService._hingeSensor != null)
-				{
-					_HingeService._hingeSensor.OnSensorChanged -= _HingeService.OnSensorChanged;
-					_HingeService._hingeSensor.StopListening();
-				}
-
-				_HingeService._isDuo = _HingeService._helper.Initialize(_HingeService.MainActivity);
-
-				if (_HingeService._isDuo)
-				{
-					_HingeService._hingeSensor = new HingeSensor(_HingeService.MainActivity);
-					_HingeService._hingeSensor.OnSensorChanged += _HingeService.OnSensorChanged;
-					_HingeService._hingeSensor.StartListening();
-				}
 			}
 
 			void ConfigurationChanged(object sender, EventArgs e)
-			{
-				if (_isLandscape != IsLandscape)
-					OnScreenChanged?.Invoke(this, e);
+			{				
+				if(IsDuo)
+					_helper?.Update();
 
-				_isLandscape = IsLandscape;
+				bool screenChanged = false;
+				if (_isLandscape != IsLandscape)
+				{
+					_isLandscape = IsLandscape;
+					screenChanged = true;
+				}
+
+				if (_mainActivity != null)
+				{
+					using (DisplayMetrics display = _mainActivity.Resources.DisplayMetrics)
+					{
+						var scalingFactor = display.Density;
+						_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
+						var newSize = new Size(_pixelScreenSize.Width / scalingFactor, _pixelScreenSize.Height / scalingFactor);
+
+						if (newSize != ScaledScreenSize)
+						{
+							ScaledScreenSize = newSize;
+							screenChanged = true;
+						}
+					}
+				}
+
+				if(screenChanged)
+					OnScreenChanged?.Invoke(this, e);
+			}
+
+			public Size ScaledScreenSize
+			{
+				get;
+				private set;
+			}
+
+			public bool IsSpanned
+				=> IsDuo && (_helper?.IsDualMode ?? false);
+
+			void StartListeningForHingeChanges()
+			{
+				if (!IsDuo)
+					return;
+
+				_hingeSensor.OnSensorChanged += OnSensorChanged;
+				_hingeSensor.StartListening();
+			}
+
+			void StopListeningForHingeChanges()
+			{
+				if (!IsDuo)
+					return;
+
+				_hingeSensor.OnSensorChanged -= OnSensorChanged;
+				_hingeSensor.StopListening();
 			}
 
 			void OnSensorChanged(object sender, HingeSensor.HingeSensorChangedEventArgs e)
 			{
-				if (_hingeLocation != GetHinge())
-				{
-					_hingeLocation = GetHinge();
-				}
-
-				if (_hingeAngle != e.HingeAngle)
-					OnScreenChanged?.Invoke(this, EventArgs.Empty);
-
-				_hingeAngle = e.HingeAngle;
+				SetHingeAngle(e.HingeAngle);
 			}
 
-			public void Dispose()
+			void SetHingeAngle(int hingeAngle)
 			{
-				if (_hingeSensor != null)
+				TaskCompletionSource<int> toSet = null;
+				lock (_hingeAngleLock)
 				{
-					_hingeSensor.OnSensorChanged -= OnSensorChanged;
-					_hingeSensor.StopListening();
+					StopListeningForHingeChanges();
+					toSet = _gettingHingeAngle;
+					_gettingHingeAngle = null;
 				}
+
+				if (toSet != null)
+					toSet.SetResult(hingeAngle);
 			}
 
-			public bool IsSpanned
-				=> _isDuo && (_helper?.IsDualMode ?? false);
+			public Task<int> GetHingeAngleAsync()
+			{
+				if (!IsDuo)
+					return Task.FromResult(0);
 
-			public DeviceInfo DeviceInfo => Device.info;
+				Task<int> returnValue = null;
+				lock (_hingeAngleLock)
+				{
+					if (_gettingHingeAngle == null)
+					{
+						_gettingHingeAngle = new TaskCompletionSource<int>();
+						StartListeningForHingeChanges();
+					}
+
+					returnValue = _gettingHingeAngle.Task;
+				}
+
+				return returnValue;
+			}
 
 			public Rectangle GetHinge()
 			{
-				if (!_isDuo || _helper == null)
+				if (!IsDuo)
 					return Rectangle.Zero;
+								
+				var hinge = _helper.GetHingeBoundsDip();
 
-				var rotation = ScreenHelper.GetRotation(_helper.Activity);
-				var hinge = _helper.DisplayMask.GetBoundingRectsForRotation(rotation).FirstOrDefault();
-				var hingeDp = new Rectangle(PixelsToDp(hinge.Left), PixelsToDp(hinge.Top), PixelsToDp(hinge.Width()), PixelsToDp(hinge.Height()));
-
+				if (hinge == null)
+					return Rectangle.Zero;
+				
+				var hingeDp = new Rectangle((hinge.Left), (hinge.Top), (hinge.Width()), (hinge.Height()));
+				
 				return hingeDp;
 			}
 
@@ -145,18 +200,19 @@ namespace Xamarin.Forms.DualScreen
 			{
 				get
 				{
-					if (!_isDuo || _helper == null)
-						return false;
+					if (!IsDuo)
+					{
+						if (_mainActivity == null)
+							return false;
+
+						var orientation = _mainActivity.Resources.Configuration.Orientation;
+						return orientation == global::Android.Content.Res.Orientation.Landscape;
+					}
 
 					var rotation = ScreenHelper.GetRotation(_helper.Activity);
-
 					return (rotation == SurfaceOrientation.Rotation270 || rotation == SurfaceOrientation.Rotation90);
 				}
 			}
-
-			double PixelsToDp(double px)
-				=> px / MainActivity.Resources.DisplayMetrics.Density;
-
 
 			public Point? GetLocationOnScreen(VisualElement visualElement)
 			{
@@ -170,23 +226,65 @@ namespace Xamarin.Forms.DualScreen
 				return new Point(view.View.Context.FromPixels(location[0]), view.View.Context.FromPixels(location[1]));
 			}
 
-			public void WatchForChangesOnLayout(VisualElement visualElement)
+			public object WatchForChangesOnLayout(VisualElement visualElement, Action action)
 			{
+				if (action == null)
+					return null;
+
 				var view = Platform.Android.Platform.GetRenderer(visualElement);
+				var androidView = view?.View;
 
-				if (view?.View == null)
-					return;
+				if (androidView == null || !androidView.IsAlive())
+					return null;
 
-				view.View.ViewTreeObserver.AddOnGlobalLayoutListener(_genericGlobalLayoutListener);
+				ViewTreeObserver.IOnGlobalLayoutListener listener = null;
+				listener = new GenericGlobalLayoutListener(() =>
+				{
+					if (!androidView.IsAlive())
+					{
+						action = null;
+						androidView = null;
+						try
+						{
+							_mainActivity?.Window?.DecorView?.RootView?.ViewTreeObserver?.RemoveOnGlobalLayoutListener(listener);
+						}
+						catch
+						{
+							// just in case something along the call path here is disposed of
+						}
+
+						return;
+					}
+
+					action?.Invoke();
+				});
+
+				androidView.ViewTreeObserver.AddOnGlobalLayoutListener(listener);
+				return listener;
 			}
 
-			public void StopWatchingForChangesOnLayout(VisualElement visualElement)
+			public void StopWatchingForChangesOnLayout(VisualElement visualElement, object handle)
 			{
-				var view = Platform.Android.Platform.GetRenderer(visualElement);
-				if (view?.View == null)
+				if (handle == null)
 					return;
 
-				view.View.ViewTreeObserver.RemoveOnGlobalLayoutListener(_genericGlobalLayoutListener);
+				var view = Platform.Android.Platform.GetRenderer(visualElement);
+				var androidView = view?.View;
+
+				if (androidView == null || !androidView.IsAlive())
+					return;
+
+				if (handle is ViewTreeObserver.IOnGlobalLayoutListener vto)
+				{
+					try
+					{
+						view.View.ViewTreeObserver.RemoveOnGlobalLayoutListener(vto);
+					}
+					catch
+					{
+						// just in case something along the call path here is disposed of
+					}
+				}
 			}
 		}
 	}

@@ -28,7 +28,6 @@ namespace Xamarin.Forms.Platform.Android
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>, GestureDetector.IOnGestureListener
 	{
 		const int SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 0;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
 		const float SwipeMinimumDelta = 10f;
@@ -50,16 +49,18 @@ namespace Xamarin.Forms.Platform.Android
 		float _swipeThreshold;
 		double _previousScrollX;
 		double _previousScrollY;
+		bool _isSwipeEnabled;
 		bool _isDisposed;
 
 		public SwipeViewRenderer(Context context) : base(context)
 		{
 			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
+
 			_context = context;
 
-			AutoPackage = false;
+			this.SetClipToOutline(true);
 
-			this.SetClipToOutline(true, Element);
+			AutoPackage = false;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<SwipeView> e)
@@ -77,6 +78,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				UpdateContent();
+				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
 				UpdateBackgroundColor();
 			}
@@ -100,6 +102,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
 				UpdateSwipeTransitionMode();
 		}
@@ -136,13 +140,13 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetBackgroundColor(backgroundColor);
 
-				if (Element.Content == null)
+				if (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default))
 					_contentView?.SetBackgroundColor(backgroundColor);
 			}
 			else
 				Control.SetWindowBackground();
 
-			if (_contentView.Background == null)
+			if (_contentView != null && _contentView.Background == null)
 				_contentView?.SetWindowBackground();
 		}
 
@@ -420,6 +424,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool HandleTouchInteractions(GestureStatus status, APointF point)
 		{
+			if (!_isSwipeEnabled)
+				return false;
+
 			switch (status)
 			{
 				case GestureStatus.Started:
@@ -570,7 +577,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateSwipeItems()
 		{
-			if (_contentView == null)
+			if (_contentView == null || _actionView != null)
 				return;
 
 			var items = GetSwipeItemsByDirection();
@@ -698,6 +705,11 @@ namespace Xamarin.Forms.Platform.Android
 			swipeItemView.Content?.Layout(new Rectangle(0, 0, swipeItemWidth, swipeItemHeight));
 		}
 
+		void UpdateIsSwipeEnabled()
+		{
+			_isSwipeEnabled = Element.IsEnabled;
+		}
+
 		void UpdateSwipeTransitionMode()
 		{
 			if (Element.IsSet(Specifics.SwipeTransitionModeProperty))
@@ -717,7 +729,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_actionView != null)
 			{
-				RemoveView(_actionView);
+				_actionView.RemoveFromParent();
 				_actionView.Dispose();
 				_actionView = null;
 			}
@@ -1006,13 +1018,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (swipeThreshold > contentWidth)
 					swipeThreshold = contentWidth;
 
-				return swipeThreshold - SwipeThresholdMargin;
+				return swipeThreshold;
 			}
 
 			if (swipeThreshold > contentHeight)
 				swipeThreshold = contentHeight;
 
-			return swipeThreshold - SwipeThresholdMargin / 2;
+			return swipeThreshold;
 		}
 
 		Size GetSwipeItemSize(ISwipeItem swipeItem)

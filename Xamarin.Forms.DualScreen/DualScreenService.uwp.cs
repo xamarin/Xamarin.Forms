@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Windows.Foundation.Metadata;
 using Windows.Graphics.Display;
 using Windows.UI.ViewManagement;
 
@@ -18,22 +19,33 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: Dependency(typeof(DualScreenService))]
 namespace Xamarin.Forms.DualScreen
 {
-    internal partial class DualScreenService : IDualScreenService
+    internal partial class DualScreenService : IDualScreenService, Platform.UWP.DualScreen.IDualScreenService
 	{
-#pragma warning disable CS0067
 		public event EventHandler OnScreenChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore CS0067
 
 		public DualScreenService()
         {
-        }
+			if(Window.Current != null)
+				Window.Current.SizeChanged += OnCurrentSizeChanged;
+		}
 
-        public bool IsSpanned
+		public Task<int> GetHingeAngleAsync() => Task.FromResult(0);
+
+		void OnCurrentSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+		{
+			OnScreenChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		bool IsDualScreenDevice => ApiInformation.IsMethodPresent("Windows.UI.ViewManagement.ApplicationView", "GetSpanningRects");
+
+		public bool IsSpanned
         {
             get
             {
-                var visibleBounds = ApplicationView.GetForCurrentView().VisibleBounds;
+				if (!IsDualScreenDevice)
+					return false;
+
+                var visibleBounds = Window.Current.Bounds;
 
                 if (visibleBounds.Height > 1200 || visibleBounds.Width > 1200)
                     return true;
@@ -41,6 +53,7 @@ namespace Xamarin.Forms.DualScreen
                 return false;
             }
 		}
+
 		public DeviceInfo DeviceInfo => Device.info;
 
 		public bool IsLandscape
@@ -54,12 +67,20 @@ namespace Xamarin.Forms.DualScreen
             }
         }
 
-        public void Dispose()
-        {
-        }
+		public Size ScaledScreenSize
+		{
+			get
+			{
+				Windows.Foundation.Rect windowSize = Window.Current.Bounds;
+				return new Size(windowSize.Width, windowSize.Height);
+			}
+		}
 
         public Rectangle GetHinge()
         {
+			if (!IsDualScreenDevice)
+				return Rectangle.Zero;
+
             var screen = DisplayInformation.GetForCurrentView();
 
             if (IsLandscape)
@@ -89,29 +110,34 @@ namespace Xamarin.Forms.DualScreen
             return new Point(screenCoords.X, screenCoords.Y);
         }
 
-		public void WatchForChangesOnLayout(VisualElement visualElement)
+		public object WatchForChangesOnLayout(VisualElement visualElement, Action action)
 		{
+			var view = Platform.UWP.Platform.GetRenderer(visualElement);
+
+			if (view?.ContainerElement == null)
+				return null;
+
+			EventHandler<object> layoutUpdated = (_, __) =>
+			{
+				action();
+			};
+
+			view.ContainerElement.LayoutUpdated += layoutUpdated;
+			return layoutUpdated;
+		}
+
+		public void StopWatchingForChangesOnLayout(VisualElement visualElement, object handle)
+		{
+			if (handle == null)
+				return;
+
 			var view = Platform.UWP.Platform.GetRenderer(visualElement);
 
 			if (view?.ContainerElement == null)
 				return;
 
-			view.ContainerElement.LayoutUpdated += OnContainerElementLayoutUpdated;
-		}
-
-		public void StopWatchingForChangesOnLayout(VisualElement visualElement)
-		{
-			var view = Platform.UWP.Platform.GetRenderer(visualElement);
-
-			if (view?.ContainerElement == null)
-				return;
-
-			view.ContainerElement.LayoutUpdated -= OnContainerElementLayoutUpdated;
-		}
-
-		void OnContainerElementLayoutUpdated(object sender, object e)
-		{
-			OnScreenChanged?.Invoke(this, EventArgs.Empty);
+			if(handle is EventHandler<object> handler)
+				view.ContainerElement.LayoutUpdated -= handler;
 		}
 	}
 }
