@@ -34,12 +34,12 @@ namespace Xamarin.Forms
 			VisualState?.VisualStateGroup?.UpdateStateTriggers();
 		}
 
-		internal virtual void OnAttached()
+		public virtual void OnAttached()
 		{
 
 		}
 
-		internal virtual void OnDetached()
+		public virtual void OnDetached()
 		{
 
 		}
