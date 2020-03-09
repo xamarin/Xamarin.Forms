@@ -135,10 +135,14 @@ echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\TabbedPageStyle.xbf
 echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\FormsEmbeddedPageWrapper.xbf
 echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\StepperControl.xbf
 echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\FormsCheckBoxStyle.xbf
+echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\PickerStyle.xbf
 
 mkdir Xamarin.Forms.Platform.UAP\bin\%CONFIG%\Microsoft.UI.Xaml
 mkdir Xamarin.Forms.Platform.UAP\bin\%CONFIG%\Microsoft.UI.Xaml\DensityStyles
 echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\Microsoft.UI.Xaml\DensityStyles\Compact.xbf
+
+mkdir Xamarin.Forms.Platform.UAP\bin\%CONFIG%\Microsoft.UI.Xaml\themes
+echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\Microsoft.UI.Xaml\themes\generic.xbf
 
 mkdir Xamarin.Forms.Platform.UAP\bin\%CONFIG%\Shell
 echo foo > Xamarin.Forms.Platform.UAP\bin\%CONFIG%\Shell\ShellStyles.xbf

@@ -62,7 +62,8 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var coordinator = LayoutInflater.FromContext(context).Inflate(Resource.Layout.FlyoutContent, null);
+			Profile.FramePartition("Inflate FlyoutContent");
+			var coordinator = AndroidAnticipator.InflateResource(context, Resource.Layout.FlyoutContent);
 
 			Profile.FramePartition("Find Recycler");
 			_recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);

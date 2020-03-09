@@ -38,28 +38,48 @@ namespace Xamarin.Forms.Internals
 
 		internal static object ResolveOrCreate(Type type, object source, Type visualType, params object[] args)
 		{
+			Profile.FrameBegin(type.Name);
 			visualType = visualType ?? _defaultVisualType;
 
 			var result = Resolve(type, args);
 
-			if (result != null) return result;
-
-			if (args.Length > 0)
+			if (result == null && args.Length > 0)
 			{
 				if(visualType != _defaultVisualType)
+				{
+					Profile.FramePartition("Activate 2 Info");
 					if (type.GetTypeInfo().DeclaredConstructors.Any(info => info.GetParameters().Length == 2))
-						return Activator.CreateInstance(type, new[] { args[0], source });
+					{
+						Profile.FramePartition("Activate 2");
+						result = Activator.CreateInstance(type, new[] { args[0], source });
+					}
+				}
 
 				// This is by no means a general solution to matching with the correct constructor, but it'll
 				// do for finding Android renderers which need Context (vs older custom renderers which may still use
 				// parameterless constructors)
-				if (type.GetTypeInfo().DeclaredConstructors.Any(info => info.GetParameters().Length == args.Length))
+				if (result == null)
 				{
-					return Activator.CreateInstance(type, args);
+					Profile.FramePartition("Activate L Info");
+					if (type.GetTypeInfo().DeclaredConstructors.Any(info => info.GetParameters().Length == args.Length))
+					{
+						Profile.FramePartition("Activate L");
+						result = Activator.CreateInstance(type, args);
+						if (result == null)
+							throw new Exception($"Failed to find matching .ctor for {type}");
+					}
 				}
 			}
 			
-			return Activator.CreateInstance(type);
+			if (result == null)
+			{
+				Profile.FramePartition("Activate");
+				result = Activator.CreateInstance(type);
+			}
+
+			Profile.FrameEnd(type.Name);
+
+			return result;
 		}
 	}
 }

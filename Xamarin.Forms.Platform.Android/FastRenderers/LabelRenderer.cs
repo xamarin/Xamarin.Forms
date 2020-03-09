@@ -12,6 +12,7 @@ using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
@@ -33,25 +34,34 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		float _lineSpacingMultiplierDefault = -1.0f;
 		VisualElementTracker _visualElementTracker;
 		VisualElementRenderer _visualElementRenderer;
-		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
+		readonly MotionEventHelper _motionEventHelper;
 		SpannableString _spannableString;
 
 		bool _wasFormatted;
 
 		public LabelRenderer(Context context) : base(context)
 		{
+			Profile.FrameBegin(nameof(LabelRenderer));
+
+			_motionEventHelper = new MotionEventHelper();
 			_labelTextColorDefault = TextColors;
 			_visualElementRenderer = new VisualElementRenderer(this);
 			BackgroundManager.Init(this);
+
+			Profile.FrameEnd(nameof(LabelRenderer));
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use LabelRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public LabelRenderer() : base(Forms.Context)
 		{
+			Profile.FrameBegin(nameof(LabelRenderer));
+			
 			_labelTextColorDefault = TextColors;
 			_visualElementRenderer = new VisualElementRenderer(this);
 			BackgroundManager.Init(this);
+
+			Profile.FrameEnd(nameof(LabelRenderer));
 		}
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
