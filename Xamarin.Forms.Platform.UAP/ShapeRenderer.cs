@@ -34,12 +34,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
 			{
-				_height = Element.HeightRequest;
+				_height = Element.Height;
 				InvalidateArrange();
 			}
 			else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
 			{
-				_width = Element.WidthRequest;
+				_width = Element.Width;
 				InvalidateArrange();
 			}
 			else if (args.PropertyName == Shape.AspectProperty.PropertyName)
