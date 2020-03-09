@@ -183,8 +183,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Carousel.SetIsDragging(e.IsIntermediate);
 			Carousel.IsScrolling = e.IsIntermediate;
-
 			UpdatePositionFromScroll();
+			HandleScroll(_scrollViewer);
 		}
 
 		void UpdatePeekAreaInsets()
@@ -282,14 +282,17 @@ namespace Xamarin.Forms.Platform.UWP
 			if (itemCount == 0)
 				return;
 
-			itemCount--;
+			if (CarouselItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal && _scrollViewer.HorizontalOffset == _previousHorizontalOffset)
+				return;
 
-			int position;
+			if (CarouselItemsLayout.Orientation == ItemsLayoutOrientation.Vertical && _scrollViewer.VerticalOffset == _previousVerticalOffset)
+				return;
 
-			if (_scrollViewer.HorizontalOffset > _scrollViewer.VerticalOffset)
-				position = _scrollViewer.ScrollableWidth > 0 ? Convert.ToInt32(Math.Ceiling(_scrollViewer.HorizontalOffset * itemCount / _scrollViewer.ScrollableWidth)) : 0;
-			else
-				position = _scrollViewer.ScrollableHeight > 0 ? Convert.ToInt32(Math.Ceiling(_scrollViewer.VerticalOffset * itemCount / _scrollViewer.ScrollableHeight)) : 0;
+			bool goingNext = CarouselItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal ?
+										_scrollViewer.HorizontalOffset > _previousHorizontalOffset :
+										_scrollViewer.VerticalOffset > _previousVerticalOffset;
+
+			var position = ListViewBase.GetVisibleIndexes(CarouselItemsLayout.Orientation, goingNext).centerItemIndex;
 
 			UpdatePosition(position);
 		}
@@ -308,7 +311,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateFromPosition()
 		{
+			var itemCount = CollectionViewSource.View.Count;
 			var carouselPosition = Carousel.Position;
+
+			if (carouselPosition >= itemCount || carouselPosition < 0)
+				throw new IndexOutOfRangeException($"Can't set CarouselView to position {carouselPosition}. ItemsSource has {itemCount} items.");
+
 			if (carouselPosition == _gotoPosition)
 				_gotoPosition = -1;
 

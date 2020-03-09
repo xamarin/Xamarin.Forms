@@ -12,7 +12,7 @@
             <RowDefinition/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <local:ExtendedCarousel ItemsSource="{Binding Items}" Position="{Binding Position, Mode=TwoWay}" >
+        <local:ExtendedCarousel x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position, Mode=TwoWay}" >
             <local:ExtendedCarousel.ItemTemplate>
                 <DataTemplate>
                     <StackLayout>
