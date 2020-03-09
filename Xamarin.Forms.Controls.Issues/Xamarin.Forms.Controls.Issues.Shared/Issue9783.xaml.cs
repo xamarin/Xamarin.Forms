@@ -8,7 +8,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue9783()
 		{
+#if APP
 			InitializeComponent();
+#endif
 		}
 
 		protected override void Init()
