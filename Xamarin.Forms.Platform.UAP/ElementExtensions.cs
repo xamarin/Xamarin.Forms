@@ -8,16 +8,14 @@ namespace Xamarin.Forms.Platform.UWP
 		internal static T FindParent<T>(this Element self)
 			where T : class
 		{
-			Element parent = null;
 			T returnvalue = default(T);
 
 			do
 			{
-				parent = self?.Parent;
-				returnvalue = parent as T;
-
+				self = self?.RealParent;
+				returnvalue = self as T;
 			}
-			while (returnvalue == null && parent != null);
+			while (returnvalue == null && self != null);
 
 			return returnvalue;
 		}

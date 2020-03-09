@@ -65,10 +65,15 @@ namespace Xamarin.Forms
 			if(bindable is BaseShellItem baseShellItem)
 				return baseShellItem.CreateDefaultFlyoutItemCell("Text", "Icon");
 
-			if(bindable is MenuItem mi && mi.Parent is BaseShellItem bsiMi)
-				return bsiMi.CreateDefaultFlyoutItemCell("Text", "Icon");
+			if (bindable is MenuItem mi)
+			{
+				if (mi.Parent is BaseShellItem bsiMi)
+					return bsiMi.CreateDefaultFlyoutItemCell("Text", "Icon");
+				else
+					return null;
+			}
 
-			throw new ArgumentException("Invalidate Menu Item Type", nameof(bindable));
+			throw new ArgumentException($"Invalidate Menu Item Type: {bindable}", nameof(bindable));
 		}
 
 		public static DataTemplate GetMenuItemTemplate(BindableObject obj) => (DataTemplate)obj.GetValue(MenuItemTemplateProperty);
