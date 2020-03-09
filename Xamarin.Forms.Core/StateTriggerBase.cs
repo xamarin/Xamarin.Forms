@@ -27,6 +27,8 @@ namespace Xamarin.Forms
 
 		internal VisualState VisualState { get; set; }
 
+		public bool IsAttached { get; private set; }
+
 		protected void SetActive(bool active)
 		{
 			IsActive = active;
@@ -34,14 +36,30 @@ namespace Xamarin.Forms
 			VisualState?.VisualStateGroup?.UpdateStateTriggers();
 		}
 
-		public virtual void OnAttached()
+		protected virtual void OnAttached()
 		{
 
 		}
 
-		public virtual void OnDetached()
+		protected virtual void OnDetached()
 		{
 
+		}
+
+		internal virtual void SendAttached()
+		{
+			if (IsAttached)
+				return;
+			OnAttached();
+			IsAttached = true;
+		}
+
+		internal virtual void SendDetached()
+		{
+			if (!IsAttached)
+				return;
+			OnDetached();
+			IsAttached = false;
 		}
 	}
 }
