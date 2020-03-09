@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 		internal MenuShellItem(MenuItem menuItem)
 		{
 			MenuItem = menuItem;
-
+			MenuItem.Parent = this;
 			SetBinding(TitleProperty, new Binding(nameof(MenuItem.Text), BindingMode.OneWay, source: menuItem));
 			SetBinding(IconProperty, new Binding(nameof(MenuItem.IconImageSource), BindingMode.OneWay, source: menuItem));
 			SetBinding(FlyoutIconProperty, new Binding(nameof(MenuItem.IconImageSource), BindingMode.OneWay, source: menuItem));

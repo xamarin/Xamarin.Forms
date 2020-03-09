@@ -62,7 +62,13 @@ namespace Xamarin.Forms
 
 		static object OnMenuItemTemplateCreate(BindableObject bindable)
 		{
-			return CreateDefaultFlyoutItemCell("Text", "Icon", bindable);
+			if(bindable is BaseShellItem baseShellItem)
+				return baseShellItem.CreateDefaultFlyoutItemCell("Text", "Icon");
+
+			if(bindable is MenuItem mi && mi.Parent is BaseShellItem bsiMi)
+				return bsiMi.CreateDefaultFlyoutItemCell("Text", "Icon");
+
+			throw new ArgumentException("Invalidate Menu Item Type", nameof(bindable));
 		}
 
 		public static DataTemplate GetMenuItemTemplate(BindableObject obj) => (DataTemplate)obj.GetValue(MenuItemTemplateProperty);
@@ -73,7 +79,7 @@ namespace Xamarin.Forms
 
 		static object OnItemTemplateCreator(BindableObject bindable)
 		{
-			return CreateDefaultFlyoutItemCell("Title", "FlyoutIcon", bindable);
+			return (bindable as BaseShellItem).CreateDefaultFlyoutItemCell("Title", "FlyoutIcon");
 		}
 
 		public static DataTemplate GetItemTemplate(BindableObject obj) => (DataTemplate)obj.GetValue(ItemTemplateProperty);
@@ -1282,114 +1288,6 @@ namespace Xamarin.Forms
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(Shell), ExperimentalFlags.ShellUWPExperimental);
 		}
-
-		static DataTemplate CreateDefaultFlyoutItemCell(string textBinding, string iconBinding, BindableObject bindable)
-		{
-			return new DataTemplate(() =>
-			{
-				var grid = new Grid();
-				grid.Resources = new ResourceDictionary();
-
-				var defaultLabelClass = new Style(typeof(Label))
-				{
-					Setters = {
-						new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Center }
-					},
-					Class = "IMPL_DefaultFlyoutItemLabelStyle",
-				};
-
-				var defaultImageClass = new Style(typeof(Image))
-				{
-					Setters = {
-						new Setter { Property = Image.VerticalOptionsProperty, Value = LayoutOptions.Center }
-					},
-					Class = "IMPL_DefaultFlyoutItemImageStyle",
-				};
-
-				var defaultGridClass = new Style(typeof(Grid))
-				{
-					Class = "IMPL_DefaultFlyoutItemStyle",
-				};
-
-				List<string> bindableObjectStyle = new List<string>() { defaultLabelClass.Class, defaultImageClass.Class, defaultGridClass.Class };
-
-				if (bindable is NavigableElement element && element.StyleClass != null)
-					foreach (var styleClass in element.StyleClass)
-						bindableObjectStyle.Add(styleClass);
-
-				var groups = new VisualStateGroupList();
-
-				var commonGroup = new VisualStateGroup();
-				commonGroup.Name = "CommonStates";
-				groups.Add(commonGroup);
-
-				var normalState = new VisualState();
-				normalState.Name = "Normal";
-				commonGroup.States.Add(normalState);
-
-				var selectedState = new VisualState();
-				selectedState.Name = "Selected";
-				selectedState.Setters.Add(new Setter
-				{
-					Property = VisualElement.BackgroundColorProperty,
-					Value = new Color(0.95)
-				});
-
-				commonGroup.States.Add(selectedState);
-
-				defaultGridClass.Setters.Add(new Setter { Property = VisualStateManager.VisualStateGroupsProperty, Value = groups });
-
-				if (Device.RuntimePlatform == Device.Android)
-					defaultGridClass.Setters.Add(new Setter { Property = Grid.HeightRequestProperty, Value = 50 });
-				
-				ColumnDefinitionCollection columnDefinitions = new ColumnDefinitionCollection();
-
-				if (Device.RuntimePlatform == Device.Android)
-					columnDefinitions.Add(new ColumnDefinition { Width = 54 });
-				else
-					columnDefinitions.Add(new ColumnDefinition { Width = 50 });
-
-				columnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-				defaultGridClass.Setters.Add(new Setter { Property = Grid.ColumnDefinitionsProperty, Value = columnDefinitions });
-
-				var image = new Image();
-
-				double sizeRequest = 22;
-				if (Device.RuntimePlatform == Device.Android)
-					sizeRequest = 24;
-
-				defaultImageClass.Setters.Add(new Setter() { Property = Image.HeightRequestProperty, Value = sizeRequest });
-				defaultImageClass.Setters.Add(new Setter() { Property = Image.WidthRequestProperty, Value = sizeRequest });
-
-				image.SetBinding(Image.SourceProperty, iconBinding);
-				grid.Children.Add(image);
-
-				var label = new Label();
-				label.SetBinding(Label.TextProperty, textBinding);
-				grid.Children.Add(label, 1, 0);
-
-				if (Device.RuntimePlatform == Device.Android)
-				{
-					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontSizeProperty, Value = 14 });
-					defaultLabelClass.Setters.Add(new Setter { Property = Label.TextColorProperty, Value = Color.Black.MultiplyAlpha(0.87) });
-					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontFamilyProperty, Value = "sans-serif-medium" });
-					defaultLabelClass.Setters.Add(new Setter { Property = Label.MarginProperty, Value = new Thickness(20, 0, 0, 0) });
-				}
-				else
-				{
-					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontSizeProperty, Value = Device.GetNamedSize(NamedSize.Small, label) });
-					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontAttributesProperty, Value = FontAttributes.Bold });
-				}
-
-				grid.StyleClass = bindableObjectStyle;
-				label.StyleClass = bindableObjectStyle;
-				image.StyleClass = bindableObjectStyle;
-
-				grid.Resources = new ResourceDictionary() { defaultGridClass, defaultLabelClass, defaultImageClass };
-				return grid;
-			});
-		}
-
 
 		class NavigationImpl : NavigationProxy
 		{

@@ -42,8 +42,10 @@ namespace Xamarin.Forms
 		[TypeConverter(typeof(ListStringTypeConverter))]
 		public IList<string> @class {
 			get { return _mergedStyle.StyleClass; }
-			set { _mergedStyle.StyleClass = value; }
+			set { _mergedStyle.StyleClass = value; OnStyleClassChanged(); }
 		}
+
+		internal virtual void OnStyleClassChanged() { }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public NavigationProxy NavigationProxy {
