@@ -423,7 +423,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				return pagetoTest;
 			});
 
-			
+
 			var page = (two.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
 			Assert.AreEqual("1234", (page as ShellTestPage).SomeQueryParameter);
 
@@ -643,7 +643,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public async Task FlyoutNavigateToImplicitContentPage()
 		{
 			var shell = new Shell();
-			var shellITem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems,  };
+			var shellITem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
 			var shellSection = new ShellSection() { Title = "can navigate to" };
 			shellSection.Items.Add(new ContentPage());
 
@@ -758,7 +758,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			ContentPage page = new ContentPage();
 			shell.Items.Add(CreateShellItem(page));
 
-			
+
 			// setup title view
 			StackLayout flyoutView = new StackLayout() { BackgroundColor = Color.White };
 			Button button = new Button();
@@ -962,14 +962,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(GetItems(shell).Contains(item1));
 			Assert.IsTrue(GetItems(shell).Contains(item2));
 		}
-		
+
 		[Test]
 		public async Task ShellContentCollectionClear()
 		{
 			var shell = new Shell();
 			var item1 = CreateShellItem();
 			var section2 = CreateShellSection();
-			
+
 			shell.Items.Add(item1);
 			item1.Items.Add(section2);
 
@@ -979,12 +979,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			mainTab.Items.Clear();
 			mainTab.Items.Add(content1);
 			mainTab.Items.Add(CreateShellContent());
-			
+
 			Assert.IsNull(clearedContent.Parent);
 			Assert.AreEqual(2, mainTab.Items.Count);
 			Assert.AreEqual(content1, mainTab.CurrentItem);
 		}
-		
+
 		[Test]
 		public async Task ShellItemCollectionClear()
 		{
@@ -992,19 +992,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			var item1 = CreateShellItem();
 			shell.Items.Add(item1);
 
-			
+
 			var item2 = CreateShellItem();
 			var item3 = CreateShellItem();
-			
+
 			shell.Items.Clear();
 			shell.Items.Add(item2);
 			shell.Items.Add(item3);
-			
+
 			Assert.IsNull(item1.Parent);
 			Assert.AreEqual(2, shell.Items.Count);
 			Assert.AreEqual(item2, shell.CurrentItem);
 		}
-		
+
 		[Test]
 		public async Task ShellSectionCollectionClear()
 		{
@@ -1015,12 +1015,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			var section1 = CreateShellSection();
 			var section2 = CreateShellSection();
 			var clearedSection = item1.Items[0];
-			
+
 			Assert.IsNotNull(clearedSection.Parent);
 			item1.Items.Clear();
 			item1.Items.Add(section1);
 			item1.Items.Add(section2);
-			
+
 			Assert.IsNull(clearedSection.Parent);
 			Assert.AreEqual(2, item1.Items.Count);
 			Assert.AreEqual(section1, shell.CurrentItem.CurrentItem);
@@ -1041,6 +1041,50 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			shell.Items.Clear();
 			Assert.AreEqual("//root2", shell.CurrentState.Location.ToString());
+		}
+
+
+		[Test]
+		public void FlyoutItemDefaultStylesApplied()
+		{
+			Shell shell = new Shell();
+			var shellItem = CreateShellItem();
+
+			shell.Items.Add(shellItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
+		}
+
+		[Test]
+		public void FlyoutItemLabelStyle()
+		{
+			var classStyle = new Style(typeof(Label))
+			{
+				Setters = {
+					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+				},
+				Class = "fooClass",
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+
+			shell.Items.Add(shellItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
+			shellItem.StyleClass = new[] { "fooClass" };
+			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
 		}
 	}
 }
