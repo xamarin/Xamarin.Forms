@@ -169,10 +169,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
 
-			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
+			if (MustReload())
 			{
-				// Okay, we're going from completely empty to more than 0 items; there's an iOS bug which apparently
-				// will just crash if we call InsertItems here, so we have to do ReloadData.
 				_collectionView.ReloadData();
 				Count += count;
 				return;
@@ -184,6 +182,21 @@ namespace Xamarin.Forms.Platform.iOS
 					_collectionView.InsertItems(indexes);
 					Count += count;
 				}, null);
+		}
+
+		bool MustReload() 
+		{
+			// UICollectionView doesn't like when we insert items into a completely empty un-grouped CV,
+			// and it doesn't like when we insert items into a grouped CV with no actual cells (just empty groups)
+			// In those circumstances, we just need to ask it to reload the data so it can get its internal
+			// accounting in order
+
+			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
+			{
+				return true;
+			}
+
+			return _collectionView.VisibleCells.Length == 0;
 		}
 
 		void Remove(NotifyCollectionChangedEventArgs args)
