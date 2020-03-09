@@ -136,9 +136,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UIColor backgroundColor;
 
+#if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
 				backgroundColor = UIColor.SystemBackgroundColor;
 			else
+#endif
 				backgroundColor = UIColor.White;
 
 			if (Element.BackgroundColor != Color.Default)
@@ -298,10 +300,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				var content = Subviews.FirstOrDefault(v => v is Platform.DefaultRenderer);
-
-				if (content != null)
-					_contentView = content;
+				if (Subviews.Length > 0)
+					_contentView = Subviews[0];
 			}
 		}
 
