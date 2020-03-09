@@ -50,7 +50,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (arguments != null)
 				{
 					var input = new NSTextField(new CGRect(0, 0, 300, 20));
-
 					var alert = new NSAlert()
 					{
 						AlertStyle = NSAlertStyle.Informational,
@@ -59,19 +58,15 @@ namespace Xamarin.Forms.Platform.MacOS
 					};
 					alert.AddButton(arguments.Accept);
 					alert.AddButton(arguments.Cancel);
-
 					alert.ShowsSuppressionButton = false;
 					alert.AccessoryView = input;
 					alert.Layout();
 					alert.BeginSheetForResponse(new NSWindow(), (result) => {
-						arguments.SetResult(input.StringValue);
+					arguments.SetResult(input.StringValue);
 
 					});
-
 				}
-
 			});
-
 
 			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
 			{
@@ -112,15 +107,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_renderer = new PlatformRenderer(this);
 			_modals = new System.Collections.Generic.List<Page>();
-
 			SubscribeToAlertsAndActionSheets();
-
-
-		}
-
-		public void PresentPrompt(PromptArguments arguments)
-		{
-
 		}
 
 		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
@@ -149,15 +136,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_disposed)
 				return;
 			_disposed = true;
-
 			Page.DescendantRemoved -= HandleChildRemoved;
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
-
 			Page.DisposeModalAndChildRenderers();
-			//foreach (var modal in _modals)
-			//modal.DisposeModalAndChildRenderers();
 			_renderer.Dispose();
 		}
 
