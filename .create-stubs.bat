@@ -110,6 +110,12 @@ echo foo > Xamarin.Forms.Platform.MacOS\bin\%CONFIG%\Xamarin.forms.Platform.macO
 echo foo > Xamarin.Forms.Platform.MacOS\bin\%CONFIG%\Xamarin.forms.Platform.dll
 echo foo > Xamarin.Forms.Maps.MacOS\bin\%CONFIG%\Xamarin.Forms.Maps.macOS.dll
 
+mkdir Xamarin.Forms.Platform.MacOS\bin\%CONFIG%\2017
+echo foo > Xamarin.Forms.Platform.MacOS\bin\%CONFIG%\2017\Xamarin.Forms.Platform.macOS.dll
+
+mkdir Xamarin.Forms.Platform.iOS\bin\%CONFIG%\2017
+echo foo > Xamarin.Forms.Platform.iOS\bin\%CONFIG%\2017\Xamarin.Forms.Platform.iOS.dll
+
 mkdir Stubs\Xamarin.Forms.Platform.Tizen\bin\%CONFIG%\tizen40
 echo foo > Stubs\Xamarin.Forms.Platform.Tizen\bin\%CONFIG%\tizen40\Xamarin.Forms.Platform.dll
 echo foo > Xamarin.Forms.Maps.Tizen\bin\%CONFIG%\Tizen40\Xamarin.Forms.Maps.Tizen.dll
