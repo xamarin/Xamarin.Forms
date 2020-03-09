@@ -146,6 +146,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+				ButtonElementManager.UpdateDisabledTextColor(Element, NativeButton);
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -168,6 +170,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
+			ButtonElementManager.UpdateDisabledTextColor(Element, NativeButton);
 		}
 
 		void UpdateBitmap()

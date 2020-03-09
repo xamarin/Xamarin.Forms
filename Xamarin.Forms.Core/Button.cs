@@ -57,6 +57,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
+		public static readonly BindableProperty DisabledTextColorProperty = BindableProperty.Create(nameof(DisabledTextColor), typeof(Color), typeof(Button), Color.Default);
+
 		public Thickness Padding
 		{
 			get { return (Thickness)GetValue(PaddingElement.PaddingProperty); }
@@ -160,6 +162,12 @@ namespace Xamarin.Forms
 		{
 			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
 			set { SetValue(TextElement.CharacterSpacingProperty, value); }
+		}
+
+		public Color DisabledTextColor
+		{
+			get { return (Color)GetValue(DisabledTextColorProperty); }
+			set { SetValue(DisabledTextColorProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore

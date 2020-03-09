@@ -238,6 +238,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
 				UpdateCharacterSpacing();
+				ButtonElementManager.UpdateDisabledTextColor(Button, this);
 				_buttonLayoutManager?.Update();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -261,6 +262,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 			{
 				UpdateInputTransparent();
+			}
+			else if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+			{
+				ButtonElementManager.UpdateDisabledTextColor(Button, this);
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);

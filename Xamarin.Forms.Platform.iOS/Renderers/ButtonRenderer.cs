@@ -98,6 +98,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateFont();
 				UpdateTextColor();
+				ButtonElementManager.UpdateDisabledTextColor(e.NewElement, Control);
 				_buttonLayoutManager?.Update();
 			}
 		}
@@ -115,6 +116,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+				ButtonElementManager.UpdateDisabledTextColor(Element, Control);
 		}
 
 		protected override void SetAccessibilityLabel()

@@ -131,6 +131,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateFont();
 			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 				UpdateCharacterSpacing();
+			else if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+				ButtonElementManager.UpdateDisabledTextColor(Element, NativeButton);
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -150,6 +152,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdateCharacterSpacing();
+			ButtonElementManager.UpdateDisabledTextColor(Element, NativeButton);
 		}
 
 		void UpdateEnabled()
@@ -186,7 +189,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
-		}
+		}		
 
 		void UpdateCharacterSpacing()
 		{
