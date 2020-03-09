@@ -5,6 +5,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
 using WBrush = Windows.UI.Xaml.Media.Brush;
+using WColor = Windows.UI.Color;
 using WGrid = Windows.UI.Xaml.Controls.Grid;
 using WRectangle = Windows.UI.Xaml.Shapes.Rectangle;
 using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
@@ -20,7 +21,7 @@ namespace Xamarin.Forms.Platform.UWP
 		const string ToggleSwitchKnobOn = "SwitchKnobOn";
 		const string ToggleSwitchFillMode = "Fill";
 
-		WBrush _originalOnHoverColor;
+		object _originalOnHoverColor;
 		WBrush _originalOnColorBrush;
 		WBrush _originalThumbOnBrush;
 
@@ -115,10 +116,21 @@ namespace Xamarin.Forms.Platform.UWP
 							if (frame != null)
 							{
 								if (_originalOnHoverColor == null)
-									_originalOnHoverColor = frame.Value as WBrush;
+								{
+									if (frame.Value is WColor color)
+										_originalOnHoverColor = color;
+
+									if (frame.Value is SolidColorBrush solidColorBrush)
+										_originalOnHoverColor = solidColorBrush;
+								}
 
 								if (!Element.OnColor.IsDefault)
-									frame.Value = new WSolidColorBrush(Element.OnColor.ToWindowsColor()) { Opacity = _originalOnHoverColor.Opacity };
+								{
+									frame.Value = new WSolidColorBrush(Element.OnColor.ToWindowsColor())
+									{
+										Opacity = _originalOnHoverColor is WSolidColorBrush originalOnHoverBrush ? originalOnHoverBrush.Opacity : 1
+									};
+								}
 								else
 									frame.Value = _originalOnHoverColor;
 							}

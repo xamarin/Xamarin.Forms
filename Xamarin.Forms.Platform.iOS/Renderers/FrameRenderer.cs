@@ -33,7 +33,8 @@ namespace Xamarin.Forms.Platform.iOS
 				e.PropertyName == VisualElement.BackgroundProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
-				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
+				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
+				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				SetupLayer();
 		}
 
@@ -73,6 +74,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_shadowView.Layer.CornerRadius = Layer.CornerRadius;
 				_shadowView.Layer.BorderColor = Layer.BorderColor;
+				_shadowView.Hidden = !Element.IsVisible;
 			}
 			else
 			{
@@ -92,7 +94,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_shadowView != null)
 			{
-				if (_shadowView.Superview == null)
+				if (_shadowView.Superview == null && Superview != null)
 					Superview.InsertSubviewBelow(_shadowView, this);
 
 				_shadowView?.SetNeedsLayout();

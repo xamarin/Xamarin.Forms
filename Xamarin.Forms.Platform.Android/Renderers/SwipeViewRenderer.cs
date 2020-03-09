@@ -28,7 +28,6 @@ namespace Xamarin.Forms.Platform.Android
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>, GestureDetector.IOnGestureListener
 	{
 		const int SwipeThreshold = 250;
-		const int SwipeThresholdMargin = 0;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
 		const float SwipeMinimumDelta = 10f;
@@ -144,7 +143,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetBackgroundColor(backgroundColor);
 
-				if (Element.Content == null)
+				if (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default))
 					_contentView?.SetBackgroundColor(backgroundColor);
 			}
 			else
@@ -591,7 +590,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateSwipeItems()
 		{
-			if (_contentView == null)
+			if (_contentView == null || _actionView != null)
 				return;
 
 			var items = GetSwipeItemsByDirection();
@@ -743,7 +742,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_actionView != null)
 			{
-				RemoveView(_actionView);
+				_actionView.RemoveFromParent();
 				_actionView.Dispose();
 				_actionView = null;
 			}
@@ -1032,13 +1031,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (swipeThreshold > contentWidth)
 					swipeThreshold = contentWidth;
 
-				return swipeThreshold - SwipeThresholdMargin;
+				return swipeThreshold;
 			}
 
 			if (swipeThreshold > contentHeight)
 				swipeThreshold = contentHeight;
 
-			return swipeThreshold - SwipeThresholdMargin / 2;
+			return swipeThreshold;
 		}
 
 		Size GetSwipeItemSize(ISwipeItem swipeItem)
