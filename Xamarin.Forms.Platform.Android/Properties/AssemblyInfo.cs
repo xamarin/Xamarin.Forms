@@ -56,6 +56,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(FontImageSource), typeof(FontImageSourceHandler))]
+[assembly: ExportImageSourceHandler(typeof(LayeredFontImageSource), typeof(FontImageSourceHandler))]
 [assembly: Xamarin.Forms.Dependency(typeof(Deserializer))]
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 [assembly: Preserve]

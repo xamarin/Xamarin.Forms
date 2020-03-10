@@ -54,6 +54,7 @@ using UIKit;
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(FontImageSource), typeof(FontImageSourceHandler))]
+[assembly: ExportImageSourceHandler(typeof(LayeredFontImageSource), typeof(FontImageSourceHandler))]
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Material")]

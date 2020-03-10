@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -9,6 +8,8 @@ using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
 using PreserveAttribute = Foundation.PreserveAttribute;
+using CoreGraphics;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -252,39 +253,99 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
+		private class LayerProperties
+		{
+			public Color IconColor { get; set; }
+			public NSAttributedString AttString { get; set; }
+			public CGSize ImageSize { get; set; }
+		}
+
 		public Task<UIImage> LoadImageAsync(
-			ImageSource imagesource,
+			ImageSource imageSource,
 			CancellationToken cancelationToken = default(CancellationToken),
 			float scale = 1f)
 		{
-			UIImage image = null;
-			var fontsource = imagesource as FontImageSource;
-			if (fontsource != null)
+			UIImage image;
+			var layerPropertiesList = new List<LayerProperties>();
+			var maxImageSize = CGSize.Empty;
+			var renderingModeAlwaysOriginal = false;
+
+			if (imageSource is LayeredFontImageSource layeredFontImageSource)
 			{
 				//This will allow lookup from the Embedded Fonts
-				var cleansedname = FontExtensions.CleanseFontName(fontsource.FontFamily);
-				var font = UIFont.FromName(cleansedname ?? string.Empty, (float)fontsource.Size) ??
-					UIFont.SystemFontOfSize((float)fontsource.Size);
-				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
-				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
-				var imagesize = ((NSString)fontsource.Glyph).GetSizeUsingAttributes(attString.GetUIKitAttributes(0, out _));
-				
-				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
-				var ctx = new NSStringDrawingContext();
-				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
-				attString.DrawString(new RectangleF(
-					imagesize.Width / 2 - boundingRect.Size.Width / 2,
-					imagesize.Height / 2 - boundingRect.Size.Height / 2,
-					imagesize.Width,
-					imagesize.Height));
-				image = UIGraphics.GetImageFromCurrentImageContext();
-				UIGraphics.EndImageContext();
+				var baseCleansedName = layeredFontImageSource.FontFamily == null ? null : FontExtensions.CleanseFontName(layeredFontImageSource.FontFamily);
+				var baseSize = (float)layeredFontImageSource.Size;
+				var baseFont = baseCleansedName == null ? UIFont.SystemFontOfSize(baseSize) : UIFont.FromName(baseCleansedName, baseSize);
+				var baseIconColor = layeredFontImageSource.Color.IsDefault ? _defaultColor : layeredFontImageSource.Color;
+				var baseAttString = layeredFontImageSource.Glyph == null ? null : new NSAttributedString(layeredFontImageSource.Glyph, font: baseFont, foregroundColor: baseIconColor.ToUIColor());
+				maxImageSize = layeredFontImageSource.Glyph == null ? CGSize.Empty : ((NSString)layeredFontImageSource.Glyph).GetSizeUsingAttributes(baseAttString.GetUIKitAttributes(0, out _));
 
-				if (image != null && iconcolor != _defaultColor)
-					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+				foreach (var layer in layeredFontImageSource.Layers)
+				{
+					//This will allow lookup from the Embedded Fonts
+					var cleansedName = layer.FontFamily == null ? null : FontExtensions.CleanseFontName(layer.FontFamily);
+					var size = layer.IsSet(FontImageSource.SizeProperty) ? (float)layer.Size : baseSize;
+					var font = layer.FontFamily == null ? baseFont : UIFont.FromName(cleansedName, size) ??
+						UIFont.SystemFontOfSize(size);
+					var iconcolor = layer.Color.IsDefault ? baseIconColor : layer.Color;
+					var attString = layer.Glyph == null ? baseAttString : new NSAttributedString(layer.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
+					var imagesize = ((NSString)layer.Glyph).GetSizeUsingAttributes(attString.GetUIKitAttributes(0, out _));
+
+					layerPropertiesList.Add(new LayerProperties { IconColor = iconcolor, AttString = attString, ImageSize = imagesize });
+
+					if (imagesize.Width > maxImageSize.Width)
+					{
+						maxImageSize.Width = imagesize.Width;
+					}
+					if (imagesize.Height > maxImageSize.Height)
+					{
+						maxImageSize.Height = imagesize.Height;
+					}
+
+				}
+
+				renderingModeAlwaysOriginal = baseIconColor != _defaultColor;
 			}
-			return Task.FromResult(image);
+			else if (imageSource is FontImageSource fontSource)
+			{
+				//This will allow lookup from the Embedded Fonts
+				var cleansedName = FontExtensions.CleanseFontName(fontSource.FontFamily);
+				var size = (float)fontSource.Size;
+				var font = UIFont.FromName(cleansedName, size) ?? UIFont.SystemFontOfSize(size);
+				var iconColor = fontSource.Color.IsDefault ? _defaultColor : fontSource.Color;
+				var attString = new NSAttributedString(fontSource.Glyph, font: font, foregroundColor: iconColor.ToUIColor());
+				var imageSize = ((NSString)fontSource.Glyph).GetSizeUsingAttributes(attString.GetUIKitAttributes(0, out _));
 
+				layerPropertiesList.Add(new LayerProperties { IconColor = iconColor, AttString = attString, ImageSize = imageSize });
+
+				maxImageSize = imageSize;
+			}
+
+			UIGraphics.BeginImageContextWithOptions(maxImageSize, false, 0f);
+			var ctx = new NSStringDrawingContext();
+
+			foreach (var layerProperties in layerPropertiesList)
+			{
+				var iconColor = layerProperties.IconColor;
+				var attString = layerProperties.AttString;
+				var imageSize = layerProperties.ImageSize;
+
+				var boundingRect = attString.GetBoundingRect(imageSize, (NSStringDrawingOptions)0, ctx);
+				attString.DrawString(new RectangleF(
+					maxImageSize.Width / 2 - boundingRect.Size.Width / 2,
+					maxImageSize.Height / 2 - boundingRect.Size.Height / 2,
+					maxImageSize.Width,
+					maxImageSize.Height));
+
+				renderingModeAlwaysOriginal |= iconColor != _defaultColor;
+			}
+			image = UIGraphics.GetImageFromCurrentImageContext();
+			UIGraphics.EndImageContext();
+
+			if (renderingModeAlwaysOriginal)
+				image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+
+			return Task.FromResult(image);
 		}
 	}
 }
