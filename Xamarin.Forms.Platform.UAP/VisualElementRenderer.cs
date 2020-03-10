@@ -495,6 +495,7 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					_control.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
+					backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
 			else
@@ -529,9 +530,12 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					if (!backgroundColor.IsDefault)
-						backgroundLayer.Background = backgroundColor.ToBrush();
+						_control.Background = backgroundColor.ToBrush();
 					else
+					{
+						_control.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
 						backgroundLayer.ClearValue(BackgroundProperty);
+					}
 				}
 			}
 			else
@@ -546,7 +550,7 @@ namespace Xamarin.Forms.Platform.UWP
 						backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
-		}
+	}
 
 		protected void UpdateAccessKey() {
 			var control = Control;

@@ -6,10 +6,10 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			var brush = (Brush)value;
+			var brush = value as Brush;
 			var color = (Color)parameter;
 
-			return brush.IsEmpty ? color.ToBrush() : brush.ToBrush();
+			return (brush == null || brush.IsEmpty) ? color.ToBrush() : brush.ToBrush();
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)

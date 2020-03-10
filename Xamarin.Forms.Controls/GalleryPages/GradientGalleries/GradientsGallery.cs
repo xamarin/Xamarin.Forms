@@ -25,7 +25,7 @@
 
 			navigationBarButton.Clicked += (sender, args) =>
 			{
-				Navigation.PushAsync(new GradientNavigationPageGallery());
+				Application.Current.MainPage = new GradientNavigationPageGallery();
 			};
 
 			var tabsButton = new Button
@@ -51,7 +51,7 @@
 						GalleryBuilder.NavButton("Gradient Views", () =>
 							new GradientViewsGallery(), Navigation),
 						GalleryBuilder.NavButton("SolidColorBrush Converter Gallery", () =>
-							new SolidColorBrushConverterGallery(), Navigation),    
+							new SolidColorBrushConverterGallery(), Navigation),
 						GalleryBuilder.NavButton("LinearGradientBrush Points Gallery", () =>
 							new LinearGradientPointsGallery(), Navigation),
 						GalleryBuilder.NavButton("LinearGradientBrush Explorer", () =>

@@ -58,10 +58,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override void UpdateBackgroundColor()
 		{
-			//background color change must be handled separately
-			//because the background would protrude through the border if the corners are rounded
-			//as the background would be applied to the renderer's FrameworkElement
+			// Background color change must be handled separately
+			// because the background would protrude through the border if the corners are rounded
+			// as the background would be applied to the renderer's FrameworkElement
 			Color backgroundColor = Element.BackgroundColor;
+
 			if (Control != null)
 			{
 				Control.Background = backgroundColor.IsDefault ? null : backgroundColor.ToBrush();
@@ -70,14 +71,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override void UpdateBackground()
 		{
+			Color backgroundColor = Element.BackgroundColor;
 			Brush background = Element.Background;
-
-			if (background == null || background.IsEmpty)
-				return;
 
 			if (Control != null)
 			{
-				Control.Background = background == Brush.Default ? null : Element.Background.ToBrush();
+				if (background == null || background.IsEmpty)
+					Control.Background = backgroundColor.IsDefault ? null : backgroundColor.ToBrush();
+				else
+					Control.Background = background.ToBrush();
 			}
 		}
 

@@ -118,12 +118,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
 
-		protected override void UpdateBackground()
-		{
-			if (Element.Background != null && !Element.Background.IsEmpty)
-				Control.Background = Element.Background.ToBrush();
-		}
-
 		void OnControlDateChanged(object sender, DatePickerValueChangedEventArgs e)
 		{
 			if (Element == null)

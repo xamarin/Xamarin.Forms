@@ -2,10 +2,9 @@
 using System.Linq;
 using NUnit.Framework;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.Platform.UWP;
 using WColor = Windows.UI.Color;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 {
@@ -31,7 +30,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 		{
 			if (control is FormsButton button)
 			{
-				return (button.BackgroundColor as SolidColorBrush).Color;
+				return (button.BackgroundColor as WSolidColorBrush).Color;
 			}
 
 			if (control is StepperControl stepper)
@@ -39,17 +38,17 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 				return stepper.ButtonBackgroundColor.ToUwpColor();
 			}
 
-			return (control.Background as SolidColorBrush).Color;
+			return (control.Background as WSolidColorBrush).Color;
 		}
 
 		WColor GetBackgroundColor(Panel panel)
 		{
-			return (panel.Background as SolidColorBrush).Color;
+			return (panel.Background as WSolidColorBrush).Color;
 		}
 
 		WColor GetBackgroundColor(Border border)
 		{
-			return (border.Background as SolidColorBrush).Color;
+			return (border.Background as WSolidColorBrush).Color;
 		}
 
 		WColor GetNativeColor(View view)
@@ -90,7 +89,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 			var renderer = GetRenderer(frame);
 			var nativeElement = renderer.GetNativeElement() as Border;
 
-			var backgroundBrush = nativeElement.Background as SolidColorBrush;
+			var backgroundBrush = nativeElement.Background as WSolidColorBrush;
 			var actualColor = backgroundBrush.Color;
 
 			var expectedColor = frame.BackgroundColor.ToUwpColor();

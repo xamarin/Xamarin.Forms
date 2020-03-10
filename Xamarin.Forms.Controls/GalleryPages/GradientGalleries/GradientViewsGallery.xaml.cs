@@ -44,19 +44,8 @@
 					break;
 			}
 
-			if (backgroundColor != null)
-			{
-				UpdateBackgroundColor(backgroundColor);
-			}
-			else if (background != null)
-			{
-				UpdateBackground(background);
-			}
-			else
-			{
-				UpdateBackgroundColor(null);
-				UpdateBackground(null);
-			}
+			UpdateBackgroundColor(backgroundColor);
+			UpdateBackground(background);
 		}
 
 		void UpdateBackgroundColor(Color? color)

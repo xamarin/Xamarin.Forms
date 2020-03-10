@@ -186,15 +186,6 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, e);
 		}
 
-		protected override void UpdateBackground()
-		{
-			if (Control == null)
-				return;
-
-			if (Element.Background != null && !Element.Background.IsEmpty)
-				Background = Element.Background.ToBrush();
-		}
-
 		void UpdateTextDecorations(TextBlock textBlock)
 		{
 			if (!Element.IsSet(Label.TextDecorationsProperty))

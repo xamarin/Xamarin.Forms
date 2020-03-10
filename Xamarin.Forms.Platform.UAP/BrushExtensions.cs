@@ -11,6 +11,9 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public static WBrush ToBrush(this Brush brush)
 		{
+			if (brush == null)
+				return null;
+			
 			if (brush is SolidColorBrush solidColorBrush)
 			{
 				return solidColorBrush.Color.ToBrush();

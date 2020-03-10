@@ -679,7 +679,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (render != null && render.ShowTitle)
 			{
 				render.Title = _currentPage.Title;
-				
+
 				if (Element.BarBackground != null && !Element.BarBackground.IsEmpty)
 					render.BarBackgroundBrush = GetBarBackgroundBrush();
 				else
