@@ -101,6 +101,7 @@
     <Compile Include="Enums\Symbol.cs" />
     <Compile Include="ExportRendererAttribute.cs" />
     <Compile Include="Extensions\AlignmentExtensions.cs" />
+    <Compile Include="Extensions\BrushExtensions.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\DeviceExtensions.cs" />
     <Compile Include="Extensions\FontExtensions.cs" />

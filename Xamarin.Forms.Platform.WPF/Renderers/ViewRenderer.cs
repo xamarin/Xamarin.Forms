@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Xamarin.Forms.Platform.WPF.Extensions;
 using WControl = System.Windows.Controls.Control;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -139,7 +140,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateHeight();
 			else if (e.PropertyName == VisualElement.WidthProperty.PropertyName)
 				UpdateWidth();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == View.HorizontalOptionsProperty.PropertyName || e.PropertyName == View.VerticalOptionsProperty.PropertyName)
 				UpdateAlignment();
@@ -210,8 +211,13 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected virtual void UpdateBackground()
 		{
-			if(Control is WControl wControl)
-				wControl?.UpdateDependencyColor(WControl.BackgroundProperty, Element.BackgroundColor);
+			if (Control is WControl wControl)
+			{
+				if (Element.Background == null || Element.Background.IsEmpty)
+					wControl?.UpdateDependencyColor(WControl.BackgroundProperty, Element.BackgroundColor);
+				else
+					wControl.Background = Element.Background.ToBrush();
+			}
 		}
 
 		protected virtual void UpdateHeight()
