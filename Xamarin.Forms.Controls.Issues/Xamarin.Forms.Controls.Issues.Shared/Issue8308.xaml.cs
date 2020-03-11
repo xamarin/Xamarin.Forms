@@ -30,14 +30,14 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		[Category(UITestCategories.Shell)]
 		[Category(UITestCategories.CollectionView)]
-		public void NavigatingBackAndForthDoesNotCrash()
+		public void NavigatingBackToCollectionViewShouldNotCrash()
 		{
 			RunningApp.WaitForElement("Instructions");
 
-			TapInFlyout("Page2");
+			TapInFlyout("Page 2");
 			RunningApp.WaitForElement("Instructions2");
 
-			TapInFlyout("Page1");
+			TapInFlyout("Page 1");
 			RunningApp.WaitForElement("Instructions");
 		}
 
