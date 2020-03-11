@@ -323,7 +323,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (_blur.Superview == null)
 					Superview.Add(_blur);
 			}
+
+			NativeView.UpdateGradientLayerSize();
 		}
+
 #else
 		public override void MouseDown(NSEvent theEvent)
 		{

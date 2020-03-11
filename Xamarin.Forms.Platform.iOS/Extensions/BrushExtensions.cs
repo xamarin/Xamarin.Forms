@@ -151,6 +151,23 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public static void UpdateGradientLayerSize(this UIView view)
+		{
+			if (view.Frame.IsEmpty)
+				return;
+
+			var layer = view.Layer;
+
+			if (layer.Sublayers != null)
+			{
+				foreach (var sublayer in layer.Sublayers)
+				{
+					if (sublayer.Frame.IsEmpty && sublayer.Name == BackgroundLayer)
+						sublayer.Frame = view.Bounds;
+				}
+			}
+		}
+
 		static bool ShouldUseParentView(UIView view)
 		{
 			if (view is UILabel)
