@@ -79,10 +79,32 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var elementColor = Element.Color;
+
 			if (!elementColor.IsDefault)
 				_colorToRenderer = elementColor.ToUIColor();
 			else
 				_colorToRenderer = color.ToUIColor();
+
+			SetNeedsDisplay();
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			if (Element == null)
+				return;
+
+			if (brush == null || brush.IsEmpty)
+				SetBackgroundColor(Element.BackgroundColor);
+			else
+			{
+				if (brush is SolidColorBrush solidColorBrush)
+					_colorToRenderer = solidColorBrush.Color.ToUIColor();
+				else
+				{
+					var gradientImage = this.GetGradientImage(brush);
+					_colorToRenderer = gradientImage != null ? UIColor.FromPatternImage(gradientImage) : UIColor.Clear;
+				}
+			}
 
 			SetNeedsDisplay();
 		}
