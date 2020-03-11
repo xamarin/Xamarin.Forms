@@ -369,6 +369,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new WebViewCoreGalleryPage(), "WebView Gallery"),
 				new GalleryPageFactory(() => new WkWebViewCoreGalleryPage(), "WkWebView Gallery"),
 				new GalleryPageFactory(() => new DynamicViewGallery(), "Dynamic ViewGallery"),
+				new GalleryPageFactory(() => new OSThemesGallery(), "OS Themes"),
+				new GalleryPageFactory(() => new OSThemesGalleryXaml(), "OS Themes XAML"),
 				//pages
  				new GalleryPageFactory(() => new RootContentPage ("Content"), "RootPages Gallery"),
 				new GalleryPageFactory(() => new MasterDetailPageTabletPage(), "MasterDetailPage Tablet Page"),

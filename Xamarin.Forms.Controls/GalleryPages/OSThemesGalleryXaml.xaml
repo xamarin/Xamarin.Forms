@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.OSThemesGalleryXaml">
+    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+        <Label TextColor="{OnAppTheme Light=Green, Dark=Red}">This text is green or red depending on Light (or default) or Dark</Label>
+        <Label>The image below is a Xamarin logo or fruits depending on Light (or default) or Dark</Label>
+        <Image Source="{OnAppTheme Light=xamarinlogo, Dark=Fruits.jpg}" />
+    </StackLayout>
+</ContentPage>
