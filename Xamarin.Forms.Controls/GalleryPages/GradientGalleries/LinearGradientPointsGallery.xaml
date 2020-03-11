@@ -103,43 +103,45 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <FlexLayout 
-            JustifyContent="Start"
-            AlignItems="Start"
-            AlignContent="Start"
-            Wrap="Wrap">
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient01}" />
-                <Label Text="(0, 0) - (1, 1)" />
-            </StackLayout>
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient02}" />
-                <Label Text="(0.5, 0) - (0.5, 1)" />
-            </StackLayout>
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient03}" />
-                <Label Text="(1, 0) - (0, 1)" />
-            </StackLayout>
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient04}" />
-                <Label Text="(1, 0.5) - (0, 0.5)" />
-            </StackLayout>
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient05}" />
-                <Label Text="(0.5, 1) - (0.5, 0)" />
-            </StackLayout>
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient06}" />
-                <Label Text="(0, 0) - (1, 1)" />
-            </StackLayout>
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient07}" />
-                <Label Text="(0, 1) - (1, 0)" />
-            </StackLayout>
-            <StackLayout>
-                <Grid Background="{StaticResource LinearGradient08}" />
-                <Label Text="(0, 0.5) - (1, 0.5)" />
-            </StackLayout>
-        </FlexLayout>
+        <ScrollView>
+            <FlexLayout 
+                JustifyContent="Start"
+                AlignItems="Start"
+                AlignContent="Start"
+                Wrap="Wrap">
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient01}" />
+                    <Label Text="(0, 0) - (1, 1)" />
+                </StackLayout>
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient02}" />
+                    <Label Text="(0.5, 0) - (0.5, 1)" />
+                </StackLayout>
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient03}" />
+                    <Label Text="(1, 0) - (0, 1)" />
+                </StackLayout>
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient04}" />
+                    <Label Text="(1, 0.5) - (0, 0.5)" />
+                </StackLayout>
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient05}" />
+                    <Label Text="(0.5, 1) - (0.5, 0)" />
+                </StackLayout>
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient06}" />
+                    <Label Text="(0, 0) - (1, 1)" />
+                </StackLayout>
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient07}" />
+                    <Label Text="(0, 1) - (1, 0)" />
+                </StackLayout>
+                <StackLayout>
+                    <Grid Background="{StaticResource LinearGradient08}" />
+                    <Label Text="(0, 0.5) - (1, 0.5)" />
+                </StackLayout>
+            </FlexLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>
