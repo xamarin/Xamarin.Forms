@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (element.BackgroundColor != Color.Default || (oldElement != null && element.BackgroundColor != oldElement.BackgroundColor))
 					SetBackgroundColor(element.BackgroundColor);
 
-				if (!element.Background.IsEmpty || (oldElement != null && element.Background != oldElement.Background))
+				if (element.Background != null && (!element.Background.IsEmpty || (oldElement != null && element.Background != oldElement.Background)))
 					SetBackground(element.Background);
 
 				UpdateClipToBounds();
