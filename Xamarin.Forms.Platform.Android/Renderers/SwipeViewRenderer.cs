@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetBackgroundColor(backgroundColor);
 
-				if (Element.Content == null)
+				if (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default))
 					_contentView?.SetBackgroundColor(backgroundColor);
 			}
 			else
