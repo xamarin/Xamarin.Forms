@@ -259,6 +259,7 @@
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\**\*.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
     <!-- VS 2017 needs these 16299-->
     <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\**\*.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
+    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\**\*.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml" />
 
     <!--Mac-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />
