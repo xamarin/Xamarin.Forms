@@ -151,52 +151,25 @@ namespace Xamarin.Forms.Platform.iOS
 			return result;
 		}
 
-		bool NotLoadedYet()
-		{
-			// If the UICollectionView hasn't actually been loaded, then calling InsertItems or DeleteItems is 
-			// going to crash or get in an unusable state; instead, ReloadData should be used
-			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
-		}
-
 		void Add(NotifyCollectionChangedEventArgs args)
 		{
-			if (NotLoadedYet())
-			{
-				_collectionView.ReloadData();
-				return;
-			}
-
-			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
 
-			if (MustReload())
+			if (ReloadDataRequired())
 			{
 				_collectionView.ReloadData();
 				Count += count;
 				return;
 			}
 
+			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
+			
 			_collectionView.PerformBatchUpdates(() =>
 				{
 					var indexes = CreateIndexesFrom(startIndex, count);
 					_collectionView.InsertItems(indexes);
 					Count += count;
 				}, null);
-		}
-
-		bool MustReload() 
-		{
-			// UICollectionView doesn't like when we insert items into a completely empty un-grouped CV,
-			// and it doesn't like when we insert items into a grouped CV with no actual cells (just empty groups)
-			// In those circumstances, we just need to ask it to reload the data so it can get its internal
-			// accounting in order
-
-			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
-			{
-				return true;
-			}
-
-			return _collectionView.VisibleCells.Length == 0;
 		}
 
 		void Remove(NotifyCollectionChangedEventArgs args)
@@ -305,6 +278,33 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return -1;
+		}
+
+		bool NotLoadedYet()
+		{
+			// If the UICollectionView hasn't actually been loaded, then calling InsertItems or DeleteItems is 
+			// going to crash or get in an unusable state; instead, ReloadData should be used
+			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
+		}
+
+		bool ReloadDataRequired()
+		{
+			if (NotLoadedYet())
+			{
+				return true;
+			}
+
+			// UICollectionView doesn't like when we insert items into a completely empty un-grouped CV,
+			// and it doesn't like when we insert items into a grouped CV with no actual cells (just empty groups)
+			// In those circumstances, we just need to ask it to reload the data so it can get its internal
+			// accounting in order
+
+			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
+			{
+				return true;
+			}
+
+			return _collectionView.VisibleCells.Length == 0;
 		}
 	}
 }

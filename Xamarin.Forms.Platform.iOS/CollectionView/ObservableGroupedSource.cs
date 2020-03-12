@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public int GroupCount => _groupSource.Count;
 
-		int IItemsViewSource.ItemCount
+		public int ItemCount
 		{
 			get
 			{
@@ -191,16 +191,8 @@ namespace Xamarin.Forms.Platform.iOS
 			// is to reset all the group tracking to get it up-to-date
 			ResetGroupTracking();
 
-			if (NotLoadedYet())
+			if (ReloadDataRequired())
 			{
-				_collectionView.ReloadData();
-				return;
-			}
-
-			if (_collectionView.NumberOfSections() == 0)
-			{
-				// Okay, we're going from completely empty to more than 0 items; there's an iOS bug which apparently
-				// will just crash if we call InsertItems here, so we have to do ReloadData.
 				_collectionView.ReloadData();
 				return;
 			}
@@ -227,14 +219,13 @@ namespace Xamarin.Forms.Platform.iOS
 			// is to reset all the group tracking to get it up-to-date
 			ResetGroupTracking();
 
-			if (NotLoadedYet())
+			if (ReloadDataRequired())
 			{
 				_collectionView.ReloadData();
+				return;
 			}
-			else
-			{
-				_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
-			}
+
+			_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
 		}
 
 		void Replace(NotifyCollectionChangedEventArgs args)
@@ -338,6 +329,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return -1;
+		}
+
+		bool ReloadDataRequired() 
+		{
+			// If the UICollectionView has never been loaded, or doesn't yet have any sections, or has no actual
+			// cells (just supplementary views like Header/Footer), any insert/delete operations are gonna crash
+			// hard. We'll need to reload the data instead.
+
+			return NotLoadedYet() 
+				|| _collectionView.NumberOfSections() == 0
+				|| _collectionView.VisibleCells.Length == 0;
 		}
 	}
 
