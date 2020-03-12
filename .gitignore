@@ -75,3 +75,5 @@ Visual Studio 2019/**
 TestResult.xml
 build/packages
 WriteDevopsVariables.csproj
+# MFractors (Xamarin productivity tool) working folder 
+.mfractor/
