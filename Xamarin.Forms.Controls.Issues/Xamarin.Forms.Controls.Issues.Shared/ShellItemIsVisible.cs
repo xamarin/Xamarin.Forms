@@ -179,6 +179,15 @@ namespace Xamarin.Forms.Controls.Issues
 			ShowFlyout();
 			RunningApp.WaitForNoElement("Item1 Flyout");
 		}
+
+		[Test]
+		public void ClearAndRecreateShellElements()
+		{
+			RunningApp.WaitForElement("ClearAndRecreate");
+			RunningApp.Tap("ClearAndRecreate");
+			RunningApp.WaitForElement("ClearAndRecreate");
+			RunningApp.Tap("ClearAndRecreate");
+		}
 #endif
 	}
 }
