@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<SwipeView>>(() => new PlatformConfigurationRegistry<SwipeView>(this));
 		}
-		
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void VerifySwipeViewFlagEnabled(
 			string constructorHint = null,
