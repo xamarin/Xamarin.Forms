@@ -233,6 +233,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
 				{
+					_gotoPosition = -1;
 					carouselPosition = 0;
 				}
 
@@ -388,7 +389,15 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		void UpdateFromPosition()
 		{
+			var itemCount = ItemsViewAdapter?.ItemsSource.Count;
 			var carouselPosition = Carousel.Position;
+
+			if (itemCount == 0)
+				return;
+
+			if (carouselPosition >= itemCount || carouselPosition < 0)
+				throw new IndexOutOfRangeException($"Can't set CarouselView to position {carouselPosition}. ItemsSource has {itemCount} items.");
+
 			if (carouselPosition == _gotoPosition)
 				_gotoPosition = -1;
 

@@ -124,9 +124,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				viewModel.Items.Clear();
 			};
 
+			var lbl = new Label();
+			lbl.SetBinding(Label.TextProperty, nameof(CarouselView.Position));
+			lbl.BindingContext = carouselView;
+
 			stacklayoutButtons.Children.Add(addItemButton);
 			stacklayoutButtons.Children.Add(removeItemButton);
 			stacklayoutButtons.Children.Add(clearItemsButton);
+			stacklayoutButtons.Children.Add(lbl);
 
 			grid.Children.Add(stacklayoutButtons, 0, 1);
 
