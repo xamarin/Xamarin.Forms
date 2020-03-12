@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Internals
@@ -36,5 +37,7 @@ namespace Xamarin.Forms.Internals
 		void QuitApplication();
 
 		SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint);
+
+		AppTheme RequestedTheme { get; }
 	}
 }

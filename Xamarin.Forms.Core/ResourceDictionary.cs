@@ -327,6 +327,13 @@ namespace Xamarin.Forms
 			ValuesChanged?.Invoke(this, new ResourcesChangedEventArgs(values));
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void Reload()
+		{
+			foreach (var mr in MergedResources)
+				OnValuesChanged(mr);
+		}
+
 		event EventHandler<ResourcesChangedEventArgs> ValuesChanged;
 
 		//only used for unit testing
