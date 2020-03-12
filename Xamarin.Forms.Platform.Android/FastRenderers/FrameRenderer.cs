@@ -228,7 +228,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			ElementPropertyChanged?.Invoke(this, e);
+
+			if (Control?.LayoutParameters == null)
+			{
+				return;
+			}
+
 
 			if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
 				UpdateShadow();
