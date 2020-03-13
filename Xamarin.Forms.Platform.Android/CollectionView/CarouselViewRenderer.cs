@@ -194,6 +194,8 @@ namespace Xamarin.Forms.Platform.Android
 				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
 
 
+			_gotoPosition = -1;
+
 			SwapAdapter(ItemsViewAdapter, false);
 
 			if (ItemsViewAdapter?.ItemsSource is ObservableItemsSource observableItemsSource)
@@ -210,43 +212,46 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			if (ItemsViewAdapter?.ItemsSource is IItemsViewSource observableItemsSource)
+			if (!(ItemsViewAdapter?.ItemsSource is IItemsViewSource observableItemsSource))
+				return;
+			
+			var carouselPosition = Carousel.Position;
+			var currentItemPosition = observableItemsSource.GetPosition(Carousel.CurrentItem);
+			var count = observableItemsSource.Count;
+
+			bool removingCurrentElement = currentItemPosition == -1;
+			bool removingLastElement = e.OldStartingIndex == count;
+			bool removingFirstElement = e.OldStartingIndex == 0;
+			bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
+
+			if (removingCurrentElementButNotFirst)
 			{
-				var carouselPosition = Carousel.Position;
-				var currentItemPosition = observableItemsSource.GetPosition(Carousel.CurrentItem);
-				var count = observableItemsSource.Count;
+				carouselPosition = Carousel.Position - 1;
 
-				bool removingCurrentElement = currentItemPosition == -1;
-				bool removingLastElement = e.OldStartingIndex == count;
-				bool removingFirstElement = e.OldStartingIndex == 0;
-				bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
-
-				if (removingCurrentElementButNotFirst)
-				{
-					carouselPosition = Carousel.Position - 1;
-				}
-				else if (removingFirstElement && !removingCurrentElement)
-				{
-					carouselPosition = currentItemPosition;
-					_noNeedForScroll = true;
-				}
-
-				if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-				{
-					_gotoPosition = -1;
-					carouselPosition = 0;
-				}
-
-				SetCurrentItem(carouselPosition);
-				UpdatePosition(carouselPosition);
-				//If we are adding or removing the last item we need to update
-				//the inset that we give to items so they are centered
-				if (e.NewStartingIndex == count - 1 || removingLastElement)
-				{
-					UpdateItemDecoration();
-				}
-				UpdateVisualStates();
 			}
+			else if (removingFirstElement && !removingCurrentElement)
+			{
+				carouselPosition = currentItemPosition;
+				_noNeedForScroll = true;
+			}
+
+			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+			{
+				carouselPosition = 0;
+			}
+
+			_gotoPosition = -1;
+
+			SetCurrentItem(carouselPosition);
+			UpdatePosition(carouselPosition);
+
+			//If we are adding or removing the last item we need to update
+			//the inset that we give to items so they are centered
+			if (e.NewStartingIndex == count - 1 || removingLastElement)
+			{
+				UpdateItemDecoration();
+			}
+			UpdateVisualStates();
 		}
 
 		void UpdateItemDecoration()
@@ -286,9 +291,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateVisualStates()
 		{
-			var layoutManager = GetLayoutManager() as LinearLayoutManager;
-
-			if (layoutManager == null)
+			if (!(GetLayoutManager() is LinearLayoutManager layoutManager))
 				return;
 
 			var first = layoutManager.FindFirstVisibleItemPosition();
