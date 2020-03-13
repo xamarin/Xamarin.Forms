@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_gotoPosition == -1 && currentItemPosition != carouselPosition)
 			{
 				_gotoPosition = currentItemPosition;
-				Carousel.ScrollTo(currentItemPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+				Carousel.ScrollTo(currentItemPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: Carousel.AnimateCurrentItemChanges);
 			}
 			UpdateVisualStates();
 		}
@@ -211,7 +211,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_gotoPosition == -1 && !Carousel.IsDragging && currentItemPosition != carouselPosition)
 			{
 				_gotoPosition = carouselPosition;
-				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: Carousel.AnimatePositionChanges);
 			}
 
 			SetCurrentItem(carouselPosition);
