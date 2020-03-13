@@ -1,7 +1,8 @@
-﻿using Xamarin.Essentials;
+﻿using System.ComponentModel;
 
-namespace Xamarin.Forms.Core
+namespace Xamarin.Forms
 {
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface IAppThemeProvider
 	{
 		AppTheme RequestedTheme { get; }

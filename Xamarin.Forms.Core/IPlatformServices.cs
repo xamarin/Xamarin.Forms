@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Internals
 
 		double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes);
 
+		AppTheme GetRequestedTheme();
+
 		Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken);
 
 		IIsolatedStorageFile GetUserStoreForApplication();

@@ -160,5 +160,10 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
+
+		public AppTheme GetRequestedTheme()
+		{
+			return AppTheme.Unspecified;
+		}
 	}
 }

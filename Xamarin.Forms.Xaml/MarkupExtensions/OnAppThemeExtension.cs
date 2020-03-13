@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Reflection;
-using Xamarin.Essentials;
-using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Xaml
 {

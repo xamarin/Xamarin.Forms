@@ -259,10 +259,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 
+		public AppTheme GetRequestedTheme()
+		{
+			return AppTheme.Unspecified;
+		}
+
 		static MD5 CreateChecksum()
 		{
 			return MD5.Create();
 		}
 	}
 }
-

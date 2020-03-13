@@ -1,6 +1,4 @@
-﻿using Xamarin.Essentials;
-
-namespace Xamarin.Forms
+﻿namespace Xamarin.Forms
 {
 	public class OnAppTheme<T>
 	{
@@ -41,7 +39,7 @@ namespace Xamarin.Forms
 
 		public static implicit operator T(OnAppTheme<T> onAppTheme)
 		{
-			switch (Application.Current?.RequestedTheme)
+			switch (((IAppThemeProvider)Application.Current).RequestedTheme)
 			{
 				default:
 				case AppTheme.Light:

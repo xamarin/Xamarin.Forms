@@ -156,6 +156,9 @@ namespace Xamarin.Forms
 			}
 		}
 
+		// Replace with Essentials APIs
+		public AppTheme RequestedTheme => Device.PlatformServices.GetRequestedTheme();
+
 		public event EventHandler<ModalPoppedEventArgs> ModalPopped;
 
 		public event EventHandler<ModalPoppingEventArgs> ModalPopping;
