@@ -65,6 +65,7 @@ jobs:
     name: win
     displayName: Build Windows Phase
     vmImage: $(win2017VmImage)
+    vmPool: $(win2017VmPool)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
     buildConfiguration: $(DefaultBuildConfiguration)
@@ -77,6 +78,7 @@ jobs:
     name: win_2019
     displayName: Build UWP Phase
     vmImage: $(win2019VmImage)
+    vmPool: $(win2019VmPool)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true'
     buildConfiguration: $(DefaultBuildConfiguration)
@@ -121,7 +123,7 @@ jobs:
     clean: all
   displayName: OSX Phase
   pool:
-    name: $(macOSVmImage)
+    vmImage: $(macOSVmImage)
     demands:
       - Agent.OS -equals darwin
       - sh
