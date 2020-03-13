@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Runtime;
 using Plugin.CurrentActivity;
 using Xamarin.Forms.DualScreen;
+using Xamarin.Forms.Platform.Android;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
@@ -23,10 +24,12 @@ namespace Xamarin.Forms.ControlGallery.Android
         {
             base.OnCreate();
             RegisterActivityLifecycleCallbacks(this);
-            //A great place to initialize Xamarin.Insights and Dependency Services!
-        }
 
-        public override void OnTerminate()
+			AndroidAnticipator.Initialize(this);
+			//A great place to initialize Xamarin.Insights and Dependency Services!
+		}
+
+		public override void OnTerminate()
         {
             base.OnTerminate();
             UnregisterActivityLifecycleCallbacks(this);
