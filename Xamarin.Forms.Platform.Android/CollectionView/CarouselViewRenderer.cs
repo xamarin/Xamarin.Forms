@@ -214,7 +214,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!(ItemsViewAdapter?.ItemsSource is IItemsViewSource observableItemsSource))
 				return;
-			
+
 			var carouselPosition = Carousel.Position;
 			var currentItemPosition = observableItemsSource.GetPosition(Carousel.CurrentItem);
 			var count = observableItemsSource.Count;
@@ -387,7 +387,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_gotoPosition == -1 && currentItemPosition != carouselPosition)
 			{
 				_gotoPosition = currentItemPosition;
-				Carousel.ScrollTo(currentItemPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+				Carousel.ScrollTo(currentItemPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: Carousel.AnimateCurrentItemChanges);
 			}
 		}
 		void UpdateFromPosition()
@@ -413,7 +413,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_gotoPosition == -1 && !Carousel.IsDragging && !Carousel.IsScrolling)
 			{
 				_gotoPosition = carouselPosition;
-				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: Carousel.AnimatePositionChanges);
 			}
 			SetCurrentItem(carouselPosition);
 		}
@@ -431,7 +431,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void LayoutReady(object sender, EventArgs e)
 		{
-			if(!_initialized)
+			if (!_initialized)
 			{
 				Carousel.Scrolled += CarouselViewScrolled;
 
