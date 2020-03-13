@@ -29,6 +29,11 @@
     <ScrollView>
         <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
             <Label TextColor="{OnAppTheme Light=Green, Dark=Red}">This text is green or red depending on Light (or default) or Dark</Label>
+            <Label>
+                <Label.TextColor>
+                    <OnAppTheme x:DataType="Color" Light="Green" Dark="Red">This text is green or red depending on Light (or default) or Dark</OnAppTheme>
+                </Label.TextColor>
+            </Label>
             <Label Style="{DynamicResource Key=OSThemeStyle}">This text is green or red depending on Light (or default) or Dark (through style)</Label>
             <Label TextColor="{DynamicResource MyColor}">This text is HotPink or Yellow depending on Light (or default) or Dark (through AppThemeColor)</Label>
             <Label TextColor="{StaticResource MyColor}">This text is HotPink or Yellow depending on Light (or default) or Dark (through AppThemeColor)</Label>

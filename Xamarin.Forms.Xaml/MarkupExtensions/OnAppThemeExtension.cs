@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 using Xamarin.Essentials;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -94,7 +95,7 @@ namespace Xamarin.Forms.Xaml
 
 		object GetValue()
 		{
-			switch (Application.Current?.RequestedTheme)
+			switch (((IAppThemeProvider)Application.Current).RequestedTheme)
 			{
 				case AppTheme.Light:
 					return Light ?? Default;

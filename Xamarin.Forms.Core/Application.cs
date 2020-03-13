@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 using System.Diagnostics;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms
 {
-	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>
+	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>, IAppThemeProvider
 	{
 		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;

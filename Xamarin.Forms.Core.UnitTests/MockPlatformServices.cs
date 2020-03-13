@@ -12,6 +12,7 @@ using FileMode = System.IO.FileMode;
 using FileAccess = System.IO.FileAccess;
 using FileShare = System.IO.FileShare;
 using Stream = System.IO.Stream;
+using Xamarin.Essentials;
 
 [assembly:Dependency (typeof(MockDeserializer))]
 [assembly:Dependency (typeof(MockResourcesProvider))]
@@ -250,8 +251,10 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 	}
 
-	public class MockApplication : Application
+	public class MockApplication : Application, IAppThemeProvider
 	{
+		public new AppTheme RequestedTheme { get; set; }
+
 		public MockApplication ()
 		{
 		}

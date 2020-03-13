@@ -129,4 +129,61 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (StackOrientation.Horizontal, layout.Orientation);
 		}
 	}
+
+	[TestFixture]
+	public class OnAppThemeTests : BaseTestFixture
+	{
+		[SetUp]
+		public override void Setup()
+		{
+			base.Setup();
+			Application.Current = new MockApplication();
+		}
+
+		[TearDown]
+		public override void TearDown()
+		{
+			Application.Current = null;
+			base.TearDown();
+		}
+
+		[Test]
+		public void OnAppThemeExtensionLightDarkColor()
+		{
+			var xaml = @"
+			<Label 
+			xmlns=""http://xamarin.com/schemas/2014/forms""
+			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"" TextColor=""{OnAppTheme Light = Green, Dark = Red}
+			"">This text is green or red depending on Light (or default) or Dark</Label>";
+
+			((MockApplication)Application.Current).RequestedTheme = Essentials.AppTheme.Light;
+			var label = new Label().LoadFromXaml(xaml);
+			Assert.AreEqual(Color.Green, label.TextColor);
+
+			((MockApplication)Application.Current).RequestedTheme = Essentials.AppTheme.Dark;
+			label = new Label().LoadFromXaml(xaml);
+			Assert.AreEqual(Color.Red, label.TextColor);
+		}
+
+		[Test]
+		public void OnAppThemeLightDarkColor()
+		{
+			var xaml = @"
+			<Label
+			xmlns=""http://xamarin.com/schemas/2014/forms""
+			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+                <Label.TextColor>
+                    <OnAppTheme x:DataType=""Color"" Light=""Green"" Dark=""Red"">This text is green or red depending on Light (or default) or Dark</OnAppTheme>
+				</Label.TextColor>
+			</Label> ";
+
+			((MockApplication)Application.Current).RequestedTheme = Essentials.AppTheme.Light;
+			var label = new Label().LoadFromXaml(xaml);
+			Assert.AreEqual(Color.Green, label.TextColor);
+
+			((MockApplication)Application.Current).RequestedTheme = Essentials.AppTheme.Dark;
+			label = new Label().LoadFromXaml(xaml);
+			Assert.AreEqual(Color.Red, label.TextColor);
+		}
+	}	
 }
