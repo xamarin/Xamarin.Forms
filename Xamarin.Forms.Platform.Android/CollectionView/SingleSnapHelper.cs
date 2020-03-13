@@ -16,8 +16,6 @@ namespace Xamarin.Forms.Platform.Android
 		// Or if the number of items on the ItemsSource changes
 		protected int CurrentTargetPosition = -1;
 		int _previousCount = 0;
-		bool _disposed;
-		CarouselView _carouselView;
 
 		protected static OrientationHelper CreateOrientationHelper(RecyclerView.LayoutManager layoutManager)
 		{
@@ -37,23 +35,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return false;
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			_disposed = true;
-
-			if (disposing && _carouselView != null)
-			{
-				_carouselView.ScrollToRequested -= CarouselViewScrollToRequested;
-			}
-
-			base.Dispose(disposing);
 		}
 
 		public override AView FindSnapView(RecyclerView.LayoutManager layoutManager)
@@ -77,17 +58,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return null;
-		}
-
-		public override void AttachToRecyclerView(RecyclerView recyclerView)
-		{
-			if ((recyclerView as CarouselViewRenderer)?.Element is CarouselView carouselView)
-			{
-				_carouselView = carouselView;
-				_carouselView.ScrollToRequested += CarouselViewScrollToRequested;
-			}
-
-			base.AttachToRecyclerView(recyclerView);
 		}
 
 		public override int FindTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX, int velocityY)
@@ -140,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android
 			return CurrentTargetPosition;
 		}
 
-		void CarouselViewScrollToRequested(object sender, ScrollToRequestEventArgs e)
+		internal void ResetCurrentTargetPosition()
 		{
 			//reset CurrentTargetPosition if ScrollTo is requested
 			CurrentTargetPosition = -1;
