@@ -143,6 +143,8 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 		}
 
+		public override bool AnimatePositionChanges => false;
+
 		public void Dispose()
 		{
 		}

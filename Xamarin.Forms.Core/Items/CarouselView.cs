@@ -248,5 +248,12 @@ namespace Xamarin.Forms
 		{
 			SetValue(IsDraggingPropertyKey, value);
 		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public virtual bool AnimatePositionChanges => IsScrollAnimated;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public virtual bool AnimateCurrentItemChanges => IsScrollAnimated;
+
 	}
 }
