@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				BackgroundColor = Element.BackgroundColor.ToUIColor();
 
-				if (_contentView != null && Element.Content == null)
+				if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
 					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			}
 			else
