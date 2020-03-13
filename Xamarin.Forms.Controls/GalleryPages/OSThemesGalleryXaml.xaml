@@ -31,7 +31,7 @@
             <Label TextColor="{OnAppTheme Light=Green, Dark=Red}">This text is green or red depending on Light (or default) or Dark</Label>
             <Label>
                 <Label.TextColor>
-                    <OnAppTheme x:DataType="Color" Light="Green" Dark="Red">This text is green or red depending on Light (or default) or Dark</OnAppTheme>
+                    <OnAppTheme x:DataType="Color" Light="Green" Dark="Red" />
                 </Label.TextColor>
             </Label>
             <Label Style="{DynamicResource Key=OSThemeStyle}">This text is green or red depending on Light (or default) or Dark (through style)</Label>
