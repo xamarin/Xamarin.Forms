@@ -12,8 +12,12 @@ namespace Xamarin.Forms.Platform.Android
 	internal class SingleSnapHelper : PagerSnapHelper
 	{
 		// CurrentTargetPosition will have this value until the user scrolls around
+		// Or if we request a ScrollTo position
+		// Or if the number of items on the ItemsSource changes
 		protected int CurrentTargetPosition = -1;
 		int _previousCount = 0;
+		bool _disposed;
+		CarouselView _carouselView;
 
 		protected static OrientationHelper CreateOrientationHelper(RecyclerView.LayoutManager layoutManager)
 		{
@@ -33,6 +37,23 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return false;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing && _carouselView != null)
+			{
+				_carouselView.ScrollToRequested -= CarouselViewScrollToRequested;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		public override AView FindSnapView(RecyclerView.LayoutManager layoutManager)
@@ -58,10 +79,23 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
+		public override void AttachToRecyclerView(RecyclerView recyclerView)
+		{
+			if ((recyclerView as CarouselViewRenderer)?.Element is CarouselView carouselView)
+			{
+				_carouselView = carouselView;
+				_carouselView.ScrollToRequested += CarouselViewScrollToRequested;
+			}
+
+			base.AttachToRecyclerView(recyclerView);
+		}
+
 		public override int FindTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX, int velocityY)
 		{
 			var itemCount = layoutManager.ItemCount;
-			//reset CurrentTargetPosition if  our count changes
+
+			//reset CurrentTargetPosition if ItemCount Changed is requested
+			//We could be adding a item before the CurrentTargetPosition
 			if (_previousCount != itemCount)
 			{
 				CurrentTargetPosition = -1;
@@ -74,7 +108,6 @@ namespace Xamarin.Forms.Platform.Android
 				return CurrentTargetPosition;
 			}
 
-		
 			var increment = 1;
 
 			if (layoutManager.CanScrollHorizontally())
@@ -94,7 +127,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (IsLayoutReversed(layoutManager))
 			{
-				increment = increment * -1;
+				increment *= -1;
 			}
 
 			if (CurrentTargetPosition == itemCount - 1 && increment == 1)
@@ -105,6 +138,12 @@ namespace Xamarin.Forms.Platform.Android
 			CurrentTargetPosition = CurrentTargetPosition + increment;
 
 			return CurrentTargetPosition;
+		}
+
+		void CarouselViewScrollToRequested(object sender, ScrollToRequestEventArgs e)
+		{
+			//reset CurrentTargetPosition if ScrollTo is requested
+			CurrentTargetPosition = -1;
 		}
 	}
 }
