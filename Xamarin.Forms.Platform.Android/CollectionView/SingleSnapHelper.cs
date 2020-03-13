@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		// CurrentTargetPosition will have this value until the user scrolls around
 		protected int CurrentTargetPosition = -1;
+		int _previousCount = 0;
 
 		protected static OrientationHelper CreateOrientationHelper(RecyclerView.LayoutManager layoutManager)
 		{
@@ -59,13 +60,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override int FindTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX, int velocityY)
 		{
+			var itemCount = layoutManager.ItemCount;
+			//reset CurrentTargetPosition if  our count changes
+			if (_previousCount != itemCount)
+			{
+				CurrentTargetPosition = -1;
+				_previousCount = itemCount;
+			}
+
 			if (CurrentTargetPosition == -1)
 			{
 				CurrentTargetPosition = base.FindTargetSnapPosition(layoutManager, velocityX, velocityY);
 				return CurrentTargetPosition;
 			}
 
-			var itemCount = layoutManager.ItemCount;
+		
 			var increment = 1;
 
 			if (layoutManager.CanScrollHorizontally())
