@@ -475,10 +475,24 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_defaultNavBarShadowImage == null)
 				_defaultNavBarShadowImage = NavigationBar.ShadowImage;
 
-			if (shouldHide)
-				NavigationBar.ShadowImage = new UIImage();
+#if __XCODE11__
+			if (Forms.IsiOS13OrNewer)
+			{
+				if (shouldHide)
+				{
+					NavigationBar.CompactAppearance.ShadowColor = UIColor.Clear;
+					NavigationBar.StandardAppearance.ShadowColor = UIColor.Clear;
+					NavigationBar.ScrollEdgeAppearance.ShadowColor = UIColor.Clear;
+				}					
+			}
 			else
-				NavigationBar.ShadowImage = _defaultNavBarShadowImage;
+#endif
+			{
+				if (shouldHide)
+					NavigationBar.ShadowImage = new UIImage();
+				else
+					NavigationBar.ShadowImage = _defaultNavBarShadowImage;
+			}
 
 			if (!Forms.IsiOS11OrNewer)
 			{
