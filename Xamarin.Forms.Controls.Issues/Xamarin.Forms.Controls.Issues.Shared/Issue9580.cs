@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		const string Success = "Success";
 		const string Test9580 = "9580";
-		const string Test9686 = "9686";
 
 		protected override void Init()
 		{
@@ -28,15 +27,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var groups = new ObservableCollection<_9580Group>()
 			{
-				new _9580Group() { Name = "One" }, new _9580Group(){ Name = "Two" }
+				new _9580Group() { Name = "One" }, new _9580Group(){ Name = "Two" }, new _9580Group(){ Name = "Three" },
+				new _9580Group() { Name = "Four" }, new _9580Group(){ Name = "Five" }, new _9580Group(){ Name = "Six" }
 			};
 
 			cv.ItemTemplate = new DataTemplate(() => {
-				var label = new Label();
+				var label = new Label() { Margin = new Thickness(5, 0, 0, 0) };
 				label.SetBinding(Label.TextProperty, new Binding("Text"));
 				return label;
 			});
-
+			
 			cv.GroupHeaderTemplate = new DataTemplate(() => {
 				var label = new Label();
 				label.SetBinding(Label.TextProperty, new Binding("Name"));
@@ -45,29 +45,20 @@ namespace Xamarin.Forms.Controls.Issues
 
 			cv.ItemsSource = groups;
 
-			var instructions = new Label { Text = $"Tap the button for the issue to test. The application doesn't crash, this test has passed."};
+			var instructions = new Label { Text = $"Tap the '{Test9580}' button. The application doesn't crash, this test has passed." };
 
 			var result = new Label { };
 
 			var button = new Button { Text = Test9580 };
-			button.Clicked += (sender, args) => {
+			button.Clicked += (sender, args) =>
+			{
 				groups[0].Add(new _9580Item { Text = "An Item" });
-				result.Text = Success;
-			};
-
-			var button2 = new Button { Text = Test9686 };
-			button2.Clicked += (sender, args) => {
-				var group = groups[0];
-				groups.Remove(group);
-				group.Add(new _9580Item { Text = "An Item" });
-				groups.Insert(0, group);
 				result.Text = Success;
 			};
 
 			layout.Children.Add(instructions);
 			layout.Children.Add(result);
 			layout.Children.Add(button);
-			layout.Children.Add(button2);
 			layout.Children.Add(cv);
 
 			Content = layout;
@@ -92,17 +83,6 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(Test9580);
 			RunningApp.WaitForElement(Success);
 		}
-
-		[Category(UITestCategories.CollectionView)]
-		[Test]
-		public void AddRemoveEmptyGroupsShouldNotCrashOnInsert()
-		{
-			RunningApp.WaitForElement(Test9686);
-			RunningApp.Tap(Test9686);
-			RunningApp.WaitForElement(Success);
-		}
 #endif
 	}
-
-
 }

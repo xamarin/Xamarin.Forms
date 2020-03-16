@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using Foundation;
 using UIKit;
 
@@ -14,6 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly int _section;
 		readonly IEnumerable _itemsSource;
 		bool _disposed;
+		bool _batchUpdating;
 
 		public ObservableItemsSource(IEnumerable itemSource, UICollectionViewController collectionViewController, int group = -1)
 		{
@@ -94,36 +96,36 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		async void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(() => CollectionChanged(args));
+				Device.BeginInvokeOnMainThread(async () => await CollectionChanged(args));
 			}
 			else
 			{
-				CollectionChanged(args);
+				await CollectionChanged(args);
 			}
 		}
 
-		void CollectionChanged(NotifyCollectionChangedEventArgs args)
+		async Task CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					Add(args);
+					await Add(args);
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
+					await Remove(args);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
+					await Replace(args);
 					break;
 				case NotifyCollectionChangedAction.Move:
 					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					Reload();
+					await Reload();
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
@@ -132,8 +134,15 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionItemsSourceChanged?.Invoke(this, args);
 		}
 
-		void Reload()
+		async Task Reload()
 		{
+			while (_batchUpdating)
+			{
+				// We don't want to reload while the UICollectionView is animating changes; if we do, things get
+				// broken or out-of-order. So just hang tight until it's finished.
+				await Task.Delay(16);
+			}
+
 			_collectionView.ReloadData();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 			Count = ItemsCount();
@@ -151,56 +160,57 @@ namespace Xamarin.Forms.Platform.iOS
 			return result;
 		}
 
-		void Add(NotifyCollectionChangedEventArgs args)
+		async Task Add(NotifyCollectionChangedEventArgs args)
 		{
-			var count = args.NewItems.Count;
-
-			if (ReloadDataRequired())
+			if (ReloadRequired())
 			{
-				_collectionView.ReloadData();
-				Count += count;
+				await Reload();
 				return;
 			}
 
+			var count = args.NewItems.Count;
+			Count += count;
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 			
 			_collectionView.PerformBatchUpdates(() =>
 				{
-					var indexes = CreateIndexesFrom(startIndex, count);
-					_collectionView.InsertItems(indexes);
-					Count += count;
-				}, null);
+					_batchUpdating = true;
+					_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));
+				}, 
+				(_) => _batchUpdating = false);
 		}
 
-		void Remove(NotifyCollectionChangedEventArgs args)
+		async Task Remove(NotifyCollectionChangedEventArgs args)
 		{
-			if (NotLoadedYet())
-			{
-				_collectionView.ReloadData();
-				return;
-			}
-
 			var startIndex = args.OldStartingIndex;
 
 			if (startIndex < 0)
 			{
 				// INCC implementation isn't giving us enough information to know where the removed items were in the
 				// collection. So the best we can do is a ReloadData()
-				Reload();
+				await Reload();
+				return;
+			}
+
+			if (ReloadRequired())
+			{
+				await Reload();
 				return;
 			}
 
 			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
-			
+			Count -= count;
+
 			_collectionView.PerformBatchUpdates(() =>
 			{
+				_batchUpdating = true;
 				_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
-				Count -= count;
-			}, null);
+			},
+			(_) => _batchUpdating = false);
 		}
 
-		void Replace(NotifyCollectionChangedEventArgs args)
+		async Task Replace(NotifyCollectionChangedEventArgs args)
 		{
 			var newCount = args.NewItems.Count;
 
@@ -215,7 +225,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// The original and replacement sets are of unequal size; this means that everything currently in view will 
 			// have to be updated. So we just have to use ReloadData and let the UICollectionView update everything
-			Reload();
+			await Reload();
 		}
 
 		void Move(NotifyCollectionChangedEventArgs args)
@@ -287,7 +297,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
 		}
 
-		bool ReloadDataRequired()
+		bool ReloadRequired()
 		{
 			if (NotLoadedYet())
 			{
