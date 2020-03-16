@@ -125,7 +125,6 @@ jobs:
   pool:
     vmImage: $(macOSVmImage)
     demands:
-      - Agent.OS -equals darwin
       - sh
       - msbuild
       - Xamarin.iOS
