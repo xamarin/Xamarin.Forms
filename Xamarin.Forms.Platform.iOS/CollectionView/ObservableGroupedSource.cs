@@ -227,7 +227,6 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			// TODO Should we just move this queueing into Reload?
 			if (ReloadRequired())
 			{
 				await Reload();
