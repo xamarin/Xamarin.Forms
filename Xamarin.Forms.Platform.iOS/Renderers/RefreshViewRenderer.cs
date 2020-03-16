@@ -24,8 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (Element != null && Element.IsRefreshing != _isRefreshing)
 					Element.SetValueFromRenderer(RefreshView.IsRefreshingProperty, _isRefreshing);
-
-
+				
 				if (_isRefreshing != _refreshControl.Refreshing)
 				{
 					if (_isRefreshing)
@@ -198,7 +197,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsEnabled()
 		{
-			if (Element.IsEnabled)
+			bool isRefreshViewEnabled = Element.IsEnabled;
+			_refreshControl.Enabled = isRefreshViewEnabled;
+
+			UserInteractionEnabled = true;
+
+			if (IsRefreshing)
+				return;
+
+			if (isRefreshViewEnabled)
 				TryInsertRefresh(_refreshControlParent);
 			else
 			{

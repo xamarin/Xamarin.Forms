@@ -1304,6 +1304,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue9305.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9767.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9054.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9326.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1461,6 +1462,9 @@
        <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue9588.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue9326.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
