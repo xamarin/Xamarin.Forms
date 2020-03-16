@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _hasNavigationBar;
 		UIImage _defaultNavBarShadowImage;
 		UIImage _defaultNavBarBackImage;
+		UIColor _defaultSeparatorColor;
 
 		[Preserve(Conditional = true)]
 		public NavigationRenderer() : base(typeof(FormsNavigationBar), null)
@@ -478,12 +479,23 @@ namespace Xamarin.Forms.Platform.iOS
 #if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
 			{
+				if (_defaultSeparatorColor == null)
+				{
+					_defaultSeparatorColor = NavigationBar.StandardAppearance.ShadowColor;
+				}
+
 				if (shouldHide)
 				{
 					NavigationBar.CompactAppearance.ShadowColor = UIColor.Clear;
 					NavigationBar.StandardAppearance.ShadowColor = UIColor.Clear;
 					NavigationBar.ScrollEdgeAppearance.ShadowColor = UIColor.Clear;
-				}					
+				}
+				else
+				{
+					NavigationBar.CompactAppearance.ShadowColor = _defaultSeparatorColor;
+					NavigationBar.StandardAppearance.ShadowColor = _defaultSeparatorColor;
+					NavigationBar.ScrollEdgeAppearance.ShadowColor = _defaultSeparatorColor;
+				}
 			}
 			else
 #endif
