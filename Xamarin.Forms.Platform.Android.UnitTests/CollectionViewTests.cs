@@ -3,7 +3,7 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Xamarin.Forms.CustomAttributes;
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	public class CollectionViewTests : PlatformTestFixture 
 	{
@@ -11,7 +11,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		[Test(Description = "CollectionView with SnapPointsType set should not crash")]
 		public async Task SnapPointsDoNotCrashOnOlderAPIs()
 		{
-			var cv = new CollectionView();
+			var cv = new Xamarin.Forms.CollectionView();
 
 			var itemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical)
 			{

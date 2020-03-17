@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using NUnit.Framework;
-using AView = Android.Views.View;
-using Xamarin.Forms.Platform.Android;
 using System.Threading.Tasks;
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	[TestFixture]
 	public class TranslationTests : PlatformTestFixture

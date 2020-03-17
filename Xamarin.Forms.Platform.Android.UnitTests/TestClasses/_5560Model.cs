@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms.Controls.Tests
+﻿namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	public class _5560Model : System.ComponentModel.INotifyPropertyChanged
 	{

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using AView = Android.Views.View;
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	[TestFixture]
 	public class ScaleTests : PlatformTestFixture

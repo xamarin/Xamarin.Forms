@@ -3,12 +3,9 @@ using System.Threading.Tasks;
 using Android.Views;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using Xamarin.Forms.Controls.Tests;
 using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Platform.Android;
-using AView = Android.Views.View;
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	[TestFixture]
 	public class Issues : PlatformTestFixture

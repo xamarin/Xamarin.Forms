@@ -19,7 +19,7 @@ using AndroidX.CardView.Widget;
 using Android.Support.V7.Widget;
 #endif
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	public class PlatformTestFixture
 	{
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			}
 		}
 
-		protected static TestCaseData CreateTestCase(VisualElement element) 
+		protected static TestCaseData CreateTestCase(VisualElement element)
 		{
 			// We set the element type as a category on the test so that if you 
 			// filter by category, say, "Button", you'll get any Button test 
@@ -81,13 +81,13 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				: context.ApplicationInfo.Flags & ~ApplicationInfoFlags.SupportsRtl;
 		}
 
-		protected IVisualElementRenderer GetRenderer(VisualElement element) 
+		protected IVisualElementRenderer GetRenderer(VisualElement element)
 		{
 			var renderer = element.GetRenderer();
-			if (renderer == null) 
+			if (renderer == null)
 			{
-				renderer = Platform.Android.Platform.CreateRendererWithContext(element, Context);
-				Platform.Android.Platform.SetRenderer(element, renderer);
+				renderer = Platform.CreateRendererWithContext(element, Context);
+				Platform.SetRenderer(element, renderer);
 			}
 
 			return renderer;
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				return fastButton;
 			}
 
-			var viewRenderer = renderer.View as Platform.Android.AppCompat.ButtonRenderer;
+			var viewRenderer = renderer.View as AppCompat.ButtonRenderer;
 			return viewRenderer.Control;
 		}
 
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			return renderer as CardView;
 		}
 
-		protected TextView GetNativeControl(Label label) 
+		protected TextView GetNativeControl(Label label)
 		{
 			var renderer = GetRenderer(label);
 			var viewRenderer = renderer.View as LabelRenderer;
@@ -216,7 +216,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 				return viewRenderer.Control;
 			}
 
-			var fastRenderer = renderer.View as Platform.Android.FastRenderers.LabelRenderer;
+			var fastRenderer = renderer.View as FastRenderers.LabelRenderer;
 
 			return fastRenderer;
 		}
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		protected EditText GetNativeControl(Picker picker)
 		{
 			var renderer = GetRenderer(picker);
-			var viewRenderer = renderer.View as Platform.Android.AppCompat.PickerRenderer;
+			var viewRenderer = renderer.View as AppCompat.PickerRenderer;
 			return viewRenderer.Control;
 		}
 
@@ -259,7 +259,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		protected SwitchCompat GetNativeControl(Switch @switch)
 		{
 			var renderer = GetRenderer(@switch);
-			var viewRenderer = renderer.View as Platform.Android.AppCompat.SwitchRenderer;
+			var viewRenderer = renderer.View as AppCompat.SwitchRenderer;
 			return viewRenderer.Control;
 		}
 
@@ -270,7 +270,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			return viewRenderer.Control;
 		}
 
-		protected void Layout(VisualElement element, AView nativeView) 
+		protected void Layout(VisualElement element, AView nativeView)
 		{
 			var size = element.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
 			var width = size.Request.Width;
@@ -286,7 +286,7 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 		// Some of the renderer properties aren't set until the renderer is actually 
 		// attached to the view hierarchy; to test them, we need to add them, run the test,
 		// then remove them
-		protected void ParentView(AView view) 
+		protected void ParentView(AView view)
 		{
 			((ViewGroup)Application.Current.MainPage.GetRenderer().View).AddView(view);
 		}
@@ -379,19 +379,9 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 					}
 
 					// Some of the button stuff doesn't work with layout parameters, so we need to parent the control
-					var needsParent = control.Parent == null;
-
-					if (needsParent)
-					{
-						ParentView(control);
-					}
-					
+					ParentView(control);
 					var result = getProperty(control);
-
-					if (needsParent)
-					{
-						UnparentView(control);
-					}
+					UnparentView(control);
 
 					return result;
 				}

@@ -10,7 +10,7 @@ using System.IO;
 using Android.Support.V7.Widget;
 #endif
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	internal static class AssertionExtensions
 	{

@@ -2,9 +2,8 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using Xamarin.Forms.CustomAttributes;
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	[TestFixture]
 	public class RotationTests : PlatformTestFixture

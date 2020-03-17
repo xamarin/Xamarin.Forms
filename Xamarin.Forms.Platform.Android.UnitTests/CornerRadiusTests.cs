@@ -4,7 +4,7 @@ using NUnit.Framework.Internal;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Platform.Android;
 
-namespace Xamarin.Forms.ControlGallery.Android.Tests
+namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	[TestFixture]
 	public class CornerRadiusTests : PlatformTestFixture
