@@ -7,7 +7,7 @@
 
 CONSOLE_PREFIX="-- SCRIPT MESSAGE:"
 CONFIG=Debug
-NUGET_EXE=caketools/nuget.exe
+NUGET_EXE=nuget.exe
 
 # Download NuGet if it does not exist.
 if [ ! -f "$NUGET_EXE" ]; then
