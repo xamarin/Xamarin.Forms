@@ -78,12 +78,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
-			bool result = base.OnInterceptTouchEvent(ev);
-
 			if (GetDrawerLockMode(_flyoutContent.AndroidView) == LockModeLockedOpen)
 				return false;
 
-			return result;
+			return base.OnInterceptTouchEvent(ev);
 		}
 
 		protected virtual void AttachFlyout(IShellContext context, AView content)

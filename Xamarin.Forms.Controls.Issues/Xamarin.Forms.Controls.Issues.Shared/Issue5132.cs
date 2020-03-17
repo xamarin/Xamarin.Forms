@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 		}
 
-		static string DefaultFontFamily()
+		public static string DefaultFontFamily()
 		{
 			var fontFamily = "";
 			switch (Device.RuntimePlatform)

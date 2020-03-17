@@ -142,6 +142,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected void OnElementSelected(Element element)
 		{
 			((IShellController)_shellContext.Shell).OnFlyoutItemSelected(element);
+			_shellContext.CurrentDrawerLayout.CloseDrawer(_rootView);
 		}
 
 		protected virtual void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)

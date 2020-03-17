@@ -804,6 +804,13 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
 		}
+		public void DoubleTapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
+		{
+			timeoutMessage = timeoutMessage ?? text;
+			ShowFlyout(flyoutIcon, usingSwipe);
+			RunningApp.WaitForElement(text, timeoutMessage);
+			RunningApp.DoubleTap(text);
+		}
 
 #endif
 
