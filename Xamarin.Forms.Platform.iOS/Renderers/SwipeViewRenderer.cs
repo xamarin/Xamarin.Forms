@@ -601,7 +601,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_isTouchDown = false;
 
-			if (!TouchInsideContent(point))
+			if (CanProcessTouchSwipeItems(point))
 				ProcessTouchSwipeItems(point);
 
 			if (!_isSwiping)
@@ -615,6 +615,19 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			ValidateSwipeThreshold();
+		}
+
+		bool CanProcessTouchSwipeItems(CGPoint point)
+		{
+			// We only invoke the SwipeItem command if we tap on the SwipeItems area
+			// and the SwipeView is fully open.
+			if (TouchInsideContent(point))
+				return false;
+
+			if (_swipeOffset == _swipeThreshold)
+				return true;
+
+			return false;
 		}
 
 		bool TouchInsideContent(CGPoint point)
@@ -797,7 +810,9 @@ namespace Xamarin.Forms.Platform.iOS
 			_swipeThreshold = 0;
 			_swipeDirection = null;
 
-			Animate(animated ? SwipeAnimationDuration : 0, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
+			var resetAnimationDuration = animated ? SwipeAnimationDuration : 0;
+
+			Animate(resetAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
 			{
 				_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
 			},
@@ -848,7 +863,8 @@ namespace Xamarin.Forms.Platform.iOS
 				Animate(completeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseIn,
 					() =>
 					{
-						double swipeThreshold = GetSwipeThreshold();
+						_swipeOffset = GetSwipeThreshold();
+						double swipeThreshold = _swipeOffset;
 
 						switch (_swipeDirection)
 						{
@@ -877,7 +893,8 @@ namespace Xamarin.Forms.Platform.iOS
 				Animate(completeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseIn,
 					() =>
 					{
-						double swipeThreshold = GetSwipeThreshold();
+						_swipeOffset = GetSwipeThreshold();
+						double swipeThreshold = _swipeOffset;
 						var actionBounds = _actionView.Bounds;
 						double actionSize;
 

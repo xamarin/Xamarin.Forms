@@ -450,7 +450,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_isTouchDown = false;
 
-			if (!TouchInsideContent(point))
+			if (CanProcessTouchSwipeItems(point))
 				ProcessTouchSwipeItems(point);
 
 			if (!_isSwiping)
@@ -464,6 +464,19 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			ValidateSwipeThreshold();
+
+			return false;
+		}
+
+		bool CanProcessTouchSwipeItems(APointF point)
+		{
+			// We only invoke the SwipeItem command if we tap on the SwipeItems area
+			// and the SwipeView is fully open.
+			if (TouchInsideContent(point))
+				return false;
+
+			if (_swipeOffset == _swipeThreshold)
+				return true;
 
 			return false;
 		}
@@ -799,7 +812,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var completeAnimationDuration = animated ? SwipeAnimationDuration : 0;
 			var swipeItems = GetSwipeItemsByDirection();
-			float swipeThreshold = _context.ToPixels(GetSwipeThreshold(swipeItems));
+			_swipeOffset = GetSwipeThreshold(swipeItems);
+			float swipeThreshold = _context.ToPixels(_swipeOffset);
 
 			if (_swipeTransitionMode == SwipeTransitionMode.Reveal)
 			{
