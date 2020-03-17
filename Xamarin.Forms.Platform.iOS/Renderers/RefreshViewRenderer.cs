@@ -25,15 +25,14 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Element != null && Element.IsRefreshing != _isRefreshing)
 					Element.SetValueFromRenderer(RefreshView.IsRefreshingProperty, _isRefreshing);
 
-
 				if (_isRefreshing != _refreshControl.Refreshing)
 				{
+					TryOffsetRefresh(this, IsRefreshing);
+
 					if (_isRefreshing)
 						_refreshControl.BeginRefreshing();
 					else
 						_refreshControl.EndRefreshing();
-
-					TryOffsetRefresh(this, IsRefreshing);
 				}
 			}
 		}
@@ -68,8 +67,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			UpdateColors();
-			UpdateIsRefreshing();
 			UpdateIsEnabled();
+			UpdateIsRefreshing();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
