@@ -168,6 +168,10 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var index = Groups.IndexOf(group);
 				Groups.Remove(group);
+				if (group.Count == 0)
+				{
+					group.GroupName = Success;
+				}
 				Groups.Insert(index, group);
 			}
 		}
