@@ -27,12 +27,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_isRefreshing != _refreshControl.Refreshing)
 				{
-					TryOffsetRefresh(this, IsRefreshing);
-
 					if (_isRefreshing)
+					{
+						TryOffsetRefresh(this, IsRefreshing);
 						_refreshControl.BeginRefreshing();
+					}
 					else
+					{
 						_refreshControl.EndRefreshing();
+						TryOffsetRefresh(this, IsRefreshing);
+					}
 				}
 			}
 		}
