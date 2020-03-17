@@ -77,6 +77,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
+		public Color GetNamedColor(string name)
+		{
+			// Not supported on this platform
+			return Color.Default;
+		}
+
 		public void OpenUriAction (Uri uri)
 		{
 			if (openUriAction != null)
