@@ -380,9 +380,6 @@
     <PackageReference Include="Xamarin.Insights" Version="1.12.3" />
     <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.21.9" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Use2017)' != 'true'">
-    <PackageReference Condition="'$(Use2017)' != 'true'" Include="Xamarin.iOS.MaterialComponents" Version="92.0.0-rc3" />
-  </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>
