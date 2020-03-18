@@ -3,6 +3,7 @@ using System.ComponentModel;
 
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using UIKit;
 
 #if __MOBILE__
 using UIKit;
@@ -76,6 +77,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.LayoutSubviews();
 			if (Control != null)
 				Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+
+			Control?.SetNeedsDisplay();
 		}
 
 		public override SizeF SizeThatFits(SizeF size)
