@@ -79,8 +79,16 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		public Color GetNamedColor(string name)
 		{
-			// Not supported on this platform
-			return Color.Default;
+			// Some mock values to test color type converter
+			switch (name)
+			{
+				case "SystemBlue":
+					return Color.FromRgb(0, 122, 255);
+				case "SystemChromeHighColor":
+					return Color.FromHex("#FF767676");
+				default:
+					return Color.Default;
+			}
 		}
 
 		public void OpenUriAction (Uri uri)

@@ -26,9 +26,6 @@
 		public const string OpaqueSeparator = "opaqueSeparator";
 		public const string Link = "link";
 
-		// Android
-		// Has none
-
 		// UWP
 		public const string SystemAltLowColor = "SystemAltLowColor";
 		public const string SystemAltMediumColor = "SystemAltMediumColor";
