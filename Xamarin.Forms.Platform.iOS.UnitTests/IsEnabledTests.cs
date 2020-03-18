@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UIKit;
 
-namespace Xamarin.Forms.ControlGallery.iOS.Tests
+namespace Xamarin.Forms.Platform.iOS.UnitTests
 {
 	public class IsEnabledTests : PlatformTestFixture 
 	{

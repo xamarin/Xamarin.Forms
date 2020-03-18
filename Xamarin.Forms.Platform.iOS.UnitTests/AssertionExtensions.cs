@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using CoreGraphics;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using UIKit;
 
-namespace Xamarin.Forms.ControlGallery.iOS.Tests
+namespace Xamarin.Forms.Platform.iOS.UnitTests
 {
 	internal static class AssertionExtensions
 	{

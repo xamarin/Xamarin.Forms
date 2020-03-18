@@ -4,7 +4,7 @@ using NUnit.Framework;
 using static Xamarin.Forms.Core.UITests.NumericExtensions;
 using static Xamarin.Forms.Core.UITests.ParsingUtils;
 
-namespace Xamarin.Forms.ControlGallery.iOS.Tests
+namespace Xamarin.Forms.Platform.iOS.UnitTests
 {
 	[TestFixture]
 	public class RotationTests : PlatformTestFixture 

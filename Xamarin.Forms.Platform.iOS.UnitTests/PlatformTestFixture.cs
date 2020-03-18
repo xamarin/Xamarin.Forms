@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UIKit;
-using Xamarin.Forms.Platform.iOS;
 
-namespace Xamarin.Forms.ControlGallery.iOS.Tests
+namespace Xamarin.Forms.Platform.iOS.UnitTests
 {
 	[Internals.Preserve(AllMembers = true)]
 	public class PlatformTestFixture
@@ -48,12 +47,12 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 
 		protected IVisualElementRenderer GetRenderer(VisualElement element)
 		{
-			return Platform.iOS.Platform.CreateRenderer(element);
+			return Platform.CreateRenderer(element);
 		}
 
 		protected async Task<IVisualElementRenderer> GetRendererAsync(VisualElement element)
 		{
-			return await Device.InvokeOnMainThreadAsync<IVisualElementRenderer>(() => Platform.iOS.Platform.CreateRenderer(element));
+			return await Device.InvokeOnMainThreadAsync<IVisualElementRenderer>(() => Platform.CreateRenderer(element));
 		}
 
 		protected UIView GetNativeControl(VisualElement visualElement)

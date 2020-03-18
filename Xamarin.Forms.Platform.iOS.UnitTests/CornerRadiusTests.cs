@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Xamarin.Forms.Platform.iOS;
 
-namespace Xamarin.Forms.ControlGallery.iOS.Tests
+namespace Xamarin.Forms.Platform.iOS.UnitTests
 {
 	[TestFixture]
 	public class CornerRadiusTests : PlatformTestFixture
