@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Windows.UI.Xaml.Controls;
 using Xamarin.Forms.Platform.UWP;
 
-namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
+namespace Xamarin.Forms.Platform.UAP.Tests
 {
 	public class PlatformTestFixture
 	{

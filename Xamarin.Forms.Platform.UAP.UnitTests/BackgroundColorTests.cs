@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.Platform.UWP;
 using WColor = Windows.UI.Color;
 
-namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
+namespace Xamarin.Forms.Platform.UAP.Tests
 {
 	[TestFixture]
 	public class BackgroundColorTests : PlatformTestFixture
@@ -37,7 +36,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 
 			if (control is StepperControl stepper)
 			{
-				return stepper.ButtonBackgroundColor.ToUwpColor();
+				return stepper.ButtonBackgroundColor.ToWindowsColor();
 			}
 
 			return (control.Background as SolidColorBrush).Color;
@@ -81,7 +80,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 		public async Task BackgroundColorConsistent(View view)
 		{
 			var nativeColor = await GetNativeColor(view);
-			var formsColor = view.BackgroundColor.ToUwpColor();
+			var formsColor = view.BackgroundColor.ToWindowsColor();
 			Assert.That(nativeColor, Is.EqualTo(formsColor));
 		}
 
@@ -90,7 +89,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
 		public async Task FrameBackgroundColorConsistent()
 		{
 			var frame = new Frame() { BackgroundColor = Color.Orange };
-			var expectedColor = frame.BackgroundColor.ToUwpColor();
+			var expectedColor = frame.BackgroundColor.ToWindowsColor();
 
 			var actualColor = await Device.InvokeOnMainThreadAsync(() =>
 			{

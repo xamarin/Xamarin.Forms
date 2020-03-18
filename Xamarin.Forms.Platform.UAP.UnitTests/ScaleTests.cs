@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
-namespace Xamarin.Forms.ControlGallery.WindowsUniversal.Tests
+namespace Xamarin.Forms.Platform.UAP.Tests
 {
 	[TestFixture]
 	public class ScaleTests : PlatformTestFixture
