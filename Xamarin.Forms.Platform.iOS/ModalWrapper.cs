@@ -5,7 +5,6 @@ using UIKit;
 using Foundation;
 using System.Threading.Tasks;
 using System.ComponentModel;
-using Foundation;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -45,13 +44,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Forms.IsiOS13OrNewer)
 				PresentationController.Delegate = this;
-		}
-
-
-		[Export("presentationControllerDidDismiss:")]
-		public async void DidDismiss(UIPresentationController presentationController)
-		{
-			await Application.Current.NavigationProxy.PopModalAsync(false);
 		}
 #if __XCODE11__
 		[Export("presentationControllerDidDismiss:")]
