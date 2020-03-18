@@ -141,7 +141,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Mobile.Client" Version="4.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="72.2.0.1" />
+    <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="92.0.0-rc3" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
