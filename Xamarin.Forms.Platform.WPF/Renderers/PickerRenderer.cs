@@ -82,13 +82,13 @@ namespace Xamarin.Forms.Platform.WPF
 			Control.SelectedIndex = Element.SelectedIndex;
 		}
 
-		private void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
+		void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
 			if (Element != null)
 				Element.SelectedIndex = Control.SelectedIndex;
 		}
 
-		private void OnControlLoaded(object sender, System.Windows.RoutedEventArgs e)
+		void OnControlLoaded(object sender, System.Windows.RoutedEventArgs e)
 		{
 			UpdateBackgroundColor();
 		}
