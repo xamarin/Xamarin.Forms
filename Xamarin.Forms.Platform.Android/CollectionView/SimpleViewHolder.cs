@@ -41,10 +41,15 @@ namespace Xamarin.Forms.Platform.Android
 			return new SimpleViewHolder(textView, null);
 		}
 
-		public static SimpleViewHolder FromFormsView(View formsView, Context context, Func<int> width, Func<int> height)
+		public static SimpleViewHolder FromFormsView(View formsView, Context context, Func<int> width, Func<int> height, ItemsView container)
 		{
 			var itemContentControl = new SizedItemContentView(context, width, height);
+			
+			// Parent the view so that the Visual info is available when the renderer is created 
+			formsView.Parent = container;
 			itemContentControl.RealizeContent(formsView);
+			formsView.Parent = null;
+
 			return new SimpleViewHolder(itemContentControl, formsView);
 		}
 

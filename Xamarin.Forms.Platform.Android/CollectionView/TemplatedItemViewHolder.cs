@@ -57,8 +57,14 @@ namespace Xamarin.Forms.Platform.Android
 				// available during OnElementChanged
 				View.BindingContext = itemBindingContext;
 
+				// Parent the view while the renderer is created so the Visual info is available
+				View.Parent = itemsView;
+				
 				// Actually create the native renderer
 				_itemContentView.RealizeContent(View);
+				
+				View.Parent = null;
+
 				_selectedTemplate = template;
 			}
 

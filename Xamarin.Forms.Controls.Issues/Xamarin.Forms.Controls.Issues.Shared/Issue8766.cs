@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			Visual = VisualMarker.Material;
-			FlowDirection = FlowDirection.RightToLeft;
 
 			var layout = new StackLayout();
 
