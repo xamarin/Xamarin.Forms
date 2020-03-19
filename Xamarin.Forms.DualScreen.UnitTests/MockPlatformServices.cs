@@ -40,11 +40,9 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			_isInvokeRequired = isInvokeRequired;
 		}
 
-		static MD5CryptoServiceProvider checksum = new MD5CryptoServiceProvider();
-
-		public string GetMD5Hash(string input)
+		public string GetHash(string input)
 		{
-			var bytes = checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
+			var bytes = Internals.Crc64.Instance.ComputeHash(Encoding.UTF8.GetBytes(input));
 			var ret = new char[32];
 			for (int i = 0; i < 16; i++)
 			{
