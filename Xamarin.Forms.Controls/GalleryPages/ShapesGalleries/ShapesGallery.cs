@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 				{
 					button,
                     GalleryBuilder.NavButton("Path Gallery", () => new PathGallery(), Navigation),
+					GalleryBuilder.NavButton("Path Aspect Gallery", () => new PathAspectGallery(), Navigation),
 					GalleryBuilder.NavButton("Transform Playground", () => new TransformPlaygroundGallery(), Navigation),
 					GalleryBuilder.NavButton("Path Transform using string (TypeConverter) Gallery", () => new PathTransformStringGallery(), Navigation)
                 }
