@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class ModalWrapper : UIViewController, IUIAdaptivePresentationControllerDelegate
 	{
 		IVisualElementRenderer _modal;
+		bool _isDisposed;
 
 		internal ModalWrapper(IVisualElementRenderer modal)
 		{
@@ -116,12 +117,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
-			UpdateBackgroundColor();
+			if(!_isDisposed)
+				UpdateBackgroundColor();
+
 			base.ViewWillAppear(animated);
 		}
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
 			if (disposing)
 			{
 				if (_modal?.Element is Page modalPage)
@@ -154,6 +162,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackgroundColor()
 		{
+			if (_isDisposed)
+				return;
+
 			if (ModalPresentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
 			{
 				Color modalBkgndColor = ((Page)_modal.Element).BackgroundColor;
