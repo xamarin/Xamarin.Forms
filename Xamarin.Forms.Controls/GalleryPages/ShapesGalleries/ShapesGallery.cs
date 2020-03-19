@@ -9,15 +9,34 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
         {
             Title = "Shapes Gallery";
 
+            var button = new Button
+            {
+                Text = "Enable Shapes",
+                AutomationId = "EnableShapes"
+            };
+            button.Clicked += ButtonClicked;
+
             Content = new StackLayout
             {
                 Children =
 				{
+					button,
                     GalleryBuilder.NavButton("Path Gallery", () => new PathGallery(), Navigation),
 					GalleryBuilder.NavButton("Transform Playground", () => new TransformPlaygroundGallery(), Navigation),
 					GalleryBuilder.NavButton("Path Transform using string (TypeConverter) Gallery", () => new PathTransformStringGallery(), Navigation)
                 }
             };
+        }
+
+        void ButtonClicked(object sender, System.EventArgs e)
+        {
+            var button = sender as Button;
+
+            button.Text = "Shapes Enabled!";
+            button.TextColor = Color.Black;
+            button.IsEnabled = false;
+
+            Device.SetFlags(new[] { ExperimentalFlags.ShapesExperimental });
         }
     }
 }
