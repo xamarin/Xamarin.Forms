@@ -183,6 +183,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(Test9686);
 			RunningApp.Tap(Test9686);
+			RunningApp.WaitForElement("Item 1");
 			RunningApp.Tap(Test9686);
 			RunningApp.WaitForElement(Success);
 		}
