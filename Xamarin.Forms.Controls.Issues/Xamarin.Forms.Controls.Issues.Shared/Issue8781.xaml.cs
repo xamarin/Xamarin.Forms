@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				resultEntry.Text = string.Empty;
 				swipeView.Close();
-				await DisplayAlert("Correct!", "The answer is 2.", "OK");
+				await DisplayAlert("Correct!", "The answer is 4.", "OK");
 			}
 			else
 			{
