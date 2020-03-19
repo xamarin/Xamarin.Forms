@@ -30,9 +30,9 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, args);
 
 			if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
-				Height = Element.Height;
+				UpdateHeight();
 			else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
-				Width = Element.Width;
+				UpdateWidth();
 			else if (args.PropertyName == Shape.AspectProperty.PropertyName)
 				UpdateAspect();
 			else if (args.PropertyName == Shape.FillProperty.PropertyName)
@@ -45,6 +45,16 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateStrokeDashArray();
 			else if (args.PropertyName == Shape.StrokeDashOffsetProperty.PropertyName)
 				UpdateStrokeDashOffset();
+		}
+
+		void UpdateHeight()
+		{
+			Control.Height = Element.Height;
+		}
+
+		void UpdateWidth()
+		{
+			Control.Width = Element.Width;
 		}
 
 		void UpdateAspect()
