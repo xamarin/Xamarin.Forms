@@ -79,7 +79,7 @@ if(buildForVS2017)
 }
 else
 {
-     iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/master/4d7186028ebf96287733777e8f082df10a6d058a/1321/package/notarized/xamarin.ios-13.19.0.212.pkg";
+    //iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/master/4d7186028ebf96287733777e8f082df10a6d058a/1321/package/notarized/xamarin.ios-13.19.0.212.pkg";
 }
 
 
