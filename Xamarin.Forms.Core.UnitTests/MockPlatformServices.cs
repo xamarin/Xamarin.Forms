@@ -12,6 +12,7 @@ using FileMode = System.IO.FileMode;
 using FileAccess = System.IO.FileAccess;
 using FileShare = System.IO.FileShare;
 using Stream = System.IO.Stream;
+using Xamarin.Forms.Internals;
 
 [assembly:Dependency (typeof(MockDeserializer))]
 [assembly:Dependency (typeof(MockResourcesProvider))]
@@ -44,6 +45,8 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			return Internals.Crc64.GetHash(input);
 		}
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		static int hex (int v)
 		{
