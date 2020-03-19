@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var layout = new StackLayout();
 
-			var instructions = new Label { Text = "If the Entry and Button above the CollectionView look the same as the Entry and Button inside the CollectionView, this test has passed."};
+			var instructions = new Label { Text = "If the Entry and Button above the CollectionView and the Entry and Button inside the CollectionView, should both be using the Material Visual. If so, this test has passed."};
 			layout.Children.Add(instructions);
 
 			var entry = new Entry { Placeholder = "I am material" };
