@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Windows.Foundation;
+using Windows.UI.Xaml;
 using WDoubleCollection = Windows.UI.Xaml.Media.DoubleCollection;
 using WShape = Windows.UI.Xaml.Shapes.Shape;
 using WStretch = Windows.UI.Xaml.Media.Stretch;
@@ -10,9 +10,6 @@ namespace Xamarin.Forms.Platform.UWP
 		  where TShape : Shape
 		  where TNativeShape : WShape
 	{
-		double _height;
-		double _width;
-
 		protected override void OnElementChanged(ElementChangedEventArgs<TShape> args)
 		{
 			base.OnElementChanged(args);
@@ -33,15 +30,9 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, args);
 
 			if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
-			{
-				_height = Element.Height;
-				InvalidateArrange();
-			}
+				Height = Element.Height;
 			else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
-			{
-				_width = Element.Width;
-				InvalidateArrange();
-			}
+				Width = Element.Width;
 			else if (args.PropertyName == Shape.AspectProperty.PropertyName)
 				UpdateAspect();
 			else if (args.PropertyName == Shape.FillProperty.PropertyName)
@@ -54,20 +45,6 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateStrokeDashArray();
 			else if (args.PropertyName == Shape.StrokeDashOffsetProperty.PropertyName)
 				UpdateStrokeDashOffset();
-		}
-
-		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
-		{
-			if (Element == null)
-				return finalSize;
-
-			Element.IsInNativeLayout = true;
-
-			Control?.Arrange(new Rect(0, 0, _width, _height));
-
-			Element.IsInNativeLayout = false;
-
-			return finalSize;
 		}
 
 		void UpdateAspect()
@@ -92,6 +69,17 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			Control.Stretch = stretch;
+
+			if (aspect == Stretch.Uniform)
+			{
+				Control.HorizontalAlignment = HorizontalAlignment.Center;
+				Control.VerticalAlignment = VerticalAlignment.Center;
+			}
+			else
+			{
+				Control.HorizontalAlignment = HorizontalAlignment.Left;
+				Control.VerticalAlignment = VerticalAlignment.Top;
+			}
 		}
 
 		void UpdateFill()

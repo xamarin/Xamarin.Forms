@@ -9,6 +9,7 @@
 
             <Style TargetType="Path">
                 <Setter Property="Aspect" Value="Uniform" />
+                <Setter Property="HorizontalOptions" Value="Start" />
             </Style>
 
         </ResourceDictionary>
