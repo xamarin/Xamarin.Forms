@@ -4,6 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.EllipseGallery"
     Title="Ellipse Gallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="Ellipse">
+                <Setter Property="HorizontalOptions" Value="Start" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView>
             <StackLayout

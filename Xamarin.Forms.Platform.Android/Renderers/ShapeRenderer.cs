@@ -46,12 +46,12 @@ namespace Xamarin.Forms.Platform.Android
 
             if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
             {
-                _height = (Element.HeightRequest > 0) ? Element.HeightRequest : Element.Height;
+                _height = Element.Height;
                 UpdateSize();
             }
             else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
             {
-                _width = (Element.WidthRequest > 0) ? Element.WidthRequest : Element.Width;
+                _width = Element.Width;
                 UpdateSize();
             }
             else if (args.PropertyName == Shape.AspectProperty.PropertyName)
