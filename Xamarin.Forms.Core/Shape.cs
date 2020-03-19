@@ -2,6 +2,11 @@
 {
     public class Shape : View
     {
+        public Shape()
+        {
+            ExperimentalFlags.VerifyFlagEnabled(nameof(Shape), ExperimentalFlags.ShapesExperimental);
+        }
+
         public static readonly BindableProperty FillProperty =
             BindableProperty.Create(nameof(Fill), typeof(Color), typeof(Shape), null);
 

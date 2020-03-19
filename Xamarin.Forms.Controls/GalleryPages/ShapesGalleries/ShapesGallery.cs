@@ -9,10 +9,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 		{
 			Title = "Shapes Gallery";
 
+			var button = new Button
+			{
+				Text = "Enable Shapes",
+				AutomationId = "EnableShapes"
+			};
+			button.Clicked += ButtonClicked;
+
 			Content = new StackLayout
 			{
 				Children =
 				{
+					button,
 					GalleryBuilder.NavButton("Ellipse Gallery", () => new EllipseGallery(), Navigation),
 					GalleryBuilder.NavButton("Line Gallery", () => new LineGallery(), Navigation),
 					GalleryBuilder.NavButton("Polygon Gallery", () => new PolygonGallery(), Navigation),
@@ -23,6 +31,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 					GalleryBuilder.NavButton("AutoSize Shapes Gallery", () => new AutoSizeShapesGallery(), Navigation)
 				}
 			};
+		}
+
+		void ButtonClicked(object sender, System.EventArgs e)
+		{
+			var button = sender as Button;
+
+			button.Text = "Shapes Enabled!";
+			button.TextColor = Color.Black;
+			button.IsEnabled = false;
+
+			Device.SetFlags(new[] { ExperimentalFlags.ShapesExperimental });
 		}
 	}
 }
