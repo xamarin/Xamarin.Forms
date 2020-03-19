@@ -35,7 +35,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-
 			_rightSwipeCountLabel = new Label
 			{
 				AutomationId = RightCountLabelId,
@@ -57,9 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Children =
 					{
-
 						CreateMySwipeView(),
-
 						new Grid
 						{
 
@@ -77,8 +74,6 @@ namespace Xamarin.Forms.Controls.Issues
 								}
 							}
 						}
-
-
 					}
 				};
 		}
@@ -88,8 +83,6 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue9088SwipeViewConfictWithShellMenuSwipeInFromLeft()
 		{
-			//RunningApp.Repl();
-
 			RunningApp.WaitForElement(x => x.Marked(SwipeViewId));
 
 			RunningApp.SwipeRightToLeft(SwipeViewId);
@@ -228,6 +221,5 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#endregion
-
 	}
 }
