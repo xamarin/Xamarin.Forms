@@ -9,7 +9,6 @@
 
             <Style TargetType="Path">
                 <Setter Property="Aspect" Value="Uniform" />
-                <Setter Property="HorizontalOptions" Value="Start" />
             </Style>
 
         </ResourceDictionary>
@@ -163,7 +162,6 @@
                 <Path
                     HeightRequest="100"
                     WidthRequest="100"
-                    BackgroundColor="LightGray"
                     Stroke="Yellow"
                     Fill="Red"
                     StrokeThickness="1"
