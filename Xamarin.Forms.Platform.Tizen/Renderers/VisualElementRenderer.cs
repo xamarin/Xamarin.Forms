@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using ElmSharp;
 using ElmSharp.Accessible;
+using ElmSharp.Wearable;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen.Native;
 using EFocusDirection = ElmSharp.FocusDirection;
@@ -698,6 +699,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (null != Element)
 			{
 				Element.SetValue(VisualElement.IsFocusedPropertyKey, true);
+			}
+
+			if (NativeView is IRotaryActionWidget ra)
+			{
+				ra.Activate();
 			}
 		}
 
