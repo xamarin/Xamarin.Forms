@@ -103,6 +103,8 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			base.UpdateItemsSource();
+
+			UpdateInitialPosition();
 		}
 
 		protected override CollectionViewSource CreateCollectionViewSource()
@@ -270,6 +272,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			SetCurrentItem(position);
 			UpdatePosition(position);
+			UpdateFromPosition();
 		}
 
 		void UpdatePositionFromScroll()
