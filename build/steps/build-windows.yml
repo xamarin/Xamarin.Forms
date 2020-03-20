@@ -59,17 +59,9 @@ jobs:
     - task: NuGetToolInstaller@1
       displayName: 'Use NuGet $(NUGET_VERSION)'
       condition: ne(variables['NUGET_VERSION'], '')
-      inputs: 
+      inputs:
         versionSpec: $(NUGET_VERSION)
-        
-    # - task: UseDotNet@2
-    #   displayName: 'Install .NET Core 3 sdk'
-    #   inputs:
-    #     packageType: sdk
-    #     version: 3.x
-    #     includePreviewVersions: false
-    #     installationPath: $(Agent.ToolsDirectory)/dotnet
-        
+
     - task: NuGetCommand@2
       displayName: 'NuGet restore ${{ parameters.slnPath }}'
       inputs:
