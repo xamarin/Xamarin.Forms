@@ -272,7 +272,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			SetCurrentItem(position);
 			UpdatePosition(position);
-			UpdateFromPosition();
+			if (position > 0)
+				UpdateFromPosition();
 		}
 
 		void UpdatePositionFromScroll()
