@@ -45,13 +45,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (view is View formsView)
 			{
-				// Temporarily parent this so the correct renderer gets created (WRT Visual)
-				formsView.Parent = itemsView;
+				// Make sure the Visual property is available when the renderer is created
+				PropertyPropagationExtensions.PropagatePropertyChanged(null, formsView, itemsView);
 
 				// No template, and the EmptyView is a Forms view; use that
 				var renderer = CreateRenderer(formsView);
-				
-				formsView.Parent = null;
 
 				return (renderer.NativeView, renderer.Element);
 			}
