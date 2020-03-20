@@ -258,6 +258,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateHorizontalTextAlignment()
 		{
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+			//Control.UpdateTextAlignment(Element);
 		}
 
 		void UpdateVerticalTextAlignment()
@@ -355,6 +356,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
 		}
+
 		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
 			Control.AttributedPlaceholder = nsAttributedString;
 
