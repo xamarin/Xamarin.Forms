@@ -1209,7 +1209,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsOpen(bool isOpen)
 		{
-			Element.IsOpen = isOpen;
+			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
 		void OnParentScrolled(object sender, ScrolledEventArgs e)

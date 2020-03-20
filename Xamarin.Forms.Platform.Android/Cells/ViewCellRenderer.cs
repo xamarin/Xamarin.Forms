@@ -279,7 +279,7 @@ namespace Xamarin.Forms.Platform.Android
 				// If the cell contains a SwipeView, we will have conflicts capturing the touch.
 				// So we need to watch locally for Tap and if we see it (and the SwipeView is open),
 				// trigger the Click manually.
-				if (!swipeView.IsOpen)
+				if (!((ISwipeViewController)swipeView).IsOpen)
 				{
 					return true;
 				}

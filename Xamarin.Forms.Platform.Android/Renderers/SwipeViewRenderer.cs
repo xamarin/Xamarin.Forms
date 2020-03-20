@@ -272,7 +272,7 @@ namespace Xamarin.Forms.Platform.Android
 			// If the SwipeView container is ItemContentView we are using SwipeView with a CollectionView or CarouselView.
 			// When doing touch up, if the SwipeView is closed, we propagate the Touch to the parent. In this way, the parent
 			// element will manage the touch (SelectionChanged, etc.).
-			if (itemContentView != null && !Element.IsOpen)
+			if (itemContentView != null && !((ISwipeViewController)Element).IsOpen)
 			{
 				itemContentView.ClickOn();
 			}
@@ -1156,7 +1156,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateIsOpen(bool isOpen)
 		{
-			Element.IsOpen = isOpen;
+			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
 		void OnCloseRequested(object sender, EventArgs e)
