@@ -32,11 +32,11 @@ namespace Xamarin.Forms.Platform.iOS
 				// We have a template; turn it into a Forms view 
 				var templateElement = viewTemplate.CreateContent() as View;
 
-				// Temporarily parent this so the correct renderer gets created (WRT Visual)
-				templateElement.Parent = itemsView;
-				var renderer = CreateRenderer(templateElement);
-				templateElement.Parent = null;
+				// Make sure the Visual property is available when the renderer is created
+				PropertyPropagationExtensions.PropagatePropertyChanged(null, templateElement, itemsView);
 
+				var renderer = CreateRenderer(templateElement);
+				
 				// and set the EmptyView as its BindingContext
 				BindableObject.SetInheritedBindingContext(renderer.Element, view);
 
