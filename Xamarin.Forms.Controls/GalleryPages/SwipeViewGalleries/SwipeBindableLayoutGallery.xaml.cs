@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 
 		public ICommand FavouriteCommand => new Command(OnFavourite);
 		public ICommand DeleteCommand => new Command(OnDelete);
-
+		public ICommand TapCommand => new Command(OnTap);
 
 		private void LoadMessages()
 		{
@@ -59,14 +59,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			}
 		}
 
-		private void OnFavourite()
+		void OnFavourite()
 		{
 			MessagingCenter.Send(this, "favourite");
 		}
 
-		private void OnDelete()
+		void OnDelete()
 		{
 			MessagingCenter.Send(this, "delete");
+		}
+
+		void OnTap()
+		{
+			MessagingCenter.Send(this, "tap");
 		}
 	}
 }

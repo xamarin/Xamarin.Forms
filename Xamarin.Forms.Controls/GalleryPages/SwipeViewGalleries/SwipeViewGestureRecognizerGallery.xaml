@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries.SwipeVerticalCollectionViewGallery"
-    Title="Swipe CollectionView">
-    <ContentPage.Resources>
+    x:Class="Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries.SwipeViewGestureRecognizerGallery"
+    Title="SwipeView GestureRecognizer Gallery">
+   <ContentPage.Resources>
         <ResourceDictionary>
 
             <Style x:Key="TitleStyle" TargetType="Label">
@@ -51,6 +51,10 @@
                         <Grid
                             BackgroundColor="White"
                             RowSpacing="0">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                   Command="{Binding Source={x:Reference SwipeCollectionView}, Path=BindingContext.TapCommand}"/>
+                            </Grid.GestureRecognizers>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -94,9 +98,7 @@
             <CollectionView
                 x:Name="SwipeCollectionView"
                 ItemsSource="{Binding Messages}"
-                ItemTemplate="{StaticResource MessageTemplate}"
-                SelectionMode="Single"
-                SelectionChanged="OnSwipeCollectionViewSelectionChanged"/>
+                ItemTemplate="{StaticResource MessageTemplate}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

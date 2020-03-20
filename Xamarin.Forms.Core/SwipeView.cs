@@ -64,6 +64,9 @@ namespace Xamarin.Forms
 			set { SetValue(BottomItemsProperty, value); }
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IsOpen { get; set; }
+
 		static void OnSwipeItemsChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			((SwipeView)bindable).UpdateSwipeItemsParent((SwipeItems)newValue);
