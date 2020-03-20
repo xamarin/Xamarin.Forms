@@ -35,7 +35,7 @@
                                  <StackLayout
                                      Orientation="Horizontal">
                                      <Label
-                                         Text="{Binding Title}"
+                                         Text="Swipe to Left"
                                          FontSize="Subtitle"
                                          LineBreakMode="WordWrap" />
                                  </StackLayout>
