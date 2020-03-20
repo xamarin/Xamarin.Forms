@@ -76,7 +76,6 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.SwipeLeftToRight(SwipeViewId);
 			RunningApp.SwipeRightToLeft(SwipeViewId);
 
-			//RunningApp.WaitForElement(x => x.Marked(SwipeItemId));
 			RunningApp.Tap(SwipeItemId);
 
 			RunningApp.WaitFor(
