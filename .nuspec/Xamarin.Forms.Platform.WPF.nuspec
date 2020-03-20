@@ -30,7 +30,7 @@
     <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\net461\Xamarin.Forms.Platform.WPF.dll" target="lib\net461" />
     <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\net461\Xamarin.Forms.Platform.WPF.*pdb" target="lib\net461" />
     
-    <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\netcoreapp3.0\Xamarin.Forms.Platform.WPF.dll" target="lib\netcoreapp3.0" />
-    <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\netcoreapp3.0\Xamarin.Forms.Platform.WPF.*pdb" target="lib\netcoreapp3.0" />
+    <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\netcoreapp3.1\Xamarin.Forms.Platform.WPF.dll" target="lib\netcoreapp3.1" />
+    <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\netcoreapp3.1\Xamarin.Forms.Platform.WPF.*pdb" target="lib\netcoreapp3.1" />
   </files>
 </package>

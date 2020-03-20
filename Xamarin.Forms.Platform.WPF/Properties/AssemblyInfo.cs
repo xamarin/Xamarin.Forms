@@ -29,7 +29,7 @@ using Xamarin.Forms.Platform.WPF;
 [assembly: ExportRenderer(typeof(ActivityIndicator), typeof(ActivityIndicatorRenderer))]
 [assembly: ExportRenderer(typeof(Frame), typeof(FrameRenderer))]
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
-#if !NETCOREAPP3_0
+#if !NETCOREAPP3_1
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
 #endif
 [assembly: ExportRenderer(typeof(MediaElement), typeof(MediaElementRenderer))]

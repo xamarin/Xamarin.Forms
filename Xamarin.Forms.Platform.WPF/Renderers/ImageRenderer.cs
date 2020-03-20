@@ -207,7 +207,7 @@ namespace Xamarin.Forms.Platform.WPF
                 advanceWidths[n] = width;
             }
 			 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
 			var dpi = VisualTreeHelper.GetDpi(System.Windows.Application.Current.MainWindow).PixelsPerDip;
 			var gr = new GlyphRun(glyphTypeface,
 				0, 
