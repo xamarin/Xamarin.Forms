@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Page.GetCurrentPage()?.SendAppearing();
 
 			return modal;
-		}	
+		}
 
 		Task INavigation.PopToRootAsync()
 		{
