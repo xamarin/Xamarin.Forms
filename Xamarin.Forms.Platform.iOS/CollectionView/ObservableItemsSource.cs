@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
 using UIKit;
@@ -15,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly int _section;
 		readonly IEnumerable _itemsSource;
 		bool _disposed;
-		bool _batchUpdating;
+		SemaphoreSlim _batchUpdating = new SemaphoreSlim(1, 1);
 
 		public ObservableItemsSource(IEnumerable itemSource, UICollectionViewController collectionViewController, int group = -1)
 		{
@@ -100,7 +101,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(async () => await CollectionChanged(args));
+				await Device.InvokeOnMainThreadAsync(async () => await CollectionChanged(args));
 			}
 			else
 			{
@@ -136,16 +137,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		async Task Reload()
 		{
-			while (_batchUpdating)
-			{
-				// We don't want to reload while the UICollectionView is animating changes; if we do, things get
-				// broken or out-of-order. So just hang tight until it's finished.
-				await Task.Delay(16);
-			}
+			await _batchUpdating.WaitAsync();
 
 			_collectionView.ReloadData();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 			Count = ItemsCount();
+
+			_batchUpdating.Release();
 		}
 
 		NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
@@ -174,10 +172,10 @@ namespace Xamarin.Forms.Platform.iOS
 			
 			_collectionView.PerformBatchUpdates(() =>
 				{
-					_batchUpdating = true;
+					_batchUpdating.Wait();
 					_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));
 				}, 
-				(_) => _batchUpdating = false);
+				(_) => _batchUpdating.Release());
 		}
 
 		async Task Remove(NotifyCollectionChangedEventArgs args)
@@ -204,10 +202,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_collectionView.PerformBatchUpdates(() =>
 			{
-				_batchUpdating = true;
+				_batchUpdating.Wait();
 				_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
 			},
-			(_) => _batchUpdating = false);
+			(_) => _batchUpdating.Release());
 		}
 
 		async Task Replace(NotifyCollectionChangedEventArgs args)

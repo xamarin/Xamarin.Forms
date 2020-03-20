@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
 using UIKit;
@@ -14,7 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly UICollectionViewController _collectionViewController;
 		readonly IList _groupSource;
 		bool _disposed;
-		bool _batchUpdating;
+		SemaphoreSlim _batchUpdating = new SemaphoreSlim(1, 1);
 		List<ObservableItemsSource> _groups = new List<ObservableItemsSource>();
 
 		public ObservableGroupedSource(IEnumerable groupSource, UICollectionViewController collectionViewController)
@@ -133,7 +134,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(async () => await CollectionChanged(args));
+				await Device.InvokeOnMainThreadAsync(async () => await CollectionChanged(args));
 			}
 			else
 			{
@@ -144,6 +145,7 @@ namespace Xamarin.Forms.Platform.iOS
 		async Task CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
+
 			{
 				case NotifyCollectionChangedAction.Add:
 					await Add(args);
@@ -169,15 +171,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ResetGroupTracking();
 
-			while (_batchUpdating)
-			{
-				// We don't want to reload while the UICollectionView is animating changes; if we do, things get
-				// broken or out-of-order. So just hang tight until it's finished.
-				await Task.Delay(16);
-			}
+			await _batchUpdating.WaitAsync();
 
 			_collectionView.ReloadData();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
+
+			_batchUpdating.Release();
 		}
 
 		NSIndexSet CreateIndexSetFrom(int startIndex, int count)
@@ -209,10 +208,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_collectionView.PerformBatchUpdates(() =>
 				{
-					_batchUpdating = true;
+					_batchUpdating.Wait();
 					_collectionView.InsertSections(CreateIndexSetFrom(startIndex, count));
 				},
-				(_) => _batchUpdating = false);
+				(_) => _batchUpdating.Release());
 		}
 
 		async Task Remove(NotifyCollectionChangedEventArgs args)
@@ -242,10 +241,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_collectionView.PerformBatchUpdates(() =>
 				{
-					_batchUpdating = true;
+					_batchUpdating.Wait();
 					_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
 				},
-				(_) => _batchUpdating = false);
+				(_) => _batchUpdating.Release());
 		}
 
 		async Task Replace(NotifyCollectionChangedEventArgs args)
