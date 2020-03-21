@@ -8,6 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms
 {
@@ -41,6 +44,9 @@ namespace Xamarin.Forms
 		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty IconProperty = IconImageSourceProperty;
+
+		public static readonly BindableProperty NotchModeProperty = BindableProperty.Create(nameof(NotchMode), typeof(NotchMode), typeof(Page), NotchMode.PlatformDefault, propertyChanged:(bo, o, n)=>((Page)bo).OnNotchModeChanged((NotchMode)n));
+
 
 		readonly Lazy<PlatformConfigurationRegistry<Page>> _platformConfigurationRegistry;
 
@@ -103,6 +109,12 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(IsBusyProperty); }
 			set { SetValue(IsBusyProperty, value); }
+		}
+
+		public NotchMode NotchMode
+		{
+			get => (NotchMode)GetValue(NotchModeProperty);
+			set => SetValue(NotchModeProperty, value);
 		}
 
 		public Thickness Padding
@@ -489,6 +501,12 @@ namespace Xamarin.Forms
 				return;
 			foreach (IElement item in args.NewItems)
 				item.Parent = this;
+		}
+
+		void OnNotchModeChanged(NotchMode newValue)
+		{
+			On<iOS>().SetUseSafeArea(newValue == NotchMode.SaveNotchArea);
+			On<Android>().SetCutoutMode((CutoutMode)(int)newValue);
 		}
 
 		bool ShouldLayoutChildren()

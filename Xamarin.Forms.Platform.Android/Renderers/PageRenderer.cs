@@ -7,9 +7,11 @@ using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Views.Accessibility;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AColorRes = Android.Resource.Color;
 using AView = Android.Views.View;
+using ASpecificPage = Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Page;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -59,6 +61,8 @@ namespace Xamarin.Forms.Platform.Android
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
 				return;
+
+			UpdateCutoutMode();
 			PageController.SendAppearing();
 		}
 
@@ -95,6 +99,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
+			else if (e.PropertyName == ASpecificPage.CutoutModeProperty.PropertyName)
+				UpdateCutoutMode();
 		}
 
 		void UpdateHeight()
@@ -150,6 +156,22 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 			});
+		}
+
+		void UpdateCutoutMode()
+		{
+			if (Build.VERSION.SdkInt < BuildVersionCodes.P)
+				return;
+
+			var isDefaultCutoutMode = !Element.On<PlatformConfiguration.Android>().IsDefaultCutoutMode();
+			var anyCutoutModeSet = ASpecificPage.AnyCutoutModeSet;
+
+			if (isDefaultCutoutMode && !anyCutoutModeSet)
+				return;
+
+			var currentCutoutMode = ASpecificPage.GetCutoutMode(Element);
+			var activity = Context.GetActivity();
+			activity.Window.Attributes.LayoutInDisplayCutoutMode = (LayoutInDisplayCutoutMode)(int)currentCutoutMode;
 		}
 
 		void IOrderedTraversalController.UpdateTraversalOrder()
