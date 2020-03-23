@@ -206,12 +206,8 @@ namespace Xamarin.Forms.Platform.iOS
 			// is to reset all the group tracking to get it up-to-date
 			ResetGroupTracking();
 
-			_collectionView.PerformBatchUpdates(() =>
-				{
-					_batchUpdating.Wait();
-					_collectionView.InsertSections(CreateIndexSetFrom(startIndex, count));
-				},
-				(_) => _batchUpdating.Release());
+			// Queue up the updates to the UICollectionView
+			BatchUpdate(() => _collectionView.InsertSections(CreateIndexSetFrom(startIndex, count)));
 		}
 
 		async Task Remove(NotifyCollectionChangedEventArgs args)
@@ -239,12 +235,8 @@ namespace Xamarin.Forms.Platform.iOS
 			// Since we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
 
-			_collectionView.PerformBatchUpdates(() =>
-				{
-					_batchUpdating.Wait();
-					_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
-				},
-				(_) => _batchUpdating.Release());
+			// Queue up the updates to the UICollectionView
+			BatchUpdate(() => _collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count)));
 		}
 
 		async Task Replace(NotifyCollectionChangedEventArgs args)
@@ -359,6 +351,26 @@ namespace Xamarin.Forms.Platform.iOS
 			return NotLoadedYet()
 				|| _collectionView.NumberOfSections() == 0
 				|| _collectionView.VisibleCells.Length == 0;
+		}
+
+		void BatchUpdate(Action update)
+		{
+			_collectionView.PerformBatchUpdates(() =>
+			{
+				if (_batchUpdating.CurrentCount > 0)
+				{
+					_batchUpdating.Wait();
+				}
+
+				update();
+			},
+					(_) =>
+					{
+						if (_batchUpdating.CurrentCount > 0)
+						{
+							_batchUpdating.Release();
+						}
+					});
 		}
 	}
 }

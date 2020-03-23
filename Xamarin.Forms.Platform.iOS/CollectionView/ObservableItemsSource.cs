@@ -169,13 +169,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var count = args.NewItems.Count;
 			Count += count;
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
-			
-			_collectionView.PerformBatchUpdates(() =>
-				{
-					_batchUpdating.Wait();
-					_collectionView.InsertItems(CreateIndexesFrom(startIndex, count));
-				}, 
-				(_) => _batchUpdating.Release());
+
+			// Queue up the updates to the UICollectionView
+			BatchUpdate(() => _collectionView.InsertItems(CreateIndexesFrom(startIndex, count)));
 		}
 
 		async Task Remove(NotifyCollectionChangedEventArgs args)
@@ -200,12 +196,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var count = args.OldItems.Count;
 			Count -= count;
 
-			_collectionView.PerformBatchUpdates(() =>
-			{
-				_batchUpdating.Wait();
-				_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
-			},
-			(_) => _batchUpdating.Release());
+			// Queue up the updates to the UICollectionView
+			BatchUpdate(() => _collectionView.DeleteItems(CreateIndexesFrom(startIndex, count)));
 		}
 
 		async Task Replace(NotifyCollectionChangedEventArgs args)
@@ -313,6 +305,26 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return _collectionView.VisibleCells.Length == 0;
+		}
+
+		void BatchUpdate(Action update)
+		{
+			_collectionView.PerformBatchUpdates(() =>
+			{
+				if (_batchUpdating.CurrentCount > 0)
+				{
+					_batchUpdating.Wait();
+				}
+
+				update();
+			},
+					(_) =>
+					{
+						if (_batchUpdating.CurrentCount > 0)
+						{
+							_batchUpdating.Release();
+						}
+					});
 		}
 	}
 }
