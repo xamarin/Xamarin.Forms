@@ -1,8 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
-	internal class MenuShellItem : ShellItem, IMenuItemController
+	internal class MenuShellItem : ShellItem, IMenuItemController, IStyleSelectable
 	{
 		internal MenuShellItem(MenuItem menuItem)
 		{
@@ -14,7 +16,10 @@ namespace Xamarin.Forms
 
 			Shell.SetMenuItemTemplate(this, Shell.GetMenuItemTemplate(MenuItem));
 			MenuItem.PropertyChanged += OnMenuItemPropertyChanged;
+			MenuItem.StyleClassChanged += (_, __) => OnStyleClassChanged();
 		}
+
+		IList<string> IStyleSelectable.Classes => ((IStyleSelectable)MenuItem).Classes;
 
 		public string Text => Title;
 

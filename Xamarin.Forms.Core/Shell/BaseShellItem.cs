@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
 using System.Linq;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
@@ -16,9 +17,9 @@ namespace Xamarin.Forms
 
 		bool _hasAppearing;
 		Grid _defaultFlyoutItemCell;
-		const string DefaultFlyoutItemLabelStyle = "IMPL_DefaultFlyoutItemLabelStyle";
-		const string DefaultFlyoutItemImageStyle = "IMPL_DefaultFlyoutItemImageStyle";
-		const string DefaultFlyoutItemStyle = "IMPL_DefaultFlyoutItemStyle";
+		const string DefaultFlyoutItemLabelStyle = "FlyoutItemLabelStyle";
+		const string DefaultFlyoutItemImageStyle = "FlyoutItemImageStyle";
+		const string DefaultFlyoutItemStyle = "FlyoutItemStyle";
 
 		#region PropertyKeys
 
@@ -274,19 +275,25 @@ namespace Xamarin.Forms
 				return;
 
 			base.OnStyleClassChanged();
+			UpdateFlyoutItemStyles(_defaultFlyoutItemCell, this as IStyleSelectable);
+		}
+
+		static void UpdateFlyoutItemStyles(Grid flyoutItemCell, IStyleSelectable source)
+		{
 			List<string> bindableObjectStyle = new List<string>() {
 				DefaultFlyoutItemLabelStyle,
 				DefaultFlyoutItemImageStyle,
 				DefaultFlyoutItemStyle };
 
-			if (StyleClass != null)
-				foreach (var styleClass in StyleClass)
+			if (source?.Classes != null)
+				foreach (var styleClass in source.Classes)
 					bindableObjectStyle.Add(styleClass);
 
-			_defaultFlyoutItemCell.StyleClass = bindableObjectStyle;
-			_defaultFlyoutItemCell.Children.OfType<Label>().First()
+			flyoutItemCell
 				.StyleClass = bindableObjectStyle;
-			_defaultFlyoutItemCell.Children.OfType<Image>().First()
+			flyoutItemCell.Children.OfType<Label>().First()
+				.StyleClass = bindableObjectStyle;
+			flyoutItemCell.Children.OfType<Image>().First()
 				.StyleClass = bindableObjectStyle;
 		}
 
@@ -323,12 +330,6 @@ namespace Xamarin.Forms
 				{
 					Class = DefaultFlyoutItemStyle,
 				};
-
-				List<string> bindableObjectStyle = new List<string>() { defaultLabelClass.Class, defaultImageClass.Class, defaultGridClass.Class };
-
-				if (StyleClass != null)
-					foreach (var styleClass in StyleClass)
-						bindableObjectStyle.Add(styleClass);
 
 				var groups = new VisualStateGroupList();
 
@@ -418,10 +419,7 @@ namespace Xamarin.Forms
 					defaultLabelClass.Setters.Add(new Setter { Property = Label.HorizontalTextAlignmentProperty, Value = TextAlignment.Start });
 				}
 
-				grid.StyleClass = bindableObjectStyle;
-				label.StyleClass = bindableObjectStyle;
-				image.StyleClass = bindableObjectStyle;
-
+				UpdateFlyoutItemStyles(_defaultFlyoutItemCell, this as IStyleSelectable);
 				grid.Resources = new ResourceDictionary() { defaultGridClass, defaultLabelClass, defaultImageClass };
 				return grid;
 			});
