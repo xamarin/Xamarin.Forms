@@ -20,9 +20,6 @@ namespace Xamarin.Forms
 		const string DefaultFlyoutItemLabelStyle = "Default_FlyoutItemLabelStyle";
 		const string DefaultFlyoutItemImageStyle = "Default_FlyoutItemImageStyle";
 		const string DefaultFlyoutItemLayoutStyle = "Default_FlyoutItemLayoutStyle";
-		const string FlyoutItemLabelStyle = "FlyoutItemLabelStyle";
-		const string FlyoutItemImageStyle = "FlyoutItemImageStyle";
-		const string FlyoutItemLayoutStyle = "FlyoutItemLayoutStyle";
 
 		#region PropertyKeys
 
@@ -287,9 +284,9 @@ namespace Xamarin.Forms
 				DefaultFlyoutItemLabelStyle,
 				DefaultFlyoutItemImageStyle,
 				DefaultFlyoutItemLayoutStyle,
-				FlyoutItemLabelStyle,
-				FlyoutItemImageStyle,
-				FlyoutItemLayoutStyle };
+				FlyoutItem.LabelStyle,
+				FlyoutItem.ImageStyle,
+				FlyoutItem.GridStyle };
 
 			if (source?.Classes != null)
 				foreach (var styleClass in source.Classes)
