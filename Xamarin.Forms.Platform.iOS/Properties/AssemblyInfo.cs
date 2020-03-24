@@ -57,7 +57,7 @@ using UIKit;
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Material")]
-[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.iOS.UnitTests")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.UnitTests.iOS")]
 [assembly: Xamarin.Forms.Dependency(typeof(Deserializer))]
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 [assembly: ResolutionGroupName("Xamarin")]

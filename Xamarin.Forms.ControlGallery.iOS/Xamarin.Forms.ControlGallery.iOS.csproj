@@ -163,12 +163,6 @@
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Platform.iOS.UnitTests\Xamarin.Forms.Platform.iOS.UnitTests.csproj">
-      <Project>{52c50e88-7f15-45fe-a63c-8e7c76ca2bae}</Project>
-      <Name>Xamarin.Forms.Platform.iOS.UnitTests</Name>
-      <IsAppExtension>false</IsAppExtension>
-      <IsWatchApp>false</IsWatchApp>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS.csproj">
       <Project>{271193c1-6e7c-429c-a36d-3f1be5267231}</Project>
       <Name>Xamarin.Forms.Platform.iOS</Name>
@@ -184,6 +178,12 @@
     <ProjectReference Condition="'$(Use2017)' != 'true'" Include="..\Xamarin.Forms.Material.iOS\Xamarin.Forms.Material.iOS.csproj">
       <Project>{8A75B1DC-CEED-4B1B-8675-A7DFFD1E6DE4}</Project>
       <Name>Xamarin.Forms.Material.iOS</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Platform.UnitTests\iOS\Xamarin.Forms.Platform.UnitTests.iOS.csproj">
+      <Project>{22d43156-19ff-406a-8d4b-d4c151803032}</Project>
+      <Name>Xamarin.Forms.Platform.UnitTests.iOS</Name>
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
     </ProjectReference>

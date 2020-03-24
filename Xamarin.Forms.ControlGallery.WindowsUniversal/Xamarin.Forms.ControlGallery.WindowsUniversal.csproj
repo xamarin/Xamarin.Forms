@@ -117,13 +117,14 @@
       <Project>{7d13bac2-c6a4-416a-b07e-c169b199e52b}</Project>
       <Name>Xamarin.Forms.Maps</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Platform.UAP.UnitTests\Xamarin.Forms.Platform.UAP.UnitTests.csproj">
-      <Project>{8f245976-f555-4814-b935-9ad58f4d2871}</Project>
-      <Name>Xamarin.Forms.Platform.UAP.UnitTests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj">
       <Project>{00d8d049-ffaa-4759-8fc9-1eca30777f72}</Project>
       <Name>Xamarin.Forms.Platform.UAP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Platform.UnitTests\UWP\Xamarin.Forms.Platform.UnitTests.UWP.csproj"
+		AdditionalProperties="Configuration=$(Configuration)Library">
+      <Project>{ac06eeff-2a02-4b92-a33c-8ef20a165220}</Project>
+      <Name>Xamarin.Forms.Platform.UnitTests.UWP</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

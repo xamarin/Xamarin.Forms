@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F6E412E9-6591-44BE-A3D6-301C1DF9541A}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TemplateGuid>{c9e5eea5-ca05-42a1-839b-61506e0a37df}</TemplateGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Xamarin.Forms.Platform.UnitTests.Android</RootNamespace>
+    <AssemblyName>Xamarin.Forms.Platform.UnitTests.Android</AssemblyName>
+    <Deterministic>True</Deterministic>
+    <AndroidApplication Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">True</AndroidApplication>
+    <AndroidResgenFile Condition=" '$(AndroidApplication)' == 'True' ">Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass Condition=" '$(AndroidApplication)' == 'True' ">Resource</AndroidResgenClass>
+	<AndroidManifest Condition="'$(AndroidApplication)' == 'True' ">Properties\AndroidManifest.xml</AndroidManifest>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == '' AND '$(Use2017)' == 'true'">v9.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v10.0</AndroidTargetFrameworkVersion>
+    <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
+    <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
+    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+	<AndroidEnableMultiDex>True</AndroidEnableMultiDex>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+	<AndroidUseAapt2>False</AndroidUseAapt2>
+	<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+	<Optimize>False</Optimize>
+	<OutputPath>bin\Debug</OutputPath>
+	<DefineConstants>DEBUG;</DefineConstants>
+	<ErrorReport>prompt</ErrorReport> 
+	<WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+	<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	<AndroidSupportedAbis>armeabi-v7a;x86</AndroidSupportedAbis>
+	<Debugger>Xamarin</Debugger> 
+    <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
+	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidManagedSymbols>True</AndroidManagedSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugLibrary|AnyCPU'">
+    <DebugSymbols>True</DebugSymbols>
+    <OutputPath>bin\DebugLibrary\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseLibrary|AnyCPU'">
+    <DebugSymbols>True</DebugSymbols>
+    <OutputPath>bin\ReleaseLibrary\</OutputPath>
+    <Optimize>True</Optimize>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit">
+      <Version>3.12.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Browser">
+      <Version>1.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4">
+      <Version>1.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData">
+      <Version>2.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Migration">
+      <Version>1.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Palette">
+      <Version>1.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="BackgroundColorTests.cs" />
+    <Compile Include="CollectionViewTests.cs" />
+    <Compile Include="CornerRadiusTests.cs" />
+    <Compile Include="EmbeddingTests.cs" />
+    <Compile Include="IsEnabledTests.cs" />
+    <Compile Include="Issues.cs" />
+    <Compile Include="IsVisibleTests.cs" />
+    <Compile Include="MainActivity.cs" Condition=" '$(AndroidApplication)' == 'True' " />
+    <Compile Include="OpacityTests.cs" />
+    <Compile Include="PlatformTestFixture.cs" />
+    <Compile Include="PlatformTestSettings.cs" />
+    <Compile Include="RendererTests.cs" />
+    <Compile Include="Resources\Resource.designer.cs" Condition=" '$(AndroidApplication)' == 'True' " />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RotationTests.cs" />
+    <Compile Include="ScaleTests.cs" />
+    <Compile Include="TestClasses\_5560Model.cs" />
+    <Compile Include="TestingPlatformService.cs" />
+    <Compile Include="TextTests.cs" />
+    <Compile Include="TranslationTests.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(AndroidApplication)' == 'True' ">
+    <None Include="Resources\AboutResources.txt" />
+    <None Include="Assets\AboutAssets.txt" />
+    <None Include="Properties\AndroidManifest.xml" Condition=" '$(AndroidApplication)' == 'True' " /> 
+  </ItemGroup>
+  <ItemGroup Condition=" '$(AndroidApplication)' == 'True' ">
+    <AndroidResource Include="Resources\layout\Tabbar.xml" />
+    <AndroidResource Include="Resources\layout\Toolbar.xml" />
+    <AndroidResource Include="Resources\values\styles.xml" />
+    <AndroidResource Include="Resources\values\colors.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon_round.xml" />
+    <AndroidResource Include="Resources\mipmap-hdpi\icon.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\icon.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\icon.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\icon.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\icon.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Stubs\Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android %28Forwarders%29.csproj">
+      <Project>{6e53feb1-1100-46ae-8013-17bba35cc197}</Project>
+      <Name>Xamarin.Forms.Platform.Android %28Forwarders%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
+      <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
+      <Name>Xamarin.Forms.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj">
+      <Project>{4dcd0420-1168-4b77-86db-6196ee4bd491}</Project>
+      <Name>Xamarin.Forms.CustomAttributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup.csproj">
+      <Project>{3b72465b-acae-43ae-9327-10f372fe5f80}</Project>
+      <Name>Xamarin.Forms.Platform.Android.FormsViewGroup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android.csproj">
+      <Project>{0e16e70a-d6dd-4323-ad5d-363abff42d6a}</Project>
+      <Name>Xamarin.Forms.Platform.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xplat\Xamarin.Forms.Platform.UnitTests.csproj">
+      <Project>{0428e1a1-bfaf-40c4-ae25-453d8e1ec44f}</Project>
+      <Name>Xamarin.Forms.Platform.UnitTests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <LinkDescription Include="LinkDescription.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\drawable\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+</Project>

@@ -212,10 +212,6 @@
       <Project>{3b72465b-acae-43ae-9327-10f372fe5f80}</Project>
       <Name>Xamarin.Forms.Platform.Android.FormsViewGroup</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Platform.Android.UnitTests\Xamarin.Forms.Platform.Android.UnitTests.csproj">
-      <Project>{a4c57790-71d1-467c-a69e-2bd84cb6666c}</Project>
-      <Name>Xamarin.Forms.Platform.Android.UnitTests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android.csproj">
       <Project>{0e16e70a-d6dd-4323-ad5d-363abff42d6a}</Project>
       <Name>Xamarin.Forms.Platform.Android</Name>
@@ -227,6 +223,11 @@
     <ProjectReference Include="..\Xamarin.Forms.Material.Android\Xamarin.Forms.Material.Android.csproj">
       <Project>{e1586ce6-8eac-4388-a15a-1aabf108b5f8}</Project>
       <Name>Xamarin.Forms.Material.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Platform.UnitTests\Android\Xamarin.Forms.Platform.UnitTests.Android.csproj"
+		AdditionalProperties="Configuration=DebugLibrary">
+      <Project>{f6e412e9-6591-44be-a3d6-301c1df9541a}</Project>
+      <Name>Xamarin.Forms.Platform.UnitTests.Android</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

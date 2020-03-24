@@ -67,4 +67,4 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.DualScreen")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Platform.UAP.UnitTests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Platform.UnitTests.UWP")]
