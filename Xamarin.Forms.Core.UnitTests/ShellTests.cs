@@ -1170,5 +1170,31 @@ namespace Xamarin.Forms.Core.UnitTests
 			menuItem.StyleClass = new[] { "fooClass" };
 			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
 		}
+
+		[Test]
+		public void FlyoutItemLabelStyleDefault()
+		{
+			var classStyle = new Style(typeof(Label))
+			{
+				Setters = {
+					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+				},
+				Class = "FlyoutItemLabelStyle",
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+
+			shell.Items.Add(shellItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		}
+
 	}
 }

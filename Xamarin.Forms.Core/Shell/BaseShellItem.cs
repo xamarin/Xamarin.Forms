@@ -17,9 +17,12 @@ namespace Xamarin.Forms
 
 		bool _hasAppearing;
 		Grid _defaultFlyoutItemCell;
-		const string DefaultFlyoutItemLabelStyle = "FlyoutItemLabelStyle";
-		const string DefaultFlyoutItemImageStyle = "FlyoutItemImageStyle";
-		const string DefaultFlyoutItemStyle = "FlyoutItemStyle";
+		const string DefaultFlyoutItemLabelStyle = "Default_FlyoutItemLabelStyle";
+		const string DefaultFlyoutItemImageStyle = "Default_FlyoutItemImageStyle";
+		const string DefaultFlyoutItemLayoutStyle = "Default_FlyoutItemLayoutStyle";
+		const string FlyoutItemLabelStyle = "FlyoutItemLabelStyle";
+		const string FlyoutItemImageStyle = "FlyoutItemImageStyle";
+		const string FlyoutItemLayoutStyle = "FlyoutItemLayoutStyle";
 
 		#region PropertyKeys
 
@@ -283,7 +286,10 @@ namespace Xamarin.Forms
 			List<string> bindableObjectStyle = new List<string>() {
 				DefaultFlyoutItemLabelStyle,
 				DefaultFlyoutItemImageStyle,
-				DefaultFlyoutItemStyle };
+				DefaultFlyoutItemLayoutStyle,
+				FlyoutItemLabelStyle,
+				FlyoutItemImageStyle,
+				FlyoutItemLayoutStyle };
 
 			if (source?.Classes != null)
 				foreach (var styleClass in source.Classes)
@@ -328,7 +334,7 @@ namespace Xamarin.Forms
 
 				var defaultGridClass = new Style(typeof(Grid))
 				{
-					Class = DefaultFlyoutItemStyle,
+					Class = DefaultFlyoutItemLayoutStyle,
 				};
 
 				var groups = new VisualStateGroupList();
