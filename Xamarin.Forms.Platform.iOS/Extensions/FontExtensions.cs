@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platform.iOS
 					var formated = fontFile.FileNameWithExtension(ext);
 					var (hasFont, filePath) = FontRegistrar.HasFont(formated);
 					if (hasFont)
-						return fontFile.PostScriptName;
+						return filePath;
 				}
 			}
 			return fontFile.PostScriptName;

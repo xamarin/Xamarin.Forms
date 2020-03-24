@@ -15,15 +15,12 @@ namespace Xamarin.Forms.Platform.iOS
 			try
 			{
 				var data = NSData.FromStream(font.ResourceStream);
-				var fonts = UIKit.UIFont.FamilyNames.ToList();
 				var provider = new CGDataProvider(data);
 				var cGFont = CGFont.CreateFromProvider(provider);
+				var name = cGFont.PostScriptName;
 				if (CTFontManager.RegisterGraphicsFont(cGFont, out var error))
 				{
-
-					var newFonts = UIKit.UIFont.FamilyNames.ToList();
-					var diff = newFonts.Except(fonts).ToList();
-					return (true, diff.FirstOrDefault());
+					return (true, name);
 				}
 				Debug.WriteLine(error.Description);
 			}
