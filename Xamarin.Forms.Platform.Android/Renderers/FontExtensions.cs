@@ -59,6 +59,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		static (bool success, Typeface typeface) TryGetFromAssets(this string fontName)
 		{
+			//First check Alias
+			var (hasFontAlias, fontPostScriptName) = FontRegistrar.HasFont(fontName);
+			if (hasFontAlias)
+				return (true, Typeface.CreateFromFile(fontPostScriptName));
+
 			var isAssetFont = IsAssetFontFamily(fontName);
 			if (isAssetFont)
 			{
@@ -74,12 +79,11 @@ namespace Xamarin.Forms.Platform.Android
 
 
 			//copied text
-
 			var fontFile = FontFile.FromString(fontName);
 
 			if (!string.IsNullOrWhiteSpace(fontFile.Extension))
 			{
-				var (hasFont, fontPath) = FontRegistrar.HasFont(fontFile.FileNameWithExtension(), fontName);
+				var (hasFont, fontPath) = FontRegistrar.HasFont(fontFile.FileNameWithExtension());
 				if (hasFont)
 				{
 					return (true, Typeface.CreateFromFile(fontPath));
@@ -90,7 +94,7 @@ namespace Xamarin.Forms.Platform.Android
 				foreach (var ext in FontFile.Extensions)
 				{
 					var formated = fontFile.FileNameWithExtension(ext);
-					var (hasFont, fontPath) = FontRegistrar.HasFont(formated, fontName);
+					var (hasFont, fontPath) = FontRegistrar.HasFont(formated);
 					if (hasFont)
 					{
 						return (true, Typeface.CreateFromFile(fontPath));

@@ -20,11 +20,11 @@ namespace Xamarin.Forms.Internals
 		}
 
 		//TODO: Investigate making this Async
-		public static (bool hasFont, string fontPath) HasFont(string font, string fontName)
+		public static (bool hasFont, string fontPath) HasFont(string font)
 		{
 			try
 			{
-				if (!EmbeddedFonts.TryGetValue(font, out var foundFont) && !EmbeddedFonts.TryGetValue(fontName, out foundFont))
+				if (!EmbeddedFonts.TryGetValue(font, out var foundFont))
 				{
 					return (false, null);
 				}
