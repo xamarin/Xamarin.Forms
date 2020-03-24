@@ -191,6 +191,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdatePeekAreaInsets()
 		{
+			ListViewBase.Padding = new Windows.UI.Xaml.Thickness(Carousel.PeekAreaInsets.Left, Carousel.PeekAreaInsets.Top, Carousel.PeekAreaInsets.Right, Carousel.PeekAreaInsets.Bottom);
 			UpdateItemsSource();
 		}
 
@@ -392,6 +393,8 @@ namespace Xamarin.Forms.Platform.UWP
 					Style = (Windows.UI.Xaml.Style)UWPApp.Current.Resources["VerticalCarouselListStyle"]
 				};
 			}
+			
+			listView.Padding = new Windows.UI.Xaml.Thickness(Carousel.PeekAreaInsets.Left, Carousel.PeekAreaInsets.Top, Carousel.PeekAreaInsets.Right, Carousel.PeekAreaInsets.Bottom);
 
 			return listView;
 		}
