@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (!string.IsNullOrWhiteSpace(fontFile.Extension))
 			{
-				var (hasFont, _) = FontRegistrar.HasFont(fontFile.FileNameWithExtension());
+				var (hasFont, _) = FontRegistrar.HasFont(fontFile.FileNameWithExtension(), fontName);
 				if (hasFont)
 					return fontFile.PostScriptName;
 			}
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				foreach (var ext in FontFile.Extensions)
 				{
 					var formated = fontFile.FileNameWithExtension(ext);
-					var (hasFont, filePath) = FontRegistrar.HasFont(formated);
+					var (hasFont, filePath) = FontRegistrar.HasFont(formated, fontName);
 					if (hasFont)
 						return fontFile.PostScriptName;
 				}

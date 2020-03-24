@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!string.IsNullOrWhiteSpace(fontFile.Extension))
 			{
-				var (hasFont, fontPath) = FontRegistrar.HasFont(fontFile.FileNameWithExtension());
+				var (hasFont, fontPath) = FontRegistrar.HasFont(fontFile.FileNameWithExtension(), fontName);
 				if (hasFont)
 				{
 					return (true, Typeface.CreateFromFile(fontPath));
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 				foreach (var ext in FontFile.Extensions)
 				{
 					var formated = fontFile.FileNameWithExtension(ext);
-					var (hasFont, fontPath) = FontRegistrar.HasFont(formated);
+					var (hasFont, fontPath) = FontRegistrar.HasFont(formated, fontName);
 					if (hasFont)
 					{
 						return (true, Typeface.CreateFromFile(fontPath));
