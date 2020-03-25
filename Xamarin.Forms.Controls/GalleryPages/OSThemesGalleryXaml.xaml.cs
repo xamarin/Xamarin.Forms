@@ -2,10 +2,23 @@
 {
 	public partial class OSThemesGalleryXaml : ContentPage
 	{
-		public OSThemesGalleryXaml()
+        public Color LightColor { get; set; } = Color.Cyan;
+        public Color DarkColor { get; set; } = Color.CornflowerBlue;
+
+        public OSThemesGalleryXaml()
 		{
 			InitializeComponent();
+            BindingContext = this;
 		}
+
+		void TapGestureRecognizer_Tapped(System.Object sender, System.EventArgs e)
+		{
+            LightColor = LightColor == Color.Cyan ? Color.Red : Color.Cyan;
+            DarkColor = DarkColor == Color. CornflowerBlue ? Color.Yellow : Color.CornflowerBlue;
+
+            OnPropertyChanged(nameof(LightColor));
+            OnPropertyChanged(nameof(DarkColor));
+        }
 	}
 
 	public class CustomControl : ContentView

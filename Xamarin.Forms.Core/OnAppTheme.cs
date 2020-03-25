@@ -1,40 +1,29 @@
 ﻿namespace Xamarin.Forms
 {
-	public class OnAppTheme<T>
+	public class OnAppTheme<T> : BindableObject
 	{
-		T _light;
-		T _dark;
-		T _default;
-		bool _isLightSet;
-		bool _isDarkSet;
-		bool _isDefaultSet;
+		public static readonly BindableProperty LightProperty = BindableProperty.Create(nameof(Light), typeof(T), typeof(OnAppTheme<T>), default(T));
 
 		public T Light
 		{
-			get => _light;
-			set
-			{
-				_light = value;
-				_isLightSet = true;
-			}
+			get => (T)GetValue(LightProperty);
+			set => SetValue(LightProperty, value);
 		}
+
+		public static readonly BindableProperty DarkProperty = BindableProperty.Create(nameof(Dark), typeof(T), typeof(OnAppTheme<T>), default(T));
+
 		public T Dark
 		{
-			get => _dark;
-			set
-			{
-				_dark = value;
-				_isDarkSet = true;
-			}
+			get => (T)GetValue(DarkProperty);
+			set => SetValue(DarkProperty, value);
 		}
+
+		public static readonly BindableProperty DefaultProperty = BindableProperty.Create(nameof(Default), typeof(T), typeof(OnAppTheme<T>), default(T));
+
 		public T Default
 		{
-			get => _default;
-			set
-			{
-				_default = value;
-				_isDefaultSet = true;
-			}
+			get => (T)GetValue(DefaultProperty);
+			set => SetValue(DefaultProperty, value);
 		}
 
 		public static implicit operator T(OnAppTheme<T> onAppTheme)
@@ -43,9 +32,9 @@
 			{
 				default:
 				case AppTheme.Light:
-					return onAppTheme._isLightSet ? onAppTheme.Light : (onAppTheme._isDefaultSet ? onAppTheme.Default : default(T));
+					return onAppTheme.IsSet(LightProperty) ? onAppTheme.Light : (onAppTheme.IsSet(DefaultProperty) ? onAppTheme.Default : default(T));
 				case AppTheme.Dark:
-					return onAppTheme._isDarkSet ? onAppTheme.Dark : (onAppTheme._isDefaultSet ? onAppTheme.Default : default(T));
+					return onAppTheme.IsSet(DarkProperty) ? onAppTheme.Dark : (onAppTheme.IsSet(DefaultProperty) ? onAppTheme.Default : default(T));
 			}
 		}
 	}

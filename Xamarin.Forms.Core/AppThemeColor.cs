@@ -1,40 +1,29 @@
 ﻿namespace Xamarin.Forms
 {
-	public class AppThemeColor
+	public class AppThemeColor : BindableObject
 	{
-		Color _light;
-		Color _dark;
-		Color _default;
-		bool _isLightSet;
-		bool _isDarkSet;
-		bool _isDefaultSet;
+		public static readonly BindableProperty LightProperty = BindableProperty.Create(nameof(Light), typeof(Color), typeof(AppThemeColor), default(Color));
 
 		public Color Light
 		{
-			get => _light;
-			set
-			{
-				_light = value;
-				_isLightSet = true;
-			}
+			get => (Color)GetValue(LightProperty);
+			set => SetValue(LightProperty, value);
 		}
+
+		public static readonly BindableProperty DarkProperty = BindableProperty.Create(nameof(Dark), typeof(Color), typeof(AppThemeColor), default(Color));
+
 		public Color Dark
 		{
-			get => _dark;
-			set
-			{
-				_dark = value;
-				_isDarkSet = true;
-			}
+			get => (Color)GetValue(DarkProperty);
+			set => SetValue(DarkProperty, value);
 		}
+
+		public static readonly BindableProperty DefaultProperty = BindableProperty.Create(nameof(Default), typeof(Color), typeof(AppThemeColor), default(Color));
+
 		public Color Default
 		{
-			get => _default;
-			set
-			{
-				_default = value;
-				_isDefaultSet = true;
-			}
+			get => (Color)GetValue(DefaultProperty);
+			set => SetValue(DefaultProperty, value);
 		}
 
 		public static implicit operator Color(AppThemeColor appThemeColor)
@@ -43,9 +32,9 @@
 			{
 				default:
 				case AppTheme.Light:
-					return appThemeColor._isLightSet ? appThemeColor.Light : (appThemeColor._isDefaultSet ? appThemeColor.Default : default);
+					return appThemeColor.IsSet(LightProperty) ? appThemeColor.Light : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(Color));
 				case AppTheme.Dark:
-					return appThemeColor._isDarkSet ? appThemeColor.Dark : (appThemeColor._isDefaultSet ? appThemeColor.Default : default);
+					return appThemeColor.IsSet(DarkProperty) ? appThemeColor.Dark : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(Color));
 			}
 		}
 	}

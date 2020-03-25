@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Content.Res;
 using Android.OS;
 #if __ANDROID_29__
 using AndroidX.Core.Content;
@@ -100,6 +101,13 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
+		}
+
+		protected override void OnConfigurationChanged(Configuration newConfig)
+		{
+			base.OnConfigurationChanged(newConfig);
+
+			Element.Resources.Reload();
 		}
 
 		void UpdateHeight()
