@@ -17,6 +17,7 @@ parameters:
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
+  useMSBuildTask: 'false'
 
 jobs:
   - job: ${{ parameters.name }}
@@ -71,6 +72,17 @@ jobs:
     - script: build.cmd -Target BuildForNuget -ScriptArgs '-configuration="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
       name: winbuild
       displayName: 'Build Projects For Nuget'
+      condition: ne(${{ parameters.useMSBuildTask }}, 'true')
+
+    - task: MSBuild@1
+      displayName: 'Build solution ${{ parameters.slnPath }}'
+      name: winslnbuild
+      condition: eq(${{ parameters.useMSBuildTask }}, 'true')
+      inputs:
+        solution: ${{ parameters.slnPath }}
+        platform: '$(BuildPlatform)'
+        configuration: '$(BuildConfiguration)'
+        msbuildArguments: ${{ parameters.msbuildExtraArguments }} /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
 
     - task: VSTest@2
       displayName: 'Unit Tests'
