@@ -13,11 +13,14 @@ namespace Xamarin.Forms.Material.iOS
 	{
 		BasicColorScheme _defaultColorScheme;
 		BasicColorScheme _colorScheme;
+		ContainerScheme _containerScheme;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
 			_colorScheme?.Dispose();
 			_colorScheme = CreateColorScheme();
+			_containerScheme?.Dispose();
+			_containerScheme = new ContainerScheme();
 
 			base.OnElementChanged(e);
 
@@ -51,11 +54,7 @@ namespace Xamarin.Forms.Material.iOS
 
 		protected virtual void ApplyTheme()
 		{
-			// TODO: Fix this once Google implements the new way.
-
-#pragma warning disable CS0618 // Type or member is obsolete
-			ProgressViewColorThemer.ApplyColorScheme(_colorScheme, Control);
-#pragma warning restore CS0618 // Type or member is obsolete
+			Control.ApplyTheme(_containerScheme);
 		}
 
 		protected override MProgressView CreateNativeControl() => new MProgressView();

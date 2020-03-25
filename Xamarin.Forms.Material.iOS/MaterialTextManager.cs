@@ -17,28 +17,30 @@ namespace Xamarin.Forms.Material.iOS
 	{
 		public static void Init(IMaterialEntryRenderer element, IMaterialTextField textField, IFontElement fontElement)
 		{
+			var containerScheme = textField.ContainerScheme;
 			textField.TextInput.ClearButtonMode = UITextFieldViewMode.Never;
 			textField.ActiveTextInputController = new MTextInputControllerFilled(textField.TextInput);
 			textField.TextInput.TextInsetsMode = TextInputTextInsetsMode.IfContent;
-			//textField.TypographyScheme = CreateTypographyScheme();
-			//textField.ColorScheme = (SemanticColorScheme)CreateColorScheme();
+			containerScheme.TypographyScheme = CreateTypographyScheme();
+			containerScheme.ColorScheme = (SemanticColorScheme)CreateColorScheme();
 			ApplyTypographyScheme(textField, fontElement);
 			ApplyTheme(textField, element);
 		}
+
 		public static void ApplyTypographyScheme(IMaterialTextField textField, IFontElement fontElement)
 		{
-			var containerScheme = new ContainerScheme();
-			containerScheme.ColorScheme  = (SemanticColorScheme)CreateColorScheme();
-			containerScheme.TypographyScheme = CreateTypographyScheme();
+			var containerScheme = textField.ContainerScheme;
 			textField.TextInput.Font = fontElement?.ToUIFont();
-			//textField.TypographyScheme.Subtitle1 = textField.TextInput.Font;
-			(textField.ActiveTextInputController as MTextInputControllerFilled)
-				.ApplyTheme(containerScheme);
+			containerScheme.TypographyScheme.Subtitle1 = textField.TextInput.Font;
+			ApplyContainerTheme(textField);
+		}
 
-//#pragma warning disable CS0618 // Type or member is obsolete
-//			TextFieldTypographyThemer.ApplyTypographyScheme(textField.TypographyScheme, textField.TextInput);
-//			TextFieldTypographyThemer.ApplyTypographyScheme(textField.TypographyScheme, textField.ActiveTextInputController);
-//#pragma warning restore CS0618 // Type or member is obsolete
+		static void ApplyContainerTheme(IMaterialTextField textField)
+		{
+			var containerScheme = textField.ContainerScheme;
+
+			if (textField.ActiveTextInputController is MTextInputControllerFilled filled)
+				filled.ApplyTheme(containerScheme);
 		}
 
 		public static void ApplyTheme(IMaterialTextField textField, IMaterialEntryRenderer element)
@@ -49,9 +51,8 @@ namespace Xamarin.Forms.Material.iOS
 			if (textField.ActiveTextInputController == null)
 				return;
 
-//#pragma warning disable CS0618 // Type or member is obsolete
-//			FilledTextFieldColorThemer.ApplySemanticColorScheme(textField.ColorScheme, (MTextInputControllerFilled)textField.ActiveTextInputController);
-//#pragma warning restore CS0618 // Type or member is obsolete
+			textField.ContainerScheme.ColorScheme = (SemanticColorScheme)CreateColorScheme();
+			ApplyContainerTheme(textField);
 
 			var textColor = MaterialColors.GetEntryTextColor(element.TextColor);
 			var placeHolderColors = MaterialColors.GetPlaceHolderColor(element.PlaceholderColor, element.TextColor);
@@ -88,8 +89,8 @@ namespace Xamarin.Forms.Material.iOS
 		public static void UpdateTextColor(IMaterialTextField textField, IMaterialEntryRenderer element)
 		{
 			var uIColor = MaterialColors.GetEntryTextColor(element.TextColor);
-			//textField.ColorScheme.OnSurfaceColor = uIColor;
-			//textField.ColorScheme.PrimaryColor = uIColor;
+			textField.ContainerScheme.ColorScheme.OnSurfaceColor = uIColor;
+			textField.ContainerScheme.ColorScheme.PrimaryColor = uIColor;
 		}
 
 		static IColorScheming CreateColorScheme()
