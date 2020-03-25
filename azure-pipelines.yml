@@ -81,7 +81,7 @@ stages:
         includeUwp: false
         includeAndroid: false
         includeNonUwpAndNonAndroid: false
-        useMSBuildTask: true
+        includePages: true
   
     - job: nuget_pack
       workspace:
