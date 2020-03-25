@@ -113,9 +113,9 @@
       <Project>{9db2f292-8034-4e06-89ad-98bbda4306b9}</Project>
       <Name>Xamarin.Forms.Xaml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xamarin.Forms.Material.Android\Xamarin.Forms.Material.Android.csproj">
-      <Project>{e1586ce6-8eac-4388-a15a-1aabf108b5f8}</Project>
-      <Name>Xamarin.Forms.Material.Android</Name>
+    <ProjectReference Include="..\PagesGallery\PagesGallery.csproj">
+      <Project>{343ebf1b-f26d-4d4d-b7d9-f6e25247af31}</Project>
+      <Name>PagesGallery</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
