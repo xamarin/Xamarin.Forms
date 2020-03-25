@@ -238,7 +238,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
 #if __XCODE11__
-			// Make sure the cells adhere to changes UI theme
+			// Make sure the control adheres to changes in UI theme
 			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				Control.SetNeedsDisplay();
 #endif

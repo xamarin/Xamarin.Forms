@@ -181,7 +181,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
 #if __XCODE11__
-			// Make sure the control adheres to changes UI theme
+			// Make sure the control adheres to changes in UI theme
 			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				UpdateTextColor();
 #endif
