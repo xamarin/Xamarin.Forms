@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.Pages", "..\..\Xamarin.Forms.Pages\Xamarin.Forms.Pages.csproj", "{B237F558-EC6C-42FD-97AF-26533AF79907}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.Core", "..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj", "{C47CA368-46E4-4FF6-A273-6878D0899EE3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.Pages.Azure", "..\..\Xamarin.Forms.Pages.Azure\Xamarin.Forms.Pages.Azure.csproj", "{33104A4F-424D-4580-858C-CAF40EA33C23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Forms.Pages.UnitTests", "..\..\Xamarin.Forms.Pages.UnitTests\Xamarin.Forms.Pages.UnitTests.csproj", "{447DC60E-C485-4427-8CF7-50074C6B61DE}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Xamarin.Flex\Xamarin.Flex.projitems*{c47ca368-46e4-4ff6-a273-6878d0899ee3}*SharedItemsImports = 5
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B237F558-EC6C-42FD-97AF-26533AF79907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B237F558-EC6C-42FD-97AF-26533AF79907}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B237F558-EC6C-42FD-97AF-26533AF79907}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B237F558-EC6C-42FD-97AF-26533AF79907}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C47CA368-46E4-4FF6-A273-6878D0899EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C47CA368-46E4-4FF6-A273-6878D0899EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C47CA368-46E4-4FF6-A273-6878D0899EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C47CA368-46E4-4FF6-A273-6878D0899EE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33104A4F-424D-4580-858C-CAF40EA33C23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33104A4F-424D-4580-858C-CAF40EA33C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33104A4F-424D-4580-858C-CAF40EA33C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33104A4F-424D-4580-858C-CAF40EA33C23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{447DC60E-C485-4427-8CF7-50074C6B61DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{447DC60E-C485-4427-8CF7-50074C6B61DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{447DC60E-C485-4427-8CF7-50074C6B61DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{447DC60E-C485-4427-8CF7-50074C6B61DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB92126F-C839-4CBE-9EDF-6D32F2E9BBB8}
+	EndGlobalSection
+EndGlobal
