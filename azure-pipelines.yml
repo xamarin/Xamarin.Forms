@@ -79,7 +79,7 @@ stages:
         vmPool: $(vs2019VmPool)
         slnPath: build/Xamarin.Forms.Pages.sln
         includeUwp: false
-        includeAndroid: false:
+        includeAndroid: false
         includeNonUwpAndNonAndroid: false
   
     - job: nuget_pack
