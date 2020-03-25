@@ -39,7 +39,7 @@
 
 		public static implicit operator Color(AppThemeColor appThemeColor)
 		{
-			switch (((IAppThemeProvider)Application.Current).RequestedTheme)
+			switch (Application.Current?.RequestedTheme)
 			{
 				default:
 				case AppTheme.Light:

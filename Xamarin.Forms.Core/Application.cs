@@ -11,7 +11,7 @@ using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms
 {
-	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>, IAppThemeProvider
+	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>
 	{
 		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
@@ -156,8 +156,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		// Replace with Essentials APIs
-		public AppTheme RequestedTheme => Device.PlatformServices.GetRequestedTheme();
+		public AppTheme RequestedTheme => Device.PlatformServices.RequestedTheme;
 
 		public event EventHandler<ModalPoppedEventArgs> ModalPopped;
 

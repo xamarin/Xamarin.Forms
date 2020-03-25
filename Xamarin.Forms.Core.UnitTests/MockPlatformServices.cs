@@ -203,11 +203,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new SizeRequest(new Size (100, 20));
 		}
 
-		public AppTheme GetRequestedTheme()
-		{
-			// Is mocked at Application level
-			return AppTheme.Unspecified;
-		}
+		public AppTheme RequestedTheme { get; set; }
 	}
 
 	internal class MockDeserializer : Internals.IDeserializer
@@ -256,10 +252,8 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 	}
 
-	public class MockApplication : Application, IAppThemeProvider
+	public class MockApplication : Application
 	{
-		public new AppTheme RequestedTheme { get; set; }
-
 		public MockApplication ()
 		{
 		}

@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Xaml
 
 		object GetValue()
 		{
-			switch (((IAppThemeProvider)Application.Current).RequestedTheme)
+			switch (Application.Current?.RequestedTheme)
 			{
 				default:
 				case AppTheme.Light:

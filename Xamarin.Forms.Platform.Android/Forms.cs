@@ -856,20 +856,22 @@ namespace Xamarin.Forms
 				return Platform.Android.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 			}
 
-			#region Remove when Essentials API is used
-			public AppTheme GetRequestedTheme()
+			#region Replace with Essentials API
+			public AppTheme RequestedTheme
 			{
-				
-				var nightMode = _context.Resources.Configuration.UiMode & UiMode.NightMask;
-				switch (nightMode)
+				get
 				{
-					case UiMode.NightYes:
-						return AppTheme.Dark;
-					case UiMode.NightNo:
-						return AppTheme.Light;
-					default:
-						return AppTheme.Unspecified;
-				};
+					var nightMode = _context.Resources.Configuration.UiMode & UiMode.NightMask;
+					switch (nightMode)
+					{
+						case UiMode.NightYes:
+							return AppTheme.Dark;
+						case UiMode.NightNo:
+							return AppTheme.Light;
+						default:
+							return AppTheme.Unspecified;
+					};
+				}
 			}
 			#endregion
 
