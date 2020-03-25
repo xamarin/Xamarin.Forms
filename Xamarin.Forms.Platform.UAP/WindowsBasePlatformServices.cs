@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UISettingsColorValuesChanged(UISettings sender, object args)
 		{
-			Application.Current?.OnRequestedThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));
+			Device.BeginInvokeOnMainThread(() => Application.Current?.OnRequestedThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme)));
 		}
 
 		async Task TryAllDispatchers(Action action)
