@@ -80,7 +80,6 @@ jobs:
       condition: eq(${{ parameters.useMSBuildTask }}, 'true')
       inputs:
         solution: ${{ parameters.slnPath }}
-        platform: '$(BuildPlatform)'
         configuration: '$(BuildConfiguration)'
         msbuildArguments: ${{ parameters.msbuildExtraArguments }} /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
 
