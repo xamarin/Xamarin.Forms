@@ -10,6 +10,11 @@ namespace Xamarin.Forms.Controls
 				Text = Application.Current.RequestedTheme.ToString()
 			};
 
+			Application.Current.RequestedThemeChanged += (s, a) =>
+			{
+				currentThemeLabel.Text = Application.Current.RequestedTheme.ToString();
+			};
+
 			var onThemeLabel = new Label
 			{
 				Text = "This text is green or red depending on Light (or default) or Dark",

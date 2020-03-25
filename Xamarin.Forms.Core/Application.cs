@@ -158,6 +158,12 @@ namespace Xamarin.Forms
 
 		public AppTheme RequestedTheme => Device.PlatformServices.RequestedTheme;
 
+		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void OnRequestedThemeChanged(AppThemeChangedEventArgs args)
+			=> RequestedThemeChanged?.Invoke(this, args);
+
 		public event EventHandler<ModalPoppedEventArgs> ModalPopped;
 
 		public event EventHandler<ModalPoppingEventArgs> ModalPopping;
