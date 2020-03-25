@@ -64,14 +64,15 @@ jobs:
   parameters:
     name: win
     displayName: Build Windows Phase
-    vmImage: $(win2019VmImage)
+    vmImage: $(vs2019VmImage)
+    vmPool: $(vs2019VmPool)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
     name: android_legacy
     displayName: Build Android [Legacy Renderers]
-    vmImage: $(macOSVmImage)
+    vmImage: $(macOSXVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="LEGACY" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
     buildConfiguration: $(AndroidBuildConfiguration)
@@ -81,7 +82,7 @@ jobs:
   parameters:
     name: android_preappcompact
     displayName: Build Android [Pre-AppCompat]
-    vmImage: $(macOSVmImage)
+    vmImage: $(macOSXVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="PREAPPCOMPAT" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
     buildConfiguration: $(AndroidBuildConfiguration)
@@ -91,7 +92,7 @@ jobs:
   parameters:
     name: android_fast
     displayName: Build Android [Fast Renderers]
-    vmImage: $(macOSVmImage)
+    vmImage: $(macOSXVmImage)
     targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="FAST" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
     buildConfiguration: $(AndroidBuildConfiguration)
@@ -101,22 +102,22 @@ jobs:
   workspace:
     clean: all
   displayName: OSX Phase
-  pool:
-    name: $(macOSVmImage)
-    demands:
-      - Agent.OS -equals darwin
-      - sh
-      - msbuild
-      - Xamarin.iOS
   strategy:
     matrix:
       BuildForVS2017:
         buildForVS2017:  'true'
+        imageName : 'macOS-10.14'
       BuildForVS2019:
         buildForVS2017:  'false'
+        imageName : 'macOS-10.14'
+  pool:
+    vmImage: $(imageName)
+    demands:
+      - sh
+      - msbuild
+      - Xamarin.iOS
   variables:
     provisionator.osxPath : 'build/provisioning/provisioning.csx'
-    provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
     buildConfiguration: $(DefaultBuildConfiguration)
     slnPath: $(SolutionFile)
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
@@ -133,7 +134,8 @@ jobs:
    - win
   condition: succeeded()
   pool:
-    name: $(winVmImage)
+    name: $(vs2019VmPool)
+    vmImage: $(vs2019VmImage)
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
@@ -147,7 +149,7 @@ jobs:
     displayName: Sign Phase
     dependsOn: nuget_pack
     pool:
-      name: $(signVmImage)
+      name: $(signVmPool)
     steps:
       - template: build/steps/build-sign.yml
     condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))

@@ -29,13 +29,16 @@ namespace Xamarin.Forms
 				propertyChanged: OnSwipeItemsChanged);
 
 		public static readonly BindableProperty RightItemsProperty =
-			BindableProperty.Create(nameof(RightItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator);
+			BindableProperty.Create(nameof(RightItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
+				propertyChanged: OnSwipeItemsChanged);
 
 		public static readonly BindableProperty TopItemsProperty =
-			BindableProperty.Create(nameof(TopItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator);
+			BindableProperty.Create(nameof(TopItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
+				propertyChanged: OnSwipeItemsChanged);
 
 		public static readonly BindableProperty BottomItemsProperty =
-			BindableProperty.Create(nameof(BottomItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator);
+			BindableProperty.Create(nameof(BottomItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
+				propertyChanged: OnSwipeItemsChanged);
 
 		public SwipeItems LeftItems
 		{
@@ -69,7 +72,16 @@ namespace Xamarin.Forms
 		public event EventHandler<SwipeStartedEventArgs> SwipeStarted;
 		public event EventHandler<SwipeChangingEventArgs> SwipeChanging;
 		public event EventHandler<SwipeEndedEventArgs> SwipeEnded;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<OpenSwipeEventArgs> OpenRequested;
+
 		public event EventHandler CloseRequested;
+
+		public void Open(OpenSwipeItem openSwipeItem)
+		{
+			OpenRequested?.Invoke(this, new OpenSwipeEventArgs(openSwipeItem));
+		}
 
 		public void Close()
 		{
@@ -118,7 +130,7 @@ namespace Xamarin.Forms
 			swipeItems.Parent = this;
 
 			foreach (var swipeItem in swipeItems)
-				((VisualElement)swipeItem).Parent = swipeItems;
+				((Element)swipeItem).Parent = swipeItems;
 		}
 	}
 }
