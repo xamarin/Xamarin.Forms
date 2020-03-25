@@ -73,14 +73,29 @@ if(bases.length == 0){
 				uri = new Uri(LocalScheme + url, UriKind.RelativeOrAbsolute);
 			}
 
-			var cookies = Element.Cookies?.GetCookies(uri);
-			if (cookies != null)
+			if (Element.Cookies?.Count > 0 || Element.setUserAgentString != null)
 			{
-				SyncNativeCookies(url);
-
 				try
 				{
 					var httpRequestMessage = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
+
+					if (Element.Cookies?.Count > 0)
+					{
+						//Set the Cookies...
+						var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+						foreach (Cookie cookie in Element.Cookies?.GetCookies(uri))
+						{
+							HttpCookie httpCookie = new HttpCookie(cookie.Name, cookie.Domain, cookie.Path);
+							httpCookie.Value = cookie.Value;
+							filter.CookieManager.SetCookie(httpCookie, false);
+						}
+					}
+
+					if (Element.setUserAgentString != null)
+					{
+						httpRequestMessage.Headers.Add("User-Agent", Element.setUserAgentString);
+					}
+
 					Control.NavigateWithHttpRequestMessage(httpRequestMessage);
 				}
 				catch (System.Exception exc)
