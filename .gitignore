@@ -72,4 +72,4 @@ caketools/
 .XamarinFormsVersionFile.txt
 .idea
 Visual Studio 2019/**
-build/Xamarin.Forms.Pages/packages
+build/packages
