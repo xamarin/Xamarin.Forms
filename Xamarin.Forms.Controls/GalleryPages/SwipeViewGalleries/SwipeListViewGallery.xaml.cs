@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 
 		async void OnSwipeListViewItemTapped(object sender, ItemTappedEventArgs args)
 		{
-			await DisplayAlert("OnSwipeListViewItemTapped", "You have been tapped a ListView item", "Ok");
+			await DisplayAlert("OnSwipeListViewItemTapped", "You have tapped a ListView item", "Ok");
 		}
 	}
 }

@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_watchForLongPress)
 				{
-					// Feed the gesture through the LongPress detector; for this to wor we *must* return true 
+					// Feed the gesture through the LongPress detector; for this to work we *must* return true 
 					// afterward (or the LPGD goes nuts and immediately fires onLongPress)
 					LongPressGestureDetector.OnTouchEvent(e);
 					return true;

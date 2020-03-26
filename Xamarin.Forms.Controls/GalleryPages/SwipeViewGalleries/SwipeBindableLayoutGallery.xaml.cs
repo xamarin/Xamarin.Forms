@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 	[Preserve(AllMembers = true)]
 	public class SwipeViewGalleryViewModel : BindableObject
 	{
-		private ObservableCollection<Message> _messages;
+		ObservableCollection<Message> _messages;
 
 		public SwipeViewGalleryViewModel()
 		{
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 		public ICommand DeleteCommand => new Command(OnDelete);
 		public ICommand TapCommand => new Command(OnTap);
 
-		private void LoadMessages()
+		void LoadMessages()
 		{
 			for (int i = 0; i < 100; i++)
 			{

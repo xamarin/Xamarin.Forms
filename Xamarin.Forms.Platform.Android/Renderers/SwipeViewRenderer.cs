@@ -1027,7 +1027,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_contentView != null)
 			{
-				var swipeThreshold = (float)(_contentView.Width * 0.8);
+				var contentWidth = (float)_context.FromPixels(_contentView.Width);
+				var swipeThreshold = contentWidth * 0.8f;
 
 				return swipeThreshold;
 			}
