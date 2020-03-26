@@ -141,6 +141,13 @@ namespace Xamarin.Forms.Platform.iOS
 				carouselPosition = 0;
 			}
 
+			//If we are adding a new item make sure to mantain the CurrentItemPosition
+			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
+				&& currentItemPosition != -1)
+			{
+				carouselPosition = currentItemPosition;
+			}
+
 			SetCurrentItem(carouselPosition);
 			SetPosition(carouselPosition);
 		}

@@ -240,6 +240,13 @@ namespace Xamarin.Forms.Platform.Android
 				carouselPosition = 0;
 			}
 
+			//If we are adding a new item make sure to mantain the CurrentItemPosition
+			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
+				&& currentItemPosition != -1)
+			{
+				carouselPosition = currentItemPosition;
+			}
+
 			_gotoPosition = -1;
 
 			SetCurrentItem(carouselPosition);
