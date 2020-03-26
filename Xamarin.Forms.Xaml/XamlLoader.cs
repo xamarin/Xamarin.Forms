@@ -93,6 +93,7 @@ namespace Xamarin.Forms.Xaml
 					var rootnode = new RuntimeRootNode(new XmlType(reader.NamespaceURI, reader.Name, null), view, (IXmlNamespaceResolver)reader) { LineNumber = ((IXmlLineInfo)reader).LineNumber, LinePosition = ((IXmlLineInfo)reader).LinePosition };
 					if (XamlFilePathAttribute.GetFilePathForObject(view) is string path) {
 						VisualDiagnostics.RegisterSourceInfo(view, new Uri($"{path};assembly={view.GetType().GetTypeInfo().Assembly.GetName().Name}", UriKind.Relative), ((IXmlLineInfo)rootnode).LineNumber, ((IXmlLineInfo)rootnode).LinePosition);
+						VisualDiagnostics.SendVisualTreeChanged(null, view);
 					}
 					XamlParser.ParseXaml(rootnode, reader);
 #pragma warning disable 0618
@@ -143,6 +144,7 @@ namespace Xamarin.Forms.Xaml
 					if (XamlFilePathAttribute.GetFilePathForObject(inflatedView) is string path)
 					{
 						VisualDiagnostics.RegisterSourceInfo(inflatedView, new Uri($"{path};assembly={inflatedView.GetType().GetTypeInfo().Assembly.GetName().Name}", UriKind.Relative), ((IXmlLineInfo)rootnode).LineNumber, ((IXmlLineInfo)rootnode).LinePosition);
+						VisualDiagnostics.SendVisualTreeChanged(null, inflatedView);
 					}
 					visitorContext.RootElement = inflatedView as BindableObject;
 
