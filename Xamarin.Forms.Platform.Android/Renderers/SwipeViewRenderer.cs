@@ -566,7 +566,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var items = GetSwipeItemsByDirection();
 
-			if (items == null)
+			if (items == null || items.Count == 0)
 				return;
 
 			_actionView = new LinearLayoutCompat(_context);
