@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			public ViewCellContainer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
 			{
-
+				// Added default constructor to prevent crash when accessing selected row in ListViewAdapter.Dispose
 			}
 
 			public ViewCellContainer(Context context, IVisualElementRenderer view, ViewCell viewCell, View parent,
