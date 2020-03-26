@@ -1200,6 +1200,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem)
 		{
+			if (_isOpen)
+				return;
+
 			switch (openSwipeItem)
 			{
 				case OpenSwipeItem.BottomItems:

@@ -1159,6 +1159,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem)
 		{
+			if (_isOpen)
+				return;
+
 			switch (openSwipeItem)
 			{
 				case OpenSwipeItem.BottomItems:
