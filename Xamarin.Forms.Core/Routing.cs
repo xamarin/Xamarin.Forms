@@ -90,7 +90,7 @@ namespace Xamarin.Forms
 
 		internal static Uri Remove(Uri uri, bool implicitRoutes, bool defaultRoutes)
 		{
-			uri = ShellUriHandler.FormatUri(uri);
+			uri = ShellUriHandler.FormatUri(uri, null);
 
 			string[] parts = uri.OriginalString.TrimEnd(_pathSeparator[0]).Split(_pathSeparator[0]);
 
