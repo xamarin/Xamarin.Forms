@@ -1,17 +1,38 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms.Xaml
 {
 	[ContentProperty(nameof(Default))]
-	public class OnAppThemeExtension : IMarkupExtension
+	public class OnAppThemeExtension : IMarkupExtension, INotifyPropertyChanged, IDisposable
 	{
-		// See Application.RequestedTheme
+		public OnAppThemeExtension()
+		{
+			Application.Current.RequestedThemeChanged += RequestedThemeChanged;
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected void OnPropertyChanged([CallerMemberName] string propName = null)
+			=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
 
 		public object Default { get; set; }
 		public object Light { get; set; }
 		public object Dark { get; set; }
+
+		private object _actualValue;
+		public object ActualValue
+		{
+			get => _actualValue;
+			private set
+			{
+				_actualValue = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public IValueConverter Converter { get; set; }
 
@@ -46,10 +67,10 @@ namespace Xamarin.Forms.Xaml
 			var value = GetValue();
 			var info = propertyType.GetTypeInfo();
 			if (value == null && info.IsValueType)
-				return Activator.CreateInstance(propertyType);
+				ActualValue = Activator.CreateInstance(propertyType);
 
 			if (Converter != null)
-				return Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
+				ActualValue = Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
 
 			var converterProvider = serviceProvider?.GetService<IValueConverterProvider>();
 			if (converterProvider != null)
@@ -80,15 +101,25 @@ namespace Xamarin.Forms.Xaml
 					}
 				}
 
-				return converterProvider.Convert(value, propertyType, minforetriever, serviceProvider);
+				ActualValue = converterProvider.Convert(value, propertyType, minforetriever, serviceProvider);
 			}
 			if (converterProvider != null)
-				return converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
+				ActualValue = converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
 
 			var ret = value.ConvertTo(propertyType, () => pi, serviceProvider, out Exception exception);
 			if (exception != null)
 				throw exception;
-			return ret;
+			ActualValue = ret;
+
+			if (!(value is Binding))
+				return new Binding(nameof(ActualValue), source: this);
+			else
+				return ret;
+		}
+
+		public void Dispose()
+		{
+			Application.Current.RequestedThemeChanged -= RequestedThemeChanged;
 		}
 
 		object GetValue()
@@ -101,6 +132,11 @@ namespace Xamarin.Forms.Xaml
 				case AppTheme.Dark:
 					return Dark ?? Default;
 			}
+		}
+
+		void RequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
+		{
+			ActualValue = GetValue();
 		}
 	}
 }

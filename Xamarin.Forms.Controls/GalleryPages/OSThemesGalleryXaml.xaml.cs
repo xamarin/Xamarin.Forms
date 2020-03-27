@@ -9,7 +9,9 @@
 		{
 			InitializeComponent();
             BindingContext = this;
-		}
+
+			Application.Current.RequestedThemeChanged += (_, __) => BindingContext = this;
+        }
 
 		void TapGestureRecognizer_Tapped(System.Object sender, System.EventArgs e)
 		{

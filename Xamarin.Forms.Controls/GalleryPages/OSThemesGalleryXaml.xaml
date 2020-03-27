@@ -35,11 +35,11 @@
                 </Label.TextColor>
             </Label>
             <Label Style="{DynamicResource Key=OSThemeStyle}">This text is green or red depending on Light (or default) or Dark (through style)</Label>
-            <Label TextColor="{DynamicResource MyColor}">This text is HotPink or Yellow depending on Light (or default) or Dark (through AppThemeColor)</Label>
-            <Label TextColor="{StaticResource MyColor}">This text is HotPink or Yellow depending on Light (or default) or Dark (through AppThemeColor)</Label>
+            <Label TextColor="{DynamicResource MyColor}">This text is HotPink or Yellow depending on Light (or default) or Dark (through DynamicResource)</Label>
+            <Label TextColor="{StaticResource MyColor}">This text is HotPink or Yellow depending on Light (or default) or Dark (through StaticResource)</Label>
             <Label x:Name="cssStyledLabel">This text is Purple or Orange depending on Light (or default) or Dark (through CSS)</Label>
             <Label>The image below is a Xamarin logo or fruits depending on Light (or default) or Dark</Label>
-            <Image Source="{OnAppTheme Light=xamarinlogo, Dark=Fruits.jpg}" />
+            <Image Source="{OnAppTheme Light=xamarinlogo.png, Dark=Fruits.jpg}" />
             <Label Text="This text changes colors through data binding (tap me)">
                 <Label.TextColor>
                     <OnAppTheme x:DataType="Color" Light="{Binding LightColor}" Dark="{Binding DarkColor}" />
