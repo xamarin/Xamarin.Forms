@@ -694,23 +694,18 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// <summary>
 		/// Handles focus events.
 		/// </summary>
-		void OnFocused(object sender, EventArgs e)
+		protected virtual void OnFocused(object sender, EventArgs e)
 		{
 			if (null != Element)
 			{
 				Element.SetValue(VisualElement.IsFocusedPropertyKey, true);
-			}
-
-			if (NativeView is IRotaryActionWidget ra)
-			{
-				ra.Activate();
 			}
 		}
 
 		/// <summary>
 		/// Handles unfocus events.
 		/// </summary>
-		void OnUnfocused(object sender, EventArgs e)
+		protected virtual void OnUnfocused(object sender, EventArgs e)
 		{
 			if (null != Element)
 			{

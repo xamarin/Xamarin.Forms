@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <param name="beforeCell">Cell before which new items will be placed. 
 		/// Null value may also be passed as this parameter, which results in appending new items to the end.
 		/// </param>
-		public void AddSource(IEnumerable source, Cell beforeCell = null)
+		public virtual void AddSource(IEnumerable source, Cell beforeCell = null)
 		{
 			foreach (var data in source)
 			{
@@ -274,7 +274,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// Sets the header.
 		/// </summary>
 		/// <param name="header">Header of the list.</param>
-		public void SetHeader(VisualElement header)
+		public virtual void SetHeader(VisualElement header)
 		{
 			if (header == null)
 			{
@@ -307,7 +307,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// Sets the footer.
 		/// </summary>
 		/// <param name="footer">Footer of the list.</param>
-		public void SetFooter(VisualElement footer)
+		public virtual void SetFooter(VisualElement footer)
 		{
 			if (footer == null)
 			{
