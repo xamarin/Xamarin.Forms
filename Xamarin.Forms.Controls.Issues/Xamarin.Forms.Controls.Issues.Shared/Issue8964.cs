@@ -61,12 +61,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void CarouselViewUnderTest_PositionChanged(object sender, PositionChangedEventArgs e)
 		{
-			_lbl.Text = $"Item CurrentItemChanged {e.CurrentPosition}";
+			System.Diagnostics.Debug.WriteLine($"PositionChanged {CarouselViewUnderTest.Position}");
+			_lbl.Text = $"Item Position - {e.CurrentPosition}";
 		}
 
 		void CarouselViewUnderTestCurrentItemChanged(object sender, CurrentItemChangedEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine("Item CurrentItemChanged");
+			System.Diagnostics.Debug.WriteLine($"CurrentItemChanged {CarouselViewUnderTest.Position}");
 			_counter++;
 			ItemSourceUnderTest.Insert(0, new ModelIssue8964 { Name = $"Counter {_counter}", Color = Color.Red, Index = _counter });
 		}
@@ -126,12 +127,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Issue8964Test() 
+		public void Issue8964Test()
 		{
-			RunningApp.WaitForElement(q => q.Marked($"Item CurrentItemChanged 4"));
+			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			var rect = RunningApp.Query("carouseView")[0].Rect;
-			RunningApp.DragCoordinates(rect.X + rect.Width - 10, rect.Y, rect.X, rect.Y);
-			RunningApp.WaitForElement(q => q.Marked($"Item CurrentItemChanged 4"));
+			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
+			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
+			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
+			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
+			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
+			RunningApp.WaitForElement(q => q.Marked($"Counter 6"));
+
 		}
 #endif
 	}
