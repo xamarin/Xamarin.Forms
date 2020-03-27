@@ -367,14 +367,13 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdatePosition(int position)
 		{
 			var carouselPosition = Carousel.Position;
+
 			//we arrived center
 			if (position == _gotoPosition)
 				_gotoPosition = -1;
 
 			if (_gotoPosition == -1 && carouselPosition != position)
-			{
 				Carousel.SetValueFromRenderer(FormsCarouselView.PositionProperty, position);
-			}
 		}
 
 		void SetCurrentItem(int carouselPosition)
@@ -388,7 +387,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateFromCurrentItem()
 		{
-			var currentItemPosition = (ItemsViewAdapter.ItemsSource as IItemsViewSource).GetPosition(Carousel.CurrentItem);
+			var currentItemPosition = ItemsViewAdapter.ItemsSource.GetPosition(Carousel.CurrentItem);
 			var carouselPosition = Carousel.Position;
 
 			if (_gotoPosition == -1 && currentItemPosition != carouselPosition)
