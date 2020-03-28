@@ -1338,6 +1338,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue8272.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8964.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9951.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9962.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\INativeColorService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
