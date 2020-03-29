@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.iOS
 				carouselPosition = 0;
 			}
 
-			//If we are adding a new item make sure to mantain the CurrentItemPosition
+			//If we are adding a new item make sure to maintain the CurrentItemPosition
 			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
 				&& currentItemPosition != -1)
 			{
@@ -244,7 +244,6 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 				}
 
-				//we need to do this becausee if the CurrentItem was set
 				ScrollToPosition(position, Carousel.Position);
 			}
 			else
