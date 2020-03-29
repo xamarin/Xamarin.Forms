@@ -349,6 +349,9 @@
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.*pdb" target="lib\tizen40" />
     <file src="..\docs\Xamarin.Forms.Xaml.xml" target="lib\tizen40" />
+
+    <!-- Copy to buildTransitive -->
+    <file src="build\**\*.*" target="buildTransitive" />
   </files>
 
 </package>

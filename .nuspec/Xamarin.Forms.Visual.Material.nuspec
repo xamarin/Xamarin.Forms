@@ -64,5 +64,8 @@
     <!--Tizen-->
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.*pdb" target="lib\tizen40" />
+
+    <!-- Copy to buildTransitive -->
+    <file src="build\**\*.*" target="buildTransitive" />
   </files>
 </package>
