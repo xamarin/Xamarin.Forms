@@ -10,10 +10,11 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EditorRenderer : EditorRendererBase<UITextView>
 	{
 		// Using same placeholder color as for the Entry
-		readonly UIColor _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey;
+		readonly UIColor _defaultPlaceholderColor = ColorExtensions.PlaceholderColor;
 
 		UILabel _placeholderLabel;
 
+		[Preserve(Conditional = true)]
 		public EditorRenderer()
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
@@ -124,6 +125,8 @@ namespace Xamarin.Forms.Platform.iOS
 		where TControl : UIView
 	{
 		bool _disposed;
+		IUITextViewDelegate _pleaseDontCollectMeGarbageCollector;
+
 		IEditorController ElementController => Element;
 		protected abstract UITextView TextView { get; }
 
@@ -147,6 +150,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
+			_pleaseDontCollectMeGarbageCollector = null;
 			base.Dispose(disposing);
 		}
 
@@ -181,6 +185,7 @@ namespace Xamarin.Forms.Platform.iOS
 				TextView.Started += OnStarted;
 				TextView.Ended += OnEnded;
 				TextView.ShouldChangeText += ShouldChangeText;
+				_pleaseDontCollectMeGarbageCollector = TextView.Delegate;
 			}
 
 			UpdateFont();
@@ -341,7 +346,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var textColor = Element.TextColor;
 
 			if (textColor.IsDefault)
-				TextView.TextColor = UIColor.Black;
+				TextView.TextColor = ColorExtensions.LabelColor;
 			else
 				TextView.TextColor = textColor.ToUIColor();
 		}

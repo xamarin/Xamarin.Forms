@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -10,6 +11,13 @@ namespace Xamarin.Forms.Platform.iOS
 		static readonly BindableProperty RealCellProperty = BindableProperty.CreateAttached("RealCell", typeof(UITableViewCell), typeof(Cell), null);
 
 		EventHandler _onForceUpdateSizeRequested;
+		PropertyChangedEventHandler _onPropertyChangedEventHandler;
+		readonly UIColor _defaultCellBgColor = Forms.IsiOS13OrNewer ? UIColor.Clear : UIColor.White;
+
+		[Preserve(Conditional = true)]
+		public CellRenderer()
+		{
+		}
 
 		public virtual UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
@@ -58,7 +66,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected void UpdateBackground(UITableViewCell tableViewCell, Cell cell)
 		{
-			var uiBgColor = UITableView.Appearance.BackgroundColor ?? UIColor.White; // Must be set to a solid color or blending issues will occur
+			var uiBgColor = UITableView.Appearance.BackgroundColor ?? _defaultCellBgColor;
+
 #if __MOBILE__
 			var defaultBgColor = cell.On<PlatformConfiguration.iOS>().DefaultBackgroundColor();
 #else
@@ -75,7 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (!UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
 						return;
 
-					uiBgColor = new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1);
+					uiBgColor = ColorExtensions.GroupedBackground;
 				}
 				else
 				{
@@ -89,7 +98,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected void WireUpForceUpdateSizeRequested(ICellController cell, UITableViewCell nativeCell, UITableView tableView)
 		{
+			var inpc = cell as INotifyPropertyChanged;
 			cell.ForceUpdateSizeRequested -= _onForceUpdateSizeRequested;
+
+			if (inpc != null)
+				inpc.PropertyChanged -= _onPropertyChangedEventHandler;
 
 			_onForceUpdateSizeRequested = (sender, e) =>
 			{
@@ -98,7 +111,30 @@ namespace Xamarin.Forms.Platform.iOS
 					tableView.ReloadRows(new[] { index }, UITableViewRowAnimation.None);
 			};
 
+			_onPropertyChangedEventHandler = (sender, e) =>
+			{
+				if(e.PropertyName == "RealCell" && sender is BindableObject bo && GetRealCell(bo) == null)
+				{
+					if(sender is ICellController icc)
+						icc.ForceUpdateSizeRequested -= _onForceUpdateSizeRequested;
+
+					if (sender is INotifyPropertyChanged notifyPropertyChanged)
+						notifyPropertyChanged.PropertyChanged -= _onPropertyChangedEventHandler;
+
+					_onForceUpdateSizeRequested = null;
+					_onPropertyChangedEventHandler = null;
+				}
+			};
+
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
+			if (inpc != null)
+				inpc.PropertyChanged += _onPropertyChangedEventHandler;
+
+		}
+
+		void Ncp_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
 		}
 
 		internal static UITableViewCell GetRealCell(BindableObject cell)

@@ -75,8 +75,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual async void OnBackButtonBehaviorPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
+			if (e.PropertyName == BackButtonBehavior.CommandProperty.PropertyName)
 				return;
+			else if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
+				return;
+			else if (e.PropertyName == BackButtonBehavior.IsEnabledProperty.PropertyName)
+			{
+				if (NavigationItem?.LeftBarButtonItem != null)
+					NavigationItem.LeftBarButtonItem.Enabled = BackButtonBehavior.IsEnabled;
+
+				return;
+			}
+
 			await UpdateToolbarItems().ConfigureAwait(false);
 		}
 
@@ -116,7 +126,7 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationItem.Title = Page.Title;
 		}
 
-		protected virtual void OnPageSet(Page oldPage, Page newPage)
+		protected virtual async void OnPageSet(Page oldPage, Page newPage)
 		{
 			if (oldPage != null)
 			{
@@ -139,6 +149,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (oldPage == null)
 				((IShellController)_context.Shell).AddFlyoutBehaviorObserver(this);
+
+			if (newPage != null)
+			{
+				try
+				{
+					await UpdateToolbarItems().ConfigureAwait(false);
+				}
+				catch(Exception exc)
+				{
+					Internals.Log.Warning(nameof(ShellPageRendererTracker), $"Failed to update toolbar items: {exc}");
+				}
+			}
 		}
 
 		protected virtual void OnRendererSet()
@@ -187,91 +209,93 @@ namespace Xamarin.Forms.Platform.iOS
 					NavigationItem.RightBarButtonItems[i].Dispose();
 			}
 
-			List<UIBarButtonItem> items = new List<UIBarButtonItem>();
-			if (Page != null)
+			List<UIBarButtonItem> primaries = null;
+			if (Page.ToolbarItems.Count > 0)
 			{
-				foreach (var item in Page.ToolbarItems)
+				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x => x.Priority))
 				{
-					items.Add(item.ToUIBarButtonItem(false, true));
+					(primaries = primaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(false, true));
 				}
+
+				if (primaries != null)
+					primaries.Reverse();
 			}
 
-			items.Reverse();
-			NavigationItem.SetRightBarButtonItems(items.ToArray(), false);
+			NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
 
-			if (BackButtonBehavior != null)
-			{
-				var behavior = BackButtonBehavior;
-				var command = behavior.Command;
-				var commandParameter = behavior.CommandParameter;
-				var image = behavior.IconOverride;
-				var enabled = behavior.IsEnabled;
+			var behavior = BackButtonBehavior;
 
-				if (image == null)
-				{
-					var text = BackButtonBehavior.TextOverride;
-					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, command, commandParameter, IsRootPage)) { Enabled = enabled };
-				}
-				else
-				{
-					var icon = await image.GetNativeImageAsync();
-					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, command, commandParameter, IsRootPage)) { Enabled = enabled };
-				}
-			}
-			else if (IsRootPage && _flyoutBehavior == FlyoutBehavior.Flyout)
-			{
+			var image = behavior.GetPropertyIfSet<ImageSource>(BackButtonBehavior.IconOverrideProperty, null);
+			var enabled = behavior.GetPropertyIfSet(BackButtonBehavior.IsEnabledProperty, true);
+			var text = behavior.GetPropertyIfSet(BackButtonBehavior.TextOverrideProperty, String.Empty);
+			
+			UIImage icon = null;
 
-				await SetDrawerArrowDrawableFromFlyoutIcon();
-			}
-			else
+			if (image == null && String.IsNullOrWhiteSpace(text) && (!IsRootPage || _flyoutBehavior != FlyoutBehavior.Flyout))
 			{
 				NavigationItem.LeftBarButtonItem = null;
 			}
+			else
+			{
+				if (String.IsNullOrWhiteSpace(text) && image == null)
+				{
+					Element item = Page;
+					while (!Application.IsApplicationOrNull(item))
+					{
+						if (item is IShellController shell)
+						{
+							image = shell.FlyoutIcon;
+							item = null;
+						}
+						item = item?.Parent;
+					}
+				}
+
+				if (image != null)
+					icon = await image.GetNativeImageAsync();
+				else if (String.IsNullOrWhiteSpace(text))
+					icon = DrawHamburger();
+
+				if (icon == null)
+				{
+					NavigationItem.LeftBarButtonItem =
+						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+				}
+				else
+				{
+					NavigationItem.LeftBarButtonItem =
+						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+				}
+
+				if (String.IsNullOrWhiteSpace(image?.AutomationId))
+					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
+				else
+					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
+
+				if (image != null)
+				{
+					NavigationItem.LeftBarButtonItem.SetAccessibilityHint(image);
+					NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(image);
+				}
+			}
 		}
 
-		static void LeftBarButtonItemHandler(UIViewController controller, ICommand command, object commandParameter, bool isRootPage)
+		void LeftBarButtonItemHandler(UIViewController controller, bool isRootPage)
 		{
+			var behavior = BackButtonBehavior;
+			ICommand defaultCommand = new Command(() => OnMenuButtonPressed(this, EventArgs.Empty));
+			var command = behavior.GetPropertyIfSet(BackButtonBehavior.CommandProperty, defaultCommand);
+			var commandParameter = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandParameterProperty, null);
+
 			if (command == null && !isRootPage && controller?.ParentViewController is UINavigationController navigationController)
 			{
 				navigationController.PopViewController(true);
 				return;
 			}
+
 			command?.Execute(commandParameter);
 		}
 
-		async Task SetDrawerArrowDrawableFromFlyoutIcon()
-		{
-			Element item = Page;
-			ImageSource image = null;
-			while (!Application.IsApplicationOrNull(item))
-			{
-				if (item is IShellController shell)
-				{
-					image = shell.FlyoutIcon;
-					item = null;
-				}
-				item = item?.Parent;
-			}
-
-			UIImage icon = null;
-
-			if (image != null)
-				icon = await image.GetNativeImageAsync();
-			else
-				icon = DrawHamburger();
-
-			var barButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, OnMenuButtonPressed);
-
-			barButtonItem.AccessibilityIdentifier = "OK";
-			NavigationItem.LeftBarButtonItem = barButtonItem;
-			if (image == null)
-				return;
-			NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
-			NavigationItem.LeftBarButtonItem.SetAccessibilityHint(image);
-			NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(image);
-		}
 
 		UIImage DrawHamburger()
 		{
@@ -323,17 +347,27 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (BackButtonBehavior != null)
-			{
 				BackButtonBehavior.PropertyChanged -= OnBackButtonBehaviorPropertyChanged;
-			}
 
 			BackButtonBehavior = value;
 
 			if (BackButtonBehavior != null)
-			{
 				BackButtonBehavior.PropertyChanged += OnBackButtonBehaviorPropertyChanged;
-			}
+
 			await UpdateToolbarItems().ConfigureAwait(false);
+		}
+
+		void OnBackButtonCommandCanExecuteChanged(object sender, EventArgs e)
+		{
+			if (NavigationItem?.LeftBarButtonItem == null)
+				return;
+
+			bool isEnabled = BackButtonBehavior.GetPropertyIfSet<bool>(BackButtonBehavior.IsEnabledProperty, true);
+
+			if (isEnabled && sender is ICommand command)
+				isEnabled = command.CanExecute(BackButtonBehavior?.CommandParameter);
+
+			NavigationItem.LeftBarButtonItem.Enabled = isEnabled;
 		}
 
 		public class TitleViewContainer : UIContainerView
@@ -547,7 +581,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SearchButtonClicked(object sender, EventArgs e)
 		{
-			_searchController.Active = false;
 			((ISearchHandlerController)SearchHandler).QueryConfirmed();
 		}
 
@@ -588,11 +621,15 @@ namespace Xamarin.Forms.Platform.iOS
 				Page.PropertyChanged -= OnPagePropertyChanged;
 				((INotifyCollectionChanged)Page.ToolbarItems).CollectionChanged -= OnToolbarItemsChanged;
 				((IShellController)_context.Shell).RemoveFlyoutBehaviorObserver(this);
+
+				if (BackButtonBehavior != null)
+					BackButtonBehavior.PropertyChanged -= OnBackButtonBehaviorPropertyChanged;
+
 			}
 
 			SearchHandler = null;
 			Page = null;
-			SetBackButtonBehavior(null);
+			BackButtonBehavior = null;
 			_rendererRef = null;
 			NavigationItem = null;
 			_searchHandlerAppearanceTracker = null;

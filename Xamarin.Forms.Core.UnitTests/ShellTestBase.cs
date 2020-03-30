@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -24,6 +25,17 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+
+		protected bool IsModal(BindableObject bindableObject)
+		{
+			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.Modal) == PresentationMode.Modal;
+		}
+
+		protected bool IsAnimated(BindableObject bindableObject)
+		{
+			return (Shell.GetPresentationMode(bindableObject) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
+		}
+
 		protected Uri CreateUri(string uri) => ShellUriHandler.CreateUri(uri);
 
 		protected ShellSection MakeSimpleShellSection(string route, string contentRoute)
@@ -43,18 +55,32 @@ namespace Xamarin.Forms.Core.UnitTests
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ShellTestPage : ContentPage
 		{
+			public ShellTestPage()
+			{
+			}
+
 			public string SomeQueryParameter
 			{
 				get;
 				set;
 			}
+
+			protected override void OnParentSet()
+			{
+				base.OnParentSet();
+			}
 		}
 
-		protected ShellItem CreateShellItem(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null, string shellSectionRoute = null, string shellItemRoute = null)
+		protected ShellItem CreateShellItem(
+			TemplatedPage page = null, 
+			bool asImplicit = false, 
+			string shellContentRoute = null, 
+			string shellSectionRoute = null, 
+			string shellItemRoute = null,
+			bool templated = false)
 		{
-			page = page ?? new ContentPage();
 			ShellItem item = null;
-			var section = CreateShellSection(page, asImplicit, shellContentRoute, shellSectionRoute);
+			var section = CreateShellSection(page, asImplicit, shellContentRoute, shellSectionRoute, templated: templated);
 
 			if (!String.IsNullOrWhiteSpace(shellItemRoute))
 			{
@@ -73,9 +99,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			return item;
 		}
 
-		protected ShellSection CreateShellSection(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null, string shellSectionRoute = null)
+		protected ShellSection CreateShellSection(
+			TemplatedPage page = null, 
+			bool asImplicit = false, 
+			string shellContentRoute = null, 
+			string shellSectionRoute = null,
+			bool templated = false)
 		{
-			var content = CreateShellContent(page, asImplicit, shellContentRoute);
+			var content = CreateShellContent(page, asImplicit, shellContentRoute, templated: templated);
 
 			ShellSection section = null;
 
@@ -96,24 +127,87 @@ namespace Xamarin.Forms.Core.UnitTests
 			return section;
 		}
 
-		protected ShellContent CreateShellContent(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null)
+		protected ShellContent CreateShellContent(TemplatedPage page = null, bool asImplicit = false, string shellContentRoute = null, bool templated = false)
 		{
-			page = page ?? new ContentPage();
 			ShellContent content = null;
 
-			if(!String.IsNullOrWhiteSpace(shellContentRoute))
+			if (!String.IsNullOrWhiteSpace(shellContentRoute))
 			{
-				content = new ShellContent() { Content = page };
+				if (templated)
+					content = new ShellContent() { ContentTemplate = new DataTemplate(() => page ?? new ContentPage()) };
+				else
+					content = new ShellContent() { Content = page ?? new ContentPage() };
+
 				content.Route = shellContentRoute;
 			}
 			else if (asImplicit)
 				content = (ShellContent)page;
 			else
-				content = new ShellContent() { Content = page };
+			{
+				if (templated)
+					content = new ShellContent() { ContentTemplate = new DataTemplate(() => page ?? new ContentPage()) };
+				else
+					content = new ShellContent() { Content = page ?? new ContentPage() };
+			}
 
 
 			return content;
 		}
 
+		protected ReadOnlyCollection<ShellContent> GetItems(ShellSection section)
+		{
+			return (section as IShellSectionController).GetItems();
+		}
+
+		protected ReadOnlyCollection<ShellSection> GetItems(ShellItem item)
+		{
+			return (item as IShellItemController).GetItems();
+		}
+
+		protected ReadOnlyCollection<ShellItem> GetItems(Shell item)
+		{
+			return (item as IShellController).GetItems();
+		}
+
+		public class TestShell : Shell
+		{
+			public int OnNavigatedCount;
+			public int OnNavigatingCount;
+			public int NavigatedCount;
+			public int NavigatingCount;
+
+			public TestShell()
+			{
+				this.Navigated += (_, __) => NavigatedCount++;
+				this.Navigating += (_, __) => NavigatingCount++;
+			}
+
+			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
+			protected override void OnNavigated(ShellNavigatedEventArgs args)
+			{
+				base.OnNavigated(args);
+				OnNavigatedHandler?.Invoke(args);
+				OnNavigatedCount++;
+			}
+
+			protected override void OnNavigating(ShellNavigatingEventArgs args)
+			{
+				base.OnNavigating(args);
+				OnNavigatingCount++;
+			}
+
+			public void Reset()
+			{
+				OnNavigatedCount = OnNavigatingCount = NavigatedCount = NavigatingCount = 0;
+			}
+
+			public void TestCount(int count, string message = null)
+			{
+				Assert.AreEqual(count, OnNavigatedCount, $"OnNavigatedCount: {message}");
+				Assert.AreEqual(count, NavigatingCount, $"NavigatingCount: {message}");
+				Assert.AreEqual(count, OnNavigatingCount, $"OnNavigatingCount: {message}");
+				Assert.AreEqual(count, NavigatedCount, $"NavigatedCount: {message}");
+			}
+		}
 	}
 }

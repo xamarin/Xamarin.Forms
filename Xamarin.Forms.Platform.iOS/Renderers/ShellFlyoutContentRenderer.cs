@@ -18,16 +18,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public ShellFlyoutContentRenderer(IShellContext context)
 		{
+			_shellContext = context;
+
 			var header = ((IShellController)context.Shell).FlyoutHeader;
 			if (header != null)
 				_headerView = new UIContainerView(((IShellController)context.Shell).FlyoutHeader);
-			_tableViewController = new ShellTableViewController(context, _headerView, OnElementSelected);
+
+			_tableViewController = CreateShellTableViewController();
 
 			AddChildViewController(_tableViewController);
 
 			context.Shell.PropertyChanged += HandleShellPropertyChanged;
 
-			_shellContext = context;
+		}
+
+		protected virtual ShellTableViewController CreateShellTableViewController()
+		{
+			return new ShellTableViewController(_shellContext, _headerView, OnElementSelected);
 		}
 
 		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -42,7 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void UpdateBackground()
 		{
 			var color = _shellContext.Shell.FlyoutBackgroundColor;
-			View.BackgroundColor = color.ToUIColor(Color.White);
+			View.BackgroundColor = color.ToUIColor(ColorExtensions.BackgroundColor);
 
 			if (View.BackgroundColor.CGColor.Alpha < 1)
 			{

@@ -3,9 +3,9 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal class ListViewLayout : ItemsViewLayout
+	public class ListViewLayout : ItemsViewLayout
 	{
-		public ListViewLayout(ListItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy) : base(itemsLayout, itemSizingStrategy)
+		public ListViewLayout(LinearItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy) : base(itemsLayout, itemSizingStrategy)
 		{
 		}
 

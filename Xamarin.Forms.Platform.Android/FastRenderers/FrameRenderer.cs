@@ -2,8 +2,14 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.CardView.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -130,7 +136,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementPackager.Dispose();
 					_visualElementPackager = null;
 				}
-				
+
 				if (_backgroundDrawable != null)
 				{
 					_backgroundDrawable.Dispose();
@@ -143,10 +149,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementRenderer = null;
 				}
 
-				int count = ChildCount;
-				for (var i = 0; i < count; i++)
+				while (ChildCount > 0)
 				{
-					AView child = GetChildAt(i);
+					AView child = GetChildAt(0);
+					child.RemoveFromParent();
 					child.Dispose();
 				}
 
@@ -222,7 +228,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			ElementPropertyChanged?.Invoke(this, e);
+
+			if (Control?.LayoutParameters == null)
+			{
+				return;
+			}
+
 
 			if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
 				UpdateShadow();
@@ -236,13 +253,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateClippedToBounds();
 		}
 
-		void UpdateClippedToBounds() => this.SetClipToOutline(Element.IsClippedToBounds);
+		void UpdateClippedToBounds()
+		{
+			this.SetClipToOutline(Element.IsClippedToBounds, Element);
+		}
 
 		void UpdateBackgroundColor()
 		{
 			if (_disposed)
 				return;
-				
+
 			Color bgColor = Element.BackgroundColor;
 			_backgroundDrawable.SetColor(bgColor.IsDefault ? AColor.White : bgColor.ToAndroid());
 		}
@@ -264,7 +284,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			if (_disposed)
 				return;
-				
+
 			float elevation = _defaultElevation;
 
 			if (elevation == -1f)
@@ -280,7 +300,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			if (_disposed)
 				return;
-				
+
 			if (_defaultCornerRadius == -1f)
 			{
 				_defaultCornerRadius = Radius;
@@ -294,6 +314,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				cornerRadius = Context.ToPixels(cornerRadius);
 
 			_backgroundDrawable.SetCornerRadius(cornerRadius);
+
+			UpdateClippedToBounds();
 		}
 	}
 }

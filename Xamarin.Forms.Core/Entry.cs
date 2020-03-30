@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_EntryRenderer))]
-	public class Entry : InputView, IFontElement, IPlaceholderElement, ITextElement, ITextAlignmentElement, IEntryController, IElementConfiguration<Entry>
+	public class Entry : InputView, IFontElement, ITextAlignmentElement, IEntryController, IElementConfiguration<Entry>
 	{
 		public static readonly BindableProperty ReturnTypeProperty = BindableProperty.Create(nameof(ReturnType), typeof(ReturnType), typeof(Entry), ReturnType.Default);
 
@@ -15,17 +15,17 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ReturnCommandParameterProperty = BindableProperty.Create(nameof(ReturnCommandParameter), typeof(object), typeof(Entry), default(object));
 
-		public static readonly BindableProperty PlaceholderProperty = PlaceholderElement.PlaceholderProperty;
+		public new static readonly BindableProperty PlaceholderProperty = InputView.PlaceholderProperty;
 
-		public static readonly BindableProperty PlaceholderColorProperty = PlaceholderElement.PlaceholderColorProperty;
+		public new static readonly BindableProperty PlaceholderColorProperty = InputView.PlaceholderColorProperty;
 
 		public static readonly BindableProperty IsPasswordProperty = BindableProperty.Create("IsPassword", typeof(bool), typeof(Entry), default(bool));
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Entry), null, BindingMode.TwoWay, propertyChanged: OnTextChanged);
+		public new static readonly BindableProperty TextProperty = InputView.TextProperty;
 
-		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+		public new static readonly BindableProperty TextColorProperty = InputView.TextColorProperty;
 
-		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
+		public new static readonly BindableProperty CharacterSpacingProperty = InputView.CharacterSpacingProperty;
 
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
@@ -42,6 +42,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty CursorPositionProperty = BindableProperty.Create(nameof(CursorPosition), typeof(int), typeof(Entry), 0, validateValue: (b, v) => (int)v >= 0);
 
 		public static readonly BindableProperty SelectionLengthProperty = BindableProperty.Create(nameof(SelectionLength), typeof(int), typeof(Entry), 0, validateValue: (b, v) => (int)v >= 0);
+
+		public static readonly BindableProperty ClearButtonVisibilityProperty = BindableProperty.Create(nameof(ClearButtonVisibility), typeof(ClearButtonVisibility), typeof(Entry), ClearButtonVisibility.Never);
 
 		readonly Lazy<PlatformConfigurationRegistry<Entry>> _platformConfigurationRegistry;
 
@@ -68,36 +70,6 @@ namespace Xamarin.Forms
 			set { SetValue(IsPasswordProperty, value); }
 		}
 
-		public string Placeholder
-		{
-			get { return (string)GetValue(PlaceholderProperty); }
-			set { SetValue(PlaceholderProperty, value); }
-		}
-
-		public Color PlaceholderColor
-		{
-			get { return (Color)GetValue(PlaceholderColorProperty); }
-			set { SetValue(PlaceholderColorProperty, value); }
-		}
-
-		public string Text
-		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
-		}
-
-		public Color TextColor
-		{
-			get { return (Color)GetValue(TextElement.TextColorProperty); }
-			set { SetValue(TextElement.TextColorProperty, value); }
-		}
-
-		public double CharacterSpacing
-		{
-			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
-			set { SetValue(TextElement.CharacterSpacingProperty, value); }
-		}
-
 		public FontAttributes FontAttributes
 		{
 			get { return (FontAttributes)GetValue(FontAttributesProperty); }
@@ -122,7 +94,7 @@ namespace Xamarin.Forms
 			get { return (bool)GetValue(IsTextPredictionEnabledProperty); }
 			set { SetValue(IsTextPredictionEnabledProperty, value); }
 		}
-    
+
 		public ReturnType ReturnType
 		{
 			get => (ReturnType)GetValue(ReturnTypeProperty);
@@ -153,6 +125,12 @@ namespace Xamarin.Forms
 			set => SetValue(ReturnCommandParameterProperty, value);
 		}
 
+		public ClearButtonVisibility ClearButtonVisibility
+		{
+			get => (ClearButtonVisibility)GetValue(ClearButtonVisibilityProperty);
+			set => SetValue(ClearButtonVisibilityProperty, value);
+		}
+
 		double IFontElement.FontSizeDefaultValueCreator() =>
 			Device.GetNamedSize(NamedSize.Default, (Entry)this);
 
@@ -170,8 +148,6 @@ namespace Xamarin.Forms
 
 		public event EventHandler Completed;
 
-		public event EventHandler<TextChangedEventArgs> TextChanged;
-
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendCompleted()
 		{
@@ -186,25 +162,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		static void OnTextChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var entry = (Entry)bindable;
-
-			entry.TextChanged?.Invoke(entry, new TextChangedEventArgs((string)oldValue, (string)newValue));
-		}
-
 		public IPlatformElementConfiguration<T, Entry> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
-		}
-
-		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
-		{
-		}
-
-		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
-		{
-			InvalidateMeasure();
 		}
 
 

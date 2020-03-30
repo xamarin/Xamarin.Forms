@@ -43,29 +43,9 @@ namespace Xamarin.Forms.Platform.WPF
 			return AppDomain.CurrentDomain.GetAssemblies();
 		}
 
-		public string GetMD5Hash(string input)
-		{
-			// MSDN - Documentation -https://msdn.microsoft.com/en-us/library/system.security.cryptography.md5(v=vs.110).aspx
-			using (MD5 md5Hash = MD5.Create()) 
-			{
-				// Convert the input string to a byte array and compute the hash.
-				byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+		public string GetHash(string input) => Crc64.GetHash(input);
 
-				// Create a new Stringbuilder to collect the bytes
-				// and create a string.
-				StringBuilder sBuilder = new StringBuilder();
-
-				// Loop through each byte of the hashed data 
-				// and format each one as a hexadecimal string.
-				for (int i = 0; i < data.Length; i++)
-				{
-					sBuilder.Append(data[i].ToString("x2"));
-				}
-
-				// Return the hexadecimal string.
-				return sBuilder.ToString();
-			}
-		}
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
@@ -85,6 +65,16 @@ namespace Xamarin.Forms.Platform.WPF
 					return (double)System.Windows.Application.Current.Resources["FontSizeMedium"];
 				case NamedSize.Large:
 					return (double)System.Windows.Application.Current.Resources["FontSizeLarge"];
+				case NamedSize.Body:
+					return (double)System.Windows.Application.Current.Resources["FontSizeBody"];
+				case NamedSize.Caption:
+					return (double)System.Windows.Application.Current.Resources["FontSizeCaption"];
+				case NamedSize.Header:
+					return (double)System.Windows.Application.Current.Resources["FontSizeHeader"];
+				case NamedSize.Subtitle:
+					return (double)System.Windows.Application.Current.Resources["FontSizeSubtitle"];
+				case NamedSize.Title:
+					return (double)System.Windows.Application.Current.Resources["FontSizeTitle"];
 				default:
 					throw new ArgumentOutOfRangeException("size");
 			}
@@ -131,7 +121,7 @@ namespace Xamarin.Forms.Platform.WPF
 		
 		public void StartTimer(TimeSpan interval, Func<bool> callback)
 		{
-			var timer = new DispatcherTimer { Interval = interval };
+			var timer = new DispatcherTimer(DispatcherPriority.Background, System.Windows.Application.Current.Dispatcher) { Interval = interval };
 			timer.Start();
 			timer.Tick += (sender, args) =>
 			{

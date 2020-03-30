@@ -14,11 +14,9 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		protected DefaultCell(CGRect frame) : base(frame)
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(DefaultCell));
-
 			Label = new UILabel(frame)
 			{
-				TextColor = UIColor.Black,
+				TextColor = ColorExtensions.LabelColor,
 				Lines = 1,
 				Font = UIFont.PreferredBody,
 				TranslatesAutoresizingMaskIntoConstraints = false

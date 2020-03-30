@@ -14,8 +14,8 @@ namespace Xamarin.Forms.Platform.Android
 	public abstract class TimePickerRendererBase<TControl> : ViewRenderer<TimePicker, TControl>, TimePickerDialog.IOnTimeSetListener, IPickerRenderer
 		where TControl : global::Android.Views.View
 	{
-		int _originalHintTextColor;
 		AlertDialog _dialog;
+		bool _disposed;
 
 		bool Is24HourView
 		{
@@ -58,7 +58,6 @@ namespace Xamarin.Forms.Platform.Android
 				var textField = CreateNativeControl();
 
 				SetNativeControl(textField);
-				_originalHintTextColor = EditText.CurrentHintTextColor;
 			}
 
 			SetTime(e.NewElement.Time);
@@ -72,6 +71,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == TimePicker.TimeProperty.PropertyName || e.PropertyName == TimePicker.FormatProperty.PropertyName)
@@ -89,7 +93,12 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnFocusChangeRequested(sender, e);
 
 			if (e.Focus)
-				CallOnClick();
+			{
+				if (Clickable)
+					CallOnClick();
+				else
+					((IPickerRenderer)this)?.OnClick();
+			}
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
@@ -98,6 +107,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Forms.IsLollipopOrNewer)
 					_dialog.CancelEvent -= OnCancelButtonClicked;
 
+				_dialog?.Dispose();
 				_dialog = null;
 			}
 		}
@@ -110,6 +120,27 @@ namespace Xamarin.Forms.Platform.Android
 				dialog.CancelEvent += OnCancelButtonClicked;
 
 			return dialog;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (Forms.IsLollipopOrNewer && _dialog.IsAlive())
+					_dialog.CancelEvent -= OnCancelButtonClicked;
+
+				_dialog?.Dispose();
+				_dialog = null;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		void IPickerRenderer.OnClick()
@@ -130,7 +161,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Element.Unfocus();
 		}
-
 
 		void SetTime(TimeSpan time)
 		{
@@ -179,7 +209,5 @@ namespace Xamarin.Forms.Platform.Android
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
-
     }
-
 }

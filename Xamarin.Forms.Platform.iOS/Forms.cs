@@ -36,9 +36,9 @@ namespace Xamarin.Forms
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
 		static bool? s_isiOS11OrNewer;
-#endif
+		static bool? s_isiOS13OrNewer;
+		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
-#if __MOBILE__
 		internal static bool IsiOS9OrNewer
 		{
 			get
@@ -69,10 +69,43 @@ namespace Xamarin.Forms
 				return s_isiOS11OrNewer.Value;
 			}
 		}
+
+		internal static bool IsiOS13OrNewer
+		{
+			get
+			{
+				if (!s_isiOS13OrNewer.HasValue)
+					s_isiOS13OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(13, 0);
+				return s_isiOS13OrNewer.Value;
+			}
+		}
+
+		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (!s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.HasValue)
+					s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden = new UIViewController().RespondsToSelector(new ObjCRuntime.Selector("setNeedsUpdateOfHomeIndicatorAutoHidden"));
+				return s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.Value;
+			}
+		}
+#else
+		static bool? s_isMojaveOrNewer;
+
+		internal static bool IsMojaveOrNewer
+		{
+			get
+			{
+				if (!s_isMojaveOrNewer.HasValue)
+					s_isMojaveOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 14, 0));
+				return s_isMojaveOrNewer.Value;
+			}
+		}
+
 #endif
 
 		static IReadOnlyList<string> s_flags;
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new string[0]);
 
 		public static void SetFlags(params string[] flags)
 		{
@@ -81,7 +114,9 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+			s_flags = (string[])flags.Clone();
+			if (s_flags.Contains ("Profile"))
+				Profile.Enable();
 		}
 
 		public static void Init()
@@ -89,7 +124,8 @@ namespace Xamarin.Forms
 			if (IsInitialized)
 				return;
 			IsInitialized = true;
-			Color.SetAccent(Color.FromRgba(50, 79, 133, 255));
+
+			Color.SetAccent(ColorExtensions.AccentColor.ToColor());
 
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
@@ -117,7 +153,7 @@ namespace Xamarin.Forms
 #endif
 
 			Internals.Registrar.RegisterAll(new[]
-				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(ExportFontAttribute) });
 			ExpressionSearch.Default = new iOSExpressionSearch();
 		}
 
@@ -161,13 +197,11 @@ namespace Xamarin.Forms
 			public IOSPlatformServices()
 			{
 #if __MOBILE__
-				//The standard accisibility size for a font is 18, we can get a
-				//close aproximation to the new Size by multiplying by this scale factor
-				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 18f;
+				//The standard accessibility size for a font is 17, we can get a
+				//close approximation to the new Size by multiplying by this scale factor
+				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 17f;
 #endif
 			}
-
-			static readonly MD5CryptoServiceProvider s_checksum = new MD5CryptoServiceProvider();
 
 			public void BeginInvokeOnMainThread(Action action)
 			{
@@ -184,17 +218,9 @@ namespace Xamarin.Forms
 				return AppDomain.CurrentDomain.GetAssemblies();
 			}
 
-			public string GetMD5Hash(string input)
-			{
-				var bytes = s_checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
-				var ret = new char[32];
-				for (var i = 0; i < 16; i++)
-				{
-					ret[i * 2] = (char)Hex(bytes[i] >> 4);
-					ret[i * 2 + 1] = (char)Hex(bytes[i] & 0xf);
-				}
-				return new string(ret);
-			}
+			public string GetHash(string input) => Crc64.GetHash(input);
+
+			string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 			public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 			{
@@ -252,14 +278,12 @@ namespace Xamarin.Forms
 			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
 				using (var client = GetHttpClient())
-				using (var response = await client.GetAsync(uri, cancellationToken))
 				{
-					if (!response.IsSuccessStatusCode)
-					{
-						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
-						return null;
-					}
-					return await response.Content.ReadAsStreamAsync();
+					// Do not remove this await otherwise the client will dispose before
+					// the stream even starts
+					var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
+
+					return result;
 				}
 			}
 

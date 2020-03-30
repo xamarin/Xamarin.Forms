@@ -242,6 +242,48 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestFromHsv()
+		{
+			var color = Color.FromRgb(1, .29, .752);
+			var colorHsv = Color.FromHsv(321, 71, 100);
+			Assert.That(color.R, Is.EqualTo(colorHsv.R).Within(0.001));
+			Assert.That(color.G, Is.EqualTo(colorHsv.G).Within(0.001));
+			Assert.That(color.B, Is.EqualTo(colorHsv.B).Within(0.001));
+		}
+
+		[Test]
+		public void TestFromHsva()
+		{
+			var color = Color.FromRgba(1, .29, .752, .5);
+			var colorHsv = Color.FromHsva(321, 71, 100, 50);
+			Assert.That(color.R, Is.EqualTo(colorHsv.R).Within(0.001));
+			Assert.That(color.G, Is.EqualTo(colorHsv.G).Within(0.001));
+			Assert.That(color.B, Is.EqualTo(colorHsv.B).Within(0.001));
+			Assert.That(color.A, Is.EqualTo(colorHsv.A).Within(0.001));
+		}
+
+		[Test]
+		public void TestFromHsvDouble()
+		{
+			var color = Color.FromRgb(1, .29, .758);
+			var colorHsv = Color.FromHsv(.89, .71, 1);
+			Assert.That(color.R, Is.EqualTo(colorHsv.R).Within(0.001));
+			Assert.That(color.G, Is.EqualTo(colorHsv.G).Within(0.001));
+			Assert.That(color.B, Is.EqualTo(colorHsv.B).Within(0.001));
+		}
+
+		[Test]
+		public void TestFromHsvaDouble()
+		{
+			var color = Color.FromRgba(1, .29, .758, .5);
+			var colorHsv = Color.FromHsva(.89, .71, 1, .5);
+			Assert.That(color.R, Is.EqualTo(colorHsv.R).Within(0.001));
+			Assert.That(color.G, Is.EqualTo(colorHsv.G).Within(0.001));
+			Assert.That(color.B, Is.EqualTo(colorHsv.B).Within(0.001));
+			Assert.That(color.A, Is.EqualTo(colorHsv.A).Within(0.001));
+		}
+
+		[Test]
 		public void FromRGBDouble ()
 		{
 			var color = Color.FromRgb (0.2, 0.3, 0.4);
@@ -276,6 +318,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(Color.Blue, converter.ConvertFromInvariantString("hsl(240,100%, 50%)"));
 			Assert.AreEqual(Color.Blue, converter.ConvertFromInvariantString("hsl(240,110%, 50%)"));
 			Assert.AreEqual(Color.Blue.MultiplyAlpha(.8), converter.ConvertFromInvariantString("hsla(240,100%, 50%, .8)"));
+			Assert.AreEqual(Color.FromHsla(0.66916666666666669, 1, 0.5), converter.ConvertFromInvariantString("hsl(240.9,100%, 50%)"));
+			Assert.AreEqual(Color.FromHsva(0.89166666666666669, .71, 1, .8), converter.ConvertFromInvariantString("hsva(321,71%, 100%, .8)"));
+			Assert.AreEqual(Color.FromHsv(0.89166666666666669, .71, 1), converter.ConvertFromInvariantString("hsv(321,71%, 100%)"));
 			Assert.AreEqual(Color.Default, converter.ConvertFromInvariantString("Color.Default"));
 			Assert.AreEqual(Color.Accent, converter.ConvertFromInvariantString("Accent"));
 			var hotpink = Color.FromHex("#FF69B4");
@@ -285,6 +330,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString(""));
 			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("rgb(0,0,255"));
 			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("hsl(12, 100%)"));
+			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("hsv(12, 100%)"));
+			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("hsva(12, 100%)"));
 			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("rgba(0,0,255)"));
 		}
 
@@ -327,6 +374,17 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void TestSystemDrawingColorEmptyToColorDefault()
 		{
 			Assert.AreEqual(Color.Default, (Color)System.Drawing.Color.Empty);
+		}
+
+		[Test]
+		public void DefaultColorsMatch()
+		{
+			//This spot-checks a few of the fields in Color
+			Assert.AreEqual(Color.CornflowerBlue, Color.FromRgb(100, 149, 237));
+			Assert.AreEqual(Color.DarkSalmon, Color.FromRgb(233, 150, 122));
+			Assert.AreEqual(Color.Transparent, Color.FromRgba(255, 255, 255, 0));
+			Assert.AreEqual(Color.Wheat, Color.FromRgb(245, 222, 179));
+			Assert.AreEqual(Color.White, Color.FromRgb(255, 255, 255));
 		}
 	}
 }

@@ -30,10 +30,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			_section.PropertyChanged += OnSectionPropertyChanged;
 			_rootPage = ((IShellContentController)_section.CurrentItem).GetOrCreateContent();
 
-			_navBar = new ShellNavBar(flyoutController, this);
+			_navBar = new ShellNavBar(flyoutController);
 			_navBar.Show();
 
-			var renderer = new ShellSectionRenderer(section);
+			var renderer = CreateShellSection(section);
 			renderer.Control.Show();
 			_navigationStack.AddLast(renderer.Control);
 			_pageToNative[_rootPage] = renderer.Control;
@@ -104,6 +104,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				Unrealize();
 			}
 			_disposed = true;
+		}
+
+		protected virtual ShellSectionRenderer CreateShellSection(ShellSection section)
+		{
+			return new ShellSectionRenderer(section);
 		}
 
 		void UpdateDisplayedPage(Page page)

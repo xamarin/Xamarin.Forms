@@ -2,17 +2,16 @@
 using Xamarin.Forms.Platform.Tizen;
 using Xamarin.Forms.Platform.Tizen.Native;
 using Xamarin.Forms.Material.Tizen;
-using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 using XFEntry = Xamarin.Forms.Entry;
 
-[assembly: ExportRenderer(typeof(XFEntry), typeof(MaterialEntryRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
+[assembly: ExportRenderer(typeof(XFEntry), typeof(MaterialEntryRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialEntryRenderer : EntryRenderer
 	{
 		protected override ElmSharp.Entry CreateNativeControl()
 		{
-			return new MaterialEntry(TForms.NativeParent)
+			return new MaterialEntry(Forms.NativeParent)
 			{
 				IsSingleLine = true,
 			};
@@ -24,8 +23,8 @@ namespace Xamarin.Forms.Material.Tizen
 			{
 				me.TextColor = Element.TextColor.ToNative();
 				me.TextFocusedColor = Element.TextColor.ToNative();
-				me.UnderlineColor = Element.TextColor.ToNative();
-				me.UnderlineFocusedColor = Element.TextColor.ToNative();
+				me.UnderlineColor = Element.PlaceholderColor.ToNative();
+				me.UnderlineFocusedColor = Element.PlaceholderColor.ToNative();
 				me.CursorColor = Element.TextColor.ToNative();
 			}
 		}

@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.OS;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Android.Views.Accessibility;
 using AColor = Android.Graphics.Color;
@@ -137,7 +142,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					Color bkgndColor = page.BackgroundColor;
 					bool isDefaultBkgndColor = bkgndColor.IsDefault;
-					if (page.Parent is BaseShellItem && isDefaultBkgndColor)
+
+					// A TabbedPage has no background. See Github6384.
+					bool isInShell = page.Parent is BaseShellItem
+					|| (page.Parent is TabbedPage && page.Parent?.Parent is BaseShellItem);
+					if (isInShell && isDefaultBkgndColor)
 					{
 						var color = Forms.IsMarshmallowOrNewer ?
 							Context.Resources.GetColor(AColorRes.BackgroundLight, Context.Theme) :
@@ -170,11 +179,15 @@ namespace Xamarin.Forms.Platform.Android
 				if (!(child is VisualElement ve))
 					continue;
 
-				tabIndexes = ve.GetSortedTabIndexesOnParentPage(out _);
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage();
 				break;
 			}
 
 			if (tabIndexes == null)
+				return;
+
+			// Let the page handle tab order itself
+			if (tabIndexes.Count <= 1)
 				return;
 
 			AView prevControl = null;
@@ -183,15 +196,13 @@ namespace Xamarin.Forms.Platform.Android
 				var tabGroup = tabIndexes[idx];
 				foreach (var child in tabGroup)
 				{
-					if (child is Layout || 
-						!(
-							child is VisualElement ve && ve.IsTabStop
-							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
-							&& ve.GetRenderer()?.View is ITabStop tabStop)
-						 )
+					if (!(child is VisualElement ve && ve.GetRenderer()?.View is AView view))
 						continue;
 
-					var thisControl = tabStop.TabStop;
+					AView thisControl = null;
+
+					if (view is ITabStop tabStop)
+						thisControl = tabStop.TabStop;
 
 					if (thisControl == null)
 						continue;

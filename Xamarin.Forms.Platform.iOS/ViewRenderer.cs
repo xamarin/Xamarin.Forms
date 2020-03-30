@@ -5,6 +5,7 @@ using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 
 #if __MOBILE__
+using UIKit;
 using NativeColor = UIKit.UIColor;
 using NativeControl = UIKit.UIControl;
 using NativeView = UIKit.UIView;
@@ -29,18 +30,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, IVisualNativeElementRenderer, ITabStop where TView : View where TNativeView : NativeView
 	{
-#if __MOBILE__
 		string _defaultAccessibilityLabel;
 		string _defaultAccessibilityHint;
 		bool? _defaultIsAccessibilityElement;
-#endif
+
 		NativeColor _defaultColor;
 
 		event EventHandler<PropertyChangedEventArgs> _elementPropertyChanged;
 		event EventHandler _controlChanging;
 		event EventHandler _controlChanged;
 
-		bool IsElementOrControlEmpty => Element == null || Control == null;
+		private protected bool IsElementOrControlEmpty => Element == null || Control == null;
 
 		protected virtual TNativeView CreateNativeControl()
 		{
@@ -165,7 +165,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			effect.SetControl(Control);
 		}
 
-#if __MOBILE__
 		protected override void SetAccessibilityHint()
 		{
 			_defaultAccessibilityHint = Control.SetAccessibilityHint(Element, _defaultAccessibilityHint);
@@ -180,8 +179,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_defaultIsAccessibilityElement = Control.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
-	
-#endif
+
 		protected override void SetAutomationId(string id)
 		{
 			if (Control == null)
@@ -236,6 +234,16 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 #if __MOBILE__
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				Control.SetNeedsDisplay();
+#endif
+		}
+
 		internal override void SendVisualElementInitialized(VisualElement element, NativeView nativeView)
 		{
 			base.SendVisualElementInitialized(element, Control);

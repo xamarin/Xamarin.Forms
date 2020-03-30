@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Internals
 			BindableObject target;
 #if DO_NOT_CHECK_FOR_BINDING_REUSE
 			if (!_weakTarget.TryGetTarget(out target))
-				throw new InvalidOperationException();
+				return;
 #else
 			if (!_weakTarget.TryGetTarget(out target) || target == null) {
 				Unapply();
@@ -272,7 +272,9 @@ namespace Xamarin.Forms.Internals
 			{
 				if (!string.IsNullOrEmpty(e.PropertyName) && string.CompareOrdinal(e.PropertyName, PropertyName) != 0)
 					return;
-				Device.BeginInvokeOnMainThread(() => _binding.Apply(false));
+
+				IDispatcher dispatcher = (sender as BindableObject)?.Dispatcher;
+				dispatcher.Dispatch(() => _binding.Apply(false));
 			}
 		}
 
