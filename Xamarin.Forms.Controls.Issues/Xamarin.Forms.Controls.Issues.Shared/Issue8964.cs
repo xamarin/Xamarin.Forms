@@ -130,16 +130,15 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue8964Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			var rect = RunningApp.Query("carouseView")[0].Rect;
-			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.SwipeLeftToRight("carouseView");
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.SwipeLeftToRight("carouseView");
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.SwipeLeftToRight("carouseView");
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.SwipeLeftToRight("carouseView");
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+			RunningApp.SwipeLeftToRight("carouseView");
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			RunningApp.WaitForElement(q => q.Marked($"Counter 6"));
 
