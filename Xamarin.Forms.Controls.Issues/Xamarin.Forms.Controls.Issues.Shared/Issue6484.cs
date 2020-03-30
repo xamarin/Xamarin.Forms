@@ -67,6 +67,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void RemovingIntermediatePagesBreaksShell()
 		{
+			RunningApp.WaitForElement("Success");
 		}
 #endif
 	}
