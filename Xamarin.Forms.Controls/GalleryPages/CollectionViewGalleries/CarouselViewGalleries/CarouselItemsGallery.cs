@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
@@ -8,9 +10,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	[Preserve(AllMembers = true)]
 	public class CarouselItemsGallery : ContentPage
 	{
-		public CarouselItemsGallery()
+		public CarouselItemsGallery(bool empty, bool async, bool nativeIndicator)
 		{
-			var viewModel = new CarouselItemsGalleryViewModel();
+			var viewModel = new CarouselItemsGalleryViewModel(empty, async);
 
 			Title = $"CarouselView (Indicators)";
 
@@ -27,7 +29,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			new LinearItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center
+				SnapPointsAlignment = SnapPointsAlignment.Center,
+				ItemSpacing = 8
 			};
 
 			var itemTemplate = GetCarouselTemplate();
@@ -36,11 +39,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
-				ItemsSource = viewModel.Items,
 				IsScrollAnimated = true,
 				IsBounceEnabled = true,
-				EmptyView = "This is the empty view"
+				EmptyView = "This is the empty view",
+				PeekAreaInsets = new Thickness(50),
+				BindingContext = viewModel
 			};
+
+			carouselView.SetBinding(CarouselView.ItemsSourceProperty, nameof(viewModel.Items));
 
 			var absolute = new AbsoluteLayout();
 			absolute.Children.Add(carouselView, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All);
@@ -53,7 +59,22 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				IndicatorsShape = IndicatorShape.Square
 			};
 
-			IndicatorView.SetItemsSourceBy(indicators, carouselView);
+			if (!nativeIndicator)
+			{
+				indicators.IndicatorTemplate = new DataTemplate(() =>
+				{
+					return new Image
+					{
+						Source = new FontImageSource
+						{
+							FontFamily = DefaultFontFamily(),
+							Glyph = "\uf30c",
+						},
+					};
+				});
+			}
+
+			carouselView.IndicatorView = indicators;
 
 			absolute.Children.Add(indicators, new Rectangle(.5, 1, -1, -1), AbsoluteLayoutFlags.PositionProportional);
 
@@ -103,9 +124,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				viewModel.Items.Clear();
 			};
 
+			var lbl = new Label();
+			lbl.SetBinding(Label.TextProperty, nameof(CarouselView.Position));
+			lbl.BindingContext = carouselView;
+
 			stacklayoutButtons.Children.Add(addItemButton);
 			stacklayoutButtons.Children.Add(removeItemButton);
 			stacklayoutButtons.Children.Add(clearItemsButton);
+			stacklayoutButtons.Children.Add(lbl);
 
 			grid.Children.Add(stacklayoutButtons, 0, 1);
 
@@ -141,6 +167,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				return frame;
 			});
 		}
+
+		static string DefaultFontFamily()
+		{
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+
+			return fontFamily;
+		}
 	}
 
 	[Preserve(AllMembers = true)]
@@ -148,20 +194,39 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	{
 		ObservableCollection<CarouselData> _items;
 
-		public CarouselItemsGalleryViewModel()
+		public CarouselItemsGalleryViewModel(bool empty, bool async)
 		{
-			Items = new ObservableCollection<CarouselData>();
-
-			var random = new Random();
-
-			for (int n = 0; n < 5; n++)
+			if (async)
 			{
-				_items.Add(new CarouselData
+				Task.Run(async () =>
 				{
-					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
-					Name = $"{n + 1}"
+					await Task.Delay(400);
+					SetSource(empty);
 				});
 			}
+			else
+			{
+				SetSource(empty);
+			}
+		}
+
+		void SetSource(bool empty)
+		{
+			var random = new Random();
+
+			var source = new List<CarouselData>();
+			if (!empty)
+			{
+				for (int n = 0; n < 5; n++)
+				{
+					source.Add(new CarouselData
+					{
+						Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
+						Name = $"{n + 1}"
+					});
+				}
+			}
+			Items = new ObservableCollection<CarouselData>(source);
 		}
 
 		public ObservableCollection<CarouselData> Items
@@ -170,7 +235,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			set
 			{
 				_items = value;
-				OnPropertyChanged();
+				OnPropertyChanged(nameof(Items));
 			}
 		}
 	}

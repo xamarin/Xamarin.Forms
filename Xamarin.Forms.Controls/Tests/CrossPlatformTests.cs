@@ -1,17 +1,20 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Tests
 {
 	[TestFixture]
-	public class CrossPlatformTests
+	public class CrossPlatformTests : CrossPlatformTestFixture
 	{
-		[Test(Description = "Always Passes")]
+		[Test]
+		[Description("Always Passes")]
 		public void PassingCrossPlatformTest()
 		{
 			Assert.Pass();
 		}
 
-		[Test(Description = "Setting ListView Header to null should not crash")]
+		[Test]
+		[Description("Setting ListView Header to null should not crash")]
 		public void Bugzilla28575()
 		{
 			string header = "Hello I am Header!!!!";
@@ -29,7 +32,8 @@ namespace Xamarin.Forms.Controls.Tests
 			listview.Header = null;
 		}
 
-		[Test(Description = "isPresentedChanged raises multiple times")]
+		[Test]
+		[Description("isPresentedChanged raises multiple times")]
 		public void Bugzilla32230()
 		{
 			var mdp = new MasterDetailPage();
@@ -42,6 +46,32 @@ namespace Xamarin.Forms.Controls.Tests
 			mdp.IsPresented = false;
 			mdp.IsPresented = true;
 			Assert.That(count, Is.EqualTo(3));
+		}
+
+		[Test]
+		[Description("ButtonRenderer UpdateTextColor function crash")]
+		public async Task Bugzilla35738() 
+		{
+			var customButton = new TestClasses.CustomButton() { Text = "This is a custom button", TextColor = Color.Fuchsia };
+			await TestingPlatform.CreateRenderer(customButton);
+		}
+
+		[Test]
+		[Description("[Bug] CollectionView exception when IsGrouped=true and null ItemSource")]
+		public async Task GitHub8269() 
+		{
+			var collectionView = new CollectionView { ItemsSource = null, IsGrouped = true };
+			await TestingPlatform.CreateRenderer(collectionView);
+		}
+
+		[Test]
+		[Description("[Bug] [UWP] NullReferenceException when call SavePropertiesAsync method off the main thread")]
+		public async Task GitHub8682()
+		{
+			await Task.Run(async () =>
+			{
+				await Application.Current.SavePropertiesAsync();
+			});
 		}
 	}
 }

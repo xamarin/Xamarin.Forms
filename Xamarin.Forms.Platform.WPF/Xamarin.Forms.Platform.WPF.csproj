@@ -55,6 +55,9 @@
     <PackageReference Include="OpenTK.GLControl" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core\Crc64.cs">
+      <Link>Crc64.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.UAP\TextBlockExtensions.cs">
       <Link>Extensions\TextBlockExtensions.cs</Link>
     </Compile>
@@ -62,6 +65,7 @@
     <Compile Include="CellControl.cs" />
     <Compile Include="Controls\FormsAppBar.cs" />
     <Compile Include="Controls\FormsAppBarButton.cs" />
+    <Compile Include="Controls\FormsFontIcon.cs" />
     <Compile Include="Controls\FormsBitmapIcon.cs" />
     <Compile Include="Controls\FormsButton.cs" />
     <Compile Include="Controls\FormsCarouselPage.cs" />
@@ -74,6 +78,9 @@
     <Compile Include="Controls\FormsPage.cs" />
     <Compile Include="Controls\FormsNavigationPage.cs" />
     <Compile Include="Controls\FormsPathIcon.cs" />
+    <Compile Include="Controls\FormsProgressRing.xaml.cs">
+      <DependentUpon>FormsProgressRing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FormsSymbolIcon.cs" />
     <Compile Include="Controls\FormsTabbedPage.cs" />
     <Compile Include="Controls\FormsTransitioningContentControl.cs" />
@@ -83,6 +90,8 @@
     <Compile Include="Converters\CaseConverter.cs" />
     <Compile Include="Converters\CollapseWhenEmptyConverter.cs" />
     <Compile Include="Converters\ColorConverter.cs" />
+    <Compile Include="Converters\FontFamilyConverter.cs" />
+    <Compile Include="Converters\FontIconColorConverter.cs" />
     <Compile Include="Converters\HeightConverter.cs" />
     <Compile Include="Converters\IconConveter.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
@@ -226,6 +235,13 @@
     <Page Include="Assets\Default.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\FormsFontIcon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\FormsProgressRing.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>

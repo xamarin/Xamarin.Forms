@@ -26,6 +26,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 	public class PickerRenderer : PickerRendererBase<UITextField>
 	{
+		[Internals.Preserve(Conditional = true)]
+		public PickerRenderer()
+		{
+
+		}
+
 		protected override UITextField CreateNativeControl()
 		{
 			return new ReadOnlyField { BorderStyle = UITextBorderStyle.RoundedRect };
@@ -42,6 +48,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IElementController ElementController => Element as IElementController;
 
+
+		[Internals.Preserve(Conditional = true)]
+		public PickerRendererBase()
+		{
+
+		}
 
 		protected abstract override TControl CreateNativeControl();
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
@@ -192,7 +204,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Font = Element.ToUIFont();			
 		}
 
-		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
+		readonly Color _defaultPlaceholderColor = ColorExtensions.PlaceholderColor.ToColor();
 		protected internal virtual void UpdatePlaceholder()
 		{
 			var formatted = (FormattedString)Element.Title;

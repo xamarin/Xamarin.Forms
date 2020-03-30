@@ -247,6 +247,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task RelativeGoTo()
 		{
+			Routing.RegisterRoute("RelativeGoTo_Page1", typeof(ContentPage));
+			Routing.RegisterRoute("RelativeGoTo_Page2", typeof(ContentPage));
+
 			var shell = new Shell
 			{
 			};
@@ -279,6 +282,15 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab21/content"));
 
 			await shell.GoToAsync("/tab23", false, true);
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content"));
+
+			await shell.GoToAsync("RelativeGoTo_Page1", false);
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content/RelativeGoTo_Page1"));
+
+			await shell.GoToAsync("../RelativeGoTo_Page2", false);
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content/RelativeGoTo_Page2"));
+
+			await shell.GoToAsync("..", false);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content"));
 
 			/*
@@ -389,6 +401,19 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
 			Assert.AreEqual("4321", testPage.SomeQueryParameter);
+		}
+
+		[Test]
+		public async Task BasicQueryStringTest()
+		{
+			var shell = new Shell();
+
+			var item = CreateShellItem(shellSectionRoute: "section2");
+			Routing.RegisterRoute("details", typeof(ShellTestPage));
+			shell.Items.Add(item);
+			await shell.GoToAsync(new ShellNavigationState($"details?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
+			Assert.AreEqual("1234", testPage.SomeQueryParameter);
 		}
 
 
@@ -852,6 +877,86 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.IsFalse(GetItems(shell).Contains(item1));
 			Assert.IsTrue(GetItems(shell).Contains(item2));
+		}
+		
+		[Test]
+		public async Task ShellContentCollectionClear()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			var section2 = CreateShellSection();
+			
+			shell.Items.Add(item1);
+			item1.Items.Add(section2);
+
+			var mainTab = item1.Items[0];
+			var content1 = CreateShellContent();
+			var clearedContent = mainTab.Items[0];
+			mainTab.Items.Clear();
+			mainTab.Items.Add(content1);
+			mainTab.Items.Add(CreateShellContent());
+			
+			Assert.IsNull(clearedContent.Parent);
+			Assert.AreEqual(2, mainTab.Items.Count);
+			Assert.AreEqual(content1, mainTab.CurrentItem);
+		}
+		
+		[Test]
+		public async Task ShellItemCollectionClear()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			shell.Items.Add(item1);
+
+			
+			var item2 = CreateShellItem();
+			var item3 = CreateShellItem();
+			
+			shell.Items.Clear();
+			shell.Items.Add(item2);
+			shell.Items.Add(item3);
+			
+			Assert.IsNull(item1.Parent);
+			Assert.AreEqual(2, shell.Items.Count);
+			Assert.AreEqual(item2, shell.CurrentItem);
+		}
+		
+		[Test]
+		public async Task ShellSectionCollectionClear()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			shell.Items.Add(item1);
+
+			var section1 = CreateShellSection();
+			var section2 = CreateShellSection();
+			var clearedSection = item1.Items[0];
+			
+			Assert.IsNotNull(clearedSection.Parent);
+			item1.Items.Clear();
+			item1.Items.Add(section1);
+			item1.Items.Add(section2);
+			
+			Assert.IsNull(clearedSection.Parent);
+			Assert.AreEqual(2, item1.Items.Count);
+			Assert.AreEqual(section1, shell.CurrentItem.CurrentItem);
+		}
+
+		[Test]
+		public async Task ShellLocationRestoredWhenItemsAreReAdded()
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root1"));
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root2"));
+
+			await shell.GoToAsync("//root2");
+			Assert.AreEqual("//root2", shell.CurrentState.Location.ToString());
+
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root1"));
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root2"));
+
+			shell.Items.Clear();
+			Assert.AreEqual("//root2", shell.CurrentState.Location.ToString());
 		}
 	}
 }

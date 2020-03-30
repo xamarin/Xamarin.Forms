@@ -9,7 +9,6 @@ using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.OS;
 using Android.Runtime;
 #if __ANDROID_29__
 using AndroidX.Core.Widget;
@@ -39,7 +38,6 @@ using AView = Android.Views.View;
 using Object = Java.Lang.Object;
 using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 using static Android.Views.View;
-using System.IO;
 using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
@@ -69,6 +67,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _isAttachedToWindow;
 		Platform _platform;
 		string _defaultNavigationContentDescription;
+		List<IMenuItem> _currentMenuItems = new List<IMenuItem>();
+		List<ToolbarItem> _currentToolbarItems = new List<ToolbarItem>();
 
 		// The following is based on https://android.googlesource.com/platform/frameworks/support.git/+/4a7e12af4ec095c3a53bb8481d8d92f63157c3b7/v4/java/android/support/v4/app/FragmentManager.java#677
 		// Must be overriden in a custom renderer to match durations in XML animation resource files
@@ -183,7 +183,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (disposing)
 			{
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
-			
+
 				if (NavigationPageController != null)
 				{
 					var navController = NavigationPageController;
@@ -232,10 +232,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					_toolbarTracker.CollectionChanged -= ToolbarTrackerOnCollectionChanged;
 
-					_toolbar.DisposeMenuItems(_toolbarTracker?.ToolbarItems, OnToolbarItemPropertyChanged);
+					_toolbar.DisposeMenuItems(_currentToolbarItems, OnToolbarItemPropertyChanged);
 
 					_toolbarTracker.Target = null;
 					_toolbarTracker = null;
+				}
+
+				if (_currentMenuItems != null)
+				{
+					_currentMenuItems.Clear();
+					_currentMenuItems = null;
+				}
+
+				if (_currentToolbarItems != null)
+				{
+					_currentToolbarItems.Clear();
+					_currentToolbarItems = null;
 				}
 
 				if (_toolbar != null)
@@ -571,11 +583,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			if (nameof(Device.Info.CurrentOrientation) == e.PropertyName)
 				ResetToolbar();
-		}
-
-		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			_toolbar.OnToolbarItemPropertyChanged(e, _toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged);
 		}
 
 		void InsertPageBefore(Page page, Page before)
@@ -918,11 +925,20 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateMenu()
 		{
-			if (_disposed)
+			if (_disposed || _currentMenuItems == null)
 				return;
 
-			_toolbar.UpdateMenuItems(_toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged);
+			_currentMenuItems.Clear();
+			_currentMenuItems = new List<IMenuItem>();
+			_toolbar.UpdateMenuItems(_toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged, _currentMenuItems, _currentToolbarItems, UpdateMenuItemIcon);
 		}
+
+		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var items = _toolbarTracker?.ToolbarItems?.ToList();
+			_toolbar.OnToolbarItemPropertyChanged(e, (ToolbarItem)sender, items, Context, null, OnToolbarItemPropertyChanged, _currentMenuItems, _currentToolbarItems, UpdateMenuItemIcon);
+		}
+
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
 			ToolbarExtensions.UpdateMenuItemIcon(context, menuItem, toolBarItem, null);

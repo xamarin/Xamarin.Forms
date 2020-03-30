@@ -50,6 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public IndicatorViewRenderer(Context context) : base(context)
 		{
+			SetGravity(GravityFlags.Center);
 			_visualElementRenderer = new VisualElementRenderer(this);
 		}
 
@@ -140,9 +141,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateIndicatorTemplate();
 			}
-			else if (changedProperty.Is(IndicatorView.IndicatorsShapeProperty) ||
-					 changedProperty.Is(IndicatorView.IndicatorColorProperty) ||
-					 changedProperty.Is(IndicatorView.SelectedIndicatorColorProperty))
+			else if (changedProperty.IsOneOf(IndicatorView.IndicatorsShapeProperty,
+											IndicatorView.IndicatorColorProperty,
+											IndicatorView.IndicatorSizeProperty,
+											IndicatorView.SelectedIndicatorColorProperty))
 			{
 				ResetIndicators();
 			}
@@ -197,23 +199,15 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateItemsSource();
 
 			ElevationHelper.SetElevation(this, newElement);
-		}
 
-		void IndicatorsViewItemSourcePropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
-		{
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
-			{
-				UpdateItemsSource();
-			}
-			else if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
-			{
-				UpdateSelectedIndicator();
-			}
+			UpdateSelectedIndicator();
 		}
 
 		void UpdateSelectedIndicator()
 		{
-			_selectedIndex = IndicatorsView.Position;
+			var maxVisible = IndicatorsView.MaximumVisible;
+			var position = IndicatorsView.Position;
+			_selectedIndex = position >= maxVisible ? maxVisible - 1 : position;
 			UpdateIndicators();
 		}
 
@@ -239,6 +233,10 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var count = IndicatorsView.Count;
+
+			if (IndicatorsView.MaximumVisible != int.MaxValue)
+				count = IndicatorsView.MaximumVisible;
+
 			var childCount = ChildCount;
 
 			for (int i = childCount; i < count; i++)

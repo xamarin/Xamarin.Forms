@@ -11,7 +11,10 @@ using WSelectionChangedEventArgs = System.Windows.Controls.SelectionChangedEvent
 namespace Xamarin.Forms.Platform.WPF
 {
 	public class PickerRenderer : ViewRenderer<Picker, ComboBox>
-	{
+	{		
+		const string TextBoxTemplate = "PART_EditableTextBox";
+    bool _isDisposed;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
 		{
 			if (e.NewElement != null)
@@ -19,8 +22,10 @@ namespace Xamarin.Forms.Platform.WPF
 				if (Control == null) // construct and SetNativeControl and suscribe control event
 				{
 					SetNativeControl(new ComboBox());
+					Control.IsEditable = true;
 					Control.SelectionChanged += OnControlSelectionChanged;
-				}
+					Control.Loaded += OnControlLoaded;
+				}								
 
 				// Update control property 
 				UpdateTitle();
@@ -33,7 +38,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			base.OnElementChanged(e);
 		}
-		
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
@@ -57,6 +62,10 @@ namespace Xamarin.Forms.Platform.WPF
 			else if (e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
 			{
 				UpdateVerticalTextAlignment();
+      }
+			else if (e.PropertyName == Picker.BackgroundColorProperty.PropertyName)
+			{
+				UpdateBackgroundColor();
 			}
 		}
 
@@ -70,6 +79,16 @@ namespace Xamarin.Forms.Platform.WPF
 			Control.UpdateDependencyColor(ComboBox.ForegroundProperty, Element.TextColor);
 		}
 
+		void UpdateBackgroundColor()
+		{			
+			var textbox = (TextBox)Control.Template.FindName(TextBoxTemplate, Control);
+			if (textbox != null)
+			{
+				var parent = (Border)textbox.Parent;
+				parent.Background = Element.BackgroundColor.ToBrush();
+			}			
+		}
+
 		void UpdateSelectedIndex()
 		{
 			Control.SelectedIndex = Element.SelectedIndex;
@@ -79,18 +98,22 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			Control.HorizontalContentAlignment = Element.HorizontalTextAlignment.ToNativeHorizontalAlignment();
 		}
+    
 		void UpdateVerticalTextAlignment()
 		{
 			Control.VerticalContentAlignment = Element.VerticalTextAlignment.ToNativeVerticalAlignment();
 		}
 
-		private void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
+		void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
 			if (Element != null)
 				Element.SelectedIndex = Control.SelectedIndex;
 		}
 
-		bool _isDisposed;
+		void OnControlLoaded(object sender, System.Windows.RoutedEventArgs e)
+		{
+			UpdateBackgroundColor();
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -102,6 +125,7 @@ namespace Xamarin.Forms.Platform.WPF
 				if (Control != null)
 				{
 					Control.SelectionChanged -= OnControlSelectionChanged;
+					Control.Loaded -= OnControlLoaded;
 					Control.ItemsSource = null;
 				}
 

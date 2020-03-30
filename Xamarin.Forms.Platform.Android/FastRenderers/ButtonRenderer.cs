@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			((IElementController)Button).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, hasFocus);
 		}
-	
+
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
 			if (_isDisposed)
@@ -96,15 +96,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			var hint = Control.Hint;
+			bool setHint = Control.LayoutParameters != null;
 
-			if (!string.IsNullOrWhiteSpace(hint))
+			if (!string.IsNullOrWhiteSpace(hint) && setHint)
 			{
 				Control.Hint = string.Empty;
 			}
 
 			var result  = _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 
-			Control.Hint = hint;
+			if(setHint)
+				Control.Hint = hint;
 
 			return result;
 		}
@@ -149,7 +151,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			ViewRenderer.MeasureExactly(this, Element, Context);
 		}
-
 
 		public override void Draw(Canvas canvas)
 		{
@@ -209,7 +210,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		protected virtual void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
-		
+
 			if (e.OldElement != null)
 			{
 				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
@@ -243,6 +244,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}	
+
+			if(Control?.LayoutParameters == null)
+			{
+				ElementPropertyChanged?.Invoke(this, e);
+				return;
+			}
+
 			if (e.PropertyName == Button.TextColorProperty.PropertyName)
 			{
 				UpdateTextColor();

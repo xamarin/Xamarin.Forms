@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static UIModalPresentationStyle ToNativeModalPresentationStyle(this PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
+		public static UIModalPresentationStyle ToNativeModalPresentationStyle(this PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
 		{
 			switch (style)
 			{
@@ -84,6 +84,29 @@ namespace Xamarin.Forms.Platform.iOS
 					return UIModalPresentationStyle.FormSheet;
 				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FullScreen:
 					return UIModalPresentationStyle.FullScreen;
+#if __XCODE11__
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.Automatic:
+					return UIModalPresentationStyle.Automatic;
+#endif
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.OverFullScreen:
+					return UIModalPresentationStyle.OverFullScreen;
+				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.PageSheet:
+					return UIModalPresentationStyle.PageSheet;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(style));
+			}
+		}
+
+		internal static UISearchBarStyle ToNativeSearchBarStyle(this PlatformConfiguration.iOSSpecific.UISearchBarStyle style)
+		{
+			switch (style)
+			{
+				case PlatformConfiguration.iOSSpecific.UISearchBarStyle.Default:
+					return UISearchBarStyle.Default;
+				case PlatformConfiguration.iOSSpecific.UISearchBarStyle.Prominent:
+					return UISearchBarStyle.Prominent;
+				case PlatformConfiguration.iOSSpecific.UISearchBarStyle.Minimal:
+					return UISearchBarStyle.Minimal;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(style));
 			}

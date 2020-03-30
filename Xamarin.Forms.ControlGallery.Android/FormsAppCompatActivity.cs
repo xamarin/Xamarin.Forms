@@ -18,7 +18,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 	[Activity(Label = "Control Gallery", Icon = "@drawable/icon", Theme = "@style/MyTheme",
 		MainLauncher = true, HardwareAccelerated = true, 
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
 	[IntentFilter(new[] { Intent.ActionView },
 		Categories = new[]
 		{
@@ -52,6 +52,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			Forms.Init(this, bundle);
 
 			FormsMaps.Init(this, bundle);
+			DualScreen.DualScreenService.Init(this);
 			FormsMaterial.Init(this, bundle);
 			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
@@ -95,12 +96,14 @@ namespace Xamarin.Forms.ControlGallery.Android
 			});
 
 			LoadApplication(_app);
-			if (Forms.Flags.Contains("FastRenderers_Experimental"))
+
+#if !TEST_EXPERIMENTAL_RENDERERS
+			if ((int)Build.VERSION.SdkInt >= 21)
 			{
-				var masterPage = ((_app.MainPage as MasterDetailPage)?.Master as ContentPage);
-				if (masterPage != null)
-					masterPage.Content = new Label { Text = "Fast Renderers" };
+				// Show a purple status bar if we're looking at legacy renderers
+				Window.SetStatusBarColor(Color.MediumPurple.ToAndroid());
 			}
+#endif
 		}
 
 		protected override void OnResume()
