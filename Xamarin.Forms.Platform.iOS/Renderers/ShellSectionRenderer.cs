@@ -105,12 +105,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return false;
 		}
 
-
-		public override void AddChildViewController(UIViewController childController)
-		{
-			base.AddChildViewController(childController);
-		}
-
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
