@@ -129,19 +129,29 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue8964Test()
 		{
+			var rect = RunningApp.Query("carouseView")[0].Rect;
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.SwipeLeftToRight("carouseView");
+			SwipePreviousItem(rect);
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.SwipeLeftToRight("carouseView");
+			SwipePreviousItem(rect);
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.SwipeLeftToRight("carouseView");
+			SwipePreviousItem(rect);
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.SwipeLeftToRight("carouseView");
+			SwipePreviousItem(rect);
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
-			RunningApp.SwipeLeftToRight("carouseView");
+			SwipePreviousItem(rect);
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			RunningApp.WaitForElement(q => q.Marked($"Counter 6"));
 
+		}
+
+		void SwipePreviousItem(UITest.Queries.AppRect rect)
+		{
+#if __ANDROID__
+			RunningApp.DragCoordinates(rect.X + 10, rect.Y, rect.X + rect.Width - 10, rect.Y);
+#else
+			RunningApp.SwipeLeftToRight("carouseView");
+#endif
 		}
 #endif
 	}
