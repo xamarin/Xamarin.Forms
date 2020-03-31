@@ -1079,6 +1079,12 @@ namespace Xamarin.Forms.Platform.iOS
 					_tracker.CollectionChanged -= TrackerOnCollectionChanged;
 					_tracker = null;
 
+					if (NavigationItem.TitleView != null)
+					{
+						NavigationItem.TitleView.Dispose();
+						NavigationItem.TitleView = null;
+					}
+
 					if (NavigationItem.RightBarButtonItems != null)
 					{
 						for (var i = 0; i < NavigationItem.RightBarButtonItems.Length; i++)
