@@ -99,16 +99,16 @@ namespace Xamarin.Forms.Platform.Tizen
 		protected override void OnFocused(object sender, EventArgs e)
 		{
 			base.OnFocused(sender, e);
-			RotaryInteractionHandler(true);
+			UpdateRotaryInteraction(true);
 		}
 
 		protected override void OnUnfocused(object sender, EventArgs e)
 		{
 			base.OnUnfocused(sender, e);
-			RotaryInteractionHandler(false);
+			UpdateRotaryInteraction(false);
 		}
 
-		protected virtual void RotaryInteractionHandler(bool enable)
+		protected virtual void UpdateRotaryInteraction(bool enable)
 		{
 			if (NativeView is IRotaryInteraction ri)
 			{
