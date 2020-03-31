@@ -278,8 +278,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			SetCurrentItem(position);
 			UpdatePosition(position);
-			if (position > 0)
-				UpdateFromPosition();
+			//if (position > 0)
+			//	UpdateFromPosition();
 		}
 
 		void UpdatePositionFromScroll()
@@ -303,7 +303,9 @@ namespace Xamarin.Forms.Platform.UWP
 										_scrollViewer.VerticalOffset > _previousVerticalOffset;
 
 			var position = ListViewBase.GetVisibleIndexes(CarouselItemsLayout.Orientation, goingNext).centerItemIndex;
-
+			if (position == -1)
+				return;
+			System.Diagnostics.Debug.WriteLine(position);
 			UpdatePosition(position);
 		}
 

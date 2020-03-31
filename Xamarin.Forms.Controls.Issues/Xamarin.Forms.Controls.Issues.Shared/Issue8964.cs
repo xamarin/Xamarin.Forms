@@ -28,9 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 			ItemSourceUnderTest = new ObservableCollection<ModelIssue8964>(GetCarouselItems());
 			var lbl = new Label
 			{
-				Text = @"Scroll to the previous item until see the Item with counter 6,
-						 since we are inserting items on the start of the collection
-						 the position should be  the same"
+				Text = "Scroll to the previous item until see the Item with counter 6, since we are inserting items on the start of the collection the position should be  the same"
 			};
 			CarouselViewUnderTest = new CarouselView
 			{
@@ -129,6 +127,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue8964Test()
 		{
+			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			var rect = RunningApp.Query("carouseView")[0].Rect;
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			SwipePreviousItem(rect);
