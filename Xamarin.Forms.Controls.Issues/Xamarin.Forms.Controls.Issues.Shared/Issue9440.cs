@@ -50,10 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 			FlyoutIcon.SetValue(AutomationProperties.NameProperty, "Shell Icon");
 		}
 
-#if UITEST
-#if !(__ANDROID__ || __IOS__)
-		[Ignore("Shell test is only supported on Android and iOS")]
-#endif
+#if UITEST && __SHELL__
 		[Test]
 		public void GitHubIssue9440()
 		{
