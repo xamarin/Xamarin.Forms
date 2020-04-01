@@ -22,20 +22,25 @@ namespace Xamarin.Forms.Controls.Issues
 		string _idIconElement = "shellIcon";
 		protected override void Init()
 		{
-			this.AddFlyoutItem(CreatePage(Test1, "Page 1"), Test1);
-			this.AddFlyoutItem(CreatePage(Test2, "Page 2"), Test2);
+			this.AddFlyoutItem(CreatePage(Test1), Test1);
+			this.AddFlyoutItem(CreatePage(Test2), Test2);
 
-			ContentPage CreatePage(string title, string txt)
+			ContentPage CreatePage(string title)
 			{
+				var label = new Label
+				{
+					TextColor = Color.Black,
+					HorizontalOptions = LayoutOptions.FillAndExpand,
+					HorizontalTextAlignment = TextAlignment.End
+				};
+				label.BindingContext = this;
+				label.SetBinding(Label.TextProperty, "FlyoutIsPresented");
 				return new ContentPage 
-				{ Title = title, 
+				{
+					Title = title, 
 					Content = new ScrollView 
 					{ 
-						Content = new Label 
-						{ 
-							Text = txt,
-							TextColor = Color.Black
-						} 
+						Content = label
 					} 
 				};
 			}
@@ -57,6 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(_idIconElement));
 			DoubleTapInFlyout(Test1, _idIconElement);
 			RunningApp.WaitForElement(q => q.Marked(Test1));
+			Assert.AreEqual(false, FlyoutIsPresented);
 		}
 #endif
 	}
