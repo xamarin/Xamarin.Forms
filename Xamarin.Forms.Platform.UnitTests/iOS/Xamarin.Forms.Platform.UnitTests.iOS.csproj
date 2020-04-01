@@ -111,7 +111,7 @@
     <Compile Include="TestingPlatformService.cs" />
     <Compile Include="TextTests.cs" />
     <None Include="Entitlements.plist" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " />
-    <None Include="Info.plist" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " />
+    <None Include="Info.plist" />
     <Compile Include="NavigationTests.cs" />
     <Compile Include="OpacityTests.cs" />
     <Compile Include="PlatformTestFixture.cs" />
