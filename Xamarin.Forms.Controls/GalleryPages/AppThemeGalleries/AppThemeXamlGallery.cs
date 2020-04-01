@@ -1,7 +1,6 @@
-﻿using System;
-namespace Xamarin.Forms.Controls
+﻿namespace Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries
 {
-	public class OSThemesGallery : ContentPage
+	public class AppThemeCodeGallery : ContentPage
 	{
 		AppThemeColor color = new AppThemeColor { Light = Color.Green, Dark = Color.Red };
 		public Color TheColor
@@ -9,7 +8,7 @@ namespace Xamarin.Forms.Controls
 			get => color.Value;
 		}
 
-		public OSThemesGallery()
+		public AppThemeCodeGallery()
 		{
 			var currentThemeLabel = new Label
 			{

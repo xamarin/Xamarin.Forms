@@ -1,11 +1,11 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages
+﻿namespace Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries
 {
-	public partial class OSThemesGalleryXaml : ContentPage
+	public partial class AppThemeXamlGallery : ContentPage
 	{
         public Color LightColor { get; set; } = Color.Cyan;
         public Color DarkColor { get; set; } = Color.CornflowerBlue;
 
-        public OSThemesGalleryXaml()
+        public AppThemeXamlGallery()
 		{
 			InitializeComponent();
             BindingContext = this;

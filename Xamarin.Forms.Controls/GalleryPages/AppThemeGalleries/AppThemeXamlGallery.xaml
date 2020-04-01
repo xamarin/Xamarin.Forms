@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:gallerypages="clr-namespace:Xamarin.Forms.Controls.GalleryPages" x:Class="Xamarin.Forms.Controls.GalleryPages.OSThemesGalleryXaml">
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:gallerypages="clr-namespace:Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries" x:Class="Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries.AppThemeXamlGallery">
     <ContentPage.Resources>
         <AppThemeColor x:Key="MyColor" Light="HotPink" Dark="Yellow" />
         <Style x:Key="OSThemeStyle" TargetType="Label" >
