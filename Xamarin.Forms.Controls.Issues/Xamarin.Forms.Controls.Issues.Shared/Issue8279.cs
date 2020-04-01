@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void ScrollWithNoItemButGroup()
+		public void ScrollWithNoItemButGroupTest()
 		{
 			RunningApp.WaitForElement(ScrollWithNoItemButGroup);
 			RunningApp.Tap(ScrollWithNoItemButGroup);
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
-		public void ScrollWithItemButNoGroup()
+		public void ScrollWithItemButNoGroupTest()
 		{
 			RunningApp.WaitForElement(ScrollWithItemButNoGroup);
 			RunningApp.Tap(ScrollWithItemButNoGroup);
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
-		public void ScrollWithItemWithGroup()
+		public void ScrollWithItemWithGroupTest()
 		{
 			RunningApp.WaitForElement(ScrollWithItemWithGroup);
 			RunningApp.Tap(ScrollWithItemWithGroup);
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
-		public void ScrollWithNoItemNoGroup()
+		public void ScrollWithNoItemNoGroupTest()
 		{
 			RunningApp.WaitForElement(ScrollWithNoItemNoGroup);
 			RunningApp.Tap(ScrollWithNoItemNoGroup);
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
-		public void ScrollWithNoItemEmptyGroup()
+		public void ScrollWithNoItemEmptyGroupTest()
 		{
 			RunningApp.WaitForElement(ScrollWithNoItemEmptyGroup);
 			RunningApp.Tap(ScrollWithNoItemEmptyGroup);
