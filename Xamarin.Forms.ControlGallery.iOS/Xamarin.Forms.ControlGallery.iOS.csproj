@@ -181,7 +181,8 @@
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Platform.UnitTests\iOS\Xamarin.Forms.Platform.UnitTests.iOS.csproj">
+    <ProjectReference Condition="'$(Use2017)' != 'true'" Include="..\Xamarin.Forms.Platform.UnitTests\iOS\Xamarin.Forms.Platform.UnitTests.iOS.csproj" 
+	AdditionalProperties="Configuration=DebugLibrary">
       <Project>{22d43156-19ff-406a-8d4b-d4c151803032}</Project>
       <Name>Xamarin.Forms.Platform.UnitTests.iOS</Name>
       <IsAppExtension>false</IsAppExtension>

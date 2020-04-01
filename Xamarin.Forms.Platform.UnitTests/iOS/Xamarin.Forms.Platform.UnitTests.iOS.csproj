@@ -8,7 +8,7 @@
     <ProjectGuid>{22D43156-19FF-406A-8D4B-D4C151803032}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
-    <OutputType>Exe</OutputType>
+	<OutputType>Exe</OutputType>
     <RootNamespace>Xamarin.Forms.Platform.UnitTests.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>Xamarin.Forms.Platform.UnitTests.iOS</AssemblyName>
@@ -62,6 +62,18 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugLibrary|iPhoneSimulator' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchArch>x86_64</MtouchArch>
+    <MtouchLink>None</MtouchLink>
+    <MtouchDebug>true</MtouchDebug>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\Xamarin.Forms.Core.UITests.Shared\Utilities\NumericExtensions.cs">
       <Link>NumericExtensions.cs</Link>
@@ -76,21 +88,21 @@
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="IsEnabledTests.cs" />
     <Compile Include="IsVisibleTests.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="AppDelegate.cs" />
+    <Compile Include="Main.cs" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " />
+    <Compile Include="AppDelegate.cs" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " />
     <Compile Include="PlatformTestSettings.cs" />
     <Compile Include="RotationTests.cs" />
     <Compile Include="ScaleTests.cs" />
     <Compile Include="TestingPlatformService.cs" />
     <Compile Include="TextTests.cs" />
-    <None Include="Entitlements.plist" />
-    <None Include="Info.plist" />
+    <None Include="Entitlements.plist" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " />
+    <None Include="Info.plist" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " />
     <Compile Include="NavigationTests.cs" />
     <Compile Include="OpacityTests.cs" />
     <Compile Include="PlatformTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
       <Visible>false</Visible>
