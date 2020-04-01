@@ -368,8 +368,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
 
-			Element.Resources.Reload();
-
 #if __XCODE11__
 			if (previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				Application.Current?.OnRequestedThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));

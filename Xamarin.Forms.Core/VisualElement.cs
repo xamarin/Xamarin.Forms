@@ -268,8 +268,10 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			
+			Application.Current.RequestedThemeChanged += (s, a) => OnRequestedThemeChanged(a.RequestedTheme);
 		}
+
+		protected virtual void OnRequestedThemeChanged(AppTheme newValue) { }
 
 		public double AnchorX
 		{

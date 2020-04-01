@@ -10,7 +10,6 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _disposed;
 
 		bool _loaded;
-		UISettings _uiSettings = new UISettings();
 
 		protected override AutomationPeer OnCreateAutomationPeer()
 		{
@@ -24,9 +23,6 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			_disposed = true;
-
-			_uiSettings.ColorValuesChanged -= _uiSettings_ColorValuesChanged;
-			_uiSettings = null;
 
 			if (Element != null)
 			{
@@ -53,7 +49,6 @@ namespace Xamarin.Forms.Platform.UWP
 				if (e.OldElement == null)
 				{
 					Loaded += OnLoaded;
-					_uiSettings.ColorValuesChanged += _uiSettings_ColorValuesChanged;	
 					Tracker = new BackgroundTracker<FrameworkElement>(BackgroundProperty);
 				}
 
@@ -65,11 +60,6 @@ namespace Xamarin.Forms.Platform.UWP
 				if (_loaded)
 					e.NewElement.SendAppearing();
 			}
-		}
-
-		void _uiSettings_ColorValuesChanged(UISettings sender, object args)
-		{
-			Device.BeginInvokeOnMainThread(() => Element.Resources.Reload());
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)

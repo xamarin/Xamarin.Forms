@@ -103,13 +103,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHeight();
 		}
 
-		protected override void OnConfigurationChanged(Configuration newConfig)
-		{
-			base.OnConfigurationChanged(newConfig);
-
-			Element.Resources.Reload();
-		}
-
 		void UpdateHeight()
 		{
 			// Handle size changes because of the soft keyboard (there's probably a more elegant solution to this)
