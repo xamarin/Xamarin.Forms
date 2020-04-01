@@ -62,7 +62,7 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
-   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugLibrary|iPhoneSimulator' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugLibrary|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -73,6 +73,21 @@
     <MtouchArch>x86_64</MtouchArch>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>true</MtouchDebug>
+  </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugLibrary|iPhone' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhone\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchArch>ARM64</MtouchArch>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <MtouchDebug>true</MtouchDebug>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <MtouchLink>None</MtouchLink>
+    <MtouchInterpreter>-all</MtouchInterpreter>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\Xamarin.Forms.Core.UITests.Shared\Utilities\NumericExtensions.cs">
