@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace Xamarin.Forms.Xaml
 {
 	[ContentProperty(nameof(Default))]
-	public class OnAppThemeExtension : IMarkupExtension, INotifyPropertyChanged, IDisposable
+	public class OnAppThemeExtension : IMarkupExtension, INotifyPropertyChanged
 	{
 		public OnAppThemeExtension()
 		{
@@ -23,13 +23,13 @@ namespace Xamarin.Forms.Xaml
 		public object Light { get; set; }
 		public object Dark { get; set; }
 
-		private object _actualValue;
-		public object ActualValue
+		private object _value;
+		public object Value
 		{
-			get => _actualValue;
+			get => _value;
 			private set
 			{
-				_actualValue = value;
+				_value = value;
 				OnPropertyChanged();
 			}
 		}
@@ -67,10 +67,10 @@ namespace Xamarin.Forms.Xaml
 			var value = GetValue();
 			var info = propertyType.GetTypeInfo();
 			if (value == null && info.IsValueType)
-				ActualValue = Activator.CreateInstance(propertyType);
+				Value = Activator.CreateInstance(propertyType);
 
 			if (Converter != null)
-				ActualValue = Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
+				Value = Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
 
 			var converterProvider = serviceProvider?.GetService<IValueConverterProvider>();
 			if (converterProvider != null)
@@ -101,25 +101,20 @@ namespace Xamarin.Forms.Xaml
 					}
 				}
 
-				ActualValue = converterProvider.Convert(value, propertyType, minforetriever, serviceProvider);
+				Value = converterProvider.Convert(value, propertyType, minforetriever, serviceProvider);
 			}
 			if (converterProvider != null)
-				ActualValue = converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
+				Value = converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
 
 			var ret = value.ConvertTo(propertyType, () => pi, serviceProvider, out Exception exception);
 			if (exception != null)
 				throw exception;
-			ActualValue = ret;
+			Value = ret;
 
 			if (!(value is Binding))
-				return new Binding(nameof(ActualValue), source: this);
+				return new Binding(nameof(Value), source: this);
 			else
 				return ret;
-		}
-
-		public void Dispose()
-		{
-			Application.Current.RequestedThemeChanged -= RequestedThemeChanged;
 		}
 
 		object GetValue()
@@ -136,7 +131,7 @@ namespace Xamarin.Forms.Xaml
 
 		void RequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
 		{
-			ActualValue = GetValue();
+			Value = GetValue();
 		}
 	}
 }

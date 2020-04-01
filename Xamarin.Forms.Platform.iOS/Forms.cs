@@ -453,7 +453,7 @@ namespace Xamarin.Forms
 			{
 				UIViewController viewController = null;
 
-				var window = UIApplication.SharedApplication.KeyWindow;
+				var window = UIApplication.SharedApplication.GetKeyWindow();
 
 				if (window != null && window.WindowLevel == UIWindowLevel.Normal)
 					viewController = window.RootViewController;
@@ -478,27 +478,6 @@ namespace Xamarin.Forms
 					throw new InvalidOperationException("Could not find current view controller.");
 
 				return viewController;
-			}
-
-			static UIWindow GetCurrentWindow(bool throwIfNull = true)
-			{
-				var window = UIApplication.SharedApplication.KeyWindow;
-
-				if (window != null && window.WindowLevel == UIWindowLevel.Normal)
-					return window;
-
-				if (window == null)
-				{
-					window = UIApplication.SharedApplication
-						.Windows
-						.OrderByDescending(w => w.WindowLevel)
-						.FirstOrDefault(w => w.RootViewController != null && w.WindowLevel == UIWindowLevel.Normal);
-				}
-
-				if (throwIfNull && window == null)
-					throw new InvalidOperationException("Could not find current window.");
-
-				return window;
 			}
 #endif
 		}

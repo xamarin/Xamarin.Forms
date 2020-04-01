@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Controls
 		AppThemeColor color = new AppThemeColor { Light = Color.Green, Dark = Color.Red };
 		public Color TheColor
 		{
-			get => color.ActualValue;
+			get => color.Value;
 		}
 
 		public OSThemesGallery()

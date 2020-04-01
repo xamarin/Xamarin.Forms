@@ -13,6 +13,7 @@ namespace Xamarin.Forms
 {
 	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>
 	{
+		readonly WeakEventManager _weakEventManager = new WeakEventManager();
 		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
 
@@ -158,11 +159,15 @@ namespace Xamarin.Forms
 
 		public AppTheme RequestedTheme => Device.PlatformServices.RequestedTheme;
 
-		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged;
+		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged
+		{
+			add => _weakEventManager.AddEventHandler(value);
+			remove => _weakEventManager.RemoveEventHandler(value);
+		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void OnRequestedThemeChanged(AppThemeChangedEventArgs args)
-			=> RequestedThemeChanged?.Invoke(this, args);
+			=> _weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
 
 		public event EventHandler<ModalPoppedEventArgs> ModalPopped;
 

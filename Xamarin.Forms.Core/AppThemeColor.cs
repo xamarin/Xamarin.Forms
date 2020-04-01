@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms
 {
-	public class AppThemeColor : BindableObject, IDisposable
+	public class AppThemeColor : BindableObject
 	{
 		public AppThemeColor()
 		{
@@ -33,13 +33,13 @@ namespace Xamarin.Forms
 			set => SetValue(DefaultProperty, value);
 		}
 
-		private Color _actualValue;
-		public Color ActualValue
+		private Color _value;
+		public Color Value
 		{
-			get => _actualValue;
+			get => _value;
 			private set
 			{
-				_actualValue = value;
+				_value = value;
 				OnPropertyChanged();
 			}
 		}
@@ -56,11 +56,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public void Dispose()
-		{
-			Application.Current.RequestedThemeChanged -= RequestedThemeChanged;
-		}
-
 		static void UpdateActualValue(BindableObject bo)
 		{
 			var appThemeColor = bo as AppThemeColor;
@@ -68,10 +63,10 @@ namespace Xamarin.Forms
 			{
 				default:
 				case AppTheme.Light:
-					appThemeColor.ActualValue = appThemeColor.IsSet(LightProperty) ? appThemeColor.Light : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(Color));
+					appThemeColor.Value = appThemeColor.IsSet(LightProperty) ? appThemeColor.Light : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(Color));
 					break;
 				case AppTheme.Dark:
-					appThemeColor.ActualValue = appThemeColor.IsSet(DarkProperty) ? appThemeColor.Dark : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(Color));
+					appThemeColor.Value = appThemeColor.IsSet(DarkProperty) ? appThemeColor.Dark : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(Color));
 					break;
 			}
 		}
