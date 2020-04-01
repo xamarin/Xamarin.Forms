@@ -6,6 +6,8 @@ namespace Xamarin.Forms
 	{
 		public AppThemeColor()
 		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(AppThemeColor), ExperimentalFlags.AppThemeExperimental, nameof(AppThemeColor));
+
 			Application.Current.RequestedThemeChanged += RequestedThemeChanged;
 		}
 

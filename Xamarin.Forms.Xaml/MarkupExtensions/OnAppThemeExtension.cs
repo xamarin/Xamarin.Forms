@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Xaml
 	{
 		public OnAppThemeExtension()
 		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(AppThemeColor), ExperimentalFlags.AppThemeExperimental, nameof(OnAppThemeExtension));
+
 			Application.Current.RequestedThemeChanged += RequestedThemeChanged;
 		}
 
