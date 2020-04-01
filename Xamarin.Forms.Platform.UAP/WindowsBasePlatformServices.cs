@@ -161,9 +161,9 @@ namespace Xamarin.Forms.Platform.UWP
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 
-		void UISettingsColorValuesChanged(UISettings sender, object args)
+		async void UISettingsColorValuesChanged(UISettings sender, object args)
 		{
-			_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Application.Current?.OnRequestedThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme)));
+			await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Application.Current?.OnRequestedThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme)));
 		}
 
 		async Task TryAllDispatchers(Action action)
