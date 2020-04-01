@@ -16,8 +16,8 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 8279, "[Feature requested] ListView do not ScrollTo a group when there is no child of this group", PlatformAffected.Android)]
-    public class Issue8279 : ContentPage
-    {
+    public class Issue8279 : TestContentPage
+	{
         public static ListView List { get; set; }
         public static List<MyGroup> Data { get; set;  }
 		const string ScrollWithNoItemButGroup = "ScrollWithNoItemButGroup";
@@ -26,6 +26,10 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ScrollWithNoItemNoGroup = "ScrollWithNoItemNoGroup";
 		const string ScrollWithNoItemEmptyGroup = "ScrollWithNoItemEmptyGroup";
 
+		protected override void Init()
+		{
+
+		}
 		public Issue8279()
         {
 #if APP
