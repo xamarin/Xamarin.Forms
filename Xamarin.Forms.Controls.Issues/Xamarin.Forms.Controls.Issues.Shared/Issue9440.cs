@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		const string Test1 = "Test 1";
 		const string Test2 = "Test 2";
-		string _idIconElement = "shellIcon";
 		protected override void Init()
 		{
 			this.AddFlyoutItem(CreatePage(Test1), Test1);
@@ -44,51 +43,16 @@ namespace Xamarin.Forms.Controls.Issues
 					} 
 				};
 			}
-			FlyoutIcon = new FontImageSource
-			{
-				Glyph = "\uf2fb",
-				FontFamily = Issue5132.DefaultFontFamily(),
-				Size = 20,
-				AutomationId = _idIconElement
-			};
-			FlyoutIcon.SetValue(AutomationProperties.HelpTextProperty, "This as Shell FlyoutIcon");
-			FlyoutIcon.SetValue(AutomationProperties.NameProperty, "Shell Icon");
 		}
 
 #if UITEST && __SHELL__
 		[Test]
 		public void GitHubIssue9440()
 		{
-			RunningApp.WaitForElement(q => q.Marked(_idIconElement));
-			DoubleTapInFlyout(Test1, _idIconElement);
+			DoubleTapInFlyout(Test1);
 			RunningApp.WaitForElement(q => q.Marked(Test1));
 			Assert.AreEqual(false, FlyoutIsPresented);
 		}
 #endif
-	}
-
-	public static class ShellExtention
-	{
-		public static Shell AddFlyoutItem(this Shell shell, ContentPage page, string title)
-		{
-			var item = new FlyoutItem
-			{
-				Title = title,
-				Items =
-				{
-					new Tab
-					{
-						Title = title,
-						Items =
-						{
-							page
-						}
-					}
-				}
-			};
-			shell.Items.Add(item);
-
-			return shell;
-		}
 	}
 }

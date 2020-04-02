@@ -46,6 +46,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IDrawerListener.OnDrawerStateChanged(int newState)
 		{
+			if(DrawerLayout.StateIdle == newState)
+			{
+				Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, IsDrawerOpen(_flyoutContent.AndroidView));
+			}	
 		}
 
 		#endregion IDrawerListener
@@ -78,10 +82,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
+			bool result = base.OnInterceptTouchEvent(ev);
+
 			if (GetDrawerLockMode(_flyoutContent.AndroidView) == LockModeLockedOpen)
 				return false;
 
-			return base.OnInterceptTouchEvent(ev);
+			return result;
 		}
 
 		protected virtual void AttachFlyout(IShellContext context, AView content)
