@@ -236,7 +236,7 @@ namespace Xamarin.Forms
 			base.ApplyQueryAttributes(query);
 			SetValue(QueryAttributesProperty, query);
 
-			if (Content is BindableObject bindable)
+			if (ContentCache is BindableObject bindable)
 				bindable.SetValue(QueryAttributesProperty, query);
 		}
 
