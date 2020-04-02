@@ -366,7 +366,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("1234", page.SomeQueryParameter);
 			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}=4321");
 			Assert.AreEqual("4321", page.SomeQueryParameter);
-
+			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}");
+			Assert.AreEqual(null, page.SomeQueryParameter);
 		}
 
 		[Test]

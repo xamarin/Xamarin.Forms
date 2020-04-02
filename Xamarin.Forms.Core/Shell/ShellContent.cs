@@ -242,17 +242,17 @@ namespace Xamarin.Forms
 
 		static void OnQueryAttributesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if (newValue is IDictionary<string, string> query)
-				ApplyQueryAttributes(bindable, query);
+			if (newValue is IDictionary<string, string> query && oldValue is IDictionary<string, string> oldQuery)
+				ApplyQueryAttributes(bindable, query, oldQuery);
 		}
 
-		static void ApplyQueryAttributes(object content, IDictionary<string, string> query)
+		static void ApplyQueryAttributes(object content, IDictionary<string, string> query, IDictionary<string, string> oldQuery)
 		{
 			if (content is IQueryAttributable attributable)
 				attributable.ApplyQueryAttributes(query);
 
 			if (content is BindableObject bindable && bindable.BindingContext != null && content != bindable.BindingContext)
-				ApplyQueryAttributes(bindable.BindingContext, query);
+				ApplyQueryAttributes(bindable.BindingContext, query, oldQuery);
 
 			var type = content.GetType();
 			var typeInfo = type.GetTypeInfo();
@@ -271,6 +271,13 @@ namespace Xamarin.Forms
 
 					if (prop != null && prop.CanWrite && prop.SetMethod.IsPublic)
 						prop.SetValue(content, value);
+				}
+				else if (oldQuery.TryGetValue(attrib.QueryId, out var oldValue))
+				{
+					PropertyInfo prop = type.GetRuntimeProperty(attrib.Name);
+
+					if (prop != null && prop.CanWrite && prop.SetMethod.IsPublic)
+						prop.SetValue(content, null);
 				}
 			}
 		}
