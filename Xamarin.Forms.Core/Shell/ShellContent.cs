@@ -242,12 +242,14 @@ namespace Xamarin.Forms
 
 		static void OnQueryAttributesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if (newValue is IDictionary<string, string> query && oldValue is IDictionary<string, string> oldQuery)
-				ApplyQueryAttributes(bindable, query, oldQuery);
+			ApplyQueryAttributes(bindable, newValue as IDictionary<string, string>, oldValue as IDictionary<string, string>);
 		}
 
 		static void ApplyQueryAttributes(object content, IDictionary<string, string> query, IDictionary<string, string> oldQuery)
 		{
+			query = query ?? new Dictionary<string, string>();
+			oldQuery = oldQuery ?? new Dictionary<string, string>();
+
 			if (content is IQueryAttributable attributable)
 				attributable.ApplyQueryAttributes(query);
 
