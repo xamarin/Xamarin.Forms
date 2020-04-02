@@ -26,6 +26,26 @@
 		public const string OpaqueSeparator = "opaqueSeparator";
 		public const string Link = "link";
 
+		// Android
+		public const string BackgroundDark = "background_dark";
+		public const string BackgroundLight = "background_light";
+		public const string Black = "black";
+		public const string DarkerGray = "darker_gray";
+		public const string HoloBlueBright = "holo_blue_bright";
+		public const string HoloBlueDark = "holo_blue_dark";
+		public const string HoloBlueLight = "holo_blue_light";
+		public const string HoloGreenDark = "holo_green_dark";
+		public const string HoloGreenLight = "holo_green_light";
+		public const string HoloOrangeDark = "holo_orange_dark";
+		public const string HoloOrangeLight = "holo_orange_light";
+		public const string HoloPurple = "holo_purple";
+		public const string HoloRedDark = "holo_red_dark";
+		public const string HoloRedLight = "holo_red_light";
+		public const string TabIndicatorText = "tab_indicator_text";
+		public const string Transparent = "transparent";
+		public const string White = "white";
+		public const string WidgetEditTextDark = "widget_edittext_dark";
+
 		// UWP
 		public const string SystemAltLowColor = "SystemAltLowColor";
 		public const string SystemAltMediumColor = "SystemAltMediumColor";

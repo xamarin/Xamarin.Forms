@@ -86,6 +86,8 @@ namespace Xamarin.Forms.Core.UnitTests
 					return Color.FromRgb(0, 122, 255);
 				case "SystemChromeHighColor":
 					return Color.FromHex("#FF767676");
+				case "HoloBlueBright":
+					return Color.FromHex("#ff00ddff");
 				default:
 					return Color.Default;
 			}
