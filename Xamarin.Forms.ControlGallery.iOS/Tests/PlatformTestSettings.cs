@@ -16,13 +16,11 @@ namespace Xamarin.Forms.ControlGallery.iOS.Tests
 		{
 			TestRunSettings = new Dictionary<string, object>
 			{
-				// Creating/modifying any renderers off the UI thread causes problems
-				// so we want to force the tests to run on main
-				{ FrameworkPackageSettings.RunOnMainThread, true }
+				{ FrameworkPackageSettings.RunOnMainThread, false }
 			};
 		}
 
-		public Assembly Assembly { get => Assembly.GetExecutingAssembly(); }
+		public Assembly Assembly { get => Assembly.Load("Xamarin.Forms.Platform.iOS.UnitTests, Version = 2.0.0.0, Culture = neutral, PublicKeyToken = null"); }
 		public Dictionary<string, object> TestRunSettings { get; }
 	}
 }

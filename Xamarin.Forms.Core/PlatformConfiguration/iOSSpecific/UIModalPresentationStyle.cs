@@ -3,6 +3,9 @@
 	public enum UIModalPresentationStyle
 	{
 		FullScreen,
-		FormSheet
+		FormSheet,
+		Automatic,
+		OverFullScreen,
+		PageSheet
 	}
 }

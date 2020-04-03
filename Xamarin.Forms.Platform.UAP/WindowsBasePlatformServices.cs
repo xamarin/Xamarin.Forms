@@ -91,12 +91,9 @@ namespace Xamarin.Forms.Platform.UWP
 			return assemblies.ToArray();
 		}
 
-		public string GetMD5Hash(string input)
-		{
-			HashAlgorithmProvider algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-			IBuffer buffer = algorithm.HashData(Encoding.Unicode.GetBytes(input).AsBuffer());
-			return CryptographicBuffer.EncodeToHexString(buffer);
-		}
+		public string GetHash(string input) => Crc64.GetHash(input);
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
@@ -107,15 +104,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			using (var client = new HttpClient())
 			{
-				HttpResponseMessage streamResponse = await client.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
+				// Do not remove this await otherwise the client will dispose before
+				// the stream even starts
+				var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
 
-				if (!streamResponse.IsSuccessStatusCode)
-				{
-					Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {streamResponse.StatusCode}");
-					return null;
-				}
-
-				return await streamResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+				return result;
 			}
 		}
 

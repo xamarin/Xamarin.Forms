@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Util;
@@ -8,7 +6,6 @@ using Android.Views;
 using Microsoft.Device.Display;
 using Xamarin.Forms;
 using Xamarin.Forms.DualScreen;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: Dependency(typeof(DualScreenService.DualScreenServiceImpl))]
@@ -17,6 +14,12 @@ namespace Xamarin.Forms.DualScreen
 {
 	public class DualScreenService
 	{
+		[Internals.Preserve(Conditional = true)]
+		public DualScreenService()
+		{
+
+		}
+
 		public static void Init(Activity activity)
 		{
 			DependencyService.Register<DualScreenServiceImpl>();
@@ -28,21 +31,16 @@ namespace Xamarin.Forms.DualScreen
 			public event EventHandler OnScreenChanged;
 			ScreenHelper _helper;
 			bool _isDuo = false;
+			bool IsDuo => (_helper == null || _HingeService == null || _mainActivity == null || _hingeSensor == null) ? false : _isDuo;
 			HingeSensor _hingeSensor;
 			static Activity _mainActivity;
 			static DualScreenServiceImpl _HingeService;
-
 			bool _isLandscape;
 			Size _pixelScreenSize;
 			object _hingeAngleLock = new object();
 			TaskCompletionSource<int> _gettingHingeAngle;
 
-			Activity MainActivity
-			{
-				get => _mainActivity;
-				set => _mainActivity = value;
-			}
-
+			[Internals.Preserve(Conditional = true)]
 			public DualScreenServiceImpl()
 			{
 				_HingeService = this;
@@ -58,36 +56,45 @@ namespace Xamarin.Forms.DualScreen
 					return;
 				}
 
-				if (activity == _HingeService.MainActivity && _HingeService._helper != null)
+				if (activity == _mainActivity && _HingeService._helper != null)
 					return;
 
 				if (_mainActivity is IDeviceInfoProvider oldDeviceInfoProvider)
-				{
 					oldDeviceInfoProvider.ConfigurationChanged -= _HingeService.ConfigurationChanged;
-				}
 
 				_mainActivity = activity;
 
+				if (_mainActivity == null)
+					return;
+
+				bool isDuo = _HingeService._isDuo = ScreenHelper.IsDualScreenDevice(_mainActivity);
+				if (!isDuo)
+					return;
+
+				var screenHelper = _HingeService._helper ?? new ScreenHelper();
+				isDuo = screenHelper.Initialize(_mainActivity);
+				_HingeService._isDuo = isDuo;
+
+				if (!isDuo)
+				{
+					_HingeService._helper = null;					
+					_HingeService._hingeSensor = null;
+					return;
+				}
+
+				_HingeService._helper = screenHelper;
+				_HingeService._hingeSensor = new HingeSensor(_mainActivity);
 				if (_mainActivity is IDeviceInfoProvider newDeviceInfoProvider)
 				{
 					newDeviceInfoProvider.ConfigurationChanged += _HingeService.ConfigurationChanged;
 				}
-
-				if (_HingeService._helper == null)
-				{
-					_HingeService._helper = new ScreenHelper();
-				}
-
-				_HingeService._isDuo = _HingeService._helper.Initialize(_HingeService.MainActivity);
-
-				if (_HingeService._isDuo)
-				{
-					_HingeService._hingeSensor = new HingeSensor(_HingeService.MainActivity);
-				}
 			}
 
 			void ConfigurationChanged(object sender, EventArgs e)
-			{
+			{				
+				if(IsDuo)
+					_helper?.Update();
+
 				bool screenChanged = false;
 				if (_isLandscape != IsLandscape)
 				{
@@ -122,21 +129,20 @@ namespace Xamarin.Forms.DualScreen
 			}
 
 			public bool IsSpanned
-				=> _isDuo && (_helper?.IsDualMode ?? false);
+				=> IsDuo && (_helper?.IsDualMode ?? false);
 
 			void StartListeningForHingeChanges()
 			{
-				if (_hingeSensor == null)
+				if (!IsDuo)
 					return;
 
 				_hingeSensor.OnSensorChanged += OnSensorChanged;
 				_hingeSensor.StartListening();
-
 			}
 
 			void StopListeningForHingeChanges()
 			{
-				if (_hingeSensor == null)
+				if (!IsDuo)
 					return;
 
 				_hingeSensor.OnSensorChanged -= OnSensorChanged;
@@ -164,6 +170,10 @@ namespace Xamarin.Forms.DualScreen
 
 			public Task<int> GetHingeAngleAsync()
 			{
+				if (!IsDuo)
+					return Task.FromResult(0);
+
+				Task<int> returnValue = null;
 				lock (_hingeAngleLock)
 				{
 					if (_gettingHingeAngle == null)
@@ -171,19 +181,24 @@ namespace Xamarin.Forms.DualScreen
 						_gettingHingeAngle = new TaskCompletionSource<int>();
 						StartListeningForHingeChanges();
 					}
+
+					returnValue = _gettingHingeAngle.Task;
 				}
 
-				return _gettingHingeAngle.Task;
+				return returnValue;
 			}
 
 			public Rectangle GetHinge()
 			{
-				if (!_isDuo || _helper == null)
+				if (!IsDuo)
 					return Rectangle.Zero;
+								
+				var hinge = _helper.GetHingeBoundsDip();
 
-				var rotation = ScreenHelper.GetRotation(_helper.Activity);
-				var hinge = _helper.DisplayMask.GetBoundingRectsForRotation(rotation).FirstOrDefault();
-				var hingeDp = new Rectangle(PixelsToDp(hinge.Left), PixelsToDp(hinge.Top), PixelsToDp(hinge.Width()), PixelsToDp(hinge.Height()));
+				if (hinge == null)
+					return Rectangle.Zero;
+				
+				var hingeDp = new Rectangle((hinge.Left), (hinge.Top), (hinge.Width()), (hinge.Height()));
 				
 				return hingeDp;
 			}
@@ -192,7 +207,7 @@ namespace Xamarin.Forms.DualScreen
 			{
 				get
 				{
-					if (!_isDuo || _helper == null)
+					if (!IsDuo)
 					{
 						if (_mainActivity == null)
 							return false;
@@ -202,14 +217,9 @@ namespace Xamarin.Forms.DualScreen
 					}
 
 					var rotation = ScreenHelper.GetRotation(_helper.Activity);
-
 					return (rotation == SurfaceOrientation.Rotation270 || rotation == SurfaceOrientation.Rotation90);
 				}
 			}
-
-			double PixelsToDp(double px)
-				=> px / MainActivity.Resources.DisplayMetrics.Density;
-
 
 			public Point? GetLocationOnScreen(VisualElement visualElement)
 			{

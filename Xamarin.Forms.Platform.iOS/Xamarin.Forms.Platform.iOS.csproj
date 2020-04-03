@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\Environment.Build.props" />
   <PropertyGroup>
     <Description>iOS Backend for Xamarin.Forms</Description>
     <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
@@ -17,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -32,6 +33,13 @@
     <ConsolePause>false</ConsolePause>
     <NoWarn>
     </NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Use2017)' == 'true' ">
+    <DefineConstants>$(DefineConstants);__XCODE10__</DefineConstants>
+    <OutputPath>$(OutputPath)\2017</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Use2017)' != 'true' ">
+    <DefineConstants>$(DefineConstants);__XCODE11__</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -105,6 +113,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\WebViewRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CellExtensions.cs" />
+    <Compile Include="..\Xamarin.Forms.Core\Crc64.cs">
+      <Link>Crc64.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs">
+      <Link>StreamWrapper.cs</Link>
+    </Compile>
     <Compile Include="CADisplayLinkTicker.cs" />
     <Compile Include="CollectionView\CarouselViewDelegator.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
@@ -248,6 +262,7 @@
     <Compile Include="Renderers\IndicatorViewRenderer.cs" />
     <Compile Include="Renderers\SwipeViewRenderer.cs" />
     <Compile Include="Extensions\UIApplicationExtensions.cs" />
+    <Compile Include="Extensions\UICollectionViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -297,6 +312,9 @@
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Use2017)' == 'true'">
+    <Reference Include="netstandard" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Condition="'$(CI)' == 'true'" Include="Xamarin.Build.TypeRedirector" Version="0.1.2-preview" PrivateAssets="all" />
