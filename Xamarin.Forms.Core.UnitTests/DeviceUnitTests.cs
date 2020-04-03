@@ -131,21 +131,33 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task DeviceTimerWithSuccessfulFunnctionReturningTrue()
 		{
+			//Arrange
 			const int expectedNumberOfExecutions = 2;
+			var timerCompletedCompletionSource = new TaskCompletionSource<bool>();
 			var timerDelay = TimeSpan.FromSeconds(1);
 			var numberOfSuccessfulTaskExecutions = 0;
 
+
+			//Act
 			Device.StartTimer(timerDelay, successfulFunction);
 
-			//Wait for Timer to trigger at least twice
+			//Wait for timer to complete
+			await timerCompletedCompletionSource.Task;
+
+			//Ensure timer does not continue to run
 			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
+
+			//Assert
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 
 			bool successfulFunction()
 			{
 				if (++numberOfSuccessfulTaskExecutions >= expectedNumberOfExecutions)
+				{
+					timerCompletedCompletionSource.TrySetResult(true);
 					return false;
+				}
 
 				return true;
 			}
@@ -154,20 +166,30 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task DeviceTimerWithSuccessfulFunctionReturningFalse()
 		{
+			//Arrange
 			const int expectedNumberOfExecutions = 1;
+			var timerCompletedCompletionSource = new TaskCompletionSource<bool>();
 			var timerDelay = TimeSpan.FromSeconds(1);
 			var numberOfSuccessfulTaskExecutions = 0;
 
+
+			//Act
 			Device.StartTimer(timerDelay, successfulFunction);
 
-			//Wait for Timer to trigger at least twice
+			//Wait for timer to complete
+			await timerCompletedCompletionSource.Task;
+
+			//Ensure timer does not continue to run
 			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
+
+			//Assert
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 
 			bool successfulFunction()
 			{
 				numberOfSuccessfulTaskExecutions++;
+				timerCompletedCompletionSource.TrySetResult(true);
 				return false;
 			}
 		}
@@ -175,17 +197,26 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task AsyncDeviceTimerWithSuccessfulShorterTaskReturningTrue()
 		{
+			//Arrange
 			const int expectedNumberOfExecutions = 2;
+			var timerCompletedCompletionSource = new TaskCompletionSource<bool>();
 			var timerDelay = TimeSpan.FromSeconds(1);
 			var taskFunctionDelay = TimeSpan.FromSeconds(0.5);
 			int numberOfSuccessfulTaskExecutions = 0;
 			var numberOfTimerTriggers = 0;
 
+
+			//Act
 			Device.StartTimer(timerDelay, successfulTask);
 
-			//Wait for Timer to trigger at least twice
+			//Wait for timer to complete
+			await timerCompletedCompletionSource.Task;
+
+			//Ensure timer does not continue to run
 			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
+
+			//Assert
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 			Assert.AreEqual(numberOfTimerTriggers, numberOfSuccessfulTaskExecutions);
 
@@ -196,7 +227,10 @@ namespace Xamarin.Forms.Core.UnitTests
 				await Task.Delay(taskFunctionDelay);
 
 				if (++numberOfSuccessfulTaskExecutions >= expectedNumberOfExecutions)
+				{
+					timerCompletedCompletionSource.TrySetResult(true);
 					return false;
+				}
 
 				return true;
 			}
@@ -205,17 +239,25 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task AsyncDeviceTimerWithSuccessfulShorterTaskReturningFalse()
 		{
+			//Arrange
 			const int expectedNumberOfExecutions = 1;
+			var timerCompletedCompletionSource = new TaskCompletionSource<bool>();
 			var timerDelay = TimeSpan.FromSeconds(1);
 			var taskFunctionDelay = TimeSpan.FromSeconds(0.5);
 			var numberOfSuccessfulTaskExecutions = 0;
 			var numberOfTimerTriggers = 0;
 
+
+			//Act
 			Device.StartTimer(timerDelay, successfulTask);
 
-			//Wait for Timer to trigger at least twice
+			//Wait for timer to complete
+			await timerCompletedCompletionSource.Task;
+
+			//Ensure timer does not continue to run
 			await Task.Delay(timerDelay.Add(timerDelay).Add(timerDelay));
 
+			//Assert
 			Assert.AreEqual(expectedNumberOfExecutions, numberOfSuccessfulTaskExecutions);
 			Assert.AreEqual(numberOfTimerTriggers, numberOfSuccessfulTaskExecutions);
 
@@ -226,6 +268,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				await Task.Delay(taskFunctionDelay);
 
 				++numberOfSuccessfulTaskExecutions;
+				timerCompletedCompletionSource.TrySetResult(true);
 				return false;
 			}
 		}
@@ -233,17 +276,36 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task AsyncDeviceTimerWithSuccessfulLongerTaskReturningTrue()
 		{
+			//Arrange
+			var timerTriggeredCompletionSource = new TaskCompletionSource<bool>();
+			var timerCompletedCompletionSource = new TaskCompletionSource<bool>();
 			var timerDelay = TimeSpan.FromSeconds(1);
-			var taskFunctionDelay = TimeSpan.FromSeconds(1.5);
+			var taskFunctionDelay = timerDelay.Add(timerDelay);
 			var numberOfSuccessfulTaskExecutions = 0;
 			var numberOfTimerTriggers = 0;
 
+
+			//Act
 			Device.StartTimer(timerDelay, successfulTask);
 
-			//Wait for Timer to trigger at least twice
-			await Task.Delay(timerDelay.Add(taskFunctionDelay));
+			//Wait for timer to trigger
+			await timerTriggeredCompletionSource.Task;
 
+			//Assert
+			Assert.AreEqual(numberOfTimerTriggers, 1);
 			Assert.Greater(numberOfTimerTriggers, numberOfSuccessfulTaskExecutions);
+
+			//Act
+			//Wait for timer to complete
+			await timerCompletedCompletionSource.Task;
+
+			//Ensure timer continues to run
+			await Task.Delay(timerDelay.Add(taskFunctionDelay).Add(timerDelay).Add(taskFunctionDelay));
+
+			//Assert
+			Assert.Greater(numberOfTimerTriggers, 1);
+			Assert.Greater(numberOfSuccessfulTaskExecutions, 1);
+			Assert.GreaterOrEqual(numberOfTimerTriggers, numberOfSuccessfulTaskExecutions);
 
 			async Task<bool> successfulTask()
 			{
@@ -252,6 +314,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				await Task.Delay(taskFunctionDelay);
 
 				numberOfSuccessfulTaskExecutions++;
+				timerCompletedCompletionSource.TrySetResult(true);
 
 				return true;
 			}
@@ -260,25 +323,47 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task AsyncDeviceTimerWithSuccessfulLongerTaskReturningFalse()
 		{
+			//Arrange
+			var timerTriggeredCompletionSource = new TaskCompletionSource<bool>();
+			var timerCompletedCompletionSource = new TaskCompletionSource<bool>();
 			var timerDelay = TimeSpan.FromSeconds(1);
-			var taskFunctionDelay = TimeSpan.FromSeconds(1.5);
+			var taskFunctionDelay = timerDelay.Add(timerDelay);
 			var numberOfSuccessfulTaskExecutions = 0;
 			var numberOfTimerTriggers = 0;
 
+
+			//Act
 			Device.StartTimer(timerDelay, successfulTask);
 
-			//Wait for Timer to trigger at least twice
-			await Task.Delay(timerDelay.Add(taskFunctionDelay));
+			//Wait for timer to trigger
+			await timerTriggeredCompletionSource.Task;
 
+			//Assert
+			Assert.AreEqual(numberOfTimerTriggers, 1);
 			Assert.Greater(numberOfTimerTriggers, numberOfSuccessfulTaskExecutions);
+
+			//Act
+			//Wait for timer to complete
+			await timerCompletedCompletionSource.Task;
+
+			//Ensure timer continues to run
+			await Task.Delay(timerDelay.Add(taskFunctionDelay).Add(timerDelay).Add(taskFunctionDelay));
+
+
+			//Assert
+			Assert.Greater(numberOfSuccessfulTaskExecutions, 1);
+			Assert.Greater(numberOfSuccessfulTaskExecutions, 1);
+			Assert.AreEqual(numberOfTimerTriggers, numberOfSuccessfulTaskExecutions);
 
 			async Task<bool> successfulTask()
 			{
 				numberOfTimerTriggers++;
+				timerTriggeredCompletionSource.SetResult(true);
 
 				await Task.Delay(taskFunctionDelay);
 
 				numberOfSuccessfulTaskExecutions++;
+				timerCompletedCompletionSource.SetResult(true);
 				return false;
 			}
 		}
