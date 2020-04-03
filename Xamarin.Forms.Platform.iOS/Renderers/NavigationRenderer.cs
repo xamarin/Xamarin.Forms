@@ -671,6 +671,9 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.CompactAppearance = navigationBarAppearance;
 				NavigationBar.StandardAppearance = navigationBarAppearance;
 				NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
+
+				var parentingViewController = (ParentingViewController)ViewControllers.Last();
+				parentingViewController?.UpdateNavigationBarBackgroundImage();
 			}
 			else
 #endif
@@ -1128,6 +1131,20 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateTitleArea(Child);
 			}
 
+			internal void UpdateNavigationBarBackgroundImage()
+			{
+				if (!Forms.IsiOS13OrNewer)
+					return;
+
+				if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
+					return;
+
+				var backgroundImage = navigationRenderer.NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
+
+				navigationRenderer.NavigationBar.CompactAppearance.BackgroundImage = backgroundImage;
+				navigationRenderer.NavigationBar.StandardAppearance.BackgroundImage = backgroundImage;
+				navigationRenderer.NavigationBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
+			}
 
 			internal void UpdateLeftBarButtonItem(Page pageBeingRemoved = null)
 			{
@@ -1278,21 +1295,6 @@ namespace Xamarin.Forms.Platform.iOS
 					current.IgnoresContainerArea = !hasNavBar;
 					NavigationController.SetNavigationBarHidden(!hasNavBar, animated);
 				}
-			}
-
-			void UpdateNavigationBarBackgroundImage()
-			{
-				if (!Forms.IsiOS13OrNewer)
-					return;
-
-				if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
-					return;
-
-				var backgroundImage = navigationRenderer.NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
-
-				navigationRenderer.NavigationBar.CompactAppearance.BackgroundImage = backgroundImage;
-				navigationRenderer.NavigationBar.StandardAppearance.BackgroundImage = backgroundImage;
-				navigationRenderer.NavigationBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
 			}
 
 			void UpdateToolbarItems()
