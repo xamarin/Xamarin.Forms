@@ -50,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue11311.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8291.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2674.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4090.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6484.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6187.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3228.xaml.cs">
@@ -2272,6 +2273,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue11853.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ShellFlyoutItemIsVisible.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
