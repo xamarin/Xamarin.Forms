@@ -11,7 +11,9 @@ using Android.Support.Design.Widget;
 using Android.Views;
 using Android.Widget;
 using NUnit.Framework;
+using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Platform.Android.UnitTests;
 
 [assembly: ExportRenderer(typeof(TestShell), typeof(TestShellRenderer))]
 namespace Xamarin.Forms.Platform.Android.UnitTests
