@@ -1282,20 +1282,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void UpdateNavigationBarBackgroundImage()
 			{
-				if (Forms.IsiOS13OrNewer)
-				{
-					if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
-						return;
+				if (!Forms.IsiOS13OrNewer)
+					return;
 
-					var backgroundImage = navigationRenderer.NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
+				if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
+					return;
 
-					if (backgroundImage == null)
-						return;
+				var backgroundImage = navigationRenderer.NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
 
-					navigationRenderer.NavigationBar.CompactAppearance.BackgroundImage = backgroundImage;
-					navigationRenderer.NavigationBar.StandardAppearance.BackgroundImage = backgroundImage;
-					navigationRenderer.NavigationBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
-				}
+				navigationRenderer.NavigationBar.CompactAppearance.BackgroundImage = backgroundImage;
+				navigationRenderer.NavigationBar.StandardAppearance.BackgroundImage = backgroundImage;
+				navigationRenderer.NavigationBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
 			}
 
 			void UpdateToolbarItems()
