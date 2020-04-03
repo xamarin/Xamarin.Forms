@@ -111,6 +111,20 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 			timer = new Timer(onTimeout, null, interval, interval);
 		}
 
+		public void StartTimer(TimeSpan interval, Func<Task<bool>> callback)
+		{
+			Timer timer = null;
+			TimerCallback onTimeout = o => BeginInvokeOnMainThread(async () =>
+			{
+				var isSuccessful = await callback();
+				if (isSuccessful)
+					return;
+
+				timer.Dispose();
+			});
+			timer = new Timer(onTimeout, null, interval, interval);
+		}
+
 		public Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 		{
 			if (getStreamAsync == null)
