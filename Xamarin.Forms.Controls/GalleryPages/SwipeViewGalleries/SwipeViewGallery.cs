@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 					{
 	 					button,
 						GalleryBuilder.NavButton("Basic SwipeView Gallery", () => new BasicSwipeGallery(), Navigation),
-						GalleryBuilder.NavButton("SwipeView Events Gallery", () => new SwipeViewEventsGallery(), Navigation),   
+						GalleryBuilder.NavButton("SwipeView Events Gallery", () => new SwipeViewEventsGallery(), Navigation),
 	  					GalleryBuilder.NavButton("SwipeItems from Resource Gallery", () => new ResourceSwipeItemsGallery(), Navigation),
 						GalleryBuilder.NavButton("BindableLayout Gallery", () => new SwipeBindableLayoutGallery(), Navigation),
 						GalleryBuilder.NavButton("ListView (RecycleElement) Gallery", () => new SwipeListViewGallery(), Navigation),
@@ -30,10 +30,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 						GalleryBuilder.NavButton("CarouselView Gallery", () => new SwipeCarouselViewGallery(), Navigation),
 						GalleryBuilder.NavButton("SwipeBehaviorOnInvoked Gallery", () => new SwipeBehaviorOnInvokedGallery(), Navigation),
 						GalleryBuilder.NavButton("Custom SwipeItem Galleries", () => new CustomSwipeItemGallery(), Navigation),
+						GalleryBuilder.NavButton("SwipeView BindingContext Gallery", () => new SwipeViewBindingContextGallery(), Navigation),
 						GalleryBuilder.NavButton("SwipeItem Icon Gallery", () => new SwipeItemIconGallery(), Navigation),
+						GalleryBuilder.NavButton("SwipeItem Size Gallery", () => new SwipeItemSizeGallery(), Navigation),
 						GalleryBuilder.NavButton("SwipeTransitionMode Gallery", () => new SwipeTransitionModeGallery(), Navigation),
 						GalleryBuilder.NavButton("Add/Remove SwipeItems Gallery", () => new AddRemoveSwipeItemsGallery(), Navigation),
-						GalleryBuilder.NavButton("Close SwipeView Gallery", () => new CloseSwipeGallery(), Navigation)
+						GalleryBuilder.NavButton("Open/Close SwipeView Gallery", () => new CloseSwipeGallery(), Navigation),
+						GalleryBuilder.NavButton("SwipeItems Dispose Gallery", () => new SwipeItemsDisposeGallery(), Navigation)
 					}
 				}
 			};
