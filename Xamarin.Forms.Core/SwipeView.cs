@@ -72,7 +72,16 @@ namespace Xamarin.Forms
 		public event EventHandler<SwipeStartedEventArgs> SwipeStarted;
 		public event EventHandler<SwipeChangingEventArgs> SwipeChanging;
 		public event EventHandler<SwipeEndedEventArgs> SwipeEnded;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<OpenSwipeEventArgs> OpenRequested;
+
 		public event EventHandler CloseRequested;
+
+		public void Open(OpenSwipeItem openSwipeItem)
+		{
+			OpenRequested?.Invoke(this, new OpenSwipeEventArgs(openSwipeItem));
+		}
 
 		public void Close()
 		{
@@ -120,14 +129,8 @@ namespace Xamarin.Forms
 		{
 			swipeItems.Parent = this;
 
-			foreach (var item in swipeItems)
-			{
-				if (item is SwipeItem swipeItem)
-					swipeItem.Parent = swipeItems;
-
-				if (item is SwipeItemView swipeItemView)
-					swipeItemView.Parent = swipeItems;
-			}
+			foreach (var swipeItem in swipeItems)
+				((Element)swipeItem).Parent = swipeItems;
 		}
 	}
 }

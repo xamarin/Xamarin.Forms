@@ -123,7 +123,8 @@ namespace Xamarin.Forms
 			if (IsInitialized)
 				return;
 			IsInitialized = true;
-			Color.SetAccent(Color.FromRgba(50, 79, 133, 255));
+
+			Color.SetAccent(ColorExtensions.AccentColor.ToColor());
 
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
@@ -195,9 +196,9 @@ namespace Xamarin.Forms
 			public IOSPlatformServices()
 			{
 #if __MOBILE__
-				//The standard accisibility size for a font is 18, we can get a
-				//close aproximation to the new Size by multiplying by this scale factor
-				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 18f;
+				//The standard accessibility size for a font is 17, we can get a
+				//close approximation to the new Size by multiplying by this scale factor
+				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 17f;
 #endif
 			}
 
@@ -499,6 +500,74 @@ namespace Xamarin.Forms
 				return Platform.MacOS.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 #endif
 			}
+
+			#region Remove with Essentials API
+			public AppTheme RequestedTheme
+			{
+				get
+				{
+#if __IOS__ || __TVOS__
+					if (!IsiOS13OrNewer)
+						return AppTheme.Unspecified;
+#if __XCODE11__
+					var uiStyle = GetCurrentUIViewController()?.TraitCollection?.UserInterfaceStyle ??
+						UITraitCollection.CurrentTraitCollection.UserInterfaceStyle;
+
+					switch (uiStyle)
+					{
+						case UIUserInterfaceStyle.Light:
+							return AppTheme.Light;
+						case UIUserInterfaceStyle.Dark:
+							return AppTheme.Dark;
+						default:
+							return AppTheme.Unspecified;
+					};
+#else
+					return AppTheme.Unspecified;
+#endif
+#else
+					return AppTheme.Unspecified;
+#endif
+				}
+			}
+
+#if __IOS__ || __TVOS__
+
+			static UIViewController GetCurrentUIViewController() =>
+				GetCurrentViewController(false);
+
+			static UIViewController GetCurrentViewController(bool throwIfNull = true)
+			{
+				UIViewController viewController = null;
+
+				var window = UIApplication.SharedApplication.GetKeyWindow();
+
+				if (window != null && window.WindowLevel == UIWindowLevel.Normal)
+					viewController = window.RootViewController;
+
+				if (viewController == null)
+				{
+					window = UIApplication.SharedApplication
+						.Windows
+						.OrderByDescending(w => w.WindowLevel)
+						.FirstOrDefault(w => w.RootViewController != null && w.WindowLevel == UIWindowLevel.Normal);
+
+					if (window == null && throwIfNull)
+						throw new InvalidOperationException("Could not find current view controller.");
+					else
+						viewController = window?.RootViewController;
+				}
+
+				while (viewController?.PresentedViewController != null)
+					viewController = viewController.PresentedViewController;
+
+				if (throwIfNull && viewController == null)
+					throw new InvalidOperationException("Could not find current view controller.");
+
+				return viewController;
+			}
+#endif
 		}
+		#endregion
 	}
 }
