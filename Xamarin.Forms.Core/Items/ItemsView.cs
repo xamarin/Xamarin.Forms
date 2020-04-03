@@ -97,8 +97,6 @@ namespace Xamarin.Forms
 
 			_logicalChildren.Add(element);
 
-			PropertyPropagationExtensions.PropagatePropertyChanged(null, element);
-
 			element.Parent = this;
 		}
 
@@ -123,7 +121,16 @@ namespace Xamarin.Forms
 
 		internal static readonly BindableProperty InternalItemsLayoutProperty =
 			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
-				LinearItemsLayout.Vertical);
+				LinearItemsLayout.Vertical, propertyChanged: OnInternalItemsLayoutPropertyChanged);
+
+		static void OnInternalItemsLayoutPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (oldValue is BindableObject boOld)
+				SetInheritedBindingContext(boOld, null);
+
+			if (newValue is BindableObject boNew)
+				SetInheritedBindingContext(boNew, bindable.BindingContext);
+		}
 
 		protected IItemsLayout InternalItemsLayout
 		{
@@ -211,6 +218,13 @@ namespace Xamarin.Forms
 		protected virtual void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
 			
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+			if (InternalItemsLayout is BindableObject bo)
+				SetInheritedBindingContext(bo, BindingContext);
 		}
 	}
 }

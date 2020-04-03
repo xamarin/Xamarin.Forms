@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
-			if(Superview != null)
+			if(Superview != null && ScrollView != null)
 			{
 				if (_requestedScroll != null)
 				{
@@ -147,7 +147,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFlowDirection()
 		{
-			if (Superview == null || _requestedScroll != null || _checkedForRtlScroll)
+			if (Superview == null || ScrollView.Content == null || _requestedScroll != null || _checkedForRtlScroll)
 				return;
 
 			if (Element is IVisualElementController controller && ScrollView.Orientation != ScrollOrientation.Vertical)

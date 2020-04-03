@@ -54,6 +54,13 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(ImageButtonRenderer))]
 	internal class _ImageButtonRenderer { }
 
+#if __ANDROID__
+	[RenderWith(typeof(RadioButtonRenderer))]
+#elif !TIZEN4_0
+	[RenderWith(typeof(RadioButtonRenderer))]
+#endif
+	internal class _RadioButtonRenderer { }
+
 	[RenderWith (typeof (TableViewRenderer))]
 	internal class _TableViewRenderer { }
 
@@ -164,6 +171,9 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
 	internal class _MasterDetailPageRenderer { }
+
+	[RenderWith (typeof(MediaElementRenderer))]
+	internal class _MediaElementRenderer { }
 
 	[RenderWith(typeof(RefreshViewRenderer))]
 	internal class _RefreshViewRenderer { }

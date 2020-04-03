@@ -1,5 +1,10 @@
 ﻿using Android.Runtime;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -123,6 +128,10 @@ namespace Xamarin.Forms.Platform.Android
 				int maxAttempts = 0;
 				var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
 				if (tabIndexes == null)
+					return base.FocusSearch(direction);
+
+				// use OS default--there's no need for us to keep going if there's one or fewer tab indexes!
+				if (tabIndexes.Count <= 1)
 					return base.FocusSearch(direction);
 
 				int tabIndex = element.TabIndex;

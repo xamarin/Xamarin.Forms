@@ -1,4 +1,5 @@
 ﻿using System;
+using CoreGraphics;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -6,6 +7,9 @@ namespace Xamarin.Forms.Platform.iOS
 	public class StructuredItemsViewController<TItemsView> : ItemsViewController<TItemsView>
 		where TItemsView : StructuredItemsView
 	{
+		public const int HeaderTag = 111;
+		public const int FooterTag = 222;
+
 		bool _disposed;
 
 		UIView _headerUIView;
@@ -30,17 +34,44 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				if (_headerViewFormsElement != null)
+				{
+					_headerViewFormsElement.MeasureInvalidated -= OnFormsElementMeasureInvalidated;
+				}
+
+				if (_footerViewFormsElement != null)
+				{
+					_footerViewFormsElement.MeasureInvalidated -= OnFormsElementMeasureInvalidated;
+				}
+
 				_headerUIView = null;
 				_headerViewFormsElement = null;
 				_footerUIView = null;
 				_footerViewFormsElement = null;
-				
 			}
 
 			base.Dispose(disposing);
 		}
 
 		protected override bool IsHorizontal => (ItemsView?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
+
+		protected override CGRect DetermineEmptyViewFrame()
+		{
+			nfloat headerHeight = 0;
+			var headerView = CollectionView.ViewWithTag(HeaderTag);
+
+			if (headerView != null)
+				headerHeight = headerView.Frame.Height;
+
+			nfloat footerHeight = 0;
+			var footerView = CollectionView.ViewWithTag(FooterTag);
+
+			if (footerView != null)
+				footerHeight = footerView.Frame.Height;
+
+			return new CGRect(CollectionView.Frame.X, CollectionView.Frame.Y, CollectionView.Frame.Width, 
+				Math.Abs(CollectionView.Frame.Height - (headerHeight + footerHeight)));
+		}
 
 		public override void ViewWillLayoutSubviews()
 		{

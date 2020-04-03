@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
 using Android.Support.V4.Content;
+#endif
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -220,7 +224,6 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
-
 		protected virtual void UpdatePlaceHolderText()
 		{
 			if (EditText.Hint == Element.Placeholder)
@@ -235,6 +238,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
 				UpdatePlaceHolderText();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)

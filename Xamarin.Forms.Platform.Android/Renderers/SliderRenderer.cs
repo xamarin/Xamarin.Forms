@@ -99,6 +99,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			Slider view = Element;
@@ -180,7 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateThumbColor()
 		{
-			Control.Thumb.SetColorFilter(Element.ThumbColor, defaultthumbcolorfilter, PorterDuff.Mode.SrcIn);
+			Control.Thumb.SetColorFilter(Element.ThumbColor, defaultthumbcolorfilter, FilterMode.SrcIn);
 		}
 
 		void UpdateThumbImage()

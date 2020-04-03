@@ -2,8 +2,14 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.CardView.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -222,7 +228,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			ElementPropertyChanged?.Invoke(this, e);
+
+			if (Control?.LayoutParameters == null)
+			{
+				return;
+			}
+
 
 			if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
 				UpdateShadow();
