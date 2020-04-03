@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -32,6 +34,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly int _alertPadding = 10;
 
 		readonly List<Page> _modals;
+		List<Page> _previousModals;
 		readonly PlatformRenderer _renderer;
 		bool _animateModals = true;
 		bool _appeared;
@@ -80,7 +83,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IReadOnlyList<Page> INavigation.ModalStack
 		{
-			get { return _modals; }
+			get 
+			{
+				if (_disposed)
+					return new List<Page>();
+
+				return _modals; 
+			}
 		}
 
 		IReadOnlyList<Page> INavigation.NavigationStack
@@ -118,6 +127,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			modal.DisposeModalAndChildRenderers();
 
+			if (!IsModalPresentedFullScreen(modal))
+				Page.GetCurrentPage()?.SendAppearing();
+
 			return modal;
 		}
 
@@ -149,6 +161,33 @@ namespace Xamarin.Forms.Platform.iOS
 		Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
 			EndEditing();
+
+			var elementConfiguration = modal as IElementConfiguration<Page>;
+
+			var presentationStyle = elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle().ToNativeModalPresentationStyle();
+
+			bool shouldFire = true;
+
+			if (Forms.IsiOS13OrNewer)
+			{
+				if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
+					shouldFire = false; // This is mainly for backwards compatibility
+			}
+			else
+			{
+				// While the above IsiOS13OrNewer will always be false if __XCODE11__ is true
+				// the UIModalPresentationStyle.Automatic is the only Xcode 11 API
+				// for readability I decided to only take this part out
+#if __XCODE11__
+				if (presentationStyle == UIKit.UIModalPresentationStyle.Automatic)
+					shouldFire = false;
+#endif
+				if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
+					shouldFire = false; // This is mainly for backwards compatibility
+			}
+
+			if (_appeared && shouldFire)
+				Page.GetCurrentPage()?.SendDisappearing();
 
 			_modals.Add(modal);
 
@@ -214,8 +253,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (!Forms.IsiOS11OrNewer)
 					safeAreaInsets = new UIEdgeInsets(UIApplication.SharedApplication.StatusBarFrame.Size.Height, 0, 0, 0);
-				else if (UIApplication.SharedApplication.KeyWindow != null)
-					safeAreaInsets = UIApplication.SharedApplication.KeyWindow.SafeAreaInsets;
+				else if (UIApplication.SharedApplication.GetKeyWindow() != null)
+					safeAreaInsets = UIApplication.SharedApplication.GetKeyWindow().SafeAreaInsets;
 				else if (UIApplication.SharedApplication.Windows.Length > 0)
 					safeAreaInsets = UIApplication.SharedApplication.Windows[0].SafeAreaInsets;
 				else
@@ -274,7 +313,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_appeared)
 				return;
 
-			_renderer.View.BackgroundColor = UIColor.White;
+			_renderer.View.BackgroundColor = ColorExtensions.BackgroundColor;
 			_renderer.View.ContentMode = UIViewContentMode.Redraw;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -535,6 +574,34 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		internal static string ResolveMsAppDataUri(Uri uri)
+		{
+			if(uri.Scheme == "ms-appdata")
+			{
+				string filePath = string.Empty;
+
+				if (uri.LocalPath.StartsWith("/local"))
+				{
+					var libraryPath = NSFileManager.DefaultManager.GetUrls(NSSearchPathDirectory.LibraryDirectory, NSSearchPathDomain.User)[0].Path;
+					filePath = Path.Combine(libraryPath, uri.LocalPath.Substring(7));
+				}
+				else if (uri.LocalPath.StartsWith("/temp"))
+				{
+					filePath = Path.Combine(Path.GetTempPath(), uri.LocalPath.Substring(6));
+				}
+				else
+				{
+					throw new ArgumentException("Invalid Uri", "Source");
+				}
+
+				return filePath;
+			}
+			else
+			{
+				throw new ArgumentException("uri");
+			}
+		}
+    
 		#region Obsolete 
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
@@ -556,7 +623,7 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
-			{
+			{	
 				if (!PageIsChildOfPlatform(sender))
 					return;
 				PresentAlert(arguments);
@@ -578,6 +645,13 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 		}
 
+		static bool IsModalPresentedFullScreen(Page modal)
+		{
+			var elementConfiguration = modal as IElementConfiguration<Page>;
+			var presentationStyle = elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle();
+			return presentationStyle != null && presentationStyle == PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FullScreen;
+		}
+
 		internal void UnsubscribeFromAlertsAndActionsSheets()
 		{
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
@@ -586,14 +660,23 @@ namespace Xamarin.Forms.Platform.iOS
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 		}
 
+		internal void MarkForRemoval()
+		{
+			_previousModals = new List<Page>(_modals);
+			_modals.Clear();
+		}
+
 		internal void CleanUpPages()
 		{
 			Page.DescendantRemoved -= HandleChildRemoved;
 
 			Page.DisposeModalAndChildRenderers();
 
-			foreach (var modal in _modals)
+			foreach (var modal in (_previousModals ?? _modals))
 				modal.DisposeModalAndChildRenderers();
+
+			_previousModals?.Clear();
+			_modals.Clear();
 
 			(Page.Parent as IDisposable)?.Dispose();
 		}
