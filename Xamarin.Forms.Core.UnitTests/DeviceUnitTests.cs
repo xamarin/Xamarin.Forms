@@ -310,6 +310,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			async Task<bool> successfulTask()
 			{
 				numberOfTimerTriggers++;
+				timerTriggeredCompletionSource.TrySetResult(true);
 
 				await Task.Delay(taskFunctionDelay);
 
