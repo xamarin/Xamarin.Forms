@@ -1055,6 +1055,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void ViewWillAppear(bool animated)
 			{
+				UpdateNavigationBarBackgroundImage();
 				UpdateNavigationBarVisibility(animated);
 
 				NavigationRenderer n;
@@ -1263,6 +1264,24 @@ namespace Xamarin.Forms.Platform.iOS
 					// prevent bottom content "jumping"
 					current.IgnoresContainerArea = !hasNavBar;
 					NavigationController.SetNavigationBarHidden(!hasNavBar, animated);
+				}
+			}
+
+			void UpdateNavigationBarBackgroundImage()
+			{
+				if (Forms.IsiOS13OrNewer)
+				{
+					if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
+						return;
+
+					var backgroundImage = navigationRenderer.NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
+
+					if (backgroundImage == null)
+						return;
+
+					navigationRenderer.NavigationBar.CompactAppearance.BackgroundImage = backgroundImage;
+					navigationRenderer.NavigationBar.StandardAppearance.BackgroundImage = backgroundImage;
+					navigationRenderer.NavigationBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
 				}
 			}
 
