@@ -16,9 +16,9 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Issue9131 : TestContentPage
 	{
 		const string ResultsLabelAutomationId = nameof(ResultsLabelAutomationId);
-		const string TestRunningText = "Running";
-		const string SuccessText = "Success";
-		const string FailedText = "Failed";
+		const string TestRunningText = "Running 🏃‍♂️";
+		const string SuccessText = "Success 😁";
+		const string FailedText = "Failed 🙈";
 
 		bool _areAllTestsCompleted = false;
 
