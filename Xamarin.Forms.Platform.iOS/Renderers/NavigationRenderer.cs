@@ -147,6 +147,14 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewWillAppear(animated);
 
 			SetStatusBarStyle();
+
+			if (Forms.IsiOS13OrNewer)
+			{
+				UpdateTint();
+				UpdateBarBackgroundColor();
+				UpdateBarTextColor();
+				UpdateHideNavigationBarSeparator();
+			}
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -225,11 +233,16 @@ namespace Xamarin.Forms.Platform.iOS
 			navPage.RemovePageRequested += OnRemovedPageRequested;
 			navPage.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 
-			UpdateTint();
-			UpdateBarBackgroundColor();
-			UpdateBarTextColor();
+			if (!Forms.IsiOS13OrNewer)
+			{
+				UpdateTint();
+				UpdateBarBackgroundColor();
+				UpdateBarTextColor();
+				UpdateHideNavigationBarSeparator();
+			}
+
 			UpdateUseLargeTitles();
-			UpdateHideNavigationBarSeparator();
+
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 

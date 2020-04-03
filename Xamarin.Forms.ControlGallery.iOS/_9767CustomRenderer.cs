@@ -13,12 +13,14 @@ namespace Xamarin.Forms.ControlGallery.iOS
     {
         public _9767CustomRenderer() : base()
         {
-            UpdateColors();
+       
         }
 
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
+
+            UpdateColors();
             UpdateGradientView();
         }
 		
