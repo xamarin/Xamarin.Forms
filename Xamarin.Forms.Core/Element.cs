@@ -462,65 +462,6 @@ namespace Xamarin.Forms
 
 		internal event EventHandler ParentSet;
 
-		internal static void SetFlowDirectionFromParent(Element child)
-		{
-			IFlowDirectionController controller = child as IFlowDirectionController;
-			if (controller == null)
-				return;
-
-			var parentView = child.Parent as IFlowDirectionController;
-			if (parentView == null)
-				return;
-
-			if (controller.EffectiveFlowDirection.IsImplicit())
-			{
-				var flowDirection = parentView.EffectiveFlowDirection.ToFlowDirection();
-
-				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
-				{
-					if (ShouldSetHasExplicitParent(parentView))
-					{
-						controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection() | EffectiveFlowDirection.HasExplicitParent;
-					}
-					else
-					{
-						controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
-					}
-				}
-			}
-
-			if (ShouldSetHasExplicitParent(parentView))
-			{
-				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection | EffectiveFlowDirection.HasExplicitParent;
-			}
-			else
-			{
-				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection & ~EffectiveFlowDirection.HasExplicitParent;
-			}
-
-			bool ShouldSetHasExplicitParent(IFlowDirectionController flowDirectionController)
-			{
-				return flowDirectionController.EffectiveFlowDirection.IsExplicit() ||
-						flowDirectionController.EffectiveFlowDirection.HasExplicitParent();
-			}
-		}
-
-		internal static void SetVisualfromParent(Element child)
-		{
-			IVisualController controller = child as IVisualController;
-			if (controller == null)
-				return;
-
-			if (controller.Visual != VisualMarker.MatchParent)
-			{
-				controller.EffectiveVisual = controller.Visual;
-				return;
-			}
-
-			if (child.Parent is IVisualController parentView)
-				controller.EffectiveVisual = parentView.EffectiveVisual;
-		}
-
 		internal virtual void SetChildInheritedBindingContext(Element child, object context)
 		{
 			SetInheritedBindingContext(child, context);

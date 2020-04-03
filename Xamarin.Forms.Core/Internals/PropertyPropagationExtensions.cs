@@ -45,22 +45,44 @@ namespace Xamarin.Forms.Internals
 
 		internal static void PropagateFlowDirection(Element target, Element source)
 		{
-			IFlowDirectionController targetController = target as IFlowDirectionController;
-			if (targetController == null)
+			IFlowDirectionController controller = target as IFlowDirectionController;
+			if (controller == null)
 				return;
 
-			if (targetController.EffectiveFlowDirection.IsImplicit())
-			{
-				var sourceController = source as IFlowDirectionController;
-				if (sourceController == null)
-					return;
+			var sourceController = source as IFlowDirectionController;
+			if (sourceController == null)
+				return;
 
+			if (controller.EffectiveFlowDirection.IsImplicit())
+			{
 				var flowDirection = sourceController.EffectiveFlowDirection.ToFlowDirection();
 
-				if (flowDirection != targetController.EffectiveFlowDirection.ToFlowDirection())
+				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
 				{
-					targetController.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
+					if (ShouldSetHasExplicitParent(sourceController))
+					{
+						controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection() | EffectiveFlowDirection.HasExplicitParent;
+					}
+					else
+					{
+						controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
+					}
 				}
+			}
+
+			if (ShouldSetHasExplicitParent(sourceController))
+			{
+				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection | EffectiveFlowDirection.HasExplicitParent;
+			}
+			else
+			{
+				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection & ~EffectiveFlowDirection.HasExplicitParent;
+			}
+
+			bool ShouldSetHasExplicitParent(IFlowDirectionController flowDirectionController)
+			{
+				return flowDirectionController.EffectiveFlowDirection.IsExplicit() ||
+						flowDirectionController.EffectiveFlowDirection.HasExplicitParent();
 			}
 		}
 
