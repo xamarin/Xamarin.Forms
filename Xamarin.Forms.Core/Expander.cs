@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using static System.Math;
 
@@ -51,12 +52,29 @@ namespace Xamarin.Forms
 		double _endHeight;
 		bool _shouldIgnoreContentSetting;
 		bool _shouldIgnoreAnimation;
+		static bool isExperimentalFlagSet = false;
 
 		public Expander()
 		{
 			ExpanderLayout = new StackLayout { Spacing = Spacing };
 			ForceUpdateSizeCommand = new Command(ForceUpdateSize);
 			InternalChildren.Add(ExpanderLayout);
+		}
+
+		internal static void VerifyExperimental([CallerMemberName] string memberName = "", string constructorHint = null)
+		{
+			if (isExperimentalFlagSet)
+				return;
+
+			ExperimentalFlags.VerifyFlagEnabled(nameof(Markup), ExperimentalFlags.ExpanderExperimental, constructorHint, memberName);
+
+			isExperimentalFlagSet = true;
+		}
+
+		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+		{			
+			VerifyExperimental();
+			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
 
 		StackLayout ExpanderLayout { get; }

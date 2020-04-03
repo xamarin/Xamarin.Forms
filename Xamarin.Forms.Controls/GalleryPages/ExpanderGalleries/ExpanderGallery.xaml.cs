@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.GalleryPages.ExpanderGalleries
 {
 	public partial class ExpanderGallery : ContentPage
 	{
