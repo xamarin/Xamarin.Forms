@@ -319,7 +319,7 @@ namespace Xamarin.Forms
 
 			var state = GetNavigationState(shellItem, shellSection, shellContent, null, null);
 
-			if (FlyoutIsPresented && GetEffectiveFlyoutBehavior() == FlyoutBehavior.Flyout)
+			if (FlyoutIsPresented && GetEffectiveFlyoutBehavior() != FlyoutBehavior.Locked)
 				SetValueFromRenderer(FlyoutIsPresentedProperty, false);
 
 			if (shellSection == null)
