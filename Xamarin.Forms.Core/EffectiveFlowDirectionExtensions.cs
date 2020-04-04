@@ -51,21 +51,11 @@ namespace Xamarin.Forms
 
 		public static bool IsRightToLeft(this EffectiveFlowDirection self)
 		{
-			// This means the user hasn't set FlowDirection anywhere so we just return the
-			// Device FlowDirection
-			if ((int)self == 0)
-				return Device.FlowDirection == FlowDirection.RightToLeft;
-
 			return (self & EffectiveFlowDirection.RightToLeft) == EffectiveFlowDirection.RightToLeft;
 		}
 
 		public static bool IsLeftToRight(this EffectiveFlowDirection self)
 		{
-			// This means the user hasn't set FlowDirection anywhere so we just return the
-			// Device FlowDirection
-			if ((int)self == 0)
-				return Device.FlowDirection == FlowDirection.LeftToRight;
-
 			return (self & EffectiveFlowDirection.RightToLeft) != EffectiveFlowDirection.RightToLeft;
 		}
 

@@ -18,39 +18,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static UISemanticContentAttribute GetFlowDirection(this IVisualElementController controller, UISemanticContentAttribute updateValue)
-		{
-			if(!controller.EffectiveFlowDirection.HasExplicitParent() &&
-				!controller.EffectiveFlowDirection.IsExplicit())
-			{
-				updateValue = UISemanticContentAttribute.Unspecified;
-			}
-			else if (controller.EffectiveFlowDirection.IsRightToLeft())
-			{
-				if (Device.FlowDirection == FlowDirection.LeftToRight)
-					updateValue = UISemanticContentAttribute.ForceRightToLeft;
-				else
-					updateValue = UISemanticContentAttribute.Unspecified;
-			}
-			else if (controller.EffectiveFlowDirection.IsLeftToRight())
-			{
-				if (Device.FlowDirection == FlowDirection.RightToLeft)
-					updateValue = UISemanticContentAttribute.ForceLeftToRight;
-				else
-					updateValue = UISemanticContentAttribute.Unspecified;
-			}
-
-			return updateValue;
-		}
-
 		internal static bool UpdateFlowDirection(this UIView view, IVisualElementController controller)
 		{
 			if (controller == null || view == null || !Forms.IsiOS9OrNewer)
 				return false;
 
-			UISemanticContentAttribute updateValue = controller.GetFlowDirection(view.SemanticContentAttribute);
+			UISemanticContentAttribute updateValue = view.SemanticContentAttribute;
 
-			if(updateValue != view.SemanticContentAttribute)
+			if (controller.EffectiveFlowDirection.IsRightToLeft())
+				updateValue = UISemanticContentAttribute.ForceRightToLeft;
+			else if (controller.EffectiveFlowDirection.IsLeftToRight())
+				updateValue = UISemanticContentAttribute.ForceLeftToRight;
+
+			if (updateValue != view.SemanticContentAttribute)
 			{
 				view.SemanticContentAttribute = updateValue;
 				return true;
