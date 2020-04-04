@@ -1145,11 +1145,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
 					return;
 
+#if __XCODE11__
 				var backgroundImage = navigationRenderer.NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
 
 				navigationRenderer.NavigationBar.CompactAppearance.BackgroundImage = backgroundImage;
 				navigationRenderer.NavigationBar.StandardAppearance.BackgroundImage = backgroundImage;
 				navigationRenderer.NavigationBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
+#endif
 			}
 
 			internal void UpdateLeftBarButtonItem(Page pageBeingRemoved = null)
