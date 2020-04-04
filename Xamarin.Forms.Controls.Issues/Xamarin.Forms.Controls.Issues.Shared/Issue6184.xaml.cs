@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void GitHubIssue6184()
 		{
 			RunningApp.WaitForElement(q => q.Marked("More"));
+			RunningApp.Tap(q => q.Marked("More"));
 			RunningApp.Tap(q => q.Marked("Issue 5"));
 			RunningApp.WaitForElement(q => q.Marked("Issue 5"));
 		}
