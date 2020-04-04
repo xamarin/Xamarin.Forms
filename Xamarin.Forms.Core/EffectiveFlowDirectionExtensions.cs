@@ -68,10 +68,5 @@ namespace Xamarin.Forms
 		{
 			return (self & EffectiveFlowDirection.Explicit) == EffectiveFlowDirection.Explicit;
 		}
-
-		public static bool HasExplicitParent(this EffectiveFlowDirection self)
-		{
-			return (self & EffectiveFlowDirection.HasExplicitParent) == EffectiveFlowDirection.HasExplicitParent;
-		}
 	}
 }

@@ -59,31 +59,11 @@ namespace Xamarin.Forms.Internals
 
 				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
 				{
-					if (ShouldSetHasExplicitParent(sourceController))
-					{
-						controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection() | EffectiveFlowDirection.HasExplicitParent;
-					}
-					else
-					{
-						controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
-					}
+					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
 				}
 			}
 
-			if (ShouldSetHasExplicitParent(sourceController))
-			{
-				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection | EffectiveFlowDirection.HasExplicitParent;
-			}
-			else
-			{
-				controller.EffectiveFlowDirection = controller.EffectiveFlowDirection & ~EffectiveFlowDirection.HasExplicitParent;
-			}
-
-			bool ShouldSetHasExplicitParent(IFlowDirectionController flowDirectionController)
-			{
-				return flowDirectionController.EffectiveFlowDirection.IsExplicit() ||
-						flowDirectionController.EffectiveFlowDirection.HasExplicitParent();
-			}
+			controller.EffectiveFlowDirection = controller.EffectiveFlowDirection;
 		}
 
 		internal static void SetFlowDirectionFromParent(Element child)
