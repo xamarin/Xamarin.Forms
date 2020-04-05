@@ -1,7 +1,11 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -191,13 +195,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
-
-
+		
 		public override void Draw(Canvas canvas)
 		{
 			if (Element == null)
 				return;
-
 			var backgroundDrawable = _backgroundTracker?.BackgroundDrawable;
 			RectF drawableBounds = null;
 
@@ -206,12 +208,11 @@ namespace Xamarin.Forms.Platform.Android
 				if ((int)Forms.SdkInt >= 18 && backgroundDrawable != null)
 				{
 					var outlineBounds = backgroundDrawable.GetPaddingBounds(canvas.Width, canvas.Height);
-					var width = (float)MeasuredWidth;
-					var height = (float)MeasuredHeight;
-
+					var width = (float)canvas.Width;
+					var height = (float)canvas.Height;
 					var widthRatio = 1f;
 					var heightRatio = 1f;
-
+						
 					if (Element.Aspect == Aspect.AspectFill && OnThisPlatform().GetIsShadowEnabled())
 						Internals.Log.Warning(nameof(ImageButtonRenderer), "AspectFill isn't fully supported when using shadows. Image may be clipped incorrectly to Border");
 
@@ -283,6 +284,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
 			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
@@ -290,7 +296,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
-
 
 		// general state related
 		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
@@ -307,7 +312,6 @@ namespace Xamarin.Forms.Platform.Android
 		bool IOnTouchListener.OnTouch(AView v, MotionEvent e) =>
 			ButtonElementManager.OnTouch(Element, Element, v, e);
 		// Button related
-
 
 		float IBorderVisualElementRenderer.ShadowRadius => Context.ToPixels(OnThisPlatform().GetShadowRadius());
 		float IBorderVisualElementRenderer.ShadowDx => Context.ToPixels(OnThisPlatform().GetShadowOffset().Width);

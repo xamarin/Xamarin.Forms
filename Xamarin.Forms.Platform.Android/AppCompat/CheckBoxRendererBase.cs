@@ -1,7 +1,11 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -10,7 +14,11 @@ using Android.Graphics;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Widget;
 using Android.Content.Res;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using AAttribute = Android.Resource.Attribute;
 
 namespace Xamarin.Forms.Platform.Android
@@ -154,6 +162,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == CheckBox.ColorProperty.PropertyName)
 			{
 				UpdateOnColor();
@@ -182,7 +195,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			Checked = Element.IsChecked;
 		}
-
 
 		protected virtual ColorStateList GetColorStateList()
 		{
@@ -216,6 +228,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var mode = PorterDuff.Mode.SrcIn;
 
+			
 			CompoundButtonCompat.SetButtonTintList(Control, GetColorStateList());
 			CompoundButtonCompat.SetButtonTintMode(Control, mode);
 		}

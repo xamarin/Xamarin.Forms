@@ -1,5 +1,10 @@
 ﻿using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.DrawerLayout.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using Android.Util;
 using Android.Views;
 using System;
@@ -41,6 +46,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IDrawerListener.OnDrawerStateChanged(int newState)
 		{
+			if(DrawerLayout.StateIdle == newState)
+			{
+				Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, IsDrawerOpen(_flyoutContent.AndroidView));
+			}	
 		}
 
 		#endregion IDrawerListener

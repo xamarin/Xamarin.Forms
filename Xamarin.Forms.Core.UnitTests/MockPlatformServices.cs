@@ -12,6 +12,7 @@ using FileMode = System.IO.FileMode;
 using FileAccess = System.IO.FileAccess;
 using FileShare = System.IO.FileShare;
 using Stream = System.IO.Stream;
+using Xamarin.Forms.Internals;
 
 [assembly:Dependency (typeof(MockDeserializer))]
 [assembly:Dependency (typeof(MockResourcesProvider))]
@@ -40,18 +41,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			_isInvokeRequired = isInvokeRequired;
 		}
 
-		static MD5CryptoServiceProvider checksum = new MD5CryptoServiceProvider ();
-
-		public string GetMD5Hash (string input)
+		public string GetHash (string input)
 		{
-			var bytes = checksum.ComputeHash (Encoding.UTF8.GetBytes (input));
-			var ret = new char [32];
-			for (int i = 0; i < 16; i++){
-				ret [i*2] = (char)hex (bytes [i] >> 4);
-				ret [i*2+1] = (char)hex (bytes [i] & 0xf);
-			}
-			return new string (ret);
+			return Internals.Crc64.GetHash(input);
 		}
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
+
 		static int hex (int v)
 		{
 			if (v < 10)
@@ -74,6 +70,22 @@ namespace Xamarin.Forms.Core.UnitTests
 					return 16;
 				default:
 					throw new ArgumentOutOfRangeException (nameof(size));
+			}
+		}
+
+		public Color GetNamedColor(string name)
+		{
+			// Some mock values to test color type converter
+			switch (name)
+			{
+				case "SystemBlue":
+					return Color.FromRgb(0, 122, 255);
+				case "SystemChromeHighColor":
+					return Color.FromHex("#FF767676");
+				case "HoloBlueBright":
+					return Color.FromHex("#ff00ddff");
+				default:
+					return Color.Default;
 			}
 		}
 
@@ -202,6 +214,8 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			return new SizeRequest(new Size (100, 20));
 		}
+
+		public AppTheme RequestedTheme { get; set; }
 	}
 
 	internal class MockDeserializer : Internals.IDeserializer

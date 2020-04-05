@@ -9,23 +9,35 @@ using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.OS;
 using Android.Runtime;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using Fragment = AndroidX.Fragment.App.Fragment;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
+using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+using AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.DrawerLayout.Widget;
+using AndroidX.AppCompat.App;
+#else
 using Android.Support.V4.Widget;
-using Android.Support.V7.Graphics.Drawable;
-using Android.Util;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
-using AView = Android.Views.View;
-using AToolbar = Android.Support.V7.Widget.Toolbar;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using AToolbar = Android.Support.V7.Widget.Toolbar;
+using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
+using Android.Support.V7.Graphics.Drawable;
+using Android.Support.V7.App;
+#endif
+using Android.Util;
+using Android.Views;
+using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
+
 using Object = Java.Lang.Object;
 using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 using static Android.Views.View;
-using System.IO;
 using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
@@ -55,6 +67,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _isAttachedToWindow;
 		Platform _platform;
 		string _defaultNavigationContentDescription;
+		List<IMenuItem> _currentMenuItems = new List<IMenuItem>();
+		List<ToolbarItem> _currentToolbarItems = new List<ToolbarItem>();
 
 		// The following is based on https://android.googlesource.com/platform/frameworks/support.git/+/4a7e12af4ec095c3a53bb8481d8d92f63157c3b7/v4/java/android/support/v4/app/FragmentManager.java#677
 		// Must be overriden in a custom renderer to match durations in XML animation resource files
@@ -169,7 +183,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (disposing)
 			{
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
-			
+
 				if (NavigationPageController != null)
 				{
 					var navController = NavigationPageController;
@@ -218,10 +232,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					_toolbarTracker.CollectionChanged -= ToolbarTrackerOnCollectionChanged;
 
-					_toolbar.DisposeMenuItems(_toolbarTracker?.ToolbarItems, OnToolbarItemPropertyChanged);
+					_toolbar.DisposeMenuItems(_currentToolbarItems, OnToolbarItemPropertyChanged);
 
 					_toolbarTracker.Target = null;
 					_toolbarTracker = null;
+				}
+
+				if (_currentMenuItems != null)
+				{
+					_currentMenuItems.Clear();
+					_currentMenuItems = null;
+				}
+
+				if (_currentToolbarItems != null)
+				{
+					_currentToolbarItems.Clear();
+					_currentToolbarItems = null;
 				}
 
 				if (_toolbar != null)
@@ -547,6 +573,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.IconColorProperty.PropertyName)
+				UpdateToolbar();
 		}
 
 #pragma warning disable 1998 // considered for removal
@@ -555,11 +583,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			if (nameof(Device.Info.CurrentOrientation) == e.PropertyName)
 				ResetToolbar();
-		}
-
-		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			_toolbar.OnToolbarItemPropertyChanged(e, _toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged);
 		}
 
 		void InsertPageBefore(Page page, Page before)
@@ -902,10 +925,23 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateMenu()
 		{
-			if (_disposed)
+			if (_disposed || _currentMenuItems == null)
 				return;
 
-			_toolbar.UpdateMenuItems(_toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged);
+			_currentMenuItems.Clear();
+			_currentMenuItems = new List<IMenuItem>();
+			_toolbar.UpdateMenuItems(_toolbarTracker?.ToolbarItems, Context, null, OnToolbarItemPropertyChanged, _currentMenuItems, _currentToolbarItems, UpdateMenuItemIcon);
+		}
+
+		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var items = _toolbarTracker?.ToolbarItems?.ToList();
+			_toolbar.OnToolbarItemPropertyChanged(e, (ToolbarItem)sender, items, Context, null, OnToolbarItemPropertyChanged, _currentMenuItems, _currentToolbarItems, UpdateMenuItemIcon);
+		}
+
+		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
+		{
+			ToolbarExtensions.UpdateMenuItemIcon(context, menuItem, toolBarItem, null);
 		}
 
 		void UpdateToolbar()
@@ -934,7 +970,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						toggle.SyncState();
 					}
 
-					var activity = (global::Android.Support.V7.App.AppCompatActivity)context.GetActivity();
+					var activity = (AppCompatActivity)context.GetActivity();
 					var icon = new DrawerArrowDrawable(activity.SupportActionBar.ThemedContext);
 					icon.Progress = 1;
 					bar.NavigationIcon = icon;
@@ -984,6 +1020,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
+
+			Color navIconColor = NavigationPage.GetIconColor(Current);
+			if (!navIconColor.IsDefault && bar.NavigationIcon != null)
+				DrawableExtensions.SetColorFilter(bar.NavigationIcon, navIconColor, FilterMode.SrcAtop);
 
 			bar.Title = currentPage?.Title ?? string.Empty;
 

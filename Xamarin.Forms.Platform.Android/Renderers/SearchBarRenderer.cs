@@ -135,6 +135,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName)
@@ -206,7 +211,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (image != null && image.Drawable != null)
 				{
 					if (Element.CancelButtonColor != Color.Default)
-						image.Drawable.SetColorFilter(Element.CancelButtonColor.ToAndroid(), PorterDuff.Mode.SrcIn);
+						image.Drawable.SetColorFilter(Element.CancelButtonColor, FilterMode.SrcIn);
 					else
 						image.Drawable.ClearColorFilter();
 				}

@@ -1,8 +1,19 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+#else
 using Android.Support.V4.App;
+#endif
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.DrawerLayout.Widget;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
+#else
 using Android.Support.V4.Widget;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
+#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -12,7 +23,6 @@ using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -346,11 +356,14 @@ namespace Xamarin.Forms.Platform.Android
 					color = Color.FromHex("#03A9F4").ToAndroid();
 				}
 
-				Profile.FramePartition("Create SplitDrawable");
-				var split = new SplitDrawable(color, statusBarHeight, navigationBarHeight);
-
-				Profile.FramePartition("SetBackground");
-				decorView.SetBackground(split);
+				if (!(decorView.Background is SplitDrawable splitDrawable) ||
+					splitDrawable.Color != color || splitDrawable.TopSize != statusBarHeight || splitDrawable.BottomSize != navigationBarHeight)
+				{
+					Profile.FramePartition("Create SplitDrawable");
+					var split = new SplitDrawable(color, statusBarHeight, navigationBarHeight);
+					Profile.FramePartition("SetBackground");
+					decorView.SetBackground(split);
+				}
 			}
 
 			Profile.FrameEnd("UpdtStatBarClr");
@@ -358,15 +371,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		class SplitDrawable : Drawable
 		{
-			readonly int _bottomSize;
-			readonly AColor _color;
-			readonly int _topSize;
+			public int BottomSize { get; }
+			public AColor Color { get; }
+			public int TopSize { get; }
 
 			public SplitDrawable(AColor color, int topSize, int bottomSize)
 			{
-				_color = color;
-				_bottomSize = bottomSize;
-				_topSize = topSize;
+				Color = color;
+				BottomSize = bottomSize;
+				TopSize = topSize;
 			}
 
 			public override int Opacity => (int)Format.Opaque;
@@ -378,11 +391,11 @@ namespace Xamarin.Forms.Platform.Android
 				using (var paint = new Paint())
 				{
 
-					paint.Color = _color;
+					paint.Color = Color;
 
-					canvas.DrawRect(new Rect(0, 0, bounds.Right, _topSize), paint);
+					canvas.DrawRect(new Rect(0, 0, bounds.Right, TopSize), paint);
 
-					canvas.DrawRect(new Rect(0, bounds.Bottom - _bottomSize, bounds.Right, bounds.Bottom), paint);
+					canvas.DrawRect(new Rect(0, bounds.Bottom - BottomSize, bounds.Right, bounds.Bottom), paint);
 
 					paint.Dispose();
 				}
