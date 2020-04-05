@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries
 				{
 					button,
 					GalleryBuilder.NavButton("Refresh Layout Gallery", () => new RefreshLayoutGallery(), Navigation),
+					GalleryBuilder.NavButton("RefreshView using margins Gallery", () => new RefreshLayoutMarginGallery(), Navigation),
 					GalleryBuilder.NavButton("Refresh ScrollView Gallery", () => new RefreshScrollViewGallery(), Navigation),
 					GalleryBuilder.NavButton("Refresh ListView Gallery", () => new RefreshListViewGallery(), Navigation),
 					GalleryBuilder.NavButton("Refresh CollectionView Gallery", () => new RefreshCollectionViewGallery(), Navigation),
@@ -63,11 +64,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries
 		bool _isRefresing;
 		ObservableCollection<RefreshItem> _items;
 		
-		public RefreshViewModel()
+		public RefreshViewModel(bool initialRefresh = false)
 		{
 			_random = new Random();
 			Items = new ObservableCollection<RefreshItem>();
-			LoadItems();
+
+			if (initialRefresh)
+				ExecuteRefresh();
+			else
+				LoadItems();
 		}
 
 		public bool IsRefreshing

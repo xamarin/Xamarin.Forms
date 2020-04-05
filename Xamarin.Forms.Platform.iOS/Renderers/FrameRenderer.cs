@@ -38,6 +38,16 @@ namespace Xamarin.Forms.Platform.iOS
 				SetupLayer();
 		}
 
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				SetupLayer();
+#endif
+		}
+
 		public virtual void SetupLayer()
 		{
 			float cornerRadius = Element.CornerRadius;
@@ -49,7 +59,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Layer.MasksToBounds = Layer.CornerRadius > 0;
 
 			if (Element.BackgroundColor == Color.Default)
-				Layer.BackgroundColor = UIColor.White.CGColor;
+				Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
 			else
 				Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
 
@@ -98,6 +108,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			base.LayoutSubviews();
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				if (_shadowView != null)
+				{
+					_shadowView.RemoveFromSuperview();
+					_shadowView.Dispose();
+					_shadowView = null;
+				}
+			}
+		}
+
 
 		[Preserve(Conditional = true)]
 		class ShadowView : UIView

@@ -29,7 +29,7 @@
         <dependency id="Xamarin.Google.Android.Material" version="1.0.0" />
       </group>
       <group targetFramework="Xamarin.iOS10">
-        <dependency id="Xamarin.iOS.MaterialComponents" version="72.2.0.1"/>
+        <dependency id="Xamarin.iOS.MaterialComponents" version="92.0.0"/>
       </group>
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
@@ -45,6 +45,9 @@
     <!--Android 10-->
     <file src="_._" target="lib\MonoAndroid10\_._" />
     <file src="Xamarin.Forms.Visual.Material.targets" target="build\MonoAndroid10\Xamarin.Forms.Visual.Material.targets" />
+
+    <!--Android 10 buildTransitive-->
+    <file src="Xamarin.Forms.Visual.Material.targets" target="buildTransitive\MonoAndroid10\Xamarin.Forms.Visual.Material.targets" />
 
     <!--Android 90-->
     <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid90\Xamarin.Forms.Material.dll" target="lib\MonoAndroid90" />
@@ -64,5 +67,6 @@
     <!--Tizen-->
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.*pdb" target="lib\tizen40" />
+
   </files>
 </package>

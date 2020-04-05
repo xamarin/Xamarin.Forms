@@ -358,6 +358,17 @@ namespace Xamarin.Forms.Platform.iOS
 			return shown;
 		}
 
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				UpdateBackgroundColor();
+#endif
+		}
+
+
 		ParentingViewController CreateViewControllerForPage(Page page)
 		{
 			if (Platform.GetRenderer(page) == null)
@@ -640,7 +651,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackgroundColor()
 		{
-			var color = Element.BackgroundColor == Color.Default ? Color.White : Element.BackgroundColor;
+			var color = Element.BackgroundColor == Color.Default ? ColorExtensions.BackgroundColor.ToColor() : Element.BackgroundColor;
 			View.BackgroundColor = color.ToUIColor();
 		}
 
@@ -654,7 +665,10 @@ namespace Xamarin.Forms.Platform.iOS
 				var navigationBarAppearance = NavigationBar.StandardAppearance;
 
 				if (barBackgroundColor == Color.Default)
+				{
 					navigationBarAppearance.ConfigureWithDefaultBackground();
+					navigationBarAppearance.BackgroundColor = UINavigationBar.Appearance.BarTintColor;
+				}
 				else
 				{
 					navigationBarAppearance.ConfigureWithOpaqueBackground();
@@ -747,7 +761,7 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 #endif
 				{
-						UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
+					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
 				}
 			}
 			else
@@ -1099,6 +1113,12 @@ namespace Xamarin.Forms.Platform.iOS
 					_tracker.Target = null;
 					_tracker.CollectionChanged -= TrackerOnCollectionChanged;
 					_tracker = null;
+
+					if (NavigationItem.TitleView != null)
+					{
+						NavigationItem.TitleView.Dispose();
+						NavigationItem.TitleView = null;
+					}
 
 					if (NavigationItem.RightBarButtonItems != null)
 					{
