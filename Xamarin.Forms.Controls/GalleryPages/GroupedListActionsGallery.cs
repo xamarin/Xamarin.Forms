@@ -88,10 +88,7 @@ namespace Xamarin.Forms.Controls
 
 			public void DoStuff()
 			{
-				if (_action == null)
-					return;
-
-				_action (this);
+				_action?.Invoke (this);
 			}
 
 			public Group Parent
