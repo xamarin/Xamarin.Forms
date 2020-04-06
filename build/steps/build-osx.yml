@@ -15,6 +15,7 @@ jobs:
         - sh
         - msbuild
         - Xamarin.iOS
+        - Agent.OS -equals Darwin
     variables:
       provisionator.osxPath : 'build/provisioning/provisioning.csx'
       buildConfiguration: $(DefaultBuildConfiguration)

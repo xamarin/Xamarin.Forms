@@ -27,6 +27,8 @@ jobs:
     timeoutInMinutes: 120
     pool:
       vmImage: ${{ parameters.vmImage }}
+      demands: 
+          - Agent.OS -equals Darwin
     dependsOn: ${{ parameters.dependsOn }}
     steps:
       - checkout: self

@@ -27,6 +27,8 @@ jobs:
     pool:
       name: ${{ parameters.vmPool }}
       vmImage: ${{ parameters.vmImage }}
+      demands: 
+        - Agent.OS -equals Windows_NT
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
       matrix:

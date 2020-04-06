@@ -122,6 +122,8 @@ jobs:
   pool:
     name: $(vs2019VmPool)
     vmImage: $(vs2019VmImage)
+    demands: 
+        - Agent.OS -equals Windows_NT
   variables:
     FormsIdAppend: ''
     buildConfiguration: $(DefaultBuildConfiguration)
@@ -136,6 +138,8 @@ jobs:
     dependsOn: nuget_pack
     pool:
       name: $(signVmPool)
+      demands: 
+          - Agent.OS -equals Windows_NT
     steps:
       - template: build/steps/build-sign.yml
     condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
