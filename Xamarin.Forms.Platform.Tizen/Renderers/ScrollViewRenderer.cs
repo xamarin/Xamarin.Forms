@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new NScroller(Forms.NativeParent));
+				SetNativeControl(CreateNativeControl());
 				Control.Scrolled += OnScrolled;
 				_scrollCanvas = new NBox(Control);
 				_scrollCanvas.LayoutUpdated += OnContentLayoutUpdated;
@@ -59,6 +59,19 @@ namespace Xamarin.Forms.Platform.Tizen
 			UpdateAll();
 
 			base.OnElementChanged(e);
+		}
+
+		protected virtual NScroller CreateNativeControl()
+		{
+
+			if (Device.Idiom == TargetIdiom.Watch)
+			{
+				return new Native.Watch.WatchScroller(Forms.NativeParent, Forms.CircleSurface);
+			}
+			else
+			{
+				return new NScroller(Forms.NativeParent);
+			}
 		}
 
 		protected override void Dispose(bool disposing)
