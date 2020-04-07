@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 		}
 
-		protected Scroller() : base()
+		protected Scroller()
 		{
 		}
 

@@ -43,6 +43,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler("HeaderElement", UpdateHeader);
 			RegisterPropertyHandler("FooterElement", UpdateFooter);
 			RegisterPropertyHandler(ListView.SelectionModeProperty, UpdateSelectionMode);
+			RegisterPropertyHandler(ListView.VerticalScrollBarVisibilityProperty, UpdateVerticalScrollBarVisibility);
+			RegisterPropertyHandler(ListView.HorizontalScrollBarVisibilityProperty, UpdateHorizontalScrollBarVisibility);
 		}
 
 		/// <summary>
@@ -421,6 +423,16 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				Control.IsHighlight = true;
 			}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			Control.VerticalScrollBarVisibility = Element.VerticalScrollBarVisibility.ToNative();
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			Control.HorizontalScrollBarVisibility = Element.HorizontalScrollBarVisibility.ToNative();
 		}
 	}
 }

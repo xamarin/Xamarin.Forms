@@ -203,17 +203,20 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			Control.VerticalScrollBarVisiblePolicy = ScrollBarVisibilityToTizen(Element.VerticalScrollBarVisibility);
+			Control.VerticalScrollBarVisiblePolicy = Element.VerticalScrollBarVisibility.ToNative();
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
 			var orientation = Element.Orientation;
 			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
-				Control.HorizontalScrollBarVisiblePolicy = ScrollBarVisibilityToTizen(Element.HorizontalScrollBarVisibility);
+				Control.HorizontalScrollBarVisiblePolicy = Element.HorizontalScrollBarVisibility.ToNative();
 		}
+	}
 
-		ScrollBarVisiblePolicy ScrollBarVisibilityToTizen(ScrollBarVisibility visibility)
+	static class ScrollBarExtensions
+	{
+		public static ScrollBarVisiblePolicy ToNative(this ScrollBarVisibility visibility)
 		{
 			switch (visibility)
 			{
