@@ -60,22 +60,6 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty MenuItemTemplateProperty =
 			BindableProperty.CreateAttached(nameof(MenuItemTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime, defaultValueCreator: OnMenuItemTemplateCreate);
 
-		static object OnMenuItemTemplateCreate(BindableObject bindable)
-		{
-			if(bindable is BaseShellItem baseShellItem)
-				return baseShellItem.CreateDefaultFlyoutItemCell("Text", "Icon");
-
-			if (bindable is MenuItem mi)
-			{
-				if (mi.Parent is BaseShellItem bsiMi)
-					return bsiMi.CreateDefaultFlyoutItemCell("Text", "Icon");
-				else
-					return null;
-			}
-
-			throw new ArgumentException($"Invalidate Menu Item Type: {bindable}", nameof(bindable));
-		}
-
 		public static DataTemplate GetMenuItemTemplate(BindableObject obj) => (DataTemplate)obj.GetValue(MenuItemTemplateProperty);
 		public static void SetMenuItemTemplate(BindableObject obj, DataTemplate menuItemTemplate) => obj.SetValue(MenuItemTemplateProperty, menuItemTemplate);
 
@@ -84,7 +68,28 @@ namespace Xamarin.Forms
 
 		static object OnItemTemplateCreator(BindableObject bindable)
 		{
-			return (bindable as BaseShellItem).CreateDefaultFlyoutItemCell("Title", "FlyoutIcon");
+			return OnFlyoutItemTemplateCreate(bindable, "Title", "FlyoutIcon");
+		}
+
+		static object OnMenuItemTemplateCreate(BindableObject bindable)
+		{
+			return OnFlyoutItemTemplateCreate(bindable, "Text", "Icon");
+		}
+
+		static object OnFlyoutItemTemplateCreate(BindableObject bindable, string textBinding, string iconBinding)
+		{
+			if (bindable is BaseShellItem baseShellItem)
+				return BaseShellItem.CreateDefaultFlyoutItemCell(baseShellItem, textBinding, iconBinding);
+			
+			if (bindable is MenuItem mi)
+			{
+				if (mi.Parent is BaseShellItem bsiMi)
+					return BaseShellItem.CreateDefaultFlyoutItemCell(bsiMi, textBinding, iconBinding);
+				else
+					return null;
+			}
+
+			return BaseShellItem.CreateDefaultFlyoutItemCell(bindable as StyleSheets.IStyleSelectable, textBinding, iconBinding);
 		}
 
 		public static DataTemplate GetItemTemplate(BindableObject obj) => (DataTemplate)obj.GetValue(ItemTemplateProperty);
