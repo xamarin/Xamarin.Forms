@@ -258,7 +258,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateHorizontalTextAlignment()
 		{
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
-			//Control.UpdateTextAlignment(Element);
 		}
 
 		void UpdateVerticalTextAlignment()
