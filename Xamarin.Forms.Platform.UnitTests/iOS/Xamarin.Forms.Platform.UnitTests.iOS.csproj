@@ -8,14 +8,19 @@
     <ProjectGuid>{22D43156-19FF-406A-8D4B-D4C151803032}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
-	<OutputType>Exe</OutputType>
-    <RootNamespace>Xamarin.Forms.Platform.UnitTests.iOS</RootNamespace>
+	  <RootNamespace>Xamarin.Forms.Platform.UnitTests.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>Xamarin.Forms.Platform.UnitTests.iOS</AssemblyName>
     <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     <ProvisioningType>automatic</ProvisioningType>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <OutputType Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">Exe</OutputType>
+    <OutputType Condition=" '$(Configuration)' == 'DebugLibrary' ">Library</OutputType>
+  </PropertyGroup>
+  
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
