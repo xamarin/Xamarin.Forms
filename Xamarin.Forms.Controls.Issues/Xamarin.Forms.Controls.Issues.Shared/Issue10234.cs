@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.Linq;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using System.Threading;
-using System.ComponentModel;
-
 
 #if UITEST
 using Xamarin.UITest;
@@ -95,6 +89,7 @@ namespace Xamarin.Forms.Controls.Issues
 				//InitializeComponent();
 				Photos = new CarouselView
 				{
+					AutomationId = "carouselView",
 					ItemTemplate = new DataTemplate(
 						() =>
 						{
@@ -154,14 +149,27 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST && __IOS__
 
 		[Test]
-		public void PaddingWithoutSafeArea()
+		public void ScrollCarouselViewAfterDispose()
 		{
 			RunningApp.WaitForElement("goToShow");
 			RunningApp.Tap("goToShow");
 			RunningApp.WaitForElement("goToBack");
+			ScrollNextItem();
 			RunningApp.Tap("goToBack");
 			RunningApp.WaitForElement("goToShow");
 			RunningApp.Tap("goToShow");
+			ScrollNextItem();
+			RunningApp.WaitForElement("goToBack");
+			RunningApp.Tap("goToBack");
+			RunningApp.WaitForElement("goToShow");
+		}
+
+		void ScrollNextItem()
+		{
+			var rect = RunningApp.Query(c => c.Marked("carouselView")).First().Rect;
+			var centerX = rect.CenterX;
+			var rightX = rect.X - 5;
+			RunningApp.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
 		}
 
 #endif
