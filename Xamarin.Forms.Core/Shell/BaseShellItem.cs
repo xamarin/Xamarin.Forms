@@ -16,6 +16,9 @@ namespace Xamarin.Forms
 		public event EventHandler Disappearing;
 
 		bool _hasAppearing;
+		const string DefaultFlyoutItemLabelStyle = "Default_FlyoutItemLabelStyle";
+		const string DefaultFlyoutItemImageStyle = "Default_FlyoutItemImageStyle";
+		const string DefaultFlyoutItemLayoutStyle = "Default_FlyoutItemLayoutStyle";
 
 		#region PropertyKeys
 
