@@ -46,6 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 				cornerRadius = 5f; // default corner radius
 
 			Layer.CornerRadius = cornerRadius;
+			Layer.MasksToBounds = Layer.CornerRadius > 0;
 
 			if (Element.BackgroundColor == Color.Default)
 				Layer.BackgroundColor = UIColor.White.CGColor;
@@ -97,6 +98,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			base.LayoutSubviews();
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				if (_shadowView != null)
+				{
+					_shadowView.RemoveFromSuperview();
+					_shadowView.Dispose();
+					_shadowView = null;
+				}
+			}
+		}
+
 
 		[Preserve(Conditional = true)]
 		class ShadowView : UIView

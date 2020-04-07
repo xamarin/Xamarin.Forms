@@ -24,11 +24,12 @@ namespace Xamarin.Forms.Controls.Issues
 		const string LeftCountLabelId = "LeftCountLabel";
 
 		int _leftCount;
-
 		Label _leftSwipeCountLabel;
 
 		protected override void Init()
 		{
+			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
+
 			Title = PageTitle;
 
 			_leftSwipeCountLabel = new Label
@@ -72,9 +73,9 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(x => x.Marked(SwipeViewId));
 
-			RunningApp.SwipeRightToLeft(SwipeViewId);
 			RunningApp.SwipeLeftToRight(SwipeViewId);
 			RunningApp.SwipeRightToLeft(SwipeViewId);
+			RunningApp.SwipeLeftToRight(SwipeViewId);
 
 			RunningApp.Tap(SwipeItemId);
 
@@ -86,7 +87,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		SwipeView CreateMySwipeView()
 		{
-			var rightSwipeItem = new SwipeItemView
+			var leftSwipeItem = new SwipeItemView
 			{
 				AutomationId = SwipeItemId,
 				Content = new Label
@@ -105,10 +106,10 @@ namespace Xamarin.Forms.Controls.Issues
 				})
 			};
 
-			var rightSwipeItems = new SwipeItems { rightSwipeItem };
+			var leftSwipeItems = new SwipeItems { leftSwipeItem };
 
-			rightSwipeItems.SwipeBehaviorOnInvoked = SwipeBehaviorOnInvoked.Close;
-			rightSwipeItems.Mode = SwipeMode.Reveal;
+			leftSwipeItems.SwipeBehaviorOnInvoked = SwipeBehaviorOnInvoked.Close;
+			leftSwipeItems.Mode = SwipeMode.Reveal;
 
 			var swipeContent = new ContentView
 			{
@@ -130,7 +131,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var mySwipeView = new SwipeView
 			{
-				RightItems = rightSwipeItems,
+				LeftItems = leftSwipeItems,
 				Content = swipeContent,
 				HeightRequest = 80
 			};

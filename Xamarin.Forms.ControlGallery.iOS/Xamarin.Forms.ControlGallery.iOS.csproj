@@ -61,7 +61,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <MtouchArch>ARMv7, ARM64</MtouchArch>
+    <MtouchArch>ARM64</MtouchArch>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>True</MtouchDebug>
     <CodesignEntitlements>
@@ -137,6 +137,7 @@
     <Compile Include="CustomRenderers\RoundedLabelRenderer.cs" />
     <Compile Include="ApiLabelRenderer.cs" />
     <Compile Include="CustomRenderers\CustomSearchBarRenderer.cs" />
+    <Compile Include="_9767CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
