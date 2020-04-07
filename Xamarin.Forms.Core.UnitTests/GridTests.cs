@@ -1519,6 +1519,137 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (invalidated);
 		}
 
+
+		[Test]
+		//https://github.com/xamarin/Xamarin.Forms/issues/4933
+		public void GridHeightCorrectWhenAspectFitImageGetsShrinked()
+		{
+			var contentGrid = new Grid
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions = LayoutOptions.Center,
+				RowDefinitions = new RowDefinitionCollection()
+				{
+					new RowDefinition(){Height = GridLength.Auto}
+				}
+			};
+			//image will have "EVERYTHING IS 100 x 20" size so grid should shrink it and itself to 50x10
+			contentGrid.Children.Add(new Image() { IsPlatformEnabled = true }, 0, 0);
+			var measurement = contentGrid.Measure(50, 100);
+			Assert.AreEqual(50, measurement.Request.Width);
+			Assert.AreEqual(10, measurement.Request.Height);
+		}
+
+
+		[Test]
+		public void MinimumWidthRequestInAutoCells()
+		{
+			var boxRow0Column0 = new BoxView
+			{
+				MinimumWidthRequest = 50,
+				WidthRequest = 200,
+				IsPlatformEnabled = true
+			};
+			var boxRow1Column0 = new BoxView
+			{
+				MinimumWidthRequest = 50,
+				WidthRequest = 200,
+				IsPlatformEnabled = true
+			};
+
+			var boxRow0Column1 = new BoxView
+			{
+				WidthRequest = 800,
+				IsPlatformEnabled = true
+			};
+			var boxRow1Column1 = new BoxView
+			{
+				WidthRequest = 800,
+				IsPlatformEnabled = true
+			};
+
+			var grid = new Grid
+			{
+				IsPlatformEnabled = true,
+				BackgroundColor = Color.Red
+			};
+
+			grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+			grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+
+			grid.Children.Add(boxRow0Column0, 0, 0);
+			grid.Children.Add(boxRow1Column0, 0, 1);
+			grid.Children.Add(boxRow1Column1, 1, 1);
+			grid.Children.Add(boxRow0Column1, 1, 0);
+
+			var view = new ContentView
+			{
+				IsPlatformEnabled = true,
+				Content = grid,
+			};
+			view.Layout(new Rectangle(0, 0, 800, 800));
+
+
+			Assert.AreEqual(boxRow0Column0.MinimumWidthRequest, boxRow0Column0.Width);
+			Assert.AreEqual(boxRow1Column0.MinimumWidthRequest, boxRow1Column0.Width);
+		}
+
+
+		[Test]
+		public void MinimumHeightRequestInAutoCells()
+		{
+			var boxRow0Column0 = new BoxView
+			{
+				MinimumHeightRequest = 50,
+				HeightRequest = 800,
+				IsPlatformEnabled = true
+			};
+			var boxRow1Column0 = new BoxView
+			{
+				HeightRequest = 800,
+				IsPlatformEnabled = true
+			};
+
+			var boxRow0Column1 = new BoxView
+			{
+				MinimumHeightRequest = 50,
+				HeightRequest = 800,
+				IsPlatformEnabled = true
+			};
+			var boxRow1Column1 = new BoxView
+			{
+				HeightRequest = 800,
+				IsPlatformEnabled = true
+			};
+
+			var grid = new Grid
+			{
+				IsPlatformEnabled = true,
+				BackgroundColor = Color.Red
+			};
+
+			grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+			grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			grid.Children.Add(boxRow0Column0, 0, 0);
+			grid.Children.Add(boxRow1Column0, 0, 1);
+			grid.Children.Add(boxRow1Column1, 1, 1);
+			grid.Children.Add(boxRow0Column1, 1, 0);
+
+			var view = new ContentView
+			{
+				IsPlatformEnabled = true,
+				Content = grid,
+			};
+			view.Layout(new Rectangle(0, 0, 800, 800));
+
+
+			Assert.AreEqual(boxRow0Column0.MinimumHeightRequest, boxRow0Column0.Height);
+			Assert.AreEqual(boxRow0Column1.MinimumHeightRequest, boxRow0Column1.Height);
+		}
+
+
+
 		// because the constraint is internal, we need this
 		public enum HackLayoutConstraint
 		{

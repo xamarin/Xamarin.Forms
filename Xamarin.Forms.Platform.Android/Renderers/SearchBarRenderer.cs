@@ -10,6 +10,7 @@ using Android.Text;
 using Android.Text.Method;
 using Android.Util;
 using Android.Widget;
+using Android.Views;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -20,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		InputTypes _inputType;
 		TextColorSwitcher _textColorSwitcher;
 		TextColorSwitcher _hintColorSwitcher;
+		float _defaultHeight => Context.ToPixels(42);
 
 		public SearchBarRenderer(Context context) : base(context)
 		{
@@ -47,9 +49,20 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
+		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			var sizerequest = base.GetDesiredSize(widthConstraint, heightConstraint);
+			if (Forms.SdkInt == BuildVersionCodes.N && heightConstraint == 0 && sizerequest.Request.Height == 0)
+			{
+				sizerequest.Request = new Size(sizerequest.Request.Width, _defaultHeight);
+			}
+			return sizerequest;
+		}
+
 		protected override SearchView CreateNativeControl()
 		{
-			return new SearchView(Context);
+			var context = (Context as ContextThemeWrapper)?.BaseContext ?? Context;
+			return new SearchView(context);
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -75,12 +88,17 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementChanged(e);
 
 			SearchView searchView = Control;
+			var isDesigner = Context.IsDesignerContext();
 
 			if (searchView == null)
 			{
 				searchView = CreateNativeControl();
 				searchView.SetIconifiedByDefault(false);
-				searchView.Iconified = false;
+				// set Iconified calls onSearchClicked 
+				// https://github.com/aosp-mirror/platform_frameworks_base/blob/6d891937a38220b0c712a1927f969e74bea3a0f3/core/java/android/widget/SearchView.java#L674-L680
+				// which causes requestFocus. The designer does not support focuses.
+				if (!isDesigner)
+					searchView.Iconified = false;
 				SetNativeControl(searchView);
 				_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
 
@@ -93,15 +111,18 @@ namespace Xamarin.Forms.Platform.Android
 
 			}
 
-			ClearFocus(searchView);
+			if (!isDesigner)
+				ClearFocus(searchView);
 			UpdateInputType();
 			UpdatePlaceholder();
 			UpdateText();
 			UpdateEnabled();
 			UpdateCancelButtonColor();
 			UpdateFont();
-			UpdateAlignment();
+			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateTextColor();
+			UpdateCharacterSpacing();
 			UpdatePlaceholderColor();
 			UpdateMaxLength();
 
@@ -114,6 +135,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName)
@@ -128,16 +154,20 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == SearchBar.VerticalOptionsProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == SearchBar.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if(e.PropertyName == InputView.KeyboardProperty.PropertyName)
@@ -152,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 				ClearFocus(Control);
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
 
@@ -160,6 +190,16 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			_editText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport(), Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
+
+			if (_editText == null)
+				return;
+
+			_editText.UpdateVerticalAlignment(Element.VerticalTextAlignment, Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
 		}
 
 		void UpdateCancelButtonColor()
@@ -171,7 +211,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (image != null && image.Drawable != null)
 				{
 					if (Element.CancelButtonColor != Color.Default)
-						image.Drawable.SetColorFilter(Element.CancelButtonColor.ToAndroid(), PorterDuff.Mode.SrcIn);
+						image.Drawable.SetColorFilter(Element.CancelButtonColor, FilterMode.SrcIn);
 					else
 						image.Drawable.ClearColorFilter();
 				}
@@ -199,14 +239,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ClearFocus(SearchView view)
 		{
-			try
-			{
-				view.ClearFocus();
-			}
-			catch (Java.Lang.UnsupportedOperationException)
-			{
-				// silently catch these as they happen in the previewer due to some bugs in Android
-			}
+			view.ClearFocus();
 		}
 
 		void UpdateFont()
@@ -235,6 +268,19 @@ namespace Xamarin.Forms.Platform.Android
 			string query = Control.Query;
 			if (query != Element.Text)
 				Control.SetQuery(Element.Text, false);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if(!Forms.IsLollipopOrNewer)
+				return;
+
+			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
+
+			if (_editText != null)
+			{
+				_editText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
 		}
 
 		void UpdateTextColor()

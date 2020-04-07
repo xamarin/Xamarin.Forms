@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UIKit;
 
 namespace Xamarin.Forms
@@ -12,7 +13,7 @@ namespace Xamarin.Forms
 
 			if (!(page.RealParent is Application))
 			{
-				Application app = new DefaultApplication();
+				Application app = new EmbeddedApplication();
 				app.MainPage = page;
 			}
 
@@ -21,8 +22,12 @@ namespace Xamarin.Forms
 			return result.ViewController;
 		}
 
-		class DefaultApplication : Application
+		sealed internal class EmbeddedApplication : Application, IDisposable
 		{
+			public void Dispose()
+			{
+				CleanUp();
+			}
 		}
 	}
 }
@@ -34,6 +39,20 @@ namespace Xamarin.Forms.Platform.iOS
 		public static UIViewController CreateViewController(this ContentPage page)
 		{
 			return Xamarin.Forms.PageExtensions.CreateViewController(page);
+		}
+
+		internal static Page GetCurrentPage(this Page currentPage)
+		{
+			if (currentPage.NavigationProxy.ModalStack.LastOrDefault() is Page modal)
+				return modal;
+			else if (currentPage is MasterDetailPage mdp)
+				return GetCurrentPage(mdp.Detail);
+			else if (currentPage is Shell shell && shell.CurrentItem?.CurrentItem is IShellSectionController ssc)
+				return ssc.PresentedPage;
+			else if (currentPage is IPageContainer<Page> pc)
+				return GetCurrentPage(pc.CurrentPage);
+			else
+				return currentPage;
 		}
 	}
 }

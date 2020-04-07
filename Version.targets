@@ -1,0 +1,89 @@
+﻿<Project>
+ <PropertyGroup>
+    <NightlyTag>nightly</NightlyTag>
+    <RegexPre>pre\d</RegexPre>
+ </PropertyGroup>
+ <PropertyGroup>
+    <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' != ''">$(SYSTEM_PULLREQUEST_TARGETBRANCH)</GitBranch>
+    <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' == '' and '$(BUILD_SOURCEBRANCHNAME)' != ''">$(BUILD_SOURCEBRANCHNAME)</GitBranch>
+  </PropertyGroup>
+
+  <Target Name="SetVersions"
+          BeforeTargets="PrepareForBuild;GetAssemblyVersion;GetPackageVersion;Pack"
+          DependsOnTargets="GitVersion"
+          Returns="$(Version)"
+         >
+    <PropertyGroup>
+      <PreOut>$([System.Text.RegularExpressions.Regex]::Match($(GitTag), $(RegexPre)))</PreOut>
+      <GitSemVerLabel Condition=" '$(GitTag)' != '' and '$(GitTag)' == '$(GitBranch)' and $([System.Text.RegularExpressions.Regex]::IsMatch('$(GitTag)', $(RegexPre))) ">$(PreOut)</GitSemVerLabel>
+      <GitSemVerLabel  Condition="$(CI) and '$(BUILD_REASON)' == 'Schedule'">$(NightlyTag)</GitSemVerLabel>
+      <GitSemVerDashLabel Condition="'$(GitSemVerLabel)' != ''" >-$(GitSemVerLabel)</GitSemVerDashLabel>
+    </PropertyGroup>
+    <ItemGroup>
+      <VersionMetadata Include="$(GitCommits)" Condition="'$(GitSemVerDashLabel)' == ''" />
+
+      <VersionMetadata Condition="$(CI) and '$(BUILD_REASON)' == 'PullRequest'"
+                       Include="pr.$(SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)"/>
+
+      <VersionMetadata Include="sha.$(GitCommit)"/>
+
+      <VersionMetadata Condition="$(CI)"
+                       Include="azdo.$(BUILD_BUILDID)"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+      <VersionMetadataLabel>@(VersionMetadata -> '%(Identity)', '-')</VersionMetadataLabel>
+      <VersionMetadataPlusLabel Condition="'$(VersionMetadataLabel)' != ''">+$(VersionMetadataLabel)</VersionMetadataPlusLabel>
+      <Version>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)</Version>
+      <PackageVersion>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+
+      <PackageVersion Condition="$(CI)">$(GitSemVerMajor).$(GitSemVerMinor).$(GitBaseVersionPatch).$(BUILDVERSION)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+      <PackageVersion Condition="$(CI) and '$(GitBaseVersion)' == '4.2.0'">$(GitSemVerMajor).$(GitSemVerMinor).$(GitBaseVersionPatch).$(BUILDVERSION42)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+      <PackageVersion Condition="$(CI) and '$(GitBaseVersion)' == '4.3.0'">$(GitSemVerMajor).$(GitSemVerMinor).$(GitBaseVersionPatch).$(BUILDVERSION43)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+      <PackageVersion Condition="$(CI) and '$(GitBaseVersion)' == '4.4.0'">$(GitSemVerMajor).$(GitSemVerMinor).$(GitBaseVersionPatch).$(BUILDVERSION44)$(GitSemVerDashLabel)$(VersionMetadataPlusLabel)</PackageVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <InformationalVersion>$(PackageVersion)</InformationalVersion>
+      <FileVersion>$(Version).$(GitCommits)</FileVersion>
+      <AssemblyVersion>2.0.0.0</AssemblyVersion> <!-- THIS SHALL REMAIN 2.0.0.0 -->
+    </PropertyGroup>
+
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
+        <_Parameter1>Version</_Parameter1>
+        <_Parameter2>2.0.0.0</_Parameter2> <!-- THIS SHALL REMAIN 2.0.0.0 -->
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
+        <_Parameter1>PackageVersion</_Parameter1>
+        <_Parameter2>$(PackageVersion)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+
+    <Message Condition="$(CI) and '$(BUILD_REASON)' == 'Schedule'" Importance="high" Text="##vso[build.addbuildtag]$(NightlyTag)"/>
+    <ItemGroup>
+       <XamarinFormsVersionFile Include="../.XamarinFormsVersionFile.txt"/>
+       <XamarinFormsVersionLine Include="$(PackageVersion)"/>
+    </ItemGroup>
+    
+    <!-- Occasionally this throws an error from parallel builds writing to this file. It's fine if only one of them wins. -->
+    <WriteLinesToFile ContinueOnError="WarnAndContinue" File="@(XamarinFormsVersionFile)" Lines="@(XamarinFormsVersionLine)" Overwrite="true" />
+    <Message Condition="$(CI)" Importance="high" Text="##vso[build.updatebuildnumber]$(PackageVersion)"/>
+    <Message Condition="$(CI)" Importance="high" Text="##vso[task.setvariable variable=XamarinFormsPackageVersion;isOutput=true;]$(PackageVersion)"/>
+  </Target>
+
+  <Target Name="VersionInfoReport" DependsOnTargets="SetVersions" AfterTargets="GitInfoReport">
+   <ItemGroup>
+		<Message Importance="$(GitInfoReportImportance)" Text="Version Info:
+  AssemblyVersion:        $(AssemblyVersion)
+  FileVersion:            $(FileVersion)
+  InformationalVersion:   $(InformationalVersion)
+  PackageVersion:         $(PackageVersion)
+  Version:        $(Version)
+  VersionPrefix:  $(VersionPrefix)
+  VersionSuffix:  $(VersionSuffix)
+"/>
+   </ItemGroup>
+	</Target>
+
+</Project>

@@ -23,7 +23,11 @@
 						GalleryBuilder.NavButton("EmptyView (View)", () =>
 							new EmptyViewViewGallery(), Navigation),
 						GalleryBuilder.NavButton("EmptyView (Template View)", () =>
-							new EmptyViewTemplateGallery(), Navigation)
+							new EmptyViewTemplateGallery(), Navigation),
+						GalleryBuilder.NavButton("EmptyView (Swap EmptyView)", () =>
+							new EmptyViewSwapGallery(), Navigation),
+						GalleryBuilder.NavButton("EmptyView (load simulation)", () =>
+							new EmptyViewLoadSimulateGallery(), Navigation),
 					}
 				}
 			};

@@ -1,46 +1,70 @@
 ﻿using System;
 using System.Linq;
 using AppKit;
+using Xamarin.Forms.Platform.MacOS;
 
 namespace Xamarin.Forms.Platform.macOS.Extensions
 {
 	internal static class NSMenuExtensions
 	{
-		public static NSMenu ToNSMenu(this Menu menus, NSMenu nsMenu = null)
+		public static NSMenu ToNSMenu(this Menu menus, NSMenu nsMenu = null, Func<MenuItem, NSMenuItem> menuItemCreator = null)
 		{
 			if (nsMenu == null)
 				nsMenu = new NSMenu(menus.Text ?? "");
+			nsMenu.AutoEnablesItems = false;
+
 			foreach (var menu in menus)
 			{
-				var menuItem = new NSMenuItem(menu.Text ?? "");
-				var subMenu = new NSMenu(menu.Text ?? "");
-				menuItem.Submenu = subMenu;
+				NSMenuItem menuItem = null;
+				NSMenu subMenu = null;
+				if (string.IsNullOrEmpty(menu.Text)) // handle menu with empty Text as the application menu
+				{
+					menuItem = nsMenu.Items.FirstOrDefault();
+					subMenu = menuItem?.Submenu;
+				}
+				if (menuItem == null)
+				{
+					menuItem = new NSMenuItem(menu.Text ?? "");
+					menuItem.Submenu = subMenu = new NSMenu(menu.Text ?? "");
+				}
+
 				foreach (var item in menu.Items)
 				{
-					var subMenuItem = item.ToNSMenuItem();
+					var subMenuItem = item.ToNSMenuItem(menuItemCreator: menuItemCreator);
 					GetAccelerators(subMenuItem, item);
 					subMenu.AddItem(subMenuItem);
 					item.PropertyChanged += (sender, e) => (sender as MenuItem)?.UpdateNSMenuItem(subMenuItem, new string[] { e.PropertyName });
 				}
-				nsMenu.AddItem(menuItem);
-				menu.ToNSMenu(subMenu);
+				if (!nsMenu.Items.Contains(menuItem))
+					nsMenu.AddItem(menuItem);
+				menu.ToNSMenu(subMenu, menuItemCreator);
 			}
 			return nsMenu;
 		}
 
 
-		public static NSMenuItem ToNSMenuItem(this MenuItem menuItem, int i = -1)
+		public static NSMenuItem ToNSMenuItem(this MenuItem menuItem, int i = -1, Func<MenuItem, NSMenuItem> menuItemCreator = null)
 		{
-			var nsMenuItem = new NSMenuItem(menuItem.Text ?? "");
+			NSMenuItem nsMenuItem = null;
+			if (menuItemCreator == null)
+				nsMenuItem = new NSMenuItem(menuItem.Text ?? "");
+			else
+				nsMenuItem = menuItemCreator(menuItem);
 			if (i != -1)
 				nsMenuItem.Tag = i;
+
 			nsMenuItem.Enabled = menuItem.IsEnabled;
 			nsMenuItem.Activated += (sender, e) => ((IMenuItemController)menuItem).Activate();
-			if (!string.IsNullOrEmpty(menuItem.Icon))
-				nsMenuItem.Image = new NSImage(menuItem.Icon);
+			_ = menuItem.ApplyNativeImageAsync(MenuItem.IconImageSourceProperty, image =>
+			{
+				if (image != null)
+					nsMenuItem.Image = image;
+			});
 
 			return nsMenuItem;
 		}
+
+
 
 		public static void UpdateNSMenuItem(this MenuItem item, NSMenuItem menuItem, string[] properties)
 		{
@@ -54,12 +78,12 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 				{
 					menuItem.Enabled = item.IsEnabled;
 				}
-				if (property.Equals(nameof(MenuItem.Icon)))
+				if (property.Equals(nameof(MenuItem.IconImageSource)))
 				{
-					if (!string.IsNullOrEmpty(item.Icon))
-						menuItem.Image = new NSImage(item.Icon);
-					else
-						menuItem.Image = null;
+					_ = item.ApplyNativeImageAsync(MenuItem.IconImageSourceProperty, image =>
+					{
+						menuItem.Image = image;
+					});
 				}
 			}
 		}

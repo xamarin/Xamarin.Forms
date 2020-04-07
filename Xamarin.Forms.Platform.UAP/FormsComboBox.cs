@@ -1,5 +1,4 @@
 ﻿using System;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using WVisualState = Windows.UI.Xaml.VisualState;
@@ -8,6 +7,23 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class FormsComboBox : ComboBox
 	{
+		public FormsComboBox()
+		{
+			DefaultStyleKey = typeof(FormsComboBox);
+			DropDownOpened += FormsComboBoxDropDownOpened;
+			SelectionChanged += FormsComboBoxSelectionChanged;
+		}
+
+		void FormsComboBoxDropDownOpened(object sender, object e)
+		{
+			MinWidth = ActualWidth;
+		}
+
+		void FormsComboBoxSelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
+		{
+			MinWidth = 0;
+		}
+
 		internal bool IsClosingAnimated { get; private set; }
 
 		internal bool IsFullScreen => Device.Idiom == TargetIdiom.Phone && Items != null && Items.Count > 5;
@@ -17,7 +33,7 @@ namespace Xamarin.Forms.Platform.UWP
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
-
+			
 			if (Device.Idiom == TargetIdiom.Phone)
 			{
 				// If we're running on the phone, we have to give the PickerRenderer hooks

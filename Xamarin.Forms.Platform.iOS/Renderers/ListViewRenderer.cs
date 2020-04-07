@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		const int DefaultRowHeight = 44;
 		ListViewDataSource _dataSource;
-		bool _estimatedRowHeight;
 		IVisualElementRenderer _headerRenderer;
 		IVisualElementRenderer _footerRenderer;
 
@@ -46,6 +45,13 @@ namespace Xamarin.Forms.Platform.iOS
 			set { _dataSource.ReloadSectionsAnimation = value; }
 		}
 
+
+		[Internals.Preserve(Conditional = true)]
+		public ListViewRenderer()
+		{
+
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultRowHeight, DefaultRowHeight);
@@ -53,6 +59,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void LayoutSubviews()
 		{
+			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
 			double height = Bounds.Height;
@@ -66,7 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// You will remove it and test and find everything is fiiiiiine, but it is not fine, no it is far from fine. See iOS, or at least iOS 8
 				// has an issue where-by if the TableHeaderView happens to NOT be an integer height, it will add padding to the space between the content
 				// of the UITableView and the TableHeaderView to the tune of the difference between Math.Ceiling (height) - height. Now this seems fine
-				// and when you test it will be, EXCEPT that it does this every time you toggle the visibility of the UITableView causing the spacing to 
+				// and when you test it will be, EXCEPT that it does this every time you toggle the visibility of the UITableView causing the spacing to
 				// grow a little each time, which you weren't testing at all were you? So there you have it, the stupid reason we integer align here.
 				//
 				// The same technically applies to the footer, though that could hardly matter less. We just do it for fun.
@@ -225,7 +232,7 @@ namespace Xamarin.Forms.Platform.iOS
 						var offset = Control.ContentOffset;
 						offset.Y += point.Y;
 						Control.SetContentOffset(offset, true);
-					});
+					}, this);
 				}
 
 				var listView = e.NewElement;
@@ -239,16 +246,15 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateRowHeight();
 
 				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController) : new ListViewDataSource(e.NewElement, _tableViewController);
-
-				UpdateEstimatedRowHeight();
+			
 				UpdateHeader();
 				UpdateFooter();
 				UpdatePullToRefreshEnabled();
+				UpdateSpinnerColor();
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
 				UpdateSelectionMode();
-				UpdateSpinnerColor();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
 
@@ -269,7 +275,6 @@ namespace Xamarin.Forms.Platform.iOS
 				_dataSource.UpdateGrouping();
 			else if (e.PropertyName == Xamarin.Forms.ListView.HasUnevenRowsProperty.PropertyName)
 			{
-				_estimatedRowHeight = false;
 				Control.Source = _dataSource = Element.HasUnevenRows ? new UnevenListViewDataSource(_dataSource) : new ListViewDataSource(_dataSource);
 				ReloadData();
 			}
@@ -295,6 +300,16 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateVerticalScrollBarVisibility();
 			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
 				UpdateHorizontalScrollBarVisibility();
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the cells adhere to changes UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				ReloadData();
+#endif
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -362,7 +377,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TableHeaderView = _headerRenderer.NativeView;
 		}
 
-		async void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
+		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
 		{
 			if (Superview == null)
 			{
@@ -388,46 +403,15 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.Layer.RemoveAllAnimations();
 					//iOS11 hack
 					if (Forms.IsiOS11OrNewer)
-					{
-						await Task.Delay(1);
-					}
-					Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
+						this.QueueForLater(() =>
+						{
+							if (Control != null && !_disposed)
+								Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
+						});
+					else
+						Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
 				}
 			}
-		}
-
-		void UpdateEstimatedRowHeight()
-		{
-			if (_estimatedRowHeight)
-				return;
-
-			// if even rows OR uneven rows but user specified a row height anyway...
-			if (!Element.HasUnevenRows || Element.RowHeight != -1)
-			{
-				Control.EstimatedRowHeight = 0;
-				_estimatedRowHeight = true;
-				return;
-			}
-
-			var source = _dataSource as UnevenListViewDataSource;
-
-			// We want to make sure we reset the cached defined row heights whenever this is called.
-			// Failing to do this will regress Bugzilla 43313 
-			// (strange animation when adding rows with uneven heights)
-			//source?.CacheDefinedRowHeights();
-
-			if (source == null)
-			{
-				// We need to set a default estimated row height, 
-				// because re-setting it later(when we have items on the TIL)
-				// will cause the UITableView to reload, and throw an Exception
-				Control.EstimatedRowHeight = DefaultRowHeight;
-				return;
-			}
-
-			Control.EstimatedRowHeight = source.GetEstimatedRowHeight(Control);
-			_estimatedRowHeight = true;
-			return;
 		}
 
 		void UpdateFooter()
@@ -448,7 +432,7 @@ namespace Xamarin.Forms.Platform.iOS
 						return;
 					}
 					Control.TableFooterView = null;
-					
+
 					_footerRenderer.Element?.DisposeModalAndChildRenderers();
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
@@ -554,8 +538,6 @@ namespace Xamarin.Forms.Platform.iOS
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-
-					UpdateEstimatedRowHeight();
 					if (e.NewStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
 
@@ -569,7 +551,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					DeleteRows(e.OldStartingIndex, e.OldItems.Count, section);
 
-					if (_estimatedRowHeight && TemplatedItemsView.TemplatedItems.Count == 0)
+					if (TemplatedItemsView.TemplatedItems.Count == 0)
 						InvalidateCellCache();
 
 					break;
@@ -580,7 +562,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					MoveRows(e.NewStartingIndex, e.OldStartingIndex, e.OldItems.Count, section);
 
-					if (_estimatedRowHeight && e.OldStartingIndex == 0)
+					if (e.OldStartingIndex == 0)
 						InvalidateCellCache();
 
 					break;
@@ -591,7 +573,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					ReloadRows(e.OldStartingIndex, e.OldItems.Count, section);
 
-					if (_estimatedRowHeight && e.OldStartingIndex == 0)
+					if (e.OldStartingIndex == 0)
 						InvalidateCellCache();
 
 					break;
@@ -685,7 +667,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void InvalidateCellCache()
 		{
-			_estimatedRowHeight = false;
 			_dataSource.InvalidatePrototypicalCellCache();
 		}
 
@@ -711,10 +692,10 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateSeparatorColor()
 		{
 			var color = Element.SeparatorColor;
-			// ...and Steve said to the unbelievers the separator shall be gray, and gray it was. The unbelievers looked on, and saw that it was good, and 
+			// ...and Steve said to the unbelievers the separator shall be gray, and gray it was. The unbelievers looked on, and saw that it was good, and
 			// they went forth and documented the default color. The holy scripture still reflects this default.
 			// Defined here: https://developer.apple.com/library/ios/documentation/UIKit/Reference/UITableView_Class/#//apple_ref/occ/instp/UITableView/separatorColor
-			Control.SeparatorColor = color.ToUIColor(UIColor.Gray);
+			Control.SeparatorColor = color.ToUIColor(ColorExtensions.SeparatorColor);
 		}
 
 		void UpdateSeparatorVisibility()
@@ -750,8 +731,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_tableViewController != null)
 				_tableViewController.UpdateRefreshControlColor(color == Color.Default ? null : color.ToUIColor());
-    }
-    
+		}
+
 		void UpdateVerticalScrollBarVisibility()
 		{
 			if (_defaultVerticalScrollVisibility == null)
@@ -804,7 +785,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 			}
 
-			internal nfloat GetEstimatedRowHeight(UITableView table)
+			nfloat GetEstimatedRowHeight(UITableView table)
 			{
 				if (List.RowHeight != -1)
 				{
@@ -840,7 +821,7 @@ namespace Xamarin.Forms.Platform.iOS
 					// we don't need to use estimatedRowHeight at all; zero will disable it and use the known heights.
 					// However, not setting the EstimatedRowHeight will drastically degrade performance with large lists.
 					// In this case, we will cache the specified cell heights asynchronously, which will be returned one time on
-					// table load by EstimatedHeight. 
+					// table load by EstimatedHeight.
 
 					return 0;
 				}
@@ -848,10 +829,19 @@ namespace Xamarin.Forms.Platform.iOS
 				return CalculateHeightForCell(table, firstCell);
 			}
 
-			internal override void InvalidatePrototypicalCellCache()
+			internal override void InvalidatingPrototypicalCellCache()
 			{
 				ClearPrototype();
 				_prototypicalCellByTypeOrDataTemplate.Clear();
+			}
+
+			protected override void UpdateEstimatedRowHeight(UITableView tableView)
+			{
+				var estimatedRowHeight = GetEstimatedRowHeight(tableView);
+				//if we are providing 0 we are disabling EstimatedRowHeight,
+				//this works fine on newer versions, but iOS10 it will cause a crash so we leave the default value
+				if (estimatedRowHeight > 0 || (estimatedRowHeight == 0 && Forms.IsiOS11OrNewer))
+					tableView.EstimatedRowHeight = estimatedRowHeight;
 			}
 
 			internal Cell GetPrototypicalCell(NSIndexPath indexPath)
@@ -974,8 +964,12 @@ namespace Xamarin.Forms.Platform.iOS
 			protected ListView List;
 			protected ITemplatedItemsView<Cell> TemplatedItemsView => List;
 			bool _isDragging;
+			bool _setupSelection;
 			bool _selectionFromNative;
 			bool _disposed;
+			bool _wasEmpty;
+			bool _estimatedRowHeight;
+
 			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
 			public ListViewDataSource(ListViewDataSource source)
@@ -1003,12 +997,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public Dictionary<int, int> Counts { get; set; }
 
-			UIColor DefaultBackgroundColor
+			UIColor DefaultBackgroundColor => UIColor.Clear;
+
+			internal void InvalidatePrototypicalCellCache()
 			{
-				get { return UIColor.Clear; }
+				_estimatedRowHeight = false;
+				InvalidatingPrototypicalCellCache();
 			}
 
-			internal virtual void InvalidatePrototypicalCellCache()
+			internal virtual void InvalidatingPrototypicalCellCache()
 			{
 			}
 
@@ -1021,6 +1018,19 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void DraggingStarted(UIScrollView scrollView)
 			{
 				_isDragging = true;
+			}
+
+			void SetupSelection(UITableViewCell nativeCell, UITableView tableView)
+			{
+				if (!(nativeCell is ContextActionsCell))
+					return;
+
+				if (_setupSelection)
+					return;
+
+				ContextActionsCell.SetupSelection(tableView);
+
+				_setupSelection = true;
 			}
 
 			public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
@@ -1059,6 +1069,8 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 					throw new NotSupportedException();
+
+				SetupSelection(nativeCell, tableView);
 
 				if (List.IsSet(Specifics.SeparatorStyleProperty))
 				{
@@ -1203,6 +1215,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Counts.TryGetValue((int)section, out countOverride))
 				{
 					Counts.Remove((int)section);
+					if (_wasEmpty && countOverride > 0)
+					{
+						// We've moved from no items to having at least one item; it's likely that the layout needs to update
+						// its cell size/estimate
+						_estimatedRowHeight = false;
+					}
+					_wasEmpty = countOverride == 0;
 					return countOverride;
 				}
 
@@ -1218,6 +1237,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void Scrolled(UIScrollView scrollView)
 			{
+				var args = new ScrolledEventArgs(scrollView.ContentOffset.X, scrollView.ContentOffset.Y);
+				List?.SendScrolled(args);
+
 				if (_isDragging && scrollView.ContentOffset.Y < 0)
 				{
 					// If the refresh spinner is currently displayed and pull-to-refresh is not enabled,
@@ -1255,10 +1277,20 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateShortNameListener();
 
-				if(List.OnThisPlatform().RowAnimationsEnabled())
+				if (List.OnThisPlatform().RowAnimationsEnabled())
 					_uiTableView.ReloadData();
 				else
 					PerformWithoutAnimation(() => { _uiTableView.ReloadData(); });
+			}
+
+			public void DetermineEstimatedRowHeight()
+			{
+				if (_estimatedRowHeight)
+					return;
+
+				UpdateEstimatedRowHeight(_uiTableView);
+
+				_estimatedRowHeight = true;
 			}
 
 			protected bool IsValidIndexPath(NSIndexPath indexPath)
@@ -1369,6 +1401,18 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
+			protected virtual void UpdateEstimatedRowHeight(UITableView tableView)
+			{
+				// We need to set a default estimated row height,
+				// because re-setting it later(when we have items on the TIL)
+				// will cause the UITableView to reload, and throw an Exception
+				tableView.EstimatedRowHeight = DefaultRowHeight;
+
+				// if even rows OR uneven rows but user specified a row height anyway...
+				if (!List.HasUnevenRows || List.RowHeight != -1)
+					tableView.EstimatedRowHeight = 0;
+			}
+
 			protected override void Dispose(bool disposing)
 			{
 				if (_disposed)
@@ -1433,10 +1477,11 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _disposed;
 		internal bool _usingLargeTitles;
 		bool _isRefreshing;
+		bool _isStartRefreshingPending;
 
-		public FormsUITableViewController(ListView element, bool usingLargeTitles) 
-		: base(element.OnThisPlatform().GetGroupHeaderStyle() == GroupHeaderStyle.Plain 
-			? UITableViewStyle.Plain 
+		public FormsUITableViewController(ListView element, bool usingLargeTitles)
+		: base(element.OnThisPlatform().GetGroupHeaderStyle() == GroupHeaderStyle.Plain
+			? UITableViewStyle.Plain
 			  : UITableViewStyle.Grouped)
 		{
 			if (Forms.IsiOS9OrNewer)
@@ -1461,16 +1506,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (!_refresh.Refreshing)
 				{
-					_refresh.BeginRefreshing();
-
-					//hack: On iOS11 with large titles we need to adjust the scroll offset manually 
+					_isStartRefreshingPending = true;
+					//hack: On iOS11 with large titles we need to adjust the scroll offset manually
 					//since our UITableView is not the first child of the UINavigationController
-					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height);
+					//This also forces the spinner color to be correct if we started refreshing immediately after changing it.
+					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, () =>
+					{
+						if (_refresh == null || _disposed)
+							return;
 
-					//hack: when we don't have cells in our UITableView the spinner fails to appear
-					CheckContentSize();
+						if( _isStartRefreshingPending)
+							StartRefreshing();
 
-					TableView.ScrollRectToVisible(new RectangleF(0, 0, _refresh.Bounds.Width, _refresh.Bounds.Height), true);
+
+						//hack: when we don't have cells in our UITableView the spinner fails to appear
+						CheckContentSize();
+						TableView.ScrollRectToVisible(new RectangleF(0, 0, _refresh.Bounds.Width, _refresh.Bounds.Height), true);
+					});
 				}
 			}
 			else
@@ -1478,7 +1530,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (RefreshControl == null)
 					return;
 
-				_refresh.EndRefreshing();
+				EndRefreshing();
 
 				UpdateContentOffset(-1);
 
@@ -1486,6 +1538,24 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!_list.IsPullToRefreshEnabled)
 					RemoveRefresh();
 			}
+		}
+
+		void StartRefreshing()
+		{
+			_isStartRefreshingPending = false;
+			if (_refresh?.Refreshing == true)
+				return;
+
+			_refresh.BeginRefreshing();
+		}
+
+		void EndRefreshing()
+		{
+			_isStartRefreshingPending = false;
+			if (_refresh?.Refreshing == false)
+				return;
+
+			_refresh.EndRefreshing();
 		}
 
 		public void UpdatePullToRefreshEnabled(bool pullToRefreshEnabled)
@@ -1499,7 +1569,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 			// https://bugzilla.xamarin.com/show_bug.cgi?id=52962
-			// just because pullToRefresh is being disabled does not mean we should kill an in progress refresh. 
+			// just because pullToRefresh is being disabled does not mean we should kill an in progress refresh.
 			// Consider the case where:
 			//   1. User pulls to refresh
 			//   2. App RefreshCommand fires (at this point _refresh.Refreshing is true)
@@ -1509,7 +1579,7 @@ namespace Xamarin.Forms.Platform.iOS
 			//   5. We end up here; A refresh is in progress while being asked to disable pullToRefresh
 		}
 
-		//hack: Form some reason UIKit isn't allowing to scroll negative values with largetitles 
+		//hack: Form some reason UIKit isn't allowing to scroll negative values with largetitles
 		public void ForceRefreshing()
 		{
 			if (!_list.IsPullToRefreshEnabled)
@@ -1517,7 +1587,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_refresh.Refreshing && !_isRefreshing)
 			{
 				_isRefreshing = true;
-				UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, _refresh.BeginRefreshing);
+				UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, StartRefreshing);
 				_list.SendRefreshing();
 			}
 		}
@@ -1536,11 +1606,17 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewWillAppear(bool animated)
 		{
 			(TableView?.Source as ListViewRenderer.ListViewDataSource)?.Cleanup();
-			if (!_list.IsRefreshing || !_refresh.Refreshing) return;
+			if (!_list.IsRefreshing || !_refresh.Refreshing)
+				return;
 
 			// Restart the refreshing to get the animation to trigger
 			UpdateIsRefreshing(false);
 			UpdateIsRefreshing(true);
+		}
+
+		public override void ViewWillLayoutSubviews()
+		{
+			(TableView?.Source as ListViewRenderer.ListViewDataSource)?.DetermineEstimatedRowHeight();
 		}
 
 		public void UpdateRefreshControlColor(UIColor color)
@@ -1559,7 +1635,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_refresh != null)
 				{
 					_refresh.ValueChanged -= OnRefreshingChanged;
-					_refresh.EndRefreshing();
+					EndRefreshing();
 					_refresh.Dispose();
 					_refresh = null;
 				}
@@ -1594,7 +1670,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (_refresh.Refreshing || _isRefreshing)
-				_refresh.EndRefreshing();
+				EndRefreshing();
 
 			RefreshControl = null;
 			_refreshAdded = false;
@@ -1603,13 +1679,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateContentOffset(nfloat offset, Action completed = null)
 		{
-			if (!_usingLargeTitles)
-				return;
-
 			UIView.Animate(0.2, () => TableView.ContentOffset = new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), completed);
 		}
 	}
-
 
 	public class FormsRefreshControl : UIRefreshControl
 	{
@@ -1618,6 +1690,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public FormsRefreshControl(bool usingLargeTitles)
 		{
 			_usingLargeTitles = usingLargeTitles;
+			AccessibilityIdentifier = "RefreshControl";
 		}
 
 		public override bool Hidden
@@ -1628,7 +1701,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			set
 			{
-				//hack: ahahah take that UIKit! 
+				//hack: ahahah take that UIKit!
 				//when using pull to refresh with Large tiles sometimes iOS tries to hide the UIRefreshControl
 				if (_usingLargeTitles && value && Refreshing)
 					return;

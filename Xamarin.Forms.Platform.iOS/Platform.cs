@@ -1,20 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class Platform : BindableObject, INavigation, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
+#if DEBUG
+				if (oldvalue != null && newvalue != null)
+				{
+					Log.Warning("Renderer", $"{bindable} already has a renderer attached to it: {oldvalue}. Please figure out why and then fix it.");
+				}
+#endif
 				var view = bindable as VisualElement;
 				if (view != null)
 					view.IsPlatformEnabled = newvalue != null;
@@ -23,6 +34,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly int _alertPadding = 10;
 
 		readonly List<Page> _modals;
+		List<Page> _previousModals;
 		readonly PlatformRenderer _renderer;
 		bool _animateModals = true;
 		bool _appeared;
@@ -34,29 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_renderer = new PlatformRenderer(this);
 			_modals = new List<Page>();
 
-			var busyCount = 0;
-			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
-			{
-				if (!PageIsChildOfPlatform(sender))
-					return;
-				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
-				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = busyCount > 0;
-			});
-
-			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
-			{
-				if (!PageIsChildOfPlatform(sender))
-					return;
-				PresentAlert(arguments);
-			});
-
-			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
-			{
-				if (!PageIsChildOfPlatform(sender))
-					return;
-
-				PresentActionSheet(arguments);
-			});
+			SubscribeToAlertsAndActionSheets();
 		}
 
 		internal UIViewController ViewController
@@ -68,20 +58,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IDisposable.Dispose()
 		{
+			Dispose(true);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
 			if (_disposed)
+			{
 				return;
+			}
+
 			_disposed = true;
 
-			Page.DescendantRemoved -= HandleChildRemoved;
-			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
-			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
-			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
-
-			Page.DisposeModalAndChildRenderers();
-			foreach (var modal in _modals)
-				modal.DisposeModalAndChildRenderers();
-
-			_renderer.Dispose();
+			if (disposing)
+			{
+				_renderer.Dispose();
+			}
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
@@ -91,7 +83,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IReadOnlyList<Page> INavigation.ModalStack
 		{
-			get { return _modals; }
+			get 
+			{
+				if (_disposed)
+					return new List<Page>();
+
+				return _modals; 
+			}
 		}
 
 		IReadOnlyList<Page> INavigation.NavigationStack
@@ -129,6 +127,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			modal.DisposeModalAndChildRenderers();
 
+			if (!IsModalPresentedFullScreen(modal))
+				Page.GetCurrentPage()?.SendAppearing();
+
 			return modal;
 		}
 
@@ -161,7 +162,40 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			EndEditing();
 
+			var elementConfiguration = modal as IElementConfiguration<Page>;
+
+			var presentationStyle = elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle().ToNativeModalPresentationStyle();
+
+			bool shouldFire = true;
+
+			if (Forms.IsiOS13OrNewer)
+			{
+				if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
+					shouldFire = false; // This is mainly for backwards compatibility
+			}
+			else
+			{
+				// While the above IsiOS13OrNewer will always be false if __XCODE11__ is true
+				// the UIModalPresentationStyle.Automatic is the only Xcode 11 API
+				// for readability I decided to only take this part out
+#if __XCODE11__
+				if (presentationStyle == UIKit.UIModalPresentationStyle.Automatic)
+					shouldFire = false;
+#endif
+				if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
+					shouldFire = false; // This is mainly for backwards compatibility
+			}
+
+			if (_appeared && shouldFire)
+				Page.GetCurrentPage()?.SendDisappearing();
+
 			_modals.Add(modal);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			modal.DescendantRemoved += HandleChildRemoved;
 
@@ -211,6 +245,25 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnBindingContextChanged();
 		}
 
+		internal static UIEdgeInsets SafeAreaInsetsForWindow
+		{
+			get
+			{
+				UIEdgeInsets safeAreaInsets;
+
+				if (!Forms.IsiOS11OrNewer)
+					safeAreaInsets = new UIEdgeInsets(UIApplication.SharedApplication.StatusBarFrame.Size.Height, 0, 0, 0);
+				else if (UIApplication.SharedApplication.GetKeyWindow() != null)
+					safeAreaInsets = UIApplication.SharedApplication.GetKeyWindow().SafeAreaInsets;
+				else if (UIApplication.SharedApplication.Windows.Length > 0)
+					safeAreaInsets = UIApplication.SharedApplication.Windows[0].SafeAreaInsets;
+				else
+					safeAreaInsets = UIEdgeInsets.Zero;
+
+				return safeAreaInsets;
+			}
+		}
+
 		internal void DidAppear()
 		{
 			_animateModals = false;
@@ -242,6 +295,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_appeared == false)
 				return;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page);
 
 			Page.DescendantRemoved += HandleChildRemoved;
@@ -254,8 +313,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_appeared)
 				return;
 
-			_renderer.View.BackgroundColor = UIColor.White;
+			_renderer.View.BackgroundColor = ColorExtensions.BackgroundColor;
 			_renderer.View.ContentMode = UIViewContentMode.Redraw;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				// The Platform property is no longer necessary, but we have to set it because some third-party
+				// library might still be retrieving it and using it
+				Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			AddChild(Page);
 
@@ -274,7 +339,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var viewRenderer = CreateRenderer(view);
 				SetRenderer(view, viewRenderer);
 
-				_renderer.View.AddSubview(viewRenderer.NativeView);
+				var nativeView = viewRenderer.NativeView;
+
+				_renderer.View.AddSubview(nativeView);
 				if (viewRenderer.ViewController != null)
 					_renderer.AddChildViewController(viewRenderer.ViewController);
 				viewRenderer.NativeView.Frame = new RectangleF(0, 0, _renderer.View.Bounds.Width, _renderer.View.Bounds.Height);
@@ -292,10 +359,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool PageIsChildOfPlatform(Page page)
 		{
-			while (!Application.IsApplicationOrNull(page.RealParent))
-				page = (Page)page.RealParent;
-
-			return Page == page || _modals.Contains(page);
+			var parent = page.AncestorToRoot();
+			return Page == parent || _modals.Contains(parent);
 		}
 
 		// Creates a UIAlertAction which includes a call to hide the presenting UIWindow at the end
@@ -328,6 +393,27 @@ namespace Xamarin.Forms.Platform.iOS
 				alert.AddAction(CreateActionWithWindowHide(arguments.Accept, UIAlertActionStyle.Default,
 					() => arguments.SetResult(true), window));
 			}
+
+			PresentPopUp(window, alert);
+		}
+
+		void PresentPrompt(PromptArguments arguments)
+		{
+			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
+
+			var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
+			alert.AddTextField(uiTextField =>
+			{
+				uiTextField.Placeholder = arguments.Placeholder;
+				uiTextField.Text = arguments.InitialValue;
+				uiTextField.ShouldChangeCharacters = (field, range, replacementString) => arguments.MaxLength <= -1 || field.Text.Length + replacementString.Length - range.Length <= arguments.MaxLength;
+				uiTextField.ApplyKeyboard(arguments.Keyboard);
+			});
+			var oldFrame = alert.View.Frame;
+			alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);
+
+			alert.AddAction(CreateActionWithWindowHide(arguments.Cancel, UIAlertActionStyle.Cancel, () => arguments.SetResult(null), window));
+			alert.AddAction(CreateActionWithWindowHide(arguments.Accept, UIAlertActionStyle.Default, () => arguments.SetResult(alert.TextFields[0].Text), window));
 
 			PresentPopUp(window, alert);
 		}
@@ -486,6 +572,113 @@ namespace Xamarin.Forms.Platform.iOS
 
 				return result;
 			}
+		}
+
+		internal static string ResolveMsAppDataUri(Uri uri)
+		{
+			if(uri.Scheme == "ms-appdata")
+			{
+				string filePath = string.Empty;
+
+				if (uri.LocalPath.StartsWith("/local"))
+				{
+					var libraryPath = NSFileManager.DefaultManager.GetUrls(NSSearchPathDirectory.LibraryDirectory, NSSearchPathDomain.User)[0].Path;
+					filePath = Path.Combine(libraryPath, uri.LocalPath.Substring(7));
+				}
+				else if (uri.LocalPath.StartsWith("/temp"))
+				{
+					filePath = Path.Combine(Path.GetTempPath(), uri.LocalPath.Substring(6));
+				}
+				else
+				{
+					throw new ArgumentException("Invalid Uri", "Source");
+				}
+
+				return filePath;
+			}
+			else
+			{
+				throw new ArgumentException("uri");
+			}
+		}
+    
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
+
+		internal void SubscribeToAlertsAndActionSheets()
+		{
+			var busyCount = 0;
+			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
+				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = busyCount > 0;
+			});
+
+			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
+			{	
+				if (!PageIsChildOfPlatform(sender))
+					return;
+				PresentAlert(arguments);
+			});
+
+			MessagingCenter.Subscribe(this, Page.PromptSignalName, (Page sender, PromptArguments arguments) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+				PresentPrompt(arguments);
+			});
+
+			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
+			{
+				if (!PageIsChildOfPlatform(sender))
+					return;
+
+				PresentActionSheet(arguments);
+			});
+		}
+
+		static bool IsModalPresentedFullScreen(Page modal)
+		{
+			var elementConfiguration = modal as IElementConfiguration<Page>;
+			var presentationStyle = elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle();
+			return presentationStyle != null && presentationStyle == PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FullScreen;
+		}
+
+		internal void UnsubscribeFromAlertsAndActionsSheets()
+		{
+			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			MessagingCenter.Unsubscribe<Page, PromptArguments>(this, Page.PromptSignalName);
+			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+		}
+
+		internal void MarkForRemoval()
+		{
+			_previousModals = new List<Page>(_modals);
+			_modals.Clear();
+		}
+
+		internal void CleanUpPages()
+		{
+			Page.DescendantRemoved -= HandleChildRemoved;
+
+			Page.DisposeModalAndChildRenderers();
+
+			foreach (var modal in (_previousModals ?? _modals))
+				modal.DisposeModalAndChildRenderers();
+
+			_previousModals?.Clear();
+			_modals.Clear();
+
+			(Page.Parent as IDisposable)?.Dispose();
 		}
 	}
 }

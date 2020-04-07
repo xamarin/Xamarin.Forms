@@ -13,6 +13,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Foundation;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Xamarin.Forms;
+
 #if __MOBILE__
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
@@ -21,7 +25,6 @@ using TNativeView = UIKit.UIView;
 using AppKit;
 using Xamarin.Forms.Platform.MacOS;
 using TNativeView = AppKit.NSView;
-
 #endif
 
 namespace Xamarin.Forms
@@ -34,9 +37,9 @@ namespace Xamarin.Forms
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
 		static bool? s_isiOS11OrNewer;
-#endif
+		static bool? s_isiOS13OrNewer;
+		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
-#if __MOBILE__
 		internal static bool IsiOS9OrNewer
 		{
 			get
@@ -67,10 +70,43 @@ namespace Xamarin.Forms
 				return s_isiOS11OrNewer.Value;
 			}
 		}
+
+		internal static bool IsiOS13OrNewer
+		{
+			get
+			{
+				if (!s_isiOS13OrNewer.HasValue)
+					s_isiOS13OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(13, 0);
+				return s_isiOS13OrNewer.Value;
+			}
+		}
+
+		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
+		{
+			get
+			{
+				if (!s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.HasValue)
+					s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden = new UIViewController().RespondsToSelector(new ObjCRuntime.Selector("setNeedsUpdateOfHomeIndicatorAutoHidden"));
+				return s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.Value;
+			}
+		}
+#else
+		static bool? s_isMojaveOrNewer;
+
+		internal static bool IsMojaveOrNewer
+		{
+			get
+			{
+				if (!s_isMojaveOrNewer.HasValue)
+					s_isMojaveOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 14, 0));
+				return s_isMojaveOrNewer.Value;
+			}
+		}
+
 #endif
 
 		static IReadOnlyList<string> s_flags;
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new string[0]);
 
 		public static void SetFlags(params string[] flags)
 		{
@@ -79,7 +115,9 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+			s_flags = (string[])flags.Clone();
+			if (s_flags.Contains ("Profile"))
+				Profile.Enable();
 		}
 
 		public static void Init()
@@ -87,7 +125,8 @@ namespace Xamarin.Forms
 			if (IsInitialized)
 				return;
 			IsInitialized = true;
-			Color.SetAccent(Color.FromRgba(50, 79, 133, 255));
+
+			Color.SetAccent(ColorExtensions.AccentColor.ToColor());
 
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
@@ -97,13 +136,25 @@ namespace Xamarin.Forms
 #else
 			Device.SetIdiom(TargetIdiom.Desktop);
 			Device.SetFlowDirection(NSApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
+			var mojave = new NSOperatingSystemVersion(10, 14, 0);
+			if (NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(mojave) &&
+				typeof(NSApplication).GetProperty("Appearance") is PropertyInfo appearance &&
+				appearance != null)
+			{
+				var aquaAppearance = NSAppearance.GetAppearance(NSAppearance.NameAqua);
+				appearance.SetValue(NSApplication.SharedApplication, aquaAppearance);
+			}
 #endif
 			Device.SetFlags(s_flags);
 			Device.PlatformServices = new IOSPlatformServices();
+#if __MOBILE__
 			Device.Info = new IOSDeviceInfo();
+#else
+			Device.Info = new Platform.macOS.MacDeviceInfo();
+#endif
 
 			Internals.Registrar.RegisterAll(new[]
-				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(ExportFontAttribute) });
 			ExpressionSearch.Default = new iOSExpressionSearch();
 		}
 
@@ -141,45 +192,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal class IOSDeviceInfo : DeviceInfo
-		{
-#if __MOBILE__
-			readonly NSObject _notification;
-#endif
-			readonly Size _scaledScreenSize;
-			readonly double _scalingFactor;
-
-			public IOSDeviceInfo()
-			{
-#if __MOBILE__
-				_notification = UIDevice.Notifications.ObserveOrientationDidChange((sender, args) => CurrentOrientation = UIDevice.CurrentDevice.Orientation.ToDeviceOrientation());
-				_scalingFactor = UIScreen.MainScreen.Scale;
-				_scaledScreenSize = new Size(UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
-#else
-				_scalingFactor = NSScreen.MainScreen.BackingScaleFactor;
-				_scaledScreenSize = new Size(NSScreen.MainScreen.Frame.Width, NSScreen.MainScreen.Frame.Height);
-#endif
-				PixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
-			}
-
-			public override Size PixelScreenSize { get; }
-
-			public override Size ScaledScreenSize => _scaledScreenSize;
-
-			public override double ScalingFactor => _scalingFactor;
-
-			protected override void Dispose(bool disposing)
-			{
-#if __MOBILE__
-				_notification.Dispose();
-#endif
-				base.Dispose(disposing);
-			}
-		}
-
 		class IOSPlatformServices : IPlatformServices
 		{
-			static readonly MD5CryptoServiceProvider s_checksum = new MD5CryptoServiceProvider();
+			readonly double _fontScalingFactor = 1;
+			public IOSPlatformServices()
+			{
+#if __MOBILE__
+				//The standard accessibility size for a font is 17, we can get a
+				//close approximation to the new Size by multiplying by this scale factor
+				_fontScalingFactor = (double)UIFont.PreferredBody.PointSize / 17f;
+#endif
+			}
 
 			public void BeginInvokeOnMainThread(Action action)
 			{
@@ -196,50 +219,159 @@ namespace Xamarin.Forms
 				return AppDomain.CurrentDomain.GetAssemblies();
 			}
 
-			public string GetMD5Hash(string input)
-			{
-				var bytes = s_checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
-				var ret = new char[32];
-				for (var i = 0; i < 16; i++)
-				{
-					ret[i * 2] = (char)Hex(bytes[i] >> 4);
-					ret[i * 2 + 1] = (char)Hex(bytes[i] & 0xf);
-				}
-				return new string(ret);
-			}
+			public string GetHash(string input) => Crc64.GetHash(input);
+
+			string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 			public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 			{
 				// We make these up anyway, so new sizes didn't really change
 				// iOS docs say default button font size is 15, default label font size is 17 so we use those as the defaults.
+				var scalingFactor = _fontScalingFactor;
+
+				if (Application.Current?.On<iOS>().GetEnableAccessibilityScalingForNamedFontSizes() == false)
+				{
+					scalingFactor = 1;
+				}
+
 				switch (size)
 				{
+					//We multiply the fonts by the scale factor, and cast to an int, to make them whole numbers.
 					case NamedSize.Default:
-						return typeof(Button).IsAssignableFrom(targetElementType) ? 15 : 17;
+						return (int)((typeof(Button).IsAssignableFrom(targetElementType) ? 15 : 17) * scalingFactor);
 					case NamedSize.Micro:
-						return 12;
+						return (int)(12 * scalingFactor);
 					case NamedSize.Small:
-						return 14;
+						return (int)(14 * scalingFactor);
 					case NamedSize.Medium:
-						return 17;
+						return (int)(17 * scalingFactor);
 					case NamedSize.Large:
-						return 22;
+						return (int)(22 * scalingFactor);
+#if __IOS__
+					case NamedSize.Body:
+						return (double)UIFont.PreferredBody.PointSize;
+					case NamedSize.Caption:
+						return (double)UIFont.PreferredCaption1.PointSize;
+					case NamedSize.Header:
+						return (double)UIFont.PreferredHeadline.PointSize;
+					case NamedSize.Subtitle:
+						return (double)UIFont.PreferredTitle2.PointSize;
+					case NamedSize.Title:
+						return (double)UIFont.PreferredTitle1.PointSize;
+#else
+					case NamedSize.Body:
+						return 23;
+					case NamedSize.Caption:
+						return 18;
+					case NamedSize.Header:
+						return 23;
+					case NamedSize.Subtitle:
+						return 28;
+					case NamedSize.Title:
+						return 34;
+
+#endif
 					default:
 						throw new ArgumentOutOfRangeException("size");
 				}
 			}
 
+			public Color GetNamedColor(string name)
+			{
+#if __XCODE11__ && __IOS__
+				UIColor resultColor = null;
+
+				switch (name)
+				{
+					case NamedPlatformColor.Label:
+						resultColor = UIColor.LabelColor;
+						break;
+					case NamedPlatformColor.Link:
+						resultColor = UIColor.LinkColor;
+						break;
+					case NamedPlatformColor.OpaqueSeparator:
+						resultColor = UIColor.OpaqueSeparatorColor;
+						break;
+					case NamedPlatformColor.PlaceholderText:
+						resultColor = UIColor.PlaceholderTextColor;
+						break;
+					case NamedPlatformColor.QuaternaryLabel:
+						resultColor = UIColor.QuaternaryLabelColor;
+						break;
+					case NamedPlatformColor.SecondaryLabel:
+						resultColor = UIColor.SecondaryLabelColor;
+						break;
+					case NamedPlatformColor.Separator:
+						resultColor = UIColor.SeparatorColor;
+						break;
+					case NamedPlatformColor.SystemBlue:
+						resultColor = UIColor.SystemBlueColor;
+						break;
+					case NamedPlatformColor.SystemGray:
+						resultColor = UIColor.SystemGrayColor;
+						break;
+					case NamedPlatformColor.SystemGray2:
+						resultColor = UIColor.SystemGray2Color;
+						break;
+					case NamedPlatformColor.SystemGray3:
+						resultColor = UIColor.SystemGray3Color;
+						break;
+					case NamedPlatformColor.SystemGray4:
+						resultColor = UIColor.SystemGray4Color;
+						break;
+					case NamedPlatformColor.SystemGray5:
+						resultColor = UIColor.SystemGray5Color;
+						break;
+					case NamedPlatformColor.SystemGray6:
+						resultColor = UIColor.SystemGray6Color;
+						break;
+					case NamedPlatformColor.SystemGreen:
+						resultColor = UIColor.SystemGreenColor;
+						break;
+					case NamedPlatformColor.SystemIndigo:
+						resultColor = UIColor.SystemIndigoColor;
+						break;
+					case NamedPlatformColor.SystemPink:
+						resultColor = UIColor.SystemPinkColor;
+						break;
+					case NamedPlatformColor.SystemPurple:
+						resultColor = UIColor.SystemPurpleColor;
+						break;
+					case NamedPlatformColor.SystemRed:
+						resultColor = UIColor.SystemRedColor;
+						break;
+					case NamedPlatformColor.SystemTeal:
+						resultColor = UIColor.SystemTealColor;
+						break;
+					case NamedPlatformColor.SystemYellow:
+						resultColor = UIColor.SystemYellowColor;
+						break;
+					case NamedPlatformColor.TertiaryLabel:
+						resultColor = UIColor.TertiaryLabelColor;
+						break;
+					default:
+						resultColor = UIColor.FromName(name);
+						break;
+				}
+
+				if (resultColor == null)
+					return Color.Default;
+
+				return resultColor.ToColor();
+#else
+				return Color.Default;
+#endif
+			}
+
 			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
 				using (var client = GetHttpClient())
-				using (var response = await client.GetAsync(uri, cancellationToken))
 				{
-					if (!response.IsSuccessStatusCode)
-					{
-						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
-						return null;
-					}
-					return await response.Content.ReadAsStreamAsync();
+					// Do not remove this await otherwise the client will dispose before
+					// the stream even starts
+					var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
+
+					return result;
 				}
 			}
 
@@ -360,6 +492,74 @@ namespace Xamarin.Forms
 				return Platform.MacOS.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 #endif
 			}
+
+			#region Remove with Essentials API
+			public AppTheme RequestedTheme
+			{
+				get
+				{
+#if __IOS__ || __TVOS__
+					if (!IsiOS13OrNewer)
+						return AppTheme.Unspecified;
+#if __XCODE11__
+					var uiStyle = GetCurrentUIViewController()?.TraitCollection?.UserInterfaceStyle ??
+						UITraitCollection.CurrentTraitCollection.UserInterfaceStyle;
+
+					switch (uiStyle)
+					{
+						case UIUserInterfaceStyle.Light:
+							return AppTheme.Light;
+						case UIUserInterfaceStyle.Dark:
+							return AppTheme.Dark;
+						default:
+							return AppTheme.Unspecified;
+					};
+#else
+					return AppTheme.Unspecified;
+#endif
+#else
+					return AppTheme.Unspecified;
+#endif
+				}
+			}
+
+#if __IOS__ || __TVOS__
+
+			static UIViewController GetCurrentUIViewController() =>
+				GetCurrentViewController(false);
+
+			static UIViewController GetCurrentViewController(bool throwIfNull = true)
+			{
+				UIViewController viewController = null;
+
+				var window = UIApplication.SharedApplication.GetKeyWindow();
+
+				if (window != null && window.WindowLevel == UIWindowLevel.Normal)
+					viewController = window.RootViewController;
+
+				if (viewController == null)
+				{
+					window = UIApplication.SharedApplication
+						.Windows
+						.OrderByDescending(w => w.WindowLevel)
+						.FirstOrDefault(w => w.RootViewController != null && w.WindowLevel == UIWindowLevel.Normal);
+
+					if (window == null && throwIfNull)
+						throw new InvalidOperationException("Could not find current view controller.");
+					else
+						viewController = window?.RootViewController;
+				}
+
+				while (viewController?.PresentedViewController != null)
+					viewController = viewController.PresentedViewController;
+
+				if (throwIfNull && viewController == null)
+					throw new InvalidOperationException("Could not find current view controller.");
+
+				return viewController;
+			}
+#endif
 		}
+		#endregion
 	}
 }

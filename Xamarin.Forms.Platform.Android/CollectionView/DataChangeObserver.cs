@@ -1,16 +1,50 @@
 using System;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using static AndroidX.RecyclerView.Widget.RecyclerView;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+using static Android.Support.V7.Widget.RecyclerView;
+#endif
 using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	internal class DataChangeObserver : RecyclerView.AdapterDataObserver
 	{
+		IntPtr _adapter;
 		readonly Action _onDataChange;
+
+		public bool Observing { get; private set; }
 
 		public DataChangeObserver(Action onDataChange) : base()
 		{
 			_onDataChange = onDataChange;
+		}
+
+		public void Start(Adapter adapter)
+		{
+			if (Observing)
+			{
+				return;
+			}
+
+			adapter.RegisterAdapterDataObserver(this);
+
+			_adapter = adapter.Handle;
+			Observing = true;
+		}
+
+		public void Stop(Adapter adapter)
+		{
+			if (Observing && IsValidAdapter(adapter))
+			{
+				adapter.UnregisterAdapterDataObserver(this);
+			}
+
+			_adapter = IntPtr.Zero;
+			Observing = false;
 		}
 
 		public override void OnChanged()
@@ -47,6 +81,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnItemRangeMoved(fromPosition, toPosition, itemCount);
 			_onDataChange?.Invoke();
+		}
+
+		bool IsValidAdapter(Adapter adapter)
+		{
+			return adapter != null && adapter.Handle == _adapter && adapter.HasObservers;
 		}
 	}
 }

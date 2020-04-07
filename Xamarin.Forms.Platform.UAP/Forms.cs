@@ -30,9 +30,24 @@ namespace Xamarin.Forms
 			var accent = (SolidColorBrush)Windows.UI.Xaml.Application.Current.Resources["SystemColorControlAccentBrush"];
 			Color.SetAccent(accent.ToFormsColor());
 
+#if UWP_14393
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Debug.WriteLine(LogFormat, c, m)));
+#else
+			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
+#endif
+			if (!Windows.UI.Xaml.Application.Current.Resources.ContainsKey("RootContainerStyle"))
+			{
+				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(GetTabletResources());
+			}
 
-			Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(GetTabletResources());
+			try
+			{
+				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(new Microsoft.UI.Xaml.Controls.XamlControlsResources());
+			}
+			catch
+			{
+				Log.Warning("Resources", "Unable to load WinUI resources. Try adding Xamarin.Forms nuget to UWP project");
+			}
 
 			Device.SetIdiom(TargetIdiom.Tablet);
 			Device.SetFlowDirection(GetFlowDirection());
@@ -64,7 +79,7 @@ namespace Xamarin.Forms
 
 			Registrar.ExtraAssemblies = rendererAssemblies?.ToArray();
 
-			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(ExportFontAttribute) });
 
 			IsInitialized = true;
 			s_state = launchActivatedEventArgs.PreviousExecutionState;
@@ -83,7 +98,7 @@ namespace Xamarin.Forms
 			return FlowDirection.MatchParent;
 		}
 
-		static Windows.UI.Xaml.ResourceDictionary GetTabletResources()
+		internal static Windows.UI.Xaml.ResourceDictionary GetTabletResources()
 		{
 			return new Windows.UI.Xaml.ResourceDictionary {
 				Source = new Uri("ms-appx:///Xamarin.Forms.Platform.UAP/Resources.xbf")

@@ -269,7 +269,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateDetailTitle();
-			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName)
 				UpdateDetailTitleIcon();
 			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 				UpdateDetailTitleView();
@@ -320,7 +320,7 @@ namespace Xamarin.Forms.Platform.UWP
 				IVisualElementRenderer renderer = _detail.GetOrCreateRenderer();
 				element = renderer.ContainerElement;
 
-				UpdateToolbarVisibilty();
+				UpdateToolbarVisibility();
 			}
 
 			Control.Detail = element;
@@ -335,7 +335,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			Control.DetailTitle = GetCurrentPage().Title ?? Element?.Title;
-			(this as ITitleProvider).ShowTitle = !string.IsNullOrEmpty(Control.DetailTitle);
+			(this as ITitleProvider).ShowTitle = !string.IsNullOrEmpty(Control.DetailTitle) || Element.MasterBehavior == MasterBehavior.Popover;
 		}
 
 		async void UpdateDetailTitleIcon()
@@ -343,7 +343,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_detail == null)
 				return;
 
-			Control.DetailTitleIcon = await NavigationPage.GetTitleIcon(GetCurrentPage()).ToWindowsImageSource();
+			Control.DetailTitleIcon = await NavigationPage.GetTitleIconImageSource(GetCurrentPage()).ToWindowsImageSourceAsync();
 			Control.InvalidateMeasure();
 		}
 
@@ -388,7 +388,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.Master = element;
 			Control.MasterTitle = _master?.Title;
 
-			UpdateToolbarVisibilty();
+			UpdateToolbarVisibility();
 		}
 
 		void UpdateMode()
@@ -411,7 +411,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.ToolbarDynamicOverflowEnabled = Element.OnThisPlatform().GetToolbarDynamicOverflowEnabled();
 		}
 
-		void UpdateToolbarVisibilty()
+		void UpdateToolbarVisibility()
 		{
 			// Enforce consistency rules on toolbar
 			Control.ShouldShowToolbar = _detail is NavigationPage || _master is NavigationPage;

@@ -10,6 +10,9 @@ using Xamarin.Forms.Platform.GTK.Renderers;
 namespace Xamarin.Forms.Platform.GTK
 {
 	public class Platform : BindableObject, INavigation, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		private bool _disposed;
 		readonly List<Page> _modals;
@@ -122,6 +125,12 @@ namespace Xamarin.Forms.Platform.GTK
 
 			Page = newRoot;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page);
 
 			Application.Current.NavigationProxy.Inner = this;
@@ -179,7 +188,28 @@ namespace Xamarin.Forms.Platform.GTK
 
 			Device.BeginInvokeOnMainThread(() =>
 			{
-				pageControl?.Control?.PopModal(modalPage);
+				if (pageControl != null)
+				{
+					var page = pageControl.Control;
+
+					if (page != null)
+					{
+						if (page.Children.Length > 0)
+						{
+							page.Remove(modalPage);
+						}
+
+						if (page.Children != null)
+						{
+							foreach (var child in page.Children)
+							{
+								child.ShowAll();
+							}
+
+							page.ShowAll();
+						}
+					}
+				}
 
 				DisposeModelAndChildrenRenderers(modal);
 			});
@@ -215,6 +245,13 @@ namespace Xamarin.Forms.Platform.GTK
 		Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
 			_modals.Add(modal);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			modal.DescendantRemoved += HandleChildRemoved;
 
 			var modalRenderer = GetRenderer(modal);
@@ -234,7 +271,17 @@ namespace Xamarin.Forms.Platform.GTK
 
 					if (page != null)
 					{
-						page.PushModal(modalRenderer.Container);
+						page.Attach(modalRenderer.Container, 0, 1, 0, 1);
+
+						if (page.Children != null)
+						{
+							foreach (var child in page.Children)
+							{
+								child.ShowAll();
+							}
+
+							page.ShowAll();
+						}
 					}
 				}
 			});
@@ -251,5 +298,14 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 
 		}
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
 	}
 }

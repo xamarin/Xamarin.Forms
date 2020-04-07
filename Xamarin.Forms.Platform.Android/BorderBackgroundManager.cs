@@ -1,12 +1,9 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using Android.Content.Res;
 using AView = Android.Views.View;
 using Android.Graphics.Drawables;
-using Android.OS;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AButton = Android.Widget.Button;
 using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
@@ -19,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _drawableEnabled;
 		bool _disposed;
 		IBorderVisualElementRenderer _renderer;
-		private IBorderElement _borderElement;
+		IBorderElement _borderElement;
 
 		VisualElement Element => _renderer?.Element;
 		AView Control => _renderer?.View;
@@ -127,7 +124,7 @@ namespace Xamarin.Forms.Platform.Android
 					shadowColor = _backgroundDrawable.PressedBackgroundColor.ToAndroid();
 				}
 				// Otherwise get values from the control (but only for supported APIs)
-				else if ((int)Build.VERSION.SdkInt >= 16)
+				else if ((int)Forms.SdkInt >= 16)
 				{
 					shadowRadius = _renderer.ShadowRadius;
 					shadowDy = _renderer.ShadowDy;
@@ -221,6 +218,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void BorderElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (_renderer.View.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName.Equals(Button.BorderColorProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.BorderWidthProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.CornerRadiusProperty.PropertyName) ||

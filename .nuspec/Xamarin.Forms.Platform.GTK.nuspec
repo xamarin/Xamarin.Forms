@@ -6,21 +6,23 @@
     <authors>Microsoft</authors>
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms xamarinforms xamarin.forms gtk gtk-sharp linux</tags>
-    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
-    <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
+    <license type="expression">MIT</license>
+    <icon>Assets\xamarin_128x128.png</icon>
     <projectUrl>http://xamarin.com/forms</projectUrl>
+    <repository type="git" url="https://github.com/xamarin/xamarin.forms"/>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xamarin Forms Renderer to build native UIs for GTK</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group>
         <dependency id="Xamarin.Forms" version="$version$" />
+        <dependency id="OpenTK" version="3.0.1" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="..\Xamarin.Forms.Platform.GTK\Libs\OpenTK\OpenTK.dll" target="lib\net45"/>
-    <file src="..\Xamarin.Forms.Platform.GTK\Libs\OpenTK\OpenTK.dll.config" target="content"/>
+    <!--Icon-->
+    <file src="..\Assets\xamarin_128x128.png" target="Assets\" />
     <file src="..\Xamarin.Forms.Platform.GTK\Libs\webkit-sharp\webkit-sharp.dll" target="lib\net45"/>
     <file src="..\Xamarin.Forms.Platform.GTK\Libs\webkit-sharp\webkit-sharp.dll.config" target="content"/>
     <file src="..\Xamarin.Forms.Platform.GTK\bin\$Configuration$\Xamarin.Forms.Platform.GTK.dll" target="lib\net45"/>

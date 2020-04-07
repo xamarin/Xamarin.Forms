@@ -1,7 +1,13 @@
 using System;
 using Android.Content;
 using Android.Runtime;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.ViewPager.Widget;
+#else
 using Android.Support.V4.View;
+#endif
+using Android.Util;
 using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
@@ -9,6 +15,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	internal class FormsViewPager : ViewPager
 	{
 		public FormsViewPager(Context context) : base(context)
+		{
+		}
+
+		public FormsViewPager(Context context, IAttributeSet attrs) : base(context, attrs)
 		{
 		}
 

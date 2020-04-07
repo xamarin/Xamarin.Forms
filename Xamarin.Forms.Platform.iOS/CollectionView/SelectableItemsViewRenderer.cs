@@ -3,69 +3,59 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class SelectableItemsViewRenderer : ItemsViewRenderer
+	public class SelectableItemsViewRenderer<TItemsView, TViewController> : StructuredItemsViewRenderer<TItemsView, TViewController>
+		where TItemsView : SelectableItemsView
+		where TViewController : SelectableItemsViewController<TItemsView>
 	{
-		SelectableItemsView SelectableItemsView => (SelectableItemsView)Element;
-		SelectableItemsViewController SelectableItemsViewController => (SelectableItemsViewController)ItemsViewController;
+		[Internals.Preserve(Conditional = true)]
+		public SelectableItemsViewRenderer() { }
 
-		protected override ItemsViewController CreateController(ItemsView itemsView, ItemsViewLayout layout)
+		protected override TViewController CreateController(TItemsView itemsView, ItemsViewLayout layout)
 		{
-			return new SelectableItemsViewController(itemsView as SelectableItemsView, layout);
+			return new SelectableItemsViewController<TItemsView>(itemsView, layout) as TViewController;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
+			if (changedProperty.IsOneOf(SelectableItemsView.SelectedItemProperty, SelectableItemsView.SelectedItemsProperty))
 			{
 				UpdateNativeSelection();
 			}
 			else if (changedProperty.Is(SelectableItemsView.SelectionModeProperty))
 			{
-				SelectableItemsViewController.UpdateSelectionMode();
+				UpdateSelectionMode();
 			}
 		}
 
-		protected override void SetUpNewElement(ItemsView newElement)
+		protected override void SetUpNewElement(TItemsView newElement)
 		{
-			if (newElement != null && !(newElement is SelectableItemsView))
-			{
-				throw new ArgumentException($"{nameof(newElement)} must be of type {typeof(SelectableItemsView).Name}");
-			}
-
 			base.SetUpNewElement(newElement);
 
-			SelectableItemsViewController.UpdateSelectionMode();
-			UpdateNativeSelection();
-		}
-
-		void UpdateNativeSelection()
-		{
-			if (SelectableItemsView == null)
+			if (newElement == null)
 			{
 				return;
 			}
 
-			var mode = SelectableItemsView.SelectionMode;
-			var selectedItem = SelectableItemsView.SelectedItem;
-
-			if (mode != SelectionMode.Multiple)
-			{
-				ClearSelection();
-
-				if (selectedItem != null)
-				{
-					SelectableItemsViewController.SelectItem(selectedItem);
-				}
-			}
-
-			// TODO hartez 2018/11/06 22:32:07 This doesn't cover all the possible cases yet; need to handle multiple selection	
+			UpdateSelectionMode();
+			UpdateNativeSelection();
 		}
 
-		void ClearSelection()
+		protected virtual void UpdateNativeSelection()
 		{
-			SelectableItemsViewController.ClearSelection();
+			Controller.UpdateNativeSelection();
+		}
+
+		protected virtual void UpdateSelectionMode()
+		{
+			Controller.UpdateSelectionMode();
+		}
+
+		protected override void UpdateItemsSource()
+		{
+			base.UpdateItemsSource();
+			UpdateNativeSelection();
 		}
 	}
 }

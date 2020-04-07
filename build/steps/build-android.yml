@@ -1,0 +1,129 @@
+parameters:
+  name: ''            # in the form type_platform_host
+  displayName: ''     # the human name
+  vmImage: ''         # the VM image
+  vmPool: ''         # the VM pool
+  dependsOn: []       # the dependiencies
+  preBuildSteps: []   # any steps to run before the build
+  postBuildSteps: []  # any additional steps to run after the build
+  slnPath : 'Xamarin.Forms.sln'
+  buildTaskPath : 'Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj'
+  androidProjectPath : 'Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj'
+  buildConfiguration : 'Debug'
+  nugetVersion: $(NUGET_VERSION)
+  monoVersion: $(MONO_VERSION)
+  provisionatorPath: 'build/provisioning/provisioning.csx'
+  provisionatorExtraArguments: ''
+
+jobs:
+  - job: ${{ parameters.name }}
+    workspace:
+      clean: all
+    displayName: ${{ parameters.displayName }}
+    timeoutInMinutes: 120
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    dependsOn: ${{ parameters.dependsOn }}
+    strategy:
+      matrix:
+        android_legacy:
+          renderers: 'LEGACY'
+          outputfolder: 'legacyRenderers'
+        android_preAppCompat:
+          renderers: 'PREAPPCOMPAT'
+          outputfolder: 'preAppCompat'
+        android_newRenderers:
+          renderers: 'FAST'
+          outputfolder: 'newRenderers'
+    steps:
+      - checkout: self
+        clean: true
+
+      - task: xamops.azdevex.provisionator-task.provisionator@1
+        displayName: 'Provisionator'
+        condition: eq(variables['provisioning'], 'true')
+        inputs:
+          provisioning_script: ${{ parameters.provisionatorPath }}
+          provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+
+      - task: Bash@3
+        displayName: 'Cake Provision'
+        condition: eq(variables['provisioningCake'], 'true')
+        inputs:
+          targetType: 'filePath'
+          filePath: 'build.sh'
+          arguments: --target provision --TeamProject="$(System.TeamProject)" --releaseChannel=$(releaseChannel)
+
+      - task: UseDotNet@2
+        displayName: 'Install .net core $(DOTNET_VERSION)'
+        condition: ne(variables['DOTNET_VERSION'], '')
+        inputs:
+          version: $(DOTNET_VERSION)
+          packageType: 'sdk'
+
+      - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
+        displayName: 'Select MONO ${{ parameters.monoVersion }}'
+
+      - task: NuGetToolInstaller@1
+        displayName: 'Use NuGet'
+        condition: ne(variables['NUGET_VERSION'], '')
+        inputs:
+          versionSpec: $(NUGET_VERSION)
+  
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download build artifact nuget'
+        condition: eq(variables['System.TeamProject'], 'DevDiv')
+        inputs:
+          artifactName: 'nuget'
+          downloadPath: 'Nuget'
+
+      - task: CopyFiles@2
+        displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)'
+        condition: eq(variables['System.TeamProject'], 'DevDiv')
+        inputs:
+          SourceFolder: 'Nuget/nuget/${{ parameters.buildConfiguration }}'
+          TargetFolder: 'Nuget'
+
+      - task: NuGetCommand@2
+        displayName: 'NuGet restore ${{ parameters.slnPath }}'
+        inputs:
+          restoreSolution:  ${{ parameters.slnPath }}
+          feedsToUse: config
+          nugetConfigPath: 'DevopsNuget.config'
+
+      - task: MSBuild@1
+        displayName: 'Build ${{ parameters.buildTaskPath  }}'
+        inputs:
+          solution: ${{ parameters.buildTaskPath }}
+          configuration: ${{ parameters.buildConfiguration }}
+
+      - task: MSBuild@1
+        displayName: 'Build Android $(renderers)'
+        inputs:
+          solution: ${{ parameters.androidProjectPath }}
+          configuration: ${{ parameters.buildConfiguration }}
+          msbuildArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="$(renderers)" /bl:$(Build.ArtifactStagingDirectory)/android-$(renderers).binlog'
+
+      - task: CopyFiles@2
+        displayName: 'Copy $(renderers)'
+        inputs:
+          SourceFolder: Xamarin.Forms.ControlGallery.Android/bin/${{ parameters.buildConfiguration }}/
+          Contents: '**/*.apk'
+          TargetFolder: 'Xamarin.Forms.ControlGallery.Android/$(outputfolder)/'
+          CleanTargetFolder: true
+          OverWrite: true
+
+      - task: CopyFiles@2
+        displayName: 'Copy Android apk $(renderers) for UITest'
+        inputs:
+          Contents: |
+            Xamarin.Forms.ControlGallery.Android/$(outputfolder)/$(ApkName)
+          TargetFolder: '$(build.artifactstagingdirectory)/androidApp'
+          CleanTargetFolder: true
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: AndroidApps'
+        condition: always()
+        inputs:
+          PathtoPublish: '$(build.artifactstagingdirectory)'
+          ArtifactName: OSXArtifacts

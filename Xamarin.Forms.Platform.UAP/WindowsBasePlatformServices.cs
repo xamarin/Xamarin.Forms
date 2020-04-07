@@ -18,6 +18,7 @@ using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
@@ -26,19 +27,26 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	internal abstract class WindowsBasePlatformServices : IPlatformServices
 	{
+		const string WrongThreadError = "RPC_E_WRONG_THREAD";
 		readonly CoreDispatcher _dispatcher;
+		readonly UISettings _uiSettings = new UISettings();
 
 		protected WindowsBasePlatformServices(CoreDispatcher dispatcher)
 		{
-			if (dispatcher == null)
-				throw new ArgumentNullException(nameof(dispatcher));
-
-			_dispatcher = dispatcher;
+			_dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+			_uiSettings.ColorValuesChanged += UISettingsColorValuesChanged;
 		}
 
-		public void BeginInvokeOnMainThread(Action action)
+		public async void BeginInvokeOnMainThread(Action action)
 		{
-			_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			if (CoreApplication.Views.Count == 1)
+			{
+				// This is the normal scenario - one window only
+				_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+				return;
+			}
+
+			await TryAllDispatchers(action);
 		}
 
 		public Ticker CreateTicker()
@@ -75,38 +83,43 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!assemblies.Contains(thisAssembly))
 				assemblies.Add(thisAssembly);
 
-			Assembly xamlAssembly = typeof(Xamarin.Forms.Xaml.IMarkupExtension).GetTypeInfo().Assembly;
+			Assembly coreAssembly = typeof(Xamarin.Forms.Label).GetTypeInfo().Assembly;
+			if (!assemblies.Contains(coreAssembly))
+				assemblies.Add(coreAssembly);
+
+			Assembly xamlAssembly = typeof(Xamarin.Forms.Xaml.Extensions).GetTypeInfo().Assembly;
 			if (!assemblies.Contains(xamlAssembly))
 				assemblies.Add(xamlAssembly);
 
 			return assemblies.ToArray();
 		}
 
-		public string GetMD5Hash(string input)
-		{
-			HashAlgorithmProvider algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-			IBuffer buffer = algorithm.HashData(Encoding.Unicode.GetBytes(input).AsBuffer());
-			return CryptographicBuffer.EncodeToHexString(buffer);
-		}
+		public string GetHash(string input) => Crc64.GetHash(input);
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
 			return size.GetFontSize();
 		}
 
+		public Color GetNamedColor(string name)
+		{
+			if (!Windows.UI.Xaml.Application.Current?.Resources.ContainsKey(name) ?? true)
+				return Color.Default;
+
+			return ((Windows.UI.Color)Windows.UI.Xaml.Application.Current?.Resources[name]).ToFormsColor();
+		}
+
 		public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 		{
 			using (var client = new HttpClient())
 			{
-				HttpResponseMessage streamResponse = await client.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
+				// Do not remove this await otherwise the client will dispose before
+				// the stream even starts
+				var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
 
-				if (!streamResponse.IsSuccessStatusCode)
-				{
-					Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {streamResponse.StatusCode}");
-					return null;
-				}
-
-				return await streamResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+				return result;
 			}
 		}
 
@@ -115,7 +128,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return new WindowsIsolatedStorage(ApplicationData.Current.LocalFolder);
 		}
 
-		public bool IsInvokeRequired => !_dispatcher.HasThreadAccess;
+		public bool IsInvokeRequired => !_dispatcher?.HasThreadAccess ?? true;
 
 		public string RuntimePlatform => Device.UWP;
 
@@ -152,5 +165,97 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
+
+		async void UISettingsColorValuesChanged(UISettings sender, object args)
+		{
+			await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Application.Current?.OnRequestedThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme)));
+		}
+
+		async Task TryAllDispatchers(Action action)
+		{
+			// Our best bet is Window.Current; most of the time, that's the Dispatcher we need
+			var currentWindow = Window.Current;
+
+			if (currentWindow?.Dispatcher != null)
+			{
+				try
+				{
+					await TryDispatch(currentWindow.Dispatcher, action);
+					return;
+				}
+				catch (Exception ex) when (ex.Message.Contains(WrongThreadError))
+				{
+					// The current window is not the one we need 
+				}
+			}
+
+			// Either Window.Current was the wrong Dispatcher, or Window.Current was null because we're on a 
+			// non-UI thread (e.g., one from the thread pool). So now it's time to try all the available Dispatchers 
+
+			var views = CoreApplication.Views;
+
+			for (int n = 0; n < views.Count; n++)
+			{
+				var dispatcher = views[n].Dispatcher;
+
+				if (dispatcher == null || dispatcher == currentWindow?.Dispatcher)
+				{
+					// Obviously null Dispatchers are no good, and we already tried the one from currentWindow
+					continue;
+				}
+
+				// We need to ignore Deactivated/Never Activated windows, but it's possible we can't access their 
+				// properties from this thread. So we'll check those using the Dispatcher
+				bool activated = false;
+
+				await TryDispatch(dispatcher, () => {
+					var mode = views[n].CoreWindow.ActivationMode;
+					activated = (mode == CoreWindowActivationMode.ActivatedInForeground
+						|| mode == CoreWindowActivationMode.ActivatedNotForeground);
+				});
+
+				if (!activated)
+				{
+					// This is a deactivated (or not yet activated) window; move on
+					continue;
+				}
+
+				try
+				{
+					await TryDispatch(dispatcher, action);
+					return;
+				}
+				catch (Exception ex) when (ex.Message.Contains(WrongThreadError))
+				{
+					// This was the incorrect dispatcher; move on to try another one
+				}
+			}
+		}
+
+		async Task<bool> TryDispatch(CoreDispatcher dispatcher, Action action)
+		{
+			if (dispatcher == null)
+			{
+				throw new ArgumentNullException(nameof(dispatcher));
+			}
+
+			var taskCompletionSource = new TaskCompletionSource<bool>();
+
+			await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
+				try
+				{
+					action();
+					taskCompletionSource.SetResult(true);
+				}
+				catch (Exception ex)
+				{
+					taskCompletionSource.SetException(ex);
+				}
+			});
+
+			return await taskCompletionSource.Task;
+		}
+
+		public AppTheme RequestedTheme => Windows.UI.Xaml.Application.Current.RequestedTheme == ApplicationTheme.Dark ? AppTheme.Dark : AppTheme.Light;
 	}
 }

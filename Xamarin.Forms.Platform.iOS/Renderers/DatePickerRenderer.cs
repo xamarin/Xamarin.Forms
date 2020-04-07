@@ -22,7 +22,22 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public class DatePickerRenderer : ViewRenderer<DatePicker, UITextField>
+	public class DatePickerRenderer : DatePickerRendererBase<UITextField>
+	{
+		[Internals.Preserve(Conditional = true)]
+		public DatePickerRenderer()
+		{
+
+		}
+
+		protected override UITextField CreateNativeControl()
+		{
+			return new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+		}
+	}
+
+	public abstract class DatePickerRendererBase<TControl> : ViewRenderer<DatePicker, TControl>
+		where TControl : UITextField
 	{
 		UIDatePicker _picker;
 		UIColor _defaultTextColor;
@@ -30,6 +45,15 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _useLegacyColorManagement;
 
 		IElementController ElementController => Element as IElementController;
+
+
+		abstract protected override TControl CreateNativeControl();
+
+		[Internals.Preserve(Conditional = true)]
+		public DatePickerRendererBase()
+		{
+
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<DatePicker> e)
 		{
@@ -40,7 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Control == null)
 			{
-				var entry = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+				var entry = CreateNativeControl();
 
 				entry.EditingDidBegin += OnStarted;
 				entry.EditingDidEnd += OnEnded;
@@ -52,7 +76,11 @@ namespace Xamarin.Forms.Platform.iOS
 				var width = UIScreen.MainScreen.Bounds.Width;
 				var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 				var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
-				var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) => entry.ResignFirstResponder());
+				var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
+				{
+					UpdateElementDate();
+					entry.ResignFirstResponder();
+				});
 
 				toolbar.SetItems(new[] { spacer, doneButton }, false);
 
@@ -62,9 +90,14 @@ namespace Xamarin.Forms.Platform.iOS
 				entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 				entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 
+				entry.InputAssistantItem.LeadingBarButtonGroups = null;
+				entry.InputAssistantItem.TrailingBarButtonGroups = null;
+
 				_defaultTextColor = entry.TextColor;
 
 				_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
+
+				entry.AccessibilityTraits = UIAccessibilityTrait.Button;
 
 				SetNativeControl(entry);
 			}
@@ -74,6 +107,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateMaximumDate();
 			UpdateMinimumDate();
 			UpdateTextColor();
+			UpdateCharacterSpacing();
 			UpdateFlowDirection();
 		}
 
@@ -82,22 +116,33 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == DatePicker.DateProperty.PropertyName || e.PropertyName == DatePicker.FormatProperty.PropertyName)
+			{
 				UpdateDateFromModel(true);
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
+			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
-			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName || e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
+			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName ||
+					 e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+			}
 		}
 
 		void HandleValueChanged(object sender, EventArgs e)
 		{
-			ElementController?.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
+			if (Element.OnThisPlatform().UpdateMode() == UpdateMode.Immediately)
+			{
+				UpdateElementDate();
+			}
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
@@ -118,16 +163,28 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Text = Element.Date.ToString(Element.Format);
 		}
 
+		void UpdateElementDate()
+		{
+			ElementController.SetValueFromRenderer(DatePicker.DateProperty, _picker.Date.ToDateTime().Date);
+		}
+
 		void UpdateFlowDirection()
 		{
 			(Control as UITextField).UpdateTextAlignment(Element);
 		}
-		
-		void UpdateFont()
+
+		protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			var textAttr = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedText = textAttr;
+		}
 		void UpdateMaximumDate()
 		{
 			_picker.MaximumDate = Element.MaximumDate.ToNSDate();
@@ -138,7 +195,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.MinimumDate = Element.MinimumDate.ToNSDate();
 		}
 
-		void UpdateTextColor()
+		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
 

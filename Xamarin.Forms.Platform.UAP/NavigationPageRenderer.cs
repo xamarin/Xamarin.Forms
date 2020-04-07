@@ -170,6 +170,10 @@ namespace Xamarin.Forms.Platform.UWP
 			NavigationPage oldElement = Element;
 			Element = (NavigationPage)element;
 
+			if (Element != null && Element.CurrentPage is null)
+				throw new InvalidOperationException(
+					"NavigationPage must have a root Page before being used. Either call PushAsync with a valid Page, or pass a Page to the constructor before usage.");
+
 			if (oldElement != null)
 			{
 				oldElement.PushRequested -= OnPushRequested;
@@ -344,7 +348,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTitleVisible();
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateTitleOnParents();
-			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName)
 				UpdateTitleIcon();
 			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 				UpdateTitleView();
@@ -368,7 +372,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateToolbarPlacement();
 			else if (e.PropertyName == ToolbarDynamicOverflowEnabledProperty.PropertyName)
 				UpdateToolbarDynamicOverflowEnabled();
-			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName)
 				UpdateTitleIcon();
 			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 				UpdateTitleView();
@@ -449,7 +453,10 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_currentPage != null)
 			{
 				if (isPopping)
+				{
 					_currentPage.Cleanup();
+					_container.TitleView?.Cleanup();
+				}
 
 				_container.Content = null;
 				_currentPage.PropertyChanged -= OnCurrentPagePropertyChanged;
@@ -539,9 +546,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_currentPage == null)
 				return;
 
-			ImageSource source = NavigationPage.GetTitleIcon(_currentPage);
+			ImageSource source = NavigationPage.GetTitleIconImageSource(_currentPage);
 
-			_titleIcon = await source.ToWindowsImageSource();
+			_titleIcon = await source.ToWindowsImageSourceAsync();
 
 			_container.TitleIcon = _titleIcon;
 

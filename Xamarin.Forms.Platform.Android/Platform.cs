@@ -10,19 +10,32 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
+using AndroidX.Legacy.App;
+#else
 using Android.Support.V4.App;
+using FragmentManager = Android.Support.V4.App.FragmentManager;
+#endif
 using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class Platform : BindableObject, INavigation, IDisposable, IPlatformLayout
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
+
+		internal static string PackageName { get; private set; }
+		internal static string GetPackageName() => PackageName ?? AppCompat.Platform.PackageName;
+
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
@@ -60,7 +73,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_embedded = embedded;
 			_context = context ?? throw new ArgumentNullException(nameof(context), "Somehow we're getting a null context passed in");
-			_activity = context as Activity;
+			PackageName = context.PackageName;
+			_activity = context.GetActivity();
 
 			if (!embedded)
 			{
@@ -281,6 +295,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			_navModel.PushModal(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			await PresentModal(modal, animated);
 
 			// Verify that the modal is still on the stack
@@ -326,6 +346,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
 				?? new DefaultRenderer(context);
+
 			renderer.SetElement(element);
 
 			return renderer;
@@ -390,14 +411,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
+			var toolbarItems = _toolbarTracker.ToolbarItems;
+			foreach (ToolbarItem item in toolbarItems)
 				item.PropertyChanged -= HandleToolbarItemPropertyChanged;
 			menu.Clear();
 
 			if (!ShouldShowActionBarTitleArea())
 				return;
 
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
+			foreach (ToolbarItem item in toolbarItems)
 			{
 				IMenuItemController controller = item;
 				item.PropertyChanged += HandleToolbarItemPropertyChanged;
@@ -411,13 +433,11 @@ namespace Xamarin.Forms.Platform.Android
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					var icon = item.Icon;
-					if (!string.IsNullOrEmpty(icon))
+					_ = _context.ApplyDrawableAsync(item, MenuItem.IconImageSourceProperty, iconDrawable =>
 					{
-						Drawable iconDrawable = _context.GetFormsDrawable(icon);
 						if (iconDrawable != null)
 							menuItem.SetIcon(iconDrawable);
-					}
+					});
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
@@ -446,6 +466,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void SetPage(Page newRoot)
 		{
+			if (Page == newRoot)
+			{
+				return;
+			}
+
 			var layout = false;
 			List<IVisualElementRenderer> toDispose = null;
 
@@ -466,6 +491,13 @@ namespace Xamarin.Forms.Platform.Android
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
@@ -555,7 +587,7 @@ namespace Xamarin.Forms.Platform.Android
 				ClearMasterDetailToggle();
 				return;
 			}
-			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || string.IsNullOrEmpty(CurrentMasterDetailPage.Master.Icon) ||
+			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || (CurrentMasterDetailPage.Master.IconImageSource?.IsEmpty ?? true) ||
 				(MasterDetailPageController.ShouldShowSplitMode && CurrentMasterDetailPage.IsPresented))
 			{
 				//clear out existing icon;
@@ -608,7 +640,8 @@ namespace Xamarin.Forms.Platform.Android
 			TabbedPage currentTabs = CurrentTabbedPage;
 
 			var atab = actionBar.NewTab();
-			atab.SetText(page.Title);
+			
+			atab.SetText(new Java.Lang.String(page.Title));
 			atab.TabSelected += (sender, e) =>
 			{
 				if (!_ignoreAndroidSelection)
@@ -756,7 +789,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void GetNewMasterDetailToggle()
 		{
-			int icon = ResourceManager.GetDrawableByName(CurrentMasterDetailPage.Master.Icon);
 			var drawer = GetRenderer(CurrentMasterDetailPage) as MasterDetailRenderer;
 			if (drawer == null)
 				return;
@@ -765,6 +797,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return;
 			}
+
+			// TODO: this must be changed to support the other image source types
+			var fileImageSource = CurrentMasterDetailPage.Master.IconImageSource as FileImageSource;
+			if (fileImageSource == null)
+					throw new InvalidOperationException("Icon property must be a FileImageSource on Master page");
+
+			int icon = ResourceManager.GetDrawableByName(fileImageSource);
 
 			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
@@ -781,8 +820,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (NavAnimationInProgress)
 				return true;
 
-			Page root = _navModel.Roots.Last();
-			bool handled = root.SendBackButtonPressed();
+			Page root = _navModel.Roots.LastOrDefault();
+			bool handled = root?.SendBackButtonPressed() ?? false;
 
 			return handled;
 		}
@@ -798,7 +837,7 @@ namespace Xamarin.Forms.Platform.Android
 				_activity.InvalidateOptionsMenu();
 			else if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 				_activity.InvalidateOptionsMenu();
-			else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
+			else if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
 				_activity.InvalidateOptionsMenu();
 		}
 
@@ -829,7 +868,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var page = sender as Page;
 				var atab = actionBar.GetTabAt(currentTabs.Children.IndexOf(page));
-				atab.SetText(page.Title);
+				atab.SetText(new Java.Lang.String(page.Title));
 			}
 		}
 
@@ -841,7 +880,7 @@ namespace Xamarin.Forms.Platform.Android
 				modalRenderer = CreateRenderer(modal, _context);
 				SetRenderer(modal, modalRenderer);
 
-				if (modal.BackgroundColor == Color.Default && modal.BackgroundImage == null)
+				if (modal.BackgroundColor == Color.Default && modal.BackgroundImageSource == null)
 					modalRenderer.View.SetWindowBackground();
 			}
 			modalRenderer.Element.Layout(new Rectangle(0, 0, _context.FromPixels(_renderer.Width), _context.FromPixels(_renderer.Height)));
@@ -1054,22 +1093,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (ShouldShowActionBarTitleArea())
 			{
 				actionBar.Title = view.Title;
-				FileImageSource titleIcon = NavigationPage.GetTitleIcon(view);
-				if (!string.IsNullOrWhiteSpace(titleIcon))
+				_ = _context.ApplyDrawableAsync(view, NavigationPage.TitleIconImageSourceProperty, icon =>
 				{
-					var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, titleIcon));
-					if (iconBitmap != null && iconBitmap.Bitmap != null)
-						actionBar.SetLogo(iconBitmap);
-
-					useLogo = true;
-					showHome = true;
-					showTitle = true;
-				}
-				else
-				{
-					showHome = true;
-					showTitle = true;
-				}
+					if (icon != null)
+						actionBar.SetLogo(icon);
+				});
+				var titleIcon = NavigationPage.GetTitleIconImageSource(view);
+				useLogo = titleIcon != null && !titleIcon.IsEmpty;
+				showHome = true;
+				showTitle = true;
 			}
 
 			ActionBarDisplayOptions options = 0;
@@ -1112,7 +1144,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal static int GenerateViewId()
 		{
 			// getting unique Id's is an art, and I consider myself the Jackson Pollock of the field
-			if ((int)Build.VERSION.SdkInt >= 17)
+			if ((int)Forms.SdkInt >= 17)
 				return global::Android.Views.View.GenerateViewId();
 
 			// Numbers higher than this range reserved for xml
@@ -1158,10 +1190,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion
 
-		internal class DefaultRenderer : VisualElementRenderer<View>
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
+
+		internal class DefaultRenderer : VisualElementRenderer<View>, ILayoutChanges
 		{
 			public bool NotReallyHandled { get; private set; }
+			
 			IOnTouchListener _touchListener;
+			bool _disposed;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
 			[EditorBrowsable(EditorBrowsableState.Never)]
@@ -1249,8 +1292,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			protected override void Dispose(bool disposing)
 			{
+				if (_disposed)
+				{
+					return;
+				}
+
+				_disposed = true;
+
 				if (disposing)
-					_touchListener = null;
+					SetOnTouchListener(null); 
 
 				base.Dispose(disposing);
 			}
@@ -1329,5 +1379,33 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		#endregion
+
+		internal static string ResolveMsAppDataUri(Uri uri)
+		{
+			if (uri.Scheme == "ms-appdata")
+			{
+				string filePath = string.Empty;
+
+				if (uri.LocalPath.StartsWith("/local"))
+				{
+					filePath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), uri.LocalPath.Substring(7));
+				}
+				else if (uri.LocalPath.StartsWith("/temp"))
+				{
+					filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), uri.LocalPath.Substring(6));
+				}
+				else
+				{
+					throw new ArgumentException("Invalid Uri", "Source");
+				}
+
+				return filePath;
+			}
+			else
+			{
+				throw new ArgumentException("uri");
+			}
+
+		}
 	}
 }

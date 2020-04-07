@@ -19,6 +19,7 @@ using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.TabbedPage
 using VisualElementSpecifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
 using PageSpecifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
 using Windows.UI.Xaml.Input;
+using System.Linq;
 using WSelectionChangedEventArgs = Windows.UI.Xaml.Controls.SelectionChangedEventArgs;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -35,6 +36,8 @@ namespace Xamarin.Forms.Platform.UWP
 		Color _barTextColor;
 		bool _disposed;
 		bool _showTitle;
+		Brush _defaultSelectedColor;
+		Brush _defaultUnselectedColor;
 
 		WTextAlignment _oldBarTextBlockTextAlignment = WTextAlignment.Center;
 		WHorizontalAlignment _oldBarTextBlockHorinzontalAlignment = WHorizontalAlignment.Center;
@@ -234,6 +237,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateBarIcons();
 			else if (e.PropertyName == PageSpecifics.ToolbarPlacementProperty.PropertyName)
 				UpdateToolbarPlacement();
+			else if (e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName || e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName)
+				UpdateSelectedTabColors();
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
@@ -244,6 +249,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateBarBackgroundColor();
 			UpdateBarIcons();
 			UpdateAccessKeys();
+			UpdateSelectedTabColors();
 		}
 
 		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e) 
@@ -281,6 +287,7 @@ namespace Xamarin.Forms.Platform.UWP
 					// Need to make sure any new items have the correct fore/background colors
 					ApplyBarBackgroundColor(true);
 					ApplyBarTextColor(true);
+					UpdateSelectedTabColors();
 					break;
 			}
 		}
@@ -310,6 +317,9 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			currentPage?.SendDisappearing();
 			Element.CurrentPage = page;
+
+			UpdateSelectedTabColors();
+
 			page?.SendAppearing();
 		}
 
@@ -417,9 +427,6 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Control == null || Element == null)
 				return;
 
-			if (!Element.IsSet(Specifics.HeaderIconsEnabledProperty))
-				return;
-
 			bool headerIconsEnabled = Element.OnThisPlatform().GetHeaderIconsEnabled();
 			bool invalidateMeasure = false;
 
@@ -436,7 +443,7 @@ namespace Xamarin.Forms.Platform.UWP
 						// Update icon image.
 						if (tabBarImage.GetValue(FrameworkElement.NameProperty).ToString() == TabBarHeaderImageName)
 						{
-							if (headerIconsEnabled)
+							if (headerIconsEnabled && tabBarImage.DataContext != null)
 							{
 								if (Element.IsSet(Specifics.HeaderIconsSizeProperty))
 								{
@@ -543,6 +550,43 @@ namespace Xamarin.Forms.Platform.UWP
 			element.SetBinding(Windows.UI.Xaml.Controls.Control.ForegroundProperty,
 				new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath("ToolbarForeground"), 
 					Source = Control, RelativeSource = new RelativeSource { Mode = RelativeSourceMode.TemplatedParent } });
+		}
+
+		void UpdateSelectedTabColors()
+		{
+			// Retrieve all tab header textblocks
+			var allTabHeaderTextBlocks = Control.GetDescendantsByName<WTextBlock>(TabBarHeaderTextBlockName).ToArray();
+			if (allTabHeaderTextBlocks.Length != Control.Items.Count)
+				return;
+
+			// Loop through all pages in the Pivot control
+			foreach (Page page in Control.Items)
+			{
+				// Fetch just the textblock for the current page
+				var tabBarTextBlock = allTabHeaderTextBlocks[Control.Items.IndexOf(page)];
+
+				// Apply selected or unselected style to the current textblock
+				if (page == Element.CurrentPage)
+				{
+					if (_defaultSelectedColor == null)
+						_defaultSelectedColor = tabBarTextBlock.Foreground;
+
+					if (Element.IsSet(TabbedPage.SelectedTabColorProperty) && Element.SelectedTabColor != Color.Default)
+						tabBarTextBlock.Foreground = Element.SelectedTabColor.ToBrush();
+					else
+						tabBarTextBlock.Foreground = _defaultSelectedColor;
+				}
+				else
+				{
+					if (_defaultUnselectedColor == null)
+						_defaultUnselectedColor = tabBarTextBlock.Foreground;
+
+					if (Element.IsSet(TabbedPage.SelectedTabColorProperty) && Element.UnselectedTabColor != Color.Default)
+						tabBarTextBlock.Foreground = Element.UnselectedTabColor.ToBrush();
+					else
+						tabBarTextBlock.Foreground = _defaultUnselectedColor;
+				}
+			}
 		}
 	}
 }

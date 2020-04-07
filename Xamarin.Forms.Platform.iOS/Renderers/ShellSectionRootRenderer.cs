@@ -22,12 +22,16 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _blurView;
 		UIView _containerArea;
 		int _currentIndex;
-		ShellSectionRootHeader _header;
+		IShellSectionRootHeader _header;
 		bool _isAnimating;
 		Dictionary<ShellContent, IVisualElementRenderer> _renderers = new Dictionary<ShellContent, IVisualElementRenderer>();
 		IShellPageRendererTracker _tracker;
+		bool _didLayoutSubviews;
+		int _lastTabThickness = Int32.MinValue;
+		Thickness _lastInset;
 
 		ShellSection ShellSection { get; set; }
+		IShellSectionController ShellSectionController => ShellSection;
 
 		public ShellSectionRootRenderer(ShellSection shellSection, IShellContext shellContext)
 		{
@@ -37,6 +41,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			_didLayoutSubviews = true;
 			base.ViewDidLayoutSubviews();
 
 			_containerArea.Frame = View.Bounds;
@@ -48,6 +53,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (ShellSection.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {ShellSection}. Title: {ShellSection.Title}. Route: {ShellSection.Route}.");
+
 			base.ViewDidLoad();
 
 			_containerArea = new UIView();
@@ -59,13 +67,13 @@ namespace Xamarin.Forms.Platform.iOS
 			LoadRenderers();
 
 			ShellSection.PropertyChanged += OnShellSectionPropertyChanged;
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnShellSectionItemsChanged;
+			ShellSectionController.ItemsCollectionChanged += OnShellSectionItemsChanged;
 
 			_blurView = new UIView();
 			UIVisualEffect blurEffect = UIBlurEffect.FromStyle(UIBlurEffectStyle.ExtraLight);
 			_blurView = new UIVisualEffectView(blurEffect);
 
-			View.AddSubview(_blurView);		
+			View.AddSubview(_blurView);
 
 			UpdateHeaderVisibility();
 
@@ -90,19 +98,22 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing && ShellSection != null)
 			{
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
-				((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnShellSectionItemsChanged;
+				ShellSectionController.ItemsCollectionChanged -= OnShellSectionItemsChanged;
 
 				_header?.Dispose();
 				_tracker?.Dispose();
 
-				foreach (var shellContent in ShellSection.Items)
+				foreach (var shellContent in ShellSectionController.GetItems())
 				{
 					if (_renderers.TryGetValue(shellContent, out var oldRenderer))
 					{
 						_renderers.Remove(shellContent);
 						oldRenderer.NativeView.RemoveFromSuperview();
 						oldRenderer.ViewController.RemoveFromParentViewController();
+						var element = oldRenderer.Element;
 						oldRenderer.Dispose();
+						element?.ClearValue(Platform.RendererProperty);
+
 					}
 				}
 			}
@@ -117,7 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_isAnimating)
 				return;
 
-			var items = ShellSection.Items;
+			var items = ShellSectionController.GetItems();
 			for (int i = 0; i < items.Count; i++)
 			{
 				var shellContent = items[i];
@@ -132,13 +143,12 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void LoadRenderers()
 		{
 			var currentItem = ShellSection.CurrentItem;
-			for (int i = 0; i < ShellSection.Items.Count; i++)
+			for (int i = 0; i < ShellSectionController.GetItems().Count; i++)
 			{
-				ShellContent item = ShellSection.Items[i];
+				ShellContent item = ShellSectionController.GetItems()[i];
 				var page = ((IShellContentController)item).GetOrCreateContent();
 				var renderer = Platform.CreateRenderer(page);
 				Platform.SetRenderer(page, renderer);
-
 				AddChildViewController(renderer.ViewController);
 
 				if (item == currentItem)
@@ -155,8 +165,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
-				var items = ShellSection.Items;
 				var currentItem = ShellSection.CurrentItem;
+				if (currentItem == null)
+					return;
+
+				var items = ShellSectionController.GetItems();
+				if (items.Count == 0)
+					return;
 
 				var oldIndex = _currentIndex;
 				var oldItem = items[oldIndex];
@@ -191,19 +206,24 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		protected virtual IShellSectionRootHeader CreateShellSectionRootHeader(IShellContext shellContext)
+		{
+			return new ShellSectionRootHeader(shellContext);
+		}
+
 		protected virtual void UpdateHeaderVisibility()
 		{
-			bool visible = ShellSection.Items.Count > 1;
+			bool visible = ShellSectionController.GetItems().Count > 1;
 
 			if (visible)
 			{
 				if (_header == null)
 				{
-					_header = new ShellSectionRootHeader(_shellContext);
+					_header = CreateShellSectionRootHeader(_shellContext);
 					_header.ShellSection = ShellSection;
 
-					AddChildViewController(_header);
-					View.AddSubview(_header.View);
+					AddChildViewController(_header.ViewController);
+					View.AddSubview(_header.ViewController.View);
 				}
 				_blurView.Hidden = false;
 				LayoutHeader();
@@ -212,8 +232,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_header != null)
 				{
-					_header.View.RemoveFromSuperview();
-					_header.RemoveFromParentViewController();
+					_header.ViewController.View.RemoveFromSuperview();
+					_header.ViewController.RemoveFromParentViewController();
 					_header.Dispose();
 					_header = null;
 				}
@@ -254,16 +274,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void LayoutHeader()
 		{
-			if (_header == null)
-				return;
-
-			CGRect frame;
-			if (Forms.IsiOS11OrNewer)
-				frame = new CGRect(View.Bounds.X, View.SafeAreaInsets.Top, View.Bounds.Width, HeaderHeight);
-			else
-				frame = new CGRect(View.Bounds.X, TopLayoutGuide.Length, View.Bounds.Width, HeaderHeight);
-			_blurView.Frame = frame;
-			_header.View.Frame = frame;
+			int tabThickness = 0;
+			if (_header != null)
+			{
+				tabThickness = HeaderHeight;
+				var headerTop = Forms.IsiOS11OrNewer ? View.SafeAreaInsets.Top : TopLayoutGuide.Length;
+				CGRect frame = new CGRect(View.Bounds.X, headerTop, View.Bounds.Width, HeaderHeight);
+				_blurView.Frame = frame;
+				_header.ViewController.View.Frame = frame;
+			}
 
 			nfloat left;
 			nfloat top;
@@ -284,7 +303,17 @@ namespace Xamarin.Forms.Platform.iOS
 				bottom = BottomLayoutGuide.Length;
 			}
 
-			((IShellSectionController)ShellSection).SendInsetChanged(new Thickness(left, top, right, bottom), HeaderHeight);
+
+			if (_didLayoutSubviews)
+			{
+				var newInset = new Thickness(left, top, right, bottom);
+				if (newInset != _lastTabThickness || tabThickness != _lastTabThickness)
+				{
+					_lastTabThickness = tabThickness;
+					_lastInset = new Thickness(left, top, right, bottom);
+					((IShellSectionController)ShellSection).SendInsetChanged(_lastInset, _lastTabThickness);
+				}
+			}
 		}
 	}
 }

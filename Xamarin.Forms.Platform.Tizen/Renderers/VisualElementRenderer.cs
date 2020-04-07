@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ElmSharp;
+using ElmSharp.Accessible;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen.Native;
 using EFocusDirection = ElmSharp.FocusDirection;
@@ -29,6 +30,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.None;
 
 		bool _movedCallbackEnabled = false;
+		string _defaultAccessibilityName;
+		string _defaultAccessibilityDescription;
+		bool? _defaultIsAccessibilityElement;
 
 		Lazy<CustomFocusManager> _customFocusManager;
 
@@ -54,19 +58,23 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Specific.NextFocusForwardViewProperty, UpdateFocusForwardView);
 			RegisterPropertyHandler(Specific.ToolTipProperty, UpdateToolTip);
 
-			RegisterPropertyHandler(VisualElement.AnchorXProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.AnchorYProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.ScaleProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.ScaleXProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.ScaleYProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.RotationProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.RotationXProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.RotationYProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.TranslationXProperty, ApplyTransformation);
-			RegisterPropertyHandler(VisualElement.TranslationYProperty, ApplyTransformation);
+			RegisterPropertyHandler(VisualElement.AnchorXProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.AnchorYProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.ScaleProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.ScaleXProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.ScaleYProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.RotationProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.RotationXProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.RotationYProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.TranslationXProperty, UpdateTransformation);
+			RegisterPropertyHandler(VisualElement.TranslationYProperty, UpdateTransformation);
 			RegisterPropertyHandler(VisualElement.TabIndexProperty, UpdateTabIndex);
 			RegisterPropertyHandler(VisualElement.IsTabStopProperty, UpdateIsTabStop);
 
+			RegisterPropertyHandler(AutomationProperties.NameProperty, SetAccessibilityName);
+			RegisterPropertyHandler(AutomationProperties.HelpTextProperty, SetAccessibilityDescription);
+			RegisterPropertyHandler(AutomationProperties.IsInAccessibleTreeProperty, SetIsAccessibilityElement);
+			RegisterPropertyHandler(AutomationProperties.LabeledByProperty, SetLabeledBy);
 
 			_customFocusManager = new Lazy<CustomFocusManager>(() =>
 			{
@@ -438,6 +446,77 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
+		protected virtual void SetAccessibilityName(bool initialize)
+		{
+			if (initialize && (string)Element.GetValue(AutomationProperties.NameProperty) == (default(string)))
+				return;
+
+			var accessibleObject = NativeView as IAccessibleObject;
+			if (accessibleObject != null)
+			{
+				_defaultAccessibilityName = accessibleObject.SetAccessibilityName(Element, _defaultAccessibilityName);
+			}
+		}
+
+		protected virtual void SetAccessibilityDescription(bool initialize)
+		{
+			if (initialize && (string)Element.GetValue(AutomationProperties.HelpTextProperty) == (default(string)))
+				return;
+
+			var accessibleObject = NativeView as IAccessibleObject;
+			if (accessibleObject != null)
+			{
+				_defaultAccessibilityDescription = accessibleObject.SetAccessibilityDescription(Element, _defaultAccessibilityDescription);
+			}
+		}
+
+		protected virtual void SetIsAccessibilityElement(bool initialize)
+		{
+			if (initialize && (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) == default(bool?))
+				return;
+
+			var accessibleObject = NativeView as IAccessibleObject;
+			if (accessibleObject != null)
+			{
+				_defaultIsAccessibilityElement = accessibleObject.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
+			}
+		}
+
+		protected virtual void SetLabeledBy(bool initialize)
+		{
+			if (initialize && (VisualElement)Element.GetValue(AutomationProperties.LabeledByProperty) == default(VisualElement))
+				return;
+
+			var accessibleObject = NativeView as IAccessibleObject;
+			if (accessibleObject != null)
+			{
+				accessibleObject.SetLabeledBy(Element);
+			}
+		}
+
+		protected Widget FocusSearch(bool forwardDirection)
+		{
+			VisualElement element = Element as VisualElement;
+			int maxAttempts = 0;
+			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
+			if (tabIndexes == null)
+				return null;
+
+			int tabIndex = Element.TabIndex;
+			int attempt = 0;
+
+			do
+			{
+				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex) as VisualElement;
+				var renderer = Platform.GetRenderer(element);
+				if (renderer?.NativeView is Widget widget && widget.IsFocusAllowed)
+				{
+					return widget;
+				}
+			} while (!(element.IsFocused || ++attempt >= maxAttempts));
+			return null;
+		}
+
 		internal virtual void SendVisualElementInitialized(VisualElement element, EvasObject nativeView)
 		{
 			element.SendViewInitialized(nativeView);
@@ -598,12 +677,12 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		static double ComputeAbsoluteX(VisualElement e)
 		{
-			return e.X + ((e.RealParent is VisualElement) && !(e.RealParent is ListView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X) : 0.0);
+			return e.X + ((e.RealParent is VisualElement) && !(e.RealParent is ListView || e.RealParent is ItemsView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X) : 0.0);
 		}
 
 		static double ComputeAbsoluteY(VisualElement e)
 		{
-			return e.Y + ((e.RealParent is VisualElement) && !(e.RealParent is ListView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y) : 0.0);
+			return e.Y + ((e.RealParent is VisualElement) && !(e.RealParent is ListView || e.RealParent is ItemsView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y) : 0.0);
 		}
 
 		static Point ComputeAbsolutePoint(VisualElement e)
@@ -789,10 +868,20 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 		}
 
-		void UpdateFocusAllowed()
+		void UpdateTransformation(bool initialize)
 		{
+			if (!initialize)
+				ApplyTransformation();
+		}
+
+		void UpdateFocusAllowed(bool initialize)
+		{
+			bool? isFocusAllowed = Specific.IsFocusAllowed(Element);
+			if (initialize && isFocusAllowed == null)
+				return;
+
 			var widget = NativeView as Widget;
-			if (widget != null && Specific.IsFocusAllowed(Element).HasValue)
+			if (widget != null && isFocusAllowed != null)
 			{
 				widget.AllowFocus((bool)Specific.IsFocusAllowed(Element));
 			}

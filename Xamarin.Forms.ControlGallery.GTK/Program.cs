@@ -21,11 +21,10 @@ namespace Xamarin.Forms.ControlGallery.GTK
             GtkOpenGL.Init();
             GtkThemes.Init();
             Gtk.Application.Init();
-			FormsMaps.Init(string.Empty);
-			Forms.Init();
+            Forms.SetFlags("CarouselView_Experimental");
+            FormsMaps.Init(string.Empty);
+            Forms.Init();
             var app = new App();
-            //var app = new BasicOpenGLApp();
-            //var app = new AdvancedOpenGLApp();
             var window = new FormsWindow();
             window.LoadApplication(app);
             window.SetApplicationTitle("Xamarin.Forms GTK# Backend");

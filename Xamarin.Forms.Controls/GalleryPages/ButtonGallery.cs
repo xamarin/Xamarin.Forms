@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Controls
 		public ButtonGallery ()
 		{
 			//ShellAppearance.SetNavBarVisible(this, false);
-			Shell.SetSearchHandler(this, new SearchHandler() { SearchBoxVisibility = SearchBoxVisiblity.Collapsable });
+			Shell.SetSearchHandler(this, new SearchHandler() { SearchBoxVisibility = SearchBoxVisibility.Collapsible });
 			BackgroundColor = new Color (0.9);
 
 			var normal = new Button { Text = "Normal Button" };
@@ -69,7 +69,8 @@ namespace Xamarin.Forms.Controls
 			var busy = new Button { Text = "Toggle Busy" };
 			var alert = new Button { Text = "Alert" };
 			var alertSingle = new Button {Text = "Alert Single"};
-			var image = new Button { Text = "Image Button", Image = new FileImageSource {File = "bank.png"}, BackgroundColor = Color.Blue.WithLuminosity (.8) };
+			var image = new Button { Text = "Image Button", ImageSource = new FileImageSource {File = "bank.png"}, BackgroundColor = Color.Blue.WithLuminosity (.8) };
+			var gif = new Button { ImageSource = "GifOne.gif" };
 
 			themedButton.Clicked += (sender, args) => themedButton.Font = Font.Default;
 
@@ -124,6 +125,7 @@ namespace Xamarin.Forms.Controls
 						alert,
 						alertSingle,
 						image,
+						gif
 					}
 				}
 			};

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -24,7 +25,8 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				var mapModel = e.OldElement;
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
 			}
 
 			if (e.NewElement != null)
@@ -33,27 +35,45 @@ namespace Xamarin.Forms.Maps.UWP
 
 				if (Control == null)
 				{
-					SetNativeControl(new MapControl());
+					SetNativeControl(new MapControl());  
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
+					Control.MapTapped += OnMapTapped; 
+					Control.LayoutUpdated += OnLayoutUpdated; 
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
+				UpdateTrafficEnabled();
 				UpdateMapType();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
 
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnCollectionChanged;
-
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnPinCollectionChanged;
 				if (mapModel.Pins.Any())
 					LoadPins();
 
-				if (Control == null) return;
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged += OnMapElementCollectionChanged;
+				if (mapModel.MapElements.Any())
+					LoadMapElements(mapModel.MapElements);
+
+				if (Control == null)
+					return;
 
 				await Control.Dispatcher.RunIdleAsync(async (i) => await MoveToRegion(mapModel.LastMoveToRegion, MapAnimationKind.None));
 				await UpdateIsShowingUser();
+			}
+		}
+
+		bool _isRegionUpdatePending;
+
+		async void OnLayoutUpdated(object sender, object e)
+		{
+			if (_isRegionUpdatePending)
+			{
+				// _isRegionUpdatePending is set to false when the update is successfull
+				await MoveToRegion(Element.LastMoveToRegion, MapAnimationKind.None);
 			}
 		}
 
@@ -69,6 +89,8 @@ namespace Xamarin.Forms.Maps.UWP
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -83,8 +105,18 @@ namespace Xamarin.Forms.Maps.UWP
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 
 				if (Element != null)
-					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;
+				{
+					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
+					((ObservableCollection<MapElement>)Element.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
+				}
+
+				if (Control != null)
+				{
+					Control.LayoutUpdated -= OnLayoutUpdated;
+					Control.MapTapped -= OnMapTapped;
+				}
 			}
+
 			base.Dispose(disposing);
 		}
 
@@ -92,7 +124,7 @@ namespace Xamarin.Forms.Maps.UWP
 		Ellipse _userPositionCircle;
 		DispatcherTimer _timer;
 
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -150,9 +182,224 @@ namespace Xamarin.Forms.Maps.UWP
 			Control.Children.Add(new PushPin(pin));
 		}
 
+		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					LoadMapElements(e.NewItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
+					LoadMapElements(e.NewItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					Control.MapElements.Clear();
+					LoadMapElements(Element.MapElements);
+					break;
+			}
+		}
+
+		void LoadMapElements(IEnumerable<MapElement> mapElements)
+		{
+			foreach (var formsMapElement in mapElements)
+			{
+				Windows.UI.Xaml.Controls.Maps.MapElement nativeMapElement = null;
+
+				switch (formsMapElement)
+				{
+					case Polyline polyline:
+						nativeMapElement = LoadPolyline(polyline);
+						break;
+					case Polygon polygon:
+						nativeMapElement = LoadPolygon(polygon);
+						break;
+					case Circle circle:
+						nativeMapElement = LoadCircle(circle);
+						break;
+				}
+
+				Control.MapElements.Add(nativeMapElement);
+
+				formsMapElement.PropertyChanged += MapElementPropertyChanged;
+				formsMapElement.MapElementId = nativeMapElement;
+			}
+		}
+
+		void RemoveMapElements(IEnumerable<MapElement> mapElements)
+		{
+			foreach (var mapElement in mapElements)
+			{
+				mapElement.PropertyChanged -= MapElementPropertyChanged;
+				Control.MapElements.Remove((Windows.UI.Xaml.Controls.Maps.MapElement)mapElement.MapElementId);
+			}
+		}
+
+		void MapElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (sender)
+			{
+				case Polyline polyline:
+					OnPolylinePropertyChanged(polyline, e);
+					break;
+				case Polygon polygon:
+					OnPolygonPropertyChanged(polygon, e);
+					break;
+				case Circle circle:
+					OnCirclePropertyChanged(circle, e);
+					break;
+			}
+		}
+
+		protected Geopath PositionsToGeopath(IList<Position> positions)
+		{
+			// Geopath constructor throws an exception on an empty list
+			if (positions.Any())
+			{
+				return new Geopath(positions.Select(p => new BasicGeoposition
+				{
+					Latitude = p.Latitude,
+					Longitude = p.Longitude
+				}));
+			}
+			else
+			{
+				return new Geopath(new[]
+				{
+					new BasicGeoposition(),
+				});
+			}
+		}
+
+		#region Polylines
+
+		protected virtual MapPolyline LoadPolyline(Polyline polyline)
+		{
+			return new MapPolyline()
+			{
+				Path = PositionsToGeopath(polyline.Geopath),
+				StrokeColor = polyline.StrokeColor.IsDefault ? Colors.Black : polyline.StrokeColor.ToWindowsColor(),
+				StrokeThickness = polyline.StrokeWidth
+			};
+		}
+
+		void OnPolylinePropertyChanged(Polyline polyline, PropertyChangedEventArgs e)
+		{
+			var mapPolyline = (MapPolyline)polyline.MapElementId;
+
+			if (mapPolyline == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == Polyline.StrokeColorProperty.PropertyName)
+			{
+				mapPolyline.StrokeColor = polyline.StrokeColor.IsDefault ? Colors.Black : polyline.StrokeColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == Polyline.StrokeWidthProperty.PropertyName)
+			{
+				mapPolyline.StrokeThickness = polyline.StrokeWidth;
+			}
+			else if (e.PropertyName == nameof(Polyline.Geopath))
+			{
+				mapPolyline.Path = PositionsToGeopath(polyline.Geopath);
+			}
+		}
+
+		#endregion
+
+		#region Polygons
+
+		protected virtual MapPolygon LoadPolygon(Polygon polygon)
+		{
+			return new MapPolygon()
+			{
+				Path = PositionsToGeopath(polygon.Geopath),
+				StrokeColor = polygon.StrokeColor.IsDefault ? Colors.Black : polygon.StrokeColor.ToWindowsColor(),
+				StrokeThickness = polygon.StrokeWidth,
+				FillColor = polygon.FillColor.ToWindowsColor()
+			};
+		}
+
+		void OnPolygonPropertyChanged(Polygon polygon, PropertyChangedEventArgs e)
+		{
+			var mapPolygon = (MapPolygon)polygon.MapElementId;
+
+			if (mapPolygon == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				mapPolygon.StrokeColor = polygon.StrokeColor.IsDefault ? Colors.Black : polygon.StrokeColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				mapPolygon.StrokeThickness = polygon.StrokeWidth;
+			}
+			else if (e.PropertyName == Polygon.FillColorProperty.PropertyName)
+			{
+				mapPolygon.FillColor = polygon.FillColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == nameof(Polygon.Geopath))
+			{
+				mapPolygon.Path = PositionsToGeopath(polygon.Geopath);
+			}
+		}
+
+		#endregion
+
+		#region Circles
+
+		protected virtual MapPolygon LoadCircle(Circle circle)
+		{
+			return new MapPolygon()
+			{
+				Path = PositionsToGeopath(circle.ToCircumferencePositions()),
+				StrokeColor = circle.StrokeColor.IsDefault ? Colors.Black : circle.StrokeColor.ToWindowsColor(),
+				StrokeThickness = circle.StrokeWidth,
+				FillColor = circle.FillColor.ToWindowsColor()
+			};
+		}
+
+		void OnCirclePropertyChanged(Circle circle, PropertyChangedEventArgs e)
+		{
+			var mapPolygon = (MapPolygon)circle.MapElementId;
+
+			if (mapPolygon == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				mapPolygon.StrokeColor = circle.StrokeColor.IsDefault ? Colors.Black : circle.StrokeColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				mapPolygon.StrokeThickness = circle.StrokeWidth;
+			}
+			else if (e.PropertyName == Circle.FillColorProperty.PropertyName)
+			{
+				mapPolygon.FillColor = circle.FillColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == Circle.CenterProperty.PropertyName ||
+					 e.PropertyName == Circle.RadiusProperty.PropertyName)
+			{
+				mapPolygon.Path = PositionsToGeopath(circle.ToCircumferencePositions());
+			}
+		}
+
+		#endregion
+
 		async Task UpdateIsShowingUser(bool moveToLocation = true)
 		{
-			if (Control == null || Element == null) return;
+			if (Control == null || Element == null)
+				return;
 
 			if (Element.IsShowingUser)
 			{
@@ -165,7 +412,8 @@ namespace Xamarin.Forms.Maps.UWP
 						LoadUserPosition(userPosition.Coordinate, moveToLocation);
 				}
 
-				if (Control == null || Element == null) return;
+				if (Control == null || Element == null)
+					return;
 
 				if (_timer == null)
 				{
@@ -197,7 +445,7 @@ namespace Xamarin.Forms.Maps.UWP
 				Longitude = span.Center.Longitude + span.LongitudeDegrees / 2
 			};
 			var boundingBox = new GeoboundingBox(nw, se);
-			await Control.TrySetViewBoundsAsync(boundingBox, null, animation);
+			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation); 
 		}
 
 		async Task UpdateVisibleRegion()
@@ -230,7 +478,8 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void LoadUserPosition(Geocoordinate userCoordinate, bool center)
 		{
-			if (Control == null || Element == null) return;
+			if (Control == null || Element == null)
+				return;
 
 			var userPosition = new BasicGeoposition
 			{
@@ -268,6 +517,11 @@ namespace Xamarin.Forms.Maps.UWP
 			}
 		}
 
+		void UpdateTrafficEnabled()
+		{
+			Control.TrafficFlowVisible = Element.TrafficEnabled;
+		}
+
 		void UpdateMapType()
 		{
 			switch (Element.MapType)
@@ -294,6 +548,11 @@ namespace Xamarin.Forms.Maps.UWP
 		void UpdateHasScrollEnabled()
 		{
 			Control.PanInteractionMode = Element.HasScrollEnabled ? MapPanInteractionMode.Auto : MapPanInteractionMode.Disabled;
+		}
+
+		void OnMapTapped(MapControl sender, MapInputEventArgs args)
+		{
+			Element?.SendMapClicked(new Position(args.Location.Position.Latitude, args.Location.Position.Longitude));
 		}
 	}
 }

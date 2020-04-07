@@ -3,26 +3,21 @@ using Android.Content;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
-using Android.Support.V4.Graphics.Drawable;
 using System.ComponentModel;
+#if __ANDROID_29__
+using AndroidX.Core.Graphics.Drawable;
+#else
+using Android.Support.V4.Graphics.Drawable;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsEditText : EditText, IDescendantFocusToggler, IFormsEditText
+	public class FormsEditText : FormsEditTextBase, IFormsEditText
 	{
-		DescendantFocusToggler _descendantFocusToggler;
-
 		public FormsEditText(Context context) : base(context)
 		{
-			DrawableCompat.Wrap(Background);
 		}
 
-		bool IDescendantFocusToggler.RequestFocus(global::Android.Views.View control, Func<bool> baseRequestFocus)
-		{
-			_descendantFocusToggler = _descendantFocusToggler ?? new DescendantFocusToggler();
-
-			return _descendantFocusToggler.RequestFocus(control, baseRequestFocus);
-		}
 
 		public override bool OnKeyPreIme(Keycode keyCode, KeyEvent e)
 		{
@@ -35,11 +30,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			_onKeyboardBackPressed?.Invoke(this, EventArgs.Empty);
 			return true;
-		}
-
-		public override bool RequestFocus(FocusSearchDirection direction, Rect previouslyFocusedRect)
-		{
-			return (this as IDescendantFocusToggler).RequestFocus(this, () => base.RequestFocus(direction, previouslyFocusedRect));
 		}
 
 		protected override void OnSelectionChanged(int selStart, int selEnd)
@@ -61,6 +51,31 @@ namespace Xamarin.Forms.Platform.Android
 			add => _selectionChanged += value;
 			remove => _selectionChanged -= value;
 		}
+	}
+
+	public class FormsEditTextBase : EditText, IDescendantFocusToggler
+	{
+		DescendantFocusToggler _descendantFocusToggler;
+
+		public FormsEditTextBase(Context context) : base(context)
+		{
+			DrawableCompat.Wrap(Background);
+		}
+
+		bool IDescendantFocusToggler.RequestFocus(global::Android.Views.View control, Func<bool> baseRequestFocus)
+		{
+			_descendantFocusToggler = _descendantFocusToggler ?? new DescendantFocusToggler();
+
+			return _descendantFocusToggler.RequestFocus(control, baseRequestFocus);
+		}
+
+
+		public override bool RequestFocus(FocusSearchDirection direction, Rect previouslyFocusedRect)
+		{
+			return (this as IDescendantFocusToggler).RequestFocus(this, () => base.RequestFocus(direction, previouslyFocusedRect));
+		}
+
+
 	}
 
 	public class SelectionChangedEventArgs : EventArgs

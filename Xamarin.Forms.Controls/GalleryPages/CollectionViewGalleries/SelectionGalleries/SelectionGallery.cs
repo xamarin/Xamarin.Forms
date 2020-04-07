@@ -20,6 +20,18 @@
 							new SelectionModeGallery(), Navigation),
 						GalleryBuilder.NavButton("Preselected Item", () =>
 							new PreselectedItemGallery(), Navigation),
+						GalleryBuilder.NavButton("Preselected Items", () =>
+							new PreselectedItemsGallery(), Navigation),
+						GalleryBuilder.NavButton("Single Selection, Bound", () =>
+							new SingleBoundSelection(), Navigation),
+						GalleryBuilder.NavButton("Multiple Selection, Bound", () =>
+							new MultipleBoundSelection(), Navigation),
+						GalleryBuilder.NavButton("SelectionChangedCommandParameter", () =>
+							new SelectionChangedCommandParameter(), Navigation),
+						GalleryBuilder.NavButton("Filterable Single Selection", () =>
+							new FilterSelection(), Navigation),
+						GalleryBuilder.NavButton("Selection Synchronization", () =>
+							new SelectionSynchronization(), Navigation),
 					}
 				}
 			};

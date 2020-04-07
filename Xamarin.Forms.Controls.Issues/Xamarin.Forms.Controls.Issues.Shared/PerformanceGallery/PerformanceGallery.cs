@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PerformanceTracker _PerformanceTracker = new PerformanceTracker();
 		List<PerformanceScenario> _TestCases = new List<PerformanceScenario>();
 		int _TestNumber = 0;
-
+		Button nextButton;
 		PerformanceViewModel ViewModel => BindingContext as PerformanceViewModel;
 
 		protected override void Init()
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_TestCases.AddRange(InflatePerformanceScenarios());
 
-			var nextButton = new Button { Text = Pending, IsEnabled = false, AutomationId = NextButtonId };
+			nextButton = new Button { Text = Pending, IsEnabled = false, AutomationId = NextButtonId };
 			nextButton.Clicked += NextButton_Clicked;
 
 			ViewModel.TestRunReferenceId = Guid.NewGuid();
@@ -82,11 +82,30 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			Content = new StackLayout { Children = { testRunRef, nextButton, _PerformanceTracker } };
+			GetBenchmarkResults();
+		}
 
-			ViewModel.BenchmarkResults = Task.Run(() => PerformanceDataManager.GetScenarioResults(_DeviceIdentifier)).GetAwaiter().GetResult();
+		async void GetBenchmarkResults(int tryCount = 0)
+		{
+			bool success = false;
+			try
+			{
+				ViewModel.BenchmarkResults = await PerformanceDataManager.GetScenarioResults(_DeviceIdentifier);
+				success = true;
+			}
+			catch(Exception exc)
+			{
+				if (tryCount < 3)
+					GetBenchmarkResults(++tryCount);
+				else
+					nextButton.Text = exc.ToString();
+			}
 
-			nextButton.IsEnabled = true;
-			nextButton.Text = Next;
+			if (success)
+			{
+				nextButton.IsEnabled = true;
+				nextButton.Text = Next;
+			}
 		}
 
 		private static string GetBuildNumber()
@@ -106,7 +125,7 @@ namespace Xamarin.Forms.Controls.Issues
 		static IEnumerable<Type> FindPerformanceScenarios()
 		{
 			return typeof(PerformanceGallery).GetTypeInfo().Assembly.DefinedTypes.Select(o => o.AsType())
-													.Where(typeInfo => typeof(PerformanceScenario).IsAssignableFrom(typeInfo));
+													.Where(type => typeof(PerformanceScenario).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()));
 		}
 
 		static IEnumerable<PerformanceScenario> InflatePerformanceScenarios()
@@ -148,6 +167,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var result = DisplayResults();
 
+#pragma warning disable 4014
 			PerformanceDataManager.PostScenarioResults(ViewModel.Scenario,
 				result,
 				ViewModel.TestRunReferenceId,
@@ -158,6 +178,7 @@ namespace Xamarin.Forms.Controls.Issues
 				_BuildInfo,
 				ViewModel.ActualRenderTime,
 				_PerformanceProvider.Statistics);
+#pragma warning restore 4014
 		}
 
 		void NextButton_Clicked(object sender, EventArgs e)

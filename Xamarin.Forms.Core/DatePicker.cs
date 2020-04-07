@@ -5,7 +5,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_DatePickerRenderer))]
-	public class DatePicker : View, IFontElement, ITextElement,IElementConfiguration<DatePicker>
+	public class DatePicker : View, IFontElement, ITextElement, IElementConfiguration<DatePicker>
 	{
 		public static readonly BindableProperty FormatProperty = BindableProperty.Create(nameof(Format), typeof(string), typeof(DatePicker), "d");
 
@@ -21,7 +21,9 @@ namespace Xamarin.Forms
 			validateValue: ValidateMaximumDate, coerceValue: CoerceMaximumDate);
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
-		
+
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
+
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
 		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
@@ -63,6 +65,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		public FontAttributes FontAttributes
@@ -146,12 +154,12 @@ namespace Xamarin.Forms
 
 		static bool ValidateMaximumDate(BindableObject bindable, object value)
 		{
-			return (DateTime)value >= ((DatePicker)bindable).MinimumDate;
+			return ((DateTime)value).Date >= ((DatePicker)bindable).MinimumDate.Date;
 		}
 
 		static bool ValidateMinimumDate(BindableObject bindable, object value)
 		{
-			return (DateTime)value <= ((DatePicker)bindable).MaximumDate;
+			return ((DateTime)value).Date <= ((DatePicker)bindable).MaximumDate.Date;
 		}
 
 		public IPlatformElementConfiguration<T, DatePicker> On<T>() where T : IConfigPlatform
@@ -162,5 +170,11 @@ namespace Xamarin.Forms
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
 		}
+
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
 	}
 }

@@ -4,16 +4,19 @@ using System.Threading.Tasks;
 using Android.Animation;
 using Android.Content;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
-using AScrollView = Android.Widget.ScrollView;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ScrollViewRenderer : NestedScrollView, IVisualElementRenderer, IEffectControlProvider
+	public class ScrollViewRenderer : NestedScrollView, IVisualElementRenderer, IEffectControlProvider, IScrollView
 	{
 		ScrollViewContainer _container;
 		HorizontalScrollView _hScrollView;
@@ -29,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 		LayoutDirection _prevLayoutDirection = LayoutDirection.Ltr;
 		bool _checkedForRtlScroll = false;
 
-		public ScrollViewRenderer(Context context) : base(context)
+		public ScrollViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.NestedScrollBarStyle))
 		{
 		}
 
@@ -76,6 +79,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= HandlePropertyChanged;
+				oldElement.LayoutChanged -= HandleLayoutChanged;
+
 				((IScrollViewController)oldElement).ScrollToRequested -= OnScrollToRequested;
 			}
 			if (element != null)
@@ -89,6 +94,8 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				_view.PropertyChanged += HandlePropertyChanged;
+				_view.LayoutChanged += HandleLayoutChanged;
+
 				Controller.ScrollToRequested += OnScrollToRequested;
 
 				LoadContent();
@@ -106,6 +113,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
+		}
+
+		void HandleLayoutChanged(object sender, EventArgs e)
+		{
+			UpdateLayout();
 		}
 
 		void UpdateFlowDirection()
@@ -128,8 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateLayout()
 		{
-			if (Tracker != null)
-				Tracker.UpdateLayout();
+			Tracker?.UpdateLayout();
 		}
 
 		public ViewGroup ViewGroup => this;
@@ -138,9 +149,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void Draw(Canvas canvas)
 		{
-			canvas.ClipRect(canvas.ClipBounds);
+			try
+			{
+				canvas.ClipRect(canvas.ClipBounds);
 
-			base.Draw(canvas);
+				base.Draw(canvas);
+			}
+			catch (Java.Lang.NullPointerException)
+			{
+				// This will most likely never run since UpdateScrollBars is called 
+				// when the scrollbars visibilities are updated but I left it here
+				// just in case there's an edge case that causes an exception
+				this.HandleScrollBarVisibilityChange();
+			}
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
@@ -247,7 +268,7 @@ namespace Xamarin.Forms.Platform.Android
 			bool requestContainerLayout = bottom > _previousBottom;
 			_previousBottom = bottom;
 
-			_container.Measure(MeasureSpecFactory.MakeMeasureSpec(right - left, MeasureSpecMode.Unspecified),
+			_container?.Measure(MeasureSpecFactory.MakeMeasureSpec(right - left, MeasureSpecMode.Unspecified),
 				MeasureSpecFactory.MakeMeasureSpec(bottom - top, MeasureSpecMode.Unspecified));
 			base.OnLayout(changed, left, top, right, bottom);
 			if (_view.Content != null && _hScrollView != null)
@@ -364,6 +385,10 @@ namespace Xamarin.Forms.Platform.Android
 			while (IsLayoutRequested)
 			{
 				await Task.Delay(TimeSpan.FromMilliseconds(1));
+				
+				if (_disposed)
+                	return;
+				
 				cycle++;
 
 				if (cycle >= 10)
@@ -498,7 +523,7 @@ namespace Xamarin.Forms.Platform.Android
 					newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
 				}
 
-				_hScrollView.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
+				_hScrollView.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;				
 			}
 		}
 
@@ -513,6 +538,15 @@ namespace Xamarin.Forms.Platform.Android
 				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
 
 			VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
+
+			this.HandleScrollBarVisibilityChange();
 		}
+
+		void IScrollView.AwakenScrollBars()
+		{
+			base.AwakenScrollBars();
+		}
+
+		bool IScrollView.ScrollBarsInitialized { get; set; } = false;
 	}
 }

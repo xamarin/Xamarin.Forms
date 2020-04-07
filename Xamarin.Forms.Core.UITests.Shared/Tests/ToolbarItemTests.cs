@@ -1,7 +1,10 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using NUnit.Framework;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.CustomAttributes;
-
+using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests
@@ -11,29 +14,33 @@ namespace Xamarin.Forms.Core.UITests
 	[Category(UITestCategories.UwpIgnore)]
 	internal class ToolbarItemTests : BaseTestFixture
 	{
-		string btn1Id = "tb1";
-		string btn2Id = "tb2";
-		string btn4Id = "tb4";
-		string btn3Id = "tb3";
+		string btn1Id = "toolbaritem_primary";
+		string btn2Id = "toolbaritem_primary2";
+		string btn4Id = "toolbaritem_secondary2";
+#if !__MACOS__
+		string btn3Id = "toolbaritem_secondary";
+#endif 
+
 #if __ANDROID__
-		static bool isSecondaryMenuOpen = false;
-#endif
-		static void ShouldShowMenu()
+		bool isSecondaryMenuOpen()
 		{
-#if __ANDROID__
-			isSecondaryMenuOpen = true;
-			//show secondary menu
-			App.WaitForElement(c => c.Class("OverflowMenuButton"));
-			App.Tap(c => c.Class("OverflowMenuButton"));
+			Thread.Sleep(1000);
+			var items = App.Query(btn4Id);
+			return items.Length > 0;
+		}
 #endif
+		void ShouldShowMenu()
+		{
+			App.TapOverflowMenuButton();
 		}
 
-		static void ShouldHideMenu()
+		void ShouldHideMenu()
 		{
 #if __ANDROID__
-			if (isSecondaryMenuOpen)
+			if (isSecondaryMenuOpen())
 			{
-				isSecondaryMenuOpen = false;
+				// slight pause in case menu hasn't quite closed
+				Thread.Sleep(500);
 				App.Back();
 			}
 #endif
@@ -42,15 +49,6 @@ namespace Xamarin.Forms.Core.UITests
 		protected override void NavigateToGallery()
 		{
 			App.NavigateToGallery(GalleryQueries.ToolbarItemGallery);
-#if __IOS__
-			btn1Id = "menuIcon";
-			btn4Id = "tb4";
-			if (AppSetup.iOSVersion  >= 9)
-			{
-				btn1Id = "toolbaritem_primary";
-				btn4Id = "toolbaritem_secondary2";
-			}
-#endif
 		}
 
 		[Test]
@@ -72,9 +70,7 @@ namespace Xamarin.Forms.Core.UITests
 		public void ToolbarButtonsCommand()
 		{
 			ShouldShowMenu();
-#if __ANDROID__
-			//App.Query (c => c.Marked (btn4Id))[0];
-#else
+
 			App.WaitForElement(btn4Id);
 			App.Tap(c => c.Marked(btn4Id));
 			App.WaitForNoElement(c => c.Text("button 4 new text"));
@@ -83,13 +79,18 @@ namespace Xamarin.Forms.Core.UITests
 #else
 			App.Tap(c => c.Marked(btn3Id));
 #endif
+#if __ANDROID__
+			ShouldShowMenu();
+#endif
 			App.Tap(c => c.Marked(btn4Id));
 			App.WaitForElement(c => c.Text("button 4 new text"));
 #if __MACOS__
 			App.Tap(c => c.Button().Index(6));
 #else
-			App.Tap(c => c.Marked(btn3Id));
+#if __ANDROID__
+			ShouldShowMenu();
 #endif
+			App.Tap(c => c.Marked(btn3Id));
 #endif
 		}
 
@@ -103,7 +104,7 @@ namespace Xamarin.Forms.Core.UITests
 			var btn2 = App.Query(c => c.Marked(btn4Id))[0];
 			Assert.False(btn2.Enabled, "Toolbar Item  should be disable");
 #else
-			var btn1 = App.Query(c => c.Marked(btn1Id))[0];
+			var btn1 = App.WaitForElement(c => c.Marked(btn1Id))[0];
 			ShouldShowMenu();
 			//var btn2 = App.Query (c => c.Marked (btn4Id)) [0];
 			//TODO: how to check Enable for the textview
@@ -155,6 +156,13 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
+
+		protected override void TestTearDown()
+		{
+			base.TestTearDown();
+			ResetApp();
+			NavigateToGallery();
+		}
 	}
 }
 

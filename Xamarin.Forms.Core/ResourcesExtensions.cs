@@ -15,14 +15,19 @@ namespace Xamarin.Forms
 				{
 					resources = resources ?? new Dictionary<string, object>();
 					foreach (KeyValuePair<string, object> res in ve.Resources.MergedResources)
-						if (!resources.ContainsKey(res.Key))
-							resources.Add(res.Key, res.Value);
+					{
+						// If a MergedDictionary value is overridden for a DynamicResource, 
+						// it comes out later in the enumeration of MergedResources
+						// TryGetValue ensures we pull the up-to-date value for the key
+						if (!resources.ContainsKey(res.Key) && ve.Resources.TryGetValue(res.Key, out object value))
+							resources.Add(res.Key, value);
 						else if (res.Key.StartsWith(Style.StyleClassPrefix, StringComparison.Ordinal))
 						{
 							var mergedClassStyles = new List<Style>(resources[res.Key] as List<Style>);
 							mergedClassStyles.AddRange(res.Value as List<Style>);
 							resources[res.Key] = mergedClassStyles;
 						}
+					}
 				}
 				var app = element as Application;
 				if (app != null && app.SystemResources != null)
@@ -47,11 +52,9 @@ namespace Xamarin.Forms
 		{
 			while (element != null)
 			{
-				var ve = element as IResourcesProvider;
-				if (ve != null && ve.IsResourcesCreated && ve.Resources.TryGetValue(key, out value))
+				if (element is IResourcesProvider ve && ve.IsResourcesCreated && ve.Resources.TryGetValue(key, out value))
 					return true;
-				var app = element as Application;
-				if (app != null && app.SystemResources != null && app.SystemResources.TryGetValue(key, out value))
+				if (element is Application app && app.SystemResources != null && app.SystemResources.TryGetValue(key, out value))
 					return true;
 				element = element.Parent;
 			}

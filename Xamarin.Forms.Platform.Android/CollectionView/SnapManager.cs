@@ -1,24 +1,28 @@
 using System;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class SnapManager : IDisposable
 	{
+		readonly IItemsLayout _itemsLayout;
 		readonly RecyclerView _recyclerView;
-		readonly ItemsView _itemsView;
 		SnapHelper _snapHelper;
 
-		public SnapManager(ItemsView itemsView, RecyclerView recyclerView)
+		public SnapManager(IItemsLayout itemsLayout, RecyclerView recyclerView)
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(SnapManager));
+			_itemsLayout = itemsLayout;
 			_recyclerView = recyclerView;
-			_itemsView = itemsView;
 		}
 
 		internal void UpdateSnapBehavior()
 		{
-			if (!(_itemsView.ItemsLayout is ItemsLayout itemsLayout))
+			if (!(_itemsLayout is ItemsLayout itemsLayout))
 			{
 				return;
 			}
@@ -26,8 +30,7 @@ namespace Xamarin.Forms.Platform.Android
 			var snapPointsType = itemsLayout.SnapPointsType;
 
 			// Clear our the existing snap helper (if any)
-			_snapHelper?.AttachToRecyclerView(null);
-			_snapHelper = null;
+			DetachSnapHelper();
 
 			if (snapPointsType == SnapPointsType.None)
 			{
@@ -52,7 +55,7 @@ namespace Xamarin.Forms.Platform.Android
 					case SnapPointsAlignment.Start:
 						return new StartSnapHelper();
 					case SnapPointsAlignment.Center:
-						return new LinearSnapHelper();
+						return new CenterSnapHelper();
 					case SnapPointsAlignment.End:
 						return new EndSnapHelper();
 					default:
@@ -75,14 +78,25 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			// The default LinearSnapHelper snaps to center
-			return new LinearSnapHelper();
+			// Use center snapping as the default
+			return new CenterSnapHelper();
+		}
+
+		internal SnapHelper GetCurrentSnapHelper()
+		{
+			return _snapHelper;
+		}
+
+		void DetachSnapHelper()
+		{
+			_snapHelper?.AttachToRecyclerView(null);
+			_snapHelper?.Dispose();
+			_snapHelper = null;
 		}
 
 		public void Dispose()
 		{
-			_recyclerView?.Dispose();
-			_snapHelper?.Dispose();
+			DetachSnapHelper();
 		}
 	}
 }

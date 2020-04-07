@@ -56,7 +56,12 @@ namespace Xamarin.Forms.Controls
 							
 							await Navigation.PushAsync (page);
 
-						} else {
+						}
+						else if (page is Shell)
+						{
+							Application.Current.MainPage = page;
+						}
+						else {
 							await Navigation.PushModalAsync (page);
 						}
 					}; 
@@ -192,6 +197,14 @@ namespace Xamarin.Forms.Controls
 				_filter = filter;
 
 				PageToAction.Clear();
+				if(String.IsNullOrWhiteSpace(filter) && !Controls.App.PreloadTestCasesIssuesList)
+				{
+					if (_section != null)
+					{
+						Root.Remove(_section);
+					}
+					return;
+				}
 
 				var issueCells = Enumerable.Empty<TextCell>();
 

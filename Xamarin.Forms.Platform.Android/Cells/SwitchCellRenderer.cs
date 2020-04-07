@@ -97,9 +97,9 @@ namespace Xamarin.Forms.Platform.Android
 					}
 					else
 					{
-						if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBean)
+						if (Forms.SdkInt >= BuildVersionCodes.JellyBean)
 						{
-							aSwitch.TrackDrawable.SetColorFilter(switchCell.OnColor.ToAndroid(), PorterDuff.Mode.Multiply);
+							aSwitch.TrackDrawable.SetColorFilter(switchCell.OnColor, FilterMode.Multiply);
 						}
 					}
 				}

@@ -1,10 +1,16 @@
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
+using Android.Support.V4.Widget;
+#endif
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class AHorizontalScrollView : HorizontalScrollView
+	public class AHorizontalScrollView : HorizontalScrollView, IScrollView
 	{
 		readonly ScrollViewRenderer _renderer;
 
@@ -17,6 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
+			if (_renderer.Element.InputTransparent)
+				return false;
 			// set the start point for the bidirectional scroll; 
 			// Down is swallowed by other controls, so we'll just sneak this in here without actually preventing
 			// other controls from getting the event.
@@ -31,6 +39,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnTouchEvent(MotionEvent ev)
 		{
+			if (!_renderer.Element.IsEnabled)
+				return false;
 			// If the touch is caught by the horizontal scrollview, forward it to the parent so custom renderers can be notified of the touch.
 			var verticalScrollViewerRenderer = Parent as ScrollViewRenderer;
 			if (verticalScrollViewerRenderer != null)
@@ -52,7 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 				_renderer.LastX = ev.RawX;
 				if (ev.Action == MotionEventActions.Move)
 				{
-					var parent = (global::Android.Widget.ScrollView)Parent;
+					var parent = (NestedScrollView)Parent;
 					parent.ScrollBy(0, (int)dY);
 					// Fall through to base.OnTouchEvent, it'll take care of the X scrolling 					
 				}
@@ -67,5 +77,37 @@ namespace Xamarin.Forms.Platform.Android
 
 			_renderer.UpdateScrollPosition(Context.FromPixels(l), Context.FromPixels(t));
 		}
+
+		public override void Draw(Canvas canvas)
+		{
+			try
+			{
+				base.Draw(canvas);
+			}
+			catch (Java.Lang.NullPointerException)
+			{
+				// This will most likely never run since UpdateScrollBars is called 
+				// when the scrollbars visibilities are updated but I left it here
+				// just in case there's an edge case that causes an exception
+				this.HandleScrollBarVisibilityChange();
+			}
+		}
+
+		public override bool HorizontalScrollBarEnabled
+		{
+			get { return base.HorizontalScrollBarEnabled; }
+			set
+			{
+				base.HorizontalScrollBarEnabled = value;
+				this.HandleScrollBarVisibilityChange();
+			}
+		}
+
+		void IScrollView.AwakenScrollBars()
+		{
+			base.AwakenScrollBars();
+		}
+
+		bool IScrollView.ScrollBarsInitialized { get; set; } = false;
 	}
 }

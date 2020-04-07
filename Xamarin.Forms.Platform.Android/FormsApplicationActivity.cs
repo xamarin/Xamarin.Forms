@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -9,7 +7,6 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -21,6 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 		AndroidApplicationLifecycleState _currentState;
 		LinearLayout _layout;
 
+		bool _powerSaveReceiverRegistered;
 		PowerSaveModeBroadcastReceiver _powerSaveModeBroadcastReceiver;
 
 		AndroidApplicationLifecycleState _previousState;
@@ -53,8 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnConfigurationChanged(newConfig);
 			EventHandler handler = ConfigurationChanged;
-			if (handler != null)
-				handler(this, new EventArgs());
+			handler?.Invoke(this, new EventArgs());
 		}
 
 		// FIXME: THIS SHOULD NOT BE MANDATORY
@@ -84,27 +81,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-			if (application == null)
-				throw new ArgumentNullException("application");
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
 
-			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
-
-			_application = application;
+			_application = application ?? throw new ArgumentNullException(nameof(application));
+			((IApplicationController)application).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			SetSoftInputMode();
 
 			application.PropertyChanged += AppOnPropertyChanged;
-
-			if (application?.MainPage != null)
-			{
-				var iver = Platform.GetRenderer(application.MainPage);
-				if (iver != null)
-				{
-					iver.Dispose();
-					application.MainPage.ClearValue(Platform.RendererProperty);
-				}
-			}
 
 			SetMainPage();
 		}
@@ -131,7 +117,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Forms.IsLollipopOrNewer)
 			{
-				// Listen for the device going into power save mode so we can handle animations being disabled	
+				// Listen for the device going into power save mode so we can handle animations being disabled
 				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
 			}
 
@@ -143,10 +129,12 @@ namespace Xamarin.Forms.Platform.Android
 			// may never be called
 			base.OnDestroy();
 
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
+
 			PopupManager.Unsubscribe(this);
 
-			if (Platform != null)
-				((IDisposable)Platform).Dispose();
+			((IDisposable) Platform)?.Dispose();
 		}
 
 		protected override void OnPause()
@@ -162,10 +150,11 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnPause;
 
-			if (Forms.IsLollipopOrNewer)
+			if (_powerSaveReceiverRegistered && Forms.IsLollipopOrNewer)
 			{
 				// Don't listen for power save mode changes while we're paused
 				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+				_powerSaveReceiverRegistered = false;
 			}
 
 			OnStateChanged();
@@ -189,11 +178,14 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
 
-			if (Forms.IsLollipopOrNewer)
+			if (!_powerSaveReceiverRegistered && Forms.IsLollipopOrNewer)
 			{
 				// Start listening for power save mode changes
 				RegisterReceiver(_powerSaveModeBroadcastReceiver, new IntentFilter(
 					PowerManager.ActionPowerSaveModeChanged));
+
+				_powerSaveReceiverRegistered = true;
+				_powerSaveModeBroadcastReceiver.CheckAnimationEnabledStatus();
 			}
 
 			OnStateChanged();
@@ -251,7 +243,16 @@ namespace Xamarin.Forms.Platform.Android
 			PopupManager.ResetBusyCount(this);
 
 			Platform = new Platform(this);
-			
+
+			if (_application != null)
+			{
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			_application.Platform = Platform;
+#pragma warning restore CS0618 // Type or member is obsolete
+			}
+
 			Platform.SetPage(page);
 			_layout.AddView(Platform.GetViewGroup());
 		}
@@ -263,7 +264,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_previousState == AndroidApplicationLifecycleState.OnCreate && _currentState == AndroidApplicationLifecycleState.OnStart)
 				_application.SendStart();
-			else if (_previousState == AndroidApplicationLifecycleState.OnStop && _currentState == AndroidApplicationLifecycleState.OnRestart)
+			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)	
 				_application.SendResume();
 			else if (_previousState == AndroidApplicationLifecycleState.OnPause && _currentState == AndroidApplicationLifecycleState.OnStop)
 				_application.SendSleep();

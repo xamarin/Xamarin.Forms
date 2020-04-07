@@ -4,6 +4,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Xamarin.Forms.Platform.WPF;component/Assets/Button.xaml" />
+        <ResourceDictionary Source="/Xamarin.Forms.Platform.WPF;component/Assets/Checkbox.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="controls:FormsAppBarButton" >
@@ -38,7 +39,14 @@
 				<Setter
 					Property="Background"
 					Value="{DynamicResource SemiTransparentWhiteBrush}" />
-			</Trigger>
-		</Style.Triggers>
+            </Trigger>
+            <Trigger
+                Property="IsEnabled"
+                Value="false">
+                <Setter
+                    Property="Foreground"
+                    Value="{DynamicResource SemiTransparentWhiteBrush}" />
+            </Trigger>
+        </Style.Triggers>
 	</Style>
 </ResourceDictionary>

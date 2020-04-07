@@ -36,5 +36,14 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			return res;
 		}
+
+		internal static string GetPath(ImageSource icon)
+		{
+			if (icon is FileImageSource filesource)
+			{
+				return GetPath(filesource.File);
+			}
+			return string.Empty;
+		}
 	}
 }

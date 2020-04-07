@@ -3,10 +3,14 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.DrawerLayout.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using Android.Views;
 using AView = Android.Views.View;
-using AColor = Android.Graphics.Drawables.ColorDrawable;
 using Android.OS;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
@@ -132,7 +136,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			AddView(_masterLayout);
 
-			var activity = Context as Activity;
+			var activity = Context.GetActivity();
 			activity?.ActionBar?.SetDisplayShowHomeEnabled(true);
 			activity?.ActionBar?.SetHomeButtonEnabled(true);
 
@@ -168,7 +172,7 @@ namespace Xamarin.Forms.Platform.Android
 				element.SendViewInitialized(this);
 
 			if (element != null && !string.IsNullOrEmpty(element.AutomationId))
-					SetAutomationId(element.AutomationId);
+				SetAutomationId(element.AutomationId);
 
 			SetContentDescription();
 		}
@@ -209,6 +213,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_masterLayout != null)
 				{
+					if (_masterLayout.ChildView != null)
+						_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
 					_masterLayout.Dispose();
 					_masterLayout = null;
 				}
@@ -275,7 +282,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Page.TitleProperty.PropertyName || e.PropertyName == Page.IconProperty.PropertyName)
+			if (e.PropertyName == Page.TitleProperty.PropertyName || e.PropertyName == Page.IconImageSourceProperty.PropertyName)
 				Platform?.UpdateMasterDetailToggle(true);
 		}
 
@@ -297,7 +304,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if (e.PropertyName == "IsGestureEnabled")
 				SetGestureState();
-			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackgroundImage(_page);
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(_page);
@@ -351,8 +358,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackgroundImage(Page view)
 		{
-			if (!string.IsNullOrEmpty(view.BackgroundImage))
-				this.SetBackground(Context.GetDrawable(view.BackgroundImage));
+			_ = this.ApplyDrawableAsync(view, Page.BackgroundImageSourceProperty, Context, drawable =>
+			{
+				this.SetBackground(drawable);
+			});
 		}
 
 		void UpdateDetail()
@@ -361,10 +370,13 @@ namespace Xamarin.Forms.Platform.Android
 				Update();
 			else
 				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() => Update());
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
+				if (_detailLayout == null || _detailLayout.IsDisposed())
+					return;
+
 				Context.HideKeyboard(this);
 				_detailLayout.ChildView = _page.Detail;
 			}
@@ -384,15 +396,20 @@ namespace Xamarin.Forms.Platform.Android
 				Update();
 			else
 				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() => Update());
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
-				if (_masterLayout != null && _masterLayout.ChildView != null)
+				if (_masterLayout == null || _masterLayout.IsDisposed())
+					return;
+
+				if (_masterLayout.ChildView != null)
 					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
 				_masterLayout.ChildView = _page.Master;
-				if (_page.Master != null)
-					_page.Master.PropertyChanged += HandleMasterPropertyChanged;
+
+				if (_masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged += HandleMasterPropertyChanged;
 			}
 		}
 

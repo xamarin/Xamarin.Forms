@@ -1,32 +1,59 @@
 using System;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Widget;
-using AView = Android.Views.View;
 using Object = Java.Lang.Object;
 using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged	
-
-	public class ItemsViewAdapter : RecyclerView.Adapter
+	public class ItemsViewAdapter<TItemsView, TItemsViewSource> : RecyclerView.Adapter 
+		where TItemsView : ItemsView
+		where TItemsViewSource : IItemsViewSource
 	{
-		protected readonly ItemsView ItemsView;
-		readonly Func<IVisualElementRenderer, Context, AView> _createView;
-		internal readonly IItemsViewSource ItemsSource;
+		protected readonly TItemsView ItemsView;
+		readonly Func<View, Context, ItemContentView> _createItemContentView;
+		internal TItemsViewSource ItemsSource;
 
-		internal ItemsViewAdapter(ItemsView itemsView, Func<IVisualElementRenderer, Context, AView> createView = null)
+		bool _disposed;
+		bool _usingItemTemplate = false;
+
+		internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
+			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
 
-			ItemsView = itemsView;
-			_createView = createView;
-			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
+			UpdateUsingItemTemplate();
 
-			if (_createView == null)
+			ItemsView.PropertyChanged += ItemsViewPropertyChanged;
+
+			_createItemContentView = createItemContentView;
+			ItemsSource = CreateItemsSource();
+
+			if (_createItemContentView == null)
 			{
-				_createView = (renderer, context) => new ItemContentView(renderer, context);
+				_createItemContentView = (view, context) => new ItemContentView(context);
+			}
+		}
+
+		protected virtual TItemsViewSource CreateItemsSource()
+		{
+			return (TItemsViewSource)ItemsSourceFactory.Create(ItemsView, this);
+		}
+
+		protected virtual void ItemsViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs property)
+		{
+			if (property.Is(Xamarin.Forms.ItemsView.ItemsSourceProperty))
+			{
+				UpdateItemsSource();
+			}
+			else if (property.Is(Xamarin.Forms.ItemsView.ItemTemplateProperty))
+			{
+				UpdateUsingItemTemplate();
 			}
 		}
 
@@ -34,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (holder is TemplatedItemViewHolder templatedItemViewHolder)
 			{
-				templatedItemViewHolder.View.Parent = null;
+				templatedItemViewHolder.Recycle(ItemsView);
 			}
 
 			base.OnViewRecycled(holder);
@@ -45,11 +72,10 @@ namespace Xamarin.Forms.Platform.Android
 			switch (holder)
 			{
 				case TextViewHolder textViewHolder:
-					textViewHolder.TextView.Text = ItemsSource[position].ToString();
+					textViewHolder.TextView.Text = ItemsSource.GetItem(position).ToString();
 					break;
-				case TemplatedItemViewHolder templateViewHolder:
-					templateViewHolder.View.Parent = ItemsView;
-					BindableObject.SetInheritedBindingContext(templateViewHolder.View, ItemsSource[position]);
+				case TemplatedItemViewHolder templatedItemViewHolder:
+					BindTemplatedItemViewHolder(templatedItemViewHolder, ItemsSource.GetItem(position));
 					break;
 			}
 		}
@@ -58,63 +84,66 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var context = parent.Context;
 
-			// Does the ItemsView have a DataTemplate?
-			var template = ItemsView.ItemTemplate;
-			if (template == null)
+			if (viewType == ItemViewType.TextItem)
 			{
-				// No template, just use the ToString view
 				var view = new TextView(context);
 				return new TextViewHolder(view);
 			}
 
-			// Realize the content, create a renderer out of it, and use that
-			var templateElement = (View)template.CreateContent();
-			var itemContentControl = _createView(CreateRenderer(templateElement, context), context);
+			var itemContentView = _createItemContentView.Invoke(ItemsView, context);
 
-			return new TemplatedItemViewHolder(itemContentControl, templateElement);
-		}
-
-		static IVisualElementRenderer CreateRenderer(View view, Context context)
-		{
-			if (view == null)
-			{
-				throw new ArgumentNullException(nameof(view));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			var renderer = Platform.CreateRenderer(view, context);
-			Platform.SetRenderer(view, renderer);
-
-			return renderer;
+			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
 		}
 
 		public override int ItemCount => ItemsSource.Count;
 
 		public override int GetItemViewType(int position)
 		{
-			// TODO hartez We might be able to turn this to our own purposes
-			// We might be able to have the CollectionView signal the adapter if the ItemTemplate property changes
-			// And as long as it's null, we return a value to that effect here
-			// Then we don't have to check _itemsView.ItemTemplate == null in OnCreateViewHolder, we can just use
-			// the viewType parameter.
-			return 42;
+			if (_usingItemTemplate)
+			{
+				return ItemViewType.TemplatedItem;
+			}
+		
+			// No template, just use the Text view
+			return ItemViewType.TextItem;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					ItemsSource?.Dispose();
+					ItemsView.PropertyChanged -= ItemsViewPropertyChanged;
+				}
+
+				_disposed = true;
+
+				base.Dispose(disposing);
+			}
 		}
 
 		public virtual int GetPositionForItem(object item)
 		{
-			for (int n = 0; n < ItemsSource.Count; n++)
-			{
-				if (ItemsSource[n] == item)
-				{
-					return n;
-				}
-			}
+			return ItemsSource.GetPosition(item);
+		}
 
-			return -1;
+		protected virtual void BindTemplatedItemViewHolder(TemplatedItemViewHolder templatedItemViewHolder, object context)
+		{
+			templatedItemViewHolder.Bind(context, ItemsView);
+		}
+
+		void UpdateItemsSource()
+		{
+			ItemsSource?.Dispose();
+
+			ItemsSource = CreateItemsSource();
+		}
+
+		void UpdateUsingItemTemplate()
+		{
+			_usingItemTemplate = ItemsView.ItemTemplate != null;
 		}
 	}
 }

@@ -15,8 +15,6 @@ namespace Xamarin.Forms.Platform.Tizen
 {
 	internal class TizenPlatformServices : IPlatformServices
 	{
-		static MD5 checksum = MD5.Create();
-
 		static SynchronizationContext s_context;
 
 		public TizenPlatformServices()
@@ -67,12 +65,33 @@ namespace Xamarin.Forms.Platform.Tizen
 					pt = Device.Idiom == TargetIdiom.TV ? 28 : (Device.Idiom == TargetIdiom.Watch ? 32 : 25);
 					break;
 				case NamedSize.Large:
-					pt = Device.Idiom == TargetIdiom.TV ? 84 : (Device.Idiom == TargetIdiom.Watch ? 36 : 31);
+					pt = Device.Idiom == TargetIdiom.TV ? 32 : (Device.Idiom == TargetIdiom.Watch ? 36 : 31);
+					break;
+				case NamedSize.Body:
+					pt = Device.Idiom == TargetIdiom.TV ? 30 : (Device.Idiom == TargetIdiom.Watch ? 32 : 28);
+					break;
+				case NamedSize.Caption:
+					pt = Device.Idiom == TargetIdiom.TV ? 26 : (Device.Idiom == TargetIdiom.Watch ? 24 : 22);
+					break;
+				case NamedSize.Header:
+					pt = Device.Idiom == TargetIdiom.TV ? 84 : (Device.Idiom == TargetIdiom.Watch ? 36 : 138);
+					break;
+				case NamedSize.Subtitle:
+					pt = Device.Idiom == TargetIdiom.TV ? 30 : (Device.Idiom == TargetIdiom.Watch ? 30 : 28);
+					break;
+				case NamedSize.Title:
+					pt = Device.Idiom == TargetIdiom.TV ? 42 : (Device.Idiom == TargetIdiom.Watch ? 36 : 40);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(size));
 			}
 			return Forms.ConvertToDPFont(pt);
+		}
+
+		public Color GetNamedColor(string name)
+		{
+			// Not supported on this platform
+			return Color.Default;
 		}
 
 		public void OpenUriAction(Uri uri)
@@ -143,18 +162,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			return new TizenIsolatedStorageFile();
 		}
 
-		static readonly char[] HexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-		public string GetMD5Hash(string input)
-		{
-			byte[] bin = checksum.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
-			char[] hex = new char[32];
-			for (var i = 0; i < 16; ++i)
-			{
-				hex[2 * i] = HexDigits[bin[i] >> 4];
-				hex[2 * i + 1] = HexDigits[bin[i] & 0xf];
-			}
-			return new string(hex);
-		}
+		public string GetHash(string input) => Crc64.GetHash(input);
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public void QuitApplication()
 		{
@@ -178,7 +188,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			public static AppDomain CurrentDomain { get; private set; }
 
-			readonly List<Assembly> _assemblies;
+			readonly HashSet<Assembly> _assemblies;
 
 			static AppDomain()
 			{
@@ -187,10 +197,26 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			AppDomain()
 			{
-				_assemblies = new List<Assembly>();
+				_assemblies = new HashSet<Assembly>();
 
 				// Add this renderer assembly to the list
 				_assemblies.Add(GetType().GetTypeInfo().Assembly);
+			}
+
+			public void AddAssembly(Assembly assembly)
+			{
+				if (!_assemblies.Contains(assembly))
+				{
+					_assemblies.Add(assembly);
+				}
+			}
+
+			public void AddAssemblies(Assembly[] assemblies)
+			{
+				foreach (var asm in assemblies)
+				{
+					AddAssembly(asm);
+				}
 			}
 
 			internal void RegisterAssemblyRecursively(Assembly asm)
@@ -227,6 +253,12 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
+
+		public AppTheme RequestedTheme => AppTheme.Unspecified;
+
+		static MD5 CreateChecksum()
+		{
+			return MD5.Create();
+		}
 	}
 }
-

@@ -27,6 +27,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
+
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
@@ -47,8 +49,11 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create("CornerRadius", typeof(int), typeof(Button), defaultValue: BorderElement.DefaultCornerRadius,
 			propertyChanged: CornerRadiusPropertyChanged);
 
-		public static readonly BindableProperty ImageProperty = ImageElement.FileImageProperty;
+		public static readonly BindableProperty ImageSourceProperty = ImageElement.ImageProperty;
 
+		[Obsolete("ImageProperty is obsolete as of 4.0.0. Please use ImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty ImageProperty = ImageElement.ImageProperty;
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
@@ -125,9 +130,17 @@ namespace Xamarin.Forms
 			set { SetValue(FontProperty, value); }
 		}
 
+		public ImageSource ImageSource
+		{
+			get { return (ImageSource)GetValue(ImageSourceProperty); }
+			set { SetValue(ImageSourceProperty, value); }
+		}
+
+		[Obsolete("Image is obsolete as of 4.0.0. Please use ImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FileImageSource Image
 		{
-			get { return (FileImageSource)GetValue(ImageProperty); }
+			get { return GetValue(ImageProperty) as FileImageSource; }
 			set { SetValue(ImageProperty, value); }
 		}
 
@@ -141,6 +154,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore
@@ -219,7 +238,7 @@ namespace Xamarin.Forms
 
 		protected override void OnBindingContextChanged()
 		{
-			FileImageSource image = Image;
+			ImageSource image = ImageSource;
 			if (image != null)
 				SetInheritedBindingContext(image, BindingContext);
 
@@ -242,17 +261,18 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		Aspect IImageElement.Aspect => Aspect.AspectFit;
-		ImageSource IImageElement.Source => Image;
+		ImageSource IImageElement.Source => ImageSource;
 		bool IImageElement.IsOpaque => false;
 
 
-		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageProperty.PropertyName);
+		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageSourceProperty.PropertyName);
 
 		int IBorderElement.CornerRadiusDefaultValue => (int)CornerRadiusProperty.DefaultValue;
 
 		Color IBorderElement.BorderColorDefaultValue => (Color)BorderColorProperty.DefaultValue;
 
 		double IBorderElement.BorderWidthDefaultValue => (double)BorderWidthProperty.DefaultValue;
+
 
 		/// <summary>
 		/// Flag to prevent overwriting the value of CornerRadius
@@ -272,6 +292,9 @@ namespace Xamarin.Forms
 			var oldVal = (int)bindable.GetValue(Button.CornerRadiusProperty);
 
 			if (oldVal == val)
+				return;
+
+			if (button.cornerOrBorderRadiusSetting) // retain until BorderRadiusProperty removed
 				return;
 
 			button.cornerOrBorderRadiusSetting = true;
@@ -307,12 +330,24 @@ namespace Xamarin.Forms
 		{
 		}
 
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			InvalidateMeasure();
+		}
+
+
 		void IBorderElement.OnBorderColorPropertyChanged(Color oldValue, Color newValue)
 		{
 		}
 
-		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
-			ImageElement.ImageSourcesSourceChanged(this, e);
+
+		bool IImageController.GetLoadAsAnimation() => false;
+		bool IImageElement.IsLoading => false;
+
+		bool IImageElement.IsAnimationPlaying => false;
+
+		void IImageElement.OnImageSourceSourceChanged(object sender, EventArgs e) =>
+			ImageElement.ImageSourceSourceChanged(this, e);
 
 		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
@@ -325,6 +360,7 @@ namespace Xamarin.Forms
 		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
+
 
 		[DebuggerDisplay("Image Position = {Position}, Spacing = {Spacing}")]
 		[TypeConverter(typeof(ButtonContentTypeConverter))]

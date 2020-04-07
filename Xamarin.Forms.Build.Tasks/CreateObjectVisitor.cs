@@ -96,10 +96,10 @@ namespace Xamarin.Forms.Build.Tasks
 			MethodDefinition ctorInfo = null;
 
 			if (node.Properties.ContainsKey(XmlName.xArguments) && !node.Properties.ContainsKey(XmlName.xFactoryMethod)) {
-				factoryCtorInfo = typedef.AllMethods().FirstOrDefault(md => md.IsConstructor &&
-																			!md.IsStatic &&
-																			md.HasParameters &&
-																			md.MatchXArguments(node, typeref, Module, Context));
+				factoryCtorInfo = typedef.AllMethods().FirstOrDefault(md => md.methodDef.IsConstructor &&
+																			!md.methodDef.IsStatic &&
+																			md.methodDef.HasParameters &&
+																			md.methodDef.MatchXArguments(node, typeref, Module, Context)).methodDef;
 				if (factoryCtorInfo == null) {
 					throw new XamlParseException(
 						string.Format("No constructors found for {0} with matching x:Arguments", typedef.FullName), node);
@@ -109,10 +109,10 @@ namespace Xamarin.Forms.Build.Tasks
 					Context.IL.Append(PushCtorXArguments(factoryCtorInfo.ResolveGenericParameters(typeref, Module), node));
 			} else if (node.Properties.ContainsKey(XmlName.xFactoryMethod)) {
 				var factoryMethod = (string)(node.Properties [XmlName.xFactoryMethod] as ValueNode).Value;
-				factoryMethodInfo = typedef.AllMethods().FirstOrDefault(md => !md.IsConstructor &&
-																			  md.Name == factoryMethod &&
-																			  md.IsStatic &&
-																			  md.MatchXArguments(node, typeref, Module, Context));
+				factoryMethodInfo = typedef.AllMethods().FirstOrDefault(md => !md.methodDef.IsConstructor &&
+																			  md.methodDef.Name == factoryMethod &&
+																			  md.methodDef.IsStatic &&
+																			  md.methodDef.MatchXArguments(node, typeref, Module, Context)).methodDef;
 				if (factoryMethodInfo == null) {
 					throw new XamlParseException(
 						String.Format("No static method found for {0}::{1} ({2})", typedef.FullName, factoryMethod, null), node);
@@ -506,7 +506,7 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 				break;
 			case "System.Uri":
-				if (hasValue && Uri.TryCreate(valueString, UriKind.RelativeOrAbsolute, out Uri outuri)) {
+				if (hasValue && Uri.TryCreate(valueString, UriKind.RelativeOrAbsolute, out _)) {
 					var vardef = new VariableDefinition(module.ImportReference(("System", "System", "Uri")));
 					Context.Body.Variables.Add(vardef);
 					//Use an extra temp var so we can push the value to the stack, just like other cases

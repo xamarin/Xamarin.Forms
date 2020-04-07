@@ -5,19 +5,52 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.XamStore
 {
+	[Preserve(AllMembers = true)]
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class StoreShell : Shell
+	public partial class StoreShell : TestShell
 	{
-		public StoreShell ()
+		public StoreShell() 
 		{
-			InitializeComponent ();
-
+			InitializeComponent();
 			CurrentItem = _storeItem;
 		}
+
+		protected override void Init()
+		{
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+			FlyoutIcon = new FontImageSource
+			{
+				Glyph = "\uf2fb",
+				FontFamily = fontFamily,
+				Size = 20,
+				AutomationId = "shellIcon"
+			};
+
+			FlyoutIcon.SetAutomationPropertiesHelpText("This as Shell FlyoutIcon");
+			FlyoutIcon.SetAutomationPropertiesName("SHELLMAINFLYOUTICON");
+			Routing.RegisterRoute("demo", typeof(DemoShellPage));
+			Routing.RegisterRoute("demo/demo", typeof(DemoShellPage));
+		}
+
+
 
 		//bool allow = false;
 

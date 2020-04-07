@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
+using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -30,27 +36,6 @@ namespace Xamarin.Forms.Platform.UWP
 		public static void SetBinding(this FrameworkElement self, DependencyProperty property, string path, Windows.UI.Xaml.Data.IValueConverter converter)
 		{
 			self.SetBinding(property, new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath(path), Converter = converter });
-		}
-
-		public static async Task<WImageSource> ToWindowsImageSource(this ImageSource source)
-		{
-			IImageSourceHandler handler;
-			if (source != null && (handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-			{
-				try
-				{
-					return await handler.LoadImageAsync(source);
-				}
-				catch (OperationCanceledException)
-				{
-					return null;
-				}
-
-			}
-			else
-			{
-				return null;
-			}
 		}
 
 		internal static InputScopeNameValue GetKeyboardButtonType(this ReturnType returnType)
@@ -107,6 +92,12 @@ namespace Xamarin.Forms.Platform.UWP
 			if (value.CompareTo(max) > 0)
 				return max;
 			return value;
+		}
+
+
+		internal static int ToEm(this double pt)
+		{
+			return Convert.ToInt32( pt * 0.0624f * 1000); //Coefficient for converting Pt to Em. The value is uniform spacing between characters, in units of 1/1000 of an em.
 		}
 	}
 }

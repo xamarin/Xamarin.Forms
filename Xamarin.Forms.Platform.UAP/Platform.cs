@@ -6,21 +6,22 @@ using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Core;
-using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using NativeAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperties;
+using WImage = Windows.UI.Xaml.Controls.Image;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public abstract class Platform : INavigation
+#pragma warning disable CS0618 // Type or member is obsolete
+		, IPlatform
+#pragma warning restore CS0618 // Type or member is obsolete
 	{
 		static Task<bool> s_currentAlert;
-
-		internal static StatusBar MobileStatusBar => ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar") ? StatusBar.GetForCurrentView() : null;
+		static Task<string> s_currentPrompt;
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer",
 			typeof(IVisualElementRenderer), typeof(Windows.Foundation.Metadata.Platform), default(IVisualElementRenderer));
@@ -64,9 +65,25 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_page = page;
 
+			var current = Windows.UI.Xaml.Application.Current;
+
+			if (!current.Resources.ContainsKey("RootContainerStyle"))
+			{
+				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(Forms.GetTabletResources());
+			}
+
+#if !UWP_14393
+			if (!current.Resources.ContainsKey(ShellRenderer.ShellStyle))
+			{
+				var myResourceDictionary = new Windows.UI.Xaml.ResourceDictionary();
+				myResourceDictionary.Source = new Uri("ms-appx:///Xamarin.Forms.Platform.UAP/Shell/ShellStyles.xbf");
+				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(myResourceDictionary);
+			}
+#endif
+
 			_container = new Canvas
 			{
-				Style = (Windows.UI.Xaml.Style)Windows.UI.Xaml.Application.Current.Resources["RootContainerStyle"]
+				Style = (Windows.UI.Xaml.Style)current.Resources["RootContainerStyle"]
 			};
 
 			_page.Content = _container;
@@ -86,6 +103,21 @@ namespace Xamarin.Forms.Platform.UWP
 			InitializeStatusBar();
 
 			SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+			Windows.UI.Xaml.Application.Current.Resuming += OnResumingAsync;
+		}
+
+		async void OnResumingAsync(object sender, object e)
+		{
+			try
+			{
+				await UpdateToolbarItems();
+			}
+			catch (Exception exception)
+			{
+				Log.Warning("Update toolbar items after app resume", 
+					$"UpdateToolbarItems failed after app resume: {exception.Message}");
+
+			}
 		}
 
 		internal void SetPage(Page newRoot)
@@ -169,7 +201,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var tcs = new TaskCompletionSource<bool>();
 			_navModel.PushModal(page);
-			SetCurrent(page, completedCallback: () => tcs.SetResult(true));
+			SetCurrent(page, false, true, () => tcs.SetResult(true));
 			return tcs.Task;
 		}
 
@@ -177,8 +209,13 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var tcs = new TaskCompletionSource<Page>();
 			Page result = _navModel.PopModal();
-			SetCurrent(_navModel.CurrentPage, true, () => tcs.SetResult(result));
+			SetCurrent(_navModel.CurrentPage, true, true, () => tcs.SetResult(result));
 			return tcs.Task;
+		}
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
+		{
+			return Platform.GetNativeSize(element, widthConstraint, heightConstraint);
 		}
 
 		public static SizeRequest GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
@@ -223,9 +260,12 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly Windows.UI.Xaml.Controls.Page _page;
 		Windows.UI.Xaml.Controls.ProgressBar _busyIndicator;
 		Page _currentPage;
+		Page _modalBackgroundPage;
 		readonly NavigationModel _navModel = new NavigationModel();
 		readonly ToolbarTracker _toolbarTracker = new ToolbarTracker();
-		readonly FileImageSourcePathConverter _fileImageSourcePathConverter = new FileImageSourcePathConverter();
+		readonly ImageConverter _imageConverter = new ImageConverter();
+		readonly ImageSourceIconElementConverter _imageSourceIconElementConverter = new ImageSourceIconElementConverter();
+
 		Windows.UI.Xaml.Controls.ProgressBar GetBusyIndicator()
 		{
 			if (_busyIndicator == null)
@@ -246,7 +286,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal bool BackButtonPressed()
 		{
-			Page lastRoot = _navModel.Roots.Last();
+			Page lastRoot = _navModel.Roots.LastOrDefault();
+
+			if (lastRoot == null)
+				return false;
 
 			bool handled = lastRoot.SendBackButtonPressed();
 
@@ -255,7 +298,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Page removed = _navModel.PopModal();
 				if (removed != null)
 				{
-					SetCurrent(_navModel.CurrentPage, true);
+					SetCurrent(_navModel.CurrentPage, true, true);
 					handled = true;
 				}
 			}
@@ -269,41 +312,93 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePageSizes();
 		}
 
-		async void SetCurrent(Page newPage, bool popping = false, Action completedCallback = null)
+		async void SetCurrent(Page newPage, bool popping = false, bool modal = false, Action completedCallback = null)
 		{
-			if (newPage == _currentPage)
+			try
+			{
+				if (newPage == _currentPage)
+					return;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				// The Platform property is no longer necessary, but we have to set it because some third-party
+				// library might still be retrieving it and using it
+				newPage.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+				if (_currentPage != null)
+				{
+					Page previousPage = _currentPage;
+
+					if (modal && !popping && !newPage.BackgroundColor.IsDefault)
+						_modalBackgroundPage = previousPage;
+					else
+					{
+						RemovePage(previousPage);
+						_modalBackgroundPage = null;
+					}
+
+					if (popping)
+					{
+						previousPage.Cleanup();
+						// Un-parent the page; otherwise the Resources Changed Listeners won't be unhooked and the 
+						// page will leak 
+						previousPage.Parent = null;
+					}
+				}
+
+				newPage.Layout(ContainerBounds);
+											
+				AddPage(newPage);
+								
+				completedCallback?.Invoke();
+
+				_currentPage = newPage;
+
+				UpdateToolbarTracker();
+
+				await UpdateToolbarItems();
+			}
+			catch(Exception error)
+			{
+				//This exception prevents the Main Page from being changed in a child 
+				//window or a different thread, except on the Main thread. 
+				//HEX 0x8001010E 
+				if (error.HResult == -2147417842)
+					throw new InvalidOperationException("Changing the current page is only allowed if it's being called from the same UI thread." +
+						"Please ensure that the new page is in the same UI thread as the current page.");
+				throw error;
+			}
+		}
+
+		void RemovePage(Page page)
+		{
+			if (_container == null || page == null)
 				return;
 
-			if (_currentPage != null)
-			{
-				Page previousPage = _currentPage;
-				IVisualElementRenderer previousRenderer = GetRenderer(previousPage);
-				_container.Children.Remove(previousRenderer.ContainerElement);
+			if (_modalBackgroundPage != null)
+				_modalBackgroundPage.GetCurrentPage()?.SendAppearing();
 
-				if (popping)
-				{
-					previousPage.Cleanup();
-					// Un-parent the page; otherwise the Resources Changed Listeners won't be unhooked and the 
-					// page will leak 
-					previousPage.Parent = null;
-				}
-			}
+			IVisualElementRenderer pageRenderer = GetRenderer(page);
 
-			newPage.Layout(ContainerBounds);
+			if (_container.Children.Contains(pageRenderer.ContainerElement))
+				_container.Children.Remove(pageRenderer.ContainerElement);
+		}
 
-			IVisualElementRenderer pageRenderer = newPage.GetOrCreateRenderer();
-			_container.Children.Add(pageRenderer.ContainerElement);
+		void AddPage(Page page)
+		{
+			if (_container == null || page == null)
+				return;
+
+			if (_modalBackgroundPage != null)
+				_modalBackgroundPage.GetCurrentPage()?.SendDisappearing();
+
+			IVisualElementRenderer pageRenderer = page.GetOrCreateRenderer();
+
+			if (!_container.Children.Contains(pageRenderer.ContainerElement))
+				_container.Children.Add(pageRenderer.ContainerElement);
 
 			pageRenderer.ContainerElement.Width = _container.ActualWidth;
 			pageRenderer.ContainerElement.Height = _container.ActualHeight;
-
-			completedCallback?.Invoke();
-
-			_currentPage = newPage;
-
-			UpdateToolbarTracker();
-
-			await UpdateToolbarItems();
 		}
 
 		async void OnToolbarItemsChanged(object sender, EventArgs e)
@@ -322,46 +417,52 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			_bounds = new Rectangle(0, 0, _page.ActualWidth, _page.ActualHeight);
 
-			StatusBar statusBar = MobileStatusBar;
-			if (statusBar != null)
-			{
-				bool landscape = Device.Info.CurrentOrientation.IsLandscape();
-				bool titleBar = CoreApplication.GetCurrentView().TitleBar.IsVisible;
-				double offset = landscape ? statusBar.OccludedRect.Width : statusBar.OccludedRect.Height;
-
-				_bounds = new Rectangle(0, 0, _page.ActualWidth - (landscape ? offset : 0), _page.ActualHeight - (landscape ? 0 : offset));
-
-				// Even if the MainPage is a ContentPage not inside of a NavigationPage, the calculated bounds
-				// assume the TitleBar is there even if it isn't visible. When UpdatePageSizes is called,
-				// _container.ActualWidth is correct because it's aware that the TitleBar isn't there, but the
-				// bounds aren't, and things can subsequently run under the StatusBar.
-				if (!titleBar)
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+				StatusBar statusBar = StatusBar.GetForCurrentView();
+				if (statusBar != null)
 				{
-					_bounds.Width -= (_bounds.Width - _container.ActualWidth);
+					bool landscape = Device.Info.CurrentOrientation.IsLandscape();
+					bool titleBar = CoreApplication.GetCurrentView().TitleBar.IsVisible;
+					double offset = landscape ? statusBar.OccludedRect.Width : statusBar.OccludedRect.Height;
+
+					_bounds = new Rectangle(0, 0, _page.ActualWidth - (landscape ? offset : 0), _page.ActualHeight - (landscape ? 0 : offset));
+
+					// Even if the MainPage is a ContentPage not inside of a NavigationPage, the calculated bounds
+					// assume the TitleBar is there even if it isn't visible. When UpdatePageSizes is called,
+					// _container.ActualWidth is correct because it's aware that the TitleBar isn't there, but the
+					// bounds aren't, and things can subsequently run under the StatusBar.
+					if (!titleBar)
+					{
+						_bounds.Width -= (_bounds.Width - _container.ActualWidth);
+					}
 				}
 			}
 		}
 
 		void InitializeStatusBar()
 		{
-			StatusBar statusBar = MobileStatusBar;
-			if (statusBar != null)
-			{
-				statusBar.Showing += (sender, args) => UpdateBounds();
-				statusBar.Hiding += (sender, args) => UpdateBounds();
-
-				// UWP 14393 Bug: If RequestedTheme is Light (which it is by default), then the 
-				// status bar uses White Foreground with White Background. 
-				// UWP 10586 Bug: If RequestedTheme is Light (which it is by default), then the 
-				// status bar uses Black Foreground with Black Background. 
-				// Since the Light theme should have a Black on White status bar, we will set it explicitly. 
-				// This can be overriden by setting the status bar colors in App.xaml.cs OnLaunched.
-
-				if (statusBar.BackgroundColor == null && statusBar.ForegroundColor == null && Windows.UI.Xaml.Application.Current.RequestedTheme == ApplicationTheme.Light)
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+				StatusBar statusBar = StatusBar.GetForCurrentView();
+				if (statusBar != null)
 				{
-					statusBar.BackgroundColor = Colors.White;
-					statusBar.ForegroundColor = Colors.Black;
-					statusBar.BackgroundOpacity = 1;
+					statusBar.Showing += (sender, args) => UpdateBounds();
+					statusBar.Hiding += (sender, args) => UpdateBounds();
+
+					// UWP 14393 Bug: If RequestedTheme is Light (which it is by default), then the 
+					// status bar uses White Foreground with White Background. 
+					// UWP 10586 Bug: If RequestedTheme is Light (which it is by default), then the 
+					// status bar uses Black Foreground with Black Background. 
+					// Since the Light theme should have a Black on White status bar, we will set it explicitly. 
+					// This can be overriden by setting the status bar colors in App.xaml.cs OnLaunched.
+
+					if (statusBar.BackgroundColor == null && statusBar.ForegroundColor == null && Windows.UI.Xaml.Application.Current.RequestedTheme == ApplicationTheme.Light)
+					{
+						statusBar.BackgroundColor = Colors.White;
+						statusBar.ForegroundColor = Colors.Black;
+						statusBar.BackgroundOpacity = 1;
+					}
 				}
 			}
 		}
@@ -387,18 +488,30 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var toolBarForegroundBinder = GetToolbarProvider() as IToolBarForegroundBinder;
 
-			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems.OrderBy(ti => ti.Priority))
+			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
 			{
 				toolBarForegroundBinder?.BindForegroundColor(commandBar);
 
 				var button = new AppBarButton();
 				button.SetBinding(AppBarButton.LabelProperty, "Text");
-				button.SetBinding(AppBarButton.IconProperty, "Icon", _fileImageSourcePathConverter);
+
+				if (commandBar.IsDynamicOverflowEnabled && item.Order == ToolbarItemOrder.Secondary)
+				{
+					button.SetBinding(AppBarButton.IconProperty, "IconImageSource", _imageSourceIconElementConverter);
+				}
+				else
+				{
+					var img = new WImage();
+					img.SetBinding(WImage.SourceProperty, "Value");
+					img.SetBinding(WImage.DataContextProperty, "IconImageSource", _imageConverter);
+					button.Content = img;
+				}
+
 				button.Command = new MenuItemCommand(item);
 				button.DataContext = item;
 				button.SetValue(NativeAutomationProperties.AutomationIdProperty, item.AutomationId);
 				button.SetAutomationPropertiesName(item);
-				button.SetAutomationPropertiesAccessibilityView(item);							   
+				button.SetAutomationPropertiesAccessibilityView(item);
 				button.SetAutomationPropertiesHelpText(item);
 				button.SetAutomationPropertiesLabeledBy(item);
 
@@ -437,6 +550,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			MessagingCenter.Subscribe<Page, AlertArguments>(Window.Current, Page.AlertSignalName, OnPageAlert);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(Window.Current, Page.ActionSheetSignalName, OnPageActionSheet);
+			MessagingCenter.Subscribe<Page, PromptArguments>(Window.Current, Page.PromptSignalName, OnPagePrompt);
 		}
 
 		static void OnPageActionSheet(object sender, ActionSheetArguments options)
@@ -474,6 +588,45 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		static async void OnPagePrompt(Page sender, PromptArguments options)
+		{
+			var promptDialog = new PromptDialog
+			{
+				Title = options.Title ?? string.Empty,
+				Message = options.Message ?? string.Empty,
+				Input = options.InitialValue ?? string.Empty,
+				Placeholder = options.Placeholder ?? string.Empty,
+				MaxLength = options.MaxLength >= 0 ? options.MaxLength : 0,
+				InputScope = options.Keyboard.ToInputScope()
+			};
+
+			if (options.Cancel != null)
+				promptDialog.SecondaryButtonText = options.Cancel;
+
+			if (options.Accept != null)
+				promptDialog.PrimaryButtonText = options.Accept;
+
+			var currentAlert = s_currentPrompt;
+			while (currentAlert != null)
+			{
+				await currentAlert;
+				currentAlert = s_currentPrompt;
+			}
+
+			s_currentPrompt = ShowPrompt(promptDialog);
+			options.SetResult(await s_currentPrompt.ConfigureAwait(false));
+			s_currentPrompt = null;
+		}
+
+		static async Task<string> ShowPrompt(PromptDialog prompt)
+		{
+			ContentDialogResult result = await prompt.ShowAsync();
+
+			if (result == ContentDialogResult.Primary)
+				return prompt.Input;
+			return null;
+		}
+
 		static async void OnPageAlert(Page sender, AlertArguments options)
 		{
 			string content = options.Message ?? string.Empty;
@@ -492,9 +645,11 @@ namespace Xamarin.Forms.Platform.UWP
 			if (options.Accept != null)
 				alertDialog.PrimaryButtonText = options.Accept;
 
-			while (s_currentAlert != null)
+			var currentAlert = s_currentAlert;
+			while (currentAlert != null)
 			{
-				await s_currentAlert;
+				await currentAlert;
+				currentAlert = s_currentAlert;
 			}
 
 			s_currentAlert = ShowAlert(alertDialog);

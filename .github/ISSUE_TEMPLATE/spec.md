@@ -1,8 +1,8 @@
 ---
 name: Spec
 about: An official specification for enhancements
-title: ''
-labels: ''
+title: "[Spec]  "
+labels: proposal-open, t/enhancement ➕
 assignees: ''
 
 ---
@@ -29,6 +29,29 @@ Provide a concise description of the feature and the motivation for adding it to
  
 # Scenarios
 
+## C# Example
+```csharp
+var thing = new MyNewControl();
+thing.BeAwesome = true;
+thing.Color = Color.Cornsilk;
+```
+
+## XAML Example
+```xaml
+<MyNewControl x:Name="thing" BeAwesome="true" Color="Cornsilk" />
+```
+
+## CSS Example
+```css
+MyNewControl {
+     color: Cornsilk;
+}
+```
+
 # Backward Compatibility
+
+Minimum API levels?
+Breaking changes?
+Unsupported platforms?
 
 # Difficulty : [low/medium/high]

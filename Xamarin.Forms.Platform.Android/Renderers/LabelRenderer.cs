@@ -74,9 +74,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			//We need to clear the Hint or else it will interfere with the sizing of the Label
 			var hint = Control.Hint;
-			if(!string.IsNullOrEmpty(hint))
+			if (!string.IsNullOrEmpty(hint))
 				Control.Hint = string.Empty;
-		
+
 			SizeRequest result = base.GetDesiredSize(widthConstraint, heightConstraint);
 
 			//Set Hint back after sizing
@@ -118,13 +118,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateText();
 				UpdateLineBreakMode();
+				UpdateCharacterSpacing();
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
 			}
 			else
-			{
-				_view.SkipNextInvalidate();
+			{	
 				UpdateText();
 				if (e.OldElement.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
@@ -132,13 +132,21 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateGravity();
 				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
+					UpdateCharacterSpacing();
 			}
 			UpdateTextDecorations();
+			UpdatePadding();
 			_motionEventHelper.UpdateElement(e.NewElement);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
@@ -147,16 +155,20 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
-			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			else if (e.IsOneOf(Label.TextProperty, Label.FormattedTextProperty, Label.TextTypeProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
+			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
 
 		void UpdateColor()
@@ -225,6 +237,13 @@ namespace Xamarin.Forms.Platform.Android
 			_view.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
 		}
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer && Control is TextView textControl)
+			{
+				textControl.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+		}
 
 		void UpdateLineHeight()
 		{
@@ -237,7 +256,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateMaxLines()
 		{
-			Control.SetMaxLines(Element);	
+			Control.SetMaxLines(Element);
 		}
 
 		void UpdateText()
@@ -257,12 +276,41 @@ namespace Xamarin.Forms.Platform.Android
 					_view.SetTextColor(_labelTextColorDefault);
 					_lastUpdateColor = Color.Default;
 				}
-				_view.Text = Element.Text;
+
+				switch (Element.TextType)
+				{
+
+					case TextType.Html:
+						if (Forms.IsNougatOrNewer)
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty, FromHtmlOptions.ModeCompact), TextView.BufferType.Spannable);
+						else
+#pragma warning disable CS0618 // Type or member is obsolete
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty), TextView.BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+						break;
+
+					default:
+						_view.Text = Element.Text;
+
+						break;
+				}
+
 				UpdateColor();
 				UpdateFont();
 
 				_wasFormatted = false;
 			}
+
+			_lastSizeRequest = null;
+		}
+
+		void UpdatePadding()
+		{
+			Control.SetPadding(
+				(int)Context.ToPixels(Element.Padding.Left),
+				(int)Context.ToPixels(Element.Padding.Top),
+				(int)Context.ToPixels(Element.Padding.Right),
+				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
 		}

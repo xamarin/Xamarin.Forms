@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
@@ -157,7 +157,6 @@ namespace Xamarin.Forms.Controls.Issues
 				protected override void OnAppearing() => Debug.WriteLine($"OnAppearing: {_permutations}");
 				protected override void OnDisappearing() => Debug.WriteLine($"OnDisappearing: {_permutations}");
 			}
-
 		}
 
 		[Preserve(AllMembers = true)]
@@ -170,7 +169,6 @@ namespace Xamarin.Forms.Controls.Issues
 				PushAsync(new InternalPage(30));
 
 				var otherPage = new InternalPage(40);
-				PushAsync(otherPage);
 
 				otherPage.Appearing += async (object sender, EventArgs e) =>
 				{
@@ -182,7 +180,9 @@ namespace Xamarin.Forms.Controls.Issues
 					Application.Current.MainPage.BindingContext = new object();
 				};
 
+				PushAsync(otherPage);
 			}
+
 			protected override void OnAppearing() => Debug.WriteLine($"OnAppearing: Issue2338");
 			protected override void OnDisappearing() => Debug.WriteLine($"OnDisappearing: Issue2338");
 
@@ -293,13 +293,17 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					base.OnAppearing();
 					await Task.Delay(500);
+#pragma warning disable 4014
 					Detail.Navigation.PushAsync(new ContentPage());
 					Detail.Navigation.PushModalAsync(new NavigationPage(new ContentPage() { Title = "Details 2" }));
+#pragma warning restore 4014
 
 					var navPage = new NavigationPage(new ContentPage() { Title = "Details" });
 					Detail = navPage;
 					Application.Current.MainPage = Issue2338TestHelper.CreateSuccessPage(nameof(Issue2338_MasterDetailsPage));
+#pragma warning disable 4014
 					navPage.PushAsync(new ContentPage() { Title = "Details 2" });
+#pragma warning restore 4014
 				}
 			}
 		}
@@ -331,7 +335,6 @@ namespace Xamarin.Forms.Controls.Issues
 					base.OnAppearing();
 					await Task.Delay(500);
 					var contentPage = new ContentPage();
-					Detail.Navigation.PushAsync(contentPage);
 
 					contentPage.Appearing += (_, __) =>
 					{
@@ -343,6 +346,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 						navPage.PushAsync(new ContentPage() { Title = "Details 2" });
 					};
+
+#pragma warning disable 4014
+					Detail.Navigation.PushAsync(contentPage);
+#pragma warning restore 4014
 				}
 			}
 		}

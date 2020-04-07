@@ -43,12 +43,15 @@ namespace Xamarin.Forms.Xaml
 		{
 			object value = null;
 
-			XamlParseException xpe;
 			var type = XamlParser.GetElementType(node.XmlType, node, Context.RootElement?.GetType().GetTypeInfo().Assembly,
-				out xpe);
-			if (xpe != null)
+				out XamlParseException xpe);
+			if (xpe != null) {
+				if (Context.ExceptionHandler != null) {
+					Context.ExceptionHandler(xpe);
+					return;
+				}
 				throw xpe;
-
+			}
 			Context.Types[node] = type;
 			if (IsXaml2009LanguagePrimitive(node))
 				value = CreateLanguagePrimitive(type, node);
@@ -76,12 +79,25 @@ namespace Xamarin.Forms.Xaml
 					if (value == null && node.CollectionItems.Any() && node.CollectionItems.First() is ValueNode) {
 						var serviceProvider = new XamlServiceProvider(node, Context);
 						var converted = ((ValueNode)node.CollectionItems.First()).Value.ConvertTo(type, () => type.GetTypeInfo(),
-							serviceProvider);
+							serviceProvider, out Exception exception);
+						if (exception != null) {
+							if (Context.ExceptionHandler != null) {
+								Context.ExceptionHandler(exception);
+								return;
+							}
+							throw exception;
+						} 
 						if (converted != null && converted.GetType() == type)
 							value = converted;
 					}
-					if (value == null)
-						value = Activator.CreateInstance(type);
+					if (value == null) {
+						try {
+							value = Activator.CreateInstance(type);
+						}
+						catch (Exception e) when (e is TargetInvocationException || e is MemberAccessException) {
+							value = XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name }, type, e) ?? throw e;
+						}
+					}
 				}
 				catch (TargetInvocationException e) when (e.InnerException is XamlParseException || e.InnerException is XmlException) {
 					throw e.InnerException;
@@ -102,8 +118,17 @@ namespace Xamarin.Forms.Xaml
 				foreach (var cnode in node.CollectionItems)
 					cnode.Accept(visitor, node);
 
-				value = markup.ProvideValue(serviceProvider);
-
+				try {
+					value = markup.ProvideValue(serviceProvider);
+				}
+				catch (Exception e) {
+					var xamlpe = e as XamlParseException ?? new XamlParseException("Markup extension failed", serviceProvider, e);
+					if (Context.ExceptionHandler != null) {
+						Context.ExceptionHandler(xamlpe);
+					}
+					else
+						throw xamlpe;
+				}
 				if (!node.Properties.TryGetValue(XmlName.xKey, out INode xKey))
 					xKey = null;
 
@@ -116,8 +141,8 @@ namespace Xamarin.Forms.Xaml
 				Values[node] = value;
 			}
 
-			if (value is BindableObject bindableValue && node.Namescope != (parentNode as IElementNode)?.Namescope)
-				NameScope.SetNameScope(bindableValue, node.Namescope);
+			if (value is BindableObject bindableValue && node.NameScopeRef != (parentNode as IElementNode)?.NameScopeRef)
+				NameScope.SetNameScope(bindableValue, node.NameScopeRef.NameScope);
 
 			if (XamlLoader.ValueCreatedCallback != null) {
 				var name = node.XmlType.Name;
@@ -132,16 +157,18 @@ namespace Xamarin.Forms.Xaml
 			var rnode = (XamlLoader.RuntimeRootNode)node;
 			Values[node] = rnode.Root;
 			Context.Types[node] = rnode.Root.GetType();
-			var bindableRoot = rnode.Root as BindableObject;
-			if (bindableRoot != null)
-				NameScope.SetNameScope(bindableRoot, node.Namescope);
+			if (rnode.Root is BindableObject bindable) {
+				if (NameScope.GetNameScope(bindable) is INameScope existingNs)
+					node.NameScopeRef.NameScope = existingNs;
+				else
+					NameScope.SetNameScope(bindable, node.NameScopeRef?.NameScope);
+			}
 		}
 
 		public void Visit(ListNode node, INode parentNode)
 		{
 			//this is a gross hack to keep ListNode alive. ListNode must go in favor of Properties
-			XmlName name;
-			if (ApplyPropertiesVisitor.TryGetPropertyName(node, parentNode, out name))
+			if (ApplyPropertiesVisitor.TryGetPropertyName(node, parentNode, out XmlName name))
 				node.XmlName = name;
 		}
 
@@ -156,14 +183,12 @@ namespace Xamarin.Forms.Xaml
 							ci.GetParameters().All(pi => pi.CustomAttributes.Any(attr => attr.AttributeType == typeof (ParameterAttribute))));
 			if (ctorInfo == null)
 				return true;
-			foreach (var parameter in ctorInfo.GetParameters())
-			{
+			foreach (var parameter in ctorInfo.GetParameters()) {
 				var propname =
 					parameter.CustomAttributes.First(ca => ca.AttributeType.FullName == "Xamarin.Forms.ParameterAttribute")
 						.ConstructorArguments.First()
 						.Value as string;
-				if (!node.Properties.ContainsKey(new XmlName("", propname)))
-				{
+				if (!node.Properties.ContainsKey(new XmlName("", propname))) {
 					missingArgName = propname;
 					return false;
 				}
@@ -181,22 +206,34 @@ namespace Xamarin.Forms.Xaml
 							ci.GetParameters().Length != 0 && ci.IsPublic &&
 							ci.GetParameters().All(pi => pi.CustomAttributes.Any(attr => attr.AttributeType == typeof (ParameterAttribute))));
 			object[] arguments = CreateArgumentsArray(node, ctorInfo);
-			return ctorInfo.Invoke(arguments);
+			try {
+				return ctorInfo.Invoke(arguments);
+			}
+			catch (Exception e) when (e is TargetInvocationException || e is MissingMemberException) {
+				return XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name }, nodeType, e) ?? throw e;
+			}
+
 		}
 
 		public object CreateFromFactory(Type nodeType, IElementNode node)
 		{
 			object[] arguments = CreateArgumentsArray(node);
 
-			if (!node.Properties.ContainsKey(XmlName.xFactoryMethod))
-			{
+			if (!node.Properties.ContainsKey(XmlName.xFactoryMethod)) {
 				//non-default ctor
-				return Activator.CreateInstance(nodeType, arguments);
+				try {
+					return Activator.CreateInstance(nodeType, arguments);
+				}
+				catch (Exception e) when (e is TargetInvocationException || e is MissingMemberException) {
+					return XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name }, nodeType, e) ?? throw e;
+				}
 			}
 
 			var factoryMethod = ((string)((ValueNode)node.Properties[XmlName.xFactoryMethod]).Value);
 			Type[] types = arguments == null ? new Type[0] : arguments.Select(a => a.GetType()).ToArray();
-			Func<MethodInfo, bool> isMatch = m => {
+
+			bool isMatch(MethodInfo m)
+			{
 				if (m.Name != factoryMethod)
 					return false;
 				var p = m.GetParameters();
@@ -205,21 +242,27 @@ namespace Xamarin.Forms.Xaml
 				if (!m.IsStatic)
 					return false;
 				for (var i = 0; i < p.Length; i++) {
-					if ((p [i].ParameterType.IsAssignableFrom(types [i])))
+					if ((p[i].ParameterType.IsAssignableFrom(types[i])))
 						continue;
-					var op_impl =  p[i].ParameterType.GetImplicitConversionOperator(fromType: types[i], toType: p[i].ParameterType)
+					var op_impl = p[i].ParameterType.GetImplicitConversionOperator(fromType: types[i], toType: p[i].ParameterType)
 								?? types[i].GetImplicitConversionOperator(fromType: types[i], toType: p[i].ParameterType);
 
 					if (op_impl == null)
 						return false;
-					arguments [i] = op_impl.Invoke(null, new [] { arguments [i]});
+					arguments[i] = op_impl.Invoke(null, new[] { arguments[i] });
 				}
 				return true;
-			};
-			var mi = nodeType.GetRuntimeMethods().FirstOrDefault(isMatch);
-			if (mi == null)
-				throw new MissingMemberException($"No static method found for {nodeType.FullName}::{factoryMethod} ({string.Join(", ", types.Select(t => t.FullName))})");
-			return mi.Invoke(null, arguments);
+			}
+
+			try {
+				var mi = nodeType.GetRuntimeMethods().FirstOrDefault(isMatch);
+				if (mi == null)
+					throw new MissingMemberException($"No static method found for {nodeType.FullName}::{factoryMethod} ({string.Join(", ", types.Select(t => t.FullName))})");
+				return mi.Invoke(null, arguments);
+			}
+			catch (Exception e) when (e is TargetInvocationException || e is MissingMemberException) {
+				return XamlLoader.InstantiationFailedCallback?.Invoke(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = node.XmlType.Name}, nodeType, e) ?? throw e;
+			}
 		}
 
 		public object[] CreateArgumentsArray(IElementNode enode)
@@ -227,17 +270,13 @@ namespace Xamarin.Forms.Xaml
 			if (!enode.Properties.ContainsKey(XmlName.xArguments))
 				return null;
 			var node = enode.Properties[XmlName.xArguments];
-			var elementNode = node as ElementNode;
-			if (elementNode != null)
-			{
+			if (node is ElementNode elementNode) {
 				var array = new object[1];
 				array[0] = Values[elementNode];
 				return array;
 			}
 
-			var listnode = node as ListNode;
-			if (listnode != null)
-			{
+			if (node is ListNode listnode) {
 				var array = new object[listnode.CollectionItems.Count];
 				for (var i = 0; i < listnode.CollectionItems.Count; i++)
 					array[i] = Values[(ElementNode)listnode.CollectionItems[i]];
@@ -250,40 +289,33 @@ namespace Xamarin.Forms.Xaml
 		{
 			var n = ctorInfo.GetParameters().Length;
 			var array = new object[n];
-			for (var i = 0; i < n; i++)
-			{
+			for (var i = 0; i < n; i++) {
 				var parameter = ctorInfo.GetParameters()[i];
 				var propname =
 					parameter.CustomAttributes.First(attr => attr.AttributeType == typeof (ParameterAttribute))
 						.ConstructorArguments.First()
 						.Value as string;
 				var name = new XmlName("", propname);
-				INode node;
-				if (!enode.Properties.TryGetValue(name, out node))
-				{
-					throw new XamlParseException(
-						String.Format("The Property {0} is required to create a {1} object.", propname, ctorInfo.DeclaringType.FullName),
-						enode as IXmlLineInfo);
-				}
+				if (!enode.Properties.TryGetValue(name, out INode node))
+					throw new XamlParseException($"The Property {propname} is required to create a {ctorInfo.DeclaringType.FullName} object.", enode as IXmlLineInfo);
 				if (!enode.SkipProperties.Contains(name))
 					enode.SkipProperties.Add(name);
 				var value = Context.Values[node];
 				var serviceProvider = new XamlServiceProvider(enode, Context);
-				var convertedValue = value.ConvertTo(parameter.ParameterType, () => parameter, serviceProvider);
+				var convertedValue = value.ConvertTo(parameter.ParameterType, () => parameter, serviceProvider, out Exception e);
+				if (e != null)
+					throw e;
 				array[i] = convertedValue;
 			}
 
 			return array;
 		}
 
-		static bool IsXaml2009LanguagePrimitive(IElementNode node)
-		{
-			return node.NamespaceURI == XamlParser.X2009Uri;
-		}
+		static bool IsXaml2009LanguagePrimitive(IElementNode node) => node.NamespaceURI == XamlParser.X2009Uri;
 
 		static object CreateLanguagePrimitive(Type nodeType, IElementNode node)
 		{
-			object value = null;
+			object value;
 			if (nodeType == typeof (string))
 				value = String.Empty;
 			else if (nodeType == typeof (Uri))
@@ -291,93 +323,41 @@ namespace Xamarin.Forms.Xaml
 			else
 				value = Activator.CreateInstance(nodeType);
 
-			if (node.CollectionItems.Count == 1 && node.CollectionItems[0] is ValueNode &&
-			    ((ValueNode)node.CollectionItems[0]).Value is string)
-			{
-				var valuestring = ((ValueNode)node.CollectionItems[0]).Value as string;
-
-				if (nodeType == typeof(SByte)) {
-					sbyte retval;
-					if (sbyte.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(Int16)) {
-					short retval;
-					if (short.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(Int32)) {
-					int retval;
-					if (int.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(Int64)) {
-					long retval;
-					if (long.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(Byte)) {
-					byte retval;
-					if (byte.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(UInt16)) {
-					ushort retval;
-					if (ushort.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(UInt32)) {
-					uint retval;
-					if (uint.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(UInt64)) {
-					ulong retval;
-					if (ulong.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(Single)) {
-					float retval;
-					if (float.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof(Double)) {
-					double retval;
-					if (double.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof (Boolean))
-				{
-					bool outbool;
-					if (bool.TryParse(valuestring, out outbool))
-						return outbool;
-				}
-				if (nodeType == typeof(TimeSpan)) {
-					TimeSpan retval;
-					if (TimeSpan.TryParse(valuestring, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-				if (nodeType == typeof (char))
-				{
-					char retval;
-					if (char.TryParse(valuestring, out retval))
-						return retval;
-				}
+			if (   node.CollectionItems.Count == 1
+				&& node.CollectionItems[0] is ValueNode
+				&& ((ValueNode)node.CollectionItems[0]).Value is string valuestring) {
+				if (nodeType == typeof(SByte) && sbyte.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var sbyteval))
+					return sbyteval;
+				if (nodeType == typeof(Int16) && short.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var int16val))
+					return int16val;
+				if (nodeType == typeof(Int32) && int.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var int32val))
+					return int32val;
+				if (nodeType == typeof(Int64) && long.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var int64val))
+					return int64val;
+				if (nodeType == typeof(Byte) && byte.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var byteval))
+					return byteval;
+				if (nodeType == typeof(UInt16) && ushort.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var uint16val))
+					return uint16val;
+				if (nodeType == typeof(UInt32) && uint.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var uint32val))
+					return uint32val;
+				if (nodeType == typeof(UInt64) && ulong.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var uint64val))
+					return uint64val;
+				if (nodeType == typeof(Single) && float.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var singleval))
+					return singleval;
+				if (nodeType == typeof(Double) && double.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var doubleval))
+					return doubleval;
+				if (nodeType == typeof(Boolean) && bool.TryParse(valuestring, out var boolval))
+					return boolval;
+				if (nodeType == typeof(TimeSpan) && TimeSpan.TryParse(valuestring, CultureInfo.InvariantCulture, out TimeSpan timespanval))
+					return timespanval;
+				if (nodeType == typeof(char) && char.TryParse(valuestring, out var charval))
+					return charval;
 				if (nodeType == typeof (string))
 					return valuestring;
-				if (nodeType == typeof (decimal))
-				{
-					decimal retval;
-					if (decimal.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						return retval;
-				}
-
-				else if (nodeType == typeof (Uri))
-				{
-					Uri retval;
-					if (Uri.TryCreate(valuestring, UriKind.RelativeOrAbsolute, out retval))
-						return retval;
-				}
+				if (nodeType == typeof(decimal) && decimal.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out var decimalval))
+					return decimalval;
+				if (nodeType == typeof(Uri) && Uri.TryCreate(valuestring, UriKind.RelativeOrAbsolute, out Uri urival))
+					return urival;
 			}
 			return value;
 		}

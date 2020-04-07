@@ -1,11 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -18,6 +14,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public ImageRenderer() : base()
 		{
 			ImageElementManager.Init(this);
+			Windows.UI.Xaml.Application.Current.Resuming += OnResumingAsync;
 		}
 
 		bool IImageVisualElementRenderer.IsDisposed => _disposed;
@@ -29,28 +26,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_measured = true;
 
-			if (Control.Source is BitmapSource bitmap)
-			{
-				return new SizeRequest(
-					new Size
-					{
-						Width = bitmap.PixelWidth,
-						Height = bitmap.PixelHeight
-					});
-			}
-			else if (Control.Source is CanvasImageSource canvas)
-			{
-				return new SizeRequest(
-					new Size
-					{
-						Width = canvas.SizeInPixels.Width,
-						Height = canvas.SizeInPixels.Height
-					});
-			}
-			else
-			{
-				throw new InvalidCastException($"\"{Control.Source.GetType().FullName}\" is not supported.");
-			}
+			return new SizeRequest(Control.Source.GetImageSourceSize());
 		}
 
 		protected override void Dispose(bool disposing)
@@ -69,6 +45,7 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					Control.ImageOpened -= OnImageOpened;
 					Control.ImageFailed -= OnImageFailed;
+					Windows.UI.Xaml.Application.Current.Resuming -= OnResumingAsync;
 				}
 			}
 
@@ -106,7 +83,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_measured)
 			{
-				ImageElementManager.RefreshImage(Element);
+				ImageElementManager.RefreshImage(this);
 			}
 
 			Element?.SetIsLoading(false);
@@ -141,7 +118,22 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected async Task UpdateSource()
 		{
-			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);		}
+			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);
+		}
+
+		async void OnResumingAsync(object sender, object e)
+		{
+			try
+			{
+				await ImageElementManager.UpdateSource(this);
+			}
+			catch (Exception exception)
+			{
+				Log.Warning("Update image source after app resume", 
+					$"ImageSource failed to update after app resume: {exception.Message}");
+				
+			}
+		}
 
 		void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)
 		{

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
-	public class MenuItem : BaseMenuItem, IMenuItemController
+	public class MenuItem : BaseMenuItem, IMenuItemController, IStyleSelectable
 	{
 		public static readonly BindableProperty AcceleratorProperty = BindableProperty.CreateAttached(nameof(Accelerator), typeof(Accelerator), typeof(MenuItem), null);
 
@@ -17,7 +19,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsDestructiveProperty = BindableProperty.Create(nameof(IsDestructive), typeof(bool), typeof(MenuItem), false);
 
-		public static readonly BindableProperty IconProperty = BindableProperty.Create(nameof(Icon), typeof(FileImageSource), typeof(MenuItem), default(FileImageSource));
+		public static readonly BindableProperty IconImageSourceProperty = BindableProperty.Create(nameof(IconImageSource), typeof(ImageSource), typeof(MenuItem), default(ImageSource));
+
+		[Obsolete("IconProperty is obsolete as of 4.0.0. Please use IconImageSourceProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static readonly BindableProperty IconProperty = IconImageSourceProperty;
 
 		static readonly BindablePropertyKey IsEnabledPropertyKey = BindableProperty.CreateReadOnly(nameof(IsEnabled), typeof(bool), typeof(ToolbarItem), true);
 		public static readonly BindableProperty IsEnabledProperty = IsEnabledPropertyKey.BindableProperty;
@@ -27,6 +33,14 @@ namespace Xamarin.Forms
 		public static Accelerator GetAccelerator(BindableObject bindable) => (Accelerator)bindable.GetValue(AcceleratorProperty);
 
 		public static void SetAccelerator(BindableObject bindable, Accelerator value) => bindable.SetValue(AcceleratorProperty, value);
+
+		internal readonly MergedStyle _mergedStyle;
+		internal event EventHandler StyleClassChanged;
+
+		public MenuItem()
+		{
+			_mergedStyle = new MergedStyle(GetType(), this);
+		}
 
 		public ICommand Command
 		{
@@ -40,10 +54,18 @@ namespace Xamarin.Forms
 			set => SetValue(CommandParameterProperty, value);
 		}
 
+		[Obsolete("Icon is obsolete as of 4.0.0. Please use IconImageSource instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FileImageSource Icon
 		{
-			get => (FileImageSource)GetValue(IconProperty);
+			get => GetValue(IconProperty) as FileImageSource ?? default(FileImageSource);
 			set => SetValue(IconProperty, value);
+		}
+
+		public ImageSource IconImageSource
+		{
+			get => (ImageSource)GetValue(IconImageSourceProperty);
+			set => SetValue(IconImageSourceProperty, value);
 		}
 
 		public bool IsDestructive
@@ -64,10 +86,33 @@ namespace Xamarin.Forms
 			[EditorBrowsable(EditorBrowsableState.Never)] set => SetValue(IsEnabledPropertyKey, value);
 		}
 
+		[TypeConverter(typeof(ListStringTypeConverter))]
+		public IList<string> StyleClass
+		{
+			get { return @class; }
+			set { @class = value; }
+		}
+
+		[TypeConverter(typeof(ListStringTypeConverter))]
+		public IList<string> @class
+		{
+			get { return _mergedStyle.StyleClass; }
+			set 
+			{ 
+				_mergedStyle.StyleClass = value;
+				StyleClassChanged?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
+		IList<string> IStyleSelectable.Classes => StyleClass;
+
 		bool IsEnabledCore
 		{
 			set => SetValueCore(IsEnabledPropertyKey, value);
 		}
+
+		[Obsolete("This property is obsolete as of 3.5.0. Please use MenuItem.IsEnabledProperty.PropertyName instead.")]
+		public string IsEnabledPropertyName => MenuItem.IsEnabledProperty.PropertyName;
 
 		public event EventHandler Clicked;
 

@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (disposing)
 				{
 					foreach (var modal in _modals)
-						Platform.DisposeModelAndChildrenRenderers(modal);
+						modal.DisposeModalAndChildRenderers();
 					_renderer = null;
 				}
 				_disposed = true;
@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		void HandleChildRemoved(object sender, ElementEventArgs e)
 		{
 			var view = e.Element;
-			Platform.DisposeModelAndChildrenRenderers(view);
+			view.DisposeModalAndChildRenderers();
 		}
 
 		Task PresentModalAsync(Page modal, bool animated)
@@ -122,9 +122,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			NSViewControllerTransitionOptions option = animated
 							? NSViewControllerTransitionOptions.SlideDown
 							: NSViewControllerTransitionOptions.None;
-
 			var task = _renderer.HandleAsyncAnimation(controller, toViewController, option,
-				() => Platform.DisposeModelAndChildrenRenderers(modal), modal);
+				() =>
+				{
+					modal.DisposeModalAndChildRenderers();
+					var removingIndex = Array.IndexOf(_renderer.ChildViewControllers, controller);
+					if(removingIndex >= 0)
+						_renderer.RemoveChildViewController(removingIndex);
+				}, modal);
 			return task;
 		}
 	}

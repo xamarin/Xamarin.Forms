@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\Environment.Build.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' And '$(BuildIpa)' == 'True' ">iPhone</Platform>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProjectGuid>{C7131F14-274F-4B55-ACA9-E81731AD012F}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -11,13 +13,14 @@
     <AssemblyName>XamarinFormsControlGalleryiOS</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <DefineConstants Condition="'$(Use2017)' != 'true'">__XCODE11__;$(DefineConstants);</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -30,7 +33,6 @@
     <MtouchUseLlvm>False</MtouchUseLlvm>
     <MtouchUseThumb>False</MtouchUseThumb>
     <MtouchOptimizePNGs>False</MtouchOptimizePNGs>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <MtouchEnableBitcode>False</MtouchEnableBitcode>
     <OptimizePNGs>True</OptimizePNGs>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
@@ -38,35 +40,38 @@
     <MtouchFloat32>False</MtouchFloat32>
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignProvision />
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <MtouchExtraArgs>--nolinkaway</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
+    <DefineConstants>HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchLink>None</MtouchLink>
     <MtouchArch>i386, x86_64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG;__UNIFIED__;__MOBILE__;__IOS__</DefineConstants>
+    <DefineConstants>DEBUG;__UNIFIED__;__MOBILE__;__IOS__;HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <MtouchArch>ARMv7, ARM64</MtouchArch>
+    <MtouchArch>ARM64</MtouchArch>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>True</MtouchDebug>
     <CodesignEntitlements>
     </CodesignEntitlements>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
-    <MtouchExtraArgs />
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
     <MtouchFastDev>False</MtouchFastDev>
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
     <MtouchUseLlvm>False</MtouchUseLlvm>
@@ -79,20 +84,25 @@
     <CodesignProvision>Automatic</CodesignProvision>
     <CodesignResourceRules />
     <CodesignExtraArgs />
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
+    <DefineConstants>HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
+    <MtouchLink>Full</MtouchLink>
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
@@ -101,6 +111,8 @@
     <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
+    <Compile Include="CustomRenderers\_9087CustomRenderer.cs" />
+    <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="SearchbarEffect.cs" />
     <Compile Include="CustomRenderer40251.cs" />
     <Compile Include="Main.cs" />
@@ -108,6 +120,8 @@
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="RegistrarValidationService.cs" />
     <Compile Include="SampleNativeControl.cs" />
+    <Compile Include="Tests\PlatformTestSettings.cs" />
+    <Compile Include="Tests\TestingPlatformService.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
@@ -117,11 +131,38 @@
     <Compile Include="CustomRenderers.cs" />
     <Compile Include="CustomRendererBugzila38731.cs" />
     <Compile Include="CustomApplication.cs" />
+    <Compile Include="..\xamarin.forms.controls\gallerypages\openglgalleries\AdvancedOpenGLGallery.cs">
+      <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
+    </Compile>
+    <Compile Include="CustomEffects\GradientEffect.cs" />
+    <Compile Include="CustomRenderers\CustomRenderer.cs" />
+    <Compile Include="CustomRenderers\RoundedLabelRenderer.cs" />
+    <Compile Include="ApiLabelRenderer.cs" />
+    <Compile Include="CustomRenderers\CustomSearchBarRenderer.cs" />
+    <Compile Include="_9767CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
       <Project>{cb9c96ce-125c-4a68-b6a1-c3ff1fbf93e1}</Project>
       <Name>Xamarin.Forms.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Platform.iOS.UnitTests\Xamarin.Forms.Platform.iOS.UnitTests.csproj">
+      <Project>{52c50e88-7f15-45fe-a63c-8e7c76ca2bae}</Project>
+      <Name>Xamarin.Forms.Platform.iOS.UnitTests</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="$(FromSource) == 'false'">
+    <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj">
+      <Project>{4dcd0420-1168-4b77-86db-6196ee4bd491}</Project>
+      <Name>Xamarin.Forms.CustomAttributes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="$(FromSource) == 'true'">
+    <ProjectReference Include="..\Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj">
+      <Project>{fb4a866a-5721-4545-9e5d-b7f7d59875a4}</Project>
+      <Name>Xamarin.Forms.DualScreen</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Maps.iOS\Xamarin.Forms.Maps.iOS.csproj">
       <Project>{aba078c4-f9bb-4924-8b2b-10fe0d2f5491}</Project>
@@ -149,9 +190,11 @@
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Material.iOS\Xamarin.Forms.Material.iOS.csproj">
+    <ProjectReference Condition="'$(Use2017)' != 'true'" Include="..\Xamarin.Forms.Material.iOS\Xamarin.Forms.Material.iOS.csproj">
       <Project>{8A75B1DC-CEED-4B1B-8675-A7DFFD1E6DE4}</Project>
       <Name>Xamarin.Forms.Material.iOS</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -166,9 +209,12 @@
     <Content Include="Entitlements.plist">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="GifOne.gif" />
+    <Content Include="GifTwo.gif" />
     <Content Include="Goobuntu-icon.png" />
     <Content Include="Intranet-icon.png" />
     <BundleResource Include="local.html" />
+    <LinkDescription Include="LinkDescription.xml" />
     <Content Include="oasis.jpg" />
     <BundleResource Include="oasissmall.jpg" />
     <Content Include="coffee%402x.png" />
@@ -300,6 +346,28 @@
     <BundleResource Include="Resources\xamarin_logo%403x.png" />
     <BundleResource Include="Resources\xamarin_logo%402x.png" />
     <BundleResource Include="Resources\xamarin_logo.png" />
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\Roboto-Bold.ttf">
+      <Link>Resources\Fonts\Roboto-Bold.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\Roboto-BoldItalic.ttf">
+      <Link>Resources\Fonts\Roboto-BoldItalic.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\Roboto-Italic.ttf">
+      <Link>Resources\Fonts\Roboto-Italic.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.MacOS\Resources\Fonts\Roboto-Regular.ttf">
+      <Link>Resources\Fonts\Roboto-Regular.ttf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="Resources\button_add%402x.png" />
+    <BundleResource Include="Resources\icon_search%402x.png" />
+    <BundleResource Include="Resources\icon_bookmark%402x.png" />
+    <BundleResource Include="Resources\xamarinstore.jpg" />
+    <BundleResource Include="Resources\cardBackground%402x.png" />
+    <BundleResource Include="Resources\Fonts\fa-solid-900.ttf" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -310,14 +378,17 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="netstandard" />
+    <Reference Include="OpenTK-1.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AdvancedColorPicker" Version="2.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NUnit">
+      <Version>3.12.0</Version>
+    </PackageReference>
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <PackageReference Include="Xamarin.Insights" Version="1.12.3" />
-    <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="72.2.0.1" />
-    <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.21.7" />
+    <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.21.9" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -366,5 +437,6 @@
       <Visible>false</Visible>
     </ImageAsset>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

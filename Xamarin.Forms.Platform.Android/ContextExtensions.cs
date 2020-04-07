@@ -4,6 +4,17 @@ using Android.Content;
 using Android.Util;
 using Android.Views.InputMethods;
 using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
+using AActivity = Android.App.Activity;
+
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+using AndroidX.AppCompat.App;
+using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
+#else
+using AFragmentManager = Android.Support.V4.App.FragmentManager;
+using Android.Support.V4.App;
+using Android.Support.V7.App;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -50,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			SetupMetrics(self);
 
-			return (float)Math.Round(dp * s_displayDensity);
+			return (float)Math.Ceiling(dp * s_displayDensity);
 		}
 
 		public static bool HasRtlSupport(this Context self) =>
@@ -80,6 +91,86 @@ namespace Xamarin.Forms.Platform.Android
 
 			using (DisplayMetrics metrics = context.Resources.DisplayMetrics)
 				s_displayDensity = metrics.Density;
+		}
+
+		public static AActivity GetActivity(this Context context)
+		{
+			if (context == null)
+				return null;
+
+			if (context is AActivity activity)
+				return activity;
+
+			if (context is ContextWrapper contextWrapper)
+				return contextWrapper.BaseContext.GetActivity();
+
+			return null;
+		}
+
+		internal static Context GetThemedContext(this Context context)
+		{
+			if (context == null)
+				return null;
+
+			if (context.IsDesignerContext())
+				return context;
+
+			if (context is AppCompatActivity activity)
+				return activity.SupportActionBar.ThemedContext;
+
+			if (context is ContextWrapper contextWrapper)
+				return contextWrapper.BaseContext.GetThemedContext();
+
+			return null;
+		}
+
+		static bool? _isDesignerContext;
+		internal static bool IsDesignerContext(this Context context)
+		{
+			if (_isDesignerContext.HasValue)
+				return _isDesignerContext.Value;
+
+			context.SetDesignerContext();
+			return _isDesignerContext.Value;
+		}
+
+		internal static void SetDesignerContext(this Context context)
+		{
+			if (_isDesignerContext.HasValue)
+				return;
+
+			if (context == null)
+				_isDesignerContext = false;
+			else if ($"{context}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
+				_isDesignerContext = true;
+			else
+				_isDesignerContext = false;
+		}
+
+		internal static void SetDesignerContext(global::Android.Views.View view)
+		{
+			_isDesignerContext = view.IsInEditMode;
+		}
+
+		internal static bool IsDesignerContext(this global::Android.Views.View view)
+		{
+			if (!_isDesignerContext.HasValue)
+				SetDesignerContext(view);
+
+			return _isDesignerContext.Value;
+		}
+
+		public static AFragmentManager GetFragmentManager(this Context context)
+		{
+			if (context == null)
+				return null;
+
+			var activity = context.GetActivity();
+
+			if (activity is FragmentActivity fa)
+				return fa.SupportFragmentManager;
+
+			return null;
 		}
 	}
 }

@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaximumTrackColor();
 			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();
-			else if (e.PropertyName == Slider.ThumbImageProperty.PropertyName)
+			else if (e.PropertyName == Slider.ThumbImageSourceProperty.PropertyName)
 				UpdateThumbImage();
 		}
 
@@ -165,22 +165,22 @@ namespace Xamarin.Forms.Platform.UWP
 				() => thumb.Background, brush => thumb.Background = brush);
 		}
 
-		void UpdateThumbImage()
+		async void UpdateThumbImage()
 		{
 			if (Element == null || Control == null)
 			{
 				return;
 			}
 
-			var thumbImage = Element.ThumbImage;
+			var thumbImage = Element.ThumbImageSource;
 
 			if (thumbImage == null)
 			{
-				Control.ThumbImage = null;
+				Control.ThumbImageSource = null;
 				return;
 			}
 
-			Control.ThumbImage = new BitmapImage(new Uri($"ms-appx:///{thumbImage.File}"));
+			Control.ThumbImageSource = await thumbImage.ToWindowsImageSourceAsync();
 		}
 
 		protected override void UpdateBackgroundColor()

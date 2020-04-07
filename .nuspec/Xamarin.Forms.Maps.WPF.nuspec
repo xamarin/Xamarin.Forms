@@ -6,9 +6,10 @@
     <authors>Microsoft</authors>
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms maps xamarinforms xamarinformsmaps xamarin.forms.maps wpf</tags>
-    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
-    <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
+    <license type="expression">MIT</license>
+    <icon>Assets\xamarin_128x128.png</icon>
     <projectUrl>http://xamarin.com/forms</projectUrl>
+    <repository type="git" url="https://github.com/xamarin/xamarin.forms"/>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Xamarin.Forms.Maps Renderer for WPF</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
@@ -23,6 +24,8 @@
     </dependencies>
   </metadata>
   <files>
+    <!--Icon-->
+    <file src="..\Assets\xamarin_128x128.png" target="Assets\" />
     <file src="..\Xamarin.Forms.Maps.WPF\bin\$Configuration$\Xamarin.Forms.Maps.WPF.dll" target="lib\net45" />
     <file src="..\Xamarin.Forms.Maps.WPF\bin\$Configuration$\Xamarin.Forms.Maps.WPF.*pdb" target="lib\net45" />
   </files>

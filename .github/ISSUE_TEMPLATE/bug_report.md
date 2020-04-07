@@ -1,8 +1,8 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: 't/bug :bug:'
+title: "[Bug] "
+labels: 's/unverified, t/bug :bug:'
 assignees: ''
 
 ---
@@ -41,3 +41,7 @@ assignees: ''
 ### Reproduction Link
 
 <!-- Please upload or provide a link to a reproduction case -->
+
+### Workaround
+
+<!-- Did you find any workaround for this issue? This can unblock other people while waiting for this issue to be resolved -->

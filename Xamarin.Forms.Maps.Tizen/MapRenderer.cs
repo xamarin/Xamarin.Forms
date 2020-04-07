@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Tizen.Location;
 using Tizen.Maps;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform.Tizen;
 using TPin = Tizen.Maps.Pin;
 
@@ -40,7 +41,7 @@ namespace Xamarin.Forms.Maps.Tizen
 		{
 			if (Control == null)
 			{
-				var mapControl = new MapView(Platform.Tizen.Forms.NativeParent, FormsMaps.MapService);
+				var mapControl = new MapView(Forms.NativeParent, FormsMaps.MapService);
 
 				mapControl.RenderPost += OnVisibleRegionChanged;
 
@@ -78,6 +79,7 @@ namespace Xamarin.Forms.Maps.Tizen
 				UpdateHasZoomEnabled();
 				UpdateIsShowingUser();
 				UpdateVisibleRegion();
+				UpdateTrafficEnabled();
 			}
 			base.OnElementChanged(e);
 		}
@@ -122,7 +124,10 @@ namespace Xamarin.Forms.Maps.Tizen
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
+
 
 		void OnMoveToRegion(Map map, MapSpan span)
 		{
@@ -204,10 +209,12 @@ namespace Xamarin.Forms.Maps.Tizen
 				pin.PropertyChanged += PinOnPropertyChanged;
 				var coordinates = new Geocoordinates(pin.Position.Latitude, pin.Position.Longitude);
 				var nativePin = new TPin(coordinates);
-				pin.Id = nativePin;
+				pin.MarkerId = nativePin;
 				nativePin.Clicked += (s, e) =>
 				{
+#pragma warning disable CS0618
 					pin.SendTap();
+#pragma warning restore CS0618
 				};
 				Control.Add(nativePin);
 				_pins.Add(pin);
@@ -219,7 +226,7 @@ namespace Xamarin.Forms.Maps.Tizen
 			foreach (Pin pin in pins)
 			{
 				pin.PropertyChanged -= PinOnPropertyChanged;
-				Control.Remove((TPin)pin.Id);
+				Control.Remove((TPin)pin.MarkerId);
 				_pins.Remove(pin);
 			}
 		}
@@ -233,6 +240,11 @@ namespace Xamarin.Forms.Maps.Tizen
 			_pins.Clear();
 			Control.RemoveAll();
 			AddPins((Element as Map).Pins);
+		}
+
+		void UpdateTrafficEnabled()
+		{
+			Control.TrafficEnabled = Element.TrafficEnabled;
 		}
 
 		void UpdateHasZoomEnabled()
@@ -254,7 +266,7 @@ namespace Xamarin.Forms.Maps.Tizen
 		void Dummy(object sender, MapGestureEventArgs e)
 		{
 			// The implementation of Tizen.Maps needs to be changed to remove this method
-		}
+		} 
 
 		void ApplyIsShowingUser(Geocoordinates coordinates)
 		{
@@ -347,7 +359,7 @@ namespace Xamarin.Forms.Maps.Tizen
 		void PinOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			Pin pin = (Pin)sender;
-			var nativePin = pin.Id as TPin;
+			var nativePin = pin.MarkerId as TPin;
 
 			if (nativePin == null)
 			{

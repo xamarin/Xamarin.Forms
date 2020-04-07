@@ -185,22 +185,22 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 		static void toggleTitleIcon(Page page)
 		{
-			var titleIcon = NavigationPage.GetTitleIcon(page);
+			var titleIcon = NavigationPage.GetTitleIconImageSource(page);
 
 			if (titleIcon == null)
-				NavigationPage.SetTitleIcon(page, "coffee.png");
+				NavigationPage.SetTitleIconImageSource(page, "coffee.png");
 			else
-				NavigationPage.SetTitleIcon(page, null);
+				NavigationPage.SetTitleIconImageSource(page, null);
 		}
 
 		void masterDetailsPageIcon_Clicked(object sender, EventArgs e)
 		{
 			if (App.Current.MainPage is MasterDetailPage mdp)
 			{
-				if (String.IsNullOrWhiteSpace(mdp.Master.Icon))
-					mdp.Master.Icon = "menuIcon";
+				if (mdp.Master.IconImageSource == null || mdp.Master.IconImageSource.IsEmpty)
+					mdp.Master.IconImageSource = "menuIcon";
 				else
-					mdp.Master.Icon = null;
+					mdp.Master.IconImageSource = null;
 			}
 		}
 

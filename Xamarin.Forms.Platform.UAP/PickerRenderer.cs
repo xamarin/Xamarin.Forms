@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _fontApplied;
 		bool _isAnimating;
 		Brush _defaultBrush;
-		FontFamily _defaultFontFamily;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -55,9 +54,9 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 
 				Control.ItemsSource = ((LockableObservableListWrapper)Element.Items)._list;
-
 				UpdateTitle();
 				UpdateSelectedIndex();
+				UpdateCharacterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -71,6 +70,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectedIndex();
 			else if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdateTitle();
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -84,7 +85,6 @@ namespace Xamarin.Forms.Platform.UWP
 			// The defaults from the control template won't be available
 			// right away; we have to wait until after the template has been applied
 			_defaultBrush = Control.Foreground;
-			_defaultFontFamily = Control.FontFamily;
 			UpdateFont();
 			UpdateTextColor();
 		}
@@ -165,6 +165,11 @@ namespace Xamarin.Forms.Platform.UWP
 			});
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
+		}
+
 		void UpdateFont()
 		{
 			if (Control == null)
@@ -211,17 +216,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTitle()
 		{
-			if (!Element.IsSet(Picker.TitleColorProperty))
-			{
-				Control.HeaderTemplate = null;
-				Control.Header = Element.Title;
-			}
-			else
-			{
-				Control.Header = null;
-				Control.HeaderTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ComboBoxHeader"];
-				Control.DataContext = Element;
-			}
+			Control.Header = null;
+			Control.HeaderTemplate = string.IsNullOrEmpty(Element.Title) ? null : (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ComboBoxHeader"];
+			Control.DataContext = Element;
 		}
 	}
 }

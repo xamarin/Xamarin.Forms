@@ -10,6 +10,8 @@ using Xamarin.Forms.Core.UnitTests;
 [assembly: TestHandler(typeof(ButtonChild), typeof(ButtonChildTarget))]
 [assembly: TestHandler(typeof(Button), typeof(VisualButtonTarget), new[] { typeof(VisualMarkerUnitTests) })]
 [assembly: TestHandler(typeof(Slider), typeof(VisualSliderTarget), new[] { typeof(VisualMarkerUnitTests) })]
+[assembly: TestHandler(typeof(ButtonPriority), typeof(ButtonHigherPriorityTarget), Priority = 1)]
+[assembly: TestHandlerLowerPriority(typeof(ButtonPriority), typeof(ButtonLowerPriorityTarget), Priority = 0)]
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -17,9 +19,15 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public TestHandlerAttribute (Type handler, Type target, Type[] supportedVisuals = null) : base(handler, target, supportedVisuals)
 		{
-			
 		}
 	}
+	internal class TestHandlerLowerPriority : HandlerAttribute
+	{
+		public TestHandlerLowerPriority(Type handler, Type target, Type[] supportedVisuals = null) : base(handler, target, supportedVisuals)
+		{
+		}
+	}
+
 	public class VisualMarkerUnitTests : IVisual { }
 	public class RegisteredWithNobodyMarker : IVisual { }
 
@@ -28,8 +36,20 @@ namespace Xamarin.Forms.Core.UnitTests
 	internal class RenderWith { }
 	internal class RenderWithChild : RenderWith { }
 	internal class RenderWithChildTarget : IRegisterable { }
+	internal class RenderWithSetAsNewDefault : IRegisterable { }
 
-	internal class VisualButtonTarget : IRegisterable { }
+	internal class VisualButtonTarget : IRegisterable
+	{
+		public object Param1 { get; }
+		public object Param2 { get; }
+
+		public VisualButtonTarget() { }
+		public VisualButtonTarget(object param1, object param2) {
+			Param1 = param1;
+			Param2 = param2;
+		}
+	}
+
 	internal class VisualSliderTarget : IRegisterable { }
 	internal class ButtonChildTarget : IRegisterable { }
 	internal class ButtonChild : Button, IRegisterable { }
@@ -38,6 +58,40 @@ namespace Xamarin.Forms.Core.UnitTests
 
 	internal class SliderTarget : IRegisterable {}
 
+	internal class ButtonPriority { }
+	internal class ButtonLowerPriorityTarget : IRegisterable { }
+	internal class ButtonHigherPriorityTarget : IRegisterable { }
+
+	[TestFixture]
+	public class PriorityRegistrarTests : BaseTestFixture
+	{
+		[SetUp]
+		public override void Setup()
+		{
+			base.Setup();
+			Device.PlatformServices = new MockPlatformServices();
+			Internals.Registrar.RegisterAll(new[] {
+				typeof (TestHandlerAttribute),
+				typeof (TestHandlerLowerPriority)
+			});
+
+		}
+
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+			Device.PlatformServices = null;
+		}
+
+		[Test]
+		public void BasicTest()
+		{
+			IRegisterable renderWithTarget = Internals.Registrar.Registered.GetHandler(typeof(ButtonPriority));
+			Assert.AreEqual(typeof(ButtonHigherPriorityTarget), renderWithTarget.GetType());
+		}
+	}
+
 	[TestFixture]
 	public class VisualRegistrarTests : BaseTestFixture
 	{
@@ -45,7 +99,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override void Setup()
 		{
 			base.Setup();
-			Device.SetFlags(new List<string> { ExperimentalFlags.VisualExperimental });
 			Device.PlatformServices = new MockPlatformServices();
 			Internals.Registrar.RegisterAll(new[] {
 				typeof (TestHandlerAttribute)
@@ -58,6 +111,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			base.TearDown();
 			Device.PlatformServices = null;
+		}
+
+
+		[Test]
+		public void RegisteringANewDefaultShouldReplaceRenderWithAttributeForFallbackVisual()
+		{
+			Internals.Registrar.Registered.Register(typeof(RenderWith), typeof(RenderWithSetAsNewDefault));
+			var renderWithTarget = Internals.Registrar.Registered.GetHandler(typeof(RenderWith), typeof(VisualMarkerUnitTests));
+
+			Assert.That(renderWithTarget, Is.InstanceOf<RenderWithSetAsNewDefault>());
 		}
 
 
@@ -103,6 +166,18 @@ namespace Xamarin.Forms.Core.UnitTests
 			buttonTarget = Internals.Registrar.Registered.GetHandler(typeof(Button));
 			Assert.IsNotNull(buttonTarget);
 			Assert.That(buttonTarget, Is.InstanceOf<ButtonTarget>());
+
+
+			Button button = new Button();
+			object someObject = new object();
+			buttonTarget = Internals.Registrar.Registered.GetHandler(typeof(Button), button, new VisualMarkerUnitTests(), someObject);
+			Assert.IsNotNull(buttonTarget);
+			Assert.That(buttonTarget, Is.InstanceOf<VisualButtonTarget>());
+
+			var visualButtonTarget = (VisualButtonTarget)buttonTarget;
+			Assert.AreEqual(visualButtonTarget.Param1, someObject);
+			Assert.AreEqual(visualButtonTarget.Param2, button);
+
 		}
 
 		[Test]
@@ -168,6 +243,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				throw new NotImplementedException();
 			}
+		}
+
+
+		[SetUp]
+		public void Setup()
+		{
+			VisualElement.SetDefaultVisual(VisualMarker.Default);
 		}
 
 		[Test]

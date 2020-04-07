@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Views;
@@ -20,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateHeight();
 			UpdateIsEnabled();
 			UpdateFlowDirection();
+			UpdateAutomationId();
 			View.SetImageVisible(false);
 
 			return View;
@@ -27,6 +29,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnCellPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
+			if (View.IsDisposed())
+			{
+				return;
+			}
+
 			if (args.PropertyName == TextCell.TextProperty.PropertyName || args.PropertyName == TextCell.TextColorProperty.PropertyName)
 				UpdateMainText();
 			else if (args.PropertyName == TextCell.DetailProperty.PropertyName || args.PropertyName == TextCell.DetailColorProperty.PropertyName)
@@ -37,6 +44,13 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHeight();
 			else if (args.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
+			else if (args.PropertyName == VisualElement.AutomationIdProperty.PropertyName)
+				UpdateAutomationId();
+		}
+
+		void UpdateAutomationId()
+		{
+			View.ContentDescription = Cell.AutomationId;
 		}
 
 		void UpdateDetailText()

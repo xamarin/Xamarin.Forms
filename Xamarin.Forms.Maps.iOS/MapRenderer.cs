@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using CoreLocation;
 using MapKit;
 using ObjCRuntime;
 using RectangleF = CoreGraphics.CGRect;
-using Foundation;
 
 #if __MOBILE__
 using UIKit;
@@ -26,6 +25,10 @@ namespace Xamarin.Forms.Maps.MacOS
 		bool _shouldUpdateRegion;
 		object _lastTouchedView;
 		bool _disposed;
+
+#if __MOBILE__
+		UITapGestureRecognizer _mapClickedGestureRecognizer;
+#endif
 
 		const string MoveMessageName = "MapMoveToRegion";
 
@@ -58,8 +61,8 @@ namespace Xamarin.Forms.Maps.MacOS
 				{
 					var mapModel = (Map)Element;
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
-
+					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
+					((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
 					foreach (Pin pin in mapModel.Pins)
 					{
 						pin.PropertyChanged -= PinOnPropertyChanged;
@@ -67,8 +70,10 @@ namespace Xamarin.Forms.Maps.MacOS
 				}
 
 				var mkMapView = (MKMapView)Control;
+				mkMapView.DidSelectAnnotationView -= MkMapViewOnAnnotationViewSelected;
 				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
 				mkMapView.GetViewForAnnotation = null;
+				mkMapView.OverlayRenderer = null; 
 				if (mkMapView.Delegate != null)
 				{
 					mkMapView.Delegate.Dispose();
@@ -76,6 +81,10 @@ namespace Xamarin.Forms.Maps.MacOS
 				}
 				mkMapView.RemoveFromSuperview();
 #if __MOBILE__
+				mkMapView.RemoveGestureRecognizer(_mapClickedGestureRecognizer);
+				_mapClickedGestureRecognizer.Dispose();
+				_mapClickedGestureRecognizer = null;
+
 				if (FormsMaps.IsiOs9OrNewer)
 				{
 					// This renderer is done with the MKMapView; we can put it in the pool
@@ -104,12 +113,19 @@ namespace Xamarin.Forms.Maps.MacOS
 			if (e.OldElement != null)
 			{
 				var mapModel = (Map)e.OldElement;
-				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
 
+				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
 				foreach (Pin pin in mapModel.Pins)
 				{
 					pin.PropertyChanged -= PinOnPropertyChanged;
+				}
+
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
+				foreach (MapElement mapElement in mapModel.MapElements)
+				{
+					mapElement.PropertyChanged -= MapElementPropertyChanged;
 				}
 			}
 
@@ -137,21 +153,29 @@ namespace Xamarin.Forms.Maps.MacOS
 					SetNativeControl(mapView);
 
 					mapView.GetViewForAnnotation = GetViewForAnnotation;
+					mapView.OverlayRenderer = GetViewForOverlay;
+					mapView.DidSelectAnnotationView += MkMapViewOnAnnotationViewSelected;
 					mapView.RegionChanged += MkMapViewOnRegionChanged;
+#if __MOBILE__
+					mapView.AddGestureRecognizer(_mapClickedGestureRecognizer = new UITapGestureRecognizer(OnMapClicked));
+#endif
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, (s, a) => MoveToRegion(a), mapModel);
 				if (mapModel.LastMoveToRegion != null)
 					MoveToRegion(mapModel.LastMoveToRegion, false);
 
+				UpdateTrafficEnabled();
 				UpdateMapType();
 				UpdateIsShowingUser();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
 
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnCollectionChanged;
+				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnPinCollectionChanged;
+				OnPinCollectionChanged(mapModel.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
-				OnCollectionChanged(((Map)Element).Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged += OnMapElementCollectionChanged;
+				OnMapElementCollectionChanged(mapModel.MapElements, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}
 
@@ -167,8 +191,10 @@ namespace Xamarin.Forms.Maps.MacOS
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName && ((Map)Element).LastMoveToRegion != null)
-				_shouldUpdateRegion = true;
+				_shouldUpdateRegion = ((Map)Element).MoveToLastRegionOnLayoutChange; 
 		}
 
 #if __MOBILE__
@@ -231,7 +257,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			}
 
 #if __MOBILE__
-			var recognizer = new UITapGestureRecognizer(g => OnClick(annotation, g))
+			var recognizer = new UITapGestureRecognizer(g => OnCalloutClicked(annotation))
 			{
 				ShouldReceiveTouch = (gestureRecognizer, touch) =>
 				{
@@ -240,33 +266,50 @@ namespace Xamarin.Forms.Maps.MacOS
 				}
 			};
 #else
-			var recognizer = new NSClickGestureRecognizer(g => OnClick(annotation, g));
+			var recognizer = new NSClickGestureRecognizer(g => OnCalloutClicked(annotation));
 #endif
 			mapPin.AddGestureRecognizer(recognizer);
 		}
 
-#if __MOBILE__
-		void OnClick(object annotationObject, UITapGestureRecognizer recognizer)
-#else
-		void OnClick(object annotationObject, NSClickGestureRecognizer recognizer)
-#endif
+		protected Pin GetPinForAnnotation(IMKAnnotation annotation)
 		{
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
-			NSObject annotation = Runtime.GetNSObject(((IMKAnnotation)annotationObject).Handle);
-			if (annotation == null)
-				return;
-
-			// lookup pin
 			Pin targetPin = null;
-			foreach (Pin pin in ((Map)Element).Pins)
-			{
-				object target = pin.Id;
-				if (target != annotation)
-					continue;
+			var map = (Map)Element;
 
-				targetPin = pin;
-				break;
+			for (int i = 0; i < map.Pins.Count; i++)
+			{
+				var pin = map.Pins[i];
+				if ((IMKAnnotation)pin.MarkerId == annotation)
+				{
+					targetPin = pin;
+					break;
+				}
 			}
+
+			return targetPin;
+		}
+
+		void MkMapViewOnAnnotationViewSelected(object sender, MKAnnotationViewEventArgs e)
+		{
+			var annotation = e.View.Annotation;
+			var pin = GetPinForAnnotation(annotation);
+
+			if (pin != null)
+			{
+				// SendMarkerClick() returns the value of PinClickedEventArgs.HideInfoWindow
+				// Hide the info window by deselecting the annotation
+				bool deselect = pin.SendMarkerClick();
+				if (deselect)
+				{
+					((MKMapView)Control).DeselectAnnotation(annotation, false);
+				}
+			}
+		}
+		
+		void OnCalloutClicked(IMKAnnotation annotation)
+		{
+			// lookup pin
+			Pin targetPin = GetPinForAnnotation(annotation);
 
 			// pin not found. Must have been activated outside of forms
 			if (targetPin == null)
@@ -277,8 +320,32 @@ namespace Xamarin.Forms.Maps.MacOS
 			if (_lastTouchedView is MKAnnotationView)
 				return;
 
+#pragma warning disable CS0618
 			targetPin.SendTap();
+#pragma warning restore CS0618
+
+			// SendInfoWindowClick() returns the value of PinClickedEventArgs.HideInfoWindow
+			// Hide the info window by deselecting the annotation
+			bool deselect = targetPin.SendInfoWindowClick();
+			if (deselect)
+			{
+				((MKMapView)Control).DeselectAnnotation(annotation, true);
+			}
 		}
+
+#if __MOBILE__
+		void OnMapClicked(UITapGestureRecognizer recognizer)
+		{
+			if (Element == null)
+			{
+				return;
+			}
+
+			var tapPoint = recognizer.LocationInView(Control);
+			var tapGPS = ((MKMapView)Control).ConvertPoint(tapPoint, Control);
+			((Map)Element).SendMapClicked(new Position(tapGPS.Latitude, tapGPS.Longitude));
+		}
+#endif
 
 		void UpdateRegion()
 		{
@@ -296,7 +363,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				pin.PropertyChanged += PinOnPropertyChanged;
 
 				var annotation = CreateAnnotation(pin);
-				pin.Id = annotation;
+				pin.MarkerId = annotation;
 				((MKMapView)Control).AddAnnotation(annotation);
 			}
 		}
@@ -304,7 +371,7 @@ namespace Xamarin.Forms.Maps.MacOS
 		void PinOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			Pin pin = (Pin)sender;
-			var annotation = pin.Id as MKPointAnnotation;
+			var annotation = pin.MarkerId as MKPointAnnotation;
 
 			if (annotation == null)
 			{
@@ -344,7 +411,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			((MKMapView)Control).SetRegion(mapRegion, animated);
 		}
 
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
 			switch (notifyCollectionChangedEventArgs.Action)
 			{
@@ -375,13 +442,18 @@ namespace Xamarin.Forms.Maps.MacOS
 			foreach (Pin pin in pins)
 			{
 				pin.PropertyChanged -= PinOnPropertyChanged;
-				((MKMapView)Control).RemoveAnnotation((IMKAnnotation)pin.Id);
+				((MKMapView)Control).RemoveAnnotation((IMKAnnotation)pin.MarkerId);
 			}
 		}
 
 		void UpdateHasScrollEnabled()
 		{
 			((MKMapView)Control).ScrollEnabled = ((Map)Element).HasScrollEnabled;
+		}
+
+		void UpdateTrafficEnabled()
+		{
+			((MKMapView)Control).ShowsTraffic = ((Map)Element).TrafficEnabled;
 		}
 
 		void UpdateHasZoomEnabled()
@@ -415,6 +487,200 @@ namespace Xamarin.Forms.Maps.MacOS
 					((MKMapView)Control).MapType = MKMapType.Hybrid;
 					break;
 			}
+		}
+
+		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					AddMapElements(e.NewItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					RemoveMapElements(e.OldItems.Cast<MapElement>());
+					AddMapElements(e.NewItems.Cast<MapElement>());
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					var mkMapView = (MKMapView)Control;
+
+					if (mkMapView.Overlays != null)
+					{
+						var overlays = mkMapView.Overlays;
+						foreach (var overlay in overlays)
+						{
+							mkMapView.RemoveOverlay(overlay);
+						}
+					}
+
+					AddMapElements(((Map)Element).MapElements);
+					break;
+			}
+		}
+
+		void AddMapElements(IEnumerable<MapElement> mapElements)
+		{
+			foreach (var element in mapElements)
+			{
+				element.PropertyChanged += MapElementPropertyChanged;
+
+				IMKOverlay overlay = null;
+				switch (element)
+				{
+					case Polyline polyline:
+						overlay = MKPolyline.FromCoordinates(polyline.Geopath
+							.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
+							.ToArray());
+						break;
+					case Polygon polygon:
+						overlay = MKPolygon.FromCoordinates(polygon.Geopath
+							.Select(position => new CLLocationCoordinate2D(position.Latitude, position.Longitude))
+							.ToArray());
+						break;
+					case Circle circle:
+						overlay = MKCircle.Circle(
+							new CLLocationCoordinate2D(circle.Center.Latitude, circle.Center.Longitude),
+							circle.Radius.Meters);
+						break;
+				}
+
+				element.MapElementId = overlay;
+
+				((MKMapView)Control).AddOverlay(overlay);
+			}
+		}
+
+		void RemoveMapElements(IEnumerable<MapElement> mapElements)
+		{
+			foreach (var element in mapElements)
+			{
+				element.PropertyChanged -= MapElementPropertyChanged;
+
+				var overlay = (IMKOverlay)element.MapElementId;
+				((MKMapView)Control).RemoveOverlay(overlay);
+			}
+		}
+
+		void MapElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var element = (MapElement)sender;
+
+			RemoveMapElements(new[] { element });
+			AddMapElements(new[] { element });
+		}
+
+		protected virtual MKOverlayRenderer GetViewForOverlay(MKMapView mapview, IMKOverlay overlay)
+		{
+			switch (overlay)
+			{
+				case MKPolyline polyline:
+					return GetViewForPolyline(polyline);
+				case MKPolygon polygon:
+					return GetViewForPolygon(polygon);
+				case MKCircle circle:
+					return GetViewForCircle(circle);
+			}
+
+			return null;
+		}
+
+		protected virtual MKPolylineRenderer GetViewForPolyline(MKPolyline mkPolyline)
+		{
+			var map = (Map)Element;
+			Polyline targetPolyline = null;
+
+			for (int i = 0; i < map.MapElements.Count; i++)
+			{
+				var element = map.MapElements[i];
+				if (ReferenceEquals(element.MapElementId, mkPolyline))
+				{
+					targetPolyline = (Polyline)element;
+					break;
+				}
+			}
+
+			if (targetPolyline == null)
+			{
+				return null;
+			}
+
+			return new MKPolylineRenderer(mkPolyline)
+			{
+#if __MOBILE__
+				StrokeColor = targetPolyline.StrokeColor.ToUIColor(Color.Black),
+#else
+				StrokeColor = targetPolyline.StrokeColor.ToNSColor(Color.Black),
+#endif
+				LineWidth = targetPolyline.StrokeWidth
+			};
+		}
+
+		protected virtual MKPolygonRenderer GetViewForPolygon(MKPolygon mkPolygon)
+		{
+			var map = (Map)Element;
+			Polygon targetPolygon = null;
+
+			for (int i = 0; i < map.MapElements.Count; i++)
+			{
+				var element = map.MapElements[i];
+				if (ReferenceEquals(element.MapElementId, mkPolygon))
+				{
+					targetPolygon = (Polygon)element;
+					break;
+				}
+			}
+
+			if (targetPolygon == null)
+			{
+				return null;
+			}
+
+			return new MKPolygonRenderer(mkPolygon)
+			{
+#if __MOBILE__
+				StrokeColor = targetPolygon.StrokeColor.ToUIColor(Color.Black),
+				FillColor = targetPolygon.FillColor.ToUIColor(),
+#else
+				StrokeColor = targetPolygon.StrokeColor.ToNSColor(Color.Black),
+				FillColor = targetPolygon.FillColor.ToNSColor(),
+#endif
+				LineWidth = targetPolygon.StrokeWidth
+			};
+		}
+
+		protected virtual MKCircleRenderer GetViewForCircle(MKCircle mkCircle)
+		{
+			var map = (Map)Element;
+			Circle targetCircle = null;
+
+			for (int i = 0; i < map.MapElements.Count; i++)
+			{
+				var element = map.MapElements[i];
+				if (ReferenceEquals(element.MapElementId, mkCircle))
+				{
+					targetCircle = (Circle)element;
+					break;
+				}
+			}
+
+			if (targetCircle == null)
+			{
+				return null;
+			}
+
+			return new MKCircleRenderer(mkCircle)
+			{
+#if __MOBILE__
+				StrokeColor = targetCircle.StrokeColor.ToUIColor(Color.Black),
+				FillColor = targetCircle.FillColor.ToUIColor(),
+#else
+				StrokeColor = targetCircle.StrokeColor.ToNSColor(Color.Black),
+				FillColor = targetCircle.FillColor.ToNSColor(),
+#endif
+				LineWidth = targetCircle.StrokeWidth
+			};
 		}
 	}
 }

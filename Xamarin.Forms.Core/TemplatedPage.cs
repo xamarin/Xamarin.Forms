@@ -16,6 +16,8 @@ namespace Xamarin.Forms
 
 		IList<Element> IControlTemplated.InternalChildren => InternalChildren;
 
+		Element IControlTemplated.TemplateRoot { get; set; }
+
 		internal override void ComputeConstraintForView(View view)
 		{
 			LayoutOptions vOptions = view.VerticalOptions;
@@ -44,5 +46,22 @@ namespace Xamarin.Forms
 		internal virtual void OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
 		{
 		}
+
+		void IControlTemplated.OnApplyTemplate()
+		{
+			OnApplyTemplate();
+		}
+
+		protected virtual void OnApplyTemplate()
+		{
+		}
+
+		protected override void OnChildRemoved(Element child)
+		{
+			base.OnChildRemoved(child);
+			TemplateUtilities.OnChildRemoved(this, child);
+		}
+
+		protected object GetTemplateChild(string name) => TemplateUtilities.GetTemplateChild(this, name);
 	}
 }

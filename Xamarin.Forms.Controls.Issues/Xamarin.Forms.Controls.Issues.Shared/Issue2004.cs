@@ -25,6 +25,9 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue2004 : TestContentPage
 	{
+#if UITEST
+		protected override void Init(){}
+#else
 		static internal NavigationPage settingsPage = new NavigationPage(new SettingsView());
 		static internal NavigationPage addressesPage = new NavigationPage(new AddressListView());
 		static internal NavigationPage associationsPage = new NavigationPage(new ContentPage());
@@ -289,12 +292,13 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 			}
 		}
+#endif
 
 #if UITEST
 		[Test]
 		public void NoCrashFromDisposedBitmapWhenSwitchingPages()
 		{
-			RunningApp.WaitForElement("Success");
+			RunningApp.WaitForElement("Success", timeout: TimeSpan.FromSeconds(20));
 		}
 #endif
 	}

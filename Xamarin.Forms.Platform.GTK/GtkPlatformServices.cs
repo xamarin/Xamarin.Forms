@@ -12,8 +12,6 @@ namespace Xamarin.Forms.Platform.GTK
 {
 	internal class GtkPlatformServices : IPlatformServices
 	{
-		private static readonly MD5CryptoServiceProvider Checksum = new MD5CryptoServiceProvider();
-
 		public bool IsInvokeRequired => Thread.CurrentThread.IsBackground;
 
 		public string RuntimePlatform => Device.GTK;
@@ -33,17 +31,9 @@ namespace Xamarin.Forms.Platform.GTK
 			return AppDomain.CurrentDomain.GetAssemblies();
 		}
 
-		public string GetMD5Hash(string input)
-		{
-			var bytes = Checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
-			var ret = new char[32];
-			for (var i = 0; i < 16; i++)
-			{
-				ret[i * 2] = (char)Hex(bytes[i] >> 4);
-				ret[i * 2 + 1] = (char)Hex(bytes[i] & 0xf);
-			}
-			return new string(ret);
-		}
+		public string GetHash(string input) => Crc64.GetHash(input);
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
@@ -52,31 +42,41 @@ namespace Xamarin.Forms.Platform.GTK
 				case NamedSize.Default:
 					return 11;
 				case NamedSize.Micro:
-					return 12;
-				case NamedSize.Small:
-					return 14;
+                case NamedSize.Caption:
+                    return 12;
 				case NamedSize.Medium:
 					return 17;
 				case NamedSize.Large:
 					return 22;
-				default:
+                case NamedSize.Small:
+                case NamedSize.Body:
+                    return 14;
+                case NamedSize.Header:
+                    return 46;
+                case NamedSize.Subtitle:
+                    return 20;
+                case NamedSize.Title:
+                    return 24;
+                default:
 					throw new ArgumentOutOfRangeException(nameof(size));
 			}
+		}
+
+		public Color GetNamedColor(string name)
+		{
+			// Not supported on this platform
+			return Color.Default;
 		}
 
 		public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 		{
 			using (var client = new HttpClient())
 			{
-				HttpResponseMessage streamResponse = await client.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
+				// Do not remove this await otherwise the client will dispose before
+				// the stream even starts
+				var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
 
-				if (!streamResponse.IsSuccessStatusCode)
-				{
-					Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {streamResponse.StatusCode}");
-					return null;
-				}
-
-				return await streamResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+				return result;
 			}
 		}
 
@@ -115,5 +115,7 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
+
+		public AppTheme RequestedTheme => AppTheme.Unspecified;
 	}
 }

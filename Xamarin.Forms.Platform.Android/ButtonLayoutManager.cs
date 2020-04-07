@@ -1,15 +1,20 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.Core.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
+#endif
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Specifics = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AView = Android.Views.View;
+using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -34,8 +39,10 @@ namespace Xamarin.Forms.Platform.Android
 		bool _preserveInitialPadding;
 		bool _borderAdjustsPadding;
 		bool _maintainLegacyMeasurements;
+		bool _hasLayoutOccurred;
 
-		public ButtonLayoutManager(IButtonLayoutRenderer renderer) : this(renderer, false, false, false, true)
+		public ButtonLayoutManager(IButtonLayoutRenderer renderer)
+			: this(renderer, false, false, false, true)
 		{
 		}
 
@@ -53,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
 		}
 
-		AppCompatButton View => _renderer?.View;
+		AButton View => _renderer?.View ?? _renderer as AButton;
 
 		Context Context => _renderer?.View?.Context;
 
@@ -70,6 +77,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_renderer != null)
 					{
+						if (_element != null)
+						{
+							_element.PropertyChanged -= OnElementPropertyChanged;
+						}
+
 						_renderer.ElementChanged -= OnElementChanged;
 						_renderer = null;
 					}
@@ -78,29 +90,45 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		internal SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			var previousHeight = View.MeasuredHeight;
+			var previousWidth = View.MeasuredWidth;
+
+			View.Measure(widthConstraint, heightConstraint);
+
+			// if the measure of the view has changed then trigger a request for layout
+			// if the measure hasn't changed then force a layout of the button
+			if (previousHeight != View.MeasuredHeight || previousWidth != View.MeasuredWidth)
+				View.MaybeRequestLayout();
+			else
+				View.ForceLayout();
+
+			return new SizeRequest(new Size(View.MeasuredWidth, View.MeasuredHeight), Size.Zero);
+		}
+
 		public void OnLayout(bool changed, int left, int top, int right, int bottom)
 		{
 			if (_disposed || _renderer == null || _element == null)
 				return;
 
-			AppCompatButton view = View;
-			if (view == null || view.Layout == null)
+			AButton view = View;
+			if (view == null)
 				return;
 
 			Drawable drawable = null;
 			Drawable[] drawables = TextViewCompat.GetCompoundDrawablesRelative(view);
-			if(drawables != null)
+			if (drawables != null)
 			{
 				foreach (var compoundDrawable in drawables)
 				{
 					if (compoundDrawable != null)
 					{
-						drawable = compoundDrawable;						
+						drawable = compoundDrawable;
 						break;
 					}
 				}
 			}
-
 
 			if (drawable != null)
 			{
@@ -141,6 +169,8 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 			}
+
+			_hasLayoutOccurred = true;
 		}
 
 		public void OnViewAttachedToWindow(AView attachedView)
@@ -183,7 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
-			else if (e.PropertyName == Button.ImageProperty.PropertyName || e.PropertyName == Button.ContentLayoutProperty.PropertyName)
+			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName || e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				UpdateImage();
 			else if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				UpdateTextAndImage();
@@ -193,7 +223,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePadding()
 		{
-			AppCompatButton view = View;
+			AButton view = View;
 			if (view == null)
 				return;
 
@@ -228,10 +258,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool UpdateTextAndImage()
 		{
-			if (_disposed || _renderer == null || _element == null)
+			if (_disposed || _renderer == null || _element == null || View?.LayoutParameters == null)
 				return false;
 
-			AppCompatButton view = View;
+			AButton view = View;
 			if (view == null)
 				return false;
 
@@ -253,48 +283,65 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed || _renderer == null || _element == null)
 				return;
 
-			AppCompatButton view = View;
+			AButton view = View;
 			if (view == null)
 				return;
 
-			FileImageSource elementImage = _element.Image;
-			string imageFile = elementImage?.File;
+			ImageSource elementImage = _element.ImageSource;
 
-			if (elementImage == null || string.IsNullOrEmpty(imageFile))
+			if (elementImage == null || elementImage.IsEmpty)
 			{
 				view.SetCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 				return;
 			}
 
-			using (var image = Context.GetDrawable(imageFile))
-			{
-				// No text, so no need for relative position; just center the image
-				// There's no option for just plain-old centering, so we'll use Top 
-				// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
-				// to handle the vertical centering 
-				var layout = string.IsNullOrEmpty(_element.Text) ? _imageOnlyLayout : _element.ContentLayout;
+			// No text, so no need for relative position; just center the image
+			// There's no option for just plain-old centering, so we'll use Top 
+			// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
+			// to handle the vertical centering 
+			var layout = string.IsNullOrEmpty(_element.Text) ? _imageOnlyLayout : _element.ContentLayout;
 
-				if(_maintainLegacyMeasurements)
-					view.CompoundDrawablePadding = (int)layout.Spacing;
-				else
-					view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
+			if (_maintainLegacyMeasurements)
+				view.CompoundDrawablePadding = (int)layout.Spacing;
+			else
+				view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
 
-				switch (layout.Position)
+			Drawable existingImage = null;
+			var images = TextViewCompat.GetCompoundDrawablesRelative(view);
+			for (int i = 0; i < images.Length; i++)
+				if (images[i] != null)
 				{
-					case Button.ButtonContentLayout.ImagePosition.Top:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, image, null, null);
-						break;
-					case Button.ButtonContentLayout.ImagePosition.Right:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, image, null);
-						break;
-					case Button.ButtonContentLayout.ImagePosition.Bottom:
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, null, image);
-						break;
-					default:
-						// Defaults to image on the left
-						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
-						break;
+					existingImage = images[i];
+					break;
 				}
+
+			if (_renderer is IVisualElementRenderer visualElementRenderer)
+			{
+				visualElementRenderer.ApplyDrawableAsync(Button.ImageSourceProperty, Context, image =>
+				{
+					if (image == existingImage)
+						return;
+
+					switch (layout.Position)
+					{
+						case Button.ButtonContentLayout.ImagePosition.Top:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, image, null, null);
+							break;
+						case Button.ButtonContentLayout.ImagePosition.Right:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, image, null);
+							break;
+						case Button.ButtonContentLayout.ImagePosition.Bottom:
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, null, image);
+							break;
+						default:
+							// Defaults to image on the left
+							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
+							break;
+					}
+
+					if (_hasLayoutOccurred)
+						_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				});
 			}
 		}
 	}

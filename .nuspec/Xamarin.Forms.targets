@@ -15,6 +15,9 @@
 		<_DefaultXamlItemsEnabled>False</_DefaultXamlItemsEnabled>
 		<EnableDefaultCssItems Condition="'$(EnableDefaultCssItems)'==''">True</EnableDefaultCssItems>
 		<_DefaultCssItemsEnabled>False</_DefaultCssItemsEnabled>
+		<!-- The WINUI check for this only runs when there is an empty string so I just convert false to an empty string to fall in line with our other properties -->
+		<SkipMicrosoftUIXamlCheckTargetPlatformVersion Condition="'$(SkipMicrosoftUIXamlCheckTargetPlatformVersion)'==''">true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
+		<SkipMicrosoftUIXamlCheckTargetPlatformVersion Condition="'$(SkipMicrosoftUIXamlCheckTargetPlatformVersion)'=='false'"></SkipMicrosoftUIXamlCheckTargetPlatformVersion>
 	</PropertyGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)Xamarin.Forms.DefaultItems.targets" Condition="'$(MSBuildSDKsPath)'!=''" />
@@ -103,13 +106,18 @@
 		</CompileDependsOn>
 	</PropertyGroup>
 
-	<Target Name="XamlC" AfterTargets="AfterCompile" Inputs="$(IntermediateOutputPath)$(TargetFileName)" Outputs="$(IntermediateOutputPath)XamlC.stamp" Condition=" '$(DesignTimeBuild)' != 'True' ">
+	<Target Name="XamlC" AfterTargets="AfterCompile" Inputs="$(IntermediateOutputPath)$(TargetFileName)" Outputs="$(IntermediateOutputPath)XamlC.stamp" Condition=" '$(DesignTimeBuild)' != 'True'">
+	    <PropertyGroup>
+		<_XFXamlCValidateOnly>$(XFXamlCValidateOnly)</_XFXamlCValidateOnly>
+		<_XFXamlCValidateOnly Condition="'$(BuildingForLiveUnitTesting)' == 'True' ">True</_XFXamlCValidateOnly>
+	    </PropertyGroup>
 		<XamlCTask
 			Assembly = "$(IntermediateOutputPath)$(TargetFileName)"
 			ReferencePath = "@(ReferencePath)"
 			OptimizeIL = "true"
 			DebugSymbols = "$(DebugSymbols)"
 			DebugType = "$(DebugType)"
+			ValidateOnly = "$(_XFXamlCValidateOnly)"
 			KeepXamlResources = "$(XFKeepXamlResources)" />
 		<Touch Files="$(IntermediateOutputPath)XamlC.stamp" AlwaysCreate="True" />
 		<ItemGroup>
@@ -143,4 +151,87 @@
  			<Compile Include="@(_CSSOutputs)" />
  		</ItemGroup>
 	</Target>
+  
+ <!-- 
+    Platform Specific Targets.
+    We can't use a framework specific targets file because it breaks shared projects i.e.  /build/MonoAndroid10/Xamarin.Forms.targets
+  -->
+
+  <!-- MonoAndroid targets. -->
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == 'MonoAndroid'">
+    <CoreCompileDependsOn>
+      IncludeProguardForAndroid;
+      $(CoreCompileDependsOn);
+    </CoreCompileDependsOn>
+    <PrepareForBuildDependsOn>
+      ValidateTargetFrameworkVersionForForms;
+      $(PrepareForBuildDependsOn);
+    </PrepareForBuildDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="IncludeProguardForAndroid" Condition="'$(XFDisableDefaultProguardConfiguration)' != 'True'">
+    <ItemGroup>
+      <ProguardConfiguration Include="$(MSBuildThisFileDirectory)MonoAndroid10\proguard.cfg" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ValidateTargetFrameworkVersionForForms" Condition="'$(XFDisableTargetFrameworkValidation)' != 'True'">
+    <PropertyGroup>
+      <MinTargetFrameworkVersionForForms>9.0</MinTargetFrameworkVersionForForms>
+      <TargetFrameworkVersionWithoutV>$(TargetFrameworkVersion.TrimStart('vV'))</TargetFrameworkVersionWithoutV>
+    </PropertyGroup>
+    <Error Code="XF005"  Condition="$(TargetFrameworkVersionWithoutV) &lt; $(MinTargetFrameworkVersionForForms)"
+           Text="The %24(TargetFrameworkVersion) for $(ProjectName) ($(TargetFrameworkVersion)) is less than the minimum required %24(TargetFrameworkVersion) for Xamarin.Forms ($(MinTargetFrameworkVersionForForms)). You need to increase the %24(TargetFrameworkVersion) for $(ProjectName)."   />
+  </Target>
+
+
+  <!-- Xamarin iOS targets -->
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == 'Xamarin.iOS' OR '$(TargetFrameworkIdentifier)' == 'Xamarin.Mac'">
+    <CoreCompileDependsOn>
+      IncludeCorrectXIOSReference;
+      $(CoreCompileDependsOn);
+    </CoreCompileDependsOn>
+    <PrepareForBuildDependsOn>
+      IncludeCorrectXIOSReference;
+      $(PrepareForBuildDependsOn);
+    </PrepareForBuildDependsOn>
+  </PropertyGroup>
+
+  
+  <Target Name="IncludeCorrectXIOSReference" Condition="'$(TargetFrameworkIdentifier)' == 'Xamarin.iOS' OR '$(TargetFrameworkIdentifier)' == 'Xamarin.Mac'">
+	<PropertyGroup>
+		<Use2017 Condition="'$(Use2017)' == '' AND '$(MSBuildRuntimeType)' == 'Mono'">$(FrameworkSDKRoot.Contains('/Versions/5'))</Use2017>
+		<Use2017 Condition="'$(Use2017)' == '' AND '$(MSBuildAssemblyVersion)' &lt; '16.0'">true</Use2017>
+		<Use2017 Condition="'$(Use2017)' == ''">false</Use2017>
+		<FrameworkDll Condition="'$(TargetFrameworkIdentifier)' == 'Xamarin.iOS'">Xamarin.Forms.Platform.iOS.dll</FrameworkDll>
+		<FrameworkDll Condition="'$(TargetFrameworkIdentifier)' == 'Xamarin.Mac'">Xamarin.Forms.Platform.macOS.dll</FrameworkDll>
+	</PropertyGroup>
+    <ItemGroup Condition="'$(Use2017)' != 'true'">
+		<Reference Include="Xamarin.Forms.Platform.iOS">
+			<HintPath>$(MSBuildThisFileDirectory)\XCODE11\$(FrameworkDll)</HintPath>
+		</Reference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Use2017)' == 'true'">
+		<Reference Include="Xamarin.Forms.Platform.iOS">
+			<HintPath>$(MSBuildThisFileDirectory)\XCODE10\$(FrameworkDll)</HintPath>
+		</Reference>
+    </ItemGroup>
+  </Target>
+
+  <!-- UWP Targets-->
+  <Target Name="WinUICheckTargetPlatformVersion" BeforeTargets="PrepareForBuild"
+      Condition="'$(TargetPlatformVersion)' != '' and '$(TargetPlatformMinVersion)' != ''">
+    <PropertyGroup>
+      <MicrosoftUIXamlTargetPlatformMinCheckValue>$([System.Version]::Parse('$(TargetPlatformMinVersion)').Build)</MicrosoftUIXamlTargetPlatformMinCheckValue>
+    </PropertyGroup>
+    <Warning
+        Text="Xamarin.Forms recommends TargetPlatformMinVersion &gt;= 10.0.14393.0 (current project is $(MicrosoftUIXamlTargetPlatformMinCheckValue))"
+        Condition="$(MicrosoftUIXamlTargetPlatformMinCheckValue) &lt; 14393" />
+    <PropertyGroup>
+      <MicrosoftUIXamlTargetPlatformCheckValue>$([System.Version]::Parse('$(TargetPlatformVersion)').Build)</MicrosoftUIXamlTargetPlatformCheckValue>
+    </PropertyGroup>
+    <Warning
+        Text="Xamarin.Forms recommends TargetPlatformVersion &gt;= 10.0.17763.0 (current project is $(MicrosoftUIXamlTargetPlatformCheckValue))"
+        Condition="$(MicrosoftUIXamlTargetPlatformCheckValue) &lt; 17763" />
+  </Target>
 </Project>

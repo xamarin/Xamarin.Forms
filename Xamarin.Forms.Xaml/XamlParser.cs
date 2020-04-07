@@ -46,8 +46,7 @@ namespace Xamarin.Forms.Xaml
 
 		public static void ParseXaml(RootNode rootNode, XmlReader reader)
 		{
-			IList<KeyValuePair<string, string>> xmlns;
-			var attributes = ParseXamlAttributes(reader, out xmlns);
+			var attributes = ParseXamlAttributes(reader, out IList<KeyValuePair<string, string>> xmlns);
 			var prefixes = PrefixesToIgnore(xmlns);
 			(rootNode.IgnorablePrefixes ?? (rootNode.IgnorablePrefixes=new List<string>())).AddRange(prefixes);
 			rootNode.Properties.AddRange(attributes);
@@ -80,14 +79,23 @@ namespace Xamarin.Forms.Xaml
 							else //Attached BP
 								name = new XmlName(reader.NamespaceURI, reader.LocalName);
 
+							if (node.Properties.ContainsKey(name))
+								throw new XamlParseException($"'{reader.Name}' is a duplicate property name.", (IXmlLineInfo)reader);
+
+							INode prop = null;
 							if (reader.IsEmptyElement)
-								throw new XamlParseException($"Unexpected empty element '<{reader.Name}/>'", (IXmlLineInfo)reader);
-							var prop = ReadNode(reader);
+								Debug.WriteLine($"Unexpected empty element '<{reader.Name} />'", (IXmlLineInfo)reader);
+							else
+								prop = ReadNode(reader);
+
 							if (prop != null)
 								node.Properties.Add(name, prop);
 						}
 						// 2. Xaml2009 primitives, x:Arguments, ...
 						else if (reader.NamespaceURI == X2009Uri && reader.LocalName == "Arguments") {
+							if (node.Properties.ContainsKey(XmlName.xArguments))
+								throw new XamlParseException($"'x:Arguments' is a duplicate directive name.", (IXmlLineInfo)reader);
+
 							var prop = ReadNode(reader);
 							if (prop != null)
 								node.Properties.Add(XmlName.xArguments, prop);
@@ -95,6 +103,9 @@ namespace Xamarin.Forms.Xaml
 						// 3. DataTemplate (should be handled by 4.)
 						else if (node.XmlType.NamespaceUri == XFUri &&
 								 (node.XmlType.Name == "DataTemplate" || node.XmlType.Name == "ControlTemplate")) {
+							if (node.Properties.ContainsKey(XmlName._CreateContent))
+								throw new XamlParseException($"Multiple child elements in {node.XmlType.Name}", (IXmlLineInfo)reader);
+
 							var prop = ReadNode(reader, true);
 							if (prop != null)
 								node.Properties.Add(XmlName._CreateContent, prop);
@@ -127,13 +138,13 @@ namespace Xamarin.Forms.Xaml
 			var skipFirstRead = nested;
 			Debug.Assert(reader.NodeType == XmlNodeType.Element);
 			var name = reader.Name;
-			List<INode> nodes = new List<INode>();
-			INode node = null;
+			var nodes = new List<INode>();
 
 			while (skipFirstRead || reader.Read())
 			{
 				skipFirstRead = false;
 
+				INode node;
 				switch (reader.NodeType)
 				{
 					case XmlNodeType.EndElement:
@@ -153,13 +164,7 @@ namespace Xamarin.Forms.Xaml
 
 						var attributes = ParseXamlAttributes(reader, out xmlns);
 						var prefixes = PrefixesToIgnore(xmlns);
-
-						IList<XmlType> typeArguments = null;
-						if (attributes.Any(kvp => kvp.Key == XmlName.xTypeArguments))
-						{
-							typeArguments =
-								((ValueNode)attributes.First(kvp => kvp.Key == XmlName.xTypeArguments).Value).Value as IList<XmlType>;
-						}
+						var typeArguments = GetTypeArguments(attributes);
 
 						node = new ElementNode(new XmlType(elementNsUri, elementName, typeArguments), elementNsUri,
 							reader as IXmlNamespaceResolver, elementXmlInfo.LineNumber, elementXmlInfo.LinePosition);
@@ -172,6 +177,7 @@ namespace Xamarin.Forms.Xaml
 							return node;
 						break;
 					case XmlNodeType.Text:
+					case XmlNodeType.CDATA:
 						node = new ValueNode(reader.Value.Trim(), (IXmlNamespaceResolver)reader, ((IXmlLineInfo)reader).LineNumber,
 							((IXmlLineInfo)reader).LinePosition);
 						nodes.Add(node);
@@ -184,6 +190,15 @@ namespace Xamarin.Forms.Xaml
 				}
 			}
 			throw new XamlParseException("Closing PropertyElement expected", (IXmlLineInfo)reader);
+		}
+
+		internal static IList<XmlType> GetTypeArguments(XmlReader reader) => GetTypeArguments(ParseXamlAttributes(reader, out _));
+
+		static IList<XmlType> GetTypeArguments(IList<KeyValuePair<XmlName, INode>> attributes)
+		{
+			return attributes.Any(kvp => kvp.Key == XmlName.xTypeArguments)
+				? ((ValueNode)attributes.First(kvp => kvp.Key == XmlName.xTypeArguments).Value).Value as IList<XmlType>
+				: null;
 		}
 
 		static IList<KeyValuePair<XmlName, INode>> ParseXamlAttributes(XmlReader reader, out IList<KeyValuePair<string,string>> xmlns)
@@ -204,64 +219,66 @@ namespace Xamarin.Forms.Xaml
 				var namespaceUri = reader.NamespaceURI;
 				if (reader.LocalName.Contains(".") && namespaceUri == "")
 					namespaceUri = ((IXmlNamespaceResolver)reader).LookupNamespace("");
-				var propertyName = new XmlName(namespaceUri, reader.LocalName);
+				var propertyName = ParsePropertyName(new XmlName(namespaceUri, reader.LocalName));
+
+				if (propertyName.NamespaceURI == null && propertyName.LocalName == null)
+					continue;
 
 				object value = reader.Value;
 
-				if (reader.NamespaceURI == X2006Uri)
-				{
-					switch (reader.LocalName) {
-					case "Key":
-						propertyName = XmlName.xKey;
-						break;
-					case "Name":
-						propertyName = XmlName.xName;
-						break;
-					case "Class":
-					case "FieldModifier":
-						continue;
-					default:
-						Debug.WriteLine("Unhandled attribute {0}", reader.Name);
-						continue;
-					}
-                }
-
-				if (reader.NamespaceURI == X2009Uri)
-				{
-					switch (reader.LocalName) {
-					case "Key":
-						propertyName = XmlName.xKey;
-						break;
-					case "Name":
-						propertyName = XmlName.xName;
-						break;
-					case "TypeArguments":
-						propertyName = XmlName.xTypeArguments;
-						value = TypeArgumentsParser.ParseExpression((string)value, (IXmlNamespaceResolver)reader, (IXmlLineInfo)reader);
-						break;
-					case "DataType":
-						propertyName = XmlName.xDataType;
-						break;
-					case "Class":
-					case "FieldModifier":
-						continue;
-					case "FactoryMethod":
-						propertyName = XmlName.xFactoryMethod;
-						break;
-					case "Arguments":
-						propertyName = XmlName.xArguments;
-						break;
-					default:
-						Debug.WriteLine("Unhandled attribute {0}", reader.Name);
-						continue;
-					}
-				}
+				if (propertyName == XmlName.xTypeArguments)
+					value = TypeArgumentsParser.ParseExpression((string)value, (IXmlNamespaceResolver)reader, (IXmlLineInfo)reader);
 
 				var propertyNode = GetValueNode(value, reader);
 				attributes.Add(new KeyValuePair<XmlName, INode>(propertyName, propertyNode));
 			}
 			reader.MoveToElement();
 			return attributes;
+		}
+
+		public static XmlName ParsePropertyName(XmlName name)
+		{
+			if (name.NamespaceURI == X2006Uri)
+			{
+				switch (name.LocalName) {
+				case "Key":
+					return XmlName.xKey;
+				case "Name":
+					return XmlName.xName;
+				case "Class":
+				case "FieldModifier":
+					return new XmlName(null, null);
+				default:
+					Debug.WriteLine("Unhandled attribute {0}", name);
+					return new XmlName(null, null);
+				}
+            }
+
+			if (name.NamespaceURI == X2009Uri)
+			{
+				switch (name.LocalName) {
+				case "Key":
+					return XmlName.xKey;
+				case "Name":
+					return XmlName.xName;
+				case "TypeArguments":
+					return XmlName.xTypeArguments;
+				case "DataType":
+					return XmlName.xDataType;
+				case "Class":
+				case "FieldModifier":
+					return new XmlName(null, null);
+				case "FactoryMethod":
+					return XmlName.xFactoryMethod;
+				case "Arguments":
+					return XmlName.xArguments;
+				default:
+					Debug.WriteLine("Unhandled attribute {0}", name);
+					return new XmlName(null, null);
+				}
+			}
+
+			return name;
 		}
 
 		static IList<string> PrefixesToIgnore(IList<KeyValuePair<string, string>> xmlns)
@@ -333,7 +350,9 @@ namespace Xamarin.Forms.Xaml
 		public static Type GetElementType(XmlType xmlType, IXmlLineInfo xmlInfo, Assembly currentAssembly,
 			out XamlParseException exception)
 		{
+#if NETSTANDARD2_0
 			bool hasRetriedNsSearch = false;
+#endif
 			IList<XamlLoader.FallbackTypeInfo> potentialTypes;
 
 #if NETSTANDARD2_0
@@ -351,26 +370,6 @@ namespace Xamarin.Forms.Xaml
 			
 			var typeArguments = xmlType.TypeArguments;
 			exception = null;
-
-			if (type != null && typeArguments != null)
-			{
-				XamlParseException innerexception = null;
-				var args = typeArguments.Select(delegate(XmlType xmltype) {
-					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out XamlParseException xpe);
-					if (xpe != null)
-					{
-						innerexception = xpe;
-						return null;
-					}
-					return t;
-				}).ToArray();
-				if (innerexception != null)
-				{
-					exception = innerexception;
-					return null;
-				}
-				type = type.MakeGenericType(args);
-			}
 
 #if NETSTANDARD2_0
 			if (type == null)
@@ -390,6 +389,31 @@ namespace Xamarin.Forms.Xaml
 			if (XamlLoader.FallbackTypeResolver != null)
 				type = XamlLoader.FallbackTypeResolver(potentialTypes, type);
 
+			if (type != null && typeArguments != null)
+			{
+				XamlParseException innerexception = null;
+				var args = typeArguments.Select(delegate(XmlType xmltype) {
+					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out XamlParseException xpe);
+					if (xpe != null)
+					{
+						innerexception = xpe;
+						return null;
+					}
+					return t;
+				}).ToArray();
+				if (innerexception != null)
+				{
+					exception = innerexception;
+					return null;
+				}
+
+				try {
+					type = type.MakeGenericType(args);
+				} catch (InvalidOperationException) {
+					exception = new XamlParseException($"Type {type} is not a GenericTypeDefinition", xmlInfo);
+				}
+			}
+
 			if (type == null)
 				exception = new XamlParseException($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}", xmlInfo);
 
@@ -408,41 +432,27 @@ namespace Xamarin.Forms.Xaml
 			var namespaceURI = xmlType.NamespaceUri;
 			var elementName = xmlType.Name;
 			var typeArguments = xmlType.TypeArguments;
-			potentialTypes = null;			
+			potentialTypes = null;
 
-			foreach (var xmlnsDef in xmlnsDefinitions)
-			{
+			foreach (var xmlnsDef in xmlnsDefinitions) {
 				if (xmlnsDef.XmlNamespace != namespaceURI)
 					continue;
 				lookupAssemblies.Add(xmlnsDef);
 			}
 
-			if (lookupAssemblies.Count == 0)
-			{
-				if (defaultAssemblyName == null)
-					return null;
-
-				string ns;
-				string typename;
-				string asmstring;
-				string targetPlatform;
-
-				XmlnsHelper.ParseXmlns(namespaceURI, out typename, out ns, out asmstring, out targetPlatform);
+			if (lookupAssemblies.Count == 0) {
+				XmlnsHelper.ParseXmlns(namespaceURI, out _, out var ns, out var asmstring, out _);
 				asmstring = asmstring ?? defaultAssemblyName;
 				if (namespaceURI != null && ns != null)
-					lookupAssemblies.Add(new XmlnsDefinitionAttribute(namespaceURI, ns)
-					{
-						AssemblyName = asmstring
-					});
+					lookupAssemblies.Add(new XmlnsDefinitionAttribute(namespaceURI, ns) { AssemblyName = asmstring });
 			}
 
 			var lookupNames = new List<string>();
-			if (elementName != "DataTemplate" && !elementName.EndsWith("Extension"))
+			if (elementName != "DataTemplate" && !elementName.EndsWith("Extension", StringComparison.Ordinal))
 				lookupNames.Add(elementName + "Extension");
 			lookupNames.Add(elementName);
 
-			for (var i = 0; i < lookupNames.Count; i++)
-			{
+			for (var i = 0; i < lookupNames.Count; i++) {
 				var name = lookupNames[i];
 				if (name.Contains(":"))
 					name = name.Substring(name.LastIndexOf(':') + 1);
@@ -453,9 +463,8 @@ namespace Xamarin.Forms.Xaml
 			
 			potentialTypes = new List<XamlLoader.FallbackTypeInfo>();
 			foreach (string typeName in lookupNames)
-				foreach (XmlnsDefinitionAttribute xmlnsDefinitionAttribute in lookupAssemblies)				
-					potentialTypes.Add(new XamlLoader.FallbackTypeInfo
-					{
+				foreach (XmlnsDefinitionAttribute xmlnsDefinitionAttribute in lookupAssemblies)	
+					potentialTypes.Add(new XamlLoader.FallbackTypeInfo {
 						ClrNamespace = xmlnsDefinitionAttribute.ClrNamespace,
 						TypeName = typeName,
 						AssemblyName = xmlnsDefinitionAttribute.AssemblyName,

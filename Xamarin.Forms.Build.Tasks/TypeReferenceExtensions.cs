@@ -11,11 +11,9 @@ namespace Xamarin.Forms.Build.Tasks
 	{
 		static string GetAssembly(TypeReference typeRef)
 		{
-			var md = typeRef.Scope as ModuleDefinition;
-			if (md != null)
+			if (typeRef.Scope is ModuleDefinition md)
 				return md.Assembly.FullName;
-			var anr = typeRef.Scope as AssemblyNameReference;
-			if (anr != null)
+			if (typeRef.Scope is AssemblyNameReference anr)
 				return anr.FullName;
 			throw new ArgumentOutOfRangeException(nameof(typeRef));
 		}
@@ -71,7 +69,7 @@ namespace Xamarin.Forms.Build.Tasks
 				return properties.Single();
 			if (typeDef.IsInterface) {
 				foreach (var face in typeDef.Interfaces) {
-					var p = face.InterfaceType.GetProperty(predicate, out var interfaceDeclaringTypeRef);
+					var p = face.InterfaceType.ResolveGenericParameters(typeRef).GetProperty(predicate, out var interfaceDeclaringTypeRef);
 					if (p != null) {
 						declaringTypeRef = interfaceDeclaringTypeRef;
 						return p;
@@ -184,29 +182,52 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public static bool InheritsFromOrImplements(this TypeReference typeRef, TypeReference baseClass)
 		{
-			if (TypeRefComparer.Default.Equals(typeRef, baseClass))
-				return true;
+			if (typeRef is GenericInstanceType genericInstance) {
+				if (baseClass is GenericInstanceType genericInstanceBaseClass &&
+						TypeRefComparer.Default.Equals(genericInstance.ElementType, genericInstanceBaseClass.ElementType)) {
+					foreach (var parameter in genericInstanceBaseClass.ElementType.ResolveCached().GenericParameters) {
+						var argument = genericInstance.GenericArguments[parameter.Position];
+						var baseClassArgument = genericInstanceBaseClass.GenericArguments[parameter.Position];
+
+						if (parameter.IsCovariant) {
+							if (!argument.InheritsFromOrImplements(baseClassArgument))
+								return false;
+						} else if (parameter.IsContravariant) {
+							if (!baseClassArgument.InheritsFromOrImplements(argument))
+								return false;
+						} else if (!TypeRefComparer.Default.Equals(argument, baseClassArgument)) {
+							return false;
+						}
+					}
+
+					return true;
+				}
+			}
+			else {
+				if (TypeRefComparer.Default.Equals(typeRef, baseClass))
+					return true;
+
+				if (typeRef.IsArray) {
+					var array = (ArrayType)typeRef;
+					var arrayType = typeRef.ResolveCached();
+					if (arrayInterfaces.Contains(baseClass.FullName))
+						return true;
+					if (array.IsVector &&  //generic interfaces are not implemented on multidimensional arrays
+						arrayGenericInterfaces.Contains(baseClass.ResolveCached().FullName) &&
+						baseClass.IsGenericInstance &&
+						TypeRefComparer.Default.Equals((baseClass as GenericInstanceType).GenericArguments[0], arrayType))
+						return true;
+					return baseClass.FullName == "System.Object";
+				}
+			}
 
 			if (typeRef.IsValueType)
 				return false;
 
-			if (typeRef.IsArray) {
-				var array = (ArrayType)typeRef;
-				var arrayType = typeRef.ResolveCached();
-				if (arrayInterfaces.Contains(baseClass.FullName))
-					return true;
-				if (array.IsVector &&  //generic interfaces are not implemented on multidimensional arrays
-				    arrayGenericInterfaces.Contains(baseClass.ResolveCached().FullName) &&
-					baseClass.IsGenericInstance &&
-					TypeRefComparer.Default.Equals((baseClass as GenericInstanceType).GenericArguments[0], arrayType))
-					return true;
-				return baseClass.FullName == "System.Object";
-			}
-
 			if (typeRef.FullName == "System.Object")
 				return false;
 			var typeDef = typeRef.ResolveCached();
-			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir.InterfaceType.ResolveGenericParameters(typeRef), baseClass)))
+			if (typeDef.Interfaces.Any(ir => ir.InterfaceType.ResolveGenericParameters(typeRef).InheritsFromOrImplements(baseClass)))
 				return true;
 			if (typeDef.BaseType == null)
 				return false;
@@ -368,8 +389,27 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public static TypeReference ResolveGenericParameters(this TypeReference self, TypeReference declaringTypeReference)
 		{
+			var genericdeclType = declaringTypeReference as GenericInstanceType;
+			var genericParameterSelf = self as GenericParameter;
 			var genericself = self as GenericInstanceType;
-			return genericself == null ? self : genericself.ResolveGenericParameters(declaringTypeReference);
+
+			if (genericdeclType == null && genericParameterSelf == null && genericself == null)
+				return self;
+
+			if (genericdeclType == null && genericParameterSelf!=null)
+			{
+				var typeDef = declaringTypeReference.Resolve();
+				if (typeDef.BaseType == null || typeDef.BaseType.FullName == "System.Object")
+					return self;
+				return self.ResolveGenericParameters(typeDef.BaseType.ResolveGenericParameters(declaringTypeReference));
+			}
+			if (genericParameterSelf != null)
+				return genericdeclType.GenericArguments[genericParameterSelf.Position];
+
+			if (genericself != null)
+				return genericself.ResolveGenericParameters(declaringTypeReference);
+
+			return self;
 		}
 
 		public static GenericInstanceType ResolveGenericParameters(this GenericInstanceType self, TypeReference declaringTypeReference)
@@ -378,13 +418,18 @@ namespace Xamarin.Forms.Build.Tasks
 			if (genericdeclType == null)
 				return self;
 
+			return self.ResolveGenericParameters(genericdeclType);
+		}
+
+		public static GenericInstanceType ResolveGenericParameters(this GenericInstanceType self, GenericInstanceType declaringTypeReference)
+		{
 			List<TypeReference> args = new List<TypeReference>();
 			for (var i = 0; i < self.GenericArguments.Count; i++) {
 				var genericParameter = self.GenericArguments[i] as GenericParameter;
 				if (genericParameter == null)
 					args.Add(self.GenericArguments[i].ResolveGenericParameters(declaringTypeReference));
 				else if (genericParameter.Type == GenericParameterType.Type)
-					args.Add(genericdeclType.GenericArguments[genericParameter.Position]);
+					args.Add(declaringTypeReference.GenericArguments[genericParameter.Position]);
 			}
 			return self.ElementType.MakeGenericInstanceType(args.ToArray());
 		}

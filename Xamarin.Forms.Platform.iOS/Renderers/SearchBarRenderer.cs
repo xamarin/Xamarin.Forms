@@ -4,6 +4,7 @@ using System.Drawing;
 using CoreGraphics;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -23,6 +24,12 @@ namespace Xamarin.Forms.Platform.iOS
 		UIToolbar _numericAccessoryView;
 
 		IElementController ElementController => Element as IElementController;
+
+		[Internals.Preserve(Conditional = true)]
+		public SearchBarRenderer()
+		{
+
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -75,10 +82,13 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateIsEnabled();
 				UpdateCancelButton();
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+				UpdateVerticalTextAlignment();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 				UpdateMaxLength();
 				UpdateKeyboard();
+				UpdateSearchBarStyle();
 			}
 
 			base.OnElementChanged(e);
@@ -98,26 +108,37 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == SearchBar.CancelButtonColorProperty.PropertyName)
 				UpdateCancelButton();
 			else if (e.PropertyName == SearchBar.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
+			{
 				UpdateFont();
+			}
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == SearchBar.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if(e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if(e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if(e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
 				UpdateKeyboard();
+			else if(e.PropertyName == PlatformConfiguration.iOSSpecific.SearchBar.SearchBarStyleProperty.PropertyName)
+				UpdateSearchBarStyle();
 		}
 
 		protected override void SetBackgroundColor(Color color)
@@ -156,6 +177,16 @@ namespace Xamarin.Forms.Platform.iOS
 			return sizeThatFits;
 		}
 
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				UpdateTextColor();
+#endif
+		}
+
 		void OnCancelClicked(object sender, EventArgs args)
 		{
 			ElementController.SetValueFromRenderer(SearchBar.TextProperty, null);
@@ -187,7 +218,17 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateOnTextChanged();
 		}
 
-		void UpdateAlignment()
+		void UpdateCharacterSpacing()
+		{
+			_textField = _textField ?? Control.FindDescendantView<UITextField>();
+			if (_textField == null)
+				return;
+
+			_textField.AttributedText = _textField.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+			_textField.AttributedPlaceholder = _textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+		}
+
+		void UpdateHorizontalTextAlignment()
 		{
 			_textField = _textField ?? Control.FindDescendantView<UITextField>();
 
@@ -197,7 +238,17 @@ namespace Xamarin.Forms.Platform.iOS
 			_textField.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 		}
 
-		void UpdateCancelButton()
+		void UpdateVerticalTextAlignment()
+		{
+			_textField = _textField ?? Control.FindDescendantView<UITextField>();
+
+			if (_textField == null)
+				return;
+
+			_textField.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();
+		}
+
+		public virtual void UpdateCancelButton()
 		{
 			Control.ShowsCancelButton = !string.IsNullOrEmpty(Control.Text);
 
@@ -259,14 +310,17 @@ namespace Xamarin.Forms.Platform.iOS
 				// https://developer.apple.com/library/prerelease/ios/documentation/UIKit/Reference/UITextField_Class/index.html#//apple_ref/occ/instp/UITextField/placeholder
 
 				var color = Element.IsEnabled && !targetColor.IsDefault 
-					? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
+					? targetColor : ColorExtensions.PlaceholderColor.ToColor();
 
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+
 			}
 			else
 			{
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, targetColor.IsDefault 
-					? ColorExtensions.SeventyPercentGrey.ToColor() : targetColor);
+					? ColorExtensions.PlaceholderColor.ToColor() : targetColor);
+				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 			}
 		}
 
@@ -362,6 +416,11 @@ namespace Xamarin.Forms.Platform.iOS
 			accessoryView.SetItems(new[] { spacer, searchButton }, false);
 
 			return accessoryView;
+		}
+
+		void UpdateSearchBarStyle()
+		{
+			Control.SearchBarStyle = Element.OnThisPlatform().GetSearchBarStyle().ToNativeSearchBarStyle();
 		}
 	}
 }

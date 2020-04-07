@@ -9,33 +9,48 @@ namespace Xamarin.Forms
 		static int s_routeCount = 0;
 		static Dictionary<string, RouteFactory> s_routes = new Dictionary<string, RouteFactory>();
 
-		internal const string ImplicitPrefix = "IMPL_";
+		const string ImplicitPrefix = "IMPL_";
+		const string DefaultPrefix = "D_FAULT_";
+		const string _pathSeparator = "/";
 
-		internal static string GenerateImplicitRoute (string source)
+		internal static string GenerateImplicitRoute(string source)
 		{
-			if (source.StartsWith(ImplicitPrefix, StringComparison.Ordinal))
+			if (IsImplicit(source))
 				return source;
-			return ImplicitPrefix + source;
+			return String.Concat(ImplicitPrefix, source);
+		}
+		internal static bool IsImplicit(string source)
+		{
+			return source.StartsWith(ImplicitPrefix, StringComparison.Ordinal);
+		}
+		internal static bool IsImplicit(BindableObject source)
+		{
+			return IsImplicit(GetRoute(source));
+		}
+		internal static bool IsDefault(string source)
+		{
+			return source.StartsWith(DefaultPrefix, StringComparison.Ordinal);
 		}
 
-		internal static bool CompareRoutes(string route, string compare, out bool isImplicit)
+		internal static void Clear()
 		{
-			if (isImplicit = route.StartsWith(ImplicitPrefix, StringComparison.Ordinal))
-				route = route.Substring(ImplicitPrefix.Length);
-
-			if (compare.StartsWith(ImplicitPrefix, StringComparison.Ordinal))
-				throw new Exception();
-
-			return route == compare;
+			s_routes.Clear();
 		}
 
 		public static readonly BindableProperty RouteProperty =
-			BindableProperty.CreateAttached("Route", typeof(string), typeof(Routing), null, 
+			BindableProperty.CreateAttached("Route", typeof(string), typeof(Routing), null,
 				defaultValueCreator: CreateDefaultRoute);
 
 		static object CreateDefaultRoute(BindableObject bindable)
 		{
-			return bindable.GetType().Name + ++s_routeCount;
+			return $"{DefaultPrefix}{bindable.GetType().Name}{++s_routeCount}";
+		}
+
+		internal static string[] GetRouteKeys()
+		{
+			string[] keys = new string[s_routes.Count];
+			s_routes.Keys.CopyTo(keys, 0);
+			return keys;
 		}
 
 		public static Element GetOrCreateContent(string route)
@@ -59,25 +74,83 @@ namespace Xamarin.Forms
 			return result;
 		}
 
-		public static string GetRoute(Element obj)
+		public static string GetRoute(BindableObject obj)
 		{
 			return (string)obj.GetValue(RouteProperty);
 		}
 
+		internal static string GetRoutePathIfNotImplicit(Element obj)
+		{
+			var source = GetRoute(obj);
+			if (IsImplicit(source))
+				return String.Empty;
+
+			return $"{source}/";
+		}
+
+		internal static Uri Remove(Uri uri, bool implicitRoutes, bool defaultRoutes)
+		{
+			uri = ShellUriHandler.FormatUri(uri, null);
+
+			string[] parts = uri.OriginalString.TrimEnd(_pathSeparator[0]).Split(_pathSeparator[0]);
+
+			bool userDefinedRouteAdded = false;
+			List<string> toKeep = new List<string>();
+			for (int i = 0; i < parts.Length; i++)
+			{
+				// This means there are no routes defined on the shell but the user has navigated to a global route
+				// so we need to attach the final route where the user left the shell
+				if (s_routes.ContainsKey(parts[i]) && !userDefinedRouteAdded && i > 0)
+				{
+					toKeep.Add(parts[i - 1]);
+				}
+
+				if (!(IsDefault(parts[i]) && defaultRoutes) && !(IsImplicit(parts[i]) && implicitRoutes))
+				{
+					if (!String.IsNullOrWhiteSpace(parts[i]))
+						userDefinedRouteAdded = true;
+
+					toKeep.Add(parts[i]);
+				}
+			}
+
+			if(!userDefinedRouteAdded && parts.Length > 0)
+			{
+				toKeep.Add(parts[parts.Length - 1]);
+			}
+
+			return new Uri(string.Join(_pathSeparator, toKeep), UriKind.Relative);
+		}
+
+		public static string FormatRoute(List<string> segments)
+		{
+			var route = FormatRoute(String.Join(_pathSeparator, segments));
+			return route;
+		}
+
+		public static string FormatRoute(string route)
+		{
+			return route;
+		}
+
 		public static void RegisterRoute(string route, RouteFactory factory)
 		{
-			if (!ValidateRoute(route))
-				throw new ArgumentException("Route must contain only lowercase letters");
+			if (!String.IsNullOrWhiteSpace(route))
+				route = FormatRoute(route);
+			ValidateRoute(route, factory);
 
 			s_routes[route] = factory;
 		}
 
+		public static void UnRegisterRoute(string route)
+		{
+			if (s_routes.TryGetValue(route, out _))
+				s_routes.Remove(route);
+		}
+
 		public static void RegisterRoute(string route, Type type)
 		{
-			if (!ValidateRoute(route))
-				throw new ArgumentException("Route must contain only lowercase letters");
-
-			s_routes[route] = new TypeRouteFactory(type);
+			RegisterRoute(route, new TypeRouteFactory(type));
 		}
 
 		public static void SetRoute(Element obj, string value)
@@ -85,13 +158,25 @@ namespace Xamarin.Forms
 			obj.SetValue(RouteProperty, value);
 		}
 
-		static bool ValidateRoute(string route)
+		static void ValidateRoute(string route, RouteFactory routeFactory)
 		{
-			// Honestly this could probably be expanded to allow any URI allowable character
-			// I just dont want to figure out what that validation looks like.
-			// It does however need to be lowercase since uri case sensitivity is a bit touchy
-			Regex r = new Regex("^[a-z]*$");
-			return r.IsMatch(route);
+			if (string.IsNullOrWhiteSpace(route))
+				throw new ArgumentNullException(nameof(route), "Route cannot be an empty string");
+
+			routeFactory = routeFactory ?? throw new ArgumentNullException(nameof(routeFactory), "Route Factory cannot be null");
+
+			var uri = new Uri(route, UriKind.RelativeOrAbsolute);
+
+			var parts = uri.OriginalString.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (var part in parts)
+			{
+				if (IsImplicit(part))
+					throw new ArgumentException($"Route contains invalid characters in \"{part}\"");
+			}
+
+			RouteFactory existingRegistration = null;
+			if(s_routes.TryGetValue(route, out existingRegistration) && !existingRegistration.Equals(routeFactory))
+				throw new ArgumentException($"Duplicated Route: \"{route}\"");
 		}
 
 		class TypeRouteFactory : RouteFactory
@@ -106,6 +191,18 @@ namespace Xamarin.Forms
 			public override Element GetOrCreate()
 			{
 				return (Element)Activator.CreateInstance(_type);
+			}
+			public override bool Equals(object obj)
+			{
+				if ((obj is TypeRouteFactory typeRouteFactory))
+					return typeRouteFactory._type == _type;
+
+				return false;
+			}
+
+			public override int GetHashCode()
+			{
+				return _type.GetHashCode();
 			}
 		}
 	}

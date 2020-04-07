@@ -6,11 +6,10 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	// TODO hartez 2017/03/03 14:11:17 It's weird that this class is called VisualElementRenderer but it doesn't implement that interface. The name should probably be different.
-	internal sealed class VisualElementRenderer : IDisposable, IEffectControlProvider, ITabStop
+	public sealed class VisualElementRenderer : IDisposable, IEffectControlProvider, ITabStop
 	{
 		bool _disposed;
-
+		
 		IVisualElementRenderer _renderer;
 		readonly GestureManager _gestureManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
@@ -66,8 +65,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
-				_gestureManager?.Dispose();
-				_automationPropertiesProvider?.Dispose();
+				EffectUtilities.UnregisterEffectControlProvider(this, Element);
+
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+				}
 
 				if (_renderer != null)
 				{
@@ -75,6 +78,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 					_renderer = null;
 				}
+
+				_gestureManager?.Dispose();
+				_automationPropertiesProvider?.Dispose();
 			}
 		}
 

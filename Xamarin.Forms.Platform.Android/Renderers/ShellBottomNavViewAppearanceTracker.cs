@@ -1,7 +1,13 @@
 ﻿using Android.Content.Res;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using Google.Android.Material.BottomNavigation;
+#else
 using Android.Support.Design.Internal;
 using Android.Support.Design.Widget;
+using Android.Support.V4.Widget;
+#endif
 using System;
 using AColor = Android.Graphics.Color;
 using R = Android.Resource;
@@ -14,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		ShellItem _shellItem;
 		ColorStateList _defaultList;
 		bool _disposed;
-		Color _lastColor = Color.Default;
+		ColorStateList _colorStateList;
 
 		public ShellBottomNavViewAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
 		{
@@ -33,71 +39,77 @@ namespace Xamarin.Forms.Platform.Android
 			SetBackgroundColor(bottomView, Color.White);
 		}
 
-		public virtual void SetAppearance(BottomNavigationView bottomView, ShellAppearance appearance)
+		public virtual void SetAppearance(BottomNavigationView bottomView, IShellAppearanceElement appearance)
 		{
 			IShellAppearanceElement controller = appearance;
-			var background = controller.EffectiveTabBarBackgroundColor;
-			var foreground = controller.EffectiveTabBarForegroundColor;
-			var disabled = controller.EffectiveTabBarDisabledColor;
-			var unselected = controller.EffectiveTabBarUnselectedColor;
-			var title = controller.EffectiveTabBarTitleColor;
-
+			var backgroundColor = controller.EffectiveTabBarBackgroundColor;
+			var foregroundColor = controller.EffectiveTabBarForegroundColor; // currently unused
+			var disabledColor = controller.EffectiveTabBarDisabledColor;
+			var unselectedColor = controller.EffectiveTabBarUnselectedColor;
+			var titleColor = controller.EffectiveTabBarTitleColor;
 
 			if (_defaultList == null)
 			{
 #if __ANDROID_28__
-				_defaultList = bottomView.ItemTextColor ?? MakeColorStateList(title.ToAndroid().ToArgb(), disabled.ToAndroid().ToArgb(), unselected.ToAndroid().ToArgb());
+				_defaultList = bottomView.ItemTextColor ?? bottomView.ItemIconTintList
+					?? MakeColorStateList(titleColor.ToAndroid().ToArgb(), disabledColor.ToAndroid().ToArgb(), unselectedColor.ToAndroid().ToArgb());
 #else
-				_defaultList = bottomView.ItemTextColor;
+				_defaultList = bottomView.ItemTextColor ?? bottomView.ItemIconTintList;
 #endif
 			}
 
-			var colorStateList = MakeColorStateList(title, disabled, unselected);
-			bottomView.ItemTextColor = colorStateList;
-			bottomView.ItemIconTintList = colorStateList;
+			_colorStateList = MakeColorStateList(titleColor, disabledColor, unselectedColor);
+			bottomView.ItemTextColor = _colorStateList;
+			bottomView.ItemIconTintList = _colorStateList;
 
-			colorStateList.Dispose();
-
-			SetBackgroundColor(bottomView, background);
+			SetBackgroundColor(bottomView, backgroundColor);
 		}
 
 		protected virtual void SetBackgroundColor(BottomNavigationView bottomView, Color color)
 		{
-			if (_lastColor.IsDefault)
-				_lastColor = color;
+			var menuView = bottomView.GetChildAt(0) as BottomNavigationMenuView;
+			var oldBackground = bottomView.Background;
+			var colorDrawable = oldBackground as ColorDrawable;
+			var colorChangeRevealDrawable = oldBackground as ColorChangeRevealDrawable;
+			AColor lastColor = colorChangeRevealDrawable?.EndColor ?? colorDrawable?.Color ?? Color.Default.ToAndroid();
+			AColor newColor;
 
-			using (var menuView = bottomView.GetChildAt(0) as BottomNavigationMenuView)
+			if (color == Color.Default)
+				newColor = Color.White.ToAndroid();
+			else
+				newColor = color.ToAndroid();
+
+			if (menuView == null)
 			{
-				if (menuView == null)
-				{
-					bottomView.SetBackground(new ColorDrawable(color.ToAndroid()));
-				}
-				else
-				{
-					var index = _shellItem.Items.IndexOf(_shellItem.CurrentItem);
-					using (var menu = bottomView.Menu)
-						index = Math.Min(index, menu.Size() - 1);
+				if (colorDrawable != null && lastColor == newColor)
+					return;
 
-					using (var child = menuView.GetChildAt(index))
-					{
-						var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
-
-						bottomView.Background?.Dispose();
-						bottomView.SetBackground(new ColorChangeRevealDrawable(_lastColor.ToAndroid(), color.ToAndroid(), touchPoint));
-						_lastColor = color;
-					}
+				if (lastColor != newColor || colorDrawable == null)
+				{
+					bottomView.SetBackground(new ColorDrawable(newColor));
 				}
+			}
+			else
+			{
+				if (colorChangeRevealDrawable != null && lastColor == newColor)
+					return;
+
+				var index = ((IShellItemController)_shellItem).GetItems().IndexOf(_shellItem.CurrentItem);
+				var menu = bottomView.Menu;
+				index = Math.Min(index, menu.Size() - 1);
+
+				var child = menuView.GetChildAt(index);
+				if (child == null)
+					return;
+
+				var touchPoint = new Point(child.Left + (child.Right - child.Left) / 2, child.Top + (child.Bottom - child.Top) / 2);
+
+				bottomView.SetBackground(new ColorChangeRevealDrawable(lastColor, newColor, touchPoint));
 			}
 		}
 
 		ColorStateList MakeColorStateList(Color titleColor, Color disabledColor, Color unselectedColor)
 		{
-			var states = new int[][] {
-				new int[] { -R.Attribute.StateEnabled },
-				new int[] {R.Attribute.StateChecked },
-				new int[] { }
-			};
-
 			var disabledInt = disabledColor.IsDefault ?
 				_defaultList.GetColorForState(new[] { -R.Attribute.StateEnabled }, AColor.Gray) :
 				disabledColor.ToAndroid().ToArgb();
@@ -107,7 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 				titleColor.ToAndroid().ToArgb();
 
 			var defaultColor = unselectedColor.IsDefault ?
-				_defaultList.GetColorForState(new int[0], AColor.Black) :
+				_defaultList.DefaultColor :
 				unselectedColor.ToAndroid().ToArgb();
 
 			return MakeColorStateList(checkedInt, disabledInt, defaultColor);
@@ -135,20 +147,23 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				if (disposing)
-				{
-					_defaultList?.Dispose();
-				}
+				_defaultList?.Dispose();
+				_colorStateList?.Dispose();
 
 				_shellItem = null;
 				_shellContext = null;
 				_defaultList = null;
-				_disposed = true;
+				_colorStateList = null;
 			}
 		}
 
-#endregion IDisposable
+		#endregion IDisposable
 	}
 }

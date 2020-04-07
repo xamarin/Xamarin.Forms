@@ -8,6 +8,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using SizeF = CoreGraphics.CGSize;
+using PreserveAttribute = Foundation.PreserveAttribute;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -35,6 +36,7 @@ namespace Xamarin.Forms.Platform.iOS
 		IImageVisualElementRenderer IButtonLayoutRenderer.ImageVisualElementRenderer => this;
 		nfloat IButtonLayoutRenderer.MinimumHeight => _minimumButtonHeight;
 
+		[Preserve(Conditional = true)]
 		public ButtonRenderer()
 		{
 			BorderElementManager.Init(this);
@@ -52,16 +54,20 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_isDisposed)
 				return;
-			if (Control != null)
-			{
-				Control.TouchUpInside -= OnButtonTouchUpInside;
-				Control.TouchDown -= OnButtonTouchDown;
-				BorderElementManager.Dispose(this);
-				_buttonLayoutManager?.Dispose();
-				_buttonLayoutManager = null;
-			}
 
 			_isDisposed = true;
+
+			if (disposing)
+			{
+				if (Control != null)
+				{
+					Control.TouchUpInside -= OnButtonTouchUpInside;
+					Control.TouchDown -= OnButtonTouchDown;
+					BorderElementManager.Dispose(this);
+					_buttonLayoutManager?.Dispose();
+					_buttonLayoutManager = null;
+				}
+			}
 
 			base.Dispose(disposing);
 		}

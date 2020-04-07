@@ -30,7 +30,8 @@ namespace Xamarin.Forms.Controls.Issues
 		const string TargetAutomationId = "controlinsideofframe";
 		const string NoTaps = "No taps yet";
 		const string Tapped = "Frame was tapped";
-		ContentPage _menu;
+
+		static NavigationPage NavigationPage;
 
 #if UITEST
 		[Test, TestCaseSource(nameof(TestCases))]
@@ -74,14 +75,12 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				// These controls show a pop-up which we have to cancel/done out of before we can continue
 #if __ANDROID__
-				var cancelButtonText = "Cancel";
+				System.Threading.Tasks.Task.Delay(2000).Wait(); // If we hit back before the dialog is fully up, it may not dismiss
 				RunningApp.Back();
 #elif __IOS__
 				var cancelButtonText = "Done";
 				RunningApp.WaitForElement(q => q.Marked(cancelButtonText));
 				RunningApp.Tap(q => q.Marked(cancelButtonText));
-#else
-				var cancelButtonText = "DismissButton";
 #endif
 
 			}
@@ -94,10 +93,12 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				RunningApp.WaitForElement(q => q.Marked(NoTaps));
 			}
+
+			NavigationPage = null;
 		}
 #endif
 
-		ContentPage CreateTestPage(View view)
+		static ContentPage CreateTestPage(View view)
 		{
 			var instructions = new Label();
 
@@ -129,20 +130,20 @@ namespace Xamarin.Forms.Controls.Issues
 			return new ContentPage { Content = layout };
 		}
 
-		Button MenuButton(string label, Func<View> view)
+		static Button MenuButton(string label, Func<View> view)
 		{
 			var button = new Button { Text = label };
 
 			var testView = view();
 			testView.AutomationId = TargetAutomationId;
 
-			button.Clicked += (sender, args) => PushAsync(CreateTestPage(testView));
+			button.Clicked += (sender, args) => NavigationPage.PushAsync(CreateTestPage(testView));
 
 			return button;
 		}
 
 		// These controls should allow the tap gesture to bubble up to their container; everything else should absorb the gesture
-		readonly List<string> _controlsWhichShouldAllowTheTapToBubbleUp = new List<string>
+		static readonly List<string> _controlsWhichShouldAllowTheTapToBubbleUp = new List<string>
 		{
 			nameof(Image),
 			nameof(Label),
@@ -150,7 +151,7 @@ namespace Xamarin.Forms.Controls.Issues
 			nameof(Frame)
 		};
 
-		IEnumerable<object[]> TestCases
+		static IEnumerable<object[]> TestCases
 		{
 			get
 			{
@@ -173,13 +174,8 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		ContentPage BuildMenu()
+		static ContentPage BuildMenu()
 		{
-			if (_menu != null)
-			{
-				return _menu;
-			}
-
 			var layout = new Grid
 			{
 				VerticalOptions = LayoutOptions.Fill,
@@ -209,9 +205,6 @@ namespace Xamarin.Forms.Controls.Issues
 			// We don't use 'SearchBar' here because on Android it sometimes finds the wrong control
 			col1.Children.Add(MenuButton("TestSearchBar", () => new SearchBar()));
 
-			col2.Children.Add(MenuButton(nameof(DatePicker), () => new DatePicker()));
-			col2.Children.Add(MenuButton(nameof(TimePicker), () => new TimePicker()));
-
 			var slider = new Slider();
 			slider.On<iOS>().SetUpdateOnTap(true);
 			col2.Children.Add(MenuButton(nameof(Slider), () => slider));
@@ -220,11 +213,16 @@ namespace Xamarin.Forms.Controls.Issues
 			col2.Children.Add(MenuButton(nameof(Stepper), () => new Stepper()));
 			col2.Children.Add(MenuButton(nameof(BoxView), () => new BoxView { BackgroundColor = Color.DarkMagenta, WidthRequest = 100, HeightRequest = 100 }));
 
+			col2.Children.Add(MenuButton(nameof(DatePicker), () => new DatePicker()));
+			col2.Children.Add(MenuButton(nameof(TimePicker), () => new TimePicker()));
+
 			return new ContentPage { Content = layout };
 		}
 
 		protected override void Init()
 		{
+			NavigationPage = this;
+			
 			PushAsync(BuildMenu());
 		}
 	}

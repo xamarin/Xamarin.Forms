@@ -6,35 +6,31 @@ using System.ComponentModel;
 using System.Linq;
 using Android.Content;
 using Android.Widget;
-using AColor = Android.Graphics.Color;
 using Android.Text;
 using Android.Text.Style;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	public class PickerRenderer : ViewRenderer<Picker, EditText>, IPickerRenderer
+	public abstract class PickerRendererBase<TControl> : ViewRenderer<Picker, TControl>, IPickerRenderer
+		where TControl : global::Android.Views.View
 	{
 		AlertDialog _dialog;
 		bool _disposed;
-		TextColorSwitcher _textColorSwitcher;
-		int _originalHintTextColor;
+		EntryAccessibilityDelegate _pickerAccessibilityDelegate;
 
-		public PickerRenderer(Context context) : base(context)
+		public PickerRendererBase(Context context) : base(context)
 		{
 			AutoPackage = false;
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use PickerRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public PickerRenderer()
+		public PickerRendererBase()
 		{
 			AutoPackage = false;
 		}
 
-		protected override EditText CreateNativeControl()
-		{
-			return new PickerEditText(Context, this);
-		}
+		protected abstract EditText EditText { get; }
 
 		protected override void Dispose(bool disposing)
 		{
@@ -43,6 +39,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_disposed = true;
 
 				((INotifyCollectionChanged)Element.Items).CollectionChanged -= RowsCollectionChanged;
+
+				_pickerAccessibilityDelegate?.Dispose();
+				_pickerAccessibilityDelegate = null;
 			}
 
 			base.Dispose(disposing);
@@ -60,16 +59,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					var textField = CreateNativeControl();
 
-					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
-
 					SetNativeControl(textField);
 
-					_originalHintTextColor = Control.CurrentHintTextColor;
+					ControlUsedForAutomation.SetAccessibilityDelegate(_pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
 				}
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -77,12 +74,19 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -94,7 +98,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			base.OnFocusChangeRequested(sender, e);
 
 			if (e.Focus)
-				CallOnClick();
+			{
+				if (Clickable)
+					CallOnClick();
+				else
+					((IPickerRenderer)this)?.OnClick();
+			}
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
@@ -151,28 +160,71 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateFont()
 		{
-			Control.Typeface = Element.ToTypeface();
-			Control.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
+			EditText.Typeface = Element.ToTypeface();
+			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
+		}
+
+		protected void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
 		}
 
 		void UpdatePicker()
 		{
-			Control.Hint = Element.Title;
-
-			if (Element.IsSet(Picker.TitleColorProperty))
-				Control.SetHintTextColor(Element.TitleColor.ToAndroid());
-			else
-				Control.SetHintTextColor(new AColor(_originalHintTextColor));
+			UpdatePlaceHolderText();
+			UpdateTitleColor();
 
 			if (Element.SelectedIndex == -1 || Element.Items == null || Element.SelectedIndex >= Element.Items.Count)
-				Control.Text = null;
+				EditText.Text = null;
 			else
-				Control.Text = Element.Items[Element.SelectedIndex];
+				EditText.Text = Element.Items[Element.SelectedIndex];
+
+			_pickerAccessibilityDelegate.ValueText = EditText.Text;
 		}
 
-		void UpdateTextColor()
+		abstract protected void UpdateTextColor();
+		abstract protected void UpdateTitleColor();
+		abstract protected void UpdatePlaceHolderText();
+	}
+
+	public class PickerRenderer : PickerRendererBase<EditText>
+	{
+		TextColorSwitcher _textColorSwitcher;
+		TextColorSwitcher _hintColorSwitcher;
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use PickerRenderer(Context) instead.")]
+		public PickerRenderer()
 		{
-			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		public PickerRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override EditText CreateNativeControl()
+		{
+			return new PickerEditText(Context);
+		}
+
+		protected override EditText EditText => Control;
+
+		protected override void UpdateTitleColor()
+		{
+			_hintColorSwitcher = _hintColorSwitcher ?? new TextColorSwitcher(EditText.HintTextColors, Element.UseLegacyColorManagement());
+			_hintColorSwitcher.UpdateTextColor(EditText, Element.TitleColor, EditText.SetHintTextColor);
+		}
+
+		protected override void UpdateTextColor()
+		{
+			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
+			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
+		}
+		protected override void UpdatePlaceHolderText()
+		{
+			EditText.Hint = Element.Title;
 		}
 	}
 }

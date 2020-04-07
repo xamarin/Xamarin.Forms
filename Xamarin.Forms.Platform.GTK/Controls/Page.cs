@@ -1,7 +1,6 @@
 ﻿using Gdk;
 using Gtk;
 using System;
-using System.Linq;
 using Xamarin.Forms.Platform.GTK.Extensions;
 
 namespace Xamarin.Forms.Platform.GTK.Controls
@@ -62,37 +61,9 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 			_contentContainerWrapper.SetBackgroundColor(backgroundColor);
 		}
 
-		public void SetBackgroundImage(string backgroundImagePath)
+		public async void SetBackgroundImage(ImageSource imageSource)
 		{
-			if (string.IsNullOrEmpty(backgroundImagePath))
-			{
-				return;
-			}
-
-			try
-			{
-				_image.Pixbuf = new Pixbuf(backgroundImagePath);
-			}
-			catch (Exception ex)
-			{
-				Internals.Log.Warning("Page BackgroundImage", "Could not load background image: {0}", ex);
-			}
-		}
-
-		public void PushModal(Widget modal)
-		{
-			Children.Last().Hide();
-			Attach(modal, 0, 1, 0, 1);
-			modal.ShowAll();
-		}
-
-		public void PopModal(Widget modal)
-		{
-			if (Children.Length > 0)
-			{
-				Remove(modal);
-			}
-			Children.Last().Show();
+			_image.Pixbuf = await imageSource.GetNativeImageAsync();
 		}
 
 		public override void Destroy()

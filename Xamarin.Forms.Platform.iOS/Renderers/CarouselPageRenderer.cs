@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementTracker _tracker;
 		Page _previousPage;
 
+		[Preserve(Conditional = true)]
 		public CarouselPageRenderer()
 		{
 		}
@@ -250,8 +251,11 @@ namespace Xamarin.Forms.Platform.iOS
 				Platform.SetRenderer(page, renderer);
 			}
 
-			UIView container = new PageContainer(page);
-			container.AddSubview(renderer.NativeView);
+			UIView container = new CarouselPageContainer(page);
+
+			UIView view = renderer.NativeView;
+
+			container.AddSubview(view);
 			_containerMap[page] = container;
 
 			AddChildViewController(renderer.ViewController);
@@ -301,7 +305,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPage();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
-			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
 		}
 
@@ -358,17 +362,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			string bgImage = ((Page)Element).BackgroundImage;
-			if (!string.IsNullOrEmpty(bgImage))
+			this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
 			{
-				View.BackgroundColor = UIColor.FromPatternImage(UIImage.FromBundle(bgImage));
-				return;
-			}
-			Color bgColor = Element.BackgroundColor;
-			if (bgColor.IsDefault)
-				View.BackgroundColor = UIColor.White;
-			else
-				View.BackgroundColor = bgColor.ToUIColor();
+				if (bgImage != null)
+					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
+				else if (Element.BackgroundColor.IsDefault)
+					View.BackgroundColor = ColorExtensions.BackgroundColor;
+				else
+					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+			});
 		}
 
 		void UpdateCurrentPage(bool animated = true)
@@ -378,9 +380,9 @@ namespace Xamarin.Forms.Platform.iOS
 				ScrollToPage(CarouselPage.GetIndex(current), animated);
 		}
 
-		class PageContainer : UIView
+		class CarouselPageContainer : UIView
 		{
-			public PageContainer(VisualElement element)
+			public CarouselPageContainer(VisualElement element)
 			{
 				Element = element;
 			}

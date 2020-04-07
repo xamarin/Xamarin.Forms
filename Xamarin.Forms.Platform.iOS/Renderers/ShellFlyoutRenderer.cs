@@ -31,10 +31,22 @@ namespace Xamarin.Forms.Platform.iOS
 				CGPoint loc = touch.LocationInView(View);
 				if (touch.View is UISlider ||
 					touch.View is MPVolumeView ||
+					IsSwipeView(touch.View) ||
 					(loc.X > view.Frame.Width * 0.1 && !IsOpen))
 					return false;
 				return true;
 			};
+		}
+
+		bool IsSwipeView(UIView view)
+		{
+			if (view == null)
+				return false;
+
+			if (view is SwipeViewRenderer)
+				return true;
+
+			return IsSwipeView(view.Superview);
 		}
 
 		#endregion IShellFlyoutRenderer
@@ -157,6 +169,38 @@ namespace Xamarin.Forms.Platform.iOS
 				LayoutSidebar(true);
 			}));
 		}
+
+		public void FocusSearch(bool forwardDirection)
+		{
+			var element = Shell.CurrentItem as ITabStopElement;
+			var tabIndexes = element?.GetTabIndexesOnParentPage(out _);
+			if (tabIndexes == null)
+				return;
+
+			int tabIndex = element.TabIndex;
+			element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
+			if (element is ShellItem item)
+				Shell.CurrentItem = item;
+			else if (element is VisualElement ve)
+				ve.Focus();
+		}
+
+		UIKeyCommand[] tabCommands = {
+			UIKeyCommand.Create ((Foundation.NSString)"\t", 0, new ObjCRuntime.Selector ("tabForward:")),
+			UIKeyCommand.Create ((Foundation.NSString)"\t", UIKeyModifierFlags.Shift, new ObjCRuntime.Selector ("tabBackward:"))
+		};
+
+		public override UIKeyCommand[] KeyCommands => tabCommands;
+
+		public UIView NativeView => throw new NotImplementedException();
+
+		public UIViewController ViewController => throw new NotImplementedException();
+
+		[Foundation.Export("tabForward:")]
+		void TabForward(UIKeyCommand cmd) => FocusSearch(forwardDirection: true);
+
+		[Foundation.Export("tabBackward:")]
+		void TabBackward(UIKeyCommand cmd) => FocusSearch(forwardDirection: false);
 
 		void HandlePanGesture(UIPanGestureRecognizer pan)
 		{

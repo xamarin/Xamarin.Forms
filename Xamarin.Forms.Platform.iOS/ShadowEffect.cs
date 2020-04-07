@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Forms.Internals;
 using PlatformElement = Xamarin.Forms.PlatformConfiguration.iOSSpecific.VisualElement;
 
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	[Preserve(AllMembers = true)]
 	internal class ShadowEffect : PlatformEffect
 	{
 		UIView ShadowView => Control ?? Container;
@@ -15,8 +17,12 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void OnDetached()
 		{
 			var layer = ShadowView.Layer;
-			layer.ShadowColor = Color.Transparent.ToCGColor();
-			layer.ShadowOpacity = 0;
+
+			if (layer != null)
+			{
+				layer.ShadowColor = Color.Transparent.ToCGColor();
+				layer.ShadowOpacity = 0;
+			}
 		}
 
 		protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
@@ -31,7 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void UpdateShadow ()
+		private void UpdateShadow()
 		{
 			var layer = ShadowView.Layer;
 

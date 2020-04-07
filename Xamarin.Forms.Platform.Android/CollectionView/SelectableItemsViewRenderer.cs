@@ -1,15 +1,13 @@
-using System;
 using System.ComponentModel;
 using Android.Content;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class SelectableItemsViewRenderer : ItemsViewRenderer
+	public class SelectableItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> : StructuredItemsViewRenderer<TItemsView, TAdapter, TItemsViewSource> 
+		where TItemsView : SelectableItemsView
+		where TAdapter : SelectableItemsViewAdapter<TItemsView, TItemsViewSource>
+		where TItemsViewSource : IItemsViewSource
 	{
-		SelectableItemsView SelectableItemsView => (SelectableItemsView)ItemsView;
-
-		SelectableItemsViewAdapter SelectableItemsViewAdapter => (SelectableItemsViewAdapter)ItemsViewAdapter; 
-
 		public SelectableItemsViewRenderer(Context context) : base(context)
 		{
 		}
@@ -17,82 +15,52 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
-			
-			if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
+
+			if (changedProperty.IsOneOf(SelectableItemsView.SelectedItemProperty, 
+				SelectableItemsView.SelectedItemsProperty, 
+				SelectableItemsView.SelectionModeProperty))
 			{
 				UpdateNativeSelection();
 			}
 		}
 
-		protected override void SetUpNewElement(ItemsView newElement)
+		protected override void SetUpNewElement(TItemsView newElement)
 		{
-			if (newElement != null && !(newElement is SelectableItemsView))
-			{
-				throw new ArgumentException($"{nameof(newElement)} must be of type {typeof(SelectableItemsView).Name}");
-			}
-
 			base.SetUpNewElement(newElement);
 
 			UpdateNativeSelection();
 		}
 
-		protected override void UpdateAdapter()
+		protected override TAdapter CreateAdapter()
 		{
-			ItemsViewAdapter = new SelectableItemsViewAdapter(SelectableItemsView);
-			SwapAdapter(ItemsViewAdapter, true);
-		}
-
-		void ClearSelection()
-		{
-			for (int i = 0, size = ChildCount; i < size; i++)
-			{
-				var holder = GetChildViewHolder(GetChildAt(i));
-				
-				if (holder is SelectableViewHolder selectable)
-				{
-					selectable.IsSelected = false;
-				}
-			}
-		}
-
-		void MarkItemSelected(object selectedItem)
-		{
-			var position = ItemsViewAdapter.GetPositionForItem(selectedItem);
-			var selectedHolder = FindViewHolderForAdapterPosition(position);
-			if (selectedHolder == null)
-			{
-				return;
-			}
-
-			if (selectedHolder is SelectableViewHolder selectable)
-			{
-				selectable.IsSelected = true;
-			}
+			return (TAdapter)new SelectableItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
 		}
 
 		void UpdateNativeSelection()
 		{
-			var mode = SelectableItemsView.SelectionMode;
-			var selectedItem = SelectableItemsView.SelectedItem;
+			var mode = ItemsView.SelectionMode;
 
-			if (selectedItem == null)
+			ItemsViewAdapter.ClearNativeSelection();
+
+			switch (mode)
 			{
-				if (mode == SelectionMode.None || mode == SelectionMode.Single)
-				{
-					ClearSelection();
-				}
+				case SelectionMode.None:
+					return;
 
-				// If the mode is Multiple and SelectedItem is set to null, don't do anything
-				return;
+				case SelectionMode.Single:
+					var selectedItem = ItemsView.SelectedItem;
+					ItemsViewAdapter.MarkNativeSelection(selectedItem);
+					return;
+
+				case SelectionMode.Multiple:
+					var selectedItems = ItemsView.SelectedItems;
+					
+					foreach(var item in selectedItems)
+					{
+						ItemsViewAdapter.MarkNativeSelection(item);
+					}
+					return;
 			}
-
-			if (mode != SelectionMode.Multiple)
-			{
-				ClearSelection();
-				MarkItemSelected(selectedItem);
-			}
-
-			// TODO hartez 2018/11/06 22:32:07 This doesn't cover all the possible cases yet; need to handle multiple selection	
 		}
 	}
 }

@@ -223,8 +223,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (cell == null)
 				{
 					cell = GetCellForPosition(position);
+
 					if (cell == null)
+					{
+						Performance.Stop(reference);
+						
 						return new AView(_context);
+					}
 				}
 			}
 
@@ -250,9 +255,11 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				cell = (Cell)boxedCell.Element;
 
-				// We are going to re-set the Platform here because in some cases (headers mostly) its possible this is unset and
-				// when the binding context gets updated the measure passes will all fail. By applying this here the Update call
-				// further down will result in correct layouts.
+#pragma warning disable CS0618 // Type or member is obsolete
+				// The Platform property is no longer necessary, but we have to set it because some third-party
+				// library might still be retrieving it and using it
+				cell.Platform = _listView.Platform;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 				ICellController cellController = cell;
 				cellController.SendDisappearing();
@@ -315,9 +322,18 @@ namespace Xamarin.Forms.Platform.Android
 
 			AView bline;
 
-			UpdateSeparatorVisibility(cell, cellIsBeingReused, isHeader, nextCellIsHeader, layout, out bline);
+			bool isSeparatorVisible = _listView.SeparatorVisibility == SeparatorVisibility.Default;
 
-			UpdateSeparatorColor(isHeader, bline);
+			if (isSeparatorVisible)
+			{
+				UpdateSeparatorVisibility(cell, cellIsBeingReused, isHeader, nextCellIsHeader, isSeparatorVisible, layout, out bline);
+
+				UpdateSeparatorColor(isHeader, bline);
+			}
+			else if (layout.ChildCount > 1)
+			{
+				layout.RemoveViewAt(1);
+			}
 
 			if ((bool)cell.GetValue(IsSelectedProperty))
 				Select(position, layout);
@@ -409,7 +425,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			Cell item = GetPrototypicalCell(position);
-			return item.IsEnabled;
+			return item?.IsEnabled ?? false;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -660,12 +676,13 @@ namespace Xamarin.Forms.Platform.Android
 			Select(position, view);
 		}
 
-		void UpdateSeparatorVisibility(Cell cell, bool cellIsBeingReused, bool isHeader, bool nextCellIsHeader, ConditionalFocusLayout layout, out AView bline)
+		void UpdateSeparatorVisibility(Cell cell, bool cellIsBeingReused, bool isHeader, bool nextCellIsHeader, bool isSeparatorVisible, ConditionalFocusLayout layout, out AView bline)
 		{
 			bline = null;
-			if (cellIsBeingReused)
-				return;
-			bool isSeparatorVisible = _listView.SeparatorVisibility == SeparatorVisibility.Default;
+			if (cellIsBeingReused && layout.ChildCount > 1)
+			{
+				layout.RemoveViewAt(1);
+			}
 			var makeBline = isSeparatorVisible || isHeader && isSeparatorVisible && !nextCellIsHeader;
 			if (makeBline)
 			{

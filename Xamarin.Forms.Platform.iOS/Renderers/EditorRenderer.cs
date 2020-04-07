@@ -7,11 +7,128 @@ using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class EditorRenderer : ViewRenderer<Editor, UITextView>
+	public class EditorRenderer : EditorRendererBase<UITextView>
+	{
+		// Using same placeholder color as for the Entry
+		readonly UIColor _defaultPlaceholderColor = ColorExtensions.PlaceholderColor;
+
+		UILabel _placeholderLabel;
+
+		[Preserve(Conditional = true)]
+		public EditorRenderer()
+		{
+			Frame = new RectangleF(0, 20, 320, 40);
+		}
+
+		protected override UITextView CreateNativeControl()
+		{
+			return new FormsUITextView(RectangleF.Empty);
+		}
+
+		protected override UITextView TextView => Control;
+
+		protected internal override void UpdateText()
+		{
+			base.UpdateText();
+			_placeholderLabel.Hidden = !string.IsNullOrEmpty(TextView.Text);
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
+		{
+			bool initializing = false;
+			if (e.NewElement != null && _placeholderLabel == null)
+			{
+				initializing = true;
+				// create label so it can get updated during the initial setup loop
+				_placeholderLabel = new UILabel
+				{
+					BackgroundColor = UIColor.Clear
+				};
+			}
+
+			base.OnElementChanged(e);
+
+			if (e.NewElement != null && initializing)
+			{
+				CreatePlaceholderLabel();
+			}
+		}
+
+		protected internal override void UpdateFont()
+		{
+			base.UpdateFont();
+			_placeholderLabel.Font = Element.ToUIFont();
+		}
+
+		protected internal override void UpdatePlaceholderText()
+		{
+			_placeholderLabel.Text = Element.Placeholder;
+		}
+
+		protected internal override void UpdateCharacterSpacing()
+		{
+			var textAttr = TextView.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if(textAttr != null)
+				TextView.AttributedText = textAttr;
+
+			var placeHolder = TextView.AttributedText.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+
+			if(placeHolder != null)
+				_placeholderLabel.AttributedText = placeHolder;
+		}
+
+		protected internal override void UpdatePlaceholderColor()
+		{
+			Color placeholderColor = Element.PlaceholderColor;
+			if (placeholderColor.IsDefault)
+				_placeholderLabel.TextColor = _defaultPlaceholderColor;
+			else
+				_placeholderLabel.TextColor = placeholderColor.ToUIColor();
+		}
+
+		void CreatePlaceholderLabel()
+		{
+			if (Control == null)
+			{
+				return;
+			}
+
+			Control.AddSubview(_placeholderLabel);
+
+			var edgeInsets = TextView.TextContainerInset;
+			var lineFragmentPadding = TextView.TextContainer.LineFragmentPadding;
+
+			var vConstraints = NSLayoutConstraint.FromVisualFormat(
+				"V:|-" + edgeInsets.Top + "-[_placeholderLabel]-" + edgeInsets.Bottom + "-|", 0, new NSDictionary(),
+				NSDictionary.FromObjectsAndKeys(
+					new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
+			);
+
+			var hConstraints = NSLayoutConstraint.FromVisualFormat(
+				"H:|-" + lineFragmentPadding + "-[_placeholderLabel]-" + lineFragmentPadding + "-|",
+				0, new NSDictionary(),
+				NSDictionary.FromObjectsAndKeys(
+					new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
+			);
+
+			_placeholderLabel.TranslatesAutoresizingMaskIntoConstraints = false;
+			_placeholderLabel.AttributedText = _placeholderLabel.AttributedText.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+
+			Control.AddConstraints(hConstraints);
+			Control.AddConstraints(vConstraints);
+		}
+
+	}
+
+	public abstract class EditorRendererBase<TControl> : ViewRenderer<Editor, TControl>
+		where TControl : UIView
 	{
 		bool _disposed;
+		IUITextViewDelegate _pleaseDontCollectMeGarbageCollector;
+
 		IEditorController ElementController => Element;
-		UILabel _placeholderLabel;
+		protected abstract UITextView TextView { get; }
 
 		protected override void Dispose(bool disposing)
 		{
@@ -24,14 +141,16 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control != null)
 				{
-					Control.Changed -= HandleChanged;
-					Control.Started -= OnStarted;
-					Control.Ended -= OnEnded;
-					Control.ShouldChangeText -= ShouldChangeText;
-					(Control as FormsUITextView).FrameChanged -= OnFrameChanged;
+					TextView.Changed -= HandleChanged;
+					TextView.Started -= OnStarted;
+					TextView.Ended -= OnEnded;
+					TextView.ShouldChangeText -= ShouldChangeText;
+					if(Control is IFormsUITextView formsUITextView)
+						formsUITextView.FrameChanged -= OnFrameChanged;
 				}
 			}
 
+			_pleaseDontCollectMeGarbageCollector = null;
 			base.Dispose(disposing);
 		}
 
@@ -44,7 +163,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Control == null)
 			{
-				SetNativeControl(new FormsUITextView(RectangleF.Empty));
+				SetNativeControl(CreateNativeControl());
 
 				if (Device.Idiom == TargetIdiom.Phone)
 				{
@@ -55,25 +174,26 @@ namespace Xamarin.Forms.Platform.iOS
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
 					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
 					{
-						Control.ResignFirstResponder();
+						TextView.ResignFirstResponder();
 						ElementController.SendCompleted();
 					});
 					accessoryView.SetItems(new[] { spacer, doneButton }, false);
-					Control.InputAccessoryView = accessoryView;
+					TextView.InputAccessoryView = accessoryView;
 				}
 
-				Control.Changed += HandleChanged;
-				Control.Started += OnStarted;
-				Control.Ended += OnEnded;
-				Control.ShouldChangeText += ShouldChangeText;
+				TextView.Changed += HandleChanged;
+				TextView.Started += OnStarted;
+				TextView.Ended += OnEnded;
+				TextView.ShouldChangeText += ShouldChangeText;
+				_pleaseDontCollectMeGarbageCollector = TextView.Delegate;
 			}
 
-			CreatePlaceholderLabel();
+			UpdateFont();
 			UpdatePlaceholderText();
 			UpdatePlaceholderColor();
 			UpdateTextColor();
 			UpdateText();
-			UpdateFont();
+			UpdateCharacterSpacing();
 			UpdateKeyboard();
 			UpdateEditable();
 			UpdateTextAlignment();
@@ -83,9 +203,9 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateUserInteraction();
 		}
 
-		private void UpdateAutoSizeOption()
+		protected internal virtual void UpdateAutoSizeOption()
 		{
-			if (Control is FormsUITextView textView)
+			if (Control is IFormsUITextView textView)
 			{
 				textView.FrameChanged -= OnFrameChanged;
 				if (Element.AutoSize == EditorAutoSizeOption.TextChanges)
@@ -93,43 +213,15 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void CreatePlaceholderLabel()
-		{
-			_placeholderLabel = new UILabel
-			{
-				BackgroundColor = UIColor.Clear
-			};
-
-			Control.AddSubview(_placeholderLabel);
-
-			var edgeInsets = Control.TextContainerInset;
-			var lineFragmentPadding = Control.TextContainer.LineFragmentPadding;
-
-			var vConstraints = NSLayoutConstraint.FromVisualFormat(
-			"V:|-" + edgeInsets.Top + "-[_placeholderLabel]-" + edgeInsets.Bottom + "-|", 0, new NSDictionary(),
-			NSDictionary.FromObjectsAndKeys(
-				new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
-		);
-
-			var hConstraints = NSLayoutConstraint.FromVisualFormat(
-				"H:|-" + lineFragmentPadding + "-[_placeholderLabel]-" + lineFragmentPadding + "-|",
-				0, new NSDictionary(),
-				NSDictionary.FromObjectsAndKeys(
-					new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
-			);
-
-			_placeholderLabel.TranslatesAutoresizingMaskIntoConstraints = false;
-
-			Control.AddConstraints(hConstraints);
-			Control.AddConstraints(vConstraints);
-		}
-
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -146,12 +238,17 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			else if (e.PropertyName == Editor.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Editor.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateTextAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == Editor.PlaceholderProperty.PropertyName)
+			{
 				UpdatePlaceholderText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == Editor.AutoSizeProperty.PropertyName)
@@ -160,7 +257,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleChanged(object sender, EventArgs e)
 		{
-			ElementController.SetValueFromRenderer(Editor.TextProperty, Control.Text);
+			ElementController.SetValueFromRenderer(Editor.TextProperty, TextView.Text);
 		}
 
 		private void OnFrameChanged(object sender, EventArgs e)
@@ -170,14 +267,14 @@ namespace Xamarin.Forms.Platform.iOS
 			// will resize until it can't anymore and thus it should never be scrolled until the Frame can't increase in size
 			if (Element.AutoSize == EditorAutoSizeOption.TextChanges)
 			{
-				Control.ScrollRangeToVisible(new NSRange(0, 0));
+				TextView.ScrollRangeToVisible(new NSRange(0, 0));
 			}
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
-			if (Control.Text != Element.Text)
-				ElementController.SetValueFromRenderer(Editor.TextProperty, Control.Text);
+			if (TextView.Text != Element.Text)
+				ElementController.SetValueFromRenderer(Editor.TextProperty, TextView.Text);
 
 			Element.SetValue(VisualElement.IsFocusedPropertyKey, false);
 			ElementController.SendCompleted();
@@ -190,90 +287,79 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateEditable()
 		{
-			Control.Editable = Element.IsEnabled;
-			Control.UserInteractionEnabled = Element.IsEnabled;
+			TextView.Editable = Element.IsEnabled;
+			TextView.UserInteractionEnabled = Element.IsEnabled;
 
-			if (Control.InputAccessoryView != null)
-				Control.InputAccessoryView.Hidden = !Element.IsEnabled;
+			if (TextView.InputAccessoryView != null)
+				TextView.InputAccessoryView.Hidden = !Element.IsEnabled;
 		}
 
-		void UpdateFont()
+		protected internal virtual void UpdateFont()
 		{
 			var font = Element.ToUIFont();
-			Control.Font = font;
-			_placeholderLabel.Font = font;
+			TextView.Font = font;
 		}
 
 		void UpdateKeyboard()
 		{
 			var keyboard = Element.Keyboard;
-			Control.ApplyKeyboard(keyboard);
+			TextView.ApplyKeyboard(keyboard);
 			if (!(keyboard is Internals.CustomKeyboard))
 			{
 				if (Element.IsSet(Xamarin.Forms.InputView.IsSpellCheckEnabledProperty))
 				{
 					if (!Element.IsSpellCheckEnabled)
 					{
-						Control.SpellCheckingType = UITextSpellCheckingType.No;
+						TextView.SpellCheckingType = UITextSpellCheckingType.No;
 					}
 				}
 				if (Element.IsSet(Editor.IsTextPredictionEnabledProperty))
 				{
 					if (!Element.IsTextPredictionEnabled)
 					{
-						Control.AutocorrectionType = UITextAutocorrectionType.No;
+						TextView.AutocorrectionType = UITextAutocorrectionType.No;
 					}
 				}
 			}
-			Control.ReloadInputViews();
+			TextView.ReloadInputViews();
 		}
 
-		void UpdateText()
+		protected internal virtual void UpdateText()
 		{
-			if (Control.Text != Element.Text)
+			if (TextView.Text != Element.Text)
 			{
-				Control.Text = Element.Text;
+				TextView.Text = Element.Text;
 			}
-			_placeholderLabel.Hidden = !string.IsNullOrEmpty(Control.Text);
 		}
 
-		void UpdatePlaceholderText()
-		{
-			_placeholderLabel.Text = Element.Placeholder;
-		}
-
-		void UpdatePlaceholderColor()
-		{
-			if (Element.PlaceholderColor == Color.Default)
-				_placeholderLabel.TextColor = UIColor.DarkGray;
-			else
-				_placeholderLabel.TextColor = Element.PlaceholderColor.ToUIColor();
-		}
+		protected internal abstract void UpdatePlaceholderText();
+		protected internal abstract void UpdatePlaceholderColor();
+		protected internal abstract void UpdateCharacterSpacing();
 
 		void UpdateTextAlignment()
 		{
-			Control.UpdateTextAlignment(Element);
+			TextView.UpdateTextAlignment(Element);
 		}
 
-		void UpdateTextColor()
+		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
 
 			if (textColor.IsDefault)
-				Control.TextColor = UIColor.Black;
+				TextView.TextColor = ColorExtensions.LabelColor;
 			else
-				Control.TextColor = textColor.ToUIColor();
+				TextView.TextColor = textColor.ToUIColor();
 		}
 
 		void UpdateMaxLength()
 		{
-			var currentControlText = Control.Text;
+			var currentControlText = TextView.Text;
 
 			if (currentControlText.Length > Element.MaxLength)
-				Control.Text = currentControlText.Substring(0, Element.MaxLength);
+				TextView.Text = currentControlText.Substring(0, Element.MaxLength);
 		}
 
-		bool ShouldChangeText(UITextView textView, NSRange range, string text)
+		protected virtual bool ShouldChangeText(UITextView textView, NSRange range, string text)
 		{
 			var newLength = textView.Text.Length + text.Length - range.Length;
 			return newLength <= Element.MaxLength;
@@ -281,6 +367,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateReadOnly()
 		{
+			TextView.UserInteractionEnabled = !Element.IsReadOnly;
+
+			// Control and TextView might be different
 			Control.UserInteractionEnabled = !Element.IsReadOnly;
 		}
 
@@ -292,9 +381,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateEditable();
 		}
 
-		internal class FormsUITextView : UITextView
+		internal class FormsUITextView : UITextView, IFormsUITextView
 		{
-			public event EventHandler ContentSizeChanged;
 			public event EventHandler FrameChanged;
 
 			public FormsUITextView(RectangleF frame) : base(frame)
@@ -304,29 +392,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override RectangleF Frame
 			{
-				get
-				{
-					return base.Frame;
-				}
+				get => base.Frame;
 				set
 				{
 					base.Frame = value;
 					FrameChanged?.Invoke(this, EventArgs.Empty);
 				}
 			}
-
-			public override CGSize ContentSize
-			{
-				get
-				{
-					return base.ContentSize;
-				}
-				set
-				{
-					base.ContentSize = value;
-					ContentSizeChanged?.Invoke(this, EventArgs.Empty);
-				}
-			}
 		}
+	}
+
+	internal interface IFormsUITextView
+	{
+		event EventHandler FrameChanged;
 	}
 }

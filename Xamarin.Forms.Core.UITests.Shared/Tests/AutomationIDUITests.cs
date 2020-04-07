@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using Xamarin.UITest;
 using System;
 using System.Threading;
@@ -30,20 +30,20 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement (c => c.Marked ("tPicker"));
 	
 			var label = App.Query ("lblHello") [0];
-			Assert.AreEqual (label.Text, "Hello Label");
+			Assert.AreEqual ("Hello Label", label.Text);
 
 			var editor = App.Query ("editorHello") [0];
-			Assert.AreEqual (editor.Text, "Hello Editor");
+			Assert.AreEqual ("Hello Editor", editor.Text);
 
 			var entry = App.Query ("entryHello") [0];
-			Assert.AreEqual (entry.Text, "Hello Entry");
+			Assert.AreEqual ("Hello Entry", entry.Text);
 				
 			App.Tap (c => c.Marked ("popModal"));
 		}
 
 
 		[Test]
-		public async void Test2()
+		public async Task Test2()
 		{
 			await Task.Delay(1000);
 			App.WaitForElement(c => c.Marked("btnTest2"));

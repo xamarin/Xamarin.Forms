@@ -12,6 +12,13 @@ namespace Xamarin.Forms.Platform.iOS
 		SizeF _fitSize;
 		UIColor defaultmintrackcolor, defaultmaxtrackcolor, defaultthumbcolor;
 		UITapGestureRecognizer _sliderTapRecognizer;
+		bool _disposed;
+
+		[Internals.Preserve(Conditional = true)]
+		public SliderRenderer()
+		{
+
+		}
 
 		public override SizeF SizeThatFits(SizeF size)
 		{
@@ -20,17 +27,27 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			if (Control != null)
+			if (_disposed)
 			{
-				Control.ValueChanged -= OnControlValueChanged;
-				if (_sliderTapRecognizer != null)
-				{
-					Control.RemoveGestureRecognizer(_sliderTapRecognizer);
-					_sliderTapRecognizer = null;
-				}
+				return;
+			}
 
-				Control.RemoveTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
-				Control.RemoveTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (Control != null)
+				{
+					Control.ValueChanged -= OnControlValueChanged;
+					if (_sliderTapRecognizer != null)
+					{
+						Control.RemoveGestureRecognizer(_sliderTapRecognizer);
+						_sliderTapRecognizer = null;
+					}
+
+					Control.RemoveTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
+					Control.RemoveTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
+				}
 			}
 
 			base.Dispose(disposing);
@@ -76,7 +93,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UpdateMinimumTrackColor();
 			UpdateMaximumTrackColor();
-			if (!string.IsNullOrEmpty(Element.ThumbImage))
+			var thumbImage = Element.ThumbImageSource;
+			if (thumbImage != null && !thumbImage.IsEmpty)
 			{
 				UpdateThumbImage();
 			}
@@ -119,12 +137,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		async void UpdateThumbImage()
+		void UpdateThumbImage()
 		{
-			var uiimage = await Element.ThumbImage.GetNativeImageAsync();
-			Control?.SetThumbImage(uiimage, UIControlState.Normal);
-			
-			((IVisualElementController)Element).NativeSizeChanged();
+			_ = this.ApplyNativeImageAsync(Slider.ThumbImageSourceProperty, uiimage =>
+			{
+				Control?.SetThumbImage(uiimage, UIControlState.Normal);
+
+				((IVisualElementController)Element).NativeSizeChanged();
+			});
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -141,7 +161,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMinimumTrackColor();
 			else if (e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName)
 				UpdateMaximumTrackColor();
-			else if (e.PropertyName == Slider.ThumbImageProperty.PropertyName)
+			else if (e.PropertyName == Slider.ThumbImageSourceProperty.PropertyName)
 				UpdateThumbImage();
 			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();

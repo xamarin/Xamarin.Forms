@@ -4,26 +4,23 @@ using CoreGraphics;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 using MProgressView = MaterialComponents.ProgressView;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialProgressBarRenderer : ViewRenderer<ProgressBar, MProgressView>
 	{
-		const float BackgroundAlpha = 0.3f;
-
-		BasicColorScheme _defaultColorScheme;
-		BasicColorScheme _colorScheme;
-
-		public MaterialProgressBarRenderer()
-		{
-			VisualElement.VerifyVisualFlagEnabled();
-		}
+		SemanticColorScheme _defaultColorScheme;
+		SemanticColorScheme _colorScheme;
+		ContainerScheme _containerScheme;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
 			_colorScheme?.Dispose();
-			_colorScheme = CreateColorScheme();
+			_colorScheme = CreateSemanticColorScheme();
+			_containerScheme?.Dispose();
+			_containerScheme = new ContainerScheme();
 
 			base.OnElementChanged(e);
 
@@ -31,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			{
 				if (Control == null)
 				{
-					_defaultColorScheme = CreateColorScheme();
+					_defaultColorScheme = CreateSemanticColorScheme();
 
 					SetNativeControl(CreateNativeControl());
 				}
@@ -43,31 +40,27 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 		}
 
+		[Obsolete]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected virtual BasicColorScheme CreateColorScheme()
 		{
-			// TODO: Fix this once Google implements the new way.
-			//       Right now, copy what is done with the activity indicator.
-
-			var cs = MaterialColors.Light.CreateColorScheme();
-			return new BasicColorScheme(
-				cs.PrimaryColor,
-				cs.PrimaryColor.ColorWithAlpha(BackgroundAlpha),
-				cs.PrimaryColor);
+			return null;
 		}
+
+		protected virtual SemanticColorScheme CreateSemanticColorScheme()
+		{
+			return MaterialColors.Light.CreateColorScheme();
+		}
+
 
 		protected virtual void ApplyTheme()
 		{
-			// TODO: Fix this once Google implements the new way.
-
-#pragma warning disable CS0618 // Type or member is obsolete
-			ProgressViewColorThemer.ApplyColorScheme(_colorScheme, Control);
-#pragma warning restore CS0618 // Type or member is obsolete
+			_containerScheme.ColorScheme = _colorScheme;
+			Control.ApplyTheme(_containerScheme);
+			Control.TrackTintColor = _containerScheme.ColorScheme.BackgroundColor;
 		}
 
-		protected override MProgressView CreateNativeControl()
-		{
-			return new MProgressView();
-		}
+		protected override MProgressView CreateNativeControl() => new MProgressView();
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
@@ -116,16 +109,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			ApplyTheme();
 		}
 
-		void UpdateProgressColor()
-		{
-			UpdateAllColors();
-		}
+		void UpdateProgressColor() => UpdateAllColors();
 
 		void UpdateAllColors()
 		{
-			// TODO: Fix this once Google implements the new way.
-			//       Right now, copy what is done with the activity indicator.
-
 			Color progressColor = Element.ProgressColor;
 			Color backgroundColor = Element.BackgroundColor;
 
@@ -134,22 +121,16 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				if(backgroundColor.IsDefault)
 				{
 					// reset everything to defaults
-					_colorScheme = new BasicColorScheme(
-						_defaultColorScheme.PrimaryColor,
-						_defaultColorScheme.PrimaryLightColor,
-						_defaultColorScheme.PrimaryColor);
+					_colorScheme = CreateSemanticColorScheme();
+					var progress = _colorScheme.PrimaryColor;
+					progress.GetRGBA(out _, out _, out _, out var alpha);
+					_colorScheme.BackgroundColor = progress.ColorWithAlpha(alpha * MaterialColors.SliderTrackAlpha);
 				}
 				else
 				{
 					// handle the case where only the background is set
 					var background = backgroundColor.ToUIColor();
-
-					// TODO: Potentially override background alpha to match material design.
-					// TODO: Potentially override primary color to match material design.
-					_colorScheme = new BasicColorScheme(
-						_defaultColorScheme.PrimaryColor,
-						background,
-						_defaultColorScheme.PrimaryColor);
+					_colorScheme = new SemanticColorScheme() { BackgroundColor = background };
 
 				}
 			}
@@ -160,10 +141,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					// handle the case where only the progress is set
 					var progress = progressColor.ToUIColor();
 
-					_colorScheme = new BasicColorScheme(
-						progress,
-						progress.ColorWithAlpha(BackgroundAlpha),
-						progress);
+					progress.GetRGBA(out _, out _, out _, out var alpha);
+					_colorScheme = new SemanticColorScheme()
+					{
+						PrimaryColor = progress,
+						BackgroundColor = progress.ColorWithAlpha(alpha * MaterialColors.SliderTrackAlpha)
+					};
 				}
 				else
 				{
@@ -171,11 +154,11 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					var background = backgroundColor.ToUIColor();
 					var progress = progressColor.ToUIColor();
 
-					// TODO: Potentially override alpha to match material design.
-					_colorScheme = new BasicColorScheme(
-						progress,
-						background,
-						progress);
+					_colorScheme = new SemanticColorScheme()
+					{
+						PrimaryColor = progress,
+						BackgroundColor = background
+					};
 				}
 			}
 		}

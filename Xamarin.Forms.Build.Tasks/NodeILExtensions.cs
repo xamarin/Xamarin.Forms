@@ -54,8 +54,49 @@ namespace Xamarin.Forms.Build.Tasks
 				return toType.InheritsFromOrImplements(targetTypeRef);
 			}
 
-			///No reason to return false
-			return true;
+			//check if it's assignable from a string
+			if (targetTypeRef.ResolveCached().FullName == "System.Nullable`1")
+				targetTypeRef = ((GenericInstanceType)targetTypeRef).GenericArguments[0];
+			if (targetTypeRef.ResolveCached().BaseType != null && targetTypeRef.ResolveCached().BaseType.FullName == "System.Enum")
+				return true;
+			if (targetTypeRef.FullName == "System.Char")
+				return true;
+			if (targetTypeRef.FullName == "System.SByte")
+				return true;
+			if (targetTypeRef.FullName == "System.Int16")
+				return true;
+			if (targetTypeRef.FullName == "System.Int32")
+				return true;
+			if (targetTypeRef.FullName == "System.Int64")
+				return true;
+			if (targetTypeRef.FullName == "System.Byte")
+				return true;
+			if (targetTypeRef.FullName == "System.UInt16")
+				return true;
+			if (targetTypeRef.FullName == "System.UInt32")
+				return true;
+			if (targetTypeRef.FullName == "System.UInt64")
+				return true;
+			if (targetTypeRef.FullName == "System.Single")
+				return true;
+			if (targetTypeRef.FullName == "System.Double")
+				return true;
+			if (targetTypeRef.FullName == "System.Boolean")
+				return true;
+			if (targetTypeRef.FullName == "System.TimeSpan")
+				return true;
+			if (targetTypeRef.FullName == "System.DateTime")
+				return true;
+			if (targetTypeRef.FullName == "System.String")
+				return true;
+			if (targetTypeRef.FullName == "System.Object")
+				return true;
+			if (targetTypeRef.FullName == "System.Decimal")
+				return true;
+			var implicitOperator = module.TypeSystem.String.GetImplicitOperatorTo(targetTypeRef, module);
+			if (implicitOperator != null)
+				return true;
+			return false;
 		}
 
 		public static IEnumerable<Instruction> PushConvertedValue(this ValueNode node, ILContext context,
@@ -96,11 +137,9 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			var module = context.Body.Method.Module;
 			var str = (string)node.Value;
-
 			//If the TypeConverter has a ProvideCompiledAttribute that can be resolved, shortcut this
-			var compiledConverterName = typeConverter?.GetCustomAttribute(module, ("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "ProvideCompiledAttribute"))?.ConstructorArguments?.First().Value as string;
 			Type compiledConverterType;
-			if (compiledConverterName != null && (compiledConverterType = Type.GetType (compiledConverterName)) != null) {
+			if (typeConverter?.GetCustomAttribute(module, ("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "ProvideCompiledAttribute"))?.ConstructorArguments?.First().Value is string compiledConverterName && (compiledConverterType = Type.GetType (compiledConverterName)) != null) {
 				var compiledConverter = Activator.CreateInstance (compiledConverterType);
 				var converter = typeof(ICompiledTypeConverter).GetMethods ().FirstOrDefault (md => md.Name == "ConvertFromString");
 				IEnumerable<Instruction> instructions;
@@ -118,8 +157,7 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			//If there's a [TypeConverter], use it
-			if (typeConverter != null)
-			{
+			if (typeConverter != null) {
 				var isExtendedConverter = typeConverter.ImplementsInterface(module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms", "IExtendedTypeConverter")));
 				var typeConverterCtorRef = module.ImportCtorReference(typeConverter, paramCount: 0);
 				var convertFromInvariantStringDefinition = isExtendedConverter
@@ -128,11 +166,11 @@ namespace Xamarin.Forms.Build.Tasks
 						.Methods.FirstOrDefault(md => md.Name == "ConvertFromInvariantString" && md.Parameters.Count == 2)
 					: typeConverter.ResolveCached()
 						.AllMethods()
-						.FirstOrDefault(md => md.Name == "ConvertFromInvariantString" && md.Parameters.Count == 1);
+						.FirstOrDefault(md => md.methodDef.Name == "ConvertFromInvariantString" && md.methodDef.Parameters.Count == 1).methodDef;
 				var convertFromInvariantStringReference = module.ImportReference(convertFromInvariantStringDefinition);
 
-				yield return Instruction.Create(OpCodes.Newobj, typeConverterCtorRef);
-				yield return Instruction.Create(OpCodes.Ldstr, node.Value as string);
+				yield return Create(Newobj, typeConverterCtorRef);
+				yield return Create(Ldstr, node.Value as string);
 
 				if (isExtendedConverter)
 				{

@@ -1,8 +1,6 @@
-using System;
-using System.ComponentModel;
 using Android.Content;
-using Android.OS;
 using Android.Views;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -10,6 +8,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly ScrollView _parent;
 		View _childView;
+		bool _isDisposed;
 
 		public ScrollViewContainer(ScrollView parent, Context context) : base(context)
 		{
@@ -44,15 +43,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
+			if (_isDisposed)
+				return;
 
+			_isDisposed = true;
+			
 			if (disposing)
 			{
-				if (ChildCount > 0)
-					GetChildAt(0).Dispose();
-				RemoveAllViews();
-				_childView = null;
+				while (ChildCount > 0)
+				{
+					AView child = GetChildAt(0);
+					child.RemoveFromParent();
+					child.Dispose();
+				}
 			}
+
+			base.Dispose(disposing);
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)

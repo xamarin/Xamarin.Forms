@@ -49,13 +49,17 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Element.IsSet(Button.BorderColorProperty) && Element.BorderColor != (Color)Button.BorderColorProperty.DefaultValue)
 					UpdateBorderColor();
 
+				if (Element.IsSet(Button.CharacterSpacingProperty))
+					UpdateCharacterSpacing();
+
 				if (Element.IsSet(Button.BorderWidthProperty) && Element.BorderWidth != (double)Button.BorderWidthProperty.DefaultValue)
 					UpdateBorderWidth();
 
 				if (Element.IsSet(Button.CornerRadiusProperty) && Element.CornerRadius != (int)Button.CornerRadiusProperty.DefaultValue)
 					UpdateBorderRadius();
 
-				if (Element.IsSet(Button.PaddingProperty) && Element.Padding != (Thickness)Button.PaddingProperty.DefaultValue)
+				// By default Button loads width padding 8, 4, 8 ,4
+				if (Element.IsSet(Button.PaddingProperty))
 					UpdatePadding();
 
 				UpdateFont();
@@ -79,9 +83,13 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageProperty.PropertyName)
+			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				UpdateContent();
+			}
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+			{
+				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
@@ -154,43 +162,58 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.BorderThickness = Element.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue ? new WThickness(3) : new WThickness(Element.BorderWidth);
 		}
 
-		void UpdateContent()
+		void UpdateCharacterSpacing()
+		{
+			Control.UpdateCharacterSpacing(Element.CharacterSpacing.ToEm());
+		}
+
+		async void UpdateContent()
 		{
 			var text = Element.Text;
-			var elementImage = Element.Image;
+			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
 			if (elementImage == null)
 			{
 				Control.Content = text;
+				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
-			var bmp = new BitmapImage(new Uri("ms-appx:///" + elementImage.File));
-
+			var size = elementImage.GetImageSourceSize();
 			var image = new WImage
 			{
-				Source = bmp,
+				Source = elementImage,
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center,
-				Stretch = Stretch.Uniform
+				Stretch = Stretch.Uniform,
+				Width = size.Width,
+				Height = size.Height,
 			};
 
-			bmp.ImageOpened += (sender, args) => {
-				image.Width = bmp.PixelWidth;
-				image.Height = bmp.PixelHeight;
-				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
-			};
+			// BitmapImage is a special case that has an event when the image is loaded
+			// when this happens, we want to resize the button
+			if (elementImage is BitmapImage bmp)
+			{
+				bmp.ImageOpened += (sender, args) => {
+					var actualSize = bmp.GetImageSourceSize();
+					image.Width = actualSize.Width;
+					image.Height = actualSize.Height;
+					Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
+				};
+			}
 
 			// No text, just the image
 			if (string.IsNullOrEmpty(text))
 			{
 				Control.Content = image;
+				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
 			// Both image and text, so we need to build a container for them
 			Control.Content = CreateContentContainer(Element.ContentLayout, image, text);
+			Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 		}
 
 		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text)

@@ -34,5 +34,60 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 			SetMixedContentMode(config.Element, value);
 			return config;
 		}
+
+		public static readonly BindableProperty EnableZoomControlsProperty = BindableProperty.Create("EnableZoomControls", typeof(bool), typeof(FormsElement), false);
+
+		public static bool GetEnableZoomControls(FormsElement element)
+		{
+			return (bool)element.GetValue(EnableZoomControlsProperty);
+		}
+
+		public static void SetEnableZoomControls(FormsElement element, bool value)
+		{
+			element.SetValue(EnableZoomControlsProperty, value);
+		}
+
+		public static void EnableZoomControls(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		{
+			SetEnableZoomControls(config.Element, value);
+		}
+		public static bool ZoomControlsEnabled(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			return GetEnableZoomControls(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> SetEnableZoomControls(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		{
+			SetEnableZoomControls(config.Element, value);
+			return config;
+		}
+
+		public static readonly BindableProperty DisplayZoomControlsProperty = BindableProperty.Create("DisplayZoomControls", typeof(bool), typeof(FormsElement), true);
+
+		public static bool GetDisplayZoomControls(FormsElement element)
+		{
+			return (bool)element.GetValue(DisplayZoomControlsProperty);
+		}
+
+		public static void SetDisplayZoomControls(FormsElement element, bool value)
+		{
+			element.SetValue(DisplayZoomControlsProperty, value);
+		}
+
+		public static void DisplayZoomControls(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		{
+			SetDisplayZoomControls(config.Element, value);
+		}
+
+		public static bool ZoomControlsDisplayed(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			return GetDisplayZoomControls(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> SetDisplayZoomControls(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		{
+			SetDisplayZoomControls(config.Element, value);
+			return config;
+		}
 	}
 }

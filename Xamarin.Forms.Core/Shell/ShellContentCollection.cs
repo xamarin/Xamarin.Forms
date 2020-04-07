@@ -1,19 +1,94 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
-	public sealed class ShellContentCollection : IList<ShellContent>, INotifyCollectionChanged
+	internal sealed class ShellContentCollection : IList<ShellContent>, INotifyCollectionChanged
 	{
+		public event NotifyCollectionChangedEventHandler VisibleItemsChanged;
 		ObservableCollection<ShellContent> _inner = new ObservableCollection<ShellContent>();
+		ObservableCollection<ShellContent> _visibleContents = new ObservableCollection<ShellContent>();
 
-		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
+		public ReadOnlyCollection<ShellContent> VisibleItems { get; }
+
+		public ShellContentCollection()
 		{
-			add { ((INotifyCollectionChanged)_inner).CollectionChanged += value; }
-			remove { ((INotifyCollectionChanged)_inner).CollectionChanged -= value; }
+			_inner.CollectionChanged += InnerCollectionChanged;
+			VisibleItems = new ReadOnlyCollection<ShellContent>(_visibleContents);
+			_visibleContents.CollectionChanged += (_, args) =>
+			{
+				VisibleItemsChanged?.Invoke(VisibleItems, args);
+			};
 		}
+
+		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+			{
+				foreach (ShellContent element in e.NewItems)
+				{
+					if (element is IShellContentController controller)
+						controller.IsPageVisibleChanged += OnIsPageVisibleChanged;
+					CheckVisibility(element);
+				}
+			}
+
+			if (e.OldItems != null)
+			{
+				Removing(e.OldItems);
+			}
+			
+			CollectionChanged?.Invoke(this, e);
+		}
+
+		void Removing(IEnumerable items)
+		{
+			foreach (ShellContent element in items)
+			{
+				if (_visibleContents.Contains(element))
+					_visibleContents.Remove(element);
+				
+				if (element is IShellContentController controller)
+					controller.IsPageVisibleChanged -= OnIsPageVisibleChanged;
+			}
+		}
+
+		void OnIsPageVisibleChanged(object sender, EventArgs e)
+		{
+			CheckVisibility((ShellContent)sender);
+		}
+
+		void CheckVisibility(ShellContent shellContent)
+		{
+			if (shellContent is IShellContentController controller)
+			{
+				// Assume incoming page will be visible
+				if (controller.Page == null)
+				{
+					if (!_visibleContents.Contains(shellContent))
+						_visibleContents.Add(shellContent);
+				}
+				else if(controller.Page.IsVisible)
+				{
+					if (!_visibleContents.Contains(shellContent))
+						_visibleContents.Add(shellContent);
+				}
+				else
+				{
+					_visibleContents.Remove(shellContent);
+				}
+			}
+			else if (_visibleContents.Contains(shellContent))
+			{
+				_visibleContents.Remove(shellContent);
+			}
+		}
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public int Count => _inner.Count;
 
@@ -27,7 +102,14 @@ namespace Xamarin.Forms
 
 		public void Add(ShellContent item) => _inner.Add(item);
 
-		public void Clear() => _inner.Clear();
+		public void Clear()
+		{
+			var list = _inner.ToList();
+			Removing(_inner);
+			_inner.Clear();
+			
+			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list));
+		}
 
 		public bool Contains(ShellContent item) => _inner.Contains(item);
 

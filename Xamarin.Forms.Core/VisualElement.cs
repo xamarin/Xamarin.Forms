@@ -6,8 +6,12 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public partial class VisualElement : NavigableElement, IAnimatable, IVisualElementController, IResourcesProvider, IStyleElement, IFlowDirectionController, IPropertyPropagationController, IVisualController
+	public partial class VisualElement : NavigableElement, IAnimatable, IVisualElementController, IResourcesProvider, IStyleElement, IFlowDirectionController, IPropertyPropagationController, IVisualController, ITabStopElement
 	{
+		public new static readonly BindableProperty NavigationProperty = NavigableElement.NavigationProperty;
+
+		public new static readonly BindableProperty StyleProperty = NavigableElement.StyleProperty;
+
 		public static readonly BindableProperty InputTransparentProperty = BindableProperty.Create("InputTransparent", typeof(bool), typeof(VisualElement), default(bool));
 
 		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool),
@@ -57,13 +61,20 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(Visual), typeof(IVisual), typeof(VisualElement), Forms.VisualMarker.MatchParent,
 									validateValue: (b, v) => v != null, propertyChanged: OnVisualChanged);
 
+		static IVisual _defaultVisual = Xamarin.Forms.VisualMarker.Default;
+		IVisual _effectiveVisual = _defaultVisual;
+
 		public IVisual Visual
 		{
 			get { return (IVisual)GetValue(VisualProperty); }
 			set { SetValue(VisualProperty, value); }
 		}
 
-		IVisual _effectiveVisual = Xamarin.Forms.VisualMarker.Default;
+		internal static void SetDefaultVisual(IVisual visual)
+		{
+			_defaultVisual = visual;
+		}
+
 		IVisual IVisualController.EffectiveVisual
 		{
 			get { return _effectiveVisual; }
@@ -257,7 +268,13 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			
+			if (Device.Flags?.IndexOf(ExperimentalFlags.AppThemeExperimental) > 0)
+				Application.Current.RequestedThemeChanged += (s, a) => OnRequestedThemeChanged(a.RequestedTheme);
+		}
+
+		protected virtual void OnRequestedThemeChanged(AppTheme newValue)
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(VisualElement), ExperimentalFlags.AppThemeExperimental, nameof(OnRequestedThemeChanged));
 		}
 
 		public double AnchorX
@@ -388,12 +405,6 @@ namespace Xamarin.Forms
 			set => SetValue(ScaleYProperty, value);
 		}
 
-		public Style Style
-		{
-			get { return (Style)GetValue(StyleProperty); }
-			set { SetValue(StyleProperty, value); }
-		}
-
 		public int TabIndex
 		{
 			get => (int)GetValue(TabIndexProperty);
@@ -413,20 +424,6 @@ namespace Xamarin.Forms
 		protected virtual void OnTabStopPropertyChanged(bool oldValue, bool newValue) { }
 
 		protected virtual bool TabStopDefaultValueCreator() => true;
-
-		[TypeConverter(typeof(ListStringTypeConverter))]
-		public IList<string> StyleClass
-		{
-			get { return @class; }
-			set { @class = value; }
-		}
-
-		[TypeConverter(typeof(ListStringTypeConverter))]
-		public IList<string> @class
-		{
-			get { return _mergedStyle.StyleClass; }
-			set { _mergedStyle.StyleClass = value; }
-		}
 
 		public double TranslationX
 		{
@@ -547,9 +544,11 @@ namespace Xamarin.Forms
 				if (value && IsNativeStateConsistent)
 					InvalidateMeasureInternal(InvalidationTrigger.RendererReady);
 
+				InvalidateStateTriggers(IsPlatformEnabled);
+
 				OnIsPlatformEnabledChanged();
 			}
-		}
+		}		
 
 		internal LayoutConstraint SelfConstraint
 		{
@@ -746,6 +745,12 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
+		protected override void OnBindingContextChanged()
+		{
+			PropagateBindingContextToStateTriggers();
+			base.OnBindingContextChanged();
+		}
+
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
@@ -830,6 +835,24 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(trigger);
 		}
 
+		internal void InvalidateStateTriggers(bool attach)
+		{
+			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
+
+			if (groups.Count == 0)
+				return;
+
+			foreach (var group in groups)
+				foreach (var state in group.States)
+					foreach (var stateTrigger in state.StateTriggers)
+					{
+						if(attach)
+							stateTrigger.OnAttached();
+						else
+							stateTrigger.OnDetached();
+					}
+		}
+
 		internal void MockBounds(Rectangle bounds)
 		{
 #if NETSTANDARD2_0
@@ -854,14 +877,6 @@ namespace Xamarin.Forms
 		internal virtual void OnIsVisibleChanged(bool oldValue, bool newValue)
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.Undefined);
-		}
-
-		internal override void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
-		{
-			if (e == ResourcesChangedEventArgs.StyleSheets)
-				ApplyStyleSheets();
-			else
-				base.OnResourcesChanged(sender, e);
 		}
 
 		internal override void OnParentResourcesChanged(IEnumerable<KeyValuePair<string, object>> values)
@@ -899,6 +914,19 @@ namespace Xamarin.Forms
 			_mockX = _mockY = _mockWidth = _mockHeight = -1;
 		}
 
+		void PropagateBindingContextToStateTriggers()
+		{
+			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
+
+			if (groups.Count == 0)
+				return;
+
+			foreach (var group in groups)
+				foreach (var state in group.States)
+					foreach (var stateTrigger in state.StateTriggers)
+						SetInheritedBindingContext(stateTrigger, BindingContext);
+		}
+
 		void OnFocused()
 		{
 			EventHandler<FocusEventArgs> focus = Focused;
@@ -927,9 +955,6 @@ namespace Xamarin.Forms
 
 		static void OnVisualChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if(newValue != Xamarin.Forms.VisualMarker.Default)
-				VerifyVisualFlagEnabled();
-
 			var self = bindable as IVisualController;
 			var newVisual = (IVisual)newValue;
 
@@ -1064,14 +1089,6 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(bool)));
 
 			}
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void VerifyVisualFlagEnabled(
-			string constructorHint = null,
-			[CallerMemberName] string memberName = "")
-		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(Visual), ExperimentalFlags.VisualExperimental);
 		}
 	}
 }

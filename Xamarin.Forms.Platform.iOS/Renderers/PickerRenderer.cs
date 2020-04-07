@@ -23,7 +23,22 @@ namespace Xamarin.Forms.Platform.iOS
 			=> enableActions.Contains(action.Name);
 	}
 
-	public class PickerRenderer : ViewRenderer<Picker, UITextField>
+	public class PickerRenderer : PickerRendererBase<UITextField>
+	{
+		[Internals.Preserve(Conditional = true)]
+		public PickerRenderer()
+		{
+
+		}
+
+		protected override UITextField CreateNativeControl()
+		{
+			return new ReadOnlyField { BorderStyle = UITextBorderStyle.RoundedRect };
+		}
+	}
+
+	public abstract class PickerRendererBase<TControl> : ViewRenderer<Picker, TControl>
+		where TControl : UITextField
 	{
 		UIPickerView _picker;
 		UIColor _defaultTextColor;
@@ -32,6 +47,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IElementController ElementController => Element as IElementController;
 
+
+		[Internals.Preserve(Conditional = true)]
+		public PickerRendererBase()
+		{
+
+		}
+
+		protected abstract override TControl CreateNativeControl();
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
 		{
 			if (e.OldElement != null)
@@ -42,7 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					// disabled cut, delete, and toggle actions because they can throw an unhandled native exception
-					var entry = new ReadOnlyField { BorderStyle = UITextBorderStyle.RoundedRect };
+					var entry = CreateNativeControl();
 
 					entry.EditingDidBegin += OnStarted;
 					entry.EditingDidEnd += OnEnded;
@@ -60,6 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 							UpdatePickerSelectedIndex(0);
 						UpdatePickerFromModel(s);
 						entry.ResignFirstResponder();
+						UpdateCharacterSpacing();
 					});
 
 					toolbar.SetItems(new[] { spacer, doneButton }, false);
@@ -70,9 +94,17 @@ namespace Xamarin.Forms.Platform.iOS
 					entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 					entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 
+					if (Forms.IsiOS9OrNewer)
+					{
+						entry.InputAssistantItem.LeadingBarButtonGroups = null;
+						entry.InputAssistantItem.TrailingBarButtonGroups = null;
+					}
+
 					_defaultTextColor = entry.TextColor;
-					
+
 					_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
+
+					entry.AccessibilityTraits = UIAccessibilityTrait.Button;
 
 					SetNativeControl(entry);
 				}
@@ -82,6 +114,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdateCharacterSpacing();
 
 				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -93,13 +126,24 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
+			{
 				UpdatePicker();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
+			{
 				UpdatePicker();
+				UpdateCharacterSpacing();
+			}
+			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
+			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName ||
+			         e.PropertyName == Picker.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+			}
 		}
 
 		void OnEditing(object sender, EventArgs eventArgs)
@@ -130,30 +174,61 @@ namespace Xamarin.Forms.Platform.iOS
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
+			UpdateCharacterSpacing();
 		}
 
-		void UpdateFont()
+        protected void UpdateCharacterSpacing()
+        {
+			var textAttr = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedText = textAttr;
+
+			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
+
+			if (placeHolder != null)
+				UpdateAttributedPlaceholder(placeHolder);
+		}
+
+        protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
 		}
+
+		readonly Color _defaultPlaceholderColor = ColorExtensions.PlaceholderColor.ToColor();
+		protected internal virtual void UpdatePlaceholder()
+		{
+			var formatted = (FormattedString)Element.Title;
+
+			if (formatted == null)
+				return;
+
+			var targetColor = Element.TitleColor;
+
+			if (_useLegacyColorManagement)
+			{
+				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
+			}
+			else
+			{
+				// Using VSM color management; take whatever is in Element.PlaceholderColor
+				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
+			}
+
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing));
+		}
+
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) => 
+			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdatePicker()
 		{
 			var selectedIndex = Element.SelectedIndex;
 			var items = Element.Items;
 
-			if (!Element.IsSet(Picker.TitleColorProperty))
-			{
-				Control.AttributedPlaceholder = null;
-				Control.Placeholder = Element.Title;
-			}
-			else
-			{
-				Control.AttributedPlaceholder = new NSAttributedString(Element.Title, new UIStringAttributes
-				{
-					ForegroundColor = Element.TitleColor.ToUIColor()
-				});
-			}
+			UpdatePlaceholder();
 
 			var oldText = Control.Text;
 			Control.Text = selectedIndex == -1 || items == null || selectedIndex >= items.Count ? "" : items[selectedIndex];
@@ -163,6 +238,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			UpdatePickerSelectedIndex(selectedIndex);
+			UpdateCharacterSpacing();
 		}
 
 		void UpdatePickerFromModel(PickerSource s)
@@ -190,7 +266,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.Select(Math.Max(formsIndex, 0), 0, true);
 		}
 
-		void UpdateTextColor()
+		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
 
@@ -243,10 +319,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		class PickerSource : UIPickerViewModel
 		{
-			PickerRenderer _renderer;
+			PickerRendererBase<TControl> _renderer;
 			bool _disposed;
 
-			public PickerSource(PickerRenderer renderer)
+			public PickerSource(PickerRendererBase<TControl> renderer)
 			{
 				_renderer = renderer;
 			}

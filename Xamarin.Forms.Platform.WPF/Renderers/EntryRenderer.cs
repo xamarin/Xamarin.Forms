@@ -32,7 +32,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdatePlaceholder();
 				UpdateColor();
 				UpdateFont();
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+				UpdateVerticalTextAlignment();
 				UpdatePlaceholderColor();
 				UpdateMaxLength();
 				UpdateIsReadOnly();
@@ -62,7 +63,9 @@ namespace Xamarin.Forms.Platform.WPF
 			else if (e.PropertyName == Entry.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
@@ -105,24 +108,36 @@ namespace Xamarin.Forms.Platform.WPF
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, Control.Text);
 
 			// If an Entry.TextChanged handler modified the value of the Entry's text, the values could now be 
-			// out-of-sync; re-sync them and force the TextBox cursor to the end of the text
+			// out-of-sync; re-sync them and fix TextBox cursor position
 			string entryText = Element.Text;
 			if (Control.Text != entryText)
 			{
 				Control.Text = entryText;
 				if (Control.Text != null)
-					Control.SelectionStart = Control.Text.Length;
+				{
+					var savedSelectionStart = Control.SelectionStart;
+					var len = Control.Text.Length;
+					Control.SelectionStart = savedSelectionStart > len ? len : savedSelectionStart;
+				}
 			}
 
 			_ignoreTextChange = false;
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 			if (Control == null)
 				return;
 
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment();
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			if (Control == null)
+				return;
+
+			Control.VerticalContentAlignment = Element.VerticalTextAlignment.ToNativeVerticalAlignment();
 		}
 
 		void UpdateColor()
@@ -133,17 +148,14 @@ namespace Xamarin.Forms.Platform.WPF
 			Entry entry = Element;
 			if (entry != null)
 			{
-				if (!IsNullOrEmpty(entry.Text))
-				{
-					if (!entry.TextColor.IsDefault)
-						Control.Foreground = entry.TextColor.ToBrush();
-					else
-						Control.Foreground = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
+				if (!entry.TextColor.IsDefault)
+					Control.Foreground = entry.TextColor.ToBrush();
+				else
+					Control.Foreground = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
 
-					// Force the PhoneTextBox control to do some internal bookkeeping
-					// so the colors change immediately and remain changed when the control gets focus
-					Control.OnApplyTemplate();
-				}
+				// Force the PhoneTextBox control to do some internal bookkeeping
+				// so the colors change immediately and remain changed when the control gets focus
+				Control.OnApplyTemplate();
 			}
 			else
 				Control.Foreground = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;

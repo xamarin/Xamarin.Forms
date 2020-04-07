@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Bugzilla41415 : TestContentPage
 	{
 		const string ButtonText = "Click Me";
-		float _x, _y;
+		float _x;
 		bool _didXChange, _didYChange;
 
 		protected override void Init()
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Controls.Issues
 				_didXChange = false;
 				_didYChange = false;
 
-				await scrollView.ScrollToAsync(_x + 100, _y + 100, true);
+				await scrollView.ScrollToAsync(_x + 100, 100, true);
 				_x = 100;
 			};
 
@@ -96,6 +96,8 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST && __ANDROID__
 
 		[Test]
+		[Ignore("Fails intermittently on TestCloud")]
+		[Category(Core.UITests.UITestCategories.ManualReview)]
 		public void Bugzilla41415Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(ButtonText));

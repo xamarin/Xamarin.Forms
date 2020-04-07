@@ -1,4 +1,8 @@
-﻿using AppKit;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AppKit;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.MacOS
 {

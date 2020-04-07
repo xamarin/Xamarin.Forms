@@ -1,11 +1,25 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Content.Res;
+using Android.OS;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+using AndroidX.AppCompat.Widget;
+#else
+using Android.Support.V4.Content;
+using Android.Support.V7.Widget;
+#endif
 using Android.Views;
+using Android.Views.Accessibility;
+using AColor = Android.Graphics.Color;
+using AColorRes = Android.Resource.Color;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class PageRenderer : VisualElementRenderer<Page>
+	public class PageRenderer : VisualElementRenderer<Page>, IOrderedTraversalController
 	{
 		public PageRenderer(Context context) : base(context)
 		{
@@ -26,11 +40,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		IPageController PageController => Element as IPageController;
 
+		IOrderedTraversalController OrderedTraversalController => this;
+
 		double _previousHeight;
+		bool _isDisposed = false;
 
 		protected override void Dispose(bool disposing)
 		{
-			PageController?.SendDisappearing();
+			if (_isDisposed)
+				return;
+
+			if (disposing)
+			{
+				PageController?.SendDisappearing();
+			}
+
+			_isDisposed = true;
 			base.Dispose(disposing);
 		}
 
@@ -62,8 +87,7 @@ namespace Xamarin.Forms.Platform.Android
 				Id = Platform.GenerateViewId();
 			}
 
-			UpdateBackgroundColor(view);
-			UpdateBackgroundImage(view);
+			UpdateBackground(false);
 
 			Clickable = true;
 		}
@@ -71,10 +95,10 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
-				UpdateBackgroundImage(Element);
+			if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
+				UpdateBackground(true);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor(Element);
+				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
 		}
@@ -105,22 +129,105 @@ namespace Xamarin.Forms.Platform.Android
 			_previousHeight = newHeight;
 		}
 
-		void UpdateBackgroundColor(Page view)
+		void UpdateBackground(bool setBkndColorEvenWhenItsDefault)
 		{
-			if (view.Parent is BaseShellItem)
+			Page page = Element;
+
+			_ = this.ApplyDrawableAsync(page, Page.BackgroundImageSourceProperty, Context, drawable =>
 			{
-				var background = view.BackgroundColor;
-				var color = Context.Resources.GetColor(global::Android.Resource.Color.BackgroundLight, Context.Theme);
-				SetBackgroundColor(background.IsDefault ? color : background.ToAndroid());
-			}
-			else if (view.BackgroundColor != Color.Default)
-				SetBackgroundColor(view.BackgroundColor.ToAndroid());
+				if (drawable != null)
+				{
+					this.SetBackground(drawable);
+				}
+				else
+				{
+					Color bkgndColor = page.BackgroundColor;
+					bool isDefaultBkgndColor = bkgndColor.IsDefault;
+
+					// A TabbedPage has no background. See Github6384.
+					bool isInShell = page.Parent is BaseShellItem
+					|| (page.Parent is TabbedPage && page.Parent?.Parent is BaseShellItem);
+					if (isInShell && isDefaultBkgndColor)
+					{
+						var color = Forms.IsMarshmallowOrNewer ?
+							Context.Resources.GetColor(AColorRes.BackgroundLight, Context.Theme) :
+							new AColor(ContextCompat.GetColor(Context, global::Android.Resource.Color.BackgroundLight));
+						SetBackgroundColor(color);
+					}
+					else if (!isDefaultBkgndColor || setBkndColorEvenWhenItsDefault)
+					{
+						SetBackgroundColor(bkgndColor.ToAndroid());
+					}
+				}
+			});
 		}
 
-		void UpdateBackgroundImage(Page view)
+		void IOrderedTraversalController.UpdateTraversalOrder()
 		{
-			if (!string.IsNullOrEmpty(view.BackgroundImage))
-				this.SetBackground(Context.GetDrawable(view.BackgroundImage));
+			// traversal order wasn't added until API 22
+			if ((int)Forms.SdkInt < 22)
+				return;
+
+			// since getting and updating the traversal order is expensive, let's only do it when a screen reader is active
+			// note that this does NOT get auto updated when you enable TalkBack, so the page will need to be reloaded to enable this path 
+			var am = AccessibilityManager.FromContext(Context);
+			if (!am.IsEnabled)
+				return;
+
+			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
+			foreach (var child in Element.LogicalChildren)
+			{
+				if (!(child is VisualElement ve))
+					continue;
+
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage();
+				break;
+			}
+
+			if (tabIndexes == null)
+				return;
+
+			// Let the page handle tab order itself
+			if (tabIndexes.Count <= 1)
+				return;
+
+			AView prevControl = null;
+			foreach (var idx in tabIndexes?.Keys)
+			{
+				var tabGroup = tabIndexes[idx];
+				foreach (var child in tabGroup)
+				{
+					if (!(child is VisualElement ve && ve.GetRenderer()?.View is AView view))
+						continue;
+
+					AView thisControl = null;
+
+					if (view is ITabStop tabStop)
+						thisControl = tabStop.TabStop;
+
+					if (thisControl == null)
+						continue;
+
+					// this element should be the first thing focused after the root
+					if (prevControl == null)
+					{
+						thisControl.AccessibilityTraversalAfter = NoId;
+					}
+					else
+					{
+						if (thisControl != prevControl)
+							thisControl.AccessibilityTraversalAfter = prevControl.Id;
+					}
+
+					prevControl = thisControl;
+				}
+			}
+		}
+
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
+		{
+			base.OnLayout(changed, l, t, r, b);
+			OrderedTraversalController.UpdateTraversalOrder();
 		}
 	}
 }

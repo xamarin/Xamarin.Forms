@@ -9,8 +9,13 @@ using Xamarin.Forms.Controls.Issues;
 [assembly: ExportRenderer(typeof(Issue1909.FlatButton), typeof(FlatButtonRenderer))]
 namespace Xamarin.Forms.ControlGallery.Android
 {
-		public class FlatButtonRenderer : ButtonRenderer
-		{
+		public class FlatButtonRenderer :
+#if TEST_EXPERIMENTAL_RENDERERS
+		Platform.Android.FastRenderers.ButtonRenderer
+#else
+		ButtonRenderer
+#endif
+	{
 			public FlatButtonRenderer(Context context) : base(context)
 			{
 			}
@@ -24,7 +29,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 					var nativeButton = (global::Android.Widget.Button)Control;
 					nativeButton.SetShadowLayer(0, 0, 0, global::Android.Graphics.Color.Transparent);
 
-					nativeButton.Elevation = 0;
+					Platform.Android.ViewExtensions.SetElevation(nativeButton, 0);
 				}
 			}
 		}

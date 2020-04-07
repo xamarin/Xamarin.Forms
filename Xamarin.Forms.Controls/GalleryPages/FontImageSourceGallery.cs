@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.Controls.Issues;
+﻿using Xamarin.Forms.Controls.Issues;
 
 namespace Xamarin.Forms.Controls
 {
@@ -19,11 +18,16 @@ namespace Xamarin.Forms.Controls
 			var fontFamily = "";
 			switch (Device.RuntimePlatform)
 			{
+				case Device.macOS:
 				case Device.iOS:
 					fontFamily = "Ionicons";
 					break;
 				case Device.UWP:
 					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.WPF:
+				case Device.GTK:
+					fontFamily = "Assets/ionicons.ttf#ionicons";
 					break;
 				case Device.Android:
 				default:
@@ -31,7 +35,17 @@ namespace Xamarin.Forms.Controls
 					break;
 			}
 
-			var i = 0;
+			grid.Children.Add(new ImageButton
+			{
+				Source = new FontImageSource
+				{
+					Glyph = Ionicons[Ionicons.Length - 1].ToString(),
+					FontFamily = fontFamily,
+					Size = 20
+				},
+			});
+
+			var i = 1;
 			foreach (char c in Ionicons)
 			{
 				grid.Children.Add(new Image
@@ -54,6 +68,34 @@ namespace Xamarin.Forms.Controls
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				Content = grid
 			};
+
+			var tb1 = new ToolbarItem()
+			{
+				Text = "tb1",
+				IconImageSource =  new FontImageSource()
+				{
+					FontFamily = fontFamily, Glyph = '\uf101'.ToString()
+				}
+			};
+			var tb2 = new ToolbarItem
+			{
+				Text = "tb2 red",
+				IconImageSource = new FontImageSource()
+				{
+					FontFamily = fontFamily, Glyph = '\uf101'.ToString(), Color = Color.Red
+				},
+			};
+			var tb3 = new ToolbarItem
+			{
+				Text = "tb3 yellow",
+				IconImageSource = new FontImageSource()
+				{
+					FontFamily = fontFamily, Glyph = '\uf2c7'.ToString(), Color = Color.Yellow
+				},
+			};
+			ToolbarItems.Add(tb1);
+			ToolbarItems.Add(tb2);
+			ToolbarItems.Add(tb3);
 		}
 
 		static readonly char[] Ionicons = new char[] {

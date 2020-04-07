@@ -1,15 +1,14 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
 
 [assembly: InternalsVisibleTo("Xamarin.Forms.Xaml.UnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Build.Tasks")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Xaml.Design")]
-[assembly: InternalsVisibleTo("Xamarin.Forms.Loader")]
-// Xamarin.Forms.Loader.dll Xamarin.Forms.Xaml.XamlLoader.Load(object, string), kzu@microsoft.com
+[assembly: InternalsVisibleTo("Xamarin.Forms.Loader")]// Xamarin.Forms.Loader.dll Xamarin.Forms.Xaml.XamlLoader.Load(object, string), kzu@microsoft.com
+[assembly: InternalsVisibleTo("Xamarin.HotReload.Forms")]
+[assembly: InternalsVisibleTo("Xamarin.HotReload.UnitTests")]
 [assembly: Preserve]
 
 [assembly: XmlnsDefinition("http://xamarin.com/schemas/2014/forms", "Xamarin.Forms.Xaml")]
@@ -25,5 +24,7 @@ using Xamarin.Forms.Xaml;
 [assembly: TypeForwardedTo(typeof(Xamarin.Forms.Xaml.Internals.INameScopeProvider))]
 #pragma warning restore CS0612 // Type or member is obsolete
 
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: TypeForwardedTo(typeof(Xamarin.Forms.Xaml.Diagnostics.DebuggerHelper))]
+[assembly: TypeForwardedTo(typeof(Xamarin.Forms.Xaml.Diagnostics.VisualDiagnostics))]
+[assembly: TypeForwardedTo(typeof(Xamarin.Forms.Xaml.Diagnostics.VisualTreeChangeEventArgs))]
+[assembly: TypeForwardedTo(typeof(Xamarin.Forms.Xaml.Diagnostics.XamlSourceInfo))]

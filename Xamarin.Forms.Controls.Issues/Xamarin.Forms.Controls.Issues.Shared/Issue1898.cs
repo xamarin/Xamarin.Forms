@@ -5,6 +5,8 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AToolbarPlacement = Xamarin.Forms.PlatformConfiguration.AndroidSpecific.ToolbarPlacement;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
+using WindowsOS = Xamarin.Forms.PlatformConfiguration.Windows;
+
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -79,8 +81,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		internal static void SetupTabbedPage(TabbedPage tabbedPage, AToolbarPlacement placement)
 		{
-			ContentPage Issue1898PageOne = new ContentPage() { Title = Title1, Icon = "bank.png" };
-			ContentPage Issue1898PageTwo = new ContentPage() { Title = Title2, Icon = "bank.png" };
+			ContentPage Issue1898PageOne = new ContentPage() { Title = Title1, IconImageSource = "bank.png" };
+			ContentPage Issue1898PageTwo = new ContentPage() { Title = Title2, IconImageSource = "bank.png" };
 
 			Issue1898PageOne.Content =
 				new StackLayout
@@ -90,9 +92,9 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						new Label(){ Text = "Click through each button on each tab to make sure they do what they say they do" },
 						new Button(){ Text = ChangeTitle1, Command = new Command(() => Issue1898PageOne.Title = ChangeTitle1) },
-						new Button(){ Text = ChangeIcon1, Command = new Command(() => Issue1898PageOne.Icon = "coffee.png")},
-						new Button(){ Text = ChangeIconPage2, Command = new Command(() => Issue1898PageTwo.Icon = "coffee.png")},
-						new Button(){ Text = ChangeIcon1Null, Command = new Command(() => Issue1898PageOne.Icon = null)},
+						new Button(){ Text = ChangeIcon1, Command = new Command(() => Issue1898PageOne.IconImageSource = "coffee.png")},
+						new Button(){ Text = ChangeIconPage2, Command = new Command(() => Issue1898PageTwo.IconImageSource = "coffee.png")},
+						new Button(){ Text = ChangeIcon1Null, Command = new Command(() => Issue1898PageOne.IconImageSource = null)},
 					}
 				};
 
@@ -103,19 +105,21 @@ namespace Xamarin.Forms.Controls.Issues
 					Children =
 					{
 						new Button(){ Text = ChangeTitle2, Command = new Command(() => Issue1898PageTwo.Title = ChangeTitle2) },
-						new Button(){ Text = ChangeIcon2, Command = new Command(() => Issue1898PageTwo.Icon = "bank.png")},
-						new Button(){ Text = ChangeIconPage1, Command = new Command(() => Issue1898PageOne.Icon = "calculator.png")},
-						new Button(){ Text = ChangeIcon2Null, Command = new Command(() => Issue1898PageTwo.Icon = null)},
+						new Button(){ Text = ChangeIcon2, Command = new Command(() => Issue1898PageTwo.IconImageSource = "bank.png")},
+						new Button(){ Text = ChangeIconPage1, Command = new Command(() => Issue1898PageOne.IconImageSource = "calculator.png")},
+						new Button(){ Text = ChangeIcon2Null, Command = new Command(() => Issue1898PageTwo.IconImageSource = null)},
 					}
 				};
 
 			tabbedPage.Children.Add(Issue1898PageOne);
 			tabbedPage.Children.Add(Issue1898PageTwo);
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			tabbedPage.On<Android>().SetBarItemColor(Color.Blue);
 			tabbedPage.On<Android>().SetBarSelectedItemColor(Color.Green);
+#pragma warning restore CS0618 // Type or member is obsolete
 			tabbedPage.On<Android>().SetToolbarPlacement(placement);
-			tabbedPage.On<Windows>().SetHeaderIconsEnabled(true);
+			tabbedPage.On<WindowsOS>().SetHeaderIconsEnabled(true);
 		}
 	}
 }

@@ -16,22 +16,20 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>default</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>default</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,10 +51,13 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="2.0.0" />
-    <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" />
+    <PackageReference Include="OpenTK" Version="3.0.1" />
+    <PackageReference Include="OpenTK.GLControl" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core\Crc64.cs">
+      <Link>Crc64.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.UAP\TextBlockExtensions.cs">
       <Link>Extensions\TextBlockExtensions.cs</Link>
     </Compile>
@@ -64,7 +65,9 @@
     <Compile Include="CellControl.cs" />
     <Compile Include="Controls\FormsAppBar.cs" />
     <Compile Include="Controls\FormsAppBarButton.cs" />
+    <Compile Include="Controls\FormsFontIcon.cs" />
     <Compile Include="Controls\FormsBitmapIcon.cs" />
+    <Compile Include="Controls\FormsButton.cs" />
     <Compile Include="Controls\FormsCarouselPage.cs" />
     <Compile Include="Controls\FormsContentControl.cs" />
     <Compile Include="Controls\FormsContentDialog.cs" />
@@ -75,6 +78,9 @@
     <Compile Include="Controls\FormsPage.cs" />
     <Compile Include="Controls\FormsNavigationPage.cs" />
     <Compile Include="Controls\FormsPathIcon.cs" />
+    <Compile Include="Controls\FormsProgressRing.xaml.cs">
+      <DependentUpon>FormsProgressRing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FormsSymbolIcon.cs" />
     <Compile Include="Controls\FormsTabbedPage.cs" />
     <Compile Include="Controls\FormsTransitioningContentControl.cs" />
@@ -84,6 +90,8 @@
     <Compile Include="Converters\CaseConverter.cs" />
     <Compile Include="Converters\CollapseWhenEmptyConverter.cs" />
     <Compile Include="Converters\ColorConverter.cs" />
+    <Compile Include="Converters\FontFamilyConverter.cs" />
+    <Compile Include="Converters\FontIconColorConverter.cs" />
     <Compile Include="Converters\HeightConverter.cs" />
     <Compile Include="Converters\IconConveter.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
@@ -160,12 +168,15 @@
     <Compile Include="Renderers\DatePickerRenderer.cs" />
     <Compile Include="Renderers\EditorRenderer.cs" />
     <Compile Include="Renderers\EntryRenderer.cs" />
+    <Compile Include="Renderers\FormsCheckBox.cs" />
     <Compile Include="Renderers\FrameRenderer.cs" />
+    <Compile Include="Renderers\ImageButtonRenderer.cs" />
     <Compile Include="Renderers\ImageRenderer.cs" />
     <Compile Include="Renderers\LabelRenderer.cs" />
     <Compile Include="Renderers\LayoutRenderer.cs" />
     <Compile Include="Renderers\ListViewRenderer.cs" />
     <Compile Include="Renderers\MasterDetailPageRenderer.cs" />
+    <Compile Include="Renderers\MediaElementRenderer.cs" />
     <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="Renderers\PageRenderer.cs" />
@@ -175,6 +186,7 @@
     <Compile Include="Renderers\SearchBarRenderer.cs" />
     <Compile Include="Renderers\SliderRenderer.cs" />
     <Compile Include="Renderers\StepperRenderer.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="Renderers\SwitchRenderer.cs" />
     <Compile Include="Renderers\TabbedPageRenderer.cs" />
     <Compile Include="Renderers\CellRenderer.cs" />
@@ -196,9 +208,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="OpenTK.dll.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -211,6 +220,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Assets\CheckBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Assets\Button.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -222,6 +235,13 @@
     <Page Include="Assets\Default.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\FormsFontIcon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\FormsProgressRing.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
