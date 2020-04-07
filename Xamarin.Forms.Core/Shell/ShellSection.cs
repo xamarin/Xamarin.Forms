@@ -237,6 +237,18 @@ namespace Xamarin.Forms
 		public ShellSection()
 		{
 			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
+
+			ShellSectionController.ItemsCollectionChanged += (_, args) =>
+			{
+				if (args.OldItems == null)
+					return;
+
+				foreach(Element item in args.OldItems)
+				{
+					OnVisibleChildRemoved(item);
+				}
+			};
+
 			Navigation = new NavigationImpl(this);
 		}
 				
@@ -513,6 +525,11 @@ namespace Xamarin.Forms
 		protected override void OnChildRemoved(Element child)
 		{
 			base.OnChildRemoved(child);
+			OnVisibleChildRemoved(child);
+		}
+
+		void OnVisibleChildRemoved(Element child)
+		{
 			if (CurrentItem == child)
 			{
 				var items = ShellSectionController.GetItems();
@@ -523,8 +540,9 @@ namespace Xamarin.Forms
 					// We want to delay invoke this because the renderer may handle this instead
 					Device.BeginInvokeOnMainThread(() =>
 					{
-						if (CurrentItem == null)
-							SetValueFromRenderer(CurrentItemProperty, items[0]);
+						var contentItems = ShellSectionController.GetItems();
+						if (contentItems.Count > 0)
+							SetValueFromRenderer(CurrentItemProperty, contentItems[0]);
 					});
 				}
 			}

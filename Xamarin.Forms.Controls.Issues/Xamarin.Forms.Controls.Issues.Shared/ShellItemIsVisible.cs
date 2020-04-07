@@ -120,6 +120,9 @@ namespace Xamarin.Forms.Controls.Issues
 			item2.Title = "Item2 Flyout";
 			item2.Route = "Item2";
 
+			AddTopTab("Top Tab 1");
+			AddTopTab("Top Tab 2");
+
 			pageItem1.SetBinding(Page.IsVisibleProperty, "Item1");
 			pageItem2.SetBinding(Page.IsVisibleProperty, "Item2");
 

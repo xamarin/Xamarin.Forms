@@ -113,7 +113,19 @@ namespace Xamarin.Forms
 
 		public ShellItem()
 		{
-			ShellItemController.ItemsCollectionChanged += (_, __) => SendStructureChanged();
+			ShellItemController.ItemsCollectionChanged += (_, args) =>
+			{
+				if (args.OldItems == null)
+					return;
+
+				foreach (Element item in args.OldItems)
+				{
+					OnVisibleChildRemoved(item);
+				}
+
+				SendStructureChanged();
+			};
+
 			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
 
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ShellItem>>(() => new PlatformConfigurationRegistry<ShellItem>(this));
@@ -210,6 +222,11 @@ namespace Xamarin.Forms
 		protected override void OnChildRemoved(Element child)
 		{
 			base.OnChildRemoved(child);
+			OnVisibleChildRemoved(child);
+		}
+
+		void OnVisibleChildRemoved(Element child)
+		{
 			if (CurrentItem == child)
 			{
 				if (ShellItemController.GetItems().Count == 0)
