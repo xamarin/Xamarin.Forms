@@ -133,19 +133,6 @@ namespace Xamarin.Forms.DualScreen
 
 #if UWP_19000
 			spanningRects = applicationView.GetSpanningRects().ToList();
-#else
-			try
-			{
-				var method = applicationView.GetType().GetMethod("GetSpanningRects");
-				if (method != null)
-				{
-					spanningRects = ((IEnumerable<Windows.Foundation.Rect>)method.Invoke(applicationView, null))?.ToList();
-				}
-			}
-			catch
-			{
-				// if reflection fails just ignore for now
-			}
 #endif
 
 			if (spanningRects?.Count == 2)
@@ -165,7 +152,7 @@ namespace Xamarin.Forms.DualScreen
 			}
 #endif
 
-			// fall back to hard coded hacks
+			// fall back to hard coded
 			Rectangle returnValue = Rectangle.Zero;
 
 			if (IsLandscape)
