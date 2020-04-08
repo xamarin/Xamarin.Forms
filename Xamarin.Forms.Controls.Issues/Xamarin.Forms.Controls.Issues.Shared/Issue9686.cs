@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			cv.SetBinding(ItemsView.ItemsSourceProperty, new Binding(nameof(_9686ViewModel.Groups)));
 
-			var instructions = new Label { Text = $"Tap the '{Test9686}' header once, then again. The application doesn't crash, this test has passed." };
+			var instructions = new Label { Text = $"Tap the first group header once, then again. The application doesn't crash, this test has passed." };
 
 			var result = new Label { };
 
