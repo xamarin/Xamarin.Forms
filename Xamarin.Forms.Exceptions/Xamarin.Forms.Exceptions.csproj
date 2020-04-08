@@ -7,8 +7,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
   </PropertyGroup>
+  <PropertyGroup>
+    <UpdateXlfOnBuild Condition="'$(CI)' != 'true'">true</UpdateXlfOnBuild>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="FormsException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="XliffTasks" Version="1.0.0-beta.20206.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">

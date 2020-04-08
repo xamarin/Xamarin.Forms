@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="es" original="../Resources.resx">
+    <body>
+      <trans-unit id="AddElementsTo">
+        <source>Cannot Add() elements to '{0}'.</source>
+        <target state="new">Cannot Add() elements to '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="AssignProperty">
+        <source>Cannot assign property '{0}': Property does not exist, or is not assignable, or mismatching type between value and property.</source>
+        <target state="new">Cannot assign property '{0}': Property does not exist, or is not assignable, or mismatching type between value and property.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BadType">
+        <source>Type '{0}' is not a {1}.</source>
+        <target state="new">Type '{0}' is not a {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BindingArguments">
+        <source>Binding: Indexer did not contain arguments.</source>
+        <target state="new">Binding: Indexer did not contain arguments.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BindingClosingBracket">
+        <source>Binding: Indexer did not contain closing bracket.</source>
+        <target state="new">Binding: Indexer did not contain closing bracket.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BindingEndsProperty">
+        <source>The name of the bindable property {0} does not ends with \"Property\".</source>
+        <target state="new">The name of the bindable property {0} does not ends with \"Property\".</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BindingParse">
+        <source>Binding: {0} could not be parsed as an index for a {1}.</source>
+        <target state="new">Binding: {0} could not be parsed as an index for a {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BindingPropertyNotFound">
+        <source>Binding: Property '{0}' not found on '{1}'.</source>
+        <target state="new">Binding: Property '{0}' not found on '{1}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BindingUnsupportedType">
+        <source>Binding: Unsupported indexer index type: {0}.</source>
+        <target state="new">Binding: Unsupported indexer index type: {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ConstructorsNotFound">
+        <source>No constructors found for {0} with matching x:Arguments</source>
+        <target state="new">No constructors found for {0} with matching x:Arguments</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Convert">
+        <source>Cannot convert type '{0}' to '{1}' via a reference conversion, boxing conversion, unboxing conversion, wrapping conversion, or null type conversion</source>
+        <target state="new">Cannot convert type '{0}' to '{1}' via a reference conversion, boxing conversion, unboxing conversion, wrapping conversion, or null type conversion</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="DataTypeStringLiteral">
+        <source>x:DataType expects a string literal, an {{x:Type}} markup or {{x:Null}}.</source>
+        <target state="new">x:DataType expects a string literal, an {{x:Type}} markup or {{x:Null}}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Definition">
+        <source>'{0}' does not contain a definition for '{1}' and no extension method '{2}' accepting a first argument of type '{0}' could be found (are you missing a using directive or an assembly reference?).</source>
+        <target state="new">'{0}' does not contain a definition for '{1}' and no extension method '{2}' accepting a first argument of type '{0}' could be found (are you missing a using directive or an assembly reference?).</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Duplicate">
+        <source>'{0}' is a duplicate.</source>
+        <target state="new">'{0}' is a duplicate.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Error">
+        <source>error</source>
+        <target state="new">error</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ExtensionFailed">
+        <source>{0} extension failed.</source>
+        <target state="new">{0} extension failed.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ExtensionNotClosed">
+        <source>{0} extension not closed.</source>
+        <target state="new">{0} extension not closed.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Invalid">
+        <source>{0} is invalid.</source>
+        <target state="new">{0} is invalid.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MethodNotFound">
+        <source>No method '{0}' with correct signature found on type '{1}'.</source>
+        <target state="new">No method '{0}' with correct signature found on type '{1}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MissingConstructor">
+        <source>Missing public default constructor for '{0}'.</source>
+        <target state="new">Missing public default constructor for '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MultiEnumToSbyte">
+        <source>Multi-valued enums are not valid on sbyte enum types</source>
+        <target state="new">Multi-valued enums are not valid on sbyte enum types</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MultipleChild">
+        <source>Multiple child elements in '{0}'.</source>
+        <target state="new">Multiple child elements in '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoResourceFoundFor">
+        <source>No resource found for '{0}'.</source>
+        <target state="new">No resource found for '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NonNullValue">
+        <source>{0} requires a non-null value to be specified for at least one idiom or Default.</source>
+        <target state="new">{0} requires a non-null value to be specified for at least one idiom or Default.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ObjectNotFound">
+        <source>Cannot find the object referenced by {0}.</source>
+        <target state="new">Cannot find the object referenced by {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Obsolete">
+        <source>'{0}' is obsolete: '{1}'</source>
+        <target state="new">'{0}' is obsolete: '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Position">
+        <source>Position</source>
+        <target state="new">Position</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PropertyNotSet">
+        <source>Property not set.</source>
+        <target state="new">Property not set.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PublicStaticProperty">
+        <source>Missing a public static '{0}' or a public instance property getter for the attached property '{0}'.</source>
+        <target state="new">Missing a public static '{0}' or a public instance property getter for the attached property '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RelativeUriOnly">
+        <source>{0} only accepts Relative URIs.</source>
+        <target state="new">{0} only accepts Relative URIs.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Requires">
+        <source>{0} require {1}.</source>
+        <target state="new">{0} require {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ResolveName">
+        <source>Cannot resolve name '{0}' of {1}.</source>
+        <target state="new">Cannot resolve name '{0}' of {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ResolveProperty">
+        <source>Cannot resolve property '{0}' to '{1}'.</source>
+        <target state="new">Cannot resolve property '{0}' to '{1}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ResolveType">
+        <source>Cannot resolve type '{0}'.</source>
+        <target state="new">Cannot resolve type '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ResourceAlreadyPresent">
+        <source>A resource with the key '{0}' is already present in the {1}.</source>
+        <target state="new">A resource with the key '{0}' is already present in the {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ResourceNotFound">
+        <source>Resource '{0}' not found.</source>
+        <target state="new">Resource '{0}' not found.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ResourceRequireKey">
+        <source>Resources in {0} require a x:Key attribute.</source>
+        <target state="new">Resources in {0} require a x:Key attribute.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SetContent">
+        <source>Cannot set the content of '{0}' as it doesn't have a '{1}'.</source>
+        <target state="new">Cannot set the content of '{0}' as it doesn't have a '{1}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SomethingNotFound">
+        <source>'{0}' not found for '{1}'.</source>
+        <target state="new">'{0}' not found for '{1}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="StyleOrContent">
+        <source>Style property or Content is not a string literal.</source>
+        <target state="new">Style property or Content is not a string literal.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="StyleSheet">
+        <source>StyleSheet requires either a Source or a content.</source>
+        <target state="new">StyleSheet requires either a Source or a content.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Syntax">
+        <source>Syntax for {0} is {1}.</source>
+        <target state="new">Syntax for {0} is {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="TypeAlreadyContains">
+        <source>The type '{0}' already contains a definition for '{1}'</source>
+        <target state="new">The type '{0}' already contains a definition for '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="TypeMismatch">
+        <source>No property, bindable property, or event found for '{0}', or mismatching type between value and property.</source>
+        <target state="new">No property, bindable property, or event found for '{0}', or mismatching type between value and property.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="TypeName">
+        <source>TypeName is not set.</source>
+        <target state="new">TypeName is not set.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="TypeNotFound">
+        <source>Type '{0}' not found in xmlns '{1}'.</source>
+        <target state="new">Type '{0}' not found in xmlns '{1}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UndeclaredPrefix">
+        <source>Undeclared xmlns prefix {0}.</source>
+        <target state="new">Undeclared xmlns prefix {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UndefinedException">
+        <source>Undefined exception</source>
+        <target state="new">Undefined exception</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Unexpected">
+        <source>Expected {0} but found {1}.</source>
+        <target state="new">Expected {0} but found {1}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Warning">
+        <source>warning</source>
+        <target state="new">warning</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="Xstatic">
+        <source>x:Static: unable to find a public -- or accessible internal -- static field, static property, const or enum value named {0} in {1}.</source>
+        <target state="new">x:Static: unable to find a public -- or accessible internal -- static field, static property, const or enum value named {0} in {1}.</target>
+        <note />
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
