@@ -175,12 +175,13 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("ToggleItem1");
 			ShowFlyout();
-			RunningApp.WaitForElement("Item1 Flyout");
-			RunningApp.Tap("Hide Flyout");
+			RunningApp.WaitForElement("Item2 Flyout");
+			RunningApp.Tap("Item2 Flyout");
 			RunningApp.Tap("AllVisible");
-			RunningApp.Tap("ToggleItem1");
+			RunningApp.Tap("ToggleItem2");
 			ShowFlyout();
-			RunningApp.WaitForNoElement("Item1 Flyout");
+			RunningApp.WaitForElement("Item1 Flyout");
+			RunningApp.WaitForNoElement("Item2 Flyout");
 		}
 
 		[Test]
