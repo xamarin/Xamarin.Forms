@@ -901,7 +901,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					_swipeDirection = null;
 
-					_contentView.Animate().TranslationX(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
+					_contentView.Animate().TranslationX(0).SetDuration(resetAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
 					{
 						if (_swipeDirection == null)
 							DisposeSwipeItems();
