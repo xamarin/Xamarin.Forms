@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\Environment.Build.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
@@ -11,13 +12,14 @@
     <AssemblyName>XamarinFormsControlGalleryiOS</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <DefineConstants Condition="'$(Use2017)' != 'true'">__XCODE11__;$(DefineConstants);</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>DEBUG;HAVE_OPENTK</DefineConstants>
+    <DefineConstants>DEBUG;HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -44,7 +46,7 @@
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
-    <DefineConstants>HAVE_OPENTK</DefineConstants>
+    <DefineConstants>HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchLink>None</MtouchLink>
@@ -57,11 +59,11 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG;__UNIFIED__;__MOBILE__;__IOS__;HAVE_OPENTK</DefineConstants>
+    <DefineConstants>DEBUG;__UNIFIED__;__MOBILE__;__IOS__;HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <MtouchArch>ARMv7, ARM64</MtouchArch>
+    <MtouchArch>ARM64</MtouchArch>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>True</MtouchDebug>
     <CodesignEntitlements>
@@ -88,7 +90,7 @@
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
-    <DefineConstants>HAVE_OPENTK</DefineConstants>
+    <DefineConstants>HAVE_OPENTK;$(DefineConstants);</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
@@ -105,12 +107,6 @@
     <AppExtensionDebugBundleId />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Xamarin.Forms.Core.UITests.Shared\Utilities\NumericExtensions.cs">
-      <Link>Tests\NumericExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Xamarin.Forms.Core.UITests.Shared\Utilities\ParsingUtils.cs">
-      <Link>Tests\ParsingUtils.cs</Link>
-    </Compile>
     <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
@@ -123,19 +119,8 @@
     <Compile Include="PerformanceTrackerRenderer.cs" />
     <Compile Include="RegistrarValidationService.cs" />
     <Compile Include="SampleNativeControl.cs" />
-    <Compile Include="Tests\AssertionExtensions.cs" />
-    <Compile Include="Tests\BackgroundColorTests.cs" />
-    <Compile Include="Tests\CornerRadiusTests.cs" />
-    <Compile Include="Tests\IsEnabledTests.cs" />
-    <Compile Include="Tests\IsVisibleTests.cs" />
-    <Compile Include="Tests\NavigationTests.cs" />
-    <Compile Include="Tests\OpacityTests.cs" />
     <Compile Include="Tests\PlatformTestSettings.cs" />
-    <Compile Include="Tests\PlatformTestFixture.cs" />
-    <Compile Include="Tests\RotationTests.cs" />
-    <Compile Include="Tests\ScaleTests.cs" />
     <Compile Include="Tests\TestingPlatformService.cs" />
-    <Compile Include="Tests\TextTests.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
@@ -153,6 +138,7 @@
     <Compile Include="CustomRenderers\RoundedLabelRenderer.cs" />
     <Compile Include="ApiLabelRenderer.cs" />
     <Compile Include="CustomRenderers\CustomSearchBarRenderer.cs" />
+    <Compile Include="_9767CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -177,6 +163,12 @@
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Platform.iOS.UnitTests\Xamarin.Forms.Platform.iOS.UnitTests.csproj">
+      <Project>{52c50e88-7f15-45fe-a63c-8e7c76ca2bae}</Project>
+      <Name>Xamarin.Forms.Platform.iOS.UnitTests</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS.csproj">
       <Project>{271193c1-6e7c-429c-a36d-3f1be5267231}</Project>
       <Name>Xamarin.Forms.Platform.iOS</Name>
@@ -189,7 +181,7 @@
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Material.iOS\Xamarin.Forms.Material.iOS.csproj">
+    <ProjectReference Condition="'$(Use2017)' != 'true'" Include="..\Xamarin.Forms.Material.iOS\Xamarin.Forms.Material.iOS.csproj">
       <Project>{8A75B1DC-CEED-4B1B-8675-A7DFFD1E6DE4}</Project>
       <Name>Xamarin.Forms.Material.iOS</Name>
       <IsAppExtension>false</IsAppExtension>
@@ -387,7 +379,6 @@
     </PackageReference>
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <PackageReference Include="Xamarin.Insights" Version="1.12.3" />
-    <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="72.2.0.1" />
     <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.21.9" />
   </ItemGroup>
   <ItemGroup>

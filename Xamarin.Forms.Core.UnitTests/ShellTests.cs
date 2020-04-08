@@ -247,6 +247,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task RelativeGoTo()
 		{
+			Routing.RegisterRoute("RelativeGoTo_Page1", typeof(ContentPage));
+			Routing.RegisterRoute("RelativeGoTo_Page2", typeof(ContentPage));
+
 			var shell = new Shell
 			{
 			};
@@ -281,6 +284,15 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync("/tab23", false, true);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content"));
 
+			await shell.GoToAsync("RelativeGoTo_Page1", false);
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content/RelativeGoTo_Page1"));
+
+			await shell.GoToAsync("../RelativeGoTo_Page2", false);
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content/RelativeGoTo_Page2"));
+
+			await shell.GoToAsync("..", false);
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content"));
+
 			/*
 			 * removing support for .. notation for now
 			await shell.GoToAsync("../one/tab11");
@@ -299,6 +311,90 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync(new ShellNavigationState($"../one/tab11#fragment"));
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("app:///s/one/tab11/content/"));
 			*/
+		}
+
+
+		[Test]
+		public async Task DotDotNavigationPassesParameters()
+		{
+			Routing.RegisterRoute(nameof(DotDotNavigationPassesParameters), typeof(ContentPage));
+			var shell = new Shell();
+			var one = new ShellItem { Route = "one" };
+
+			var tabone = MakeSimpleShellSection("tabone", "content");
+
+			one.Items.Add(tabone);
+
+			shell.Items.Add(one);
+
+			one.CurrentItem.CurrentItem.ContentTemplate = new DataTemplate(() =>
+			{
+				ShellTestPage pagetoTest = new ShellTestPage();
+				pagetoTest.BindingContext = pagetoTest;
+				return pagetoTest;
+			});
+
+			var page = (ShellTestPage)(one.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
+			Assert.AreEqual(null, page.SomeQueryParameter);
+			await shell.GoToAsync(nameof(DotDotNavigationPassesParameters));
+			await shell.GoToAsync($"..?{nameof(ShellTestPage.SomeQueryParameter)}=1234");
+			Assert.AreEqual("1234", page.SomeQueryParameter);
+
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task ReNavigatingToCurrentLocationPassesParameters(bool useDataTemplates)
+		{
+			var shell = new Shell();
+			ShellTestPage pagetoTest = new ShellTestPage();
+			pagetoTest.BindingContext = pagetoTest;		
+			var one = CreateShellItem(pagetoTest, shellContentRoute: "content", templated: useDataTemplates);
+			shell.Items.Add(one);
+			ShellTestPage page = null;
+			if (useDataTemplates)
+			{
+				page = (ShellTestPage)(one.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
+			}
+			else
+			{
+				page = (ShellTestPage)one.CurrentItem.CurrentItem.Content;
+			}
+
+			Assert.AreEqual(null, page.SomeQueryParameter);
+			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}=1234");
+			Assert.AreEqual("1234", page.SomeQueryParameter);
+			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}=4321");
+			Assert.AreEqual("4321", page.SomeQueryParameter);
+			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}");
+			Assert.AreEqual(null, page.SomeQueryParameter);
+		}
+
+		[Test]
+		public async Task RoutePathDefaultRemovalWithGlobalRoutesKeepsOneDefaultRoute()
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+
+			Routing.RegisterRoute(nameof(RoutePathDefaultRemovalWithGlobalRoutesKeepsOneDefaultRoute), typeof(ContentPage));
+			await shell.GoToAsync(nameof(RoutePathDefaultRemovalWithGlobalRoutesKeepsOneDefaultRoute));
+
+			// If all routes on the shell are default we still need to make sure it appends something that represents where you are in the
+			// shell structure
+			Assert.AreNotEqual($"//{nameof(RoutePathDefaultRemovalWithGlobalRoutesKeepsOneDefaultRoute)}", shell.CurrentState.Location.ToString());
+		}
+
+
+		[Test]
+		public async Task RoutePathDefaultRemovalWithGlobalRoutesKeepsOneNamedRoute()
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellContentRoute: "content"));
+
+			Routing.RegisterRoute(nameof(RoutePathDefaultRemovalWithGlobalRoutesKeepsOneNamedRoute), typeof(ContentPage));
+			await shell.GoToAsync(nameof(RoutePathDefaultRemovalWithGlobalRoutesKeepsOneNamedRoute));
+
+			Assert.AreEqual($"//content/{nameof(RoutePathDefaultRemovalWithGlobalRoutesKeepsOneNamedRoute)}", shell.CurrentState.Location.ToString());
 		}
 
 		[Test]
@@ -327,7 +423,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				return pagetoTest;
 			});
 
-			
+
 			var page = (two.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
 			Assert.AreEqual("1234", (page as ShellTestPage).SomeQueryParameter);
 
@@ -547,7 +643,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public async Task FlyoutNavigateToImplicitContentPage()
 		{
 			var shell = new Shell();
-			var shellITem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems,  };
+			var shellITem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
 			var shellSection = new ShellSection() { Title = "can navigate to" };
 			shellSection.Items.Add(new ContentPage());
 
@@ -662,7 +758,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			ContentPage page = new ContentPage();
 			shell.Items.Add(CreateShellItem(page));
 
-			
+
 			// setup title view
 			StackLayout flyoutView = new StackLayout() { BackgroundColor = Color.White };
 			Button button = new Button();
@@ -866,14 +962,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(GetItems(shell).Contains(item1));
 			Assert.IsTrue(GetItems(shell).Contains(item2));
 		}
-		
+
 		[Test]
 		public async Task ShellContentCollectionClear()
 		{
 			var shell = new Shell();
 			var item1 = CreateShellItem();
 			var section2 = CreateShellSection();
-			
+
 			shell.Items.Add(item1);
 			item1.Items.Add(section2);
 
@@ -883,12 +979,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			mainTab.Items.Clear();
 			mainTab.Items.Add(content1);
 			mainTab.Items.Add(CreateShellContent());
-			
+
 			Assert.IsNull(clearedContent.Parent);
 			Assert.AreEqual(2, mainTab.Items.Count);
 			Assert.AreEqual(content1, mainTab.CurrentItem);
 		}
-		
+
 		[Test]
 		public async Task ShellItemCollectionClear()
 		{
@@ -896,19 +992,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			var item1 = CreateShellItem();
 			shell.Items.Add(item1);
 
-			
+
 			var item2 = CreateShellItem();
 			var item3 = CreateShellItem();
-			
+
 			shell.Items.Clear();
 			shell.Items.Add(item2);
 			shell.Items.Add(item3);
-			
+
 			Assert.IsNull(item1.Parent);
 			Assert.AreEqual(2, shell.Items.Count);
 			Assert.AreEqual(item2, shell.CurrentItem);
 		}
-		
+
 		[Test]
 		public async Task ShellSectionCollectionClear()
 		{
@@ -919,15 +1015,186 @@ namespace Xamarin.Forms.Core.UnitTests
 			var section1 = CreateShellSection();
 			var section2 = CreateShellSection();
 			var clearedSection = item1.Items[0];
-			
+
 			Assert.IsNotNull(clearedSection.Parent);
 			item1.Items.Clear();
 			item1.Items.Add(section1);
 			item1.Items.Add(section2);
-			
+
 			Assert.IsNull(clearedSection.Parent);
 			Assert.AreEqual(2, item1.Items.Count);
 			Assert.AreEqual(section1, shell.CurrentItem.CurrentItem);
 		}
+
+		[Test]
+		public async Task ShellLocationRestoredWhenItemsAreReAdded()
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root1"));
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root2"));
+
+			await shell.GoToAsync("//root2");
+			Assert.AreEqual("//root2", shell.CurrentState.Location.ToString());
+
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root1"));
+			shell.Items.Add(CreateShellItem(shellContentRoute: "root2"));
+
+			shell.Items.Clear();
+			Assert.AreEqual("//root2", shell.CurrentState.Location.ToString());
+		}
+
+
+		[Test]
+		public void FlyoutItemDefaultStylesApplied()
+		{
+			Shell shell = new Shell();
+			var shellItem = CreateShellItem();
+
+			shell.Items.Add(shellItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
+		}
+
+		[Test]
+		public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
+		{
+			var classStyle = new Style(typeof(Label))
+			{
+				Setters = {
+					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+				},
+				Class = "fooClass",
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+
+			shell.Items.Add(shellItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
+			shellItem.StyleClass = new[] { "fooClass" };
+			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		}
+
+
+		[Test]
+		public void FlyoutItemLabelStyleCustom()
+		{
+			var classStyle = new Style(typeof(Label))
+			{
+				Setters = {
+					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+				},
+				Class = "fooClass",
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+			shellItem.StyleClass = new[] { "fooClass" };
+
+			shell.Items.Add(shellItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		}
+
+		[Test]
+		public void MenuItemLabelStyleCustom()
+		{
+			var classStyle = new Style(typeof(Label))
+			{
+				Setters = {
+					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+				},
+				Class = "fooClass",
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+			var menuItem = new MenuItem();
+			var shellMenuItem = new MenuShellItem(menuItem);
+			menuItem.StyleClass = new[] { "fooClass" };
+			shell.Items.Add(shellItem);
+			shell.Items.Add(shellMenuItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellMenuItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		}
+
+		[Test]
+		public void MenuItemLabelStyleCanBeChangedAfterRendered()
+		{
+			var classStyle = new Style(typeof(Label))
+			{
+				Setters = {
+					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+				},
+				Class = "fooClass",
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+			var menuItem = new MenuItem();
+			var shellMenuItem = new MenuShellItem(menuItem);
+			shell.Items.Add(shellItem);
+			shell.Items.Add(shellMenuItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellMenuItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
+			menuItem.StyleClass = new[] { "fooClass" };
+			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		}
+
+		[Test]
+		public void FlyoutItemLabelStyleDefault()
+		{
+			var classStyle = new Style(typeof(Label))
+			{
+				Setters = {
+					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+				},
+				Class = "FlyoutItemLabelStyle",
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+
+			shell.Items.Add(shellItem);
+
+			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var thing = (Element)flyoutItemTemplate.CreateContent();
+			thing.Parent = shell;
+
+			var label = thing.LogicalChildren.OfType<Label>().First();
+			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		}
+
 	}
 }

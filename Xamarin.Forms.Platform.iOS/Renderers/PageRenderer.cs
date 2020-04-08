@@ -364,6 +364,16 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+
+#if __XCODE11__
+			if (Forms.IsiOS13OrNewer && previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				Application.Current?.OnRequestedThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));
+#endif
+		}
+
 		bool ShouldUseSafeArea()
 		{
 			bool usingSafeArea = Page.On<PlatformConfiguration.iOS>().UsingSafeArea();
@@ -507,7 +517,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (bgImage != null)
 					NativeView.BackgroundColor = UIColor.FromPatternImage(bgImage);
 				else if (Element.BackgroundColor.IsDefault)
-					NativeView.BackgroundColor = UIColor.White;
+					NativeView.BackgroundColor = ColorExtensions.BackgroundColor;
 				else
 					NativeView.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			});
