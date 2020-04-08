@@ -498,7 +498,7 @@ namespace Xamarin.Forms.Xaml
 					try {
 						return property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) });
 					} catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, lineInfo, innerException: e, property.DeclaringType.ToString(), "Get" + property.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, lineInfo, innerException: e, property.DeclaringType.ToString(), "Get" + property.PropertyName);
 					}
 				};
 			else
@@ -507,7 +507,7 @@ namespace Xamarin.Forms.Xaml
 					try {
 						return property.DeclaringType.GetRuntimeProperty(property.PropertyName);
 					} catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, lineInfo, innerException: e, property.DeclaringType.ToString(), property.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, lineInfo, innerException: e, property.DeclaringType.ToString(), property.PropertyName);
 					}
 				};
 			var convertedValue = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider, out exception);
@@ -610,7 +610,7 @@ namespace Xamarin.Forms.Xaml
 				try {
 					propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
 				} catch (AmbiguousMatchException e) {
-					throw new CSException(CSException.Ecode.TypeAlreadyContais, lineInfo, innerException: e, elementType.ToString(), localName);
+					throw new CSException(CSException.Ecode.TypeAlreadyContains, lineInfo, innerException: e, elementType.ToString(), localName);
 				}
 				elementType = elementType.BaseType;
 			}

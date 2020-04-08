@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddElementsTo" xml:space="preserve">
+    <value>Cannot Add() elements to '{0}'.</value>
+  </data>
+  <data name="AssignProperty" xml:space="preserve">
+    <value>Cannot assign property '{0}': Property does not exist, or is not assignable, or mismatching type between value and property.</value>
+  </data>
+  <data name="BadType" xml:space="preserve">
+    <value>Type '{0}' is not a {1}.</value>
+  </data>
+  <data name="BindingArguments" xml:space="preserve">
+    <value>Binding: Indexer did not contain arguments.</value>
+  </data>
+  <data name="BindingClosingBracket" xml:space="preserve">
+    <value>Binding: Indexer did not contain closing bracket.</value>
+  </data>
+  <data name="BindingEndsProperty" xml:space="preserve">
+    <value>The name of the bindable property {0} does not ends with \"Property\".</value>
+  </data>
+  <data name="BindingParse" xml:space="preserve">
+    <value>Binding: {0} could not be parsed as an index for a {1}.</value>
+  </data>
+  <data name="BindingPropertyNotFound" xml:space="preserve">
+    <value>Binding: Property '{0}' not found on '{1}'.</value>
+  </data>
+  <data name="BindingUnsupportedType" xml:space="preserve">
+    <value>Binding: Unsupported indexer index type: {0}.</value>
+  </data>
+  <data name="ConstructorsNotFound" xml:space="preserve">
+    <value>No constructors found for {0} with matching x:Arguments</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>Cannot convert type '{0}' to '{1}' via a reference conversion, boxing conversion, unboxing conversion, wrapping conversion, or null type conversion</value>
+  </data>
+  <data name="DataTypeStringLiteral" xml:space="preserve">
+    <value>x:DataType expects a string literal, an {{x:Type}} markup or {{x:Null}}.</value>
+  </data>
+  <data name="Definition" xml:space="preserve">
+    <value>'{0}' does not contain a definition for '{1}' and no extension method '{2}' accepting a first argument of type '{0}' could be found (are you missing a using directive or an assembly reference?).</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>'{0}' is a duplicate.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>error</value>
+  </data>
+  <data name="ExtensionFailed" xml:space="preserve">
+    <value>{0} extension failed.</value>
+  </data>
+  <data name="ExtensionNotClosed" xml:space="preserve">
+    <value>{0} extension not closed.</value>
+  </data>
+  <data name="Invalid" xml:space="preserve">
+    <value>{0} is invalid.</value>
+  </data>
+  <data name="MethodNotFound" xml:space="preserve">
+    <value>No method '{0}' with correct signature found on type '{1}'.</value>
+  </data>
+  <data name="MissingConstructor" xml:space="preserve">
+    <value>Missing public default constructor for '{0}'.</value>
+  </data>
+  <data name="MultiEnumToSbyte" xml:space="preserve">
+    <value>Multi-valued enums are not valid on sbyte enum types</value>
+  </data>
+  <data name="MultipleChild" xml:space="preserve">
+    <value>Multiple child elements in '{0}'.</value>
+  </data>
+  <data name="NonNullValue" xml:space="preserve">
+    <value>{0} requires a non-null value to be specified for at least one idiom or Default.</value>
+  </data>
+  <data name="NoResourceFoundFor" xml:space="preserve">
+    <value>No resource found for '{0}'.</value>
+  </data>
+  <data name="ObjectNotFound" xml:space="preserve">
+    <value>Cannot find the object referenced by {0}.</value>
+  </data>
+  <data name="Obsolete" xml:space="preserve">
+    <value>'{0}' is obsolete: '{1}'</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="PropertyNotSet" xml:space="preserve">
+    <value>Property not set.</value>
+  </data>
+  <data name="PublicStaticProperty" xml:space="preserve">
+    <value>Missing a public static '{0}' or a public instance property getter for the attached property '{0}'.</value>
+  </data>
+  <data name="RelativeUriOnly" xml:space="preserve">
+    <value>{0} only accepts Relative URIs.</value>
+  </data>
+  <data name="Requires" xml:space="preserve">
+    <value>{0} require {1}.</value>
+  </data>
+  <data name="ResolveName" xml:space="preserve">
+    <value>Cannot resolve name '{0}' of {1}.</value>
+  </data>
+  <data name="ResolveProperty" xml:space="preserve">
+    <value>Cannot resolve property '{0}' to '{1}'.</value>
+  </data>
+  <data name="ResolveType" xml:space="preserve">
+    <value>Cannot resolve type '{0}'.</value>
+  </data>
+  <data name="ResourceAlreadyPresent" xml:space="preserve">
+    <value>A resource with the key '{0}' is already present in the {1}.</value>
+  </data>
+  <data name="ResourceNotFound" xml:space="preserve">
+    <value>Resource '{0}' not found.</value>
+  </data>
+  <data name="ResourceRequireKey" xml:space="preserve">
+    <value>Resources in {0} require a x:Key attribute.</value>
+  </data>
+  <data name="SetContent" xml:space="preserve">
+    <value>Cannot set the content of '{0}' as it doesn't have a '{1}'.</value>
+  </data>
+  <data name="SomethingNotFound" xml:space="preserve">
+    <value>'{0}' not found for '{1}'.</value>
+  </data>
+  <data name="StyleOrContent" xml:space="preserve">
+    <value>Style property or Content is not a string literal.</value>
+  </data>
+  <data name="StyleSheet" xml:space="preserve">
+    <value>StyleSheet requires either a Source or a content.</value>
+  </data>
+  <data name="Syntax" xml:space="preserve">
+    <value>Syntax for {0} is {1}.</value>
+  </data>
+  <data name="TypeAlreadyContains" xml:space="preserve">
+    <value>The type '{0}' already contains a definition for '{1}'</value>
+  </data>
+  <data name="TypeMismatch" xml:space="preserve">
+    <value>No property, bindable property, or event found for '{0}', or mismatching type between value and property.</value>
+  </data>
+  <data name="TypeName" xml:space="preserve">
+    <value>TypeName is not set.</value>
+  </data>
+  <data name="TypeNotFound" xml:space="preserve">
+    <value>Type '{0}' not found in xmlns '{1}'.</value>
+  </data>
+  <data name="UndeclaredPrefix" xml:space="preserve">
+    <value>Undeclared xmlns prefix {0}.</value>
+  </data>
+  <data name="UndefinedException" xml:space="preserve">
+    <value>Undefined exception</value>
+  </data>
+  <data name="Unexpected" xml:space="preserve">
+    <value>Expected {0} but found {1}.</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>warning</value>
+  </data>
+  <data name="Xstatic" xml:space="preserve">
+    <value>x:Static: unable to find a public -- or accessible internal -- static field, static property, const or enum value named {0} in {1}.</value>
+  </data>
+</root>

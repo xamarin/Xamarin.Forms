@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Xaml
 						minfo = bp.DeclaringType.GetRuntimeProperty(bp.PropertyName);
 					}
 					catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), e, bp.DeclaringType.ToString(), bp.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), e, bp.DeclaringType.ToString(), bp.PropertyName);
 					}
 					if (minfo != null)
 						return minfo;
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Xaml
 						return bp.DeclaringType.GetRuntimeMethod("Get" + bp.PropertyName, new[] { typeof(BindableObject) });
 					}
 					catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), e, bp.DeclaringType.ToString(), "Get" + bp.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), e, bp.DeclaringType.ToString(), "Get" + bp.PropertyName);
 					}
 				}
 

@@ -33,14 +33,14 @@ namespace Xamarin.Forms
 					try {
 						minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 					} catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, Property.DeclaringType.ToString(), Property.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), innerException: e, Property.DeclaringType.ToString(), Property.PropertyName);
 					}
 					if (minfo != null)
 						return minfo;
 					try {
 						return Property.DeclaringType.GetRuntimeMethod("Get" + Property.PropertyName, new[] { typeof(BindableObject) });
 					} catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, Property.DeclaringType.ToString(), "Get" + Property.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), innerException: e, Property.DeclaringType.ToString(), "Get" + Property.PropertyName);
 					}
 				};
 

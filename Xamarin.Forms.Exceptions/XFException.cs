@@ -74,141 +74,140 @@ namespace Xamarin.Forms.Exceptions
 
 		public override string GetMessage()
 		{
-			var unformatedMessage = string.Empty;
-			// TODO: localization
+			var unformattedMessage = string.Empty;
 			switch ((Ecode)Code)
 			{
 				case Ecode.ResolveType:
-					unformatedMessage = "Can't resolve type '{0}'.";
+					unformattedMessage = Resources.ResolveType;
 					break;
 				case Ecode.ResolveProperty:
-					unformatedMessage = "Can't resolve property '{0}' to '{1}'.";
+					unformattedMessage = Resources.ResolveProperty;
 					break;
 				case Ecode.AddElementsTo:
-					unformatedMessage = "Can not Add() elements to '{0}'.";
+					unformattedMessage = Resources.AddElementsTo;
 					break;
 				case Ecode.SetContent:
-					unformatedMessage = "Can not set the content of '{0}' as it doesn't have a '{1}'.";
+					unformattedMessage = Resources.SetContent;
 					break;
 				case Ecode.ResolveName:
-					unformatedMessage = "Can't resolve name '{0}' of {1}.";
+					unformattedMessage = Resources.ResolveName;
 					break;
 				case Ecode.AssignProperty:
-					unformatedMessage = "Cannot assign property '{0}': Property does not exist, or is not assignable, or mismatching type between value and property.";
+					unformattedMessage = Resources.AssignProperty;
 					break;
 				case Ecode.BindingPropertyNotFound:
-					unformatedMessage = "Binding: Property '{0}' not found on '{1}'.";
+					unformattedMessage = Resources.BindingPropertyNotFound;
 					break;
 				case Ecode.BindingClosingBracket:
-					unformatedMessage = "Binding: Indexer did not contain closing bracket.";
+					unformattedMessage = Resources.BindingClosingBracket;
 					break;
 				case Ecode.BindingArguments:
-					unformatedMessage = "Binding: Indexer did not contain arguments.";
+					unformattedMessage = Resources.BindingArguments;
 					break;
 				case Ecode.BindingUnsupportedType:
-					unformatedMessage = "Binding: Unsupported indexer index type: {0}.";
+					unformattedMessage = Resources.BindingUnsupportedType;
 					break;
 				case Ecode.BindingParse:
-					unformatedMessage = "Binding: {0} could not be parsed as an index for a {1}.";
+					unformattedMessage = Resources.BindingParse;
 					break;
 				case Ecode.BindingEndsProperty:
-					unformatedMessage = "The name of the bindable property {0} does not ends with \"Property\". This is the kind of convention the world is build upon, a bit like Planck's constant.";
+					unformattedMessage = Resources.BindingEndsProperty;
 					break;
 				case Ecode.PublicStaticProperty:
-					unformatedMessage = "Missing a public static '{0}' or a public instance property getter for the attached property '{0}'.";
+					unformattedMessage = Resources.PublicStaticProperty;
 					break;
 				case Ecode.DataTypeStringLiteral:
-					unformatedMessage = "x:DataType expects a string literal, an {{x:Type}} markup or {{x:Null}}.";
+					unformattedMessage = Resources.DataTypeStringLiteral;
 					break;
 				case Ecode.UndeclaredPrefix:
-					unformatedMessage = "Undeclared xmlns prefix {0}.";
+					unformattedMessage = Resources.UndeclaredPrefix;
 					break;
 				case Ecode.TypeMismatch:
-					unformatedMessage = "No property, bindable property, or event found for '{0}', or mismatching type between value and property.";
+					unformattedMessage = Resources.TypeMismatch;
 					break;
 				case Ecode.Unexpected:
-					unformatedMessage = "Expected {0} but found {1}.";
+					unformattedMessage = Resources.Unexpected;
 					break;
 				case Ecode.ResourceAlreadyPresent:
-					unformatedMessage = "A resource with the key '{0}' is already present in the {1}.";
+					unformattedMessage = Resources.ResourceAlreadyPresent;
 					break;
 				case Ecode.ResourceRequireKey:
-					unformatedMessage = "Resources in {0} require a x:Key attribute.";
+					unformattedMessage = Resources.ResourceRequireKey;
 					break;
 				case Ecode.PropertyNotSet:
-					unformatedMessage = "Property not set.";
+					unformattedMessage = Resources.PropertyNotSet;
 					break;
 				case Ecode.NoResourceFoundFor:
-					unformatedMessage = "No resource found for '{0}'.";
+					unformattedMessage = Resources.NoResourceFoundFor;
 					break;
 				case Ecode.TypeName:
-					unformatedMessage = "TypeName isn't set.";
+					unformattedMessage = Resources.TypeName;
 					break;
 				case Ecode.StyleSheet:
-					unformatedMessage = "StyleSheet require either a Source or a content.";
+					unformattedMessage = Resources.StyleSheet;
 					break;
 				case Ecode.StyleOrContent:
-					unformatedMessage = "Style property or Content is not a string literal.";
+					unformattedMessage = Resources.StyleOrContent;
 					break;
 				case Ecode.Duplicate:
-					unformatedMessage = "'{0}' is a duplicate.";
+					unformattedMessage = Resources.Duplicate;
 					break;
 				case Ecode.MultipleChild:
-					unformatedMessage = "Multiple child elements in '{0}'.";
+					unformattedMessage = Resources.MultipleChild;
 					break;
 				case Ecode.BadType:
-					unformatedMessage = "Type '{0}' is not a {1}.";
+					unformattedMessage = Resources.BadType;
 					break;
 				case Ecode.TypeNotFound:
-					unformatedMessage = "Type '{0}' not found in xmlns '{1}'.";
+					unformattedMessage = Resources.TypeNotFound;
 					break;
 				case Ecode.MethodNotFound:
-					unformatedMessage = "No method '{0}' with correct signature found on type '{1}'.";
+					unformattedMessage = Resources.MethodNotFound;
 					break;
 				case Ecode.SomethingNotFound:
-					unformatedMessage = "'{0}' not found for '{1}'.";
+					unformattedMessage = Resources.SomethingNotFound;
 					break;
 				case Ecode.MissingConstructor:
-					unformatedMessage = "Missing public default constructor for '{0}'.";
+					unformattedMessage = Resources.MissingConstructor;
 					break;
 				case Ecode.NonNullValue:
-					unformatedMessage = "{0} requires a non-null value to be specified for at least one idiom or Default.";
+					unformattedMessage = Resources.NonNullValue;
 					break;
 				case Ecode.Requires:
-					unformatedMessage = "{0} require {1}.";
+					unformattedMessage = Resources.Requires;
 					break;
 				case Ecode.Invalid:
-					unformatedMessage = "{0} is invalid.";
+					unformattedMessage = Resources.Invalid;
 					break;
 				case Ecode.ExtensionFailed:
-					unformatedMessage = "{0} extension failed.";
+					unformattedMessage = Resources.ExtensionFailed;
 					break;
 				case Ecode.ExtensionNotClosed:
-					unformatedMessage = "{0} extension not closed.";
+					unformattedMessage = Resources.ExtensionNotClosed;
 					break;
 				case Ecode.Syntax:
-					unformatedMessage = "Syntax for {0} is {1}.";
+					unformattedMessage = Resources.Syntax;
 					break;
 				case Ecode.Xstatic:
-					unformatedMessage = "x:Static: unable to find a public -- or accessible internal -- static field, static property, const or enum value named {0} in {1}.";
+					unformattedMessage = Resources.Xstatic;
 					break;
 				case Ecode.ObjectNotFound:
-					unformatedMessage = "Can not find the object referenced by {0}.";
+					unformattedMessage = Resources.ObjectNotFound;
 					break;
 				case Ecode.RelativeUriOnly:
-					unformatedMessage = "{0} only accepts Relative URIs.";
+					unformattedMessage = Resources.RelativeUriOnly;
 					break;
 				case Ecode.ResourceNotFound:
-					unformatedMessage = "Resource '{0}' not found.";
+					unformattedMessage = Resources.ResourceNotFound;
 					break;
 				case Ecode.ConstructorsNotFound:
-					unformatedMessage = "No constructors found for {0} with matching x:Arguments";
+					unformattedMessage = Resources.ConstructorsNotFound;
 					break;
 				case Ecode.MultiEnumToSbyte:
-					unformatedMessage = "Multi-valued enums are not valid on sbyte enum types";
+					unformattedMessage = Resources.MultiEnumToSbyte;
 					break;
 			}
-			return unformatedMessage;
+			return unformattedMessage;
 		}
 	}
 }

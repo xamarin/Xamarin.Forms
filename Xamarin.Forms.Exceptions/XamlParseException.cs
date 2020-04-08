@@ -11,11 +11,11 @@ namespace Xamarin.Forms.Exceptions
 	public abstract class XamlParseException : Exception
 	{
 		readonly Regex _curlyBracketRegex = new Regex(@"\{(?<num>\d+?).*?\}");
-		string _message;
-		readonly string _undefinedMessage = "Undefined exception";
-		static readonly string _positionMessage = "Position";
+		readonly string _message;
+		readonly string _undefinedMessage = Resources.UndefinedException;
+		static readonly string PositionMessage = Resources.Position;
 
-		string GetTypeString(bool isError) => isError ? "error" : "warning";
+		string GetTypeString(bool isError) => isError ? Resources.Error : Resources.Warning;
 
 		public virtual string Prefix { get; }
 
@@ -82,11 +82,11 @@ namespace Xamarin.Forms.Exceptions
 		}
 
 		// http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx
-		string Format(string unformatedMessage, params object[] args)
+		string Format(string unformattedMessage, params object[] args)
 		{
-			var message = string.IsNullOrEmpty(unformatedMessage)
+			var message = string.IsNullOrEmpty(unformattedMessage)
 				? _undefinedMessage
-				: $"{GetTypeString(Error)} {Prefix}{Code:0000}: {SmartFormat(unformatedMessage, args)}";
+				: $"{GetTypeString(Error)} {Prefix}{Code:0000}: {SmartFormat(unformattedMessage, args)}";
 
 			return AddPosition(XmlInfo, message);
 		}
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Exceptions
 		{
 			if (XmlLineInfo == null || !XmlLineInfo.HasLineInfo())
 				return message;
-			return $"{_positionMessage} ({XmlLineInfo.LineNumber},{XmlLineInfo.LinePosition}): {message}";
+			return $"{PositionMessage} ({XmlLineInfo.LineNumber},{XmlLineInfo.LinePosition}): {message}";
 		}
 
 		public override string Message => _message;

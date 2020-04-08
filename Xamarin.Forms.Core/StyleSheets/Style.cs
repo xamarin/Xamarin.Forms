@@ -94,14 +94,14 @@ namespace Xamarin.Forms.StyleSheets
 					try {
 						minfo = property.DeclaringType.GetRuntimeProperty(property.PropertyName);
 					} catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, property.DeclaringType.ToString(), property.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), innerException: e, property.DeclaringType.ToString(), property.PropertyName);
 					}
 					if (minfo != null)
 						return minfo;
 					try {
 						return property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) });
 					} catch (AmbiguousMatchException e) {
-						throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, property.DeclaringType.ToString(), "Get" + property.PropertyName);
+						throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), innerException: e, property.DeclaringType.ToString(), "Get" + property.PropertyName);
 					}
 				};
 			var ret = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider, out Exception exception);

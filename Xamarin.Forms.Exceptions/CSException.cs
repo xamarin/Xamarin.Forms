@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Exceptions
 		public enum Ecode
 		{
 			Convert = 0039,
-			TypeAlreadyContais = 0102,
+			TypeAlreadyContains = 0102,
 			Obsolete = 0618,
 			Definition = 1061,
 		}
@@ -35,24 +35,23 @@ namespace Xamarin.Forms.Exceptions
 
 		public override string GetMessage()
 		{
-			var unformatedMessage = string.Empty;
-			// TODO: localization
+			var unformattedMessage = string.Empty;
 			switch ((Ecode)Code)
 			{
 				case Ecode.Convert:
-					unformatedMessage = "Cannot convert type '{0}' to '{1}' via a reference conversion, boxing conversion, unboxing conversion, wrapping conversion, or null type conversion";
+					unformattedMessage = Resources.Convert;
 					break;
-				case Ecode.TypeAlreadyContais:
-					unformatedMessage = "The type '{0}' already contains a definition for '{1}'";
+				case Ecode.TypeAlreadyContains:
+					unformattedMessage = Resources.TypeAlreadyContains;
 					break;
 				case Ecode.Obsolete:
-					unformatedMessage = "'{0}' is obsolete: '{1}'";
+					unformattedMessage = Resources.Obsolete;
 					break;
 				case Ecode.Definition:
-					unformatedMessage = "'{0}' does not contain a definition for '{1}' and no extension method '{2}' accepting a first argument of type '{0}' could be found (are you missing a using directive or an assembly reference?).";
+					unformattedMessage = Resources.Definition;
 					break;
 			}
-			return unformatedMessage;
+			return unformattedMessage;
 		}
 	}
 }

@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Xaml
 					setter = t.GetRuntimeProperty(prop).SetMethod;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, t.ToString(), prop);
+					throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), innerException: e, t.ToString(), prop);
 				}
 			}
 			else {
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Xaml
 					setter = markupExtension.GetType().GetRuntimeProperty(prop).SetMethod;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, markupExtension.GetType().ToString(), prop);
+					throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), innerException: e, markupExtension.GetType().ToString(), prop);
 				}
 
 			}
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Xaml
 						throw converterException;
 				}
 				catch (AmbiguousMatchException e) {
-					throw new CSException(CSException.Ecode.TypeAlreadyContais, serviceProvider.GetLineInfo(), innerException: e, markupExtension.ToString(), prop);
+					throw new CSException(CSException.Ecode.TypeAlreadyContains, serviceProvider.GetLineInfo(), innerException: e, markupExtension.ToString(), prop);
 				}
 			}
 
