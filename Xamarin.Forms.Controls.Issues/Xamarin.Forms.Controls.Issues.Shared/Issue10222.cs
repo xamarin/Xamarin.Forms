@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Content = new Button
 				{
+					AutomationId = "goTo",
 					Text = "Go",
 					Command = new Command(async () => await Navigation.PushAsync(new CarouselViewTestPage()))
 				}
@@ -39,6 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				cv = new CollectionView
 				{
+					AutomationId = "collectionView",
 					Margin = new Thickness(0,40),
 					ItemTemplate = new DataTemplate(() =>
 					{
@@ -83,10 +85,10 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue10222Test() 
 		{
-			// Delete this and all other UITEST sections if there is no way to automate the test. Otherwise, be sure to rename the test and update the Category attribute on the class. Note that you can add multiple categories.
-			RunningApp.Screenshot("I am at Issue1");
-			RunningApp.WaitForElement(q => q.Marked("Issue1Label"));
-			RunningApp.Screenshot("I see the Label");
+			RunningApp.WaitForElement(q => q.Marked("goTo"));
+			RunningApp.Tap("goTo");
+			RunningApp.WaitForElement(q => q.Marked("collectionView"));
+			RunningApp.WaitForElement(q => q.Marked("goTo"));
 		}
 #endif
 	}
