@@ -371,7 +371,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool IsValidSwipeItems(SwipeItems swipeItems)
 		{
-			return swipeItems != null && swipeItems.Count > 0;
+			return swipeItems != null && swipeItems.Where(s => s.IsVisible).Count() > 0;
 		}
 
 		void UpdateSwipeItems()
@@ -379,14 +379,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_contentView == null || _actionView != null)
 				return;
 
-			_swipeItemsRect = new List<CGRect>();
+			SwipeItems items = GetSwipeItemsByDirection();
 
-			SwipeItems visibleItems = GetVisibleSwipeItemsByDirection();
-
-			if (visibleItems == null || visibleItems.Count == 0)
+			if (items == null || items.Count == 0)
 				return;
 
-			SwipeItems items = GetSwipeItemsByDirection();
+			_swipeItemsRect = new List<CGRect>();
 
 			double swipeItemsWidth;
 
@@ -468,8 +466,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 					i++;
 					previousWidth += swipeItemWidth;
-					_swipeItemsRect.Add(child.Frame);
 				}
+
+				_swipeItemsRect.Add(child.Frame);
 			}
 		}
 
@@ -784,20 +783,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return swipeItems;
 		}
 
-		SwipeItems GetVisibleSwipeItemsByDirection()
-		{
-			SwipeItems swipeItems = GetSwipeItemsByDirection();
-
-			if (swipeItems == null || swipeItems.Count == 0)
-				return swipeItems;
-
-			return new SwipeItems(swipeItems.Where(s => s.IsVisible))
-			{
-				Mode = swipeItems.Mode,
-				SwipeBehaviorOnInvoked = swipeItems.SwipeBehaviorOnInvoked
-			};
-		}
-
 		void Swipe()
 		{
 			if (_contentView == null)
@@ -987,7 +972,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
 			{
-				var swipeItems = GetVisibleSwipeItemsByDirection();
+				var swipeItems = GetSwipeItemsByDirection();
 
 				if (swipeItems == null)
 					return;
@@ -996,7 +981,8 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					foreach (var swipeItem in swipeItems)
 					{
-						ExecuteSwipeItem(swipeItem);
+						if (swipeItem.IsVisible)
+							ExecuteSwipeItem(swipeItem);
 					}
 
 					if (swipeItems.SwipeBehaviorOnInvoked != SwipeBehaviorOnInvoked.RemainOpen)
@@ -1090,7 +1076,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Math.Abs(_swipeThreshold) > double.Epsilon)
 				return _swipeThreshold;
 
-			var swipeItems = GetVisibleSwipeItemsByDirection();
+			var swipeItems = GetSwipeItemsByDirection();
 
 			if (swipeItems == null)
 				return 0;
@@ -1112,8 +1098,11 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					foreach (var swipeItem in swipeItems)
 					{
-						var swipeItemSize = GetSwipeItemSize(swipeItem);
-						swipeThreshold += swipeItemSize.Width;
+						if (swipeItem.IsVisible)
+						{
+							var swipeItemSize = GetSwipeItemSize(swipeItem);
+							swipeThreshold += swipeItemSize.Width;
+						}
 					}
 				}
 				else
@@ -1222,7 +1211,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_swipeDirection == null)
 				return false;
 
-			var swipeItems = GetVisibleSwipeItemsByDirection();
+			var swipeItems = GetSwipeItemsByDirection();
 			return IsValidSwipeItems(swipeItems);
 		}
 
@@ -1250,7 +1239,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_isResettingSwipe)
 				return;
 
-			var swipeItems = GetVisibleSwipeItemsByDirection();
+			var swipeItems = GetSwipeItemsByDirection();
 
 			if (swipeItems == null || _swipeItemsRect == null)
 				return;
@@ -1261,17 +1250,20 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var swipeItem = swipeItems[i];
 
-				var swipeItemX = swipeItemRect.Left;
-				var swipeItemY = swipeItemRect.Top;
-
-				if (TouchInsideContent(swipeItemX, swipeItemY, swipeItemRect.Width, swipeItemRect.Height, point.X, point.Y))
+				if (swipeItem.IsVisible)
 				{
-					ExecuteSwipeItem(swipeItem);
+					var swipeItemX = swipeItemRect.Left;
+					var swipeItemY = swipeItemRect.Top;
 
-					if (swipeItems.SwipeBehaviorOnInvoked != SwipeBehaviorOnInvoked.RemainOpen)
-						ResetSwipe();
+					if (TouchInsideContent(swipeItemX, swipeItemY, swipeItemRect.Width, swipeItemRect.Height, point.X, point.Y))
+					{
+						ExecuteSwipeItem(swipeItem);
 
-					break;
+						if (swipeItems.SwipeBehaviorOnInvoked != SwipeBehaviorOnInvoked.RemainOpen)
+							ResetSwipe();
+
+						break;
+					}
 				}
 
 				i++;
@@ -1386,9 +1378,9 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 			}
 
-			var swipeItems = GetVisibleSwipeItemsByDirection();
+			var swipeItems = GetSwipeItemsByDirection();
 
-			if (swipeItems.Count == 0)
+			if (swipeItems.Where(s => s.IsVisible).Count() == 0)
 				return;
 
 			var swipeThreshold = GetSwipeThreshold();
