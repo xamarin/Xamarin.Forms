@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (!ViewControllers.Any())
 					return;
-				var parentingViewController = (ParentingViewController)ViewControllers.Last();
+				var parentingViewController = GetParentingViewController();
 				parentingViewController?.UpdateLeftBarButtonItem();
 			});
 		}
@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			View.SetNeedsLayout();
 
-			var parentingViewController = (ParentingViewController)ViewControllers.Last();
+			var parentingViewController = GetParentingViewController();
 			parentingViewController?.UpdateLeftBarButtonItem();
 		}
 
@@ -149,12 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetStatusBarStyle();
 
 			if (Forms.IsiOS13OrNewer)
-			{
-				UpdateTint();
 				UpdateBarBackgroundColor();
-				UpdateBarTextColor();
-				UpdateHideNavigationBarSeparator();
-			}
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -233,14 +228,10 @@ namespace Xamarin.Forms.Platform.iOS
 			navPage.RemovePageRequested += OnRemovedPageRequested;
 			navPage.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 
-			if (!Forms.IsiOS13OrNewer)
-			{
-				UpdateTint();
-				UpdateBarBackgroundColor();
-				UpdateBarTextColor();
-				UpdateHideNavigationBarSeparator();
-			}
-
+			UpdateTint();
+			UpdateBarBackgroundColor();
+			UpdateBarTextColor();
+			UpdateHideNavigationBarSeparator();
 			UpdateUseLargeTitles();
 
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
@@ -390,6 +381,14 @@ namespace Xamarin.Forms.Platform.iOS
 			pageRenderer.ViewController.DidMoveToParentViewController(pack);
 
 			return pack;
+		}
+
+		ParentingViewController GetParentingViewController()
+		{
+			if (!ViewControllers.Any())
+				return null;
+
+			return ViewControllers.Last() as ParentingViewController;
 		}
 
 		void FindParentMasterDetail()
@@ -628,7 +627,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ViewControllers = _removeControllers;
 			}
 			target.Dispose();
-			var parentingViewController = ViewControllers.Last() as ParentingViewController;
+			var parentingViewController = GetParentingViewController();
 			parentingViewController?.UpdateLeftBarButtonItem(page);
 		}
 
@@ -683,7 +682,7 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.StandardAppearance = navigationBarAppearance;
 				NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
 
-				var parentingViewController = (ParentingViewController)ViewControllers.Last();
+				var parentingViewController = GetParentingViewController();
 				parentingViewController?.UpdateNavigationBarBackgroundImage();
 			}
 			else
