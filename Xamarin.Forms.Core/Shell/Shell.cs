@@ -80,7 +80,7 @@ namespace Xamarin.Forms
 		{
 			if (bindable is BaseShellItem baseShellItem)
 				return BaseShellItem.CreateDefaultFlyoutItemCell(baseShellItem, textBinding, iconBinding);
-			
+
 			if (bindable is MenuItem mi)
 			{
 				if (mi.Parent is BaseShellItem bsiMi)
@@ -225,6 +225,30 @@ namespace Xamarin.Forms
 
 		List<(IAppearanceObserver Observer, Element Pivot)> _appearanceObservers = new List<(IAppearanceObserver Observer, Element Pivot)>();
 		List<IFlyoutBehaviorObserver> _flyoutBehaviorObservers = new List<IFlyoutBehaviorObserver>();
+
+		DataTemplate IShellController.GetFlyoutItemDataTemplate(BindableObject bo)
+		{
+			BindableProperty bp = null;
+
+			if (bo is IMenuItemController)
+			{
+				bp = MenuItemTemplateProperty;
+
+				if (bo is MenuItem mi && mi.Parent != null && mi.Parent.IsSet(bp))
+					bo = mi.Parent;
+				else if (bo is MenuShellItem msi && msi.MenuItem != null && msi.MenuItem.IsSet(bp))
+					bo = msi.MenuItem;
+			}
+			else
+			{
+				bp = ItemTemplateProperty;
+			}
+
+			if (bo.IsSet(bp))
+				return (DataTemplate)bo.GetValue(bp);
+
+			return (DataTemplate)GetValue(bp);
+		}
 
 		event EventHandler IShellController.StructureChanged
 		{

@@ -1141,14 +1141,25 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void FlyoutItemDefaultTemplatesDontCrashWhenSet()
+		public void FlyoutItemDefaultTemplates()
 		{
 			Shell shell = new Shell();
-			shell.MenuItemTemplate = new DataTemplate(() => new Label());
-			shell.ItemTemplate = new DataTemplate(() => new Label());
+			IShellController sc = (IShellController)shell;
+			shell.MenuItemTemplate = new DataTemplate(() => new Label() { Text = "MenuItemTemplate" });
+			shell.ItemTemplate = new DataTemplate(() => new Label() { Text = "ItemTemplate" });
 
 			var shellItem = CreateShellItem();
+			var menuItem = new MenuShellItem(new MenuItem());
 			shell.Items.Add(shellItem);
+			shell.Items.Add(menuItem);
+
+
+			DataTemplate triggerDefault = shell.ItemTemplate;
+			triggerDefault = shell.MenuItemTemplate;
+
+			Assert.AreEqual("ItemTemplate", ((Label)sc.GetFlyoutItemDataTemplate(shellItem).CreateContent()).Text);
+			Assert.AreEqual("MenuItemTemplate", ((Label)sc.GetFlyoutItemDataTemplate(menuItem).CreateContent()).Text);
+			Assert.AreEqual("MenuItemTemplate", ((Label)sc.GetFlyoutItemDataTemplate(menuItem.MenuItem).CreateContent()).Text);
 		}
 
 
