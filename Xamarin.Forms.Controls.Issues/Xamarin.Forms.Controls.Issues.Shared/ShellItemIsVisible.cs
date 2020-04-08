@@ -192,6 +192,18 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("ClearAndRecreate");
 			RunningApp.Tap("ClearAndRecreate");
 		}
+
+
+		[Test]
+		public void ClearAndRecreateFromSecondaryPage()
+		{
+			RunningApp.WaitForElement("ClearAndRecreate");
+			ShowFlyout();
+			RunningApp.Tap("Item2 Flyout");
+			RunningApp.Tap("ToggleItem1");
+			RunningApp.Tap("ClearAndRecreate");
+			RunningApp.WaitForElement("Top Tab 1");
+		}
 #endif
 	}
 }

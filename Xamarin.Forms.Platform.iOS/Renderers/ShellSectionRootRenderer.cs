@@ -83,7 +83,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var tracker = _shellContext.CreatePageRendererTracker();
 			tracker.IsRootPage = true;
 			tracker.ViewController = this;
-			tracker.Page = ((IShellContentController)ShellSection.CurrentItem).GetOrCreateContent();
+
+			if(ShellSection.CurrentItem != null)
+				tracker.Page = ((IShellContentController)ShellSection.CurrentItem).GetOrCreateContent();
 			_tracker = tracker;
 			UpdateFlowDirection();
 		}
@@ -167,6 +169,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ShellContent item = ShellSectionController.GetItems()[i];
 				var page = ((IShellContentController)item).GetOrCreateContent();
+				if (!page.IsVisible)
+					continue;
+
 				var renderer = Platform.CreateRenderer(page);
 				Platform.SetRenderer(page, renderer);
 				AddChildViewController(renderer.ViewController);
@@ -198,6 +203,14 @@ namespace Xamarin.Forms.Platform.iOS
 				if (newContent == null)
 					return;
 
+				if (_currentContent == null)
+				{
+					_currentContent = newContent;
+					_currentIndex = ShellSectionController.GetItems().IndexOf(_currentContent);
+					_tracker.Page = ((IShellContentController)newContent).Page;
+					return;
+				}
+
 				var items = ShellSectionController.GetItems();
 				if (items.Count == 0)
 					return;
@@ -214,6 +227,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_currentContent = newContent;
 				_currentIndex = newIndex;
+
+				if (!_renderers.ContainsKey(newContent))
+					return;
+
 				var currentRenderer = _renderers[newContent];
 
 				// -1 == slide left, 1 ==  slide right
@@ -233,11 +250,13 @@ namespace Xamarin.Forms.Platform.iOS
 				},
 				() =>
 				{
-					oldRenderer.NativeView.RemoveFromSuperview();
+					if(_renderers.ContainsKey(oldContent))
+						oldRenderer.NativeView.RemoveFromSuperview();
+
 					_isAnimating = false;
 					_tracker.Page = ((IShellContentController)newContent).Page;
 
-					if (!ShellSectionController.GetItems().Contains(oldContent))
+					if (!ShellSectionController.GetItems().Contains(oldContent) && _renderers.ContainsKey(oldContent))
 					{
 						_renderers.Remove(oldContent);
 						oldRenderer.ViewController.RemoveFromParentViewController();

@@ -264,9 +264,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (ShellSection.CurrentItem == null || ShellSectionController.GetItems().Count == 0)
-				return;
-
 			CollectionView.ReloadData();
 		}
 

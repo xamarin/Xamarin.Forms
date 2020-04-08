@@ -238,7 +238,7 @@ namespace Xamarin.Forms
 		{
 			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
 
-			ShellSectionController.ItemsCollectionChanged += (_, args) =>
+			((ShellContentCollection)Items).VisibleItemsChangedInternal += (_, args) =>
 			{
 				if (args.OldItems == null)
 					return;
@@ -532,18 +532,14 @@ namespace Xamarin.Forms
 		{
 			if (CurrentItem == child)
 			{
-				var items = ShellSectionController.GetItems();
-				if (items.Count == 0)
+				var contentItems = ShellSectionController.GetItems();
+				if (contentItems.Count == 0)
+				{
 					ClearValue(CurrentItemProperty);
+				}
 				else
 				{
-					// We want to delay invoke this because the renderer may handle this instead
-					Device.BeginInvokeOnMainThread(() =>
-					{
-						var contentItems = ShellSectionController.GetItems();
-						if (contentItems.Count > 0 && (CurrentItem == null || !contentItems.Contains(CurrentItem)))
-							SetValueFromRenderer(CurrentItemProperty, contentItems[0]);
-					});
+					SetValueFromRenderer(CurrentItemProperty, contentItems[0]);
 				}
 			}
 

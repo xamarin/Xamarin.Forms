@@ -10,10 +10,11 @@ namespace Xamarin.Forms
 	internal sealed class ShellContentCollection : IList<ShellContent>, INotifyCollectionChanged
 	{
 		public event NotifyCollectionChangedEventHandler VisibleItemsChanged;
+		public event NotifyCollectionChangedEventHandler VisibleItemsChangedInternal;
+		public ReadOnlyCollection<ShellContent> VisibleItems { get; }
+
 		ObservableCollection<ShellContent> _inner = new ObservableCollection<ShellContent>();
 		ObservableCollection<ShellContent> _visibleContents = new ObservableCollection<ShellContent>();
-
-		public ReadOnlyCollection<ShellContent> VisibleItems { get; }
 		bool _pauseCollectionChanged;
 		List<NotifyCollectionChangedEventArgs> _notifyCollectionChangedEventArgs;
 
@@ -30,8 +31,14 @@ namespace Xamarin.Forms
 					return;
 				}
 
-				VisibleItemsChanged?.Invoke(VisibleItems, args);
+				OnVisibleItemsChanged(args);
 			};
+		}
+
+		void OnVisibleItemsChanged(NotifyCollectionChangedEventArgs args)
+		{
+			VisibleItemsChangedInternal?.Invoke(VisibleItems, args);
+			VisibleItemsChanged?.Invoke(VisibleItems, args);
 		}
 
 		void PauseCollectionChanged() => _pauseCollectionChanged = true;
@@ -43,8 +50,8 @@ namespace Xamarin.Forms
 			var pendingEvents = _notifyCollectionChangedEventArgs.ToList();
 			_notifyCollectionChangedEventArgs.Clear();
 
-			foreach(var arg in pendingEvents)
-				VisibleItemsChanged?.Invoke(VisibleItems, arg);
+			foreach(var args in pendingEvents)
+				OnVisibleItemsChanged(args);
 		}
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
