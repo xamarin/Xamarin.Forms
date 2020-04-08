@@ -207,7 +207,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var oldRenderer = _renderers[oldContent];
 
 				// this means the currently visible item has been removed
-				if(oldIndex == -1 && _currentIndex <= newIndex)
+				if (oldIndex == -1 && _currentIndex <= newIndex)
 				{
 					newIndex++;
 				}
@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_isAnimating = false;
 					_tracker.Page = ((IShellContentController)newContent).Page;
 
-					if(!ShellSectionController.GetItems().Contains(oldContent))
+					if (!ShellSectionController.GetItems().Contains(oldContent))
 					{
 						_renderers.Remove(oldContent);
 						oldRenderer.ViewController.RemoveFromParentViewController();
@@ -292,6 +292,26 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			// Make sure we do this after the header has a chance to react
 			Device.BeginInvokeOnMainThread(UpdateHeaderVisibility);
+
+			if (e.OldItems != null)
+			{
+				foreach (ShellContent oldItem in e.OldItems)
+				{
+					// if current item is removed will be handled by the currentitem property changed event
+					// That way the render is swapped out cleanly once the new current item is set
+					if (_currentContent == oldItem)
+						continue;
+
+					if (e.OldStartingIndex < _currentIndex)
+						_currentIndex--;
+
+					var oldRenderer = _renderers[oldItem];
+					_renderers.Remove(oldItem);
+					oldRenderer.NativeView.RemoveFromSuperview();
+					oldRenderer.ViewController.RemoveFromParentViewController();
+					oldRenderer.Dispose();
+				}
+			}
 
 			if (e.NewItems != null)
 			{
