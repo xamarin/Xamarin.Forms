@@ -541,7 +541,7 @@ namespace Xamarin.Forms
 					Device.BeginInvokeOnMainThread(() =>
 					{
 						var contentItems = ShellSectionController.GetItems();
-						if (contentItems.Count > 0)
+						if (contentItems.Count > 0 && CurrentItem == null)
 							SetValueFromRenderer(CurrentItemProperty, contentItems[0]);
 					});
 				}
