@@ -40,8 +40,6 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _appeared;
 		bool _disposed;
 
-		UIPopoverPresentationController _popoverPresentationController;
-
 		internal Platform()
 		{
 			_renderer = new PlatformRenderer(this);
@@ -531,44 +529,30 @@ namespace Xamarin.Forms.Platform.iOS
 			_renderer.View?.Window?.EndEditing(true);
 		}
 
-		public async Task<T> ShowPopup<T>(Popup<T> popup)
+		private class DemoPopoverController : UIViewController
 		{
-			var wrapper = PopupWrapper<T>.Wrap(popup);
-
-			var currenPageRenderer = GetRenderer(Application.Current.MainPage);
-			var presentingViewController = currenPageRenderer.ViewController;
-
-			var anchorNativeView = popup.Anchor == null ? currenPageRenderer.NativeView : GetRenderer(popup.Anchor).NativeView;
-
-			wrapper.ModalInPopover = !popup.IsLightDismissEnabled;
-			wrapper.ModalPresentationStyle = UIKit.UIModalPresentationStyle.Popover;
-
-			presentingViewController.PresentViewController(wrapper, true, null);
-
-			_popoverPresentationController = wrapper.PopoverPresentationController;
-
-			_popoverPresentationController.DidDismiss += (sender, e) =>
+			public DemoPopoverController() : base("TestPopover", null) { }
+			public override void ViewDidLoad()
 			{
-				popup.LightDismiss();
-				_popoverPresentationController = null;
-			};
-
-			_popoverPresentationController.SourceRect = new RectangleF(anchorNativeView.Bounds.Location, anchorNativeView.Bounds.Size);
-			_popoverPresentationController.SourceView = anchorNativeView;
-
-			var result = await popup.Result;
-
-			if (!Forms.IsiOS9OrNewer)
-			{
-				await presentingViewController.DismissViewControllerAsync(true);
-			}
-			else
-			{
-				presentingViewController.DismissViewController(true, null);
+				base.ViewDidLoad();
+				View.Frame = new CoreGraphics.CGRect(0, 0, 100, 100);
+				this.PreferredContentSize = new CoreGraphics.CGSize(10, 10);
+				View.BackgroundColor = UIColor.Red;
 			}
 
-			_popoverPresentationController = null;
-			return result;
+			public class PopoverDelegate : UIPopoverPresentationControllerDelegate
+			{
+				public override UIKit.UIModalPresentationStyle GetAdaptivePresentationStyle(UIPresentationController forPresentationController)
+				{
+					return UIKit.UIModalPresentationStyle.None;
+				}
+			}
+		}
+
+		public Task<T> ShowPopup<T>(Popup<T> popup)
+		{
+			CreateRenderer(popup);
+			return popup.Result;
 		}
 
 		internal class DefaultRenderer : VisualElementRenderer<VisualElement>

@@ -192,7 +192,6 @@
     <Compile Include="NativeViewWrapper.cs" />
     <Compile Include="NativeViewWrapperRenderer.cs" />
     <Compile Include="PlatformEffect.cs" />
-    <Compile Include="PopupWrapper.cs" />
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
@@ -200,6 +199,7 @@
     <Compile Include="Renderers\IShellSectionRootHeader.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\CheckBoxRendererBase.cs" />
+    <Compile Include="Renderers\PopupRenderer.cs" />
     <Compile Include="Renderers\RadioButtonCALayer.cs" />
     <Compile Include="Renderers\RadioButtonRenderer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />

@@ -40,6 +40,7 @@ using UIKit;
 [assembly: ExportRenderer(typeof(Path), typeof(PathRenderer))]
 #endif
 
+[assembly: ExportRenderer(typeof(Popup), typeof(PopupRenderer))]
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(TabletMasterDetailRenderer), UIUserInterfaceIdiom.Pad)]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
