@@ -13,7 +13,9 @@ namespace Xamarin.Forms.Controls.Issues
     {
         public Github9536()
         {
-            InitializeComponent();
+#if APP
+	        InitializeComponent();
+#endif
         }
         
         void Button_Clicked(object sender, System.EventArgs e) {
