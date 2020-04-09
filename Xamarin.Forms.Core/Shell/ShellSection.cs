@@ -179,7 +179,9 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
-		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
+		// we want the list returned from here to remain point in time accurate
+		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() 
+			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItems.ToList());
 
 		[Obsolete]
 		[EditorBrowsable(EditorBrowsableState.Never)]

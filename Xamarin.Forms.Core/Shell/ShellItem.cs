@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -83,7 +84,9 @@ namespace Xamarin.Forms
 			return accept;
 		}
 
-		ReadOnlyCollection<ShellSection> IShellItemController.GetItems() => ((ShellSectionCollection)Items).VisibleItems;
+		// we want the list returned from here to remain point in time accurate
+		ReadOnlyCollection<ShellSection> IShellItemController.GetItems() => 
+			new ReadOnlyCollection<ShellSection>(((ShellSectionCollection)Items).VisibleItems.ToList());
 
 		event NotifyCollectionChangedEventHandler IShellItemController.ItemsCollectionChanged
 		{

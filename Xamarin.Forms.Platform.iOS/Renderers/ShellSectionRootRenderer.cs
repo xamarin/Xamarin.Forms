@@ -164,13 +164,30 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void LoadRenderers()
 		{
-			var currentItem = ShellSection.CurrentItem;
-			for (int i = 0; i < ShellSectionController.GetItems().Count; i++)
+			Dictionary<ShellContent, Page> createdPages = new Dictionary<ShellContent, Page>();
+			var contentItems = ShellSectionController.GetItems();
+
+			// pre create all the pages in case the visibility of a page
+			// removes the page from shell
+			for (int i = 0; i < contentItems.Count; i++)
 			{
-				ShellContent item = ShellSectionController.GetItems()[i];
+				ShellContent item = contentItems[i];
 				var page = ((IShellContentController)item).GetOrCreateContent();
-				if (!page.IsVisible)
-					continue;
+				createdPages.Add(item, page);
+			}
+
+			var currentItem = ShellSection.CurrentItem;
+			contentItems = ShellSectionController.GetItems();
+
+			for (int i = 0; i < contentItems.Count; i++)
+			{
+				ShellContent item = contentItems[i];
+				Page page = null;
+				if(!createdPages.TryGetValue(item, out page))
+				{
+					page = ((IShellContentController)item).GetOrCreateContent();
+					contentItems = ShellSectionController.GetItems();
+				}
 
 				var renderer = Platform.CreateRenderer(page);
 				Platform.SetRenderer(page, renderer);

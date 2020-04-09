@@ -202,7 +202,8 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("Item2 Flyout");
 			RunningApp.Tap("ToggleItem1");
 			RunningApp.Tap("ClearAndRecreate");
-			RunningApp.WaitForElement("Top Tab 1");
+			RunningApp.Tap("Top Tab 2");
+			RunningApp.Tap("Top Tab 1");
 		}
 #endif
 	}
