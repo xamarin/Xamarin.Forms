@@ -25,20 +25,25 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 			}
 
-			if (view is VisualElement visualElement)
+			if (view is VisualElement visualElement
+#if __MOBILE__
+			  )
+#else
+			    && !(view is NavigationPage))
+#endif
 			{
 				renderer = Platform.GetRenderer(visualElement);
 				if (renderer != null)
 				{
+#if __MOBILE__
 					if (renderer.ViewController != null)
 					{
-#if __MOBILE__
+
 						var modalWrapper = renderer.ViewController.ParentViewController as ModalWrapper;
 						if (modalWrapper != null)
 							modalWrapper.Dispose();
-#endif
 					}
-
+#endif
 					renderer.NativeView.RemoveFromSuperview();
 					renderer.Dispose();
 				}
