@@ -53,6 +53,10 @@ namespace Xamarin.Forms.Exceptions
 			ResourceNotFound = 0064,
 			ConstructorsNotFound = 0065,
 			MultiEnumToSbyte = 0070,
+			MarkupExpEnd = 0080,
+			MarkupExpChar = 0081,
+			MarkupExpUnterminated = 0082,
+			MarkupExpEmptyVal = 0083,
 		}
 
 		public override string Prefix => "XF";
@@ -205,6 +209,18 @@ namespace Xamarin.Forms.Exceptions
 					break;
 				case Ecode.MultiEnumToSbyte:
 					unformattedMessage = Resources.MultiEnumToSbyte;
+					break;
+				case Ecode.MarkupExpEnd:
+					unformattedMessage = Resources.MarkupExpEnd;
+					break;
+				case Ecode.MarkupExpChar:
+					unformattedMessage = Resources.MarkupExpChar;
+					break;
+				case Ecode.MarkupExpUnterminated:
+					unformattedMessage = Resources.MarkupExpUnterminated;
+					break;
+				case Ecode.MarkupExpEmptyVal:
+					unformattedMessage = Resources.MarkupExpEmptyVal;
 					break;
 			}
 			return unformattedMessage;

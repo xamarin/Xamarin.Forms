@@ -92,6 +92,26 @@
         <target state="new">{0} is invalid.</target>
         <note />
       </trans-unit>
+      <trans-unit id="MarkupExpChar">
+        <source>Unexpected character following value string.</source>
+        <target state="new">Unexpected character following value string.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MarkupExpEmptyVal">
+        <source>Empty value string in markup expression.</source>
+        <target state="new">Empty value string in markup expression.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MarkupExpEnd">
+        <source>Unexpected end of markup expression.</source>
+        <target state="new">Unexpected end of markup expression.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MarkupExpUnterminated">
+        <source>Unterminated quoted string.</source>
+        <target state="new">Unterminated quoted string.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="MethodNotFound">
         <source>No method '{0}' with correct signature found on type '{1}'.</source>
         <target state="new">No method '{0}' with correct signature found on type '{1}'.</target>

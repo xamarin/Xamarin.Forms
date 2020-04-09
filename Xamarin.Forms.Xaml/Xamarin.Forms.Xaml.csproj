@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Exceptions\Xamarin.Forms.Exceptions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />

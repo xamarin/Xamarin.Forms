@@ -171,6 +171,18 @@
   <data name="Invalid" xml:space="preserve">
     <value>{0} is invalid.</value>
   </data>
+  <data name="MarkupExpChar" xml:space="preserve">
+    <value>Unexpected character following value string.</value>
+  </data>
+  <data name="MarkupExpEmptyVal" xml:space="preserve">
+    <value>Empty value string in markup expression.</value>
+  </data>
+  <data name="MarkupExpEnd" xml:space="preserve">
+    <value>Unexpected end of markup expression.</value>
+  </data>
+  <data name="MarkupExpUnterminated" xml:space="preserve">
+    <value>Unterminated quoted string.</value>
+  </data>
   <data name="MethodNotFound" xml:space="preserve">
     <value>No method '{0}' with correct signature found on type '{1}'.</value>
   </data>

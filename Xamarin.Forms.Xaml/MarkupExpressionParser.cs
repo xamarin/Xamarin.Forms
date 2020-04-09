@@ -33,6 +33,7 @@
 
 using System;
 using System.Text;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -54,7 +55,7 @@ namespace Xamarin.Forms.Xaml
 				return expression.Substring(2);
 
 			if (expression[expression.Length - 1] != '}')
-				throw new XamlParseException("Expression must end with '}'", serviceProvider);
+				throw new XFException(XFException.Ecode.Unexpected, serviceProvider.GetLineInfo(), "}", expression[expression.Length - 1].ToString());
 
 			int len;
 			string match;
@@ -62,7 +63,7 @@ namespace Xamarin.Forms.Xaml
 				return false;
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0)
-				throw new XamlParseException("Expression did not end in '}'", serviceProvider);
+				throw new XFException(XFException.Ecode.Unexpected, serviceProvider.GetLineInfo(), "}", string.Empty);
 
 			var parser = Activator.CreateInstance(GetType()) as IExpressionParser;
 			return parser.Parse(match, ref expression, serviceProvider);
@@ -152,13 +153,13 @@ namespace Xamarin.Forms.Xaml
 			var value = ParseExpression(ref remaining, serviceProvider);
 			remaining = remaining.TrimStart();
 			if (remaining.Length <= 0)
-				throw new XamlParseException("Unexpected end of markup expression", serviceProvider);
+				throw new XFException(XFException.Ecode.MarkupExpEnd, serviceProvider.GetLineInfo());
 			if (remaining[0] == ',')
 				last = false;
 			else if (remaining[0] == '}')
 				last = true;
 			else
-				throw new XamlParseException("Unexpected character following value string", serviceProvider);
+				throw new XFException(XFException.Ecode.MarkupExpChar, serviceProvider.GetLineInfo());
 
 			remaining = remaining.Substring(1);
 			return new Property { last = last, name = prop, strValue = value as string, value = value };
@@ -209,10 +210,10 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			if (inString && end == remaining.Length)
-				throw new XamlParseException("Unterminated quoted string", serviceProvider);
+				throw new XFException(XFException.Ecode.MarkupExpUnterminated, serviceProvider.GetLineInfo());
 
 			if (end == 0)
-				throw new XamlParseException("Empty value string in markup expression", serviceProvider);
+				throw new XFException(XFException.Ecode.MarkupExpEmptyVal, serviceProvider.GetLineInfo());
 
 			next = remaining[end];
 			remaining = remaining.Substring(end + 1);
