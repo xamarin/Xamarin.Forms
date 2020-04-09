@@ -10,6 +10,9 @@ namespace Xamarin.Forms
 			BorderColor = default(Color);
 		}
 
+		public static BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(Color), typeof(BasePopup));
+		public static BindableProperty SizeProperty = BindableProperty.Create(nameof(Size), typeof(Size), typeof(BasePopup));
+
 		/// <summary>
 		/// Gets or sets the <see cref="View"/> to render in the Popup.
 		/// </summary>
@@ -25,7 +28,11 @@ namespace Xamarin.Forms
 		/// This color sets the native background color of the <see cref="Popup"/>, which is
 		/// independent of any background color configured in the actual View.
 		/// </remarks>
-		public Color Color { get; set; }
+		public Color Color
+		{
+			get => (Color)GetValue(ColorProperty);
+			set => SetValue(ColorProperty, value);
+		}
 
 		/// <summary>
 		/// Gets or sets the <see cref="Color"/> of the Popup Border.
@@ -55,8 +62,11 @@ namespace Xamarin.Forms
 		/// will be required. This will allow the View to have a concept of <see cref="Size"/>
 		/// that varies from the actual <see cref="Size"/> of the <see cref="Popup" />
 		/// </remarks>
-		public Size Size { get; set; }
-
+		public Size Size
+		{
+			get => (Size)GetValue(SizeProperty);
+			set => SetValue(SizeProperty, value);
+		}
 
 		public bool IsLightDismissEnabled { get; set; }
 
