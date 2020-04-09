@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\..\Environment.Build.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
@@ -8,12 +9,13 @@
     <ProjectGuid>{22D43156-19FF-406A-8D4B-D4C151803032}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
-	  <RootNamespace>Xamarin.Forms.Platform.UnitTests.iOS</RootNamespace>
+	<RootNamespace>Xamarin.Forms.Platform.UnitTests.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>Xamarin.Forms.Platform.UnitTests.iOS</AssemblyName>
     <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     <ProvisioningType>automatic</ProvisioningType>
+	<DefineConstants Condition="'$(Use2017)' != 'true'">__XCODE11__;$(DefineConstants);</DefineConstants>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -174,6 +176,7 @@
     <Reference Include="Xamarin.iOS" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors" />
+	<Reference Include="netstandard" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit">
