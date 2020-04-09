@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.Android
 				childLayoutParams.Height = (int)_popup.Size.Height;
 				child.LayoutParameters = childLayoutParams;
 
-				int horizontalParams;
+				int horizontalParams = -1;
 				switch (_popup.View.HorizontalOptions.Alignment)
 				{
 					case LayoutAlignment.Center:
@@ -76,7 +76,8 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 				}
 
-				int verticalParams;
+
+				int verticalParams = -1;
 				switch (_popup.View.VerticalOptions.Alignment)
 				{
 					case LayoutAlignment.Center:
@@ -122,7 +123,9 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 					case LayoutAlignment.Center:
 					case LayoutAlignment.Fill:
-						containerLayoutParams.Gravity = GravityFlags.CenterVertical;
+						containerLayoutParams.Gravity = GravityFlags.FillVertical;
+						containerLayoutParams.Height = (int)_popup.Size.Height;
+						_container.MatchHeight = true;
 						break;
 					case LayoutAlignment.End:
 						containerLayoutParams.Gravity = GravityFlags.Bottom;
@@ -136,7 +139,9 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 					case LayoutAlignment.Center:
 					case LayoutAlignment.Fill:
-						containerLayoutParams.Gravity |= GravityFlags.CenterHorizontal;
+						containerLayoutParams.Gravity |= GravityFlags.FillHorizontal;
+						containerLayoutParams.Width = (int)_popup.Size.Width;
+						_container.MatchWidth = true;
 						break;
 					case LayoutAlignment.End:
 						containerLayoutParams.Gravity |= GravityFlags.Right;
@@ -169,6 +174,40 @@ namespace Xamarin.Forms.Platform.Android
 				_dialog.Window.Attributes.X = locationOnScreen[0] + (anchorView.Width / 2) - (_dialog.Window.DecorView.MeasuredWidth / 2);
 				_dialog.Window.Attributes.Y = locationOnScreen[1] + (anchorView.Height / 2) - (_dialog.Window.DecorView.MeasuredHeight / 2);
 			}
+			else
+				SetDialogPosition();
+		}
+
+		void SetDialogPosition()
+		{
+			GravityFlags gravityFlags = GravityFlags.Center;
+			switch (_popup.VerticalOptions.Alignment)
+			{
+				case LayoutAlignment.Start:
+					gravityFlags = GravityFlags.Top;
+					break;
+				case LayoutAlignment.End:
+					gravityFlags = GravityFlags.Bottom;
+					break;
+				default:
+					gravityFlags = GravityFlags.CenterVertical;
+					break;
+			}
+
+			switch (_popup.HorizontalOptions.Alignment)
+			{
+				case LayoutAlignment.Start:
+					gravityFlags |= GravityFlags.Left;
+					break;
+				case LayoutAlignment.End:
+					gravityFlags |= GravityFlags.Right;
+					break;
+				default:
+					gravityFlags |= GravityFlags.CenterHorizontal;
+					break;
+			}
+
+			_dialog.Window.SetGravity(gravityFlags);
 		}
 
 		private void OnDismissed(object sender, PopupDismissedEventArgs e)
@@ -178,7 +217,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void OnCancel(IDialogInterface dialog)
 		{
-			if (Element is BasePopup popup)
+			if (Element is Popup popup)
 			{
 				popup.LightDismiss();
 			}

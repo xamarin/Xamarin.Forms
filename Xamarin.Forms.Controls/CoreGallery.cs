@@ -311,6 +311,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
 				new GalleryPageFactory(() => new PopoverGallery(), "Popover Gallery"),
+				new GalleryPageFactory(() => new CustomPopoverGalleryPage(), "Custom Popover Galery"),
 				new GalleryPageFactory(() => new AlertGallery(), "DisplayAlert Gallery"),
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),
 				new GalleryPageFactory(() => new NativeBindingGalleryPage(), "Native Binding Controls Gallery"),

@@ -541,7 +541,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var anchorNativeView = popup.Anchor == null ? currenPageRenderer.NativeView : GetRenderer(popup.Anchor).NativeView;
 
 			wrapper.ModalInPopover = !popup.IsLightDismissEnabled;
-			wrapper.ModalPresentationStyle = UIModalPresentationStyle.Popover;
+			wrapper.ModalPresentationStyle = UIKit.UIModalPresentationStyle.Popover;
 
 			presentingViewController.PresentViewController(wrapper, true, null);
 

@@ -1,5 +1,6 @@
 using CoreGraphics;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -36,7 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var view = popup.View;
 
 			var contentPage = new ContentPage { Content = view };
-			
+
 			_renderer = Platform.CreateRenderer(contentPage);
 			Platform.SetRenderer(contentPage, _renderer);
 			contentPage.Parent = Application.Current.MainPage;
@@ -46,8 +47,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void InitializeViewController(Popup<T> popup)
 		{
-			Title = popup.Title;
-
 			View.BackgroundColor = UIColor.White;
 			View.AddSubview(_renderer.ViewController.View);
 			AddChildViewController(_renderer.ViewController);
@@ -73,6 +72,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			View.BackgroundColor = UIColor.White;
 			base.ViewWillAppear(animated);
+		}
+
+		private class PopoverDelegate : UIPopoverPresentationControllerDelegate
+		{
+			public override UIModalPresentationStyle GetAdaptivePresentationStyle(UIPresentationController forPresentationController)
+			{
+				return UIModalPresentationStyle.None;
+			}
 		}
 	}
 }

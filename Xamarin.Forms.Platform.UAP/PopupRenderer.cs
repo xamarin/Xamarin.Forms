@@ -2,8 +2,8 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using XamlStyle = Windows.UI.Xaml.Style;
 using UWPThickness = Windows.UI.Xaml.Thickness;
+using XamlStyle = Windows.UI.Xaml.Style;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Platform.UWP
 			flyoutStyle.Setters.Add(new Windows.UI.Xaml.Setter(FlyoutPresenter.MinWidthProperty, currentSize.Width + (_defaultBorderThickness * 2)));
 			flyoutStyle.Setters.Add(new Windows.UI.Xaml.Setter(FlyoutPresenter.BackgroundProperty, newPopup.Color.ToWindowsColor()));
 			flyoutStyle.Setters.Add(new Windows.UI.Xaml.Setter(FlyoutPresenter.PaddingProperty, 0));
-			flyoutStyle.Setters.Add(new Windows.UI.Xaml.Setter(FlyoutPresenter.BorderThicknessProperty, new UWPThickness(_defaultBorderThickness) ));
+			flyoutStyle.Setters.Add(new Windows.UI.Xaml.Setter(FlyoutPresenter.BorderThicknessProperty, new UWPThickness(_defaultBorderThickness)));
 
 			_flyout.FlyoutPresenterStyle = flyoutStyle;
 			_flyout.Content = content;
@@ -99,12 +99,53 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				FlyoutBase.SetAttachedFlyout(Platform.Current.NavigationStack[0].ToFrameworkElement(), _flyout);
-				FlyoutBase.ShowAttachedFlyout(Platform.Current.NavigationStack[0].ToFrameworkElement());
+				var frameworkElement = Platform.Current.NavigationStack[0].ToFrameworkElement();
+				SetDialogPosition(newPopup.VerticalOptions, newPopup.HorizontalOptions);
+				FlyoutBase.SetAttachedFlyout(frameworkElement, _flyout);
+				FlyoutBase.ShowAttachedFlyout(frameworkElement);
 			}
 
 			newPopup.Dismissed += OnDismissed;
 			OnElementChanged(new ElementChangedEventArgs<BasePopup>(oldPopup, newPopup));
+		}
+
+		void SetDialogPosition(LayoutOptions verticalOptions, LayoutOptions horizontalOptions)
+		{
+			_flyout.Placement = FlyoutPlacementMode.Full;
+
+			switch (verticalOptions.Alignment)
+			{
+				case LayoutAlignment.Start:
+					_flyout.Placement = FlyoutPlacementMode.Top;
+					break;
+				case LayoutAlignment.End:
+					_flyout.Placement = FlyoutPlacementMode.Bottom;
+					break;
+			}
+
+			switch (horizontalOptions.Alignment)
+			{
+#if !UWP_14393
+				case LayoutAlignment.Start when _flyout.Placement == FlyoutPlacementMode.Top:
+					_flyout.Placement = FlyoutPlacementMode.TopEdgeAlignedLeft;
+					break;
+				case LayoutAlignment.End when _flyout.Placement == FlyoutPlacementMode.Top:
+					_flyout.Placement = FlyoutPlacementMode.TopEdgeAlignedRight;
+					break;
+				case LayoutAlignment.Start when _flyout.Placement == FlyoutPlacementMode.Bottom:
+					_flyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft;
+					break;
+				case LayoutAlignment.End when _flyout.Placement == FlyoutPlacementMode.Bottom:
+					_flyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedRight;
+					break;
+#endif
+				case LayoutAlignment.Start:
+					_flyout.Placement = FlyoutPlacementMode.Left;
+					break;
+				case LayoutAlignment.End:
+					_flyout.Placement = FlyoutPlacementMode.Right;
+					break;
+			}
 		}
 
 		private void OnDismissed(object sender, PopupDismissedEventArgs e)

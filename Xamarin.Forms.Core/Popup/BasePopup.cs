@@ -8,6 +8,8 @@ namespace Xamarin.Forms
 		{
 			Color = Color.White;
 			BorderColor = default(Color);
+			VerticalOptions = LayoutOptions.CenterAndExpand;
+			HorizontalOptions = LayoutOptions.CenterAndExpand;
 		}
 
 		public static BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(Color), typeof(BasePopup));

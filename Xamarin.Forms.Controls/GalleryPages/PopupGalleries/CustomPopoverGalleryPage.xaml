@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Title="Custom Popover Control"
+             x:Class="Xamarin.Forms.Controls.CustomPopoverGalleryPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout>
+                <Label Text="Dialog Width:" />
+                <Slider x:Name="widthSlider" Minimum="0" Maximum="1000" Value="600" />
+            </StackLayout>
+            <StackLayout>
+                <Label Text="Dialog Height:" />
+                <Slider x:Name="heightSlider" Minimum="0" Maximum="1500" Value="700"/>
+            </StackLayout>
+            <StackLayout>
+                <Label Text="Position" />
+                <Picker x:Name="position">
+                    <Picker.Items>
+                        <x:String>Center</x:String>
+                        <x:String>TopLeft</x:String>
+                        <x:String>Top</x:String>
+                        <x:String>TopRight</x:String>
+                        <x:String>Right</x:String>
+                        <x:String>BottomRight</x:String>
+                        <x:String>Bottom</x:String>
+                        <x:String>BottomLeft</x:String>
+                        <x:String>Left</x:String>
+                    </Picker.Items>
+                </Picker>
+            </StackLayout>
+            <Button Text="Show Dialog"
+                    VerticalOptions="EndAndExpand" 
+                    Clicked="ShowDialog_Clicked"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
