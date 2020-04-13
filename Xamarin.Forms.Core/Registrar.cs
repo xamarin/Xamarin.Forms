@@ -296,7 +296,7 @@ namespace Xamarin.Forms.Internals
 			return true;
 		}
 
-public static void RegisterStylesheets(Assembly assembly = null)
+		public static void RegisterStylesheets(Assembly assembly = null)
 		{
 			assembly = assembly ?? typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
 
