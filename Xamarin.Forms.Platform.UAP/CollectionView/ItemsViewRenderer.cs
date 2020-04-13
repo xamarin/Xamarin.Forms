@@ -65,6 +65,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
+			else if (changedProperty.Is(StructuredItemsView.ItemsLayoutProperty))
+			{
+				UpdateLayoutManager();
+			}
 			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty,
 				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
@@ -157,6 +161,27 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateEmptyViewVisibility();
 		}
 
+		protected virtual void UpdateLayoutManager()
+		{
+			if (Element == null || ListViewBase == null)
+			{
+				return;
+			}
+ 
+
+			ListViewBase = SelectListViewBase();
+			ListViewBase.IsSynchronizedWithCurrentItem = false;
+
+			SetNativeControl(ListViewBase);
+
+			UpdateItemTemplate();
+			UpdateItemsSource();
+			UpdateVerticalScrollBarVisibility();
+			UpdateHorizontalScrollBarVisibility();
+			UpdateEmptyView();
+
+		}
+
 		protected virtual void UpdateItemTemplate()
 		{
 			if (Element == null || ListViewBase == null)
@@ -188,6 +213,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				FindScrollViewer(ListViewBase);
 
+				//newElement.PropertyChanged += LayoutPropertyChanged;
 				Layout.PropertyChanged += LayoutPropertyChanged;
 
 				SetNativeControl(ListViewBase);

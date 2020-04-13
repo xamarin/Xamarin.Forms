@@ -186,6 +186,25 @@ namespace Xamarin.Forms.Platform.UWP
 						break;
 				}
 			}
+			else if (property.Is(StructuredItemsView.ItemsLayoutProperty))
+			{
+				if (ListViewBase is FormsGridView formsGridView)
+				{
+					formsGridView.ItemContainerStyle = GetItemContainerStyle((GridItemsLayout)Layout);
+				}
+				else
+				{
+					switch (ListViewBase)
+					{
+						case FormsListView formsListView:
+							formsListView.ItemContainerStyle = GetVerticalItemContainerStyle((LinearItemsLayout)Layout);
+							break;
+						case WListView listView:
+							listView.ItemContainerStyle = GetHorizontalItemContainerStyle((LinearItemsLayout)Layout);
+							break;
+					}
+				}
+			}
 		}
 
 		static ListViewBase CreateGridView(GridItemsLayout gridItemsLayout)
