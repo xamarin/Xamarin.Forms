@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platform.Android
 				_webChromeClient = GetFormsWebChromeClient();
 				_webChromeClient.SetContext(Context);
 				webView.SetWebChromeClient(_webChromeClient);
-				webView.Settings.UserAgentString = Element.setUserAgentString;
+				webView.Settings.UserAgentString = Element.UserAgentString;
 
 				if (Context.IsDesignerContext())
 				{

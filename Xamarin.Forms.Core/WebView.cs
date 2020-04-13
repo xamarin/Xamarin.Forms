@@ -40,7 +40,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty CookiesProperty = BindableProperty.Create(nameof(Cookies), typeof(CookieContainer), typeof(WebView), null);
 
-		public static readonly BindableProperty UserAgentProperty = BindableProperty.Create(nameof(setUserAgentString), typeof(string), typeof(WebView), default(string));
+		public static readonly BindableProperty UserAgentProperty = BindableProperty.Create(nameof(UserAgentString), typeof(string), typeof(WebView), default(string));
 
 		readonly Lazy<PlatformConfigurationRegistry<WebView>> _platformConfigurationRegistry;
 
@@ -79,7 +79,7 @@ namespace Xamarin.Forms
 			set { SetValue(CookiesProperty, value); }
 		}
 
-		public string setUserAgentString
+		public string UserAgentString
 		{
 			get { return (string)GetValue(UserAgentProperty); }
 			set { SetValue(UserAgentProperty, value); }

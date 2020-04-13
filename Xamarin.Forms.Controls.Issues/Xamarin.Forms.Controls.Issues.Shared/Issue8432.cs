@@ -19,11 +19,11 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			string UserAgentString = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko XAMARIN Rocks";
+			string UAString = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko XAMARIN Rocks";
 
 			Label header = new Label
 			{
-				Text = $"A Webview of www.WhatIsMyBrowser.com and the UserAgent - {UserAgentString} ",
+				Text = $"A Webview of www.WhatIsMyBrowser.com and the UserAgent - {UAString} ",
 				FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
 				HorizontalOptions = LayoutOptions.Center
 			};
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Source = "https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending",
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				VerticalOptions = LayoutOptions.FillAndExpand,
-				setUserAgentString = UserAgentString
+				UserAgentString = UAString
 			};
 
 			Content = new StackLayout

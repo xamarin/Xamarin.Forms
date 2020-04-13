@@ -240,6 +240,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (uri == null)
 				return false;
+				
+			CustomUserAgent = WebView.UserAgentString;
 
 			var myCookieJar = WebView.Cookies;
 			if (myCookieJar == null)
