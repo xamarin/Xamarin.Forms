@@ -47,6 +47,19 @@ namespace Xamarin.Forms.ControlGallery.Android.Tests
 			return viewRenderer.Control;
 		}
 
+		protected global::Android.Widget.Button GetNativeControl(Button button)
+		{
+			var renderer = GetRenderer(button);
+
+			if (renderer is Xamarin.Forms.Platform.Android.FastRenderers.ButtonRenderer fastRenderer)
+			{
+				return fastRenderer;
+			}
+
+			var viewRenderer = renderer.View as ViewRenderer<Button, global::Android.Widget.Button>;
+			return viewRenderer.Control;
+		}
+
 		protected FormsEditText GetNativeControl(Entry entry)
 		{
 			var renderer = GetRenderer(entry);
