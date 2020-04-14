@@ -1,7 +1,6 @@
 parameters:
   name: ''            # in the form type_platform_host
   targetFolder: ''    # the bootstrapper target
-  dependsOn: []       # the dependiencies
   preBuildSteps: []   # any steps to run before the build
   postBuildSteps: []  # any additional steps to run after the build
   slnPath : 'Xamarin.Forms.sln'

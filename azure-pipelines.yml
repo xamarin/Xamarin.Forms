@@ -115,7 +115,6 @@ stages:
           demands: 
             - Agent.OS -equals Windows_NT
             - msbuild
-        dependsOn: ${{ parameters.dependsOn }}
         strategy:
           matrix:
             debug:
