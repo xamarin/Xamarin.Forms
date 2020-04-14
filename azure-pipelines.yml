@@ -168,25 +168,27 @@ stages:
             buildConfiguration: $(AndroidBuildConfiguration)
             provisionatorPath : 'build/provisioning/provisioning.csx'
     - job: android_preappcompact
-      - template: build/steps/build-android.yml
-        parameters:
-          name: android_preappcompact
-          displayName: Build Android [Pre-AppCompat]
-          vmImage: $(macOSXVmImage)
-          targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
-          androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="PREAPPCOMPAT" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
-          buildConfiguration: $(AndroidBuildConfiguration)
-          provisionatorPath : 'build/provisioning/provisioning.csx'
+      steps:
+        - template: build/steps/build-android.yml
+          parameters:
+            name: android_preappcompact
+            displayName: Build Android [Pre-AppCompat]
+            vmImage: $(macOSXVmImage)
+            targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
+            androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="PREAPPCOMPAT" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
+            buildConfiguration: $(AndroidBuildConfiguration)
+            provisionatorPath : 'build/provisioning/provisioning.csx'
     - job: android_fast
-      - template: build/steps/build-android.yml
-        parameters:
-          name: android_fast
-          displayName: Build Android [Fast Renderers]
-          vmImage: $(macOSXVmImage)
-          targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
-          androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="FAST" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
-          buildConfiguration: $(AndroidBuildConfiguration)
-          provisionatorPath : 'build/provisioning/provisioning.csx'
+      steps:
+        - template: build/steps/build-android.yml
+          parameters:
+            name: android_fast
+            displayName: Build Android [Fast Renderers]
+            vmImage: $(macOSXVmImage)
+            targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
+            androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="FAST" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
+            buildConfiguration: $(AndroidBuildConfiguration)
+            provisionatorPath : 'build/provisioning/provisioning.csx'
 
 
   - stage: build_osx
