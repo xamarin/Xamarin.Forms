@@ -12,10 +12,9 @@ jobs:
     pool:
       vmImage: ${{ parameters.vmImage }}
       demands:
-        - sh
-        - msbuild
-        - Xamarin.iOS
         - Agent.OS -equals Darwin
+        - sh
+        - Xamarin.iOS
     variables:
       provisionator.osxPath : 'build/provisioning/provisioning.csx'
       buildConfiguration: $(DefaultBuildConfiguration)

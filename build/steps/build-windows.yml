@@ -27,9 +27,8 @@ jobs:
     pool:
       name: ${{ parameters.vmPool }}
       vmImage: ${{ parameters.vmImage }}
-      ${{ if eq(parameters.vmPool, 'Azure Pipelines') }}:
-        demands: 
-          - Agent.OS -equals Windows_NT
+      demands: 
+        msbuild
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
       matrix:
