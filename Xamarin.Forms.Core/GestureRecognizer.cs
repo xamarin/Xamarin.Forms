@@ -6,79 +6,35 @@ namespace Xamarin.Forms
 {
 	public class GestureRecognizer : Element, IGestureRecognizer
 	{
-		static readonly BindablePropertyKey TouchStatePropertyKey =
-			BindableProperty.CreateReadOnly(nameof(TouchState), typeof(TouchState), typeof(GestureRecognizer), TouchState.Default);
-
-		static readonly BindablePropertyKey TouchCountPropertyKey =
-			BindableProperty.CreateReadOnly(nameof(TouchCount), typeof(int), typeof(GestureRecognizer), 0);
-
-		static readonly BindablePropertyKey TouchesPropertyKey =
-			BindableProperty.CreateReadOnly(nameof(Touches), typeof(IReadOnlyList<Touch>), typeof(GestureRecognizer), new List<Touch>());
-
-		public static readonly BindableProperty TouchStateProperty = TouchStatePropertyKey.BindableProperty;
-
-		public static readonly BindableProperty TouchCountProperty = TouchCountPropertyKey.BindableProperty;
-
-		public static readonly BindableProperty TouchesProperty = TouchesPropertyKey.BindableProperty;
-
 		readonly Dictionary<int, Touch> _touchesDictionary = new Dictionary<int, Touch>();
-
-		int _touchCount;
-		List<Touch> _touches;
-		TouchState _touchState;
 
 		internal GestureRecognizer()
 		{
 		}
 
-		public int TouchCount
+		public IReadOnlyList<Touch> Touches { get; private set; } = new List<Touch>();
+
+		public event EventHandler<TouchEventArgs> TouchUpdated;
+
+		public virtual void OnTouch(View sender, GestureEventArgs eventArgs)
 		{
-			get => _touchCount;
+			// empty
 		}
 
-		public IReadOnlyList<Touch> Touches
-		{
-			get => _touches;
-		}
-
-		public TouchState TouchState
-		{
-			get => _touchState;
-		}
-
-		protected TouchState PreviousState { get; set; }
-
-		public virtual void OnTouch(View sender, TouchEventArgs eventArgs)
-		{
-		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendTouch(View sender, TouchEventArgs eventArgs)
 		{
 			CollectTouch(eventArgs, sender);
 
-			PreviousState = TouchState;
-			_touchState = eventArgs.TouchState;
-			_touchCount = _touches.Count;
-
-			OnTouch(sender, eventArgs);
+			//var ev = new GestureEventArgs(0, TouchState.Cancel,new List<RawTouchPoint>());
+			//OnTouch(sender, ev);
 			TouchUpdated?.Invoke(this, eventArgs);
-
-			OnPropertyChanged(nameof(Touches));
-			OnPropertyChanged(nameof(TouchCount));
-			OnPropertyChanged(nameof(TouchState));
-
-			if (TouchCount == 0)
-			{
-				_touchState = TouchState.Default;
-			}
 		}
-
-		public event EventHandler<TouchEventArgs> TouchUpdated;
 
 		void CollectTouch(TouchEventArgs ev, View view)
 		{
-			foreach (TouchPoint touchPoint in ev.TouchPoints)
+			foreach (RawTouchPoint touchPoint in ev.TouchPoints)
 			{
 				if (touchPoint.TouchState.IsTouching())
 				{
@@ -86,7 +42,7 @@ namespace Xamarin.Forms
 					{
 						touch.TouchPoints.Add(touchPoint);
 						var points = new List<Point>();
-						foreach (TouchPoint point in touch.TouchPoints)
+						foreach (RawTouchPoint point in touch.TouchPoints)
 						{
 							if (point.TouchState.IsTouching())
 							{
@@ -94,7 +50,7 @@ namespace Xamarin.Forms
 							}
 						}
 
-						touch.Gesture = GestureDetector.DetectGesture(points.ToArray());
+						touch.Gesture = GestureDetector.DetectGesture(points);
 					}
 					else
 					{
@@ -107,22 +63,22 @@ namespace Xamarin.Forms
 				}
 			}
 
-			_touches = new List<Touch>(_touchesDictionary.Values);
+			Touches = new List<Touch>(_touchesDictionary.Values);
 		}
 
 		internal static class GestureDetector
 		{
 			const double GestureThreshold = 6.0;
 
-			internal static GestureDirection DetectGesture(Point[] points)
+			internal static GestureDirection DetectGesture(List<Point> points)
 			{
-				if (points.Length == 0)
+				if (points.Count == 0)
 				{
 					return GestureDirection.None;
 				}
 
 				Point first = points[0];
-				Point last = points[points.Length - 1];
+				Point last = points[points.Count - 1];
 
 				var xDiff = first.X - last.X;
 				var yDiff = first.Y - last.Y;
@@ -181,13 +137,13 @@ namespace Xamarin.Forms
 				return gesture;
 			}
 
-			static GestureDirection GetDirection(Point[] points, bool up, bool down, bool right, bool left)
+			static GestureDirection GetDirection(List<Point> points, bool up, bool down, bool right, bool left)
 			{
 				var gestureDirection = GestureDirection.None;
 				var pointsAboveDiagonal = 0;
 				var pointsBelowDiagonal = 0;
 				Point first = points[0];
-				Point last = points[points.Length - 1];
+				Point last = points[points.Count - 1];
 
 				foreach (Point point in points)
 				{
@@ -227,6 +183,25 @@ namespace Xamarin.Forms
 
 				return gestureDirection;
 			}
+		}
+
+		public struct RawTouchPoint
+		{
+			public RawTouchPoint(int touchId, Point point, TouchState state, bool isInOriginalView)
+			{
+				TouchId = touchId;
+				Point = point;
+				TouchState = state;
+				IsInOriginalView = isInOriginalView;
+			}
+
+			public Point Point { get; }
+
+			public bool IsInOriginalView { get; }
+
+			public int TouchId { get; }
+
+			public TouchState TouchState { get; }
 		}
 	}
 }

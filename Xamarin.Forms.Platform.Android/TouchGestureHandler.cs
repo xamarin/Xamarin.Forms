@@ -54,16 +54,16 @@ namespace Xamarin.Forms.Platform.Android
 			return new TouchEventArgs(motionEvent.PointerCount, GetTouchState(motionEvent), GetTouchPoints(motionEvent));
 		}
 
-		IReadOnlyList<TouchPoint> GetTouchPoints(MotionEvent me)
+		IReadOnlyList<GestureRecognizer.RawTouchPoint> GetTouchPoints(MotionEvent me)
 		{
-			var points = new List<TouchPoint>(me.PointerCount);
+			var points = new List<GestureRecognizer.RawTouchPoint>(me.PointerCount);
 			var touchState = GetTouchState(me);
 			for (var i = 0; i < me.PointerCount; i++)
 			{
 				var point = new Point(_fromPixels(me.GetX(i)), _fromPixels(me.GetY(i)));
 				View view = GetView();
 				var isInView = view?.Bounds.Contains(point) ?? false;
-				points.Add(new TouchPoint(me.GetPointerId(i), point, touchState, isInView));
+				points.Add(new GestureRecognizer.RawTouchPoint(me.GetPointerId(i), point, touchState, isInView));
 			}
 
 			return points.AsReadOnly();

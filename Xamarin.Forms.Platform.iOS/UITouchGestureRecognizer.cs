@@ -58,16 +58,16 @@ namespace Xamarin.Forms.Platform.iOS
 			return new TouchEventArgs((int)touches.Count, touchState, GetTouchPoints(touches, touchState));
 		}
 
-		IReadOnlyList<TouchPoint> GetTouchPoints(NSSet touches, TouchState touchState)
+		IReadOnlyList<GestureRecognizer.RawTouchPoint> GetTouchPoints(NSSet touches, TouchState touchState)
 		{
-			var points = new List<TouchPoint>((int)touches.Count);
+			var points = new List<GestureRecognizer.RawTouchPoint>((int)touches.Count);
 
 			foreach (UITouch touch in touches)
 			{
 				View view = _getView();
 				Point point = touch.LocationInView(touch.View).ToPoint();
 				var isInView = view.Bounds.Contains(point);
-				points.Add(new TouchPoint(touches.IndexOf(touch), point, GetTouchState(touch.Phase), isInView));
+				points.Add(new GestureRecognizer.RawTouchPoint(touches.IndexOf(touch), point, GetTouchState(touch.Phase), isInView));
 			}
 
 			return points.AsReadOnly();

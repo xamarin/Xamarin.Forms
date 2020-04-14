@@ -687,9 +687,9 @@ namespace Xamarin.Forms.Platform.UWP
 			var touchGestures = view.GestureRecognizers.GetGesturesFor<GestureRecognizer>();
 			foreach (var recognizer in touchGestures)
 			{
-				recognizer.SendTouch(view, new TouchEventArgs(_fingers.Count, state, new List<TouchPoint>
+				recognizer.SendTouch(view, new TouchEventArgs(_fingers.Count, state, new List<GestureRecognizer.RawTouchPoint>
 				{
-					new TouchPoint((int)pointId, point, state, view.Bounds.Contains(point))
+					new GestureRecognizer.RawTouchPoint((int)pointId, point, state, view.Bounds.Contains(point))
 				}));
 			}
 		}

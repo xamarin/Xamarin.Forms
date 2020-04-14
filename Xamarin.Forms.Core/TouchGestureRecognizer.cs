@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
@@ -6,6 +7,120 @@ namespace Xamarin.Forms
 {
 	public class TouchGestureRecognizer : GestureRecognizer
 	{
+		/*
+		static readonly BindablePropertyKey TouchPointsPropertyKey =
+			BindableProperty.CreateReadOnly(nameof(TouchPoints), typeof(IReadOnlyList<TouchPoint>), typeof(TouchGestureRecognizer),new List<TouchPoint>());
+
+		public static readonly BindableProperty TouchPointsProperty = TouchPointsPropertyKey.BindableProperty;
+
+		static readonly BindablePropertyKey TouchCountPropertyKey =
+			BindableProperty.CreateReadOnly(nameof(TouchCount), typeof(int), typeof(TouchGestureRecognizer), 0);
+
+		public static readonly BindableProperty TouchCountProperty = TouchCountPropertyKey.BindableProperty;
+
+
+		public IReadOnlyList<TouchPoint> TouchPoints
+		{
+			get { return (IReadOnlyList<TouchPoint>)GetValue(TouchPointsProperty); }
+			internal set { SetValue(TouchPointsPropertyKey, value); }
+		}
+
+		public int TouchCount
+		{
+			get { return (int)GetValue(TouchCountProperty); }
+			internal set { SetValue(TouchCountPropertyKey, value); }
+		}
+
+
+		public override void OnTouch(View sender, GestureEventArg eventArgs)
+		{
+			TouchCount = Touches.Count;
+
+			if (sender.HasVisualStateGroups())
+			{
+				VisualStateManager.GoToState(sender, eventArgs.TouchState.ToString());
+			}
+
+			TouchPoints = eventArgs.TouchPoints;
+
+			switch (eventArgs.TouchState)
+			{
+				case TouchState.Press:
+					Press?.Invoke(this, eventArgs);
+					PressCommand.Run(PressCommandProperty);
+					break;
+				case TouchState.Release:
+					Release?.Invoke(this, eventArgs);
+					ReleaseCommand.Run(ReleaseCommandProperty);
+					break;
+				case TouchState.Move:
+					Move?.Invoke(this, eventArgs);
+					MoveCommand.Run(MoveCommandProperty);
+					break;
+				case TouchState.Cancel:
+					Cancel?.Invoke(this, eventArgs);
+					CancelCommand.Run(CancelCommandProperty);
+					break;
+				case TouchState.Fail:
+					Fail?.Invoke(this, eventArgs);
+					FailCommand.Run(FailCommandProperty);
+					break;
+				case TouchState.Change:
+					Change?.Invoke(this, eventArgs);
+					ChangeCommand.Run(ChangeCommandProperty);
+					break;
+				case TouchState.Enter:
+					Enter?.Invoke(this, eventArgs);
+					EnterCommand.Run(EnterCommandProperty);
+					break;
+				case TouchState.Exit:
+					Exit?.Invoke(this, eventArgs);
+					ExitCommand.Run(ExitCommandProperty);
+					break;
+				case TouchState.Hover:
+					Hover?.Invoke(this, eventArgs);
+					HoverCommand.Run(HoverCommandProperty);
+					break;
+			}
+
+
+			if (TouchCount > 0 && eventArgs.TouchState == TouchState.Move)
+			{
+				if (_previousTouchIsInOriginalView != eventArgs.IsInOriginalView)
+				{
+					if (!_previousTouchIsInOriginalView && eventArgs.IsInOriginalView)
+					{
+						if (sender.HasVisualStateGroups())
+						{
+							VisualStateManager.GoToState(sender, TouchState.Enter.ToString());
+						}
+						Enter?.Invoke(this, eventArgs);
+						EnterCommand.Run(EnterCommandProperty);
+					}
+					else
+					{
+						if (sender.HasVisualStateGroups())
+						{
+							VisualStateManager.GoToState(sender, TouchState.Exit.ToString());
+						}
+						Exit?.Invoke(this, eventArgs);
+						ExitCommand.Run(ExitCommandProperty);
+					}
+				}
+			}
+
+			_previousTouchIsInOriginalView = eventArgs.IsInOriginalView;
+
+			if (sender.HasVisualStateGroups() && TouchCount == 0 && eventArgs.TouchState.IsFinishedTouch())
+			{
+				VisualStateManager.GoToState(sender, TouchState.Default.ToString());
+			}
+		}
+
+		*/
+
+
+		/*
 		public static readonly BindableProperty PressCommandProperty =
 			BindableProperty.Create(nameof(PressCommand), typeof(ICommand), typeof(TouchGestureRecognizer));
 
@@ -260,5 +375,6 @@ namespace Xamarin.Forms
 				VisualStateManager.GoToState(sender, TouchState.Default.ToString());
 			}
 		}
+		*/
 	}
 }
