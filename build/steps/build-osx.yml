@@ -13,7 +13,6 @@ jobs:
       name: ${{ parameters.vmPool }}
       vmImage: ${{ parameters.vmImage }}
       demands:
-        - Agent.OS -equals Darwin
         - sh
         - Xamarin.iOS
     variables:

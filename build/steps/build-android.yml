@@ -28,7 +28,8 @@ jobs:
     pool:
       vmImage: ${{ parameters.vmImage }}
       demands: 
-          - Agent.OS -equals Darwin
+        - sh
+        - Xamarin.Android
     dependsOn: ${{ parameters.dependsOn }}
     steps:
       - checkout: self
