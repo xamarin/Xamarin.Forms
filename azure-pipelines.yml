@@ -161,29 +161,48 @@ stages:
     dependsOn: []
     jobs:
     - job: osx
+      workspace:
+        clean: all
+      displayName: OSX Phase
+      pool:
+        name:  $(osx2019VmPool)
+        vmImage: $(macOSXVmImage)
+        demands:
+          - sh
+          - Xamarin.iOS
+      variables:
+        provisionator.osxPath : 'build/provisioning/provisioning.csx'
+        buildConfiguration: $(DefaultBuildConfiguration)
+        slnPath: $(SolutionFile)
+        iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
+        iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
+        buildForVS2017: 'false'
       steps:
         - template: build/steps/build-osx.yml
-          parameters:
-            vmPool: $(osx2019VmPool)
-            vmImage: $(macOSXVmImage)
-            name: osx
-            buildForVS2017: 'false'
-            displayName: 'OSX Phase'
-
 
   - stage: build_osx_2017
     displayName: Build OSX 2017
     dependsOn: []
     jobs:
-    - job: osx
+    - job: osx_2017
+      workspace:
+        clean: all
+      displayName: OSX Phase 201
+      pool:
+        name:  $(osx2017VmPool)
+        vmImage: 'macOS-10.14'
+        demands:
+          - sh
+          - Xamarin.iOS
+      variables:
+        provisionator.osxPath : 'build/provisioning/provisioning.csx'
+        buildConfiguration: $(DefaultBuildConfiguration)
+        slnPath: $(SolutionFile)
+        iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
+        iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
+        buildForVS2017: 'true'
       steps:
         - template: build/steps/build-osx.yml
-          parameters:
-            vmPool: $(osx2017VmPool)
-            vmImage: 'macOS-10.14'
-            name: osx_2017
-            buildForVS2017: 'true'
-            displayName: 'OSX Phase 2017'
 
   # only sign using the private server
   - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
