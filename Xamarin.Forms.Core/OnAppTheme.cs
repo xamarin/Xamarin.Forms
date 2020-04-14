@@ -45,13 +45,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private T _actualValue;
-		public T ActualValue
+		private T _value;
+		public T Value
 		{
-			get => _actualValue;
+			get => _value;
 			private set
 			{
-				_actualValue = value;
+				_value = value;
 				OnPropertyChanged();
 			}
 		}
@@ -63,10 +63,10 @@ namespace Xamarin.Forms
 			{
 				default:
 				case OSAppTheme.Light:
-					appThemeColor.ActualValue = appThemeColor.IsSet(LightProperty) ? appThemeColor.Light : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(T));
+					appThemeColor.Value = appThemeColor.IsSet(LightProperty) ? appThemeColor.Light : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(T));
 					break;
 				case OSAppTheme.Dark:
-					appThemeColor.ActualValue = appThemeColor.IsSet(DarkProperty) ? appThemeColor.Dark : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(T));
+					appThemeColor.Value = appThemeColor.IsSet(DarkProperty) ? appThemeColor.Dark : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(T));
 					break;
 			}
 		}
