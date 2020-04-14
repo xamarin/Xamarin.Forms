@@ -78,7 +78,7 @@ if(buildForVS2017)
     macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.mac-5.4.0.64.pkg";
 
 }
-else if(releaseChannelArg == "Stable")
+else if(releaseChannel == ReleaseChannel.Stable)
 {
     if(IsXcodeVersionOver("11.4"))
     {
