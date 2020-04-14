@@ -292,6 +292,13 @@ Task("BuildForNuget")
     }
 });
 
+Task("BuildTasks")
+    .Description("Build Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj")
+    .Does(() =>
+{
+    MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
+});
+
 Task("Build")
     .Description("Builds all necessary projects to run Control Gallery")
     .IsDependentOn("Restore")

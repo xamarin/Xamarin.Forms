@@ -60,10 +60,13 @@ jobs:
       inputs:
         restoreSolution: $(slnPath)
 
-    - task: MSBuild@1
+    - task: Bash@3
       displayName: 'Build solution Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj'
+      condition: or(eq(variables['provisioningCake'], 'true'), eq(variables['buildForVS2017'], 'true'))
       inputs:
-        solution: Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj
+        targetType: 'filePath'
+        filePath: 'build.sh'
+        arguments: --target BuildTasks
 
     - task: InstallAppleCertificate@2
       displayName: 'Install an Apple certificate'
