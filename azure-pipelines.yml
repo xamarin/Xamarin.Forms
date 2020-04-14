@@ -212,7 +212,6 @@ stages:
       jobs:
         - job: nuget_sign
           displayName: Sign Phase
-          dependsOn: nuget_pack
           pool:
             name: $(signVmPool)
             demands: 
