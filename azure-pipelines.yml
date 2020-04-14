@@ -100,7 +100,7 @@ stages:
         variables:
           FormsIdAppend: ''
           buildConfiguration: $(DefaultBuildConfiguration)
-          nugetPackageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
+          nugetPackageVersion : $[ dependencies.win_hosted.outputs['debug.winbuild.xamarinformspackageversion'] ]
         steps:
           - template: build/steps/build-nuget.yml
 
@@ -142,7 +142,7 @@ stages:
         variables:
           FormsIdAppend: ''
           buildConfiguration: $(DefaultBuildConfiguration)
-          nugetPackageVersion : $[ dependencies.win.outputs['debug.winbuild.xamarinformspackageversion'] ]
+          nugetPackageVersion : $[ dependencies.win_bots.outputs['debug.winbuild.xamarinformspackageversion'] ]
         steps:
           - template: build/steps/build-nuget.yml
 
