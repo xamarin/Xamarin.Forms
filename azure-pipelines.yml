@@ -67,14 +67,13 @@ stages:
         condition: eq(variables['vs2019VmPool'], 'Azure Pipelines')
         workspace:
           clean: all
-        displayName: ${{ parameters.displayName }}
+        displayName: Build Windows Phase
         timeoutInMinutes: 120
         pool:
-          name: ${{ parameters.vmPool }}
-          vmImage: ${{ parameters.vmImage }}
+          name: $(vs2019VmPool)
+          vmImage: $(vs2019VmImage)
           demands: 
             msbuild
-        dependsOn: ${{ parameters.dependsOn }}
         strategy:
           matrix:
             debug:
@@ -84,9 +83,6 @@ stages:
         steps:
           - template: build/steps/build-windows.yml
             parameters:
-              displayName: Build Windows Phase
-              vmImage: $(vs2019VmImage)
-              vmPool: $(vs2019VmPool)
               provisionatorPath : 'build/provisioning/provisioning.csx'
       - job: nuget_pack_hosted
         workspace:
@@ -111,11 +107,11 @@ stages:
         condition: ne(variables['vs2019VmPool'], 'Azure Pipelines')
         workspace:
           clean: all
-        displayName: ${{ parameters.displayName }}
+        displayName: Build Windows Phase Bots
         timeoutInMinutes: 120
         pool:
-          name: ${{ parameters.vmPool }}
-          vmImage: ${{ parameters.vmImage }}
+          name: $(vs2019VmPool)
+          vmImage: $(vs2019VmImage)
           demands: 
             - Agent.OS -equals Windows_NT
             - msbuild
@@ -129,9 +125,6 @@ stages:
         steps:
           - template: build/steps/build-windows.yml
             parameters:
-              displayName: Build Windows Phase
-              vmImage: $(vs2019VmImage)
-              vmPool: $(vs2019VmPool)
               provisionatorPath : 'build/provisioning/provisioning.csx'
 
       - job: nuget_pack_bots
