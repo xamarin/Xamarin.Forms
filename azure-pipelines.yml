@@ -100,6 +100,7 @@ jobs:
 
 - template: build/steps/build-osx.yml
   parameters:
+    vmPool: $(osx2019VmPool)
     vmImage: $(macOSXVmImage)
     name: osx
     buildForVS2017: 'false'
@@ -107,6 +108,7 @@ jobs:
 
 - template: build/steps/build-osx.yml
   parameters:
+    vmPool: $(osx2017VmPool)
     vmImage: 'macOS-10.14'
     name: osx_2017
     buildForVS2017: 'true'

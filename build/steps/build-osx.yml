@@ -10,6 +10,7 @@ jobs:
       clean: all
     displayName: ${{ parameters.displayName }}
     pool:
+      name: ${{ parameters.vmPool }}
       vmImage: ${{ parameters.vmImage }}
       demands:
         - Agent.OS -equals Darwin
