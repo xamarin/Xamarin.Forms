@@ -62,6 +62,7 @@ schedules:
 stages:
   - stage: windows
     displayName: Build Windows
+    dependsOn: []
     jobs:
       - job: win_hosted
         condition: eq(variables['vs2019VmPool'], 'Azure Pipelines')
@@ -147,44 +148,17 @@ stages:
 
   - stage: android
     displayName: Build Android
+    dependsOn: []
     jobs:
-    - job: android_legacy
-      steps:
-        - template: build/steps/build-android.yml
-          parameters:
-            name: android_legacy
-            displayName: Build Android [Legacy Renderers]
-            vmImage: $(macOSXVmImage)
-            targetFolder: Xamarin.Forms.ControlGallery.Android/legacyRenderers/
-            androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="LEGACY" /bl:$(Build.ArtifactStagingDirectory)/android-legacy.binlog'
-            buildConfiguration: $(AndroidBuildConfiguration)
-            provisionatorPath : 'build/provisioning/provisioning.csx'
-    - job: android_preappcompact
-      steps:
-        - template: build/steps/build-android.yml
-          parameters:
-            name: android_preappcompact
-            displayName: Build Android [Pre-AppCompat]
-            vmImage: $(macOSXVmImage)
-            targetFolder: Xamarin.Forms.ControlGallery.Android/preAppCompat
-            androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="PREAPPCOMPAT" /bl:$(Build.ArtifactStagingDirectory)/android-preappcompact.binlog'
-            buildConfiguration: $(AndroidBuildConfiguration)
-            provisionatorPath : 'build/provisioning/provisioning.csx'
-    - job: android_fast
-      steps:
-        - template: build/steps/build-android.yml
-          parameters:
-            name: android_fast
-            displayName: Build Android [Fast Renderers]
-            vmImage: $(macOSXVmImage)
-            targetFolder: Xamarin.Forms.ControlGallery.Android/newRenderers/
-            androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="FAST" /bl:$(Build.ArtifactStagingDirectory)/android-newrenderers.binlog'
-            buildConfiguration: $(AndroidBuildConfiguration)
-            provisionatorPath : 'build/provisioning/provisioning.csx'
+      - template: build/steps/build-android.yml
+        parameters:
+          vmImage: $(macOSXVmImage)
+          provisionatorPath : 'build/provisioning/provisioning.csx'
 
 
   - stage: build_osx
     displayName: Build OSX
+    dependsOn: []
     jobs:
     - job: osx
       steps:
@@ -199,6 +173,7 @@ stages:
 
   - stage: build_osx_2017
     displayName: Build OSX 2017
+    dependsOn: []
     jobs:
     - job: osx
       steps:
