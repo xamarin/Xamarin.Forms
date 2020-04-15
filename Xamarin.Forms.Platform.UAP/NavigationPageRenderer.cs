@@ -330,7 +330,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		async void OnBackClicked(object sender, RoutedEventArgs e)
 		{
-			await Element.PopAsync();
+			await Element.SendBackButtonPressed();
 		}
 
 		void OnChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
