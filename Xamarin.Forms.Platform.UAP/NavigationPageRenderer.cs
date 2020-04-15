@@ -328,9 +328,9 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		async void OnBackClicked(object sender, RoutedEventArgs e)
+		void OnBackClicked(object sender, RoutedEventArgs e)
 		{
-			await Element.SendBackButtonPressed();
+			Element.SendBackButtonPressed();
 		}
 
 		void OnChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
