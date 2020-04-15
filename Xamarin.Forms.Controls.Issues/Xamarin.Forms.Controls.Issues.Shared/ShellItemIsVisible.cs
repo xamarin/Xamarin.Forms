@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			var pageItem1 = createPage("Item 1");
+			var pageItem1 = createPage("Item Title Page");
 			var item1 = AddContentPage(pageItem1);
 			var pageItem2 = createPage("Item 2");
 			var item2 = AddContentPage(pageItem2);
@@ -175,7 +175,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.Tap("ToggleItem1");
 			RunningApp.WaitForElement("Welcome to Tab 1");
-			RunningApp.WaitForNoElement("Item 1");
 			RunningApp.WaitForNoElement("ToggleItem1");
 		}
 
