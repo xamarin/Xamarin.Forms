@@ -1,29 +1,13 @@
-﻿using System;
-using Xamarin.Forms.Xaml;
+﻿using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AppThemeXamlGallery : ContentPage
 	{
-        public Color LightColor { get; set; } = Color.Cyan;
-        public Color DarkColor { get; set; } = Color.CornflowerBlue;
-
         public AppThemeXamlGallery()
 		{
 			InitializeComponent();
-            BindingContext = this;
-            
-			Application.Current.RequestedThemeChanged += (_, __) => BindingContext = this;
-        }
-
-		void TapGestureRecognizer_Tapped(object sender, EventArgs e)
-		{
-            LightColor = LightColor == Color.Cyan ? Color.Red : Color.Cyan;
-            DarkColor = DarkColor == Color. CornflowerBlue ? Color.Yellow : Color.CornflowerBlue;
-
-            OnPropertyChanged(nameof(LightColor));
-            OnPropertyChanged(nameof(DarkColor));
         }
 	}
 

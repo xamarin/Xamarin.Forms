@@ -38,15 +38,6 @@
             <!--<Label x:Name="cssStyledLabel">This text is Purple or Orange depending on Light (or default) or Dark (through CSS)</Label>-->
             <Label>The image below is a Xamarin logo or fruits depending on Light (or default) or Dark</Label>
             <Image Source="{OnAppTheme Light=xamarinlogo.png, Dark=Fruits.jpg}" />
-            <Label Text="This text changes colors through data binding (tap me)">
-                <Label.TextColor>
-                    <OnAppTheme x:TypeArguments="Color" Light="{Binding LightColor}" Dark="{Binding DarkColor}" />
-                </Label.TextColor>
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
-                </Label.GestureRecognizers>
-            </Label>
-
             <gallerypages:CustomControl TextColor="Brown" Text="This custom control should have brown text" />
         </StackLayout>
     </ScrollView>
