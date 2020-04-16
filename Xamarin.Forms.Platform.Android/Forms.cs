@@ -21,6 +21,12 @@ using Xamarin.Forms.Platform.Android;
 using Resource = Android.Resource;
 using Trace = System.Diagnostics.Trace;
 using System.ComponentModel;
+using AColor = Android.Graphics.Color;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
+using Android.Support.V4.Content;
+#endif
 
 namespace Xamarin.Forms
 {
@@ -410,7 +416,7 @@ namespace Xamarin.Forms
 		}
 
 		static IReadOnlyList<string> s_flags;
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new string[0]);
 
 		public static void SetFlags(params string[] flags)
 		{
@@ -426,7 +432,9 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+			s_flags = (string[])flags.Clone();
+			if (s_flags.Contains ("Profile"))
+				Profile.Enable();
 			FlagsSet = true;
 		}
 
@@ -493,6 +501,7 @@ namespace Xamarin.Forms
 			double _scalingFactor;
 
 			Orientation _previousOrientation = Orientation.Undefined;
+			Platform.Android.DualScreen.IDualScreenService DualScreenService => DependencyService.Get<Platform.Android.DualScreen.IDualScreenService>();
 
 			public AndroidDeviceInfo(Context formsActivity)
 			{
@@ -555,7 +564,16 @@ namespace Xamarin.Forms
 
 			void CheckOrientationChanged(Context formsActivity)
 			{
-				var orientation = formsActivity.Resources.Configuration.Orientation;
+				Orientation orientation;
+
+				if (DualScreenService?.IsSpanned == true)
+				{
+					orientation = (DualScreenService.IsLandscape) ? Orientation.Landscape : Orientation.Portrait;
+				}
+				else
+				{
+					orientation = formsActivity.Resources.Configuration.Orientation;
+				}
 
 				if (!_previousOrientation.Equals(orientation))
 					CurrentOrientation = orientation.ToDeviceOrientation();
@@ -600,7 +618,6 @@ namespace Xamarin.Forms
 
 		class AndroidPlatformServices : IPlatformServices
 		{
-			static readonly MD5CryptoServiceProvider Checksum = new MD5CryptoServiceProvider();
 			double _buttonDefaultSize;
 			double _editTextDefaultSize;
 			double _labelDefaultSize;
@@ -645,17 +662,9 @@ namespace Xamarin.Forms
 				return AppDomain.CurrentDomain.GetAssemblies();
 			}
 
-			public string GetMD5Hash(string input)
-			{
-				byte[] bytes = Checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
-				var ret = new char[32];
-				for (var i = 0; i < 16; i++)
-				{
-					ret[i * 2] = (char)Hex(bytes[i] >> 4);
-					ret[i * 2 + 1] = (char)Hex(bytes[i] & 0xf);
-				}
-				return new string(ret);
-			}
+			public string GetHash(string input) => Crc64.GetHash(input);
+
+			string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 			public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 			{
@@ -738,20 +747,84 @@ namespace Xamarin.Forms
 				}
 			}
 
+			public Color GetNamedColor(string name)
+			{
+				int color;
+				switch (name)
+				{
+					case NamedPlatformColor.BackgroundDark:
+						color = ContextCompat.GetColor(_context, Resource.Color.BackgroundDark);
+						break;
+					case NamedPlatformColor.BackgroundLight:
+						color = ContextCompat.GetColor(_context, Resource.Color.BackgroundLight);
+						break;
+					case NamedPlatformColor.Black:
+						color = ContextCompat.GetColor(_context, Resource.Color.Black);
+						break;
+					case NamedPlatformColor.DarkerGray:
+						color = ContextCompat.GetColor(_context, Resource.Color.DarkerGray);
+						break;
+					case NamedPlatformColor.HoloBlueBright:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloBlueBright);
+						break;
+					case NamedPlatformColor.HoloBlueDark:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloBlueDark);
+						break;
+					case NamedPlatformColor.HoloBlueLight:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloBlueLight);
+						break;
+					case NamedPlatformColor.HoloGreenDark:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloGreenDark);
+						break;
+					case NamedPlatformColor.HoloGreenLight:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloGreenLight);
+						break;
+					case NamedPlatformColor.HoloOrangeDark:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloOrangeDark);
+						break;
+					case NamedPlatformColor.HoloOrangeLight:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloOrangeLight);
+						break;
+					case NamedPlatformColor.HoloPurple:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloPurple);
+						break;
+					case NamedPlatformColor.HoloRedDark:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloRedDark);
+						break;
+					case NamedPlatformColor.HoloRedLight:
+						color = ContextCompat.GetColor(_context, Resource.Color.HoloRedLight);
+						break;
+					case NamedPlatformColor.TabIndicatorText:
+						color = ContextCompat.GetColor(_context, Resource.Color.TabIndicatorText);
+						break;
+					case NamedPlatformColor.Transparent:
+						color = ContextCompat.GetColor(_context, Resource.Color.Transparent);
+						break;
+					case NamedPlatformColor.White:
+						color = ContextCompat.GetColor(_context, Resource.Color.White);
+						break;
+					case NamedPlatformColor.WidgetEditTextDark:
+						color = ContextCompat.GetColor(_context, Resource.Color.WidgetEditTextDark);
+						break;
+					default:
+						return Color.Default;
+				}
+
+				if (color != 0)
+					return new AColor(color).ToColor();
+
+				return Color.Default;
+			}
+
 			public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 			{
 				using (var client = new HttpClient())
 				{
-					HttpResponseMessage response = await client.GetAsync(uri, cancellationToken).ConfigureAwait(false);
-					if (!response.IsSuccessStatusCode)
-					{
-						Internals.Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
-						return null;
-					}
+					// Do not remove this await otherwise the client will dispose before
+					// the stream even starts
+					var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
 
-					// the HttpResponseMessage needs to be disposed of after the calling code is done with the stream
-					// otherwise the stream may get disposed before the caller can use it
-					return new StreamWrapper(await response.Content.ReadAsStreamAsync().ConfigureAwait(false), response);
+					return result;
 				}
 			}
 
@@ -848,6 +921,23 @@ namespace Xamarin.Forms
 			public SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 			{
 				return Platform.Android.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
+			}
+
+			public OSAppTheme RequestedTheme
+            {
+                get
+                {
+                    var nightMode = _context.Resources.Configuration.UiMode & UiMode.NightMask;
+                    switch (nightMode)
+                    {
+                        case UiMode.NightYes:
+                            return OSAppTheme.Dark;
+                        case UiMode.NightNo:
+                            return OSAppTheme.Light;
+                        default:
+                            return OSAppTheme.Unspecified;
+					};
+				}
 			}
 
 			public class _IsolatedStorageFile : IIsolatedStorageFile

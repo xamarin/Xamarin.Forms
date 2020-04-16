@@ -56,7 +56,8 @@ using Android.Support.V4.Content;
 [assembly: ExportRenderer(typeof(ShellGestures.TouchTestView), typeof(ShellGesturesTouchTestViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue7249Switch), typeof(Issue7249SwitchRenderer))]
 [assembly: ExportRenderer(typeof(Issue9360.Issue9360NavigationPage), typeof(Issue9360NavigationPageRenderer))]
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries.HingeAngleLabel), typeof(HingeAngleLabelRenderer))]
+[assembly: ExportRenderer(typeof(Issue8801.PopupStackLayout), typeof(Issue8801StackLayoutRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Tests.TestClasses.CustomButton), typeof(CustomButtonRenderer))]
 
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
@@ -65,53 +66,21 @@ using Android.Support.V4.Content;
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
-	public class HingeAngleLabelRenderer : Xamarin.Forms.Platform.Android.FastRenderers.LabelRenderer
+	public class Issue8801StackLayoutRenderer : VisualElementRenderer<StackLayout>
 	{
-		System.Timers.Timer _hingeTimer;
-		public HingeAngleLabelRenderer(Context context) : base(context)
+		public Issue8801StackLayoutRenderer(Context context) : base(context)
 		{
+
+
 		}
 
-		async void OnTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+		public override void AddView(global::Android.Views.View child)
 		{
-			if (_hingeTimer == null)
-				return;
-
-			_hingeTimer.Stop();
-			var hingeAngle = await DualScreen.DualScreenInfo.Current.GetHingeAngleAsync();
-
-			Device.BeginInvokeOnMainThread(() =>
+			if (child is global::Android.Widget.Button head && (head.Text == "Show" || head.Text == "Hide"))
 			{
-				if (_hingeTimer != null)
-					Element.Text = hingeAngle.ToString();
-			});
-
-			if(_hingeTimer != null)
-				_hingeTimer.Start();
-		}
-
-		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
-		{
-			base.OnElementChanged(e);
-
-			if(_hingeTimer == null)
-			{
-				_hingeTimer = new System.Timers.Timer(100);
-				_hingeTimer.Elapsed += OnTimerElapsed;
-				_hingeTimer.Start();
-			}
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (_hingeTimer != null)
-			{
-				_hingeTimer.Elapsed -= OnTimerElapsed;
-				_hingeTimer.Stop();
-				_hingeTimer = null;
+				base.AddView(child);
 			}
 
-			base.Dispose(disposing);
 		}
 	}
 
@@ -145,7 +114,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 							menuItem.SetIcon(drawable);
 						}
 						else
-						{	
+						{
 							var drawable = Context.GetDrawable(name);
 							menuItem.SetIcon(drawable);
 						}
@@ -186,18 +155,6 @@ namespace Xamarin.Forms.ControlGallery.Android
 		public AttachedStateEffectLabelRenderer(Context context) : base(context)
 		{
 		}
-
-#if TEST_EXPERIMENTAL_RENDERERS
-		protected override void Dispose(bool disposing)
-		{
-			foreach (var effect in Element.Effects.OfType<Controls.Effects.AttachedStateEffect>())
-			{
-				effect.Detached(Element);
-			}
-
-			base.Dispose(disposing);
-		}
-#endif
 	}
 
 	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer

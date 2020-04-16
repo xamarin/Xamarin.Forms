@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Platform.Android
 		ILayoutChanges,
 		IDisposedState
 	{
+		bool _hasLayoutOccurred;
 		bool _inputTransparent;
 		bool _disposed;
 		bool _skipInvalidate;
@@ -76,6 +77,12 @@ namespace Xamarin.Forms.Platform.Android
 			// Tag = this;
 
 			_backgroundTracker = new BorderBackgroundManager(this, false);
+		}
+
+		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+		{
+			base.OnLayout(changed, left, top, right, bottom);
+			_hasLayoutOccurred = true;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -195,13 +202,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
-
-
+		
 		public override void Draw(Canvas canvas)
 		{
 			if (Element == null)
 				return;
-
 			var backgroundDrawable = _backgroundTracker?.BackgroundDrawable;
 			RectF drawableBounds = null;
 
@@ -210,12 +215,11 @@ namespace Xamarin.Forms.Platform.Android
 				if ((int)Forms.SdkInt >= 18 && backgroundDrawable != null)
 				{
 					var outlineBounds = backgroundDrawable.GetPaddingBounds(canvas.Width, canvas.Height);
-					var width = (float)MeasuredWidth;
-					var height = (float)MeasuredHeight;
-
+					var width = (float)canvas.Width;
+					var height = (float)canvas.Height;
 					var widthRatio = 1f;
 					var heightRatio = 1f;
-
+						
 					if (Element.Aspect == Aspect.AspectFill && OnThisPlatform().GetIsShadowEnabled())
 						Internals.Log.Warning(nameof(ImageButtonRenderer), "AspectFill isn't fully supported when using shadows. Image may be clipped incorrectly to Border");
 
@@ -287,6 +291,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
 			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
@@ -294,7 +303,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
-
 
 		// general state related
 		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
@@ -312,7 +320,6 @@ namespace Xamarin.Forms.Platform.Android
 			ButtonElementManager.OnTouch(Element, Element, v, e);
 		// Button related
 
-
 		float IBorderVisualElementRenderer.ShadowRadius => Context.ToPixels(OnThisPlatform().GetShadowRadius());
 		float IBorderVisualElementRenderer.ShadowDx => Context.ToPixels(OnThisPlatform().GetShadowOffset().Width);
 		float IBorderVisualElementRenderer.ShadowDy => Context.ToPixels(OnThisPlatform().GetShadowOffset().Height);
@@ -322,6 +329,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool IBorderVisualElementRenderer.UseDefaultShadow() => false;
 		VisualElement IBorderVisualElementRenderer.Element => Element;
 		AView IBorderVisualElementRenderer.View => this;
+
+		bool ILayoutChanges.HasLayoutOccurred => _hasLayoutOccurred;
 
 		IPlatformElementConfiguration<PlatformConfiguration.Android, ImageButton> OnThisPlatform()
 		{

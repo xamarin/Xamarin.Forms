@@ -1,16 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using AColor = Android.Graphics.Color;
-using AView = Android.Views.View;
 using ColorStateList = Android.Content.Res.ColorStateList;
 using IMenu = Android.Views.IMenu;
 using LP = Android.Views.ViewGroup.LayoutParams;

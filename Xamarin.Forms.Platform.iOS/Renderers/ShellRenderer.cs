@@ -6,6 +6,12 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellRenderer : UIViewController, IShellContext, IVisualElementRenderer, IEffectControlProvider
 	{
+		[Internals.Preserve(Conditional = true)]
+		public ShellRenderer()
+		{
+
+		}
+
 		#region IShellContext
 
 		bool IShellContext.AllowFlyoutGesture
@@ -246,7 +252,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var color = Shell.BackgroundColor;
 			if (color.IsDefault)
-				color = Color.Black;
+				color = ColorExtensions.BackgroundColor.ToColor();
 
 			FlyoutRenderer.View.BackgroundColor = color.ToUIColor();
 		}

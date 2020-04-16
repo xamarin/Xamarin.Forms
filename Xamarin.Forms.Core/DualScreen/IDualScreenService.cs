@@ -6,7 +6,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.DualScreen
 {
-	internal interface IDualScreenService : IDisposable
+	internal interface IDualScreenService
 	{
 		event EventHandler OnScreenChanged;
 		bool IsSpanned { get; }
