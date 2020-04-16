@@ -81,6 +81,6 @@ namespace Xamarin.Forms
 			internal set { SetValue(TouchIndexPropertyKey, value); }
 		}
 
-		public event EventHandler<TouchPointEventArgs> TouchPointUpdated { get; }
+		public event EventHandler<TouchPointEventArgs> TouchPointUpdated;
 	}
 }

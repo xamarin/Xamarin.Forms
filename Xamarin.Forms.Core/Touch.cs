@@ -13,22 +13,18 @@ namespace Xamarin.Forms
 
 		public GestureDirection Gesture { get; set; }
 
+		public Point PagePosition { get; set; }
+
+		public Point ScreenPosition { get; set; }
+
+		public TouchState StatusType { get; set; }
+
 		public View Target { get; }
 
 		public int TouchIndex { get; }
 
 		public List<GestureRecognizer.RawTouchPoint> TouchPoints { get; }
+
+		public Point ViewPosition { get; set; }
 	}
 }
-
-
-/*public class Touch
-{
-	public int TouchIndex { get; set; }
-	public Point ViewPosition { get; set; }
-	public Point PagePosition { get; set; }
-	public Point ScreenPosition { get; set; }
-	public GestureStatusType StatusType { get; set; }
-	View Target { get; }
-}
-*/
