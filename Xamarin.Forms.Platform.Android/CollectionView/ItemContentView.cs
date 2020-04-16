@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		public void ClickOn()
+		internal void ClickOn()
 		{
 			CallOnClick();
 		}
