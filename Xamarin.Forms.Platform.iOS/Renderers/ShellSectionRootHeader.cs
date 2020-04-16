@@ -222,6 +222,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (SelectedIndex < 0)
 				return;
 
+			if (ShellSectionController.GetItems().IndexOf(ShellSection.CurrentItem) != SelectedIndex)
+				return;
+
 			var layout = CollectionView.GetLayoutAttributesForItem(NSIndexPath.FromItemSection((int)SelectedIndex, 0));
 
 			if (layout == null)
