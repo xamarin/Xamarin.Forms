@@ -33,12 +33,21 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 
 		protected override void OnAppearing()
 		{
-			base.OnAppearing();
-			Setup(Width, Height);
-
 			PanePriority.SelectedIndex = 0;
 			TallModeConfiguration.SelectedIndex = 1;
 			WideModeConfiguration.SelectedIndex = 1;
+
+			DualScreen.DualScreenInfo.Current.HingeAngleChanged += OnHingeAngleChanged;
+		}
+
+		protected override void OnDisappearing()
+		{
+			DualScreen.DualScreenInfo.Current.HingeAngleChanged -= OnHingeAngleChanged;
+		}
+
+		void OnHingeAngleChanged(object sender, DualScreen.HingeAngleChangedEventArgs e)
+		{
+			lblHingeAngle.Text = e.HingeAngleInDegrees.ToString();
 		}
 
 		void Setup(double width, double height)
@@ -46,9 +55,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			if (width <= 0 || height <= 0)
 				return;
 
-
-			MinTallModeHeight.Maximum = height;
-			MinWideModeWidth.Maximum = width;
+			lblScreenDim.Text = $"Screen Dimensions: {width}x{height}";
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -64,6 +71,4 @@ namespace Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries
 			Pane2Length.Value = 0.5;
 		}
 	}
-
-	public class HingeAngleLabel : Label { }
 }

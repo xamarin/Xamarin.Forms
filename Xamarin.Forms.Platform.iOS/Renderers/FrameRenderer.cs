@@ -7,9 +7,16 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class FrameRenderer : VisualElementRenderer<Frame>
+	public class FrameRenderer : VisualElementRenderer<Frame>, ITabStop
 	{
 		ShadowView _shadowView;
+		UIView ITabStop.TabStop => this;
+
+		[Internals.Preserve(Conditional = true)]
+		public FrameRenderer()
+		{
+
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
 		{
@@ -26,8 +33,19 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName ||
 			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
-				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
+				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
+				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				SetupLayer();
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				SetupLayer();
+#endif
 		}
 
 		public virtual void SetupLayer()
@@ -38,9 +56,10 @@ namespace Xamarin.Forms.Platform.iOS
 				cornerRadius = 5f; // default corner radius
 
 			Layer.CornerRadius = cornerRadius;
+			Layer.MasksToBounds = Layer.CornerRadius > 0;
 
 			if (Element.BackgroundColor == Color.Default)
-				Layer.BackgroundColor = UIColor.White.CGColor;
+				Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
 			else
 				Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
 
@@ -62,6 +81,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_shadowView.UpdateBackgroundColor();
 				_shadowView.Layer.CornerRadius = Layer.CornerRadius;
 				_shadowView.Layer.BorderColor = Layer.BorderColor;
+				_shadowView.Hidden = !Element.IsVisible;
 			}
 			else
 			{
@@ -81,13 +101,28 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_shadowView != null)
 			{
-				if (_shadowView.Superview == null)
+				if (_shadowView.Superview == null && Superview != null)
 					Superview.InsertSubviewBelow(_shadowView, this);
 
 				_shadowView?.SetNeedsLayout();
 			}
 			base.LayoutSubviews();
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				if (_shadowView != null)
+				{
+					_shadowView.RemoveFromSuperview();
+					_shadowView.Dispose();
+					_shadowView = null;
+				}
+			}
+		}
+
 
 		[Preserve(Conditional = true)]
 		class ShadowView : UIView
@@ -112,9 +147,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				//Putting a transparent background under any shadowee having a background with alpha < 1
 				//Giving the Shadow a background of the same color when shadowee background == 1.
-				//The latter will result in a 'darker' shadow as you would expect from something that 
+				//The latter will result in a 'darker' shadow as you would expect from something that
 				//isn't transparent. This also mimics the look as it was before with non-transparent Frames.
-				if (_shadowee.BackgroundColor.Alpha < 1) 
+				if (_shadowee.BackgroundColor.Alpha < 1)
 					BackgroundColor = UIColor.Clear;
 				else
 					BackgroundColor = new UIColor(_shadowee.BackgroundColor);

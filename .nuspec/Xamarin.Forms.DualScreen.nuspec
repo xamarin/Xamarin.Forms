@@ -7,7 +7,7 @@
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms twopaneview DualScreen xamarinforms xamarinformsdualscreen xamarin.forms.dualscreen</tags>
     <license type="expression">MIT</license>
-    <iconUrl>https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Assets/xamarin_128x128.png</iconUrl>
+    <icon>Assets\xamarin_128x128.png</icon>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <repository type="git" url="https://github.com/xamarin/xamarin.forms"/>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -18,15 +18,16 @@
         <dependency id="Xamarin.Forms" version="$version$"/>
       </group>
       <group targetFramework="MonoAndroid90">
-        <dependency id="Xamarin.DuoSdk" version="0.0.3.2" />
+        <dependency id="Xamarin.DuoSdk" version="0.0.3.4" />
       </group>
       <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.DuoSdk" version="0.0.3.2" />
+        <dependency id="Xamarin.DuoSdk" version="0.0.3.4" />
       </group>
     </dependencies>
   </metadata>
   <files>
-
+    <!--Icon-->
+    <file src="..\Assets\xamarin_128x128.png" target="Assets\" />
     <!--netstandard 1.0-->
     <file src="..\Xamarin.Forms.DualScreen\bin\$Configuration$\netstandard1.0\Xamarin.Forms.DualScreen.dll" target="lib\netstandard1.0" />
     <file src="..\Xamarin.Forms.DualScreen\bin\$Configuration$\netstandard1.0\Xamarin.Forms.DualScreen.*pdb" target="lib\netstandard1.0" />

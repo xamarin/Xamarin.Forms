@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _disposed;
 
+		[Internals.Preserve(Conditional = true)]
 		internal PlatformRenderer(Platform platform)
 		{
 			Platform = platform;
@@ -90,7 +91,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// while it's being replaced on the Window.RootViewController with a new MainPage
 			if (!_disposed)
 			{
-				View.BackgroundColor = UIColor.White;
+				View.BackgroundColor = ColorExtensions.BackgroundColor;
 				Platform.WillAppear();
 			}
 

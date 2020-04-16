@@ -269,7 +269,13 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			
+			if (Device.Flags?.IndexOf(ExperimentalFlags.AppThemeExperimental) > 0)
+				Application.Current.RequestedThemeChanged += (s, a) => OnRequestedThemeChanged(a.RequestedTheme);
+		}
+
+		protected virtual void OnRequestedThemeChanged(OSAppTheme newValue)
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(VisualElement), ExperimentalFlags.AppThemeExperimental, nameof(OnRequestedThemeChanged));
 		}
 
 		public double AnchorX
@@ -839,9 +845,9 @@ namespace Xamarin.Forms
 					foreach (var stateTrigger in state.StateTriggers)
 					{
 						if(attach)
-							stateTrigger.OnAttached();
+							stateTrigger.SendAttached();
 						else
-							stateTrigger.OnDetached();
+							stateTrigger.SendDetached();
 					}
 		}
 
@@ -869,14 +875,6 @@ namespace Xamarin.Forms
 		internal virtual void OnIsVisibleChanged(bool oldValue, bool newValue)
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.Undefined);
-		}
-
-		internal override void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
-		{
-			if (e == ResourcesChangedEventArgs.StyleSheets)
-				ApplyStyleSheets();
-			else
-				base.OnResourcesChanged(sender, e);
 		}
 
 		internal override void OnParentResourcesChanged(IEnumerable<KeyValuePair<string, object>> values)
