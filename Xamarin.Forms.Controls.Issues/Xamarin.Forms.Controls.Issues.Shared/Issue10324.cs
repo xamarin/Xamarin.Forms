@@ -25,11 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public IssueTestAlertPage()
 			{
 				Title = "Hit Mouse BackButton/XButton1. An alert will appear (OnBackButtonPressed overridden)";
-				Content = new StackLayout
-				{
-					HorizontalOptions = LayoutOptions.FillAndExpand,
-					VerticalOptions = LayoutOptions.FillAndExpand
-				};
+				Content = new StackLayout();
 
 				Navigation.PushAsync(new IssueTestBackPage());
 			}
@@ -46,11 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public IssueTestBackPage()
 			{
 				Title = "Hit Mouse BackButton/XButton1. Page will go back (OnBackButtonPressed not overridden)";
-				Content = new StackLayout
-				{
-					HorizontalOptions = LayoutOptions.FillAndExpand,
-					VerticalOptions = LayoutOptions.FillAndExpand
-				};
+				Content = new StackLayout();
 			}
 
 			protected override bool OnBackButtonPressed()
