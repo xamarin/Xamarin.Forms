@@ -11,6 +11,7 @@ using Tizen.Applications;
 using TSystemInfo = Tizen.System.Information;
 using ELayout = ElmSharp.Layout;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
+using ElmSharp.Wearable;
 
 namespace Xamarin.Forms
 {
@@ -185,6 +186,11 @@ namespace Xamarin.Forms
 
 		public static ELayout BaseLayout => NativeParent as ELayout;
 
+		public static CircleSurface CircleSurface
+		{
+			get; internal set;
+		}
+
 		public static bool IsInitialized
 		{
 			get;
@@ -236,7 +242,7 @@ namespace Xamarin.Forms
 		}
 
 		static IReadOnlyList<string> s_flags;
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new string[0]);
 
 		public static void SetFlags(params string[] flags)
 		{
@@ -245,7 +251,9 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+			s_flags = (string[])flags.Clone();
+			if (s_flags.Contains ("Profile"))
+				Profile.Enable();
 		}
 
 		public static void SetTitleBarVisibility(TizenTitleBarVisibility visibility)
@@ -471,6 +479,10 @@ namespace Xamarin.Forms
 			}
 			Color.SetAccent(GetAccentColor(profile));
 			ExpressionSearch.Default = new TizenExpressionSearch();
+
+			if (application is WatchApplication)
+				s_platformType = PlatformType.Lightweight;
+
 			IsInitialized = true;
 		}
 

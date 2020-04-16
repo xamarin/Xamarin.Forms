@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var color = Shell.BackgroundColor;
 			if (color.IsDefault)
-				color = Color.Black;
+				color = ColorExtensions.BackgroundColor.ToColor();
 
 			FlyoutRenderer.View.BackgroundColor = color.ToUIColor();
 		}

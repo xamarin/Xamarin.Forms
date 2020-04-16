@@ -27,13 +27,16 @@
     <None Remove="Fonts\fa-regular-400.ttf" />
     <None Remove="Fonts\PTM55FT.ttf" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup  Condition="$(FromSource) == 'true'">
     <!-- A reference to the entire .NET Framework is automatically included -->
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="$(FromSource) == 'false'">
+    <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BuildNumber.txt" />
@@ -64,10 +67,25 @@
     <EmbeddedResource Update="GalleryPages\RadioButtonGroupGalleryPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <Compile Update="TabIndexTest\DaysOfWeekView.xaml.cs">
+      <DependentUpon>DaysOfWeekView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="TabIndexTest\DayView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TabIndexTest\TabIndex.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TabIndexTest\DaysOfWeekView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Fonts\" />
+    <Folder Include="GalleryPages\AppThemeGalleries\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -81,7 +99,20 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Update="GalleryPages\AppThemeGalleries\AppThemeCodeGallery.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="GalleryPages\AppThemeGalleries\AppThemeGallery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="GalleryPages\AppThemeGalleries\AppThemeGallery.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="GalleryPages\AppThemeGalleries\OSThemesGallery.cs">
+      <SubType></SubType>
+    </Compile>
+  </ItemGroup>
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
     <CreateItem Include="blank.config">
       <Output TaskParameter="Include" ItemName="ConfigFile" />

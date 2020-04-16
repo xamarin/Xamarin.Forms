@@ -91,12 +91,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateLayout();
 			Controller = CreateController(newElement, _layout);
-			 
-
 			SetNativeControl(Controller.View);
 			Controller.CollectionView.BackgroundColor = UIColor.Clear;
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
+			UpdateItemsUpdatingScrollMode();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -124,6 +123,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateItemsSource()
 		{
+			UpdateItemsUpdatingScrollMode();
 			Controller.UpdateItemsSource();
 		}
 
