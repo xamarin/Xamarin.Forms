@@ -330,7 +330,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnBackClicked(object sender, RoutedEventArgs e)
 		{
-			Element.SendBackButtonPressed();
+			Element?.SendBackButtonPressed();
 		}
 
 		void OnChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
