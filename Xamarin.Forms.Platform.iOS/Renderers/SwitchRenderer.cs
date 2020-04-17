@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -39,12 +40,14 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				_defaultOnColor = UISwitch.Appearance.OnTintColor;
-				_defaultOffColor = UISwitch.Appearance.TintColor;
+				_defaultOffColor = Forms.IsiOS13OrNewer
+					? Control.Subviews?.FirstOrDefault().Subviews?.FirstOrDefault()?.BackgroundColor
+					: UISwitch.Appearance.TintColor;
 				_defaultThumbColor = UISwitch.Appearance.ThumbTintColor;
 				Control.On = Element.IsToggled;
 				e.NewElement.Toggled += OnElementToggled;
 				UpdateOnColor();
-				UpdateOffColor(Element.BackgroundColor);
+				UpdateOffColor();
 				UpdateThumbColor();
 			}
 
@@ -53,33 +56,38 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateOnColor()
 		{
-			if (Element == null)
+			if (IsElementOrControlEmpty)
 				return;
+
 			Control.OnTintColor = Element.OnColor != Color.Default
 				? Element.OnColor.ToUIColor()
 				: _defaultOnColor;
 		}
 
-		void UpdateOffColor(Color backgroundColor)
+		void UpdateOffColor()
 		{
-			if (Element == null)
+			if (IsElementOrControlEmpty)
 				return;
-			if (Element.OffColor == Color.Default || backgroundColor != Color.Default)
+
+			if (!Forms.IsiOS13OrNewer)
 			{
-				Control.TintColor = _defaultOffColor;
-				Control.Layer.CornerRadius = 0;
-				base.SetBackgroundColor(backgroundColor);
+				HandleOffColorForOlderSystemVersions(Element.BackgroundColor);
 				return;
 			}
-			var color = Element.OffColor.ToUIColor();
-			Control.TintColor = color;
-			Control.BackgroundColor = color;
-			Control.Layer.CornerRadius = Control.Bounds.Height / 2;
+
+			var offColorView = Control.Subviews.FirstOrDefault()?.Subviews.FirstOrDefault();
+			if (offColorView == null)
+				return;
+			
+			offColorView.BackgroundColor = Element.OffColor != Color.Default
+				? Element.OffColor.ToUIColor()
+				: _defaultOffColor;
+			
 		}
 
 		void UpdateThumbColor()
 		{
-			if (Element == null)
+			if (IsElementOrControlEmpty)
 				return;
 
 			Color thumbColor = Element.ThumbColor;
@@ -97,7 +105,33 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		protected override void SetBackgroundColor(Color color)
-			=> UpdateOffColor(color);
+		{
+			if (IsElementOrControlEmpty)
+				return;
+
+			if (!Forms.IsiOS13OrNewer)
+			{
+				HandleOffColorForOlderSystemVersions(Element.BackgroundColor);
+				return;
+			}
+
+			base.SetBackgroundColor(color);
+		}
+
+		void HandleOffColorForOlderSystemVersions(Color backgroundColor)
+		{
+			if (Element.OffColor == Color.Default || backgroundColor != Color.Default)
+			{
+				Control.TintColor = _defaultOffColor;
+				Control.Layer.CornerRadius = 0;
+				base.SetBackgroundColor(backgroundColor);
+				return;
+			}
+			var offColor = Element.OffColor.ToUIColor();
+			Control.TintColor = offColor;
+			Control.BackgroundColor = offColor;
+			Control.Layer.CornerRadius = Control.Bounds.Height / 2;
+		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -106,7 +140,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == Switch.OnColorProperty.PropertyName)
 				UpdateOnColor();
 			else if (e.PropertyName == Switch.OffColorProperty.PropertyName)
-				UpdateOffColor(Element.BackgroundColor);
+				UpdateOffColor();
 			else if (e.PropertyName == Switch.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();
 		}
