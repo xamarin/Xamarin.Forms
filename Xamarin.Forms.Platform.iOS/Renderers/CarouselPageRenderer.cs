@@ -27,7 +27,22 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		IElementController ElementController => Element as IElementController;
+		nfloat TopHeightOffset
+		{
+			get
+			{
+				nfloat navBarHeight = 0;
+				nfloat statusBarHeight = 0;
 
+				if (ViewController.NavigationController?.NavigationBar != null)
+					navBarHeight = ViewController.NavigationController.NavigationBar.Frame.Height;
+
+				if (!UIApplication.SharedApplication.StatusBarHidden)
+					statusBarHeight = UIApplication.SharedApplication.StatusBarFrame.Height;
+
+				return navBarHeight + statusBarHeight;
+			}
+		}
 
 		protected CarouselPage Carousel
 		{
@@ -111,6 +126,12 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
+			RectangleF bounds = View.Superview.Bounds;
+			if (Element.Parent is BaseShellItem)
+			{
+				bounds.Height -= TopHeightOffset;
+				Element.Layout(bounds.ToRectangle());
+			}
 
 			View.Frame = View.Superview.Bounds;
 			_scrollView.Frame = View.Bounds;
@@ -269,7 +290,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_ignoreNativeScrolling || SelectedIndex >= ElementController.LogicalChildren.Count)
 				return;
-						
+
 			var currentPage = (ContentPage)ElementController.LogicalChildren[SelectedIndex];
 			if (_previousPage != currentPage)
 			{
@@ -320,6 +341,9 @@ namespace Xamarin.Forms.Platform.iOS
 				container.Frame = new RectangleF(x, bounds.Y, bounds.Width, bounds.Height);
 				x += bounds.Width;
 			}
+
+			if (Element.Parent is BaseShellItem)
+				bounds.Height -= TopHeightOffset;
 
 			_scrollView.PagingEnabled = true;
 			_scrollView.ContentSize = new SizeF(bounds.Width * ((CarouselPage)Element).Children.Count, bounds.Height);
