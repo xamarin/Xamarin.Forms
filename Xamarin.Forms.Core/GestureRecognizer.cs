@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 		{
 			CollectTouch(eventArgs, sender);
 
-			//var ev = new GestureEventArgs(0, TouchState.Cancel,new List<RawTouchPoint>());
+			var ev = new GestureEventArgs(0, TouchState.Cancel,new List<RawTouchPoint>());
 			//OnTouch(sender, ev);
 			TouchUpdated?.Invoke(this, eventArgs);
 		}

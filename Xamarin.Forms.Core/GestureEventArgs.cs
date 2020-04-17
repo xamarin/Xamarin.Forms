@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 
 		public int TouchCount { get; }
 
-		public IReadOnlyList<GestureRecognizer.RawTouchPoint> TouchPoints { get; }
+		public IReadOnlyList<TouchPoint> TouchPoints { get; }
 
 		public TouchState TouchState { get; }
 	}
