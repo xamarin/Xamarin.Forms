@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android
 		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
 		{
 			((IViewController)Element).SetValueFromRenderer(Switch.IsToggledProperty, isChecked);
-			UpdateOnColor();
+			UpdateOnOffColor();
 		}
 
 		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				e.NewElement.Toggled += HandleToggled;
 				Control.Checked = e.NewElement.IsToggled;
-				UpdateOnColor();
+				UpdateOnOffColor();
 				UpdateThumbColor();
 			}
 		}
@@ -101,35 +101,39 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Switch.OnColorProperty.PropertyName)
-				UpdateOnColor();
+			if (e.PropertyName == Switch.OnColorProperty.PropertyName ||
+				e.PropertyName == Switch.OffColorProperty.PropertyName)
+				UpdateOnOffColor();
 			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();
 		}
 
-		void UpdateOnColor()
+		void UpdateOnOffColor()
 		{
-			if (Element != null)
+			if (Element == null || Control == null)
+				return;
+
+			Control.TrackDrawable?.ClearColorFilter();
+
+			if (Control.Checked)
 			{
-				if (Control.Checked)
+				if (Element.OnColor == Color.Default)
 				{
-					if (Element.OnColor == Color.Default)
-					{
-						Control.TrackDrawable = _defaultTrackDrawable;
-					}
-					else
-					{
-						if (Forms.SdkInt >= BuildVersionCodes.JellyBean)
-						{
-							Control.TrackDrawable?.SetColorFilter(Element.OnColor.ToAndroid(), FilterMode.SrcAtop);
-						}
-					}
+					Control.TrackDrawable = _defaultTrackDrawable;
+					return;
 				}
-				else
-				{
-					Control.TrackDrawable?.ClearColorFilter();
-				}
+
+				if (Forms.SdkInt >= BuildVersionCodes.JellyBean)
+					Control.TrackDrawable?.SetColorFilter(Element.OnColor.ToAndroid(), FilterMode.SrcAtop);
+				
+				return;
 			}
+
+			if (Element.OffColor == Color.Default)
+				return;
+
+			if (Forms.SdkInt >= BuildVersionCodes.JellyBean)
+				Control.TrackDrawable?.SetColorFilter(Element.OffColor.ToAndroid(), FilterMode.SrcAtop);
 		}
 
 		void UpdateThumbColor()
