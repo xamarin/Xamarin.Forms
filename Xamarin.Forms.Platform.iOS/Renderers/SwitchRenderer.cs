@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class SwitchRenderer : ViewRenderer<Switch, UISwitch>
 	{
 		UIColor _defaultOnColor;
+		UIColor _defaultOffColor;
 		UIColor _defaultThumbColor;
 
 		[Internals.Preserve(Conditional = true)]
@@ -38,10 +39,12 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				_defaultOnColor = UISwitch.Appearance.OnTintColor;
+				_defaultOffColor = UISwitch.Appearance.TintColor;
 				_defaultThumbColor = UISwitch.Appearance.ThumbTintColor;
 				Control.On = Element.IsToggled;
 				e.NewElement.Toggled += OnElementToggled;
 				UpdateOnColor();
+				UpdateOffColor(Element.BackgroundColor);
 				UpdateThumbColor();
 			}
 
@@ -50,13 +53,28 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateOnColor()
 		{
-			if (Element != null)
+			if (Element == null)
+				return;
+			Control.OnTintColor = Element.OnColor != Color.Default
+				? Element.OnColor.ToUIColor()
+				: _defaultOnColor;
+		}
+
+		void UpdateOffColor(Color backgroundColor)
+		{
+			if (Element == null)
+				return;
+			if (Element.OffColor == Color.Default || backgroundColor != Color.Default)
 			{
-				if (Element.OnColor == Color.Default)
-					Control.OnTintColor = _defaultOnColor;
-				else
-					Control.OnTintColor = Element.OnColor.ToUIColor();
+				Control.TintColor = _defaultOffColor;
+				Control.Layer.CornerRadius = 0;
+				base.SetBackgroundColor(backgroundColor);
+				return;
 			}
+			var color = Element.OffColor.ToUIColor();
+			Control.TintColor = color;
+			Control.BackgroundColor = color;
+			Control.Layer.CornerRadius = Control.Bounds.Height / 2;
 		}
 
 		void UpdateThumbColor()
@@ -78,13 +96,18 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.SetState(Element.IsToggled, true);
 		}
 
+		protected override void SetBackgroundColor(Color color)
+			=> UpdateOffColor(color);
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Switch.OnColorProperty.PropertyName)
 				UpdateOnColor();
-			if (e.PropertyName == Switch.ThumbColorProperty.PropertyName)
+			else if (e.PropertyName == Switch.OffColorProperty.PropertyName)
+				UpdateOffColor(Element.BackgroundColor);
+			else if (e.PropertyName == Switch.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();
 		}
 	}
