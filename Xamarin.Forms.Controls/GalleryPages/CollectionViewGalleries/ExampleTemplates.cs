@@ -143,10 +143,33 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				var frame = new Frame
 				{
 					Padding = new Thickness(5),
+					BackgroundColor = Color.Transparent,
 					Content = grid
 				};
 
 				return frame;
+			});
+		}
+
+		public static DataTemplate IndicatorTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var image = new Image
+				{
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center,
+					Aspect = Aspect.AspectFill,
+					Source = new FontImageSource
+					{
+						FontFamily = DefaultFontFamily(),
+						Glyph = "\uf30c",
+					},
+					HeightRequest = 10,
+					WidthRequest = 10
+				};
+
+				return image;
 			});
 		}
 
@@ -467,6 +490,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		static void More_Clicked(object sender, EventArgs e)
 		{
 			throw new NotImplementedException();
+		}
+
+		static string DefaultFontFamily()
+		{
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+
+			return fontFamily;
 		}
 
 		class IndexRequestConverter : IValueConverter

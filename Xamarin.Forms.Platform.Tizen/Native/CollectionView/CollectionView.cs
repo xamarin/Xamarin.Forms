@@ -7,10 +7,11 @@ using EBox = ElmSharp.Box;
 using EScroller = ElmSharp.Scroller;
 using ESize = ElmSharp.Size;
 using EPoint = ElmSharp.Point;
+using ElmSharp.Wearable;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
-	public class CollectionView : EBox, ICollectionViewController
+	public class CollectionView : EBox, ICollectionViewController, IRotaryInteraction
 	{
 		RecyclerPool _pool = new RecyclerPool();
 		ICollectionViewLayoutManager _layoutManager;
@@ -27,6 +28,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		SnapPointsType _snapPoints;
 		ESize _itemSize = new ESize(-1, -1);
 
+		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
+
 		public CollectionView(EvasObject parent) : base(parent)
 		{
 			SetLayoutCallback(OnLayout);
@@ -40,6 +43,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_innerLayout.Show();
 			Scroller.SetContent(_innerLayout);
 		}
+
+		public IRotaryActionWidget RotaryWidget { get => Scroller as IRotaryActionWidget; }
+
 
 		public CollectionViewSelectionMode SelectionMode
 		{
@@ -114,7 +120,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			Y = Scroller.Geometry.Y - Scroller.CurrentRegion.Y
 		};
 
-		ESize AllocatedSize { get; set; }
+		protected ESize AllocatedSize { get; set; }
 
 		Rect ViewPort => Scroller.CurrentRegion;
 
@@ -314,7 +320,14 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		protected virtual EScroller CreateScroller(EvasObject parent)
 		{
-			return new EScroller(parent);
+			if (Device.Idiom == TargetIdiom.Watch)
+			{
+				return new CircleScroller(parent, Forms.CircleSurface);
+			}
+			else
+			{
+				return new EScroller(parent);
+			}
 		}
 
 		void UpdateSelectedItemIndex()
@@ -495,6 +508,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		void RequestLayoutItems()
 		{
+			if (AllocatedSize.Width <= 0 || AllocatedSize.Height <= 0)
+				return;
+
 			if (!_requestLayoutItems)
 			{
 				_requestLayoutItems = true;
@@ -519,9 +535,24 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_innerLayout.MinimumHeight = size.Height;
 		}
 
+		int _previousHorizontalOffset = 0;
+		int _previousVerticalOffset = 0;
 		void OnScrolled(object sender, EventArgs e)
 		{
-			_layoutManager.LayoutItems(Scroller.CurrentRegion);
+			_layoutManager.LayoutItems(ViewPort);
+			var args = new ItemsViewScrolledEventArgs();
+			args.FirstVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X, ViewPort.Y);
+			args.CenterItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + (ViewPort.Width / 2), ViewPort.Y + (ViewPort.Height / 2));
+			args.LastVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + ViewPort.Width, ViewPort.Y + ViewPort.Height);
+			args.HorizontalOffset = ViewPort.X;
+			args.HorizontalDelta = ViewPort.X - _previousHorizontalOffset;
+			args.VerticalOffset = ViewPort.Y;
+			args.VerticalDelta = ViewPort.Y - _previousVerticalOffset;
+
+			Scrolled?.Invoke(this, args);
+
+			_previousHorizontalOffset = ViewPort.X;
+			_previousVerticalOffset = ViewPort.Y;
 		}
 
 		void UpdateSnapPointsType(SnapPointsType snapPoints)

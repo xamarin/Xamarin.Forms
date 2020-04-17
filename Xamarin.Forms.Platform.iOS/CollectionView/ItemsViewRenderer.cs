@@ -15,11 +15,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected TItemsView ItemsView => Element;
 
-
-
 		public override UIViewController ViewController => Controller;
 
 		protected TViewController Controller { get; private set; }
+
+		[Internals.Preserve(Conditional = true)]
+		protected ItemsViewRenderer()
+		{
+			AutoPackage = false;
+		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -50,10 +54,6 @@ namespace Xamarin.Forms.Platform.iOS
 				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
 				Controller.UpdateEmptyView();
-			}
-			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemSizingStrategyProperty))
-			{
-				UpdateItemSizingStrategy();
 			}
 			else if (changedProperty.Is(Xamarin.Forms.ItemsView.HorizontalScrollBarVisibilityProperty))
 			{
@@ -91,12 +91,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateLayout();
 			Controller = CreateController(newElement, _layout);
-			 
-
 			SetNativeControl(Controller.View);
 			Controller.CollectionView.BackgroundColor = UIColor.Clear;
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
+			UpdateItemsUpdatingScrollMode();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -124,6 +123,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateItemsSource()
 		{
+			UpdateItemsUpdatingScrollMode();
 			Controller.UpdateItemsSource();
 		}
 

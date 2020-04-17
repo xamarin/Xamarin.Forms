@@ -150,10 +150,12 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			App.IOSVersion = int.Parse(versionPart[0]);
 
 			Xamarin.Calabash.Start();
-			// Forms.SetFlags("CollectionView_Experimental", "Shell_Experimental");
+			Forms.SetFlags("SwipeView_Experimental", "MediaElement_Experimental", "AppTheme_Experimental");
 			Forms.Init();
 			FormsMaps.Init();
+#if __XCODE11__
 			FormsMaterial.Init();
+#endif
 
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
 			{

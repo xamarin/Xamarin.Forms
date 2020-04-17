@@ -1,13 +1,15 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.Foundation;
 using Xamarin.Forms.Internals;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using UWPApp = Windows.UI.Xaml.Application;
 using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
-using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -16,15 +18,22 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		protected CollectionViewSource CollectionViewSource;
 
-		protected ListViewBase ListViewBase { get; private set; }
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
 		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
+		FrameworkElement _emptyView;
+		View _formsEmptyView;
+		ScrollViewer _scrollViewer;
+		internal double _previousHorizontalOffset;
+		internal double _previousVerticalOffset;
 
+		protected ListViewBase ListViewBase { get; private set; }
 		protected UWPDataTemplate ViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["View"];
 		protected UWPDataTemplate ItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["ItemsViewDefaultTemplate"];
 
-		FrameworkElement _emptyView;
-		View _formsEmptyView;
+		protected ItemsViewRenderer()
+		{
+			AutoPackage = false;
+		}
 
 		protected TItemsView ItemsView => Element;
 		protected ItemsControl ItemsControl { get; private set; }
@@ -56,7 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
-			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty, 
+			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty,
 				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
 				UpdateEmptyView();
@@ -135,7 +144,7 @@ namespace Xamarin.Forms.Platform.UWP
 					IsSourceGrouped = false
 				};
 			}
-			
+
 			return new CollectionViewSource
 			{
 				Source = itemsSource,
@@ -177,6 +186,8 @@ namespace Xamarin.Forms.Platform.UWP
 				ListViewBase = SelectListViewBase();
 				ListViewBase.IsSynchronizedWithCurrentItem = false;
 
+				FindScrollViewer(ListViewBase);
+
 				Layout.PropertyChanged += LayoutPropertyChanged;
 
 				SetNativeControl(ListViewBase);
@@ -217,6 +228,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				ListViewBase.ItemsSource = null;
 			}
+
+			if (_scrollViewer != null)
+			{
+				_scrollViewer.ViewChanged -= OnScrollViewChanged;
+			}
 		}
 
 		void UpdateVerticalScrollBarVisibility()
@@ -255,6 +271,27 @@ namespace Xamarin.Forms.Platform.UWP
 					ScrollViewer.SetHorizontalScrollBarVisibility(Control, _defaultHorizontalScrollVisibility.Value);
 					break;
 			}
+		}
+
+		protected virtual void FindScrollViewer(ListViewBase listView)
+		{
+			var scrollViewer = listView.GetFirstDescendant<ScrollViewer>();
+
+			if (scrollViewer != null)
+			{
+				_scrollViewer = scrollViewer;
+				_scrollViewer.ViewChanged += OnScrollViewChanged;
+				return;
+			}
+
+			void ListViewLoaded(object sender, RoutedEventArgs e)
+			{
+				var lv = (ListViewBase)sender;
+				lv.Loaded -= ListViewLoaded;
+				FindScrollViewer(listView);
+			}
+
+			listView.Loaded += ListViewLoaded;
 		}
 
 		protected virtual async Task ScrollTo(ScrollToRequestEventArgs args)
@@ -335,7 +372,12 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (emptyView)
 			{
 				case string text:
-					_emptyView = new TextBlock { Text = text };
+					_emptyView = new TextBlock
+					{
+						HorizontalAlignment = HorizontalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Center,
+						Text = text
+					};
 					break;
 				case View view:
 					_emptyView = RealizeEmptyView(view);
@@ -345,7 +387,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 			}
 
-			(ListViewBase as IEmptyView)?.SetEmptyView(_emptyView);
+			(ListViewBase as IEmptyView)?.SetEmptyView(_emptyView, _formsEmptyView);
 
 			UpdateEmptyViewVisibility();
 		}
@@ -354,13 +396,18 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (emptyViewTemplate == null)
 			{
-				return new TextBlock { Text = bindingContext.ToString() };
+				return new TextBlock
+				{
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
+					Text = bindingContext.ToString()
+				};
 			}
 
 			var template = emptyViewTemplate.SelectDataTemplate(bindingContext, null);
 			var view = template.CreateContent() as View;
-
 			view.BindingContext = bindingContext;
+
 			return RealizeEmptyView(view);
 		}
 
@@ -386,6 +433,49 @@ namespace Xamarin.Forms.Platform.UWP
 					}
 				}
 			}
+		}
+
+		internal void HandleScroll(ScrollViewer scrollViewer)
+		{
+			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
+			{
+				HorizontalOffset = scrollViewer.HorizontalOffset,
+				HorizontalDelta = scrollViewer.HorizontalOffset - _previousHorizontalOffset,
+				VerticalOffset = scrollViewer.VerticalOffset,
+				VerticalDelta = scrollViewer.VerticalOffset - _previousVerticalOffset,
+			};
+
+			_previousHorizontalOffset = scrollViewer.HorizontalOffset;
+			_previousVerticalOffset = scrollViewer.VerticalOffset;
+
+			var layoutOrientaton = ItemsLayoutOrientation.Vertical;
+			bool goingNext = true;
+			switch (Layout)
+			{
+				case LinearItemsLayout linearItemsLayout:
+					layoutOrientaton = linearItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal ? ItemsLayoutOrientation.Horizontal : ItemsLayoutOrientation.Vertical;
+					goingNext = itemsViewScrolledEventArgs.HorizontalDelta > 0;
+					break;
+				case GridItemsLayout gridItemsLayout:
+					layoutOrientaton = gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal ? ItemsLayoutOrientation.Horizontal : ItemsLayoutOrientation.Vertical;
+					goingNext = itemsViewScrolledEventArgs.VerticalDelta > 0;
+					break;
+				default:
+					break;
+			}
+
+			var visibleIndexes = ListViewBase.GetVisibleIndexes(layoutOrientaton, goingNext);
+
+			itemsViewScrolledEventArgs.FirstVisibleItemIndex = visibleIndexes.firstVisibleItemIndex;
+			itemsViewScrolledEventArgs.CenterItemIndex = visibleIndexes.centerItemIndex;
+			itemsViewScrolledEventArgs.LastVisibleItemIndex = visibleIndexes.lastVisibleItemIndex;
+
+			Element.SendScrolled(itemsViewScrolledEventArgs);
+		}
+
+		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+		{
+			HandleScroll(_scrollViewer);
 		}
 	}
 }

@@ -23,11 +23,24 @@ namespace Xamarin.Forms.Controls
 			tb1.IsEnabled = _isEnable;
 			tb1.AutomationId = "toolbaritem_primary";
 
-			var tb2 = new ToolbarItem("tb2", null, () =>
+			var fis = new FontImageSource()
+			{
+				FontFamily = GetFontFamily(),
+				Glyph = '\uf101'.ToString(),
+				Color = Color.Red
+			};
+
+			var tb2 = new ToolbarItem("tb2 font", null, () =>
 			{
 				label.Text = "tb2";
 			}, ToolbarItemOrder.Primary);
+			tb2.IconImageSource = fis;
 			tb2.AutomationId = "toolbaritem_primary2";
+			var tb6 = new ToolbarItem("tb6 long long text", null, () =>
+			{
+				label.Text = "tb6";
+			}, ToolbarItemOrder.Primary);
+			tb6.AutomationId = "toolbaritem_primary6";
 
 			var tb3 = new ToolbarItem("tb3", "bank.png", () =>
 			{
@@ -58,6 +71,7 @@ namespace Xamarin.Forms.Controls
 			ToolbarItems.Add(tb3);
 			ToolbarItems.Add(tb4);
 			ToolbarItems.Add(tb5);
+			ToolbarItems.Add(tb6);
 
 			Content = new StackLayout
 			{
@@ -65,6 +79,31 @@ namespace Xamarin.Forms.Controls
 					label
 				}
 			};
+		}
+
+		static string GetFontFamily()
+		{
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.macOS:
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.WPF:
+				case Device.GTK:
+					fontFamily = "Assets/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+
+			return fontFamily;
 		}
 	}
 }

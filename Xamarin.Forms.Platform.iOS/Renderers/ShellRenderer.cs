@@ -6,6 +6,12 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellRenderer : UIViewController, IShellContext, IVisualElementRenderer, IEffectControlProvider
 	{
+		[Internals.Preserve(Conditional = true)]
+		public ShellRenderer()
+		{
+
+		}
+
 		#region IShellContext
 
 		bool IShellContext.AllowFlyoutGesture
@@ -115,6 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetupCurrentShellItem();
 
 			UpdateBackgroundColor();
+			UpdateFlowDirection();
 		}
 
 		protected virtual IShellFlyoutRenderer CreateFlyoutRenderer()
@@ -207,6 +214,27 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == Shell.CurrentItemProperty.PropertyName)
 			{
 				OnCurrentItemChanged();
+				UpdateFlowDirection();
+			}
+			else if(e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			{
+				UpdateFlowDirection(true);
+			}
+		}
+
+		void UpdateFlowDirection(bool readdViews = false)
+		{
+			if (_currentShellItemRenderer?.ViewController == null)
+				return;
+
+			bool update = _currentShellItemRenderer.ViewController.View.UpdateFlowDirection(Element);
+			update = View.UpdateFlowDirection(Element) || update;
+
+			if (update && readdViews)
+			{
+				_currentShellItemRenderer.ViewController.View.RemoveFromSuperview();
+				View.AddSubview(_currentShellItemRenderer.ViewController.View);
+				View.SendSubviewToBack(_currentShellItemRenderer.ViewController.View);
 			}
 		}
 
@@ -246,7 +274,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var color = Shell.BackgroundColor;
 			if (color.IsDefault)
-				color = Color.Black;
+				color = ColorExtensions.BackgroundColor.ToColor();
 
 			FlyoutRenderer.View.BackgroundColor = color.ToUIColor();
 		}

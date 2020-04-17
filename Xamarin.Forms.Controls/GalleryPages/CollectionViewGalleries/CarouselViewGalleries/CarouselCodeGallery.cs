@@ -26,9 +26,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				RowDefinitions = new RowDefinitionCollection
 				{
-					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = 40 },
+					new RowDefinition { Height = 80 },
+					new RowDefinition { Height = 30},
+					new RowDefinition { Height = 20},
+					new RowDefinition { Height = 20},
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				}
@@ -46,10 +48,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
-				Position = 2,
-				//NumberOfSideItems = 1,
-				Margin = new Thickness(0,10,0,40),
-				BackgroundColor = Color.LightGray,
+				Margin = new Thickness(0,10,0,10),
+				BackgroundColor = Color.Red,
 				AutomationId = "TheCarouselView"
 			};
 
@@ -58,24 +58,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			else
 				carouselView.PeekAreaInsets = new Thickness(0, 30, 0, 30);
 
-			carouselView.Scrolled += CarouselView_Scrolled;
-
-			layout.Children.Add(carouselView);
+			carouselView.Scrolled += CarouselViewScrolled;
 
 			StackLayout stacklayoutInfo = GetReadOnlyInfo(carouselView);
 
 			var generator = new ItemsSourceGenerator(carouselView, initialItems: nItems, itemsSourceType: ItemsSourceType.ObservableCollection);
 
-			layout.Children.Add(generator);
-
 			var positionControl = new PositionControl(carouselView, nItems);
-			layout.Children.Add(positionControl);
-
+			
 			var spacingModifier = new SpacingModifier(carouselView.ItemsLayout, "Update Spacing");
-
-			layout.Children.Add(spacingModifier);
-
-			layout.Children.Add(stacklayoutInfo);
 
 			var stckPeek = new StackLayout { Orientation = StackOrientation.Horizontal };
 			stckPeek.Children.Add(new Label { Text = "Peek" });
@@ -98,13 +89,28 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			};
 
 			stckPeek.Children.Add(padi);
-			stacklayoutInfo.Children.Add(stckPeek);
-			stacklayoutInfo.Children.Add(_scrollInfoLabel);
+		
+			var content = new Grid();
+			content.Children.Add(carouselView);
+
+#if DEBUG
+			// Uncomment this line to add a helper to visualize the center of each element.
+			//content.Children.Add(CreateDebuggerLines());
+#endif
+			layout.Children.Add(generator);
+			layout.Children.Add(positionControl);
+			layout.Children.Add(stacklayoutInfo);
+			layout.Children.Add(stckPeek);
+			layout.Children.Add(spacingModifier);
+			layout.Children.Add(_scrollInfoLabel);
+			layout.Children.Add(content);
 
 			Grid.SetRow(positionControl, 1);
 			Grid.SetRow(stacklayoutInfo, 2);
-			Grid.SetRow(spacingModifier, 3);
-			Grid.SetRow(carouselView, 4);
+			Grid.SetRow(stckPeek, 3);
+			Grid.SetRow(spacingModifier, 4);
+			Grid.SetRow(_scrollInfoLabel, 5);
+			Grid.SetRow(content, 6);
 
 			Content = layout;
 			generator.CollectionChanged += (sender, e) => {
@@ -112,9 +118,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			};
 
 			generator.GenerateItems();
+			positionControl.UpdatePosition(1);
 		}
 
-		private void CarouselView_Scrolled(object sender, ItemsViewScrolledEventArgs e)
+		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			_scrollInfoLabel.Text = $"First item: {e.FirstVisibleItemIndex}, Last item: {e.LastVisibleItemIndex}";
 
@@ -151,5 +158,35 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			return new StackLayout { Children = { stacklayoutInfo } };
 		}
+#if DEBUG
+		Grid CreateDebuggerLines()
+		{
+			var grid = new Grid
+			{
+				InputTransparent = true,
+				Margin = new Thickness(0, 10, 0, 10)
+			};
+
+			var horizontalLine = new Grid
+			{
+				HeightRequest = 1,
+				BackgroundColor = Color.Red,
+				VerticalOptions = LayoutOptions.Center
+			};
+
+			grid.Children.Add(horizontalLine);
+
+			var verticalLine = new Grid
+			{
+				WidthRequest = 1,
+				BackgroundColor = Color.Red,
+				HorizontalOptions = LayoutOptions.Center
+			};
+
+			grid.Children.Add(verticalLine);
+
+			return grid;
+		}
+#endif
 	}
 }

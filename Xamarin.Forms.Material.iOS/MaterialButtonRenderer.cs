@@ -96,6 +96,13 @@ namespace Xamarin.Forms.Material.iOS
 
 			// Colors have to be re-applied to Character spacing
 			_buttonLayoutManager?.UpdateText();
+
+			Color textColor = Element.TextColor;
+
+			if (textColor.IsDefault)
+				Control.SetTitleColor(MaterialColors.Light.DisabledColor, UIControlState.Disabled);
+			else
+				Control.SetTitleColor(textColor.ToUIColor(), UIControlState.Disabled);
 		}
 
 		protected override MButton CreateNativeControl() => new MButton();
@@ -168,6 +175,9 @@ namespace Xamarin.Forms.Material.iOS
 					colorScheme.PrimaryColor = uiColor;
 					colorScheme.OnSurfaceColor = uiColor;
 				}
+
+				if (Control != null)
+					ApplyTheme();
 			}
 		}
 
@@ -243,7 +253,7 @@ namespace Xamarin.Forms.Material.iOS
 				else
 					colorScheme.OnPrimaryColor = textColor.ToUIColor();
 			}
-			
+
 		}
 
 		// IImageVisualElementRenderer

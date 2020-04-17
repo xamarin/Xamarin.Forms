@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					}
 				}
 			};
-			GestureRecognizers.Add(gesture);
+			//GestureRecognizers.Add(gesture);
 		}
 	}
 }

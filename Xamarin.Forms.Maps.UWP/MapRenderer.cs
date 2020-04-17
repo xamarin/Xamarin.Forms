@@ -35,15 +35,17 @@ namespace Xamarin.Forms.Maps.UWP
 
 				if (Control == null)
 				{
-					SetNativeControl(new MapControl());
+					SetNativeControl(new MapControl());  
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
-					Control.MapTapped += OnMapTapped;
+					Control.MapTapped += OnMapTapped; 
+					Control.LayoutUpdated += OnLayoutUpdated; 
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
+				UpdateTrafficEnabled();
 				UpdateMapType();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
@@ -64,6 +66,17 @@ namespace Xamarin.Forms.Maps.UWP
 			}
 		}
 
+		bool _isRegionUpdatePending;
+
+		async void OnLayoutUpdated(object sender, object e)
+		{
+			if (_isRegionUpdatePending)
+			{
+				// _isRegionUpdatePending is set to false when the update is successfull
+				await MoveToRegion(Element.LastMoveToRegion, MapAnimationKind.None);
+			}
+		}
+
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
@@ -76,6 +89,8 @@ namespace Xamarin.Forms.Maps.UWP
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -93,6 +108,12 @@ namespace Xamarin.Forms.Maps.UWP
 				{
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
 					((ObservableCollection<MapElement>)Element.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
+				}
+
+				if (Control != null)
+				{
+					Control.LayoutUpdated -= OnLayoutUpdated;
+					Control.MapTapped -= OnMapTapped;
 				}
 			}
 
@@ -196,6 +217,9 @@ namespace Xamarin.Forms.Maps.UWP
 					case Polygon polygon:
 						nativeMapElement = LoadPolygon(polygon);
 						break;
+					case Circle circle:
+						nativeMapElement = LoadCircle(circle);
+						break;
 				}
 
 				Control.MapElements.Add(nativeMapElement);
@@ -224,6 +248,9 @@ namespace Xamarin.Forms.Maps.UWP
 				case Polygon polygon:
 					OnPolygonPropertyChanged(polygon, e);
 					break;
+				case Circle circle:
+					OnCirclePropertyChanged(circle, e);
+					break;
 			}
 		}
 
@@ -242,7 +269,7 @@ namespace Xamarin.Forms.Maps.UWP
 			{
 				return new Geopath(new[]
 				{
-					new BasicGeoposition(), 
+					new BasicGeoposition(),
 				});
 			}
 		}
@@ -326,6 +353,49 @@ namespace Xamarin.Forms.Maps.UWP
 
 		#endregion
 
+		#region Circles
+
+		protected virtual MapPolygon LoadCircle(Circle circle)
+		{
+			return new MapPolygon()
+			{
+				Path = PositionsToGeopath(circle.ToCircumferencePositions()),
+				StrokeColor = circle.StrokeColor.IsDefault ? Colors.Black : circle.StrokeColor.ToWindowsColor(),
+				StrokeThickness = circle.StrokeWidth,
+				FillColor = circle.FillColor.ToWindowsColor()
+			};
+		}
+
+		void OnCirclePropertyChanged(Circle circle, PropertyChangedEventArgs e)
+		{
+			var mapPolygon = (MapPolygon)circle.MapElementId;
+
+			if (mapPolygon == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				mapPolygon.StrokeColor = circle.StrokeColor.IsDefault ? Colors.Black : circle.StrokeColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				mapPolygon.StrokeThickness = circle.StrokeWidth;
+			}
+			else if (e.PropertyName == Circle.FillColorProperty.PropertyName)
+			{
+				mapPolygon.FillColor = circle.FillColor.ToWindowsColor();
+			}
+			else if (e.PropertyName == Circle.CenterProperty.PropertyName ||
+					 e.PropertyName == Circle.RadiusProperty.PropertyName)
+			{
+				mapPolygon.Path = PositionsToGeopath(circle.ToCircumferencePositions());
+			}
+		}
+
+		#endregion
+
 		async Task UpdateIsShowingUser(bool moveToLocation = true)
 		{
 			if (Control == null || Element == null)
@@ -375,7 +445,7 @@ namespace Xamarin.Forms.Maps.UWP
 				Longitude = span.Center.Longitude + span.LongitudeDegrees / 2
 			};
 			var boundingBox = new GeoboundingBox(nw, se);
-			await Control.TrySetViewBoundsAsync(boundingBox, null, animation);
+			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation); 
 		}
 
 		async Task UpdateVisibleRegion()
@@ -445,6 +515,11 @@ namespace Xamarin.Forms.Maps.UWP
 				Control.Center = point;
 				Control.ZoomLevel = 13;
 			}
+		}
+
+		void UpdateTrafficEnabled()
+		{
+			Control.TrafficFlowVisible = Element.TrafficEnabled;
 		}
 
 		void UpdateMapType()

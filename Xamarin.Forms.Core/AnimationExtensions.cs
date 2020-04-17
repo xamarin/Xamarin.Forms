@@ -124,6 +124,8 @@ namespace Xamarin.Forms
 			return x => start + (target - start) * x;
 		}
 
+		public static IDisposable Batch(this IAnimatable self) => new BatchObject(self);
+
 		static void AbortAnimation(AnimatableKey key)
 		{
 			// If multiple animations on the same view with the same name (IOW, the same AnimatableKey) are invoked
@@ -237,7 +239,9 @@ namespace Xamarin.Forms
 				var repeat = false;
 
 				// If the Ticker has been disabled (e.g., by power save mode), then don't repeat the animation
-				if (info.Repeat != null && Ticker.Default.SystemEnabled)
+				var animationsEnabled = Ticker.Default.SystemEnabled;
+
+				if (info.Repeat != null && animationsEnabled)
 					repeat = info.Repeat();
 
 				if (!repeat)
@@ -247,7 +251,7 @@ namespace Xamarin.Forms
 					tweener.Finished -= HandleTweenerFinished;
 				}
 
-				info.Finished?.Invoke(tweener.Value, false);
+				info.Finished?.Invoke(tweener.Value, !animationsEnabled);
 
 				if (info.Owner.TryGetTarget(out owner))
 					owner.BatchCommit();
@@ -313,6 +317,23 @@ namespace Xamarin.Forms
 			public WeakReference<IAnimatable> Owner { get; set; }
 
 			public uint Rate { get; set; }
+		}
+
+		sealed class BatchObject : IDisposable
+		{
+			IAnimatable _animatable;
+
+			public BatchObject(IAnimatable animatable)
+			{
+				_animatable = animatable;
+				_animatable?.BatchBegin();
+			}
+
+			public void Dispose()
+			{
+				_animatable?.BatchCommit();
+				_animatable = null;
+			}
 		}
 	}
 }

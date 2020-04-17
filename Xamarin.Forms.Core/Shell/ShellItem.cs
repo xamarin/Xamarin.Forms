@@ -12,6 +12,10 @@ namespace Xamarin.Forms
 	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class FlyoutItem : ShellItem
 	{
+		public const string LabelStyle = "FlyoutItemLabelStyle";
+		public const string ImageStyle = "FlyoutItemImageStyle";
+		public const string GridStyle = "FlyoutItemGridStyle";
+
 		public FlyoutItem()
 		{
 			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
@@ -41,12 +45,14 @@ namespace Xamarin.Forms
 
 		#region IShellItemController
 
+		IShellItemController ShellItemController => this;
+
 		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
 		{
 			var shellSection = request.Request.Section;
 
 			if (shellSection == null)
-				shellSection = Items[0];
+				shellSection = ShellItemController.GetItems()[0];
 
 			Shell.ApplyQueryAttributes(shellSection, queryData, request.Request.Content == null);
 
@@ -77,6 +83,14 @@ namespace Xamarin.Forms
 			return accept;
 		}
 
+		ReadOnlyCollection<ShellSection> IShellItemController.GetItems() => ((ShellSectionCollection)Items).VisibleItems;
+
+		event NotifyCollectionChangedEventHandler IShellItemController.ItemsCollectionChanged
+		{
+			add { ((ShellSectionCollection)Items).VisibleItemsChanged += value; }
+			remove { ((ShellSectionCollection)Items).VisibleItemsChanged -= value; }
+		}
+
 		#endregion IShellItemController
 
 		#region IPropertyPropagationController
@@ -99,7 +113,9 @@ namespace Xamarin.Forms
 
 		public ShellItem()
 		{
-			((INotifyCollectionChanged)Items).CollectionChanged += ItemsCollectionChanged;
+			ShellItemController.ItemsCollectionChanged += (_, __) => SendStructureChanged();
+			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
+
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ShellItem>>(() => new PlatformConfigurationRegistry<ShellItem>(this));
 		}
 
@@ -196,10 +212,10 @@ namespace Xamarin.Forms
 			base.OnChildRemoved(child);
 			if (CurrentItem == child)
 			{
-				if (Items.Count == 0)
+				if (ShellItemController.GetItems().Count == 0)
 					ClearValue(CurrentItemProperty);
 				else
-					SetValueFromRenderer(CurrentItemProperty, Items[0]);
+					SetValueFromRenderer(CurrentItemProperty, ShellItemController.GetItems()[0]);
 			}
 		}
 
@@ -237,8 +253,6 @@ namespace Xamarin.Forms
 				foreach (Element element in e.OldItems)
 					OnChildRemoved(element);
 			}
-
-			SendStructureChanged();
 		}
 
 		internal override void SendAppearing()

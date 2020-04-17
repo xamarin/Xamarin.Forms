@@ -1,20 +1,23 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
-	internal class MenuShellItem : ShellItem, IMenuItemController
+	internal class MenuShellItem : ShellItem, IMenuItemController, IStyleSelectable
 	{
 		internal MenuShellItem(MenuItem menuItem)
 		{
 			MenuItem = menuItem;
-
+			MenuItem.Parent = this;
 			SetBinding(TitleProperty, new Binding(nameof(MenuItem.Text), BindingMode.OneWay, source: menuItem));
 			SetBinding(IconProperty, new Binding(nameof(MenuItem.IconImageSource), BindingMode.OneWay, source: menuItem));
 			SetBinding(FlyoutIconProperty, new Binding(nameof(MenuItem.IconImageSource), BindingMode.OneWay, source: menuItem));
 
-			Shell.SetMenuItemTemplate(this, Shell.GetMenuItemTemplate(MenuItem));
 			MenuItem.PropertyChanged += OnMenuItemPropertyChanged;
 		}
+
+		IList<string> IStyleSelectable.Classes => ((IStyleSelectable)MenuItem).Classes;
 
 		public string Text => Title;
 
