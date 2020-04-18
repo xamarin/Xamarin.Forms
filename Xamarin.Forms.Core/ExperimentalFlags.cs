@@ -27,6 +27,11 @@ namespace Xamarin.Forms
 			string constructorHint = null,
 			[CallerMemberName] string memberName = "")
 		{
+			if (DesignMode.IsDesignModeEnabled)
+			{
+				return; 
+			}
+
 			if (Device.Flags == null || !Device.Flags.Contains(flagName))
 			{
 				if (!String.IsNullOrEmpty(memberName))
