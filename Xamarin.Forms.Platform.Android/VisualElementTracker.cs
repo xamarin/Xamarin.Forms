@@ -39,7 +39,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			if(_context.IsDesignerContext())
 			{
-				renderer.View.ViewAttachedToWindow += (_, __) => HandleViewAttachedToWindow();
 			}
 			else
 			{
