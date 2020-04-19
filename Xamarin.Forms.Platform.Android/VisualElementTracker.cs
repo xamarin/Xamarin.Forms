@@ -42,6 +42,10 @@ namespace Xamarin.Forms.Platform.Android
 				_attachTracker = AttachTracker.Instance;
 				renderer.View.AddOnAttachStateChangeListener(_attachTracker);
 			}
+			else
+			{
+				_attachTracker = new AttachTracker();
+			}
 		}
 
 		public void Dispose()
