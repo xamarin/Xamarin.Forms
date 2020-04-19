@@ -37,7 +37,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			renderer.View.SetCameraDistance(3600);
 
-			renderer.View.AddOnAttachStateChangeListener(AttachTracker.Instance);
+			if(_context.IsDesignerContext())
+			{
+				renderer.View.ViewAttachedToWindow += (_, __) => HandleViewAttachedToWindow();
+			}
+			else
+			{
+				renderer.View.AddOnAttachStateChangeListener(AttachTracker.Instance);
+			}
 		}
 
 		public void Dispose()
