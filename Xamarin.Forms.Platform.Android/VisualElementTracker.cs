@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _initialUpdateNeeded = true;
 		bool _layoutNeeded;
 		IVisualElementRenderer _renderer;
-
+		AttachTracker _attachTracker;
 		public VisualElementTracker(IVisualElementRenderer renderer)
 		{
 			_batchCommittedHandler = HandleRedrawNeeded;
@@ -37,12 +37,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			renderer.View.SetCameraDistance(3600);
 
-			if(_context.IsDesignerContext())
+			if(!_context.IsDesignerContext())
 			{
-			}
-			else
-			{
-				renderer.View.AddOnAttachStateChangeListener(AttachTracker.Instance);
+				_attachTracker = AttachTracker.Instance;
+				renderer.View.AddOnAttachStateChangeListener(_attachTracker);
 			}
 		}
 
@@ -66,7 +64,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (_renderer != null)
 				{
 					_renderer.ElementChanged -= RendererOnElementChanged;
-					_renderer.View.RemoveOnAttachStateChangeListener(AttachTracker.Instance);
+
+					if (_renderer.View.IsAlive() && _attachTracker.IsAlive())
+					{
+						_renderer.View.RemoveOnAttachStateChangeListener(_attachTracker);
+						_attachTracker = null;
+					}
+
 					_renderer = null;
 					_context = null;
 				}
