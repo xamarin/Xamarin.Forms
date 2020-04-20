@@ -52,7 +52,7 @@ if (IsMac)
 		Item ("Xamarin.Mac", "6.16.0.11")
       		.Source (_ => macSDK_macos);
 
-    var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
+    /*var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
     if (!string.IsNullOrEmpty(dotnetVersion))
 	  {
 		// VSTS installs into a non-default location. Let's hardcode it here because why not.
@@ -61,7 +61,7 @@ if (IsMac)
 		var defaultInstallLocation = Path.Combine ("/usr/local/share/dotnet/sdk/", dotnetVersion);
 		if (Directory.Exists (vstsBaseInstallPath) && !Directory.Exists (vstsInstallPath))
 			ln (defaultInstallLocation, vstsInstallPath);
-	  }
+	  }*/
 }
 else
 {

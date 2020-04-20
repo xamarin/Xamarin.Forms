@@ -25,7 +25,7 @@ steps:
 
   - task: UseDotNet@2
     displayName: 'Install .net core $(DOTNET_VERSION)'
-    condition: ne(variables['DOTNET_VERSION'], '')
+    condition: and(ne(variables['DOTNET_VERSION'], ''), eq(variables['provisioning'], 'false'))
     inputs:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
