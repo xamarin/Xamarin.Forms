@@ -13,6 +13,13 @@ string iOSSDK_macos = "";//$"https://download.visualstudio.microsoft.com/downloa
 string macSDK_macos = "";//$"https://download.visualstudio.microsoft.com/download/pr/6e56949e-1beb-4550-abf9-ff404868de82/547895e66c0543faccb25933d8691371/xamarin.mac-6.16.0.11.pkg";
 
 
+if (!Directory.Exists ("/Library/Frameworks/Mono.framework/Versions/Current/Commands/mono"))
+{
+	Item ("Mono", "6.8.0.105")
+		.Source (_ => "https://download.mono-project.com/archive/6.8.0/macos-10-universal/MonoFramework-MDK-6.8.0.105.macos10.xamarin.universal.pkg");
+}
+
+
 if (IsMac)
 {
 	string releaseChannel = Environment.GetEnvironmentVariable ("releaseChannel");
