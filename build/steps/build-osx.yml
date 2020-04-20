@@ -9,6 +9,12 @@ steps:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments)
 
+  - task: xamops.azdevex.provisionator-task.provisionator@1
+    displayName: 'Provision Xcode'
+    condition: eq(variables['REQUIRED_XCODE'], 'true')
+    inputs:
+      provisioning_script: 'build/provisioning/xcode.csx'
+
   - task: Bash@3
     displayName: 'Cake Provision'
     condition: or(eq(variables['provisioningCake'], 'true'), eq(variables['buildForVS2017'], 'true'))
