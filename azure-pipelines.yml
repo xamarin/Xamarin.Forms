@@ -138,7 +138,8 @@ stages:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
           demands: 
-            msbuild
+            - Agent.OS -equals Windows_NT
+            - msbuild
         variables:
           FormsIdAppend: ''
           buildConfiguration: $(DefaultBuildConfiguration)
