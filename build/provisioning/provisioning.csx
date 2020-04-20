@@ -22,6 +22,10 @@ if (!Directory.Exists ("/Library/Frameworks/Mono.framework/Versions/Current/Comm
 
 if (IsMac)
 {
+    
+	ForceJavaCleanup();
+	Item (XreItem.Java_OpenJDK_1_8_0_25);
+	
 	string releaseChannel = Environment.GetEnvironmentVariable ("releaseChannel");
 
 	if(releaseChannel == "Preview")
@@ -47,8 +51,6 @@ if (IsMac)
 	if(!String.IsNullOrEmpty(macSDK_macos))
 		Item ("Xamarin.Mac", "6.16.0.11")
       		.Source (_ => macSDK_macos);
-    
-	ForceJavaCleanup();
 
     var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
     if (!string.IsNullOrEmpty(dotnetVersion))
