@@ -482,7 +482,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				SetLockMode(isShowingSplit ? LockModeLockedOpen : LockModeUnlocked);
 				unchecked
 				{
-					SetScrimColor(isShowingSplit ? Color.Transparent.ToAndroid() : (int)DefaultScrimColor);
+					SetScrimColor(isShowingSplit ? (int)Color.Transparent.ToAndroid() : (int)DefaultScrimColor);
 				}
 			}
 		}

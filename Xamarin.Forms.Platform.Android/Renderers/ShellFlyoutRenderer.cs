@@ -189,7 +189,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			unchecked
 			{
-				SetScrimColor(behavior == FlyoutBehavior.Locked ? Color.Transparent.ToAndroid() : (int)DefaultScrimColor);
+				SetScrimColor(behavior == FlyoutBehavior.Locked ? (int)Color.Transparent.ToAndroid() : (int)DefaultScrimColor);
 			}
 		}
 

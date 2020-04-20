@@ -249,7 +249,7 @@ namespace Xamarin.Forms.Material.Android
 			if (_defaultBackgroundColor == null)
 				_defaultBackgroundColor = CardBackgroundColor.DefaultColor;
 
-			SetCardBackgroundColor(bgColor.IsDefault ? _defaultBackgroundColor.Value : bgColor.ToAndroid());
+			SetCardBackgroundColor(bgColor.IsDefault ? _defaultBackgroundColor.Value : (int)bgColor.ToAndroid());
 		}
 
 		// IVisualElementRenderer
