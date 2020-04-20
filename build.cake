@@ -44,7 +44,7 @@ bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
 
 string artifactStagingDirectory = Argument("Build_ArtifactStagingDirectory", (string)null) ?? EnvironmentVariable("Build.ArtifactStagingDirectory") ?? EnvironmentVariable("Build_ArtifactStagingDirectory") ?? ".";
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
-    (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : System.IO.Path.Combine(EnvironmentVariable("HOME"), "/Library/Developer/Xamarin/android-sdk-macosx"));
+    (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
 string[] androidSdkManagerInstalls = new [] { "platforms;android-24", "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
 
@@ -164,9 +164,11 @@ Task("provision-androidsdk")
         if(androidSdkManagerInstalls.Length > 0)
         {
             var androidSdkSettings = new AndroidSdkManagerToolSettings {
-                SdkRoot = ANDROID_HOME,
                 SkipVersionCheck = true
             };
+
+            if(!String.IsNullOrWhiteSpace(ANDROID_HOME))            
+                androidSdkSettings.SdkRoot = ANDROID_HOME;
 
             AcceptLicenses (androidSdkSettings);
             AndroidSdkManagerUpdateAll (androidSdkSettings);
