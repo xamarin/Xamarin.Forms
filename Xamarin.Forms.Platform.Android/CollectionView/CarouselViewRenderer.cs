@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (adapter != null)
 			{
 				adapter.NotifyItemChanged(_oldPosition);
-				Carousel.ScrollTo(_oldPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+				Carousel.ScrollTo(_oldPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: Carousel.AnimatePositionChanges);
 			}
 
 			base.UpdateItemSpacing();
