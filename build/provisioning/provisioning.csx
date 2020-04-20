@@ -15,8 +15,8 @@ string macSDK_macos = "";//$"https://download.visualstudio.microsoft.com/downloa
 
 if (!Directory.Exists ("/Library/Frameworks/Mono.framework/Versions/Current/Commands/mono"))
 {
-	Item ("Mono", "6.8.0.105")
-		.Source (_ => "https://download.mono-project.com/archive/6.8.0/macos-10-universal/MonoFramework-MDK-6.8.0.105.macos10.xamarin.universal.pkg");
+	//Item ("Mono", "6.8.0.123")
+	//	.Source (_ => "https://download.mono-project.com/archive/6.8.0/macos-10-universal/MonoFramework-MDK-6.8.0.123.macos10.xamarin.universal.pkg");
 }
 
 
@@ -25,7 +25,7 @@ if (IsMac)
     
 	ForceJavaCleanup();
 	Item (XreItem.Java_OpenJDK_1_8_0_25);
-	
+
 	string releaseChannel = Environment.GetEnvironmentVariable ("releaseChannel");
 
 	if(releaseChannel == "Preview")
