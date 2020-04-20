@@ -17,7 +17,8 @@ steps:
 
   - script: |
       echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/Current/Commands/"
-    condition: and(eq(variables['provisioning'], 'true'), eq(variables['buildForVS2017'], 'false'))
+    displayName: 'Setup Mono Path'
+    condition: or(eq(variables['provisioning'], 'true'), eq(variables['provisioningCake'], 'true'))
 
   - task: Bash@3
     displayName: 'Cake Provision'
