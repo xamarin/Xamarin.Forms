@@ -51,17 +51,6 @@ if (IsMac)
 	if(!String.IsNullOrEmpty(macSDK_macos))
 		Item ("Xamarin.Mac", "6.16.0.11")
       		.Source (_ => macSDK_macos);
-
-    /*var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
-    if (!string.IsNullOrEmpty(dotnetVersion))
-	  {
-		// VSTS installs into a non-default location. Let's hardcode it here because why not.
-		var vstsBaseInstallPath = Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".dotnet", "sdk");
-		var vstsInstallPath = Path.Combine (vstsBaseInstallPath, dotnetVersion);
-		var defaultInstallLocation = Path.Combine ("/usr/local/share/dotnet/sdk/", dotnetVersion);
-		if (Directory.Exists (vstsBaseInstallPath) && !Directory.Exists (vstsInstallPath))
-			ln (defaultInstallLocation, vstsInstallPath);
-	  }*/
 }
 else
 {
@@ -83,14 +72,8 @@ else
 
 }
 
-// Item(XreItem.Java_OpenJDK_1_8_0_25);
-AndroidSdk ().ApiLevel((AndroidApiLevel)24);
-AndroidSdk ().ApiLevel((AndroidApiLevel)28);
-AndroidSdk ().ApiLevel((AndroidApiLevel)29);
-
-void ln (string source, string destination)
-{
-	Console.WriteLine ($"ln -sf {source} {destination}");
-	if (!Config.DryRun)
-		Exec ("/bin/ln", "-sf", source, destination);
-}
+AndroidSdk()
+	.ApiLevel((AndroidApiLevel)24)
+	.ApiLevel((AndroidApiLevel)28)
+	.ApiLevel((AndroidApiLevel)29)
+	.SdkManagerPackage ("build-tools;29.0.3");
