@@ -7,7 +7,7 @@ steps:
     condition: and(eq(variables['provisioning'], 'true'), eq(variables['buildForVS2017'], 'false'))
     inputs:
       provisioning_script: $(provisionator.osxPath)
-      provisioning_extra_args: $(provisionator.extraArguments)
+      provisioning_extra_args: $(provisionator.extraArguments) --v
 
   - task: xamops.azdevex.provisionator-task.provisionator@1
     displayName: 'Provision Xcode'
