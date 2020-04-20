@@ -17,8 +17,9 @@ steps:
 
   - script: |
       echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/Current/Commands/"
+      echo "##vso[task.prependpath]~/Library/Developer/Xamarin/android-sdk-macosx"
     displayName: 'Setup Mono Path'
-    condition: or(eq(variables['provisioning'], 'true'), eq(variables['provisioningCake'], 'true'))
+    condition: and(ne(variables['osx2019VmPool'], 'Azure Pipelines'), eq(variables['buildForVS2017'], 'false'))
 
   - task: Bash@3
     displayName: 'Cake Provision'
