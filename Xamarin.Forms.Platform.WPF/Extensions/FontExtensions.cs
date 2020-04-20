@@ -20,10 +20,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			self.FontSize = font.UseNamedSize ? GetFontSize(font.NamedSize) : font.FontSize;
 
-			if (!string.IsNullOrEmpty(font.FontFamily))
-				self.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), font.FontFamily);
-			else
-				self.FontFamily = (FontFamily)System.Windows.Application.Current.Resources["FontFamilySemiBold"];
+			self.FontFamily = font.FontFamily.ToFontFamily("FontFamilySemiBold");
 
 			if (font.FontAttributes.HasFlag(FontAttributes.Italic))
 				self.FontStyle = FontStyles.Italic;
@@ -57,10 +54,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			self.FontSize = font.UseNamedSize ? GetFontSize(font.NamedSize) : font.FontSize;
 
-			if (!string.IsNullOrEmpty(font.FontFamily))
-				self.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), font.FontFamily);
-			else
-				self.FontFamily = (FontFamily)System.Windows.Application.Current.Resources["FontFamilyNormal"];
+			self.FontFamily = font.FontFamily.ToFontFamily("FontFamilyNormal");
 
 			if (font.FontAttributes.HasFlag(FontAttributes.Italic))
 				self.FontStyle = FontStyles.Italic;
