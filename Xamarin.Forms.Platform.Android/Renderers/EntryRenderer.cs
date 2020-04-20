@@ -247,14 +247,15 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePlaceHolderText();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdateInputType();
-			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			else if (e.IsOneOf(Entry.TextProperty, Entry.TextTransformProperty))
 			{
-				if (EditText.Text != Element.Text)
+				var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+				if (EditText.Text != text)
 				{
-					EditText.Text = Element.Text;
+					EditText.Text = text;
 					if (EditText.IsFocused)
 					{
-						EditText.SetSelection(EditText.Text.Length);
+						EditText.SetSelection(text.Length);
 						EditText.ShowKeyboard();
 					}
 				}

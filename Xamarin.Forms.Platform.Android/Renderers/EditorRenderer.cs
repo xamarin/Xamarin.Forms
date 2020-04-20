@@ -147,7 +147,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.PropertyName == Editor.TextProperty.PropertyName || e.PropertyName == Editor.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
@@ -254,7 +254,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == newText)
 				return;
