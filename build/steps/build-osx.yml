@@ -3,17 +3,21 @@ steps:
     clean: true
 
   - task: xamops.azdevex.provisionator-task.provisionator@1
+    displayName: 'Provision Xcode'
+    condition: and(ne(variables['REQUIRED_XCODE'], ''), eq(variables['buildForVS2017'], 'false'))
+    inputs:
+      provisioning_script: 'build/provisioning/xcode.csx'
+
+  - task: xamops.azdevex.provisionator-task.provisionator@1
     displayName: 'Provisionator'
     condition: and(eq(variables['provisioning'], 'true'), eq(variables['buildForVS2017'], 'false'))
     inputs:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments) --v
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
-    displayName: 'Provision Xcode'
-    condition: and(ne(variables['REQUIRED_XCODE'], ''), eq(variables['buildForVS2017'], 'false'))
-    inputs:
-      provisioning_script: 'build/provisioning/xcode.csx'
+  - script: |
+      echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/Current/Commands/"
+    condition: and(eq(variables['provisioning'], 'true'), eq(variables['buildForVS2017'], 'false'))
 
   - task: Bash@3
     displayName: 'Cake Provision'
