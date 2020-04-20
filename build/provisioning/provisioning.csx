@@ -13,18 +13,18 @@ string iOSSDK_macos = "";//$"https://download.visualstudio.microsoft.com/downloa
 string macSDK_macos = "";//$"https://download.visualstudio.microsoft.com/download/pr/6e56949e-1beb-4550-abf9-ff404868de82/547895e66c0543faccb25933d8691371/xamarin.mac-6.16.0.11.pkg";
 
 
-string releaseChannel = Environment.GetEnvironmentVariable ("releaseChannel");
-
-if(releaseChannel == "Preview")
-{
-	XamarinChannel("Preview");
-}
-else{
-	XamarinChannel("Stable");
-}
-
 if (IsMac)
 {
+	string releaseChannel = Environment.GetEnvironmentVariable ("releaseChannel");
+
+	if(releaseChannel == "Preview")
+	{
+		XamarinChannel("Preview");
+	}
+	else{
+		XamarinChannel("Stable");
+	}
+
   	if(!String.IsNullOrEmpty(monoSDK_macos))
     	Item ("Mono", monoVersion)
       		.Source (_ => monoSDK_macos);
