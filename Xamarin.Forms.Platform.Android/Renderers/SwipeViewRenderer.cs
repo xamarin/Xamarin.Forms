@@ -66,6 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.NewElement != null)
 			{
+				e.NewElement.OpenRequested += OnOpenRequested;
 				e.NewElement.CloseRequested += OnCloseRequested;
 
 				if (Control == null)
@@ -82,7 +83,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (e.OldElement != null)
+			{
+				e.NewElement.OpenRequested -= OnOpenRequested;
 				e.OldElement.CloseRequested -= OnCloseRequested;
+			}
 
 			base.OnElementChanged(e);
 		}
@@ -188,6 +192,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (Element != null)
 				{
+					Element.OpenRequested -= OnOpenRequested;
 					Element.CloseRequested -= OnCloseRequested;
 				}
 
@@ -435,8 +440,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!ValidateSwipeDirection() || _isResettingSwipe)
 				return false;
-			
+
 			_swipeOffset = GetSwipeOffset(_initialPoint, point);
+
+			UpdateSwipeItems();
 
 			if (Math.Abs(_swipeOffset) > double.Epsilon)
 				Swipe();
@@ -455,7 +462,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!_isSwiping)
 				return false;
-			
+
 			_isSwiping = false;
 
 			RaiseSwipeEnded();
@@ -559,7 +566,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var items = GetSwipeItemsByDirection();
 
-			if (items == null)
+			if (items == null || items.Count == 0)
 				return;
 
 			_actionView = new LinearLayoutCompat(_context);
@@ -650,7 +657,22 @@ namespace Xamarin.Forms.Platform.Android
 
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
-				drawable.SetBounds(0, 0, iconSize, iconSize);
+				int drawableWidth = drawable.IntrinsicWidth;
+				int drawableHeight = drawable.IntrinsicHeight;
+
+				if(drawableWidth > drawableHeight)
+				{
+					var iconWidth = iconSize;
+					var iconHeight = drawableHeight * iconWidth / drawableWidth;
+					drawable.SetBounds(0, 0, iconWidth, iconHeight);
+				}
+				else
+				{
+					var iconHeight = iconSize;
+					var iconWidth = drawableWidth * iconHeight / drawableHeight;
+					drawable.SetBounds(0, 0, iconWidth, iconHeight);
+				}
+
 				drawable.SetColorFilter(textColor.ToAndroid(), FilterMode.SrcAtop);
 				swipeButton.SetCompoundDrawables(null, drawable, null, null);
 			});
@@ -1088,7 +1110,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isResettingSwipe)
 				return;
-			
+
 			var swipeItems = GetSwipeItemsByDirection();
 
 			if (swipeItems == null || _actionView == null)
@@ -1124,6 +1146,48 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			swipeItem.OnInvoked();
+		}
+
+		void OnOpenRequested(object sender, OpenSwipeEventArgs e)
+		{
+			if (_contentView == null)
+				return;
+
+			var openSwipeItem = e.OpenSwipeItem;
+			ProgrammaticallyOpenSwipeItem(openSwipeItem);
+		}
+
+		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem)
+		{
+			if (_isOpen)
+				return;
+
+			switch (openSwipeItem)
+			{
+				case OpenSwipeItem.BottomItems:
+					_swipeDirection = SwipeDirection.Up;
+					break;
+				case OpenSwipeItem.LeftItems:
+					_swipeDirection = SwipeDirection.Right;
+					break;
+				case OpenSwipeItem.RightItems:
+					_swipeDirection = SwipeDirection.Left;
+					break;
+				case OpenSwipeItem.TopItems:
+					_swipeDirection = SwipeDirection.Down;
+					break;
+			}
+
+			var swipeItems = GetSwipeItemsByDirection();
+
+			if (swipeItems.Count == 0)
+				return;
+
+			var swipeThreshold = GetSwipeThreshold();
+			_swipeOffset = swipeThreshold;
+
+			UpdateSwipeItems();
+			Swipe();
 		}
 
 		void OnCloseRequested(object sender, EventArgs e)
