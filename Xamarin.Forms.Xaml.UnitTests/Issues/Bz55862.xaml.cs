@@ -44,9 +44,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void BindingContextWithConverter(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.That(() => MockCompiler.Compile(typeof(Bz55862)), Throws.Exception.TypeOf<XamlParseException>());
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Bz55862)));
 				else
-					Assert.That(() => new Bz55862(useCompiledXaml), Throws.Exception.TypeOf<XamlParseException>());	
+					Assert.Catch<XamlParseException>(() => new Bz55862(useCompiledXaml));
 			}
 		}
 	}

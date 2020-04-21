@@ -23,9 +23,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void DetailedErrorMessageOnMissingXmlnsDeclaration(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh2063)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh2063)));
 				else
-					Assert.Throws<XamlParseException>(() => new Gh2063(useCompiledXaml));
+					Assert.Catch<XamlParseException>(() => new Gh2063(useCompiledXaml));
 			}
 		}
 	}

@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ErrorOnMissingBindingTarget(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(()=> MockCompiler.Compile(typeof(Gh2517)));
+					Assert.Catch<XamlParseException>(()=> MockCompiler.Compile(typeof(Gh2517)));
 			}
 		}
 	}

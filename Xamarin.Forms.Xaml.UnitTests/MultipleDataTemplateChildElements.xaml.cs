@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(true)]
 			public static void ThrowXamlParseException(bool useCompiledXaml)
 			{
-				Assert.Throws<XamlParseException>(useCompiledXaml ?
+				Assert.Catch<XamlParseException>(useCompiledXaml ?
 					(TestDelegate)(() => MockCompiler.Compile(typeof(MultipleDataTemplateChildElements))) :
 					() => new MultipleDataTemplateChildElements(useCompiledXaml));
 			}

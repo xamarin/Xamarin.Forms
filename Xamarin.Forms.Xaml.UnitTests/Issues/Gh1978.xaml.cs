@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			{
 				if (!useCompiledXaml)
 					return;
-				Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh1978)));
+				Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh1978)));
 			}
 		}
 	}

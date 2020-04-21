@@ -222,7 +222,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var serviceProvider = new Internals.XamlServiceProvider (null, null) {
 				IXamlTypeResolver = typeResolver,
 			};
-			Assert.Throws<XamlParseException> (()=> (new MarkupExtensionParser ()).ParseExpression (ref markupString, serviceProvider));
+			Assert.Catch<XamlParseException> (()=> (new MarkupExtensionParser ()).ParseExpression (ref markupString, serviceProvider));
 		}
 	}
 }

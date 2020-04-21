@@ -26,9 +26,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void KeylessResourceThrowsMeaningfulException([Values(false, true)]bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(AB946693)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(AB946693)));
 				else
-					Assert.Throws<XamlParseException>(() => new AB946693(useCompiledXaml));
+					Assert.Catch<XamlParseException>(() => new AB946693(useCompiledXaml));
 			}
 		}
 	}

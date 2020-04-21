@@ -26,9 +26,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ThrowsOnInvalidXaml([Values(false, true)]bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh5095)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh5095)));
 				else
-					Assert.Throws<XamlParseException>(() => new Gh5095(false));
+					Assert.Catch<XamlParseException>(() => new Gh5095(false));
 			}
 		}
 	}

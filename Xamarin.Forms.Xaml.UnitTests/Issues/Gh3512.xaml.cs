@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Xamarin.Forms;
 using Xamarin.Forms.Core.UnitTests;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ThrowsOnDuplicateXKey(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<Exceptions.XamlParseException>(() => MockCompiler.Compile(typeof(Gh3512)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh3512)));
 				else
 					Assert.Throws<ArgumentException>(() => new Gh3512(useCompiledXaml));
 			}

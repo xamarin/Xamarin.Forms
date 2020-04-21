@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(false), TestCase(true)]
 			public void UsefullxResourceErrorMessages(bool useCompiledXaml)
 			{
-				Assert.Throws<XamlParseException>(() => new Gh2007(useCompiledXaml));
+				Assert.Catch<XamlParseException>(() => new Gh2007(useCompiledXaml));
 			}
 		}
 	}

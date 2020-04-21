@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			};
 			var context = new HydrationContext { RootElement = new Label() };
 			rootNode.Accept(new CreateValuesVisitor(context), null);
-			Assert.Throws<XamlParseException>(() => node.Accept(new ApplyPropertiesVisitor(context), rootNode));
+			Assert.Catch<XamlParseException>(() => node.Accept(new ApplyPropertiesVisitor(context), rootNode));
 		}
 
 		[Test]

@@ -33,9 +33,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ErrorOnMissingDefaultCtor([Values (false, true)]bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh4751)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh4751)));
 				else
-					Assert.Throws<XamlParseException>(() => new Gh4751(useCompiledXaml));
+					Assert.Catch<XamlParseException>(() => new Gh4751(useCompiledXaml));
 			}
 		}
 	}

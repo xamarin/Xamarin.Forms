@@ -25,9 +25,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ReportSyntaxError([Values(false, true)]bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh5378_1)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh5378_1)));
 				else
-					Assert.Throws<XamlParseException>(() => new Gh5378_1(useCompiledXaml));
+					Assert.Catch<XamlParseException>(() => new Gh5378_1(useCompiledXaml));
 			}
 		}
 	}

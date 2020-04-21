@@ -386,7 +386,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var serviceProvider = new Internals.XamlServiceProvider (null, null);
 			serviceProvider.IXamlTypeResolver = typeResolver;
 			serviceProvider.IProvideValueTarget = new MockValueProvider ("Bar", new ReverseConverter());
-			Assert.Throws<XamlParseException> (() => (new MarkupExtensionParser ()).ParseExpression (ref expression, serviceProvider));
+			Assert.Catch<XamlParseException> (() => (new MarkupExtensionParser ()).ParseExpression (ref expression, serviceProvider));
 		}
 	}
 }

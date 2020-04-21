@@ -26,9 +26,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void InvalidMarkupAssignmentThrowsXPE([Values(false, true)]bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh7187)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh7187)));
 				else
-					Assert.Throws<XamlParseException>(() => new Gh7187(useCompiledXaml));
+					Assert.Catch<XamlParseException>(() => new Gh7187(useCompiledXaml));
 			}
 		}
 	}

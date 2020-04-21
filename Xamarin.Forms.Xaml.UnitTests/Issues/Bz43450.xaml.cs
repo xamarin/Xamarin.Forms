@@ -37,9 +37,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void DoesNotAllowGridRowDefinition(bool useCompiledXaml)
 			{
 				if (!useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => new Bz43450(useCompiledXaml));
+					Assert.Catch<XamlParseException>(() => new Bz43450(useCompiledXaml));
 				else
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Bz43450)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Bz43450)));
 			}
 		}
 	}

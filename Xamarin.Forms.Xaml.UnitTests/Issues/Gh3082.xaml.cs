@@ -48,9 +48,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ThrowsOnWrongEventHandlerSignature(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(()=>MockCompiler.Compile(typeof(Gh3082)));
+					Assert.Catch<XamlParseException>(()=>MockCompiler.Compile(typeof(Gh3082)));
 				else
-					Assert.Throws<XamlParseException>(()=>new Gh3082(false));
+					Assert.Catch<XamlParseException>(()=>new Gh3082(false));
 			}
 		}
 	}

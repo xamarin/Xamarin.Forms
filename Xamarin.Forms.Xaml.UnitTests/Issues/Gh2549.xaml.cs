@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ErrorOnUnknownXmlnsForDataType(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh2549)));
+					Assert.Catch<XamlParseException>(() => MockCompiler.Compile(typeof(Gh2549)));
 			}
 		}
 	}

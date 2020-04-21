@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					if (useCompiledXaml)
 						Assert.Throws<InvalidCastException>(() => new Bz59818(useCompiledXaml));
 					else
-						Assert.Throws<XamlParseException>(() => new Bz59818(useCompiledXaml));
+						Assert.Catch<XamlParseException>(() => new Bz59818(useCompiledXaml));
 					return;
 				}
 				var layout = new Bz59818(useCompiledXaml);
