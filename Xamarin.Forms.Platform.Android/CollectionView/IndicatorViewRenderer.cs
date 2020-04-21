@@ -160,6 +160,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateItemsSource();
 			}
+			else if (changedProperty.Is(IndicatorView.MaximumVisibleProperty))
+			{
+				UpdateIndicatorCount();
+				ResetIndicators();
+			}
 		}
 
 		protected virtual void UpdateBackgroundColor(Color? color = null)
