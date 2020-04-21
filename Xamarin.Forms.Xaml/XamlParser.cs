@@ -416,7 +416,7 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			if (type == null)
-				exception = new XFException(XFException.Ecode.TypeNotFound, xmlInfo, type.ToString(), xmlType.NamespaceUri);
+				exception = new XFException(XFException.Ecode.TypeNotFound, xmlInfo, xmlType.Name, xmlType.NamespaceUri);
 
 			return type;
 		}
