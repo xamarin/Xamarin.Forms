@@ -1,14 +1,15 @@
+using CoreGraphics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using CoreGraphics;
+using ObjCRuntime;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.NavigationPage;
 using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
+using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.NavigationPage;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
@@ -16,6 +17,7 @@ using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+
 	public class NavigationRenderer : UINavigationController, IVisualElementRenderer, IEffectControlProvider
 	{
 		internal const string UpdateToolbarButtons = "Xamarin.UpdateToolbarButtons";
@@ -315,6 +317,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (renderer == null || renderer.ViewController == null)
 				return false;
 
+			var actuallyRemoved = false;
+
 			if (page != ((ParentingViewController)TopViewController).Child)
 				throw new NotSupportedException("Popped page does not appear on top of current navigation stack, please file a bug.");
 
@@ -324,7 +328,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_ignorePopCall = true;
 			poppedViewController = base.PopViewController(animated);
 
-			var actuallyRemoved = poppedViewController == null ? true : !await task;
+			actuallyRemoved = (poppedViewController == null) ? true : !await task;
 			_ignorePopCall = false;
 
 			poppedViewController?.Dispose();
@@ -370,7 +374,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void FindParentMasterDetail()
 		{
-			var page = Element as Page;
+			Page page = Element as Page;
+
 			var parentPages = page.GetParentPages();
 			var masterDetail = parentPages.OfType<MasterDetailPage>().FirstOrDefault();
 
@@ -618,84 +623,57 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateBarBackgroundColor()
 		{
 			var barBackgroundColor = NavPage.BarBackgroundColor;
-
-#if __XCODE11__
-			if (Forms.IsiOS13OrNewer)
-			{
-				var navigationBarAppearance = NavigationBar.StandardAppearance;
-
-				if (barBackgroundColor == Color.Default)
-					navigationBarAppearance.ConfigureWithDefaultBackground();
-				else
-				{
-					navigationBarAppearance.ConfigureWithOpaqueBackground();
-					navigationBarAppearance.BackgroundColor = barBackgroundColor.ToUIColor();
-				}
-
-				NavigationBar.CompactAppearance = navigationBarAppearance;
-				NavigationBar.StandardAppearance = navigationBarAppearance;
-				NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
-			}
-			else
-#endif
-			{
-				// Set navigation bar background color
-				NavigationBar.BarTintColor = barBackgroundColor == Color.Default
+			// Set navigation bar background color
+			NavigationBar.BarTintColor = barBackgroundColor == Color.Default
 				? UINavigationBar.Appearance.BarTintColor
 				: barBackgroundColor.ToUIColor();
-			}
 		}
 
 		void UpdateBarTextColor()
 		{
 			var barTextColor = NavPage.BarTextColor;
 
-			// Determine new title text attributes via global static data
-			var globalTitleTextAttributes = UINavigationBar.Appearance.TitleTextAttributes;
-			var titleTextAttributes = new UIStringAttributes
-			{
-				ForegroundColor = barTextColor == Color.Default ? globalTitleTextAttributes?.ForegroundColor : barTextColor.ToUIColor(),
-				Font = globalTitleTextAttributes?.Font
-			};
+			var globalAttributes = UINavigationBar.Appearance.GetTitleTextAttributes();
 
-			// Determine new large title text attributes via global static data
-			var largeTitleTextAttributes = titleTextAttributes;
-			if (Forms.IsiOS11OrNewer)
+			if (barTextColor == Color.Default)
 			{
-				var globalLargeTitleTextAttributes = UINavigationBar.Appearance.LargeTitleTextAttributes;
-
-				largeTitleTextAttributes = new UIStringAttributes
+				if (NavigationBar.TitleTextAttributes != null)
 				{
-					ForegroundColor = barTextColor == Color.Default ? globalLargeTitleTextAttributes?.ForegroundColor : barTextColor.ToUIColor(),
-					Font = globalLargeTitleTextAttributes?.Font
-				};
-			}
-
-#if __XCODE11__
-			if (Forms.IsiOS13OrNewer)
-			{
-				NavigationBar.CompactAppearance.TitleTextAttributes = titleTextAttributes;
-				NavigationBar.CompactAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
-
-				NavigationBar.StandardAppearance.TitleTextAttributes = titleTextAttributes;
-				NavigationBar.StandardAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
-
-				NavigationBar.ScrollEdgeAppearance.TitleTextAttributes = titleTextAttributes;
-				NavigationBar.ScrollEdgeAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
+					var attributes = new UIStringAttributes();
+					attributes.ForegroundColor = globalAttributes.TextColor;
+					attributes.Font = globalAttributes.Font;
+					NavigationBar.TitleTextAttributes = attributes;
+				}
 			}
 			else
-#endif
 			{
-				NavigationBar.TitleTextAttributes = titleTextAttributes;
-
-				if (Forms.IsiOS11OrNewer)
-					NavigationBar.LargeTitleTextAttributes = largeTitleTextAttributes;
+				var titleAttributes = new UIStringAttributes();
+				titleAttributes.Font = globalAttributes.Font;
+				// TODO: the ternary if statement here will always return false because of the encapsulating if statement.
+				// What was the intention?
+				titleAttributes.ForegroundColor = barTextColor == Color.Default
+					? titleAttributes.ForegroundColor ?? UINavigationBar.Appearance.TintColor
+					: barTextColor.ToUIColor();
+				NavigationBar.TitleTextAttributes = titleAttributes;
 			}
 
+			if (Forms.IsiOS11OrNewer)
+			{
+				var globalLargeTitleAttributes = UINavigationBar.Appearance.LargeTitleTextAttributes;
+				if (globalLargeTitleAttributes == null)
+					NavigationBar.LargeTitleTextAttributes = NavigationBar.TitleTextAttributes;
+			}
+
+			var statusBarColorMode = NavPage.OnThisPlatform().GetStatusBarTextColorMode();
+
 			// set Tint color (i. e. Back Button arrow and Text)
-			NavigationBar.TintColor = barTextColor == Color.Default || NavPage.OnThisPlatform().GetStatusBarTextColorMode() == StatusBarTextColorMode.DoNotAdjust
+			var iconColor = NavigationPage.GetIconColor(Current);
+			if (iconColor.IsDefault)
+				iconColor = barTextColor;
+
+			NavigationBar.TintColor = iconColor == Color.Default || statusBarColorMode == StatusBarTextColorMode.DoNotAdjust
 				? UINavigationBar.Appearance.TintColor
-				: barTextColor.ToUIColor();
+				: iconColor.ToUIColor();
 		}
 
 		void SetStatusBarStyle()
@@ -705,17 +683,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (statusBarColorMode == StatusBarTextColorMode.DoNotAdjust || barTextColor.Luminosity <= 0.5)
 			{
-#if __XCODE11__
 				// Use dark text color for status bar
-				if (Forms.IsiOS13OrNewer)
-				{
-					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.DarkContent;
-				}
-				else
-#endif
-				{
-						UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
-				}
+				UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
 			}
 			else
 			{
@@ -962,6 +931,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					UpdateHasBackButton();
 					UpdateLargeTitles();
+					UpdateIconColor();
 				}
 			}
 
@@ -987,18 +957,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				base.ViewDidDisappear(animated);
 
-				// force a redraw for right toolbar items by resetting TintColor to prevent
-				// toolbar items being grayed out when canceling swipe to a previous page
-				foreach (var item in NavigationItem?.RightBarButtonItems)
-				{
-					if (item.Image != null)
-						continue;
-
-					var tintColor = item.TintColor;
-					item.TintColor = tintColor == null ? UIColor.Clear : null;
-					item.TintColor = tintColor;
-				}
-				
 				Disappearing?.Invoke(this, EventArgs.Empty);
 			}
 
@@ -1089,6 +1047,8 @@ namespace Xamarin.Forms.Platform.iOS
 				else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 					UpdateTitleArea(Child);
+				else if (e.PropertyName == NavigationPage.IconColorProperty.PropertyName)
+					UpdateIconColor();
 			}
 
 
@@ -1165,6 +1125,12 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateTitleImage(titleViewContainer, titleIcon);
 					NavigationItem.TitleView = titleViewContainer;
 				}
+			}
+			
+			void UpdateIconColor()
+			{
+				if (_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
+					navigationRenderer.UpdateBarTextColor();
 			}
 
 			async void UpdateTitleImage(Container titleViewContainer, ImageSource titleIcon)
@@ -1359,27 +1325,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal class FormsNavigationBar : UINavigationBar
 		{
-			[Internals.Preserve(Conditional = true)]
 			public FormsNavigationBar() : base()
 			{
 			}
 
-			[Internals.Preserve(Conditional = true)]
 			public FormsNavigationBar(Foundation.NSCoder coder) : base(coder)
 			{
 			}
 
-			[Internals.Preserve(Conditional = true)]
 			protected FormsNavigationBar(Foundation.NSObjectFlag t) : base(t)
 			{
 			}
 
-			[Internals.Preserve(Conditional = true)]
 			protected internal FormsNavigationBar(IntPtr handle) : base(handle)
 			{
 			}
 
-			[Internals.Preserve(Conditional = true)]
 			public FormsNavigationBar(RectangleF frame) : base(frame)
 			{
 			}
