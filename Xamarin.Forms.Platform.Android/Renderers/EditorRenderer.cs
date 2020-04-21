@@ -51,6 +51,18 @@ namespace Xamarin.Forms.Platform.Android
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
+
+		protected override void OnAttachedToWindow()
+		{
+			base.OnAttachedToWindow();
+
+			if (EditText.IsAlive() && EditText.Enabled)
+			{
+				// https://issuetracker.google.com/issues/37095917
+				EditText.Enabled = false;
+				EditText.Enabled = true;
+			}
+		}
 	}
 
 	public abstract class EditorRendererBase<TControl> : ViewRenderer<Editor, TControl>, ITextWatcher
@@ -262,6 +274,9 @@ namespace Xamarin.Forms.Platform.Android
 			newText = TrimToMaxLength(newText);
 			EditText.Text = newText;
 			EditText.SetSelection(newText.Length);
+
+			if (EditText.TextFormatted is ISpannable sp)
+				Selection.SelectAll(sp);
 		}
 
 		abstract protected void UpdateTextColor();
