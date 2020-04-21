@@ -93,6 +93,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateTextColor();
 				UpdatePadding();
+				UpdateRadioColor();
 			}
 		}
 
@@ -117,6 +118,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_radioButtonLayer.SetNeedsDisplay();
 			else if (e.PropertyName == RadioButton.IsCheckedProperty.PropertyName)
 				_radioButtonLayer.SetNeedsDisplay();
+			else if (e.Is(RadioButton.RadioColorProperty))
+				UpdateRadioColor();
 		}
 
 		protected override void SetAccessibilityLabel()
@@ -234,6 +237,11 @@ namespace Xamarin.Forms.Platform.iOS
 			var contentEdgeInsets = uiElement.ContentEdgeInsets;
 			contentEdgeInsets.Left += _radioButtonLayer.Frame.Left + _radioButtonLayer.Frame.Width;
 			uiElement.ContentEdgeInsets = contentEdgeInsets;
+		}
+
+		void UpdateRadioColor()
+		{
+			((RadioButtonCALayer)_radioButtonLayer).SetRadioColor(Element.RadioColor);
 		}
 
 		void UpdateContentEdge(UIButton button, UIEdgeInsets? delta = null)

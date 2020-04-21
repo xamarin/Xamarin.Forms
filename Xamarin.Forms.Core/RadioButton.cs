@@ -21,6 +21,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty GroupNameProperty = BindableProperty.Create(
 			nameof(GroupName), typeof(string), typeof(RadioButton), null, propertyChanged: (b, o, n) => ((RadioButton)b).OnGroupNamePropertyChanged((string)o, (string)n));
 
+		public static readonly BindableProperty RadioColorProperty = BindableProperty.Create(
+			nameof(RadioColor), typeof(Color), typeof(RadioButton), Color.Default);
+
 		// TODO Needs implementations beyond Android
 		//public static readonly BindableProperty ButtonSourceProperty = BindableProperty.Create(
 		//	nameof(ButtonSource), typeof(ImageSource), typeof(RadioButton), null);
@@ -37,6 +40,12 @@ namespace Xamarin.Forms
 		{
 			get { return (string)GetValue(GroupNameProperty); }
 			set { SetValue(GroupNameProperty, value); }
+		}
+
+		public Color RadioColor
+		{
+			get { return (Color)GetValue(RadioColorProperty); }
+			set { SetValue(RadioColorProperty, value); }
 		}
 
 		// TODO Needs implementations beyond Android

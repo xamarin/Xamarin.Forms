@@ -29,9 +29,9 @@
                        Margin="0, 0, 0, 10"/>
                 <Label Text="StackLayout" />
                 <StackLayout>
-                    <RadioButton Text="RadioButton, Group=null" />
-                    <RadioButton Text="RadioButton, Group=null"/>
-                    <RadioButton Text="RadioButton, Group=null"/>
+                    <RadioButton Text="RadioButton, Group=null, RadioColor=Red" RadioColor="Red" />
+                    <RadioButton Text="RadioButton, Group=null, RadioColor=Blue" RadioColor="Blue" />
+                    <RadioButton Text="RadioButton, Group=null, RadioColor=Yellow" RadioColor="Yellow" />
                 </StackLayout>
                 <Label Text="StackLayout" Margin="0, 10"/>
                 <StackLayout>

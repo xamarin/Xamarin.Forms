@@ -12,9 +12,9 @@ namespace Xamarin.Forms.Platform.iOS
 		const float _checkSize = 25f;
 		const float _containerInset = 5f;
 		const float _checkInset = 9f;
-		const UIColor _checkBorderStrokeColor = null;
-		const UIColor _checkBorderFillColor = null;
-		const UIColor _checkMarkStrokeColor = null;
+		UIColor _checkBorderStrokeColor = null;
+		UIColor _checkBorderFillColor = null;
+		UIColor _checkMarkStrokeColor = null;
 		const UIColor _checkMarkFillColor = null;
 
 		readonly UIButton _nativeControl;
@@ -41,6 +41,20 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSublayers();
 			LayoutLayers();
+		}
+
+		public void SetRadioColor(Color color)
+		{
+			var uiColor = color.ToUIColor();
+
+			if (color == Color.Default)
+				uiColor = null;
+
+			_checkBorderStrokeColor = uiColor;
+			_checkBorderFillColor = uiColor;
+			_checkMarkStrokeColor = uiColor;
+
+			ColorLayers();
 		}
 
 		void InitializeLayers()
