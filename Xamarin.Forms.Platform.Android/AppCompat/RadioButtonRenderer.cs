@@ -5,9 +5,11 @@ using Android.Graphics;
 #if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.AppCompat.Widget;
+using AndroidX.Core.Widget;
 #else
 using Android.Support.V7.Widget;
 using Android.Support.V4.View;
+using Android.Support.V4.Widget;
 #endif
 using Android.Util;
 using Android.Views;
@@ -18,6 +20,8 @@ using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using Android.Graphics.Drawables;
 using Android.Widget;
+using Android.Content.Res;
+using AAttribute = Android.Resource.Attribute;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -39,6 +43,14 @@ namespace Xamarin.Forms.Platform.Android
 		ButtonLayoutManager _buttonLayoutManager;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> _platformElementConfiguration;
 		Button _button;
+
+		static int[][] _checkedStates = new int[][]
+					{
+						new int[] { AAttribute.StateEnabled, AAttribute.StateChecked },
+						new int[] { AAttribute.StateEnabled, -AAttribute.StateChecked },
+						new int[] { -AAttribute.StateEnabled, AAttribute.StateChecked },
+						new int[] { -AAttribute.StateEnabled, -AAttribute.StatePressed },
+					};
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -213,6 +225,7 @@ namespace Xamarin.Forms.Platform.Android
 				_buttonLayoutManager?.Update();
 				//UpdateButtonImage(true);
 				UpdateIsChecked();
+				UpdateRadioColor();
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
 
@@ -236,6 +249,10 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == RadioButton.IsCheckedProperty.PropertyName)
 			{
 				UpdateIsChecked();
+			}
+			else if (e.Is(RadioButton.RadioColorProperty))
+			{
+				UpdateRadioColor();
 			}
 			//else if (e.PropertyName == RadioButton.ButtonSourceProperty.PropertyName)
 			//{
@@ -368,6 +385,34 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			Checked = ((RadioButton)Element).IsChecked;
+		}
+
+		ColorStateList GetColorStateList()
+		{
+			var tintColor = ((RadioButton)Element).RadioColor == Color.Default ? Color.Accent.ToAndroid() : ((RadioButton)Element).RadioColor.ToAndroid();
+
+			var list = new ColorStateList(
+					_checkedStates,
+					new int[]
+					{
+						tintColor,
+						tintColor,
+						tintColor,
+						tintColor
+					});
+
+			return list;
+		}
+
+		void UpdateRadioColor()
+		{
+			if (Element == null || Control == null)
+				return;
+
+			var mode = PorterDuff.Mode.SrcIn;
+
+			CompoundButtonCompat.SetButtonTintList(Control, GetColorStateList());
+			CompoundButtonCompat.SetButtonTintMode(Control, mode);
 		}
 
 		void IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
