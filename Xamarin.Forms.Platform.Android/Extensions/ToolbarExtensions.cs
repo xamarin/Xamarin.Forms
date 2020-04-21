@@ -10,6 +10,8 @@ using Android.Content;
 using Android.Graphics;
 using System.Collections.Generic;
 using System;
+using Android.Text;
+using Android.Text.Style;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -32,9 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 			PropertyChangedEventHandler toolbarItemChanged,
 			List<IMenuItem> menuItemsCreated,
 			List<ToolbarItem> toolbarItemsCreated,
-			Action<Context, 
-			IMenuItem, 
-			ToolbarItem> updateMenuItemIcon = null)
+			Action<Context, IMenuItem, ToolbarItem> updateMenuItemIcon = null)
 		{
 			if (sortedToolbarItems == null || menuItemsCreated == null)
 				return;
@@ -65,9 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 			PropertyChangedEventHandler toolbarItemChanged,
 			List<IMenuItem> menuItemsCreated,
 			List<ToolbarItem> toolbarItemsCreated,
-			Action<Context,
-			IMenuItem, 
-			ToolbarItem> updateMenuItemIcon = null)
+			Action<Context, IMenuItem, ToolbarItem> updateMenuItemIcon = null)
 		{
 			IMenu menu = toolbar.Menu;
 			item.PropertyChanged -= toolbarItemChanged;
@@ -75,9 +73,30 @@ namespace Xamarin.Forms.Platform.Android
 
 			IMenuItem menuitem;
 
+			Java.Lang.ICharSequence newTitle = null;
+
+			if (!String.IsNullOrWhiteSpace(item.Text))
+			{
+				if (tintColor != null && tintColor != Color.Default)
+				{
+					var color = item.IsEnabled ? tintColor.Value.ToAndroid() : tintColor.Value.MultiplyAlpha(0.302).ToAndroid();
+					SpannableString titleTinted = new SpannableString(item.Text);
+					titleTinted.SetSpan(new ForegroundColorSpan(color), 0, titleTinted.Length(), 0);
+					newTitle = titleTinted;
+				}
+				else
+				{
+					newTitle = new Java.Lang.String(item.Text);
+				}
+			}
+			else
+			{
+				newTitle = new Java.Lang.String();
+			}
+
 			if (menuItemIndex == null)
 			{
-				menuitem = menu.Add(new Java.Lang.String(item.Text));
+				menuitem = menu.Add(newTitle);
 				menuItemsCreated?.Add(menuitem);
 				toolbarItemsCreated?.Add(item);
 			}
@@ -91,12 +110,12 @@ namespace Xamarin.Forms.Platform.Android
 				if (!menuitem.IsAlive())
 					return;
 
-				menuitem.SetTitle(new Java.Lang.String(item.Text));
+				menuitem.SetTitle(newTitle);
 			}
 
 			menuitem.SetEnabled(item.IsEnabled);
 			menuitem.SetTitleOrContentDescription(item);
-
+			
 			if (updateMenuItemIcon != null)
 				updateMenuItemIcon(context, menuitem, item);
 			else
@@ -106,18 +125,6 @@ namespace Xamarin.Forms.Platform.Android
 				menuitem.SetShowAsAction(ShowAsAction.Always);
 
 			menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
-
-			if (tintColor != null && tintColor != Color.Default)
-			{
-				var view = toolbar.FindViewById(menuitem.ItemId);
-				if (view is ATextView textView)
-				{
-					if (item.IsEnabled)
-						textView.SetTextColor(tintColor.Value.ToAndroid());
-					else
-						textView.SetTextColor(tintColor.Value.MultiplyAlpha(0.302).ToAndroid());
-				}
-			}
 		}
 
 		internal static void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem, Color? tintColor)
@@ -159,9 +166,7 @@ namespace Xamarin.Forms.Platform.Android
 			PropertyChangedEventHandler toolbarItemChanged,
 			List<IMenuItem> currentMenuItems,
 			List<ToolbarItem> currentToolbarItems,
-			Action<Context, 
-			IMenuItem,
-			ToolbarItem> updateMenuItemIcon = null)
+			Action<Context, IMenuItem, ToolbarItem> updateMenuItemIcon = null)
 		{
 			if (toolbarItems == null)
 				return;
