@@ -274,9 +274,6 @@ namespace Xamarin.Forms.Platform.Android
 			newText = TrimToMaxLength(newText);
 			EditText.Text = newText;
 			EditText.SetSelection(newText.Length);
-
-			if (EditText.TextFormatted is ISpannable sp)
-				Selection.SelectAll(sp);
 		}
 
 		abstract protected void UpdateTextColor();
