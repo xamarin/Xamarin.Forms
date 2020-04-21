@@ -39,61 +39,19 @@ var configuration = Argument("configuration", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("releaseChannel", "Stable");
 releaseChannelArg = EnvironmentVariable("releaseChannel") ?? releaseChannelArg;
-var teamProject = Argument("TeamProject", "");
-bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
 
-string artifactStagingDirectory = Argument("Build_ArtifactStagingDirectory", (string)null) ?? EnvironmentVariable("Build.ArtifactStagingDirectory") ?? EnvironmentVariable("Build_ArtifactStagingDirectory") ?? ".";
 var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
 string[] androidSdkManagerInstalls = new string[0];//new [] { "platforms;android-24", "platforms;android-28"};
-
-
-Information ("Team Project: {0}", teamProject);
-Information ("buildForVS2017: {0}", buildForVS2017);
-
 var releaseChannel = ReleaseChannel.Stable;
+
 if(releaseChannelArg == "Preview")
 {
     releaseChannel = ReleaseChannel.Preview;
 }
 
 Information ("Release Channel: {0}", releaseChannel);
-
-string androidSDK_macos = "";
-string monoSDK_macos = "";
-string iOSSDK_macos = "";
-string macSDK_macos = "";
-string monoPatchVersion = "";
-string monoMajorVersion = "";
-string monoVersion = "";
-
-if(buildForVS2017)
-{
-    // VS2017
-    monoMajorVersion = "5.18.1";
-    monoPatchVersion = "";
-    androidSDK_macos = "https://aka.ms/xamarin-android-commercial-d15-9-macos";
-    iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.ios-12.4.0.64.pkg";
-    macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.mac-5.4.0.64.pkg";
-
-}
-
-if(String.IsNullOrWhiteSpace(monoPatchVersion))
-    monoVersion = $"{monoMajorVersion}";
-else
-    monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
-
-if(!String.IsNullOrWhiteSpace(monoVersion))
-{
-    monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
-}
-    
-
-string androidSDK = IsRunningOnWindows() ? "" : androidSDK_macos;
-string monoSDK = IsRunningOnWindows() ? "" : monoSDK_macos;
-string iosSDK = IsRunningOnWindows() ? "" : iOSSDK_macos;
-string macSDK  = IsRunningOnWindows() ? "" : macSDK_macos;
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -111,12 +69,8 @@ Task("provision-macsdk")
     .Description("Install Xamarin.Mac SDK")
     .Does(async () =>
     {
-        if(!IsRunningOnWindows())
-        {
-            if(!String.IsNullOrWhiteSpace(macSDK))
-                await Boots(macSDK);
-            else
-                await Boots (Product.XamarinMac, releaseChannel);
+        if (!IsRunningOnWindows ()) {
+            await Boots (Product.XamarinMac, releaseChannel);
         }
     });
 
@@ -125,10 +79,7 @@ Task("provision-iossdk")
     .Does(async () =>
     {
         if (!IsRunningOnWindows ()) {
-            if(!String.IsNullOrWhiteSpace(iosSDK))
-                await Boots(iosSDK);
-            else
-                await Boots (Product.XamariniOS, releaseChannel);
+            await Boots (Product.XamariniOS, releaseChannel);
         }
     });
 
@@ -152,10 +103,7 @@ Task("provision-androidsdk")
         }
 
         if (!IsRunningOnWindows ()) {
-            if(!String.IsNullOrWhiteSpace(androidSDK))
-                await Boots (androidSDK);
-            else
-                await Boots (Product.XamarinAndroid, releaseChannel);
+            await Boots (Product.XamarinAndroid, releaseChannel);
         }
     });
 
@@ -165,10 +113,7 @@ Task("provision-monosdk")
     {
         if(!IsRunningOnWindows())
         {
-            if(!String.IsNullOrWhiteSpace(monoSDK))
-                await Boots(monoSDK);
-            else
-                await Boots (Product.Mono, releaseChannel);
+            await Boots (Product.Mono, releaseChannel);
         }
     });
 
@@ -181,8 +126,7 @@ Task("provision")
 
 Task("NuGetPack")
     .Description("Build and Create Nugets")
-    .IsDependentOn("Restore")
-    .IsDependentOn("BuildForNuget")
+    .IsDependentOn("Build")
     .IsDependentOn("_NuGetPack");
 
 
@@ -235,56 +179,18 @@ Task("Restore")
         }
     });
 
-Task("BuildForNuget")
-    .Description("Builds all necessary projects to create Nuget Packages")
-    .Does(() =>
-{
-    try{
-
-        var msbuildSettings = GetMSBuildSettings();
-        var binaryLogger = new MSBuildBinaryLogSettings {
-            Enabled  = true
-        };
-
-        msbuildSettings.BinaryLogger = binaryLogger;
-        msbuildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
-        binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}.binlog";
-
-        MSBuild("./Xamarin.Forms.sln", msbuildSettings);
-
-        binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
-        MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
-                    msbuildSettings
-                        .WithTarget("rebuild")
-                        .WithProperty("DisableEmbeddedXbf", "false")
-                        .WithProperty("EnableTypeInfoReflection", "false"));
-
-        binaryLogger.FileName = $"{artifactStagingDirectory}/ios-{configuration}-csproj.binlog";
-        MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
-                    msbuildSettings
-                        .WithTarget("rebuild")
-                        .WithProperty("USE2017", "true"));
-
-        binaryLogger.FileName = $"{artifactStagingDirectory}/macos-{configuration}-csproj.binlog";
-        MSBuild("./Xamarin.Forms.Platform.MacOS/Xamarin.Forms.Platform.MacOS.csproj",
-                    msbuildSettings
-                        .WithTarget("rebuild")
-                        .WithProperty("USE2017", "true"));
-    }
-    catch(Exception)
-    {
-        if(IsRunningOnWindows())
-            throw;
-    }
-});
-
 Task("Build")
-    .Description("Builds all necessary projects to run Control Gallery")
+    .Description("Builds all necessary projects to create Nuget Packages")
     .IsDependentOn("Restore")
     .Does(() =>
 {
     try{
         MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithRestore());
+
+        MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
+                    GetMSBuildSettings()
+                        .WithRestore()
+                        .WithProperty("DisableEmbeddedXbf", "false"));
     }
     catch(Exception)
     {
