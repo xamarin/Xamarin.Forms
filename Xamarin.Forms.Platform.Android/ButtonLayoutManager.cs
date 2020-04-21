@@ -14,7 +14,6 @@ using Android.Support.V7.Widget;
 #endif
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
-using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -60,7 +59,7 @@ namespace Xamarin.Forms.Platform.Android
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
 		}
 
-		AButton View => _renderer?.View ?? _renderer as AButton;
+		AppCompatButton View => _renderer?.View;
 
 		Context Context => _renderer?.View?.Context;
 
@@ -112,7 +111,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed || _renderer == null || _element == null)
 				return;
 
-			AButton view = View;
+			AppCompatButton view = View;
 			if (view == null)
 				return;
 
@@ -184,6 +183,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Update()
 		{
+			if (View?.LayoutParameters == null && _hasLayoutOccurred)
+				return;
+
 			if (!UpdateTextAndImage())
 				UpdateImage();
 			UpdatePadding();
@@ -223,7 +225,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePadding()
 		{
-			AButton view = View;
+			AppCompatButton view = View;
 			if (view == null)
 				return;
 
@@ -258,10 +260,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool UpdateTextAndImage()
 		{
-			if (_disposed || _renderer == null || _element == null || View?.LayoutParameters == null)
+			if (_disposed || _renderer == null || _element == null)
 				return false;
 
-			AButton view = View;
+			if (View?.LayoutParameters == null && _hasLayoutOccurred)
+				return false;
+			
+			AppCompatButton view = View;
 			if (view == null)
 				return false;
 
@@ -283,7 +288,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_disposed || _renderer == null || _element == null)
 				return;
 
-			AButton view = View;
+			AppCompatButton view = View;
 			if (view == null)
 				return;
 

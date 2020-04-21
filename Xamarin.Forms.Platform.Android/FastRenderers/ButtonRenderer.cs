@@ -35,6 +35,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		ButtonLayoutManager _buttonLayoutManager;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> _platformElementConfiguration;
 		Button _button;
+		bool _hasLayoutOccurred;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -152,6 +153,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			ViewRenderer.MeasureExactly(this, Element, Context);
 		}
 
+
 		public override void Draw(Canvas canvas)
 		{
 			if (_backgroundTracker?.BackgroundDrawable != null)
@@ -210,7 +212,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		protected virtual void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
-
+		
 			if (e.OldElement != null)
 			{
 				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
@@ -244,12 +246,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (this.IsDisposed())
-			{
-				return;
-			}	
-
-			if(Control?.LayoutParameters == null)
+			if(Control?.LayoutParameters == null && _hasLayoutOccurred)
 			{
 				ElementPropertyChanged?.Invoke(this, e);
 				return;
@@ -279,6 +276,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_buttonLayoutManager?.OnLayout(changed, l, t, r, b);
 			base.OnLayout(changed, l, t, r, b);
+			_hasLayoutOccurred = true;
 		}
 
 		void SetTracker(VisualElementTracker tracker)
