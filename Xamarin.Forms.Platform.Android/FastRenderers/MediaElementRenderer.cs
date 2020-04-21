@@ -70,18 +70,6 @@ namespace Xamarin.Forms.Platform.Android
 			ViewRenderer.MeasureExactly(this, Element, Context);
 		}
 
-		void UnsubscribeFromEvents(MediaElement element)
-		{
-			if (element == null)
-				return;
-
-			element.PropertyChanged -= OnElementPropertyChanged;
-			element.SeekRequested -= SeekRequested;
-			element.StateRequested -= StateRequested;
-			element.PositionRequested -= OnPositionRequested;
-
-		}
-
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
 			if (element is null)
@@ -97,7 +85,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (oldElement != null)
 			{
-				UnsubscribeFromEvents(oldElement);
+				oldElement.PropertyChanged -= OnElementPropertyChanged;
+				oldElement.SeekRequested -= SeekRequested;
+				oldElement.StateRequested -= StateRequested;
 			}
 
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
@@ -106,13 +96,9 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackgroundColor();
 			}
 
-			if (MediaElement != null)
-			{
-				MediaElement.PropertyChanged += OnElementPropertyChanged;
-				MediaElement.SeekRequested += SeekRequested;
-				MediaElement.StateRequested += StateRequested;
-				MediaElement.PositionRequested += OnPositionRequested;
-			}
+			MediaElement.PropertyChanged += OnElementPropertyChanged;
+			MediaElement.SeekRequested += SeekRequested;
+			MediaElement.StateRequested += StateRequested;
 
 			if (_tracker is null)
 			{
@@ -129,9 +115,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void StateRequested(object sender, StateRequested e)
 		{
-			if (_view == null)
-				return;
-
 			switch (e.State)
 			{
 				case MediaElementState.Playing:
@@ -159,19 +142,8 @@ namespace Xamarin.Forms.Platform.Android
 			Controller.Position = _view.Position;
 		}
 
-		void OnPositionRequested(object sender, EventArgs e)
-		{
-			if (_view == null)
-				return;
-
-			Controller.Position = _view.Position;
-		}
-
 		void SeekRequested(object sender, SeekRequested e)
 		{
-			if (_view == null)
-				return;
-
 			Controller.Position = _view.Position;
 		}
 
@@ -218,7 +190,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					UnsubscribeFromEvents(Element as MediaElement);
+					Element.PropertyChanged -= OnElementPropertyChanged;
 
 					if (Platform.GetRenderer(Element) == this)
 						Element.ClearValue(Platform.RendererProperty);
@@ -254,9 +226,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void MetadataRetrieved(object sender, EventArgs e)
 		{
-			if (_view == null)
-				return;
-
 			Controller.Duration = _view.DurationTimeSpan;
 			Controller.VideoHeight = _view.VideoHeight;
 			Controller.VideoWidth = _view.VideoWidth;
@@ -307,34 +276,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateKeepScreenOn()
 		{
-			if (_view == null)
-				return;
-
 			_view.KeepScreenOn = MediaElement.KeepScreenOn;
 		}
 
 		void UpdateShowPlaybackControls()
 		{
-			if (_controller == null)
-				return;
-
 			_controller.Visibility = MediaElement.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
 		}
 
 		void UpdateSource()
 		{
-			if (_view == null)
-				return;
-
 			if (MediaElement.Source != null)
 			{
 				if (MediaElement.Source is UriMediaSource uriSource)
 				{
 					if (uriSource.Uri.Scheme == "ms-appx")
 					{
-						if (uriSource.Uri.LocalPath.Length <= 1)
-							return;
-
 						// video resources should be in the raw folder with Build Action set to AndroidResource
 						string uri = "android.resource://" + Context.PackageName + "/raw/" + uriSource.Uri.LocalPath.Substring(1, uriSource.Uri.LocalPath.LastIndexOf('.') - 1).ToLower();
 						_view.SetVideoURI(global::Android.Net.Uri.Parse(uri));
@@ -382,18 +339,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void MediaPlayer.IOnCompletionListener.OnCompletion(MediaPlayer mp)
 		{
-			if (Controller == null)
-				return;
-
 			Controller.Position = TimeSpan.FromMilliseconds(_mediaPlayer.CurrentPosition);
 			Controller.OnMediaEnded();
 		}
 
 		void MediaPlayer.IOnPreparedListener.OnPrepared(MediaPlayer mp)
 		{
-			if (Controller == null)
-				return;
-
 			Controller.OnMediaOpened();
 
 			UpdateLayoutParameters();
@@ -415,9 +366,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLayoutParameters()
 		{
-			if (_view == null)
-				return;
-
 			if (_view.VideoWidth == 0 || _view.VideoHeight == 0)
 			{
 				_view.LayoutParameters = new FrameLayout.LayoutParams(Width, Height, GravityFlags.Fill);
@@ -494,18 +442,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool MediaPlayer.IOnErrorListener.OnError(MediaPlayer mp, MediaError what, int extra)
 		{
-			if (Controller == null)
-				return false;
-
 			Controller.OnMediaFailed();
 			return false;
 		}
 		
 		bool MediaPlayer.IOnInfoListener.OnInfo(MediaPlayer mp, MediaInfo what, int extra)
 		{
-			if (_view == null)
-				return false;
-
+			System.Diagnostics.Debug.WriteLine(what);
 			switch (what)
 			{
 				case MediaInfo.BufferingStart:
