@@ -590,6 +590,12 @@ namespace Xamarin.Forms.Controls
 	public abstract class TestShell : Shell
 	{
 		protected const string FlyoutIconAutomationId = "OK";
+#if __IOS__
+		protected const string BackButtonAutomationId = "Back";
+#else
+		protected const string BackButtonAutomationId = "OK";
+#endif
+
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;
 		protected virtual bool Isolate => true;
@@ -668,29 +674,6 @@ namespace Xamarin.Forms.Controls
 				}
 			});
 			return page;
-		}
-
-		public FlyoutItem AddFlyoutItem(ContentPage page, string title)
-		{
-			var item = new FlyoutItem
-			{
-				Title = title,
-				Items =
-				{
-					new Tab
-					{
-						Title = title,
-						Items =
-						{
-							page
-						}
-					}
-				}
-			};
-
-			Items.Add(item);
-
-			return item;
 		}
 
 		public TabBar CreateTabBar(string shellItemTitle)
@@ -819,20 +802,19 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
+		public void TapBackArrow(string backArrowIcon = BackButtonAutomationId)
+		{
+			RunningApp.WaitForElement(backArrowIcon, "Back Arrow Not Found");
+			RunningApp.Tap(backArrowIcon);
+		}
+
+
 		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
 		{
 			timeoutMessage = timeoutMessage ?? text;
 			ShowFlyout(flyoutIcon, usingSwipe);
 			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
-		}
-
-		public void DoubleTapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
-		{
-			timeoutMessage = timeoutMessage ?? text;
-			ShowFlyout(flyoutIcon, usingSwipe);
-			RunningApp.WaitForElement(text, timeoutMessage);
-			RunningApp.DoubleTap(text);
 		}
 
 #endif
