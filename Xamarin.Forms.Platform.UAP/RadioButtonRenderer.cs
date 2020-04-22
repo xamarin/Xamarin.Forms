@@ -9,6 +9,12 @@ namespace Xamarin.Forms.Platform.UWP
 	public class RadioButtonRenderer : ViewRenderer<RadioButton, FormsRadioButton>
 	{
 		bool _fontApplied;
+		readonly Brush _disabledColorBrush;
+
+		public RadioButtonRenderer()
+		{
+			_disabledColorBrush = Resources["RadioButtonForegroundDisabled"] as Brush ?? Color.LightGray.ToBrush();
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<RadioButton> e)
 		{
@@ -18,7 +24,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var button = new FormsRadioButton();
+					var button = new FormsRadioButton
+					{
+						Style = Windows.UI.Xaml.Application.Current.Resources["FormsRadioButtonStyle"] as Windows.UI.Xaml.Style
+					};
 
 					button.Click += OnButtonClick;
 					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
@@ -56,6 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateFont();
 				UpdateCheck();
+				UpdateRadioColor();
 			}
 		}
 
@@ -111,6 +121,10 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == RadioButton.IsCheckedProperty.PropertyName)
 			{
 				UpdateCheck();
+			}
+			else if (e.IsOneOf(RadioButton.RadioColorProperty, VisualElement.IsEnabledProperty))
+			{
+				UpdateRadioColor();
 			}
 		}
 
@@ -208,6 +222,14 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			Control.IsChecked = Element.IsChecked;
+		}
+
+		void UpdateRadioColor()
+		{
+			if (Control.IsEnabled)
+				Control.RadioColor = Element.RadioColor == Color.Default ? Color.Accent.ToBrush() : Element.RadioColor.ToBrush();
+			else
+				Control.RadioColor = _disabledColorBrush;
 		}
 	}
 }

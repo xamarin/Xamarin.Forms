@@ -6,11 +6,14 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class FormsRadioButton : Windows.UI.Xaml.Controls.RadioButton
 	{
-		public static readonly DependencyProperty BorderRadiusProperty = DependencyProperty.Register(nameof(BorderRadius), typeof(int), typeof(FormsButton),
-	new PropertyMetadata(default(int), OnBorderRadiusChanged));
+		public static readonly DependencyProperty BorderRadiusProperty = DependencyProperty.Register(nameof(BorderRadius), typeof(int), typeof(FormsRadioButton),
+			new PropertyMetadata(default(int), OnBorderRadiusChanged));
 
-		public static readonly DependencyProperty BackgroundColorProperty = DependencyProperty.Register(nameof(BackgroundColor), typeof(Brush), typeof(FormsButton),
+		public static readonly DependencyProperty BackgroundColorProperty = DependencyProperty.Register(nameof(BackgroundColor), typeof(Brush), typeof(FormsRadioButton),
 			new PropertyMetadata(default(Brush), OnBackgroundColorChanged));
+
+		public static readonly DependencyProperty RadioColorProperty = DependencyProperty.Register(nameof(RadioColor), typeof(Brush), typeof(FormsRadioButton),
+			new PropertyMetadata(default(Brush)));
 
 		WContentPresenter _contentPresenter;
 
@@ -23,6 +26,18 @@ namespace Xamarin.Forms.Platform.UWP
 			set
 			{
 				SetValue(BackgroundColorProperty, value);
+			}
+		}
+
+		public Brush RadioColor
+		{
+			get
+			{
+				return (Brush)GetValue(RadioColorProperty);
+			}
+			set
+			{
+				SetValue(RadioColorProperty, value);
 			}
 		}
 
