@@ -44,13 +44,15 @@ namespace Xamarin.Forms.Platform.Android
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> _platformElementConfiguration;
 		Button _button;
 
-		static int[][] _checkedStates = new int[][]
+		static readonly int[][] CheckedStates = new int[][]
 					{
 						new int[] { AAttribute.StateEnabled, AAttribute.StateChecked },
 						new int[] { AAttribute.StateEnabled, -AAttribute.StateChecked },
 						new int[] { -AAttribute.StateEnabled, AAttribute.StateChecked },
 						new int[] { -AAttribute.StateEnabled, -AAttribute.StatePressed },
 					};
+
+		static readonly AColor DefaultRadioColor = new AColor(Resource.Drawable.abc_btn_radio_material);
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -392,13 +394,13 @@ namespace Xamarin.Forms.Platform.Android
 			var tintColor = ((RadioButton)Element).RadioColor == Color.Default ? Color.Accent.ToAndroid() : ((RadioButton)Element).RadioColor.ToAndroid();
 
 			var list = new ColorStateList(
-					_checkedStates,
+					CheckedStates,
 					new int[]
 					{
 						tintColor,
+						DefaultRadioColor,
 						tintColor,
-						tintColor,
-						tintColor
+						DefaultRadioColor
 					});
 
 			return list;
