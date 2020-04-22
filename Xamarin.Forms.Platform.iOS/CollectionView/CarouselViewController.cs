@@ -33,30 +33,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		//public override void ViewWillLayoutSubviews()
-		//{
-		//	base.ViewWillLayoutSubviews();
-		//	if (!_viewInitialized)
-		//	{
-		//		_viewInitialized = true;
-		//		UpdateInitialPosition();
-		//	}
-
-		//	UpdateVisualStates();
-		//}
-
-		public override void ViewWillAppear(bool animated)
-		{
-			base.ViewWillAppear(animated);
-			if (!_viewInitialized)
-			{
-				_viewInitialized = true;
-				UpdateInitialPosition();
-			}
-
-			UpdateVisualStates();
-		}
-
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
@@ -77,6 +53,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UnsubscribeCollectionItemsSourceChanged(ItemsSource);
 			base.UpdateItemsSource();
 			SubscribeCollectionItemsSourceChanged(ItemsSource);
+			UpdateInitialPosition();
 		}
 
 		protected override bool IsHorizontal => (Carousel?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
@@ -218,11 +195,12 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateVisualStates();
 		}
 
-		void ScrollToPosition(int goToPosition, int carouselPosition, bool animate)
+		void ScrollToPosition(int goToPosition, int carouselPosition, bool animate, bool forceScroll = false)
 		{
-			if (_gotoPosition == -1 && goToPosition != carouselPosition)
+			if (_gotoPosition == -1 && (goToPosition != carouselPosition || forceScroll))
 			{
 				_gotoPosition = goToPosition;
+				System.Diagnostics.Debug.WriteLine($"Scrolling to {_gotoPosition}");
 				Carousel.ScrollTo(goToPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: animate);
 			}
 		}
@@ -242,28 +220,34 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateInitialPosition()
 		{
-			int position = Carousel.Position;
-			if (Carousel.CurrentItem != null)
+			if (!_viewInitialized)
 			{
-				var items = Carousel.ItemsSource as IList;
+				_viewInitialized = true;
 
-				for (int n = 0; n < items?.Count; n++)
+				int position = Carousel.Position;
+				if (Carousel.CurrentItem != null)
 				{
-					if (items[n] == Carousel.CurrentItem)
+					var items = Carousel.ItemsSource as IList;
+
+					for (int n = 0; n < items?.Count; n++)
 					{
-						position = n;
-						break;
+						if (items[n] == Carousel.CurrentItem)
+						{
+							position = n;
+							break;
+						}
 					}
 				}
-			}
-			else
-			{
-				SetCurrentItem(Carousel.Position);
+				else
+				{
+					SetCurrentItem(Carousel.Position);
+				}
+
+				if (position > 0)
+					ScrollToPosition(position, Carousel.Position, Carousel.AnimatePositionChanges, true);
 			}
 
-			if (position > 0)
-				ScrollToPosition(position, Carousel.Position, Carousel.AnimatePositionChanges);
-
+			UpdateVisualStates();
 		}
 
 		void UpdateVisualStates()
