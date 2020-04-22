@@ -189,6 +189,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var count = Element.Count;
 
 			UIPager.Pages = maxCount != int.MaxValue ? maxCount : count;
+			UpdateCurrentPage();
 		}
 
 		void UpdateHidesForSinglePage()
