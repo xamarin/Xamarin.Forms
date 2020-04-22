@@ -1,5 +1,6 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Linq;
 
 
 #if UITEST
@@ -32,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Content = new Editor()
 						{
-							Text = "Press and hold this text. Text should become selected and copy context menu should open",
+							Text = "Press and hold this text. Text should become selected and context menu should open",
 							AutomationId = "PressEditor"
 						}
 					},
@@ -40,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Content = new Entry()
 						{
-							Text = "Press and hold this text. Text should become selected and copy context menu should open",
+							Text = "Press and hold this text. Text should become selected and context menu should open",
 							AutomationId = "PressEntry"
 						}
 					}
@@ -53,9 +54,26 @@ namespace Xamarin.Forms.Controls.Issues
 		public void ContextMenuShowsUpWhenPressAndHoldTextOnEditorAndEntryField()
 		{
 			RunningApp.TouchAndHold("PressEditor");
-			RunningApp.WaitForElement("Share");
+			TestForPopup();
+			RunningApp.Tap("PressEntry");
 			RunningApp.TouchAndHold("PressEntry");
-			RunningApp.WaitForElement("Share");
+			TestForPopup();
+		}
+
+		void TestForPopup()
+		{
+			var result = RunningApp.QueryUntilPresent(() =>
+			{
+				return RunningApp.Query("Paste")
+						.Union(RunningApp.Query("Share"))
+						.Union(RunningApp.Query("Copy"))
+						.Union(RunningApp.Query("Cut"))
+						.Union(RunningApp.Query("Select All"))
+						.ToArray();
+			});
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result.Length > 0);
 		}
 #endif
 	}
