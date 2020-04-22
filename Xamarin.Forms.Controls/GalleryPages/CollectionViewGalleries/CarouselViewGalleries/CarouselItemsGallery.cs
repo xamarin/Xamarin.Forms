@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	{
 		CarouselItemsGalleryViewModel _viewModel;
 		bool _setPositionOnAppering;
-		public CarouselItemsGallery(bool empty, bool async, bool nativeIndicator, bool setPosition, bool setPositionOnAppearing)
+		public CarouselItemsGallery(bool empty, bool async, bool nativeIndicator, bool setPosition, bool setPositionOnAppearing, bool animateScroll)
 		{
 			_viewModel = new CarouselItemsGalleryViewModel(empty, async);
 			_setPositionOnAppering = setPositionOnAppearing;
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
-				IsScrollAnimated = true,
+				IsScrollAnimated = animateScroll,
 				IsBounceEnabled = true,
 				EmptyView = "This is the empty view",
 				PeekAreaInsets = new Thickness(50),
