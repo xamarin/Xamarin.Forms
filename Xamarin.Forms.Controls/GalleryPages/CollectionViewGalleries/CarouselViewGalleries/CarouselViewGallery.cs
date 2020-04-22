@@ -34,11 +34,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal)", () =>
 							new CarouselXamlGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Forms)", () =>
-							new CarouselItemsGallery(false,false,false), Navigation),
+							new CarouselItemsGallery(false,false,false,false,false), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Default (Native))", () =>
-							new CarouselItemsGallery(false,false,true), Navigation),
+							new CarouselItemsGallery(false,false,true,false,false), Navigation),
 						GalleryBuilder.NavButton("CarouselView Async", () =>
-							new CarouselItemsGallery(false,true,true), Navigation),
+							new CarouselItemsGallery(false,true,true,false,false), Navigation),
 	  					GalleryBuilder.NavButton("CarouselView Snap", () =>
  							new CarouselSnapGallery(), Navigation),
 						GalleryBuilder.NavButton("ObservableCollection and CarouselView", () =>
@@ -46,7 +46,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("CarouselView EmptyView", () =>
   							new EmptyCarouselGallery(), Navigation),
 						GalleryBuilder.NavButton("IndicatorView", () =>
-  							new IndicatorCodeGallery(), Navigation)
+  							new IndicatorCodeGallery(), Navigation),
+						GalleryBuilder.NavButton("CarouselView SetPosition Ctor", () =>
+							new CarouselItemsGallery(false,true,true,true,false), Navigation),
+						GalleryBuilder.NavButton("CarouselView SetPosition Appearing", () =>
+							new CarouselItemsGallery(false,true,true,false,true), Navigation),
 					}
 				}
 			};
