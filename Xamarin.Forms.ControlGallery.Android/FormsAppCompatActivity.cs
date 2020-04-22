@@ -45,7 +45,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 #if TEST_EXPERIMENTAL_RENDERERS
 			// Fake_Flag is here so we can test for flag initialization issues
-			Forms.SetFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
+			Forms.SetFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
 #else
 			Forms.SetFlags("UseLegacyRenderers", "SwipeView_Experimental", "MediaElement_Experimental", "AppTheme_Experimental");
 #endif

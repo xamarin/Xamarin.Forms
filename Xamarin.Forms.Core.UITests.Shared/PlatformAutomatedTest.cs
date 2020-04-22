@@ -14,7 +14,15 @@ namespace Xamarin.Forms.Core.UITests.Shared
 		[Category(UITestCategories.ViewBaseTests)]
 		public void AutomatedTests()
 		{
-			App.WaitForElement("SUCCESS", timeout: TimeSpan.FromMinutes(1));
+			try
+			{
+				App.WaitForElement("SUCCESS", timeout: TimeSpan.FromMinutes(1));
+			}
+			catch
+			{
+				App.Tap("Toggle Passed");
+				throw;
+			}
 		}
 	}
 }

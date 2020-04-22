@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 				int androidColor;
 				if (i != 2)
 				{
-					androidColor = (int)Color.Red.ToAndroid();
+					androidColor = (int)Color.Purple.ToAndroid();
 				}
 				else
 				{

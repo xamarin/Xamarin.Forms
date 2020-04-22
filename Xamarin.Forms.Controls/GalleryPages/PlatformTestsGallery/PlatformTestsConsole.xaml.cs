@@ -8,6 +8,7 @@ using System;
 using System.Threading.Tasks;
 using System.IO;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 {
@@ -28,6 +29,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		int _testsRunCount = 0;
 
 		readonly PlatformTestRunner _runner = new PlatformTestRunner();
+		DisplaySettings _displaySettings;
 
 		public PlatformTestsConsole()
 		{
@@ -40,6 +42,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			MessagingCenter.Subscribe<Exception>(this, "TestRunnerError", OutputTestRunnerError);
 
 			Rerun.Clicked += RerunClicked;
+			togglePassed.Clicked += ToggledPassedClicked;
+
+			_displaySettings = new DisplaySettings();
+			BindingContext = _displaySettings;
+		}
+
+		private void ToggledPassedClicked(object sender, EventArgs e)
+		{
+			_displaySettings.ShowPassed = !_displaySettings.ShowPassed;
 		}
 
 		async void RerunClicked(object sender, EventArgs e)
@@ -137,6 +148,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			var label = new Label { Text = $"{name} Started", LineBreakMode = LineBreakMode.HeadTruncation,
 				FontAttributes = FontAttributes.Bold };
 
+			SetupPassedLabelBindings(label);
+
 			Device.BeginInvokeOnMainThread(() =>
 			{
 				Results.Children.Add(label);
@@ -188,6 +201,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			else
 			{
 				label.TextColor = _successColor;
+				SetupPassedLabelBindings(label);
 			}
 
 			var margin = new Thickness(15, 0, 0, 0);
@@ -261,6 +275,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			else
 			{
 				label.TextColor = _successColor;
+				SetupPassedLabelBindings(label);
+				SetupPassedLabelBindings(counts);
 			}
 
 			counts.TextColor = label.TextColor;
@@ -316,6 +332,35 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		async void ResultsAdded(object sender, ElementEventArgs e)
 		{
 			await ResultsScrollView.ScrollToAsync(e.Element, ScrollToPosition.MakeVisible, false);
+		}
+
+		[Preserve(AllMembers = true)]
+		public class DisplaySettings : INotifyPropertyChanged
+		{
+			bool _showPassed;
+
+			public DisplaySettings()
+			{
+				_showPassed = true;
+			}
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			public bool ShowPassed
+			{
+				get => _showPassed;
+				set
+				{
+					_showPassed = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowPassed)));
+				}
+			}
+		}
+
+		public Label SetupPassedLabelBindings(Label label)
+		{
+			label.SetBinding(Label.IsVisibleProperty, "ShowPassed");
+			return label;
 		}
 	}
 }
