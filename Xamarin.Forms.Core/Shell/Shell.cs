@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
@@ -145,6 +146,15 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty UnselectedColorProperty =
 			BindableProperty.CreateAttached("UnselectedColor", typeof(Color), typeof(Shell), Color.Default,
 				propertyChanged: OnColorValueChanged);
+
+		public static readonly BindableProperty BottomToolBarLabelVisibilityModeProperty =
+			BindableProperty.CreateAttached("BottomToolBarLabelVisibilityMode", typeof(BottomToolBarLabelVisibilityMode), typeof(Shell), BottomToolBarLabelVisibilityMode.Default);
+
+		public static BottomToolBarLabelVisibilityMode GetBottomToolBarLabelVisibilityMode(BindableObject element) =>
+			(BottomToolBarLabelVisibilityMode)element.GetValue(BottomToolBarLabelVisibilityModeProperty);
+
+		public static void SetBottomToolBarLabelVisibilityMode(BindableObject element, BottomToolBarLabelVisibilityMode value) =>
+			element.SetValue(BottomToolBarLabelVisibilityModeProperty, value);
 
 		public static Color GetBackgroundColor(BindableObject obj) => (Color)obj.GetValue(BackgroundColorProperty);
 		public static void SetBackgroundColor(BindableObject obj, Color value) => obj.SetValue(BackgroundColorProperty, value);
