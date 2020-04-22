@@ -1,10 +1,51 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System;
 
 namespace Xamarin.Forms
 {
-	public class OnAppTheme<T> : INotifyPropertyChanged
+	public class OnAppTheme<T> : BindingBase
 	{
+		WeakReference<BindableObject> _weakTarget;
+		BindableProperty _targetProperty;
+
+		public OnAppTheme()
+		{
+			Application.Current.RequestedThemeChanged += ThemeChanged;
+		}
+
+		void ThemeChanged(object sender, AppThemeChangedEventArgs e)
+		{
+			Device.BeginInvokeOnMainThread(() => ApplyCore());
+		}
+		public new BindingMode Mode
+		{
+			get => base.Mode;
+			set
+			{
+				// TODO
+				throw new Exception();
+			}
+		}
+		internal override BindingBase Clone()
+		{
+			throw new NotImplementedException();
+		}
+
+		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		{
+			_weakTarget = new WeakReference<BindableObject>(bindObj);
+			_targetProperty = targetProperty;
+			base.Apply(context, bindObj, targetProperty, fromBindingContextChanged);
+			ApplyCore();
+		}
+
+		void ApplyCore()
+		{
+			if (_weakTarget == null || !_weakTarget.TryGetTarget(out var target))
+				return;
+
+			target.SetValue(_targetProperty, Application.Current.RequestedTheme == OSAppTheme.Dark ? Dark : Light);
+		}
+
 		T _light;
 		T _dark;
 		T _default;
@@ -44,10 +85,6 @@ namespace Xamarin.Forms
 		{
 			return onAppTheme.GetValue();
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-			=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
 		public T Value => GetValue();
 

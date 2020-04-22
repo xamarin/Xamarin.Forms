@@ -103,7 +103,11 @@ namespace Xamarin.Forms.Xaml
 					}
 				}
 
-				return converterProvider.Convert(value, propertyType, minforetriever, serviceProvider);
+				var light = converterProvider.Convert(Light, propertyType, minforetriever, serviceProvider);
+
+				var dark = converterProvider.Convert(Dark, propertyType, minforetriever, serviceProvider);
+
+				return new OnAppTheme<object> { Light = light, Dark = dark };
 			}
 			if (converterProvider != null)
 				return converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
@@ -111,7 +115,7 @@ namespace Xamarin.Forms.Xaml
 			var ret = value.ConvertTo(propertyType, () => pi, serviceProvider, out Exception exception);
 			if (exception != null)
 				throw exception;
-			return ret;
+			return new OnAppTheme<object> { Light = Light, Dark = Dark };
 		}
 
 		object GetValue()
