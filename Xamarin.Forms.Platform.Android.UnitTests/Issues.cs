@@ -96,6 +96,8 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 
 				model.Text = model.Text == text1 ? text2 : text1;
 			}
+
+			model.MarkTestCompleted();
 		}
 
 		[Test(Description = "No ObjectDisposedException should be thrown")]
@@ -120,6 +122,8 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 
 				model.Text = model.Text == text1 ? text2 : text1;
 			}
+
+			model.MarkTestCompleted();
 		}
 	}
 }

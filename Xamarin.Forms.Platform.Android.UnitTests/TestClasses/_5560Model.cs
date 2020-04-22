@@ -17,8 +17,20 @@
 			set
 			{
 				_text = value;
-				OnPropertyChanged(nameof(Text));
+
+				if(!TestCompleted)
+					OnPropertyChanged(nameof(Text));
 			}
 		}
+
+		public void MarkTestCompleted()
+		{
+			// because this model is reused by multiple controls it can sometimes cause a ping pong effect
+			// where multiple controls are updating the model and then the model is re-updating those controls
+			// which then re-update the model
+			TestCompleted = true;
+		}
+
+		bool TestCompleted { get; set; }
 	}
 }
