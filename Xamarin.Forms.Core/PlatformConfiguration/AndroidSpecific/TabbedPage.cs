@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.ComponentModel;
+	using Xamarin.Forms.Internals;
 	using FormsElement = Forms.TabbedPage;
 
 	public static class TabbedPage
@@ -150,6 +151,27 @@
 		{
 			return GetMaxItemCount(config.Element);
 		}
+
+		public static readonly BindableProperty BottomToolBarLabelVisibilityModeProperty =
+			BindableProperty.Create("BottomToolBarLabelVisibilityMode",
+									typeof(BottomToolBarLabelVisibilityMode),
+									typeof(TabbedPage),
+									BottomToolBarLabelVisibilityMode.Default);
+
+		public static BottomToolBarLabelVisibilityMode GetBottomToolBarLabelVisibilityMode(BindableObject element) =>
+			(BottomToolBarLabelVisibilityMode)element.GetValue(BottomToolBarLabelVisibilityModeProperty);
+
+		public static void SetBottomToolBarLabelVisibilityMode(BindableObject element, BottomToolBarLabelVisibilityMode value) =>
+			element.SetValue(BottomToolBarLabelVisibilityModeProperty, value);
+
+		public static IPlatformElementConfiguration<Android, FormsElement> SetBottomToolBarLabelVisibilityMode(this IPlatformElementConfiguration<Android, FormsElement> config, BottomToolBarLabelVisibilityMode labelVisibilityMode)
+		{
+			SetBottomToolBarLabelVisibilityMode(config.Element, labelVisibilityMode);
+			return config;
+		}
+
+		public static BottomToolBarLabelVisibilityMode GetBottomToolBarLabelVisibilityMode(this IPlatformElementConfiguration<Android, FormsElement> config) =>
+			GetBottomToolBarLabelVisibilityMode(config.Element);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("BarItemColor is obsolete as of version 4.0. Please use TabbedPage.UnselectedTabColor instead.")]

@@ -670,6 +670,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_bottomNavigationView,
 				Context);
 
+			var labelVisibility = Element.OnThisPlatform().GetBottomToolBarLabelVisibilityMode();
+
+			_bottomNavigationView.LabelVisibilityMode = labelVisibility.ToAndroidLabelVisibilityMode();
+
 			if (Element.CurrentPage == null && Element.Children.Count > 0)
 				Element.CurrentPage = Element.Children[0];
 		}
