@@ -41,9 +41,9 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 		}
 
-#if UITEST && __IOS__
+#if UITEST && __SHELL__
 		[Test]
-		public void Issue10222Test() 
+		public void TopTabsDontScrollBackToStartWhenSelected() 
 		{
 			var element1 = RunningApp.WaitForElement("Tab 1", "Shell hasn't loaded")[0].Rect;
 			RunningApp.WaitForNoElement("Tab 12", "Tab shouldn't be visible");
