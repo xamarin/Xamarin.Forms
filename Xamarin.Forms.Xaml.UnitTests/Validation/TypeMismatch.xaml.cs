@@ -4,6 +4,7 @@ using Xamarin.Forms;
 
 using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
+using Xamarin.Forms.Exceptions;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
@@ -26,9 +27,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ThrowsOnMismatchingType ([Values(true, false)]bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws(new XamlParseExceptionConstraint(7, 16, m => m.StartsWith("No property, bindable property", StringComparison.Ordinal)), () => MockCompiler.Compile(typeof(TypeMismatch)));
+					Assert.Throws(new XamlParseExceptionConstraint(7, 16, XFException.Ecode.TypeMismatch), () => MockCompiler.Compile(typeof(TypeMismatch)));
 				else
-					Assert.Throws(new XamlParseExceptionConstraint(7, 16, m => m.StartsWith("Cannot assign property", StringComparison.Ordinal)), () => new TypeMismatch(useCompiledXaml));
+					Assert.Throws(new XamlParseExceptionConstraint(7, 16, XFException.Ecode.AssignProperty), () => new TypeMismatch(useCompiledXaml));
 			}
 		}
 	}

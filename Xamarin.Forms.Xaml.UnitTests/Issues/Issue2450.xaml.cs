@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ThrowMeaningfulExceptionOnDuplicateXName (bool useCompiledXaml)
 			{
 				var layout = new Issue2450(useCompiledXaml);
-				Assert.Throws(new XamlParseExceptionConstraint(11, 13, m => m == "An element with the name \"label0\" already exists in this NameScope"),
+				Assert.Throws(new XamlParseExceptionConstraint(11, 13, Exceptions.XFException.Ecode.Duplicate),
 							  () => (layout.Resources ["foo"] as Forms.DataTemplate).CreateContent());
 			}
 		}

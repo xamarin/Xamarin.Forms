@@ -9,9 +9,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		bool haslineinfo;
 		int linenumber;
 		int lineposition;
-		Func<string, bool> messagePredicate;
+		XFException.Ecode? code;
 
-		XamlParseExceptionConstraint(bool haslineinfo) : base(typeof(XamlParseException))
+		XamlParseExceptionConstraint(bool haslineinfo) : base(typeof(XFException))
 		{
 			this.haslineinfo = haslineinfo;
 		}
@@ -22,38 +22,26 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		{
 		}
 
-		public XamlParseExceptionConstraint (int linenumber, int lineposition, Func<string, bool> messagePredicate = null) : this (true)
+		public XamlParseExceptionConstraint(int linenumber, int lineposition, XFException.Ecode? code = null) : this(true)
 		{
 			this.linenumber = linenumber;
 			this.lineposition = lineposition;
-			this.messagePredicate = messagePredicate;
+			this.code = code;
 		}
 
-		protected override bool Matches (object actual)
+		protected override bool Matches(object actual)
 		{
-			if (!base.Matches (actual))
+			if (!base.Matches(actual))
 				return false;
 			var xmlInfo = ((XamlParseException)actual).XmlInfo;
 			if (!haslineinfo)
 				return true;
-			if (xmlInfo == null || !xmlInfo.HasLineInfo ())
+			if (xmlInfo == null || !xmlInfo.HasLineInfo())
 				return false;
-			if (messagePredicate != null)
-				if (!messagePredicate (((XamlParseException)actual).Message))
+			if (code != null)
+				if (code != (XFException.Ecode)((XamlParseException)actual).Code)
 					return false;
 			return xmlInfo.LineNumber == linenumber && xmlInfo.LinePosition == lineposition;
-		}
-
-		public override string Description
-		{
-			get
-			{
-				if (haslineinfo)
-				{
-					return string.Format($"{base.Description} line {linenumber}, position {lineposition}");
-				}
-				return base.Description;
-			}
 		}
 
 		//public override void WriteActualValueTo (MessageWriter writer)
