@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Xaml
 				}
 				catch (Exception e)
 				{
-					exception = new CSException(CSException.Ecode.Convert, serviceProvider.GetLineInfo(), e, value.GetType().ToString(), $"{toType}. {e.Message}");
+					exception = (e as XamlParseException) ?? new CSException(CSException.Ecode.Convert, serviceProvider.GetLineInfo(), e, value.GetType().ToString(), $"{toType}. {e.Message}");
 					return null;
 				}
 				var converterType = converter?.GetType();
