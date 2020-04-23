@@ -19,15 +19,17 @@ namespace Xamarin.Forms
 		public new BindingMode Mode
 		{
 			get => base.Mode;
-			set
-			{
-				// TODO
-				throw new Exception();
-			}
+			private set { }
 		}
 		internal override BindingBase Clone()
 		{
-			return new OnAppTheme<T> { Light = Light, Dark = Dark };
+			return new OnAppTheme<T> { Light = Light, Dark = Dark, Default = Default };
+		}
+
+		internal override void Apply(bool fromTarget)
+		{
+			base.Apply(fromTarget);
+			ApplyCore();
 		}
 
 		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
@@ -43,7 +45,7 @@ namespace Xamarin.Forms
 			if (_weakTarget == null || !_weakTarget.TryGetTarget(out var target))
 				return;
 
-			target.SetValue(_targetProperty, Application.Current.RequestedTheme == OSAppTheme.Dark ? Dark : Light);
+			target?.SetValue(_targetProperty, GetValue());
 		}
 
 		T _light;

@@ -363,7 +363,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 		}
-
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);

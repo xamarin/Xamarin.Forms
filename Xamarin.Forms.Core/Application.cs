@@ -159,20 +159,31 @@ namespace Xamarin.Forms
 
 		public OSAppTheme RequestedTheme => Device.PlatformServices.RequestedTheme;
 
-		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged
-		{
-			add
-			{
-				ExperimentalFlags.VerifyFlagEnabled(nameof(Application), ExperimentalFlags.AppThemeExperimental, nameof(RequestedThemeChanged));
+		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged;
+		// Doesn't work on iOS
+		//{
+		//	add => _weakEventManager.AddEventHandler(value);
+		//	remove => _weakEventManager.RemoveEventHandler(value);
+		//}
 
-				_weakEventManager.AddEventHandler(value);
-			}
-			remove => _weakEventManager.RemoveEventHandler(value);
-		}
+		bool _themeChangedFiring;
+		OSAppTheme _lastAppTheme;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void OnRequestedThemeChanged(AppThemeChangedEventArgs args)
-			=> _weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
+		{
+			if (!_themeChangedFiring && RequestedTheme != _lastAppTheme)
+			{
+				_themeChangedFiring = true;
+				_lastAppTheme = RequestedTheme;
+
+				// Doesn't work on iOS
+				//_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
+
+				RequestedThemeChanged.Invoke(this, args);
+				_themeChangedFiring = false;
+			}
+		}
 
 		public event EventHandler<ModalPoppedEventArgs> ModalPopped;
 
