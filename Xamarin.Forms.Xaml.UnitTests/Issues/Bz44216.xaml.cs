@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void DontSetValueOnPrivateBP(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws(new XamlParseExceptionConstraint(7, 26, Exceptions.XFException.Ecode.BindingPropertyNotFound), () => MockCompiler.Compile(typeof(Bz44216)));
+					Assert.Throws(new XamlParseExceptionConstraint(7, 26, Exceptions.XFException.Ecode.TypeMismatch), () => MockCompiler.Compile(typeof(Bz44216)));
 				else
 					Assert.Throws(new XamlParseExceptionConstraint(7, 26, Exceptions.XFException.Ecode.AssignProperty), () => new Bz44216(useCompiledXaml));
 			}
