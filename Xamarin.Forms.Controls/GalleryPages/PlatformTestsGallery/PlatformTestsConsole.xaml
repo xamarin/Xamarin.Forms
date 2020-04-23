@@ -19,7 +19,7 @@
                 <Label x:Name="Status" Text="Running Tests..." VerticalTextAlignment="Center"/>
                 <Label Grid.Column="1" x:Name="RunCount" Text="" VerticalTextAlignment="Center"/>
                 <Button Grid.Column="2" Text="Run Again" x:Name="Rerun" IsEnabled="False"/>
-                <Button Grid.Column="3" Text="Toggle Passed" x:Name="togglePassed"/>
+                <Button Grid.Column="3" Text="Toggle Passed" AutomationId="TogglePassed" x:Name="togglePassed"/>
             </Grid>
             <ScrollView x:Name="ResultsScrollView">
                 <StackLayout x:Name="Results" ChildAdded="ResultsAdded">

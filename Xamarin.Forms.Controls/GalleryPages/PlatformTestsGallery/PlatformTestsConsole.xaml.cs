@@ -60,6 +60,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				RunCount.Text = "";
 				Results.Children.Clear();
 				Rerun.IsEnabled = false;
+				_displaySettings.ShowPassed = true;
 			});
 
 			await Task.Delay(50);
@@ -102,6 +103,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				{
 					Status.Text = SuccessText;
 					Status.TextColor = _successColor;
+					_displaySettings.ShowPassed = true;
 				}
 
 				RunCount.Text = $"{_testsRunCount} tests run";
@@ -116,6 +118,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 			Status.Text = failText;
 			Status.TextColor = _failColor;
+			_displaySettings.ShowPassed = false;
 		}
 
 		void AssemblyFinished(ITestResult assembly)
