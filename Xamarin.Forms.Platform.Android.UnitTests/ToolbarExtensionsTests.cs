@@ -77,12 +77,12 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			AToolBar aToolBar = settings.ToolBar;
 			List<IMenuItem> menuItemsCreated = settings.MenuItemsCreated;
 
-			Assert.IsTrue(menuItemsCreated[2].IsEnabled);
+			Assert.IsTrue(menuItemsCreated[2].IsEnabled, "Initial state of menu Item is not enabled");
 			sortedItems[2].IsEnabled = false;
 
-			Assert.IsTrue(menuItemsCreated[0].IsEnabled);
-			Assert.IsTrue(menuItemsCreated[1].IsEnabled);
-			Assert.IsFalse(menuItemsCreated[2].IsEnabled);
+			Assert.IsTrue(menuItemsCreated[0].IsEnabled, "Menu Item 1 is incorrectly disabled");
+			Assert.IsTrue(menuItemsCreated[1].IsEnabled, "Menu Item 2 is incorrectly disabled");
+			Assert.IsFalse(menuItemsCreated[2].IsEnabled, "Menu Item 3 is incorrectly disabled");
 
 			var textViews = settings.TextViews.ToList();
 
