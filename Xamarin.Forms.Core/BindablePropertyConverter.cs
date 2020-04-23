@@ -103,9 +103,9 @@ namespace Xamarin.Forms
 				throw new XFException(XFException.Ecode.ResolveProperty, lineinfo, name, type.Name);
 			var bp = bpinfo.GetValue(null) as BindableProperty;
 			var isObsolete = bpinfo.GetCustomAttribute<ObsoleteAttribute>() != null;
-			if (isObsolete)
-				throw new CSException(CSException.Ecode.Obsolete, lineinfo, propertyName, $"{type.Name}.{name}");
-			if (bp.PropertyName != propertyName)
+			//if (isObsolete) We explicitly do not error for obsolete properties. We forward them instead.
+			//	throw new CSException(CSException.Ecode.Obsolete, lineinfo, propertyName, $"{type.Name}.{name}");
+			if (bp.PropertyName != propertyName && !isObsolete)
 				throw new XFException(XFException.Ecode.BindingPropertyNotFound, lineinfo, $"{type.Name}.{name}", propertyName);
 			return bp;
 		}
