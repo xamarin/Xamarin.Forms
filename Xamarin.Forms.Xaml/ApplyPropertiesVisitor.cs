@@ -345,7 +345,7 @@ namespace Xamarin.Forms.Xaml
 				return;
 
 			var assemblyName = (context.RootAssembly ?? rootElement.GetType().GetTypeInfo().Assembly)?.GetName().Name;
-			//If it's a BindableProberty, SetValue
+			//If it's a BindableProperty, SetValue
 			if (xpe == null && TrySetValue(xamlelement, property, attached, value, lineInfo, serviceProvider, out xpe)) {
 				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
 					VisualDiagnostics.RegisterSourceInfo(value, new Uri($"{path};assembly={assemblyName}", UriKind.Relative), ((IXmlLineInfo)node).LineNumber, ((IXmlLineInfo)node).LinePosition);
