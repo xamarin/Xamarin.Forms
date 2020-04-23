@@ -26,7 +26,7 @@ if (IsMac)
 	ForceJavaCleanup();
 	Item (XreItem.Java_OpenJDK_1_8_0_25);
 
-	string releaseChannel = Environment.GetEnvironmentVariable ("releaseChannel");
+	string releaseChannel = Environment.GetEnvironmentVariable ("CHANNEL");
 
 	if(releaseChannel == "Preview")
 	{

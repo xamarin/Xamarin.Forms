@@ -37,8 +37,8 @@ PowerShell:
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
 var packageVersion = Argument("packageVersion", "");
-var releaseChannelArg = Argument("releaseChannel", "Stable");
-releaseChannelArg = EnvironmentVariable("releaseChannel") ?? releaseChannelArg;
+var releaseChannelArg = Argument("CHANNEL", "Stable");
+releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
 bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
 
