@@ -27,7 +27,7 @@ steps:
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target provision --buildForVS2017=$(buildForVS2017) --CHANNEL=$(CHANNEL)
+      arguments: --target provision --buildForVS2017=$(buildForVS2017)
 
   - task: UseDotNet@2
     displayName: 'Install .net core $(DOTNET_VERSION)'
