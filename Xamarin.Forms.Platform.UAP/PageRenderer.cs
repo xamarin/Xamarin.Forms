@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Element?.SendDisappearing();
 			}
 
-			base.Dispose();
+			base.Dispose(true);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Page> e)
