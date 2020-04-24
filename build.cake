@@ -117,10 +117,10 @@ iOSSDK_macos = Argument("IOS_SDK_MAC", iOSSDK_macos);
 monoSDK_macos = Argument("MONO_SDK_MAC", monoSDK_macos);
 macSDK_macos = Argument("MAC_SDK_MAC", macSDK_macos);
 
-string androidSDK_windows = Argument("ANDROID_SDK_WINDOWS", "");
-string iOSSDK_windows = Argument("IOS_SDK_WINDOWS", "");
-string monoSDK_windows = Argument("MONO_SDK_WINDOWS", "");
-string macSDK_windows = Argument("MAC_SDK_WINDOWS", "");
+string androidSDK_windows = EnvironmentVariable("ANDROID_SDK_WINDOWS", "");
+string iOSSDK_windows = EnvironmentVariable("IOS_SDK_WINDOWS", "");
+string monoSDK_windows = EnvironmentVariable("MONO_SDK_WINDOWS", "");
+string macSDK_windows = EnvironmentVariable("MAC_SDK_WINDOWS", "");
 
 string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
 string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
