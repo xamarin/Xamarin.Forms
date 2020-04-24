@@ -19,7 +19,7 @@ namespace Xamarin.Forms
 			=> (((IndicatorView)bindable).IndicatorLayout as IndicatorStackLayout)?.ResetIndicatorCount((int)oldValue));
 
 		public static readonly BindableProperty MaximumVisibleProperty = BindableProperty.Create(nameof(MaximumVisible), typeof(int), typeof(IndicatorView), int.MaxValue, propertyChanged: (bindable, oldValue, newValue)
-		=> (((IndicatorView)bindable).IndicatorLayout as IndicatorStackLayout)?.ResetIndicators(), coerceValue: CoerceMaximumVisible);
+		=> (((IndicatorView)bindable).IndicatorLayout as IndicatorStackLayout)?.ResetIndicators());
 
 		public static readonly BindableProperty IndicatorTemplateProperty = BindableProperty.Create(nameof(IndicatorTemplate), typeof(DataTemplate), typeof(IndicatorView), default(DataTemplate), propertyChanging: (bindable, oldValue, newValue)
 			=> UpdateIndicatorLayout((IndicatorView)bindable, newValue));
@@ -70,6 +70,15 @@ namespace Xamarin.Forms
 		{
 			get => (int)GetValue(MaximumVisibleProperty);
 			set => SetValue(MaximumVisibleProperty, value);
+		}
+
+		public int ActualMaximumVisible
+		{
+			get
+			{
+				var minValue = Math.Min(MaximumVisible, Count);
+				return minValue <= 0 ? 0 : minValue;
+			}
 		}
 
 		public DataTemplate IndicatorTemplate
@@ -162,12 +171,6 @@ namespace Xamarin.Forms
 				count++;
 			}
 			Count = count;
-		}
-
-		static object CoerceMaximumVisible(BindableObject bindable, object value)
-		{
-			var minValue = Math.Min((int)value, ((IndicatorView)bindable).Count);
-			return minValue <= 0 ? 0 : minValue;
 		}
 	}
 }

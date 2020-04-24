@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using CoreGraphics;
 using UIKit;
 using static Xamarin.Forms.IndicatorView;
@@ -172,7 +173,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_updatingPosition = true;
-			var maxVisible = Element.MaximumVisible;
+			var maxVisible = Element.ActualMaximumVisible;
 			var position = Element.Position;
 			var index = position >= maxVisible ? maxVisible - 1 : position;
 			UIPager.CurrentPage = index;
@@ -185,7 +186,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (UIPager == null)
 				return;
 
-			var maxCount = Element.MaximumVisible;
+			var maxCount = Element.ActualMaximumVisible;
 			var count = Element.Count;
 
 			UIPager.Pages = maxCount != int.MaxValue ? maxCount : count;

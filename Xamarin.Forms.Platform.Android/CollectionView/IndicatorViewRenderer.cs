@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateSelectedIndicator()
 		{
-			var maxVisible = IndicatorsView.MaximumVisible;
+			var maxVisible = IndicatorsView.ActualMaximumVisible;
 			var position = IndicatorsView.Position;
 			_selectedIndex = position >= maxVisible ? maxVisible - 1 : position;
 			UpdateIndicators();
@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Platform.Android
 			var count = IndicatorsView.Count;
 
 			if (IndicatorsView.MaximumVisible != int.MaxValue)
-				count = IndicatorsView.MaximumVisible;
+				count = IndicatorsView.ActualMaximumVisible;
 
 			var childCount = ChildCount;
 

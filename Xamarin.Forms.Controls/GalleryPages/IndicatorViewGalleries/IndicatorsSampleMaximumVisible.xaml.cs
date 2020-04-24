@@ -31,6 +31,18 @@ namespace Xamarin.Forms.Controls
 			UpdateCurrentCount();
 		}
 
+		void ItemsSourceMinusClicked(object sender, EventArgs e)
+		{
+			_vm.Items.RemoveAt(0);
+			UpdateCurrentCount();
+		}
+
+		void ItemsSourcePlusClicked(object sender, EventArgs e)
+		{
+			_vm.Items.Add(_vm.GetItem(_vm.Items.Count));
+			UpdateCurrentCount();
+		}
+
 		void UpdateCurrentCount()
 		{
 			CurrentCount.Text = $"MaximumVisible: {_maxVisible}, item count: {_vm.Items.Count}";

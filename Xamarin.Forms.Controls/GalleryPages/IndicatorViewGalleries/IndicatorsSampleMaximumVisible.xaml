@@ -15,6 +15,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -26,7 +27,11 @@
         
         <Button Grid.Row="1" Text="MaximumVisible--" Clicked="MaximumVisibleClicked"></Button>
         <Button Grid.Row="2" Text="Set MaximumVisible> ItemCount" Clicked="MaximumVisibleAboveItemCountClicked"></Button>
-        <CarouselView x:Name="carousel" ItemsSource="{Binding Items}" Grid.Row="4" Grid.RowSpan="3" IndicatorView="indicators">
+        <StackLayout HorizontalOptions="Center" Grid.Row="3" Orientation="Horizontal">
+            <Button Text="ItemsSource--" Clicked="ItemsSourceMinusClicked"></Button>
+            <Button Text="ItemsSource++" Clicked="ItemsSourcePlusClicked"></Button>
+        </StackLayout>
+        <CarouselView x:Name="carousel" ItemsSource="{Binding Items}" Grid.Row="5" Grid.RowSpan="3" IndicatorView="indicators">
             <CarouselView.ItemTemplate>
                 <DataTemplate>
                     <Frame BackgroundColor="{Binding Color}">
@@ -37,8 +42,8 @@
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
-        <IndicatorView x:Name="indicators" Grid.Row="5" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center" />
-        <IndicatorView x:Name="indicatorsForms" Grid.Row="6" IndicatorColor="Gray"
+        <IndicatorView x:Name="indicators" Grid.Row="6" IndicatorColor="Gray" SelectedIndicatorColor="White" HorizontalOptions="Center" />
+        <IndicatorView x:Name="indicatorsForms" Grid.Row="7" IndicatorColor="Gray"
                        ItemsSource="{Binding Path=ItemsSource, Source={x:Reference carousel}}"
                        Position="{Binding Path=Position, Source={x:Reference carousel}}"
                        SelectedIndicatorColor="White" HorizontalOptions="Center" >
