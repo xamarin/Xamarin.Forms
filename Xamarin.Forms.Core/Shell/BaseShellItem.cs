@@ -16,7 +16,6 @@ namespace Xamarin.Forms
 		public event EventHandler Disappearing;
 
 		bool _hasAppearing;
-		Grid _defaultFlyoutItemCell;
 		const string DefaultFlyoutItemLabelStyle = "Default_FlyoutItemLabelStyle";
 		const string DefaultFlyoutItemImageStyle = "Default_FlyoutItemImageStyle";
 		const string DefaultFlyoutItemLayoutStyle = "Default_FlyoutItemLayoutStyle";
@@ -260,22 +259,12 @@ namespace Xamarin.Forms
 				OnPropertyChanged(VisualElement.FlowDirectionProperty.PropertyName);
 			}
 		}
+
 		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
 		double IFlowDirectionController.Width => (Parent as VisualElement)?.Width ?? 0;
 
-
 		internal virtual void ApplyQueryAttributes(IDictionary<string, string> query)
 		{
-		}
-
-
-		internal override void OnStyleClassChanged()
-		{
-			if (_defaultFlyoutItemCell == null)
-				return;
-
-			base.OnStyleClassChanged();
-			UpdateFlyoutItemStyles(_defaultFlyoutItemCell, this as IStyleSelectable);
 		}
 
 		static void UpdateFlyoutItemStyles(Grid flyoutItemCell, IStyleSelectable source)
@@ -286,7 +275,7 @@ namespace Xamarin.Forms
 				DefaultFlyoutItemLayoutStyle,
 				FlyoutItem.LabelStyle,
 				FlyoutItem.ImageStyle,
-				FlyoutItem.GridStyle };
+				FlyoutItem.LayoutStyle };
 
 			if (source?.Classes != null)
 				foreach (var styleClass in source.Classes)
@@ -300,14 +289,11 @@ namespace Xamarin.Forms
 				.StyleClass = bindableObjectStyle;
 		}
 
-		internal DataTemplate CreateDefaultFlyoutItemCell(string textBinding, string iconBinding)
+		internal static DataTemplate CreateDefaultFlyoutItemCell(IStyleSelectable styleSelectable, string textBinding, string iconBinding)
 		{
 			return new DataTemplate(() =>
 			{
-				if (_defaultFlyoutItemCell != null)
-					return _defaultFlyoutItemCell;
-
-				var grid = _defaultFlyoutItemCell = new Grid();
+				var grid = new Grid();
 				if (Device.RuntimePlatform == Device.UWP)
 					grid.ColumnSpacing = grid.RowSpacing = 0;
 
@@ -334,8 +320,9 @@ namespace Xamarin.Forms
 					Class = DefaultFlyoutItemLayoutStyle,
 				};
 
+				
 				var groups = new VisualStateGroupList();
-
+				
 				var commonGroup = new VisualStateGroup();
 				commonGroup.Name = "CommonStates";
 				groups.Add(commonGroup);
@@ -397,11 +384,15 @@ namespace Xamarin.Forms
 					defaultImageClass.Setters.Add(new Setter { Property = Image.MarginProperty, Value = new Thickness(12, 0, 12, 0) });					
 				}
 
-				image.SetBinding(Image.SourceProperty, iconBinding);
+				Binding imageBinding = new Binding(iconBinding);
+				defaultImageClass.Setters.Add(new Setter { Property = Image.SourceProperty, Value = imageBinding });
+
 				grid.Children.Add(image);
 
 				var label = new Label();
-				label.SetBinding(Label.TextProperty, textBinding);
+				Binding labelBinding = new Binding(textBinding);
+				defaultLabelClass.Setters.Add(new Setter { Property = Label.TextProperty, Value = labelBinding });
+
 				grid.Children.Add(label, 1, 0);
 
 				if (Device.RuntimePlatform == Device.Android)
@@ -422,7 +413,13 @@ namespace Xamarin.Forms
 					defaultLabelClass.Setters.Add(new Setter { Property = Label.HorizontalTextAlignmentProperty, Value = TextAlignment.Start });
 				}
 
-				UpdateFlyoutItemStyles(_defaultFlyoutItemCell, this as IStyleSelectable);
+				INameScope nameScope = new NameScope();
+				NameScope.SetNameScope(grid, nameScope);
+				nameScope.RegisterName("FlyoutItemLayout", grid);
+				nameScope.RegisterName("FlyoutItemImage", image);
+				nameScope.RegisterName("FlyoutItemLabel", label);
+
+				UpdateFlyoutItemStyles(grid, styleSelectable);
 				grid.Resources = new ResourceDictionary() { defaultGridClass, defaultLabelClass, defaultImageClass };
 				return grid;
 			});
