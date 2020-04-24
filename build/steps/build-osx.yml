@@ -27,7 +27,7 @@ steps:
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target provision --buildForVS2017=$(buildForVS2017) --releaseChannel=$(releaseChannel)
+      arguments: --target provision --buildForVS2017=$(buildForVS2017) --CHANNEL=$(CHANNEL) --ANDROID_SDK_MAC=$(ANDROID_SDK_MAC) --IOS_SDK_MAC=$(IOS_SDK_MAC) --MONO_SDK_MAC=$(MONO_SDK_MAC) --MAC_SDK_MAC=$(MAC_SDK_MAC)
 
   - task: UseDotNet@2
     displayName: 'Install .net core $(DOTNET_VERSION)'

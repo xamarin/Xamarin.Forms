@@ -17,7 +17,7 @@ parameters:
 steps:
   - checkout: self
     clean: true
-  - script: build.cmd -Target provision
+  - script: build.cmd -Target provision '-ANDROID_SDK_WINDOWS="$(ANDROID_SDK_WINDOWS)"' '-IOS_SDK_WINDOWS="$(IOS_SDK_WINDOWS)"' '-MONO_SDK_WINDOWS="$(MONO_SDK_WINDOWS)"' '-MAC_SDK_WINDOWS="$(MAC_SDK_WINDOWS)"'
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
 

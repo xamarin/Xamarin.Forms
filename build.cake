@@ -111,12 +111,21 @@ if(String.IsNullOrWhiteSpace(monoSDK_macos))
         monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
     }
 }
-    
 
-string androidSDK = IsRunningOnWindows() ? "" : androidSDK_macos;
-string monoSDK = IsRunningOnWindows() ? "" : monoSDK_macos;
-string iosSDK = IsRunningOnWindows() ? "" : iOSSDK_macos;
-string macSDK  = IsRunningOnWindows() ? "" : macSDK_macos;
+androidSDK_macos = Argument("ANDROID_SDK_MAC", androidSDK_macos);
+iOSSDK_macos = Argument("IOS_SDK_MAC", iOSSDK_macos);
+monoSDK_macos = Argument("MONO_SDK_MAC", monoSDK_macos);
+macSDK_macos = Argument("MAC_SDK_MAC", macSDK_macos);
+
+string androidSDK_windows = Argument("ANDROID_SDK_WINDOWS", "");
+string iOSSDK_windows = Argument("IOS_SDK_WINDOWS", "");
+string monoSDK_windows = Argument("MONO_SDK_WINDOWS", "");
+string macSDK_windows = Argument("MAC_SDK_WINDOWS", "");
+
+string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
+string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
+string iosSDK = IsRunningOnWindows() ? iOSSDK_windows : iOSSDK_macos;
+string macSDK  = IsRunningOnWindows() ? macSDK_windows : macSDK_macos;
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
