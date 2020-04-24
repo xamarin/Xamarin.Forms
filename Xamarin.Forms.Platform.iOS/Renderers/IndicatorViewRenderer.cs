@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_updatingPosition = true;
-			var maxVisible = Element.ActualMaximumVisible;
+			var maxVisible = GetMaximumVisible();
 			var position = Element.Position;
 			var index = position >= maxVisible ? maxVisible - 1 : position;
 			UIPager.CurrentPage = index;
@@ -186,10 +186,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (UIPager == null)
 				return;
 
-			var maxCount = Element.ActualMaximumVisible;
-			var count = Element.Count;
-
-			UIPager.Pages = maxCount != int.MaxValue ? maxCount : count;
+			UIPager.Pages = GetMaximumVisible();
 		}
 
 		void UpdateHidesForSinglePage()
@@ -222,6 +219,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UpdatePages();
 			UpdateCurrentPage();
+		}
+
+		int GetMaximumVisible()
+		{
+			var minValue = Math.Min(Element.MaximumVisible, Element.Count);
+			return minValue <= 0 ? 0 : minValue;
 		}
 	}
 

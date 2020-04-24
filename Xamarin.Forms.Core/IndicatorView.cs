@@ -72,15 +72,6 @@ namespace Xamarin.Forms
 			set => SetValue(MaximumVisibleProperty, value);
 		}
 
-		public int ActualMaximumVisible
-		{
-			get
-			{
-				var minValue = Math.Min(MaximumVisible, Count);
-				return minValue <= 0 ? 0 : minValue;
-			}
-		}
-
 		public DataTemplate IndicatorTemplate
 		{
 			get => (DataTemplate)GetValue(IndicatorTemplateProperty);
