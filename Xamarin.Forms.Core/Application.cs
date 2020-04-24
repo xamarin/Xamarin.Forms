@@ -159,7 +159,12 @@ namespace Xamarin.Forms
 
 		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged
 		{
-			add => _weakEventManager.AddEventHandler(value);
+			add
+			{
+				ExperimentalFlags.VerifyFlagEnabled(nameof(Application), ExperimentalFlags.AppThemeExperimental, nameof(RequestedThemeChanged));
+
+				_weakEventManager.AddEventHandler(value);
+			}
 			remove => _weakEventManager.RemoveEventHandler(value);
 		}
 

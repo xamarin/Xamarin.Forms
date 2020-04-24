@@ -70,11 +70,6 @@ namespace Xamarin.Forms.Xaml
 							  ?? pi?.PropertyType
 							  ?? throw new InvalidOperationException("Cannot determine property to provide the value for.");
 
-			//var value = GetValue();
-			//var info = propertyType.GetTypeInfo();
-			//if (value == null && info.IsValueType)
-			//	return Activator.CreateInstance(propertyType);
-
 			if (Converter != null)
 			{
 				var light = Converter.Convert(Light, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
