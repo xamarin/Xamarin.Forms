@@ -127,6 +127,12 @@ string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
 string iosSDK = IsRunningOnWindows() ? iOSSDK_windows : iOSSDK_macos;
 string macSDK  = IsRunningOnWindows() ? macSDK_windows : macSDK_macos;
 
+
+Information ("androidSDK: {0}", androidSDK);
+Information ("monoSDK: {0}", monoSDK);
+Information ("macSDK: {0}", macSDK);
+Information ("iosSDK: {0}", iosSDK);
+
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
@@ -150,6 +156,8 @@ Task("provision-macsdk")
             else
                 await Boots (Product.XamarinMac, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(macSDK))
+            await Boots(macSDK);
     });
 
 Task("provision-iossdk")
@@ -162,6 +170,8 @@ Task("provision-iossdk")
             else
                 await Boots (Product.XamariniOS, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(iosSDK))
+            await Boots(iosSDK);
     });
 
 Task("provision-androidsdk")
@@ -191,6 +201,8 @@ Task("provision-androidsdk")
             else
                 await Boots (Product.XamarinAndroid, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(androidSDK))
+            await Boots(androidSDK);
     });
 
 Task("provision-monosdk")
@@ -204,6 +216,8 @@ Task("provision-monosdk")
             else
                 await Boots (Product.Mono, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(monoSDK))
+            await Boots(monoSDK);
     });
 
 Task("provision")
