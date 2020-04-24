@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:gallerypages="clr-namespace:Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries" x:Class="Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries.AppThemeXamlGallery" BackgroundColor="{OnAppTheme Light=Lightgray, Dark=Black}">
     <ContentPage.Resources>
+        <ResourceDictionary>
+            <gallerypages:FooConverter x:Key="fooConv"/>
+        </ResourceDictionary>
         <AppThemeColor x:Key="MyColor" Light="HotPink" Dark="Yellow" />
         <Style x:Key="OSThemeStyle" TargetType="Label">
             <Setter Property="TextColor" Value="{OnAppTheme Black, Light=Green, Dark=Red}" />
@@ -39,6 +42,8 @@
             <Label>Image with OnAppThemeExtension</Label>
             <Image Source="{OnAppTheme Light=xamarinlogo.png, Dark=Fruits.jpg}" />
             <!--<gallerypages:CustomControl TextColor="Brown" Text="This custom control should have brown text" />-->
+            <Label TextColor="{OnAppTheme Light=1, Dark=2, Converter={StaticResource fooConv}}">With ValueConverter</Label>
+
         </StackLayout>
     </ScrollView>
 </ContentPage>

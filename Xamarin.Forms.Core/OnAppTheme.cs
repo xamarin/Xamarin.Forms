@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 	{
 		WeakReference<BindableObject> _weakTarget;
 		BindableProperty _targetProperty;
-
+		
 		public OnAppTheme()
 		{
 			Application.Current.RequestedThemeChanged += ThemeChanged;
@@ -39,13 +39,12 @@ namespace Xamarin.Forms
 			base.Apply(context, bindObj, targetProperty, fromBindingContextChanged);
 			ApplyCore();
 		}
-
 		void ApplyCore()
 		{
 			if (_weakTarget == null || !_weakTarget.TryGetTarget(out var target))
 				return;
 
-			target?.SetValue(_targetProperty, GetValue());
+			target?.SetValueCore(_targetProperty, GetValue());
 		}
 
 		T _light;

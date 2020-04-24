@@ -1,18 +1,19 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries
+﻿using System;
+
+namespace Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries
 {
 	public class AppThemeCodeGallery : ContentPage
 	{
+		Label _currentThemeLabel;
+
 		public AppThemeCodeGallery()
 		{
-			var currentThemeLabel = new Label
+			_currentThemeLabel = new Label
 			{
 				Text = Application.Current.RequestedTheme.ToString()
 			};
 
-			Application.Current.RequestedThemeChanged += (s, a) =>
-			{
-				currentThemeLabel.Text = Application.Current.RequestedTheme.ToString();
-			};
+			Application.Current.RequestedThemeChanged += Current_RequestedThemeChanged;
 
 			var onThemeLabel = new Label
 			{
@@ -29,9 +30,9 @@
 				Text = "TextColor through SetAppThemeColor"
 			};
 
-			onThemeLabel.SetBinding(Label.TextColorProperty, new AppThemeColor() { Light = Color.Green, Dark = Color.Red } );
+			onThemeLabel.SetBinding(Label.TextColorProperty, new AppThemeColor() { Light = Color.Green, Dark = Color.Red });
 
-			onThemeLabel1.SetAppTheme(Label.TextColorProperty, Color.Green, Color.Red);
+			onThemeLabel1.SetOnAppTheme(Label.TextColorProperty, Color.Green, Color.Red);
 
 			onThemeLabel2.SetAppThemeColor(Label.TextColorProperty, Color.Green, Color.Red);
 
@@ -39,10 +40,15 @@
 			{
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center,
-				Children = { currentThemeLabel, onThemeLabel , onThemeLabel1, onThemeLabel2 }
+				Children = { _currentThemeLabel, onThemeLabel , onThemeLabel1,onThemeLabel2 }
 			};
 
 			Content = stackLayout;
+		}
+
+		private void Current_RequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
+		{
+			_currentThemeLabel.Text = Application.Current.RequestedTheme.ToString();
 		}
 	}
 }

@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Text = "Green on Light, Red on Dark"
 			};
 
-			label.SetAppTheme(Label.TextColorProperty, Color.Green, Color.Red);
+			label.SetOnAppTheme(Label.TextColorProperty, Color.Green, Color.Red);
 			Assert.AreEqual(Color.Green, label.TextColor);
 
 			SetAppTheme(OSAppTheme.Dark);
