@@ -21,7 +21,6 @@ using IMenu = Android.Views.IMenu;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using Orientation = Android.Widget.Orientation;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-//using static Xamarin.Forms.Platform.Android.Extensions;
 
 namespace Xamarin.Forms.Platform.Android
 {
