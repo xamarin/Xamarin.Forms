@@ -7,7 +7,7 @@ if (string.IsNullOrEmpty (desiredXcode)) {
 	Environment.Exit (1);
 }
 
-XreItem xreItem = null;
+XreItem xreItem;
 
 if(desiredXcode == "Latest")
 	xreItem = (XreItem)Enum.GetValues(typeof(XreItem)).Cast<int>().Max();
