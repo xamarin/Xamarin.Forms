@@ -125,6 +125,18 @@ namespace Xamarin.Forms.Platform.Android
 				menuitem.SetShowAsAction(ShowAsAction.Always);
 
 			menuitem.SetOnMenuItemClickListener(new GenericMenuClickListener(((IMenuItemController)item).Activate));
+
+			if (!Forms.IsLollipopOrNewer && (tintColor != null && tintColor != Color.Default))
+			{
+				var view = toolbar.FindViewById(menuitem.ItemId);
+				if (view is ATextView textView)
+				{
+					if (item.IsEnabled)
+						textView.SetTextColor(tintColor.Value.ToAndroid());
+					else
+						textView.SetTextColor(tintColor.Value.MultiplyAlpha(0.302).ToAndroid());
+				}
+			}
 		}
 
 		internal static void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem, Color? tintColor)
