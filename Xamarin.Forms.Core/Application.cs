@@ -173,11 +173,17 @@ namespace Xamarin.Forms
 			// To minimize that for us, we only do it when the theme actually changes and it's not currently firing
 			if (!_themeChangedFiring && RequestedTheme != _lastAppTheme)
 			{
-				_themeChangedFiring = true;
-				_lastAppTheme = RequestedTheme;
+				try
+				{
+					_themeChangedFiring = true;
+					_lastAppTheme = RequestedTheme;
 
-				_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
-				_themeChangedFiring = false;
+					_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
+				}
+				finally
+				{
+					_themeChangedFiring = false;
+				}
 			}
 		}
 
