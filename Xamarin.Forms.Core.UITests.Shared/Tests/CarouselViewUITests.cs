@@ -198,9 +198,14 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.QueryUntilPresent(() =>
 			{
-				App.ScrollDown();
-				return App.Query(t => t.Marked(galleryName));
-			});
+				var query = App.Query(t => t.Marked(galleryName));
+				if (query.Count() == 0)
+				{
+					App.ScrollDown();
+					return null;
+				}
+				return query;
+			}, delayInMs: 500);
 
 			App.Tap(t => t.Marked(galleryName));
 		}
