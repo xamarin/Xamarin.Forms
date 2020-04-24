@@ -112,15 +112,23 @@ if(String.IsNullOrWhiteSpace(monoSDK_macos))
     }
 }
 
-androidSDK_macos = Argument("ANDROID_SDK_MAC", androidSDK_macos);
-iOSSDK_macos = Argument("IOS_SDK_MAC", iOSSDK_macos);
-monoSDK_macos = Argument("MONO_SDK_MAC", monoSDK_macos);
-macSDK_macos = Argument("MAC_SDK_MAC", macSDK_macos);
+string androidSDK_windows = "";
+string iOSSDK_windows = "";
+string monoSDK_windows = "";
+string macSDK_windows = "";
 
-string androidSDK_windows = EnvironmentVariable("ANDROID_SDK_WINDOWS", "");
-string iOSSDK_windows = EnvironmentVariable("IOS_SDK_WINDOWS", "");
-string monoSDK_windows = EnvironmentVariable("MONO_SDK_WINDOWS", "");
-string macSDK_windows = EnvironmentVariable("MAC_SDK_WINDOWS", "");
+if(!buildForVS2017)
+{
+    androidSDK_macos = EnvironmentVariable("ANDROID_SDK_MAC", androidSDK_macos);
+    iOSSDK_macos = EnvironmentVariable("IOS_SDK_MAC", iOSSDK_macos);
+    monoSDK_macos = EnvironmentVariable("MONO_SDK_MAC", monoSDK_macos);
+    macSDK_macos = EnvironmentVariable("MAC_SDK_MAC", macSDK_macos);
+
+    androidSDK_windows = EnvironmentVariable("ANDROID_SDK_WINDOWS", "");
+    iOSSDK_windows = EnvironmentVariable("IOS_SDK_WINDOWS", "");
+    monoSDK_windows = EnvironmentVariable("MONO_SDK_WINDOWS", "");
+    macSDK_windows = EnvironmentVariable("MAC_SDK_WINDOWS", "");
+}
 
 string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
 string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
