@@ -188,7 +188,7 @@ stages:
     - job: osx_2017
       workspace:
         clean: all
-      displayName: OSX Phase 201
+      displayName: OSX Phase 2017
       pool:
         name:  $(osx2017VmPool)
         vmImage: 'macOS-10.14'
