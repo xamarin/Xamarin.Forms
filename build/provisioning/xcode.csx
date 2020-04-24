@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 var desiredXcode = Environment.GetEnvironmentVariable ("REQUIRED_XCODE");
 if (string.IsNullOrEmpty (desiredXcode)) {
@@ -6,7 +7,12 @@ if (string.IsNullOrEmpty (desiredXcode)) {
 	Environment.Exit (1);
 }
 
-var xreItem = (XreItem) Enum.Parse (typeof (XreItem), desiredXcode);
+XreItem xreItem = null;
+
+if(desiredXcode == "Latest")
+	xreItem = (XreItem)Enum.GetValues(typeof(XreItem)).Cast<int>().Max();
+else
+	xreItem = (XreItem) Enum.Parse (typeof (XreItem), desiredXcode);
 
 var item = Item (xreItem);
 Console.WriteLine ("InstallPath: {0}", item.Version);
