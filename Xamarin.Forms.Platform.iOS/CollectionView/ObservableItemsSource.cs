@@ -284,7 +284,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			// If the UICollectionView hasn't actually been loaded, then calling InsertItems or DeleteItems is 
 			// going to crash or get in an unusable state; instead, ReloadData should be used
-			return !_collectionViewController.IsViewLoaded;
+			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
 		}
 
 		bool ReloadRequired()
@@ -320,10 +320,7 @@ namespace Xamarin.Forms.Platform.iOS
 			},
 					(_) =>
 					{
-						if (_batchUpdating.CurrentCount > 0)
-						{
-							_batchUpdating.Release();
-						}
+						_batchUpdating.Release();
 					});
 		}
 	}
