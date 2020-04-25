@@ -202,7 +202,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_gotoPosition == -1 && (goToPosition != carouselPosition || forceScroll))
 			{
 				_gotoPosition = goToPosition;
-				System.Diagnostics.Debug.WriteLine($"Scrolling to {_gotoPosition}");
 				Carousel.ScrollTo(goToPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: animate);
 			}
 		}
