@@ -98,7 +98,7 @@ namespace Xamarin.Forms
 
 		public static bool HasVisualStateGroups(this VisualElement element)
 		{
-			if (!element.IsSet(VisualStateGroupsProperty, true))
+			if (!element.IsSet(VisualStateGroupsProperty))
 				return false;
 
 			if (GetVisualStateGroups(element) is VisualStateGroupList vsgl)
