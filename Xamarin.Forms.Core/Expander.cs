@@ -10,6 +10,8 @@ namespace Xamarin.Forms
 	{
 		const string ExpandAnimationName = nameof(ExpandAnimationName);
 		const uint DefaultAnimationLength = 250;
+		const double EnabledOpacity = 1;
+		const double DisabledOpacity = .6;
 
 		public event EventHandler Tapped;
 
@@ -58,6 +60,7 @@ namespace Xamarin.Forms
 			ExpanderLayout = new StackLayout { Spacing = Spacing };
 			ForceUpdateSizeCommand = new Command(ForceUpdateSize);
 			InternalChildren.Add(ExpanderLayout);
+			OnIsEnabledChanged();
 		}
 
 		internal static void VerifyExperimental([CallerMemberName] string memberName = "", string constructorHint = null)
@@ -180,6 +183,13 @@ namespace Xamarin.Forms
 			base.OnBindingContextChanged();
 			_lastVisibleHeight = -1;
 			SetContent(true, true);
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
+			if (propertyName == IsEnabledProperty.PropertyName)
+				OnIsEnabledChanged();
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -363,5 +373,8 @@ namespace Xamarin.Forms
 					State = ExpanderState.Expanded;
 				});
 		}
+
+		void OnIsEnabledChanged()
+			=> ExpanderLayout.Opacity = IsEnabled ? EnabledOpacity: DisabledOpacity;
 	}
 }
