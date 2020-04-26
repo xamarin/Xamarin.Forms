@@ -18,7 +18,10 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			Button myButton = new Button()
 			{
 				BackgroundColor = Color.Green,
-				TextColor = Color.White
+				TextColor = Color.White,
+				BindingContext = new object(),
+				Text = "test text",
+				IsEnabled = false
 			};
 
 			var vsm = myButton.GetValue(VisualStateManager.VisualStateGroupsProperty);
