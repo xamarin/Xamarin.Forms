@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
+		const float OpenSwipeThresholdPercentage = 0.6f; // 60%
 		const double SwipeThreshold = 250;
 		const double SwipeItemWidth = 100;
 		const double SwipeAnimationDuration = 0.2;
@@ -287,9 +288,10 @@ namespace Xamarin.Forms.Platform.iOS
 		void HandleTap()
 		{
 			if (_tapGestureRecognizer == null)
-			{
 				return;
-			}
+			
+			if (_isSwiping)
+				return;
 
 			var state = _tapGestureRecognizer.State;
 
@@ -968,7 +970,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_swipeDirection == null)
 				return;
 
-			var swipeThresholdPercent = 0.6 * GetSwipeThreshold();
+			var swipeThresholdPercent = OpenSwipeThresholdPercentage * GetSwipeThreshold();
 
 			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
 			{
@@ -1418,7 +1420,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_swipeDirection == null || !ValidateSwipeDirection())
 				return;
 
-			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value);
+			bool isOpen = false;
+
+			var swipeThresholdPercent = OpenSwipeThresholdPercentage * GetSwipeThreshold();
+
+			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
+				isOpen = true;
+
+			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value, isOpen);
 			((ISwipeViewController)Element).SendSwipeEnded(swipeEndedEventArgs);
 		}
 	}
