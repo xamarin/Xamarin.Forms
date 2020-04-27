@@ -156,9 +156,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xamarin.Forms.DualScreen", "Xamarin.Forms.DualScreen", "{C97E54D4-DBC5-424E-B63F-4CF2F3EE8D13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.DualScreen", "Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj", "{FB4A866A-5721-4545-9E5D-B7F7D59875A4}"
-	ProjectSection(ProjectDependencies) = postProject
-		{00D8D049-FFAA-4759-8FC9-1ECA30777F72} = {00D8D049-FFAA-4759-8FC9-1ECA30777F72}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.DualScreen.UnitTests", "Xamarin.Forms.DualScreen.UnitTests\Xamarin.Forms.DualScreen.UnitTests.csproj", "{00D50743-7821-4293-92F2-7C614C256BD6}"
 EndProject
