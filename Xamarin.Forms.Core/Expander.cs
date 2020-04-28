@@ -25,6 +25,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsExpandedProperty = BindableProperty.Create(nameof(IsExpanded), typeof(bool), typeof(Expander), default(bool), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetContent(false));
 
+		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(nameof(Orientation), typeof(ExpanderOrientation), typeof(Expander), default(ExpanderOrientation), propertyChanged: (bindable, oldValue, newValue)
+			=> ((Expander)bindable).SetOrientation((ExpanderOrientation)oldValue));
+
 		public static readonly BindableProperty ExpandAnimationLengthProperty = BindableProperty.Create(nameof(ExpandAnimationLength), typeof(uint), typeof(Expander), DefaultAnimationLength);
 
 		public static readonly BindableProperty CollapseAnimationLengthProperty = BindableProperty.Create(nameof(CollapseAnimationLength), typeof(uint), typeof(Expander), DefaultAnimationLength);
@@ -42,19 +45,35 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ForceUpdateSizeCommandProperty = BindableProperty.Create(nameof(ForceUpdateSizeCommand), typeof(ICommand), typeof(Expander), default(ICommand), BindingMode.OneWayToSource);
 
 		DataTemplate _previousTemplate;
-		double _lastVisibleHeight = -1;
-		double _previousWidth = -1;
-		double _startHeight;
-		double _endHeight;
+		double _lastVisibleSize = -1;
+		Size _previousSize = new Size(-1, -1);
 		bool _shouldIgnoreContentSetting;
-		bool _shouldIgnoreAnimation;
-		static bool isExperimentalFlagSet = false;
+		readonly object _contentSetLocker = new object();
+		static bool isExperimentalFlagSet;
 
 		public Expander()
 		{
 			ExpanderLayout = new StackLayout { Spacing = 0 };
 			ForceUpdateSizeCommand = new Command(ForceUpdateSize);
 			InternalChildren.Add(ExpanderLayout);
+			HeaderTapGestureRecognizer = new TapGestureRecognizer
+			{
+				CommandParameter = this,
+				Command = new Command(parameter =>
+				{
+					var parent = (parameter as View).Parent;
+					while (parent != null && !(parent is Page))
+					{
+						if (parent is Expander ancestorExpander)
+							ancestorExpander.ContentSizeRequest = -1;
+
+						parent = parent.Parent;
+					}
+					IsExpanded = !IsExpanded;
+					Command?.Execute(CommandParameter);
+					Tapped?.Invoke(this, EventArgs.Empty);
+				})
+			};
 		}
 
 		internal static void VerifyExperimental([CallerMemberName] string memberName = "", string constructorHint = null)
@@ -68,7 +87,7 @@ namespace Xamarin.Forms
 		}
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
-		{			
+		{
 			VerifyExperimental(nameof(Expander));
 			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
@@ -76,17 +95,46 @@ namespace Xamarin.Forms
 		StackLayout ExpanderLayout { get; }
 
 		ContentView ContentHolder { get; set; }
-		
-		double ContentHeightRequest
+
+		GestureRecognizer HeaderTapGestureRecognizer { get; }
+
+		double Size => Orientation.IsVertical()
+			? Height
+			: Width;
+
+		double ContentSize => Orientation.IsVertical()
+			? ContentHolder.Height
+			: ContentHolder.Width;
+
+		double ContentSizeRequest
 		{
 			get
 			{
-				var heightRequest = Content.HeightRequest;
-				if (heightRequest < 0 || !(Content is Layout layout))
-					return heightRequest;
-				return heightRequest + layout.Padding.VerticalThickness;
+				var sizeRequest = Orientation.IsVertical()
+					? Content.HeightRequest
+					: Content.WidthRequest;
+
+				if (sizeRequest < 0 || !(Content is Layout layout))
+					return sizeRequest;
+
+				return sizeRequest + (Orientation.IsVertical()
+					? layout.Padding.VerticalThickness
+					: layout.Padding.HorizontalThickness);
+			}
+			set
+			{
+				if (Orientation.IsVertical())
+				{
+					ContentHolder.HeightRequest = value;
+					return;
+				}
+				ContentHolder.WidthRequest = value;
 			}
 		}
+
+		double MeasuredContentSize => Orientation.IsVertical()
+			? ContentHolder.Measure(Width, double.PositiveInfinity).Request.Height
+			: ContentHolder.Measure(double.PositiveInfinity, Height).Request.Width;
 
 		public View Header
 		{
@@ -110,6 +158,12 @@ namespace Xamarin.Forms
 		{
 			get => (bool)GetValue(IsExpandedProperty);
 			set => SetValue(IsExpandedProperty, value);
+		}
+
+		public ExpanderOrientation Orientation
+		{
+			get => (ExpanderOrientation)GetValue(OrientationProperty);
+			set => SetValue(OrientationProperty, value);
 		}
 
 		public uint ExpandAnimationLength
@@ -162,114 +216,105 @@ namespace Xamarin.Forms
 
 		public void ForceUpdateSize()
 		{
-			_lastVisibleHeight = -1;
+			_lastVisibleSize = -1;
 			OnIsExpandedChanged();
 		}
 
 		protected override void OnBindingContextChanged()
 		{
 			base.OnBindingContextChanged();
-			_lastVisibleHeight = -1;
+			_lastVisibleSize = -1;
 			SetContent(true, true);
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
 		{
 			base.OnSizeAllocated(width, height);
-			if (Abs(width - _previousWidth) >= double.Epsilon)
-			{
+			if ((Abs(width - _previousSize.Width) >= double.Epsilon && Orientation.IsVertical()) ||
+				(Abs(height - _previousSize.Height) >= double.Epsilon && !Orientation.IsVertical()))
 				ForceUpdateSize();
-			}
-			_previousWidth = width;
+
+			_previousSize = new Size(width, height);
 		}
 
-		void OnIsExpandedChanged(bool isBindingContextChanged = false)
+		void OnIsExpandedChanged(bool shouldIgnoreAnimation = false)
 		{
 			if (ContentHolder == null || (!IsExpanded && !ContentHolder.IsVisible))
-			{
 				return;
-			}
 
 			var isAnimationRunning = ContentHolder.AnimationIsRunning(ExpandAnimationName);
 			ContentHolder.AbortAnimation(ExpandAnimationName);
 
-			_startHeight = ContentHolder.IsVisible
-				? Max(ContentHolder.Height, 0)
+			var startSize = ContentHolder.IsVisible
+				? Max(ContentSize, 0)
 				: 0;
 
 			if (IsExpanded)
-			{
 				ContentHolder.IsVisible = true;
-			}
 
-			_endHeight = ContentHeightRequest >= 0
-				? ContentHeightRequest
-				: _lastVisibleHeight;
+			var endSize = ContentSizeRequest >= 0
+				? ContentSizeRequest
+				: _lastVisibleSize;
 
 			if (IsExpanded)
 			{
-				if (_endHeight <= 0)
+				if (endSize <= 0)
 				{
-					ContentHolder.HeightRequest = -1;
-					_endHeight = ContentHolder.Measure(Width, double.PositiveInfinity).Request.Height;
-					ContentHolder.HeightRequest = 0;
+					ContentSizeRequest = -1;
+					endSize = MeasuredContentSize;
+					ContentSizeRequest = 0;
 				}
 			}
 			else
 			{
-				_lastVisibleHeight = _startHeight = ContentHeightRequest >= 0
-						? ContentHeightRequest
+				_lastVisibleSize = startSize = ContentSizeRequest >= 0
+						? ContentSizeRequest
 						: !isAnimationRunning
-							? ContentHolder.Height
-							: _lastVisibleHeight;
-				_endHeight = 0;
+							? ContentSize
+							: _lastVisibleSize;
+				endSize = 0;
 			}
 
-			_shouldIgnoreAnimation = isBindingContextChanged || Height < 0;
-
-			InvokeAnimation();
+			InvokeAnimation(startSize, endSize, shouldIgnoreAnimation);
 		}
 
 		void SetHeader(View oldHeader)
 		{
 			if (oldHeader != null)
 			{
+				oldHeader.GestureRecognizers.Remove(HeaderTapGestureRecognizer);
 				ExpanderLayout.Children.Remove(oldHeader);
 			}
+
 			if (Header != null)
 			{
-				ExpanderLayout.Children.Insert(0, Header);
-				Header.GestureRecognizers.Add(new TapGestureRecognizer
-				{
-					CommandParameter = this,
-					Command = new Command(parameter =>
-					{
-						var parent = (parameter as View).Parent;
-						while (parent != null && !(parent is Page))
-						{
-							if (parent is Expander ancestorExpander)
-							{
-								ancestorExpander.ContentHolder.HeightRequest = -1;
-							}
-							parent = parent.Parent;
-						}
-						IsExpanded = !IsExpanded;
-						Command?.Execute(CommandParameter);
-						Tapped?.Invoke(this, EventArgs.Empty);
-					})
-				});
+				if (Orientation.IsRegularOrder())
+					ExpanderLayout.Children.Insert(0, Header);
+				else
+					ExpanderLayout.Children.Add(Header);
+
+				Header.GestureRecognizers.Add(HeaderTapGestureRecognizer);
 			}
 		}
 
-		void SetContent(bool isForceUpdate, bool isBindingContextChanged = false)
+		void SetContent(bool isForceUpdate, bool shouldIgnoreAnimation = false, bool isForceContentReset = false)
 		{
-			if (IsExpanded && (Content == null || isForceUpdate))
+			if (IsExpanded && (Content == null || isForceUpdate || isForceContentReset))
 			{
-				_shouldIgnoreContentSetting = true;
-				Content = CreateContent() ?? Content;
-				_shouldIgnoreContentSetting = false;
+				lock (_contentSetLocker)
+				{
+					_shouldIgnoreContentSetting = true;
+
+					var contentFromTemplate = CreateContent();
+					if (contentFromTemplate != null)
+						Content = contentFromTemplate;
+					else if (isForceContentReset)
+						SetContent();
+
+					_shouldIgnoreContentSetting = false;
+				}
 			}
-			OnIsExpandedChanged(isBindingContextChanged);
+			OnIsExpandedChanged(shouldIgnoreAnimation);
 		}
 
 		void SetContent()
@@ -286,41 +331,57 @@ namespace Xamarin.Forms
 				{
 					IsClippedToBounds = true,
 					IsVisible = false,
-					HeightRequest = 0,
 					Content = Content
 				};
-				ExpanderLayout.Children.Add(ContentHolder);
+				ContentSizeRequest = 0;
+
+				if (Orientation.IsRegularOrder())
+					ExpanderLayout.Children.Add(ContentHolder);
+				else
+					ExpanderLayout.Children.Insert(0, ContentHolder);
 			}
 
 			if (!_shouldIgnoreContentSetting)
-			{
 				SetContent(true);
-			}
 		}
 
 		View CreateContent()
 		{
 			var template = ContentTemplate;
 			while (template is DataTemplateSelector selector)
-			{
 				template = selector.SelectTemplate(BindingContext, this);
-			}
+
 			if (template == _previousTemplate && Content != null)
-			{
 				return null;
-			}
+
 			_previousTemplate = template;
 			return (View)template?.CreateContent();
 		}
 
-		void InvokeAnimation()
+		void SetOrientation(ExpanderOrientation oldOrientation)
+		{
+			if(oldOrientation.IsVertical() == Orientation.IsVertical())
+			{
+				SetHeader(Header);
+				return;
+			}
+
+			ExpanderLayout.Orientation = Orientation.IsVertical()
+				? StackOrientation.Vertical
+				: StackOrientation.Horizontal;
+			_lastVisibleSize = -1;
+			SetHeader(Header);
+			SetContent(true, true, true);
+		}
+
+		void InvokeAnimation(double startSize, double endSize, bool shouldIgnoreAnimation)
 		{
 			State = IsExpanded ? ExpanderState.Expanding : ExpanderState.Collapsing;
 
-			if (_shouldIgnoreAnimation)
+			if (shouldIgnoreAnimation || Size < 0)
 			{
 				State = IsExpanded ? ExpanderState.Expanded : ExpanderState.Collapsed;
-				ContentHolder.HeightRequest = _endHeight;
+				ContentSizeRequest = endSize;
 				ContentHolder.IsVisible = IsExpanded;
 				return;
 			}
@@ -333,18 +394,15 @@ namespace Xamarin.Forms
 				easing = CollapseAnimationEasing;
 			}
 
-			if (_lastVisibleHeight > 0)
-			{
-				length = Max((uint)(length * (Abs(_endHeight - _startHeight) / _lastVisibleHeight)), 1);
-			}
+			if (_lastVisibleSize > 0)
+				length = Max((uint)(length * (Abs(endSize - startSize) / _lastVisibleSize)), 1);
 
-			new Animation(v => ContentHolder.HeightRequest = v, _startHeight, _endHeight)
+			new Animation(v => ContentSizeRequest = v, startSize, endSize)
 				.Commit(ContentHolder, ExpandAnimationName, 16, length, easing, (value, isInterrupted) =>
 				{
 					if (isInterrupted)
-					{
 						return;
-					}
+
 					if (!IsExpanded)
 					{
 						ContentHolder.IsVisible = false;

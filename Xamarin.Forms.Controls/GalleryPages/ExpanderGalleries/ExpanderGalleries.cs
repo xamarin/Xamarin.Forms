@@ -25,7 +25,9 @@
 						descriptionLabel,
 						button,
 						GalleryBuilder.NavButton("Expander Gallery", () =>
-							new ExpanderGallery(), Navigation)
+							new ExpanderGallery(), Navigation),
+						GalleryBuilder.NavButton("Expander Orientation Gallery", () =>
+							new ExpanderOrientationGallery(), Navigation)
 					}
 				}
 			};
