@@ -118,9 +118,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (scrollView.ContentOffset.Y < 0)
 					return true;
-
+				
 				if (refreshing)
-					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _originalY - _refreshControlHeight), true);
+ 					//fixed bug initial tint color is default
+                    scrollView.ContentOffset = (new CGPoint(0, _originalY - _refreshControl.Frame.Size.Height * 2.0));
 				else
 					scrollView.SetContentOffset(new CoreGraphics.CGPoint(0, _originalY), true);
 
