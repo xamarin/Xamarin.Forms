@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public partial class Grid : Layout<View>, IGridController, IElementConfiguration<Grid>
+	public partial class Grid : Layout<View>, IGridController, IElementConfiguration<Grid>, ISpacingElement
 	{
 		public static readonly BindableProperty RowProperty = BindableProperty.CreateAttached("Row", typeof(int), typeof(Grid), default(int), validateValue: (bindable, value) => (int)value >= 0);
 
@@ -17,11 +17,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ColumnSpanProperty = BindableProperty.CreateAttached("ColumnSpan", typeof(int), typeof(Grid), 1, validateValue: (bindable, value) => (int)value >= 1);
 
-		public static readonly BindableProperty RowSpacingProperty = BindableProperty.Create("RowSpacing", typeof(double), typeof(Grid), 6d,
-			propertyChanged: (bindable, oldValue, newValue) => ((Grid)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
+		public static readonly BindableProperty RowSpacingProperty = SpacingElement.RowSpacingProperty;
 
-		public static readonly BindableProperty ColumnSpacingProperty = BindableProperty.Create("ColumnSpacing", typeof(double), typeof(Grid), 6d,
-			propertyChanged: (bindable, oldValue, newValue) => ((Grid)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
+		public static readonly BindableProperty ColumnSpacingProperty = SpacingElement.ColumnSpacingProperty;
 
 		public static readonly BindableProperty ColumnDefinitionsProperty = BindableProperty.Create("ColumnDefinitions", typeof(ColumnDefinitionCollection), typeof(Grid), null,
 			validateValue: (bindable, value) => value != null, propertyChanged: (bindable, oldvalue, newvalue) =>
@@ -91,8 +89,8 @@ namespace Xamarin.Forms
 
 		public double RowSpacing
 		{
-			get { return (double)GetValue(RowSpacingProperty); }
-			set { SetValue(RowSpacingProperty, value); }
+			get { return (double)GetValue(SpacingElement.RowSpacingProperty); }
+			set { SetValue(SpacingElement.RowSpacingProperty, value); }
 		}
 
 		public static int GetColumn(BindableObject bindable)
@@ -277,6 +275,14 @@ namespace Xamarin.Forms
 				}
 			}
 		}
+
+		void ISpacingElement.OnRowSpacingPropertyChanged(double oldValue, double newValue) => InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+
+		void ISpacingElement.OnColumnSpacingPropertyChanged(double oldValue, double newValue) => InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+
+		double ISpacingElement.RowSpacingDefaultValueCreator() => 6d;
+
+		double ISpacingElement.ColumnSpacingDefaultValueCreator() => 6d;
 
 		public interface IGridList<T> : IList<T> where T : View
 		{
