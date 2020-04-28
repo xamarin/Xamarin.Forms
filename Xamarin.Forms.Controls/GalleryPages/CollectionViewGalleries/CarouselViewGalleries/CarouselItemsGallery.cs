@@ -12,12 +12,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	{
 		CarouselItemsGalleryViewModel _viewModel;
 		bool _setPositionOnAppering;
-		public CarouselItemsGallery(bool empty, bool async, bool nativeIndicator, bool setPosition, bool setPositionOnAppearing, bool animateScroll)
+		public CarouselItemsGallery(bool startEmptyCollection = false, bool setCollectionWithAsync = false, 
+									bool useNativeIndicators = false, bool setPositionOnConstructor = false, 
+									bool setPositionOnAppearing = false, bool useScrollAnimated = true)
 		{
-			_viewModel = new CarouselItemsGalleryViewModel(empty, async);
+			_viewModel = new CarouselItemsGalleryViewModel(startEmptyCollection, setCollectionWithAsync);
 			_setPositionOnAppering = setPositionOnAppearing;
-			
-			if (setPosition)
+
+			if (setPositionOnConstructor)
 				_viewModel.CarouselPosition = 3;
 
 			Title = $"CarouselView (Indicators)";
@@ -45,7 +47,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
-				IsScrollAnimated = animateScroll,
+				IsScrollAnimated = useScrollAnimated,
 				IsBounceEnabled = true,
 				EmptyView = "This is the empty view",
 				PeekAreaInsets = new Thickness(50),
@@ -65,7 +67,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				IndicatorsShape = IndicatorShape.Square
 			};
 
-			if (!nativeIndicator)
+			if (!useNativeIndicators)
 			{
 				indicators.IndicatorTemplate = new DataTemplate(() =>
 				{

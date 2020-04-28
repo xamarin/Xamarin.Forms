@@ -34,11 +34,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal)", () =>
 							new CarouselXamlGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Forms)", () =>
-							new CarouselItemsGallery(false,false,false,false,false,true), Navigation),
+							new CarouselItemsGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Default (Native))", () =>
-							new CarouselItemsGallery(false,false,true,false,false,true), Navigation),
+							new CarouselItemsGallery(useNativeIndicators: true), Navigation),
 						GalleryBuilder.NavButton("CarouselView Async", () =>
-							new CarouselItemsGallery(false,true,true,false,false,true), Navigation),
+							new CarouselItemsGallery(setCollectionWithAsync:true, useNativeIndicators: true), Navigation),
 	  					GalleryBuilder.NavButton("CarouselView Snap", () =>
  							new CarouselSnapGallery(), Navigation),
 						GalleryBuilder.NavButton("ObservableCollection and CarouselView", () =>
@@ -48,11 +48,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("IndicatorView", () =>
   							new IndicatorCodeGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView SetPosition Ctor", () =>
-							new CarouselItemsGallery(false,true,true,true,false,true), Navigation),
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnConstructor: true), Navigation),
 						GalleryBuilder.NavButton("CarouselView SetPosition Appearing", () =>
-							new CarouselItemsGallery(false,true,true,false,true,true), Navigation),
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnAppearing: true), Navigation),
 						GalleryBuilder.NavButton("CarouselView SetPosition Ctor No Animation", () =>
-							new CarouselItemsGallery(false,true,true,true,false,false), Navigation),
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnConstructor: true, useScrollAnimated: false), Navigation),
 					}
 				}
 			};
