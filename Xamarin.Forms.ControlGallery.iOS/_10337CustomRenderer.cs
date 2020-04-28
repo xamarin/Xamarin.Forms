@@ -13,22 +13,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
         {
             base.ViewDidLoad();
 
-            var isiOS13OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(13, 0);
-
-            if (isiOS13OrNewer)
-            {
-                var navigationBarAppearance = NavigationBar.StandardAppearance;
-                navigationBarAppearance.ConfigureWithDefaultBackground();
-                navigationBarAppearance.BackgroundColor = UIColor.Red;
-                navigationBarAppearance.ShadowImage = new UIImage();
-                navigationBarAppearance.ShadowColor = UIColor.Clear;
-                NavigationBar.StandardAppearance = navigationBarAppearance;
-                System.Diagnostics.Debug.WriteLine("_10337CustomRenderer");
-            }
-			else
-			{
-                NavigationBar.ShadowImage = new UIImage();
-            }
+            NavigationBar.ShadowImage = new UIImage();
+            UINavigationBar.Appearance.BackIndicatorImage = new UIImage();
+            UINavigationBar.Appearance.BackIndicatorTransitionMaskImage = new UIImage();
         }
     }
 }
