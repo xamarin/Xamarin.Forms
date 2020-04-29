@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_unselectedColor = unselectedColor;
 
 			if (reloadData)
-				CollectionView.ReloadData();
+				ReloadData();
 		}
 
 		#endregion IAppearanceObserver
@@ -267,7 +267,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			ReloadData();
+		}
+
+		void ReloadData()
+		{
 			CollectionView.ReloadData();
+			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
 		public class ShellSectionHeaderCell : UICollectionViewCell
