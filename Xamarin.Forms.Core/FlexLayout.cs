@@ -5,7 +5,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class FlexLayout : Layout<View>
+	public class FlexLayout : Layout<View>, ISpacingElement
 	{
 		public static readonly BindableProperty DirectionProperty =
 			BindableProperty.Create(nameof(Direction), typeof(FlexDirection), typeof(FlexLayout), FlexDirection.Row,
@@ -30,6 +30,10 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty WrapProperty =
 			BindableProperty.Create(nameof(Wrap), typeof(FlexWrap), typeof(FlexLayout), FlexWrap.NoWrap,
 									propertyChanged: OnWrapPropertyChanged);
+
+		public static readonly BindableProperty RowSpacingProperty = SpacingElement.RowSpacingProperty;
+
+		public static readonly BindableProperty ColumnSpacingProperty = SpacingElement.ColumnSpacingProperty;
 
 		static readonly BindableProperty FlexItemProperty =
 			BindableProperty.CreateAttached("FlexItem", typeof(Flex.Item), typeof(FlexLayout), null);
@@ -82,6 +86,17 @@ namespace Xamarin.Forms
 		public FlexWrap Wrap {
 			get => (FlexWrap)GetValue(WrapProperty);
 			set => SetValue(WrapProperty, value);
+		}
+
+		public double ColumnSpacing
+		{
+			get { return (double)GetValue(ColumnSpacingProperty); }
+			set { SetValue(ColumnSpacingProperty, value); }
+		}
+		public double RowSpacing
+		{
+			get { return (double)GetValue(RowSpacingProperty); }
+			set { SetValue(RowSpacingProperty, value); }
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -215,6 +230,22 @@ namespace Xamarin.Forms
 			flexLayout.InvalidateLayout();
 		}
 
+		void ISpacingElement.OnRowSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			if (_root == null)
+				return;
+			_root.RowGap = (float)(double)newValue;
+			InvalidateLayout();
+		}
+
+		void ISpacingElement.OnColumnSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			if (_root == null)
+				return;
+			_root.ColumnGap = (float)(double)newValue;
+			InvalidateLayout();
+		}
+
 		Flex.Item _root;
 		//this should only be used in unitTests. layout creation will normally happen on OnParentSet
 		internal override void OnIsPlatformEnabledChanged()
@@ -249,6 +280,8 @@ namespace Xamarin.Forms
 			item.Direction = (Flex.Direction)(FlexDirection)GetValue(DirectionProperty);
 			item.JustifyContent = (Flex.Justify)(FlexJustify)GetValue(JustifyContentProperty);
 			item.Wrap = (Flex.Wrap)(FlexWrap)GetValue(WrapProperty);
+			item.ColumnGap = (float)(double)GetValue(ColumnSpacingProperty);
+			item.RowGap = (float)(double)GetValue(RowSpacingProperty);
 		}
 
 		void ClearLayout()
@@ -447,6 +480,10 @@ namespace Xamarin.Forms
 			_root.Height = !double.IsPositiveInfinity((height)) ? (float)height : 0;
 			_root.Layout();
 		}
+
+		double ISpacingElement.RowSpacingDefaultValueCreator() => 0d;
+
+		double ISpacingElement.ColumnSpacingDefaultValueCreator() => 0d;
 	}
 
 	static class FlexExtensions

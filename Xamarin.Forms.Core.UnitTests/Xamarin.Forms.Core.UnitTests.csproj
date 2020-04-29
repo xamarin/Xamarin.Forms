@@ -239,6 +239,7 @@
     <Compile Include="FlexLayoutAlignSelfTests.cs" />
     <Compile Include="FlexOrderTests.cs" />
     <Compile Include="FontAttributeConverterUnitTests.cs" />
+    <Compile Include="FlexSpacingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

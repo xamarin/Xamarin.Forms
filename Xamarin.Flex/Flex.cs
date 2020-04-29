@@ -265,6 +265,8 @@ namespace Xamarin.Flex
 		/// <remarks>The default value for this property is NaN.</remarks>
 		public float Bottom { get; set; } = float.NaN;
 
+		public float ColumnGap { get; set; } = 0f;
+
 		/// <summary>This property defines the direction and main-axis of child items. If set to Column (or ColumnReverse), the main-axis will be the y-axis and items will be stacked vertically. If set to Row (or RowReverse), the main-axis will be the x-axis and items will be stacked horizontally.</summary>
 		/// <value>Any value part of the<see cref="T:Xamarin.Flex.Direction" /> enumeration.</value>
 		/// <remarks>The default value for this property is Column.</remarks>
@@ -313,7 +315,6 @@ namespace Xamarin.Flex
 		public float MarginTop { get; set; } = 0f;
 
 		int order;
-
 		/// <summary>This property specifies whether this item should be laid out before or after other items in the container.Items are laid out based on the ascending value of this property.Items that have the same value for this property will be laid out in the order they were inserted.</summary>
 		/// <value>The item order (can be a negative, 0, or positive value).</value>
 		/// <remarks>The default value for this property is 0.</remarks>
@@ -350,6 +351,8 @@ namespace Xamarin.Flex
 		/// <value>The value for the property.</value>
 		/// <remarks>The default value for this property is NaN.</remarks>
 		public float Right { get; set; } = float.NaN;
+
+		public float RowGap { get; set; } = 0f;
 
 		/// <summary>This property defines the shrink factor of the item.In case the child items overflow the main-axis of the container, this factor will be used to determine how individual items should shrink so that all items can fill inside the container.If this property is set to 0, the item will not shrink.</summary>
 		/// <value>The item shrink factor.</value>
@@ -436,7 +439,7 @@ namespace Xamarin.Flex
 		{
 			if (Parent != null)
 				throw new InvalidOperationException("Layout() must be called on a root item (that hasn't been added to another item)");
-			if (Double.IsNaN(Width) || Double.IsNaN(Height))
+			if (float.IsNaN(Width) || float.IsNaN(Height))
 				throw new InvalidOperationException("Layout() must be called on an item that has proper values for the Width and Height properties");
 			if (SelfSizing != null)
 				throw new InvalidOperationException("Layout() cannot be called on an item that has the SelfSizing property set");
@@ -561,7 +564,8 @@ namespace Xamarin.Flex
 				layout.flex_grows += child.Grow;
 				layout.flex_shrinks += child.Shrink;
 
-				layout.flex_dim -= child_size + child.MarginThickness(layout.vertical);
+				layout.flex_dim -= child_size + child.MarginThickness(layout.vertical)
+				+ (relative_children_count == 0 ? 0:layout.vertical ? item.RowGap : item.ColumnGap);
 
 				relative_children_count++;
 
@@ -580,8 +584,9 @@ namespace Xamarin.Flex
 				float pos = 0;
 				float spacing = 0;
 				float flex_dim = layout.align_dim - layout.lines_sizes;
+				float gap = (layout.vertical ? item.ColumnGap : item.RowGap);
 				if (flex_dim > 0)
-					layout_align(item.AlignContent, flex_dim, (uint)(layout.lines?.Length ?? 0), ref pos, ref spacing);
+					layout_align(item.AlignContent, flex_dim, gap, (uint)(layout.lines?.Length ?? 0), ref pos, ref spacing);
 
 				float old_pos = 0;
 				if (layout.reverse2) {
@@ -595,7 +600,7 @@ namespace Xamarin.Flex
 
 					if (layout.reverse2) {
 						pos -= line.size;
-						pos -= spacing;
+						pos -= spacing + gap;
 						old_pos -= line.size;
 					}
 
@@ -619,7 +624,7 @@ namespace Xamarin.Flex
 
 					if (!layout.reverse2) {
 						pos += line.size;
-						pos += spacing;
+						pos += spacing + gap;
 						old_pos += line.size;
 					}
 				}
@@ -668,7 +673,7 @@ namespace Xamarin.Flex
 			}
 		}
 
-		static void layout_align(AlignContent align, float flex_dim, uint children_count, ref float pos_p, ref float spacing_p)
+		static void layout_align(AlignContent align, float flex_dim, float gap, uint children_count, ref float pos_p, ref float spacing_p)
 		{
 			if (flex_dim < 0)
 				throw new ArgumentException();
@@ -701,7 +706,10 @@ namespace Xamarin.Flex
 				}
 				return;
 			case AlignContent.Stretch:
-				spacing_p = flex_dim / children_count;
+				if (children_count > 0)
+					spacing_p = (flex_dim - gap * (children_count - 1)) / children_count;
+				else
+					spacing_p = flex_dim / children_count;
 				return;
 			default:
 				throw new ArgumentException();
@@ -723,23 +731,19 @@ namespace Xamarin.Flex
 			// Determine the main axis initial position and optional spacing.
 			float pos = 0;
 			float spacing = 0;
-			if (layout.flex_grows == 0 && layout.flex_dim > 0) {
+			if (layout.flex_grows == 0 && layout.flex_dim > 0)
 				layout_align(item.JustifyContent, layout.flex_dim, children_count, ref pos, ref spacing);
-			}
 
 			if (layout.reverse)
 				pos = layout.size_dim - pos;
 
-
-			if (layout.reverse) {
+			if (layout.reverse)
 				pos -= layout.vertical ? item.PaddingBottom : item.PaddingRight;
-			}
-			else {
+			else
 				pos += layout.vertical ? item.PaddingTop : item.PaddingLeft;
-			}
-			if (layout.wrap && layout.reverse2) {
+
+			if (layout.wrap && layout.reverse2)
 				layout.pos2 -= layout.line_dim;
-			}
 
 			for (int i = child_begin; i < child_end; i++) {
 				Item child = layout.child_at(item, i);
@@ -798,6 +802,7 @@ namespace Xamarin.Flex
 
 				// Set the main axis position.
 				if (layout.reverse) {
+					pos -= i == child_begin ? 0 : layout.vertical ? item.RowGap : item.ColumnGap;
 					pos -= (layout.vertical ? child.MarginBottom : child.MarginRight);
 					pos -= child.Frame[layout.frame_size_i];
 					child.Frame[layout.frame_pos_i] = pos;
@@ -806,6 +811,7 @@ namespace Xamarin.Flex
 				}
 				else {
 					pos += (layout.vertical ? child.MarginTop : child.MarginLeft);
+					pos += i == child_begin ? 0 : layout.vertical ? item.RowGap : item.ColumnGap;
 					child.Frame[layout.frame_pos_i] = pos;
 					pos += child.Frame[layout.frame_size_i];
 					pos += spacing;
