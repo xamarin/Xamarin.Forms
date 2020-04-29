@@ -60,7 +60,6 @@ namespace Xamarin.Forms
 			ExpanderLayout = new StackLayout { Spacing = Spacing };
 			ForceUpdateSizeCommand = new Command(ForceUpdateSize);
 			InternalChildren.Add(ExpanderLayout);
-			OnIsEnabledChanged();
 		}
 
 		internal static void VerifyExperimental([CallerMemberName] string memberName = "", string constructorHint = null)
