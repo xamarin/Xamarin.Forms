@@ -1152,19 +1152,19 @@ namespace Xamarin.Forms.Platform.iOS
 				var navBar = navigationRenderer.NavigationBar;
 				var navAppearance = navBar.StandardAppearance;
 
-				if (navAppareance.BackgroundColor == null)
+				if (navAppearance.BackgroundColor == null)
 				{
 					var backgroundColor = navBar.BarTintColor;
 					navBar.CompactAppearance.BackgroundColor = navBar.StandardAppearance.BackgroundColor = navBar.ScrollEdgeAppearance.BackgroundColor = backgroundColor;
 				}
 
-				if (navAppareance.BackgroundImage == null)
+				if (navAppearance.BackgroundImage == null)
 				{
 					var backgroundImage = navBar.GetBackgroundImage(UIBarMetrics.Default);
 					navBar.CompactAppearance.BackgroundImage = navBar.StandardAppearance.BackgroundImage = navBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
 				}
 
-				if (navAppareance.ShadowImage == null)
+				if (navAppearance.ShadowImage == null)
 				{
 					var shadowImage = navBar.ShadowImage;
 					navBar.CompactAppearance.ShadowImage = navBar.StandardAppearance.ShadowImage = navBar.ScrollEdgeAppearance.ShadowImage = shadowImage;
