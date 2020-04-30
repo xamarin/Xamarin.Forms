@@ -116,7 +116,8 @@ namespace Xamarin.Forms.Core.UITests
 		string UpdateQueryForParent(string query, bool isOnParentRenderer)
 		{
 			if (isOnParentRenderer && 
-				PlatformViewType != PlatformViews.BoxView)
+				PlatformViewType != PlatformViews.BoxView && 
+				PlatformViewType != PlatformViews.Frame)
 			{
 
 #if __ANDROID__
