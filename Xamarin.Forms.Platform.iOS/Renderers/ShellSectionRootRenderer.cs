@@ -120,8 +120,13 @@ namespace Xamarin.Forms.Platform.iOS
 				foreach (var renderer in _renderers)
 				{
 					var oldRenderer = renderer.Value;
-					oldRenderer.NativeView.RemoveFromSuperview();
-					oldRenderer.ViewController.RemoveFromParentViewController();
+
+					if(oldRenderer.NativeView != null)
+						oldRenderer.NativeView.RemoveFromSuperview();
+
+					if (oldRenderer.ViewController != null)
+						oldRenderer.ViewController.RemoveFromParentViewController();
+
 					var element = oldRenderer.Element;
 					oldRenderer.Dispose();
 					element?.ClearValue(Platform.RendererProperty);
