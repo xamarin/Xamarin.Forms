@@ -14,12 +14,13 @@ namespace Xamarin.Forms.Controls.Issues
         public Github9536()
         {
 #if APP
+            Title = "PopModalAsync"; 
 	        InitializeComponent();
 #endif
         }
         
         void Button_Clicked(object sender, System.EventArgs e) {
-            Navigation.PushModalAsync(new NavigationPage(new Issue2964.ModalPage()));
+            Navigation.PushModalAsync(new NavigationPage( new Issue2964.ModalPage()));
         }
     }
 }
