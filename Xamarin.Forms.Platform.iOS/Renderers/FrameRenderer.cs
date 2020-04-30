@@ -30,12 +30,16 @@ namespace Xamarin.Forms.Platform.iOS
 					_actualView.AddSubview(item);
 				}
 
+				// Make sure the gestures still work on our subview
 				if (NativeView.GestureRecognizers != null)
 				{
 					foreach (var gesture in NativeView.GestureRecognizers)
-					{
 						_actualView.AddGestureRecognizer(gesture);
-					}
+				}
+				else
+				{
+					// If there are no gestures, don't handle input at all
+					UserInteractionEnabled = false;
 				}
 
 				AddSubview(_actualView);
