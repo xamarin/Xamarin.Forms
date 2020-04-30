@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 		ShellContent _currentContent;
 		int _currentIndex = 0;
 		IShellSectionRootHeader _header;
-		bool _isAnimating;
+		IVisualElementRenderer _isAnimatingOut;
 		Dictionary<ShellContent, IVisualElementRenderer> _renderers = new Dictionary<ShellContent, IVisualElementRenderer>();
 		IShellPageRendererTracker _tracker;
 		bool _didLayoutSubviews;
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void LayoutRenderers()
 		{
-			if (_isAnimating)
+			if (_isAnimatingOut != null)
 				return;
 
 			var items = ShellSectionController.GetItems();
@@ -279,7 +279,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_containerArea.AddSubview(currentRenderer.NativeView);
 
-				_isAnimating = true;
+				_isAnimatingOut = oldRenderer;
 
 				currentRenderer.NativeView.Frame = new CGRect(-motionDirection * View.Bounds.Width, 0, View.Bounds.Width, View.Bounds.Height);
 
@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if(oldRenderer.NativeView != null && _renderers.ContainsKey(oldContent))
 						oldRenderer.NativeView.RemoveFromSuperview();
 
-					_isAnimating = false;
+					_isAnimatingOut = null;
 					_tracker.Page = ((IShellContentController)newContent).Page;
 
 					if (!ShellSectionController.GetItems().Contains(oldContent) && _renderers.ContainsKey(oldContent))
@@ -373,10 +373,14 @@ namespace Xamarin.Forms.Platform.iOS
 					if (_currentContent == oldItem)
 						continue;
 
+					var oldRenderer = _renderers[oldItem];
+
+					if (oldRenderer == _isAnimatingOut)
+						continue;
+
 					if (e.OldStartingIndex < _currentIndex)
 						_currentIndex--;
-
-					var oldRenderer = _renderers[oldItem];
+					
 					_renderers.Remove(oldItem);
 					oldRenderer.NativeView.RemoveFromSuperview();
 					oldRenderer.ViewController.RemoveFromParentViewController();
