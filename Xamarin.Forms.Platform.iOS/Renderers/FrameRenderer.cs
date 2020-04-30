@@ -5,9 +5,8 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class FrameRenderer : ViewRenderer<Frame, UIView>, ITabStop
+	public class FrameRenderer : VisualElementRenderer<Frame>, ITabStop
 	{
-		readonly UIView _wrapperView = new UIView();
 		UIView _actualView = new UIView();
 		CGSize _previousSize;
 
@@ -20,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
 		{
+
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
@@ -38,8 +38,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 				}
 
-				_wrapperView.AddSubview(_actualView);
-				SetNativeControl(_wrapperView);
+				AddSubview(_actualView);
 
 				SetupLayer();
 			}
@@ -64,36 +63,44 @@ namespace Xamarin.Forms.Platform.iOS
 			if (cornerRadius == -1f)
 				cornerRadius = 5f; // default corner radius
 
-			_wrapperView.Layer.CornerRadius = cornerRadius;
-			_wrapperView.Layer.MasksToBounds = Layer.CornerRadius > 0;
+			_actualView.Layer.CornerRadius = cornerRadius;
+			_actualView.Layer.MasksToBounds = _actualView.Layer.CornerRadius > 0;
 
 			if (Element.BackgroundColor == Color.Default)
-				_wrapperView.Layer.BackgroundColor = UIColor.White.CGColor;
-			else
-				_wrapperView.Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
-
-			if (Element.BorderColor == Color.Default)
-				_wrapperView.Layer.BorderColor = UIColor.Clear.CGColor;
+				_actualView.Layer.BackgroundColor = UIColor.White.CGColor;
 			else
 			{
-				_wrapperView.Layer.BorderColor = Element.BorderColor.ToCGColor();
-				_wrapperView.Layer.BorderWidth = 1;
+				// BackgroundColor gets set on the base class too which messes with
+				// the corner radius, shadow, etc. so override that behaviour here
+				BackgroundColor = null;
+				_actualView.Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
+			}
+
+			if (Element.BorderColor == Color.Default)
+				_actualView.Layer.BorderColor = UIColor.Clear.CGColor;
+			else
+			{
+				_actualView.Layer.BorderColor = Element.BorderColor.ToCGColor();
+				_actualView.Layer.BorderWidth = 1;
 			}
 
 			if (Element.HasShadow)
 			{
-				_wrapperView.Layer.ShadowRadius = 5;
-				_wrapperView.Layer.ShadowColor = UIColor.Black.CGColor;
-				_wrapperView.Layer.ShadowOpacity = 0.8f;
-				_wrapperView.Layer.ShadowOffset = new SizeF();
+				Layer.ShadowRadius = 5;
+				Layer.ShadowColor = UIColor.Black.CGColor;
+				Layer.ShadowOpacity = 0.8f;
+				Layer.ShadowOffset = new SizeF();
 			}
 			else
 			{
-				_wrapperView.Layer.ShadowOpacity = 0;
+				Layer.ShadowOpacity = 0;
 			}
 
-			_wrapperView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
-			_wrapperView.Layer.ShouldRasterize = true;
+			Layer.RasterizationScale = UIScreen.MainScreen.Scale;
+			Layer.ShouldRasterize = true;
+
+			_actualView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
+			_actualView.Layer.ShouldRasterize = true;
 		}
 
 		public override void LayoutSubviews()
@@ -107,7 +114,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void Draw(CGRect rect)
 		{
 			_actualView.Frame = Bounds;
-			_wrapperView.Frame = Bounds;
 
 			base.Draw(rect);
 
