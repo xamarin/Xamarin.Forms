@@ -258,16 +258,20 @@ namespace Xamarin.Forms.Platform.iOS
 				_isAnimating = true;
 
 				currentRenderer.NativeView.Frame = new CGRect(-motionDirection * View.Bounds.Width, 0, View.Bounds.Width, View.Bounds.Height);
-				oldRenderer.NativeView.Frame = _containerArea.Bounds;
+
+				if(oldRenderer.NativeView != null)
+					oldRenderer.NativeView.Frame = _containerArea.Bounds;
 
 				UIView.Animate(.25, 0, UIViewAnimationOptions.CurveEaseOut, () =>
 				{
 					currentRenderer.NativeView.Frame = _containerArea.Bounds;
-					oldRenderer.NativeView.Frame = new CGRect(motionDirection * View.Bounds.Width, 0, View.Bounds.Width, View.Bounds.Height);
+
+					if (oldRenderer.NativeView != null)
+						oldRenderer.NativeView.Frame = new CGRect(motionDirection * View.Bounds.Width, 0, View.Bounds.Width, View.Bounds.Height);
 				},
 				() =>
 				{
-					if(_renderers.ContainsKey(oldContent))
+					if(oldRenderer.NativeView != null && _renderers.ContainsKey(oldContent))
 						oldRenderer.NativeView.RemoveFromSuperview();
 
 					_isAnimating = false;
@@ -276,8 +280,12 @@ namespace Xamarin.Forms.Platform.iOS
 					if (!ShellSectionController.GetItems().Contains(oldContent) && _renderers.ContainsKey(oldContent))
 					{
 						_renderers.Remove(oldContent);
-						oldRenderer.ViewController.RemoveFromParentViewController();
-						oldRenderer.Dispose();
+
+						if (oldRenderer.NativeView != null)
+						{
+							oldRenderer.ViewController.RemoveFromParentViewController();
+							oldRenderer.Dispose();
+						}
 					}
 				});
 			}
