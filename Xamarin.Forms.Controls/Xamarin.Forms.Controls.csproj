@@ -64,11 +64,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Update="GalleryPages\RadioButtonGroupGalleryPage.xaml">
+    <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\RadioButtonGroupGalleryPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <Compile Update="TabIndexTest\DaysOfWeekView.xaml.cs">
       <DependentUpon>DaysOfWeekView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="GalleryPages\IndicatorViewGalleries\IndicatorGalleries.cs">
+      <SubType></SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -94,7 +94,9 @@
             <CollectionView
                 x:Name="SwipeCollectionView"
                 ItemsSource="{Binding Messages}"
-                ItemTemplate="{StaticResource MessageTemplate}" />
+                ItemTemplate="{StaticResource MessageTemplate}"
+                SelectionMode="Single"
+                SelectionChanged="OnSwipeCollectionViewSelectionChanged"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
