@@ -75,21 +75,13 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue3667Tests ()
 		{
-			var labelValue = RunningApp.Query(query => query.Text(text));
-			if (labelValue.Length == 0)
-				Assert.Fail();
+			RunningApp.WaitForElement(query => query.Text(text));
 			RunningApp.Tap("Change TextTransform");
-			labelValue = RunningApp.Query(query => query.Text(text.ToLowerInvariant()));
-			if (labelValue.Length == 0)
-				Assert.Fail();
+			RunningApp.WaitForElement(query => query.Text(text.ToLowerInvariant()));
 			RunningApp.Tap("Change TextTransform");
-			labelValue = RunningApp.Query(query => query.Text(text.ToUpperInvariant()));
-			if (labelValue.Length == 0)
-				Assert.Fail();
+			RunningApp.WaitForElement(query => query.Text(text.ToUpperInvariant()));
 			RunningApp.Tap("Change TextTransform");
-			labelValue = RunningApp.Query(query => query.Text(text));
-			if (labelValue.Length == 0)
-				Assert.Fail();
+			RunningApp.WaitForElement(query => query.Text(text));
 		}
 #endif
 	}
