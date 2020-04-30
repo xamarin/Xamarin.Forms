@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
 			NSUrlRequest request = new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri));
 
-			if (WebView.Cookies != null)
+			if (WebView.Cookies != null && WebView.ShouldManageCookies)
 			{
 				if (Forms.IsiOS11OrNewer)
 				{
