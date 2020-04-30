@@ -33,8 +33,7 @@ namespace Xamarin.Forms
 			VisibleItems = new ReadOnlyCollection<T>(_visibleContents);
 			Inner = new ObservableCollection<T>();
 
-			_visibleContents.CollectionChanged += (_, args) =>
-				VisibleItemsChanged?.Invoke(VisibleItems, args);
+			_visibleContents.CollectionChanged += OnVisibleItemsChanged;
 		}
 
 		#region IList
@@ -48,7 +47,7 @@ namespace Xamarin.Forms
 		public virtual void Clear()
 		{
 			var list = Inner.ToList();
-			Removing(Inner);
+			RemoveInnerCollection();
 			Inner.Clear();
 			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list));
 		}
@@ -77,7 +76,7 @@ namespace Xamarin.Forms
 		{
 			if (e.NewItems != null)
 			{
-				foreach (T element in e.NewItems)
+				foreach (T element in e.NewItems)//
 				{
 					if (element is IElementController controller)
 						OnElementControllerInserting(controller);
@@ -94,18 +93,6 @@ namespace Xamarin.Forms
 			CollectionChanged?.Invoke(this, e);
 		}
 
-		void Removing(IEnumerable items)
-		{
-			foreach (T element in items)
-			{
-				if (_visibleContents.Contains(element))
-					_visibleContents.Remove(element);
-
-				if (element is IElementController controller)
-					OnElementControllerRemoving(controller);
-			}
-		}
-
 		void SetInnerCollection(ref IList<T> field, IList<T> newValue)
 		{
 			CheckEvents(ref field, ref newValue);
@@ -119,6 +106,28 @@ namespace Xamarin.Forms
 
 			if (newValue is INotifyCollectionChanged newObservable)
 				newObservable.CollectionChanged += InnerCollectionChanged;
+		}
+
+		void Removing(IEnumerable items)
+		{
+			foreach (T element in items)
+			{
+				if (_visibleContents.Contains(element))
+					_visibleContents.Remove(element);
+
+				if (element is IElementController controller)
+					OnElementControllerRemoving(controller);
+			}
+		}
+
+		protected virtual void RemoveInnerCollection()
+		{
+			Removing(Inner);
+		}
+
+		protected virtual void OnVisibleItemsChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			VisibleItemsChanged?.Invoke(VisibleItems, args);
 		}
 
 		protected abstract void CheckVisibility(T element);
