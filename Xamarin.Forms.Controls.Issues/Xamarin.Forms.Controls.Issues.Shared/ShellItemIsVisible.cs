@@ -147,8 +147,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			void AddTopTabs()
 			{
-				AddTopTab("Top Tab 1").Content = new StackLayout() { Children = { new Label { Text = "Welcome to Tab 1" } } };
-				AddTopTab("Top Tab 2").Content = new StackLayout() { Children = { new Label { Text = "Welcome to Tab 2" } } };
+				AddTopTab($"Top Tab 1").Content = new StackLayout() { Children = { new Label { Text = "Welcome to Tab 1" } } };
+				AddTopTab($"Top Tab 2").Content = new StackLayout() { Children = { new Label { Text = "Welcome to Tab 2" } } };
 			}
 		}
 
@@ -237,19 +237,6 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("ClearAndRecreateShellContent");
 			RunningApp.WaitForElement("ClearAndRecreate");
 			RunningApp.Tap("ClearAndRecreate");
-		}
-
-
-		[Test]
-		public void ClearAndRecreateShellContentFromSecondaryPage()
-		{
-			RunningApp.WaitForElement("ClearAndRecreateShellContent");
-			ShowFlyout();
-			RunningApp.Tap("Item2 Flyout");
-			RunningApp.Tap("ToggleItem1");
-			RunningApp.Tap("ClearAndRecreateShellContent");
-			RunningApp.Tap("Top Tab 2");
-			RunningApp.Tap("Top Tab 1");
 		}
 #endif
 	}

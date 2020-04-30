@@ -117,19 +117,17 @@ namespace Xamarin.Forms.Platform.iOS
 				_header?.Dispose();
 				_tracker?.Dispose();
 
-				foreach (var shellContent in ShellSectionController.GetItems())
+				foreach (var renderer in _renderers)
 				{
-					if (_renderers.TryGetValue(shellContent, out var oldRenderer))
-					{
-						_renderers.Remove(shellContent);
-						oldRenderer.NativeView.RemoveFromSuperview();
-						oldRenderer.ViewController.RemoveFromParentViewController();
-						var element = oldRenderer.Element;
-						oldRenderer.Dispose();
-						element?.ClearValue(Platform.RendererProperty);
-
-					}
+					var oldRenderer = renderer.Value;
+					oldRenderer.NativeView.RemoveFromSuperview();
+					oldRenderer.ViewController.RemoveFromParentViewController();
+					var element = oldRenderer.Element;
+					oldRenderer.Dispose();
+					element?.ClearValue(Platform.RendererProperty);
 				}
+
+				_renderers.Clear();
 			}
 
 			if(disposing)
@@ -182,6 +180,10 @@ namespace Xamarin.Forms.Platform.iOS
 			for (int i = 0; i < contentItems.Count; i++)
 			{
 				ShellContent item = contentItems[i];
+
+				if (_renderers.ContainsKey(item))
+					continue;
+
 				Page page = null;
 				if(!createdPages.TryGetValue(item, out page))
 				{
@@ -334,6 +336,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			if (_isDisposed)
+				return;
+
 			// Make sure we do this after the header has a chance to react
 			Device.BeginInvokeOnMainThread(UpdateHeaderVisibility);
 
@@ -361,6 +366,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				foreach (ShellContent newItem in e.NewItems)
 				{
+					if (_renderers.ContainsKey(newItem))
+						continue;
+
 					var page = ((IShellContentController)newItem).GetOrCreateContent();
 					var renderer = Platform.CreateRenderer(page);
 					Platform.SetRenderer(page, renderer);
@@ -373,6 +381,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void LayoutHeader()
 		{
+			if (ShellSection == null)
+				return;
+
 			int tabThickness = 0;
 			if (_header != null)
 			{
