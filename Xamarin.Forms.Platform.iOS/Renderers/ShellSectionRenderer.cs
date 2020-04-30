@@ -109,6 +109,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
+			if (_disposed)
+				return;
+
 			UpdateFlowDirection();
 			base.ViewWillAppear(animated);
 		}
@@ -121,6 +124,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			if (_disposed)
+				return;
+
 			base.ViewDidLayoutSubviews();
 
 			_appearanceTracker.UpdateLayout(this);
@@ -134,6 +140,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (_disposed)
+				return;
+
 			base.ViewDidLoad();
 			InteractivePopGestureRecognizer.Delegate = new GestureDelegate(this, ShouldPop);
 			UpdateFlowDirection();
@@ -149,6 +158,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				this.RemoveFromParentViewController();
 				_disposed = true;
 				_renderer.Dispose();
 				_appearanceTracker.Dispose();

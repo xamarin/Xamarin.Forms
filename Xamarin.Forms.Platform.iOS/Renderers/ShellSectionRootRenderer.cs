@@ -32,7 +32,12 @@ namespace Xamarin.Forms.Platform.iOS
 		Thickness _lastInset;
 		bool _isDisposed;
 
-		ShellSection ShellSection { get; set; }
+		ShellSection ShellSection
+		{
+			get;
+			set;
+		}
+
 		IShellSectionController ShellSectionController => ShellSection;
 
 		public ShellSectionRootRenderer(ShellSection shellSection, IShellContext shellContext)
@@ -56,6 +61,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (_isDisposed)
+				return;
+
 			if (ShellSection.CurrentItem == null)
 				throw new InvalidOperationException($"Content not found for active {ShellSection}. Title: {ShellSection.Title}. Route: {ShellSection.Route}.");
 
@@ -92,12 +100,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
-			UpdateFlowDirection();
+			if (_isDisposed)
+				return;
+
+				UpdateFlowDirection();
 			base.ViewWillAppear(animated);
 		}
 
 		public override void ViewSafeAreaInsetsDidChange()
 		{
+			if (_isDisposed)
+				return;
+
 			base.ViewSafeAreaInsetsDidChange();
 
 			LayoutHeader();
@@ -113,6 +127,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
 				ShellSectionController.ItemsCollectionChanged -= OnShellSectionItemsChanged;
+
+
+				this.RemoveFromParentViewController();
 
 				_header?.Dispose();
 				_tracker?.Dispose();

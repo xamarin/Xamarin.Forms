@@ -149,6 +149,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			if (_isDisposed)
+				return;
+
 			base.ViewDidLayoutSubviews();
 
 			LayoutBar();
@@ -209,6 +212,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				ShellSection = null;
 				_bar.RemoveFromSuperview();
+				this.RemoveFromParentViewController();
 				_bar.Dispose();
 				_bar = null;
 			}
