@@ -161,6 +161,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (_isDisposed)
+				return;
+
 			base.ViewDidLoad();
 
 			CollectionView.ScrollsToTop = false;
@@ -271,6 +274,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			if (_isDisposed)
+				return;
+
 			CollectionView.ReloadData();
 		}
 
