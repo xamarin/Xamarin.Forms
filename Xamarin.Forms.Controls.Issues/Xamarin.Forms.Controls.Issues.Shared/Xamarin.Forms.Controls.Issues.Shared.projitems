@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewGroupTypeIssue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8291.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2674.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6484.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6187.cs" />
@@ -1343,7 +1344,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue8272.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8964.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9951.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9962.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\INativeColorService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9794.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue10438.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1947,7 +1951,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6403.xaml">
-    <SubType>Designer</SubType>
+      <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue9196.xaml">
