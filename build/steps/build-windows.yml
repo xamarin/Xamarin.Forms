@@ -210,6 +210,16 @@ jobs:
 
         TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
+    - task: CopyFiles@2
+      displayName: 'Copy Exceptions'
+      inputs:
+        Contents: |
+          Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.dll
+          Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.pdb
+          Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.mdb
+
+        TargetFolder: ${{ parameters.artifactsTargetFolder }}
+
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
       condition: always()
