@@ -1150,7 +1150,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// were already set to navigation bar in older versions of
 				// iOS.
 				var navBar = navigationRenderer.NavigationBar;
-				var navAppareance = navBar.StandardAppearance;
+				var navAppearance = navBar.StandardAppearance;
 
 				if (navAppareance.BackgroundColor == null)
 				{
