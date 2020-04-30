@@ -190,18 +190,18 @@ steps:
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
       
-    - task: CopyFiles@2
-      displayName: 'Copy Exceptions'
-      inputs:
-        Contents: |
-          Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.dll
-          Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.pdb
-          Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.mdb
+  - task: CopyFiles@2
+    displayName: 'Copy Exceptions'
+    inputs:
+      Contents: |
+        Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.dll
+        Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.pdb
+        Xamarin.Forms.Exceptions/bin/$(BuildConfiguration)/**/*.mdb
 
-        TargetFolder: ${{ parameters.artifactsTargetFolder }}
+      TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
-      condition: always()
-      inputs:
-        ArtifactName: ${{ parameters.artifactsName }}
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
+    condition: always()
+    inputs:
+      ArtifactName: ${{ parameters.artifactsName }}
