@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IAppearanceObserver
 
-		readonly IShellContext _context;
+		IShellContext _context;
 
 		readonly Dictionary<Element, IShellPageRendererTracker> _trackers =
 			new Dictionary<Element, IShellPageRendererTracker>();
@@ -71,11 +71,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Delegate = new NavDelegate(this);
 			_context = context;
+			_context.Shell.PropertyChanged += HandleShellPropertyChanged;
 		}
-		
+
 		[Export("navigationBar:shouldPopItem:")]
+		[Internals.Preserve(Conditional = true)]
 		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
-		{
+		{	
 			// this means the pop is already done, nothing we can do
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
@@ -105,6 +107,18 @@ namespace Xamarin.Forms.Platform.iOS
 			return false;
 		}
 
+		public override void ViewWillAppear(bool animated)
+		{
+			UpdateFlowDirection();
+			base.ViewWillAppear(animated);
+		}
+
+		internal void UpdateFlowDirection()
+		{
+			View.UpdateFlowDirection(_context.Shell);
+			NavigationBar.UpdateFlowDirection(_context.Shell);
+		}
+
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
@@ -122,6 +136,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 			InteractivePopGestureRecognizer.Delegate = new GestureDelegate(this, ShouldPop);
+			UpdateFlowDirection();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -138,6 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_renderer.Dispose();
 				_appearanceTracker.Dispose();
 				_shellSection.PropertyChanged -= HandlePropertyChanged;
+				_context.Shell.PropertyChanged -= HandleShellPropertyChanged;
 
 				if (_displayedPage != null)
 					_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
@@ -160,6 +176,13 @@ namespace Xamarin.Forms.Platform.iOS
 			_shellSection = null;
 			_appearanceTracker = null;
 			_renderer = null;
+			_context = null;
+		}
+
+		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Is(VisualElement.FlowDirectionProperty))
+				UpdateFlowDirection();
 		}
 
 		protected virtual void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -336,15 +359,20 @@ namespace Xamarin.Forms.Platform.iOS
 			var page = e.Page;
 
 			var renderer = Platform.GetRenderer(page);
+			var viewController = renderer?.ViewController;
 
-			if (renderer != null)
+			if (viewController == null && _trackers.ContainsKey(page))
+				viewController = _trackers[page].ViewController;
+
+			if (viewController != null)
 			{
-				if (renderer.ViewController == TopViewController)
+				if (viewController == TopViewController)
 				{
 					e.Animated = false;
 					OnPopRequested(e);
 				}
-				ViewControllers = ViewControllers.Remove(renderer.ViewController);
+
+				ViewControllers = ViewControllers.Remove(viewController);
 				DisposePage(page);
 			}
 		}
@@ -371,9 +399,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_trackers.TryGetValue(page, out var tracker))
 			{
+				if(tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
+					ViewControllers = ViewControllers.Remove(_trackers[page].ViewController);
+
 				tracker.Dispose();
 				_trackers.Remove(page);
 			}
+
 
 			var renderer = Platform.GetRenderer(page);
 			if (renderer != null)

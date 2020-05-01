@@ -37,18 +37,19 @@ PowerShell:
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
 var packageVersion = Argument("packageVersion", "");
-var releaseChannelArg = Argument("releaseChannel", "Stable");
-releaseChannelArg = EnvironmentVariable("releaseChannel") ?? releaseChannelArg;
+var releaseChannelArg = Argument("CHANNEL", "Stable");
+releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
 bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
 
 string artifactStagingDirectory = Argument("Build_ArtifactStagingDirectory", (string)null) ?? EnvironmentVariable("Build.ArtifactStagingDirectory") ?? EnvironmentVariable("Build_ArtifactStagingDirectory") ?? ".";
-var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ??
+var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
-string[] androidSdkManagerInstalls = new string[0];//new [] { "platforms;android-24", "platforms;android-28"};
+string[] androidSdkManagerInstalls = new string[0]; //new [] { "platforms;android-24", "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
 
 
+Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 Information ("Team Project: {0}", teamProject);
 Information ("buildForVS2017: {0}", buildForVS2017);
 
@@ -78,22 +79,67 @@ if(buildForVS2017 || teamProject == "DevDiv")
     macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.mac-5.4.0.64.pkg";
 
 }
-
-if(String.IsNullOrWhiteSpace(monoPatchVersion))
-    monoVersion = $"{monoMajorVersion}";
-else
-    monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
-
-if(!String.IsNullOrWhiteSpace(monoVersion))
+else if(releaseChannel == ReleaseChannel.Stable)
 {
-    monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
-}
-    
+    if(IsXcodeVersionOver("11.4"))
+    {
+        // Xcode 11.4 just uses boots enums
+        Information ("XCODE 11.4");
+    }
+    else
+    {
+        // Xcode 11.3
+        monoMajorVersion = "";
+        monoPatchVersion = "";
+        androidSDK_macos = "https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/aa46188c5f7a2e0c6f2d4bd4dc261604/xamarin.android-10.2.0.100.pkg";
+        iOSSDK_macos = $"https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/21e09d8084eb7c15eaa07c970e0eccdc/xamarin.ios-13.14.1.39.pkg";
+        macSDK_macos = $"https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/979144aead55378df75482d35957cdc9/xamarin.mac-6.14.1.39.pkg";
+        monoSDK_macos = "https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/3a376d8c817ec4d720ecca2d95ceb4c1/monoframework-mdk-6.8.0.123.macos10.xamarin.universal.pkg";
 
-string androidSDK = IsRunningOnWindows() ? "" : androidSDK_macos;
-string monoSDK = IsRunningOnWindows() ? "" : monoSDK_macos;
-string iosSDK = IsRunningOnWindows() ? "" : iOSSDK_macos;
-string macSDK  = IsRunningOnWindows() ? "" : macSDK_macos;
+    }
+}
+
+if(String.IsNullOrWhiteSpace(monoSDK_macos))
+{
+    if(String.IsNullOrWhiteSpace(monoPatchVersion))
+        monoVersion = $"{monoMajorVersion}";
+    else
+        monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
+
+    if(!String.IsNullOrWhiteSpace(monoVersion))
+    {
+        monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
+    }
+}
+
+string androidSDK_windows = "";
+string iOSSDK_windows = "";
+string monoSDK_windows = "";
+string macSDK_windows = "";
+
+if(!buildForVS2017)
+{
+    androidSDK_macos = EnvironmentVariable("ANDROID_SDK_MAC", androidSDK_macos);
+    iOSSDK_macos = EnvironmentVariable("IOS_SDK_MAC", iOSSDK_macos);
+    monoSDK_macos = EnvironmentVariable("MONO_SDK_MAC", monoSDK_macos);
+    macSDK_macos = EnvironmentVariable("MAC_SDK_MAC", macSDK_macos);
+
+    androidSDK_windows = EnvironmentVariable("ANDROID_SDK_WINDOWS", "");
+    iOSSDK_windows = EnvironmentVariable("IOS_SDK_WINDOWS", "");
+    monoSDK_windows = EnvironmentVariable("MONO_SDK_WINDOWS", "");
+    macSDK_windows = EnvironmentVariable("MAC_SDK_WINDOWS", "");
+}
+
+string androidSDK = IsRunningOnWindows() ? androidSDK_windows : androidSDK_macos;
+string monoSDK = IsRunningOnWindows() ? monoSDK_windows : monoSDK_macos;
+string iosSDK = IsRunningOnWindows() ? iOSSDK_windows : iOSSDK_macos;
+string macSDK  = IsRunningOnWindows() ? macSDK_windows : macSDK_macos;
+
+
+Information ("androidSDK: {0}", androidSDK);
+Information ("monoSDK: {0}", monoSDK);
+Information ("macSDK: {0}", macSDK);
+Information ("iosSDK: {0}", iosSDK);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -118,6 +164,8 @@ Task("provision-macsdk")
             else
                 await Boots (Product.XamarinMac, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(macSDK))
+            await Boots(macSDK);
     });
 
 Task("provision-iossdk")
@@ -130,6 +178,8 @@ Task("provision-iossdk")
             else
                 await Boots (Product.XamariniOS, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(iosSDK))
+            await Boots(iosSDK);
     });
 
 Task("provision-androidsdk")
@@ -141,9 +191,11 @@ Task("provision-androidsdk")
         if(androidSdkManagerInstalls.Length > 0)
         {
             var androidSdkSettings = new AndroidSdkManagerToolSettings {
-                SdkRoot = ANDROID_HOME,
                 SkipVersionCheck = true
             };
+
+            if(!String.IsNullOrWhiteSpace(ANDROID_HOME))            
+                androidSdkSettings.SdkRoot = ANDROID_HOME;
 
             AcceptLicenses (androidSdkSettings);
             AndroidSdkManagerUpdateAll (androidSdkSettings);
@@ -157,6 +209,8 @@ Task("provision-androidsdk")
             else
                 await Boots (Product.XamarinAndroid, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(androidSDK))
+            await Boots(androidSDK);
     });
 
 Task("provision-monosdk")
@@ -170,6 +224,8 @@ Task("provision-monosdk")
             else
                 await Boots (Product.Mono, releaseChannel);
         }
+        else if(!String.IsNullOrWhiteSpace(monoSDK))
+            await Boots(monoSDK);
     });
 
 Task("provision")
@@ -278,6 +334,13 @@ Task("BuildForNuget")
     }
 });
 
+Task("BuildTasks")
+    .Description("Build Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj")
+    .Does(() =>
+{
+    MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
+});
+
 Task("Build")
     .Description("Builds all necessary projects to run Control Gallery")
     .IsDependentOn("Restore")
@@ -359,4 +422,31 @@ MSBuildSettings GetMSBuildSettings()
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
         Configuration = configuration,
     };
+}
+
+bool IsXcodeVersionOver(string version)
+{
+    if(IsRunningOnWindows())
+        return true;
+
+    IEnumerable<string> redirectedStandardOutput;
+    StartProcess("xcodebuild", 
+        new ProcessSettings {
+            Arguments = new ProcessArgumentBuilder().Append(@"-version"),
+            RedirectStandardOutput = true
+        },
+         out redirectedStandardOutput
+    );
+
+    foreach (var item in redirectedStandardOutput)
+    {
+        if(item.Contains("Xcode"))
+        {
+            var xcodeVersion = Version.Parse(item.Replace("Xcode", ""));
+            Information($"Xcode: {xcodeVersion}");
+            return Version.Parse(item.Replace("Xcode", "")) >= Version.Parse(version); 
+        }
+    }
+
+    return true;
 }
