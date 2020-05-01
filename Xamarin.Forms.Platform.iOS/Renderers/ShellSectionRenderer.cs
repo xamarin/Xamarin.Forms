@@ -153,9 +153,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_disposed)
 				return;
 
-			base.Dispose(disposing);
-
-
 			if (disposing)
 			{
 				this.RemoveFromParentViewController();
@@ -177,7 +174,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (tracker == null)
 						continue;
 
-					DisposePage(tracker);
+					DisposePage(tracker, true);
 				}
 			}
 
@@ -187,6 +184,8 @@ namespace Xamarin.Forms.Platform.iOS
 			_appearanceTracker = null;
 			_renderer = null;
 			_context = null;
+
+			base.Dispose(disposing);
 		}
 
 		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -405,11 +404,11 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 		}
 
-		void DisposePage(Page page)
+		void DisposePage(Page page, bool calledFromDispose = false)
 		{
 			if (_trackers.TryGetValue(page, out var tracker))
 			{
-				if(tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
+				if(!calledFromDispose && tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
 					ViewControllers = ViewControllers.Remove(_trackers[page].ViewController);
 
 				tracker.Dispose();
