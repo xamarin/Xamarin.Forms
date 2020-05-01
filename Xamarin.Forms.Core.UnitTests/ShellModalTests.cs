@@ -317,6 +317,24 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public async Task GoBackWithoutDotDotTests()
+		{
+			var shell = new Shell();
+
+			var item = CreateShellItem(shellSectionRoute: "section2");
+			shell.Items.Add(item);
+
+			await shell.GoToAsync(new ShellNavigationState($"ModalTestPage"));
+			var modalPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ModalTestPageBase;
+			Assert.NotNull(modalPage);
+
+			await shell.GoBackAsync();
+
+			var previousPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ContentPage;
+			Assert.NotNull(previousPage);
+		}
+
+		[Test]
 		public async Task NavigatingAndNavigatedFiresForShellModal()
 		{
 			Shell shell = new Shell();

@@ -475,6 +475,11 @@ namespace Xamarin.Forms
 			return GoToAsync(state, animate, false);
 		}
 
+		public Task GoBackAsync()
+		{
+			return GoToAsync("..");
+		}
+
 		internal async Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes)
 		{
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
