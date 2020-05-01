@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Maps
 
 		public static readonly BindableProperty IsShowingUserProperty = BindableProperty.Create("IsShowingUser", typeof(bool), typeof(Map), default(bool));
 
+		public static readonly BindableProperty TrafficEnabledProperty = BindableProperty.Create("TrafficEnabled", typeof(bool), typeof(Map), default(bool));
+
 		public static readonly BindableProperty HasScrollEnabledProperty = BindableProperty.Create("HasScrollEnabled", typeof(bool), typeof(Map), true);
 
 		public static readonly BindableProperty HasZoomEnabledProperty = BindableProperty.Create("HasZoomEnabled", typeof(bool), typeof(Map), true);
@@ -31,6 +33,7 @@ namespace Xamarin.Forms.Maps
 		public static readonly BindableProperty MoveToLastRegionOnLayoutChangeProperty = BindableProperty.Create(nameof(MoveToLastRegionOnLayoutChange), typeof(bool), typeof(Map), defaultValue: true);
 
 		readonly ObservableCollection<Pin> _pins = new ObservableCollection<Pin>();
+		readonly ObservableCollection<MapElement> _mapElements = new ObservableCollection<MapElement>();
 		MapSpan _visibleRegion;
 
 		public Map(MapSpan region)
@@ -63,6 +66,12 @@ namespace Xamarin.Forms.Maps
 		{
 			get { return (bool)GetValue(IsShowingUserProperty); }
 			set { SetValue(IsShowingUserProperty, value); }
+		}
+
+		public bool TrafficEnabled
+		{
+			get => (bool)GetValue(TrafficEnabledProperty);
+			set => SetValue(TrafficEnabledProperty, value);
 		}
 
 		public MapType MapType
@@ -99,6 +108,8 @@ namespace Xamarin.Forms.Maps
 			get { return (bool)GetValue(MoveToLastRegionOnLayoutChangeProperty); }
 			set { SetValue(MoveToLastRegionOnLayoutChangeProperty, value); }
 		}
+        
+		public IList<MapElement> MapElements => _mapElements;
 
 		public event EventHandler<MapClickedEventArgs> MapClicked;
 		

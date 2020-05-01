@@ -1,5 +1,9 @@
 ﻿using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -8,6 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _disposed;
 		IShellContext _shellContext;
+		int _titleTextColor = -1;
 
 		public ShellToolbarAppearanceTracker(IShellContext shellContext)
 		{
@@ -32,10 +37,23 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var titleArgb = title.ToAndroid(ShellRenderer.DefaultTitleColor).ToArgb();
 
-			toolbar.SetTitleTextColor(titleArgb);
-			using (var colorDrawable = new ColorDrawable(background.ToAndroid(ShellRenderer.DefaultBackgroundColor)))
-				toolbar.SetBackground(colorDrawable);
-			toolbarTracker.TintColor = foreground.IsDefault ? ShellRenderer.DefaultForegroundColor : foreground;
+			if (_titleTextColor != titleArgb)
+			{
+				toolbar.SetTitleTextColor(titleArgb);
+				_titleTextColor = titleArgb;
+			}
+
+			var newColor = background.ToAndroid(ShellRenderer.DefaultBackgroundColor);
+			if (!(toolbar.Background is ColorDrawable cd) || cd.Color != newColor)
+			{
+				using (var colorDrawable = new ColorDrawable(background.ToAndroid(ShellRenderer.DefaultBackgroundColor)))
+					toolbar.SetBackground(colorDrawable);
+			}
+
+			var newTintColor = foreground.IsDefault ? ShellRenderer.DefaultForegroundColor : foreground;
+
+			if(toolbarTracker.TintColor != newTintColor)
+				toolbarTracker.TintColor = newTintColor;
 		}
 
 		#region IDisposable
@@ -47,13 +65,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				if (disposing)
-				{
-				}
 				_shellContext = null;
-				_disposed = true;
 			}
 		}
 

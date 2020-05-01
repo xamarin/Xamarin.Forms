@@ -3,7 +3,11 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+#else
 using Android.Support.V4.View;
+#endif
 using Android.Text;
 using Android.Util;
 using Android.Views;
@@ -17,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		int? _defaultLabelFor;
 		bool _disposed;
 		Label _element;
+		// Do not dispose _labelTextColorDefault
 		readonly ColorStateList _labelTextColorDefault;
 		int _lastConstraintHeight;
 		int _lastConstraintWidth;
@@ -30,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementRenderer _visualElementRenderer;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 		SpannableString _spannableString;
-
+		bool _hasLayoutOccurred;
 		bool _wasFormatted;
 
 		public LabelRenderer(Context context) : base(context)
@@ -114,8 +119,19 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					return _lastSizeRequest.Value;
 			}
 
+			//We need to clear the Hint or else it will interfere with the sizing of the Label
+			var hint = Control.Hint;
+			bool setHint = Control.LayoutParameters != null;
+			if (!string.IsNullOrEmpty(hint) && setHint)
+				Control.Hint = string.Empty;
+
 			Measure(widthConstraint, heightConstraint);
-			SizeRequest result = new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+			var result = new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+
+			//Set Hint back after sizing
+			if(setHint)
+				Control.Hint = hint;
+
 			result.Minimum = new Size(Math.Min(Context.ToPixels(10), result.Request.Width), result.Request.Height);
 
 			// if the measure of the view has changed then trigger a request for layout
@@ -138,6 +154,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			base.OnLayout(changed, left, top, right, bottom);
 			this.RecalculateSpanPositions(Element, _spannableString, new SizeRequest(new Size(right - left, bottom - top)));
+			_hasLayoutOccurred = true;
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -197,7 +214,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				}
 
 				_spannableString?.Dispose();
-				_labelTextColorDefault?.Dispose();
 
 				if (Element != null)
 				{
@@ -240,7 +256,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 
-				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
 				UpdateCharacterSpacing();
@@ -251,6 +266,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateGravity();
 				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+
 				UpdatePadding();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -259,11 +275,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			ElementPropertyChanged?.Invoke(this, e);
+
+			if (Control?.LayoutParameters == null && _hasLayoutOccurred)
+				return;
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateGravity();
-			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
+			else if (e.PropertyName == Label.TextColorProperty.PropertyName ||
+				e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
@@ -380,7 +405,23 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					SetTextColor(_labelTextColorDefault);
 					_lastUpdateColor = Color.Default;
 				}
-				Text = Element.Text;
+
+				switch (Element.TextType)
+				{
+					case TextType.Html:
+						if (Forms.IsNougatOrNewer)
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty, FromHtmlOptions.ModeCompact), BufferType.Spannable);
+						else
+#pragma warning disable CS0618 // Type or member is obsolete
+							Control.SetText(Html.FromHtml(Element.Text ?? string.Empty), BufferType.Spannable);
+#pragma warning restore CS0618 // Type or member is obsolete
+						break;
+
+					default:
+						Text = Element.Text;
+						break;
+				}
+				
 				UpdateColor();
 				UpdateFont();
 

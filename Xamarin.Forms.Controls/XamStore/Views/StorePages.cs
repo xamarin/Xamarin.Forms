@@ -19,6 +19,9 @@ namespace Xamarin.Forms.Controls.XamStore
 
 		public BasePage(string title, Color tint)
 		{
+			ToolbarItems.Add(new ToolbarItem() { Text = "text" });
+			ToolbarItems.Add(new ToolbarItem() { IconImageSource = "coffee.png" });
+
 			Title = title;
 			Shell.SetForegroundColor(this, tint);
 			var grid = new Grid()
@@ -198,6 +201,10 @@ namespace Xamarin.Forms.Controls.XamStore
 					RemoveTopTab),
 				1, 13);
 
+			grid.Children.Add(MakeButton("Flow Direction",
+					ChangeFlowDirection),
+				2, 13);
+
 			grid.Children.Add(MakeSwitch("Nav Visible", out _navBarVisibleSwitch), 0, 14);
 			grid.Children.Add(MakeSwitch("Tab Visible", out _tabBarVisibleSwitch), 1, 14);
 
@@ -299,11 +306,15 @@ namespace Xamarin.Forms.Controls.XamStore
 
 			Content = new ScrollView { Content = grid };
 
-			//var listView = new ListView();
-			//listView.ItemsSource = Enumerable.Range(0, 1000).ToList();
 
-			//Content = listView;
-		}
+            grid.Children.Add(MakeButton("Hide Nav Shadow",
+                    () => Shell.SetNavBarHasShadow(this, false)),
+                1, 21);
+
+            grid.Children.Add(MakeButton("Show Nav Shadow",
+                    () => Shell.SetNavBarHasShadow(this, true)),
+                2, 21);
+        }
 
 		Switch _navBarVisibleSwitch;
 		Switch _tabBarVisibleSwitch;
@@ -318,6 +329,16 @@ namespace Xamarin.Forms.Controls.XamStore
 					(control = new Switch {IsToggled = true})
 				}
 			};
+		}
+
+		private void ChangeFlowDirection()
+		{
+			var ve = (Shell)Parent.Parent.Parent.Parent;
+
+			if (ve.FlowDirection != FlowDirection.RightToLeft)
+				ve.FlowDirection = FlowDirection.RightToLeft;
+			else
+				ve.FlowDirection = FlowDirection.LeftToRight;
 		}
 
 		private void RemoveTopTab()
@@ -475,7 +496,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	[Preserve (AllMembers = true)]
 	public class HomePage : BasePage
 	{
-		public HomePage() : base("Store Home", Color.Default)
+		public HomePage() : base("Store Home", Color.Black)
 		{
 			AddSearchHandler("Search Apps", SearchBoxVisibility.Expanded);
 		}
@@ -484,7 +505,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	[Preserve (AllMembers = true)]
 	public class GamesPage : BasePage
 	{
-		public GamesPage() : base("Games", Color.Default)
+		public GamesPage() : base("Games", Color.Black)
 		{
 			AddSearchHandler("Search Games", SearchBoxVisibility.Expanded);
 		}

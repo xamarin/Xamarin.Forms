@@ -15,9 +15,21 @@ namespace Xamarin.Forms.Controls
 		public ListPage ()
 		{
 			_listScreen = new ListScreen ();
+			var clearItemsButton = new Button { Text = "Clear items" };
+			clearItemsButton.Clicked += delegate
+			{
+				_listScreen.View.ItemsSource = new List<int>();
+			};
+            var resetItemsSourceButton = new Button { Text = "Set ItemsSource = null" };
+			resetItemsSourceButton.Clicked += delegate
+			{
+				_listScreen.View.ItemsSource = null;
+			};
 			Content = new StackLayout {
 				Children = {
 					new Label {Text = "Foo"},
+					clearItemsButton,
+					resetItemsSourceButton,
 					_listScreen.View
 				}
 			};
@@ -57,13 +69,14 @@ namespace Xamarin.Forms.Controls
 			public ViewCellTest ()
 			{
 				var stackLayout = new StackLayout {
-					Orientation = StackOrientation.Horizontal
+					Orientation = StackOrientation.Horizontal,
+					HorizontalOptions = LayoutOptions.FillAndExpand
 				};
 
-				var label = new Label ();
+				var label = new Label (){HorizontalOptions = LayoutOptions.StartAndExpand};
 				label.SetBinding (Label.TextProperty, "Text");
 
-				var box = new BoxView {WidthRequest = 100, HeightRequest = 10, Color = Color.Red};
+				var box = new BoxView {WidthRequest = 100, HeightRequest = 10, Color = Color.Red, HorizontalOptions = LayoutOptions.End};
 
 				stackLayout.Children.Add (label);
 				stackLayout.Children.Add (box);

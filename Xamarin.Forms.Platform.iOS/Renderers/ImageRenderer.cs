@@ -8,6 +8,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
+using PreserveAttribute = Foundation.PreserveAttribute;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -28,10 +29,11 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public class ImageRenderer : ViewRenderer<Image, UIImageView>, IImageVisualElementRenderer
+	public class ImageRenderer : ViewRenderer<Image, FormsUIImageView>, IImageVisualElementRenderer
 	{
 		bool _isDisposed;
 
+		[Preserve(Conditional = true)]
 		public ImageRenderer() : base()
 		{
 			ImageElementManager.Init(this);
@@ -63,7 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					var imageView = new UIImageView(RectangleF.Empty);
+					var imageView = new FormsUIImageView();
 					imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 					imageView.ClipsToBounds = true;
 					SetNativeControl(imageView);
@@ -121,8 +123,18 @@ namespace Xamarin.Forms.Platform.iOS
 		Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1);
 	}
 
-	public sealed class FileImageSourceHandler : IImageSourceHandler
+	public interface IAnimationSourceHandler : IRegisterable
 	{
+		Task<FormsCAKeyFrameAnimation> LoadImageAnimationAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1);
+	}
+
+	public sealed class FileImageSourceHandler : IImageSourceHandler, IAnimationSourceHandler
+	{
+		[Preserve(Conditional = true)]
+		public FileImageSourceHandler()
+		{
+		}
+
 		public Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
 			UIImage image = null;
@@ -138,10 +150,26 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return Task.FromResult(image);
 		}
+
+		public Task<FormsCAKeyFrameAnimation> LoadImageAnimationAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1)
+		{
+			FormsCAKeyFrameAnimation animation = ImageAnimationHelper.CreateAnimationFromFileImageSource(imagesource as FileImageSource);
+			if (animation == null)
+			{
+				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);
+			}
+
+			return Task.FromResult(animation);
+		}
 	}
 
-	public sealed class StreamImagesourceHandler : IImageSourceHandler
+	public sealed class StreamImagesourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
+		[Preserve(Conditional = true)]
+		public StreamImagesourceHandler()
+		{
+		}
+
 		public async Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
 			UIImage image = null;
@@ -162,10 +190,26 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return image;
 		}
+
+		public async Task<FormsCAKeyFrameAnimation> LoadImageAnimationAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1)
+		{
+			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromStreamImageSourceAsync(imagesource as StreamImageSource, cancelationToken).ConfigureAwait(false);
+			if (animation == null)
+			{
+				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);
+			}
+
+			return animation;
+		}
 	}
 
-	public sealed class ImageLoaderSourceHandler : IImageSourceHandler
+	public sealed class ImageLoaderSourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
+		[Preserve(Conditional = true)]
+		public ImageLoaderSourceHandler()
+		{
+		}
+
 		public async Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
 			UIImage image = null;
@@ -186,29 +230,46 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return image;
 		}
+
+		public async Task<FormsCAKeyFrameAnimation> LoadImageAnimationAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1)
+		{
+			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromUriImageSourceAsync(imagesource as UriImageSource, cancelationToken).ConfigureAwait(false);
+			if (animation == null)
+			{
+				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);
+			}
+
+			return animation;
+		}
 	}
 
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
-		//should this be the default color on the BP for iOS? 
-		readonly Color _defaultColor = Color.White;
+		readonly Color _defaultColor = ColorExtensions.LabelColor.ToColor();
+
+		[Preserve(Conditional = true)]
+		public FontImageSourceHandler()
+		{
+		}
 
 		public Task<UIImage> LoadImageAsync(
-			ImageSource imagesource, 
-			CancellationToken cancelationToken = default(CancellationToken), 
+			ImageSource imagesource,
+			CancellationToken cancelationToken = default(CancellationToken),
 			float scale = 1f)
 		{
 			UIImage image = null;
 			var fontsource = imagesource as FontImageSource;
 			if (fontsource != null)
 			{
-				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
-				var imagesize = new SizeF((float)fontsource.Size, (float)fontsource.Size);
-				var font = UIFont.FromName(fontsource.FontFamily ?? string.Empty, (float)fontsource.Size) ??
+				//This will allow lookup from the Embedded Fonts
+				var cleansedname = FontExtensions.CleanseFontName(fontsource.FontFamily);
+				var font = UIFont.FromName(cleansedname ?? string.Empty, (float)fontsource.Size) ??
 					UIFont.SystemFontOfSize((float)fontsource.Size);
-
-				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
+				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
 				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
+				var imagesize = ((NSString)fontsource.Glyph).GetSizeUsingAttributes(attString.GetUIKitAttributes(0, out _));
+				
+				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
 				var ctx = new NSStringDrawingContext();
 				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
 				attString.DrawString(new RectangleF(
@@ -219,7 +280,7 @@ namespace Xamarin.Forms.Platform.iOS
 				image = UIGraphics.GetImageFromCurrentImageContext();
 				UIGraphics.EndImageContext();
 
-				if (iconcolor != _defaultColor)
+				if (image != null && iconcolor != _defaultColor)
 					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
 			}
 			return Task.FromResult(image);

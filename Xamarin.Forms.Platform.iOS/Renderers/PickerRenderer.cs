@@ -25,6 +25,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 	public class PickerRenderer : PickerRendererBase<UITextField>
 	{
+		[Internals.Preserve(Conditional = true)]
+		public PickerRenderer()
+		{
+
+		}
+
 		protected override UITextField CreateNativeControl()
 		{
 			return new ReadOnlyField { BorderStyle = UITextBorderStyle.RoundedRect };
@@ -41,6 +47,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IElementController ElementController => Element as IElementController;
 
+
+		[Internals.Preserve(Conditional = true)]
+		public PickerRendererBase()
+		{
+
+		}
 
 		protected abstract override TControl CreateNativeControl();
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
@@ -89,8 +101,10 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 
 					_defaultTextColor = entry.TextColor;
-					
+
 					_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
+
+					entry.AccessibilityTraits = UIAccessibilityTrait.Button;
 
 					SetNativeControl(entry);
 				}
@@ -173,7 +187,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
 
 			if (placeHolder != null)
-				Control.AttributedPlaceholder = placeHolder;
+				UpdateAttributedPlaceholder(placeHolder);
 		}
 
         protected internal virtual void UpdateFont()
@@ -181,7 +195,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Font = Element.ToUIFont();
 		}
 
-		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
+		readonly Color _defaultPlaceholderColor = ColorExtensions.PlaceholderColor.ToColor();
 		protected internal virtual void UpdatePlaceholder()
 		{
 			var formatted = (FormattedString)Element.Title;
@@ -194,18 +208,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 
-			Control.AttributedPlaceholder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing);
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Title, Element.CharacterSpacing));
 		}
 
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) => 
+			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdatePicker()
 		{

@@ -10,6 +10,7 @@ using Android.Text;
 using Android.Text.Method;
 using Android.Util;
 using Android.Widget;
+using Android.Views;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -60,7 +61,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override SearchView CreateNativeControl()
 		{
-			return new SearchView(Context);
+			var context = (Context as ContextThemeWrapper)?.BaseContext ?? Context;
+			return new SearchView(context);
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -133,6 +135,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName)
@@ -204,7 +211,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (image != null && image.Drawable != null)
 				{
 					if (Element.CancelButtonColor != Color.Default)
-						image.Drawable.SetColorFilter(Element.CancelButtonColor.ToAndroid(), PorterDuff.Mode.SrcIn);
+						image.Drawable.SetColorFilter(Element.CancelButtonColor, FilterMode.SrcIn);
 					else
 						image.Drawable.ClearColorFilter();
 				}

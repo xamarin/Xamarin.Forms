@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)BaseTestFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformAutomatedTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformQueries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Queries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Remotes\BaseViewContainerRemote.cs" />
@@ -28,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\DisplayAlertUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\EditorUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\EntryUITests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\ExpanderViewUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\FrameUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ImageButtonUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ImageUITests.cs" />
@@ -59,5 +61,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\UITestCustomExceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ViewInspector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\CollectionViewUITests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\CarouselViewUITests.cs" />
   </ItemGroup>
 </Project>

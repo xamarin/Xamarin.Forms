@@ -4,7 +4,7 @@ using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ItemContentView : ViewGroup
+	public class ItemContentView : ViewGroup
 	{
 		protected IVisualElementRenderer Content;
 		Size? _size;
@@ -12,6 +12,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ItemContentView(Context context) : base(context)
 		{
+		}
+
+		internal void ClickOn()
+		{
+			CallOnClick();
 		}
 
 		internal void RealizeContent(View view)
@@ -23,8 +28,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ElementMeasureInvalidated(object sender, System.EventArgs e)
 		{
-			RequestLayout();
+			if (this.IsAlive())
+			{
+				RequestLayout();
+			}
+			else if(sender is VisualElement ve)
+			{
+				ve.MeasureInvalidated -= ElementMeasureInvalidated;
+			}
 		}
+
+		internal IVisualElementRenderer VisualElementRenderer => Content;
 
 		internal void Recycle()
 		{

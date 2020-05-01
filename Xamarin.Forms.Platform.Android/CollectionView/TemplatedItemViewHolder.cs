@@ -3,7 +3,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class TemplatedItemViewHolder : SelectableViewHolder
+	public class TemplatedItemViewHolder : SelectableViewHolder
 	{
 		readonly ItemContentView _itemContentView;
 		readonly DataTemplate _template;
@@ -11,7 +11,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public View View { get; private set; }
 
-		public TemplatedItemViewHolder(ItemContentView itemContentView, DataTemplate template) : base(itemContentView)
+		public TemplatedItemViewHolder(ItemContentView itemContentView, DataTemplate template, 
+			bool isSelectionEnabled = true) : base(itemContentView, isSelectionEnabled)
 		{
 			_itemContentView = itemContentView;
 			_template = template;
@@ -33,8 +34,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Recycle(ItemsView itemsView)
 		{
-			View.BindingContext = null;
 			itemsView.RemoveLogicalChild(View);
+			View.BindingContext = null;
 		}
 
 		public void Bind(object itemBindingContext, ItemsView itemsView, 
@@ -42,20 +43,37 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var template = _template.SelectDataTemplate(itemBindingContext, itemsView);
 
-			if(template != _selectedTemplate)
+			var templateChanging = template != _selectedTemplate;
+
+			if(templateChanging)
 			{
+				// Clean up any content we're still holding on to
 				_itemContentView.Recycle();
+
+				// Create the new content
 				View = (View)template.CreateContent();
+
+				// Set the binding context _before_ we create the renderer; that way, the bound data will be 
+				// available during OnElementChanged
+				View.BindingContext = itemBindingContext;
+
+				// Make sure the Visual property is available when the renderer is created
+				PropertyPropagationExtensions.PropagatePropertyChanged(null, View, itemsView);
+
+				// Actually create the native renderer
 				_itemContentView.RealizeContent(View);
+
 				_selectedTemplate = template;
 			}
 
-			_itemContentView.HandleItemSizingStrategy(reportMeasure, size); 
+			_itemContentView.HandleItemSizingStrategy(reportMeasure, size);
 
-			// Set the binding context before we add it as a child of the ItemsView; otherwise, it will
-			// inherit the ItemsView's binding context
-			View.BindingContext = itemBindingContext;
-
+			if (!templateChanging)
+			{
+				// Same template, new data
+				View.BindingContext = itemBindingContext;
+			}
+			
 			itemsView.AddLogicalChild(View);
 		}
 	}

@@ -1,5 +1,10 @@
 ﻿using Android.Runtime;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -14,21 +19,17 @@ namespace Xamarin.Forms.Platform.Android
 	public class ShellFlyoutRecyclerAdapter : RecyclerView.Adapter
 	{
 		readonly IShellContext _shellContext;
-
-		DataTemplate _defaultItemTemplate;
-
-		DataTemplate _defaultMenuItemTemplate;
-
 		List<AdapterListItem> _listItems;
-
 		Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
-		readonly Action<Element> _selectedCallback;
+		Action<Element> _selectedCallback;
+		bool _disposed;
+		ElementViewHolder _elementViewHolder;
 
 		public ShellFlyoutRecyclerAdapter(IShellContext shellContext, Action<Element> selectedCallback)
 		{
 			_shellContext = shellContext;
 
-			((IShellController)Shell).StructureChanged += OnShellStructureChanged;
+			ShellController.StructureChanged += OnShellStructureChanged;
 
 			_listItems = GenerateItemList();
 			_selectedCallback = selectedCallback;
@@ -38,24 +39,26 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected Shell Shell => _shellContext.Shell;
 
-		protected virtual DataTemplate DefaultItemTemplate =>
-			_defaultItemTemplate ?? (_defaultItemTemplate = new DataTemplate(() => GenerateDefaultCell("Title", "FlyoutIcon")));
+		IShellController ShellController => (IShellController)Shell;
 
-		protected virtual DataTemplate DefaultMenuItemTemplate =>
-			_defaultMenuItemTemplate ?? (_defaultMenuItemTemplate = new DataTemplate(() => GenerateDefaultCell("Text", "Icon")));
+		protected virtual DataTemplate DefaultItemTemplate => null;
+
+		protected virtual DataTemplate DefaultMenuItemTemplate => null;
 
 		public override int GetItemViewType(int position)
 		{
 			var item = _listItems[position];
-			DataTemplate dataTemplate = null;
+			DataTemplate dataTemplate = ShellController.GetFlyoutItemDataTemplate(item.Element);
 			if (item.Element is IMenuItemController)
 			{
-				dataTemplate = Shell.GetMenuItemTemplate(item.Element) ?? Shell.MenuItemTemplate ?? DefaultMenuItemTemplate;
+				if (DefaultMenuItemTemplate != null && Shell.MenuItemTemplate == dataTemplate)
+					dataTemplate = DefaultMenuItemTemplate;
 			}
 			else
 			{
-				dataTemplate = Shell.GetItemTemplate(item.Element) ?? Shell.ItemTemplate ?? DefaultItemTemplate;
-			}	
+				if (DefaultItemTemplate != null && Shell.ItemTemplate == dataTemplate)
+					dataTemplate = DefaultItemTemplate;
+			}
 
 			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
 			var id = ((IDataTemplateController)template).Id;
@@ -82,7 +85,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			AView ITabStop.TabStop => this;
 
-#region IVisualElementRenderer
+			#region IVisualElementRenderer
 
 			VisualElement IVisualElementRenderer.Element => Content?.BindingContext as VisualElement;
 
@@ -105,7 +108,7 @@ namespace Xamarin.Forms.Platform.Android
 			public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 #pragma warning restore 67
 
-#endregion IVisualElementRenderer
+			#endregion IVisualElementRenderer
 
 			internal View Content { get; set; }
 
@@ -118,6 +121,10 @@ namespace Xamarin.Forms.Platform.Android
 				int maxAttempts = 0;
 				var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
 				if (tabIndexes == null)
+					return base.FocusSearch(direction);
+
+				// use OS default--there's no need for us to keep going if there's one or fewer tab indexes!
+				if (tabIndexes.Count <= 1)
 					return base.FocusSearch(direction);
 
 				int tabIndex = element.TabIndex;
@@ -163,7 +170,9 @@ namespace Xamarin.Forms.Platform.Android
 			container.LayoutParameters = new LP(LP.MatchParent, LP.WrapContent);
 			linearLayout.AddView(container);
 
-			return new ElementViewHolder(content, linearLayout, bar, _selectedCallback);
+			_elementViewHolder = new ElementViewHolder(content, linearLayout, bar, _selectedCallback);
+
+			return _elementViewHolder;
 		}
 
 		protected virtual List<AdapterListItem> GenerateItemList()
@@ -194,52 +203,25 @@ namespace Xamarin.Forms.Platform.Android
 			NotifyDataSetChanged();
 		}
 
-		View GenerateDefaultCell(string textBinding, string iconBinding)
+		protected override void Dispose(bool disposing)
 		{
-			var grid = new Grid();
-			var groups = new VisualStateGroupList();
-			
-			var commonGroup = new VisualStateGroup();
-			commonGroup.Name = "CommonStates";
-			groups.Add(commonGroup);
+			if (_disposed)
+				return;
 
-			var normalState = new VisualState();
-			normalState.Name = "Normal";
-			commonGroup.States.Add(normalState);
+			_disposed = true;
 
-			var selectedState = new VisualState();
-			selectedState.Name = "Selected";
-			selectedState.Setters.Add(new Setter
+			if (disposing)
 			{
-				Property = VisualElement.BackgroundColorProperty,
-				Value = new Color(0.95)
-			});
+				((IShellController)Shell).StructureChanged -= OnShellStructureChanged;
 
-			commonGroup.States.Add(selectedState);
+				_elementViewHolder?.Dispose();
 
-			VisualStateManager.SetVisualStateGroups(grid, groups);
+				_listItems = null;
+				_selectedCallback = null;
+				_elementViewHolder = null;
+			}
 
-			grid.HeightRequest = 50;
-			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 54 });
-			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-
-			var image = new Image();
-			image.VerticalOptions = image.HorizontalOptions = LayoutOptions.Center;
-			image.HeightRequest = image.WidthRequest = 24;
-			image.SetBinding(Image.SourceProperty, iconBinding);
-			grid.Children.Add(image);
-
-			var label = new Label();
-			label.Margin = new Thickness(20, 0, 0, 0);
-			label.VerticalTextAlignment = TextAlignment.Center;
-			label.SetBinding(Label.TextProperty, textBinding);
-			grid.Children.Add(label, 1, 0);
-
-			label.FontSize = 14;
-			label.TextColor = Color.Black.MultiplyAlpha(0.87);
-			label.FontFamily = "sans-serif-medium";
-
-			return grid;
+			base.Dispose(disposing);
 		}
 
 		public class AdapterListItem
@@ -256,9 +238,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public class ElementViewHolder : RecyclerView.ViewHolder
 		{
-			readonly Action<Element> _selectedCallback;
+			Action<Element> _selectedCallback;
 			Element _element;
 			AView _itemView;
+			bool _disposed;
 
 			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : base(itemView)
 			{
@@ -320,6 +303,25 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				_selectedCallback(Element);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (_disposed)
+					return;
+
+				_disposed = true;
+
+				if (disposing)
+				{
+					_itemView.Click -= OnClicked;
+
+					Element = null;
+					_itemView = null;
+					_selectedCallback = null;
+				}
+
+				base.Dispose(disposing);
 			}
 		}
 	}

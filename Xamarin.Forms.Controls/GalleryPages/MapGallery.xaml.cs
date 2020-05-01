@@ -23,7 +23,11 @@ namespace Xamarin.Forms.Controls
 			InitializeComponent();
 
 			Map = MakeMap();
-			Map.Pins.ForEach(pin => pin.Clicked += PinClicked);
+			Map.Pins.ForEach(pin =>
+			{
+				pin.MarkerClicked += MarkerClicked;
+				pin.InfoWindowClicked += InfoWindowClicked;
+			});
 			Map.MapClicked += MapClicked;
 
 			((Grid)Content).Children.Add(Map, 0, 1);
@@ -63,9 +67,24 @@ namespace Xamarin.Forms.Controls
 			};
 		}
 
-		void PinClicked(object sender, EventArgs e)
+
+		void GetMapRegionClicked(object sender, EventArgs e)
 		{
-			LastPinClickLabel.Text = $"Last Pin Clicked: {((Pin)sender).Label}";
+			if (Map.VisibleRegion == null)
+				DisplayAlert(":(", "VisibleRegion is null, move the map to get it!", "OK");
+			else
+				DisplayAlert(":)", $"Lat: {Map.VisibleRegion.Center.Latitude}, Long: {Map.VisibleRegion.Center.Longitude}, move the map to get it!", "OK");
+		}
+
+		void MarkerClicked(object sender, PinClickedEventArgs e)
+		{
+			LastMarkerClickLabel.Text = $"Last Marker Clicked: {((Pin)sender).Label}";
+		}
+
+		void InfoWindowClicked(object sender, PinClickedEventArgs e)
+		{
+			LastInfoWindowClickLabel.Text = $"Last Info Window Clicked: {((Pin)sender).Label}";
+			e.HideInfoWindow = true;
 		}
 
 		async void SearchForAddress(object sender, EventArgs e)
@@ -162,6 +181,12 @@ namespace Xamarin.Forms.Controls
 		{
 			Map.MoveToLastRegionOnLayoutChange = !Map.MoveToLastRegionOnLayoutChange;
 			((Button)sender).Text = Map.MoveToLastRegionOnLayoutChange.ToString();
+		}
+
+		void ShowTrafficToggled(object sender, ToggledEventArgs e)
+		{
+			var control = (Switch)sender;
+			Map.TrafficEnabled = control.IsToggled;
 		}
 	}
 }

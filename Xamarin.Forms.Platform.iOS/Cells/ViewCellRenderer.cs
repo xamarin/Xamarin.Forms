@@ -9,6 +9,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ViewCellRenderer : CellRenderer
 	{
+		[Preserve(Conditional = true)]
+		public ViewCellRenderer()
+		{
+		}
+
 		public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
 			Performance.Start(out string reference);
@@ -141,6 +146,8 @@ namespace Xamarin.Forms.Platform.iOS
 					if (_viewCell != null)
 					{
 						_viewCell.PropertyChanged -= ViewCellPropertyChanged;
+						_viewCell.View.MeasureInvalidated -= OnMeasureInvalidated;
+						SetRealCell(_viewCell, null);
 					}
 					_viewCell = null;
 				}
@@ -170,6 +177,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Device.BeginInvokeOnMainThread(oldCell.SendDisappearing);
 					oldCell.PropertyChanged -= ViewCellPropertyChanged;
+					oldCell.View.MeasureInvalidated -= OnMeasureInvalidated;
 				}
 
 				_viewCell = cell;
@@ -201,9 +209,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 				Platform.SetRenderer(_viewCell.View, renderer);
 				UpdateIsEnabled(_viewCell.IsEnabled);
+				_viewCell.View.MeasureInvalidated += OnMeasureInvalidated;
 				Performance.Stop(reference);
 			}
 
+			void OnMeasureInvalidated(object sender, EventArgs e)
+			{
+				SetNeedsLayout();
+			}
+
+			
 		}
 	}
 }

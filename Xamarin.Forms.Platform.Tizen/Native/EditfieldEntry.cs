@@ -1,19 +1,16 @@
 using System;
 using ElmSharp;
 using ELayout = ElmSharp.Layout;
+using EColor = ElmSharp.Color;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
 	public class EditfieldEntry : Native.Entry
 	{
-		public event EventHandler TextBlockFocused;
-		public event EventHandler TextBlockUnfocused;
-
-		public bool IsTextBlockFocused => _isTexstBlockFocused;
-
+		Button _clearButton;
 		ELayout _editfieldLayout;
+		bool _enableClearButton;
 		int _heightPadding = 0;
-		bool _isTexstBlockFocused = false;
 
 		public EditfieldEntry(EvasObject parent) : base(parent)
 		{
@@ -25,7 +22,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_editfieldLayout.SetTheme("layout", "editfield", style);
 		}
 
-		public override ElmSharp.Color BackgroundColor
+		public bool IsTextBlockFocused { get; private set; }
+
+		public override EColor BackgroundColor
 		{
 			get
 			{
@@ -37,16 +36,38 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 		}
 
+		public bool EnableClearButton
+		{
+			get => _enableClearButton;
+			set
+			{
+				_enableClearButton = value;
+				UpdateEnableClearButton();
+			}
+		}
+
+		public EColor ClearButtonColor
+		{
+			get => _clearButton?.GetPartColor("icon") ?? EColor.Default;
+			set
+			{
+				if (_clearButton != null)
+				{
+					_clearButton.SetPartColor("icon", value);
+					_clearButton.SetPartColor("icon_pressed", value);
+				}
+			}
+		}
+
 		public void SetFocusOnTextBlock(bool isFocused)
 		{
-			AllowFocus(isFocused);
 			SetFocus(isFocused);
-			_isTexstBlockFocused = isFocused;
+			IsTextBlockFocused = isFocused;
 
 			if (isFocused)
-				TextBlockFocused?.Invoke(this, EventArgs.Empty);
+				OnTextBlockFocused();
 			else
-				TextBlockUnfocused?.Invoke(this, EventArgs.Empty);
+				OnTextBlcokUnfocused();
 		}
 
 		public override ElmSharp.Size Measure(int availableWidth, int availableHeight)
@@ -69,7 +90,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		protected override IntPtr CreateHandle(EvasObject parent)
 		{
 			var handle = base.CreateHandle(parent);
-			AllowFocus(false);
 			_editfieldLayout = CreateEditFieldLayout(parent);
 
 			// If true, It means, there is no extra layout on the widget handle
@@ -91,11 +111,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return _editfieldLayout;
 		}
 
-		protected ELayout EditfieldLayout
+		protected override void OnTextChanged(string oldValue, string newValue)
 		{
-			get
+			base.OnTextChanged(oldValue, newValue);
+			if (EnableClearButton)
 			{
-				return _editfieldLayout;
+				var emission = string.IsNullOrEmpty(newValue) ? "elm,action,hide,button" : "elm,action,show,button";
+				_editfieldLayout.SignalEmit(emission, "");
 			}
 		}
 
@@ -108,18 +130,19 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				SetFocusOnTextBlock(false);
 				layout.SignalEmit("elm,state,unfocused", "");
+				OnEntryLayoutUnfocused();
 			};
 			layout.Focused += (s, e) =>
 			{
-				AllowFocus(false);
 				layout.SignalEmit("elm,state,focused", "");
+				OnEntryLayoutFocused();
 			};
 
 			layout.KeyDown += (s, e) =>
 			{
 				if (e.KeyName == "Return")
 				{
-					if (!_isTexstBlockFocused)
+					if (!IsTextBlockFocused)
 					{
 						SetFocusOnTextBlock(true);
 						e.Flags |= EvasEventFlag.OnHold;
@@ -140,6 +163,32 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			};
 
 			return layout;
+		}
+
+		protected virtual void UpdateEnableClearButton()
+		{
+			if (EnableClearButton)
+			{
+				_clearButton = new Button(_editfieldLayout)
+				{
+					Style = "editfield_clear"
+				};
+				_clearButton.AllowFocus(false);
+				_clearButton.Clicked += OnClearButtonClicked;
+
+				_editfieldLayout.SetPartContent("elm.swallow.button", _clearButton);
+				_editfieldLayout.SignalEmit("elm,action,show,button", "");
+			}
+			else
+			{
+				_editfieldLayout.SetPartContent("elm.swallow.button", null);
+				_clearButton = null;
+			}
+		}
+
+		void OnClearButtonClicked(object sender, EventArgs e)
+		{
+			Text = string.Empty;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using CoreGraphics;
 using System;
 using UIKit;
 using System.ComponentModel;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -15,18 +16,27 @@ namespace Xamarin.Forms.Platform.iOS
 		double _headerOffset = 0;
 		double _headerSize;
 		bool _isDisposed;
+		Action<Element> _onElementSelected;
+		IShellController ShellController => ((IShellController)_context.Shell);
 
 		public ShellTableViewController(IShellContext context, UIContainerView headerView, Action<Element> onElementSelected)
 		{
 			_context = context;
+			_onElementSelected = onElementSelected;
 			_headerView = headerView;
-			_source = new ShellTableViewSource(context, onElementSelected);
+			_source = CreateShellTableViewSource();
 			_source.ScrolledEvent += OnScrolled;
+
 			if (_headerView != null)
 				_headerView.HeaderSizeChanged += OnHeaderSizeChanged;
-			((IShellController)_context.Shell).StructureChanged += OnStructureChanged;
 
+			ShellController.StructureChanged += OnStructureChanged;
 			_context.Shell.PropertyChanged += OnShellPropertyChanged;
+		}
+
+		protected ShellTableViewSource CreateShellTableViewSource()
+		{
+			return new ShellTableViewSource(_context, _onElementSelected);
 		}
 
 		void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -36,6 +46,8 @@ namespace Xamarin.Forms.Platform.iOS
 				SetHeaderContentInset();
 				LayoutParallax();
 			}
+			else if (e.Is(Shell.FlyoutVerticalScrollModeProperty))
+				UpdateVerticalScrollMode();
 		}
 
 		void OnHeaderSizeChanged(object sender, EventArgs e)
@@ -49,6 +61,26 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_source.ClearCache();
 			TableView.ReloadData();
+			UpdateVerticalScrollMode();
+		}
+
+		void UpdateVerticalScrollMode()
+		{
+			switch (_context.Shell.FlyoutVerticalScrollMode)
+			{
+				case ScrollMode.Auto:
+					TableView.ScrollEnabled = true;
+					TableView.AlwaysBounceVertical = false;
+					break;
+				case ScrollMode.Enabled:
+					TableView.ScrollEnabled = true;
+					TableView.AlwaysBounceVertical = true;
+					break;
+				case ScrollMode.Disabled:
+					TableView.ScrollEnabled = false;
+					TableView.AlwaysBounceVertical = false;
+					break;
+			}
 		}
 
 		public void LayoutParallax()
@@ -91,6 +123,7 @@ namespace Xamarin.Forms.Platform.iOS
 				TableView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
 			else
 				TableView.ContentInset = new UIEdgeInsets(Platform.SafeAreaInsetsForWindow.Top, 0, 0, 0);
+			UpdateVerticalScrollMode();
 		}
 
 		public override void ViewDidLoad()
@@ -123,8 +156,11 @@ namespace Xamarin.Forms.Platform.iOS
 					_headerView.HeaderSizeChanged -= OnHeaderSizeChanged;
 
 				_context.Shell.PropertyChanged -= OnShellPropertyChanged;
+
+				_onElementSelected = null;
 			}
 
+			
 			_isDisposed = true;
 			base.Dispose(disposing);
 		}

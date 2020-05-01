@@ -1,16 +1,21 @@
 ﻿using System;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class SpacingItemDecoration : RecyclerView.ItemDecoration
+	public class SpacingItemDecoration : RecyclerView.ItemDecoration
 	{
-		ItemsLayoutOrientation _orientation;
-		double _verticalSpacing;
+		readonly ItemsLayoutOrientation _orientation;
+		readonly double _verticalSpacing;
 		double _adjustedVerticalSpacing = -1;
-		double _horizontalSpacing;
+		readonly double _horizontalSpacing;
 		double _adjustedHorizontalSpacing = -1;
 
 		public SpacingItemDecoration(IItemsLayout itemsLayout)
@@ -27,16 +32,12 @@ namespace Xamarin.Forms.Platform.Android
 					_horizontalSpacing = gridItemsLayout.HorizontalItemSpacing;
 					_verticalSpacing = gridItemsLayout.VerticalItemSpacing;
 					break;
-				case ListItemsLayout listItemsLayout:
+				case LinearItemsLayout listItemsLayout:
 					_orientation = listItemsLayout.Orientation;
 					if (_orientation == ItemsLayoutOrientation.Horizontal)
-					{
 						_horizontalSpacing = listItemsLayout.ItemSpacing;
-					}
 					else
-					{
 						_verticalSpacing = listItemsLayout.ItemSpacing;
-					}
 					break;
 			}
 		}
@@ -78,13 +79,17 @@ namespace Xamarin.Forms.Platform.Android
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
 				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalSpacing;
-				outRect.Bottom = (int)_adjustedVerticalSpacing;
+
+				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
+					outRect.Bottom = (int)_adjustedVerticalSpacing;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
 				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalSpacing;
-				outRect.Right = (int)_adjustedHorizontalSpacing;
+
+				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
+					outRect.Right = (int)_adjustedHorizontalSpacing;
 			}
 		}
 	}

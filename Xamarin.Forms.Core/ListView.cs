@@ -47,7 +47,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
 		public static readonly BindableProperty RefreshControlColorProperty = BindableProperty.Create(nameof(RefreshControlColor), typeof(Color), typeof(ListView), Color.Default);
-    
+	
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(nameof(HorizontalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
 
 		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create(nameof(VerticalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
@@ -285,6 +285,10 @@ namespace Xamarin.Forms
 			=> ItemDisappearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendScrolled(ScrolledEventArgs args)
+			=> Scrolled?.Invoke(this, args);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendRefreshing()
 		{
 			BeginRefresh();
@@ -315,6 +319,8 @@ namespace Xamarin.Forms
 		public event EventHandler<SelectedItemChangedEventArgs> ItemSelected;
 
 		public event EventHandler<ItemTappedEventArgs> ItemTapped;
+
+		public event EventHandler<ScrolledEventArgs> Scrolled;
 
 		public event EventHandler Refreshing;
 
@@ -431,7 +437,7 @@ namespace Xamarin.Forms
 			_previousGroupSelected = groupIndex;
 
 			// A11y: Keyboards and screen readers can deselect items, allowing -1 to be possible
-			if (cell == null && inGroupIndex != -1)
+			if (cell == null && inGroupIndex >= 0)
 			{
 				cell = group[inGroupIndex];
 			}
@@ -442,7 +448,14 @@ namespace Xamarin.Forms
 
 			cell?.OnTapped();
 
-			ItemTapped?.Invoke(this, new ItemTappedEventArgs(ItemsSource.Cast<object>().ElementAt(groupIndex), cell?.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
+			var itemSource = ItemsSource?.Cast<object>().ToList();
+			object tappedGroup = null;
+			if (itemSource?.Count > groupIndex)
+			{
+				tappedGroup = itemSource.ElementAt(groupIndex);
+			}
+
+			ItemTapped?.Invoke(this, new ItemTappedEventArgs(tappedGroup, cell?.BindingContext, TemplatedItems.GetGlobalIndexOfItem(cell?.BindingContext)));
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -59,6 +60,10 @@ namespace Xamarin.Forms.Platform.UWP
 				e.OldElement.ItemSelected -= OnElementItemSelected;
 				e.OldElement.ScrollToRequested -= OnElementScrollToRequested;
 				((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems.CollectionChanged -= OnCollectionChanged;
+				if (Control != null)
+				{
+					Control.Loaded -= ControlOnLoaded;
+				}
 			}
 
 			if (e.NewElement != null)
@@ -92,18 +97,33 @@ namespace Xamarin.Forms.Platform.UWP
 				ClearSizeEstimate();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
+
+				if (Control != null)
+				{
+					Control.Loaded += ControlOnLoaded;
+				}
 			}
+		}
+
+		void ControlOnLoaded(object sender, RoutedEventArgs e)
+		{
+			var scrollViewer = GetScrollViewer();
+			scrollViewer?.RegisterPropertyChangedCallback(ScrollViewer.VerticalOffsetProperty, (o, dp) =>
+			{
+				var args = new ScrolledEventArgs(0, _scrollViewer.VerticalOffset);
+				Element?.SendScrolled(args);
+			});
 		}
 
 		bool IsObservableCollection(object source)
 		{
-			var type = source.GetType();
-			return type.IsGenericType &&
-				   type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
+			return source is INotifyCollectionChanged && source is IList;
 		}
 
 		void ReloadData()
 		{
+			var isStillTheSameUnderlyingItemsSource = _collection != null && object.ReferenceEquals(_collection, Element?.ItemsSource);
+
 			if (Element?.ItemsSource == null)
 			{
 				_collection = null;
@@ -111,17 +131,21 @@ namespace Xamarin.Forms.Platform.UWP
 			else
 			{
 				_collectionIsWrapped = !IsObservableCollection(Element.ItemsSource);
+
 				if (_collectionIsWrapped)
 				{
 					_collection = new ObservableCollection<object>();
 					foreach (var item in Element.ItemsSource)
 						_collection.Add(item);
 				}
-				else
+				else if(!object.ReferenceEquals(_collection, Element.ItemsSource))
 				{
 					_collection = (IList)Element.ItemsSource;
 				}
 			}
+
+			if (isStillTheSameUnderlyingItemsSource && _collectionViewSource != null)
+				return;
 
 			if (_collectionViewSource != null)
 				_collectionViewSource.Source = null;
@@ -207,7 +231,10 @@ namespace Xamarin.Forms.Platform.UWP
 				ReloadData();
 			}
 
-			Device.BeginInvokeOnMainThread(() => List?.UpdateLayout());
+			if (Element.Dispatcher == null)
+				Device.BeginInvokeOnMainThread(() => List?.UpdateLayout());
+			else
+				Element.Dispatcher.BeginInvokeOnMainThread(() => List?.UpdateLayout());
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -752,7 +779,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
-			if (Element.SelectedItem != List.SelectedItem)
+			bool areEqual = false;
+
+			if (Element.SelectedItem != null && Element.SelectedItem.GetType().GetTypeInfo().IsValueType)
+				areEqual = Element.SelectedItem.Equals(List.SelectedItem);
+			else
+				areEqual = Element.SelectedItem == List.SelectedItem;
+
+			if (!areEqual)
 			{
 				if (_itemWasClicked)
 					List.SelectedItem = Element.SelectedItem;

@@ -6,6 +6,7 @@ using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using WFontIconSource = Microsoft.UI.Xaml.Controls.FontIconSource;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -21,27 +22,54 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var device = CanvasDevice.GetSharedDevice();
 			var dpi = Math.Max(_minimumDpi, Windows.Graphics.Display.DisplayInformation.GetForCurrentView().LogicalDpi);
-			var canvasSize = (float)fontsource.Size + 2;
 
-			var imageSource = new CanvasImageSource(device, canvasSize, canvasSize, dpi);
-			using (var ds = imageSource.CreateDrawingSession(Windows.UI.Colors.Transparent))
+			var textFormat = new CanvasTextFormat
 			{
-				var textFormat = new CanvasTextFormat
-				{
-					FontFamily = fontsource.FontFamily,
-					FontSize = (float)fontsource.Size,
-					HorizontalAlignment = CanvasHorizontalAlignment.Center,
-					Options = CanvasDrawTextOptions.Default,
-				};
-				var iconcolor = (fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToWindowsColor();
+				FontFamily = fontsource.FontFamily,
+				FontSize = (float)fontsource.Size,
+				HorizontalAlignment = CanvasHorizontalAlignment.Center,
+				VerticalAlignment = CanvasVerticalAlignment.Center,
+				Options = CanvasDrawTextOptions.Default
+			};
 
-				// offset by 1 as we added a 1 inset
-				var x = textFormat.FontSize / 2f + 1f;
-				var y = -1f;
-				ds.DrawText(fontsource.Glyph, x, y, iconcolor, textFormat);
+			using (var layout = new CanvasTextLayout(device, fontsource.Glyph, textFormat, (float)fontsource.Size, (float)fontsource.Size))
+			{
+				var canvasWidth = (float)layout.LayoutBounds.Width + 2;
+				var canvasHeight = (float)layout.LayoutBounds.Height + 2;
+
+				var imageSource = new CanvasImageSource(device, canvasWidth, canvasHeight, dpi);
+				using (var ds = imageSource.CreateDrawingSession(Windows.UI.Colors.Transparent))
+				{
+					var iconcolor = (fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToWindowsColor();
+
+					// offset by 1 as we added a 1 inset
+					var x = (float)layout.DrawBounds.X * -1;
+
+					ds.DrawTextLayout(layout, x, 1f, iconcolor);
+				}
+
+				return Task.FromResult((Windows.UI.Xaml.Media.ImageSource)imageSource);
+			}
+		}
+
+		public Task<Microsoft.UI.Xaml.Controls.IconSource> LoadIconSourceAsync(ImageSource imagesource, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			Microsoft.UI.Xaml.Controls.IconSource image = null;
+
+			if (imagesource is FontImageSource fontImageSource)
+			{
+				image = new WFontIconSource
+				{
+					Glyph = fontImageSource.Glyph,
+					FontSize = fontImageSource.Size,
+					Foreground = fontImageSource.Color.ToBrush()
+				};
+
+				if (!string.IsNullOrEmpty(fontImageSource.FontFamily))
+					((WFontIconSource)image).FontFamily = new FontFamily(fontImageSource.FontFamily);
 			}
 
-			return Task.FromResult((Windows.UI.Xaml.Media.ImageSource)imageSource);
+			return Task.FromResult(image);
 		}
 
 		public Task<IconElement> LoadIconElementAsync(ImageSource imagesource, CancellationToken cancellationToken = default(CancellationToken))
@@ -53,10 +81,12 @@ namespace Xamarin.Forms.Platform.UWP
 				image = new FontIcon
 				{
 					Glyph = fontImageSource.Glyph,
-					FontFamily = new FontFamily(fontImageSource.FontFamily),
 					FontSize = fontImageSource.Size,
 					Foreground = fontImageSource.Color.ToBrush()
 				};
+
+				if (!string.IsNullOrEmpty(fontImageSource.FontFamily))
+					((FontIcon)image).FontFamily = new FontFamily(fontImageSource.FontFamily);
 			}
 
 			return Task.FromResult(image);
