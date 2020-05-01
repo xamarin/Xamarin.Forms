@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (!ViewControllers.Any())
 					return;
-				var parentingViewController = (ParentingViewController)ViewControllers.Last();
+				var parentingViewController = GetParentingViewController();
 				parentingViewController?.UpdateLeftBarButtonItem();
 			});
 		}
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			View.SetNeedsLayout();
 
-			var parentingViewController = (ParentingViewController)ViewControllers.Last();
+			var parentingViewController = GetParentingViewController();
 			parentingViewController?.UpdateLeftBarButtonItem();
 		}
 
@@ -148,6 +148,9 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewWillAppear(animated);
 
 			SetStatusBarStyle();
+
+			if (Forms.IsiOS13OrNewer)
+				UpdateBarBackgroundColor();
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -229,8 +232,9 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTint();
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
-			UpdateUseLargeTitles();
 			UpdateHideNavigationBarSeparator();
+			UpdateUseLargeTitles();
+
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
@@ -363,7 +367,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.TraitCollectionDidChange(previousTraitCollection);
 #if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
-			if (previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				UpdateBackgroundColor();
 #endif
 		}
@@ -386,6 +390,14 @@ namespace Xamarin.Forms.Platform.iOS
 			pageRenderer.ViewController.DidMoveToParentViewController(pack);
 
 			return pack;
+		}
+
+		ParentingViewController GetParentingViewController()
+		{
+			if (!ViewControllers.Any())
+				return null;
+
+			return ViewControllers.Last() as ParentingViewController;
 		}
 
 		void FindParentMasterDetail()
@@ -624,7 +636,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ViewControllers = _removeControllers;
 			}
 			target.Dispose();
-			var parentingViewController = ViewControllers.Last() as ParentingViewController;
+			var parentingViewController = GetParentingViewController();
 			parentingViewController?.UpdateLeftBarButtonItem(page);
 		}
 
@@ -665,7 +677,10 @@ namespace Xamarin.Forms.Platform.iOS
 				var navigationBarAppearance = NavigationBar.StandardAppearance;
 
 				if (barBackgroundColor == Color.Default)
+				{
 					navigationBarAppearance.ConfigureWithDefaultBackground();
+					navigationBarAppearance.BackgroundColor = UINavigationBar.Appearance.BarTintColor;
+				}
 				else
 				{
 					navigationBarAppearance.ConfigureWithOpaqueBackground();
@@ -675,6 +690,9 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.CompactAppearance = navigationBarAppearance;
 				NavigationBar.StandardAppearance = navigationBarAppearance;
 				NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
+
+				var parentingViewController = GetParentingViewController();
+				parentingViewController?.UpdateNavigationBarBackgroundImage();
 			}
 			else
 #endif
@@ -758,7 +776,7 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 #endif
 				{
-						UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
+					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
 				}
 			}
 			else
@@ -1078,6 +1096,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void ViewWillAppear(bool animated)
 			{
+				UpdateNavigationBarBackgroundImage();
 				UpdateNavigationBarVisibility(animated);
 
 				NavigationRenderer n;
@@ -1110,6 +1129,12 @@ namespace Xamarin.Forms.Platform.iOS
 					_tracker.Target = null;
 					_tracker.CollectionChanged -= TrackerOnCollectionChanged;
 					_tracker = null;
+
+					if (NavigationItem.TitleView != null)
+					{
+						NavigationItem.TitleView.Dispose();
+						NavigationItem.TitleView = null;
+					}
 
 					if (NavigationItem.RightBarButtonItems != null)
 					{
@@ -1146,6 +1171,22 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateIconColor();
 			}
 
+			internal void UpdateNavigationBarBackgroundImage()
+			{
+				if (!Forms.IsiOS13OrNewer)
+					return;
+
+				if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
+					return;
+
+#if __XCODE11__
+				var backgroundImage = navigationRenderer.NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
+
+				navigationRenderer.NavigationBar.CompactAppearance.BackgroundImage = backgroundImage;
+				navigationRenderer.NavigationBar.StandardAppearance.BackgroundImage = backgroundImage;
+				navigationRenderer.NavigationBar.ScrollEdgeAppearance.BackgroundImage = backgroundImage;
+#endif
+			}
 
 			internal void UpdateLeftBarButtonItem(Page pageBeingRemoved = null)
 			{

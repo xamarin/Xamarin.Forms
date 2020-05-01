@@ -10,10 +10,10 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		readonly IShellContext _context;
 		readonly Action<Element> _onElementSelected;
-		DataTemplate _defaultItemTemplate;
-		DataTemplate _defaultMenuItemTemplate;
 		List<List<Element>> _groups;
 		Dictionary<Element, View> _views;
+
+		IShellController ShellController => (IShellController)_context.Shell;
 
 		public ShellTableViewSource(IShellContext context, Action<Element> onElementSelected)
 		{
@@ -36,11 +36,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		protected virtual DataTemplate DefaultItemTemplate =>
-			_defaultItemTemplate ?? (_defaultItemTemplate = new DataTemplate(() => GenerateDefaultCell("Title", "FlyoutIcon")));
+		protected virtual DataTemplate DefaultItemTemplate => null;
 
-		protected virtual DataTemplate DefaultMenuItemTemplate =>
-			_defaultMenuItemTemplate ?? (_defaultMenuItemTemplate = new DataTemplate(() => GenerateDefaultCell("Text", "Icon")));
+		protected virtual DataTemplate DefaultMenuItemTemplate => null;
 
 		public void ClearCache()
 		{
@@ -67,7 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var request = view.Measure(tableView.Bounds.Width, double.PositiveInfinity, MeasureFlags.None);
 
-				if(request.Request.Height > defaultHeight)
+				if (request.Request.Height > defaultHeight)
 					height = (float)request.Request.Height;
 				else
 					height = defaultHeight;
@@ -85,14 +83,16 @@ namespace Xamarin.Forms.Platform.iOS
 			int row = indexPath.Row;
 			var context = Groups[section][row];
 
-			DataTemplate template = null;
+			DataTemplate template = ShellController.GetFlyoutItemDataTemplate(context);
 			if (context is IMenuItemController)
 			{
-				template = Shell.GetMenuItemTemplate(context) ?? _context.Shell.MenuItemTemplate ?? DefaultMenuItemTemplate;
+				if (DefaultMenuItemTemplate != null && _context.Shell.MenuItemTemplate == template)
+					template = DefaultMenuItemTemplate;
 			}
 			else
 			{
-				template = Shell.GetItemTemplate(context) ?? _context.Shell.ItemTemplate ?? DefaultItemTemplate;
+				if (DefaultItemTemplate != null && _context.Shell.ItemTemplate == template)
+					template = DefaultItemTemplate;
 			}
 
 			var cellId = ((IDataTemplateController)template.SelectDataTemplate(context, _context.Shell)).IdString;
@@ -154,52 +154,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void WillDisplay(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
 		{
 			cell.BackgroundColor = UIColor.Clear;
-		}
-
-		View GenerateDefaultCell(string textBinding, string iconBinding)
-		{
-			var grid = new Grid();
-
-			var groups = new VisualStateGroupList();
-
-			var commonGroup = new VisualStateGroup();
-			commonGroup.Name = "CommonStates";
-			groups.Add(commonGroup);
-
-			var normalState = new VisualState();
-			normalState.Name = "Normal";
-			commonGroup.States.Add(normalState);
-
-			var selectedState = new VisualState();
-			selectedState.Name = "Selected";
-			selectedState.Setters.Add(new Setter
-			{
-				Property = VisualElement.BackgroundColorProperty,
-				Value = new Color(0.95)
-			});
-
-			commonGroup.States.Add(selectedState);
-
-			VisualStateManager.SetVisualStateGroups(grid, groups);
-
-			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 50 });
-			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-
-			var image = new Image();
-			image.VerticalOptions = image.HorizontalOptions = LayoutOptions.Center;
-			image.HeightRequest = image.WidthRequest = 22;
-			image.SetBinding(Image.SourceProperty, iconBinding);
-			grid.Children.Add(image);
-
-			var label = new Label();
-			label.VerticalTextAlignment = TextAlignment.Center;
-			label.SetBinding(Label.TextProperty, textBinding);
-			grid.Children.Add(label, 1, 0);
-
-			label.FontSize = Device.GetNamedSize(NamedSize.Small, label);
-			label.FontAttributes = FontAttributes.Bold;
-
-			return grid;
 		}
 
 		class SeparatorView : UIView
