@@ -6,8 +6,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
-using System.Diagnostics;
-using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms
 {
@@ -61,7 +59,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void SetCurrentApplication(Application value) => Current = value; 
+		public static void SetCurrentApplication(Application value) => Current = value;
 
 		public static Application Current { get; set; }
 
@@ -163,17 +161,13 @@ namespace Xamarin.Forms
 
 		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged
 		{
-			add
-			{
-				ExperimentalFlags.VerifyFlagEnabled(nameof(Application), ExperimentalFlags.AppThemeExperimental, nameof(RequestedThemeChanged));
-
-				_weakEventManager.AddEventHandler(value);
-			}
+			add => _weakEventManager.AddEventHandler(value);
 			remove => _weakEventManager.RemoveEventHandler(value);
 		}
 
 		bool _themeChangedFiring;
 		public OSAppTheme LastAppTheme { get; private set; }
+
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void OnRequestedThemeChanged(AppThemeChangedEventArgs args)
@@ -197,13 +191,6 @@ namespace Xamarin.Forms
 					_themeChangedFiring = false;
 				}
 			}
-
-			if (LastAppTheme == args.RequestedTheme)
-				return;
-
-			LastAppTheme = args.RequestedTheme;
-
-			_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
 		}
 
 		public event EventHandler<ModalPoppedEventArgs> ModalPopped;
