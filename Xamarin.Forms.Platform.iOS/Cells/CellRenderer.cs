@@ -14,6 +14,11 @@ namespace Xamarin.Forms.Platform.iOS
 		PropertyChangedEventHandler _onPropertyChangedEventHandler;
 		readonly UIColor _defaultCellBgColor = Forms.IsiOS13OrNewer ? UIColor.Clear : UIColor.White;
 
+		[Preserve(Conditional = true)]
+		public CellRenderer()
+		{
+		}
+
 		public virtual UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
 			Performance.Start(out string reference);
@@ -79,7 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (!UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
 						return;
 
-					uiBgColor = new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1);
+					uiBgColor = ColorExtensions.GroupedBackground;
 				}
 				else
 				{

@@ -18,6 +18,7 @@
 		public const string DisplayAlert = "DisplayAlert";
 		public const string Editor = "Editor";
 		public const string Entry = "Entry";
+		public const string ExpanderView = "ExpanderView";
 		public const string Frame = "Frame";
 		public const string Image = "Image";
 		public const string ImageButton = "ImageButton";
@@ -35,6 +36,7 @@
 		public const string Slider = "Slider";
 		public const string Stepper = "Stepper";
 		public const string Switch = "Switch";
+		public const string SwipeView = "SwipeView";
 		public const string TableView = "TableView";
 		public const string TimePicker = "TimePicker";
 		public const string ToolbarItem = "ToolbarItem";

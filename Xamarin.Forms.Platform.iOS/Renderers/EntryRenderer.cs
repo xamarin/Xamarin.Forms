@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class EntryRenderer : EntryRendererBase<UITextField>
 	{
+		[Preserve(Conditional = true)]
 		public EntryRenderer()
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
@@ -354,6 +355,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
 		}
+
 		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
 			Control.AttributedPlaceholder = nsAttributedString;
 

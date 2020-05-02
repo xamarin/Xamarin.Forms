@@ -176,7 +176,7 @@ namespace Xamarin.Forms
 
 			var info = new Info { Rate = rate, Length = length, Easing = easing ?? Easing.Linear };
 
-			var tweener = new Tweener(info.Length);
+			var tweener = new Tweener(info.Length, info.Rate);
 			tweener.Handle = key;
 			tweener.ValueUpdated += HandleTweenerUpdated;
 			tweener.Finished += HandleTweenerFinished;
@@ -239,7 +239,9 @@ namespace Xamarin.Forms
 				var repeat = false;
 
 				// If the Ticker has been disabled (e.g., by power save mode), then don't repeat the animation
-				if (info.Repeat != null && Ticker.Default.SystemEnabled)
+				var animationsEnabled = Ticker.Default.SystemEnabled;
+
+				if (info.Repeat != null && animationsEnabled)
 					repeat = info.Repeat();
 
 				if (!repeat)
@@ -249,7 +251,7 @@ namespace Xamarin.Forms
 					tweener.Finished -= HandleTweenerFinished;
 				}
 
-				info.Finished?.Invoke(tweener.Value, false);
+				info.Finished?.Invoke(tweener.Value, !animationsEnabled);
 
 				if (info.Owner.TryGetTarget(out owner))
 					owner.BatchCommit();

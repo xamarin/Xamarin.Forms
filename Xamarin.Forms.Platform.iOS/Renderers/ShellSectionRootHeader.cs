@@ -57,7 +57,15 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _bottomShadow;
 		Color _selectedColor;
 		Color _unselectedColor;
+		bool _isDisposed;
 
+		[Internals.Preserve(Conditional = true)]
+		public ShellSectionRootHeader()
+		{
+
+		}
+
+		[Internals.Preserve(Conditional = true)]
 		public ShellSectionRootHeader(IShellContext shellContext) : base(new UICollectionViewFlowLayout())
 		{
 			_shellContext = shellContext;
@@ -65,6 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public double SelectedIndex { get; set; }
 		public ShellSection ShellSection { get; set; }
+		IShellSectionController ShellSectionController => ShellSection;
 
 		public UIViewController ViewController => this;
 
@@ -83,7 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var selectedItems = collectionView.GetIndexPathsForSelectedItems();
 
-			var shellContent = ShellSection.Items[indexPath.Row];
+			var shellContent = ShellSectionController.GetItems()[indexPath.Row];
 			headerCell.Label.Text = shellContent.Title;
 			headerCell.Label.SetNeedsDisplay();
 
@@ -100,7 +109,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			return ShellSection.Items.Count;
+			return ShellSectionController.GetItems().Count;
 		}
 
 		public override void ItemDeselected(UICollectionView collectionView, NSIndexPath indexPath)
@@ -112,7 +121,9 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
 		{
 			var row = indexPath.Row;
-			var item = ShellSection.Items[row];
+
+			var item = ShellSectionController.GetItems()[row];
+
 			if (item != ShellSection.CurrentItem)
 				ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, item);
 
@@ -128,7 +139,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override bool ShouldSelectItem(UICollectionView collectionView, NSIndexPath indexPath)
 		{
 			var row = indexPath.Row;
-			var item = ShellSection.Items[row];
+			var item = ShellSectionController.GetItems()[row];
 			IShellController shellController = _shellContext.Shell;
 
 			if (item == ShellSection.CurrentItem)
@@ -174,7 +185,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.RegisterClassForCell(GetCellType(), CellId);
 
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, ShellSection);
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnShellSectionItemsChanged;
+			ShellSectionController.ItemsCollectionChanged += OnShellSectionItemsChanged;
 
 			UpdateSelectedIndex();
 			ShellSection.PropertyChanged += OnShellSectionPropertyChanged;
@@ -187,12 +198,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
+			if (_isDisposed)
+				return;
 
 			if (disposing)
 			{
 				((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
-				((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnShellSectionItemsChanged;
+				ShellSectionController.ItemsCollectionChanged -= OnShellSectionItemsChanged;
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
 
 				ShellSection = null;
@@ -200,11 +212,23 @@ namespace Xamarin.Forms.Platform.iOS
 				_bar.Dispose();
 				_bar = null;
 			}
+
+			_isDisposed = true;
+			base.Dispose(disposing);
 		}
 
 		protected void LayoutBar()
 		{
+			if (SelectedIndex < 0)
+				return;
+
+			if (ShellSectionController.GetItems().IndexOf(ShellSection.CurrentItem) != SelectedIndex)
+				return;
+
 			var layout = CollectionView.GetLayoutAttributesForItem(NSIndexPath.FromItemSection((int)SelectedIndex, 0));
+
+			if (layout == null)
+				return;
 
 			var frame = layout.Frame;
 
@@ -228,7 +252,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateSelectedIndex(bool animated = false)
 		{
-			SelectedIndex = ShellSection.Items.IndexOf(ShellSection.CurrentItem);
+			if (ShellSection.CurrentItem == null)
+				return;
+
+			SelectedIndex = ShellSectionController.GetItems().IndexOf(ShellSection.CurrentItem);
+
+			if (SelectedIndex < 0)
+				return;
+
 			LayoutBar();
 
 			CollectionView.SelectItem(NSIndexPath.FromItemSection((int)SelectedIndex, 0), false, UICollectionViewScrollPosition.CenteredHorizontally);
@@ -244,6 +275,22 @@ namespace Xamarin.Forms.Platform.iOS
 			public UIColor SelectedColor { get; set; }
 			public UIColor UnSelectedColor { get; set; }
 
+			[Internals.Preserve(Conditional = true)]
+			public ShellSectionHeaderCell()
+			{
+
+			}
+
+			[Export("initWithFrame:")]
+			[Internals.Preserve(Conditional = true)]
+			public ShellSectionHeaderCell(CGRect frame) : base(frame)
+			{
+				Label = new UILabel();
+				Label.TextAlignment = UITextAlignment.Center;
+				Label.Font = UIFont.BoldSystemFontOfSize(14);
+				ContentView.AddSubview(Label);
+			}
+
 			public override bool Selected
 			{
 				get => base.Selected;
@@ -252,15 +299,6 @@ namespace Xamarin.Forms.Platform.iOS
 					base.Selected = value;
 					Label.TextColor = value ? SelectedColor : UnSelectedColor;
 				}
-			}
-
-			[Export("initWithFrame:")]
-			public ShellSectionHeaderCell(CGRect frame) : base(frame)
-			{
-				Label = new UILabel();
-				Label.TextAlignment = UITextAlignment.Center;
-				Label.Font = UIFont.BoldSystemFontOfSize(14);
-				ContentView.AddSubview(Label);
 			}
 
 			public UILabel Label { get; }

@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Xamarin.Forms.Platform;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms
 {
@@ -15,7 +16,6 @@ namespace Xamarin.Forms
 		public const string CurrentItemVisualState = "CurrentItem";
 		public const string NextItemVisualState = "NextItem";
 		public const string PreviousItemVisualState = "PreviousItem";
-		public const string VisibleItemVisualState = "VisibleItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
@@ -26,11 +26,11 @@ namespace Xamarin.Forms
 			set { SetValue(PeekAreaInsetsProperty, value); }
 		}
 
-		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(List<View>), typeof(CarouselView), null);
+		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(ObservableCollection<View>), typeof(CarouselView), new ObservableCollection<View>());
 
 		public static readonly BindableProperty VisibleViewsProperty = VisibleViewsPropertyKey.BindableProperty;
 
-		public List<View> VisibleViews => (List<View>)GetValue(VisibleViewsProperty);
+		public ObservableCollection<View> VisibleViews => (ObservableCollection<View>)GetValue(VisibleViewsProperty);
 
 		static readonly BindablePropertyKey IsDraggingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsDragging), typeof(bool), typeof(CarouselView), false);
 
@@ -66,7 +66,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty CurrentItemProperty =
-		BindableProperty.Create(nameof(CurrentItem), typeof(object), typeof(CarouselView), default, BindingMode.TwoWay, 
+		BindableProperty.Create(nameof(CurrentItem), typeof(object), typeof(CarouselView), default, BindingMode.TwoWay,
 			propertyChanged: CurrentItemPropertyChanged);
 
 		public static readonly BindableProperty CurrentItemChangedCommandProperty =
@@ -110,8 +110,6 @@ namespace Xamarin.Forms
 					command.Execute(commandParameter);
 				}
 			}
-
-			carouselView.SetValueCore(PositionProperty, GetPositionForItem(carouselView, newValue));
 
 			carouselView.CurrentItemChanged?.Invoke(carouselView, args);
 
@@ -158,6 +156,30 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsLayoutProperty, value);
 		}
 
+		[TypeConverter(typeof(ReferenceTypeConverter))]
+		public IndicatorView IndicatorView
+		{
+			set => LinkToIndicatorView(this, value);
+		}
+
+		static void LinkToIndicatorView(CarouselView carouselView, IndicatorView indicatorView)
+		{
+			if (indicatorView == null)
+				return;
+
+			indicatorView.SetBinding(IndicatorView.PositionProperty, new Binding
+			{
+				Path = nameof(CarouselView.Position),
+				Source = carouselView
+			});
+
+			indicatorView.SetBinding(IndicatorView.ItemsSourceProperty, new Binding
+			{
+				Path = nameof(ItemsView.ItemsSource),
+				Source = carouselView
+			});
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsScrolling { get; set; }
 
@@ -186,7 +208,7 @@ namespace Xamarin.Forms
 			}
 			catch (InvalidOperationException)
 			{
-			
+
 			}
 		}
 
@@ -196,13 +218,6 @@ namespace Xamarin.Forms
 
 		protected virtual void OnCurrentItemChanged(EventArgs args)
 		{
-		}
-
-		protected override void OnScrolled(ItemsViewScrolledEventArgs e)
-		{
-			CurrentItem = GetItemForPosition(this, e.CenterItemIndex);
-
-			base.OnScrolled(e);
 		}
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -225,42 +240,7 @@ namespace Xamarin.Forms
 
 			carousel.PositionChanged?.Invoke(carousel, args);
 
-			// If the user is interacting with the Carousel or the Carousel is doing ScrollTo, we don't need to scroll to item.
-			if (!carousel.IsDragging && !carousel.IsScrolling)
-				carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
-
 			carousel.OnPositionChanged(args);
-		}
-
-		static object GetItemForPosition(CarouselView carouselView, int index)
-		{
-			if (!(carouselView?.ItemsSource is IList itemSource))
-				return null;
-
-			if (itemSource.Count == 0)
-				return null;
-
-			return itemSource[index];
-		}
-
-		static int GetPositionForItem(CarouselView carouselView, object item)
-		{
-			var itemSource = carouselView?.ItemsSource as IList;
-
-			for (int n = 0; n < itemSource?.Count; n++)
-			{
-				if (itemSource[n] == item)
-				{
-					return n;
-				}
-			}
-			return 0;
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SetCurrentItem(object item)
-		{
-			SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -268,5 +248,12 @@ namespace Xamarin.Forms
 		{
 			SetValue(IsDraggingPropertyKey, value);
 		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public virtual bool AnimatePositionChanges => IsScrollAnimated;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public virtual bool AnimateCurrentItemChanges => IsScrollAnimated;
+
 	}
 }

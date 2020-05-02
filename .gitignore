@@ -70,3 +70,6 @@ caketools/
 .ionide/**
 /.nuspec
 .XamarinFormsVersionFile.txt
+.idea
+Visual Studio 2019/**
+build/packages

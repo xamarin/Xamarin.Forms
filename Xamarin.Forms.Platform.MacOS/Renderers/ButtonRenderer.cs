@@ -94,6 +94,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					var btn = new FormsNSButton();
 					btn.SetButtonType(NSButtonType.MomentaryPushIn);
+					btn.BezelStyle = NSBezelStyle.Rounded;
 					btn.Pressed += HandleButtonPressed;
 					btn.Released += HandleButtonReleased;
 					SetNativeControl(btn);
@@ -102,6 +103,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				UpdateText();
+				UpdateCharacterSpacing();
 				UpdateFont();
 				UpdateBorder();
 				UpdateImage();
@@ -127,6 +129,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateImage();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 		}
 
 		void OnButtonActivated(object sender, EventArgs eventArgs)
@@ -186,6 +190,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 			{
 				var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
+				textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
 				Control.AttributedTitle = textWithColor;
 			}
 		}
@@ -193,6 +198,11 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdatePadding()
 		{
 			(Control as FormsNSButton)?.UpdatePadding(Element.Padding);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			Control.AttributedTitle = Control.AttributedTitle.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
 		}
 
 		void HandleButtonPressed()

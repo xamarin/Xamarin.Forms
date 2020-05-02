@@ -1,7 +1,12 @@
 using System;
 using Android.Content;
 using Android.Content.Res;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Object = Java.Lang.Object;
 
@@ -229,7 +234,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				// EmptyView is a Forms View; display that
-				return SimpleViewHolder.FromFormsView(formsView, context, () => GetWidth(parent), () => GetHeight(parent));
+				return SimpleViewHolder.FromFormsView(formsView, context, () => GetWidth(parent), () => GetHeight(parent), ItemsView);
 			}
 
 			var itemContentView = new SizedItemContentView(parent.Context, () => GetWidth(parent), () => GetHeight(parent));

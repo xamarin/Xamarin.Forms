@@ -2,8 +2,14 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.CardView.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -16,6 +22,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		float _defaultCornerRadius = -1f;
 		int? _defaultLabelFor;
 
+		bool _hasLayoutOccurred;
 		bool _disposed;
 		Frame _element;
 		GradientDrawable _backgroundDrawable;
@@ -143,10 +150,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementRenderer = null;
 				}
 
-				int count = ChildCount;
-				for (var i = 0; i < count; i++)
+				while (ChildCount > 0)
 				{
-					AView child = GetChildAt(i);
+					AView child = GetChildAt(0);
+					child.RemoveFromParent();
 					child.Dispose();
 				}
 
@@ -208,6 +215,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				IVisualElementRenderer renderer = Android.Platform.GetRenderer(visualElement);
 				renderer?.UpdateLayout();
 			}
+
+			_hasLayoutOccurred = true;
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -222,7 +231,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			ElementPropertyChanged?.Invoke(this, e);
+
+			if (Control?.LayoutParameters == null && _hasLayoutOccurred)
+			{
+				return;
+			}
+
 
 			if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
 				UpdateShadow();

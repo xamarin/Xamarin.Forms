@@ -263,6 +263,7 @@ namespace Xamarin.Forms.Internals
 		//typeof(ExportRendererAttribute);
 		//typeof(ExportCellAttribute);
 		//typeof(ExportImageSourceHandlerAttribute);
+		//TODO this is no longer used?
 		public static void RegisterRenderers(HandlerAttribute[] attributes)
 		{
 			var length = attributes.Length;
@@ -331,23 +332,36 @@ namespace Xamarin.Forms.Internals
 			Profile.FramePartition("Reflect");
 			foreach (Assembly assembly in assemblies)
 			{
-				Profile.FrameBegin(assembly.GetName().Name);
+				string frameName = Profile.IsEnabled ? assembly.GetName().Name : "Assembly";
+				Profile.FrameBegin(frameName);
 
 				foreach (Type attrType in attrTypes)
 				{
 					object[] attributes = assembly.GetCustomAttributesSafe(attrType);
 					if (attributes == null || attributes.Length == 0)
 						continue;
-					//NOTE: a simple cast to HandlerAttribute[] failed on UWP, hence the Array.Copy
-					var handlerAttributes = new HandlerAttribute[attributes.Length];
-					Array.Copy(attributes, handlerAttributes, attributes.Length);
-					RegisterRenderers(handlerAttributes);
+					
+					var length = attributes.Length;
+					for (var i = 0; i < length; i++)
+					{
+						var a = attributes[i];
+						var attribute = a as HandlerAttribute;
+						if(attribute == null && (a is ExportFontAttribute fa))
+						{
+							FontRegistrar.Register(fa, assembly);
+						}
+						else
+						{
+							if (attribute.ShouldRegister())
+								Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals, attribute.Priority);
+						}
+					}
 				}
 
 				object[] effectAttributes = assembly.GetCustomAttributesSafe(typeof (ExportEffectAttribute));
 				if (effectAttributes == null || effectAttributes.Length == 0)
 				{
-					Profile.FrameEnd();
+					Profile.FrameEnd(frameName);
 					continue;
 				}
 
@@ -360,7 +374,7 @@ namespace Xamarin.Forms.Internals
 				Array.Copy(effectAttributes, typedEffectAttributes, effectAttributes.Length);
 				RegisterEffects(resolutionName, typedEffectAttributes);
 
-				Profile.FrameEnd();
+				Profile.FrameEnd(frameName);
 			}
 
 			if ((flags & InitializationFlags.DisableCss) == 0)

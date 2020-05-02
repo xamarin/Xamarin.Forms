@@ -223,8 +223,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (cell == null)
 				{
 					cell = GetCellForPosition(position);
+
 					if (cell == null)
+					{
+						Performance.Stop(reference);
+						
 						return new AView(_context);
+					}
 				}
 			}
 
@@ -317,9 +322,18 @@ namespace Xamarin.Forms.Platform.Android
 
 			AView bline;
 
-			UpdateSeparatorVisibility(cell, cellIsBeingReused, isHeader, nextCellIsHeader, layout, out bline);
+			bool isSeparatorVisible = _listView.SeparatorVisibility == SeparatorVisibility.Default;
 
-			UpdateSeparatorColor(isHeader, bline);
+			if (isSeparatorVisible)
+			{
+				UpdateSeparatorVisibility(cell, cellIsBeingReused, isHeader, nextCellIsHeader, isSeparatorVisible, layout, out bline);
+
+				UpdateSeparatorColor(isHeader, bline);
+			}
+			else if (layout.ChildCount > 1)
+			{
+				layout.RemoveViewAt(1);
+			}
 
 			if ((bool)cell.GetValue(IsSelectedProperty))
 				Select(position, layout);
@@ -662,12 +676,13 @@ namespace Xamarin.Forms.Platform.Android
 			Select(position, view);
 		}
 
-		void UpdateSeparatorVisibility(Cell cell, bool cellIsBeingReused, bool isHeader, bool nextCellIsHeader, ConditionalFocusLayout layout, out AView bline)
+		void UpdateSeparatorVisibility(Cell cell, bool cellIsBeingReused, bool isHeader, bool nextCellIsHeader, bool isSeparatorVisible, ConditionalFocusLayout layout, out AView bline)
 		{
 			bline = null;
-			if (cellIsBeingReused)
-				return;
-			bool isSeparatorVisible = _listView.SeparatorVisibility == SeparatorVisibility.Default;
+			if (cellIsBeingReused && layout.ChildCount > 1)
+			{
+				layout.RemoveViewAt(1);
+			}
 			var makeBline = isSeparatorVisible || isHeader && isSeparatorVisible && !nextCellIsHeader;
 			if (makeBline)
 			{

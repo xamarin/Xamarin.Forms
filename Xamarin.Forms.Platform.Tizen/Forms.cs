@@ -11,6 +11,7 @@ using Tizen.Applications;
 using TSystemInfo = Tizen.System.Information;
 using ELayout = ElmSharp.Layout;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
+using ElmSharp.Wearable;
 
 namespace Xamarin.Forms
 {
@@ -185,6 +186,17 @@ namespace Xamarin.Forms
 
 		public static ELayout BaseLayout => NativeParent as ELayout;
 
+		public static CircleSurface CircleSurface
+		{
+			get; internal set;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static Element RotaryFocusObject
+		{
+			get; internal set;
+		}
+
 		public static bool IsInitialized
 		{
 			get;
@@ -236,7 +248,7 @@ namespace Xamarin.Forms
 		}
 
 		static IReadOnlyList<string> s_flags;
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new string[0]);
 
 		public static void SetFlags(params string[] flags)
 		{
@@ -245,7 +257,9 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+			s_flags = (string[])flags.Clone();
+			if (s_flags.Contains ("Profile"))
+				Profile.Enable();
 		}
 
 		public static void SetTitleBarVisibility(TizenTitleBarVisibility visibility)
@@ -346,6 +360,7 @@ namespace Xamarin.Forms
 
 				Elementary.Initialize();
 				Elementary.ThemeOverlay();
+				Utility.AppendGlobalFontPath(@"/usr/share/fonts");
 			}
 
 			Device.PlatformServices = new TizenPlatformServices();
@@ -357,6 +372,28 @@ namespace Xamarin.Forms
 
 			Device.Info = new Forms.TizenDeviceInfo();
 			Device.SetFlags(s_flags);
+
+			string profile = ((TizenDeviceInfo)Device.Info).Profile;
+			if (profile == "mobile")
+			{
+				Device.SetIdiom(TargetIdiom.Phone);
+			}
+			else if (profile == "tv")
+			{
+				Device.SetIdiom(TargetIdiom.TV);
+			}
+			else if (profile == "desktop")
+			{
+				Device.SetIdiom(TargetIdiom.Desktop);
+			}
+			else if (profile == "wearable")
+			{
+				Device.SetIdiom(TargetIdiom.Watch);
+			}
+			else
+			{
+				Device.SetIdiom(TargetIdiom.Unsupported);
+			}
 
 			if (!Forms.IsInitialized)
 			{
@@ -394,7 +431,8 @@ namespace Xamarin.Forms
 										typeof(ExportRendererAttribute),
 										typeof(ExportImageSourceHandlerAttribute),
 										typeof(ExportCellAttribute),
-										typeof(ExportHandlerAttribute)
+										typeof(ExportHandlerAttribute),
+										typeof(ExportFontAttribute)
 									});
 								}
 						}
@@ -405,7 +443,8 @@ namespace Xamarin.Forms
 								typeof(ExportRendererAttribute),
 								typeof(ExportImageSourceHandlerAttribute),
 								typeof(ExportCellAttribute),
-								typeof(ExportHandlerAttribute)
+								typeof(ExportHandlerAttribute),
+								typeof(ExportFontAttribute)
 							});
 						}
 					}
@@ -439,34 +478,18 @@ namespace Xamarin.Forms
 						typeof(ExportRendererAttribute),
 						typeof(ExportImageSourceHandlerAttribute),
 						typeof(ExportCellAttribute),
-						typeof(ExportHandlerAttribute)
+						typeof(ExportHandlerAttribute),
+						typeof(ExportFontAttribute)
 					});
 				}
 			}
 
-			string profile = ((TizenDeviceInfo)Device.Info).Profile;
-			if (profile == "mobile")
-			{
-				Device.SetIdiom(TargetIdiom.Phone);
-			}
-			else if (profile == "tv")
-			{
-				Device.SetIdiom(TargetIdiom.TV);
-			}
-			else if (profile == "desktop")
-			{
-				Device.SetIdiom(TargetIdiom.Desktop);
-			}
-			else if (profile == "wearable")
-			{
-				Device.SetIdiom(TargetIdiom.Watch);
-			}
-			else
-			{
-				Device.SetIdiom(TargetIdiom.Unsupported);
-			}
 			Color.SetAccent(GetAccentColor(profile));
 			ExpressionSearch.Default = new TizenExpressionSearch();
+
+			if (application is WatchApplication)
+				s_platformType = PlatformType.Lightweight;
+
 			IsInitialized = true;
 		}
 

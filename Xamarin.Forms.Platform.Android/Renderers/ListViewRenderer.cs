@@ -1,7 +1,11 @@
 using System.ComponentModel;
-using Android.App;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.SwipeRefreshLayout.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using Android.Views;
 using AListView = Android.Widget.ListView;
 using AView = Android.Views.View;
@@ -60,6 +64,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
+				Controller.ScrollToRequested -= OnScrollToRequested;
+		
 				if (_headerRenderer != null)
 				{
 					Platform.ClearRenderer(_headerRenderer.View);
@@ -80,10 +86,12 @@ namespace Xamarin.Forms.Platform.Android
 				_footerView?.Dispose();
 				_footerView = null;
 
-				// Unhook the adapter from the ListView before disposing of it
 				if (Control != null)
 				{
+					// Unhook the adapter from the ListView before disposing of it
 					Control.Adapter = null;
+
+					Control.SetOnScrollListener(null);
 				}
 
 				if (_adapter != null)
@@ -91,8 +99,6 @@ namespace Xamarin.Forms.Platform.Android
 					_adapter.Dispose();
 					_adapter = null;
 				}
-
-				Controller.ScrollToRequested -= OnScrollToRequested;
 			}
 
 			base.Dispose(disposing);
@@ -139,14 +145,16 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				((IListViewController)e.OldElement).ScrollToRequested -= OnScrollToRequested;
 
-				if (_adapter != null)
+				if (Control != null)
 				{
 					// Unhook the adapter from the ListView before disposing of it
-					if (Control != null)
-					{
-						Control.Adapter = null;
-					}
+					Control.Adapter = null;
+					
+					Control.SetOnScrollListener(null);
+				}
 
+				if (_adapter != null)
+				{
 					_adapter.Dispose();
 					_adapter = null;
 				}
@@ -191,6 +199,20 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHorizontalScrollBarVisibility();
 				UpdateVerticalScrollBarVisibility();
 			}
+		}
+
+		internal void ClickOn(AView viewCell)
+		{
+			if (Control == null)
+			{
+				return;
+			}
+
+			var position = Control.GetPositionForView(viewCell);
+			var id = Control.GetItemIdAtPosition(position);
+
+			viewCell.PerformHapticFeedback(FeedbackConstants.ContextClick);
+			_adapter.OnItemClick(Control, viewCell, position, id);
 		}
 
 		internal void LongClickOn(AView viewCell)

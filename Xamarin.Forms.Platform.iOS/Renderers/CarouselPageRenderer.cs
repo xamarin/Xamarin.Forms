@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementTracker _tracker;
 		Page _previousPage;
 
+		[Preserve(Conditional = true)]
 		public CarouselPageRenderer()
 		{
 		}
@@ -366,7 +367,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (bgImage != null)
 					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
 				else if (Element.BackgroundColor.IsDefault)
-					View.BackgroundColor = UIColor.White;
+					View.BackgroundColor = ColorExtensions.BackgroundColor;
 				else
 					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
 			});

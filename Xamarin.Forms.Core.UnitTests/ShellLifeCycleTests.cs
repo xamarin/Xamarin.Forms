@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -136,7 +137,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public async Task EnsureOnAppearingFiresForNavigatedToPage()
 		{
-			Routing.RegisterRoute("LifeCyclePage", typeof(LifeCyclePage));
 			Shell shell = new Shell();
 			shell.Items.Add(CreateShellItem());
 			await shell.GoToAsync("LifeCyclePage");
@@ -146,6 +146,39 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(page.Appearing);
 			Assert.IsTrue(page.ParentSet);
 		}
+
+		[Test]
+		public async Task EnsureOnAppearingFiresForLastPageOnly()
+		{
+			Shell shell = new Shell();
+			LifeCyclePage shellContentPage = new LifeCyclePage();
+			shell.Items.Add(CreateShellItem(page: shellContentPage));
+			await shell.GoToAsync("LifeCyclePage/LifeCyclePage");
+
+			var page = (LifeCyclePage)shell.GetVisiblePage();
+			var nonVisiblePage = (LifeCyclePage)shell.Navigation.NavigationStack[1];
+
+			Assert.IsFalse(nonVisiblePage.Appearing);
+			Assert.IsTrue(page.Appearing);
+		}
+		
+		[Test]
+		public async Task EnsureOnAppearingFiresForLastPageOnlyAbsoluteRoute()
+		{
+			Shell shell = new Shell();
+			LifeCyclePage shellContentPage = new LifeCyclePage();
+			shell.Items.Add(CreateShellItem());
+			shell.Items.Add(CreateShellItem(page: shellContentPage, shellItemRoute:"ShellItemRoute"));
+			await shell.GoToAsync("///ShellItemRoute/LifeCyclePage/LifeCyclePage");
+
+			var page = (LifeCyclePage)shell.GetVisiblePage();
+			var nonVisiblePage = (LifeCyclePage)shell.Navigation.NavigationStack[1];
+
+			Assert.IsFalse(shellContentPage.Appearing);
+			Assert.IsFalse(nonVisiblePage.Appearing);
+			Assert.IsTrue(page.Appearing);
+		}
+
 
 		[Test]
 		public async Task EnsureOnAppearingFiresForPushedPage()
@@ -452,7 +485,60 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False(pageNotAppearingFired, "Incorrect Page Appearing Fired");
 		}
 
-		class LifeCyclePage : ContentPage
+		[Test]
+		public void OnNavigatedCalledOnce()
+		{
+			List<ShellNavigatedEventArgs> args = new List<ShellNavigatedEventArgs>();
+			Action<ShellNavigatedEventArgs> onNavigated = (a) =>
+			{
+				args.Add(a);
+			};
+
+			TestShell testShell = new TestShell()
+			{
+				OnNavigatedHandler = onNavigated
+			};
+
+			testShell.Items.Add(base.CreateShellItem());
+
+			Assert.AreEqual(1, args.Count);
+		}
+
+
+		[Test]
+		public async Task OnNavigatedFiresWhenPopping()
+		{
+			Routing.RegisterRoute("AlarmPage", typeof(LifeCyclePage));
+			Routing.RegisterRoute("SoundsPage", typeof(LifeCyclePage));
+			TestShell shell = new TestShell();
+
+			var item = CreateShellItem(shellContentRoute: ContentRoute, shellSectionRoute: SectionRoute, shellItemRoute: ItemRoute);
+			shell.Items.Add(item);
+
+			await shell.GoToAsync("AlarmPage/SoundsPage");
+			shell.Reset();
+
+			await shell.Navigation.PopAsync();
+			shell.TestCount(1);
+		}
+
+		public async Task OnNavigatedFiresWhenPopToRoot()
+		{
+			Routing.RegisterRoute("AlarmPage", typeof(LifeCyclePage));
+			Routing.RegisterRoute("SoundsPage", typeof(LifeCyclePage));
+			TestShell shell = new TestShell();
+
+			var item = CreateShellItem(shellContentRoute: ContentRoute, shellSectionRoute: SectionRoute, shellItemRoute: ItemRoute);
+			shell.Items.Add(item);
+
+			await shell.GoToAsync("AlarmPage/SoundsPage");
+			shell.Reset();
+
+			await shell.Navigation.PopToRootAsync();
+			shell.TestCount(1);
+		}
+
+		public class LifeCyclePage : ContentPage
 		{
 			public bool Appearing;
 			public bool ParentSet;
@@ -460,10 +546,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			protected override void OnAppearing()
 			{
 				base.OnAppearing();
-
-				if (Parent == null)
-					throw new Exception("Parent is null");
-
 				Appearing = true;
 			}
 
@@ -474,12 +556,37 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		class ShellLifeCycleState
+		public override void Setup()
 		{
-			public bool ItemAppearing;
-			public bool SectionAppearing;
-			public bool ContentAppearing;
-			public bool PageAppearing;
+			base.Setup();
+			Routing.RegisterRoute("LifeCyclePage", typeof(LifeCyclePage));
+		}
+
+		public class ShellLifeCycleState
+		{
+			public bool ItemAppearing
+			{
+				get;
+				set;
+			}
+
+			public bool SectionAppearing
+			{
+				get;
+				set;
+			}
+
+			public bool ContentAppearing
+			{
+				get;
+				set;
+			}
+
+			public bool PageAppearing
+			{
+				get;
+				set;
+			}
 
 			public ShellLifeCycleState(Shell shell)
 			{
@@ -520,6 +627,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.IsFalse(ContentAppearing);
 				Assert.IsFalse(PageAppearing);
 			}
+
 			public void AllTrue()
 			{
 				Assert.IsTrue(ItemAppearing);

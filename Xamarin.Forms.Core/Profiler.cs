@@ -2,13 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Internals
 {
@@ -26,24 +20,45 @@ namespace Xamarin.Forms.Internals
 			public int Depth;
 			public int Line;
 		}
-		public static List<Datum> Data = new List<Datum>(Capacity);
+		public static List<Datum> Data;
 
-		static Stack<Profile> Stack = new Stack<Profile>(Capacity);
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static bool IsEnabled { get; private set; } = false;
+
+		static Stack<Profile> Stack;
 		static int Depth = 0;
 		static bool Running = false;
-		static Stopwatch Stopwatch = new Stopwatch();
+		static Stopwatch Stopwatch;
 
 		readonly long _start;
 		readonly string _name;
 		readonly int _slot;
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void Enable()
+		{
+			if (!IsEnabled)
+			{
+				IsEnabled = true;
+				Data = new List<Datum>(Capacity);
+				Stack = new Stack<Profile>(Capacity);
+				Stopwatch = new Stopwatch();
+			}
+		}
+
 		public static void Start() 
 		{
+			if (!IsEnabled)
+				return;
+
 			Running = true;
 		}
 
 		public static void Stop()
 		{
+			if (!IsEnabled)
+				return;
+
 			// unwind stack
 			Running = false;
 			while (Stack.Count > 0)
@@ -52,28 +67,28 @@ namespace Xamarin.Forms.Internals
 
 		public static void FrameBegin(
 			[CallerMemberName] string name = "",
-			string id = null,
 			[CallerLineNumber] int line = 0)
 		{
-			if (!Running)
+			if (!IsEnabled || !Running)
 				return;
 
-			FrameBeginBody(name, id, line);
+			FrameBeginBody(name, null, line);
 		}
 
-		public static void FrameEnd()
+		public static void FrameEnd(
+			[CallerMemberName] string name = "")
 		{
-			if (!Running)
+			if (!IsEnabled || !Running)
 				return;
 
-			FrameEndBody();
+			FrameEndBody(name);
 		}
 
 		public static void FramePartition(
 			string id,
 			[CallerLineNumber] int line = 0)
 		{
-			if (!Running)
+			if (!IsEnabled || !Running)
 				return;
 
 			FramePartitionBody(id, line);
@@ -90,9 +105,12 @@ namespace Xamarin.Forms.Internals
 			Stack.Push(new Profile(name, id, line));
 		}
 
-		static void FrameEndBody()
+		static void FrameEndBody(string name)
 		{
 			var profile = Stack.Pop();
+			if (profile._name != name)
+				throw new InvalidOperationException(
+					$"Expected to end frame '{profile._name}', not '{name}'.");
 			profile.Dispose();
 		}
 
@@ -104,7 +122,7 @@ namespace Xamarin.Forms.Internals
 			var name = profile._name;
 			profile.Dispose();
 
-			FrameBegin(name, id, line);
+			FrameBeginBody(name, id, line);
 		}
 
 		Profile(
@@ -132,6 +150,8 @@ namespace Xamarin.Forms.Internals
 
 		public void Dispose()
 		{
+			if (!IsEnabled)
+				return;
 			if (Running && _start == 0)
 				return;
 

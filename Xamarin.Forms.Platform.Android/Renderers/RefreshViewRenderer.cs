@@ -2,13 +2,22 @@
 using System.ComponentModel;
 using Android.Content;
 using Android.OS;
-using Android.Support.V4.View;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.Core.Widget;
+using AndroidX.RecyclerView.Widget;
+using AndroidX.SwipeRefreshLayout.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V4.Widget;
+using Android.Support.V4.View;
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
+using AWebView = Android.Webkit.WebView;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -59,6 +68,19 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		public override bool CanChildScrollUp() => CanScrollUp(_renderer.View);
+
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
+		{
+			base.OnLayout(changed, l, t, r, b);
+
+			var refreshViewContent = RefreshView?.Content;
+
+			if (refreshViewContent == null)
+				return;
+
+			IVisualElementRenderer renderer = Platform.GetRenderer(refreshViewContent);
+			renderer?.UpdateLayout();
+		}
 
 		public void SetElement(VisualElement element)
 		{
@@ -170,13 +192,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if(view is RecyclerView recyclerView)
-				return recyclerView.ScrollY < 0;
-
-			if (view is global::Android.Widget.ScrollView scrollview)
-				return scrollview.ScrollY < 0;
+				return recyclerView.ComputeVerticalScrollOffset() > 0;
 
 			if (view is NestedScrollView nestedScrollView)
-				return nestedScrollView.ScrollY < 0;
+				return nestedScrollView.ComputeVerticalScrollOffset() > 0;
+
+			if (view is AWebView webView)
+				return webView.ScrollY > 0;
 
 			return true;
 		}

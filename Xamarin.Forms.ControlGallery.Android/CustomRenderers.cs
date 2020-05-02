@@ -23,6 +23,13 @@ using System.Reflection;
 using Android.Text;
 using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
+#if __ANDROID_29__
+using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
+using NestedScrollView = global::AndroidX.Core.Widget.NestedScrollView;
+#else
+using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using NestedScrollView = global::Android.Support.V4.Widget.NestedScrollView;
+#endif
 using System.IO;
 using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
 using Android.Support.V4.Content;
@@ -49,6 +56,8 @@ using Android.Support.V4.Content;
 [assembly: ExportRenderer(typeof(ShellGestures.TouchTestView), typeof(ShellGesturesTouchTestViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue7249Switch), typeof(Issue7249SwitchRenderer))]
 [assembly: ExportRenderer(typeof(Issue9360.Issue9360NavigationPage), typeof(Issue9360NavigationPageRenderer))]
+[assembly: ExportRenderer(typeof(Issue8801.PopupStackLayout), typeof(Issue8801StackLayoutRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Tests.TestClasses.CustomButton), typeof(CustomButtonRenderer))]
 
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
@@ -57,6 +66,24 @@ using Android.Support.V4.Content;
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
+	public class Issue8801StackLayoutRenderer : VisualElementRenderer<StackLayout>
+	{
+		public Issue8801StackLayoutRenderer(Context context) : base(context)
+		{
+
+
+		}
+
+		public override void AddView(global::Android.Views.View child)
+		{
+			if (child is global::Android.Widget.Button head && (head.Text == "Show" || head.Text == "Hide"))
+			{
+				base.AddView(child);
+			}
+
+		}
+	}
+
 	public class Issue9360NavigationPageRenderer : Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer
 	{
 		public Issue9360NavigationPageRenderer(Context context) : base(context)
@@ -87,7 +114,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 							menuItem.SetIcon(drawable);
 						}
 						else
-						{	
+						{
 							var drawable = Context.GetDrawable(name);
 							menuItem.SetIcon(drawable);
 						}
@@ -113,7 +140,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 		public ScrollbarFadingEnabledFalseScrollViewRenderer(Context context) : base(context)
 		{
 			// I do a cast here just so this will fail just to be sure we don't change the base types
-			var castingTest = (global::Android.Support.V4.Widget.NestedScrollView)this;
+			var castingTest = (NestedScrollView)this;
 			castingTest.ScrollbarFadingEnabled = false;
 		}
 	}
@@ -128,18 +155,6 @@ namespace Xamarin.Forms.ControlGallery.Android
 		public AttachedStateEffectLabelRenderer(Context context) : base(context)
 		{
 		}
-
-#if TEST_EXPERIMENTAL_RENDERERS
-		protected override void Dispose(bool disposing)
-		{
-			foreach (var effect in Element.Effects.OfType<Controls.Effects.AttachedStateEffect>())
-			{
-				effect.Detached(Element);
-			}
-
-			base.Dispose(disposing);
-		}
-#endif
 	}
 
 	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
@@ -903,7 +918,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 #endif
 	{
 #if !FORMS_APPLICATION_ACTIVITY
-		protected override void SetupPageTransition(global::Android.Support.V4.App.FragmentTransaction transaction, bool isPush)
+		protected override void SetupPageTransition(FragmentTransaction transaction, bool isPush)
 		{
 			transaction.SetTransition((int)FragmentTransit.None);
 		}
