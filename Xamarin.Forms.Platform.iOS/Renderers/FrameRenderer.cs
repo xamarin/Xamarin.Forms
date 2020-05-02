@@ -38,8 +38,8 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					// If there are no gestures, don't handle input at all
-					UserInteractionEnabled = false;
+					// If no recognizers, let the gestures pass through the extra layer
+					_actualView.UserInteractionEnabled = false;
 				}
 
 				AddSubview(_actualView);
