@@ -336,6 +336,7 @@ Task("BuildForNuget")
         binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.DualScreen/Xamarin.Forms.DualScreen.csproj",
                     msbuildSettings
+                        .WithRestore()
                         .WithTarget("rebuild"));
     }
     catch(Exception)
