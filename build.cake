@@ -313,6 +313,17 @@ Task("BuildForNuget")
 
         MSBuild("./Xamarin.Forms.sln", msbuildSettings);
 
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
+        binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
+        MSBuild("./Xamarin.Forms.DualScreen/Xamarin.Forms.DualScreen.csproj",
+                    msbuildSettings
+                        .WithRestore()
+                        .WithTarget("rebuild"));
+
+
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
                     msbuildSettings
@@ -320,24 +331,22 @@ Task("BuildForNuget")
                         .WithProperty("DisableEmbeddedXbf", "false")
                         .WithProperty("EnableTypeInfoReflection", "false"));
 
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/ios-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
                     msbuildSettings
                         .WithTarget("rebuild")
                         .WithProperty("USE2017", "true"));
 
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/macos-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.MacOS/Xamarin.Forms.Platform.MacOS.csproj",
                     msbuildSettings
                         .WithTarget("rebuild")
                         .WithProperty("USE2017", "true"));
 
-        
-        binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
-        MSBuild("./Xamarin.Forms.DualScreen/Xamarin.Forms.DualScreen.csproj",
-                    msbuildSettings
-                        .WithRestore()
-                        .WithTarget("rebuild"));
     }
     catch(Exception)
     {
