@@ -43,7 +43,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				AddSubview(_actualView);
-
 				SetupLayer();
 			}
 		}
@@ -68,7 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 				cornerRadius = 5f; // default corner radius
 
 			_actualView.Layer.CornerRadius = cornerRadius;
-			_actualView.Layer.MasksToBounds = _actualView.Layer.CornerRadius > 0;
+			//_actualView.Layer.MasksToBounds = _actualView.Layer.CornerRadius > 0;
 
 			if (Element.BackgroundColor == Color.Default)
 				_actualView.Layer.BackgroundColor = UIColor.White.CGColor;
