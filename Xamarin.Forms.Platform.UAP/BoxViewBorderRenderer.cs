@@ -16,14 +16,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var rect = new Border
+					var border = new Border
 					{
 						DataContext = Element
 					};
-
-					rect.SetBinding(Shape.FillProperty, new Windows.UI.Xaml.Data.Binding { Converter = new ColorConverter(), Path = new PropertyPath("Color") });
-
-					SetNativeControl(rect);
+					SetNativeControl(border);
 				}
 
 				SetCornerRadius(Element.CornerRadius);
