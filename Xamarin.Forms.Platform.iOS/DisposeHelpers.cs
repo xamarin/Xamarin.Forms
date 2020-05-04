@@ -25,12 +25,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 			}
 
-			if (view is VisualElement visualElement
-#if __MOBILE__
-			  )
-#else
-			    && !(view is NavigationPage))
-#endif
+			if (view is VisualElement visualElement)
 			{
 				renderer = Platform.GetRenderer(visualElement);
 				if (renderer != null)
