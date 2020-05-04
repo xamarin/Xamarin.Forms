@@ -58,6 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 			_preserveInitialPadding = preserveInitialPadding;
 			_borderAdjustsPadding = borderAdjustsPadding;
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
+			_renderer.View.SetAllCaps(false);
 		}
 
 		AButton View => _renderer?.View ?? _renderer as AButton;
