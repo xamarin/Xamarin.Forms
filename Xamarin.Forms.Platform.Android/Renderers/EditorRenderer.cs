@@ -95,11 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ITextWatcher.OnTextChanged(ICharSequence s, int start, int before, int count)
 		{
-			if (string.IsNullOrEmpty(Element.Text) && s.Length() == 0)
-				return;
-
-			if (Element.Text != s.ToString())
-				((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, s.ToString());
+			Internals.TextTransformUtilites.SetPlainText(Element, s?.ToString());
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
