@@ -7,34 +7,57 @@
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.Issues.Issue4459">
     <ContentPage.Content>
-        <StackLayout>
-            <Label>Enter a corner radius for each corner and the box view below should update.</Label>
-            <StackLayout Orientation="Horizontal">
-                <Label Text="Top Left"></Label>
-                <Entry x:Name="TopLeft" Text="10" TextChanged="InputView_OnTextChanged"></Entry>
-            </StackLayout>
+        <ScrollView>
+            <StackLayout>
+                <Label>Enter a corner radius for each corner and the box view below should update.</Label>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Top Left"></Label>
+                    <Entry x:Name="TopLeft" Text="10" TextChanged="InputView_OnTextChanged"></Entry>
+                </StackLayout>
 
-            <StackLayout Orientation="Horizontal">
-                <Label Text="Top Right"></Label>
-                <Entry x:Name="TopRight" Text="0" TextChanged="InputView_OnTextChanged"></Entry>
-            </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Top Right"></Label>
+                    <Entry x:Name="TopRight" Text="0" TextChanged="InputView_OnTextChanged"></Entry>
+                </StackLayout>
 
-            <StackLayout Orientation="Horizontal">
-                <Label Text="Bottom Right"></Label>
-                <Entry x:Name="BottomRight" Text="10" TextChanged="InputView_OnTextChanged"></Entry>
-            </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Bottom Right"></Label>
+                    <Entry x:Name="BottomRight" Text="10" TextChanged="InputView_OnTextChanged"></Entry>
+                </StackLayout>
 
-            <StackLayout Orientation="Horizontal">
-                <Label Text="Bottom Left"></Label>
-                <Entry x:Name="BottomLeft" Text="0" TextChanged="InputView_OnTextChanged"></Entry>
-            </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Bottom Left"></Label>
+                    <Entry x:Name="BottomLeft" Text="0" TextChanged="InputView_OnTextChanged"></Entry>
+                </StackLayout>
 
-            <BoxView x:Name="BoxView" BackgroundColor="#CC3300"
-                     WidthRequest="200"
-                     HeightRequest="100"
-                     CornerRadius="10,0,0,10"
-                     Margin="50"
-            />
-        </StackLayout>
+                <BoxView x:Name="BoxView" BackgroundColor="#CC3300"
+                         WidthRequest="200"
+                         HeightRequest="100"
+                         CornerRadius="10,0,0,10"
+                         Margin="50" />
+
+                <Label>Setting Color Property Left Orange, Right Red backgrounds</Label>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <BoxView x:Name="Color1" Grid.Column="0" Color="Orange"></BoxView>
+                    <BoxView x:Name="Color2" Grid.Column="1" Color="Red"></BoxView>
+                </Grid>
+
+                <Label>Setting BackgroundColor Property Left Orange, Right Red backgrounds</Label>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <BoxView x:Name="Color3" Grid.Column="0" BackgroundColor="Orange"></BoxView>
+                    <BoxView x:Name="Color4" Grid.Column="1" BackgroundColor="Red"></BoxView>
+                </Grid>
+
+            </StackLayout></ScrollView>
     </ContentPage.Content>
 </ContentPage>

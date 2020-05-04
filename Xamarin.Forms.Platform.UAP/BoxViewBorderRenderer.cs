@@ -36,6 +36,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.PropertyName == BoxView.CornerRadiusProperty.PropertyName)
 				SetCornerRadius(Element.CornerRadius);
+			if(e.PropertyName == BoxView.ColorProperty.PropertyName)
+				UpdateBackgroundColor();
 		}
 
 		protected override AutomationPeer OnCreateAutomationPeer()
@@ -56,8 +58,12 @@ namespace Xamarin.Forms.Platform.UWP
 			//as the background would be applied to the renderer's FrameworkElement
 			if (Control == null)
 				return;
-			Color backgroundColor = Element.BackgroundColor;
-			Control.Background = backgroundColor.IsDefault ? null : backgroundColor.ToBrush();
+
+			Color colorToSet = Element.Color;
+
+			if (colorToSet == Color.Default)
+				colorToSet = Element.BackgroundColor;
+			Control.Background = colorToSet.IsDefault ? null : colorToSet.ToBrush();
 		}
 
 		void SetCornerRadius(CornerRadius cornerRadius)

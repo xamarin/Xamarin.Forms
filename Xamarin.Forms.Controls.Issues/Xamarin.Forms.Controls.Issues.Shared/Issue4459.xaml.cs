@@ -23,6 +23,18 @@ namespace Xamarin.Forms.Controls.Issues
 #if APP
 			BoxView.CornerRadius = new CornerRadius(double.Parse(TopLeft.Text), double.Parse(TopRight.Text),
 			double.Parse(BottomLeft.Text), double.Parse(BottomRight.Text));
+
+			Color1.CornerRadius = new CornerRadius(double.Parse(TopLeft.Text), double.Parse(TopRight.Text),
+			double.Parse(BottomLeft.Text), double.Parse(BottomRight.Text));
+
+			Color2.CornerRadius = new CornerRadius(double.Parse(TopLeft.Text), double.Parse(TopRight.Text),
+			double.Parse(BottomLeft.Text), double.Parse(BottomRight.Text));
+
+			Color3.CornerRadius = new CornerRadius(double.Parse(TopLeft.Text), double.Parse(TopRight.Text),
+			double.Parse(BottomLeft.Text), double.Parse(BottomRight.Text));
+
+			Color4.CornerRadius = new CornerRadius(double.Parse(TopLeft.Text), double.Parse(TopRight.Text),
+			double.Parse(BottomLeft.Text), double.Parse(BottomRight.Text));
 #endif
 		}
 	}
