@@ -98,36 +98,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public async void LoadUrl(string url)
 		{
-			var uri = new Uri(url);
-			var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
-			var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
-			NSUrlRequest request = new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri));
-
-			var jCookies = WebView.Cookies?.GetCookies(uri);
-
-			if (jCookies != null)
+			try
 			{
-				if (Forms.IsiOS11OrNewer)
-				{
-					var existingCookies = await Configuration.WebsiteDataStore.HttpCookieStore.GetAllCookiesAsync();
+				var uri = new Uri(url);
+				var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
+				var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
+				NSUrlRequest request = new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri));
 
-					foreach (var cookie in existingCookies)
-						await Configuration.WebsiteDataStore.HttpCookieStore.DeleteCookieAsync(cookie);
-
-					foreach (System.Net.Cookie jCookie in jCookies)
-					{
-						await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(jCookie));
-					}
-				}
-				else if(WebView.Cookies.Count > 0)
-				{
-					WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(uri)), WKUserScriptInjectionTime.AtDocumentStart, false);
-					Configuration.UserContentController.AddUserScript(wKUserScript);
-
-				}
+				await SyncCookies(uri);
+				LoadRequest(request);
 			}
-
-			LoadRequest(request);
+			catch(Exception exc)
+			{
+				Log.Warning(nameof(WkWebViewRenderer), $"Unable to Load Url {exc}");
+			}
 		}
 
 		public override void LayoutSubviews()
@@ -164,6 +148,33 @@ namespace Xamarin.Forms.Platform.iOS
 			var changed = ElementChanged;
 			if (changed != null)
 				changed(this, e);
+		}
+
+		async Task SyncCookies(Uri uri)
+		{
+			var jCookies = WebView.Cookies?.GetCookies(uri);
+
+			if (jCookies != null)
+			{
+				if (Forms.IsiOS11OrNewer)
+				{
+					var existingCookies = await Configuration.WebsiteDataStore.HttpCookieStore.GetAllCookiesAsync();
+
+					foreach (var cookie in existingCookies)
+						await Configuration.WebsiteDataStore.HttpCookieStore.DeleteCookieAsync(cookie);
+
+					foreach (System.Net.Cookie jCookie in jCookies)
+					{
+						await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(jCookie));
+					}
+				}
+				else if (WebView.Cookies.Count > 0)
+				{
+					WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(uri)), WKUserScriptInjectionTime.AtDocumentStart, false);
+					Configuration.UserContentController.AddUserScript(wKUserScript);
+
+				}
+			}
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -216,9 +227,17 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCanGoBackForward();
 		}
 
-		void OnReloadRequested(object sender, EventArgs eventArgs)
+		async void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
-			Reload();
+			try
+			{
+				await SyncCookies(new Uri(Url.ToString()));
+				Reload();
+			}
+			catch(Exception exc)
+			{
+				Log.Warning(nameof(WkWebViewRenderer), $"Reload Failed: {exc}");
+			}
 		}
 
 		void UpdateCanGoBackForward()
