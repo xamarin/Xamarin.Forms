@@ -8,6 +8,7 @@ using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using System.Threading.Tasks;
 using System.Net;
 using Windows.Web.Http;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -73,7 +74,7 @@ if(bases.length == 0){
 			var cookies = Element.Cookies?.GetCookies(uri);
 			if (cookies != null)
 			{
-				SyncCookies(uri);
+				SyncCookies(url);
 
 				try
 				{
@@ -163,28 +164,71 @@ if(bases.length == 0){
 			}
 		}
 
-		void SyncCookies(Uri uri)
+		HashSet<string> _loadedCookies = new HashSet<string>();
+
+		HttpCookieCollection GetCookiesFromNativeStore(string url)
 		{
-			if (uri == null)
+			CookieContainer existingCookies = new CookieContainer();
+			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+			var uri = new Uri(url);
+			var nativeCookies = filter.CookieManager.GetCookies(uri);
+			return nativeCookies;
+		}
+
+		void InitialCookiePreloadIfNecessary(string url)
+		{
+			var myCookieJar = Element.Cookies;
+			if (myCookieJar == null)
 				return;
 
-			var cookies = Element.Cookies?.GetCookies(uri);
+			if (!_loadedCookies.Add(url))
+				return;
+
+			var uri = new System.Uri(url);
+			var cookies = myCookieJar.GetCookies(uri);
+
+			if (cookies != null)
+			{
+				var existingCookies = GetCookiesFromNativeStore(url);
+				foreach (HttpCookie cookie in existingCookies)
+				{
+					if (cookies[cookie.Name] == null)
+						myCookieJar.SetCookies(uri, cookie.ToString());
+				}
+			}
+		}
+		
+		internal void SyncCookies(string url)
+		{
+			if (String.IsNullOrWhiteSpace(url))
+				return;
+
+			var uri = new Uri(url);
+			var myCookieJar = Element.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			InitialCookiePreloadIfNecessary(url);
+			var cookies = myCookieJar.GetCookies(uri);
 			if (cookies == null)
 				return;
 
-			//Set the Cookies...
+			var retrieveCurrentWebCookies = GetCookiesFromNativeStore(url);
+
 			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
-
-			foreach(var httpCookie in filter.CookieManager.GetCookies(uri))
-			{				
-				filter.CookieManager.DeleteCookie(httpCookie);
-			}
-
 			foreach (Cookie cookie in cookies)
 			{
 				HttpCookie httpCookie = new HttpCookie(cookie.Name, cookie.Domain, cookie.Path);
 				httpCookie.Value = cookie.Value;
 				filter.CookieManager.SetCookie(httpCookie, false);
+			}
+
+			foreach (HttpCookie cookie in retrieveCurrentWebCookies)
+			{
+				if (cookies[cookie.Name] != null)
+					continue;
+
+				filter.CookieManager.DeleteCookie(cookie);
 			}
 		}
 
@@ -230,7 +274,7 @@ if(bases.length == 0){
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
-			SyncCookies(Control?.Source);
+			SyncCookies(Control?.Source?.ToString());
 			Control.Refresh();
 		}
 

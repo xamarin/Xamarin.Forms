@@ -27,8 +27,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Label header = new Label
 			{
-				Text = "Check that a WebView can use Cookies...",
-				FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
+				Text = "Cookies...",
+				FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
 				HorizontalOptions = LayoutOptions.Center
 			};
 
@@ -101,6 +101,7 @@ namespace Xamarin.Forms.Controls.Issues
 									AutomationId = "EmptyAllCookies",
 									Command = new Command(() =>
 									{
+										webView.Cookies = cookieContainer;
 										cookieResult.Text = String.Empty;
 										cookieExpectation = (cookieValue) =>
 										{
@@ -114,7 +115,12 @@ namespace Xamarin.Forms.Controls.Issues
 											}
 										};
 
-										webView.Cookies = new CookieContainer();
+										foreach(Cookie c in webView.Cookies.GetCookies(uri))
+										{
+											if(c.Name.StartsWith("TestCookie"))
+												c.Expired = true;
+										}
+
 										webView.Reload();
 									})
 								},
@@ -124,9 +130,7 @@ namespace Xamarin.Forms.Controls.Issues
 									AutomationId = "NullAllCookies",
 									Command = new Command(() =>
 									{
-										cookieResult.Text = String.Empty;
 										var currentCookies = _currentCookieValue;
-
 										cookieExpectation = (cookieValue) =>
 										{
 											if(Regex.Matches(_currentCookieValue, "TestCookie").Count != Regex.Matches(cookieValue, "TestCookie").Count)
@@ -162,42 +166,7 @@ namespace Xamarin.Forms.Controls.Issues
 											}
 										};
 
-
-										var cc = new CookieContainer();
-										cc.Add(new Cookie
-										{
-											Name = $"TestCookie{cookieContainer.Count}",
-											Expires = DateTime.Now.AddDays(1),
-											Value = $"My Test Cookie {cookieContainer.Count}...",
-											Domain = uri.Host,
-											Path = "/"
-										});
-
-										webView.Cookies = cc;
-										webView.Reload();
-									})
-								},
-								new Button()
-								{
-									Text = "Additional",
-									AutomationId = "AdditionalCookie",
-									Command = new Command(() =>
-									{
-										cookieResult.Text = String.Empty;
-										cookieExpectation = (cookieValue) =>
-										{
-											if(Regex.Matches(cookieValue, "TestCookie").Count <= 1)
-											{
-												cookieResult.Text = "Not enough cookies in the jar";
-											}
-											else
-											{
-												cookieResult.Text = "Success";
-											}
-										};
-
-										var cc = webView.Cookies ?? new CookieContainer();
-
+										cookieContainer = new CookieContainer();
 										cookieContainer.Add(new Cookie
 										{
 											Name = $"TestCookie{cookieContainer.Count}",
@@ -210,8 +179,83 @@ namespace Xamarin.Forms.Controls.Issues
 										webView.Cookies = cookieContainer;
 										webView.Reload();
 									})
+								},
+								new Button()
+								{
+									Text = "Additional",
+									AutomationId = "AdditionalCookie",
+									Command = new Command(() =>
+									{
+										webView.Cookies = cookieContainer;
+										cookieResult.Text = String.Empty;
+										cookieContainer.Add(new Cookie
+										{
+											Name = $"TestCookie{cookieContainer.Count}",
+											Expires = DateTime.Now.AddDays(1),
+											Value = $"My Test Cookie {cookieContainer.Count}...",
+											Domain = uri.Host,
+											Path = "/"
+										});
+
+										int cookieCount = 0;
+										foreach(Cookie testCookie in cookieContainer.GetCookies(uri))
+											if(testCookie.Name.StartsWith("TestCookie"))
+												cookieCount++;
+
+										cookieExpectation = (cookieValue) =>
+										{
+											if(Regex.Matches(cookieValue, "TestCookie").Count != cookieCount)
+											{
+												cookieResult.Text = "Not enough cookies in the jar";
+											}
+											else
+											{
+												cookieResult.Text = "Success";
+											}
+										};
+
+										webView.Reload();
+									})
 								}
 							}
+						},
+						new Button()
+						{
+							Text = "Change Cookies During Navigating",
+							AutomationId = "ChangeDuringNavigating",
+							Command = new Command(() =>
+							{
+								webView.Cookies = cookieContainer;
+								var cookieToAdd = new Cookie
+								{
+									Name = $"TestCookie{cookieContainer.Count}",
+									Expires = DateTime.Now.AddDays(1),
+									Value = $"My Test Cookie {cookieContainer.Count}...",
+									Domain = uri.Host,
+									Path = "/"
+								};
+
+								EventHandler<WebNavigatingEventArgs> navigating = null;
+								navigating = (_, __) =>
+								{
+									cookieContainer.Add(cookieToAdd);
+								};
+
+								cookieResult.Text = String.Empty;
+								cookieExpectation = (cookieValue) =>
+								{
+									if(cookieValue.Contains(cookieToAdd.Name))
+									{
+										cookieResult.Text = "Cookie not added during navigating";
+									}
+									else
+									{
+										cookieResult.Text = "Success";
+									}
+								};
+
+								webView.Reload();
+							})
 						},
 						new Button()
 						{
