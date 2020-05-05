@@ -877,10 +877,11 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsOpen(false);
 		}
 
-		void Swipe()
+		void Swipe(bool animated = false)
 		{
 			var offset = _context.ToPixels(ValidateSwipeOffset(_swipeOffset));
 			_isOpen = offset != 0;
+			var swipeAnimationDuration = animated ? SwipeAnimationDuration : 0;
 
 			if (_swipeTransitionMode == SwipeTransitionMode.Reveal)
 			{
@@ -888,11 +889,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					case SwipeDirection.Left:
 					case SwipeDirection.Right:
-						_contentView.TranslationX = offset;
+						_contentView.Animate().TranslationX(offset).SetDuration(swipeAnimationDuration);
 						break;
 					case SwipeDirection.Up:
 					case SwipeDirection.Down:
-						_contentView.TranslationY = offset;
+						_contentView.Animate().TranslationY(offset).SetDuration(swipeAnimationDuration);
 						break;
 				}
 			}
@@ -903,24 +904,24 @@ namespace Xamarin.Forms.Platform.Android
 				switch (_swipeDirection)
 				{
 					case SwipeDirection.Left:
-						_contentView.TranslationX = offset;
+						_contentView.Animate().TranslationX(offset).SetDuration(swipeAnimationDuration);
 						actionSize = (int)_context.ToPixels(Element.RightItems.Count * SwipeItemWidth);
-						_actionView.TranslationX = actionSize - Math.Abs(offset);
+						_actionView.Animate().TranslationX(actionSize - Math.Abs(offset)).SetDuration(swipeAnimationDuration);
 						break;
 					case SwipeDirection.Right:
-						_contentView.TranslationX = offset;
+						_contentView.Animate().TranslationX(offset).SetDuration(swipeAnimationDuration);
 						actionSize = (int)_context.ToPixels(Element.LeftItems.Count * SwipeItemWidth);
-						_actionView.TranslationX = -actionSize + offset;
+						_actionView.Animate().TranslationX(-actionSize + offset).SetDuration(swipeAnimationDuration);
 						break;
 					case SwipeDirection.Up:
-						_contentView.TranslationY = offset;
+						_contentView.Animate().TranslationY(offset).SetDuration(swipeAnimationDuration);
 						actionSize = _contentView.Height;
-						_actionView.TranslationY = actionSize - Math.Abs(offset);
+						_actionView.Animate().TranslationY(actionSize - Math.Abs(offset)).SetDuration(swipeAnimationDuration);
 						break;
 					case SwipeDirection.Down:
-						_contentView.TranslationY = offset;
+						_contentView.Animate().TranslationY(offset).SetDuration(swipeAnimationDuration);
 						actionSize = _contentView.Height;
-						_actionView.TranslationY = -actionSize + Math.Abs(offset);
+						_actionView.Animate().TranslationY(-actionSize + Math.Abs(offset)).SetDuration(swipeAnimationDuration);
 						break;
 				}
 			}
@@ -1337,10 +1338,12 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var openSwipeItem = e.OpenSwipeItem;
-			ProgrammaticallyOpenSwipeItem(openSwipeItem);
+			var animated = e.Animated;
+
+			ProgrammaticallyOpenSwipeItem(openSwipeItem, animated);
 		}
 
-		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem)
+		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem, bool animated)
 		{
 			if (_isOpen)
 				return;
@@ -1367,10 +1370,25 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var swipeThreshold = GetSwipeThreshold();
-			_swipeOffset = swipeThreshold;
+			UpdateOffset(swipeThreshold);
 
 			UpdateSwipeItems();
-			Swipe();
+			Swipe(animated);
+		}
+
+		void UpdateOffset(float swipeOffset)
+		{
+			switch (_swipeDirection)
+			{
+				case SwipeDirection.Right:
+				case SwipeDirection.Down:
+					_swipeOffset = swipeOffset;
+					break;
+				case SwipeDirection.Left:
+				case SwipeDirection.Up:
+					_swipeOffset = -swipeOffset;
+					break;
+			}
 		}
 
 		void UpdateIsOpen(bool isOpen)
@@ -1381,9 +1399,11 @@ namespace Xamarin.Forms.Platform.Android
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
-		void OnCloseRequested(object sender, EventArgs e)
+		void OnCloseRequested(object sender, CloseSwipeEventArgs e)
 		{
-			ResetSwipe();
+			var animated = e.Animated;
+
+			ResetSwipe(animated);
 		}
 
 		void OnParentScrolled(object sender, ScrolledEventArgs e)
