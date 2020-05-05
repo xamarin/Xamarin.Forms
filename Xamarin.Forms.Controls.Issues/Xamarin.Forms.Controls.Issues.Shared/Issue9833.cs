@@ -1,11 +1,8 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Collections.ObjectModel;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Windows.Input;
-using System.Collections.ObjectModel;
-using System;
 
 #if UITEST
-using Xamarin.UITest;
 using NUnit.Framework;
 using Xamarin.Forms.Core.UITests;
 #endif
@@ -13,49 +10,53 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 9833, "[Bug] [UWP] Propagate CollectionView BindingContext to EmptyView",	
+	[Issue(IssueTracker.Github, 9833, "[Bug] [UWP] Propagate CollectionView BindingContext to EmptyView",
 		PlatformAffected.UWP)]
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
 #endif
 	public class Issue9833 : TestContentPage
 	{
+		readonly CollectionView _collectionView;
+		readonly Label _emptyLabel;
+
 		public Issue9833()
 		{
 			Title = "Issue 9833";
-			
+
 			BindingContext = new Issue9833ViewModel();
 
-			var layout = new StackLayout();
+			var layout = new StackLayout
+			{
+				Padding = 0
+			};
 
 			var instructions = new Label
 			{
-				Text = "If can execute the command from the EmptyView, the test has passed.",
+				Text = "If the EmptyView BindingContext is not null, the test has passed.",
 				BackgroundColor = Color.Black,
 				TextColor = Color.White
 			};
 
-			var collectionView = new CollectionView();
-			collectionView.SetBinding(ItemsView.ItemsSourceProperty, "Model.Items");
+			_collectionView = new CollectionView();
+			_collectionView.SetBinding(ItemsView.ItemsSourceProperty, "Items");
 
 			var emptyView = new StackLayout
 			{
 				BackgroundColor = Color.LightGray
 			};
 
-			var emptyButton = new Button
+			_emptyLabel = new Label
 			{
-				Text = "Execute Command (EmptyView)"
+				Text = "This is the EmptyView. "
 			};
 
-			emptyButton.SetBinding(Button.CommandProperty, "Model.Command");
+			emptyView.Children.Add(_emptyLabel);
 
-			emptyView.Children.Add(emptyButton);
-
-			collectionView.EmptyView = emptyView;
+			_collectionView.EmptyView = emptyView;
 
 			layout.Children.Add(instructions);
-			layout.Children.Add(collectionView);
+			layout.Children.Add(_collectionView);
 
 			Content = layout;
 		}
@@ -64,51 +65,39 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 
 		}
-	}
 
-	[Preserve(AllMembers = true)]
-	public class Issue9833Model
-	{
-		int _counter;
-
-		public Issue9833Model()
+		protected override void OnAppearing()
 		{
-			Command = new Command(Execute);
-		}
+			base.OnAppearing();
 
-		public ObservableCollection<string> Items { get; set; }
-		public ICommand Command  { get; set; }
-
-		void Execute()
-		{
-			_counter++;
-			Console.WriteLine($"Issue9833: {_counter}");
+			var emptyView = (View)_collectionView.EmptyView;
+			_emptyLabel.Text += $"BindingContext = {emptyView.BindingContext}";
 		}
 	}
 
 	[Preserve(AllMembers = true)]
 	public class Issue9833ViewModel : BindableObject
 	{
-		Issue9833Model _model;
+		ObservableCollection<string> _items;
 
 		public Issue9833ViewModel()
 		{
 			LoadData();
 		}
 
-		public Issue9833Model Model
+		public ObservableCollection<string> Items
 		{
-			get { return _model; }
+			get { return _items; }
 			set
 			{
-				_model = value;
+				_items = value;
 				OnPropertyChanged();
 			}
 		}
 
 		void LoadData()
 		{
-			Model = new Issue9833Model();
+			Items = new ObservableCollection<string>();
 		}
 	}
 }
