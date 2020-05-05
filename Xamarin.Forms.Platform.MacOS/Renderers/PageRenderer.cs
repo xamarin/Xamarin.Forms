@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using Foundation;
 using Xamarin.Forms.PlatformConfiguration.macOSSpecific;
 
 namespace Xamarin.Forms.Platform.MacOS
@@ -87,6 +88,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			Init();
 			base.ViewWillAppear();
+		}
+
+		public override void ViewDidLayout()
+		{
+			base.ViewDidLayout();
+			UpdateBackground();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -187,7 +194,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					else
 					{
 						Color bgColor = Element.BackgroundColor;
-						View.Layer.BackgroundColor = bgColor.IsDefault ? NSColor.White.CGColor : bgColor.ToCGColor();
+						View.Layer.BackgroundColor = bgColor.IsDefault ? ColorExtensions.WindowBackgroundColor.CGColor : bgColor.ToCGColor();
 					}
 				}
 			});

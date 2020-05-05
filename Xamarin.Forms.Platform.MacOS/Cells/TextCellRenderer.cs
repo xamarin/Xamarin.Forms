@@ -5,8 +5,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class TextCellRenderer : CellRenderer
 	{
-		static readonly Color s_defaultDetailColor = new Color(.32, .4, .57);
-		static readonly Color s_defaultTextColor = Color.Black;
+		static readonly Color s_defaultDetailColor = ColorExtensions.SecondaryLabelColor.ToColor(NSColorSpace.DeviceRGBColorSpace);
+		static readonly Color s_defaultTextColor = ColorExtensions.TextColor.ToColor(NSColorSpace.DeviceRGBColorSpace);
 
 		public override NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
 		{
