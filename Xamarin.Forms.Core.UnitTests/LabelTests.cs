@@ -61,15 +61,15 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (fired);
 
 			fired = false;
-			label.TextTransform = Internals.TextTransform.Lowercase;
+			label.TextTransform = TextTransform.Lowercase;
 			Assert.IsTrue(fired);
 
 			fired = false;
-			label.TextTransform = Internals.TextTransform.Uppercase;
+			label.TextTransform = TextTransform.Uppercase;
 			Assert.IsTrue(fired);
 
 			fired = false;
-			label.TextTransform = Internals.TextTransform.None;
+			label.TextTransform = TextTransform.None;
 			Assert.IsTrue(fired);
 
 			var fs = new FormattedString ();

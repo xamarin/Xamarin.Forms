@@ -58,7 +58,6 @@ namespace Xamarin.Forms.Platform.Android
 			_preserveInitialPadding = preserveInitialPadding;
 			_borderAdjustsPadding = borderAdjustsPadding;
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
-			_renderer.View.SetAllCaps(false);
 		}
 
 		AButton View => _renderer?.View ?? _renderer as AButton;
@@ -267,13 +266,17 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (View?.LayoutParameters == null && _hasLayoutOccurred)
 				return false;
-			
+
 			AButton view = View;
 			if (view == null)
 				return false;
 
+			var textTransform = _element.TextTransform;
+			
+			_renderer.View.SetAllCaps(textTransform == TextTransform.Default);
+
 			string oldText = view.Text;
-			view.Text = _element.UpdateFormsText(_element.Text, _element.TextTransform);
+			view.Text = _element.UpdateFormsText(_element.Text, textTransform);
 
 			// If we went from or to having no text, we need to update the image position
 			if (string.IsNullOrEmpty(oldText) != string.IsNullOrEmpty(view.Text))

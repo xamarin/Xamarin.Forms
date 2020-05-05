@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty TextTransformProperty =
-			BindableProperty.Create(nameof(ITextElement.TextTransform), typeof(TextTransform), typeof(ITextElement), TextTransform.None,
+			BindableProperty.Create(nameof(ITextElement.TextTransform), typeof(TextTransform), typeof(ITextElement), TextTransform.Default,
 							propertyChanged: OnTextTransformPropertyChanged);
 
 		static void OnTextTransformPropertyChanged(BindableObject bindable, object oldValue, object newValue)
