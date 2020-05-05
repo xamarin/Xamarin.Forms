@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Text = "Current TextTransform is None",
 				BackgroundColor = Color.Aqua,
-				TextTransform = TextTransform.None
+				TextTransform = transform
 			};
 			var but = new Button
 			{
@@ -55,8 +55,11 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			foreach (var item in list)
+			{
+				item.TextTransform = transform;
 				layout.Children.Add(item as View);
-
+			}
+				
 			layout.Children.Add(new Label
 			{
 				Text = "[Lowercase] " + text2,
