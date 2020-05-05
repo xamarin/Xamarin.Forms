@@ -103,7 +103,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
 			NSUrlRequest request = new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri));
 
-			if (WebView.Cookies != null)
+			var jCookies = WebView.Cookies?.GetCookies(uri);
+
+			if (jCookies != null)
 			{
 				if (Forms.IsiOS11OrNewer)
 				{
@@ -111,9 +113,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 					foreach (var cookie in existingCookies)
 						await Configuration.WebsiteDataStore.HttpCookieStore.DeleteCookieAsync(cookie);
-
-
-					var jCookies = WebView.Cookies.GetCookies(uri);
 
 					foreach (System.Net.Cookie jCookie in jCookies)
 					{

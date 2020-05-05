@@ -70,16 +70,10 @@ if(bases.length == 0){
 				uri = new Uri(LocalScheme + url, UriKind.RelativeOrAbsolute);
 			}
 
-			if (Element.ShouldManageCookies && Element.Cookies?.Count > 0)
+			var cookies = Element.Cookies?.GetCookies(uri);
+			if (cookies != null)
 			{
-				//Set the Cookies...
-				var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
-				foreach (Cookie cookie in Element.Cookies.GetCookies(uri))
-				{
-					HttpCookie httpCookie = new HttpCookie(cookie.Name, cookie.Domain, cookie.Path);
-					httpCookie.Value = cookie.Value;
-					filter.CookieManager.SetCookie(httpCookie, false);
-				}
+				SyncCookies(uri);
 
 				try
 				{
@@ -169,6 +163,31 @@ if(bases.length == 0){
 			}
 		}
 
+		void SyncCookies(Uri uri)
+		{
+			if (uri == null)
+				return;
+
+			var cookies = Element.Cookies?.GetCookies(uri);
+			if (cookies == null)
+				return;
+
+			//Set the Cookies...
+			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+
+			foreach(var httpCookie in filter.CookieManager.GetCookies(uri))
+			{				
+				filter.CookieManager.DeleteCookie(httpCookie);
+			}
+
+			foreach (Cookie cookie in cookies)
+			{
+				HttpCookie httpCookie = new HttpCookie(cookie.Name, cookie.Domain, cookie.Path);
+				httpCookie.Value = cookie.Value;
+				filter.CookieManager.SetCookie(httpCookie, false);
+			}
+		}
+
 		void Load()
 		{
 			if (Element.Source != null)
@@ -211,6 +230,7 @@ if(bases.length == 0){
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
+			SyncCookies(Control?.Source);
 			Control.Refresh();
 		}
 

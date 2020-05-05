@@ -2,6 +2,9 @@
 using System.Net;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using System.Text.RegularExpressions;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -18,6 +21,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 3262, "Adding Cookies ability to a WebView...")]
 	public class Issue3262 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
+		string _currentCookieValue;
+
 		protected override void Init()
 		{
 			Label header = new Label
@@ -51,8 +56,26 @@ namespace Xamarin.Forms.Controls.Issues
 					VerticalOptions = LayoutOptions.FillAndExpand,
 					Cookies = cookieContainer
 				};
+				webView.On<Windows>().SetIsJavaScriptAlertEnabled(true);
 
+				Action<string> cookieExpectation = null;
+				var cookieResult = new Label()
+				{
+					Text = "",
+					AutomationId = "CookieResult"
+				};
 
+				webView.Navigating += (_, __) =>
+				{
+					cookieResult.Text = String.Empty;
+				};
+
+				webView.Navigated += async (_, __) =>
+				{
+					_currentCookieValue = await webView.EvaluateJavaScriptAsync("document.cookie");
+					cookieExpectation?.Invoke(_currentCookieValue);
+					cookieExpectation = null;
+				};
 
 				Content = new StackLayout
 				{
@@ -61,18 +84,147 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						header,
 						webView,
+						new Label()
+						{
+							Text = "Modify the Cookie Container"
+						},
+						cookieResult,
+						new StackLayout()
+						{
+							Orientation = StackOrientation.Horizontal,
+							Children =
+							{
+								new Button()
+								{
+									Text = "Empty",
+									AutomationId = "EmptyAllCookies",
+									Command = new Command(() =>
+									{
+										cookieResult.Text = String.Empty;
+										cookieExpectation = (cookieValue) =>
+										{
+											if(cookieValue.Contains("TestCookie"))
+											{
+												cookieResult.Text = "Test Cookie Was not correctly cleared";
+											}
+											else
+											{
+												cookieResult.Text = "Success";
+											}
+										};
+
+										webView.Cookies = new CookieContainer();
+										webView.Reload();
+									})
+								},
+								new Button()
+								{
+									Text = "Null",
+									AutomationId = "NullAllCookies",
+									Command = new Command(() =>
+									{
+										cookieResult.Text = String.Empty;
+										var currentCookies = _currentCookieValue;
+
+										cookieExpectation = (cookieValue) =>
+										{
+											if(Regex.Matches(_currentCookieValue, "TestCookie").Count != Regex.Matches(cookieValue, "TestCookie").Count)
+											{
+												cookieResult.Text = "Cookie Collection Incorrectly Modified";
+											}
+											else
+											{
+												cookieResult.Text = "Success";
+											}
+										};
+
+										webView.Cookies = null;
+										webView.Reload();
+									})
+								},
+								new Button()
+								{
+									Text = "One",
+									AutomationId = "OneCookie",
+									Command = new Command(() =>
+									{
+										cookieResult.Text = String.Empty;
+										cookieExpectation = (cookieValue) =>
+										{
+											if(Regex.Matches(cookieValue, "TestCookie").Count > 1)
+											{
+												cookieResult.Text = "Too many cookies in the jar";
+											}
+											else
+											{
+												cookieResult.Text = "Success";
+											}
+										};
+
+
+										var cc = new CookieContainer();
+										cc.Add(new Cookie
+										{
+											Name = $"TestCookie{cookieContainer.Count}",
+											Expires = DateTime.Now.AddDays(1),
+											Value = $"My Test Cookie {cookieContainer.Count}...",
+											Domain = uri.Host,
+											Path = "/"
+										});
+
+										webView.Cookies = cc;
+										webView.Reload();
+									})
+								},
+								new Button()
+								{
+									Text = "Additional",
+									AutomationId = "AdditionalCookie",
+									Command = new Command(() =>
+									{
+										cookieResult.Text = String.Empty;
+										cookieExpectation = (cookieValue) =>
+										{
+											if(Regex.Matches(cookieValue, "TestCookie").Count <= 1)
+											{
+												cookieResult.Text = "Not enough cookies in the jar";
+											}
+											else
+											{
+												cookieResult.Text = "Success";
+											}
+										};
+
+										var cc = webView.Cookies ?? new CookieContainer();
+
+										cookieContainer.Add(new Cookie
+										{
+											Name = $"TestCookie{cookieContainer.Count}",
+											Expires = DateTime.Now.AddDays(1),
+											Value = $"My Test Cookie {cookieContainer.Count}...",
+											Domain = uri.Host,
+											Path = "/"
+										});
+
+										webView.Cookies = cookieContainer;
+										webView.Reload();
+									})
+								}
+							}
+						},
 						new Button()
 						{
 							Text = "Display all Cookies. You should see a cookie called 'TestCookie'",
 							AutomationId = "DisplayAllCookies",
 							Command = new Command(async () =>
 							{
-								await webView.EvaluateJavaScriptAsync("alert(document.cookie);");
+								var result = await webView.EvaluateJavaScriptAsync("document.cookie");
+								await this.DisplayAlert("cookie", result, "Cancel");
 							})
 						},
 						new Button()
 						{
-							Text = "Load page without cookies and app shouldn't crash",
+							Text = "Load asset without cookies and app shouldn't crash",
 							AutomationId = "PageWithoutCookies",
 							Command = new Command(() =>
 							{
@@ -91,13 +243,54 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
+
 		[Test]
 		public void LoadingPageWithoutCookiesSpecifiedDoesntCrash()
 		{
 			RunningApp.Tap("PageWithoutCookies");
 			RunningApp.WaitForElement("PageWithoutCookies");
 		}
-#endif
 
+		[Test]
+		public void AddAdditionalCookieToWebView()
+		{
+			RunningApp.WaitForElement("AdditionalCookie");
+			// add a couple cookies
+			RunningApp.Tap("AdditionalCookie");
+			RunningApp.WaitForElement("Success");
+			RunningApp.Tap("AdditionalCookie");
+			RunningApp.WaitForElement("Success");
+		}
+
+		[Test]
+		public void SetToOneCookie()
+		{
+			RunningApp.WaitForElement("OneCookie");
+			RunningApp.Tap("OneCookie");
+			RunningApp.WaitForElement("Success");
+		}
+
+		[Test]
+		public void SetCookieContainerToNullDisablesCookieManagement()
+		{
+			RunningApp.WaitForElement("AdditionalCookie");
+			// add a cookie to verify said cookie remains
+			RunningApp.Tap("AdditionalCookie");
+			RunningApp.WaitForElement("Success");
+			RunningApp.Tap("NullAllCookies");
+			RunningApp.WaitForElement("Success");
+		}
+
+		[Test]
+		public void RemoveAllTheCookiesIAdded()
+		{
+			RunningApp.WaitForElement("AdditionalCookie");
+			// add a cookie so you can remove a cookie
+			RunningApp.Tap("AdditionalCookie");
+			RunningApp.WaitForElement("Success");
+			RunningApp.Tap("EmptyAllCookies");
+			RunningApp.WaitForElement("Success");
+		}
+#endif
 	}
 }
