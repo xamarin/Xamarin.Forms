@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Foundation;
@@ -168,9 +170,40 @@ namespace Xamarin.Forms.Platform.iOS
 						await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(jCookie));
 					}
 				}
-				else if (WebView.Cookies.Count > 0)
+				else
 				{
-					WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(uri)), WKUserScriptInjectionTime.AtDocumentStart, false);
+					var currentCookies = await WebView.EvaluateJavaScriptAsync("document.cookie");
+
+					var websiteDataTypes = new NSSet<NSString>(new[]
+					   {
+							WKWebsiteDataType.Cookies
+
+						});
+
+					WKWebsiteDataStore.DefaultDataStore.FetchDataRecordsOfTypes(websiteDataTypes, (NSArray records) =>
+					{
+						for (nuint i = 0; i < records.Count; i++)
+						{
+							var record = records.GetItem<WKWebsiteDataRecord>(i);
+							WKWebsiteDataStore.DefaultDataStore.RemoveDataOfTypes(record.DataTypes,
+																				  new[] { record }, () => { Debug.WriteLine($"deleted: {record.DisplayName}"); });
+						}
+					});
+
+					CookieContainer existingCookies = new CookieContainer();
+
+					try
+					{
+						if(currentCookies != null)
+							existingCookies.SetCookies(uri, currentCookies);
+					}
+					catch(CookieException exc)
+					{
+						Log.Warning(nameof(WkWebViewRenderer), $"Failed to read existing cookies {exc}");
+					}
+
+					WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(uri, existingCookies)), WKUserScriptInjectionTime.AtDocumentStart, false);
+
 					Configuration.UserContentController.AddUserScript(wKUserScript);
 
 				}
@@ -232,12 +265,14 @@ namespace Xamarin.Forms.Platform.iOS
 			try
 			{
 				await SyncCookies(new Uri(Url.ToString()));
-				Reload();
 			}
 			catch(Exception exc)
 			{
-				Log.Warning(nameof(WkWebViewRenderer), $"Reload Failed: {exc}");
+				Log.Warning(nameof(WkWebViewRenderer), $"Syncing Existing Cookies Failed: {exc}");
 			}
+
+			LoadUrl(Url.ToString());
+			//Reload();
 		}
 
 		void UpdateCanGoBackForward()
@@ -248,21 +283,29 @@ namespace Xamarin.Forms.Platform.iOS
 
 
 
-		string GetCookieString(Uri url)
+		string GetCookieString(Uri url, CookieContainer existingCookies)
 		{ 
 			var jCookies = WebView.Cookies.GetCookies(url);
+			var currentCookies = existingCookies?.GetCookies(url);
 
 			StringBuilder cookieBuilder = new StringBuilder();
+			List<string> cookiesToKeep = new List<string>();
 			foreach (System.Net.Cookie jCookie in jCookies)
 			{
+				cookiesToKeep.Add(jCookie.Name);
 
 				cookieBuilder.Append("document.cookie = '");
 				cookieBuilder.Append(jCookie.Name);
 				cookieBuilder.Append("=");
-				cookieBuilder.Append(jCookie.Value);
 
-				if (!jCookie.Expired)
+				if (jCookie.Expired)
 				{
+					cookieBuilder.Append($"; Max-Age=0");
+					cookieBuilder.Append($"; expires=Sun, 31 Dec 2000 00:00:00 UTC");
+				}
+				else
+				{
+					cookieBuilder.Append(jCookie.Value);
 					cookieBuilder.Append($"; Max-Age={jCookie.Expires.Subtract(DateTime.UtcNow).TotalSeconds}");
 				}
 
@@ -284,6 +327,42 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				cookieBuilder.Append("';");
+			}
+
+			if(currentCookies != null)
+			{
+				foreach(Cookie jCookie in currentCookies)
+				{
+					if (cookiesToKeep.Contains(jCookie.Name))
+						continue;
+
+					cookieBuilder.Append("document.cookie = '");
+					cookieBuilder.Append(jCookie.Name);
+					cookieBuilder.Append("=");
+
+					cookieBuilder.Append($"; Max-Age=0");
+					cookieBuilder.Append($"; expires=Thu, 18 Dec 2013 12:00:00 UTC");
+					/*cookieBuilder.Append($"; expires=Sun, 31 Dec 2000 00:00:00 UTC");
+
+					if (!String.IsNullOrWhiteSpace(jCookie.Domain))
+					{
+						cookieBuilder.Append($"; Domain={jCookie.Domain}");
+					}
+					if (!String.IsNullOrWhiteSpace(jCookie.Domain))
+					{
+						cookieBuilder.Append($"; Path={jCookie.Path}");
+					}
+					if (jCookie.Secure)
+					{
+						cookieBuilder.Append($"; Secure");
+					}
+					if (jCookie.HttpOnly)
+					{
+						cookieBuilder.Append($"; HttpOnly");
+					}*/
+
+					cookieBuilder.Append("';");
+				}
 			}
 
 			return cookieBuilder.ToString();

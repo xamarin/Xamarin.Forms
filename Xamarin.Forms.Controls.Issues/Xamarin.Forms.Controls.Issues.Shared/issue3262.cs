@@ -67,7 +67,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 				webView.Navigating += (_, __) =>
 				{
-					cookieResult.Text = String.Empty;
+					if(cookieExpectation != null)
+						cookieResult.Text = "Navigating";
 				};
 
 				webView.Navigated += async (_, __) =>
