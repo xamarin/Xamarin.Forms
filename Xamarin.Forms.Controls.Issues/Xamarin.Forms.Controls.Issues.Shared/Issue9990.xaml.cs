@@ -15,13 +15,13 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
+#if APP
 		int x = 60;
 		void BtnMove(object sender, EventArgs e)
 		{
-#if APP
 			frm.TranslateTo(x, 0);
 			x = -x;
-#endif
 		}
+#endif
 	}
 }
