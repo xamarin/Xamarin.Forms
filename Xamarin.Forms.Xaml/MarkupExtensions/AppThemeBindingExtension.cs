@@ -7,21 +7,49 @@ namespace Xamarin.Forms.Xaml
 	[ContentProperty(nameof(Default))]
 	public class AppThemeBindingExtension : IMarkupExtension<BindingBase>
 	{
+		object _default;
+		bool _hasdefault;
+		object _light;
+		bool _haslight;
+		object _dark;
+		bool _hasdark;
+
 		public AppThemeBindingExtension()
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(AppThemeBindingExtension), ExperimentalFlags.AppThemeExperimental, nameof(AppThemeBindingExtension));
 		}
 
-		public object Default { get; set; }
-		public object Light { get; set; }
-		public object Dark { get; set; }
-		public object Value	{ get; private set;	}
+		public object Default
+		{
+			get => _default; set
+			{
+				_default = value;
+				_hasdefault = true;
+			}
+		}
+		public object Light
+		{
+			get => _light; set
+			{
+				_light = value;
+				_haslight = true;
+			}
+		}
+		public object Dark
+		{
+			get => _dark; set
+			{
+				_dark = value;
+				_hasdark = true;
+			}
+		}
+		public object Value { get; private set; }
 
 		public object ProvideValue(IServiceProvider serviceProvider) => (this as IMarkupExtension<BindingBase>).ProvideValue(serviceProvider);
 
 		BindingBase IMarkupExtension<BindingBase>.ProvideValue(IServiceProvider serviceProvider)
 		{
-			if (   Default == null
+			if (Default == null
 				&& Light == null
 				&& Dark == null)
 				throw new XamlParseException("AppThemeBindingExtension requires a non-null value to be specified for at least one theme or Default.", serviceProvider);
@@ -71,30 +99,28 @@ namespace Xamarin.Forms.Xaml
 				}
 			}
 
+			var binding = new OnAppTheme<object>();
 			if (converterProvider != null)
-				return new OnAppTheme<object> {
-					Light = converterProvider.Convert(Light, propertyType, minforetriever, serviceProvider),
-					Dark = converterProvider.Convert(Dark, propertyType, minforetriever, serviceProvider),
-					Default = converterProvider.Convert(Dark, propertyType, minforetriever, serviceProvider)
-				};
+			{
+				if (_haslight) binding.Light = converterProvider.Convert(Light, propertyType, minforetriever, serviceProvider);
+				if (_hasdark) binding.Dark = converterProvider.Convert(Dark, propertyType, minforetriever, serviceProvider);
+				if (_hasdefault) binding.Default = converterProvider.Convert(Default, propertyType, minforetriever, serviceProvider);
+				return binding;
+			}
 
+			Exception converterException = null;
 
-			var light = Light.ConvertTo(propertyType, minforetriever, serviceProvider, out Exception converterException);
-			
-			if (converterException != null)
-				throw converterException;
-
-			var dark = Dark.ConvertTo(propertyType, minforetriever, serviceProvider, out converterException);
-
-			if (converterException != null)
-				throw converterException;
-
-			var @default = Dark.ConvertTo(propertyType, minforetriever, serviceProvider, out converterException);
+			if (converterException != null && _haslight)
+				binding.Light = Light.ConvertTo(propertyType, minforetriever, serviceProvider, out converterException);
+			if (converterException != null && _hasdark)
+				binding.Dark = Dark.ConvertTo(propertyType, minforetriever, serviceProvider, out converterException);
+			if (converterException != null && _hasdefault)
+				binding.Default = Default.ConvertTo(propertyType, minforetriever, serviceProvider, out converterException);
 
 			if (converterException != null)
 				throw converterException;
 
-			return new OnAppTheme<object> { Light = light, Dark = dark, Default = @default };
+			return binding;
 		}
 	}
 }
