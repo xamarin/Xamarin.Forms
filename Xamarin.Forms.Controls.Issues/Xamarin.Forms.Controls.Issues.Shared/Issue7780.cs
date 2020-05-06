@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var instructions = new Label
 			{
 				Margin = new Thickness(6),
-				Text = "CHange the CarouselView FlowDirection and verify that it works correctly."
+				Text = "Change the CarouselView FlowDirection and verify that it works correctly."
 			};
 
 			var itemsLayout =
