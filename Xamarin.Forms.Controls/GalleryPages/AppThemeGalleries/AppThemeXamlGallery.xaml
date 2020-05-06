@@ -10,7 +10,7 @@
             <Label TextColor="{AppThemeBinding Light=Green, Dark=Red}">OnAppThemeExtension</Label>
             <Label Text="AppThemeBinding XAML tag">
                 <Label.TextColor>
-                    <AppThemeBinding x:TypeArguments="Color" Light="Green" Dark="Red" />
+                    <AppThemeBinding Light="Green" Dark="Red" />
                 </Label.TextColor>
             </Label>
             <Label Style="{DynamicResource Key=OSThemeStyle}">DynamicResource Style</Label>
