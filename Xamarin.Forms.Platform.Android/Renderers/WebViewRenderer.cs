@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			var args = new WebNavigatingEventArgs(_eventState, new UrlWebViewSource { Url = url }, url);
-			SyncCookies(url);
+			SyncNativeCookies(url);
 			ElementController.SendNavigating(args);
 			UpdateCanGoBackForward();
 			UrlCanceled = args.Cancel ? null : url;
@@ -237,7 +237,32 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		internal void SyncCookies(string url)
+		internal void SyncNativeCookiesToElement(string url)
+		{
+			if (String.IsNullOrWhiteSpace(url))
+				return;
+
+			var myCookieJar = Element.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			var uri = new Uri(url);
+			var cookies = myCookieJar.GetCookies(uri);
+			var retrieveCurrentWebCookies = GetCookiesFromNativeStore(url);
+
+			foreach (Cookie cookie in cookies)
+			{
+				var nativeCookie = retrieveCurrentWebCookies[cookie.Name];
+				if (nativeCookie == null)
+					cookie.Expired = true;
+				else
+					cookie.Value = nativeCookie.Value;
+			}
+
+			SyncNativeCookies(url);
+		}
+
+		void SyncNativeCookies(string url)
 		{
 			if (String.IsNullOrWhiteSpace(url))
 				return;
@@ -321,7 +346,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
-			SyncCookies(Control.Url?.ToString());
+			SyncNativeCookies(Control.Url?.ToString());
 			_eventState = WebNavigationEvent.Refresh;
 			Control.Reload();
 		}

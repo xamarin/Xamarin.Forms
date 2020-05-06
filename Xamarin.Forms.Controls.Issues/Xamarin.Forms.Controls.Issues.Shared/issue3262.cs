@@ -295,6 +295,17 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("PageWithoutCookies");
 			RunningApp.WaitForElement("PageWithoutCookies");
 		}
+		
+		[Test]
+		public void ChangeDuringNavigating()
+		{
+			RunningApp.WaitForElement("ChangeDuringNavigating");
+			// add a couple cookies
+			RunningApp.Tap("ChangeDuringNavigating");
+			RunningApp.WaitForElement("Success");
+			RunningApp.Tap("ChangeDuringNavigating");
+			RunningApp.WaitForElement("Success");
+		}
 
 		[Test]
 		public void AddAdditionalCookieToWebView()

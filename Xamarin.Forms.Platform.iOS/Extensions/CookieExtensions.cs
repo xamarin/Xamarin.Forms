@@ -12,13 +12,16 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	internal static class CookieExtensions
 	{
-		public static Cookie ToCookie(this NSHttpCookie nscookie)
+		public static Cookie ToCookie(this NSHttpCookie nscookie, bool setDomain = true)
 		{
+			Uri commentUri = null;
+			if (nscookie.CommentUrl != null)
+				commentUri = nscookie.CommentUrl;
+
 			Cookie cookie = new Cookie()
 			{
 				Comment = nscookie.Comment,
-				CommentUri = nscookie.CommentUrl,
-				Domain = nscookie.Domain,
+				CommentUri = commentUri,
 				Expires = nscookie.ExpiresDate.ToDateTime(),
 				HttpOnly = nscookie.IsHttpOnly,
 				Name = nscookie.Name,
@@ -28,6 +31,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				Version = (int)nscookie.Version,
 				Port = String.Join(",", nscookie.PortList.Select(x => x.ToString()))
 			};
+
+			if (setDomain)
+				cookie.Domain = nscookie.Domain;
 
 			return cookie;
 		}

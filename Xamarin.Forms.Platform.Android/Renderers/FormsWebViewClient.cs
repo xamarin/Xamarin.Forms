@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_renderer?.Element == null || string.IsNullOrWhiteSpace(url) || url == WebViewRenderer.AssetBaseUrl)
 				return;
 
-			_renderer.SyncCookies(url);
+			_renderer.SyncNativeCookiesToElement(url);
 			var cancel = false;
 			if (!url.Equals(_renderer.UrlCanceled, StringComparison.OrdinalIgnoreCase))
 				cancel = SendNavigatingCanceled(url);
@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (navigate)
 			{
 				var args = new WebNavigatedEventArgs(_renderer.GetCurrentWebNavigationEvent(), source, url, _navigationResult);
-				_renderer.SyncCookies(url);
+				_renderer.SyncNativeCookiesToElement(url);
 				_renderer.ElementController.SendNavigated(args);
 			}
 
