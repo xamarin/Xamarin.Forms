@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Net;
 using Windows.Web.Http;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -74,7 +75,7 @@ if(bases.length == 0){
 			var cookies = Element.Cookies?.GetCookies(uri);
 			if (cookies != null)
 			{
-				SyncCookies(url);
+				SyncNativeCookies(url);
 
 				try
 				{
@@ -197,8 +198,38 @@ if(bases.length == 0){
 				}
 			}
 		}
-		
-		internal void SyncCookies(string url)
+
+		void SyncNativeCookiesToElement(string url)
+		{
+			if (String.IsNullOrWhiteSpace(url))
+				return;
+
+			var myCookieJar = Element.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			var uri = new Uri(url);
+			var cookies = myCookieJar.GetCookies(uri);
+			var retrieveCurrentWebCookies = GetCookiesFromNativeStore(url);
+
+			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+			var nativeCookies = filter.CookieManager.GetCookies(uri);
+
+			foreach (Cookie cookie in cookies)
+			{
+				var httpCookie = nativeCookies
+					.FirstOrDefault(x => x.Name == cookie.Name);
+
+				if (httpCookie == null)
+					cookie.Expired = true;
+				else
+					cookie.Value = httpCookie.Value;
+			}
+
+			SyncNativeCookies(url);
+		}
+
+		void SyncNativeCookies(string url)
 		{
 			if (String.IsNullOrWhiteSpace(url))
 				return;
@@ -274,7 +305,7 @@ if(bases.length == 0){
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
-			SyncCookies(Control?.Source?.ToString());
+			SyncNativeCookies(Control?.Source?.ToString());
 			Control.Refresh();
 		}
 
@@ -324,6 +355,7 @@ if(bases.length == 0){
 			((IElementController)Element).SetValueFromRenderer(WebView.SourceProperty, source);
 			_updating = false;
 
+			SyncNativeCookiesToElement(source.Url);
 			Element.SendNavigated(new WebNavigatedEventArgs(evnt, source, source.Url, result));
 
 			UpdateCanGoBackForward();
