@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Action<string> cookieExpectation = null;
 				var cookieResult = new Label()
 				{
-					Text = "",
+					Text = "Loading",
 					AutomationId = "CookieResult"
 				};
 
@@ -73,6 +73,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 				webView.Navigated += async (_, __) =>
 				{
+					if (cookieResult.Text == "Loading")
+						cookieResult.Text = "Loaded";
+
 					_currentCookieValue = await webView.EvaluateJavaScriptAsync("document.cookie");
 					cookieExpectation?.Invoke(_currentCookieValue);
 					cookieExpectation = null;
@@ -299,7 +302,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ChangeDuringNavigating()
 		{
-			RunningApp.WaitForElement("ChangeDuringNavigating");
+			RunningApp.WaitForElement("Loaded");
 			// add a couple cookies
 			RunningApp.Tap("ChangeDuringNavigating");
 			RunningApp.WaitForElement("Success");
@@ -310,7 +313,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void AddAdditionalCookieToWebView()
 		{
-			RunningApp.WaitForElement("AdditionalCookie");
+			RunningApp.WaitForElement("Loaded");
 			// add a couple cookies
 			RunningApp.Tap("AdditionalCookie");
 			RunningApp.WaitForElement("Success");
@@ -321,7 +324,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void SetToOneCookie()
 		{
-			RunningApp.WaitForElement("OneCookie");
+			RunningApp.WaitForElement("Loaded");
 			RunningApp.Tap("OneCookie");
 			RunningApp.WaitForElement("Success");
 		}
@@ -329,7 +332,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void SetCookieContainerToNullDisablesCookieManagement()
 		{
-			RunningApp.WaitForElement("AdditionalCookie");
+			RunningApp.WaitForElement("Loaded");
 			// add a cookie to verify said cookie remains
 			RunningApp.Tap("AdditionalCookie");
 			RunningApp.WaitForElement("Success");
@@ -340,7 +343,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void RemoveAllTheCookiesIAdded()
 		{
-			RunningApp.WaitForElement("AdditionalCookie");
+			RunningApp.WaitForElement("Loaded");
 			// add a cookie so you can remove a cookie
 			RunningApp.Tap("AdditionalCookie");
 			RunningApp.WaitForElement("Success");
