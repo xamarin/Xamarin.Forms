@@ -80,6 +80,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(query => query.Text(text));
 			RunningApp.Tap("Change TextTransform");
+			RunningApp.WaitForElement(query => query.Text(text));
+			RunningApp.Tap("Change TextTransform");
 			RunningApp.WaitForElement(query => query.Text(text.ToLowerInvariant()));
 			RunningApp.Tap("Change TextTransform");
 			RunningApp.WaitForElement(query => query.Text(text.ToUpperInvariant()));
