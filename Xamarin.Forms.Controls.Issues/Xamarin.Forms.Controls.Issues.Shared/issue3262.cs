@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				webView.Navigating += (_, __) =>
 				{
-					if(cookieExpectation != null)
+					if (cookieExpectation != null)
 						cookieResult.Text = "Navigating";
 				};
 
@@ -182,7 +182,14 @@ namespace Xamarin.Forms.Controls.Issues
 										webView.Cookies = cookieContainer;
 										webView.Reload();
 									})
-								},
+								}
+							}
+						},
+						new StackLayout()
+						{
+							Orientation = StackOrientation.Horizontal,
+							Children =
+							{
 								new Button()
 								{
 									Text = "Additional",
@@ -219,46 +226,46 @@ namespace Xamarin.Forms.Controls.Issues
 
 										webView.Reload();
 									})
-								}
+								},
+								new Button()
+								{
+									Text = "Add Navigating",
+									AutomationId = "ChangeDuringNavigating",
+									Command = new Command(() =>
+									{
+										webView.Cookies = cookieContainer;
+										var cookieToAdd = new Cookie
+										{
+											Name = $"TestCookie{cookieContainer.Count}",
+											Expires = DateTime.Now.AddDays(1),
+											Value = $"My Test Cookie {cookieContainer.Count}...",
+											Domain = uri.Host,
+											Path = "/"
+										};
+
+										EventHandler<WebNavigatingEventArgs> navigating = null;
+										navigating = (_, __) =>
+										{
+											cookieContainer.Add(cookieToAdd);
+										};
+
+										cookieResult.Text = String.Empty;
+										cookieExpectation = (cookieValue) =>
+										{
+											if(cookieValue.Contains(cookieToAdd.Name))
+											{
+												cookieResult.Text = "Cookie not added during navigating";
+											}
+											else
+											{
+												cookieResult.Text = "Success";
+											}
+										};
+
+										webView.Reload();
+									})
+								},
 							}
-						},
-						new Button()
-						{
-							Text = "Change Cookies During Navigating",
-							AutomationId = "ChangeDuringNavigating",
-							Command = new Command(() =>
-							{
-								webView.Cookies = cookieContainer;
-								var cookieToAdd = new Cookie
-								{
-									Name = $"TestCookie{cookieContainer.Count}",
-									Expires = DateTime.Now.AddDays(1),
-									Value = $"My Test Cookie {cookieContainer.Count}...",
-									Domain = uri.Host,
-									Path = "/"
-								};
-
-								EventHandler<WebNavigatingEventArgs> navigating = null;
-								navigating = (_, __) =>
-								{
-									cookieContainer.Add(cookieToAdd);
-								};
-
-								cookieResult.Text = String.Empty;
-								cookieExpectation = (cookieValue) =>
-								{
-									if(cookieValue.Contains(cookieToAdd.Name))
-									{
-										cookieResult.Text = "Cookie not added during navigating";
-									}
-									else
-									{
-										cookieResult.Text = "Success";
-									}
-								};
-
-								webView.Reload();
-							})
 						},
 						new Button()
 						{
@@ -298,7 +305,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("PageWithoutCookies");
 			RunningApp.WaitForElement("PageWithoutCookies");
 		}
-		
+
 		[Test]
 		public void ChangeDuringNavigating()
 		{
