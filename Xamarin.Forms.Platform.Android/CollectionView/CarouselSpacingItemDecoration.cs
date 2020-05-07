@@ -12,7 +12,7 @@ using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class CarouselSpacingItemDecoration : RecyclerView.ItemDecoration
+	public class CarouselSpacingItemDecoration : RecyclerView.ItemDecoration
 	{
 		readonly FormsCarouselView _carouselView;
 		readonly ItemsLayoutOrientation _orientation;

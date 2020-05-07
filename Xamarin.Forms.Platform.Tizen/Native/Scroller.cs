@@ -14,6 +14,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 		}
 
+		protected Scroller()
+		{
+		}
+
 		protected override void OnRealized()
 		{
 			base.OnRealized();
