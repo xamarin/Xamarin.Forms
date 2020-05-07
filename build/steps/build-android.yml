@@ -21,8 +21,8 @@ jobs:
     displayName: ${{ parameters.displayName }}
     timeoutInMinutes: 120
     pool:
-      name: ${{ parameters.vmPool }}
-      vmImage: ${{ parameters.vmImage }}
+      name: ${{ coalesce(parameters.vmPool, 'Azure Pipelines') }}
+      vmImage: ${{ coalesce(parameters.vmImage, 'macOS-10.15') }}
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
       matrix:
