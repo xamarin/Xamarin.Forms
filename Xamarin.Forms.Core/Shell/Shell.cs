@@ -268,7 +268,10 @@ namespace Xamarin.Forms
 		void IShellController.AddAppearanceObserver(IAppearanceObserver observer, Element pivot)
 		{
 			_appearanceObservers.Add((observer, pivot));
-			observer.OnAppearanceChanged(GetAppearanceForPivot(pivot));
+			var appearance = GetAppearanceForPivot(pivot);
+
+			if(appearance != null)
+				observer.OnAppearanceChanged(appearance);
 		}
 
 		void IShellController.AddFlyoutBehaviorObserver(IFlyoutBehaviorObserver observer)
