@@ -210,6 +210,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_loadedCookies.Add(url))
 				return;
 
+			// pre ios 11 we sync cookies after navigated
+			if (!Forms.IsiOS11OrNewer)
+				return;
+
 			var uri = new Uri(url);
 			var cookies = myCookieJar.GetCookies(uri);
 			var existingCookies = await GetCookiesFromNativeStore(url);
@@ -235,7 +239,17 @@ namespace Xamarin.Forms.Platform.iOS
 			var uri = new Uri(url);
 			var cookies = myCookieJar.GetCookies(uri);
 			var retrieveCurrentWebCookies = await GetCookiesFromNativeStore(url);
-			
+
+			foreach (var nscookie in retrieveCurrentWebCookies)
+			{
+				if (cookies[nscookie.Name] == null)
+				{
+					string cookieH = $"{nscookie.Name}={nscookie.Value}; domain={nscookie.Domain}; path={nscookie.Path}";
+
+					myCookieJar.SetCookies(uri, cookieH);
+				}
+			}
+
 			foreach (Cookie cookie in cookies)
 			{
 				NSHttpCookie nSHttpCookie = null;
@@ -315,11 +329,8 @@ namespace Xamarin.Forms.Platform.iOS
 					cookiesToSet.Add(cookie);
 			}
 
-			if(cookiesToSet.Count > 0)
-				await SetCookie(cookiesToSet);
-
-			if(deleteCookies.Count > 0)
-				await DeleteCookies(deleteCookies);
+			await SetCookie(cookiesToSet);
+			await DeleteCookies(deleteCookies);
 		}
 
 		async Task SetCookie(List<Cookie> cookies)
@@ -331,11 +342,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-
-				WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(cookies)), WKUserScriptInjectionTime.AtDocumentStart, false);
-
 				Configuration.UserContentController.RemoveAllUserScripts();
-				Configuration.UserContentController.AddUserScript(wKUserScript);
+
+				if (cookies.Count > 0)
+				{
+					WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(cookies)), WKUserScriptInjectionTime.AtDocumentStart, false);
+
+					Configuration.UserContentController.AddUserScript(wKUserScript);
+				}
 			}
 		}
 
