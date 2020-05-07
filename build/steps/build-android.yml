@@ -14,7 +14,8 @@ parameters:
   monoVersion: $(MONO_VERSION)
   provisionatorPath: 'build/provisioning/provisioning.csx'
   provisionatorExtraArguments: ''
-
+  vmPool: 'Azure Pipelines'
+  vmImage: 'macOS-10.15'
 jobs:
   - job: ${{ parameters.name }}
     workspace:
@@ -22,6 +23,7 @@ jobs:
     displayName: ${{ parameters.displayName }}
     timeoutInMinutes: 120
     pool:
+      name: ${{ parameters.vmPool }}
       vmImage: ${{ parameters.vmImage }}
     dependsOn: ${{ parameters.dependsOn }}
     strategy:

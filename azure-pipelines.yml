@@ -202,7 +202,8 @@ stages:
     jobs:
       - template: build/steps/build-android.yml
         parameters:
-          vmImage: $(macOSXVmImage)
+          vmPool: $(macAndroid2019VmPool)
+          vmImage: $(macAndroid2019VmImage)
           provisionatorPath : 'build/provisioning/provisioning.csx'
           buildForVS2017: false
           buildConfiguration: $(DefaultBuildConfiguration)
@@ -217,6 +218,7 @@ stages:
     jobs:
       - template: build/steps/build-android.yml
         parameters:
+          vmPool: $(macAndroid2017VmPool)
           vmImage: 'macOS-10.14'
           provisionatorPath : 'build/provisioning/provisioning.csx'
           buildForVS2017: true
@@ -230,6 +232,8 @@ stages:
       dependsOn: []
     jobs:
       - job: osx
+        ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
+          timeoutInMinutes: 120
         workspace:
           clean: all
         displayName: OSX Phase
