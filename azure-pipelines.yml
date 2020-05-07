@@ -202,8 +202,8 @@ stages:
     jobs:
       - template: build/steps/build-android.yml
         parameters:
-          vmPool: coalesce(variables['macAndroid2019VmPool'], 'Azure Pipelines')
-          vmImage: coalesce(variables['macAndroid2019VmImage'], 'macOS-10.15')
+          vmPool: ${{ variables.macAndroid2019VmPool }}
+          vmImage: ${{ variables.macAndroid2019VmImage }}
           provisionatorPath : 'build/provisioning/provisioning.csx'
           buildForVS2017: false
           buildConfiguration: $(DefaultBuildConfiguration)
@@ -218,7 +218,7 @@ stages:
     jobs:
       - template: build/steps/build-android.yml
         parameters:
-          vmPool: coalesce(variables['macAndroid2017VmPool'], 'Azure Pipelines')
+          vmPool: ${{ variables.macAndroid2017VmPool }}
           vmImage: 'macOS-10.14'
           provisionatorPath : 'build/provisioning/provisioning.csx'
           buildForVS2017: true
