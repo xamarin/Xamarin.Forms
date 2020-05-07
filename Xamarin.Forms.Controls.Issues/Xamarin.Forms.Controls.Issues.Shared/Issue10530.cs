@@ -8,11 +8,11 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
+namespace Xamarin.Forms.Controls.Issues
+{
 #if UITEST
 	[Category(UITestCategories.SwipeView)]
 #endif
-namespace Xamarin.Forms.Controls.Issues
-{
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 10530, "[Bug] Swipe View Null Reference Exception while trying to change visibility of swipe item", PlatformAffected.Android)]
 	public class Issue10530 : TestContentPage
