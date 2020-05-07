@@ -275,13 +275,28 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var retrieveCurrentWebCookies = await GetCookiesFromNativeStore(url);
 
+			List<NSHttpCookie> deleteCookies = new List<NSHttpCookie>();
+			foreach (var cookie in retrieveCurrentWebCookies)
+			{
+				if (cookies[cookie.Name] != null)
+					continue;
+
+				deleteCookies.Add(cookie);
+			}
+
 			List<Cookie> cookiesToSet = new List<Cookie>();
 			foreach (Cookie cookie in cookies)
 			{
 				bool changeCookie = true;
 
-				// on iOS 10 we have to rewrite all the cookies
-				if (Forms.IsiOS11OrNewer)
+				// This code is used to only push updates to cookies that have changed.
+				// This doesn't quite work on on iOS 10 if we have to delete any cookies.
+				// I haven't found a way on iOS 10 to remove individual cookies. 
+				// The trick we use on Android with writing a cookie that expires doesn't work
+				// So on iOS10 if the user wants to remove any cookies we just delete 
+				// the cookie for the entire domain inside of DeleteCookies and then rewrite
+				// all the cookies
+				if (Forms.IsiOS11OrNewer || deleteCookies.Count == 0)
 				{
 					foreach (var nsCookie in retrieveCurrentWebCookies)
 					{
@@ -300,18 +315,11 @@ namespace Xamarin.Forms.Platform.iOS
 					cookiesToSet.Add(cookie);
 			}
 
-			await SetCookie(cookiesToSet);
+			if(cookiesToSet.Count > 0)
+				await SetCookie(cookiesToSet);
 
-			List<NSHttpCookie> deleteCookies = new List<NSHttpCookie>();
-			foreach (var cookie in retrieveCurrentWebCookies)
-			{
-				if (cookies[cookie.Name] != null)
-					continue;
-
-				deleteCookies.Add(cookie);
-			}
-
-			await DeleteCookies(deleteCookies);
+			if(deleteCookies.Count > 0)
+				await DeleteCookies(deleteCookies);
 		}
 
 		async Task SetCookie(List<Cookie> cookies)
@@ -443,8 +451,6 @@ namespace Xamarin.Forms.Platform.iOS
 			StringBuilder cookieBuilder = new StringBuilder();
 			foreach (System.Net.Cookie jCookie in existingCookies)
 			{
-				// cookiesToKeep.Add(jCookie.Name);
-
 				cookieBuilder.Append("document.cookie = '");
 				cookieBuilder.Append(jCookie.Name);
 				cookieBuilder.Append("=");
