@@ -182,10 +182,11 @@ if(bases.length == 0){
 			if (myCookieJar == null)
 				return;
 
-			if (!_loadedCookies.Add(url))
+			var uri = new System.Uri(url);
+
+			if (!_loadedCookies.Add(uri.Host))
 				return;
 
-			var uri = new System.Uri(url);
 			var cookies = myCookieJar.GetCookies(uri);
 
 			if (cookies != null)

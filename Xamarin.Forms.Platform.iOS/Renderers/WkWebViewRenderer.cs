@@ -207,14 +207,15 @@ namespace Xamarin.Forms.Platform.iOS
 			if (myCookieJar == null)
 				return;
 
-			if (!_loadedCookies.Add(url))
+			var uri = new Uri(url);
+
+			if (!_loadedCookies.Add(uri.Host))
 				return;
 
 			// pre ios 11 we sync cookies after navigated
 			if (!Forms.IsiOS11OrNewer)
 				return;
 
-			var uri = new Uri(url);
 			var cookies = myCookieJar.GetCookies(uri);
 			var existingCookies = await GetCookiesFromNativeStore(url);
 			foreach (var nscookie in existingCookies)
