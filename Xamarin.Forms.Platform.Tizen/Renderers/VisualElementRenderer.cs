@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using ElmSharp;
 using ElmSharp.Accessible;
+using ElmSharp.Wearable;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen.Native;
 using EFocusDirection = ElmSharp.FocusDirection;
@@ -494,6 +495,29 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
+		protected Widget FocusSearch(bool forwardDirection)
+		{
+			VisualElement element = Element as VisualElement;
+			int maxAttempts = 0;
+			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
+			if (tabIndexes == null)
+				return null;
+
+			int tabIndex = Element.TabIndex;
+			int attempt = 0;
+
+			do
+			{
+				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex) as VisualElement;
+				var renderer = Platform.GetRenderer(element);
+				if (renderer?.NativeView is Widget widget && widget.IsFocusAllowed)
+				{
+					return widget;
+				}
+			} while (!(element.IsFocused || ++attempt >= maxAttempts));
+			return null;
+		}
+
 		internal virtual void SendVisualElementInitialized(VisualElement element, EvasObject nativeView)
 		{
 			element.SendViewInitialized(nativeView);
@@ -670,7 +694,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// <summary>
 		/// Handles focus events.
 		/// </summary>
-		void OnFocused(object sender, EventArgs e)
+		protected virtual void OnFocused(object sender, EventArgs e)
 		{
 			if (null != Element)
 			{
@@ -681,7 +705,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// <summary>
 		/// Handles unfocus events.
 		/// </summary>
-		void OnUnfocused(object sender, EventArgs e)
+		protected virtual void OnUnfocused(object sender, EventArgs e)
 		{
 			if (null != Element)
 			{

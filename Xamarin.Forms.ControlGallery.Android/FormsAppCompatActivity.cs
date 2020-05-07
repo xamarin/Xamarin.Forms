@@ -18,7 +18,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 	[Activity(Label = "Control Gallery", Icon = "@drawable/icon", Theme = "@style/MyTheme",
 		MainLauncher = true, HardwareAccelerated = true, 
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.UiMode)]
 	[IntentFilter(new[] { Intent.ActionView },
 		Categories = new[]
 		{
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// Fake_Flag is here so we can test for flag initialization issues
 			Forms.SetFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
 #else
-			Forms.SetFlags("UseLegacyRenderers"/*, "CollectionView_Experimental", "Shell_Experimental" */);
+			Forms.SetFlags("UseLegacyRenderers", "SwipeView_Experimental", "MediaElement_Experimental", "AppTheme_Experimental");
 #endif
 			Forms.Init(this, bundle);
 
@@ -84,13 +84,25 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			SetUpForceRestartTest();
 
+			// Make the activity accessible to platform unit tests
+			DependencyResolver.ResolveUsing((t) => {
+				if (t == typeof(Context))
+				{
+					return this;
+				}
+
+				return null;
+			});
+
 			LoadApplication(_app);
-			if (Forms.Flags.Contains("FastRenderers_Experimental"))
+
+#if !TEST_EXPERIMENTAL_RENDERERS
+			if ((int)Build.VERSION.SdkInt >= 21)
 			{
-				var masterPage = ((_app.MainPage as MasterDetailPage)?.Master as ContentPage);
-				if (masterPage != null)
-					masterPage.Content = new Label { Text = "Fast Renderers" };
+				// Show a purple status bar if we're looking at legacy renderers
+				Window.SetStatusBarColor(Color.MediumPurple.ToAndroid());
 			}
+#endif
 		}
 
 		protected override void OnResume()

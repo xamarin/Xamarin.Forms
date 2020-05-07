@@ -7,13 +7,18 @@ using AImageView = Android.Widget.ImageView;
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+#else
 using Android.Support.V4.View;
+#endif
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
 	public class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer, ITabStop,
 		ILayoutChanges
 	{
+		bool _hasLayoutOccurred;
 		bool _disposed;
 		Image _element;
 		bool _skipInvalidate;
@@ -21,8 +26,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementTracker _visualElementTracker;
 		VisualElementRenderer _visualElementRenderer;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
+		IFormsAnimationDrawable _formsAnimationDrawable;
 
-		bool IImageRendererController.IsDisposed => _disposed;
+		bool IImageRendererController.IsDisposed => _disposed || !Control.IsAlive();
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -60,6 +66,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			base.Dispose(disposing);
+		}
+
+		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+		{
+			base.OnLayout(changed, left, top, right, bottom);
+			_hasLayoutOccurred = true;
 		}
 
 		public override void Invalidate()
@@ -169,6 +181,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 
 		void IImageRendererController.SkipInvalidate() => _skipInvalidate = true;
+		void IImageRendererController.SetFormsAnimationDrawable(IFormsAnimationDrawable value)
+		{
+			if(_formsAnimationDrawable != null)
+				_formsAnimationDrawable.AnimationStopped -= OnAnimationStopped;
+
+			_formsAnimationDrawable = value;
+			if (_formsAnimationDrawable != null)
+				_formsAnimationDrawable.AnimationStopped += OnAnimationStopped;
+		}
+
+		bool ILayoutChanges.HasLayoutOccurred => _hasLayoutOccurred;
+
+		void OnAnimationStopped(object sender, FormsAnimationDrawableStateEventArgs e) =>
+			ImageElementManager.OnAnimationStopped(Element, e);
 
 		protected AImageView Control => this;
 		protected Image Element => _element;
@@ -188,6 +214,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			ElementPropertyChanged?.Invoke(this, e);
 		}
 	}

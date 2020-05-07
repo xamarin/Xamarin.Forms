@@ -9,9 +9,16 @@ namespace Xamarin.Forms
 {
 	internal static class ExperimentalFlags
 	{
+		internal const string StateTriggersExperimental = "StateTriggers_Experimental";
+		internal const string IndicatorViewExperimental = "IndicatorView_Experimental";
 		internal const string ShellUWPExperimental = "Shell_UWP_Experimental";
 		internal const string CarouselViewExperimental = "CarouselView_Experimental";
-		internal const string CollectionViewExperimental = "CollectionView_Experimental";
+		internal const string SwipeViewExperimental = "SwipeView_Experimental";
+		internal const string MediaElementExperimental = "MediaElement_Experimental";
+		internal const string MarkupExperimental = "Markup_Experimental";
+		internal const string AppThemeExperimental = "AppTheme_Experimental";
+		internal const string ExpanderExperimental = "Expander_Experimental";
+		internal const string RadioButtonExperimental = "RadioButton_Experimental";
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void VerifyFlagEnabled(
@@ -20,6 +27,11 @@ namespace Xamarin.Forms
 			string constructorHint = null,
 			[CallerMemberName] string memberName = "")
 		{
+			if (DesignMode.IsDesignModeEnabled)
+			{
+				return; 
+			}
+
 			if (Device.Flags == null || !Device.Flags.Contains(flagName))
 			{
 				if (!String.IsNullOrEmpty(memberName))

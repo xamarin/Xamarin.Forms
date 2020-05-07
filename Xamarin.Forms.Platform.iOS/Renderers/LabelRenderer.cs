@@ -43,6 +43,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			Label.TextTypeProperty.PropertyName
 		};
 
+		[Internals.Preserve(Conditional = true)]
+		public LabelRenderer()
+		{
+
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			if (!_perfectSizeValid)
@@ -244,9 +250,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Element?.TextType != TextType.Text)
 				return;
 
-			if (!Element.IsSet(Label.TextDecorationsProperty))
-				return;
-
 #if __MOBILE__
 			if (!(Control.AttributedText?.Length > 0))
 				return;
@@ -279,10 +282,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
 #if __MOBILE__
-			UpdateCharacterSpacing();
+			Control.AttributedText = newAttributedText;
 #else
 			Control.AttributedStringValue = newAttributedText;
 #endif
+			UpdateCharacterSpacing();
 			_perfectSizeValid = false;
 		}
 
@@ -379,20 +383,24 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateCharacterSpacing()
 		{
-#if __MOBILE__
 			if (IsElementOrControlEmpty)
 				return;
 
 			if (Element?.TextType != TextType.Text)
 				return;
-
+#if __MOBILE__
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
-				
-			_perfectSizeValid = false;
+#else
+   			var textAttr = Control.AttributedStringValue.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedStringValue = textAttr;
 #endif
+
+			_perfectSizeValid = false;
 		}
 
 		void UpdateText()
@@ -450,28 +458,28 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			string text = Element.Text ?? string.Empty;
 
+			var attr = GetNSAttributedStringDocumentAttributes();
 #if __MOBILE__
-			var attr = new NSAttributedStringDocumentAttributes
-			{
-				DocumentType = NSDocumentType.HTML
-			};
 
 			NSError nsError = null;
 
 			Control.AttributedText = new NSAttributedString(text, attr, ref nsError);
-
 #else
-			var attr = new NSAttributedStringDocumentAttributes
-			{
-				DocumentType = NSDocumentType.HTML
-			};
-
 			var htmlData = new NSMutableData();
 			htmlData.SetData(text);
 
 			Control.AttributedStringValue = new NSAttributedString(htmlData, attr, out _);
 #endif
 			_perfectSizeValid = false;
+		}
+
+		protected virtual NSAttributedStringDocumentAttributes GetNSAttributedStringDocumentAttributes()
+		{
+			return new NSAttributedStringDocumentAttributes
+			{
+				DocumentType = NSDocumentType.HTML,
+				StringEncoding = NSStringEncoding.UTF8
+			};
 		}
 
 		void UpdateFont()
@@ -508,9 +516,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			// default value of color documented to be black in iOS docs
 #if __MOBILE__
-			Control.TextColor = textColor.ToUIColor(ColorExtensions.Black);
+			Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else
-			Control.TextColor = textColor.ToNSColor(ColorExtensions.Black);
+			var alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.Black), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });
+			textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
+			Control.AttributedStringValue = textWithColor;
 #endif
 			UpdateLayout();
 		}

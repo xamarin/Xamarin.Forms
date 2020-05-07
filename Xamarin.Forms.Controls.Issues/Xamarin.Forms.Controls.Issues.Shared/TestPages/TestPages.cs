@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls
 #elif __IOS__
 
 			app = InitializeiOSApp();
-			
+
 #elif __MACOS__
 			Xamarin.UITest.Desktop.TestAgent.Start();
 			app = InitializeMacOSApp();
@@ -76,8 +76,8 @@ namespace Xamarin.Forms.Controls
 #endif
 
 #if __IOS__
-		static IApp InitializeiOSApp() 
-		{ 
+		static IApp InitializeiOSApp()
+		{
 			// Running on a device
 			var app = ConfigureApp.iOS.InstalledApp(AppPaths.BundleId).Debug()
 				//Uncomment to run from a specific iOS SIM, get the ID from XCode -> Devices
@@ -201,7 +201,7 @@ namespace Xamarin.Forms.Controls
 					if (attempts < maxAttempts)
 					{
 						// Something has failed and we're stuck in a place where we can't navigate
-						// to the test. Usually this is because we're getting network/HTTP errors 
+						// to the test. Usually this is because we're getting network/HTTP errors
 						// communicating with the server on the device. So we'll try restarting the app.
 						RunningApp = InitializeApp();
 					}
@@ -262,7 +262,7 @@ namespace Xamarin.Forms.Controls
 		static int s_testsrun;
 		const int ConsecutiveTestLimit = 20;
 
-		// Until we get more of our memory leak issues worked out, restart the app 
+		// Until we get more of our memory leak issues worked out, restart the app
 		// after a specified number of tests so we don't get bogged down in GC
 		// (or booted by jetsam)
 		public static void EnsureMemory()
@@ -590,6 +590,12 @@ namespace Xamarin.Forms.Controls
 	public abstract class TestShell : Shell
 	{
 		protected const string FlyoutIconAutomationId = "OK";
+#if __IOS__
+		protected const string BackButtonAutomationId = "Back";
+#else
+		protected const string BackButtonAutomationId = "OK";
+#endif
+
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;
 		protected virtual bool Isolate => true;
@@ -597,14 +603,27 @@ namespace Xamarin.Forms.Controls
 
 		protected TestShell() : base()
 		{
+			Routing.Clear();
 #if APP
 			Init();
 #endif
 		}
 
+		protected ContentPage DisplayedPage
+		{
+			get
+			{
+				return (ContentPage)(CurrentItem.CurrentItem as IShellSectionController).PresentedPage;
+			}
+		}
+
 		public ContentPage AddTopTab(string title, string icon = null)
 		{
-			var page = new ContentPage();
+			var page = new ContentPage()
+			{
+				Title = title
+			};
+
 			AddTopTab(page, title, icon);
 			return page;
 		}
@@ -619,17 +638,30 @@ namespace Xamarin.Forms.Controls
 				return;
 			}
 
-			Items[0].Items[0].Items.Add(new ShellContent()
+			var content = new ShellContent()
 			{
 				Title = title ?? page.Title,
 				Content = page,
 				Icon = icon
-			});
+			};
+
+			Items[0].Items[0].Items.Add(content);
+
+			if (!String.IsNullOrWhiteSpace(content.Title))
+				content.Route = content.Title;
 		}
 
 		public ContentPage AddBottomTab(string title, string icon = null)
 		{
 			ContentPage page = new ContentPage();
+			if (Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				item.Items[0].Title = title ?? page.Title;
+				return page;
+			}
+
 			Items[0].Items.Add(new ShellSection()
 			{
 				AutomationId = title,
@@ -646,6 +678,29 @@ namespace Xamarin.Forms.Controls
 				}
 			});
 			return page;
+		}
+
+		public FlyoutItem AddFlyoutItem(ContentPage page, string title)
+		{
+			var item = new FlyoutItem
+			{
+				Title = title,
+				Items =
+				{
+					new Tab
+					{
+						Title = title,
+						Items =
+						{
+							page
+						}
+					}
+				}
+			};
+
+			Items.Add(item);
+
+			return item;
 		}
 
 		public TabBar CreateTabBar(string shellItemTitle)
@@ -688,6 +743,7 @@ namespace Xamarin.Forms.Controls
 			item.Title = shellItemTitle;
 
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
+			shellSection.Title = shellItemTitle;
 
 			shellSection.Items.Add(new ShellContent()
 			{
@@ -700,24 +756,34 @@ namespace Xamarin.Forms.Controls
 			return page;
 		}
 
-		public ShellItem AddContentPage(ContentPage contentPage = null)
-			=> AddContentPage<ShellItem, ShellSection>(contentPage);
+		public ShellItem AddContentPage(ContentPage contentPage = null, string title = null)
+			=> AddContentPage<ShellItem, ShellSection>(contentPage, title);
 
-		public TShellItem AddContentPage<TShellItem, TShellSection>(ContentPage contentPage = null)
+		public TShellItem AddContentPage<TShellItem, TShellSection>(ContentPage contentPage = null, string title = null)
 			where TShellItem : ShellItem
 			where TShellSection : ShellSection
 		{
+			title = title ?? contentPage?.Title;
 			contentPage = contentPage ?? new ContentPage();
 			TShellItem item = Activator.CreateInstance<TShellItem>();
-			item.Title = contentPage.Title;
+			item.Title = title;
 			TShellSection shellSection = Activator.CreateInstance<TShellSection>();
 			Items.Add(item);
 			item.Items.Add(shellSection);
+			shellSection.Title = title;
 
-			shellSection.Items.Add(new ShellContent()
+			var content = new ShellContent()
 			{
-				ContentTemplate = new DataTemplate(() => contentPage)
-			});
+				ContentTemplate = new DataTemplate(() => contentPage),
+				Title = title
+			};
+
+			shellSection.Items.Add(content);
+
+			if(!String.IsNullOrWhiteSpace(title))
+			{
+				content.Route = title;
+			}
 
 			return item;
 		}
@@ -763,6 +829,12 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
+		public void TapBackArrow(string backArrowIcon = BackButtonAutomationId)
+		{
+			RunningApp.WaitForElement(backArrowIcon, "Back Arrow Not Found");
+			RunningApp.Tap(backArrowIcon);
+		}
+
 
 		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
 		{
@@ -770,6 +842,14 @@ namespace Xamarin.Forms.Controls
 			ShowFlyout(flyoutIcon, usingSwipe);
 			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
+		}
+
+		public void DoubleTapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
+		{
+			timeoutMessage = timeoutMessage ?? text;
+			ShowFlyout(flyoutIcon, usingSwipe);
+			RunningApp.WaitForElement(text, timeoutMessage);
+			RunningApp.DoubleTap(text);
 		}
 
 #endif
@@ -785,7 +865,7 @@ namespace Xamarin.Forms.Controls.Issues
 	using System;
 	using NUnit.Framework;
 
-	// Run setup once for all tests in the Xamarin.Forms.Controls.Issues namespace
+// Run setup once for all tests in the Xamarin.Forms.Controls.Issues namespace
 	// (instead of once for each test)
 	[SetUpFixture]
 	public class IssuesSetup

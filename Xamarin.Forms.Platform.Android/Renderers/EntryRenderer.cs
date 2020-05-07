@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
 using Android.Support.V4.Content;
+#endif
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -214,16 +218,31 @@ namespace Xamarin.Forms.Platform.Android
 					formsEditContext.SelectionChanged -= SelectionChanged;
 					ListenForCloseBtnTouch(false);
 				}
+				_clearBtn = null;
 			}
 
 			base.Dispose(disposing);
 		}
 
+		protected virtual void UpdatePlaceHolderText()
+		{
+			if (EditText.Hint == Element.Placeholder)
+				return;
 
-		protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
+			EditText.Hint = Element.Placeholder;
+			if (EditText.IsFocused)
+			{
+				EditText.ShowKeyboard();
+			}
+		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
 				UpdatePlaceHolderText();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
@@ -301,12 +320,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateHorizontalTextAlignment()
 		{
-			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
+			EditText.UpdateTextAlignment(Element.HorizontalTextAlignment, Element.VerticalTextAlignment);
 		}
 
 		void UpdateVerticalTextAlignment()
 		{
-			EditText.UpdateVerticalAlignment(Element.VerticalTextAlignment);
+			EditText.UpdateTextAlignment(Element.HorizontalTextAlignment, Element.VerticalTextAlignment);
 		}
 
 		protected abstract void UpdateColor();
@@ -530,6 +549,7 @@ namespace Xamarin.Forms.Platform.Android
 	// Entry clear button management
 	public abstract partial class EntryRendererBase<TControl>
 	{
+		Drawable _clearBtn;
 		internal override void OnNativeFocusChanged(bool hasFocus)
 		{
 			base.OnNativeFocusChanged(hasFocus);
@@ -544,9 +564,24 @@ namespace Xamarin.Forms.Platform.Android
 
 		void EditTextTouched(object sender, TouchEventArgs e)
 		{
-			MotionEvent me = e.Event;
-			if (me.Action == MotionEventActions.Up && me.RawX >= EditText.Right - EditText.CompoundPaddingRight)
-				EditText.Text = null;
+			e.Handled = false;
+			var me = e.Event;
+
+			var rBounds = _clearBtn?.Bounds;
+			if (rBounds != null)
+			{
+				var x = me.GetX();
+				var y = me.GetY();
+				if (me.Action == MotionEventActions.Up
+				    && x >= (EditText.Right - rBounds.Width())
+				    && x <= (EditText.Right - EditText.PaddingRight)
+				    && y >= EditText.PaddingTop
+				    && y <= (EditText.Height - EditText.PaddingBottom))
+				{
+					EditText.Text = null;
+					e.Handled = true;
+				}
+			}
 		}
 
 		void UpdateClearBtnOnElementChanged()
@@ -591,6 +626,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Drawable d = showClearButton && (Element.Text?.Length > 0) ? GetCloseButtonDrawable() : null;
 			EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+			_clearBtn = d;
 		}
 
 		protected virtual Drawable GetCloseButtonDrawable()

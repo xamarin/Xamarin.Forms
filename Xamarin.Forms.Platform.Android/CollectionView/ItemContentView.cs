@@ -14,6 +14,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
+		internal void ClickOn()
+		{
+			CallOnClick();
+		}
+
 		internal void RealizeContent(View view)
 		{
 			Content = CreateRenderer(view, Context);
@@ -23,8 +28,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ElementMeasureInvalidated(object sender, System.EventArgs e)
 		{
-			RequestLayout();
+			if (this.IsAlive())
+			{
+				RequestLayout();
+			}
+			else if(sender is VisualElement ve)
+			{
+				ve.MeasureInvalidated -= ElementMeasureInvalidated;
+			}
 		}
+
+		internal IVisualElementRenderer VisualElementRenderer => Content;
 
 		internal void Recycle()
 		{

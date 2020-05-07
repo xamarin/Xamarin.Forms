@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Threading;
+using System.Threading.Tasks;
 using Foundation;
 using UIKit;
 
@@ -12,10 +14,11 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly UICollectionView _collectionView;
 		readonly bool _grouped;
 		readonly int _section;
-		readonly IList _itemsSource;
+		readonly IEnumerable _itemsSource;
 		bool _disposed;
+		SemaphoreSlim _batchUpdating = new SemaphoreSlim(1, 1);
 
-		public ObservableItemsSource(IList itemSource, UICollectionViewController collectionViewController, int group = -1)
+		public ObservableItemsSource(IEnumerable itemSource, UICollectionViewController collectionViewController, int group = -1)
 		{
 			_collectionViewController = collectionViewController;
 			_collectionView = _collectionViewController.CollectionView;
@@ -24,13 +27,17 @@ namespace Xamarin.Forms.Platform.iOS
 			_grouped = group >= 0;
 
 			_itemsSource = itemSource;
-			
+
+			Count = ItemsCount();
+
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
-		public int Count => _itemsSource.Count;
+		internal event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
 
-		public object this[int index] => _itemsSource[index];
+		public int Count { get; private set; }
+
+		public object this[int index] => ElementAt(index);
 
 		public void Dispose()
 		{
@@ -52,7 +59,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public int ItemCountInGroup(nint group)
 		{
-			return _itemsSource.Count;
+			return Count;
 		}
 
 		public object Group(NSIndexPath indexPath)
@@ -62,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public NSIndexPath GetIndexForItem(object item)
 		{
-			for (int n = 0; n < _itemsSource.Count; n++)
+			for (int n = 0; n < Count; n++)
 			{
 				if (this[n] == item)
 				{
@@ -75,7 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public int GroupCount => 1;
 
-		public int ItemCount => _itemsSource.Count;
+		public int ItemCount => Count;
 
 		public object this[NSIndexPath indexPath]
 		{
@@ -90,34 +97,53 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		async void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				await Device.InvokeOnMainThreadAsync(async () => await CollectionChanged(args));
+			}
+			else
+			{
+				await CollectionChanged(args);
+			}
+		}
+
+		async Task CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					Add(args);
+					await Add(args);
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					Remove(args);
+					await Remove(args);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					Replace(args);
+					await Replace(args);
 					break;
 				case NotifyCollectionChangedAction.Move:
 					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					Reload();
+					await Reload();
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+
+			CollectionItemsSourceChanged?.Invoke(this, args);
 		}
 
-		void Reload()
+		async Task Reload()
 		{
+			await _batchUpdating.WaitAsync();
+
 			_collectionView.ReloadData();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
+			Count = ItemsCount();
+
+			_batchUpdating.Release();
 		}
 
 		NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
@@ -132,73 +158,55 @@ namespace Xamarin.Forms.Platform.iOS
 			return result;
 		}
 
-		bool NotLoadedYet()
+		async Task Add(NotifyCollectionChangedEventArgs args)
 		{
-			// If the UICollectionView hasn't actually been loaded, then calling InsertItems or DeleteItems is 
-			// going to crash or get in an unusable state; instead, ReloadData should be used
-			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
-		}
+			if (ReloadRequired())
+			{
+				await Reload();
+				return;
+			}
 
-		void Add(NotifyCollectionChangedEventArgs args)
-		{
-			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
 			var count = args.NewItems.Count;
+			Count += count;
+			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 
-			if (NotLoadedYet())
-			{
-				_collectionView.ReloadData();
-				return;
-			}
-
-			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
-			{
-				// Okay, we're going from completely empty to more than 0 items; there's an iOS bug which apparently
-				// will just crash if we call InsertItems here, so we have to do ReloadData.
-				_collectionView.ReloadData();
-				return;
-			}
-
-			_collectionView.PerformBatchUpdates(() =>
-				{
-					var indexes = CreateIndexesFrom(startIndex, count);
-					_collectionView.InsertItems(indexes);
-				}, null);
+			// Queue up the updates to the UICollectionView
+			BatchUpdate(() => _collectionView.InsertItems(CreateIndexesFrom(startIndex, count)));
 		}
 
-		void Remove(NotifyCollectionChangedEventArgs args)
+		async Task Remove(NotifyCollectionChangedEventArgs args)
 		{
 			var startIndex = args.OldStartingIndex;
-
-			if (NotLoadedYet())
-			{
-				_collectionView.ReloadData();
-				return;
-			}
 
 			if (startIndex < 0)
 			{
 				// INCC implementation isn't giving us enough information to know where the removed items were in the
 				// collection. So the best we can do is a ReloadData()
-				Reload();
+				await Reload();
+				return;
+			}
+
+			if (ReloadRequired())
+			{
+				await Reload();
 				return;
 			}
 
 			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
+			Count -= count;
 
-			_collectionView.PerformBatchUpdates(() =>
-			{
-				_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
-			}, null);
+			// Queue up the updates to the UICollectionView
+			BatchUpdate(() => _collectionView.DeleteItems(CreateIndexesFrom(startIndex, count)));
 		}
 
-		void Replace(NotifyCollectionChangedEventArgs args)
+		async Task Replace(NotifyCollectionChangedEventArgs args)
 		{
 			var newCount = args.NewItems.Count;
 
 			if (newCount == args.OldItems.Count)
 			{
-				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 
 				// We are replacing one set of items with a set of equal size; we can do a simple item range update
 				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
@@ -207,7 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// The original and replacement sets are of unequal size; this means that everything currently in view will 
 			// have to be updated. So we just have to use ReloadData and let the UICollectionView update everything
-			Reload();
+			await Reload();
 		}
 
 		void Move(NotifyCollectionChangedEventArgs args)
@@ -227,6 +235,96 @@ namespace Xamarin.Forms.Platform.iOS
 			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
 			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
 			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
+		}
+
+		internal int ItemsCount()
+		{
+			if (_itemsSource is IList list)
+				return list.Count;
+
+			int count = 0;
+			foreach (var item in _itemsSource)
+				count++;
+			return count;
+		}
+
+		internal object ElementAt(int index)
+		{
+			if (_itemsSource is IList list)
+				return list[index];
+
+			int count = 0;
+			foreach (var item in _itemsSource)
+			{
+				if (count == index)
+					return item;
+				count++;
+			}
+
+			return -1;
+		}
+
+		internal int IndexOf(object item)
+		{
+			if (_itemsSource is IList list)
+				return list.IndexOf(item);
+
+			int count = 0;
+			foreach (var i in _itemsSource)
+			{
+				if (i == item)
+					return count;
+				count++;
+			}
+
+			return -1;
+		}
+
+		bool NotLoadedYet()
+		{
+			// If the UICollectionView hasn't actually been loaded, then calling InsertItems or DeleteItems is 
+			// going to crash or get in an unusable state; instead, ReloadData should be used
+			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
+		}
+
+		bool ReloadRequired()
+		{
+			if (NotLoadedYet())
+			{
+				return true;
+			}
+
+			// UICollectionView doesn't like when we insert items into a completely empty un-grouped CV,
+			// and it doesn't like when we insert items into a grouped CV with no actual cells (just empty groups)
+			// In those circumstances, we just need to ask it to reload the data so it can get its internal
+			// accounting in order
+
+			if (!_grouped && _collectionView.NumberOfItemsInSection(_section) == 0)
+			{
+				return true;
+			}
+
+			return _collectionView.VisibleCells.Length == 0;
+		}
+
+		void BatchUpdate(Action update)
+		{
+			_collectionView.PerformBatchUpdates(() =>
+			{
+				if (_batchUpdating.CurrentCount > 0)
+				{
+					_batchUpdating.Wait();
+				}
+
+				update();
+			},
+					(_) =>
+					{
+						if (_batchUpdating.CurrentCount == 0)
+						{
+							_batchUpdating.Release();
+						}
+					});
 		}
 	}
 }

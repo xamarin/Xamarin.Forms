@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Xamarin.Forms.CustomAttributes
 {
-	[Conditional("DEBUG")]
+	
 	[AttributeUsage(
 		AttributeTargets.Class |
 		AttributeTargets.Event |
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.CustomAttributes
 		Default
 	}
 
-	[Conditional("DEBUG")]
+	
 	[AttributeUsage(
 		AttributeTargets.Class |
 		AttributeTargets.Method,
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.CustomAttributes
 			: $"{IssueTracker.ToString().Substring(0, 1)}{IssueNumber} ({IssueTestNumber})";
 	}
 
-	[Conditional("DEBUG")]
+	
 	public class UiTestExemptAttribute : Attribute
 	{
 		// optional string reason
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public string Description => "Description: " + _description;
 	}
 
-	[Conditional("DEBUG")]
+	
 	public class UiTestFragileAttribute : Attribute
 	{
 		// optional string reason
@@ -120,7 +120,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public string Description => "Description: " + _description;
 	}
 
-	[Conditional("DEBUG")]
+	
 	[AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
 	public class UiTestBrokenAttribute : Attribute
 	{
@@ -201,7 +201,9 @@ namespace Xamarin.Forms.CustomAttributes
 			EntryCell,
 			Editor,
 			DatePicker,
-			CheckBox
+			CheckBox,
+			SwipeView,
+			RadioButton
 		}
 
 		public enum Layouts
@@ -505,6 +507,7 @@ namespace Xamarin.Forms.CustomAttributes
 			Completed,
 			TextChanged,
 			Placeholder,
+			PlaceholderColor,
 			Text,
 			TextColor,
 			FontAttributes,
@@ -644,7 +647,10 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
 			MaxLines,
-			TextType
+			HtmlTextType,
+			HtmlTextTypeMultipleLines,
+			HtmlTextLabelProperties,
+			TextTypeToggle,
 		}
 
 		public enum MasterDetailPage
@@ -748,11 +754,24 @@ namespace Xamarin.Forms.CustomAttributes
 			ThumbColor
 		}
 
+		public enum SwipeView
+		{
+			RightItems,
+			TopItems,
+			BottomItems
+		}
+
 		public enum CheckBox
 		{
 			IsChecked,
 			CheckedColor,
 			UncheckedColor
+		}
+
+		public enum RadioButton
+		{
+			IsChecked,
+			ButtonSource,
 		}
 
 		public enum TimePicker
@@ -874,8 +893,8 @@ namespace Xamarin.Forms.CustomAttributes
 			IsScrollAnimated,
 			NumberOfSideItems, 
 			PeekAreaInsets,
-			Position
+			Position,
+			IsBounceEnabled
 		}
 	}
 }
-

@@ -110,6 +110,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public void LayoutItems(Rect bound, bool force)
 		{
+			if (_allocatedSize.Width <= 0 || _allocatedSize.Height <= 0)
+				return;
+
 			// TODO : need to optimization. it was frequently called with similar bound value.
 			if (!ShouldRearrange(bound) && !force)
 			{
@@ -291,6 +294,22 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				if (_cached.Count > index)
 					_cached[index] = false;
 			}
+		}
+
+		public int GetVisibleItemIndex(int x, int y)
+		{
+			int coordinate = IsHorizontal ? x : y;
+			int canvasSize = IsHorizontal ? _scrollCanvasSize.Width : _scrollCanvasSize.Height;
+
+			if (coordinate < 0)
+				return 0;
+			if (canvasSize < coordinate)
+				return CollectionView.Count - 1;
+
+			if (!_hasUnevenRows)
+				return coordinate / BaseItemSize;
+			else
+				return _accumulatedItemSizes.FindIndex(current => coordinate <= current);
 		}
 
 		void InitializeMeasureCache()

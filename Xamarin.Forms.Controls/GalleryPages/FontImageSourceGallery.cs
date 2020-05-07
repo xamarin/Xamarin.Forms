@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.Controls.Issues;
+﻿using Xamarin.Forms.Controls.Issues;
 
 namespace Xamarin.Forms.Controls
 {
@@ -19,6 +18,7 @@ namespace Xamarin.Forms.Controls
 			var fontFamily = "";
 			switch (Device.RuntimePlatform)
 			{
+				case Device.macOS:
 				case Device.iOS:
 					fontFamily = "Ionicons";
 					break;
@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Controls
 					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
 					break;
 				case Device.WPF:
+				case Device.GTK:
 					fontFamily = "Assets/ionicons.ttf#ionicons";
 					break;
 				case Device.Android:
@@ -67,6 +68,34 @@ namespace Xamarin.Forms.Controls
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				Content = grid
 			};
+
+			var tb1 = new ToolbarItem()
+			{
+				Text = "tb1",
+				IconImageSource =  new FontImageSource()
+				{
+					FontFamily = fontFamily, Glyph = '\uf101'.ToString()
+				}
+			};
+			var tb2 = new ToolbarItem
+			{
+				Text = "tb2 red",
+				IconImageSource = new FontImageSource()
+				{
+					FontFamily = fontFamily, Glyph = '\uf101'.ToString(), Color = Color.Red
+				},
+			};
+			var tb3 = new ToolbarItem
+			{
+				Text = "tb3 yellow",
+				IconImageSource = new FontImageSource()
+				{
+					FontFamily = fontFamily, Glyph = '\uf2c7'.ToString(), Color = Color.Yellow
+				},
+			};
+			ToolbarItems.Add(tb1);
+			ToolbarItems.Add(tb2);
+			ToolbarItems.Add(tb3);
 		}
 
 		static readonly char[] Ionicons = new char[] {

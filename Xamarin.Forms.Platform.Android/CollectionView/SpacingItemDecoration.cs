@@ -1,11 +1,16 @@
 ﻿using System;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class SpacingItemDecoration : RecyclerView.ItemDecoration
+	public class SpacingItemDecoration : RecyclerView.ItemDecoration
 	{
 		readonly ItemsLayoutOrientation _orientation;
 		readonly double _verticalSpacing;

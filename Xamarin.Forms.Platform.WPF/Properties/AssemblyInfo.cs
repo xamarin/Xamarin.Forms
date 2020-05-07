@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.WPF;
+using Xamarin.Forms.Platform.WPF; 
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 
@@ -31,6 +31,7 @@ using Xamarin.Forms.Platform.WPF;
 [assembly: ExportRenderer(typeof(Frame), typeof(FrameRenderer))]
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
+[assembly: ExportRenderer(typeof(MediaElement), typeof(MediaElementRenderer))]
 [assembly: ExportRenderer(typeof(ImageButton), typeof(ImageButtonRenderer))]
 
 // Control doesn't exist natively in WPF Platform
