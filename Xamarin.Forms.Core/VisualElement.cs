@@ -275,7 +275,7 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			if (Device.Flags?.IndexOf(ExperimentalFlags.AppThemeExperimental) > 0)
+			if (Application.Current != null)
 				Application.Current.RequestedThemeChanged += (s, a) => OnRequestedThemeChanged(a.RequestedTheme);
 		}
 
@@ -844,6 +844,9 @@ namespace Xamarin.Forms
 
 		internal void InvalidateStateTriggers(bool attach)
 		{
+			if (!this.HasVisualStateGroups())
+				return;
+
 			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
 
 			if (groups.Count == 0)
