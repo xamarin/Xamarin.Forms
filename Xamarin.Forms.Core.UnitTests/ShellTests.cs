@@ -32,6 +32,40 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(shell.CurrentItem, Is.EqualTo(shellItem));
 		}
 
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void SetCurrentItemWithImplicitlyWrappedShellContent(bool useShellContent)
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+
+			BaseShellItem shellElement = null;
+
+			if(useShellContent)
+				shellElement = CreateShellContent(shellContentRoute: "TestMe");
+			else
+				shellElement = CreateShellSection(shellSectionRoute: "TestMe");
+
+			if (useShellContent)
+				shell.Items.Add((ShellContent)shellElement);
+			else
+				shell.Items.Add((ShellSection)shellElement);
+
+			var item2 = shell.Items[1];
+
+			Assert.AreEqual(FindParentOfType<ShellItem>(shellElement), item2);
+
+			if (useShellContent)
+				shell.CurrentItem = (ShellContent)shellElement;
+			else
+				shell.CurrentItem = (ShellSection)shellElement;
+
+			Assert.AreEqual(2, shell.Items.Count);
+			Assert.AreEqual(FindParentOfType<ShellItem>(shellElement), item2);
+			Assert.AreEqual(item2, shell.CurrentItem);
+		}
+
 		[Test]
 		public void ShellChildrenBindingContext()
 		{
@@ -1290,6 +1324,50 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(Color.Red, label.BackgroundColor);
 			Assert.IsTrue(VisualStateManager.GoToState(grid, "Selected"));
 			Assert.AreEqual(Color.Green, label.BackgroundColor);
+		}
+
+		[Test]
+		public void ClearingShellContentAndReAddingSetsCurrentItem()
+		{
+			Shell shell = new Shell();
+			var item = CreateShellItem();
+			item.CurrentItem.Items.Add(CreateShellContent());
+			item.CurrentItem.Items.Add(CreateShellContent());
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item);
+			shell.Items.Add(item2);
+
+			item.Items[0].Items.Clear();
+
+			var content = CreateShellContent();
+			item.Items[0].Items.Add(content);
+			item.Items[0].Items.Add(CreateShellContent());
+
+			Assert.IsNotNull(item.CurrentItem);
+			Assert.IsNotNull(item.CurrentItem.CurrentItem);
+		}
+
+		[Test]
+		public void ClearingShellSectionAndReAddingSetsCurrentItem()
+		{
+			Shell shell = new Shell();
+			var item = CreateShellItem();
+			item.CurrentItem.Items.Add(CreateShellContent());
+			item.CurrentItem.Items.Add(CreateShellContent());
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item);
+			shell.Items.Add(item2);
+
+			item.Items.Clear();
+
+			var section = CreateShellSection();
+			item.Items.Add(section);
+			item.Items.Add(CreateShellSection());
+
+			Assert.IsNotNull(item.CurrentItem);
+			Assert.IsNotNull(item.CurrentItem.CurrentItem);
 		}
 
 
