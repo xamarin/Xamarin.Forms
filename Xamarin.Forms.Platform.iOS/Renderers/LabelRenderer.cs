@@ -6,7 +6,6 @@ using Foundation;
 using System.Collections.Generic;
 using CoreGraphics;
 using System.Diagnostics;
-using Xamarin.Forms.Core;
 
 #if __MOBILE__
 using UIKit;
