@@ -2,6 +2,7 @@
 using Xamarin.Forms.Internals;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
