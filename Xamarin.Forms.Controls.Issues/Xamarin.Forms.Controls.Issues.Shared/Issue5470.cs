@@ -56,9 +56,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __IOS__
 		[Test]
-		public async void Issue5470Test() 
+		public void Issue5470Test() 
 		{
-			await Task.Delay(500); // give it time to crash
+			Thread.Sleep(500); // give it time to crash
 			RunningApp.WaitForElement (q => q.Marked ("IssuePageLabel"));
 		}
 #endif
