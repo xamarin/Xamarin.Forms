@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Xamarin.Forms.Internals;
 using Android.Support.V4.Widget;
 using Android.Util;
-using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Platform.Android
 {
