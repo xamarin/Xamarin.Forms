@@ -10,8 +10,11 @@ namespace Xamarin.Forms.Platform.Android
 		readonly ItemsLayoutOrientation _orientation;
 		readonly double _verticalSpacing;
 		double _adjustedVerticalSpacing = -1;
+		double _adjustedVerticalOffset;
 		readonly double _horizontalSpacing;
 		double _adjustedHorizontalSpacing = -1;
+		readonly double _adjustedHorizontalOffset;
+		readonly int _spanCount;
 
 		public SpacingItemDecoration(IItemsLayout itemsLayout)
 		{
@@ -26,6 +29,7 @@ namespace Xamarin.Forms.Platform.Android
 					_orientation = gridItemsLayout.Orientation;
 					_horizontalSpacing = gridItemsLayout.HorizontalItemSpacing;
 					_verticalSpacing = gridItemsLayout.VerticalItemSpacing;
+					_spanCount = gridItemsLayout.Span;
 					break;
 				case LinearItemsLayout listItemsLayout:
 					_orientation = listItemsLayout.Orientation;
@@ -33,6 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 						_horizontalSpacing = listItemsLayout.ItemSpacing;
 					else
 						_verticalSpacing = listItemsLayout.ItemSpacing;
+					_spanCount = 1;
 					break;
 			}
 		}
@@ -71,20 +76,31 @@ namespace Xamarin.Forms.Platform.Android
 				spanIndex = gridLayoutParameters.SpanIndex;
 			}
 
+			var adapter = parent.GetAdapter();
+			var childCount = adapter.ItemCount - 1;
+			var index = parent.GetChildAdapterPosition(view);
+			var lastSpanIndex = childCount - (_spanCount - childCount % _spanCount);
+
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
-				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalSpacing;
-
-				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
-					outRect.Bottom = (int)_adjustedVerticalSpacing;
+				outRect.Left = index < _spanCount ? 0 : (int)_adjustedHorizontalOffset;
+				if (_spanCount > 1)
+					outRect.Right = index < lastSpanIndex ? (int)_adjustedHorizontalOffset : 0;
+				else
+					outRect.Right = index < childCount ? (int)_adjustedHorizontalOffset : 0;
+				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalOffset;
+				outRect.Bottom = spanIndex == _spanCount - 1 ? 0 : (int)_adjustedVerticalOffset;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalSpacing;
-
-				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
-					outRect.Right = (int)_adjustedHorizontalSpacing;
+				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalOffset;
+				outRect.Right = spanIndex == _spanCount - 1 ? 0 : (int)_adjustedHorizontalOffset;
+				outRect.Top = index < _spanCount ? 0 : (int)_adjustedVerticalOffset;
+				if (_spanCount > 1)
+					outRect.Bottom = index < lastSpanIndex ? (int)_adjustedVerticalOffset : 0;
+				else
+					outRect.Bottom = index < childCount ? (int)_adjustedVerticalOffset : 0;
 			}
 		}
 	}
