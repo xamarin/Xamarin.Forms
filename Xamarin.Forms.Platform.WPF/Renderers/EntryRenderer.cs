@@ -285,6 +285,7 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.LostFocus -= OnTextBoxUnfocused;
 					Control.TextChanged -= TextBoxOnTextChanged;
 					Control.KeyUp -= TextBoxOnKeyUp;
+					Control.SelectionChanged -= TextBoxOnSelectionChanged;
 				}
 			}
 
