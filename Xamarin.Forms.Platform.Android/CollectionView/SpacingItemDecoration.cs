@@ -79,22 +79,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var adapter = parent.GetAdapter();
-			var childCount = adapter.ItemCount - 1;
+			var childCount = adapter.ItemCount;
 			var index = parent.GetChildAdapterPosition(view);
-			var lastSpanIndex = childCount - (_spanCount - childCount % _spanCount);
+			var lastSpanIndex = childCount - childCount % _spanCount;
 
 			if (_orientation == ItemsLayoutOrientation.Vertical)
-			{
-				outRect.Left = index < _spanCount ? 0 : (int)_adjustedHorizontalOffset;
-				if (_spanCount > 1)
-					outRect.Right = index < lastSpanIndex ? (int)_adjustedHorizontalOffset : 0;
-				else
-					outRect.Right = index < childCount ? (int)_adjustedHorizontalOffset : 0;
-				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalOffset;
-				outRect.Bottom = spanIndex == _spanCount - 1 ? 0 : (int)_adjustedVerticalOffset;
-			}
-
-			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
 				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalOffset;
 				outRect.Right = spanIndex == _spanCount - 1 ? 0 : (int)_adjustedHorizontalOffset;
@@ -103,6 +92,18 @@ namespace Xamarin.Forms.Platform.Android
 					outRect.Bottom = index < lastSpanIndex ? (int)_adjustedVerticalOffset : 0;
 				else
 					outRect.Bottom = index < childCount ? (int)_adjustedVerticalOffset : 0;
+			}
+
+			if (_orientation == ItemsLayoutOrientation.Horizontal)
+			{
+				outRect.Left = index < _spanCount ? 0 : (int)_adjustedHorizontalOffset;
+				if (_spanCount > 1)
+					outRect.Right = index < lastSpanIndex ? (int)_adjustedHorizontalOffset : 0;
+				else
+					outRect.Right = index < childCount ? (int)_adjustedHorizontalOffset : 0;
+				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalOffset;
+				outRect.Bottom = spanIndex == _spanCount - 1 ? 0 : (int)_adjustedVerticalOffset;
+
 			}
 		}
 	}
