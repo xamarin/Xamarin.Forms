@@ -8,7 +8,7 @@
 
 Windows CMD:
 build.cmd -Target NugetPack
-build.cmd -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"'
+build.cmd -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"','-configuration="Release"'
 
 PowerShell:
 ./build.ps1 -Target NugetPack
@@ -34,13 +34,17 @@ PowerShell:
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
+var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
+var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
-bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
+
+var buildForVS2017Arg = EnvironmentVariable("buildForVS2017") ?? Argument("buildForVS2017", "false");
+bool buildForVS2017 = Convert.ToBoolean(buildForVS2017Arg);
 
 string artifactStagingDirectory = Argument("Build_ArtifactStagingDirectory", (string)null) ?? EnvironmentVariable("Build.ArtifactStagingDirectory") ?? EnvironmentVariable("Build_ArtifactStagingDirectory") ?? ".";
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
@@ -49,9 +53,14 @@ var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
 string[] androidSdkManagerInstalls = new string[0]; //new [] { "platforms;android-24", "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
 
 
+Information ("XamarinFormsVersion: {0}", XamarinFormsVersion);
+Information ("ANDROID_RENDERERS: {0}", ANDROID_RENDERERS);
+Information ("configuration: {0}", configuration);
 Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 Information ("Team Project: {0}", teamProject);
 Information ("buildForVS2017: {0}", buildForVS2017);
+Information ("EnvironmentVariable buildForVS2017: {0}", EnvironmentVariable("buildForVS2017"));
+Information ("Argument buildForVS2017: {0}", Argument("buildForVS2017", "not set"));
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -69,7 +78,7 @@ string monoPatchVersion = "";
 string monoMajorVersion = "";
 string monoVersion = "";
 
-if(buildForVS2017 || teamProject == "DevDiv")
+if(buildForVS2017)
 {
     // VS2017
     monoMajorVersion = "5.18.1";
@@ -308,6 +317,17 @@ Task("BuildForNuget")
 
         MSBuild("./Xamarin.Forms.sln", msbuildSettings);
 
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
+        binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
+        MSBuild("./Xamarin.Forms.DualScreen/Xamarin.Forms.DualScreen.csproj",
+                    msbuildSettings
+                        .WithRestore()
+                        .WithTarget("rebuild"));
+
+
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
                     msbuildSettings
@@ -315,17 +335,22 @@ Task("BuildForNuget")
                         .WithProperty("DisableEmbeddedXbf", "false")
                         .WithProperty("EnableTypeInfoReflection", "false"));
 
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/ios-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
                     msbuildSettings
                         .WithTarget("rebuild")
                         .WithProperty("USE2017", "true"));
 
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/macos-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.MacOS/Xamarin.Forms.Platform.MacOS.csproj",
                     msbuildSettings
                         .WithTarget("rebuild")
                         .WithProperty("USE2017", "true"));
+
     }
     catch(Exception)
     {
@@ -417,11 +442,19 @@ RunTarget(target);
 
 MSBuildSettings GetMSBuildSettings()
 {
-    return new MSBuildSettings {
+    var buildSettings =  new MSBuildSettings {
         PlatformTarget = PlatformTarget.MSIL,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
         Configuration = configuration,
     };
+
+    if(!String.IsNullOrWhiteSpace(XamarinFormsVersion))
+    {
+        buildSettings = buildSettings.WithProperty("XamarinFormsVersion", XamarinFormsVersion);
+    }
+    
+    buildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
+    return buildSettings;
 }
 
 bool IsXcodeVersionOver(string version)

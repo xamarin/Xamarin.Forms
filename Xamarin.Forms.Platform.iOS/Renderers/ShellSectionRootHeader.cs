@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_unselectedColor = unselectedColor;
 
 			if (reloadData)
-				CollectionView.ReloadData();
+				ReloadData();
 		}
 
 		#endregion IAppearanceObserver
@@ -149,6 +149,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			if (_isDisposed)
+				return;
+
 			base.ViewDidLayoutSubviews();
 
 			LayoutBar();
@@ -158,6 +161,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (_isDisposed)
+				return;
+
 			base.ViewDidLoad();
 
 			CollectionView.ScrollsToTop = false;
@@ -209,6 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				ShellSection = null;
 				_bar.RemoveFromSuperview();
+				this.RemoveFromParentViewController();
 				_bar.Dispose();
 				_bar = null;
 			}
@@ -267,7 +274,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			ReloadData();
+		}
+
+		void ReloadData()
+		{
+			if (_isDisposed)
+				return;
+
 			CollectionView.ReloadData();
+			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
 		public class ShellSectionHeaderCell : UICollectionViewCell
