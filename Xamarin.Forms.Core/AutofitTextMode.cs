@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Xamarin.Forms.Core
+namespace Xamarin.Forms
 {
 	[TypeConverter(typeof(AutoFitTextModeConverter))]
 	public enum AutoFitTextMode
