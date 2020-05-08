@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 		double _adjustedVerticalOffset;
 		readonly double _horizontalSpacing;
 		double _adjustedHorizontalSpacing = -1;
-		readonly double _adjustedHorizontalOffset;
+		double _adjustedHorizontalOffset;
 		readonly int _spanCount;
 
 		public SpacingItemDecoration(IItemsLayout itemsLayout)
@@ -49,11 +49,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (_adjustedVerticalSpacing == -1)
 			{
 				_adjustedVerticalSpacing = parent.Context.ToPixels(_verticalSpacing);
+				_adjustedVerticalOffset = _adjustedVerticalSpacing / 2;
 			}
 
 			if (_adjustedHorizontalSpacing == -1)
 			{
 				_adjustedHorizontalSpacing = parent.Context.ToPixels(_horizontalSpacing);
+				_adjustedHorizontalOffset = _adjustedHorizontalSpacing / 2;
 			}
 
 			var itemViewType = parent.GetChildViewHolder(view).ItemViewType;
