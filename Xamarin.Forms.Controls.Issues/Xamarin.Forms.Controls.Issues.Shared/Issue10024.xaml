@@ -11,7 +11,7 @@
             <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
         </AbsoluteLayout.GestureRecognizers>
 
-        <Label Text="Tap anywhere on the screen to show a animated frame and tap outside the new frame to hide it. It show show no visual atrifacts while animating" />
+        <Label Text="Tap anywhere on the screen to show a animated frame and tap outside the new frame to hide it. It show show no visual artifacts while animating" />
 
 
         <StackLayout x:Name="OpaqueContainer" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1, 1, 1, 1" BackgroundColor="Black" Opacity="0" IsVisible="false">
