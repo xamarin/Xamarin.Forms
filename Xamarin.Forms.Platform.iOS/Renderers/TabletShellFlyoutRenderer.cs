@@ -145,15 +145,20 @@ namespace Xamarin.Forms.Platform.iOS
 				if (view == null)
 					return;
 
-				var swipeViewTouched = IsSwipeView(view);
-				PresentsWithGesture = !swipeViewTouched;
+				if (_flyoutBehavior == FlyoutBehavior.Flyout)
+				{
+					var swipeViewTouched = IsSwipeView(view);
+					PresentsWithGesture = !swipeViewTouched;
+				}
 			}
 		}
 
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
 		{
 			base.TouchesEnded(touches, evt);
-			PresentsWithGesture = true;
+
+			if(_flyoutBehavior == FlyoutBehavior.Flyout)
+				PresentsWithGesture = true;
 		}
 
 		protected override void Dispose(bool disposing)
