@@ -5,9 +5,9 @@ using Xamarin.Forms;
 
 namespace Xamarin.Forms.Controls.GalleryPages.ExpanderGalleries
 {
-	public partial class ExpanderOrientationGallery : ContentPage
+	public partial class ExpanderDirectionGallery : ContentPage
 	{
-		public ExpanderOrientationGallery()
+		public ExpanderDirectionGallery()
 		{
 			InitializeComponent();
 		}

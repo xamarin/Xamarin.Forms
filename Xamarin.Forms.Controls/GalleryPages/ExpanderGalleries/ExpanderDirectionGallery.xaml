@@ -1,34 +1,34 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Xamarin.Forms.Controls.GalleryPages.ExpanderGalleries.ExpanderOrientationGallery">
+             x:Class="Xamarin.Forms.Controls.GalleryPages.ExpanderGalleries.ExpanderDirectionGallery">
     <ScrollView Padding="30, 50" >
         <StackLayout Spacing="20">
 
-            <Expander HorizontalOptions="FillAndExpand" Orientation="TopToBottom">
+            <Expander HorizontalOptions="FillAndExpand" Direction="Down">
                 <Expander.Header>
-                    <Label FontSize="18" Text="TopToBottom" HorizontalOptions="CenterAndExpand"/>
+                    <Label FontSize="18" Text="Direction: Down" HorizontalOptions="CenterAndExpand"/>
                 </Expander.Header>
                 <BoxView Color="Red" HeightRequest="100" WidthRequest="200" HorizontalOptions="CenterAndExpand" />
             </Expander>
 
-            <Expander HorizontalOptions="FillAndExpand" Orientation="BottomToTop">
+            <Expander HorizontalOptions="FillAndExpand" Direction="Up">
                 <Expander.Header>
-                    <Label FontSize="18" Text="BottomToTop" HorizontalOptions="CenterAndExpand"/>
+                    <Label FontSize="18" Text="Direction: Up" HorizontalOptions="CenterAndExpand"/>
                 </Expander.Header>
                 <BoxView Color="Blue" HeightRequest="100" WidthRequest="200" HorizontalOptions="CenterAndExpand" />
             </Expander>
 
-            <Expander HorizontalOptions="StartAndExpand" Orientation="LeadingToTrailing">
+            <Expander HorizontalOptions="StartAndExpand" Direction="Left">
                 <Expander.Header>
-                    <Label FontSize="18" Text="LeadingToTrailing" HorizontalOptions="Start" VerticalTextAlignment="Center" HeightRequest="100"/>
+                    <Label FontSize="18" Text="Direction: Left" HorizontalOptions="Start" VerticalTextAlignment="Center" HeightRequest="100"/>
                 </Expander.Header>
                 <BoxView Color="Green" HeightRequest="100" WidthRequest="200" />
             </Expander>
 
-            <Expander HorizontalOptions="EndAndExpand" Orientation="TrailingToLeading">
+            <Expander HorizontalOptions="EndAndExpand" Direction="Right">
                 <Expander.Header>
-                    <Label FontSize="18" Text="TrailingToLeading" HorizontalOptions="End" VerticalTextAlignment="Center" HeightRequest="100"/>
+                    <Label FontSize="18" Text="Direction: Right" HorizontalOptions="End" VerticalTextAlignment="Center" HeightRequest="100"/>
                 </Expander.Header>
                 <BoxView Color="Purple" HeightRequest="100" WidthRequest="200" />
             </Expander>

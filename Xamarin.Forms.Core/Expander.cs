@@ -25,8 +25,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsExpandedProperty = BindableProperty.Create(nameof(IsExpanded), typeof(bool), typeof(Expander), default(bool), BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetContent(false));
 
-		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(nameof(Orientation), typeof(ExpanderOrientation), typeof(Expander), default(ExpanderOrientation), propertyChanged: (bindable, oldValue, newValue)
-			=> ((Expander)bindable).SetOrientation((ExpanderOrientation)oldValue));
+		public static readonly BindableProperty DirectionProperty = BindableProperty.Create(nameof(Direction), typeof(ExpandDirection), typeof(Expander), default(ExpandDirection), propertyChanged: (bindable, oldValue, newValue)
+			=> ((Expander)bindable).SetDirection((ExpandDirection)oldValue));
 
 		public static readonly BindableProperty ExpandAnimationLengthProperty = BindableProperty.Create(nameof(ExpandAnimationLength), typeof(uint), typeof(Expander), DefaultAnimationLength);
 
@@ -98,11 +98,11 @@ namespace Xamarin.Forms
 
 		GestureRecognizer HeaderTapGestureRecognizer { get; }
 
-		double Size => Orientation.IsVertical()
+		double Size => Direction.IsVertical()
 			? Height
 			: Width;
 
-		double ContentSize => Orientation.IsVertical()
+		double ContentSize => Direction.IsVertical()
 			? ContentHolder.Height
 			: ContentHolder.Width;
 
@@ -110,20 +110,20 @@ namespace Xamarin.Forms
 		{
 			get
 			{
-				var sizeRequest = Orientation.IsVertical()
+				var sizeRequest = Direction.IsVertical()
 					? Content.HeightRequest
 					: Content.WidthRequest;
 
 				if (sizeRequest < 0 || !(Content is Layout layout))
 					return sizeRequest;
 
-				return sizeRequest + (Orientation.IsVertical()
+				return sizeRequest + (Direction.IsVertical()
 					? layout.Padding.VerticalThickness
 					: layout.Padding.HorizontalThickness);
 			}
 			set
 			{
-				if (Orientation.IsVertical())
+				if (Direction.IsVertical())
 				{
 					ContentHolder.HeightRequest = value;
 					return;
@@ -132,7 +132,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		double MeasuredContentSize => Orientation.IsVertical()
+		double MeasuredContentSize => Direction.IsVertical()
 			? ContentHolder.Measure(Width, double.PositiveInfinity).Request.Height
 			: ContentHolder.Measure(double.PositiveInfinity, Height).Request.Width;
 
@@ -160,10 +160,10 @@ namespace Xamarin.Forms
 			set => SetValue(IsExpandedProperty, value);
 		}
 
-		public ExpanderOrientation Orientation
+		public ExpandDirection Direction
 		{
-			get => (ExpanderOrientation)GetValue(OrientationProperty);
-			set => SetValue(OrientationProperty, value);
+			get => (ExpandDirection)GetValue(DirectionProperty);
+			set => SetValue(DirectionProperty, value);
 		}
 
 		public uint ExpandAnimationLength
@@ -230,8 +230,8 @@ namespace Xamarin.Forms
 		protected override void OnSizeAllocated(double width, double height)
 		{
 			base.OnSizeAllocated(width, height);
-			if ((Abs(width - _previousSize.Width) >= double.Epsilon && Orientation.IsVertical()) ||
-				(Abs(height - _previousSize.Height) >= double.Epsilon && !Orientation.IsVertical()))
+			if ((Abs(width - _previousSize.Width) >= double.Epsilon && Direction.IsVertical()) ||
+				(Abs(height - _previousSize.Height) >= double.Epsilon && !Direction.IsVertical()))
 				ForceUpdateSize();
 
 			_previousSize = new Size(width, height);
@@ -288,7 +288,7 @@ namespace Xamarin.Forms
 
 			if (Header != null)
 			{
-				if (Orientation.IsRegularOrder())
+				if (Direction.IsRegularOrder())
 					ExpanderLayout.Children.Insert(0, Header);
 				else
 					ExpanderLayout.Children.Add(Header);
@@ -335,7 +335,7 @@ namespace Xamarin.Forms
 				};
 				ContentSizeRequest = 0;
 
-				if (Orientation.IsRegularOrder())
+				if (Direction.IsRegularOrder())
 					ExpanderLayout.Children.Add(ContentHolder);
 				else
 					ExpanderLayout.Children.Insert(0, ContentHolder);
@@ -358,15 +358,15 @@ namespace Xamarin.Forms
 			return (View)template?.CreateContent();
 		}
 
-		void SetOrientation(ExpanderOrientation oldOrientation)
+		void SetDirection(ExpandDirection oldDirection)
 		{
-			if(oldOrientation.IsVertical() == Orientation.IsVertical())
+			if(oldDirection.IsVertical() == Direction.IsVertical())
 			{
 				SetHeader(Header);
 				return;
 			}
 
-			ExpanderLayout.Orientation = Orientation.IsVertical()
+			ExpanderLayout.Orientation = Direction.IsVertical()
 				? StackOrientation.Vertical
 				: StackOrientation.Horizontal;
 			_lastVisibleSize = -1;
