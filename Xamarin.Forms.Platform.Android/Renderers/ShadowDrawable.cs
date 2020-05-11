@@ -34,7 +34,8 @@ namespace Xamarin.Forms.Platform.Android.Renderers
 
 		public void UpdateBackgroundColor(Color backgroundColor)
 		{
-            _paintShadow.Color = backgroundColor.ToAndroid();
+			// TODO: Refactor.
+			_paintShadow.Color = backgroundColor.ToAndroid();
         }
 
 		public void UpdateCornerRadius(float cornerRadius)

@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Platform.UAP.Extensions
 			spriteVisual.Size = new Vector2((float)element.ActualWidth, (float)element.ActualHeight);
 			spriteVisual.Shadow = dropShadow;
 
+			// TODO: Refactor. By modifying the hierarchy used this is not necessary.
 			var backgroundColor = visualElement.BackgroundColor;
 			spriteVisual.Brush = compositor.CreateColorBrush(backgroundColor.ToWindowsColor());
 
