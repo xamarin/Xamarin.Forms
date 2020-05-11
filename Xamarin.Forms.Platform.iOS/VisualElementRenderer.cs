@@ -266,6 +266,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					SetBackgroundColor(element.BackgroundColor);
 
 				UpdateClipToBounds();
+				UpdateShadow();
 
 				if (_tracker == null)
 				{
@@ -396,6 +397,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetBackgroundColor(Element.BackgroundColor);
 			else if (e.PropertyName == Xamarin.Forms.Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
+			else if (e.PropertyName == Xamarin.Forms.Layout.ShadowProperty.PropertyName)
+				UpdateShadow();
 			else if (e.PropertyName == VisualElement.IsTabStopProperty.PropertyName)
 				UpdateTabStop();
 			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
@@ -498,6 +501,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void UpdateNativeWidget()
 		{
+
 		}
 
 		internal virtual void SendVisualElementInitialized(VisualElement element, NativeView nativeView)
@@ -528,6 +532,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				parentRenderer = parentRenderer.Superview;
 			}
+#endif
+		}
+
+		void UpdateShadow()
+		{
+#if __MOBILE__
+			if (Element is Layout shadowLayout)
+				this.SetShadow(shadowLayout.Shadow);
 #endif
 		}
 

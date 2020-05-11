@@ -119,6 +119,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateClipToBounds();
 			}
 
+			UpdateShadow();
+
 			Performance.Stop(reference);
 
 			//On Width or Height changes, the anchors needs to be updated
@@ -137,6 +139,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateClipToBounds();
 				return;
+			}
+
+			if (e.PropertyName == Layout.ShadowProperty.PropertyName)
+			{
+				UpdateShadow();
 			}
 
 			if (_renderer.Element.Batched)
@@ -204,6 +211,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateClipToBounds();
+			UpdateShadow();
 		}
 
 		void RendererOnElementChanged(object sender, VisualElementChangedEventArgs args)
@@ -287,6 +295,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_renderer.View.SetClipToOutline(layout.IsClippedToBounds, _renderer.Element);
+		}
+
+		void UpdateShadow()
+		{
+			if (!(_renderer.Element is Layout layout))
+				return;
+
+			_renderer.View.SetShadow(layout.Shadow, _renderer.Element);
 		}
 
 		void UpdateIsVisible()

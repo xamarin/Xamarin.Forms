@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.ShadowGalleries.ShadowLayoutGallery"
+    Title="Shadow Layouts Gallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <DropShadow
+                x:Key="LayoutShadow"
+                Color="DarkBlue"
+                Offset="10, 10"
+                Radius="10"
+                Opacity="0.75"/>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <StackLayout
+            Padding="12">
+            <Label
+                Text="Frame"/>
+            <Frame
+                BackgroundColor="Red"
+                CornerRadius="12"
+                HeightRequest="100"
+                Shadow="{StaticResource LayoutShadow}"/>
+            <Label
+                Text="Grid"/>
+            <Grid
+                BackgroundColor="Red"
+                HeightRequest="100"
+                Shadow="{StaticResource LayoutShadow}"/>
+            <Label
+                Text="StackLayout"/>
+            <StackLayout
+                BackgroundColor="Red"
+                HeightRequest="100"
+                Shadow="{StaticResource LayoutShadow}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

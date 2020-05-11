@@ -18,6 +18,7 @@ using Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery;
 using Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries;
 using Xamarin.Forms.Controls.GalleryPages.ExpanderGalleries;
 using Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries;
+using Xamarin.Forms.Controls.GalleryPages.ShadowGalleries;
 
 namespace Xamarin.Forms.Controls
 {
@@ -419,6 +420,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ProgressBarGallery(), "ProgressBar Gallery - Legacy"),
 				new GalleryPageFactory(() => new RelativeLayoutGallery(), "RelativeLayout Gallery - Legacy"),
 				new GalleryPageFactory(() => new ScaleRotate(), "Scale Rotate Gallery - Legacy"),
+				new GalleryPageFactory(() => new ShadowsGallery(), "Shadows Gallery"),
 				new GalleryPageFactory(() => new SearchBarGallery(), "SearchBar Gallery - Legacy"),
 				new GalleryPageFactory(() => new SettingsPage(), "Settings Page - Legacy"),
 				new GalleryPageFactory(() => new SliderGallery(), "Slider Gallery - Legacy"),

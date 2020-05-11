@@ -5,6 +5,7 @@ using System.Linq;
 using static System.String;
 using Xamarin.Forms.Internals;
 #if __MOBILE__
+using CoreGraphics;
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
@@ -120,6 +121,28 @@ namespace Xamarin.Forms.Platform.MacOS
 			Func<UIView, IEnumerable<UIView>> getChildren = null)
 		{
 			NativeBindingHelpers.SetBindingContext(target, bindingContext, getChildren);
+		}
+
+		public static void SetShadow(this UIView target, DropShadow shadow)
+		{
+#if __MOBILE__
+			var layer = target.Layer;
+
+			if (shadow != null)
+			{
+				layer.ShadowColor = shadow.Color.ToCGColor();
+				layer.ShadowRadius = (nfloat)shadow.Radius;
+				layer.ShadowOffset = new CGSize(shadow.Offset.ToPointF());
+				layer.ShadowOpacity = (float)shadow.Opacity;
+			}
+			else
+			{
+				layer.ShadowColor = new CGColor(0, 0, 0, 0);
+				layer.ShadowRadius = 0;
+				layer.ShadowOffset = new CGSize();
+				layer.ShadowOpacity = 0;
+			}
+#endif
 		}
 
 		internal static void TransferbindablePropertiesToWrapper(this UIView target, View wrapper)

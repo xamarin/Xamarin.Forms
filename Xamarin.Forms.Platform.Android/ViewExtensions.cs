@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
@@ -11,8 +13,7 @@ using Android.Views;
 using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
 using Android.Graphics;
-using System.Collections.Generic;
-using System.Linq;
+using Xamarin.Forms.Platform.Android.Renderers;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -147,7 +148,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-
 		public static bool SetElevation(this AView view, float value)
 		{
 			if (view.IsDisposed() || !Forms.IsLollipopOrNewer)
@@ -155,6 +155,28 @@ namespace Xamarin.Forms.Platform.Android
 
 			view.Elevation = value;
 			return true;
+		}
+
+		public static void SetShadow(this AView view, DropShadow shadow, VisualElement visualElement)
+		{
+			if (shadow == null)
+				return;
+
+			// Shadows have a bunch of roles — they help show importance, purpose and relations between components.
+			// The official method uses the view’s outline and works on API 21+. It’s hardware accelerated, fast and looks nice. ViewOutlineProvider supports colored shadows starting from API 28.
+			// We can use Paint.setShadowLayer(). This method uses blurring to draw a shadow below anything drawn using that Paint object. It’s easy to use, gives pretty good results and works with any shape and color. The main problem is that is hardware accelerated starting from API 28.
+			// It’s possible to draw shadows using proper drawables like dynamic 9-patch images.
+			var shadowDrawable = new ShadowDrawable();
+			shadowDrawable.UpdateShadow(shadow);
+			shadowDrawable.UpdateBackgroundColor(visualElement.BackgroundColor);
+
+			float cornerRadius = 0;
+			if (visualElement is Frame frame)
+				cornerRadius = frame.CornerRadius;
+
+			shadowDrawable.UpdateCornerRadius(cornerRadius);
+
+			shadowDrawable.Attach(view);
 		}
 
 		internal static void MaybeRequestLayout(this AView view)

@@ -59,6 +59,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
+		public static readonly BindableProperty ShadowProperty = BindableProperty.Create(
+			nameof(Shadow), typeof(DropShadow), typeof(Layout), null);
+
 		static IList<KeyValuePair<Layout, int>> s_resolutionList = new List<KeyValuePair<Layout, int>>();
 		static bool s_relayoutInProgress;
 		bool _allocatedFlag;
@@ -93,6 +96,12 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(CascadeInputTransparentProperty); }
 			set { SetValue(CascadeInputTransparentProperty, value); }
+		}
+
+		public DropShadow Shadow
+		{
+			get { return (DropShadow)GetValue(ShadowProperty); }
+			set { SetValue(ShadowProperty, value); }
 		}
 
 		Thickness IPaddingElement.PaddingDefaultValueCreator()
