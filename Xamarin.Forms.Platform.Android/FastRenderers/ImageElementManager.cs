@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.Widget;
 using AScaleType = Android.Widget.ImageView.ScaleType;
@@ -13,10 +14,16 @@ using AViewCompat = Android.Support.V4.View.ViewCompat;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	public static class ImageElementManager
+	public class ImageElementManager : IDisposable
 	{
-		public static void Init(IVisualElementRenderer renderer)
+		readonly IVisualElementRenderer renderer;
+		bool disposedValue;
+		CancellationTokenSource currentImageLoadCancellationSource;
+
+		public ImageElementManager(IVisualElementRenderer renderer)
 		{
+			this.renderer = renderer;
+
 			renderer.ElementPropertyChanged += OnElementPropertyChanged;
 			renderer.ElementChanged += OnElementChanged;
 
@@ -30,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				AViewCompat.SetClipBounds(imageView, imageView.GetScaleType() == AScaleType.CenterCrop ? new ARect(0, 0, e.Right - e.Left, e.Bottom - e.Top) : null);
 		}
 
-		public static void Dispose(IVisualElementRenderer renderer)
+		void Unregister()
 		{
 			renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 			renderer.ElementChanged -= OnElementChanged;
@@ -47,9 +54,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-		async static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
+		async void OnElementChanged(object sender, VisualElementChangedEventArgs e)
 		{
-			var renderer = (sender as IVisualElementRenderer);
 			var view = renderer.View as ImageView;
 			var newImageElementManager = e.NewElement as IImageElement;
 			var oldImageElementManager = e.OldElement as IImageElement;
@@ -71,12 +77,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			ElevationHelper.SetElevation(view, renderer.Element);
 		}
 
-		async static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			var renderer = (sender as IVisualElementRenderer);
 			var ImageElementManager = (IImageElement)renderer.Element;
 			var imageController = (IImageController)renderer.Element;
-
 
 			if (renderer?.View?.LayoutParameters == null &&(renderer is ILayoutChanges lc && lc.HasLayoutOccurred))
 			{
@@ -96,7 +100,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				await StartStopAnimation(renderer, imageController, ImageElementManager).ConfigureAwait(false);
 		}
 
-		async static Task StartStopAnimation(
+		async Task StartStopAnimation(
 			IVisualElementRenderer renderer,
 			IImageController imageController,
 			IImageElement imageElement)
@@ -121,8 +125,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-
-		async static Task TryUpdateBitmap(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)
+		async Task TryUpdateBitmap(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)
 		{
 			if (newImage == null || rendererController.IsDisposed)
 			{
@@ -139,9 +142,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				rendererController.SetFormsAnimationDrawable(null);
 			}
 
+			CancellationToken imageLoadCancellation = GetImageLoadCancellationToken(newImage, previous);
+
 			try
 			{
-				await Control.UpdateBitmap(newImage, previous).ConfigureAwait(false);
+				await Control.UpdateBitmap(newImage, previous, imageLoadCancellation).ConfigureAwait(false);
+			}
+			catch (OperationCanceledException) when (imageLoadCancellation.IsCancellationRequested)
+			{
+				return;
 			}
 			catch (Exception ex)
 			{
@@ -165,6 +174,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
+		CancellationToken GetImageLoadCancellationToken(IImageElement newImage, IImageElement previous)
+		{
+			var sameImageSource = newImage.Source != null && Equals(previous?.Source, newImage.Source);
+
+			if (sameImageSource && currentImageLoadCancellationSource != null)
+				return currentImageLoadCancellationSource.Token;
+
+			currentImageLoadCancellationSource?.Cancel();
+			currentImageLoadCancellationSource = new CancellationTokenSource();
+			return currentImageLoadCancellationSource.Token;
+		}
+
 		internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
 		{
 			if (image != null && e.Finished)
@@ -180,6 +201,25 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			ImageView.ScaleType type = newImage.Aspect.ToScaleType();
 			Control.SetScaleType(type);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					Unregister();
+				}
+
+				disposedValue = true;
+			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }

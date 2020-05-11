@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		Image _element;
 		bool _skipInvalidate;
 		int? _defaultLabelFor;
+		ImageElementManager _imageManager;
 		VisualElementTracker _visualElementTracker;
 		VisualElementRenderer _visualElementRenderer;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
@@ -43,7 +44,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_element.PropertyChanged -= OnElementPropertyChanged;
 				}
 
-				ImageElementManager.Dispose(this);
+				_imageManager?.Dispose();
+				_imageManager = null;
+
 				BackgroundManager.Dispose(this);
 
 				if (_visualElementTracker != null)
@@ -145,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				_visualElementRenderer = new VisualElementRenderer(this);
 				BackgroundManager.Init(this);
-				ImageElementManager.Init(this);
+				_imageManager = new ImageElementManager(this);
 			}
 
 			Performance.Stop(reference);

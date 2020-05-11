@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _disposed;
 		bool _skipInvalidate;
 		int? _defaultLabelFor;
+		ImageElementManager _imageManager;
 		VisualElementTracker _tracker;
 		VisualElementRenderer _visualElementRenderer;
 		BorderBackgroundManager _backgroundTracker;
@@ -103,7 +104,8 @@ namespace Xamarin.Forms.Platform.Android
 				SetOnTouchListener(null);
 				OnFocusChangeListener = null;
 
-				ImageElementManager.Dispose(this);
+				_imageManager?.Dispose();
+				_imageManager = null;
 
 				_tracker?.Dispose();
 				_tracker = null;
@@ -179,8 +181,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_tracker == null)
 			{
 				_tracker = new VisualElementTracker(this);
-				ImageElementManager.Init(this);
-
+				_imageManager = new ImageElementManager(this);
 			}
 
 			if (_visualElementRenderer == null)
