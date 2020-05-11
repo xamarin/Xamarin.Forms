@@ -132,6 +132,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 			}
 
+			if (!TryRequestUpdateImageSource(newImage, previous, out var imageLoadCancellation))
+				return;
+
 			if (Control.Drawable is FormsAnimationDrawable currentAnimation)
 			{
 				rendererController.SetFormsAnimationDrawable(currentAnimation);
@@ -141,8 +144,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				rendererController.SetFormsAnimationDrawable(null);
 			}
-
-			CancellationToken imageLoadCancellation = GetImageLoadCancellationToken(newImage, previous);
 
 			try
 			{
@@ -158,11 +159,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 			finally
 			{
-				if (newImage is IImageController imageController)
+				if (!imageLoadCancellation.IsCancellationRequested && newImage is IImageController imageController)
 					imageController.SetIsLoading(false);
 			}
 
-			if (rendererController.IsDisposed)
+			if (imageLoadCancellation.IsCancellationRequested || rendererController.IsDisposed)
 				return;
 
 			if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
@@ -174,16 +175,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-		CancellationToken GetImageLoadCancellationToken(IImageElement newImage, IImageElement previous)
+		bool TryRequestUpdateImageSource(IImageElement newImage, IImageElement previous, out CancellationToken cancellationToken)
 		{
-			var sameImageSource = newImage.Source != null && Equals(previous?.Source, newImage.Source);
+			bool sameImageSource = newImage.Source != null && Equals(previous?.Source, newImage.Source);
+			bool alreadyLoading = _currentImageLoadCancellationSource != null;
 
-			if (sameImageSource && _currentImageLoadCancellationSource != null)
-				return _currentImageLoadCancellationSource.Token;
+			if (sameImageSource && alreadyLoading)
+				return false;
 
 			_currentImageLoadCancellationSource?.Cancel();
 			_currentImageLoadCancellationSource = new CancellationTokenSource();
-			return _currentImageLoadCancellationSource.Token;
+			cancellationToken = _currentImageLoadCancellationSource.Token;
+			return true;
 		}
 
 		internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
