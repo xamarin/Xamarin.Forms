@@ -3,7 +3,9 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Platform.UAP.Extensions;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -20,10 +22,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			if (e.NewElement != null)
-			{
+			{			
 				SizeChanged += OnSizeChanged;
 
 				UpdateClipToBounds();
+				UpdateShadow();
 
 				if (!string.IsNullOrEmpty(Element.AutomationId))
 				{
@@ -56,11 +59,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.PropertyName == Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
+			else if (e.PropertyName == Layout.ShadowProperty.PropertyName)
+				UpdateShadow();
 		}
 
 		void OnSizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			UpdateClipToBounds();
+			UpdateShadow();
 		}
 
 		void UpdateClipToBounds()
@@ -70,6 +76,12 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Clip = new RectangleGeometry { Rect = new Rect(0, 0, ActualWidth, ActualHeight) };
 			}
+		}
+
+		void UpdateShadow()
+		{
+			var shadow = Element.Shadow;
+			this.SetShadow(shadow, Element);		
 		}
 	}
 }

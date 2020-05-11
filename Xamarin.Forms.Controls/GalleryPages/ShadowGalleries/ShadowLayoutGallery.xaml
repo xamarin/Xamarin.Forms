@@ -25,19 +25,34 @@
                 BackgroundColor="Red"
                 CornerRadius="12"
                 HeightRequest="100"
-                Shadow="{StaticResource LayoutShadow}"/>
+                Shadow="{StaticResource LayoutShadow}">
+                <Label
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Text="Frame Content"/>
+            </Frame>
             <Label
                 Text="Grid"/>
             <Grid
                 BackgroundColor="Red"
                 HeightRequest="100"
-                Shadow="{StaticResource LayoutShadow}"/>
+                Shadow="{StaticResource LayoutShadow}">
+                <Label
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Text="Grid Content"/>
+            </Grid>
             <Label
                 Text="StackLayout"/>
             <StackLayout
                 BackgroundColor="Red"
                 HeightRequest="100"
-                Shadow="{StaticResource LayoutShadow}"/>
+                Shadow="{StaticResource LayoutShadow}">
+                <Label
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Text="StackLayout Content"/>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
