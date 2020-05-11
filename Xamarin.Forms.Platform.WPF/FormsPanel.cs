@@ -86,10 +86,8 @@ namespace Xamarin.Forms.Platform.WPF
 				if (request.Width == -1)
 					request.Width = 0.0;
 
-
 				if (request.Height == -1)
 					request.Height = 0.0;
-
 
 				result = new System.Windows.Size(request.Width, request.Height);
 			}
