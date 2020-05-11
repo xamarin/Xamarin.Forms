@@ -1,11 +1,48 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
-using Foundation;
 using Xamarin.Forms.PlatformConfiguration.macOSSpecific;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
+	public class FormsNSView : NSView
+	{
+		readonly IVisualElementRenderer _renderer;
+		public FormsNSView(IVisualElementRenderer renderer)
+		{
+			_renderer = renderer;
+		}
+
+		public override void UpdateLayer()
+		{
+			base.UpdateLayer();
+
+			UpdateBackground();
+		}
+
+		void UpdateBackground()
+		{
+			this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
+			{
+				if (bgImage != null)
+				{
+					View.Layer.BackgroundColor = NSColor.FromPatternImage(bgImage).CGColor;
+				}
+				else
+				{
+					Brush background = Element.Background;
+
+					if (!Brush.IsNullOrEmpty(background))
+						NativeView.UpdateBackground(Element.Background);
+					else
+					{
+						Color bgColor = Element.BackgroundColor;
+						View.Layer.BackgroundColor = bgColor.IsDefault ? ColorExtensions.WindowBackgroundColor.CGColor : bgColor.ToCGColor();
+					}
+				}
+			});
+		}
+	}
 	public class PageRenderer : NSViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		bool _init;
@@ -19,7 +56,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public PageRenderer()
 		{
-			View = new NSView { WantsLayer = true };
+			View = new FormsNSView(this) { WantsLayer = true };
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -93,7 +130,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override void ViewDidLayout()
 		{
 			base.ViewDidLayout();
-			UpdateBackground();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -179,25 +215,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateBackground()
 		{
-			this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
-			{
-				if (bgImage != null)
-				{
-					View.Layer.BackgroundColor = NSColor.FromPatternImage(bgImage).CGColor;
-				}
-				else
-				{
-					Brush background = Element.Background;
-
-					if (!Brush.IsNullOrEmpty(background))
-						NativeView.UpdateBackground(Element.Background);
-					else
-					{
-						Color bgColor = Element.BackgroundColor;
-						View.Layer.BackgroundColor = bgColor.IsDefault ? ColorExtensions.WindowBackgroundColor.CGColor : bgColor.ToCGColor();
-					}
-				}
-			});
+			// Moved bg logic to NSView inheritance to allow for dynamic updating through OS Theme
+			View.UpdateLayer();
 		}
 
 		void UpdateTitle()

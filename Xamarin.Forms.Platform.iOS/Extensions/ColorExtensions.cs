@@ -222,6 +222,18 @@ namespace Xamarin.Forms.Platform.MacOS
 				return new Color(.32, .4, .57).ToNSColor();
 			}
 		}
+
+		internal static NSColor GroupedBackground
+		{
+			get
+			{
+#if __XCODE11__
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.SystemGrayColor;
+#endif
+				return Color.LightGray.ToNSColor();
+			}
+		}
 #endif
 
 		public static CGColor ToCGColor(this Color color)

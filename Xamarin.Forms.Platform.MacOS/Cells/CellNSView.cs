@@ -9,8 +9,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	internal class CellNSView : NSView, INativeElementView
 	{
-		static readonly NSColor s_defaultChildViewsBackground = NSColor.Clear;
-		static readonly CGColor s_defaultHeaderViewsBackground = NSColor.LightGray.CGColor;
+		readonly NSColor s_defaultChildViewsBackground = NSColor.Clear;
 		Cell _cell;
 		readonly NSTableViewCellStyle _style;
 
@@ -126,7 +125,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				nativeCell.Identifier = templateId;
 
 			if (!isHeader) return nativeCell;
-			if (nativeCell.Layer != null) nativeCell.Layer.BackgroundColor = s_defaultHeaderViewsBackground;
+			if (nativeCell.Layer != null) nativeCell.Layer.BackgroundColor = ColorExtensions.GroupedBackground.CGColor;
 			return nativeCell;
 		}
 
