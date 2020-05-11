@@ -134,7 +134,10 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateHorizontalTextAlignment()
 		{
-			Control.HorizontalTextAlignment = Element.HorizontalTextAlignment.ToNative();
+			if (Control is IEntry ie)
+			{
+				ie.HorizontalTextAlignment = Element.HorizontalTextAlignment.ToNative();
+			}
 		}		
 
 		void OnLayoutFocused(object sender, EventArgs e)
