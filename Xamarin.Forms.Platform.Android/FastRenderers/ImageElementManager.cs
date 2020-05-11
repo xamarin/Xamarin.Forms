@@ -17,8 +17,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 	public class ImageElementManager : IDisposable
 	{
 		readonly IVisualElementRenderer renderer;
-		bool disposedValue;
-		CancellationTokenSource currentImageLoadCancellationSource;
+		CancellationTokenSource _currentImageLoadCancellationSource;
+		bool _disposed;
 
 		public ImageElementManager(IVisualElementRenderer renderer)
 		{
@@ -178,12 +178,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			var sameImageSource = newImage.Source != null && Equals(previous?.Source, newImage.Source);
 
-			if (sameImageSource && currentImageLoadCancellationSource != null)
-				return currentImageLoadCancellationSource.Token;
+			if (sameImageSource && _currentImageLoadCancellationSource != null)
+				return _currentImageLoadCancellationSource.Token;
 
-			currentImageLoadCancellationSource?.Cancel();
-			currentImageLoadCancellationSource = new CancellationTokenSource();
-			return currentImageLoadCancellationSource.Token;
+			_currentImageLoadCancellationSource?.Cancel();
+			_currentImageLoadCancellationSource = new CancellationTokenSource();
+			return _currentImageLoadCancellationSource.Token;
 		}
 
 		internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
@@ -205,14 +205,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposed)
 			{
 				if (disposing)
 				{
 					Unregister();
 				}
 
-				disposedValue = true;
+				_disposed = true;
 			}
 		}
 
