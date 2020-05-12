@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override TAdapter CreateAdapter()
 		{
-			return (TAdapter)new GroupableItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
+			return (TAdapter)new GroupableItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView, ItemsContext);
 		}
 	}
 }
