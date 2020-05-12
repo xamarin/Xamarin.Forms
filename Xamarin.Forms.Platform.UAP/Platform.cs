@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
 using Windows.UI;
@@ -557,67 +557,28 @@ namespace Xamarin.Forms.Platform.UWP
 			MessagingCenter.Subscribe<Page, PromptArguments>(Window.Current, Page.PromptSignalName, OnPagePrompt);
 		}
 
-		static void OnPageSnackbar(Page page, SnackbarArguments snackbarArguments)
+		static DispatcherTimer _snackbarTimer;
+		static void OnPageSnackbar(Page page, SnackbarArguments options)
 		{
-			var content = new ToastContent()
+			var sender = GetRenderer(page).ContainerElement.Parent as PageControl;
+			_snackbarTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(options.Duration) };
+			_snackbarTimer.Tick += delegate
 			{
-				Visual = new ToastVisual()
-				{
-					BindingGeneric = new ToastBindingGeneric()
-					{
-						Children =
-						{
-							new AdaptiveText()
-							{
-								Text = snackbarArguments.Message
-							}
-						}
-					}
-				}
+				sender.HideSnackBar();
+				_snackbarTimer.Stop();
+				options.SetResult(false);
 			};
-
-			if (!string.IsNullOrEmpty(snackbarArguments.ActionButtonText))
+			sender.OnSnackbarActionExecuted += delegate
 			{
-				content.Actions = new ToastActionsCustom()
-				{
-					Buttons =
-					{
-						new ToastButton(snackbarArguments.ActionButtonText, "")
-						{
-							ActivationType = ToastActivationType.Foreground
-						}
-					}
-				};
-			}
-
-			var notifier = ToastNotificationManager.CreateToastNotifier();
-			var toast = new ToastNotification(content.GetXml())
-			{
-				ExpirationTime = DateTimeOffset.Now.AddMilliseconds(snackbarArguments.Duration)
+				sender.HideSnackBar();
+				_snackbarTimer.Stop();
+				options.SetResult(true);
 			};
-			toast.Dismissed += (ToastNotification sender, ToastDismissedEventArgs args) =>
-			{
-				if (args.Reason != ToastDismissalReason.ApplicationHidden)
-				{
-					snackbarArguments.SetResult(false);
-					notifier.Hide(toast);
-				}
-			};
-
-			if (snackbarArguments.Action != null)
-			{
-				toast.Activated += async delegate
-				  {
-					  notifier.Hide(toast);
-					  await snackbarArguments.Action();
-					  snackbarArguments.SetResult(true);
-				  };
-			}
-
-			notifier.Show(toast);
+			_snackbarTimer.Start();
+			sender.ShowSnackBar(options.Message, options.ActionButtonText, options.Action);			
 		}
 
-		static void OnPageActionSheet(object sender, ActionSheetArguments options)
+		static void OnPageActionSheet(Page sender, ActionSheetArguments options)
 		{
 			bool userDidSelect = false;
 			var flyoutContent = new FormsFlyout(options);
@@ -643,7 +604,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			try
 			{
-				actionSheet.ShowAt(((Page)sender).GetOrCreateRenderer().ContainerElement);
+				actionSheet.ShowAt(sender.GetOrCreateRenderer().ContainerElement);
 			}
 			catch (ArgumentException) // if the page is not in the visual tree
 			{

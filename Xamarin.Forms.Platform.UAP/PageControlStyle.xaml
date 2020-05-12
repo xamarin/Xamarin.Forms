@@ -15,6 +15,7 @@
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
 							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
 						</Grid.RowDefinitions>
 
 						<Border x:Name="TopCommandBarArea" HorizontalAlignment="Stretch" Background="{TemplateBinding ToolbarBackground}">
@@ -45,7 +46,31 @@
 
 						<uwp:FormsPresenter Margin="{TemplateBinding ContentMargin}" ContentTransitions="{TemplateBinding ContentTransitions}" x:Name="presenter" Grid.Row="1" />
 
-						<Border x:Name="BottomCommandBarArea" Grid.Row="2" HorizontalAlignment="Stretch"></Border>
+                        <Border x:Name="BottomCommandBarArea" Grid.Row="2" HorizontalAlignment="Stretch"></Border>
+
+                        <Grid x:Name="PART_SnackBar" Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="PART_SnackbarMessage"
+                                       Grid.Column="0"
+                                       Text="{TemplateBinding SnackbarMessage}" 
+                                       Margin="5"
+                                       VerticalAlignment="Center" 
+                                       FontSize="22" 
+                                       TextWrapping="WrapWholeWords"
+                                       Visibility="{Binding Text, ElementName=PART_SnackbarMessage, Converter={StaticResource TextLengthToVisibilityConverter}}"/>
+
+                            <Button x:Name="PART_SnackbarActionButton" 
+                                    Grid.Column="1"  
+                                    VerticalAlignment="Center" 
+                                    Margin="5"
+                                    Content="{TemplateBinding SnackbarActionButtonText}"
+                                    Command="{TemplateBinding SnackbarActionCommand}" 
+                                    FontSize="22"
+                                    Visibility="{Binding Content, ElementName=PART_SnackbarActionButton, Converter={StaticResource TextLengthToVisibilityConverter}}"/>
+                        </Grid>						
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>

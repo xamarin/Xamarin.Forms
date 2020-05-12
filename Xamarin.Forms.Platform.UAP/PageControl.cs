@@ -1,4 +1,6 @@
-﻿﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -28,6 +30,49 @@ namespace Xamarin.Forms.Platform.UWP
 		public static readonly DependencyProperty TitleInsetProperty = DependencyProperty.Register("TitleInset", typeof(double), typeof(PageControl), new PropertyMetadata(default(double)));
 
 		public static readonly DependencyProperty TitleBrushProperty = DependencyProperty.Register("TitleBrush", typeof(Brush), typeof(PageControl), new PropertyMetadata(null));
+
+		public static readonly DependencyProperty SnackbarActionCommandProperty = DependencyProperty.Register("SnackbarActionCommand", typeof(ICommand), typeof(PageControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty SnackbarActionButtonTextProperty = DependencyProperty.Register("SnackbarActionButtonText", typeof(string), typeof(PageControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty SnackbarMessageProperty = DependencyProperty.Register("SnackbarMessage", typeof(string), typeof(PageControl),new PropertyMetadata(null));
+		public string SnackbarActionButtonText
+		{
+			get { return (string)GetValue(SnackbarActionButtonTextProperty); }
+			private set { SetValue(SnackbarActionButtonTextProperty, value); }
+		}
+
+		public ICommand SnackbarActionCommand
+		{
+			get { return (ICommand)GetValue(SnackbarActionCommandProperty); }
+			private set { SetValue(SnackbarActionCommandProperty, value); }
+		}
+
+		public string SnackbarMessage
+		{
+			get { return (string)GetValue(SnackbarMessageProperty); }
+			private set { SetValue(SnackbarMessageProperty, value); }
+		}
+
+		public Action OnSnackbarActionExecuted;
+		public void ShowSnackBar(string message, string actionButtonText, Func<Task> action)
+		{
+			SnackbarMessage = message;
+			SnackbarActionButtonText = actionButtonText;
+			if (action != null)
+			{
+				SnackbarActionCommand = new Command(async () =>
+				{
+					OnSnackbarActionExecuted?.Invoke();
+					await action();
+				});
+			}
+		}
+
+		public void HideSnackBar()
+		{
+			SnackbarMessage = null;
+			SnackbarActionButtonText = null;
+			SnackbarActionCommand = null;
+		}
 
 		CommandBar _commandBar;
 		FrameworkElement _titleViewPresenter;

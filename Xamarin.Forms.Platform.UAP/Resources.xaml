@@ -22,6 +22,7 @@
 	<uwp:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
 	<uwp:HeightConverter x:Key="HeightConverter" />
 	<uwp:CollapseWhenEmptyConverter x:Key="CollapseWhenEmpty" />
+    <uwp:TextLengthToVisibilityConverter x:Key="TextLengthToVisibilityConverter" />
 	<uwp:BoolToVisibilityConverter x:Key="BoolVisibilityConverter" />
 	<uwp:BoolToVisibilityConverter x:Key="InvertedBoolVisibilityConverter" FalseIsVisible="True" />
 	<uwp:PageToRenderedElementConverter x:Key="PageToRenderer" />
