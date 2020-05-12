@@ -109,7 +109,9 @@ namespace Xamarin.Forms.Platform.GTK
 
 			var platform = new Platform();
 			platform.PlatformRenderer.SetSizeRequest (WidthRequest, HeightRequest);
-			Add (platform.PlatformRenderer);
+			var container = new VBox();
+			container.Add (platform.PlatformRenderer);
+			Add(container);
 			platform.SetPage (_application.MainPage);
 
 			Child.ShowAll ();

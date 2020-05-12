@@ -36,46 +36,54 @@ namespace Xamarin.Forms.Platform.GTK.Helpers
 		}
 
 		static Timer _snackbarTimer;
-		public static void ShowSnackbar(PlatformRenderer platformRender, SnackbarArguments arguments)
+		static bool isSnackBarActive;
+		static Widget GetTopWindowContainer(PlatformRenderer platformRenderer)
 		{
-			var isActionDialog = !string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null;
-			MessageDialog messageDialog = new MessageDialog(
-					platformRender.Toplevel as Window,
-					DialogFlags.DestroyWithParent,
-					MessageType.Other,
-					isActionDialog ? ButtonsType.Ok : ButtonsType.None,
-					arguments.Message);
+			return (platformRenderer.Toplevel as Window).Child;
+		}
 
+		static HBox GetSnackbarLayout(PlatformRenderer platformRender, SnackbarArguments arguments)
+		{
+			var snackbarLayout = new HBox();
+			var message = new Gtk.Label(arguments.Message);
+			snackbarLayout.Add(message);
+			var isActionDialog = !string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null;
 			if (isActionDialog)
 			{
-				SetButtonText(arguments.ActionButtonText, ButtonsType.Ok, messageDialog);
-			}
-
-			var isActionButtonClicked = false;
-			messageDialog.Destroyed += async delegate
-			{
-				_snackbarTimer.Stop();
-				if (isActionButtonClicked)
+				var button = new Gtk.Button();
+				button.Label = arguments.ActionButtonText;
+				button.Clicked += async delegate
 				{
+					_snackbarTimer.Stop();
 					await arguments.Action();
 					arguments.SetResult(true);
-				}
-				else
-				{
-					arguments.SetResult(false);
-				}
-			};
+					(GetTopWindowContainer(platformRender) as VBox).Remove(snackbarLayout);
+					isSnackBarActive = false;
+				};
+				snackbarLayout.Add(button);
+			}
 
+			return snackbarLayout;
+		}
+
+		public static void ShowSnackbar(PlatformRenderer platformRender, SnackbarArguments arguments)
+		{
+			if (isSnackBarActive)
+				return;
+
+			isSnackBarActive = true;
+			var snackBar = GetSnackbarLayout(platformRender, arguments);
+			((platformRender.Toplevel as Window).Child as VBox).Add(snackBar);
+			(platformRender.Toplevel as Window).Child.ShowAll();
 			_snackbarTimer = new Timer(arguments.Duration);
 			_snackbarTimer.Elapsed += delegate
-			  {
-				  messageDialog.Destroy();
-				  _snackbarTimer.Stop();
-			  };
+			{
+				((platformRender.Toplevel as Window).Child as VBox).Remove(snackBar);
+				_snackbarTimer.Stop();
+				arguments.SetResult(false);
+				isSnackBarActive = false;
+			};
 			_snackbarTimer.Start();
-			var result = messageDialog.Run();
-			isActionButtonClicked = result == (int)ResponseType.Ok;
-			messageDialog.Destroy();
 		}
 
 		public static void ShowActionSheet(PlatformRenderer platformRender, ActionSheetArguments arguments)
