@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using ElmSharp;
+using Xamarin.Forms.Platform.Tizen.Native.Watch;
+using ERect = ElmSharp.Rect;
 using NScroller = Xamarin.Forms.Platform.Tizen.Native.Scroller;
 using NBox = Xamarin.Forms.Platform.Tizen.Native.Box;
-using ERect = ElmSharp.Rect;
+using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.ScrollView;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -20,6 +22,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		public ScrollViewRenderer()
 		{
 			RegisterPropertyHandler("Content", FillContent);
+			RegisterPropertyHandler(Specific.BarColorProperty, UpdateBarColor);
 		}
 
 		/// <summary>
@@ -208,9 +211,20 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			var orientation = Element.Orientation;
-			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
-				Control.HorizontalScrollBarVisiblePolicy = Element.HorizontalScrollBarVisibility.ToNative();
+			Control.HorizontalScrollBarVisiblePolicy = Element.HorizontalScrollBarVisibility.ToNative();
+		}
+
+		void UpdateBarColor()
+		{
+			if (Control is WatchScroller wScroller)
+			{
+				var color = Specific.GetBarColor(Element);
+				if (color != Xamarin.Forms.Color.Default)
+				{
+					wScroller.HorizontalScrollBarColor = color.ToNative();
+					wScroller.VerticalScrollBarColor = color.ToNative();
+				}
+			}
 		}
 	}
 

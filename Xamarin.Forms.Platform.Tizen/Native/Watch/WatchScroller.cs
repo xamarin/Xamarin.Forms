@@ -1,6 +1,7 @@
 ﻿using System;
 using ElmSharp;
 using ElmSharp.Wearable;
+using EColor = ElmSharp.Color;
 
 namespace Xamarin.Forms.Platform.Tizen.Native.Watch
 {
@@ -34,6 +35,18 @@ namespace Xamarin.Forms.Platform.Tizen.Native.Watch
 		{
 			get => _circleScroller.HorizontalScrollBarVisiblePolicy;
 			set => _circleScroller.HorizontalScrollBarVisiblePolicy = value;
+		}
+
+		public EColor VerticalScrollBarColor
+		{
+			get => _circleScroller.VerticalScrollBarColor;
+			set => _circleScroller.VerticalScrollBarColor = value;
+		}
+
+		public EColor HorizontalScrollBarColor
+		{
+			get => _circleScroller.HorizontalScrollBarColor;
+			set => _circleScroller.HorizontalScrollBarColor = value;
 		}
 
 		protected override IntPtr CreateHandle(EvasObject parent)
