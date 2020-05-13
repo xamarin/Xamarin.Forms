@@ -59,7 +59,7 @@ if (IsMac)
 				.Source (_ => "https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-5-xcode11.5/PKG-Xamarin.Mac-notarized");
 
 			Item ("Xamarin.iOS")
-				.Source (_ => "https://xamci.azurewebsites.net/dl/xamarin/xamarin-android/master/PKG-Xamarin.iOS-notarized");
+				.Source (_ => "https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-5-xcode11.5/PKG-Xamarin.iOS-notarized");
 
 		}
 		else if(releaseChannel == "Preview")
