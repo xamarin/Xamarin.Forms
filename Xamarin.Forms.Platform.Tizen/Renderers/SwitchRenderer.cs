@@ -58,6 +58,8 @@ namespace Xamarin.Forms.Platform.Tizen
 				case SwitchStyle.Toggle:
 				case SwitchStyle.Favorite:
 				case SwitchStyle.CheckBox:
+				case SwitchStyle.OnOff:
+				case SwitchStyle.Small:
 					Control.Style = style;
 					break;
 				default:
