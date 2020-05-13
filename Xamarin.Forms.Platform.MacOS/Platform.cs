@@ -4,6 +4,9 @@ using RectangleF = CoreGraphics.CGRect;
 using System.Linq;
 using Xamarin.Forms.Internals;
 using Foundation;
+using Xamarin.Forms.Platform.macOS.Controls.Snackbar.SnackbarViews;
+using Xamarin.Forms.Platform.macOS.Controls.Snackbar;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -34,49 +37,26 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			MessagingCenter.Subscribe(this, Page.SnackbarSignalName, (Page sender, SnackbarArguments arguments) =>
 			{
-				var isNotificationActivated = false;
-				NSUserNotificationCenter center = NSUserNotificationCenter.DefaultUserNotificationCenter;
-								
-				// If we return true here, Notification will show up even if your app is TopMost.
-				center.ShouldPresentNotification = (c, n) => { return true; };
-
-				var notification = new NSUserNotification
+				var snackbar = SnackBar.MakeSnackbar(arguments.Message)
+				.SetDuration(arguments.Duration)
+				.SetTimeoutAction(() =>
 				{
-					Identifier = Guid.NewGuid().ToString(),
-					InformativeText = arguments.Message,
-					DeliveryDate = (NSDate)DateTime.Now
-				};
-				var _snackbarTimer = NSTimer.CreateScheduledTimer(TimeSpan.FromMilliseconds(arguments.Duration), t =>
-				{
-					if (!isNotificationActivated)
-					{
-						center.RemoveDeliveredNotification(notification);
-						arguments.SetResult(false);
-					}
+					arguments.SetResult(false);
+					return Task.CompletedTask;
 				});
 
 				if (!string.IsNullOrEmpty(arguments.ActionButtonText) && arguments.Action != null)
 				{
-					notification.HasActionButton = true;
-					notification.ActionButtonTitle = arguments.ActionButtonText;
-					center.DidActivateNotification += async (s, e) =>
+					snackbar.SetActionButtonText(arguments.ActionButtonText);
+					snackbar.SetAction(async () =>
 					{
-						if (e.Notification.Identifier == notification.Identifier &&
-							e.Notification.ActivationType == NSUserNotificationActivationType.ActionButtonClicked)
-						{
-							await arguments.Action();
-							arguments.SetResult(true);
-						}
-						else
-						{
-							arguments.SetResult(false);
-						}
-
-						isNotificationActivated = true;
-					};
+						snackbar.Dismiss();
+						await arguments.Action();
+						arguments.SetResult(true);
+					});
 				}
 
-				center.ScheduleNotification(notification);
+				snackbar.Show();
 			});
 
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>

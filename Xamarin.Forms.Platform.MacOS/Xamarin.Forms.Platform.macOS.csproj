@@ -269,6 +269,12 @@
       <Link>Extensions\FontExtensions.Shared.cs</Link>
     </Compile>
     <Compile Include="Extensions\NSAttributedStringExtensions.cs" />
+    <Compile Include="Controls\Snackbar\SnackBar.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarAppearance.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarLayout.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarViews\ActionMessageSnackbarView.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarViews\BaseSnackbarView.cs" />
+    <Compile Include="Controls\Snackbar\SnackbarViews\MessageSnackbarView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

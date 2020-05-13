@@ -418,8 +418,8 @@ namespace Xamarin.Forms.Platform.iOS
 				snackbar.SetActionButtonText(arguments.ActionButtonText);
 				snackbar.SetAction(async () =>
 				{
-					await arguments.Action();
 					snackbar.Dismiss();
+					await arguments.Action();
 					arguments.SetResult(true);
 				});
 			}
