@@ -66,7 +66,8 @@ if (IsMac)
 		{
 			XamarinChannel("Preview");
 		}
-		else{
+		else if(releaseChannel == "Stable")
+		{
 			XamarinChannel("Stable");
 		}
 	}
