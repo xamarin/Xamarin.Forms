@@ -51,6 +51,18 @@ namespace Xamarin.Forms.Platform.Android
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
+
+		protected override void OnAttachedToWindow()
+		{
+			base.OnAttachedToWindow();
+
+			if (EditText.IsAlive() && EditText.Enabled)
+			{
+				// https://issuetracker.google.com/issues/37095917
+				EditText.Enabled = false;
+				EditText.Enabled = true;
+			}
+		}
 	}
 
 	public abstract class EditorRendererBase<TControl> : ViewRenderer<Editor, TControl>, ITextWatcher
@@ -83,11 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ITextWatcher.OnTextChanged(ICharSequence s, int start, int before, int count)
 		{
-			if (string.IsNullOrEmpty(Element.Text) && s.Length() == 0)
-				return;
-
-			if (Element.Text != s.ToString())
-				((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, s.ToString());
+			Internals.TextTransformUtilites.SetPlainText(Element, s?.ToString());
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -147,7 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.PropertyName == Editor.TextProperty.PropertyName || e.PropertyName == Editor.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
@@ -254,7 +262,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == newText)
 				return;

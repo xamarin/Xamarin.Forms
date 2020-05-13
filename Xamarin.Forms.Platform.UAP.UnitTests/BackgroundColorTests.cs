@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Platform.UWP;
 using WColor = Windows.UI.Color;
 
-namespace Xamarin.Forms.Platform.UAP.Tests
+namespace Xamarin.Forms.Platform.UAP.UnitTests
 {
 	[TestFixture]
 	public class BackgroundColorTests : PlatformTestFixture
@@ -94,6 +94,24 @@ namespace Xamarin.Forms.Platform.UAP.Tests
 			var actualColor = await Device.InvokeOnMainThreadAsync(() =>
 			{
 				var renderer = GetRenderer(frame);
+				var nativeElement = renderer.GetNativeElement() as Border;
+
+				var backgroundBrush = nativeElement.Background as SolidColorBrush;
+				return backgroundBrush.Color;
+			});
+
+			Assert.That(actualColor, Is.EqualTo(expectedColor));
+		}
+
+		[Test, Category("Color"), Category("BoxView")]
+		public async Task BoxViewColorConsistent() 
+		{
+			var box = new BoxView() { Color = Color.PapayaWhip };
+			var expectedColor = box.Color.ToWindowsColor();
+
+			var actualColor = await Device.InvokeOnMainThreadAsync(() =>
+			{
+				var renderer = GetRenderer(box);
 				var nativeElement = renderer.GetNativeElement() as Border;
 
 				var backgroundBrush = nativeElement.Background as SolidColorBrush;

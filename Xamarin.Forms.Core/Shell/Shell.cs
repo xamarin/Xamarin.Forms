@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
@@ -58,34 +59,13 @@ namespace Xamarin.Forms
 			BindableProperty.CreateAttached("TitleView", typeof(View), typeof(Shell), null, propertyChanged: OnTitleViewChanged);
 
 		public static readonly BindableProperty MenuItemTemplateProperty =
-			BindableProperty.CreateAttached(nameof(MenuItemTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime, defaultValueCreator: OnMenuItemTemplateCreate);
-
-		static object OnMenuItemTemplateCreate(BindableObject bindable)
-		{
-			if(bindable is BaseShellItem baseShellItem)
-				return baseShellItem.CreateDefaultFlyoutItemCell("Text", "Icon");
-
-			if (bindable is MenuItem mi)
-			{
-				if (mi.Parent is BaseShellItem bsiMi)
-					return bsiMi.CreateDefaultFlyoutItemCell("Text", "Icon");
-				else
-					return null;
-			}
-
-			throw new ArgumentException($"Invalidate Menu Item Type: {bindable}", nameof(bindable));
-		}
+			BindableProperty.CreateAttached(nameof(MenuItemTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime);
 
 		public static DataTemplate GetMenuItemTemplate(BindableObject obj) => (DataTemplate)obj.GetValue(MenuItemTemplateProperty);
 		public static void SetMenuItemTemplate(BindableObject obj, DataTemplate menuItemTemplate) => obj.SetValue(MenuItemTemplateProperty, menuItemTemplate);
 
 		public static readonly BindableProperty ItemTemplateProperty =
-			BindableProperty.CreateAttached(nameof(ItemTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime, defaultValueCreator: OnItemTemplateCreator);
-
-		static object OnItemTemplateCreator(BindableObject bindable)
-		{
-			return (bindable as BaseShellItem).CreateDefaultFlyoutItemCell("Title", "FlyoutIcon");
-		}
+			BindableProperty.CreateAttached(nameof(ItemTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime);
 
 		public static DataTemplate GetItemTemplate(BindableObject obj) => (DataTemplate)obj.GetValue(ItemTemplateProperty);
 		public static void SetItemTemplate(BindableObject obj, DataTemplate itemTemplate) => obj.SetValue(ItemTemplateProperty, itemTemplate);
@@ -220,6 +200,51 @@ namespace Xamarin.Forms
 
 		List<(IAppearanceObserver Observer, Element Pivot)> _appearanceObservers = new List<(IAppearanceObserver Observer, Element Pivot)>();
 		List<IFlyoutBehaviorObserver> _flyoutBehaviorObservers = new List<IFlyoutBehaviorObserver>();
+
+		DataTemplate IShellController.GetFlyoutItemDataTemplate(BindableObject bo)
+		{
+			BindableProperty bp = null;
+			string textBinding; 
+			string iconBinding;
+			IStyleSelectable styleClassSource = null;
+
+			if (bo is IMenuItemController)
+			{
+				bp = MenuItemTemplateProperty;
+
+				if (bo is MenuItem mi && mi.Parent != null && mi.Parent.IsSet(bp))
+					bo = mi.Parent;
+				else if (bo is MenuShellItem msi && msi.MenuItem != null && msi.MenuItem.IsSet(bp))
+					bo = msi.MenuItem;
+
+				if (bo is MenuItem myStyle)
+					styleClassSource = myStyle;
+				else if (bo is MenuShellItem msiStyle)
+					styleClassSource = msiStyle.MenuItem;
+
+				textBinding = "Text";
+				iconBinding = "Icon";
+			}
+			else
+			{
+				styleClassSource = bo as IStyleSelectable;
+				bp = ItemTemplateProperty;
+				textBinding = "Title";
+				iconBinding = "FlyoutIcon";
+			}
+
+			if (bo.IsSet(bp))
+			{
+				return (DataTemplate)bo.GetValue(bp);
+			}
+
+			if(IsSet(bp))
+			{
+				return (DataTemplate)GetValue(bp);
+			}
+
+			return BaseShellItem.CreateDefaultFlyoutItemCell(styleClassSource, textBinding, iconBinding);
+		}
 
 		event EventHandler IShellController.StructureChanged
 		{
@@ -399,7 +424,8 @@ namespace Xamarin.Forms
 
 			ProcessNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
 		}
-		ReadOnlyCollection<ShellItem> IShellController.GetItems() => ((ShellItemCollection)Items).VisibleItems;
+		ReadOnlyCollection<ShellItem> IShellController.GetItems() =>
+			new ReadOnlyCollection<ShellItem>(((ShellItemCollection)Items).VisibleItems.ToList());
 
 		event NotifyCollectionChangedEventHandler IShellController.ItemsCollectionChanged
 		{
@@ -1025,6 +1051,9 @@ namespace Xamarin.Forms
 		{
 			if (oldValue is ShellItem oldShellItem)
 				oldShellItem.SendDisappearing();
+
+			if (newValue == null)
+				return;
 
 			if (newValue is ShellItem newShellItem)
 				newShellItem.SendAppearing();

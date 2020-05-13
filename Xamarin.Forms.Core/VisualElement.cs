@@ -187,7 +187,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
 
-		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
+		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanging:FlowDirectionChanging, propertyChanged: FlowDirectionChanged);
 
 		public static readonly BindableProperty TabIndexProperty =
 			BindableProperty.Create(nameof(TabIndex),
@@ -218,7 +218,6 @@ namespace Xamarin.Forms
 			((VisualElement)bindable).TabStopDefaultValueCreator();
 
 		IFlowDirectionController FlowController => this;
-		IPropertyPropagationController PropertyPropagationController => this;
 
 		public FlowDirection FlowDirection
 		{
@@ -232,13 +231,21 @@ namespace Xamarin.Forms
 			get { return _effectiveFlowDirection; }
 			set
 			{
-				if (value == _effectiveFlowDirection)
-					return;
-				
-				_effectiveFlowDirection = value;
-				InvalidateMeasureInternal(InvalidationTrigger.Undefined);
-				OnPropertyChanged(FlowDirectionProperty.PropertyName);
+				SetEffectiveFlowDirection(value, true);
 			}
+		}
+
+		void SetEffectiveFlowDirection(EffectiveFlowDirection value, bool fireFlowDirectionPropertyChanged)
+		{
+			if (value == _effectiveFlowDirection)
+				return;
+
+			_effectiveFlowDirection = value;
+			InvalidateMeasureInternal(InvalidationTrigger.Undefined);
+
+			if (fireFlowDirectionPropertyChanged)
+				OnPropertyChanged(FlowDirectionProperty.PropertyName);
+
 		}
 
 		EffectiveFlowDirection IVisualElementController.EffectiveFlowDirection => FlowController.EffectiveFlowDirection;
@@ -268,11 +275,11 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			if (Device.Flags?.IndexOf(ExperimentalFlags.AppThemeExperimental) > 0)
+			if (Application.Current != null)
 				Application.Current.RequestedThemeChanged += (s, a) => OnRequestedThemeChanged(a.RequestedTheme);
 		}
 
-		protected virtual void OnRequestedThemeChanged(AppTheme newValue)
+		protected virtual void OnRequestedThemeChanged(OSAppTheme newValue)
 		{
 			ExperimentalFlags.VerifyFlagEnabled(nameof(VisualElement), ExperimentalFlags.AppThemeExperimental, nameof(OnRequestedThemeChanged));
 		}
@@ -837,6 +844,9 @@ namespace Xamarin.Forms
 
 		internal void InvalidateStateTriggers(bool attach)
 		{
+			if (!this.HasVisualStateGroups())
+				return;
+
 			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
 
 			if (groups.Count == 0)
@@ -847,9 +857,9 @@ namespace Xamarin.Forms
 					foreach (var stateTrigger in state.StateTriggers)
 					{
 						if(attach)
-							stateTrigger.OnAttached();
+							stateTrigger.SendAttached();
 						else
-							stateTrigger.OnDetached();
+							stateTrigger.SendDetached();
 					}
 		}
 
@@ -966,18 +976,24 @@ namespace Xamarin.Forms
 			(self as IPropertyPropagationController)?.PropagatePropertyChanged(VisualElement.VisualProperty.PropertyName);
 		}
 
-		static void FlowDirectionChanged(BindableObject bindable, object oldValue, object newValue)
+		static void FlowDirectionChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = bindable as IFlowDirectionController;
 
 			if (self.EffectiveFlowDirection.IsExplicit() && oldValue == newValue)
 				return;
 
-			var newFlowDirection = (FlowDirection)newValue;
+			var newFlowDirection = ((FlowDirection)newValue).ToEffectiveFlowDirection(isExplicit: true);
 
-			self.EffectiveFlowDirection = newFlowDirection.ToEffectiveFlowDirection(isExplicit: true);
+			if (self is VisualElement ve)
+				ve.SetEffectiveFlowDirection(newFlowDirection, false);
+			else
+				self.EffectiveFlowDirection = newFlowDirection;
+		}
 
-			(self as IPropertyPropagationController)?.PropagatePropertyChanged(VisualElement.FlowDirectionProperty.PropertyName);
+		static void FlowDirectionChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			(bindable as IPropertyPropagationController)?.PropagatePropertyChanged(VisualElement.FlowDirectionProperty.PropertyName);
 		}
 
 
