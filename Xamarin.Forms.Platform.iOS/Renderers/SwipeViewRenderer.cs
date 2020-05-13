@@ -1374,7 +1374,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsOpen(bool isOpen)
 		{
-			((ISwipeViewController)Element).IsOpen = isOpen;
+			if (Element is ISwipeViewController swipeViewController)
+				swipeViewController.IsOpen = isOpen;
 		}
 
 		void OnParentScrolled(object sender, ScrolledEventArgs e)
