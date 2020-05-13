@@ -1,5 +1,3 @@
-Console.WriteLine ("buildForVS2017: {0}", Environment.GetEnvironmentVariable ("buildForVS2017"));
-
 if (IsMac)
 {
 	if (!Directory.Exists ("/Library/Frameworks/Mono.framework/Versions/Current/Commands/"))
@@ -55,7 +53,16 @@ if (IsMac)
 	
 	if(!specificSdkSet)
 	{
-		if(releaseChannel == "Preview")
+		if(releaseChannel == "Beta")
+		{
+			Item ("Xamarin.Mac")
+				.Source (_ => Environment.GetEnvironmentVariable ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-5-xcode11.5/PKG-Xamarin.Mac-notarized"));
+
+			Item ("Xamarin.iOS")
+				.Source (_ => Environment.GetEnvironmentVariable ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-android/master/PKG-Xamarin.iOS-notarized"));
+
+		}
+		else if(releaseChannel == "Preview")
 		{
 			XamarinChannel("Preview");
 		}
