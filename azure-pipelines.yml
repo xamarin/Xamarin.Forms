@@ -203,7 +203,7 @@ stages:
       - template: build/steps/build-android.yml
         parameters:
           vmPool: $[variables.macAndroid2019VmPool]
-          vmImage: $[variables.macAndroid2019VmImage]
+          vmImage: $[coalesce(variables.macAndroid2019VmImage, 'macOS-10.15') ]
           provisionatorPath : 'build/provisioning/provisioning.csx'
           buildForVS2017: false
           buildConfiguration: $(DefaultBuildConfiguration)
