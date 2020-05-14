@@ -32,6 +32,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public CollectionView(EvasObject parent) : base(parent)
 		{
+			AllowFocus(true);
 			SetLayoutCallback(OnLayout);
 			Scroller = CreateScroller(parent);
 			Scroller.Show();
