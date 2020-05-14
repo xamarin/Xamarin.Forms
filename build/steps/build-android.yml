@@ -22,7 +22,7 @@ jobs:
     timeoutInMinutes: 120
     pool:
       name: ${{ parameters.vmPool }}
-      vmImage: ${{ coalesce(parameters.vmImage, 'macOS-10.15') }}
+      vmImage: ${{ parameters.vmImage }}
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
       matrix:
