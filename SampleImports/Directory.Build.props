@@ -1,8 +1,7 @@
 <Project>
   <PropertyGroup>
     <XamarinFormsSource Condition="'$(XamarinFormsSource)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</XamarinFormsSource>
-    <FromSource Condition="'$(FromSource)' == ''">true</FromSource>
-    <XamarinFormsVersion>4.6.0.494-pre2</XamarinFormsVersion>
+    <FromSource Condition="'$(FromSource)' == ''">true</FromSource>    
     <NoWarn>$(NoWarn);NU1605</NoWarn>
     <SampleProject Condition="'$(SampleProject)' == ''">true</SampleProject>
   </PropertyGroup>
