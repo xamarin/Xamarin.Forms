@@ -38,19 +38,20 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public class CarouselItemViewModel : BindableObject
 	{
 		static string RandomImage(int w = 1000, int h = 1000) => $"https://picsum.photos/{w}/{h}?{Guid.NewGuid()}";
 
 		public ObservableCollection<string> Images { get; } = new ObservableCollection<string>();
 
-		int _Position;
+		int _position;
 		public int Position
 		{
-			get { return _Position; }
+			get { return _position; }
 			set
 			{
-				_Position = value;
+				_position = value;
 				OnPropertyChanged();
 			}
 		}
