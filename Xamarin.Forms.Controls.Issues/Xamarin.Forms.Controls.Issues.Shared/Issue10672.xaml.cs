@@ -22,7 +22,9 @@ namespace Xamarin.Forms.Controls
 	{
 		public Issue10672()
 		{
+#if APP
 			InitializeComponent();
+#endif
 		}
 
 		public ObservableCollection<CarouselItemViewModel> Items { get; } = new ObservableCollection<CarouselItemViewModel>();
