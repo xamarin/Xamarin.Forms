@@ -323,7 +323,10 @@ namespace Xamarin.Forms
 				{
 					if (leaf == target)
 					{
-						observer.OnAppearanceChanged(GetAppearanceForPivot(pivot));
+						var appearance = GetAppearanceForPivot(pivot);
+						if(appearance != null)
+							observer.OnAppearanceChanged(appearance);
+
 						break;
 					}
 					leaf = leaf.Parent;
