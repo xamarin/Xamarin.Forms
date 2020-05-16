@@ -181,7 +181,7 @@ namespace Xamarin.Forms
 
 		// we want the list returned from here to remain point in time accurate
 		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() 
-			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItems.ToList());
+			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItemsReadOnly.ToList());
 
 		[Obsolete]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -269,6 +269,7 @@ namespace Xamarin.Forms
 		}
 
 		public IList<ShellContent> Items => (IList<ShellContent>)GetValue(ItemsProperty);
+		internal override ShellElementCollection ShellElementCollection => (ShellElementCollection)Items;
 
 		public IReadOnlyList<Page> Stack => _navStack;
 
