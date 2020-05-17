@@ -37,9 +37,15 @@ namespace Xamarin.Forms.ControlGallery.WPF.Renderers
 		{
 			drawingContext.DrawRectangle(Brushes.LightGray, new Pen(Brushes.Black, 1), new Rect(0,0,ActualWidth, ActualHeight));
 			var isEnabledText = IsEnabled ? "I'm enabled :)" : "I'm disabled :(";
+#if NET461
 			drawingContext.DrawText(new FormattedText(isEnabledText, 
 				System.Globalization.CultureInfo.CurrentCulture, 
 				System.Windows.FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.Green), new System.Windows.Point(10,10));
+#else
+			drawingContext.DrawText(new FormattedText(isEnabledText,
+				System.Globalization.CultureInfo.CurrentCulture,
+				System.Windows.FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.Green, 1.25), new System.Windows.Point(10, 10));
+#endif
 		}
 
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
