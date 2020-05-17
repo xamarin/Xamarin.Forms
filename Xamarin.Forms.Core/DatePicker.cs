@@ -9,6 +9,12 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty FormatProperty = BindableProperty.Create(nameof(Format), typeof(string), typeof(DatePicker), "d");
 
+
+		public  static readonly BindableProperty PlaceholderProperty = InputView.PlaceholderProperty;
+
+		public  static readonly BindableProperty PlaceholderColorProperty = InputView.PlaceholderColorProperty;
+
+
 		public static readonly BindableProperty DateProperty = BindableProperty.Create(nameof(Date), typeof(DateTime), typeof(DatePicker), default(DateTime), BindingMode.TwoWay,
 			coerceValue: CoerceDate,
 			propertyChanged: DatePropertyChanged,
@@ -86,7 +92,11 @@ namespace Xamarin.Forms
 			get { return (FontAttributes)GetValue(FontAttributesProperty); }
 			set { SetValue(FontAttributesProperty, value); }
 		}
-
+		public string PlaceHolderText
+		{
+			get { return (string)GetValue(PlaceholderProperty); }
+			set { SetValue(PlaceholderProperty, value); }
+		}
 		public string FontFamily
 		{
 			get { return (string)GetValue(FontFamilyProperty); }

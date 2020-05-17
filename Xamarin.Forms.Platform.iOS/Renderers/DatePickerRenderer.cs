@@ -109,6 +109,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTextColor();
 			UpdateCharacterSpacing();
 			UpdateFlowDirection();
+			UpdatePlaceHolderText();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -122,6 +123,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
+			else if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
+				UpdatePlaceHolderText();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
@@ -143,6 +146,19 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateElementDate();
 			}
+		}
+		protected virtual void UpdatePlaceHolderText()
+		{
+			if (Control.Placeholder == Element.PlaceHolderText)
+				return;
+
+
+			if(!string.IsNullOrEmpty(Control.Placeholder))
+			{
+				Control.Text = Element.PlaceHolderText.ToString();
+			}
+			
+			
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
@@ -194,6 +210,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_picker.MinimumDate = Element.MinimumDate.ToNSDate();
 		}
+	
 
 		protected internal virtual void UpdateTextColor()
 		{

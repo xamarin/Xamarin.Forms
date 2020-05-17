@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => picker.MinimumDate = new DateTime (2200, 1, 1), Throws.ArgumentException);
 		}
 
+
 		[Test]
 		public void TestMaximumDateException ()
 		{
