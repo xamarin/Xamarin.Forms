@@ -174,7 +174,7 @@ namespace Xamarin.Forms
 
 		bool _themeChangedFiring;
 		OSAppTheme _lastAppTheme;
-		private OSAppTheme _userAppTheme = OSAppTheme.Unspecified;
+		OSAppTheme _userAppTheme = OSAppTheme.Unspecified;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void TriggerThemeChanged(AppThemeChangedEventArgs args)
