@@ -67,9 +67,7 @@ namespace Xamarin.Forms
 
 		public override bool Equals(object obj)
 		{
-			var appearance = obj as ShellAppearance;
-
-			if (appearance == null)
+			if(!(obj is ShellAppearance appearance))
 				return false;
 
 			for(int i = 0; i < _colorArray.Length; i++)
