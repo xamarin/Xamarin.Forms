@@ -12,8 +12,8 @@ namespace Xamarin.Forms
 
 		public  static readonly BindableProperty PlaceholderProperty = InputView.PlaceholderProperty;
 
+	
 		public  static readonly BindableProperty PlaceholderColorProperty = InputView.PlaceholderColorProperty;
-
 
 		public static readonly BindableProperty DateProperty = BindableProperty.Create(nameof(Date), typeof(DateTime), typeof(DatePicker), default(DateTime), BindingMode.TwoWay,
 			coerceValue: CoerceDate,
@@ -92,7 +92,13 @@ namespace Xamarin.Forms
 			get { return (FontAttributes)GetValue(FontAttributesProperty); }
 			set { SetValue(FontAttributesProperty, value); }
 		}
-		public string PlaceHolderText
+
+		public Color PlaceHolderColor
+		{
+			get { return (Color)GetValue(PlaceholderProperty); }
+			set { SetValue(PlaceholderProperty, value); }
+		}
+		public string Placeholder
 		{
 			get { return (string)GetValue(PlaceholderProperty); }
 			set { SetValue(PlaceholderProperty, value); }

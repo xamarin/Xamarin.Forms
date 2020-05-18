@@ -12,6 +12,8 @@ namespace Xamarin.Forms.Platform.Android
 	public abstract class DatePickerRendererBase<TControl> : ViewRenderer<DatePicker, TControl>, IPickerRenderer
 		where TControl : global::Android.Views.View
 	{
+
+		TextColorSwitcher _hintColorSwitcher;
 		int _originalHintTextColor;
 		DatePickerDialog _dialog;
 		bool _disposed;
@@ -72,7 +74,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaximumDate();
 			UpdateTextColor();
 			UpdateCharacterSpacing();
-			UpdatePlaceholderText();
+			UpdatePlaceholderColor();
+			UpdatePlaceholder();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -88,7 +91,9 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Editor.PlaceholderProperty.PropertyName)
-				UpdatePlaceholderText();
+				UpdatePlaceholder();
+			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
+				UpdatePlaceholderColor();
 			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
 				UpdateCharacterSpacing();
 			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName || e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
@@ -195,14 +200,18 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
-		void UpdatePlaceholderText()
+		void UpdatePlaceholder()
 		{
-			if (EditText.Hint == Element.PlaceHolderText)
+			if (EditText.Hint == Element.Placeholder)
 				return;
 
-			EditText.Hint = Element.PlaceHolderText;
+			EditText.Hint = Element.Placeholder;
 		}
-
+		void UpdatePlaceholderColor()
+		{
+			_hintColorSwitcher = _hintColorSwitcher ?? new TextColorSwitcher(EditText.HintTextColors, Element.UseLegacyColorManagement());
+			_hintColorSwitcher.UpdateTextColor(EditText, Element.TextColor, EditText.SetHintTextColor);
+		}
 		void UpdateMaximumDate()
 		{
 			if (_dialog != null)

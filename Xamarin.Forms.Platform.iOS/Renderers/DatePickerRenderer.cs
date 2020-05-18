@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class NoCaretField : UITextField
 	{
+
 		public NoCaretField() : base(new RectangleF())
 		{
 			SpellCheckingType = UITextSpellCheckingType.No;
@@ -45,7 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _useLegacyColorManagement;
 
 		IElementController ElementController => Element as IElementController;
-
+		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
 
 		abstract protected override TControl CreateNativeControl();
 
@@ -109,7 +110,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTextColor();
 			UpdateCharacterSpacing();
 			UpdateFlowDirection();
-			UpdatePlaceHolderText();
+			UpdatePlaceholderText();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -124,7 +125,9 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
 			else if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
-				UpdatePlaceHolderText();
+				UpdatePlaceholderText();
+			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
+				UpdatedPlaceHolderColor();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
@@ -147,19 +150,57 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateElementDate();
 			}
 		}
-		protected virtual void UpdatePlaceHolderText()
+
+
+		protected virtual void UpdatePlaceholderText()
 		{
-			if (Control.Placeholder == Element.PlaceHolderText)
+			var formatted = (FormattedString)Element.Placeholder;
+
+			if (formatted == null)
+				return;
+
+			var targetColor = Element.PlaceHolderColor;
+
+			if (_useLegacyColorManagement)
+			{
+				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
+			}
+			else
+			{
+				// Using VSM color management; take whatever is in Element.PlaceholderColor
+				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
+			}
+
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
+		}
+
+		protected virtual void UpdatedPlaceHolderColor()
+		{
+
+			var formatted = (FormattedString)Element.Placeholder;
+
+			if (formatted == null)
 				return;
 
 
-			if(!string.IsNullOrEmpty(Control.Placeholder))
+			var targetColor = Element.PlaceHolderColor;
+
+			if (_useLegacyColorManagement)
 			{
-				Control.Text = Element.PlaceHolderText.ToString();
+				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
-			
-			
+			else
+			{
+				// Using VSM color management; take whatever is in Element.PlaceholderColor
+				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
+			}
 		}
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
+		Control.AttributedPlaceholder = nsAttributedString;
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
@@ -210,7 +251,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_picker.MinimumDate = Element.MinimumDate.ToNSDate();
 		}
-	
+
 
 		protected internal virtual void UpdateTextColor()
 		{
