@@ -108,6 +108,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Switch.OnColorProperty.PropertyName)
@@ -129,7 +134,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 				else
 				{
-					Control.TrackDrawable?.SetColorFilter(Element.OnColor, FilterMode.Multiply);
+					Control.TrackDrawable?.SetColorFilter(Element.OnColor, FilterMode.SrcAtop);
 				}
 			}
 			else
@@ -145,7 +150,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (Element.ThumbColor != Color.Default)
 			{
-				Control.ThumbDrawable?.SetColorFilter(Element.ThumbColor, FilterMode.Multiply);
+				Control.ThumbDrawable?.SetColorFilter(Element.ThumbColor, FilterMode.SrcAtop);
 				_changedThumbColor = true;
 			}
 			else

@@ -250,6 +250,13 @@ namespace Xamarin.Forms
 			return OnBackButtonPressed();
 		}
 
+		protected override void OnRequestedThemeChanged(OSAppTheme newValue)
+		{
+			base.OnRequestedThemeChanged(newValue);
+
+			Resources?.Reload();
+		}
+
 		protected virtual void LayoutChildren(double x, double y, double width, double height)
 		{
 			var area = new Rectangle(x, y, width, height);
@@ -394,7 +401,25 @@ namespace Xamarin.Forms
 			}
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
+
+		internal void OnAppearing(Action action)
+		{
+			if (_hasAppeared)
+				action();
+			else
+			{
+				EventHandler eventHandler = null;
+				eventHandler = (_, __) =>
+				{
+					this.Appearing -= eventHandler;
+					action();
+				};
+
+				this.Appearing += eventHandler;
+			}
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
         public void SendAppearing()
 		{
 			if (_hasAppeared)

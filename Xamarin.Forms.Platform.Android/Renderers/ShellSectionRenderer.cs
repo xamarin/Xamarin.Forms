@@ -33,6 +33,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ViewPager.IOnPageChangeListener.OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
 		{
+			if(!_selecting && ShellSection?.CurrentItem != null)
+			{
+				UpdateCurrentItem(ShellSection.CurrentItem);
+			}
 		}
 
 		void ViewPager.IOnPageChangeListener.OnPageScrollStateChanged(int state)
@@ -59,8 +63,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateCurrentItem(shellContent);
 			}
-			else
+			else if(shellSection?.CurrentItem != null)
 			{
+				var currentPosition = SectionController.GetItems().IndexOf(shellSection.CurrentItem);
 				_selecting = true;
 
 				// Android doesn't really appreciate you calling SetCurrentItem inside a OnPageSelected callback.
@@ -69,10 +74,10 @@ namespace Xamarin.Forms.Platform.Android
 
 				Device.BeginInvokeOnMainThread(() =>
 				{
-					if (position < _viewPager.ChildCount && _toolbarTracker != null)
+					if (currentPosition < _viewPager.ChildCount && _toolbarTracker != null)
 					{
-						_viewPager.SetCurrentItem(position, false);
-						UpdateCurrentItem(shellContent);
+						_viewPager.SetCurrentItem(currentPosition, false);
+						UpdateCurrentItem(shellSection.CurrentItem);
 					}
 
 					_selecting = false;
@@ -162,8 +167,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			_tablayout.SetupWithViewPager(_viewPager);
 
-			var currentPage = ((IShellContentController)shellSection.CurrentItem).GetOrCreateContent();
-			var currentIndex = SectionController.GetItems().IndexOf(ShellSection.CurrentItem);
+			Page currentPage = null;
+			int currentIndex = -1;
+			var currentItem = ShellSection.CurrentItem;
+
+			while (currentIndex < 0 && SectionController.GetItems().Count > 0 && ShellSection.CurrentItem != null)
+			{
+				currentItem = ShellSection.CurrentItem;
+				currentPage = ((IShellContentController)shellSection.CurrentItem).GetOrCreateContent();
+
+				// current item hasn't changed
+				if(currentItem == shellSection.CurrentItem)
+					currentIndex = SectionController.GetItems().IndexOf(currentItem);
+			}
 
 			_toolbarTracker = _shellContext.CreateTrackerForToolbar(_toolbar);
 			_toolbarTracker.Page = currentPage;
@@ -250,6 +266,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
 				var newIndex = SectionController.GetItems().IndexOf(ShellSection.CurrentItem);
+
+
+				if (SectionController.GetItems().Count != _viewPager.ChildCount)
+					_viewPager.Adapter.NotifyDataSetChanged();
 
 				if (newIndex >= 0)
 				{

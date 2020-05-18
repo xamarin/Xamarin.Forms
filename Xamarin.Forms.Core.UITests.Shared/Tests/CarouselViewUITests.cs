@@ -1,5 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
+using Xamarin.UITest;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -14,6 +15,108 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.WaitForElement(_carouselViewGalleries);
 			App.Tap(_carouselViewGalleries);
+		}
+
+		[TestCase("CarouselView (XAML, Horizontal)")]
+		public void CarouselViewRemoveAndUpdateCurrentItem(string subgallery)
+		{
+			VisitSubGallery(subgallery);
+
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			CheckPositionValue("lblSelected", "0");
+
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			var centerX = rect.CenterX;
+			var rightX = rect.X - 5;
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+
+			CheckPositionValue("lblPosition", "1");
+			CheckPositionValue("lblCurrentItem", "1");
+			CheckPositionValue("lblSelected", "1");
+
+			App.Tap(x => x.Marked("btnRemove"));
+
+			CheckPositionValue("lblPosition", "1");
+			CheckPositionValue("lblCurrentItem", "2");
+			CheckPositionValue("lblSelected", "2");
+
+			App.Back();
+		}
+
+
+		[TestCase("CarouselView (XAML, Horizontal)")]
+		public void CarouselViewRemoveFirstCurrentItem(string subgallery)
+		{
+			VisitSubGallery(subgallery);
+
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			App.Tap(x => x.Marked("btnRemove"));
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "1");
+			CheckPositionValue("lblSelected", "1");
+
+			App.Back();
+		}
+
+
+		[TestCase("CarouselView (XAML, Horizontal)")]
+		public void CarouselViewRemoveLastCurrentItem(string subgallery)
+		{
+			VisitSubGallery(subgallery);
+
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			CheckPositionValue("lblSelected", "0");
+
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			var centerX = rect.CenterX;
+			var rightX = rect.X - 5;
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+
+			CheckPositionValue("lblPosition", "4");
+			CheckPositionValue("lblCurrentItem", "4");
+			CheckPositionValue("lblSelected", "4");
+
+			App.Tap(x => x.Marked("btnRemove"));
+
+			CheckPositionValue("lblPosition", "3");
+			CheckPositionValue("lblCurrentItem", "3");
+			CheckPositionValue("lblSelected", "3");
+
+			App.Back();
+		}
+
+		[TestCase("IndicatorView")]
+		public void CarouselViewFirstLastPosition(string subgallery)
+		{
+			VisitSubGallery(subgallery, true);
+			App.WaitForElement("Item: 0");
+			App.Tap(x => x.Marked("btnRemoveFirst"));
+			App.WaitForElement("Item: 1");
+			App.Tap(x => x.Marked("btnNext"));
+			App.WaitForElement("Item: 2");
+			App.Tap(x => x.Marked("btnRemoveFirst"));
+			App.WaitForElement("Item: 2");
+			App.Tap(x => x.Marked("btnNext"));
+			App.Tap(x => x.Marked("btnNext"));
+			App.Tap(x => x.Marked("btnNext"));
+			App.Tap(x => x.Marked("btnNext"));
+			App.Tap(x => x.Marked("btnNext"));
+			App.Tap(x => x.Marked("btnNext"));
+			App.Tap(x => x.Marked("btnNext"));
+			App.WaitForElement("Item: 9");
+			App.Tap(x => x.Marked("btnRemoveLast"));
+			App.WaitForElement("Item: 8");
+			App.Tap(x => x.Marked("btnPrev"));
+			App.WaitForElement("Item: 7");
+
+			App.Back();
 		}
 
 		[TestCase("CarouselView (Code, Horizontal)")]
@@ -82,12 +185,42 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 #endif
+			App.Back();
 		}
 
-		void VisitSubGallery(string galleryName)
+		void VisitSubGallery(string galleryName, bool enableIndicator = false)
 		{
-			App.WaitForElement(t => t.Marked(galleryName));
+			App.ScrollUp();
+			App.ScrollUp();
+
+			if (enableIndicator)
+				App.Tap(t => t.Marked("EnableIndicatorView"));
+
+			App.QueryUntilPresent(() =>
+			{
+				var query = App.Query(t => t.Marked(galleryName));
+				if (query.Count() == 0)
+				{
+					App.ScrollDown();
+					return null;
+				}
+				return query;
+			}, delayInMs: 500);
+
 			App.Tap(t => t.Marked(galleryName));
 		}
+
+		static void CheckPositionValue(string marked, string value)
+		{
+			var positionAfter = App.QueryUntilPresent(() =>
+			{
+				var positionLabel = App.WaitForElement(x => x.Marked(marked));
+				if (positionLabel.First().Text == value)
+					return positionLabel;
+				return null;
+			}, delayInMs: 1000);
+			Assert.IsTrue(positionAfter[0].Text == value);
+		}
+
 	}
 }
