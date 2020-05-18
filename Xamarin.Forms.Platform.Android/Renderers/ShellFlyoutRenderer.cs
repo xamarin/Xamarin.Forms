@@ -22,7 +22,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			UpdateScrimColor(appearance.FlyoutBackdropColor);
+			if (appearance == null)
+				UpdateScrimColor(Color.Default);
+			else
+				UpdateScrimColor(appearance.FlyoutBackdropColor);
 		}
 
 		#endregion IAppearanceObserver
