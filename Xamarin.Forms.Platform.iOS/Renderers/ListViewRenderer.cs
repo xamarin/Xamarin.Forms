@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
@@ -1114,11 +1113,15 @@ namespace Xamarin.Forms.Platform.iOS
 				if (cell.HasContextActions)
 					throw new NotSupportedException("Header cells do not support context actions");
 
-				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
-				view = new HeaderWrapperView { Cell = cell };
-				view.AddSubview(renderer.GetCell(cell, null, tableView));
+				const string reuseIdentifier = "HeaderWrapper";
+				var header = (HeaderWrapperView)tableView.DequeueReusableHeaderFooterView(reuseIdentifier) ?? new HeaderWrapperView(reuseIdentifier);
+				header.Cell = cell;
 
-				return view;
+				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
+				header.TableViewCell = renderer.GetCell(cell, null, tableView);
+				// header.TableViewCell = renderer.GetCell(cell, header.TableViewCell, tableView);
+
+				return header;
 			}
 
 			public override void HeaderViewDisplayingEnded(UITableView tableView, UIView headerView, nint section)
@@ -1457,14 +1460,42 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	internal class HeaderWrapperView : UIView
+	internal class HeaderWrapperView : UITableViewHeaderFooterView
 	{
+		public HeaderWrapperView(string reuseIdentifier) : base((NSString)reuseIdentifier)
+		{
+			Console.WriteLine($"Constructing HeaderWrapperView:{guid}");
+		}
+
+		public Guid guid = Guid.NewGuid();
+
+		UITableViewCell _tableViewCell;
+
 		public Cell Cell { get; set; }
+
+		public UITableViewCell TableViewCell
+		{
+			get => _tableViewCell;
+			set
+			{
+				if (ReferenceEquals(_tableViewCell, value)) return;
+				_tableViewCell?.RemoveFromSuperview();
+				_tableViewCell = value;
+				AddSubview(value);
+			}
+		}
+
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
 			foreach (var item in Subviews)
 				item.Frame = Bounds;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			Console.WriteLine($"Disposing HeaderWrapperView:{guid}");
 		}
 	}
 
