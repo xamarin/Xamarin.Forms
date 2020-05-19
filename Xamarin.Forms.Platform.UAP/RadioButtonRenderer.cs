@@ -9,6 +9,10 @@ namespace Xamarin.Forms.Platform.UWP
 	public class RadioButtonRenderer : ViewRenderer<RadioButton, FormsRadioButton>
 	{
 		bool _fontApplied;
+		FormsRadioButton button;
+		PointerEventHandler _pointerPressedHandler;
+
+		public bool IsDisposed { get; private set; }
 
 		protected override void OnElementChanged(ElementChangedEventArgs<RadioButton> e)
 		{
@@ -18,10 +22,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var button = new FormsRadioButton();
+					button = new FormsRadioButton();
+					_pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
 
-					button.Click += OnButtonClick;
-					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+					button.Click += OnButtonClick;					
+					button.AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
 					button.Loaded += ButtonOnLoaded;
 					button.Checked += OnRadioButtonCheckedOrUnchecked;
 					button.Unchecked += OnRadioButtonCheckedOrUnchecked;
@@ -167,8 +172,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateContent()
 		{
-			var text = Element.Text;
-			Control.Content = text;
+			Control.Content = Element.Text;
 		}
 
 		void UpdateFont()
@@ -208,6 +212,26 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			Control.IsChecked = Element.IsChecked;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (IsDisposed)
+				return;
+			if (button != null)
+			{
+				button.Click -= OnButtonClick;
+				button.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+				button.Loaded -= ButtonOnLoaded;
+				button.Checked -= OnRadioButtonCheckedOrUnchecked;
+				button.Unchecked -= OnRadioButtonCheckedOrUnchecked;
+
+				_pointerPressedHandler = null;
+			}
+
+			IsDisposed = true;
+
+			base.Dispose(disposing);
 		}
 	}
 }
