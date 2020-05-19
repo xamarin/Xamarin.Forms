@@ -18,8 +18,8 @@ namespace Xamarin.Forms.Controls
 	[Issue(IssueTracker.Github, 10735, "[Bug] [Fatal] [Android] CollectionView Causes Application Crash When Keyboard Opens", PlatformAffected.Android)]
 	public partial class Issue10735 : TestContentPage
 	{
-		int _addItemDelay = 300;
-		int _changeFocusDelay = 1000;
+		readonly int _addItemDelay = 300;
+		readonly int _changeFocusDelay = 1000;
 		int _item = 0;
 		View _lastFocus;
 
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls
                     _item++;
                 }
             });
-
+#if APP
             Task.Run(async () =>
             {
                 while (true)
@@ -69,6 +69,7 @@ namespace Xamarin.Forms.Controls
                     });
                 }
             });
+#endif
         }
     }
 }
