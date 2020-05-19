@@ -174,17 +174,17 @@ namespace Xamarin.Forms.Platform.Android
 						? LinearLayoutManager.Horizontal
 						: LinearLayoutManager.Vertical;
 
-					return new LinearLayoutManager(Context, orientation, false);
+					return new ItemsLinearLayoutManager(Context, orientation, false);
 			}
 
 			// Fall back to plain old vertical list
 			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
-			return new LinearLayoutManager(Context);
+			return new ItemsLinearLayoutManager(Context);
 		}
 
 		GridLayoutManager CreateGridLayout(GridItemsLayout gridItemsLayout)
 		{
-			var gridLayoutManager = new GridLayoutManager(Context, gridItemsLayout.Span,
+			var gridLayoutManager = new ItemsGridLayoutManager(Context, gridItemsLayout.Span,
 				gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
 					? LinearLayoutManager.Horizontal
 					: LinearLayoutManager.Vertical,
@@ -633,7 +633,7 @@ namespace Xamarin.Forms.Platform.Android
 				SwapAdapter(_emptyViewAdapter, true);
 
 				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager	
-				SetLayoutManager(new LinearLayoutManager(Context));
+				SetLayoutManager(new ItemsLinearLayoutManager(Context));
 			}
 			else if (!showEmptyView && currentAdapter != ItemsViewAdapter)
 			{
