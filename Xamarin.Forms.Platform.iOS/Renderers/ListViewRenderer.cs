@@ -1104,10 +1104,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override UIView GetViewForHeader(UITableView tableView, nint section)
 			{
-				UIView view = null;
-
 				if (!List.IsGroupingEnabled)
-					return view;
+					return null;
 
 				var cell = TemplatedItemsView.TemplatedItems[(int)section];
 				if (cell.HasContextActions)
@@ -1118,8 +1116,7 @@ namespace Xamarin.Forms.Platform.iOS
 				header.Cell = cell;
 
 				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
-				header.TableViewCell = renderer.GetCell(cell, null, tableView);
-				// header.TableViewCell = renderer.GetCell(cell, header.TableViewCell, tableView);
+				header.SetTableViewCell(renderer.GetCell(cell, null, tableView));
 
 				return header;
 			}
@@ -1460,29 +1457,22 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	internal class HeaderWrapperView : UITableViewHeaderFooterView
+	class HeaderWrapperView : UITableViewHeaderFooterView
 	{
 		public HeaderWrapperView(string reuseIdentifier) : base((NSString)reuseIdentifier)
 		{
-			Console.WriteLine($"Constructing HeaderWrapperView:{guid}");
 		}
-
-		public Guid guid = Guid.NewGuid();
 
 		UITableViewCell _tableViewCell;
 
 		public Cell Cell { get; set; }
 
-		public UITableViewCell TableViewCell
+		public void SetTableViewCell(UITableViewCell value)
 		{
-			get => _tableViewCell;
-			set
-			{
-				if (ReferenceEquals(_tableViewCell, value)) return;
-				_tableViewCell?.RemoveFromSuperview();
-				_tableViewCell = value;
-				AddSubview(value);
-			}
+			if (ReferenceEquals(_tableViewCell, value)) return;
+			_tableViewCell?.RemoveFromSuperview();
+			_tableViewCell = value;
+			AddSubview(value);
 		}
 
 		public override void LayoutSubviews()
@@ -1490,12 +1480,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.LayoutSubviews();
 			foreach (var item in Subviews)
 				item.Frame = Bounds;
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-			Console.WriteLine($"Disposing HeaderWrapperView:{guid}");
 		}
 	}
 
