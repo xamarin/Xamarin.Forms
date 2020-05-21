@@ -50,7 +50,7 @@ string artifactStagingDirectory = Argument("Build_ArtifactStagingDirectory", (st
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
-string[] androidSdkManagerInstalls =  new string[0];//new [] { "platforms;android-24", "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
+string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
 
 (string name, string location)[] windowsSdksInstalls = new (string name, string location)[]
 {
@@ -381,6 +381,8 @@ Task("provision")
     .IsDependentOn("provision-macsdk")
     .IsDependentOn("provision-iossdk")
     .IsDependentOn("provision-androidsdk")
+    .IsDependentOn("provision-netsdk-local")
+    .IsDependentOn("provision-windowssdk")
     .IsDependentOn("provision-monosdk"); // always provision monosdk last otherwise CI might fail
 
 Task("NuGetPack")
