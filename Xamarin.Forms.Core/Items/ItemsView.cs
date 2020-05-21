@@ -96,6 +96,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
+			OnChildAdded(element);
 			_logicalChildren.Add(element);
 
 			element.Parent = this;
