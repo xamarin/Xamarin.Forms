@@ -49,6 +49,13 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateSearchBarPlaceholder(uiTextField);
 			UpdateCancelButtonColor(cancelButton);
 			UpdateSearchBarBackgroundColor(uiTextField);
+			UpdateTextTransform(uiTextField);
+		}
+
+		internal void UpdateFlowDirection(Shell shell)
+		{
+			_uiSearchBar.UpdateFlowDirection(shell);
+			_numericAccessoryView.UpdateFlowDirection(shell);
 		}
 
 		void SearchHandlerFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -66,6 +73,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.Is(SearchHandler.TextColorProperty))
 			{
 				UpdateTextColor(_uiSearchBar.FindDescendantView<UITextField>());
+			}
+			else if (e.Is(SearchHandler.TextTransformProperty))
+			{
+				UpdateTextTransform(_uiSearchBar.FindDescendantView<UITextField>());
 			}
 			else if (e.IsOneOf(SearchHandler.PlaceholderColorProperty, SearchHandler.PlaceholderProperty))
 			{
@@ -186,6 +197,14 @@ namespace Xamarin.Forms.Platform.iOS
 			//searchBarTextField.leftView = paddingView
 
 			//searchBarTextField.leftViewMode = .unlessEditing
+		}
+
+		void UpdateTextTransform(UITextField textField)
+		{
+			if (textField == null)
+				return;
+
+			textField.Text = _searchHandler.UpdateFormsText(textField.Text, _searchHandler.TextTransform);
 		}
 
 		void UpdateTextColor(UITextField textField)

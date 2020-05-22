@@ -2,78 +2,103 @@
 
 namespace Xamarin.Forms
 {
-	public class OnAppTheme<T> : BindableObject
+	public class OnAppTheme<T> : BindingBase
 	{
+		WeakReference<BindableObject> _weakTarget;
+		BindableProperty _targetProperty;
+		
 		public OnAppTheme()
 		{
-			Application.Current.RequestedThemeChanged += RequestedThemeChanged;
+			Application.Current.RequestedThemeChanged += ThemeChanged;
 		}
 
-		public static readonly BindableProperty LightProperty = BindableProperty.Create(nameof(Light), typeof(T), typeof(OnAppTheme<T>), default(T), propertyChanged: (bo, __, ___) => UpdateActualValue(bo));
+		void ThemeChanged(object sender, AppThemeChangedEventArgs e)
+		{
+			Device.BeginInvokeOnMainThread(() => ApplyCore());
+		}
+		public new BindingMode Mode
+		{
+			get => base.Mode;
+			private set { }
+		}
+		internal override BindingBase Clone()
+		{
+			return new OnAppTheme<T> { Light = Light, Dark = Dark, Default = Default };
+		}
+
+		internal override void Apply(bool fromTarget)
+		{
+			base.Apply(fromTarget);
+			ApplyCore();
+		}
+
+		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		{
+			_weakTarget = new WeakReference<BindableObject>(bindObj);
+			_targetProperty = targetProperty;
+			base.Apply(context, bindObj, targetProperty, fromBindingContextChanged);
+			ApplyCore();
+		}
+		void ApplyCore()
+		{
+			if (_weakTarget == null || !_weakTarget.TryGetTarget(out var target))
+				return;
+
+			target?.SetValueCore(_targetProperty, GetValue());
+		}
+
+		T _light;
+		T _dark;
+		T _default;
+		bool _isLightSet;
+		bool _isDarkSet;
+		bool _isDefaultSet;
 
 		public T Light
 		{
-			get => (T)GetValue(LightProperty);
-			set => SetValue(LightProperty, value);
+			get => _light;
+			set
+			{
+				_light = value;
+				_isLightSet = true;
+			}
 		}
-
-		public static readonly BindableProperty DarkProperty = BindableProperty.Create(nameof(Dark), typeof(T), typeof(OnAppTheme<T>), default(T), propertyChanged: (bo, __, ___) => UpdateActualValue(bo));
-
 		public T Dark
 		{
-			get => (T)GetValue(DarkProperty);
-			set => SetValue(DarkProperty, value);
+			get => _dark;
+			set
+			{
+				_dark = value;
+				_isDarkSet = true;
+			}
 		}
-
-		public static readonly BindableProperty DefaultProperty = BindableProperty.Create(nameof(Default), typeof(T), typeof(OnAppTheme<T>), default(T), propertyChanged: (bo, __, ___) => UpdateActualValue(bo));
-
 		public T Default
 		{
-			get => (T)GetValue(DefaultProperty);
-			set => SetValue(DefaultProperty, value);
+			get => _default;
+			set
+			{
+				_default = value;
+				_isDefaultSet = true;
+			}
 		}
 
 		public static implicit operator T(OnAppTheme<T> onAppTheme)
 		{
-			switch (Application.Current?.RequestedTheme)
+			return onAppTheme.GetValue();
+		}
+
+		public T Value => GetValue();
+
+		T GetValue()
+		{
+			switch (Application.Current.RequestedTheme)
 			{
 				default:
 				case OSAppTheme.Light:
-					return onAppTheme.IsSet(LightProperty) ? onAppTheme.Light : (onAppTheme.IsSet(DefaultProperty) ? onAppTheme.Default : default(T));
+					return _isLightSet ? Light : (_isDefaultSet ? Default : default);
 				case OSAppTheme.Dark:
-					return onAppTheme.IsSet(DarkProperty) ? onAppTheme.Dark : (onAppTheme.IsSet(DefaultProperty) ? onAppTheme.Default : default(T));
+					return _isDarkSet ? Dark : (_isDefaultSet ? Default : default);
 			}
-		}
-
-		private T _actualValue;
-		public T ActualValue
-		{
-			get => _actualValue;
-			private set
-			{
-				_actualValue = value;
-				OnPropertyChanged();
-			}
-		}
-
-		static void UpdateActualValue(BindableObject bo)
-		{
-			var appThemeColor = bo as OnAppTheme<T>;
-			switch (Application.Current?.RequestedTheme)
-			{
-				default:
-				case OSAppTheme.Light:
-					appThemeColor.ActualValue = appThemeColor.IsSet(LightProperty) ? appThemeColor.Light : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(T));
-					break;
-				case OSAppTheme.Dark:
-					appThemeColor.ActualValue = appThemeColor.IsSet(DarkProperty) ? appThemeColor.Dark : (appThemeColor.IsSet(DefaultProperty) ? appThemeColor.Default : default(T));
-					break;
-			}
-		}
-
-		void RequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
-		{
-			UpdateActualValue(this);
 		}
 	}
 }

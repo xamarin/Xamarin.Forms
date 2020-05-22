@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>
 	{
+		const float OpenSwipeThresholdPercentage = 0.6f; // 60%
 		const int SwipeThreshold = 250;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
@@ -265,6 +266,28 @@ namespace Xamarin.Forms.Platform.Android
 			return false;
 		}
 
+		public override bool DispatchTouchEvent(MotionEvent e)
+		{
+			if (e.Action == MotionEventActions.Up)
+				PropagateParentTouch();
+
+			return base.DispatchTouchEvent(e);
+		}
+
+		void PropagateParentTouch()
+		{
+			var itemContentView = _contentView.Parent.GetParentOfType<ItemContentView>();
+
+			// If the SwipeView container is ItemContentView we are using SwipeView with a CollectionView or CarouselView.
+			// When doing touch up, if the SwipeView is closed, we propagate the Touch to the parent. In this way, the parent
+			// element will manage the touch (SelectionChanged, etc.).
+			if (itemContentView != null && !((ISwipeViewController)Element).IsOpen)
+			{
+				itemContentView.ClickOn();
+			}
+		}
+
+
 		void UpdateContent()
 		{
 			if (Element.Content == null)
@@ -427,7 +450,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				UpdateSwipeItems();
 			}
-			
+
 			if (!_isSwiping)
 			{
 				RaiseSwipeStarted();
@@ -438,6 +461,7 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			_swipeOffset = GetSwipeOffset(_initialPoint, point);
+			UpdateIsOpen(_swipeOffset != 0);
 
 			UpdateSwipeItems();
 
@@ -712,7 +736,7 @@ namespace Xamarin.Forms.Platform.Android
 				int drawableWidth = drawable.IntrinsicWidth;
 				int drawableHeight = drawable.IntrinsicHeight;
 
-				if(drawableWidth > drawableHeight)
+				if (drawableWidth > drawableHeight)
 				{
 					var iconWidth = iconSize;
 					var iconHeight = drawableHeight * iconWidth / drawableWidth;
@@ -734,6 +758,9 @@ namespace Xamarin.Forms.Platform.Android
 			swipeButton.SetPadding(0, buttonPadding, 0, buttonPadding);
 			swipeButton.SetOnTouchListener(null);
 			swipeButton.Visibility = formsSwipeItem.IsVisible ? ViewStates.Visible : ViewStates.Gone;
+
+			if (!string.IsNullOrEmpty(formsSwipeItem.AutomationId))
+				swipeButton.ContentDescription = formsSwipeItem.AutomationId;
 
 			return swipeButton;
 		}
@@ -807,6 +834,8 @@ namespace Xamarin.Forms.Platform.Android
 				_actionView.Dispose();
 				_actionView = null;
 			}
+
+			UpdateIsOpen(false);
 		}
 
 		void Swipe()
@@ -1022,7 +1051,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_swipeDirection == null)
 				return;
 
-			var swipeThresholdPercent = 0.6 * GetSwipeThreshold();
+			var swipeThresholdPercent = OpenSwipeThresholdPercentage * GetSwipeThreshold();
 
 			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
 			{
@@ -1287,6 +1316,11 @@ namespace Xamarin.Forms.Platform.Android
 			Swipe();
 		}
 
+		void UpdateIsOpen(bool isOpen)
+		{
+			((ISwipeViewController)Element).IsOpen = isOpen;
+		}
+
 		void OnCloseRequested(object sender, EventArgs e)
 		{
 			ResetSwipe();
@@ -1333,7 +1367,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (_swipeDirection == null || !ValidateSwipeDirection())
 				return;
 
-			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value);
+			bool isOpen = false;
+
+			var swipeThresholdPercent = OpenSwipeThresholdPercentage * GetSwipeThreshold();
+
+			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
+				isOpen = true;
+
+			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value, isOpen);
 			((ISwipeViewController)Element).SendSwipeEnded(swipeEndedEventArgs);
 		}
 	}

@@ -1,69 +1,75 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries
+﻿using System;
+using System.Globalization;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
+
+namespace Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries
 {
+    [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AppThemeXamlGallery : ContentPage
 	{
-        public Color LightColor { get; set; } = Color.Cyan;
-        public Color DarkColor { get; set; } = Color.CornflowerBlue;
-
         public AppThemeXamlGallery()
 		{
 			InitializeComponent();
-            BindingContext = this;
-
-			Application.Current.RequestedThemeChanged += (_, __) => BindingContext = this;
-        }
-
-		void TapGestureRecognizer_Tapped(System.Object sender, System.EventArgs e)
-		{
-            LightColor = LightColor == Color.Cyan ? Color.Red : Color.Cyan;
-            DarkColor = DarkColor == Color. CornflowerBlue ? Color.Yellow : Color.CornflowerBlue;
-
-            OnPropertyChanged(nameof(LightColor));
-            OnPropertyChanged(nameof(DarkColor));
         }
 	}
 
-	public class CustomControl : ContentView
-    {
-        public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(CustomControl), (Color)new AppThemeColor() { Light = Color.Red, Dark = Color.Green });
-        public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(CustomControl));
-        public static readonly BindableProperty BoxColorProperty = BindableProperty.Create(nameof(BoxColor), typeof(Color), typeof(CustomControl), Color.Yellow);
+	[Preserve(AllMembers = true)]
+	class FooConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			var val = value as string;
+			return val == "1" ? Color.Green : Color.Red;
+		}
 
-        private StackLayout layout = new StackLayout();
-        public CustomControl()
-        {
-            var label = new Label();
-            label.SetBinding(Label.TextProperty, new Binding(nameof(Text), source: this));
-            label.SetBinding(Label.TextColorProperty, new Binding(nameof(TextColor), source: this, mode: BindingMode.TwoWay));
-            label.SetDynamicResource(Label.TextColorProperty, "MyColor");
-            this.layout.Children.Add(label);
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotSupportedException("Only one way bindings are supported with this converter");
+		}
+	}
 
-            var box = new BoxView();
-            box.SetBinding(BoxView.ColorProperty, new Binding(nameof(BoxColor), source: this, mode: BindingMode.TwoWay));
-            box.WidthRequest = 24;
-            box.HeightRequest = 24;
-            this.layout.Children.Add(box);
+	//public class CustomControl : ContentView
+	//   {
+	//       public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(CustomControl), (Color)new AppThemeColor() { Light = Color.Red, Dark = Color.Green });
+	//       public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(CustomControl));
+	//       public static readonly BindableProperty BoxColorProperty = BindableProperty.Create(nameof(BoxColor), typeof(Color), typeof(CustomControl), Color.Yellow);
 
-            this.layout.Orientation = StackOrientation.Horizontal;
-            this.Content = this.layout;
-        }
+	//       private StackLayout layout = new StackLayout();
+	//       public CustomControl()
+	//       {
+	//           var label = new Label();
+	//           label.SetBinding(Label.TextProperty, new Binding(nameof(Text), source: this));
+	//           label.SetBinding(Label.TextColorProperty, new Binding(nameof(TextColor), source: this, mode: BindingMode.TwoWay));
+	//           label.SetDynamicResource(Label.TextColorProperty, "MyColor");
+	//           this.layout.Children.Add(label);
 
-        public Color TextColor
-        {
-            get { return (Color)this.GetValue(TextColorProperty); }
-            set { this.SetValue(TextColorProperty, value); }
-        }
+	//           var box = new BoxView();
+	//           box.SetBinding(BoxView.ColorProperty, new Binding(nameof(BoxColor), source: this, mode: BindingMode.TwoWay));
+	//           box.WidthRequest = 24;
+	//           box.HeightRequest = 24;
+	//           this.layout.Children.Add(box);
 
-        public string Text
-        {
-            get { return (string)this.GetValue(TextProperty); }
-            set { this.SetValue(TextProperty, value); }
-        }
+	//           this.layout.Orientation = StackOrientation.Horizontal;
+	//           this.Content = this.layout;
+	//       }
 
-        public Color BoxColor
-        {
-            get { return (Color)this.GetValue(BoxColorProperty); }
-            set { this.SetValue(BoxColorProperty, value); }
-        }
-    } 
+	//       public Color TextColor
+	//       {
+	//           get { return (Color)this.GetValue(TextColorProperty); }
+	//           set { this.SetValue(TextColorProperty, value); }
+	//       }
+
+	//       public string Text
+	//       {
+	//           get { return (string)this.GetValue(TextProperty); }
+	//           set { this.SetValue(TextProperty, value); }
+	//       }
+
+	//       public Color BoxColor
+	//       {
+	//           get { return (Color)this.GetValue(BoxColorProperty); }
+	//           set { this.SetValue(BoxColorProperty, value); }
+	//       }
+	//   } 
 }
