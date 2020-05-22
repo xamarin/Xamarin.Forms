@@ -34,7 +34,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty VisualStateGroupsProperty =
 			BindableProperty.CreateAttached("VisualStateGroups", typeof(VisualStateGroupList), typeof(VisualElement),
 				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged,
-				defaultValueCreator: bindable => new VisualStateGroupList { VisualElement = (VisualElement)bindable });
+				defaultValueCreator: bindable => new VisualStateGroupList(true) { VisualElement = (VisualElement)bindable });
 
 		static void VisualStateGroupsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -64,7 +64,7 @@ namespace Xamarin.Forms
 
 		public static bool GoToState(VisualElement visualElement, string name)
 		{
-			if (!visualElement.IsSet(VisualStateGroupsProperty))
+			if (!visualElement.HasVisualStateGroups())
 			{
 				return false;
 			}
@@ -112,7 +112,13 @@ namespace Xamarin.Forms
 
 		public static bool HasVisualStateGroups(this VisualElement element)
 		{
-			return element.IsSet(VisualStateGroupsProperty);
+			if (!element.IsSet(VisualStateGroupsProperty))
+				return false;
+
+			if (GetVisualStateGroups(element) is VisualStateGroupList vsgl)
+				return !vsgl.IsDefault;
+
+			return true;
 		}
 
 		internal static void UpdateStateTriggers(VisualElement visualElement)
@@ -130,6 +136,7 @@ namespace Xamarin.Forms
 	public class VisualStateGroupList : IList<VisualStateGroup>
 	{
 		readonly IList<VisualStateGroup> _internalList;
+		internal bool IsDefault { get; private set; }
 
 		// Used to check for duplicate names; we keep it around because it's cheaper to create it once and clear it
 		// than to create one every time we need to validate
@@ -181,8 +188,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public VisualStateGroupList()
+		public VisualStateGroupList() : this(false)
 		{
+		}
+
+		public VisualStateGroupList(bool isDefault)
+		{
+			IsDefault = isDefault;
 			_internalList = new WatchAddList<VisualStateGroup>(ValidateAndNotify);
 		}
 
@@ -193,6 +205,9 @@ namespace Xamarin.Forms
 
 		void ValidateAndNotify(IList<VisualStateGroup> groups)
 		{
+			if(groups.Count > 0)
+				IsDefault = false;
+
 			Validate(groups);
 			OnStatesChanged();
 		}
