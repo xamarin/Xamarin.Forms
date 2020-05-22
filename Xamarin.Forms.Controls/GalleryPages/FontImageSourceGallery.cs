@@ -40,6 +40,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Source = new FontImageSource
 				{
+					Color = Color.White,
 					Glyph = Ionicons[Ionicons.Length - 1].ToString(),
 					FontFamily = fontFamily,
 					Size = 20
@@ -52,6 +53,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Source = new LayeredFontImageSource
 				{
+					Color = Color.White,
 					Layers = new List<FontImageSource> {
 						new FontImageSource
 						{
@@ -79,6 +81,7 @@ namespace Xamarin.Forms.Controls
 				Source = new LayeredFontImageSource
 				{
 					Size = 30,
+					Color = Color.White,
 					Layers = new List<FontImageSource> {
 						new FontImageSource
 						{
@@ -106,6 +109,7 @@ namespace Xamarin.Forms.Controls
 				Source = new LayeredFontImageSource
 				{
 					Size = 20,
+					Color = Color.White,
 					Layers = new List<FontImageSource> {
 						new FontImageSource
 						{
@@ -133,6 +137,7 @@ namespace Xamarin.Forms.Controls
 				Source = new LayeredFontImageSource
 				{
 					Size = 30,
+					Color = Color.White,
 					Layers = new List<FontImageSource> {
 						new FontImageSource
 						{
@@ -211,6 +216,7 @@ namespace Xamarin.Forms.Controls
 				{
 					Source = new FontImageSource
 					{
+						Color = Color.White,
 						Glyph = c.ToString(),
 						FontFamily = fontFamily,
 						Size = 20
