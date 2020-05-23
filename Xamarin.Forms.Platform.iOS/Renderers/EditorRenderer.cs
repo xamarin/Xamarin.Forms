@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EditorRenderer : EditorRendererBase<UITextView>
 	{
 		// Using same placeholder color as for the Entry
-		readonly UIColor _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey;
+		readonly UIColor _defaultPlaceholderColor = ColorExtensions.PlaceholderColor;
 
 		UILabel _placeholderLabel;
 
@@ -217,7 +217,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.IsOneOf(Editor.TextProperty, Editor.TextTransformProperty))
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -326,9 +326,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal virtual void UpdateText()
 		{
-			if (TextView.Text != Element.Text)
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			if (TextView.Text != text)
 			{
-				TextView.Text = Element.Text;
+				TextView.Text = text;
 			}
 		}
 
@@ -346,7 +347,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var textColor = Element.TextColor;
 
 			if (textColor.IsDefault)
-				TextView.TextColor = UIColor.Black;
+				TextView.TextColor = ColorExtensions.LabelColor;
 			else
 				TextView.TextColor = textColor.ToUIColor();
 		}

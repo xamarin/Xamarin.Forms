@@ -1,7 +1,6 @@
 using Foundation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -9,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class PageContainer : UIView, IUIAccessibilityContainer
 	{
 		readonly IAccessibilityElementsController _parent;
-		List<NSObject> _accessibilityElements = new List<NSObject>();
+		List<NSObject> _accessibilityElements = null;
 		bool _disposed;
 
 		public PageContainer(IAccessibilityElementsController parent)
@@ -28,21 +27,13 @@ namespace Xamarin.Forms.Platform.iOS
 			get
 			{
 				// lazy-loading this list so that the expensive call to GetAccessibilityElements only happens when VoiceOver is on.
-				if (_accessibilityElements == null)
+				if (_accessibilityElements == null || _accessibilityElements.Count == 0)
 				{
 					_accessibilityElements = _parent.GetAccessibilityElements();
-					if (_accessibilityElements == null)
-					{
-						NSObject defaultElements = AccessibilityContainer.GetAccessibilityElements();
-						if (defaultElements != null)
-							_accessibilityElements = NSArray.ArrayFromHandle<NSObject>(defaultElements.Handle).ToList();
-					}
 				}
 				return _accessibilityElements;
 			}
 		}
-
-		IUIAccessibilityContainer AccessibilityContainer => this;
 
 		public void ClearAccessibilityElements()
 		{
@@ -60,9 +51,10 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		[Export("accessibilityElementCount")]
+		[Internals.Preserve(Conditional = true)]
 		nint AccessibilityElementCount()
 		{
-			if (AccessibilityElements == null)
+			if (AccessibilityElements == null || AccessibilityElements.Count == 0)
 				return 0;
 
 			// Note: this will only be called when VoiceOver is enabled
@@ -70,15 +62,23 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		[Export("accessibilityElementAtIndex:")]
+		[Internals.Preserve(Conditional = true)]
 		NSObject GetAccessibilityElementAt(nint index)
 		{
+			if (AccessibilityElements == null || AccessibilityElements.Count == 0)
+				return NSNull.Null;
+
 			// Note: this will only be called when VoiceOver is enabled
 			return AccessibilityElements[(int)index];
 		}
 
 		[Export("indexOfAccessibilityElement:")]
+		[Internals.Preserve(Conditional = true)]
 		int GetIndexOfAccessibilityElement(NSObject element)
 		{
+			if (AccessibilityElements == null || AccessibilityElements.Count == 0)
+				return int.MaxValue;
+
 			// Note: this will only be called when VoiceOver is enabled
 			return AccessibilityElements.IndexOf(element);
 		}
