@@ -42,12 +42,26 @@ namespace Xamarin.Forms
 
 		protected void OnVisibleItemsChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
+			if (args.NewItems != null && _pauseCollectionChanged)
+			{
+				OnVisibleItemsChanged(args);
+				ResumeCollectionChanged();
+				return;
+			}
+
+			if (args.OldItems != null && VisibleItems.Count == 0)
+				PauseCollectionChanged();
+
 			if (_pauseCollectionChanged)
 			{
 				_notifyCollectionChangedEventArgs.Add(args);
 				return;
 			}
 
+		}
+
+		void OnVisibleItemsChanged(NotifyCollectionChangedEventArgs args)
+		{
 			VisibleItemsChanged?.Invoke(VisibleItemsReadOnly, args);
 			VisibleItemsChangedInternal?.Invoke(VisibleItemsReadOnly, args);
 		}
@@ -69,15 +83,17 @@ namespace Xamarin.Forms
 			private protected set;
 		}
 
-
+		// Pause Collection Changed events when the list has zero items
+		// we don't want to propagate out a visible collection changed event until the next visible item
+		// is realized
 		void PauseCollectionChanged() => _pauseCollectionChanged = true;
-
 
 		void ResumeCollectionChanged()
 		{
 			_pauseCollectionChanged = false;
 
-			var pendingEvents = _notifyCollectionChangedEventArgs.ToList();
+			// process the added items first and then remove
+			var pendingEvents = _notifyCollectionChangedEventArgs.OrderBy(x => x.NewItems != null ? 0 : 1).ToList();
 			_notifyCollectionChangedEventArgs.Clear();
 
 			foreach (var args in pendingEvents)
