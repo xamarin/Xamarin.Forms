@@ -255,6 +255,8 @@ namespace Xamarin.Forms
 						OnVisibleChildAdded(item);
 					}
 				}
+
+				SendStructureChanged();
 			};
 
 			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
@@ -879,8 +881,6 @@ namespace Xamarin.Forms
 				foreach (Element element in e.OldItems)
 					OnChildRemoved(element);
 			}
-
-			SendStructureChanged();
 		}
 
 		void RemovePage(Page page)

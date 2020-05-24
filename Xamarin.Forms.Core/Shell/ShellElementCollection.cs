@@ -49,15 +49,9 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if (args.OldItems != null && VisibleItems.Count == 0)
-			{
-				PauseCollectionChanged();
-			}
-
 			if (_pauseCollectionChanged)
 			{
 				_notifyCollectionChangedEventArgs.Add(args);
-				VisibleItemsChangedInternal?.Invoke(VisibleItemsReadOnly, args);
 				return;
 			}
 
@@ -111,9 +105,17 @@ namespace Xamarin.Forms
 
 		public void Clear()
 		{
-			PauseCollectionChanged();
 			var list = Inner.Cast<BaseShellItem>().ToList();
-			Removing(Inner);
+			try
+			{
+				PauseCollectionChanged();
+				Removing(Inner);
+			}
+			finally
+			{
+				ResumeCollectionChanged();
+			}
+
 			Inner.Clear();
 			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list));
 		}

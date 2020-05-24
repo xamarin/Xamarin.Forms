@@ -236,6 +236,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (_isDisposed)
+				return;
+
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
 				var newContent = ShellSection.CurrentItem;
@@ -295,6 +298,9 @@ namespace Xamarin.Forms.Platform.iOS
 				},
 				() =>
 				{
+					if (_isDisposed)
+						return;
+
 					if(oldRenderer.NativeView != null && _renderers.ContainsKey(oldContent))
 						oldRenderer.NativeView.RemoveFromSuperview();
 
