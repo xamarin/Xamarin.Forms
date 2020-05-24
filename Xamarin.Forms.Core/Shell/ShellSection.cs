@@ -238,7 +238,7 @@ namespace Xamarin.Forms
 
 		public ShellSection()
 		{
-			((ShellContentCollection)Items).VisibleItemsChangedInternal += (_, args) =>
+			((ShellElementCollection)Items).VisibleItemsChangedInternal += (_, args) =>
 			{
 				if (args.OldItems != null)
 				{
@@ -255,10 +255,9 @@ namespace Xamarin.Forms
 						OnVisibleChildAdded(item);
 					}
 				}
-				
-				ItemsCollectionChanged(_, args);
-
 			};
+
+			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
 
 			Navigation = new NavigationImpl(this);
 		}
@@ -536,11 +535,8 @@ namespace Xamarin.Forms
 				sc.Page.PlatformEnabledChanged += WaitForRendererToGetRemoved;
 				void WaitForRendererToGetRemoved(object s, EventArgs p)
 				{
-					if (!sc.Page.IsPlatformEnabled)
-					{
-						sc.Page.PlatformEnabledChanged -= WaitForRendererToGetRemoved;
-						base.OnChildRemoved(child);
-					}
+					sc.Page.PlatformEnabledChanged -= WaitForRendererToGetRemoved;
+					base.OnChildRemoved(child);
 				};
 			}
 			else

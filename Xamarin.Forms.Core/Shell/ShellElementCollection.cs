@@ -42,30 +42,28 @@ namespace Xamarin.Forms
 
 		protected void OnVisibleItemsChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			if (args.NewItems != null && _pauseCollectionChanged)
+			if (args?.NewItems?.Count > 0 && _pauseCollectionChanged)
 			{
-				OnVisibleItemsChanged(args);
+				_notifyCollectionChangedEventArgs.Add(args);
 				ResumeCollectionChanged();
 				return;
 			}
 
 			if (args.OldItems != null && VisibleItems.Count == 0)
+			{
 				PauseCollectionChanged();
+			}
 
 			if (_pauseCollectionChanged)
 			{
 				_notifyCollectionChangedEventArgs.Add(args);
+				VisibleItemsChangedInternal?.Invoke(VisibleItemsReadOnly, args);
 				return;
 			}
 
-		}
-
-		void OnVisibleItemsChanged(NotifyCollectionChangedEventArgs args)
-		{
-			VisibleItemsChanged?.Invoke(VisibleItemsReadOnly, args);
 			VisibleItemsChangedInternal?.Invoke(VisibleItemsReadOnly, args);
+			VisibleItemsChanged?.Invoke(VisibleItemsReadOnly, args);
 		}
-
 
 		protected IList VisibleItems
 		{
@@ -97,7 +95,10 @@ namespace Xamarin.Forms
 			_notifyCollectionChangedEventArgs.Clear();
 
 			foreach (var args in pendingEvents)
-				OnVisibleItemsChanged(this, args);
+				VisibleItemsChangedInternal?.Invoke(VisibleItemsReadOnly, args);
+
+			foreach (var args in pendingEvents)
+				VisibleItemsChanged?.Invoke(VisibleItemsReadOnly, args);
 		}
 
 		#region IList
@@ -110,19 +111,11 @@ namespace Xamarin.Forms
 
 		public void Clear()
 		{
-			try
-			{
-				PauseCollectionChanged();
-				var list = Inner.Cast<BaseShellItem>().ToList();
-				RemoveInnerCollection();
-				Inner.Clear();
-				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list));
-
-			}
-			finally
-			{
-				ResumeCollectionChanged();
-			}
+			PauseCollectionChanged();
+			var list = Inner.Cast<BaseShellItem>().ToList();
+			Removing(Inner);
+			Inner.Clear();
+			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list));
 		}
 
 		public virtual void Add(BaseShellItem item) => Inner.Add(item);
@@ -178,11 +171,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		protected void RemoveInnerCollection()
-		{
-			Removing(Inner);
-		}
-
 		protected virtual void CheckVisibility(BaseShellItem element)
 		{
 			if (IsShellElementVisible(element))
@@ -230,7 +218,7 @@ namespace Xamarin.Forms
 		{
 			if (controller is ShellGroupItem sgi)
 			{
-				sgi.ShellElementCollection.VisibleItemsChanged += OnShellElementControllerItemsCollectionChanged;
+				sgi.ShellElementCollection.VisibleItemsChangedInternal += OnShellElementControllerItemsCollectionChanged;
 			}
 		}
 
@@ -238,7 +226,7 @@ namespace Xamarin.Forms
 		{
 			if (controller is ShellGroupItem sgi)
 			{
-				sgi.ShellElementCollection.VisibleItemsChanged -= OnShellElementControllerItemsCollectionChanged;
+				sgi.ShellElementCollection.VisibleItemsChangedInternal -= OnShellElementControllerItemsCollectionChanged;
 			}
 		}
 

@@ -1370,7 +1370,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNotNull(item.CurrentItem.CurrentItem);
 		}
 
-
 		//[Test]
 		//public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
 		//{

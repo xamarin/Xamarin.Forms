@@ -116,9 +116,8 @@ namespace Xamarin.Forms
 
 		public ShellItem()
 		{
-			ShellItemController.ItemsCollectionChanged += (_, args) =>
+			((ShellElementCollection)Items).VisibleItemsChangedInternal += (_, args) =>
 			{
-
 				if (args.OldItems != null)
 				{
 					foreach (Element item in args.OldItems)

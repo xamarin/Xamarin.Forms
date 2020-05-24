@@ -739,7 +739,7 @@ namespace Xamarin.Forms
 			if (CurrentItem != null)
 				SetCurrentItem();
 
-			ShellController.ItemsCollectionChanged += (s, e) =>
+			((ShellElementCollection)Items).VisibleItemsChangedInternal += (s, e) =>
 			{
 				SetCurrentItem();
 				SendStructureChanged();
