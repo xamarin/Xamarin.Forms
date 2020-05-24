@@ -82,9 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual async void OnBackButtonBehaviorPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == BackButtonBehavior.CommandProperty.PropertyName)
-				return;
-			else if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
+			if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
 				return;
 			else if (e.PropertyName == BackButtonBehavior.IsEnabledProperty.PropertyName)
 			{
@@ -94,7 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			await UpdateToolbarItems().ConfigureAwait(false);
+			await UpdateLeftToolbarItems().ConfigureAwait(false);
 		}
 
 		protected virtual void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -230,6 +228,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
 
+			await UpdateLeftToolbarItems().ConfigureAwait(false);
+
+		}
+
+		async Task UpdateLeftToolbarItems()
+		{
 			var behavior = BackButtonBehavior;
 
 			var image = behavior.GetPropertyIfSet<ImageSource>(BackButtonBehavior.IconOverrideProperty, null);
@@ -239,7 +243,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UIImage icon = null;
 
-			if (image == null && String.IsNullOrWhiteSpace(text) && (!IsRootPage || _flyoutBehavior != FlyoutBehavior.Flyout))
+			/*if (image == null &&
+				String.IsNullOrWhiteSpace(text) &&
+				(!IsRootPage || _flyoutBehavior != FlyoutBehavior.Flyout))
+			{
+				NavigationItem.LeftBarButtonItem = null;
+			}
+			else*/
+			if(IsRootPage && _flyoutBehavior != FlyoutBehavior.Flyout)
 			{
 				NavigationItem.LeftBarButtonItem = null;
 			}
@@ -261,22 +272,44 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (image != null)
 					icon = await image.GetNativeImageAsync();
-				else if (text == null)
+				else if (String.IsNullOrWhiteSpace(text) && IsRootPage)
 					icon = DrawHamburger();
 
-
-
-				if (text != null && !IsRootPage)
+				/*if (!IsRootPage)
 				{
 					var backButton = new UIBarButtonItem { Style = UIBarButtonItemStyle.Plain };
 					backButton.Title = text;
-
 					NavigationItem.BackBarButtonItem = backButton;
 				}
-				else if (icon == null)
+				else*/
+				if (icon == null)
 				{
-					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+					if (IsRootPage)
+					{
+						NavigationItem.LeftBarButtonItem =
+							new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+					}
+					else
+					{
+						//NavigationItem.LeftBarButtonItem = null;
+						UIBarButtonItem backButton;
+
+						if (text == null)
+						{
+							backButton = new UIBarButtonItem((string)null, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+						}
+						else
+						{
+							backButton = new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+						}
+
+						if(ViewController.ParentViewController is UINavigationController nc)
+						{
+							var viewControllers = nc.ViewControllers;
+							var previousVC = viewControllers[viewControllers.Length - 2];
+							previousVC.NavigationItem.BackBarButtonItem = backButton;
+						}
+					}
 				}
 				else
 				{
