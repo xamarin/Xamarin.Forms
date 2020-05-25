@@ -101,13 +101,21 @@
       <Project>{cb9c96ce-125c-4a68-b6a1-c3ff1fbf93e1}</Project>
       <Name>Xamarin.Forms.Controls</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Platform.UAP.UnitTests\Xamarin.Forms.Platform.UAP.UnitTests.csproj">
+      <Project>{8f245976-f555-4814-b935-9ad58f4d2871}</Project>
+      <Name>Xamarin.Forms.Platform.UAP.UnitTests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="$(FromSource) == 'false'">
+    <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj">
+      <Project>{4dcd0420-1168-4b77-86db-6196ee4bd491}</Project>
+      <Name>Xamarin.Forms.CustomAttributes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="$(FromSource) == 'true'">
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
       <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
       <Name>Xamarin.Forms.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj">
-      <Project>{fb4a866a-5721-4545-9e5d-b7f7d59875a4}</Project>
-      <Name>Xamarin.Forms.DualScreen</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Maps.UWP\Xamarin.Forms.Maps.UWP.csproj">
       <Project>{04d89a60-78ef-4a32-ae17-87e47e0233a5}</Project>
@@ -116,10 +124,6 @@
     <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj">
       <Project>{7d13bac2-c6a4-416a-b07e-c169b199e52b}</Project>
       <Name>Xamarin.Forms.Maps</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Platform.UAP.UnitTests\Xamarin.Forms.Platform.UAP.UnitTests.csproj">
-      <Project>{8f245976-f555-4814-b935-9ad58f4d2871}</Project>
-      <Name>Xamarin.Forms.Platform.UAP.UnitTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj">
       <Project>{00d8d049-ffaa-4759-8fc9-1eca30777f72}</Project>
@@ -147,6 +151,7 @@
     <Content Include="Assets\Fonts\OFL.txt" />
     <Content Include="bank.png" />
     <Content Include="calculator.png" />
+    <Content Include="cardBackground.png" />
     <Content Include="coffee.png" />
     <Content Include="cover1.jpg" />
     <Content Include="cover1small.jpg" />

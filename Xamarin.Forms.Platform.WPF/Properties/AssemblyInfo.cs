@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.WPF;
+using Xamarin.Forms.Platform.WPF; 
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 

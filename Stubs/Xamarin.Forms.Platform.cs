@@ -54,11 +54,7 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(ImageButtonRenderer))]
 	internal class _ImageButtonRenderer { }
 
-#if __ANDROID__
 	[RenderWith(typeof(RadioButtonRenderer))]
-#elif !TIZEN4_0
-	[RenderWith(typeof(RadioButtonRenderer))]
-#endif
 	internal class _RadioButtonRenderer { }
 
 	[RenderWith (typeof (TableViewRenderer))]
@@ -124,9 +120,7 @@ namespace Xamarin.Forms.Platform
 	internal class _CheckBoxRenderer { }
 #endif
 
-#if !TIZEN4_0
 	[RenderWith(typeof(IndicatorViewRenderer))]
-#endif
 	internal class _IndicatorViewRenderer { }
 
 #if __IOS__

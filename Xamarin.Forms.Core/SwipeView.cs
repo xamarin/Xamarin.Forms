@@ -64,6 +64,8 @@ namespace Xamarin.Forms
 			set { SetValue(BottomItemsProperty, value); }
 		}
 
+		bool ISwipeViewController.IsOpen { get; set; }
+
 		static void OnSwipeItemsChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			((SwipeView)bindable).UpdateSwipeItemsParent((SwipeItems)newValue);
@@ -129,14 +131,8 @@ namespace Xamarin.Forms
 		{
 			swipeItems.Parent = this;
 
-			foreach (var item in swipeItems)
-			{
-				if (item is SwipeItem swipeItem)
-					swipeItem.Parent = swipeItems;
-
-				if (item is SwipeItemView swipeItemView)
-					swipeItemView.Parent = swipeItems;
-			}
+			foreach (var swipeItem in swipeItems)
+				((Element)swipeItem).Parent = swipeItems;
 		}
 	}
 }

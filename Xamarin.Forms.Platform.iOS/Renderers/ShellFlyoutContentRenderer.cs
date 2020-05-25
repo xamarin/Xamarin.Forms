@@ -40,16 +40,24 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.IsOneOf(
-				Shell.FlyoutBackgroundColorProperty, 
+				Shell.FlyoutBackgroundColorProperty,
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateBackground();
+			else if (e.Is(VisualElement.FlowDirectionProperty))
+				UpdateFlowDirection();
+		}
+
+		void UpdateFlowDirection()
+		{
+			_tableViewController.View.UpdateFlowDirection(_shellContext.Shell);
+			_headerView.UpdateFlowDirection(_shellContext.Shell);
 		}
 
 		protected virtual void UpdateBackground()
 		{
 			var color = _shellContext.Shell.FlyoutBackgroundColor;
-			View.BackgroundColor = color.ToUIColor(Color.White);
+			View.BackgroundColor = color.ToUIColor(ColorExtensions.BackgroundColor);
 
 			if (View.BackgroundColor.CGColor.Alpha < 1)
 			{
@@ -140,12 +148,12 @@ namespace Xamarin.Forms.Platform.iOS
 			};
 
 			UpdateBackground();
+			UpdateFlowDirection();
 		}
-
 		public override void ViewWillAppear(bool animated)
 		{
+			UpdateFlowDirection();
 			base.ViewWillAppear(animated);
-
 			WillAppear?.Invoke(this, EventArgs.Empty);
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using AppKit;
 using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.MacOS;
 using Xamarin.Forms.Controls;
@@ -8,6 +9,7 @@ using IOPath = System.IO.Path;
 
 [assembly: Dependency(typeof(TestCloudService))]
 [assembly: Dependency(typeof(CacheService))]
+[assembly: Dependency(typeof(NativeColorService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
 
@@ -23,6 +25,17 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 			{
 				File.Delete(file);
 			}
+		}
+	}
+
+	public class NativeColorService : INativeColorService
+	{
+		public Color GetConvertedColor(bool shouldCrash)
+		{
+			if (shouldCrash)
+				return NSColor.ControlText.ToColor();
+
+			return NSColor.ControlText.ToColor(NSColorSpace.DeviceRGBColorSpace);
 		}
 	}
 

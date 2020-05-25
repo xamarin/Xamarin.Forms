@@ -241,8 +241,8 @@ namespace Xamarin.Forms.Platform.Android
 					// adjust border radius so outer edge of stroke is same radius as border radius of background
 					float borderRadius = Math.Max(ConvertCornerRadiusToPixels() - inset, 0);
 
-					RectF rect = new RectF(0, 0, width, height);
-					rect.Inset(inset + PaddingLeft, inset + PaddingTop);
+					RectF rect = new RectF(0, 0, width , height);
+					rect.Inset(PaddingLeft, PaddingTop);
 					path.AddRoundRect(rect, borderRadius, borderRadius, APath.Direction.Ccw);
 
 					canvas.Save();

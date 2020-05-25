@@ -56,7 +56,9 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="BackgroundColorTests.cs" />
     <Compile Include="CornerRadiusTests.cs" />
+    <Compile Include="EmbeddingTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
+    <Compile Include="ImageButtonTests.cs" />
     <Compile Include="IsEnabledTests.cs" />
     <Compile Include="IsVisibleTests.cs" />
     <Compile Include="NavigationTests.cs" />
