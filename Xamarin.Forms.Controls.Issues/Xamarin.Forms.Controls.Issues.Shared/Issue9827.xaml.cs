@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -51,13 +50,15 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue9827Test()
 		{
-		
+			RunningApp.WaitForElement("Pos:0");
+			RunningApp.Tap(c => c.Marked("btnNext"));
+			RunningApp.WaitForElement("Pos:1");
 		}
 #endif
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ViewModelIssue9827 : INotifyPropertyChanged
+	public class ViewModelIssue9827 : System.ComponentModel.INotifyPropertyChanged
 	{
 		public ViewModelIssue9827()
 		{
@@ -145,7 +146,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public string Title { get { return title; } set { SetProperty(ref title, value); } }
 
 		#region INotifyPropertyChanged
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
 		{
@@ -153,13 +154,13 @@ namespace Xamarin.Forms.Controls.Issues
 			if (changed == null)
 				return;
 
-			changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			changed.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
 		}
 		#endregion
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ModelIssue9827 : INotifyPropertyChanged
+	public class ModelIssue9827 : System.ComponentModel.INotifyPropertyChanged
 	{
 		private string title;
 
@@ -196,7 +197,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		#region INotifyPropertyChanged
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
 		{
@@ -204,7 +205,7 @@ namespace Xamarin.Forms.Controls.Issues
 			if (changed == null)
 				return;
 
-			changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			changed.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
 		}
 		#endregion INotifyPropertyChanged
 	}

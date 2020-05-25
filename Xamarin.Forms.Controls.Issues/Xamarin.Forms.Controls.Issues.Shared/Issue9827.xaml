@@ -37,9 +37,9 @@
         </Grid.RowDefinitions>
         <Label Text="Swipe to the next item in the CarouselView. The SearchBar text should be updated to match the current item, and so should the indicator view. However, with PeekAreaInserts set to a non-0 value, the CurrentItem lags behind, so the IndicatorView and the SearchBar don't get updated. It looks like this is related to being inside of a Grid with a * row pushing the CarouselView down. O_O"></Label>
         <StackLayout HorizontalOptions="Center" Grid.Row="1" Orientation="Horizontal">
-            <Button Command="{Binding GoPrevCommand}" Text="Back"/>
+            <Button AutomationId="btnPrev" Command="{Binding GoPrevCommand}" Text="Back"/>
             <Label AutomationId="lblPosition" Text="{ Binding Path=Position, Source={x:Reference cv}, StringFormat='Pos:{0}'}"/>
-            <Button Command="{Binding GoNextCommand}" Text="Next"/>
+            <Button AutomationId="btnNext" Command="{Binding GoNextCommand}" Text="Next"/>
         </StackLayout>
         <SearchBar Grid.Row="2" x:Name="matchSearch" BindingContext="{Binding CarouselCurrentItem}" Text="{Binding Title, Mode=OneWay}" Placeholder="Title" WidthRequest="300" />
         <CarouselView Grid.Row="3" x:Name="cv"
