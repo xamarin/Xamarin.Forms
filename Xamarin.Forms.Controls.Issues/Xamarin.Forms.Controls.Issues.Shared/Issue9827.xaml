@@ -3,11 +3,12 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
-    x:Class="Xamarin.Forms.Controls.Issues.Issue9827">
+    x:Class="Xamarin.Forms.Controls.Issues.Issue9827"
+    BackgroundColor="Blue">
     <controls:TestContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="MyTemplate">
-                <Grid Margin="10">
+                <Grid Margin="10" BackgroundColor="Blue">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
@@ -27,7 +28,7 @@
             </DataTemplate>
         </ResourceDictionary>
     </controls:TestContentPage.Resources>
-    <Grid Padding="40">
+    <Grid Padding="40" BackgroundColor="LightBlue">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -41,7 +42,7 @@
             <Label AutomationId="lblPosition" Text="{ Binding Path=Position, Source={x:Reference cv}, StringFormat='Pos:{0}'}"/>
             <Button AutomationId="btnNext" Command="{Binding GoNextCommand}" Text="Next"/>
         </StackLayout>
-        <SearchBar Grid.Row="2" x:Name="matchSearch" BindingContext="{Binding CarouselCurrentItem}" Text="{Binding Title, Mode=OneWay}" Placeholder="Title" WidthRequest="300" />
+        <SearchBar AutomationId="searchBar" Grid.Row="2" x:Name="matchSearch" BindingContext="{Binding CarouselCurrentItem}" Text="{Binding Title, Mode=OneWay}" Placeholder="Title" WidthRequest="300" />
         <CarouselView Grid.Row="3" x:Name="cv"
                           ItemsSource="{Binding Items}" 
                           CurrentItem="{Binding CarouselCurrentItem}" 
@@ -49,6 +50,8 @@
                           PeekAreaInsets="20"
                           IndicatorView="indicators"
                           ItemTemplate="{StaticResource MyTemplate}"
+                          BackgroundColor="Pink"
+                          AutomationId="carousel"
                          />
         <IndicatorView Grid.Row="4" x:Name="indicators" IndicatorColor="Orange" SelectedIndicatorColor="Purple" IndicatorsShape="Circle" MaximumVisible="10"/>
     </Grid>
