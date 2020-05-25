@@ -107,11 +107,14 @@
     <Compile Include="Extensions\FormattedStringExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementAttached.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
+    <Compile Include="Extensions\GeometryExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="Extensions\KeyboardExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\PageExtensions.cs" />
+    <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Extensions\ScrollBarVisibilityExtensions.cs" />
+    <Compile Include="Extensions\TransformExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="FormsApplicationPage.cs" />
@@ -177,10 +180,12 @@
     <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="Renderers\PageRenderer.cs" />
+    <Compile Include="Renderers\PathRenderer.cs" />
     <Compile Include="Renderers\PickerRenderer.cs" />
     <Compile Include="Renderers\ProgressBarRenderer.cs" />
     <Compile Include="Renderers\ScrollViewRenderer.cs" />
     <Compile Include="Renderers\SearchBarRenderer.cs" />
+    <Compile Include="Renderers\ShapeRenderer.cs" />
     <Compile Include="Renderers\SliderRenderer.cs" />
     <Compile Include="Renderers\StepperRenderer.cs" />
     <Compile Include="Renderers\CheckBoxRenderer.cs" />
