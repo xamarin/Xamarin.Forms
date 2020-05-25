@@ -59,6 +59,8 @@ VS 2019+ is required for developing Xamarin.Forms. If you do not already have it
 - Mobile Development with .NET 
   - `Individual Components > Development Activities > Xamarin Remoted Simulator`
   - If you're not using Hyper-V `Individual Components > Emulators > Hyper-V Intel Hardware Accelerated Execution Manager (HAXM)`
+- Most current SDK version of .NET Core
+  - Or install the most current .NET Core SDK from here https://dotnet.microsoft.com/download
 
 The Android 10.0 API 29 SDK and Android 9.0 API 28 SDK are required for developing Xamarin.Forms. They can be installed by using the [Xamarin Android SDK Manager](https://docs.microsoft.com/xamarin/android/get-started/installation/android-sdk).
 
