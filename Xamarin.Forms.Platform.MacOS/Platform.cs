@@ -3,6 +3,8 @@ using AppKit;
 using RectangleF = CoreGraphics.CGRect;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using Foundation;
+using System.IO;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -71,6 +73,34 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				arguments.SetResult(titleResult);
 			});
+		}
+
+		internal static string ResolveMsAppDataUri(Uri uri)
+		{
+			if (uri.Scheme == "ms-appdata")
+			{
+				string filePath = string.Empty;
+
+				if (uri.LocalPath.StartsWith("/local"))
+				{
+					var libraryPath = NSFileManager.DefaultManager.GetUrls(NSSearchPathDirectory.LibraryDirectory, NSSearchPathDomain.User)[0].Path;
+					filePath = Path.Combine(libraryPath, uri.LocalPath.Substring(7));
+				}
+				else if (uri.LocalPath.StartsWith("/temp"))
+				{
+					filePath = Path.Combine(Path.GetTempPath(), uri.LocalPath.Substring(6));
+				}
+				else
+				{
+					throw new ArgumentException("Invalid Uri", "Source");
+				}
+
+				return filePath;
+			}
+			else
+			{
+				throw new ArgumentException("uri");
+			}
 		}
 
 		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)

@@ -37,6 +37,7 @@ using Xamarin.Forms.Platform.MacOS;
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
 [assembly: ExportRenderer(typeof(TableView), typeof(TableViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
+[assembly: ExportRenderer(typeof(MediaElement), typeof(MediaElementRenderer))]
 [assembly: ExportRenderer(typeof(Layout), typeof(LayoutRenderer))]
 [assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]
 [assembly: ExportCell(typeof(TextCell), typeof(TextCellRenderer))]

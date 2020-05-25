@@ -39,6 +39,7 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 
 		public override void DidFinishLaunching(NSNotification notification)
 		{
+			Forms.SetFlags(new string[] { "MediaElement_Experimental" });
 			Forms.Init();
 			FormsMaps.Init();
 
