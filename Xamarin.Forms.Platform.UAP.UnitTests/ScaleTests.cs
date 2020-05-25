@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Windows.UI.Xaml;
 using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
 
-namespace Xamarin.Forms.Platform.UAP.Tests
+namespace Xamarin.Forms.Platform.UAP.UnitTests
 {
 	[TestFixture]
 	public class ScaleTests : PlatformTestFixture

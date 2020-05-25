@@ -16,7 +16,6 @@
     <Deterministic>True</Deterministic>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
     <AndroidUseAapt2>true</AndroidUseAapt2>
   </PropertyGroup>
@@ -51,6 +50,7 @@
     <Compile Include="BackgroundColorTests.cs" />
     <Compile Include="CollectionViewTests.cs" />
     <Compile Include="CornerRadiusTests.cs" />
+    <Compile Include="EmbeddingTests.cs" />
     <Compile Include="IsEnabledTests.cs" />
     <Compile Include="Issues.cs" />
     <Compile Include="IsVisibleTests.cs" />
@@ -60,9 +60,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RotationTests.cs" />
     <Compile Include="ScaleTests.cs" />
+    <Compile Include="ToolbarExtensionsTests.cs" />
+    <Compile Include="ShellTests.cs" />
     <Compile Include="TestClasses\_5560Model.cs" />
     <Compile Include="TextTests.cs" />
     <Compile Include="TranslationTests.cs" />
+    <Compile Include="ButtonTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit">

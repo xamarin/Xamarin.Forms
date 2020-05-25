@@ -201,7 +201,7 @@ namespace Xamarin.Forms
 					SetInheritedBindingContext(this, null);
 				}
 
-				VisualDiagnostics.SendVisualTreeChanged(this, value);
+				VisualDiagnostics.SendVisualTreeChanged(value, this);
 
 				OnParentSet();
 
@@ -344,7 +344,7 @@ namespace Xamarin.Forms
 		protected virtual void OnParentSet()
 		{
 			ParentSet?.Invoke(this, EventArgs.Empty);
-			ApplyStyleSheetsOnParentSet();
+			ApplyStyleSheets();
 			(this as IPropertyPropagationController)?.PropagatePropertyChanged(null);
 		}
 
@@ -388,7 +388,7 @@ namespace Xamarin.Forms
 		internal virtual void OnParentResourcesChanged(object sender, ResourcesChangedEventArgs e)
 		{
 			if (e == ResourcesChangedEventArgs.StyleSheets)
-				ApplyStyleSheetsOnParentSet();
+				ApplyStyleSheets();
 			else
 				OnParentResourcesChanged(e.Values);
 		}
@@ -409,7 +409,10 @@ namespace Xamarin.Forms
 
 		internal virtual void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
 		{
-			OnResourcesChanged(e.Values);
+			if (e == ResourcesChangedEventArgs.StyleSheets)
+				ApplyStyleSheets();
+			else
+				OnResourcesChanged(e.Values);
 		}
 
 		internal void OnResourcesChanged(IEnumerable<KeyValuePair<string, object>> values)
@@ -461,43 +464,6 @@ namespace Xamarin.Forms
 		}
 
 		internal event EventHandler ParentSet;
-
-		internal static void SetFlowDirectionFromParent(Element child)
-		{
-			IFlowDirectionController controller = child as IFlowDirectionController;
-			if (controller == null)
-				return;
-
-			if (controller.EffectiveFlowDirection.IsImplicit())
-			{
-				var parentView = child.Parent as IFlowDirectionController;
-				if (parentView == null)
-					return;
-
-				var flowDirection = parentView.EffectiveFlowDirection.ToFlowDirection();
-
-				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
-				{
-					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
-				}
-			}
-		}
-
-		internal static void SetVisualfromParent(Element child)
-		{
-			IVisualController controller = child as IVisualController;
-			if (controller == null)
-				return;
-
-			if (controller.Visual != VisualMarker.MatchParent)
-			{
-				controller.EffectiveVisual = controller.Visual;
-				return;
-			}
-
-			if (child.Parent is IVisualController parentView)
-				controller.EffectiveVisual = parentView.EffectiveVisual;
-		}
 
 		internal virtual void SetChildInheritedBindingContext(Element child, object context)
 		{

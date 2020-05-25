@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +26,25 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+		protected T FindParentOfType<T>(Element element)
+		{
+			var navPage = GetParentsPath(element)
+				.OfType<T>()
+				.FirstOrDefault();
+
+			return navPage;
+		}
+
+		protected IEnumerable<Element> GetParentsPath(Element self)
+		{
+			Element current = self;
+
+			while (!Application.IsApplicationOrNull(current.RealParent))
+			{
+				current = current.RealParent;
+				yield return current;
+			}
+		}
 
 		protected bool IsModal(BindableObject bindableObject)
 		{
@@ -78,7 +98,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			string shellSectionRoute = null, 
 			string shellItemRoute = null,
 			bool templated = false)
-		{			
+		{
 			ShellItem item = null;
 			var section = CreateShellSection(page, asImplicit, shellContentRoute, shellSectionRoute, templated: templated);
 
@@ -169,5 +189,45 @@ namespace Xamarin.Forms.Core.UnitTests
 			return (item as IShellController).GetItems();
 		}
 
+		public class TestShell : Shell
+		{
+			public int OnNavigatedCount;
+			public int OnNavigatingCount;
+			public int NavigatedCount;
+			public int NavigatingCount;
+
+			public TestShell()
+			{
+				this.Navigated += (_, __) => NavigatedCount++;
+				this.Navigating += (_, __) => NavigatingCount++;
+			}
+
+			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
+			protected override void OnNavigated(ShellNavigatedEventArgs args)
+			{
+				base.OnNavigated(args);
+				OnNavigatedHandler?.Invoke(args);
+				OnNavigatedCount++;
+			}
+
+			protected override void OnNavigating(ShellNavigatingEventArgs args)
+			{
+				base.OnNavigating(args);
+				OnNavigatingCount++;
+			}
+
+			public void Reset()
+			{
+				OnNavigatedCount = OnNavigatingCount = NavigatedCount = NavigatingCount = 0;
+			}
+
+			public void TestCount(int count, string message = null)
+			{
+				Assert.AreEqual(count, OnNavigatedCount, $"OnNavigatedCount: {message}");
+				Assert.AreEqual(count, NavigatingCount, $"NavigatingCount: {message}");
+				Assert.AreEqual(count, OnNavigatingCount, $"OnNavigatingCount: {message}");
+				Assert.AreEqual(count, NavigatedCount, $"NavigatedCount: {message}");
+			}
+		}
 	}
 }
