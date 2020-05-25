@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
-				Text = ""
+				Text = "Expand the Expander and swipe the CarouselView. Without any crash, the test has passed."
 			};
 
 			var expander = new Expander();
@@ -56,12 +56,19 @@ namespace Xamarin.Forms.Controls.Issues
 
 			carouselView.ItemTemplate = new DataTemplate(() =>
 			{
-				var template = new Frame();
+				var template = new Grid
+				{
+					BackgroundColor = Color.Red,
+					Padding = 24
+				};
+
 				var grid = new Grid
 				{
 					BackgroundColor = Color.Lime
 				};
-				template.Content = grid;
+
+				template.Children.Add(grid);
+
 				return template;
 			});
 
