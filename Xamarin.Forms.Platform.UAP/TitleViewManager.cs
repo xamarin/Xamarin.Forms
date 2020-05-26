@@ -52,6 +52,17 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				CommandBar.LayoutUpdated -= commandLayoutUpdated;
 				CommandBar.Unloaded -= commandBarUnloaded;
+				CommandBar.Loaded += CommandBar_Loaded;
+			}
+		}
+
+		private void CommandBar_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (CommandBar != null)
+			{
+				CommandBar.LayoutUpdated += commandLayoutUpdated;
+				CommandBar.Unloaded += commandBarUnloaded;
+				CommandBar.Loaded -= CommandBar_Loaded;
 			}
 		}
 
