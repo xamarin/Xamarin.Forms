@@ -57,6 +57,8 @@ namespace Xamarin.Forms
 
 		internal static readonly BindableProperty TransformProperty = BindableProperty.Create("Transform", typeof(string), typeof(VisualElement), null, propertyChanged: OnTransformChanged);
 
+		public static readonly BindableProperty ClipProperty = BindableProperty.Create(nameof(Clip), typeof(Geometry), typeof(VisualElement), null);
+
 		public static readonly BindableProperty VisualProperty =
 			BindableProperty.Create(nameof(Visual), typeof(IVisual), typeof(VisualElement), Forms.VisualMarker.MatchParent,
 									validateValue: (b, v) => v != null, propertyChanged: OnVisualChanged);
@@ -471,6 +473,13 @@ namespace Xamarin.Forms
 		{
 			get { return _mockY == -1 ? (double)GetValue(YProperty) : _mockY; }
 			private set { SetValue(YPropertyKey, value); }
+		}
+
+		[TypeConverter(typeof(PathGeometryConverter))]
+		public Geometry Clip
+		{
+			get { return (Geometry)GetValue(ClipProperty); }
+			set { SetValue(ClipProperty, value); }
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]

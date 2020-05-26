@@ -11,6 +11,7 @@ using WTransformCollection = System.Windows.Media.TransformCollection;
 using WRotateTransform = System.Windows.Media.RotateTransform;
 using WTranslateTransform = System.Windows.Media.TranslateTransform;
 using WScaleTransform = System.Windows.Media.ScaleTransform;
+using Xamarin.Forms.Platform.WPF.Extensions;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -137,6 +138,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateOpacity();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
+			else if (e.PropertyName == VisualElement.ClipProperty.PropertyName)
+				UpdateClip();
 		}
 
 		protected virtual void UpdateNativeControl()
@@ -147,6 +150,7 @@ namespace Xamarin.Forms.Platform.WPF
 			UpdateOpacity();
 			UpdateScaleAndTranslateAndRotation();
 			UpdateInputTransparent();
+			UpdateClip();
 			UpdateVisibility();
 
 			if (_invalidateArrangeNeeded)
@@ -252,6 +256,11 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateInputTransparent()
 		{
 			Control.IsHitTestVisible = !Element.InputTransparent;
+		}
+
+		void UpdateClip()
+		{
+			Control.Clip = Element.Clip.ToWindows();
 		}
 
 		void UpdateOpacity()
