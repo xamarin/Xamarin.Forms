@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("Pos:0");
 			RunningApp.Tap(c => c.Marked("btnNext"));
-			Assert.AreEqual("Item 1 with some additional text", elementText);
+			RunningApp.WaitForElement("Item 1 with some additional text");
 			RunningApp.WaitForElement("Pos:1");
 		
 		}
