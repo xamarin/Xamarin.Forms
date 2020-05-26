@@ -294,12 +294,13 @@ Task("provision-windowssdk")
             {
                 string sdkPath = System.IO.Path.Combine(@"C:\Program Files (x86)\Windows Kits\10\Platforms\UAP", windowsSdk.name);
                 if(DirectoryExists(sdkPath) && GetFiles(System.IO.Path.Combine(sdkPath, "*.*")).Count() > 0)
+                {
+                    Information("Already Installed: {0}", sdkPath);
                     continue;
+                }
 
 
-                Information(sdkPath);
-                Information(DirectoryExists(sdkPath).ToString());
-                Information(GetFiles(sdkPath).Count().ToString());
+                Information("Installing: {0}", sdkPath);
                 string installUrl = windowsSdk.location;
                 string installerPath = $"{System.IO.Path.GetTempPath()}" + $"WindowsSDK{i}.exe";
                 DownloadFile(installUrl, installerPath);
