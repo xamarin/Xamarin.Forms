@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 9827, "Issue Description (Markup)", PlatformAffected.Default)]
+	[Issue(IssueTracker.Github, 9827, "CarouselView doesn't update the CurrentItem on Swipe under strange condition", PlatformAffected.Android)]
 	public partial class Issue9827 : TestContentPage
 	{
 		ViewModelIssue9827 ViewModel => BindingContext as ViewModelIssue9827;
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class ModelIssue9827 : System.ComponentModel.INotifyPropertyChanged
 	{
-		private string title;
+		string _title;
 
 		protected bool SetProperty<T>(ref T backingStore,
 									  T value,
@@ -184,15 +184,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public string Title
 		{
-			get { return title; }
+			get { return _title; }
 			set
 			{
-				if (title == value)
+				if (_title == value)
 				{
 					return;
 				}
 
-				title = value;
+				_title = value;
 				OnPropertyChanged();
 			}
 		}
