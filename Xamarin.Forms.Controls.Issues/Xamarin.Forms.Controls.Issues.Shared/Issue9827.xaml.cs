@@ -51,12 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue9827Test()
 		{
 			RunningApp.WaitForElement("Pos:0");
-			//RunningApp.Tap(c => c.Marked("btnNext"));
-			var rect = RunningApp.Query(c => c.Marked("carousel")).First().Rect;
-			var centerX = rect.CenterX;
-			var rightX = rect.X + rect.Width - 1;
-			RunningApp.DragCoordinates(centerX, rect.CenterY, rightX, rect.CenterY);
-			var elementText = RunningApp.Query(c => c.Marked("searchBar")).First().Text;
+			RunningApp.Tap(c => c.Marked("btnNext"));
 			Assert.AreEqual("Item 1 with some additional text", elementText);
 			RunningApp.WaitForElement("Pos:1");
 		
