@@ -63,8 +63,10 @@ string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms
 // these don't run on CI
 string[] netFrameworkSdksLocalInstall = new string[]
 {
-    "https://download.microsoft.com/download/F/1/D/F1DEB8DB-D277-4EF9-9F48-3A65D4D8F965/NDP461-DevPack-KB3105179-ENU.exe",
-    "https://go.microsoft.com/fwlink/?linkid=874338", //NET472
+    "https://download.microsoft.com/download/F/1/D/F1DEB8DB-D277-4EF9-9F48-3A65D4D8F965/NDP461-DevPack-KB3105179-ENU.exe", //NET461 targeting pack
+    "https://dotnet.microsoft.com/download/dotnet-framework/thank-you/net461-developer-pack-offline-installer", //NET461 SDK
+    "https://go.microsoft.com/fwlink/?linkid=874338", //NET472 targeting pack
+    "https://dotnet.microsoft.com/download/dotnet-framework/thank-you/net472-developer-pack-offline-installer", //NET472 SDK
 };
 
 Information ("XamarinFormsVersion: {0}", XamarinFormsVersion);
