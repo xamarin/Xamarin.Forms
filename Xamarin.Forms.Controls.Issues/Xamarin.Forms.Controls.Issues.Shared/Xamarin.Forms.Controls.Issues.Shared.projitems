@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CollectionViewGroupTypeIssue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Github9536.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Github9536.xaml.cs">
     <DependentUpon>Github9536.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
