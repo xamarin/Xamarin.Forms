@@ -601,6 +601,23 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => true;
 #endif
 
+		protected void IncreaseFlyoutItemsHeightSoUITestsCanClickOnThem()
+		{
+			this.Resources.Add(new Style(typeof(Label))
+			{
+				ApplyToDerivedTypes = true,
+				Class = FlyoutItem.LayoutStyle,
+				Setters =
+				{
+					new Setter()
+					{
+						Property = HeightRequestProperty,
+						Value = 50
+					}
+				}
+			});
+		}
+
 		protected TestShell() : base()
 		{
 			Routing.Clear();
@@ -619,7 +636,11 @@ namespace Xamarin.Forms.Controls
 
 		public ContentPage AddTopTab(string title, string icon = null)
 		{
-			var page = new ContentPage();
+			var page = new ContentPage()
+			{
+				Title = title
+			};
+
 			AddTopTab(page, title, icon);
 			return page;
 		}
