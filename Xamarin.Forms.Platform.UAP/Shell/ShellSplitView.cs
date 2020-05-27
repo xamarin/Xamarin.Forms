@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (value == Color.Default)
 				{
-					LightDismissOverlayMode = LightDismissOverlayMode.Value;
+					LightDismissOverlayMode = _defaultLightDismissOverlayMode ?? LightDismissOverlayMode.Auto;
 				}
 				else
 				{
