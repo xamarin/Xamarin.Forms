@@ -18,7 +18,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 10454, "CollectionView ChildAdded", PlatformAffected.All)]
 	public class Issue10454 : TestContentPage
 	{
-		public Issue10454()
+		const string Success = "Success";
+
+		protected override void Init()
 		{
 			Title = "Issue 10454";
 
@@ -48,7 +50,10 @@ namespace Xamarin.Forms.Controls.Issues
 				FontSize = 18
 			};
 
+			var successLabel = new Label();
+
 			layout.Children.Add(labelInfo);
+			layout.Children.Add(successLabel);
 			layout.Children.Add(collectionView);
 
 			Content = layout;
@@ -57,13 +62,24 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				labelInfo.Text = $"ChildAdded {args.Element}";
 				Console.WriteLine(labelInfo.Text);
+
+				successLabel.Text = Success;
+			};
+
+			collectionView.ChildRemoved += (sender, args) =>
+			{
+				labelInfo.Text = $"ChildRemoved  {args.Element}";
+				Console.WriteLine(labelInfo.Text);
 			};
 		}
 
-		protected override void Init()
+#if UITEST
+		[Test]
+		public void ChildAddedShouldFire() 
 		{
-
+			RunningApp.WaitForElement(Success);
 		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
