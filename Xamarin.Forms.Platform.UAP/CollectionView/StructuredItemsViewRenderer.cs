@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+
 using Windows.UI.Xaml.Controls;
+
 using UWPApp = Windows.UI.Xaml.Application;
 using WListView = Windows.UI.Xaml.Controls.ListView;
 using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
@@ -43,6 +45,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFooter();
 			}
+			else if (changedProperty.Is(StructuredItemsView.ItemsLayoutProperty))
+			{
+				UpdateItemsLayout();
+			}
 		}
 
 		protected override ListViewBase SelectListViewBase()
@@ -57,7 +63,7 @@ namespace Xamarin.Forms.Platform.UWP
 					return CreateHorizontalListView(listItemsLayout);
 			}
 
-			throw new NotImplementedException("The layout is not implemented");			
+			throw new NotImplementedException("The layout is not implemented");
 		}
 
 		protected virtual void UpdateHeader()
@@ -186,25 +192,6 @@ namespace Xamarin.Forms.Platform.UWP
 						break;
 				}
 			}
-			else if (property.Is(StructuredItemsView.ItemsLayoutProperty))
-			{
-				if (ListViewBase is FormsGridView formsGridView)
-				{
-					formsGridView.ItemContainerStyle = GetItemContainerStyle((GridItemsLayout)Layout);
-				}
-				else
-				{
-					switch (ListViewBase)
-					{
-						case FormsListView formsListView:
-							formsListView.ItemContainerStyle = GetVerticalItemContainerStyle((LinearItemsLayout)Layout);
-							break;
-						case WListView listView:
-							listView.ItemContainerStyle = GetHorizontalItemContainerStyle((LinearItemsLayout)Layout);
-							break;
-					}
-				}
-			}
 		}
 
 		static ListViewBase CreateGridView(GridItemsLayout gridItemsLayout)
@@ -230,7 +217,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static ListViewBase CreateHorizontalListView(LinearItemsLayout listItemsLayout)
 		{
-			var horizontalListView = new WListView()
+			var horizontalListView = new FormsListView()
 			{
 				ItemsPanel = (ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalListItemsPanel"],
 				ItemContainerStyle = GetHorizontalItemContainerStyle(listItemsLayout)
@@ -257,8 +244,8 @@ namespace Xamarin.Forms.Platform.UWP
 		static WStyle GetVerticalItemContainerStyle(LinearItemsLayout layout)
 		{
 			var v = layout?.ItemSpacing ?? 0;
-			var margin = new WThickness(0, v, 0, v);	
-			
+			var margin = new WThickness(0, v, 0, v);
+
 			var style = new WStyle(typeof(ListViewItem));
 			style.Setters.Add(new WSetter(ListViewItem.MarginProperty, margin));
 			return style;
