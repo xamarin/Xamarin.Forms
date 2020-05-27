@@ -36,11 +36,6 @@ namespace Xamarin.Forms.Platform.iOS
 					foreach (var gesture in NativeView.GestureRecognizers)
 						_actualView.AddGestureRecognizer(gesture);
 				}
-				else
-				{
-					// If no recognizers, let the gestures pass through the extra layer
-					_actualView.UserInteractionEnabled = false;
-				}
 
 				AddSubview(_actualView);
 				SetupLayer();
