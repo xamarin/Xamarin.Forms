@@ -269,6 +269,30 @@
       <Link>Extensions\FontExtensions.Shared.cs</Link>
     </Compile>
     <Compile Include="Extensions\NSAttributedStringExtensions.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\ShapeRenderer.cs">
+      <Link>Renderers\ShapeRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\DoubleCollectionExtensions.cs">
+      <Link>Extensions\DoubleCollectionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\LineRenderer.cs">
+      <Link>Renderers\LineRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\PolygonRenderer.cs">
+      <Link>Renderers\PolygonRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\PolylineRenderer.cs">
+      <Link>Renderers\PolylineRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\PointCollectionExtensions.cs">
+      <Link>Extensions\PointCollectionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\EllipseRenderer.cs">
+      <Link>Renderers\EllipseRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\RectRenderer.cs">
+      <Link>Renderers\RectRenderer.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

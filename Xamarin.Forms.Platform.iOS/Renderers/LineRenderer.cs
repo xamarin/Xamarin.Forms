@@ -2,7 +2,11 @@
 using System.ComponentModel;
 using CoreGraphics;
 
+#if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
+#else
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
     public class LineRenderer : ShapeRenderer<Line, LineView>
     {

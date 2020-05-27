@@ -2,9 +2,13 @@
 using System.ComponentModel;
 using CoreGraphics;
 
+#if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
+#else
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
-	public class RectRenderer : ShapeRenderer<Rect, RectView>
+    public class RectRenderer : ShapeRenderer<Rect, RectView>
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Rect> args)
         {

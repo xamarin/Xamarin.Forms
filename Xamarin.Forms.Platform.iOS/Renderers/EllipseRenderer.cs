@@ -1,8 +1,12 @@
 ﻿using CoreGraphics;
 
+#if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
+#else
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
-	public class EllipseRenderer : ShapeRenderer<Ellipse, EllipseView>
+    public class EllipseRenderer : ShapeRenderer<Ellipse, EllipseView>
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Ellipse> args)
         {

@@ -1,6 +1,10 @@
 ﻿using System;
 
+#if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
+#else
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
     public static class DoubleCollectionExtensions
     {

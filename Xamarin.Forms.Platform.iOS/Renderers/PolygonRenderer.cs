@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel;
 using CoreGraphics;
 
+#if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
+#else
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
-	public class PolygonRenderer : ShapeRenderer<Polygon, PolygonView>
+    public class PolygonRenderer : ShapeRenderer<Polygon, PolygonView>
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Polygon> args)
         {
