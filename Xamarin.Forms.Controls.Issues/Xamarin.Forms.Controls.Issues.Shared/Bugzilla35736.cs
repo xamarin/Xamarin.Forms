@@ -9,6 +9,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 35736, "[iOS] Editor does not update Text value from autocorrect when losing focus", PlatformAffected.iOS)]
 	public class Bugzilla35736 : TestContentPage
@@ -46,7 +49,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Fails sometimes")]
-		public void Bugzilla35736Test() 
+		public void Bugzilla35736Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Bugzilla35736Editor"));
 			RunningApp.EnterText(q => q.Marked("Bugzilla35736Editor"), "Testig");

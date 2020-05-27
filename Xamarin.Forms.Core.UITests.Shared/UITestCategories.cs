@@ -60,5 +60,6 @@
 		public const string TitleView = "TitleView";
 		public const string DisplayPrompt = "DisplayPrompt";
 		public const string IndicatorView = "IndicatorView";
+		public const string Bugzilla = "Bugzilla";
 	}
 }

@@ -11,13 +11,17 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 29128, "Slider background lays out wrong Android")]
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 29128, "Slider background lays out wrong Android")]
 	public class Bugzilla29128 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			Content = new Slider {
+			Content = new Slider
+			{
 				AutomationId = "SliderId",
 				BackgroundColor = Color.Blue,
 				Maximum = 255,
@@ -28,11 +32,11 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		[Test]
 		[Category(UITestCategories.ManualReview)]
-		public void Bugzilla29128Test ()
+		public void Bugzilla29128Test()
 		{
-			RunningApp.WaitForElement (q => q.Marked ("SliderId"));
+			RunningApp.WaitForElement(q => q.Marked("SliderId"));
 			RunningApp.Screenshot("Slider and button should be centered");
-			Assert.Inconclusive ("For visual review only");
+			Assert.Inconclusive("For visual review only");
 		}
 #endif
 	}
