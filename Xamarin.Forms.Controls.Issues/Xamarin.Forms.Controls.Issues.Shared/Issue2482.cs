@@ -16,6 +16,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[Category(UITestCategories.Animation)]
 #endif
 	[Preserve(AllMembers = true)]

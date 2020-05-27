@@ -9,6 +9,9 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 3413, "[iOS] Searchbar in Horizontal Stacklayout doesn't render", PlatformAffected.iOS)]
 	public class Issue3413 : TestContentPage
@@ -67,11 +70,11 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		[Test]
 		[Category(UITestCategories.ManualReview)]
-		public void Issue3413Test ()
+		public void Issue3413Test()
 		{
-			RunningApp.WaitForElement (q => q.Marked ("srb_vertical"));
-			RunningApp.WaitForElement (q => q.Marked ("srb_horizontal"));
-			RunningApp.Screenshot ("Please verify we have 2 SearchBars. One below the label, other side by side with the label");
+			RunningApp.WaitForElement(q => q.Marked("srb_vertical"));
+			RunningApp.WaitForElement(q => q.Marked("srb_horizontal"));
+			RunningApp.Screenshot("Please verify we have 2 SearchBars. One below the label, other side by side with the label");
 		}
 #endif
 	}

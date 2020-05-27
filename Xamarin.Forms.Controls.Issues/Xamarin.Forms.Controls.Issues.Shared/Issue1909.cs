@@ -11,9 +11,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1909, "Xamarin.forms 2.5.0.280555 and android circle button issue", PlatformAffected.Android)]
-	public class Issue1909 : TestContentPage 
+	public class Issue1909 : TestContentPage
 	{
 		public class FlatButton : Button { }
 		protected override void Init()
@@ -47,7 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			Content = new StackLayout
-					{
+			{
 				Children = {
 					new Label{ Text = "The following buttons should be perfectly round. The bottom button should be larger and should not have a shadow." },
 					button,
