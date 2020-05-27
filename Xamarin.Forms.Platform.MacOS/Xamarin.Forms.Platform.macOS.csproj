@@ -270,6 +270,7 @@
     </Compile>
     <Compile Include="Extensions\NSAttributedStringExtensions.cs" />
     <Compile Include="Renderers\MediaElementRenderer.cs" />
+    <Compile Include="EmbeddedFontLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
