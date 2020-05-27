@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel;
 using CoreGraphics;
 
+#if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
+#else
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
-	public class PathRenderer : ShapeRenderer<Path, PathView>
+    public class PathRenderer : ShapeRenderer<Path, PathView>
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Path> args)
         {
@@ -58,8 +62,13 @@ namespace Xamarin.Forms.Platform.iOS
         }
 
 		public void UpdateTransform(CGAffineTransform transform)
-		{
+        {
+#if __MOBILE__
             Transform = transform;
+#else
+            WantsLayer = true;
+            Layer.AffineTransform = transform;
+#endif
         }
     }
 }

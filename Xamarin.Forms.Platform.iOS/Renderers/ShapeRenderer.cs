@@ -2,9 +2,16 @@
 using System.ComponentModel;
 using CoreAnimation;
 using CoreGraphics;
+
+#if __MOBILE__
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
+#else
+using AppKit;
+
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
     public class ShapeRenderer<TShape, TNativeShape> : ViewRenderer<TShape, TNativeShape>
         where TShape : Shape
@@ -100,13 +107,22 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Control.ShapeLayer.UpdateStrokeDashOffset((nfloat)Element.StrokeDashOffset);
 		}
-	}
+    }
 
-    public class ShapeView : UIView
+    public class ShapeView
+    #if __MOBILE__
+	: UIView
+#else
+	: NSView
+#endif
     {
         public ShapeView()
         {
+#if __MOBILE__
             BackgroundColor = UIColor.Clear;
+#else
+            WantsLayer = true;
+#endif
             ShapeLayer = new ShapeLayer();
             Layer.AddSublayer(ShapeLayer);
             Layer.MasksToBounds = false;
@@ -119,7 +135,7 @@ namespace Xamarin.Forms.Platform.iOS
         }
     }
 
-    public class ShapeLayer : CALayer
+	public class ShapeLayer : CALayer
     {
 		// TODO: Expose this properties
         const CGLineCap StrokeLineCap = CGLineCap.Butt;
