@@ -29,13 +29,16 @@ namespace Xamarin.Forms
 				propertyChanged: OnSwipeItemsChanged);
 
 		public static readonly BindableProperty RightItemsProperty =
-			BindableProperty.Create(nameof(RightItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator);
+			BindableProperty.Create(nameof(RightItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
+				propertyChanged: OnSwipeItemsChanged);
 
 		public static readonly BindableProperty TopItemsProperty =
-			BindableProperty.Create(nameof(TopItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator);
+			BindableProperty.Create(nameof(TopItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
+				propertyChanged: OnSwipeItemsChanged);
 
 		public static readonly BindableProperty BottomItemsProperty =
-			BindableProperty.Create(nameof(BottomItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator);
+			BindableProperty.Create(nameof(BottomItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
+				propertyChanged: OnSwipeItemsChanged);
 
 		public SwipeItems LeftItems
 		{
@@ -61,6 +64,8 @@ namespace Xamarin.Forms
 			set { SetValue(BottomItemsProperty, value); }
 		}
 
+		bool ISwipeViewController.IsOpen { get; set; }
+
 		static void OnSwipeItemsChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			((SwipeView)bindable).UpdateSwipeItemsParent((SwipeItems)newValue);
@@ -69,7 +74,16 @@ namespace Xamarin.Forms
 		public event EventHandler<SwipeStartedEventArgs> SwipeStarted;
 		public event EventHandler<SwipeChangingEventArgs> SwipeChanging;
 		public event EventHandler<SwipeEndedEventArgs> SwipeEnded;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<OpenSwipeEventArgs> OpenRequested;
+
 		public event EventHandler CloseRequested;
+
+		public void Open(OpenSwipeItem openSwipeItem)
+		{
+			OpenRequested?.Invoke(this, new OpenSwipeEventArgs(openSwipeItem));
+		}
 
 		public void Close()
 		{
@@ -117,14 +131,8 @@ namespace Xamarin.Forms
 		{
 			swipeItems.Parent = this;
 
-			foreach (var item in swipeItems)
-			{
-				if(item is SwipeItem swipeItem)
-					swipeItem.Parent = swipeItems;
-
-				if (item is SwipeItemView swipeItemView)
-					swipeItemView.Parent = swipeItems;
-			}
+			foreach (var swipeItem in swipeItems)
+				((Element)swipeItem).Parent = swipeItems;
 		}
 	}
 }

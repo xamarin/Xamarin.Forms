@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +26,25 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+		protected T FindParentOfType<T>(Element element)
+		{
+			var navPage = GetParentsPath(element)
+				.OfType<T>()
+				.FirstOrDefault();
+
+			return navPage;
+		}
+
+		protected IEnumerable<Element> GetParentsPath(Element self)
+		{
+			Element current = self;
+
+			while (!Application.IsApplicationOrNull(current.RealParent))
+			{
+				current = current.RealParent;
+				yield return current;
+			}
+		}
 
 		protected bool IsModal(BindableObject bindableObject)
 		{
@@ -72,27 +92,44 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		protected ShellItem CreateShellItem(
-			TemplatedPage page = null, 
-			bool asImplicit = false, 
-			string shellContentRoute = null, 
-			string shellSectionRoute = null, 
+			TemplatedPage page = null,
+			bool asImplicit = false,
+			string shellContentRoute = null,
+			string shellSectionRoute = null,
 			string shellItemRoute = null,
 			bool templated = false)
-		{			
-			ShellItem item = null;
+		{
+			return CreateShellItem<ShellItem>(
+				page,
+				asImplicit,
+				shellContentRoute,
+				shellSectionRoute,
+				shellItemRoute,
+				templated);
+		}
+
+		protected T CreateShellItem<T>(
+			TemplatedPage page = null,
+			bool asImplicit = false,
+			string shellContentRoute = null,
+			string shellSectionRoute = null,
+			string shellItemRoute = null,
+			bool templated = false) where T : ShellItem
+		{
+			T item = null;
 			var section = CreateShellSection(page, asImplicit, shellContentRoute, shellSectionRoute, templated: templated);
 
 			if (!String.IsNullOrWhiteSpace(shellItemRoute))
 			{
-				item = new ShellItem();
+				item = Activator.CreateInstance<T>();
 				item.Route = shellItemRoute;
 				item.Items.Add(section);
 			}
 			else if (asImplicit)
-				item = ShellItem.CreateFromShellSection(section);
+				item = (T)ShellItem.CreateFromShellSection(section);
 			else
 			{
-				item = new ShellItem();
+				item = Activator.CreateInstance<T>();
 				item.Items.Add(section);
 			}
 
@@ -100,27 +137,42 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		protected ShellSection CreateShellSection(
+			TemplatedPage page = null,
+			bool asImplicit = false,
+			string shellContentRoute = null,
+			string shellSectionRoute = null,
+			bool templated = false)
+		{
+			return CreateShellSection<ShellSection>(
+				page, 
+				asImplicit, 
+				shellContentRoute,
+				shellSectionRoute, 
+				templated);
+		}
+
+		protected T CreateShellSection<T>(
 			TemplatedPage page = null, 
 			bool asImplicit = false, 
 			string shellContentRoute = null, 
 			string shellSectionRoute = null,
-			bool templated = false)
+			bool templated = false) where T : ShellSection
 		{
 			var content = CreateShellContent(page, asImplicit, shellContentRoute, templated: templated);
 
-			ShellSection section = null;
+			T section = null;
 
 			if (!String.IsNullOrWhiteSpace(shellSectionRoute))
 			{
-				section = new ShellSection();
+				section = Activator.CreateInstance<T>();
 				section.Route = shellSectionRoute;
 				section.Items.Add(content);
 			}
 			else if (asImplicit)
-				section = ShellSection.CreateFromShellContent(content);
+				section = (T)ShellSection.CreateFromShellContent(content);
 			else
 			{
-				section = new ShellSection();
+				section = Activator.CreateInstance<T>();
 				section.Items.Add(content);
 			}
 
@@ -169,5 +221,45 @@ namespace Xamarin.Forms.Core.UnitTests
 			return (item as IShellController).GetItems();
 		}
 
+		public class TestShell : Shell
+		{
+			public int OnNavigatedCount;
+			public int OnNavigatingCount;
+			public int NavigatedCount;
+			public int NavigatingCount;
+
+			public TestShell()
+			{
+				this.Navigated += (_, __) => NavigatedCount++;
+				this.Navigating += (_, __) => NavigatingCount++;
+			}
+
+			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
+			protected override void OnNavigated(ShellNavigatedEventArgs args)
+			{
+				base.OnNavigated(args);
+				OnNavigatedHandler?.Invoke(args);
+				OnNavigatedCount++;
+			}
+
+			protected override void OnNavigating(ShellNavigatingEventArgs args)
+			{
+				base.OnNavigating(args);
+				OnNavigatingCount++;
+			}
+
+			public void Reset()
+			{
+				OnNavigatedCount = OnNavigatingCount = NavigatedCount = NavigatingCount = 0;
+			}
+
+			public void TestCount(int count, string message = null)
+			{
+				Assert.AreEqual(count, OnNavigatedCount, $"OnNavigatedCount: {message}");
+				Assert.AreEqual(count, NavigatingCount, $"NavigatingCount: {message}");
+				Assert.AreEqual(count, OnNavigatingCount, $"OnNavigatingCount: {message}");
+				Assert.AreEqual(count, NavigatedCount, $"NavigatedCount: {message}");
+			}
+		}
 	}
 }

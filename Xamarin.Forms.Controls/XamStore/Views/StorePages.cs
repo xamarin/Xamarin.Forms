@@ -201,6 +201,10 @@ namespace Xamarin.Forms.Controls.XamStore
 					RemoveTopTab),
 				1, 13);
 
+			grid.Children.Add(MakeButton("Flow Direction",
+					ChangeFlowDirection),
+				2, 13);
+
 			grid.Children.Add(MakeSwitch("Nav Visible", out _navBarVisibleSwitch), 0, 14);
 			grid.Children.Add(MakeSwitch("Tab Visible", out _tabBarVisibleSwitch), 1, 14);
 
@@ -303,14 +307,24 @@ namespace Xamarin.Forms.Controls.XamStore
 			Content = new ScrollView { Content = grid };
 
 
-            grid.Children.Add(MakeButton("Hide Nav Shadow",
+			grid.Children.Add(MakeButton("FlyoutBackdrop Color",
+					() =>
+					{
+						if (Shell.GetFlyoutBackdropColor(Shell.Current) == Color.Default)
+							Shell.SetFlyoutBackdropColor(Shell.Current, Color.Purple);
+						else
+							Shell.SetFlyoutBackdropColor(Shell.Current, Color.Default);
+					}),
+				0, 21);
+
+			grid.Children.Add(MakeButton("Hide Nav Shadow",
                     () => Shell.SetNavBarHasShadow(this, false)),
                 1, 21);
 
             grid.Children.Add(MakeButton("Show Nav Shadow",
                     () => Shell.SetNavBarHasShadow(this, true)),
                 2, 21);
-        }
+		}
 
 		Switch _navBarVisibleSwitch;
 		Switch _tabBarVisibleSwitch;
@@ -325,6 +339,16 @@ namespace Xamarin.Forms.Controls.XamStore
 					(control = new Switch {IsToggled = true})
 				}
 			};
+		}
+
+		private void ChangeFlowDirection()
+		{
+			var ve = (Shell)Parent.Parent.Parent.Parent;
+
+			if (ve.FlowDirection != FlowDirection.RightToLeft)
+				ve.FlowDirection = FlowDirection.RightToLeft;
+			else
+				ve.FlowDirection = FlowDirection.LeftToRight;
 		}
 
 		private void RemoveTopTab()

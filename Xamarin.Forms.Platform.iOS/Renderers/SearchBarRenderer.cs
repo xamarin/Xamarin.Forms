@@ -188,6 +188,16 @@ namespace Xamarin.Forms.Platform.iOS
 			return sizeThatFits;
 		}
 
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				UpdateTextColor();
+#endif
+		}
+
 		void OnCancelClicked(object sender, EventArgs args)
 		{
 			ElementController.SetValueFromRenderer(SearchBar.TextProperty, null);
@@ -311,7 +321,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// https://developer.apple.com/library/prerelease/ios/documentation/UIKit/Reference/UITextField_Class/index.html#//apple_ref/occ/instp/UITextField/placeholder
 
 				var color = Element.IsEnabled && !targetColor.IsDefault 
-					? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
+					? targetColor : ColorExtensions.PlaceholderColor.ToColor();
 
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
@@ -320,7 +330,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, targetColor.IsDefault 
-					? ColorExtensions.SeventyPercentGrey.ToColor() : targetColor);
+					? ColorExtensions.PlaceholderColor.ToColor() : targetColor);
 				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 			}
 		}

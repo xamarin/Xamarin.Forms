@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.WPF
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
 		}
-		
+
 		void UpdateAspect()
 		{
 			Control.Stretch = Element.Aspect.ToStretch();
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.WPF
 	}
 
 	public sealed class UriImageSourceHandler : IImageSourceHandler
-	{		
+	{
 		public Task<System.Windows.Media.ImageSource> LoadImageAsync(ImageSource imagesoure, CancellationToken cancelationToken = new CancellationToken())
 		{
 			BitmapImage bitmapimage = null;
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.WPF
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
 		public Task<System.Windows.Media.ImageSource> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = new CancellationToken())
-		{			
+		{
 			var fontsource = imagesource as FontImageSource;
 			var image = CreateGlyph(
 					fontsource.Glyph,
@@ -175,7 +175,7 @@ namespace Xamarin.Forms.Platform.WPF
 					fontsource.Size,
 					(fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToBrush());
 			return Task.FromResult(image);
-		}		
+		}
 
 		static System.Windows.Media.ImageSource CreateGlyph(
 			string text,
@@ -197,25 +197,38 @@ namespace Xamarin.Forms.Platform.WPF
                 return null;
             }
 
-            var glyphIndexes = new ushort[text.Length];
-            var advanceWidths = new double[text.Length];
-            for (int n = 0; n < text.Length; n++)
-            {
-                var glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
-                glyphIndexes[n] = glyphIndex;
-                var width = glyphTypeface.AdvanceWidths[glyphIndex] * 1.0;
-                advanceWidths[n] = width;
-            }
+			var glyphIndexes = new ushort[text.Length];
+			var advanceWidths = new double[text.Length];
+			for (int n = 0; n < text.Length; n++)
+			{
+				var glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
+				glyphIndexes[n] = glyphIndex;
+				var width = glyphTypeface.AdvanceWidths[glyphIndex] * 1.0;
+				advanceWidths[n] = width;
+			}
 
-            var gr = new GlyphRun(glyphTypeface,
-                0, false,
-                fontSize,
-                glyphIndexes,
-                new System.Windows.Point(0, 0),
-                advanceWidths,
-                null, null, null, null, null, null);
-            var glyphRunDrawing = new GlyphRunDrawing(foreBrush, gr);
-            return new DrawingImage(glyphRunDrawing);
-        }
-    }
+#if NETCOREAPP3_1
+			var dpi = VisualTreeHelper.GetDpi(System.Windows.Application.Current.MainWindow).PixelsPerDip;
+			var gr = new GlyphRun(glyphTypeface,
+				0, 
+				false,
+				fontSize,
+				(float) dpi,
+				glyphIndexes,
+				new System.Windows.Point(0, 0),
+				advanceWidths,
+				null, null, null, null, null, null);
+#else
+			var gr = new GlyphRun(glyphTypeface,
+				0, false,
+				fontSize,
+				glyphIndexes,
+				new System.Windows.Point(0, 0),
+				advanceWidths,
+				null, null, null, null, null, null);
+#endif
+			var glyphRunDrawing = new GlyphRunDrawing(foreBrush, gr);
+			return new DrawingImage(glyphRunDrawing);
+		}
+	}
 }

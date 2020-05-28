@@ -35,16 +35,17 @@ namespace Xamarin.Forms.Maps.UWP
 
 				if (Control == null)
 				{
-					SetNativeControl(new MapControl()); 
+					SetNativeControl(new MapControl());
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.MapTapped += OnMapTapped;
-					Control.LayoutUpdated += OnLayoutUpdated; 
+					Control.LayoutUpdated += OnLayoutUpdated;
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
+				UpdateTrafficEnabled();
 				UpdateMapType();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
@@ -88,6 +89,8 @@ namespace Xamarin.Forms.Maps.UWP
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -123,6 +126,18 @@ namespace Xamarin.Forms.Maps.UWP
 
 		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => PinCollectionChanged(e));
+			}
+			else
+			{
+				PinCollectionChanged(e);
+			}
+		}
+
+		void PinCollectionChanged(NotifyCollectionChangedEventArgs e)
+		{
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
@@ -144,6 +159,7 @@ namespace Xamarin.Forms.Maps.UWP
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					ClearPins();
+					LoadPins();
 					break;
 			}
 		}
@@ -180,6 +196,18 @@ namespace Xamarin.Forms.Maps.UWP
 		}
 
 		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => MapElementCollectionChanged(e));
+			}
+			else
+			{
+				MapElementCollectionChanged(e);
+			}
+		}
+
+		void MapElementCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -442,7 +470,7 @@ namespace Xamarin.Forms.Maps.UWP
 				Longitude = span.Center.Longitude + span.LongitudeDegrees / 2
 			};
 			var boundingBox = new GeoboundingBox(nw, se);
-			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation); 
+			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation);
 		}
 
 		async Task UpdateVisibleRegion()
@@ -512,6 +540,11 @@ namespace Xamarin.Forms.Maps.UWP
 				Control.Center = point;
 				Control.ZoomLevel = 13;
 			}
+		}
+
+		void UpdateTrafficEnabled()
+		{
+			Control.TrafficFlowVisible = Element.TrafficEnabled;
 		}
 
 		void UpdateMapType()

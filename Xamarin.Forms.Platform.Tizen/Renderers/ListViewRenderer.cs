@@ -43,6 +43,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler("HeaderElement", UpdateHeader);
 			RegisterPropertyHandler("FooterElement", UpdateFooter);
 			RegisterPropertyHandler(ListView.SelectionModeProperty, UpdateSelectionMode);
+			RegisterPropertyHandler(ListView.VerticalScrollBarVisibilityProperty, UpdateVerticalScrollBarVisibility);
+			RegisterPropertyHandler(ListView.HorizontalScrollBarVisibilityProperty, UpdateHorizontalScrollBarVisibility);
 		}
 
 		/// <summary>
@@ -54,8 +56,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new Native.ListView(Forms.NativeParent));
+				SetNativeControl(CreateNativeControl());
 
+				Control.Scrolled += OnScrolled;
 				Control.ItemSelected += OnListViewItemSelected;
 				Control.ItemUnselected += OnListViewItemUnselected;
 			}
@@ -77,6 +80,18 @@ namespace Xamarin.Forms.Platform.Tizen
 			base.OnElementChanged(e);
 		}
 
+		protected virtual Native.ListView CreateNativeControl()
+		{
+			if(Device.Idiom == TargetIdiom.Watch)
+			{
+				return new Native.Watch.WatchListView(Forms.NativeParent, Forms.CircleSurface);
+			}
+			else
+			{
+				return new Native.ListView(Forms.NativeParent);
+			}
+		}
+
 		/// <summary>
 		/// Handles the disposing of an existing renderer instance. Results in event handlers
 		/// being detached and a Dispose() method from base class (VisualElementRenderer) being invoked.
@@ -96,6 +111,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 				if (Control != null)
 				{
+					Control.Scrolled -= OnScrolled;
 					Control.ItemSelected -= OnListViewItemSelected;
 					Control.ItemUnselected -= OnListViewItemUnselected;
 				}
@@ -162,6 +178,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
+		void OnScrolled(object sender, EventArgs e)
+		{
+			var region = Control.CurrentRegion.ToDP();
+			Element.SendScrolled(new ScrolledEventArgs(region.X, region.Y));
+		}
+
 		/// <summary>
 		/// This is method handles "scroll to" requests from xamarin events.
 		/// It allows for scrolling to specified item on list view.
@@ -224,14 +246,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			public void Dispose()
 			{
-				if (headerElement != null)
-				{
-					Control.SetHeader(headerElement);
-				}
-				if (footerElement != null)
-				{
-					Control.SetFooter(footerElement);
-				}
+				Control.SetHeader(headerElement);
+				Control.SetFooter(footerElement);
 			}
 		}
 
@@ -401,6 +417,16 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				Control.IsHighlight = true;
 			}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			Control.VerticalScrollBarVisibility = Element.VerticalScrollBarVisibility.ToNative();
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			Control.HorizontalScrollBarVisibility = Element.HorizontalScrollBarVisibility.ToNative();
 		}
 	}
 }

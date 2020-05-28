@@ -1,8 +1,10 @@
 using System;
+using Xamarin.Forms.Platform.Tizen.Native;
+using EEntry = ElmSharp.Entry;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class EditorRenderer : ViewRenderer<Editor, Native.Entry>
+	public class EditorRenderer : ViewRenderer<Editor, EEntry>
 	{
 		public EditorRenderer()
 		{
@@ -23,20 +25,29 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control == null)
 			{
-				// Multiline EditField style is only available on Mobile and TV profile
-				var entry = Device.Idiom == TargetIdiom.Phone || Device.Idiom == TargetIdiom.TV ? new Native.EditfieldEntry(Forms.NativeParent, "multiline") : new Native.Entry(Forms.NativeParent)
-				{
-					IsSingleLine = false,
-				};
-				entry.Focused += OnFocused;
-				entry.Unfocused += OnUnfocused;
-				entry.TextChanged += OnTextChanged;
+				var entry = CreateNativeControl();
+				entry.Focused += OnEntryFocused;
+				entry.Unfocused += OnEntryUnfocused;
 				entry.Unfocused += OnCompleted;
 				entry.PrependMarkUpFilter(MaxLengthFilter);
-
+				if (entry is IEntry ie)
+				{
+					ie.TextChanged += OnTextChanged;
+				}
 				SetNativeControl(entry);
 			}
 			base.OnElementChanged(e);
+		}
+
+		protected virtual EEntry CreateNativeControl()
+		{
+			// Multiline EditField style is only available on Mobile and TV profile
+			var entry = Device.Idiom == TargetIdiom.Phone || Device.Idiom == TargetIdiom.TV ? new Native.EditfieldEntry(Forms.NativeParent, "multiline") : new Native.Entry(Forms.NativeParent)
+			{
+				IsSingleLine = false,
+			};
+
+			return entry;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -45,10 +56,13 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				if (null != Control)
 				{
-					Control.TextChanged -= OnTextChanged;
 					Control.BackButtonPressed -= OnCompleted;
-					Control.Unfocused -= OnUnfocused;
-					Control.Focused -= OnFocused;
+					Control.Unfocused -= OnEntryUnfocused;
+					Control.Focused -= OnEntryFocused;
+					if (Control is IEntry ie)
+					{
+						ie.TextChanged -= OnTextChanged;
+					}
 				}
 			}
 			base.Dispose(disposing);
@@ -59,14 +73,22 @@ namespace Xamarin.Forms.Platform.Tizen
 			return (Control as Native.IMeasurable).Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
 		}
 
+		protected virtual void UpdateTextColor()
+		{
+			if (Control is IEntry ie)
+			{
+				ie.TextColor = Element.TextColor.ToNative();
+			}
+		}
+
 		void OnTextChanged(object sender, EventArgs e)
 		{
-			Element.SetValueFromRenderer(Editor.TextProperty, ((Native.Entry)sender).Text);
+			Element.SetValueFromRenderer(Editor.TextProperty, Control.Text);
 		}
 
 		bool _isSendComplate = false;
 
-		void OnFocused(object sender, EventArgs e)
+		void OnEntryFocused(object sender, EventArgs e)
 		{
 			// BackButtonPressed is only passed to the object that is at the highest Z-Order, and it does not propagate to lower objects.
 			// If you want to make Editor input completed by using BackButtonPressed, you should subscribe BackButtonPressed event only when Editor gets focused.
@@ -74,7 +96,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			_isSendComplate = false;
 		}
 
-		void OnUnfocused(object sender, EventArgs e)
+		void OnEntryUnfocused(object sender, EventArgs e)
 		{
 			// BackButtonPressed is only passed to the object that is at the highest Z-Order, and it does not propagate to lower objects.
 			// When the object is unfocesed BackButtonPressed event has to be released to stop using it.
@@ -99,31 +121,39 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		void UpdateTextColor()
-		{
-			Control.TextColor = Element.TextColor.ToNative();
-		}
-
 		void UpdateFontSize()
 		{
-			Control.FontSize = Element.FontSize;
+			if (Control is IEntry ie)
+			{
+				ie.FontSize = Element.FontSize;
+			}
 		}
 
 		void UpdateFontFamily()
 		{
-			Control.FontFamily = Element.FontFamily.ToNativeFontFamily();
+			if (Control is IEntry ie)
+			{
+				ie.FontFamily = Element.FontFamily.ToNativeFontFamily();
+			}
 		}
 
 		void UpdateFontAttributes()
 		{
-			Control.FontAttributes = Element.FontAttributes;
+			if (Control is IEntry ie)
+			{
+				ie.FontAttributes = Element.FontAttributes;
+			}
 		}
 
 		void UpdateKeyboard(bool initialize)
 		{
 			if (initialize && Element.Keyboard == Keyboard.Default)
 				return;
-			Control.UpdateKeyboard(Element.Keyboard, Element.IsSpellCheckEnabled, true);
+
+			if (Control is IEntry ie)
+			{
+				ie.UpdateKeyboard(Element.Keyboard, Element.IsSpellCheckEnabled, true);
+			}
 		}
 
 		void UpdateIsSpellCheckEnabled()
@@ -139,12 +169,18 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdatePlaceholder()
 		{
-			Control.Placeholder = Element.Placeholder;
+			if (Control is IEntry ie)
+			{
+				ie.Placeholder = Element.Placeholder;
+			}
 		}
 
 		void UpdatePlaceholderColor()
 		{
-			Control.PlaceholderColor = Element.PlaceholderColor.ToNative();
+			if (Control is IEntry ie)
+			{
+				ie.PlaceholderColor = Element.PlaceholderColor.ToNative();
+			}
 		}
 
 		string MaxLengthFilter(ElmSharp.Entry entry, string s)
