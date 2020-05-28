@@ -12,9 +12,6 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4879, "4879 - ImageButtonPadding", PlatformAffected.UWP)]
 	public class Issue4879 : TestContentPage

@@ -11,9 +11,6 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
-#endif
 	[Preserve(AllMembers = true)]
     [Issue(IssueTracker.Bugzilla, 36802, "[iOS] AccessoryView Partially Hidden When Using RecycleElement and GroupShortName", PlatformAffected.iOS)]
     public class Bugzilla36802 : TestContentPage

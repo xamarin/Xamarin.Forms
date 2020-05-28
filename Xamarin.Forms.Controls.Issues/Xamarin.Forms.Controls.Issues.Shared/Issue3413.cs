@@ -9,9 +9,6 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 3413, "[iOS] Searchbar in Horizontal Stacklayout doesn't render", PlatformAffected.iOS)]
 	public class Issue3413 : TestContentPage

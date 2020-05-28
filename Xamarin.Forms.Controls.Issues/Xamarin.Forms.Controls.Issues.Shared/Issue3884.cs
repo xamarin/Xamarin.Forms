@@ -11,7 +11,6 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.ManualReview)]
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 3884, "BoxView corner radius", PlatformAffected.Android)]

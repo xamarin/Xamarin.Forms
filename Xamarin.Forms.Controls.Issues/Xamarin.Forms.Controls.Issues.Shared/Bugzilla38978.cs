@@ -10,9 +10,6 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
-#endif
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 38978, "Cell.ForceUpdateSize issues with row selection/deselection (ViewCell)", PlatformAffected.Android)]
 	public class Bugzilla38978 : TestContentPage // or TestMasterDetailPage, etc ...

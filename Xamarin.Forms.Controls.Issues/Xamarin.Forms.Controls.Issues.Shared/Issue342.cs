@@ -11,9 +11,6 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 342, "NRE when Image is not assigned source", PlatformAffected.WinPhone)]
 	public class Issue342NoSource : TestContentPage

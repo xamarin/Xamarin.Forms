@@ -15,9 +15,6 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1667, "Entry: Position and color of caret", PlatformAffected.All)]
 	public class Issue1667 : TestContentPage

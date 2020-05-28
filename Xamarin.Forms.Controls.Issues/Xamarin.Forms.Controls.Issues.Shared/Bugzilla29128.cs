@@ -11,9 +11,6 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 29128, "Slider background lays out wrong Android")]
 	public class Bugzilla29128 : TestContentPage
