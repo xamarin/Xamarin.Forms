@@ -15,6 +15,9 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Up:
 					buttonController?.SendReleased();
 					break;
+				case MotionEventActions.Cancel:
+					buttonController?.SendCanceled();
+					break;
 			}
 
 			return false;

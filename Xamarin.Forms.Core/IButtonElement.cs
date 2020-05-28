@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Internals
 		void PropagateUpClicked();
 		void PropagateUpPressed();
 		void PropagateUpReleased();
+		void PropagateUpCanceled();
 		void SetIsPressed(bool isPressed);
 		void OnCommandCanExecuteChanged(object sender, EventArgs e);
 		bool IsEnabledCore { set; }

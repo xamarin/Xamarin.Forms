@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Material.iOS
 			{
 				Control.TouchUpInside -= OnButtonTouchUpInside;
 				Control.TouchDown -= OnButtonTouchDown;
+				Control.TouchCancel -= OnButtonTouchCancel;
 				_buttonLayoutManager?.Dispose();
 				_buttonLayoutManager = null;
 			}
@@ -69,6 +70,7 @@ namespace Xamarin.Forms.Material.iOS
 
 					Control.TouchUpInside += OnButtonTouchUpInside;
 					Control.TouchDown += OnButtonTouchDown;
+					Control.TouchCancel += OnButtonTouchCancel;
 				}
 
 				UpdateFont();
@@ -149,6 +151,11 @@ namespace Xamarin.Forms.Material.iOS
 				return;
 
 			base.SetAccessibilityLabel();
+		}
+
+		void OnButtonTouchCancel(object sender, EventArgs eventArgs)
+		{
+			Element?.SendCanceled();
 		}
 
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)

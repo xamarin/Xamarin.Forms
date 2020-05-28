@@ -82,5 +82,16 @@ namespace Xamarin.Forms
 				ButtonElementManager.PropagateUpReleased();
 			}
 		}
+
+		public static void ElementCanceled(VisualElement visualElement, IButtonElement ButtonElementManager)
+		{
+			if (visualElement.IsEnabled == true)
+			{
+				IButtonController buttonController = ButtonElementManager as IButtonController;
+				ButtonElementManager.SetIsPressed(false);
+				visualElement.ChangeVisualStateInternal();
+				ButtonElementManager.PropagateUpCanceled();
+			}
+		}
 	}
 }

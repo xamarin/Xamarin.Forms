@@ -344,6 +344,10 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						buttonController?.SendReleased();
 					}
+					else if (e.Action == AMotionEventActions.Cancel)
+					{
+						buttonController?.SendCanceled();
+					}
 				}
 				return false;
 			}

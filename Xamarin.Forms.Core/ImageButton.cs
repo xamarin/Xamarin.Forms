@@ -42,6 +42,7 @@ namespace Xamarin.Forms
 		public event EventHandler Clicked;
 		public event EventHandler Pressed;
 		public event EventHandler Released;
+		public event EventHandler Canceled;
 
 		readonly Lazy<PlatformConfigurationRegistry<ImageButton>> _platformConfigurationRegistry;
 
@@ -163,6 +164,10 @@ namespace Xamarin.Forms
 		public void SendReleased() =>
 			ButtonElement.ElementReleased(this, this);
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendCanceled() =>
+			ButtonElement.ElementCanceled(this, this);
+
 		public void PropagateUpClicked() =>
 			Clicked?.Invoke(this, EventArgs.Empty);
 
@@ -171,6 +176,9 @@ namespace Xamarin.Forms
 
 		public void PropagateUpReleased() =>
 			Released?.Invoke(this, EventArgs.Empty);
+
+		public void PropagateUpCanceled() =>
+			Canceled?.Invoke(this, EventArgs.Empty);
 
 		public void RaiseImageSourcePropertyChanged() =>
 			OnPropertyChanged(nameof(Source));

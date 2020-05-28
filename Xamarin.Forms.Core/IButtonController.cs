@@ -8,5 +8,6 @@ namespace Xamarin.Forms
 		void SendClicked();
 		void SendPressed();
 		void SendReleased();
+		void SendCanceled();
 	}
 }
