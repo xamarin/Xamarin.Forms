@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Carousel.PropertyChanged += CarouselViewPropertyChanged;
 			Carousel.Scrolled += CarouselViewScrolled;
 			_oldViews = new List<View>();
+		}
 
 		protected override UICollectionView CreateUICollectionView()
 		{
@@ -37,11 +38,6 @@ namespace Xamarin.Forms.Platform.iOS
 				return new CarouselUICollectionView(View.Bounds, ItemsViewLayout, dataSource);
 			}
 			return base.CreateUICollectionView();
-		}
-
-		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
-		{
-			return new CarouselViewDelegator(ItemsViewLayout, this);
 		}
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
