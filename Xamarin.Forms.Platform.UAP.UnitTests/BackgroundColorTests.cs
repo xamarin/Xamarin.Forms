@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.UAP.UnitTests
 				var renderer = GetRenderer(box);
 				var nativeElement = renderer.GetNativeElement() as Border;
 
-				var backgroundBrush = nativeElement.Background as SolidColorBrush;
+				var backgroundBrush = nativeElement.Background as WSolidColorBrush;
 				return backgroundBrush.Color;
 			});
 

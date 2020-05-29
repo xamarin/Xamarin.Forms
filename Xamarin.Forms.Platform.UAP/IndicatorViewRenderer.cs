@@ -34,9 +34,10 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					UpdateControl();
 				}
-				_fillColor = new SolidColorBrush(Element.IndicatorColor.ToWindowsColor());
 
-				_selectedColor = new SolidColorBrush(Element.SelectedIndicatorColor.ToWindowsColor());
+				_fillColor = new WSolidColorBrush(Element.IndicatorColor.ToWindowsColor());
+
+				_selectedColor = new WSolidColorBrush(Element.SelectedIndicatorColor.ToWindowsColor());
 
 				CreateIndicators();
 			}
