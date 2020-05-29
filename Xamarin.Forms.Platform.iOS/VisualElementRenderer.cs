@@ -468,7 +468,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Element == null)
 				return;
 
-			//SetBackground(Element.Background);
+			SetBackground(Element.Background);
 		}
 
 		protected virtual void SetBackground(Brush brush)
