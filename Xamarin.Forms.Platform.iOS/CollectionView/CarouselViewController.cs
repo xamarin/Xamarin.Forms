@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using CoreGraphics;
 using Foundation;
@@ -15,9 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		List<View> _oldViews;
 		int _gotoPosition = -1;
 		CGSize _size;
-		internal int currentNegative;
-		internal int currentIndex;
-		internal int currentMaxItemsCount;
+		CarouselViewDataSource _dataSource;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -31,11 +30,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override UICollectionView CreateUICollectionView()
 		{
-			if(Carousel.Loop)
+			if (Carousel.Loop)
 			{
-				var dataSource = new CarouselViewDataSource(ItemsView, ItemsViewLayout, ItemsSource, DetermineCellReuseId());
+				_dataSource = new CarouselViewDataSource(ItemsView, ItemsViewLayout, ItemsSource, DetermineCellReuseId());
 
-				return new CarouselUICollectionView(View.Bounds, ItemsViewLayout, dataSource);
+				return new CarouselUICollectionView(View.Bounds, ItemsViewLayout, _dataSource);
 			}
 			return base.CreateUICollectionView();
 		}
@@ -141,9 +140,43 @@ namespace Xamarin.Forms.Platform.iOS
 			Carousel.IsScrolling = isScrolling;
 		}
 
+		internal NSIndexPath GetGoToIndexPath(int position)
+		{
+			if (!Carousel.Loop)
+				return NSIndexPath.FromItemSection(position, 0);
+
+			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem();
+			var increment = Carousel.Position - position;
+			var goToPosition = increment < 0 ? centerIndexPath.Row + Math.Abs(increment) : centerIndexPath.Row - Math.Abs(increment);
+			NSIndexPath goToIndexPath = NSIndexPath.FromItemSection(goToPosition, 0);
+			return goToIndexPath;
+		}
+
+		NSIndexPath GetIndexPathForCenteredItem()
+		{
+			var centerPoint = new CGPoint(CollectionView.Center.X + CollectionView.ContentOffset.X, CollectionView.Center.Y + CollectionView.ContentOffset.Y);
+			var centerIndexPath = CollectionView.IndexPathForItemAtPoint(centerPoint);
+			return centerIndexPath;
+		}
+
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
-			SetPosition(e.CenterItemIndex);
+			var index = e.CenterItemIndex;
+			if (Carousel.Loop)
+			{
+				var cell = CollectionView.CellForItem(NSIndexPath.FromItemSection(e.CenterItemIndex, 0));
+				if (cell is TemplatedCell templatedCell)
+				{
+					var bContext = templatedCell.VisualElementRenderer?.Element?.BindingContext;
+					index = ItemsSource.GetIndexForItem(bContext).Row;
+					SetPosition(index);
+				}
+			}
+			else
+			{
+				SetPosition(index);
+			}
+
 			UpdateVisualStates();
 		}
 

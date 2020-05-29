@@ -17,8 +17,6 @@ namespace Xamarin.Forms.Platform.iOS
 			: base(frame, layout)
 		{
 			DataSource = _carouselViewDataSource = carouselViewDataSource;
-			AllowsSelection = false;
-			AllowsMultipleSelection = false;
 			_isHorizontal = layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal;
 		}
 
