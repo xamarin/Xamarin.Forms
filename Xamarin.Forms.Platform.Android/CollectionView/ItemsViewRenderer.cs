@@ -30,8 +30,6 @@ namespace Xamarin.Forms.Platform.Android
 		int? _defaultLabelFor;
 		bool _disposed;
 
-		protected Context ItemsContext { get; private set; }
-
 		protected TItemsView ItemsView;
 		protected IItemsLayout ItemsLayout { get; private set; }
 
@@ -48,10 +46,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		RecyclerView.ItemDecoration _itemDecoration;
 
-		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
+		public ItemsViewRenderer(Context context) : base(
+			new ContextThemeWrapper(context, Resource.Style.collectionViewTheme), null, 
+			Resource.Attribute.collectionViewStyle)
 		{
-			ItemsContext = context;
-
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
 
@@ -274,7 +272,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual TAdapter CreateAdapter()
 		{
-			return (TAdapter)new ItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView, ItemsContext);
+			return (TAdapter)new ItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
 		}
 
 		protected virtual void UpdateAdapter()

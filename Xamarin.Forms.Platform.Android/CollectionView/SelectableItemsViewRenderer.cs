@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override TAdapter CreateAdapter()
 		{
-			return (TAdapter)new SelectableItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView, ItemsContext);
+			return (TAdapter)new SelectableItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
 		}
 
 		void UpdateNativeSelection()

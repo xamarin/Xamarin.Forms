@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override TAdapter CreateAdapter()
 		{
-			return (TAdapter)new StructuredItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView, ItemsContext);
+			return (TAdapter)new StructuredItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
 		}
 
 		protected override void SetUpNewElement(TItemsView newElement)

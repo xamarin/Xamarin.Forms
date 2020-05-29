@@ -16,8 +16,6 @@ namespace Xamarin.Forms.Platform.Android
 		where TItemsView : ItemsView
 		where TItemsViewSource : IItemsViewSource
 	{
-		Context _itemsContext;
-
 		protected readonly TItemsView ItemsView;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
 		internal TItemsViewSource ItemsSource;
@@ -25,11 +23,9 @@ namespace Xamarin.Forms.Platform.Android
 		bool _disposed;
 		bool _usingItemTemplate = false;
 
-		internal ItemsViewAdapter(TItemsView itemsView, Context itemsContext, Func<View, Context, ItemContentView> createItemContentView = null)
+		internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
 			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
-
-			_itemsContext = itemsContext;
 
 			UpdateUsingItemTemplate();
 
@@ -86,7 +82,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
-			var context = _itemsContext;
+			var context = parent.Context;
 
 			if (viewType == ItemViewType.TextItem)
 			{
