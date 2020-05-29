@@ -228,28 +228,6 @@ namespace Xamarin.Forms
 		{
 		}
 
-		// protected override void OnScrolled(ItemsViewScrolledEventArgs e)
-		// {
-		// 	var realIndex = e.CenterItemIndex;
-		// 	var count = (ItemsSource as IList).Count;
-		// 	if (count > 0)
-		// 	{
-		// 		if (Loop)
-		// 		{
-		// 			realIndex = e.CenterItemIndex % (ItemsSource as IList).Count;
-		// 		}
-
-		// 		CurrentItem = GetItemForPosition(this, realIndex);
-		// 	}
-		// 	else
-		// 	{
-		// 		CurrentItem = null;
-		// 	}
-			
-
-		// 	base.OnScrolled(e);
-		// }
-
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var carousel = (CarouselView)bindable;
