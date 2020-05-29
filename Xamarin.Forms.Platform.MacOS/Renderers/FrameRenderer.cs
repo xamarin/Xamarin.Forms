@@ -19,10 +19,47 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName ||
-			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
+				e.PropertyName == VisualElement.BackgroundProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
 				SetupLayer();
+		}
+
+		protected override void SetBackgroundColor(Color color)
+		{
+
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			Layer.RemoveGradientLayer();
+
+			if (brush != null && !brush.IsEmpty)
+			{
+				if (brush is SolidColorBrush solidColorBrush)
+				{
+					var backgroundColor = solidColorBrush.Color;
+
+					if (backgroundColor == Color.Default)
+						Layer.BackgroundColor = NSColor.White.CGColor;
+					else
+						Layer.BackgroundColor = backgroundColor.ToCGColor();
+				}
+				else
+				{
+					var gradientLayer = this.GetGradientLayer(brush);
+
+					if (gradientLayer != null)
+					{
+						Layer.BackgroundColor = NSColor.Clear.CGColor;
+						Layer.InsertGradientLayer(gradientLayer, 0);
+
+						gradientLayer.CornerRadius = Layer.CornerRadius;
+						gradientLayer.BorderColor = Layer.BorderColor;
+					}
+				}
+			}
 		}
 
 		void SetupLayer()

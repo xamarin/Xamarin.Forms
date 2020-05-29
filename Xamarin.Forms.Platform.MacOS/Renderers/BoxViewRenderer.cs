@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				SetBackgroundColor(Element.Color);
+				SetBackground(Element.Background);
 				SetCornerRadius(Element.CornerRadius);
 			}
 
@@ -28,6 +29,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == BoxView.ColorProperty.PropertyName)
 				SetBackgroundColor(Element.Color);
+			if (e.PropertyName == BoxView.ColorProperty.PropertyName)
+				SetBackground(Element.Background);
 			else if (e.PropertyName == BoxView.CornerRadiusProperty.PropertyName)
 				SetCornerRadius(Element.CornerRadius);
 			else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName && Element.IsVisible)
@@ -40,6 +43,25 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			(Control as FormsBoxView)?.SetColor (color.ToNSColor ());
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			if (Element == null)
+				return;
+
+			if (brush == null || brush.IsEmpty)
+				SetBackgroundColor(Element.BackgroundColor);
+			else
+			{
+				if (brush is SolidColorBrush solidColorBrush)
+					(Control as FormsBoxView)?.SetColor(solidColorBrush.Color.ToNSColor());
+				else
+				{
+					var gradientImage = this.GetGradientImage(brush);
+					(Control as FormsBoxView)?.SetBrush(gradientImage != null ? NSColor.FromPatternImage(gradientImage) : NSColor.Clear);
+				}
+			}
 		}
 
 		void SetCornerRadius(CornerRadius cornerRadius)

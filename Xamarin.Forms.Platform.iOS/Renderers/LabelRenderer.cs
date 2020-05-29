@@ -320,7 +320,22 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				Layer.BackgroundColor = color.ToCGColor();
 #endif
+		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			var gradientLayer = this.GetGradientLayer(brush);
+
+			if (gradientLayer != null)
+			{
+#if __MOBILE__
+				Layer.BackgroundColor = UIColor.Clear.CGColor;
+#else
+				Layer.InsertGradientLayer(gradientLayer, 0);
+#endif
+			}
+			else
+				Layer.RemoveGradientLayer();
 		}
 
 		void UpdateHorizontalTextAlignment()

@@ -215,9 +215,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (IsElementOrControlEmpty)
 				return;
 
-#if __MOBILE__
 			Control.UpdateBackground(brush);
-#endif
 		}
 
 		protected void SetNativeControl(TNativeView uiview)

@@ -1,21 +1,26 @@
 ﻿using System.Linq;
+using AppKit;
 using CoreAnimation;
 using CoreGraphics;
 using Foundation;
-using UIKit;
 
-namespace Xamarin.Forms.Platform.iOS
+namespace Xamarin.Forms.Platform.MacOS
 {
 	public static class BrushExtensions
 	{
 		const string BackgroundLayer = "BackgroundLayer";
+		const string SolidColorBrushLayer = "SolidColorBrushLayer";
 
-		public static void UpdateBackground(this UIView control, Brush brush)
+		public static void UpdateBackground(this NSView control, Brush brush)
 		{
 			if (control == null)
 				return;
 
-			UIView view = ShouldUseParentView(control) ? control.Superview : control;
+			NSView view = ShouldUseParentView(control) ? control.Superview : control;
+
+			// Clear previous background color
+			if (control.Layer != null && control.Layer.Name.Equals(SolidColorBrushLayer))
+				control.Layer.BackgroundColor = NSColor.Clear.CGColor;
 
 			// Remove previous background gradient layer if any
 			RemoveGradientLayer(view);
@@ -23,27 +28,28 @@ namespace Xamarin.Forms.Platform.iOS
 			if (brush == null || brush.IsEmpty)
 				return;
 
+			control.WantsLayer = true;
+
 			if (brush is SolidColorBrush solidColorBrush)
 			{
 				var backgroundColor = solidColorBrush.Color;
 
 				if (backgroundColor != Color.Default)
-					control.BackgroundColor = backgroundColor.ToUIColor();
+				{
+					control.Layer.Name = SolidColorBrushLayer;
+					control.Layer.BackgroundColor = backgroundColor.ToCGColor();
+				}
 			}
 			else
 			{
 				var gradientLayer = GetGradientLayer(control, brush);
 
 				if (gradientLayer != null)
-				{
-					control.BackgroundColor = UIColor.Clear;
-
 					view.InsertGradientLayer(gradientLayer, 0);
-				}
 			}
 		}
 
-		public static CAGradientLayer GetGradientLayer(this UIView control, Brush brush)
+		public static CAGradientLayer GetGradientLayer(this NSView control, Brush brush)
 		{
 			if (control == null)
 				return null;
@@ -100,7 +106,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		public static UIImage GetGradientImage(this UIView control, Brush brush)
+		public static NSImage GetGradientImage(this NSView control, Brush brush)
 		{
 			if (control == null || brush == null || brush.IsEmpty)
 				return null;
@@ -110,19 +116,16 @@ namespace Xamarin.Forms.Platform.iOS
 			if (gradientLayer == null)
 				return null;
 
-			UIGraphics.BeginImageContextWithOptions(gradientLayer.Bounds.Size, false, UIScreen.MainScreen.Scale);
+			NSImage gradientImage = new NSImage(new CGSize(gradientLayer.Bounds.Width, gradientLayer.Bounds.Height));
+			gradientImage.LockFocus();
+			var context = NSGraphicsContext.CurrentContext.GraphicsPort;
+			gradientLayer.RenderInContext(context);
+			gradientImage.UnlockFocus();
 
-			if (UIGraphics.GetCurrentContext() == null)
-				return null;
-
-			gradientLayer.RenderInContext(UIGraphics.GetCurrentContext());
-			UIImage gradientImage = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext();
-			
 			return gradientImage;
 		}
 
-		public static void InsertGradientLayer(this UIView view, CAGradientLayer gradientLayer, int index)
+		public static void InsertGradientLayer(this NSView view, CAGradientLayer gradientLayer, int index)
 		{
 			InsertGradientLayer(view.Layer, gradientLayer, index);
 		}
@@ -135,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 				layer.InsertSublayer(gradientLayer, index);
 		}
 
-		public static void RemoveGradientLayer(this UIView view)
+		public static void RemoveGradientLayer(this NSView view)
 		{
 			if (view != null)
 				RemoveGradientLayer(view.Layer);
@@ -150,7 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public static void UpdateGradientLayerSize(this UIView view)
+		public static void UpdateGradientLayerSize(this NSView view)
 		{
 			if (view.Frame.IsEmpty)
 				return;
@@ -167,9 +170,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		static bool ShouldUseParentView(UIView view)
+		static bool ShouldUseParentView(NSView view)
 		{
-			if (view is UILabel)
+			if (view is NSButton || view is NSTextField || view is NSDatePicker || view is NSSlider || view is NSStepper)
 				return true;
 
 			return false;

@@ -463,11 +463,17 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+		void UpdateBackground()
+		{
+			if (Element == null)
+				return;
+
+			//SetBackground(Element.Background);
+		}
+
 		protected virtual void SetBackground(Brush brush)
 		{
-#if __MOBILE__
 			NativeView.UpdateBackground(brush);
-#endif
 		}
 
 #if __MOBILE__
@@ -513,6 +519,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void UpdateNativeWidget()
 		{
+			// If there are size changes etc., update the brush layer with the appropriate values.
+			UpdateBackground();
 		}
 
 		internal virtual void SendVisualElementInitialized(VisualElement element, NativeView nativeView)

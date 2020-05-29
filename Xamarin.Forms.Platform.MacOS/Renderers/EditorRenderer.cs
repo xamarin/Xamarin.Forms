@@ -88,6 +88,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.SetBackgroundColor(color);
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			if (Control == null)
+				return;
+
+			var gradientImage = this.GetGradientImage(brush);
+			Control.BackgroundColor = gradientImage != null ? NSColor.FromPatternImage(gradientImage) : NSColor.Clear;
+
+			base.SetBackground(brush);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)

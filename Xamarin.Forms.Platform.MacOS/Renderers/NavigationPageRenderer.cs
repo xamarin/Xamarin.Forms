@@ -214,6 +214,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			NavigationPage.PoppedToRoot += OnPoppedToRoot;
 
 			UpdateBarBackgroundColor();
+			UpdateBarBackground();
 			UpdateBarTextColor();
 
 			_events = new EventTracker(this);
@@ -426,6 +427,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			Platform.NativeToolbarTracker.UpdateToolBar();
 		}
 
+		void UpdateBarBackground()
+		{
+			Platform.NativeToolbarTracker.UpdateToolBar();
+		}
+
 		void UpdateBarTextColor()
 		{
 			Platform.NativeToolbarTracker.UpdateToolBar();
@@ -440,9 +446,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_tracker == null)
 				return;
 
-			if (e.PropertyName == Xamarin.Forms.NavigationPage.BarBackgroundColorProperty.PropertyName)
+			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
-			else if (e.PropertyName == Xamarin.Forms.NavigationPage.BarTextColorProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				UpdateBarBackground();
+			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateBarTextColor();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();

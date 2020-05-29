@@ -329,15 +329,17 @@ namespace Xamarin.Forms.Platform.iOS
 					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
 				else
 				{
-					if (Element.BackgroundColor == Color.Default)
-						View.BackgroundColor = UIColor.White;
-					else
-						View.BackgroundColor = Element.BackgroundColor.ToUIColor();
-
 					Brush background = Element.Background;
 
 					if (background != null && !background.IsEmpty)
 						View.UpdateBackground(Element.Background);
+					else
+					{
+						if (Element.BackgroundColor == Color.Default)
+							View.BackgroundColor = UIColor.White;
+						else
+							View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+					}
 				}
 			});
 		}
