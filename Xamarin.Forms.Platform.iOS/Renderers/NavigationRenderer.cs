@@ -691,7 +691,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBarBackgroundColor()
 		{
-			var barBackgroundColor = NavPage.BarBackgroundColor;
+			var barBackgroundColor = Color.Default;
+			if (Current != null)
+				barBackgroundColor = NavigationPage.GetBackgroundTitleView(Current);
+			if (barBackgroundColor.IsDefault)
+				barBackgroundColor = NavPage.BarBackgroundColor;
 
 #if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
