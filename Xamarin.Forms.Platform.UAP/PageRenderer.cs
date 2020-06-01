@@ -103,7 +103,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!Element.HasAppeared)
 				return;
 
-			if (Element.StatusBarColor == Color.Default)
+			var statusBarColor = GetEffectiveBindableValue<Color>(Page.StatusBarColorProperty);
+
+			if (statusBarColor == Color.Default)
 				return;
 
 			if (ApiInformation.IsTypePresent(typeof(StatusBar).FullName ?? string.Empty))
@@ -111,7 +113,7 @@ namespace Xamarin.Forms.Platform.UWP
 				var statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)
 				{
-					statusBar.BackgroundColor = Element.StatusBarColor.ToWindowsColor();
+					statusBar.BackgroundColor = statusBarColor.ToWindowsColor();
 				}
 			}
 			else
@@ -119,7 +121,7 @@ namespace Xamarin.Forms.Platform.UWP
 				var titleBar = ApplicationView.GetForCurrentView()?.TitleBar;
 				if (titleBar != null)
 				{
-					titleBar.BackgroundColor = Element.StatusBarColor.ToWindowsColor();
+					titleBar.BackgroundColor = statusBarColor.ToWindowsColor();
 				}
 			}
 		}
@@ -129,8 +131,10 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!Element.HasAppeared)
 				return;
 
+			var statusBarStyle = GetEffectiveBindableValue<StatusBarStyle>(Page.StatusBarStyleProperty);
+
 			Color foregroundColor = Color.Default;
-			switch (Element.StatusBarStyle)
+			switch (statusBarStyle)
 			{
 				case StatusBarStyle.LightContent:
 					foregroundColor = Color.Black;
@@ -156,6 +160,18 @@ namespace Xamarin.Forms.Platform.UWP
 					titleBar.ForegroundColor = foregroundColor.ToWindowsColor();
 				}
 			}
+		}
+
+		T GetEffectiveBindableValue<T>(BindableProperty bindableProperty)
+		{
+			Element element = Element;
+			while (element != null && !element.IsSet(bindableProperty))
+				element = element.Parent;
+
+			if (element == null)
+				return default(T);
+
+			return (T)Element.GetValue(bindableProperty);
 		}
 	}
 }

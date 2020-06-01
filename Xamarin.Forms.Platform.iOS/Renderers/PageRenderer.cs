@@ -571,10 +571,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!Page.HasAppeared)
 				return;
 
-			if (Page.StatusBarColor == Color.Default)
+			var statusBarColorProperty = GetEffectiveBindableValue<Color>(Page.StatusBarColorProperty);
+
+			if (statusBarColorProperty == Color.Default)
 				return;
 
-			var statusBarColor = Page.StatusBarColor.ToUIColor();
+			var statusBarColor = statusBarColorProperty.ToUIColor();
 			if (Forms.IsiOS13OrNewer)
 			{
 				foreach (var window in UIApplication.SharedApplication.Windows)
@@ -604,7 +606,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!Page.HasAppeared)
 				return;
 
-			switch (Page.StatusBarStyle)
+			var statusBarStyle = GetEffectiveBindableValue<StatusBarStyle>(Page.StatusBarStyleProperty);
+
+			switch (statusBarStyle)
 			{
 				case StatusBarStyle.Default:
 					UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.Default, false);
@@ -630,5 +634,17 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		public override bool PrefersHomeIndicatorAutoHidden => Page.OnThisPlatform().PrefersHomeIndicatorAutoHidden();
+
+		T GetEffectiveBindableValue<T>(BindableProperty bindableProperty)
+		{
+			Element element = Element;
+			while (element != null && !element.IsSet(bindableProperty))
+				element = element.Parent;
+
+			if (element == null)
+				return default(T);
+
+			return (T)Element.GetValue(bindableProperty);
+		}
 	}
 }

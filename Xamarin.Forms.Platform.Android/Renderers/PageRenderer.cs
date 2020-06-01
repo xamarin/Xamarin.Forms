@@ -175,10 +175,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (!Element.HasAppeared)
 				return;
 
-			if (Element.StatusBarColor == Color.Default)
+			var statusBarColor = GetEffectiveBindableValue<Color>(Page.StatusBarColorProperty);
+			if (statusBarColor == Color.Default)
 				return;
 
-			(Context.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(Element.StatusBarColor.ToAndroid());
+			(Context.GetActivity() as FormsAppCompatActivity)?.SetStatusBarColor(statusBarColor.ToAndroid());
 		}
 
 		void UpdateStatusBarStyle()
@@ -194,7 +195,9 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 				}
 
-				switch (Element.StatusBarStyle)
+				var statusBarStyle= GetEffectiveBindableValue<StatusBarStyle>(Page.StatusBarStyleProperty);
+
+				switch (statusBarStyle)
 				{
 					case StatusBarStyle.Default:
 						window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.Visible;
@@ -275,6 +278,18 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 			OrderedTraversalController.UpdateTraversalOrder();
+		}
+
+		T GetEffectiveBindableValue<T>(BindableProperty bindableProperty)
+		{
+			Element element = Element;
+			while (element != null && !element.IsSet(bindableProperty))
+				element = element.Parent;
+
+			if (element == null)
+				return default(T);
+
+			return (T)Element.GetValue(bindableProperty);
 		}
 	}
 }
