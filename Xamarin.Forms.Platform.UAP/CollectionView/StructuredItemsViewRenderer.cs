@@ -237,7 +237,10 @@ namespace Xamarin.Forms.Platform.UWP
 			var margin = new WThickness(h, v, h, v);
 
 			var style = new WStyle(typeof(GridViewItem));
+
 			style.Setters.Add(new WSetter(GridViewItem.MarginProperty, margin));
+			style.Setters.Add(new WSetter(GridViewItem.PaddingProperty, new WThickness(0)));
+
 			return style;
 		}
 
@@ -247,7 +250,10 @@ namespace Xamarin.Forms.Platform.UWP
 			var margin = new WThickness(0, v, 0, v);
 
 			var style = new WStyle(typeof(ListViewItem));
+
 			style.Setters.Add(new WSetter(ListViewItem.MarginProperty, margin));
+			style.Setters.Add(new WSetter(GridViewItem.PaddingProperty, new WThickness(0)));
+
 			return style;
 		}
 
@@ -257,7 +263,9 @@ namespace Xamarin.Forms.Platform.UWP
 			var padding = new WThickness(h, 0, h, 0);
 
 			var style = new WStyle(typeof(ListViewItem));
+
 			style.Setters.Add(new WSetter(ListViewItem.PaddingProperty, padding));
+
 			return style;
 		}
 	}
