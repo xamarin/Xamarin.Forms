@@ -257,12 +257,6 @@ namespace Xamarin.Forms
 				foreach(var pendingAction in actionsToProcess)
 					pendingAction();
 			}
-
-			if (_hasAppeared)
-			{
-				RefreshStatusBarColor();
-				RefreshStatusBarStyle();
-			}
 		}
 
 		public void ForceLayout()
@@ -464,6 +458,8 @@ namespace Xamarin.Forms
 			Appearing?.Invoke(this, EventArgs.Empty);
 			var pageContainer = this as IPageContainer<Page>;
 			pageContainer?.CurrentPage?.SendAppearing();
+			RefreshStatusBarColor();
+			RefreshStatusBarStyle();
 			FindApplication(this)?.OnPageAppearing(this);
 		}
 
