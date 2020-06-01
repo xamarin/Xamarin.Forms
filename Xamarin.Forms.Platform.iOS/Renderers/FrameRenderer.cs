@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
 		{
-
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
@@ -35,6 +34,10 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					foreach (var gesture in NativeView.GestureRecognizers)
 						_actualView.AddGestureRecognizer(gesture);
+				}
+				else if (_actualView.Subviews.Length == 0)
+				{
+					_actualView.UserInteractionEnabled = false;
 				}
 
 				AddSubview(_actualView);
