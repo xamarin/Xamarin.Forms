@@ -257,6 +257,12 @@ namespace Xamarin.Forms
 				foreach(var pendingAction in actionsToProcess)
 					pendingAction();
 			}
+
+			if (_hasAppeared)
+			{
+				RefreshStatusBarColor();
+				RefreshStatusBarStyle();
+			}
 		}
 
 		public void ForceLayout()
@@ -458,10 +464,6 @@ namespace Xamarin.Forms
 			Appearing?.Invoke(this, EventArgs.Empty);
 			var pageContainer = this as IPageContainer<Page>;
 			pageContainer?.CurrentPage?.SendAppearing();
-
-			RefreshStatusBarColor();
-			RefreshStatusBarStyle();
-
 			FindApplication(this)?.OnPageAppearing(this);
 		}
 
@@ -590,14 +592,46 @@ namespace Xamarin.Forms
 			_titleView = newTitleView;
 		}
 
-		protected virtual void StatusBarColorUpdated()
+		protected void StatusBarColorUpdated()
 		{
+			var pageContainer = this as IPageContainer<Page>;
 
+			if (pageContainer?.CurrentPage == null)
+			{
+				if (StatusBarColor != (Color)StatusBarColorProperty.DefaultValue)
+				{
+					StatusBarColor = StatusBarColor;
+				}
+				else
+				{
+					RefreshStatusBarColor();
+				}
+			}
+			else
+			{
+				pageContainer?.CurrentPage?.StatusBarStyleUpdated();
+			}
 		}
 
-		protected virtual void StatusBarStyleUpdated()
+		protected void StatusBarStyleUpdated()
 		{
+			var pageContainer = this as IPageContainer<Page>;
 
+			if (pageContainer?.CurrentPage == null)
+			{
+				if (StatusBarStyle != (StatusBarStyle)StatusBarStyleProperty.DefaultValue)
+				{
+					StatusBarStyle = StatusBarStyle;
+				}
+				else
+				{
+					RefreshStatusBarStyle();
+				}
+			}
+			else
+			{
+				pageContainer?.CurrentPage?.StatusBarStyleUpdated();
+			}
 		}
 
 		internal void RefreshStatusBarColor()

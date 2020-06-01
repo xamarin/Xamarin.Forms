@@ -539,34 +539,5 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
-		protected override void StatusBarColorUpdated()
-		{
-			if (CurrentPage == null)
-				return;
-
-			if (StatusBarColor != (Color)StatusBarColorProperty.DefaultValue)
-			{
-				CurrentPage.StatusBarColor = StatusBarColor;
-			}
-			else
-			{
-				CurrentPage.RefreshStatusBarColor();
-			}
-		}
-
-		protected override void StatusBarStyleUpdated()
-		{
-			if (CurrentPage == null)
-				return;
-
-			if (CurrentPage != null && StatusBarStyle != (StatusBarStyle)StatusBarStyleProperty.DefaultValue)
-			{
-				CurrentPage.StatusBarStyle = StatusBarStyle;
-			}
-			else
-			{
-				CurrentPage.RefreshStatusBarStyle();
-			}
-		}
 	}
 }

@@ -1364,23 +1364,6 @@ namespace Xamarin.Forms
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
 		}
 
-		protected override void StatusBarColorUpdated()
-		{
-			if (Current != null && StatusBarColor != (Color)StatusBarColorProperty.DefaultValue)
-			{
-				Current.StatusBarColor = StatusBarColor;
-			}
-		}
-
-		protected override void StatusBarStyleUpdated()
-		{
-			if (Current != null && StatusBarStyle != (StatusBarStyle)StatusBarStyleProperty.DefaultValue)
-			{
-				Current.StatusBarStyle = StatusBarStyle;
-			}
-		}
-
-
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void VerifyShellUWPFlagEnabled(
 			string constructorHint = null,
