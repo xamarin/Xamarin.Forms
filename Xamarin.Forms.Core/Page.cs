@@ -439,7 +439,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendAppearing()
+		public void SendAppearing()
 		{
 			if (_hasAppeared)
 				return;
