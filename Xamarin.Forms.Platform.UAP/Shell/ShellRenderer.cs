@@ -65,6 +65,8 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor(TogglePaneButton, false);
 			UpdatePaneButtonColor(NavigationViewBackButton, false);
 			UpdateFlyoutBackgroundColor();
+			UpdateFlyoutBackdropColor();
+			ShellSplitView.UpdateFlyoutBackdropColor();
 		}
 
 		void OnPaneClosed()
@@ -145,6 +147,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		#endregion IVisualElementRenderer
 
+
+		ShellSplitView ShellSplitView => (ShellSplitView)GetTemplateChild("RootSplitView");
 		protected internal Shell Element { get; set; }
 
 		internal Shell Shell => Element;
@@ -168,13 +172,28 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFlyoutBackgroundColor();
 			}
-			else if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+			else if (e.PropertyName == Shell.FlyoutBackdropColorProperty.PropertyName)
 			{
-				UpdateStatusBarColor();
+				UpdateFlyoutBackdropColor();
 			}
-			else if (e.PropertyName == Page.StatusBarStyleProperty.PropertyName)
+            else if (e.PropertyName == Page.StatusBarColorProperty.PropertyName)
+            {
+                UpdateStatusBarColor();
+            }
+            else if (e.PropertyName == Page.StatusBarStyleProperty.PropertyName)
+            {
+                UpdateStatusBarStyle();
+            }
+		}
+
+		protected virtual void UpdateFlyoutBackdropColor()
+		{
+			var splitView = ShellSplitView;
+			if (splitView != null)
 			{
-				UpdateStatusBarStyle();
+				splitView.FlyoutBackdropColor = _shell.FlyoutBackdropColor;
+				if (IsPaneOpen)
+					ShellSplitView.UpdateFlyoutBackdropColor();
 			}
 		}
 
@@ -222,6 +241,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateStatusBarStyle();
 			(shell as IShellController).ItemsCollectionChanged += OnItemsCollectionChanged;
 			UpdateFlyoutBackgroundColor();
+			UpdateFlyoutBackdropColor();
 		}
 
 		void OnItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
