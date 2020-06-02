@@ -18,6 +18,7 @@
 		public const string DisplayAlert = "DisplayAlert";
 		public const string Editor = "Editor";
 		public const string Entry = "Entry";
+		public const string ExpanderView = "ExpanderView";
 		public const string Frame = "Frame";
 		public const string Image = "Image";
 		public const string ImageButton = "ImageButton";
@@ -59,5 +60,8 @@
 		public const string TitleView = "TitleView";
 		public const string DisplayPrompt = "DisplayPrompt";
 		public const string IndicatorView = "IndicatorView";
+		public const string Bugzilla = "Bugzilla";
+		public const string Github5000 = "Github5000";
+		public const string Github10000 = "Github10000";
 	}
 }

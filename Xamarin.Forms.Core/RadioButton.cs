@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -20,8 +21,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty GroupNameProperty = BindableProperty.Create(
 			nameof(GroupName), typeof(string), typeof(RadioButton), null, propertyChanged: (b, o, n) => ((RadioButton)b).OnGroupNamePropertyChanged((string)o, (string)n));
 
-		public static readonly BindableProperty ButtonSourceProperty = BindableProperty.Create(
-			nameof(ButtonSource), typeof(ImageSource), typeof(RadioButton), null);
+		// TODO Needs implementations beyond Android
+		//public static readonly BindableProperty ButtonSourceProperty = BindableProperty.Create(
+		//	nameof(ButtonSource), typeof(ImageSource), typeof(RadioButton), null);
 
 		public event EventHandler<CheckedChangedEventArgs> CheckedChanged;
 
@@ -37,15 +39,34 @@ namespace Xamarin.Forms
 			set { SetValue(GroupNameProperty, value); }
 		}
 
-		public ImageSource ButtonSource
-		{
-			get { return (ImageSource)GetValue(ButtonSourceProperty); }
-			set { SetValue(ButtonSourceProperty, value); }
-		}
+		// TODO Needs implementations beyond Android
+		//public ImageSource ButtonSource
+		//{
+		//	get { return (ImageSource)GetValue(ButtonSourceProperty); }
+		//	set { SetValue(ButtonSourceProperty, value); }
+		//}
 
 		public RadioButton()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<RadioButton>>(() => new PlatformConfigurationRegistry<RadioButton>(this));
+		}
+
+
+		static bool isExperimentalFlagSet = false;
+		internal static void VerifyExperimental([CallerMemberName] string memberName = "", string constructorHint = null)
+		{
+			if (isExperimentalFlagSet)
+				return;
+
+			ExperimentalFlags.VerifyFlagEnabled(nameof(RadioButton), ExperimentalFlags.RadioButtonExperimental, constructorHint, memberName);
+
+			isExperimentalFlagSet = true;
+		}
+
+		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+		{
+			VerifyExperimental(nameof(RadioButton));
+			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
 
 		public new IPlatformElementConfiguration<T, RadioButton> On<T>() where T : IConfigPlatform

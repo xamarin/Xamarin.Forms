@@ -72,6 +72,12 @@ namespace Xamarin.Forms.Platform.GTK
 			}
 		}
 
+		public Color GetNamedColor(string name)
+		{
+			// Not supported on this platform
+			return Color.Default;
+		}
+
 		public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 		{
 			using (var client = new HttpClient())
@@ -119,5 +125,7 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
+
+		public OSAppTheme RequestedTheme => OSAppTheme.Unspecified;
 	}
 }
