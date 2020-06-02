@@ -29,8 +29,11 @@
             <Button Command="{Binding RemoveCommand}"  AutomationId="btnRemove" Text="{Binding Path=Selected.Index, StringFormat='Remove {0}'}" BackgroundColor="LightGray" TextColor="Black" />
             <Button Command="{Binding NextCommand}"  AutomationId="btnNext" Text="&gt;" FontAttributes="Bold" BackgroundColor="LightGray" TextColor="Black" />
         </StackLayout>
-        <CarouselView AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Grid.Row="5" Grid.ColumnSpan="2"
-                      CurrentItem="{Binding Selected}" >
+        <CarouselView Loop="{Binding IsLoop}" AutomationId="TheCarouselView" x:Name="carousel" ItemsSource="{Binding Items}"
+                      Grid.Row="5" Grid.ColumnSpan="2"
+                      Position="{Binding Position}"
+                      CurrentItem="{Binding Selected}"
+                      >
             <CarouselView.ItemTemplate>
                 <DataTemplate>
                     <gallery:ExampleTemplateCarousel />
