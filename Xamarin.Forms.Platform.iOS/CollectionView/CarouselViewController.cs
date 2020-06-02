@@ -145,10 +145,25 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!Carousel.Loop)
 				return NSIndexPath.FromItemSection(position, 0);
 
+			var currentCarouselPosition = Carousel.Position;
+
+			var diffToStart = currentCarouselPosition + (ItemsSource.ItemCount - position);
+			var diffToEnd = ItemsSource.ItemCount - currentCarouselPosition + position;
 			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem();
-			var increment = Carousel.Position - position;
-			var goToPosition = increment < 0 ? centerIndexPath.Row + Math.Abs(increment) : centerIndexPath.Row - Math.Abs(increment);
+
+			var increment = currentCarouselPosition - position;
+			var incrementAbs = Math.Abs(increment);
+
+			int goToPosition;
+			if (diffToStart < incrementAbs)
+				goToPosition = centerIndexPath.Row - diffToStart;
+			else if (diffToEnd < incrementAbs)
+				goToPosition = centerIndexPath.Row + diffToEnd;
+			else
+				goToPosition = centerIndexPath.Row - increment;
+
 			NSIndexPath goToIndexPath = NSIndexPath.FromItemSection(goToPosition, 0);
+
 			return goToIndexPath;
 		}
 
