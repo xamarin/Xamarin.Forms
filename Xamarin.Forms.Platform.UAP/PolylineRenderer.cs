@@ -1,8 +1,17 @@
 ﻿using System.ComponentModel;
+
+#if WINDOWS_UWP
 using WFillRule = Windows.UI.Xaml.Media.FillRule;
 using WPolyline = Windows.UI.Xaml.Shapes.Polyline;
 
 namespace Xamarin.Forms.Platform.UWP
+#else
+using Xamarin.Forms.Platform.WPF.Extensions;
+using WFillRule = System.Windows.Media.FillRule;
+using WPolyline = System.Windows.Shapes.Polyline;
+
+namespace Xamarin.Forms.Platform.WPF
+#endif
 {
 	public class PolylineRenderer : ShapeRenderer<Polyline, WPolyline>
 	{

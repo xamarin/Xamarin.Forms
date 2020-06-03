@@ -1,7 +1,14 @@
 ﻿using System.ComponentModel;
+
+#if WINDOWS_UWP
 using WRectangle = Windows.UI.Xaml.Shapes.Rectangle;
 
 namespace Xamarin.Forms.Platform.UWP
+#else
+using WRectangle = System.Windows.Shapes.Rectangle;
+
+namespace Xamarin.Forms.Platform.WPF
+#endif
 {
 	public class RectRenderer : ShapeRenderer<Rect, WRectangle>
 	{

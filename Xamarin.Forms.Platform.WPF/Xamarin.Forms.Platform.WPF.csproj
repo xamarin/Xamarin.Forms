@@ -16,6 +16,12 @@
     <Compile Include="..\Xamarin.Forms.Core\Crc64.cs">
       <Link>Crc64.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.UAP\EllipseRenderer.cs" Link="Renderers\EllipseRenderer.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.UAP\LineRenderer.cs" Link="Renderers\LineRenderer.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.UAP\PolygonRenderer.cs" Link="Renderers\PolygonRenderer.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.UAP\PolylineRenderer.cs" Link="Renderers\PolylineRenderer.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.UAP\RectRenderer.cs" Link="Renderers\RectRenderer.cs" />
+    <Compile Include="..\Xamarin.Forms.Platform.UAP\ShapeRenderer.cs" Link="Renderers\ShapeRenderer.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.UAP\TextBlockExtensions.cs">
       <Link>Extensions\TextBlockExtensions.cs</Link>
     </Compile>

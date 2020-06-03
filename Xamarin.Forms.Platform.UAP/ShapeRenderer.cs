@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+
+#if WINDOWS_UWP
 using Windows.UI.Xaml;
 using WDoubleCollection = Windows.UI.Xaml.Media.DoubleCollection;
 using WPenLineCap = Windows.UI.Xaml.Media.PenLineCap;
@@ -7,6 +9,16 @@ using WShape = Windows.UI.Xaml.Shapes.Shape;
 using WStretch = Windows.UI.Xaml.Media.Stretch;
 
 namespace Xamarin.Forms.Platform.UWP
+#else
+using System.Windows;
+using WDoubleCollection = System.Windows.Media.DoubleCollection;
+using WPenLineCap = System.Windows.Media.PenLineCap;
+using WPenLineJoin = System.Windows.Media.PenLineJoin;
+using WShape = System.Windows.Shapes.Shape;
+using WStretch = System.Windows.Media.Stretch;
+
+namespace Xamarin.Forms.Platform.WPF
+#endif
 {
 	public class ShapeRenderer<TShape, TNativeShape> : ViewRenderer<TShape, TNativeShape>
 		  where TShape : Shape
@@ -54,12 +66,18 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
 				UpdateStrokeLineJoin();
 		}
-
+		
+#if !WINDOWS_UWP
+		new 
+#endif	
 		void UpdateHeight()
 		{
 			Control.Height = Element.Height;
 		}
 
+#if !WINDOWS_UWP
+		new
+#endif
 		void UpdateWidth()
 		{
 			Control.Width = Element.Width;

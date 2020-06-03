@@ -1,7 +1,14 @@
 ﻿using System.ComponentModel;
+
+#if WINDOWS_UWP
 using WLine = Windows.UI.Xaml.Shapes.Line;
 
 namespace Xamarin.Forms.Platform.UWP
+#else
+using WLine = System.Windows.Shapes.Line;
+
+namespace Xamarin.Forms.Platform.WPF
+#endif
 {
 	public class LineRenderer : ShapeRenderer<Line, WLine>
 	{
