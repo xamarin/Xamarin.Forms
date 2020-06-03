@@ -77,7 +77,14 @@ namespace Xamarin.Forms.Markup.UnitTests
 				{ typeof(ShellItem), tbd },
 				{ typeof(ShellSection), tbd },
 				{ typeof(Tab), tbd },
-				{ typeof(TabBar), tbd }
+				{ typeof(TabBar), tbd },
+
+				{ typeof(Ellipse), tbd },
+				{ typeof(Line), tbd },
+				{ typeof(Polygon), tbd },
+				{ typeof(Polyline), tbd },
+				{ typeof(Rect), tbd },
+				{ typeof(Shape), tbd }
 			};
 
 			var failMessage = new StringBuilder();
