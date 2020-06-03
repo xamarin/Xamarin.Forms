@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.UWP
 		WBrush _defaultTextColorFocusBrush;
 
 		bool _fontApplied;
+		bool _isDisposed;
 
 		FormsTextBox _queryTextBox;
 		FormsCancelButton _cancelButton;
@@ -330,6 +331,22 @@ namespace Xamarin.Forms.Platform.UWP
 				if (backgroundColor.IsDefault)
 					_queryTextBox.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			if (disposing && Control != null)
+			{
+				Control.QuerySubmitted -= OnQuerySubmitted;
+				Control.TextChanged -= OnTextChanged;
+				Control.Loaded -= OnControlLoaded;
+			}
+
+			_isDisposed = true;
+			base.Dispose(disposing);
 		}
 	}
 }
