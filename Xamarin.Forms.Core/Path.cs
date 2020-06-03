@@ -7,7 +7,8 @@ namespace Xamarin.Forms
     public class Path : Shape
     {
         public static readonly BindableProperty DataProperty =
-             BindableProperty.Create(nameof(Data), typeof(Geometry), typeof(Path), null);
+             BindableProperty.Create(nameof(Data), typeof(Geometry), typeof(Path), null,
+                 propertyChanged: OnGeometryPropertyChanged);
 
         public static readonly BindableProperty RenderTransformProperty =
 			BindableProperty.Create(nameof(RenderTransform), typeof(Transform), typeof(Path), null,
@@ -26,7 +27,20 @@ namespace Xamarin.Forms
             get { return (Transform)GetValue(RenderTransformProperty); }
         }
 
-        static void OnTransformPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        static void OnGeometryPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue != null)
+            {
+                (oldValue as Geometry).PropertyChanged -= (bindable as Path).OnGeometryPropertyChanged;
+            }
+
+            if (newValue != null)
+            {
+                (newValue as Geometry).PropertyChanged += (bindable as Path).OnGeometryPropertyChanged;
+            }
+        }
+
+		static void OnTransformPropertyChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (oldValue != null)
             {
@@ -37,6 +51,11 @@ namespace Xamarin.Forms
             {
                 (newValue as Transform).PropertyChanged += (bindable as Path).OnTransformPropertyChanged;
             }
+        }
+
+        void OnGeometryPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            OnPropertyChanged(nameof(Geometry));
         }
 
         void OnTransformPropertyChanged(object sender, PropertyChangedEventArgs args)
