@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-//// UWP Replacement for WPF RadialGradientBrush: https://msdn.microsoft.com/en-us/library/system.windows.media.radialgradientbrush(v=vs.110).aspx.
+// This implementations is from the Windows Community Toolkit: https://github.com/windows-toolkit/WindowsCommunityToolkit/blob/6b26f1dd7c40fb96910b5cc48945a99c19add3a9/Microsoft.Toolkit.Uwp.UI.Media/Brushes/RadialGradientBrush.cs
+// The Windows Community Toolkit is a collection of helper functions, custom controls, and app services. It simplifies and demonstrates common developer tasks building UWP apps for Windows 10. 
+// The toolkit is part of the .NET Foundation.
+// UWP Replacement for WPF RadialGradientBrush: https://msdn.microsoft.com/en-us/library/system.windows.media.radialgradientbrush(v=vs.110).aspx.
 
 using System.Numerics;
 using Microsoft.Graphics.Canvas;
