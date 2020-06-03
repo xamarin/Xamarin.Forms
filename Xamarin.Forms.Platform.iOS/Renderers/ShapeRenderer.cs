@@ -133,9 +133,13 @@ namespace Xamarin.Forms.Platform.MacOS
             private set;
             get;
         }
+
+#if !__MOBILE__
+        public override bool IsFlipped => true;
+#endif
     }
 
-	public class ShapeLayer : CALayer
+    public class ShapeLayer : CALayer
     {
 		// TODO: Expose this properties
         const CGLineCap StrokeLineCap = CGLineCap.Butt;
