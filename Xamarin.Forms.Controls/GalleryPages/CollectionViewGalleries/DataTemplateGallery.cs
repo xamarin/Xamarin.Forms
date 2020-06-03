@@ -26,6 +26,7 @@
 							new TemplateCodeCollectionViewGridGallery (ItemsLayoutOrientation.Horizontal), Navigation),
                         GalleryBuilder.NavButton("DataTemplateSelector", () =>
                             new DataTemplateSelectorGallery(), Navigation),
+						GalleryBuilder.NavButton("VaryingDateTemplateSelector", () => new VaryingDataTempleteSelectorGallery(), Navigation)
 					}
                 }
 			};

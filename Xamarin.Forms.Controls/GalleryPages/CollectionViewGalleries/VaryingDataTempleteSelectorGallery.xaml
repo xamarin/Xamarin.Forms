@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:collectionViewGalleries="clr-namespace:Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries;assembly=Xamarin.Forms.Controls"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.VaryingDataTempleteSelectorGallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="CarTemplate">
+                <Frame BorderColor="Red" BackgroundColor="Yellow">
+                    <StackLayout HeightRequest="100">
+                        <Label Text="{Binding Name}" />
+                    </StackLayout>
+                </Frame>
+            </DataTemplate>
+
+            <DataTemplate x:Key="PlaneTemplate">
+                <Frame BorderColor="Red" BackgroundColor="Aqua">
+                    <StackLayout HeightRequest="50">
+                        <Label Text="{Binding Name}" />
+                    </StackLayout>
+                </Frame>
+            </DataTemplate>
+
+            <collectionViewGalleries:VehicleTemplateSelector x:Key="VehicleTemplateSelector"
+                                                             CareTemplate="{StaticResource CarTemplate}"
+                                                             PlaneTemplate="{StaticResource PlaneTemplate}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <CollectionView ItemsSource="{Binding Items}" 
+                            ItemTemplate="{StaticResource VehicleTemplateSelector}"
+                            VerticalOptions="FillAndExpand" ItemSizingStrategy="MeasureAllItems" >
+                <!--<CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Horizontal"
+                                     Span="4" />
+                </CollectionView.ItemsLayout>-->
+
+            </CollectionView>
+
+            <StackLayout Grid.Row="1">
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Index"/>
+                    <Entry Text="{Binding Index}"/>
+                </StackLayout>
+                <Button Text="InsertCar" Clicked="InsertCar_OnClicked"/>
+                <Button Text="InsertPlane" Clicked="InsertPlane_OnClicked"/>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
