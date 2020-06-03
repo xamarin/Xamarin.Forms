@@ -275,13 +275,6 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			if (Application.Current != null)
-				Application.Current.RequestedThemeChanged += (s, a) => OnRequestedThemeChanged(a.RequestedTheme);
-		}
-
-		protected virtual void OnRequestedThemeChanged(OSAppTheme newValue)
-		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(VisualElement), ExperimentalFlags.AppThemeExperimental, nameof(OnRequestedThemeChanged));
 		}
 
 		public double AnchorX
@@ -539,6 +532,9 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal event EventHandler PlatformEnabledChanged;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsPlatformEnabled
 		{
 			get { return _isPlatformEnabled; }
@@ -554,8 +550,9 @@ namespace Xamarin.Forms
 				InvalidateStateTriggers(IsPlatformEnabled);
 
 				OnIsPlatformEnabledChanged();
+				PlatformEnabledChanged?.Invoke(this, EventArgs.Empty);
 			}
-		}		
+		}
 
 		internal LayoutConstraint SelfConstraint
 		{

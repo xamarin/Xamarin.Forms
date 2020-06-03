@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public CollectionView(EvasObject parent) : base(parent)
 		{
+			AllowFocus(true);
 			SetLayoutCallback(OnLayout);
 			Scroller = CreateScroller(parent);
 			Scroller.Show();
@@ -249,6 +250,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return Adaptor.MeasureItem(index, widthConstraint, heightConstraint);
 		}
 
+		protected virtual ViewHolder CreateViewHolder()
+		{
+			return new ViewHolder(this);
+		}
+
 		ViewHolder ICollectionViewController.RealizeView(int index)
 		{
 			if (Adaptor == null)
@@ -262,7 +268,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			else
 			{
 				var content = Adaptor.CreateNativeView(index, this);
-				holder = new ViewHolder(this);
+				holder = CreateViewHolder();
 				holder.RequestSelected += OnRequestItemSelection;
 				holder.Content = content;
 				holder.ViewCategory = Adaptor.GetViewCategory(index);
