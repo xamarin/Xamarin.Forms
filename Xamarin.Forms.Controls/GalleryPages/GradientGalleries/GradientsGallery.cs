@@ -11,8 +11,8 @@
 
 			var button = new Button
 			{
-				Text = "Enable SwipeView",
-				AutomationId = "EnableSwipeView"
+				Text = "Enable Brushes",
+				AutomationId = "EnableBrushes"
 			};
 			button.Clicked += ButtonClicked;
 
@@ -73,11 +73,11 @@
 		{
 			var button = sender as Button;
 
-			button.Text = "SwipeView Enabled!";
+			button.Text = "Brushes Enabled!";
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.SwipeViewExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.SwipeViewExperimental });
 		}
 	}
 }
