@@ -28,6 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Internals.Preserve(Conditional = true)]
 		public DatePickerRenderer()
 		{
+			
 
 		}
 
@@ -126,8 +127,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMinimumDate();
 			else if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
 				UpdatePlaceholderText();
-			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
-				UpdatedPlaceHolderColor();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
@@ -176,29 +175,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
 		}
 
-		protected virtual void UpdatedPlaceHolderColor()
-		{
-
-			var formatted = (FormattedString)Element.Placeholder;
-
-			if (formatted == null)
-				return;
-
-
-			var targetColor = Element.PlaceHolderColor;
-
-			if (_useLegacyColorManagement)
-			{
-				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
-			}
-			else
-			{
-				// Using VSM color management; take whatever is in Element.PlaceholderColor
-				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
-			}
-		}
+	 
 		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
 		Control.AttributedPlaceholder = nsAttributedString;
 
@@ -217,7 +194,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_picker.Date.ToDateTime().Date != Element.Date.Date)
 				_picker.SetDate(Element.Date.ToNSDate(), animate);
 
-			Control.Text = Element.Date.ToString(Element.Format);
+			if (!string.IsNullOrEmpty(Element.Placeholder))
+				Control.Text = Element.Placeholder;
+			else
+				Control.Text = Element.Date.ToString(Element.Format);
 		}
 
 		void UpdateElementDate()

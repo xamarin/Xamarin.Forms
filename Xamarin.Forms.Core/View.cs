@@ -152,6 +152,7 @@ namespace Xamarin.Forms
 			set { SetValue(VerticalOptionsProperty, value); }
 		}
 
+
 		protected override void OnBindingContextChanged()
 		{
 			this.PropagateBindingContext(GestureRecognizers);

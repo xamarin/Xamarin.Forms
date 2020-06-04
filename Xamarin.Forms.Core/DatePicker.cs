@@ -95,8 +95,8 @@ namespace Xamarin.Forms
 
 		public Color PlaceHolderColor
 		{
-			get { return (Color)GetValue(PlaceholderProperty); }
-			set { SetValue(PlaceholderProperty, value); }
+			get { return (Color)GetValue(PlaceholderColorProperty); }
+			set { SetValue(PlaceholderColorProperty, value); }
 		}
 		public string Placeholder
 		{
@@ -177,9 +177,10 @@ namespace Xamarin.Forms
 		static void DatePropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var datePicker = (DatePicker)bindable;
+			datePicker.Placeholder = string.Empty;
 			EventHandler<DateChangedEventArgs> selected = datePicker.DateSelected;
-
-			if (selected != null)
+			
+				if (selected != null)
 				selected(datePicker, new DateChangedEventArgs((DateTime)oldValue, (DateTime)newValue));
 		}
 

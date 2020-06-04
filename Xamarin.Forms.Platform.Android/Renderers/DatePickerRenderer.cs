@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 				SetNativeControl(textField);
 				_originalHintTextColor = EditText.CurrentHintTextColor;
 			}
-
+			
 			SetDate(Element.Date);
 
 			UpdateFont();
@@ -170,6 +170,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateMinimumDate();
 			UpdateMaximumDate();
+			UpdatePlaceholder();
 			if (Forms.IsLollipopOrNewer)
 				_dialog.CancelEvent += OnCancelButtonClicked;
 

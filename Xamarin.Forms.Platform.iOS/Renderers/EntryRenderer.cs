@@ -365,6 +365,8 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != text)
 				Control.Text = text;
+			if (Control.Placeholder != "")
+				Control.Text = Control.Placeholder;
 		}
 
 		void UpdateCharacterSpacing()
