@@ -166,6 +166,11 @@ namespace Xamarin.Forms.Platform.iOS
 				return CGSize.Empty;
 			}
 
+			if (section > ItemsSource.GroupCount - 1)
+			{
+				return CGSize.Empty;
+			}
+
 			if (!Forms.IsiOS11OrNewer)
 			{
 				// iOS 10 crashes if we try to dequeue a cell for measurement
