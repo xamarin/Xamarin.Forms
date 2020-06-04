@@ -193,8 +193,10 @@ namespace Xamarin.Forms.Platform.Android
 				gradientStrokeDrawable.SetColor(color);
 			}
 			else
+			{
+				gradientStrokeDrawable.SetStroke(0, Color.Default.ToAndroid());
 				gradientStrokeDrawable.SetGradient(brush);
-
+			}
 			view.Background?.Dispose();
 			view.Background = gradientStrokeDrawable;
 		}

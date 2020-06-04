@@ -75,6 +75,7 @@
                 <StackLayout>
                     <Button
                         x:Name="Button"
+                        CornerRadius="12"
                         Text="Button"/>
                     <BoxView
                         x:Name="BoxView"
