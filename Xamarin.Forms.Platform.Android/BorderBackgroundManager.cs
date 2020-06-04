@@ -161,13 +161,6 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 
-				if (!backgroundIsDefault)
-				{
-					Brush background = Element.Background;
-
-					Control.UpdateBackground(background);
-				}
-
 				_drawableEnabled = true;
 			}
 
