@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, FormsProgressBar>
+	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, ProgressRing>
 	{
 		object _foregroundDefault;
 
@@ -15,7 +16,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new FormsProgressBar { IsIndeterminate = true, Style = Windows.UI.Xaml.Application.Current.Resources["FormsProgressBarStyle"] as Windows.UI.Xaml.Style });
+					SetNativeControl(
+						new ProgressRing
+						{
+							IsActive = Element.IsRunning,
+							Visibility = Element.IsVisible ? Windows.UI.Xaml.Visibility.Visible : Visibility.Collapsed,
+							IsEnabled = Element.IsEnabled
+						});
 
 					Control.Loaded += OnControlLoaded;
 				}
@@ -29,7 +36,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == ActivityIndicator.IsRunningProperty.PropertyName || e.PropertyName == VisualElement.OpacityProperty.PropertyName)
+			if (e.PropertyName == ActivityIndicator.IsRunningProperty.PropertyName ||
+			    e.PropertyName == VisualElement.OpacityProperty.PropertyName)
 				UpdateIsRunning();
 			else if (e.PropertyName == ActivityIndicator.ColorProperty.PropertyName)
 				UpdateColor();
@@ -57,7 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIsRunning()
 		{
-			Control.ElementOpacity = Element.IsRunning ? Element.Opacity : 0;
+			Control.Opacity = Element.IsRunning ? Element.Opacity : 0;
 		}
 	}
 }
