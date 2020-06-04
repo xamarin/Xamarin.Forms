@@ -58,6 +58,8 @@
 							new LinearGradientExplorerGallery(), Navigation),
 						GalleryBuilder.NavButton("RadialGradient Explorer", () =>
 							new RadialGradientExplorerGallery(), Navigation),
+						GalleryBuilder.NavButton("Bindable Brush Gallery", () =>
+							new BindableBrushGallery(), Navigation),
 						navigationBarButton,
 						tabsButton,
 						GalleryBuilder.NavButton("CSS Gradients Explorer", () =>
