@@ -11,16 +11,12 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		protected readonly CarouselView Carousel;
 
+		CarouselViewLoopManager _carouselViewLoopManager;
 		bool _initialPositionSet;
 		bool _viewInitialized;
 		List<View> _oldViews;
 		int _gotoPosition = -1;
 		CGSize _size;
-		int _indexOffset = 0;
-		nfloat _cellPadding = 0.0f;
-		nfloat _cellWidth = 0.0f;
-		nfloat _cellHeight = 0.0f;
-		const int LoopCount = 3;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -36,11 +32,18 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UICollectionViewCell cell;
 			if (Carousel.Loop)
-				cell = GetCellAtIndexPath(collectionView, indexPath, NSIndexPath.FromRowSection(GetCorrectedIndex(indexPath.Row - _indexOffset), 0));
+			{
+				var cellAndCorrectedIndex = _carouselViewLoopManager.GetCellAndCorrectIndex(collectionView, indexPath, DetermineCellReuseId());
+				cell = cellAndCorrectedIndex.cell;
+				var correctedIndexPath = NSIndexPath.FromRowSection(cellAndCorrectedIndex.correctedIndex, 0);
+				UpdateTemplatedCell(cell as TemplatedCell, correctedIndexPath);
+			}
 			else
+			{
 				cell = base.GetCell(collectionView, indexPath);
-		
-			var element = (cell as CarouselTemplatedCell)?.VisualElementRenderer?.Element;
+			}
+
+			var element = (cell as TemplatedCell)?.VisualElementRenderer?.Element;
 			if (element != null)
 				VisualStateManager.GoToState(element, CarouselView.DefaultItemVisualState);
 			return cell;
@@ -49,9 +52,15 @@ namespace Xamarin.Forms.Platform.iOS
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
 			if (Carousel.Loop)
-				return LoopCount * GetItemsSourceCount();
+				return _carouselViewLoopManager.GetLoopItemsCount();
 
 			return base.GetItemsCount(collectionView, section);
+		}
+
+		public override void ViewDidLoad()
+		{
+			_carouselViewLoopManager = new CarouselViewLoopManager(Layout as UICollectionViewFlowLayout);
+			base.ViewDidLoad();
 		}
 
 		public override void ViewWillLayoutSubviews()
@@ -59,8 +68,8 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewWillLayoutSubviews();
 			if (!_viewInitialized)
 			{
-				_viewInitialized = true;	
-				SetupCellDimensions();
+				_viewInitialized = true;
+				_size = CollectionView.Bounds.Size;
 			}
 
 			UpdateVisualStates();
@@ -76,12 +85,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			if (Carousel.Loop)
-			{
-				if (IsHorizontal)
-					CentreHorizontalIfNeeded();
-				else
-					CentreVerticallyIfNeeded();
-			}
+				_carouselViewLoopManager.CenterIfNeeded(CollectionView, IsHorizontal);
+
 			UpdateInitialPosition();
 		}
 
@@ -99,6 +104,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UnsubscribeCollectionItemsSourceChanged(ItemsSource);
 			base.UpdateItemsSource();
+
+			_carouselViewLoopManager.SetItemsSource(ItemsSource);
 			SubscribeCollectionItemsSourceChanged(ItemsSource);
 			_initialPositionSet = false;
 			UpdateInitialPosition();
@@ -125,6 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
 			var itemsSource = base.CreateItemsViewSource();
+			_carouselViewLoopManager.SetItemsSource(itemsSource);
 			SubscribeCollectionItemsSourceChanged(itemsSource);
 			return itemsSource;
 		}
@@ -147,35 +155,15 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		internal void UpdateIsScrolling(bool isScrolling) => Carousel.IsScrolling = isScrolling;
-	
-		internal NSIndexPath GetGoToIndexPath(int position)
+
+		internal NSIndexPath GetScrollToIndexPath(int position)
 		{
-			if (!Carousel.Loop)
-				return NSIndexPath.FromItemSection(position, 0);
+			if (Carousel.Loop)
+				return _carouselViewLoopManager.GetGoToIndex(CollectionView, Carousel.Position, position);
 
-			var currentCarouselPosition = Carousel.Position;
-
-			var diffToStart = currentCarouselPosition + (ItemsSource.ItemCount - position);
-			var diffToEnd = ItemsSource.ItemCount - currentCarouselPosition + position;
-			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem();
-
-			var increment = currentCarouselPosition - position;
-			var incrementAbs = Math.Abs(increment);
-
-			int goToPosition;
-			if (diffToStart < incrementAbs)
-				goToPosition = centerIndexPath.Row - diffToStart;
-			else if (diffToEnd < incrementAbs)
-				goToPosition = centerIndexPath.Row + diffToEnd;
-			else
-				goToPosition = centerIndexPath.Row - increment;
-
-			NSIndexPath goToIndexPath = NSIndexPath.FromItemSection(goToPosition, 0);
-
-			return goToIndexPath;
+			return NSIndexPath.FromItemSection(position, 0);
 		}
 
-	
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			var index = e.CenterItemIndex;
@@ -253,6 +241,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFromPosition();
 			else if (changedProperty.Is(CarouselView.CurrentItemProperty))
 				UpdateFromCurrentItem();
+			else if (changedProperty.Is(CarouselView.LoopProperty))
+				CollectionView.ReloadData();
 		}
 
 		void SetPosition(int position)
@@ -398,10 +388,43 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_oldViews = newViews;
 		}
+	}
 
-		void CentreVerticallyIfNeeded()
+	class CarouselViewLoopManager
+	{
+		int _indexOffset = 0;
+		nfloat _cellPadding = 0.0f;
+		nfloat _cellWidth = 0.0f;
+		nfloat _cellHeight = 0.0f;
+		const int LoopCount = 3;
+		IItemsViewSource _itemsSource;
+
+		public CarouselViewLoopManager(UICollectionViewFlowLayout layout)
 		{
-			var currentOffset = CollectionView.ContentOffset;
+			if (layout == null)
+				throw new ArgumentNullException(nameof(layout), "LoopManager expects a UICollectionViewFlowLayout");
+
+			_cellPadding = 0;
+			_cellWidth = layout.ItemSize.Width;
+			_cellHeight = layout.ItemSize.Height;
+		}
+
+		public void CenterIfNeeded(UICollectionView collectionView, bool isHorizontal)
+		{
+			if (isHorizontal)
+				CenterHorizontalIfNeeded(collectionView);
+			else
+				CenterVerticallyIfNeeded(collectionView);
+		}
+
+		public void SetItemsSource(IItemsViewSource itemsSource)
+		{
+			_itemsSource = itemsSource;
+		}
+
+		void CenterVerticallyIfNeeded(UICollectionView collectionVie)
+		{
+			var currentOffset = collectionVie.ContentOffset;
 
 			var contentHeight = GetTotalContentHeight();
 
@@ -418,31 +441,31 @@ namespace Xamarin.Forms.Platform.iOS
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
 				var offsetCorrection = (Math.Abs(cellcount) % 1.0) * (_cellHeight + _cellPadding);
 
-				if (CollectionView.ContentOffset.Y < centerOffsetY)
+				if (collectionVie.ContentOffset.Y < centerOffsetY)
 				{
-					CollectionView.ContentOffset = new CGPoint(currentOffset.X, centerOffsetY - offsetCorrection);
+					collectionVie.ContentOffset = new CGPoint(currentOffset.X, centerOffsetY - offsetCorrection);
 				}
-				else if (CollectionView.ContentOffset.Y > centerOffsetY)
+				else if (collectionVie.ContentOffset.Y > centerOffsetY)
 				{
-					CollectionView.ContentOffset = new CGPoint(currentOffset.X, centerOffsetY + offsetCorrection);
+					collectionVie.ContentOffset = new CGPoint(currentOffset.X, centerOffsetY + offsetCorrection);
 				}
 
 				ShiftContentArray(shiftCells);
 
-				CollectionView.ReloadData();
+				collectionVie.ReloadData();
 			}
 		}
 
-		void CentreHorizontalIfNeeded()
+		void CenterHorizontalIfNeeded(UICollectionView collectionView)
 		{
-			var currentOffset = CollectionView.ContentOffset;
+			var currentOffset = collectionView.ContentOffset;
 
 			nfloat contentWidth = GetTotalContentWidth();
 
 			if (contentWidth == 0)
 				return;
 
-			var centerOffsetX = (LoopCount * contentWidth - CollectionView.Bounds.Size.Width) / 2;
+			var centerOffsetX = (LoopCount * contentWidth - collectionView.Bounds.Size.Width) / 2;
 
 			var distFromCentre = centerOffsetX - currentOffset.X;
 
@@ -452,29 +475,55 @@ namespace Xamarin.Forms.Platform.iOS
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
 				var offsetCorrection = (Math.Abs(cellcount % 1.0f)) * (_cellWidth + _cellPadding);
 
-				if (CollectionView.ContentOffset.X < centerOffsetX)
+				if (collectionView.ContentOffset.X < centerOffsetX)
 				{
-					CollectionView.ContentOffset = new CGPoint(centerOffsetX - offsetCorrection, currentOffset.Y);
+					collectionView.ContentOffset = new CGPoint(centerOffsetX - offsetCorrection, currentOffset.Y);
 				}
-				else if (CollectionView.ContentOffset.X > centerOffsetX)
+				else if (collectionView.ContentOffset.X > centerOffsetX)
 				{
-					CollectionView.ContentOffset = new CGPoint(centerOffsetX + offsetCorrection, currentOffset.Y);
+					collectionView.ContentOffset = new CGPoint(centerOffsetX + offsetCorrection, currentOffset.Y);
 				}
 
 				ShiftContentArray(shiftCells);
 
-				CollectionView.ReloadData();
+				collectionView.ReloadData();
 			}
 		}
 
-		UICollectionViewCell GetCellAtIndexPath(UICollectionView collectionView, NSIndexPath dequeueIndexPath, NSIndexPath usableIndexPath)
+		public (UICollectionViewCell cell, int correctedIndex) GetCellAndCorrectIndex(UICollectionView collectionView, NSIndexPath indexPath, string reuseId)
 		{
-			var cell = collectionView.DequeueReusableCell(DetermineCellReuseId(), dequeueIndexPath) as UICollectionViewCell;
-			UpdateTemplatedCell(cell as TemplatedCell, usableIndexPath);
-			return cell;
+			var cell = collectionView.DequeueReusableCell(reuseId, indexPath) as UICollectionViewCell;
+			var correctedIndex = GetCorrectedIndex(indexPath.Row - _indexOffset);
+			return (cell, correctedIndex);
 		}
 
-		int GetCorrectedIndex(int indexToCorrect)
+
+		public NSIndexPath GetGoToIndex(UICollectionView collectionView, int carouselPosition, int newPosition)
+		{
+			var currentCarouselPosition = carouselPosition;
+			var itemSourceCount = _itemsSource.ItemCount;
+
+			var diffToStart = currentCarouselPosition + (itemSourceCount - newPosition);
+			var diffToEnd = itemSourceCount - currentCarouselPosition + newPosition;
+			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem(collectionView);
+
+			var increment = currentCarouselPosition - newPosition;
+			var incrementAbs = Math.Abs(increment);
+
+			int goToPosition;
+			if (diffToStart < incrementAbs)
+				goToPosition = centerIndexPath.Row - diffToStart;
+			else if (diffToEnd < incrementAbs)
+				goToPosition = centerIndexPath.Row + diffToEnd;
+			else
+				goToPosition = centerIndexPath.Row - increment;
+
+			NSIndexPath goToIndexPath = NSIndexPath.FromItemSection(goToPosition, 0);
+
+			return goToIndexPath;
+		}
+
+		public int GetCorrectedIndex(int indexToCorrect)
 		{
 			var itemsCount = GetItemsSourceCount();
 			if ((indexToCorrect < itemsCount && indexToCorrect >= 0) || itemsCount == 0)
@@ -489,14 +538,16 @@ namespace Xamarin.Forms.Platform.iOS
 			return newIndex;
 		}
 
-		NSIndexPath GetIndexPathForCenteredItem()
+		public NSIndexPath GetIndexPathForCenteredItem(UICollectionView collectionView)
 		{
-			var centerPoint = new CGPoint(CollectionView.Center.X + CollectionView.ContentOffset.X, CollectionView.Center.Y + CollectionView.ContentOffset.Y);
-			var centerIndexPath = CollectionView.IndexPathForItemAtPoint(centerPoint);
+			var centerPoint = new CGPoint(collectionView.Center.X + collectionView.ContentOffset.X, collectionView.Center.Y + collectionView.ContentOffset.Y);
+			var centerIndexPath = collectionView.IndexPathForItemAtPoint(centerPoint);
 			return centerIndexPath;
 		}
 
-		int GetItemsSourceCount() => ItemsSource.ItemCountInGroup(0);
+		public int GetItemsSourceCount() => _itemsSource.ItemCountInGroup(0);
+
+		public int GetLoopItemsCount() => LoopCount * GetItemsSourceCount();
 
 		nfloat GetTotalContentWidth()
 		{
@@ -510,22 +561,10 @@ namespace Xamarin.Forms.Platform.iOS
 			return ((numberOfCells) * (_cellHeight + _cellPadding)) - _cellPadding;
 		}
 
-		void SetupCellDimensions()
-		{
-			_size = CollectionView.Bounds.Size;
-			var layout = Layout as UICollectionViewFlowLayout;
-			_cellPadding = 0;
-			_cellWidth = layout.ItemSize.Width;
-			_cellHeight = layout.ItemSize.Height;
-		}
-
 		void ShiftContentArray(int shiftCells)
 		{
 			var correctedIndex = GetCorrectedIndex(shiftCells);
 			_indexOffset += correctedIndex;
 		}
-
-		
-		
 	}
 }

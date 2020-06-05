@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Carousel.Loop)
 			{
-				var goToIndexPath = Controller.GetGoToIndexPath(args.Index);
+				var goToIndexPath = Controller.GetScrollToIndexPath(args.Index);
 				Controller.CollectionView.ScrollToItem(goToIndexPath,
 					args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
 					args.IsAnimated);
