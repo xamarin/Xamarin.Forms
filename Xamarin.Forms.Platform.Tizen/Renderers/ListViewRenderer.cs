@@ -40,9 +40,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(ListView.RowHeightProperty, UpdateRowHeight);
 			RegisterPropertyHandler(ListView.SelectedItemProperty, UpdateSelectedItem);
 			RegisterPropertyHandler(ListView.ItemsSourceProperty, UpdateSource);
-			RegisterPropertyHandler("HeaderElement", UpdateHeader);
-			RegisterPropertyHandler("FooterElement", UpdateFooter);
+			RegisterPropertyHandler(nameof(Element.HeaderElement), UpdateHeader);
+			RegisterPropertyHandler(nameof(Element.FooterElement), UpdateFooter);
 			RegisterPropertyHandler(ListView.SelectionModeProperty, UpdateSelectionMode);
+			RegisterPropertyHandler(ListView.VerticalScrollBarVisibilityProperty, UpdateVerticalScrollBarVisibility);
+			RegisterPropertyHandler(ListView.HorizontalScrollBarVisibilityProperty, UpdateHorizontalScrollBarVisibility);
 		}
 
 		/// <summary>
@@ -54,8 +56,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new Native.ListView(Forms.NativeParent));
+				SetNativeControl(CreateNativeControl());
 
+				Control.Scrolled += OnScrolled;
 				Control.ItemSelected += OnListViewItemSelected;
 				Control.ItemUnselected += OnListViewItemUnselected;
 			}
@@ -77,6 +80,18 @@ namespace Xamarin.Forms.Platform.Tizen
 			base.OnElementChanged(e);
 		}
 
+		protected virtual Native.ListView CreateNativeControl()
+		{
+			if(Device.Idiom == TargetIdiom.Watch)
+			{
+				return new Native.Watch.WatchListView(Forms.NativeParent, Forms.CircleSurface);
+			}
+			else
+			{
+				return new Native.ListView(Forms.NativeParent);
+			}
+		}
+
 		/// <summary>
 		/// Handles the disposing of an existing renderer instance. Results in event handlers
 		/// being detached and a Dispose() method from base class (VisualElementRenderer) being invoked.
@@ -96,6 +111,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 				if (Control != null)
 				{
+					Control.Scrolled -= OnScrolled;
 					Control.ItemSelected -= OnListViewItemSelected;
 					Control.ItemUnselected -= OnListViewItemUnselected;
 				}
@@ -162,6 +178,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
+		void OnScrolled(object sender, EventArgs e)
+		{
+			var region = Control.CurrentRegion.ToDP();
+			Element.SendScrolled(new ScrolledEventArgs(region.X, region.Y));
+		}
+
 		/// <summary>
 		/// This is method handles "scroll to" requests from xamarin events.
 		/// It allows for scrolling to specified item on list view.
@@ -194,48 +216,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		}
 
 		/// <summary>
-		/// Helper class for managing proper postion of Header and Footer element.
-		/// Since both elements need to be implemented with ordinary list elements,
-		/// both header and footer are removed at first, then the list is being modified
-		/// and finally header and footer are prepended and appended to the list, respectively.
-		/// </summary>
-		class HeaderAndFooterHandler : IDisposable
-		{
-			VisualElement headerElement;
-			VisualElement footerElement;
-
-			Native.ListView Control;
-
-			public HeaderAndFooterHandler(Widget control)
-			{
-				Control = control as Native.ListView;
-
-				if (Control.HasHeader())
-				{
-					headerElement = Control.GetHeader();
-					Control.RemoveHeader();
-				}
-				if (Control.HasFooter())
-				{
-					footerElement = Control.GetFooter();
-					Control.RemoveFooter();
-				}
-			}
-
-			public void Dispose()
-			{
-				if (headerElement != null)
-				{
-					Control.SetHeader(headerElement);
-				}
-				if (footerElement != null)
-				{
-					Control.SetFooter(footerElement);
-				}
-			}
-		}
-
-		/// <summary>
 		/// This method is called whenever something changes in list view data model.
 		/// Method will not be invoked for grouping mode, but for example event with
 		/// action reset will be handled here when switching between group and no-group mode.
@@ -244,25 +224,22 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// <param name="e">NotifyCollectionChangedEventArgs.</param>
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			using (new HeaderAndFooterHandler(Control))
+			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				if (e.Action == NotifyCollectionChangedAction.Add)
+				Cell before = null;
+				if (e.NewStartingIndex + e.NewItems.Count < Element.TemplatedItems.Count)
 				{
-					Cell before = null;
-					if (e.NewStartingIndex + e.NewItems.Count < Element.TemplatedItems.Count)
-					{
-						before = Element.TemplatedItems[e.NewStartingIndex + e.NewItems.Count];
-					}
-					Control.AddSource(e.NewItems, before);
+					before = Element.TemplatedItems[e.NewStartingIndex + e.NewItems.Count];
 				}
-				else if (e.Action == NotifyCollectionChangedAction.Remove)
-				{
-					Control.Remove(e.OldItems);
-				}
-				else if (e.Action == NotifyCollectionChangedAction.Reset)
-				{
-					UpdateSource();
-				}
+				Control.AddSource(e.NewItems, before);
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Remove)
+			{
+				Control.Remove(e.OldItems);
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				UpdateSource();
 			}
 		}
 
@@ -275,26 +252,23 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// <param name="e">NotifyCollectionChangedEventArgs.</param>
 		void OnGroupedCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			using (new HeaderAndFooterHandler(Control))
+			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				if (e.Action == NotifyCollectionChangedAction.Add)
+				TemplatedItemsList<ItemsView<Cell>, Cell> itemsGroup = sender as TemplatedItemsList<ItemsView<Cell>, Cell>;
+				Cell before = null;
+				if (e.NewStartingIndex + e.NewItems.Count < itemsGroup.Count)
 				{
-					TemplatedItemsList<ItemsView<Cell>, Cell> itemsGroup = sender as TemplatedItemsList<ItemsView<Cell>, Cell>;
-					Cell before = null;
-					if (e.NewStartingIndex + e.NewItems.Count < itemsGroup.Count)
-					{
-						before = itemsGroup[e.NewStartingIndex + e.NewItems.Count];
-					}
-					Control.AddItemsToGroup(itemsGroup, e.NewItems, before);
+					before = itemsGroup[e.NewStartingIndex + e.NewItems.Count];
 				}
-				else if (e.Action == NotifyCollectionChangedAction.Remove)
-				{
-					Control.Remove(e.OldItems);
-				}
-				else if (e.Action == NotifyCollectionChangedAction.Reset)
-				{
-					Control.ResetGroup(sender as TemplatedItemsList<ItemsView<Cell>, Cell>);
-				}
+				Control.AddItemsToGroup(itemsGroup, e.NewItems, before);
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Remove)
+			{
+				Control.Remove(e.OldItems);
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				Control.ResetGroup(sender as TemplatedItemsList<ItemsView<Cell>, Cell>);
 			}
 		}
 
@@ -303,32 +277,30 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </summary>
 		void UpdateSource()
 		{
-			bool hasHeader = Control.HasHeader();
-			bool hasFooter = Control.HasFooter();
-
 			Control.Clear();
+			UpdateHeader(false);
 			Control.AddSource(Element.TemplatedItems);
+			UpdateFooter(false);
 			UpdateSelectedItem();
-
-			if (hasHeader)
-				UpdateHeader();
-			if (hasFooter)
-				UpdateFooter();
 		}
 
 		/// <summary>
 		/// Updates the header.
 		/// </summary>
-		void UpdateHeader()
+		void UpdateHeader(bool initialize)
 		{
+			if (initialize)
+				return;
 			Control.SetHeader(((IListViewController)Element).HeaderElement as VisualElement);
 		}
 
 		/// <summary>
 		/// Updates the footer.
 		/// </summary>
-		void UpdateFooter()
+		void UpdateFooter(bool initialize)
 		{
+			if (initialize)
+				return;
 			Control.SetFooter(((IListViewController)Element).FooterElement as VisualElement);
 		}
 
@@ -373,6 +345,10 @@ namespace Xamarin.Forms.Platform.Tizen
 					_lastSelectedItem.IsSelected = false;
 					_lastSelectedItem = null;
 				}
+				if (Control.SelectedItem != null)
+				{
+					Control.SelectedItem.IsSelected = false;
+				}
 			}
 			else
 			{
@@ -401,6 +377,16 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				Control.IsHighlight = true;
 			}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			Control.VerticalScrollBarVisibility = Element.VerticalScrollBarVisibility.ToNative();
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			Control.HorizontalScrollBarVisibility = Element.HorizontalScrollBarVisibility.ToNative();
 		}
 	}
 }

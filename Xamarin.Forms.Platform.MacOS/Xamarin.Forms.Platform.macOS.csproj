@@ -78,6 +78,9 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core\Crc64.cs">
+      <Link>Crc64.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs">
       <Link>StreamWrapper.cs</Link>
     </Compile>
@@ -266,6 +269,7 @@
       <Link>Extensions\FontExtensions.Shared.cs</Link>
     </Compile>
     <Compile Include="Extensions\NSAttributedStringExtensions.cs" />
+    <Compile Include="EmbeddedFontLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

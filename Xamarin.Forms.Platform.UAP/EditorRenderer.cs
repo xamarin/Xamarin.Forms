@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.UWP
 		Brush _defaultTextColorFocusBrush;
 		Brush _defaultPlaceholderColorFocusBrush;
 		Brush _placeholderDefaultBrush;
+		string _transformedText;
 
 		IEditorController ElementController => Element;
 
@@ -50,6 +51,10 @@ namespace Xamarin.Forms.Platform.UWP
 					// color stuff, then the underlying textbox should just use the Forms VSM states
 					textBox.UseFormsVsm = e.NewElement.HasVisualStateGroups()
 						|| !e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+
+					// The default is DetectFromContent, which we don't want because it can
+					// override the FlowDirection settings. 
+					textBox.TextAlignment = Windows.UI.Xaml.TextAlignment.Left;
 				}
 
 				UpdateText();
@@ -57,7 +62,6 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextColor();
 				UpdateCharacterSpacing();
 				UpdateFont();
-				UpdateTextAlignment();
 				UpdateFlowDirection();
 				UpdateMaxLength();
 				UpdateDetectReadingOrderFromContent();
@@ -112,7 +116,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFont();
 			}
-			else if (e.PropertyName == Editor.TextProperty.PropertyName)
+			else if (e.IsOneOf(Editor.TextProperty, Editor.TextTransformProperty))
 			{
 				UpdateText();
 			}
@@ -122,7 +126,6 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
-				UpdateTextAlignment();
 				UpdateFlowDirection();
 			}
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
@@ -174,9 +177,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNativeTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
 		{
-			Element.SetValueCore(Editor.TextProperty, Control.Text);
+			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
+			Element.SetValueCore(Editor.TextProperty, _transformedText);
 		}
-
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -255,9 +258,10 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
 		}
+	
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (Control.Text == newText)
 			{
@@ -266,11 +270,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Control.Text = newText;
 			Control.SelectionStart = Control.Text.Length;
-		}
-
-		void UpdateTextAlignment()
-		{
-			Control.UpdateTextAlignment(Element);
 		}
 
 		void UpdateTextColor()

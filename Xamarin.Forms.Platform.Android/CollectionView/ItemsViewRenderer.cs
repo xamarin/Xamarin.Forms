@@ -46,7 +46,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		RecyclerView.ItemDecoration _itemDecoration;
 
-		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
+		public ItemsViewRenderer(Context context) : base(
+			new ContextThemeWrapper(context, Resource.Style.collectionViewTheme), null, 
+			Resource.Attribute.collectionViewStyle)
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
@@ -582,6 +584,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
+			(GetSnapManager()?.GetCurrentSnapHelper() as SingleSnapHelper)?.ResetCurrentTargetPosition();
 			ScrollTo(args);
 		}
 

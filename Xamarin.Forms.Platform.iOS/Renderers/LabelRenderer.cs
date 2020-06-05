@@ -225,6 +225,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdatePadding();
 			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.TextTransformProperty.PropertyName)
+				UpdateText();
 		}
 
 		protected override NativeLabel CreateNativeControl()
@@ -248,9 +250,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			if (Element?.TextType != TextType.Text)
-				return;
-
-			if (!Element.IsSet(Label.TextDecorationsProperty))
 				return;
 
 #if __MOBILE__
@@ -284,7 +283,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
-#if !__MOBILE__
+#if __MOBILE__
+			Control.AttributedText = newAttributedText;
+#else
 			Control.AttributedStringValue = newAttributedText;
 #endif
 			UpdateCharacterSpacing();
@@ -433,10 +434,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			else
 			{
+				var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 #if __MOBILE__
-				Control.Text = Element.Text;
+				Control.Text = text;
 #else
-				Control.StringValue = Element.Text ?? "";
+				Control.StringValue = text ?? "";
 #endif
 			}
 			UpdateLayout();
@@ -517,7 +519,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			// default value of color documented to be black in iOS docs
 #if __MOBILE__
-			Control.TextColor = textColor.ToUIColor(ColorExtensions.Black);
+			Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else
 			var alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.Black), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });

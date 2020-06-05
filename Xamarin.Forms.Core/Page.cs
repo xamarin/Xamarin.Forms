@@ -285,6 +285,9 @@ namespace Xamarin.Forms
 
 		protected virtual bool OnBackButtonPressed()
 		{
+			if (RealParent is BaseShellItem || RealParent is Shell)
+				return true;
+
 			var application = RealParent as Application;
 			if (application == null || this == application.MainPage)
 				return false;
@@ -394,7 +397,25 @@ namespace Xamarin.Forms
 			}
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
+
+		internal void OnAppearing(Action action)
+		{
+			if (_hasAppeared)
+				action();
+			else
+			{
+				EventHandler eventHandler = null;
+				eventHandler = (_, __) =>
+				{
+					this.Appearing -= eventHandler;
+					action();
+				};
+
+				this.Appearing += eventHandler;
+			}
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
         public void SendAppearing()
 		{
 			if (_hasAppeared)

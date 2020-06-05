@@ -6,14 +6,14 @@ namespace Xamarin.Forms.Platform.iOS
 	internal abstract class WidthConstrainedTemplatedCell : TemplatedCell
 	{
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		public WidthConstrainedTemplatedCell(CGRect frame) : base(frame)
 		{
 		}
 
 		public override void ConstrainTo(CGSize constraint)
 		{
-			base.ConstrainTo(constraint);
-
+			ClearConstraints();
 			ConstrainedDimension = constraint.Width;
 		}
 

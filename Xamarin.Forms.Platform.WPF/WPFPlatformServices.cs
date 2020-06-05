@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.WPF
 	{
 		public bool IsInvokeRequired
 		{
-			get { return !System.Windows.Application.Current.Dispatcher.CheckAccess(); }
+			get { return System.Windows.Application.Current == null ? false : !System.Windows.Application.Current.Dispatcher.CheckAccess(); }
 		}
 
 		public string RuntimePlatform => Device.WPF;
@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			System.Diagnostics.Process.Start(uri.AbsoluteUri);
 		}
-		
+
 		public void BeginInvokeOnMainThread(Action action)
 		{
 			System.Windows.Application.Current?.Dispatcher.BeginInvoke(action);
@@ -43,29 +43,9 @@ namespace Xamarin.Forms.Platform.WPF
 			return AppDomain.CurrentDomain.GetAssemblies();
 		}
 
-		public string GetMD5Hash(string input)
-		{
-			// MSDN - Documentation -https://msdn.microsoft.com/en-us/library/system.security.cryptography.md5(v=vs.110).aspx
-			using (MD5 md5Hash = MD5.Create()) 
-			{
-				// Convert the input string to a byte array and compute the hash.
-				byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+		public string GetHash(string input) => Crc64.GetHash(input);
 
-				// Create a new Stringbuilder to collect the bytes
-				// and create a string.
-				StringBuilder sBuilder = new StringBuilder();
-
-				// Loop through each byte of the hashed data 
-				// and format each one as a hexadecimal string.
-				for (int i = 0; i < data.Length; i++)
-				{
-					sBuilder.Append(data[i].ToString("x2"));
-				}
-
-				// Return the hexadecimal string.
-				return sBuilder.ToString();
-			}
-		}
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
@@ -98,6 +78,12 @@ namespace Xamarin.Forms.Platform.WPF
 				default:
 					throw new ArgumentOutOfRangeException("size");
 			}
+		}
+
+		public Color GetNamedColor(string name)
+		{
+			// Not supported on this platform
+			return Color.Default;
 		}
 
 		public Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
@@ -138,7 +124,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			return new WPFIsolatedStorageFile(IsolatedStorageFile.GetUserStoreForAssembly());
 		}
-		
+
 		public void StartTimer(TimeSpan interval, Func<bool> callback)
 		{
 			var timer = new DispatcherTimer(DispatcherPriority.Background, System.Windows.Application.Current.Dispatcher) { Interval = interval };
@@ -160,5 +146,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
+
+		public OSAppTheme RequestedTheme => OSAppTheme.Unspecified;
 	}
 }
