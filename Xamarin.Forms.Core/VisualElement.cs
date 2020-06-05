@@ -329,7 +329,6 @@ namespace Xamarin.Forms
 			set { SetValue(AnchorYProperty, value); }
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Color BackgroundColor
 		{
 			get { return (Color)GetValue(BackgroundColorProperty); }
