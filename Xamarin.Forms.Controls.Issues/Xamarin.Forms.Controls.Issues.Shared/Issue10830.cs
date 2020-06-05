@@ -44,6 +44,13 @@ namespace Xamarin.Forms.Controls.Issues
 				HeightRequest = 50
 			};
 
+			var label = new Label
+			{
+				Text = "Success"
+			};
+
+			expanderHeader.Children.Add(label);
+
 			expander.Header = expanderHeader;
 
 			var carouselView = new CarouselView
@@ -89,5 +96,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 			BindingContext = this;
 		}
+
+#if UITEST
+		[Test]
+		public void Issue10830Test() 
+		{
+			RunningApp.WaitForElement(q => q.Marked("Success"));
+		}
+#endif
 	}
 }
