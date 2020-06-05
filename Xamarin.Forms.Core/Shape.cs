@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms
 {
-    public class Shape : View
+    public abstract class Shape : View
     {
 		public Shape()
 		{
