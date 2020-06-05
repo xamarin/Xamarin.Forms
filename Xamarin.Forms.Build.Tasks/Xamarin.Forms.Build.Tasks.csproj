@@ -27,14 +27,12 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.8.166" />
     <PackageReference Include="StrongNamer" Version="0.0.8" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+     <PackageReference Include="XliffTasks" Version="1.0.0-beta.20206.1" PrivateAssets="all" />
   </ItemGroup>
 
   <PropertyGroup>
      <UpdateXlfOnBuild Condition="'$(CI)' != 'true'">true</UpdateXlfOnBuild>
   </PropertyGroup>
-  <ItemGroup Condition="'$(CI)' != 'true'">
-     <PackageReference Include="XliffTasks" Version="1.0.0-beta.20206.1" PrivateAssets="all" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj" />
