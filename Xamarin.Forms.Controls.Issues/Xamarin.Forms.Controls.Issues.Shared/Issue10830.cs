@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Controls.Issues
 			BindingContext = this;
 		}
 
-#if UITEST
+#if UITEST && __ANDROID__
 		[Test]
 		public void Issue10830Test() 
 		{
