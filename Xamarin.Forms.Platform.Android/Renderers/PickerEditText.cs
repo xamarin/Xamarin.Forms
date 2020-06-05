@@ -1,9 +1,8 @@
-using System;
 using Android.Content;
 using Android.Graphics;
 using Android.Runtime;
 using Android.Views;
-using Android.Widget;
+using Java.Lang;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -31,6 +30,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnFocusChanged(gainFocus, direction, previouslyFocusedRect);
 			PickerManager.OnFocusChanged(gainFocus, this, this);
+		}
+
+		public override void SetText(ICharSequence text, BufferType type)
+		{
+			text = this.EllipsizeText(text);
+			base.SetText(text, type);
 		}
 
 		protected override void Dispose(bool disposing)

@@ -5,6 +5,7 @@ using Android.Graphics;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
+using Java.Lang;
 using Xamarin.Forms.Platform.Android;
 
 namespace Xamarin.Forms.Material.Android
@@ -31,6 +32,12 @@ namespace Xamarin.Forms.Material.Android
 		{
 			base.OnFocusChanged(gainFocus, direction, previouslyFocusedRect);
 			PickerManager.OnFocusChanged(gainFocus, this, (IPopupTrigger)Parent.Parent);
+		}
+
+		public override void SetText(ICharSequence text, BufferType type)
+		{
+			text = this.EllipsizeText(text);
+			base.SetText(text, type);
 		}
 
 		protected override void Dispose(bool disposing)
