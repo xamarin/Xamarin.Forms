@@ -77,6 +77,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var cell = collectionView.DequeueReusableCell(DetermineCellReuseId(), indexPath) as UICollectionViewCell;
 
+			//if (cell is TemplatedCell t && t.VisualElementRenderer?.Element != null)
+			//{
+			//	var x = t.ContentView.Frame.X;
+			//	var y = t.ContentView.Frame.Y;
+			//	var size = t.Measure();
+			//	cell.ContentView.Frame = new CGRect(new CGPoint(x,y), size);
+			//}
+
 			switch (cell)
 			{
 				case DefaultCell defaultCell:
@@ -86,7 +94,7 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateTemplatedCell(templatedCell, indexPath);
 					break;
 			}
-
+			
 			return cell;
 		}
 

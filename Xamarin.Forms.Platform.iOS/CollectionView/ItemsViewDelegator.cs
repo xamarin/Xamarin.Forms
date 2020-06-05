@@ -21,6 +21,28 @@ namespace Xamarin.Forms.Platform.iOS
 			ViewController = itemsViewController;
 		}
 
+
+		/// <summary>
+		/// Per default this method returns the Estimated size when its not overriden.
+		/// This method is called before the rendering process and sizes the cell correctly before it is displayed in the collectionview
+		/// Calling the base implementation of this method will throw an exception when overriding the method
+		/// </summary>
+		/// <returns></returns>
+		public override CGSize GetSizeForItem(UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)
+		{
+			if (ItemsViewLayout.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
+				return ItemsViewLayout.EstimatedItemSize;
+
+			// ".CellForItem" is not reliable here because when the cell at "indexpath" is not visible it will return null
+			var cell = collectionView.CellForItem(indexPath); 
+			if (cell is ItemsViewCell itemsViewCell)
+			{
+				var size = itemsViewCell.Measure();
+				return size;
+			}
+			else return ItemsViewLayout.EstimatedItemSize; // This is basically a Fallback when ".CellForItem" return null
+		}
+
 		public override void Scrolled(UIScrollView scrollView)
 		{
 			var indexPathsForVisibleItems = ViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row).ToList();
