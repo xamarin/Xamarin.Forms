@@ -345,6 +345,22 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+		[Test]
+		public async Task GetCurrentPageInModalNavigation()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute", shellSectionRoute: "Section", shellContentRoute: "Content"));
+
+			shell.Navigated += (_, __) =>
+			{
+				var page = shell.CurrentPage;
+				Assert.IsNotNull(page);
+				Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
+			};
+
+			await shell.GoToAsync("ModalTestPage");
+		}
+
 
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ModalTestPageBase : ShellLifeCycleTests.LifeCyclePage

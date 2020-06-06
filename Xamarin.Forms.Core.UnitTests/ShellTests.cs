@@ -1429,6 +1429,55 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNotNull(item.CurrentItem.CurrentItem);
 		}
 
+		[Test]
+		public async Task GetCurrentPageInShellNavigation()
+		{
+			Shell shell = new Shell();
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1");
+
+			shell.Items.Add(item1);
+			Routing.RegisterRoute("cat", typeof(ContentPage));
+
+			shell.Navigated += (_, __) =>
+			{
+				var page = shell.CurrentPage;
+				Assert.IsNotNull(page);
+				Assert.AreEqual(page.GetType(), typeof(ContentPage));
+			};
+
+			await shell.GoToAsync("cat");
+		}
+
+		[Test]
+		public async Task GetCurrentPageBetweenSections()
+		{
+			var shell = new Shell();
+			var one = new ShellItem { Route = "one" };
+			var two = new ShellItem { Route = "two" };
+
+			var tabone = MakeSimpleShellSection("tabone", "content");
+			var tabtwo = MakeSimpleShellSection("tabtwo", "content");
+			var tabthree = MakeSimpleShellSection("tabthree", "content");
+			var tabfour = MakeSimpleShellSection("tabfour", "content");
+
+			one.Items.Add(tabone);
+			one.Items.Add(tabtwo);
+
+			two.Items.Add(tabthree);
+			two.Items.Add(tabfour);
+
+			shell.Items.Add(one);
+			shell.Items.Add(two);
+
+			shell.Navigated += (_, __) =>
+			{
+				var page = shell.CurrentPage;
+				Assert.IsNotNull(page);
+				Assert.AreEqual(page.GetType(), typeof(ShellTestPage));
+			};
+			shell.GoToAsync(new ShellNavigationState("//two/tabfour/"));
+		}
+
 		//[Test]
 		//public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
 		//{
