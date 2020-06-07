@@ -1478,6 +1478,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.GoToAsync(new ShellNavigationState("//two/tabfour/"));
 		}
 
+		[Test]
+		public void GetCurrentPageOnInit()
+		{
+			var shell = new Shell();
+			shell.Navigated += (_, __) =>
+			{
+				var page = shell.CurrentPage;
+				Assert.IsNotNull(page);
+			};
+			var tabone = MakeSimpleShellSection("tabone", "content");
+			shell.Items.Add(tabone);
+		}
+
 		//[Test]
 		//public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
 		//{
