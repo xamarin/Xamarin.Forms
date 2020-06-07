@@ -21,6 +21,13 @@ namespace Xamarin.Forms
 		{
 
 		}
+
+		public static readonly new BindableProperty IsVisibleProperty =
+			BindableProperty.CreateAttached(nameof(IsVisible), typeof(bool), typeof(FlyoutItem), true);
+
+		public static bool GetIsVisible(BindableObject obj) => (bool)obj.GetValue(IsVisibleProperty);
+		public static void SetIsVisible(BindableObject obj, bool isVisible) => obj.SetValue(IsVisibleProperty, isVisible);
+
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Always)]

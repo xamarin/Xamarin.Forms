@@ -57,6 +57,9 @@ namespace Xamarin.Forms
 									propertyChanged: OnTabStopPropertyChanged,
 									defaultValueCreator: TabStopDefaultValueCreator);
 
+		public static readonly BindableProperty IsVisibleProperty =
+			BindableProperty.Create(nameof(IsVisible), typeof(bool), typeof(BaseShellItem), true);
+
 		static void OnTabIndexPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
 			((BaseShellItem)bindable).OnTabIndexPropertyChanged((int)oldValue, (int)newValue);
 
@@ -115,6 +118,12 @@ namespace Xamarin.Forms
 		{
 			get => (bool)GetValue(IsTabStopProperty);
 			set => SetValue(IsTabStopProperty, value);
+		}
+
+		public bool IsVisible
+		{
+			get => (bool)GetValue(IsVisibleProperty);
+			set => SetValue(IsVisibleProperty, value);
 		}
 
 		internal virtual void SendAppearing()

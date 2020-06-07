@@ -1043,7 +1043,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task ShellItemNotVisible()
+		public async Task ShellItemNotVisibleWhenContentPageNotVisible()
 		{
 			var shell = new Shell();
 			var item1 = CreateShellItem(new ContentPage() { IsVisible = false });
@@ -1054,6 +1054,74 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.IsFalse(GetItems(shell).Contains(item1));
 			Assert.IsTrue(GetItems(shell).Contains(item2));
+		}
+
+		[Test]
+		public async Task BaseShellItemNotVisible()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			item1.IsVisible = false;
+			Assert.IsFalse(GetItems(shell).Contains(item1));
+			Assert.IsTrue(GetItems(shell).Contains(item2));
+
+			item1.IsVisible = true;
+			Assert.IsTrue(GetItems(shell).Contains(item1));
+
+			item1.Items[0].IsVisible = false;
+			Assert.IsFalse(GetItems(shell).Contains(item1));
+			item1.Items[0].IsVisible = true;
+			Assert.IsTrue(GetItems(shell).Contains(item1));
+
+			item1.Items[0].Items[0].IsVisible = false;
+			Assert.IsFalse(GetItems(shell).Contains(item1));
+			item1.Items[0].Items[0].IsVisible = true;
+			Assert.IsTrue(GetItems(shell).Contains(item1));
+		}
+
+		[Test]
+		public async Task CanStillNavigateToNotVisibleShellItem()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem(shellItemRoute:"NotVisible");
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			item1.IsVisible = false;
+
+			shell.GoToAsync("//NotVisible");
+
+			Assert.AreEqual("//NotVisible", shell.CurrentState.Location.ToString());
+		}
+
+
+		[Test]
+		public async Task FlyoutItemVisible()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem<FlyoutItem>(shellItemRoute: "NotVisible");
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			FlyoutItem.SetIsVisible(item1, false);
+			Assert.IsTrue(GetItems(shell).Contains(item1));
+
+			bool hasFlyoutItem =
+				(shell as IShellController)
+					.GenerateFlyoutGrouping()
+					.SelectMany(i => i)
+					.Contains(item1);
+
+			Assert.IsFalse(hasFlyoutItem);
 		}
 
 		[Test]
