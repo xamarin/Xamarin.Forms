@@ -769,10 +769,31 @@ namespace Xamarin.Forms
 					try
 					{
 						var location = CurrentState.Location;
-						if (ShellUriHandler.GetNavigationRequest(this, ((ShellNavigationState)location).FullLocation, false) != null)
-							await GoToAsync(location, false);
+						var navRequest = ShellUriHandler.GetNavigationRequest(this, ((ShellNavigationState)location).FullLocation, false);
 
-						return;
+						if (navRequest != null)
+						{
+							var item = navRequest.Request.Item;
+							var section = navRequest.Request.Section;
+							var Content = navRequest.Request.Content;
+
+							if (IsValidRoute(item) && IsValidRoute(section) && IsValidRoute(Content))
+							{
+								await GoToAsync(location, false);
+								return;
+							}
+
+							bool IsValidRoute(BaseShellItem baseShellItem)
+							{
+								if (baseShellItem == null)
+									return true;
+
+								if (!baseShellItem.IsVisible)
+									return false;
+
+								return baseShellItem.IsPartOfVisibleTree();
+							}
+						}
 					}
 					catch (Exception exc)
 					{

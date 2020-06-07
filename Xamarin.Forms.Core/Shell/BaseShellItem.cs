@@ -126,6 +126,16 @@ namespace Xamarin.Forms
 			set => SetValue(IsVisibleProperty, value);
 		}
 
+		internal bool IsPartOfVisibleTree()
+		{
+			if (Parent is IShellController shell)
+				return shell.GetItems().Contains(this);
+			else if (Parent is ShellGroupItem sgi)
+				return sgi.ShellElementCollection.Contains(this);
+
+			return false;
+		}
+
 		internal virtual void SendAppearing()
 		{
 			if (_hasAppearing)

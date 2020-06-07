@@ -1497,6 +1497,29 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNotNull(item.CurrentItem.CurrentItem);
 		}
 
+		[Test]
+		public async Task HotReloadStaysOnActiveItem()
+		{
+			Shell shell = new Shell();
+
+			shell.Items.Add(CreateShellItem(shellItemRoute: "item1"));
+			shell.Items.Add(CreateShellItem(shellItemRoute: "item2"));
+			shell.Items.Add(CreateShellItem(shellItemRoute: "item3"));
+
+			await shell.GoToAsync("//item3");
+			Assert.AreEqual("//item3", shell.CurrentState.Location.ToString());
+
+			shell.Items.Add(CreateShellItem(shellItemRoute: "item1"));
+			shell.Items.Add(CreateShellItem(shellItemRoute: "item2"));
+			shell.Items.Add(CreateShellItem(shellItemRoute: "item3"));
+
+			shell.Items.RemoveAt(0);
+			shell.Items.RemoveAt(0);
+			shell.Items.RemoveAt(0);
+
+			Assert.AreEqual("//item3", shell.CurrentState.Location.ToString());
+		}
+
 		[TestCase("ContentPage")]
 		[TestCase("ShellItem")]
 		[TestCase("Shell")]
