@@ -155,7 +155,7 @@
 	{
 	}
 
-	internal class _RectRenderer
+	internal class _RectangleRenderer
 	{
 	}
 

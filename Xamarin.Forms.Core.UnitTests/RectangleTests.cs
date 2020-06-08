@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Rect = Xamarin.Forms.Shapes.Rectangle;
 
 namespace Xamarin.Forms.Core.UnitTests
 {

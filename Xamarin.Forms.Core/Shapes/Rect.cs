@@ -1,20 +1,20 @@
 ﻿using Xamarin.Forms.Platform;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Shapes
 {
-    [RenderWith(typeof(_RectRenderer))]
-    public sealed class Rect : Shape
+    [RenderWith(typeof(_RectangleRenderer))]
+    public sealed class Rectangle : Shape
     {
-		public Rect()
+		public Rectangle()
 		{
 			Aspect = Stretch.Fill; 
 		}
 
         public static readonly BindableProperty RadiusXProperty =
-            BindableProperty.Create(nameof(RadiusX), typeof(double), typeof(Rect), 0.0d);
+            BindableProperty.Create(nameof(RadiusX), typeof(double), typeof(Rectangle), 0.0d);
 
         public static readonly BindableProperty RadiusYProperty =
-            BindableProperty.Create(nameof(RadiusY), typeof(double), typeof(Rect), 0.0d);
+            BindableProperty.Create(nameof(RadiusY), typeof(double), typeof(Rectangle), 0.0d);
 
         public double RadiusX
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using CoreGraphics;
+using Rect = Xamarin.Forms.Shapes.Rectangle;
 
 #if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
@@ -8,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
-    public class RectRenderer : ShapeRenderer<Rect, RectView>
+    public class RectangleRenderer : ShapeRenderer<Rect, RectView>
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Rect> args)
         {

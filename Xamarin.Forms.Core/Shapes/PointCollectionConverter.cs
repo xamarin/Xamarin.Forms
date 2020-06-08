@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Shapes
 {
     public class PointCollectionConverter : TypeConverter
     {

@@ -2,12 +2,12 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.RectGallery"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.RectangleGallery"
     Title="Rectangle Gallery">
     <ContentPage.Resources>
         <ResourceDictionary>
 
-            <Style TargetType="Rect">
+            <Style TargetType="Rectangle">
                 <Setter Property="HorizontalOptions" Value="Start" />
             </Style>
 
@@ -19,25 +19,25 @@
                 Padding="12">
                 <Label
                     Text="A basic Rectangle"/>
-                <Rect
+                <Rectangle
                     Fill ="Red"
                     WidthRequest ="150"
                     HeightRequest ="50"/>
                 <Label
                     Text="A Square"/>
-                <Rect
+                <Rectangle
                     Stroke ="Red"
                     StrokeThickness="4"
                     WidthRequest ="150"
                     HeightRequest ="150"/>
                 <Label
                     Text="A Rectangle with stroke"/>
-                <Rect
+                <Rectangle
                     Stroke ="Red"
                     StrokeThickness="4"
                     WidthRequest ="150"
                     HeightRequest ="50"/>
-                <Rect
+                <Rectangle
                     Fill="DarkBlue"
                     Stroke ="Red"
                     StrokeThickness="4"
@@ -45,7 +45,7 @@
                     HeightRequest ="50"/>
                 <Label
                     Text="A Rectangle with stroke dash"/>
-                <Rect
+                <Rectangle
                     Fill="DarkBlue"
                     Stroke ="Red"
                     StrokeThickness="4"
@@ -55,7 +55,7 @@
                     HeightRequest ="50"/>
                 <Label
                     Text="A Rectangle with curved corners"/>
-                <Rect
+                <Rectangle
                     RadiusX ="12"
                     RadiusY ="24"
                     Fill ="DarkBlue"

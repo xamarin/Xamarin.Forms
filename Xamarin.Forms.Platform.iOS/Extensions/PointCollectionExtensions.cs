@@ -1,4 +1,5 @@
 ﻿using CoreGraphics;
+using Xamarin.Forms.Shapes;
 
 #if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS

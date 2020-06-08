@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
+	using Xamarin.Forms.Shapes;
 	using XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews;
 
 	[TestFixture(true)]
@@ -83,7 +84,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				{ typeof(Line), tbd },
 				{ typeof(Polygon), tbd },
 				{ typeof(Polyline), tbd },
-				{ typeof(Rect), tbd },
+				{ typeof(Rectangle), tbd },
 				{ typeof(Shape), tbd }
 			};
 

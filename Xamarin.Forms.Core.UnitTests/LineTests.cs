@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms.Core.UnitTests
 {

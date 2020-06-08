@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
+using Rect = Xamarin.Forms.Shapes.Rectangle;
 using APath = Android.Graphics.Path;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class RectRenderer : ShapeRenderer<Rect, RectView>
+	public class RectangleRenderer : ShapeRenderer<Rect, RectView>
     {
-        public RectRenderer(Context context) : base(context)
+        public RectangleRenderer(Context context) : base(context)
         {
 
         }

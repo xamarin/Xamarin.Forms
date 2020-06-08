@@ -243,7 +243,7 @@
     <Compile Include="AppThemeTests.cs" />
     <Compile Include="PolygonTests.cs" />
     <Compile Include="PolylineTests.cs" />
-    <Compile Include="RectTests.cs" />
+    <Compile Include="RectangleTests.cs" />
     <Compile Include="LineTests.cs" />
   </ItemGroup>
   <ItemGroup>

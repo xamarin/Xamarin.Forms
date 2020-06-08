@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using CoreGraphics;
+using Xamarin.Forms.Shapes;
 
 #if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
@@ -7,13 +8,13 @@ namespace Xamarin.Forms.Platform.iOS
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
-    public class PolygonRenderer : ShapeRenderer<Polygon, PolygonView>
+    public class PolylineRenderer : ShapeRenderer<Polyline, PolylineView>
     {
-        protected override void OnElementChanged(ElementChangedEventArgs<Polygon> args)
+        protected override void OnElementChanged(ElementChangedEventArgs<Polyline> args)
         {
             if (Control == null)
             {
-                SetNativeControl(new PolygonView());
+                SetNativeControl(new PolylineView());
             }
 
             base.OnElementChanged(args);
@@ -29,9 +30,9 @@ namespace Xamarin.Forms.Platform.MacOS
         {
             base.OnElementPropertyChanged(sender, args);
 
-            if (args.PropertyName == Polygon.PointsProperty.PropertyName)
+            if (args.PropertyName == Polyline.PointsProperty.PropertyName)
                 UpdatePoints();
-            else if (args.PropertyName == Polygon.FillRuleProperty.PropertyName)
+            else if (args.PropertyName == Polyline.FillRuleProperty.PropertyName)
                 UpdateFillRule();
         }
 
@@ -46,14 +47,12 @@ namespace Xamarin.Forms.Platform.MacOS
         }
     }
 
-    public class PolygonView : ShapeView
+    public class PolylineView : ShapeView
     {
         public void UpdatePoints(CGPoint[] points)
         {
 			var path = new CGPath();
             path.AddLines(points);
-            path.CloseSubpath();
-
             ShapeLayer.UpdateShape(path);
         }
 

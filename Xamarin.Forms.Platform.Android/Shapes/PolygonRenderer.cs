@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Android.Content;
+using Xamarin.Forms.Shapes;
 using static Android.Graphics.Path;
 using APath = Android.Graphics.Path;
 

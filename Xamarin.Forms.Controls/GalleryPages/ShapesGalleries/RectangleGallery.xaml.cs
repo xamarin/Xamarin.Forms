@@ -3,9 +3,9 @@
 namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 {
 	[Preserve(AllMembers = true)]
-	public partial class RectGallery : ContentPage
+	public partial class RectangleGallery : ContentPage
 	{
-		public RectGallery()
+		public RectangleGallery()
 		{
 			InitializeComponent();
 		}

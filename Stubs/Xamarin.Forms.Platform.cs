@@ -188,8 +188,8 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(PolygonRenderer))]
 	internal class _PolygonRenderer { }
 
-	[RenderWith(typeof(RectRenderer))]
-	internal class _RectRenderer { }
+	[RenderWith(typeof(RectangleRenderer))]
+	internal class _RectangleRenderer { }
 #endif
 }
 

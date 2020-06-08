@@ -1,6 +1,6 @@
 ﻿using Xamarin.Forms.Platform;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Shapes
 {
     [RenderWith(typeof(_EllipseRenderer))]
     public sealed class Ellipse : Shape

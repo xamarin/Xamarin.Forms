@@ -8,6 +8,7 @@ using AColor = Android.Graphics.Color;
 using AMatrix = Android.Graphics.Matrix;
 using APath = Android.Graphics.Path;
 using AView = Android.Views.View;
+using Shape = Xamarin.Forms.Shapes.Shape;
 
 namespace Xamarin.Forms.Platform.Android
 {
