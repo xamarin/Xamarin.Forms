@@ -80,13 +80,13 @@ namespace Xamarin.Forms.Platform.Android
 			shape.Draw(canvas, _strokePaint);
 		}
 
-		public abstract class IGradientShader
+		public abstract class GradientShader
 		{
 			public int[] Colors { get; set; }
 			public float[] Offsets { get; set; }
 		}
 
-		public class LinearGradientShader : IGradientShader
+		public class LinearGradientShader : GradientShader
 		{
 			public LinearGradientShader()
 			{
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Platform.Android
 			public float Y2 { get; set; }
 		}
 
-		public class RadialGradientShader : IGradientShader
+		public class RadialGradientShader : GradientShader
 		{
 			public RadialGradientShader()
 			{
@@ -132,9 +132,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal class GradientShaderFactory : ShaderFactory
 		{
-			readonly IGradientShader _gradientShader;
+			readonly GradientShader _gradientShader;
 
-			public GradientShaderFactory(IGradientShader gradientShader)
+			public GradientShaderFactory(GradientShader gradientShader)
 			{
 				_gradientShader = gradientShader;
 			}
