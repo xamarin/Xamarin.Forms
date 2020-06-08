@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Frame = control.Bounds,
 					LayerType = CAGradientLayerType.Radial,
 					StartPoint = new CGPoint(center.X, center.Y),
-					EndPoint = new CGPoint(1, 1),
+					EndPoint = GetRadialGradientBrushEndPoint(center, radius),
 					CornerRadius = (float)radius
 				};
 
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.iOS
 			gradientLayer.RenderInContext(UIGraphics.GetCurrentContext());
 			UIImage gradientImage = UIGraphics.GetImageFromCurrentImageContext();
 			UIGraphics.EndImageContext();
-			
+
 			return gradientImage;
 		}
 
@@ -173,6 +173,27 @@ namespace Xamarin.Forms.Platform.iOS
 				return true;
 
 			return false;
+		}
+
+		static CGPoint GetRadialGradientBrushEndPoint(Point startPoint, double radius)
+		{
+			double x = startPoint.X == 1 ? (startPoint.X - radius) : (startPoint.X + radius);
+
+			if (x < 0)
+				x = 0;
+
+			if (x > 1)
+				x = 1;
+
+			double y = startPoint.Y == 1 ? (startPoint.Y - radius) : (startPoint.Y + radius);
+
+			if (y < 0)
+				y = 0;
+
+			if (y > 1)
+				y = 1;
+
+			return new CGPoint(x, y);
 		}
 	}
 }
