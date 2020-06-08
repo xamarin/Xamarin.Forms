@@ -132,6 +132,22 @@ namespace Xamarin.Forms.Platform.iOS
 			base.SetAccessibilityLabel();
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			UIColor backgroundColor = Element.BackgroundColor == Color.Default ? null : Element.BackgroundColor.ToUIColor();
+
+			if (brush is SolidColorBrush solidColorBrush)
+				backgroundColor = solidColorBrush.Color.ToUIColor();
+			else
+			{
+				var gradientImage = this.GetGradientImage(brush);
+				if (gradientImage != null)
+					backgroundColor = UIColor.FromPatternImage(gradientImage);
+			}
+
+			Control.BackgroundColor = backgroundColor;
+		}
+
 		void SetControlPropertiesFromProxy()
 		{
 			foreach (UIControlState uiControlState in s_controlStates)

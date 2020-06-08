@@ -330,9 +330,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 #if __MOBILE__
 				Layer.BackgroundColor = UIColor.Clear.CGColor;
-#else
-				Layer.InsertGradientLayer(gradientLayer, 0);
 #endif
+				Layer.InsertGradientLayer(gradientLayer, 0);
 			}
 			else
 				Layer.RemoveGradientLayer();
