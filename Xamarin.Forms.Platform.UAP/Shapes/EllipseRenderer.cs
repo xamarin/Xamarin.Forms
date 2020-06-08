@@ -1,4 +1,6 @@
-﻿#if WINDOWS_UWP
+﻿using Xamarin.Forms.Shapes;
+
+#if WINDOWS_UWP
 using WEllipse = Windows.UI.Xaml.Shapes.Ellipse;
 
 namespace Xamarin.Forms.Platform.UWP

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Xamarin.Forms.Shapes;
 
 #if WINDOWS_UWP
 using WFillRule = Windows.UI.Xaml.Media.FillRule;

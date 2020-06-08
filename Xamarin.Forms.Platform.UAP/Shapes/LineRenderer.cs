@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Xamarin.Forms.Shapes;
 
 #if WINDOWS_UWP
 using WLine = Windows.UI.Xaml.Shapes.Line;

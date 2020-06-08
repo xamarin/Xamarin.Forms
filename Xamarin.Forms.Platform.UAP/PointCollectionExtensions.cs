@@ -1,7 +1,16 @@
-﻿using WPoint = Windows.Foundation.Point;
+﻿using Xamarin.Forms.Shapes;
+
+#if WINDOWS_UWP
+using WPoint = Windows.Foundation.Point;
 using WPointCollection = Windows.UI.Xaml.Media.PointCollection;
 
 namespace Xamarin.Forms.Platform.UWP
+#else
+using WPoint = System.Windows.Point;
+using WPointCollection = System.Windows.Media.PointCollection;
+
+namespace Xamarin.Forms.Platform.WPF
+#endif
 {
 	public static class PointCollectionExtensions
 	{

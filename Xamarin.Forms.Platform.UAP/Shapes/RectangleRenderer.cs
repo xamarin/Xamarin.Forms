@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Rect = Xamarin.Forms.Shapes.Rectangle;
 
 #if WINDOWS_UWP
 using WRectangle = Windows.UI.Xaml.Shapes.Rectangle;
@@ -10,7 +11,7 @@ using WRectangle = System.Windows.Shapes.Rectangle;
 namespace Xamarin.Forms.Platform.WPF
 #endif
 {
-	public class RectRenderer : ShapeRenderer<Rect, WRectangle>
+	public class RectangleRenderer : ShapeRenderer<Rect, WRectangle>
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<Rect> args)
 		{
