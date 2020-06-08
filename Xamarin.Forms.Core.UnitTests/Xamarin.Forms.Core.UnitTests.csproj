@@ -243,6 +243,8 @@
     <Compile Include="AppThemeTests.cs" />
     <Compile Include="PolygonTests.cs" />
     <Compile Include="PolylineTests.cs" />
+    <Compile Include="RectTests.cs" />
+    <Compile Include="LineTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
