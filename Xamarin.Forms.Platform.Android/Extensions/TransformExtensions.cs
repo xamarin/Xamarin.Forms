@@ -1,4 +1,5 @@
-﻿using AMatrix = Android.Graphics.Matrix;
+﻿using Xamarin.Forms.Shapes;
+using AMatrix = Android.Graphics.Matrix;
 
 namespace Xamarin.Forms.Platform.Android
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Android.Content;
 using Android.Graphics;
+using Xamarin.Forms.Shapes;
 using APath = Android.Graphics.Path;
 using Rect = Xamarin.Forms.Rectangle;
 

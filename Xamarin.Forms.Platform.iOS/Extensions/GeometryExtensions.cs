@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CoreGraphics;
+using Xamarin.Forms.Shapes;
 using Rect = Xamarin.Forms.Rectangle;
 
 #if __MOBILE__

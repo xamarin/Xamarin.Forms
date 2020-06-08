@@ -1,4 +1,5 @@
 ﻿using System;
+using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 {

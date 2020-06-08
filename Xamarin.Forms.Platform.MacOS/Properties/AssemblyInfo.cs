@@ -1,6 +1,7 @@
 ﻿using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.MacOS;
+using Xamarin.Forms.Shapes;
 
 [assembly: Dependency(typeof(Deserializer))]
 [assembly: Dependency(typeof(ResourcesProvider))]
