@@ -19,8 +19,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
 			{
 				GradientStops = new GradientStopCollection
 				{
-					new GradientStop { Color = Color.Red },
-					new GradientStop { Color = Color.Orange }
+					new GradientStop { Color = Color.Red, Offset = 0.0f },
+					new GradientStop { Color = Color.Orange, Offset = 0.5f }
 				},
 				StartPoint = new Point(0, 0),
 				EndPoint = new Point(1, 0)
@@ -33,8 +33,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
 
 			LinearGradient.GradientStops = new GradientStopCollection
 			{
-				new GradientStop { Color = Color.FromRgb(random.Next(255), random.Next(255), random.Next(255)) },
-				new GradientStop { Color = Color.FromRgb(random.Next(255), random.Next(255), random.Next(255)) }
+				new GradientStop { Color = Color.FromRgb(random.Next(255), random.Next(255), random.Next(255)), Offset = 0.0f },
+				new GradientStop { Color = Color.FromRgb(random.Next(255), random.Next(255), random.Next(255)), Offset = 0.5f }
 			};
 		}
 	}
