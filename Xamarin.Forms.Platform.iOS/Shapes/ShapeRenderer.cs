@@ -33,6 +33,8 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateStrokeThickness();
                 UpdateStrokeDashArray();
                 UpdateStrokeDashOffset();
+                UpdateStrokeLineCap();
+                UpdateStrokeLineJoin();
             }
         }
 
@@ -58,11 +60,15 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateStroke();
             else if (args.PropertyName == Shape.StrokeThicknessProperty.PropertyName)
                 UpdateStrokeThickness();
-			else if (args.PropertyName == Shape.StrokeDashArrayProperty.PropertyName)
-				UpdateStrokeDashArray();
-			else if (args.PropertyName == Shape.StrokeDashOffsetProperty.PropertyName)
-				UpdateStrokeDashOffset();
-		}
+            else if (args.PropertyName == Shape.StrokeDashArrayProperty.PropertyName)
+                UpdateStrokeDashArray();
+            else if (args.PropertyName == Shape.StrokeDashOffsetProperty.PropertyName)
+                UpdateStrokeDashOffset();
+            else if (args.PropertyName == Shape.StrokeLineCapProperty.PropertyName)
+                UpdateStrokeLineCap();
+            else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
+                UpdateStrokeLineJoin();
+        }
 
         public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
         {
@@ -99,22 +105,64 @@ namespace Xamarin.Forms.Platform.MacOS
             Control.ShapeLayer.UpdateStrokeThickness(Element.StrokeThickness);
         }
 
-		void UpdateStrokeDashArray()
-		{
-			Control.ShapeLayer.UpdateStrokeDash(Element.StrokeDashArray.ToArray());
-		}
+        void UpdateStrokeDashArray()
+        {
+            Control.ShapeLayer.UpdateStrokeDash(Element.StrokeDashArray.ToArray());
+        }
 
-		void UpdateStrokeDashOffset()
+        void UpdateStrokeDashOffset()
+        {
+            Control.ShapeLayer.UpdateStrokeDashOffset((nfloat)Element.StrokeDashOffset);
+        }
+
+		void UpdateStrokeLineCap()
 		{
-			Control.ShapeLayer.UpdateStrokeDashOffset((nfloat)Element.StrokeDashOffset);
-		}
+            PenLineCap lineCap = Element.StrokeLineCap;
+            CGLineCap iLineCap = CGLineCap.Butt;
+
+            switch (lineCap)
+            {
+                case PenLineCap.Flat:
+                    iLineCap = CGLineCap.Butt;
+                    break;
+                case PenLineCap.Square:
+                    iLineCap = CGLineCap.Square;
+                    break;
+                case PenLineCap.Round:
+                    iLineCap = CGLineCap.Round;
+                    break;
+            }
+
+            Control.ShapeLayer.UpdateStrokeLineCap(iLineCap);
+        }
+
+        void UpdateStrokeLineJoin()
+        {
+            PenLineJoin lineJoin = Element.StrokeLineJoin;
+            CGLineJoin iLineJoin = CGLineJoin.Miter;
+
+            switch (lineJoin)
+            {
+                case PenLineJoin.Miter:
+                    iLineJoin = CGLineJoin.Miter;
+                    break;
+                case PenLineJoin.Bevel:
+                    iLineJoin = CGLineJoin.Bevel;
+                    break;
+                case PenLineJoin.Round:
+                    iLineJoin = CGLineJoin.Round;
+                    break;
+            }
+
+            Control.ShapeLayer.UpdateStrokeLineJoin(iLineJoin);
+        }
     }
 
     public class ShapeView
-    #if __MOBILE__
+#if __MOBILE__
 	: UIView
 #else
-	: NSView
+    : NSView
 #endif
     {
         public ShapeView()
@@ -142,9 +190,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
     public class ShapeLayer : CALayer
     {
-		// TODO: Expose this properties
-        const CGLineCap StrokeLineCap = CGLineCap.Butt;
-        const CGLineJoin StrokeLineJoin = CGLineJoin.Miter;
         const float StrokeMiterLimit = 10f;
 
         CGPath _path;
@@ -164,10 +209,15 @@ namespace Xamarin.Forms.Platform.MacOS
 
         Stretch _stretch;
 
+		CGLineCap _strokeLineCap;
+        CGLineJoin _strokeLineJoin;
+
         public ShapeLayer()
         {
             _fillMode = false;
             _stretch = Stretch.None;
+            _strokeLineCap = CGLineCap.Butt;
+            _strokeLineJoin = CGLineJoin.Miter;
         }
 
         public override void DrawInContext(CGContext ctx)
@@ -192,13 +242,13 @@ namespace Xamarin.Forms.Platform.MacOS
         {
             _fillMode = fillMode;
             SetNeedsDisplay();
-        }	
+        }
 
-		public SizeRequest GetDesiredSize()
+        public SizeRequest GetDesiredSize()
         {
             return new SizeRequest(new Size(
-				Math.Max(0, _pathStrokeBounds.Right),
-				Math.Max(0, _pathStrokeBounds.Bottom)));
+                Math.Max(0, _pathStrokeBounds.Right),
+                Math.Max(0, _pathStrokeBounds.Bottom)));
         }
 
         public void UpdateSize(CGSize size)
@@ -243,6 +293,20 @@ namespace Xamarin.Forms.Platform.MacOS
             SetNeedsDisplay();
         }
 
+        public void UpdateStrokeLineCap(CGLineCap strokeLineCap)
+        {
+            _strokeLineCap = strokeLineCap;
+            UpdatePathStrokeBounds();
+            SetNeedsDisplay();
+        }
+
+        public void UpdateStrokeLineJoin(CGLineJoin strokeLineJoin)
+        {
+            _strokeLineJoin = strokeLineJoin;
+            UpdatePathStrokeBounds();
+            SetNeedsDisplay();
+        }
+
         void BuildRenderPath()
         {
             if (_path == null)
@@ -264,7 +328,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
                 nfloat widthScale = viewBounds.Width / _pathFillBounds.Width;
                 nfloat heightScale = viewBounds.Height / _pathFillBounds.Height;
-				var stretchTransform = CGAffineTransform.MakeIdentity();
+                var stretchTransform = CGAffineTransform.MakeIdentity();
 
                 switch (_stretch)
                 {
@@ -275,8 +339,8 @@ namespace Xamarin.Forms.Platform.MacOS
                         stretchTransform.Scale(widthScale, heightScale);
 
                         stretchTransform.Translate(
-							viewBounds.Left - widthScale * _pathFillBounds.Left,
-							viewBounds.Top - heightScale * _pathFillBounds.Top);
+                            viewBounds.Left - widthScale * _pathFillBounds.Left,
+                            viewBounds.Top - heightScale * _pathFillBounds.Top);
                         break;
 
                     case Stretch.Uniform:
@@ -285,10 +349,10 @@ namespace Xamarin.Forms.Platform.MacOS
                         stretchTransform.Scale(minScale, minScale);
 
                         stretchTransform.Translate(
-							viewBounds.Left - minScale * _pathFillBounds.Left +
-							(viewBounds.Width - minScale * _pathFillBounds.Width) / 2,
-							viewBounds.Top - minScale * _pathFillBounds.Top + 
-							(viewBounds.Height - minScale * _pathFillBounds.Height) / 2);
+                            viewBounds.Left - minScale * _pathFillBounds.Left +
+                            (viewBounds.Width - minScale * _pathFillBounds.Width) / 2,
+                            viewBounds.Top - minScale * _pathFillBounds.Top +
+                            (viewBounds.Height - minScale * _pathFillBounds.Height) / 2);
                         break;
 
                     case Stretch.UniformToFill:
@@ -297,8 +361,8 @@ namespace Xamarin.Forms.Platform.MacOS
                         stretchTransform.Scale(maxScale, maxScale);
 
                         stretchTransform.Translate(
-							viewBounds.Left - maxScale * _pathFillBounds.Left,
-							viewBounds.Top - maxScale * _pathFillBounds.Top);
+                            viewBounds.Left - maxScale * _pathFillBounds.Left,
+                            viewBounds.Top - maxScale * _pathFillBounds.Top);
                         break;
                 }
 
@@ -349,7 +413,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
             var lengths = new nfloat[0];
 
-			if(_strokeDash.Length > 0)
+            if (_strokeDash.Length > 0)
                 lengths = new nfloat[_strokeDash.Length];
 
             for (int i = 0; i < _strokeDash.Length; i++)
@@ -357,10 +421,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
             graphics.SetLineWidth(_strokeWidth);
             graphics.SetLineDash(_dashOffset * _strokeWidth, lengths);
-            graphics.SetLineCap(StrokeLineCap);
-            graphics.SetLineJoin(StrokeLineJoin);
+            graphics.SetLineCap(_strokeLineCap);
+            graphics.SetLineJoin(_strokeLineJoin);
             graphics.SetMiterLimit(StrokeMiterLimit * _strokeWidth / 4);
-			
+
             graphics.AddPath(_renderPath);
             graphics.SetStrokeColor(_stroke);
             graphics.SetFillColor(_fill);
@@ -372,7 +436,7 @@ namespace Xamarin.Forms.Platform.MacOS
         void UpdatePathStrokeBounds()
         {
             if (_path != null)
-                _pathStrokeBounds = _path.CopyByStrokingPath(_strokeWidth, StrokeLineCap, StrokeLineJoin, StrokeMiterLimit).PathBoundingBox;
+                _pathStrokeBounds = _path.CopyByStrokingPath(_strokeWidth, _strokeLineCap, _strokeLineJoin, StrokeMiterLimit).PathBoundingBox;
             else
                 _pathStrokeBounds = new CGRect();
 

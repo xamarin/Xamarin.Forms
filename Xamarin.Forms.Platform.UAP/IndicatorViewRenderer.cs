@@ -6,14 +6,15 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using WEllipse = Windows.UI.Xaml.Shapes.Ellipse;
-using WShape = Windows.UI.Xaml.Shapes.Shape;
 using WRectangle = Windows.UI.Xaml.Shapes.Rectangle;
+using WShape = Windows.UI.Xaml.Shapes.Shape;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	class IndicatorViewRenderer : ViewRenderer<IndicatorView, FrameworkElement>
 	{
 		const int DefaultPadding = 4;
+
 		SolidColorBrush _selectedColor;
 		SolidColorBrush _fillColor;
 		ObservableCollection<WShape> _dots;

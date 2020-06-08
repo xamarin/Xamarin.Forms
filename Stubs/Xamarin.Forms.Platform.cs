@@ -177,8 +177,23 @@ namespace Xamarin.Forms.Platform
 
 #if !TIZEN4_0
 	[RenderWith(typeof(PathRenderer))]
-#endif
 	internal class _PathRenderer { }
+	
+	[RenderWith(typeof(EllipseRenderer))]
+	internal class _EllipseRenderer { }
+
+	[RenderWith(typeof(LineRenderer))]
+	internal class _LineRenderer { }
+
+	[RenderWith(typeof(PolylineRenderer))]
+	internal class _PolylineRenderer { }
+
+	[RenderWith(typeof(PolygonRenderer))]
+	internal class _PolygonRenderer { }
+
+	[RenderWith(typeof(RectangleRenderer))]
+	internal class _RectangleRenderer { }
+#endif
 }
 
 

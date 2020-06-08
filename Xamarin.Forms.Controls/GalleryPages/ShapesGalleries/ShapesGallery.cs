@@ -29,7 +29,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 					GalleryBuilder.NavButton("Clip Gallery", () => new ClipGallery(), Navigation),
 					GalleryBuilder.NavButton("Clip Views Gallery", () => new ClipViewsGallery(), Navigation),
                     GalleryBuilder.NavButton("Add/Remove Clip Gallery", () => new AddRemoveClipGallery(), Navigation),
-                    GalleryBuilder.NavButton("Clip Performance Gallery", () => new ClipPerformanceGallery(), Navigation)
+                    GalleryBuilder.NavButton("Clip Performance Gallery", () => new ClipPerformanceGallery(), Navigation),
+					GalleryBuilder.NavButton("Ellipse Gallery", () => new EllipseGallery(), Navigation),
+					GalleryBuilder.NavButton("Line Gallery", () => new LineGallery(), Navigation),
+					GalleryBuilder.NavButton("Polygon Gallery", () => new PolygonGallery(), Navigation),
+					GalleryBuilder.NavButton("Polyline Gallery", () => new PolylineGallery(), Navigation),
+					GalleryBuilder.NavButton("Rectangle Gallery", () => new RectangleGallery(), Navigation),
+					GalleryBuilder.NavButton("LineCap Gallery", () => new LineCapGallery(), Navigation),
+					GalleryBuilder.NavButton("LineJoin Gallery", () => new LineJoinGallery(), Navigation),
+					GalleryBuilder.NavButton("AutoSize Shapes Gallery", () => new AutoSizeShapesGallery(), Navigation)
                 }
             };
         }

@@ -5,9 +5,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Internals;
-using WThickness = Windows.UI.Xaml.Thickness;
+using Windows.UI.Xaml.Input;
+using System.Threading.Tasks;
+using System.Diagnostics;
 using WImage = Windows.UI.Xaml.Controls.Image;
 using WStretch = Windows.UI.Xaml.Media.Stretch;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {

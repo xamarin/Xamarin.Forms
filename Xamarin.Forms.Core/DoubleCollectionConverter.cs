@@ -8,7 +8,7 @@ namespace Xamarin.Forms
         public override object ConvertFromInvariantString(string value)
         {
             string[] doubles = value.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            DoubleCollection doubleCollection = new DoubleCollection();
+			var doubleCollection = new DoubleCollection();
 
             foreach (string d in doubles)
             {

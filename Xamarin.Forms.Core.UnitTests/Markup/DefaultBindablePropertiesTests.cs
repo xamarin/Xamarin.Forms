@@ -101,10 +101,16 @@ namespace Xamarin.Forms.Markup.UnitTests
 				{ typeof(RotateTransform), tbd },
 				{ typeof(ScaleTransform), tbd },
 				{ typeof(SkewTransform), tbd },
+
 				{ typeof(Shape), tbd },
 				{ typeof(Transform), tbd },
 				{ typeof(TransformGroup), tbd },
-				{ typeof(TranslateTransform), tbd }
+				{ typeof(TranslateTransform), tbd },
+				{ typeof(Ellipse), tbd },
+				{ typeof(Line), tbd },
+				{ typeof(Polygon), tbd },
+				{ typeof(Polyline), tbd },
+				{ typeof(Rectangle), tbd },
 			};
 
 			var failMessage = new StringBuilder();

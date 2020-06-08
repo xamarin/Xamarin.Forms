@@ -2,8 +2,8 @@
 {
     public abstract class Shape : View
     {
-		public Shape()
-		{
+        public Shape()
+        {
             ExperimentalFlags.VerifyFlagEnabled(nameof(Shape), ExperimentalFlags.ShapesExperimental);
         }
 
@@ -23,8 +23,14 @@
         public static readonly BindableProperty StrokeDashOffsetProperty =
             BindableProperty.Create(nameof(StrokeDashOffset), typeof(double), typeof(Shape), 0.0);
 
+        public static readonly BindableProperty StrokeLineCapProperty =
+			BindableProperty.Create(nameof(StrokeLineCap), typeof(PenLineCap), typeof(Shape), PenLineCap.Flat);
+
+        public static readonly BindableProperty StrokeLineJoinProperty =
+			BindableProperty.Create(nameof(StrokeLineJoin), typeof(PenLineJoin), typeof(Shape), PenLineJoin.Miter);
+
         public static readonly BindableProperty AspectProperty =
-            BindableProperty.Create(nameof(Aspect), typeof(Stretch), typeof(Shape), Stretch.None);
+			BindableProperty.Create(nameof(Aspect), typeof(Stretch), typeof(Shape), Stretch.None);
 
         public Color Fill
         {
@@ -54,6 +60,18 @@
         {
             set { SetValue(StrokeDashOffsetProperty, value); }
             get { return (double)GetValue(StrokeDashOffsetProperty); }
+        }
+
+        public PenLineCap StrokeLineCap
+        {
+            set { SetValue(StrokeLineCapProperty, value); }
+            get { return (PenLineCap)GetValue(StrokeLineCapProperty); }
+        }
+
+        public PenLineJoin StrokeLineJoin
+        {
+            set { SetValue(StrokeLineJoinProperty, value); }
+            get { return (PenLineJoin)GetValue(StrokeLineJoinProperty); }
         }
 
         public Stretch Aspect

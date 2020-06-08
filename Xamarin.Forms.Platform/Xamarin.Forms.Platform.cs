@@ -147,7 +147,27 @@
 	{
 	}
 
-	internal class _PathRenderer
+	internal class _PathRenderer	
+	{
+	}
+	
+	internal class _EllipseRenderer
+	{
+	}
+
+	internal class _LineRenderer
+	{
+	}
+
+	internal class _RectangleRenderer
+	{
+	}
+
+	internal class _PolylineRenderer
+	{
+	}
+
+	internal class _PolygonRenderer
 	{
 	}
 }

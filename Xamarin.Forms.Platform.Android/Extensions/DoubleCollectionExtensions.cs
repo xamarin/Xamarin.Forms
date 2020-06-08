@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms.Platform.Android
 {
-    public static class DoubleCollectionExtensions
+	public static class DoubleCollectionExtensions
     {
         public static float[] ToArray(this DoubleCollection doubleCollection)
         {

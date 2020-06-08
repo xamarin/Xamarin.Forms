@@ -36,6 +36,8 @@ namespace Xamarin.Forms.Platform.Android
                 UpdateStroke();
                 UpdateStrokeThickness();
                 UpdateStrokeDashArray();
+                UpdateStrokeLineCap();
+                UpdateStrokeLineJoin();
             }
         }
 
@@ -53,7 +55,7 @@ namespace Xamarin.Forms.Platform.Android
                 _width = Element.Width;
                 UpdateSize();
             }
-            if (args.PropertyName == Shape.AspectProperty.PropertyName)
+            else if (args.PropertyName == Shape.AspectProperty.PropertyName)
                 UpdateAspect();
             else if (args.PropertyName == Shape.FillProperty.PropertyName)
                 UpdateFill();
@@ -63,6 +65,10 @@ namespace Xamarin.Forms.Platform.Android
                 UpdateStrokeThickness();
             else if (args.PropertyName == Shape.StrokeDashArrayProperty.PropertyName)
                 UpdateStrokeDashArray();
+            else if (args.PropertyName == Shape.StrokeLineCapProperty.PropertyName)
+                UpdateStrokeLineCap();
+            else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
+                UpdateStrokeLineJoin();
         }
 
         public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -103,6 +109,48 @@ namespace Xamarin.Forms.Platform.Android
         void UpdateStrokeDashArray()
         {
             Control.UpdateStrokeDashArray(Element.StrokeDashArray.ToArray());
+        }
+
+        void UpdateStrokeLineCap()
+        {
+            PenLineCap lineCap = Element.StrokeLineCap;
+            Paint.Cap aLineCap = Paint.Cap.Butt;
+
+            switch (lineCap)
+            {
+                case PenLineCap.Flat:
+                    aLineCap = Paint.Cap.Butt;
+                    break;
+                case PenLineCap.Square:
+                    aLineCap = Paint.Cap.Square;
+                    break;
+                case PenLineCap.Round:
+                    aLineCap = Paint.Cap.Round;
+                    break;
+            }
+
+            Control.UpdateStrokeLineCap(aLineCap);
+        }
+
+        void UpdateStrokeLineJoin()
+        {
+            PenLineJoin lineJoin = Element.StrokeLineJoin;
+            Paint.Join aLineJoin = Paint.Join.Miter;
+
+            switch (lineJoin)
+            {
+                case PenLineJoin.Miter:
+                    aLineJoin = Paint.Join.Miter;
+                    break;
+                case PenLineJoin.Bevel:
+                    aLineJoin = Paint.Join.Bevel;
+                    break;
+                case PenLineJoin.Round:
+                    aLineJoin = Paint.Join.Round;
+                    break;
+            }
+
+            Control.UpdateStrokeLineJoin(aLineJoin);
         }
     }
 
@@ -191,8 +239,8 @@ namespace Xamarin.Forms.Platform.Android
             if (_path != null)
             {
                 return new SizeRequest(new Size(
-					Math.Max(0, _pathStrokeBounds.Right),
-					Math.Max(0, _pathStrokeBounds.Bottom)));
+                    Math.Max(0, _pathStrokeBounds.Right),
+                    Math.Max(0, _pathStrokeBounds.Bottom)));
             }
 
             return new SizeRequest();
@@ -242,6 +290,18 @@ namespace Xamarin.Forms.Platform.Android
             UpdatePathStrokeBounds();
         }
 
+        public void UpdateStrokeLineCap(Paint.Cap strokeCap)
+        {
+            _drawable.Paint.StrokeCap = strokeCap;
+            UpdatePathStrokeBounds();
+        }
+
+        public void UpdateStrokeLineJoin(Paint.Join strokeJoin)
+        {
+            _drawable.Paint.StrokeJoin = strokeJoin;
+            Invalidate();
+        }
+
         public void UpdateSize(double width, double height)
         {
             _drawable.SetBounds(0, 0, (int)(width * _density), (int)(height * _density));
@@ -251,7 +311,7 @@ namespace Xamarin.Forms.Platform.Android
         protected void UpdatePathShape()
         {
             if (_path != null && !_drawable.Bounds.IsEmpty)
-				_drawable.Shape = new PathShape(_path, _drawable.Bounds.Width(), _drawable.Bounds.Height());
+                _drawable.Shape = new PathShape(_path, _drawable.Bounds.Width(), _drawable.Bounds.Height());
             else
                 _drawable.Shape = null;
 
@@ -302,8 +362,8 @@ namespace Xamarin.Forms.Platform.Android
                     float maxScale = Math.Max(widthScale, heightScale);
                     matrix.SetScale(maxScale, maxScale);
                     matrix.PostTranslate(
-						drawableBounds.Left - maxScale * _pathFillBounds.Left,
-						drawableBounds.Top - maxScale * _pathFillBounds.Top);
+                        drawableBounds.Left - maxScale * _pathFillBounds.Left,
+                        drawableBounds.Top - maxScale * _pathFillBounds.Top);
                     break;
             }
 
