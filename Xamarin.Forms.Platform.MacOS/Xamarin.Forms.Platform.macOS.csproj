@@ -280,6 +280,7 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Shapes\PathRenderer.cs">
       <Link>Shapes\PathRenderer.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Extensions\PointCollectionExtensions.cs">
       <Link>Extensions\PointCollectionExtensions.cs</Link>
     </Compile>
