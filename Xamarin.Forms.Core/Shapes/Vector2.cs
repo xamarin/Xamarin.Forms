@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Shapes
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public struct Vector2
