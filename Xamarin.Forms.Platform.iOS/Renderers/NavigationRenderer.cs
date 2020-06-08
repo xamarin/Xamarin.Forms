@@ -704,8 +704,12 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				// Set navigation bar background color
 				NavigationBar.BarTintColor = barBackgroundColor == Color.Default
-				? UINavigationBar.Appearance.BarTintColor
-				: barBackgroundColor.ToUIColor();
+					? UINavigationBar.Appearance.BarTintColor
+					: barBackgroundColor.ToUIColor();
+
+				var barBackgroundBrush = NavPage.BarBackground;
+				var gradientImage = NavigationBar.GetGradientImage(barBackgroundBrush);
+				NavigationBar.SetBackgroundImage(gradientImage, UIBarMetrics.Default);
 			}
 		}
 
