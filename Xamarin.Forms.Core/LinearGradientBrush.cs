@@ -2,6 +2,15 @@
 {
 	public class LinearGradientBrush : GradientBrush
 	{
+		public override bool IsEmpty
+		{
+			get
+			{
+				var linearGradientBrush = this;
+				return linearGradientBrush == null || linearGradientBrush.GradientStops.Count == 0;
+			}
+		}
+
 		public static readonly BindableProperty StartPointProperty = BindableProperty.Create(
 			nameof(StartPoint), typeof(Point), typeof(LinearGradientBrush), new Point(0, 0));
 

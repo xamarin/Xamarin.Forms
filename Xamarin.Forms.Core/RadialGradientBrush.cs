@@ -2,6 +2,15 @@
 {
 	public class RadialGradientBrush : GradientBrush
 	{
+		public override bool IsEmpty
+		{
+			get
+			{
+				var radialGradientBrush = this;
+				return radialGradientBrush == null || radialGradientBrush.GradientStops.Count == 0;
+			}
+		}
+
 		public static readonly BindableProperty CenterProperty = BindableProperty.Create(
 			nameof(Center), typeof(Point), typeof(RadialGradientBrush), new Point(0.5, 0.5));
 

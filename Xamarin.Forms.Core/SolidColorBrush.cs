@@ -10,6 +10,8 @@
 			Color = color;
 		}
 
+		public override bool IsEmpty { get { return Color.IsDefault; } }
+
 		public static readonly BindableProperty ColorProperty = BindableProperty.Create(
 			nameof(Color), typeof(Color), typeof(SolidColorBrush), Color.Default);
 

@@ -3,7 +3,7 @@
 namespace Xamarin.Forms
 {
 	[ContentProperty(nameof(GradientStops))]
-	public class GradientBrush : Brush
+	public abstract class GradientBrush : Brush
 	{
 		static bool IsExperimentalFlagSet = false;
 
