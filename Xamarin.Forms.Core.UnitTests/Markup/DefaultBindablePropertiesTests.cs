@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
+	using Xamarin.Forms.Shapes;
 	using XamarinFormsMarkupUnitTestsDefaultBindablePropertiesViews;
 
 	[TestFixture(true)]
