@@ -5,10 +5,10 @@
         public static readonly BindableProperty RectProperty =
             BindableProperty.Create(nameof(Rect), typeof(Rectangle), typeof(RectangleGeometry), new Rectangle());
 
-        public Rectangle Rect
+        public Xamarin.Forms.Rectangle Rect
         {
             set { SetValue(RectProperty, value); }
-            get { return (Rectangle)GetValue(RectProperty); }
+            get { return (Xamarin.Forms.Rectangle)GetValue(RectProperty); }
         }
     }
 }
