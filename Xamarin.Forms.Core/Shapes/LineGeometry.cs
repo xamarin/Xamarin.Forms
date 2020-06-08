@@ -16,8 +16,8 @@
 
         public Point EndPoint
         {
-            set { SetValue(StartPointProperty, value); }
-            get { return (Point)GetValue(StartPointProperty); }
+            set { SetValue(EndPointProperty, value); }
+            get { return (Point)GetValue(EndPointProperty); }
         }
     }
 }
