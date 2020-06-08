@@ -1,6 +1,7 @@
 ﻿using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
+using Xamarin.Forms.Shapes;
 using WVector2 = System.Numerics.Vector2;
 
 namespace Xamarin.Forms.Platform.UWP

@@ -1,7 +1,8 @@
-﻿using WFoundation = System.Windows;
+﻿using Xamarin.Forms.Shapes;
+using WFoundation = System.Windows;
 using WMedia = System.Windows.Media;
 
-namespace Xamarin.Forms.Platform.WPF.Extensions
+namespace Xamarin.Forms.Platform.WPF
 {
 	public static class GeometryExtensions
 	{

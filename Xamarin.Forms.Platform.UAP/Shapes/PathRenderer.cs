@@ -1,8 +1,15 @@
 ﻿using System.ComponentModel;
-using Xamarin.Forms.Platform.WPF.Extensions;
+using Path = Xamarin.Forms.Shapes.Path;
+
+#if WINDOWS_UWP
+using WPath = Windows.UI.Xaml.Shapes.Path;
+
+namespace Xamarin.Forms.Platform.UWP
+#else
 using WPath = System.Windows.Shapes.Path;
 
 namespace Xamarin.Forms.Platform.WPF
+#endif
 {
 	public class PathRenderer : ShapeRenderer<Path, WPath>
 	{

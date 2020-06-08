@@ -1,7 +1,16 @@
-﻿using WMatrix = Windows.UI.Xaml.Media.Matrix;
+﻿using Xamarin.Forms.Shapes;
+
+#if WINDOWS_UWP
+using WMatrix = Windows.UI.Xaml.Media.Matrix;
 using WMatrixTransform = Windows.UI.Xaml.Media.MatrixTransform;
 
 namespace Xamarin.Forms.Platform.UWP
+#else
+using WMatrix = System.Windows.Media.Matrix;
+using WMatrixTransform = System.Windows.Media.MatrixTransform;
+
+namespace Xamarin.Forms.Platform.WPF
+#endif
 {
 	public static class TransformExtensions
 	{
