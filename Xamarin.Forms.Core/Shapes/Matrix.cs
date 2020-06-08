@@ -673,7 +673,7 @@ namespace Xamarin.Forms.Shapes
 
     internal static class MatrixUtil
     {
-        internal static void TransformRect(ref Rectangle rect, ref Matrix matrix)
+        internal static void TransformRect(ref Xamarin.Forms.Rectangle rect, ref Matrix matrix)
         {
             if (rect.IsEmpty)
             {
