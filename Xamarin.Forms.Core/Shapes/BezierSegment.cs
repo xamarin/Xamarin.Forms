@@ -2,13 +2,13 @@
 {
     public class BezierSegment : PathSegment
     {
-		public BezierSegment()
-		{
+        public BezierSegment()
+        {
 
-		}
+        }
 
-		public BezierSegment(Point point1, Point point2, Point point3)
-		{
+        public BezierSegment(Point point1, Point point2, Point point3)
+        {
             Point1 = point1;
             Point2 = point2;
             Point3 = point3;
