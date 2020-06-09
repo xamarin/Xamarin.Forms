@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Xamarin.Forms.Core.UnitTests
+namespace Xamarin.Forms.Shapes.UnitTests
 {
 	public class PointCollectionTests
 	{
