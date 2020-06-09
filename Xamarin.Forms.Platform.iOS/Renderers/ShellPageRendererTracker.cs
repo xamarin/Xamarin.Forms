@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using UIKit;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -53,6 +56,7 @@ namespace Xamarin.Forms.Platform.iOS
 		WeakReference<UIViewController> _rendererRef;
 		IShellSearchResultsRenderer _resultsRenderer;
 		UISearchController _searchController;
+		UIToolbar _secondaryToolbar;
 		SearchHandler _searchHandler;
 		Page _page;
 		NSCache _nSCache;
@@ -208,6 +212,83 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		class SecondaryToolbar : UIToolbar
+		{
+			readonly List<UIView> _lines = new List<UIView>();
+
+			public SecondaryToolbar()
+			{
+				TintColor = UIColor.White;
+			}
+
+			public override UIBarButtonItem[] Items
+			{
+				get { return base.Items; }
+				set
+				{
+					base.Items = value;
+					SetupLines();
+				}
+			}
+
+			public override void LayoutSubviews()
+			{
+				base.LayoutSubviews();
+				if (Items == null || Items.Length == 0)
+					return;
+
+				this.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+
+				LayoutToolbarItems(Bounds.Width, Bounds.Height, 0);
+			}
+
+			void LayoutToolbarItems(nfloat toolbarWidth, nfloat toolbarHeight, nfloat padding)
+			{
+				var x = padding;
+				var y = 0;
+				var itemH = toolbarHeight;
+				var itemW = toolbarWidth / Items.Length;
+
+				foreach (var item in Items)
+				{
+					var frame = new RectangleF((float)x, y, (float)itemW, (float)itemH);
+					item.CustomView.Frame = frame;
+						
+					x += itemW + padding;
+				}
+
+				x = itemW + padding * 1.5f;
+				y = (int)Bounds.GetMidY();
+				foreach (var l in _lines)
+				{
+					l.Center = new PointF((float)x, y);
+					x += itemW + padding;
+				}
+			}
+
+			void SetupLines()
+			{
+				_lines.ForEach(l => l.RemoveFromSuperview());
+				_lines.Clear();
+				if (Items == null)
+					return;
+				for (var i = 1; i < Items.Length; i++)
+				{
+					var l = new UIView(new RectangleF(0, 0, 1, 24)) { BackgroundColor = new UIColor(0, 0, 0, 0.2f) };
+					AddSubview(l);
+					_lines.Add(l);
+				}
+			}
+		}
+
+		void DeviceRotated(NSNotification notification)
+		{
+			var statusBarBottom = UIKit.UIApplication.SharedApplication.StatusBarFrame.Height;
+			var navBarBottom = ViewController.NavigationController.NavigationBar.Frame.Height;
+			var totalBottom = statusBarBottom + navBarBottom;
+			_secondaryToolbar.Frame = new RectangleF(0, totalBottom, ViewController.View.Frame.Width, 44);
+		}
+
 		protected virtual async Task UpdateToolbarItems()
 		{
 			if (NavigationItem.RightBarButtonItems != null)
@@ -217,11 +298,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			List<UIBarButtonItem> primaries = null;
+			List<UIBarButtonItem> secondaries = null;
 			if (Page.ToolbarItems.Count > 0)
 			{
 				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x => x.Priority))
 				{
-					(primaries = primaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(false, true));
+					if (item.Order == ToolbarItemOrder.Primary)
+					{
+						(primaries = primaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(false, true));
+					} else
+					{
+						(secondaries = secondaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(true, false));
+					}
+
 				}
 
 				if (primaries != null)
@@ -229,6 +318,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
+
+			if (secondaries != null && secondaries.Any())
+			{
+				if (_secondaryToolbar == null)
+				{
+					_secondaryToolbar = new SecondaryToolbar();
+					ViewController.View.Add(_secondaryToolbar);
+					var statusBarBottom = UIKit.UIApplication.SharedApplication.StatusBarFrame.Height;
+					var navBarBottom = ViewController.NavigationController.NavigationBar.Frame.Height;
+					var totalBottom = statusBarBottom + navBarBottom;
+					_secondaryToolbar.Frame = new RectangleF(0, totalBottom, ViewController.View.Frame.Width, 44);
+					Foundation.NSNotificationCenter.DefaultCenter.AddObserver(new NSString("UIDeviceOrientationDidChangeNotification"), DeviceRotated);
+				}
+				_secondaryToolbar.Items = secondaries.ToArray();
+			}
 
 			var behavior = BackButtonBehavior;
 
@@ -646,6 +750,13 @@ namespace Xamarin.Forms.Platform.iOS
 				Page.PropertyChanged -= OnPagePropertyChanged;
 				((INotifyCollectionChanged)Page.ToolbarItems).CollectionChanged -= OnToolbarItemsChanged;
 				((IShellController)_context.Shell).RemoveFlyoutBehaviorObserver(this);
+
+				if (_secondaryToolbar != null)
+				{
+					_secondaryToolbar.RemoveFromSuperview();
+					_secondaryToolbar.Dispose();
+					_secondaryToolbar = null;
+				}
 
 				if (BackButtonBehavior != null)
 					BackButtonBehavior.PropertyChanged -= OnBackButtonBehaviorPropertyChanged;
