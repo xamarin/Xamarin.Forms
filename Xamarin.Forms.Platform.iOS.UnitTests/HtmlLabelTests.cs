@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using UIKit;
 
@@ -12,6 +13,28 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 		public async Task LabelTextColorAppliesToHtml()
 		{
 			var label = new Label { TextColor = Color.Red, Text = "<p>Hello</p>", TextType = TextType.Html };
+			var expected = Color.Red.ToUIColor();
+			var actual = await GetControlProperty(label, uiLabel => uiLabel.TextColor);
+			Assert.That(actual, Is.EqualTo(expected));
+		}
+
+		[Test, Category("Text"), Category("Label"), Category("Color")]
+		[Description("If Label does not specify a TextColor, HTML colors should work")]
+		public async Task LabelDefaultTextColorDefersToHtml()
+		{
+			var label = new Label { Text = "<p style='color:blue;font-size:72pt'>Hello</p>", TextType = TextType.Html, 
+				VerticalOptions = LayoutOptions.Center };
+			var expected = Color.Blue.ToUIColor();
+
+			var actual = await GetControlProperty(label, uiLabel => uiLabel.TextColor);
+			Assert.That(actual, Is.EqualTo(expected).Using<UIColor>(ColorComparison.ARGBEquivalent));
+		}
+
+		[Test, Category("Text"), Category("Label"), Category("Color")]
+		[Description("If Label specifies a TextColor, it should override HTML colors")]
+		public async Task LabelTextColorOverridesHtmlColors()
+		{
+			var label = new Label { Text = "<p style='color:blue;'>Hello</p>", TextType = TextType.Html, TextColor = Color.Red };
 			var expected = Color.Red.ToUIColor();
 			var actual = await GetControlProperty(label, uiLabel => uiLabel.TextColor);
 			Assert.That(actual, Is.EqualTo(expected));
@@ -40,6 +63,23 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 
 			Assert.That(actualFont.FontDescriptor.SymbolicTraits & UIFontDescriptorSymbolicTraits.Italic, Is.Not.Zero);
 			Assert.That(actualFont.Name, Is.EqualTo(expectedFontFamily));
+			Assert.That(actualFont.PointSize, Is.EqualTo(expectedFontSize));
+		}
+
+		[Test, Category("Text"), Category("Label"), Category("Font")]
+		[Description("If Label Font is not set HTML fonts should apply")]
+		public async Task LabelFontDefaultDefersToHtml()
+		{
+			var label = new Label
+			{
+				Text = "<p style='font-size:3em'>Hello</p>",
+				TextType = TextType.Html
+			};
+
+			nfloat expectedFontSize = 36; // 12pt * 3em
+
+			var actualFont = await GetControlProperty(label, uiLabel => uiLabel.Font);
+
 			Assert.That(actualFont.PointSize, Is.EqualTo(expectedFontSize));
 		}
 	}

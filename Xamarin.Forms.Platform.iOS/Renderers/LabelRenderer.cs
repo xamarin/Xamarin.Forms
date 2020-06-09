@@ -489,11 +489,43 @@ namespace Xamarin.Forms.Platform.MacOS
 			};
 		}
 
+		static bool FontIsDefault(Label label) 
+		{
+			if (label.IsSet(Label.FontAttributesProperty))
+			{
+				return false;
+			}
+
+			if (label.IsSet(Label.FontFamilyProperty))
+			{
+				return false;
+			}
+
+			if (label.IsSet(Label.FontSizeProperty))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		void UpdateFont()
 		{
+			if(Element == null)
+			{
+				return;
+			}
+
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
+				return;
+			}
+
+			if (Element.TextType == TextType.Html && FontIsDefault(Element))
+			{
+				// If no explicit font properties have been specified and we're display HTML,
+				// let the HTML determine the typeface
 				return;
 			}
 
@@ -515,9 +547,16 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var textColor = (Color)Element.GetValue(Label.TextColorProperty);
 
-			// default value of color documented to be black in iOS docs
+			if (textColor.IsDefault && Element.TextType == TextType.Html)
+			{
+				// If no explicit text color has been specified and we're displaying HTML, 
+				// let the HTML determine the colors
+				return;		
+			}
+
+				// default value of color documented to be black in iOS docs
 #if __MOBILE__
-			Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
+				Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else
 			var alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.Black), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });

@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="BackgroundColorTests.cs" />
+    <Compile Include="ColorComparison.cs" />
     <Compile Include="CornerRadiusTests.cs" />
     <Compile Include="EmbeddingTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
