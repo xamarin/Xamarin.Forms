@@ -1,4 +1,3 @@
-using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -7,6 +6,7 @@ using Windows.UI.Xaml.Controls;
 using WGradientStop = Windows.UI.Xaml.Media.GradientStop;
 using WGradientStopCollection = Windows.UI.Xaml.Media.GradientStopCollection;
 using WLinearGradientBrush = Windows.UI.Xaml.Media.LinearGradientBrush;
+using WRect = Windows.Foundation.Rect;
 
 namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 {
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
-			_textBlock.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
+			_textBlock.Arrange(new WRect(0, 0, finalSize.Width, finalSize.Height));
 			return finalSize;
 		}
 
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 			_textBlock.Measure (availableSize);
 
 			// This deliberately does something wrong so we can demo fixing it
-			Rect bounds = ApplicationView.GetForCurrentView ().VisibleBounds;
+			WRect bounds = ApplicationView.GetForCurrentView ().VisibleBounds;
 			double scaleFactor = DisplayInformation.GetForCurrentView ().RawPixelsPerViewPixel;
 			var size = new Size (bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 

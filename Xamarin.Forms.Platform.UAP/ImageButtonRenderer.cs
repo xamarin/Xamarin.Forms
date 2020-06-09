@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.UWP
 					{
 						VerticalAlignment = VerticalAlignment.Center,
 						HorizontalAlignment = HorizontalAlignment.Center,
-						Stretch = Stretch.Uniform,
+						Stretch = WStretch.Uniform,
 					};
 
 					_image.ImageOpened += OnImageOpened;

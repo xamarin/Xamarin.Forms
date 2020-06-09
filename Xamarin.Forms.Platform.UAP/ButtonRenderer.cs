@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Internals;
 using Windows.UI.Xaml.Input;
 using WBrush = Windows.UI.Xaml.Media.Brush;

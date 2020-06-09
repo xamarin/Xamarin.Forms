@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -9,6 +8,7 @@ using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Windows.UI.Xaml.Input;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
+using WRect = Windows.Foundation.Rect;
 using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Element.IsInNativeLayout = true;
 
-			var myRect = new Rect(0, 0, finalSize.Width, finalSize.Height);
+			var myRect = new WRect(0, 0, finalSize.Width, finalSize.Height);
 
 			if (Control != null)
 			{
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Platform.UWP
 					continue;
 				Rectangle bounds = child.Bounds;
 
-				renderer.ContainerElement.Arrange(new Rect(bounds.X, bounds.Y, Math.Max(0, bounds.Width), Math.Max(0, bounds.Height)));
+				renderer.ContainerElement.Arrange(new WRect(bounds.X, bounds.Y, Math.Max(0, bounds.Width), Math.Max(0, bounds.Height)));
 
 				if (ArrangeNativeChildren)
 				{

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using WShape = Windows.UI.Xaml.Shapes.Shape;
 
 namespace Xamarin.Forms.Platform.UWP
 {
