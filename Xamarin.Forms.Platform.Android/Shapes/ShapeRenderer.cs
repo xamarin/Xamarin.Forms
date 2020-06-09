@@ -233,6 +233,8 @@ namespace Xamarin.Forms.Platform.Android
 
                 if (_stroke is GradientBrush strokeGradientBrush)
                 {
+                    UpdatePathStrokeBounds();
+
                     if (strokeGradientBrush is LinearGradientBrush linearGradientBrush)
                         _strokeShader = CreateLinearGradient(linearGradientBrush, _pathStrokeBounds);
 
@@ -283,6 +285,8 @@ namespace Xamarin.Forms.Platform.Android
         public void UpdateAspect(Stretch aspect)
         {
             _aspect = aspect;
+            _fillShader = null;
+            _strokeShader = null;
             Invalidate();
         }
 
@@ -367,6 +371,7 @@ namespace Xamarin.Forms.Platform.Android
                 _pathFillBounds.SetEmpty();
             }
 
+            _fillShader = null;
             UpdatePathStrokeBounds();
         }
 
