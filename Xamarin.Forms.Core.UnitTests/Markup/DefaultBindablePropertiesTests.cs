@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				{ typeof(Polygon), tbd },
 				{ typeof(Polyline), tbd },
 				{ typeof(Rectangle), tbd },
-				{ typeof(Shape), tbd }
+				{ typeof(Shape), tbd },
 
 				{ typeof(Brush), tbd },
 				{ typeof(GradientBrush), tbd },
