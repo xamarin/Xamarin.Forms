@@ -631,8 +631,6 @@ namespace Xamarin.Forms
 
 		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack, IReadOnlyList<Page> modalStack)
 		{
-			//StringBuilder stateBuilder = new StringBuilder($"//");
-			Dictionary<string, string> queryData = new Dictionary<string, string>();
 			List<string> routeStack = new List<string>();
 
 			bool stackAtRoot = sectionStack == null || sectionStack.Count <= 1;
@@ -656,7 +654,7 @@ namespace Xamarin.Forms
 					if (!stackAtRoot)
 					{
 						for (int i = 1; i < sectionStack.Count; i++)
-						{							
+						{
 							var page = sectionStack[i];
 							routeStack.AddRange(CollapsePath(Routing.GetRoute(page), routeStack));
 						}
