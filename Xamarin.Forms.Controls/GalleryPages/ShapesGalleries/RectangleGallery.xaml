@@ -11,6 +11,17 @@
                 <Setter Property="HorizontalOptions" Value="Start" />
             </Style>
 
+            <!-- FILL BRUSH -->
+            <LinearGradientBrush
+                x:Key="FillBrush"
+                StartPoint="0, 0" EndPoint="1, 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="BlueViolet" Offset="0.1" />
+                    <GradientStop Color="MediumPurple" Offset="0.6" />
+                    <GradientStop Color="Purple" Offset="1.0" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -59,6 +70,14 @@
                     RadiusX ="12"
                     RadiusY ="24"
                     Fill ="DarkBlue"
+                    WidthRequest ="150"
+                    HeightRequest ="50"/>
+                <Label
+                    Text="A Rectangle with curved corners using Brushes"/>
+                <Rectangle
+                    RadiusX ="12"
+                    RadiusY ="24"
+                    Fill ="{StaticResource FillBrush}"
                     WidthRequest ="150"
                     HeightRequest ="50"/>
             </StackLayout>

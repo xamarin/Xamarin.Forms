@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.ShapesExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.ShapesExperimental });
 		}
 	}
 }

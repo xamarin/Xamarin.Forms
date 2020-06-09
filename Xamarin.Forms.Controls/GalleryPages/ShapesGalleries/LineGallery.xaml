@@ -4,6 +4,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.LineGallery"
     Title="Line Gallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <!-- STROKE BRUSH -->
+            <LinearGradientBrush
+                x:Key="StrokeBrush"
+                StartPoint="0, 0" EndPoint="1, 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="Yellow" Offset="0.1" />
+                    <GradientStop Color="Orange" Offset="0.6" />
+                    <GradientStop Color="Red" Offset="1.0" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <StackLayout
             Padding="12">
@@ -33,6 +49,15 @@
                 X1="10" Y1="10"
                 X2="50" Y2="50"
                 Stroke="Black"
+                StrokeThickness="4" />
+            <Label
+                Text="A Line using StrokeThickness using Brushes"/>
+            <Line
+                HeightRequest="50"
+                WidthRequest="50"
+                X1="10" Y1="10"
+                X2="50" Y2="50"
+                Stroke="{StaticResource StrokeBrush}"
                 StrokeThickness="4" />
         </StackLayout>
     </ContentPage.Content>

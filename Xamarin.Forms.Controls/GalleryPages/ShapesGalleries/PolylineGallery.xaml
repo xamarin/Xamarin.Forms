@@ -4,6 +4,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.PolylineGallery"
     Title="Polyline Gallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <!-- STROKE BRUSH -->
+            <LinearGradientBrush
+                x:Key="StrokeBrush"
+                StartPoint="0, 0" EndPoint="1, 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="Yellow" Offset="0.1" />
+                    <GradientStop Color="Orange" Offset="0.6" />
+                    <GradientStop Color="Red" Offset="1.0" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
      <ContentPage.Content>
         <StackLayout
             Padding="12">
@@ -23,6 +39,13 @@
                 StrokeThickness="2"
                 StrokeDashArray="1 1"
                 StrokeDashOffset="6"
+                Points="0,0 10,30 15,0 18,60 23,30 35,30 40,0 43,60 48,30 100,30" />
+            <Label
+                Text="A Polyline using Brushes"/>
+            <Polyline
+                HeightRequest="100"
+                WidthRequest="500"
+                Stroke="{StaticResource StrokeBrush}"
                 Points="0,0 10,30 15,0 18,60 23,30 35,30 40,0 43,60 48,30 100,30" />
         </StackLayout>
     </ContentPage.Content>

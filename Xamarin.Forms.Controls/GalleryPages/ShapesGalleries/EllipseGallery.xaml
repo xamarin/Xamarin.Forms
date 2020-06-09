@@ -11,6 +11,17 @@
                 <Setter Property="HorizontalOptions" Value="Start" />
             </Style>
 
+             <!-- FILL BRUSH -->
+            <LinearGradientBrush
+                x:Key="FillBrush"
+                StartPoint="0, 0" EndPoint="1, 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="BlueViolet" Offset="0.1" />
+                    <GradientStop Color="MediumPurple" Offset="0.6" />
+                    <GradientStop Color="Purple" Offset="1.0" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -47,6 +58,16 @@
                     Text="An Ellipse with stroke dash"/>
                 <Ellipse
                     Fill="DarkBlue"
+                    Stroke ="Red"
+                    StrokeThickness="4"
+                    StrokeDashArray="1, 1"
+                    StrokeDashOffset="6"
+                    WidthRequest ="150"
+                    HeightRequest ="50"/>
+                <Label
+                    Text="An Ellipse with stroke dash using Brushes"/>
+                <Ellipse
+                    Fill="{StaticResource FillBrush}"
                     Stroke ="Red"
                     StrokeThickness="4"
                     StrokeDashArray="1, 1"

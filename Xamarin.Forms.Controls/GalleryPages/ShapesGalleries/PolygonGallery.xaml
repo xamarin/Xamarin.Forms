@@ -29,6 +29,17 @@
                         Value="3" />
             </Style>
 
+            <!-- FILL BRUSH -->
+            <LinearGradientBrush
+                x:Key="FillBrush"
+                StartPoint="0, 0" EndPoint="1, 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="BlueViolet" Offset="0.1" />
+                    <GradientStop Color="MediumPurple" Offset="0.6" />
+                    <GradientStop Color="Purple" Offset="1.0" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -50,6 +61,17 @@
                         HeightRequest="100"
                         WidthRequest="200"
                         Fill ="AliceBlue"
+                        StrokeThickness ="5" 
+                        Stroke ="Green"
+                        StrokeDashArray="1 1"
+                        StrokeDashOffset="6"
+                        Points ="40,10 70,80 10,50" />
+                <Label
+                    Text="A dash Polygon using Brushes"/>
+                    <Polygon
+                        HeightRequest="100"
+                        WidthRequest="200"
+                        Fill ="{StaticResource FillBrush}"
                         StrokeThickness ="5" 
                         Stroke ="Green"
                         StrokeDashArray="1 1"
