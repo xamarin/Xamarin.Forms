@@ -270,7 +270,6 @@
     <Compile Include="Shapes\ShapeRenderer.cs" />
     <Compile Include="Shapes\PathRenderer.cs" />
     <Compile Include="Extensions\PointCollectionExtensions.cs" />
-    <Compile Include="Extensions\DoubleCollectionExtensions.cs" />
     <Compile Include="Extensions\UIApplicationExtensions.cs" />
     <Compile Include="Extensions\UICollectionViewExtensions.cs" />
     <Compile Include="Shapes\EllipseRenderer.cs" />
