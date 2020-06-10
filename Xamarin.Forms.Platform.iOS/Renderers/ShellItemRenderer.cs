@@ -375,6 +375,5 @@ namespace Xamarin.Forms.Platform.iOS
 
 			TabBar.Hidden = !ShellItemController.ShowTabs;
 		}
-		}
 	}
 }
