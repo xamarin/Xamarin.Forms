@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms
 {
-	class OnAppTheme<T> : BindingBase
+	public class OnAppTheme<T> : BindingBase
 	{
 		WeakReference<BindableObject> _weakTarget;
 		BindableProperty _targetProperty;
