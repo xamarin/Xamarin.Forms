@@ -21,7 +21,6 @@ namespace Xamarin.Forms.Controls
 			var isToggledContainer = new ValueViewContainer<Switch>(Test.Switch.IsToggled, new Switch(), "IsToggled", value => value.ToString());
 
 			var onColoredSwitch = new Switch() { OnColor = Color.HotPink };
-
 			var onColorContainer = new ValueViewContainer<Switch>(Test.Switch.OnColor, onColoredSwitch, "OnColor", value => value.ToString());
 			var changeOnColorButton = new Button
 			{
@@ -31,10 +30,25 @@ namespace Xamarin.Forms.Controls
 			{
 				Text = "Clear OnColor"
 			};
-			changeOnColorButton.Clicked += (s, a) => { onColoredSwitch.OnColor = Color.Red; };
+			changeOnColorButton.Clicked += (s, a) => { onColoredSwitch.OnColor = Color.Gold; };
 			clearOnColorButton.Clicked += (s, a) => { onColoredSwitch.OnColor = Color.Default; };
 			onColorContainer.ContainerLayout.Children.Add(changeOnColorButton);
 			onColorContainer.ContainerLayout.Children.Add(clearOnColorButton);
+
+			var offColoredSwitch = new Switch() { OffColor = Color.Purple };
+			var offColorContainer = new ValueViewContainer<Switch>(Test.Switch.OffColor, offColoredSwitch, "OffColor", value => value.ToString());
+			var changeOffColorButton = new Button
+			{
+				Text = "Change OffColor"
+			};
+			var clearOffColorButton = new Button
+			{
+				Text = "Clear OffColor"
+			};
+			changeOffColorButton.Clicked += (s, a) => { offColoredSwitch.OffColor = Color.Green; };
+			clearOffColorButton.Clicked += (s, a) => { offColoredSwitch.OffColor = Color.Default; };
+			offColorContainer.ContainerLayout.Children.Add(changeOffColorButton);
+			offColorContainer.ContainerLayout.Children.Add(clearOffColorButton);
 
 			var thumbColorSwitch = new Switch() { ThumbColor = Color.Yellow };
 			var thumbColorContainer = new ValueViewContainer<Switch>(Test.Switch.ThumbColor, thumbColorSwitch, nameof(Switch.ThumbColor), value => value.ToString());
@@ -45,6 +59,7 @@ namespace Xamarin.Forms.Controls
 
 			Add(isToggledContainer);
 			Add(onColorContainer);
+			Add(offColorContainer);
 			Add(thumbColorContainer);
 		}
 	}

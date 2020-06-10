@@ -747,6 +747,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			IsToggled,
 			OnColor,
+			OffColor,
 			ThumbColor
 		}
 
