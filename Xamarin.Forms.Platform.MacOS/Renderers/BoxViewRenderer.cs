@@ -1,11 +1,24 @@
 ﻿using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 using Xamarin.Forms.Platform.macOS.Controls;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class BoxViewRenderer : ViewRenderer<BoxView, NSView>
 	{
+		CGSize _previousSize;
+
+		public override void Layout()
+		{
+			base.Layout();
+
+			if (_previousSize != Bounds.Size)
+				SetBackground(Element.Background);
+
+			_previousSize = Bounds.Size;
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<BoxView> e)
 		{
 			if (e.NewElement != null)
@@ -58,8 +71,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					(Control as FormsBoxView)?.SetColor(solidColorBrush.Color.ToNSColor());
 				else
 				{
-					var gradientImage = this.GetGradientImage(brush);
-					(Control as FormsBoxView)?.SetBrush(gradientImage != null ? NSColor.FromPatternImage(gradientImage) : NSColor.Clear);
+					var backgroundImage = this.GetBackgroundImage(brush);
+					(Control as FormsBoxView)?.SetBrush(backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear);
 				}
 			}
 		}

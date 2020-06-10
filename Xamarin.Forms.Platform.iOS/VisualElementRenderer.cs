@@ -4,6 +4,7 @@ using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using Xamarin.Forms.Internals;
+using CoreAnimation;
 
 #if __MOBILE__
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -326,7 +327,10 @@ namespace Xamarin.Forms.Platform.MacOS
 					Superview.Add(_blur);
 			}
 
-			NativeView.UpdateGradientLayerSize();
+			bool hasBackground = Element.Background != null && !Element.Background.IsEmpty;
+
+			if (hasBackground)
+				NativeView.UpdateBackgroundLayer();
 		}
 
 #else
@@ -463,14 +467,6 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
-		void UpdateBackground()
-		{
-			if (Element == null)
-				return;
-
-			SetBackground(Element.Background);
-		}
-
 		protected virtual void SetBackground(Brush brush)
 		{
 			NativeView.UpdateBackground(brush);
@@ -519,8 +515,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void UpdateNativeWidget()
 		{
-			// If there are size changes etc., update the brush layer with the appropriate values.
-			UpdateBackground();
+
 		}
 
 		internal virtual void SendVisualElementInitialized(VisualElement element, NativeView nativeView)

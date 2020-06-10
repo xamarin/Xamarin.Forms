@@ -150,15 +150,15 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (background != null)
 				{
-					var gradientLayer = this.GetGradientLayer(background);
+					var backgroundLayer = this.GetBackgroundLayer(background);
 
-					if (gradientLayer != null)
+					if (backgroundLayer != null)
 					{
 						Layer.BackgroundColor = NSColor.Clear.CGColor;
-						Layer.InsertGradientLayer(gradientLayer, 0);
+						Layer.InsertBackgroundLayer(backgroundLayer, 0);
 					}
 					else
-						Layer.RemoveGradientLayer();
+						Layer.RemoveBackgroundLayer();
 				}
 				else
 					Control.Cell.BackgroundColor = backgroundColor.ToNSColor();

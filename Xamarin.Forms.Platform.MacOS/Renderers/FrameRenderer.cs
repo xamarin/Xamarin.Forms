@@ -28,12 +28,16 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
-
+			if (Element.BackgroundColor == Color.Default)
+				Layer.BackgroundColor = NSColor.White.CGColor;
+			else
+				Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
 		}
 
 		protected override void SetBackground(Brush brush)
 		{
-			Layer.RemoveGradientLayer();
+			Layer.BackgroundColor = NSColor.White.CGColor;
+			Layer.RemoveBackgroundLayer();
 
 			if (brush != null && !brush.IsEmpty)
 			{
@@ -48,15 +52,15 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 				else
 				{
-					var gradientLayer = this.GetGradientLayer(brush);
+					var backgroundLayer = this.GetBackgroundLayer(brush);
 
-					if (gradientLayer != null)
+					if (backgroundLayer != null)
 					{
 						Layer.BackgroundColor = NSColor.Clear.CGColor;
-						Layer.InsertGradientLayer(gradientLayer, 0);
+						Layer.InsertBackgroundLayer(backgroundLayer, 0);
 
-						gradientLayer.CornerRadius = Layer.CornerRadius;
-						gradientLayer.BorderColor = Layer.BorderColor;
+						backgroundLayer.CornerRadius = Layer.CornerRadius;
+						backgroundLayer.BorderColor = Layer.BorderColor;
 					}
 				}
 			}
@@ -70,11 +74,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				cornerRadius = 5f; // default corner radius
 
 			Layer.CornerRadius = cornerRadius;
-
-			if (Element.BackgroundColor == Color.Default)
-				Layer.BackgroundColor = NSColor.White.CGColor;
-			else
-				Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
 
 			if (Element.HasShadow)
 			{

@@ -692,8 +692,8 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				var barBackgroundBrush = NavPage.BarBackground;
-				var gradientImage = NavigationBar.GetGradientImage(barBackgroundBrush);
-				navigationBarAppearance.BackgroundImage = gradientImage;
+				var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
+				navigationBarAppearance.BackgroundImage = backgroundImage;
 
 				NavigationBar.CompactAppearance = navigationBarAppearance;
 				NavigationBar.StandardAppearance = navigationBarAppearance;
@@ -708,8 +708,8 @@ namespace Xamarin.Forms.Platform.iOS
 					: barBackgroundColor.ToUIColor();
 
 				var barBackgroundBrush = NavPage.BarBackground;
-				var gradientImage = NavigationBar.GetGradientImage(barBackgroundBrush);
-				NavigationBar.SetBackgroundImage(gradientImage, UIBarMetrics.Default);
+				var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
+				NavigationBar.SetBackgroundImage(backgroundImage, UIBarMetrics.Default);
 			}
 		}
 

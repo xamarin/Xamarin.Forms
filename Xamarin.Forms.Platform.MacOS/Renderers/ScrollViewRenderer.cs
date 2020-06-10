@@ -249,7 +249,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			ContentView.Frame = new RectangleF(ContentView.Frame.X, ContentView.Frame.Y, Frame.Width, Frame.Height);
 			ResetNativeNonScroll();
-			UpdateBackground();
 		}
 
 		void UpdateVerticalScrollBarVisibility()

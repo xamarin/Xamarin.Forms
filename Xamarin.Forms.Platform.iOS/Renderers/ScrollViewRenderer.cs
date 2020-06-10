@@ -117,9 +117,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get { return null; }
 		}
-
-		
-
+				
 		public override void LayoutSubviews()
 		{
 			_insetTracker?.OnLayoutSubviews();
@@ -135,6 +133,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
+					UpdateBackground();
 					UpdateFlowDirection();
 				}
 			}

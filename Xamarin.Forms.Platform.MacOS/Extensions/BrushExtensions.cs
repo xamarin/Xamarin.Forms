@@ -19,37 +19,39 @@ namespace Xamarin.Forms.Platform.MacOS
 			NSView view = ShouldUseParentView(control) ? control.Superview : control;
 
 			// Clear previous background color
-			if (control.Layer != null && control.Layer.Name.Equals(SolidColorBrushLayer))
+			if (control.Layer != null && control.Layer.Name == SolidColorBrushLayer)
 				control.Layer.BackgroundColor = NSColor.Clear.CGColor;
 
 			// Remove previous background gradient layer if any
-			RemoveGradientLayer(view);
+			RemoveBackgroundLayer(view);
 
 			if (brush == null || brush.IsEmpty)
 				return;
 
 			control.WantsLayer = true;
+			control.LayerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.BeforeViewResize;
 
 			if (brush is SolidColorBrush solidColorBrush)
 			{
+				control.Layer.Name = SolidColorBrushLayer;
+
 				var backgroundColor = solidColorBrush.Color;
 
-				if (backgroundColor != Color.Default)
-				{
-					control.Layer.Name = SolidColorBrushLayer;
+				if (backgroundColor == Color.Default)
+					control.Layer.BackgroundColor = NSColor.Clear.CGColor;
+				else
 					control.Layer.BackgroundColor = backgroundColor.ToCGColor();
-				}
 			}
 			else
 			{
-				var gradientLayer = GetGradientLayer(control, brush);
+				var backgroundLayer = GetBackgroundLayer(control, brush);
 
-				if (gradientLayer != null)
-					view.InsertGradientLayer(gradientLayer, 0);
+				if (backgroundLayer != null)
+					view.InsertBackgroundLayer(backgroundLayer, 0);
 			}
 		}
 
-		public static CAGradientLayer GetGradientLayer(this NSView control, Brush brush)
+		public static CAGradientLayer GetBackgroundLayer(this NSView control, Brush brush)
 		{
 			if (control == null)
 				return null;
@@ -62,10 +64,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				var linearGradientLayer = new CAGradientLayer
 				{
 					Name = BackgroundLayer,
+					AutoresizingMask = CAAutoresizingMask.HeightSizable | CAAutoresizingMask.WidthSizable,
+					ContentsGravity = CALayer.GravityResizeAspectFill,
 					Frame = control.Bounds,
 					LayerType = CAGradientLayerType.Axial,
 					StartPoint = new CGPoint(p1.X, p1.Y),
-					EndPoint = new CGPoint(p2.X, p2.Y)
+					EndPoint = new CGPoint(p2.X, p2.Y),
 				};
 
 				if (linearGradientBrush.GradientStops != null && linearGradientBrush.GradientStops.Count > 0)
@@ -87,9 +91,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					Name = BackgroundLayer,
 					Frame = control.Bounds,
+					AutoresizingMask = CAAutoresizingMask.HeightSizable | CAAutoresizingMask.WidthSizable,
+					ContentsGravity = CALayer.GravityResizeAspectFill,
 					LayerType = CAGradientLayerType.Radial,
 					StartPoint = new CGPoint(center.X, center.Y),
-					EndPoint = new CGPoint(1, 1),
+					EndPoint = GetRadialGradientBrushEndPoint(center, radius),
 					CornerRadius = (float)radius
 				};
 
@@ -106,66 +112,58 @@ namespace Xamarin.Forms.Platform.MacOS
 			return null;
 		}
 
-		public static NSImage GetGradientImage(this NSView control, Brush brush)
+		public static NSImage GetBackgroundImage(this NSView control, Brush brush)
 		{
 			if (control == null || brush == null || brush.IsEmpty)
 				return null;
 
-			var gradientLayer = control.GetGradientLayer(brush);
+			var backgroundLayer = control.GetBackgroundLayer(brush);
 
-			if (gradientLayer == null)
+			if (backgroundLayer == null)
 				return null;
 
-			NSImage gradientImage = new NSImage(new CGSize(gradientLayer.Bounds.Width, gradientLayer.Bounds.Height));
-			gradientImage.LockFocus();
+			NSImage backgroundImage = new NSImage(new CGSize(backgroundLayer.Bounds.Width, backgroundLayer.Bounds.Height));
+			backgroundImage.LockFocus();
 			var context = NSGraphicsContext.CurrentContext.GraphicsPort;
-			gradientLayer.RenderInContext(context);
-			gradientImage.UnlockFocus();
+			backgroundLayer.RenderInContext(context);
+			backgroundImage.UnlockFocus();
 
-			return gradientImage;
+			return backgroundImage;
 		}
 
-		public static void InsertGradientLayer(this NSView view, CAGradientLayer gradientLayer, int index)
+		public static void InsertBackgroundLayer(this NSView view, CAGradientLayer backgroundLayer, int index)
 		{
-			InsertGradientLayer(view.Layer, gradientLayer, index);
+			InsertBackgroundLayer(view.Layer, backgroundLayer, index);
 		}
 
-		public static void InsertGradientLayer(this CALayer layer, CAGradientLayer gradientLayer, int index)
+		public static void InsertBackgroundLayer(this CALayer layer, CAGradientLayer backgroundLayer, int index)
 		{
-			RemoveGradientLayer(layer);
+			RemoveBackgroundLayer(layer);
 
-			if (gradientLayer != null)
-				layer.InsertSublayer(gradientLayer, index);
+			if (backgroundLayer != null)
+				layer.InsertSublayer(backgroundLayer, index);
 		}
 
-		public static void RemoveGradientLayer(this NSView view)
+		public static void RemoveBackgroundLayer(this NSView view)
 		{
 			if (view != null)
-				RemoveGradientLayer(view.Layer);
+				RemoveBackgroundLayer(view.Layer);
 		}
 
-		public static void RemoveGradientLayer(this CALayer layer)
+		public static void RemoveBackgroundLayer(this CALayer layer)
 		{
-			if (layer != null && layer.Sublayers != null && layer.Sublayers.Count() > 0)
+			if (layer != null)
 			{
-				var previousBackgroundLayer = layer.Sublayers.FirstOrDefault(x => x.Name == BackgroundLayer);
-				previousBackgroundLayer?.RemoveFromSuperLayer();
-			}
-		}
+				if (layer.Name == BackgroundLayer)
+					layer?.RemoveFromSuperLayer();
 
-		public static void UpdateGradientLayerSize(this NSView view)
-		{
-			if (view.Frame.IsEmpty)
-				return;
+				if (layer.Sublayers == null || layer.Sublayers.Count() == 0)
+					return;
 
-			var layer = view.Layer;
-
-			if (layer.Sublayers != null)
-			{
-				foreach (var sublayer in layer.Sublayers)
+				foreach (var subLayer in layer.Sublayers)
 				{
-					if (sublayer.Frame.IsEmpty && sublayer.Name == BackgroundLayer)
-						sublayer.Frame = view.Bounds;
+					if (subLayer.Name == BackgroundLayer)
+						subLayer?.RemoveFromSuperLayer();
 				}
 			}
 		}
@@ -176,6 +174,27 @@ namespace Xamarin.Forms.Platform.MacOS
 				return true;
 
 			return false;
+		}
+
+		static CGPoint GetRadialGradientBrushEndPoint(Point startPoint, double radius)
+		{
+			double x = startPoint.X == 1 ? (startPoint.X - radius) : (startPoint.X + radius);
+
+			if (x < 0)
+				x = 0;
+
+			if (x > 1)
+				x = 1;
+
+			double y = startPoint.Y == 1 ? (startPoint.Y - radius) : (startPoint.Y + radius);
+
+			if (y < 0)
+				y = 0;
+
+			if (y > 1)
+				y = 1;
+
+			return new CGPoint(x, y);
 		}
 	}
 }

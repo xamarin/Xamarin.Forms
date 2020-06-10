@@ -120,7 +120,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Control == null)
 				return;
 
-			_backgroundUIView.RemoveGradientLayer();
+			_backgroundUIView.RemoveBackgroundLayer();
 
 			if (brush != null && !brush.IsEmpty)
 			{
@@ -141,12 +141,12 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					var gradientLayer = _backgroundUIView.GetGradientLayer(Element.Background);
+					var backgroundLayer = _backgroundUIView.GetBackgroundLayer(Element.Background);
 
-					if (gradientLayer != null)
+					if (backgroundLayer != null)
 					{
 						_backgroundUIView.BackgroundColor = UIColor.Clear;
-						_backgroundUIView.InsertGradientLayer(gradientLayer, 0);
+						_backgroundUIView.InsertBackgroundLayer(backgroundLayer, 0);
 					}
 				}
 			}

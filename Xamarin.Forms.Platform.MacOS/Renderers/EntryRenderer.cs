@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
@@ -89,11 +90,22 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		bool _disposed;
+		CGSize _previousSize;
 		NSColor _defaultTextColor;
 
 		IElementController ElementController => Element;
 
 		IEntryController EntryController => Element;
+
+		public override void Layout()
+		{
+			base.Layout();
+
+			if (_previousSize != Bounds.Size)
+				SetBackground(Element.Background);
+
+			_previousSize = Bounds.Size;
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
@@ -157,8 +169,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Control == null)
 				return;
 
-			var gradientImage = this.GetGradientImage(brush);
-			Control.BackgroundColor = gradientImage != null ? NSColor.FromPatternImage(gradientImage) : NSColor.Clear;
+			var backgroundImage = this.GetBackgroundImage(brush);
+			Control.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
 
 			base.SetBackground(brush);
 		}

@@ -324,17 +324,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackground(Brush brush)
 		{
-			var gradientLayer = this.GetGradientLayer(brush);
+			var backgroundLayer = this.GetBackgroundLayer(brush);
 
-			if (gradientLayer != null)
+			if (backgroundLayer != null)
 			{
 #if __MOBILE__
 				Layer.BackgroundColor = UIColor.Clear.CGColor;
 #endif
-				Layer.InsertGradientLayer(gradientLayer, 0);
+				Layer.InsertBackgroundLayer(backgroundLayer, 0);
 			}
 			else
-				Layer.RemoveGradientLayer();
+				Layer.RemoveBackgroundLayer();
 		}
 
 		void UpdateHorizontalTextAlignment()

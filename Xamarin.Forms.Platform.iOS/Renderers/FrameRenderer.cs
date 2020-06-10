@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Brush background = Element.Background;
 
-			Layer.RemoveGradientLayer();
+			Layer.RemoveBackgroundLayer();
 
 			if (background != null && !background.IsEmpty)
 			{
@@ -144,15 +144,15 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					var gradientLayer = this.GetGradientLayer(background);
+					var backgroundLayer = this.GetBackgroundLayer(background);
 
-					if (gradientLayer != null)
+					if (backgroundLayer != null)
 					{
 						Layer.BackgroundColor = UIColor.Clear.CGColor;
-						Layer.InsertGradientLayer(gradientLayer, 0);
+						Layer.InsertBackgroundLayer(backgroundLayer, 0);
 
-						gradientLayer.CornerRadius = Layer.CornerRadius;
-						gradientLayer.BorderColor = Layer.BorderColor;
+						backgroundLayer.CornerRadius = Layer.CornerRadius;
+						backgroundLayer.BorderColor = Layer.BorderColor;
 					}
 				}
 			}

@@ -18,35 +18,37 @@ namespace Xamarin.Forms.Platform.iOS
 			UIView view = ShouldUseParentView(control) ? control.Superview : control;
 
 			// Remove previous background gradient layer if any
-			RemoveGradientLayer(view);
+			RemoveBackgroundLayer(view);
 
 			if (brush == null || brush.IsEmpty)
 				return;
 
-			if (brush is SolidColorBrush solidColorBrush)
+			var backgroundLayer = GetBackgroundLayer(control, brush);
+
+			if (backgroundLayer != null)
 			{
-				var backgroundColor = solidColorBrush.Color;
-
-				if (backgroundColor != Color.Default)
-					control.BackgroundColor = backgroundColor.ToUIColor();
-			}
-			else
-			{
-				var gradientLayer = GetGradientLayer(control, brush);
-
-				if (gradientLayer != null)
-				{
-					control.BackgroundColor = UIColor.Clear;
-
-					view.InsertGradientLayer(gradientLayer, 0);
-				}
+				control.BackgroundColor = UIColor.Clear;
+				view.InsertBackgroundLayer(backgroundLayer, 0);
 			}
 		}
 
-		public static CAGradientLayer GetGradientLayer(this UIView control, Brush brush)
+		public static CALayer GetBackgroundLayer(this UIView control, Brush brush)
 		{
 			if (control == null)
 				return null;
+
+			if (brush is SolidColorBrush solidColorBrush)
+			{
+				var linearGradientLayer = new CALayer
+				{
+					Name = BackgroundLayer,
+					ContentsGravity = CALayer.GravityResizeAspectFill,
+					Frame = control.Bounds,
+					BackgroundColor = solidColorBrush.Color.ToCGColor()
+				};
+
+				return linearGradientLayer;
+			}
 
 			if (brush is LinearGradientBrush linearGradientBrush)
 			{
@@ -56,6 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var linearGradientLayer = new CAGradientLayer
 				{
 					Name = BackgroundLayer,
+					ContentsGravity = CALayer.GravityResizeAspectFill,
 					Frame = control.Bounds,
 					LayerType = CAGradientLayerType.Axial,
 					StartPoint = new CGPoint(p1.X, p1.Y),
@@ -80,6 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var radialGradientLayer = new CAGradientLayer
 				{
 					Name = BackgroundLayer,
+					ContentsGravity = CALayer.GravityResizeAspectFill,
 					Frame = control.Bounds,
 					LayerType = CAGradientLayerType.Radial,
 					StartPoint = new CGPoint(center.X, center.Y),
@@ -100,69 +104,85 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		public static UIImage GetGradientImage(this UIView control, Brush brush)
+		public static UIImage GetBackgroundImage(this UIView control, Brush brush)
 		{
 			if (control == null || brush == null || brush.IsEmpty)
 				return null;
 
-			var gradientLayer = control.GetGradientLayer(brush);
+			var backgroundLayer = control.GetBackgroundLayer(brush);
 
-			if (gradientLayer == null)
+			if (backgroundLayer == null)
 				return null;
 
-			UIGraphics.BeginImageContextWithOptions(gradientLayer.Bounds.Size, false, UIScreen.MainScreen.Scale);
+			UIGraphics.BeginImageContextWithOptions(backgroundLayer.Bounds.Size, false, UIScreen.MainScreen.Scale);
 
 			if (UIGraphics.GetCurrentContext() == null)
 				return null;
 
-			gradientLayer.RenderInContext(UIGraphics.GetCurrentContext());
+			backgroundLayer.RenderInContext(UIGraphics.GetCurrentContext());
 			UIImage gradientImage = UIGraphics.GetImageFromCurrentImageContext();
 			UIGraphics.EndImageContext();
 
 			return gradientImage;
 		}
 
-		public static void InsertGradientLayer(this UIView view, CAGradientLayer gradientLayer, int index)
+		public static void InsertBackgroundLayer(this UIView view, CALayer backgroundLayer, int index)
 		{
-			InsertGradientLayer(view.Layer, gradientLayer, index);
+			InsertBackgroundLayer(view.Layer, backgroundLayer, index);
 		}
 
-		public static void InsertGradientLayer(this CALayer layer, CAGradientLayer gradientLayer, int index)
+		public static void InsertBackgroundLayer(this CALayer layer, CALayer backgroundLayer, int index)
 		{
-			RemoveGradientLayer(layer);
+			RemoveBackgroundLayer(layer);
 
-			if (gradientLayer != null)
-				layer.InsertSublayer(gradientLayer, index);
+			if (backgroundLayer != null)
+				layer.InsertSublayer(backgroundLayer, index);
 		}
 
-		public static void RemoveGradientLayer(this UIView view)
+		public static void RemoveBackgroundLayer(this UIView view)
 		{
 			if (view != null)
-				RemoveGradientLayer(view.Layer);
+				RemoveBackgroundLayer(view.Layer);
 		}
 
-		public static void RemoveGradientLayer(this CALayer layer)
+		public static void RemoveBackgroundLayer(this CALayer layer)
 		{
-			if (layer != null && layer.Sublayers != null && layer.Sublayers.Count() > 0)
+			if (layer != null)
 			{
-				var previousBackgroundLayer = layer.Sublayers.FirstOrDefault(x => x.Name == BackgroundLayer);
-				previousBackgroundLayer?.RemoveFromSuperLayer();
+				if (layer.Name == BackgroundLayer)
+					layer?.RemoveFromSuperLayer();
+
+				if (layer.Sublayers == null || layer.Sublayers.Count() == 0)
+					return;
+
+				foreach (var subLayer in layer.Sublayers)
+				{
+					if (subLayer.Name == BackgroundLayer)
+						subLayer?.RemoveFromSuperLayer();
+				}
 			}
 		}
 
-		public static void UpdateGradientLayerSize(this UIView view)
+		public static void UpdateBackgroundLayer(this UIView view)
 		{
 			if (view.Frame.IsEmpty)
 				return;
 
 			var layer = view.Layer;
 
+			UpdateBackgroundLayer(layer, view.Bounds);
+		}
+
+		static void UpdateBackgroundLayer(this CALayer layer, CGRect bounds)
+		{
 			if (layer.Sublayers != null)
 			{
 				foreach (var sublayer in layer.Sublayers)
 				{
-					if (sublayer.Frame.IsEmpty && sublayer.Name == BackgroundLayer)
-						sublayer.Frame = view.Bounds;
+					UpdateBackgroundLayer(sublayer, bounds);
+
+					if (sublayer.Name == BackgroundLayer && sublayer.Frame != bounds)
+						sublayer.Frame = bounds;
 				}
 			}
 		}
